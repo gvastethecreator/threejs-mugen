@@ -1,20 +1,20 @@
 # DA29-009 architecture note
 
-Wave 0 · revision 119e627410a4
+Wave 0
 
 ## Decision surface
-
 Define the gate taxonomy. Depends on DA29-008. Systems: QA docs, reports, scorecard.
 
 ## Acceptance
-
 Schema distinguishes unit, focused, trace, global, browser route, accessibility, performance, source review, release, and production gates plus valid inheritance rules.
 
 ## Constraints
-
 Gate mixing. Allows taxonomy adoption only.
 
-## Status
+## Anchors
+- Authority materializer: scripts/materialize_authority_selector.cjs
+- Authority doc: docs/AUTHORITY_SELECTOR.md
+- Series registry: docs/evidence/da29/series-registry-v1.json
 
-Architecture/control design recorded for series closeout. Implementation remains
-owned by later `[I]` / `[G]` cuts that list this ID as a dependency.
+## Status
+Architecture/control design only. Downstream [I]/[G] cuts own runtime proof.

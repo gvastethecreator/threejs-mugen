@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-078",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "src/app/App.ts",
+    "src/mugen"
+  ],
+  "facts": {
+    "src/app/App.ts": 668855,
+    "src/mugen": 0
+  },
+  "error": null,
+  "cut": "Prove AIR reserved actions and element timing. Depends on DA29-043 and DA29-084.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "df4512b812a72afe6b75207eb2397756c36209595f2aa0a29020bf30505e155b"
+  }
+}

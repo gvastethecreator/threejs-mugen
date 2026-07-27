@@ -1,31 +1,16 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-114",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Prove full keyboard operation and focus order. Depends on DA29-111.",
   "acceptance": "Import, play controls, panels, dialogs, Studio actions, and errors work without pointer; focus order follows task flow and escape/return behavior is stable.",
-  "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "49af3e48bb46fa706229cdc4d7a1f5f127fc8759e69b8f2b6ab4dc3a32981de9"
+    "value": "bd489c5f01047a30d32a4c9ee8afb7cff75e719bb2fef4a2da44cb9116b8f940"
   }
 }

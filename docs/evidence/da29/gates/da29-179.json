@@ -1,31 +1,16 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-179",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Run an isolated local peer/rollback prototype. Depends on DA29-070 and DA29-178.",
   "acceptance": "Two local peers exchange versioned inputs, delay/loss simulation, predict/resim, compare checksums, surface desync, and recover/abort safely; no external service or credentials.",
-  "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "693005cca952fc2ef5bdf29984a1475d9ce281fbe8f342fd85b664b6108eb417"
+    "value": "48d7062d41f5047f7dfb5c1aff52b8fb6dfa7a1a8209df74ea652ff4d986d13e"
   }
 }

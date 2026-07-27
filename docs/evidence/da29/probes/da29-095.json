@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-095",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "src/mugen",
+    "src/game"
+  ],
+  "facts": {
+    "src/mugen": 0,
+    "src/game": 0
+  },
+  "error": null,
+  "cut": "Implement committed, aborted, and indeterminate recovery. Depends on DA29-094.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "ca1c9f9b8211f0d8957186b3f32e78261753a588285f3a0bd4f25c80ffe56f12"
+  }
+}

@@ -1,31 +1,21 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-130",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "browser-matrix",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Run a long deterministic soak. Depends on DA29-121…129.",
   "acceptance": "Named device/browser runs repeated rounds, imports, saves, project switches, audio, pause/resume, and stress for fixed duration; frame, memory, errors, resource counts, and final replay digest pass thresholds.",
   "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/da29/product-browser-matrix-v1.json",
+    "docs/evidence/da29/browser/match-desktop.png",
+    "docs/evidence/da29/browser/match-mobile.png",
+    "docs/evidence/da29/browser/studio-workbench-desktop.png"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "0409131fbd628bc0c48e4f39b32352f049033d5f53130036575dfd9e2e4ce88b"
+    "value": "4600e514f0d62cdc1d5a4f044feddd2509f6e7056201bd3c73f7a315f96871a8"
   }
 }

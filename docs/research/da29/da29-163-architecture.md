@@ -1,20 +1,20 @@
 # DA29-163 architecture note
 
-Wave 16 · revision 119e627410a4
+Wave 16
 
 ## Decision surface
-
 Define UI text, motif strings, and localization ownership. Depends on DA29-161, DA29-162, and DA29-116.
 
 ## Acceptance
-
 ADR distinguishes authored motif text, engine copy, locale selection, fallback, encoding, bidi, truncation, accessible names, and evidence snapshots.
 
 ## Constraints
-
 Localization can alter layout and authored meaning. Allows architecture only.
 
-## Status
+## Anchors
+- Authority materializer: scripts/materialize_authority_selector.cjs
+- Authority doc: docs/AUTHORITY_SELECTOR.md
+- Series registry: docs/evidence/da29/series-registry-v1.json
 
-Architecture/control design recorded for series closeout. Implementation remains
-owned by later `[I]` / `[G]` cuts that list this ID as a dependency.
+## Status
+Architecture/control design only. Downstream [I]/[G] cuts own runtime proof.

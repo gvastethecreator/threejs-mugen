@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-053",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "src/app/StudioTabs.ts",
+    "src/app/App.ts"
+  ],
+  "facts": {
+    "src/app/StudioTabs.ts": 1326,
+    "src/app/App.ts": 668855
+  },
+  "error": null,
+  "cut": "Run three-plus live projectiles from imported states. Depends on DA29-041 and DA29-012.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "03668ed5b7f404c05d2e248a520d71f1deeb9532e2f09cf8e4e7b1355a475bb5"
+  }
+}

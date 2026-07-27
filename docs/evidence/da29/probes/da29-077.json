@@ -1,0 +1,14 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-077",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": false,
+  "entryPoints": [],
+  "facts": {},
+  "error": "no shipped probe mapping for cut",
+  "cut": "Execute a real ACT palette-selection path. Depends on DA29-082 and DA29-043.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "1a1dc7f6f9c885481039c50bd7487a77d674500c4789c4de805c830008e895dc"
+  }
+}

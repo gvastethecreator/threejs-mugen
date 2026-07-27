@@ -1,31 +1,22 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-140",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Prove extraction by deletion and forbidden-import tests. Depends on DA29-139.",
   "acceptance": "Each shared contract survives removal of either adapter in isolation; boundary violations fail; bundle graph shows no fighting code in the non-fighting route; docs name remaining domain coupling.",
   "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/da29/gates/da29-140-report.json",
     "docs/evidence/controller-coverage-matrix-v1.json",
     "docs/evidence/native-asset-provenance-v1.json",
     "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/compatibility-corpus-v1.2.json"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "d18c9a094f746496cce5039c97bdce890af375dddb931e4d91eefc0afcd715bc"
+    "value": "fc2cafef1db25d342300d7f110d63b9b2ad468c94933f52256436f4b9c3aa104"
   }
 }

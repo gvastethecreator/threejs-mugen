@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-056",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "src/mugen",
+    "src/game"
+  ],
+  "facts": {
+    "src/mugen": 0,
+    "src/game": 0
+  },
+  "error": null,
+  "cut": "Close a bounded Explod/ModifyExplod/BindToRoot chain. Depends on DA29-055 and DA29-052.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "3d99c4d4967038f1887c8779075e78c327914cf4d2c689a281232eeceecd6e49"
+  }
+}

@@ -1,21 +1,45 @@
 {
   "schema": "Da29ProductBrowserMatrix/v1",
   "id": "DA29-003",
-  "generatedAt": "2026-07-27T00:00:00.000Z",
-  "claimCeiling": "named route/view inventory only; blocks broad usability until DA29-111…120",
+  "generatedAt": "2026-07-27T04:06:28.284Z",
+  "claimCeiling": "named route/view captures only; blocks broad usability until DA29-111…120",
   "routes": [
-    { "id": "match", "mode": "match", "viewports": ["1440x960", "390x844"], "status": "inventory" },
-    { "id": "inspect", "mode": "inspect", "viewports": ["1440x960"], "status": "inventory" },
-    { "id": "studio-workbench", "mode": "studio", "tab": "workbench", "viewports": ["1440x960"], "status": "inventory" },
-    { "id": "studio-evidence", "mode": "studio", "tab": "evidence", "viewports": ["1440x960"], "status": "inventory" },
-    { "id": "command-palette", "overlay": "command-palette", "viewports": ["1440x960"], "status": "inventory" }
-  ],
-  "priorBrowserGates": [
-    "docs/evidence/da28-09-turns-browser",
-    "docs/evidence/da26-13-browser"
+    {
+      "id": "match-desktop",
+      "viewport": "1440x960",
+      "path": "docs/evidence/da29/browser/match-desktop.png",
+      "sha256": "250b5b727700c8cdaf2c9499e279d9c308383c77fffe286127a52770beb4cd0d",
+      "consoleErrorCount": 0,
+      "status": "captured"
+    },
+    {
+      "id": "match-mobile",
+      "viewport": "390x844",
+      "path": "docs/evidence/da29/browser/match-mobile.png",
+      "sha256": "74651bb46f2692a64ed74c6fe6c9d00cbf3cfd6c6f0f56fdf86b6b86f7477c7e",
+      "consoleErrorCount": 0,
+      "status": "captured"
+    },
+    {
+      "id": "studio-workbench-desktop",
+      "viewport": "1440x960",
+      "path": "docs/evidence/da29/browser/studio-workbench-desktop.png",
+      "sha256": "3d02f8d28c6aaf209155e53dc896d5216afdfd2186a7ca4f8a6c9ba36c720ea7",
+      "consoleErrorCount": 0,
+      "status": "captured"
+    }
   ],
   "claims": {
-    "allowed": ["route manifest inventory for DA29-003"],
-    "blocked": ["broad usability", "error-free product claim without fresh screenshots at one commit"]
+    "allowed": [
+      "route manifest + screenshots for DA29-003"
+    ],
+    "blocked": [
+      "broad usability",
+      "formal/global tip rewrite"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "984113c96e91ea6872d4707cd8edff7f6e8cb9975e0068582a94c776991f2470"
   }
 }

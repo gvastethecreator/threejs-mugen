@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-026",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "src/game",
+    "src/mugen"
+  ],
+  "facts": {
+    "src/game": 0,
+    "src/mugen": 0
+  },
+  "error": null,
+  "cut": "Replay the canonical input log. Depends on DA29-025 and DA29-029.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "cde0b411872afb7a109bce6acf2fc22a21ae9e70f4d2ddc42093c2014197a6e9"
+  }
+}

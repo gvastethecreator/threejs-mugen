@@ -1,31 +1,24 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-085",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Harden CNS/CMD recovery and diagnostic limits. Depends on DA29-033 and DA29-081.",
   "acceptance": "Mutation corpus covers truncated blocks, duplicate fields, invalid expressions, encoding/newlines, huge tokens, nested comments, unknown fields, and bounded error counts.",
   "relatedArtifacts": [
+    "docs/evidence/da29/compatibility-corpus-v1.3.json",
     "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/evidence/da29/score-adjudication-v1.3.json",
+    "docs/evidence/da29/product-browser-matrix-v1.json",
     "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/native-asset-provenance-v1.json"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "8e7c3790a7b25d350d166718d674116020aa1dbdb8b666e9cce5e0e6fb71b4de"
+    "value": "843cf7238547a771d050b4ef48452fe11d057f45faec06e555201fe67fc48b6f"
   }
 }

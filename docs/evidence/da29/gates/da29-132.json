@@ -1,31 +1,16 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-132",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Make required roots non-vacuous. Depends on DA29-131.",
   "acceptance": "Active profile fails when a required root is missing, optional roots are explicit, and negative fixtures prove forbidden vocabulary/imports in every active root.",
-  "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "a609723964a04830bbd4b8cc0ac10085fdb9f5cd1c9ae9b3e40bf0b74e4c74d6"
+    "value": "cc3f72afcd04fdde9f49cc8802a9950573c7545b6d5fbe44f638f66b11064a64"
   }
 }

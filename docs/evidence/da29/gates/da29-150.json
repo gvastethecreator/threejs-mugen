@@ -1,31 +1,18 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-150",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Run final score, compatibility, product, and release adjudication. Depends on all required tasks for the chosen milestone, especially DA29-005 and DA29-147…149.",
   "acceptance": "Independent evidence review records accepted/rejected facts, exact score changes, release decision, supported profiles/routes, known gaps, and next queue; every broad claim links its gate.",
   "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/da29/score-adjudication-v1.3.json"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "711b6796509c1d3703983abc04643a89f0df9118e7dcebe090e008ff1a73cfd7"
+    "value": "957c69cb7a58af29d11f53336d1eaeb068cea1de7f16d680c0c9ae1af33cb7f9"
   }
 }

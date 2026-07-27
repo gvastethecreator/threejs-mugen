@@ -1,31 +1,24 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-126",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Fuzz ZIP and binary parser resource limits. Depends on DA29-082, DA29-083, and DA29-086.",
   "acceptance": "Seeded corpus covers size/ratio/depth, malformed headers, truncation, integer edges, duplicate paths, cancellation, time/memory caps, and stable rejection.",
   "relatedArtifacts": [
+    "docs/evidence/da29/compatibility-corpus-v1.3.json",
     "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/evidence/da29/score-adjudication-v1.3.json",
+    "docs/evidence/da29/product-browser-matrix-v1.json",
     "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/native-asset-provenance-v1.json"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "2771b5b7e51be76a76dcabd09ecdda236f33f806c1bb9da05d3779515e7ff3a3"
+    "value": "d4450bdea18e11054547d256f44591f3ce43ea35874d49080de904a53eab4f5c"
   }
 }

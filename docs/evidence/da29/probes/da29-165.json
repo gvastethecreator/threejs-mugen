@@ -1,0 +1,14 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-165",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": false,
+  "entryPoints": [],
+  "facts": {},
+  "error": "no shipped probe mapping for cut",
+  "cut": "Add a bounded storyboard/cutscene player. Depends on DA29-074, DA29-078, DA29-080, and DA29-161.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "308d3f7e61150f8455772f0c0eb1c60a83750460d11cfe8095f82869dbdb546e"
+  }
+}

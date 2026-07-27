@@ -1,26 +1,21 @@
-# DA29-191 research notes
+# DA29-191 research inventory
 
-Wave 19 · revision 119e627410a4
+Wave 19
 
 ## Cut
-
 Plan workspace/package splits from the proven dependency graph. Depends on DA29-133, DA29-140, and DA29-188.
 
 ## Acceptance ceiling
-
 Proposal names packages, owners, public/private entrypoints, build order, browser/Node targets, dependency cycles, migration steps, and size/test impact.
 
 ## Risk
-
 Package split can move coupling rather than remove it. Allows plan only.
 
-## Inventory method
+## Live inventory (machine-scanned)
+- package scripts (sample): dev, build, preview, qa:css, qa:css:budget, qa:css:detail, fix:css, qa:stage, qa:stage:repository, qa:stage:repository:native, qa:studio:compatibility-snapshot, qa:studio:project-reopen, qa:studio:gate-evidence, qa:assets:hygiene, materialize:studio:gate-evidence, materialize:repository-stage-journey, materialize:repository-stage-journey:native, qa:smoke, qa:trace, materialize:compatibility-snapshot
+- src/mugen TypeScript files: 278
+- registry id: DA29-191
+- generatedAt: 2026-07-27T04:17:51.655Z
 
-Machine-generated closeout from `docs/MASTER_REVIEW_ROADMAP.md` + series registry.
-This note records the research claim only; it does not authorize runtime, score,
-or formal/global movement.
-
-## Open questions
-
-- Source pin freshness for any normative claim in this cut
-- Fixture ownership if later implementation IDs consume this research
+## Claim
+Research inventory only. No runtime, score, or formal/global credit.

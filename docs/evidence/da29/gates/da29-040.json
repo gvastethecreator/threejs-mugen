@@ -1,31 +1,24 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-040",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Add a compiler differential artifact over the lawful corpus. Depends on DA29-033, DA29-034, and DA29-035.",
   "acceptance": "For each fixture, artifact lists parsed blocks, compiled ops, dropped/unknown fields, diagnostics, canonical digest, and revision; changes require review.",
   "relatedArtifacts": [
+    "docs/evidence/da29/compatibility-corpus-v1.3.json",
     "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/evidence/da29/score-adjudication-v1.3.json",
+    "docs/evidence/da29/product-browser-matrix-v1.json",
     "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/native-asset-provenance-v1.json"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "e2f89fd83adf273b9e155189f9459619ffa0fa9576137632fafe66b529d362d3"
+    "value": "6f8075a0f6c301fd1f9a8d4a878cec8588bce4e92fdc05f43fdf374003f5bdc6"
   }
 }

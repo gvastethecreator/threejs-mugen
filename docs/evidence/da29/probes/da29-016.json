@@ -1,0 +1,18 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-016",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "docs/evidence/source-authority-epoch-v1.json"
+  ],
+  "facts": {
+    "docs/evidence/source-authority-epoch-v1.json": 4521
+  },
+  "error": null,
+  "cut": "Add source locations and digests to source-family review. Depends on DA29-008. Systems: Elecbyte/Ikemen manifests.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "7c5f133a4b8097aa4121575ad37f5440ad0be89c68bdba5dc9be0a26f6997f6a"
+  }
+}

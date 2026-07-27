@@ -1,31 +1,16 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-174",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Prototype a bounded Lua sandbox offline. Depends on DA29-125 and DA29-173.",
   "acceptance": "Repository-owned scripts test allowlisted APIs, deterministic clock/RNG, memory/instruction/time caps, cancellation, errors, no file/network/DOM access, and worker termination.",
-  "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
-  ],
+  "relatedArtifacts": [],
   "digest": {
     "algorithm": "sha-256",
-    "value": "d1162f00f23d04005801bd7fed7f892ee5ca4a3a861039c95ee0db08f00031e2"
+    "value": "138c27f3ce19003cb480eb3bc666e20e0febeb97fa7201f7b23516bbe2bc92e9"
   }
 }

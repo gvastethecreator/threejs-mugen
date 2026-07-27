@@ -1,0 +1,14 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-184",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": false,
+  "entryPoints": [],
+  "facts": {},
+  "error": "no shipped probe mapping for cut",
+  "cut": "Add source diff, external-change, and merge workflow. Depends on DA29-090, DA29-097, DA29-098, and DA29-182.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "d0c168dd697a080c03d61b545d951ae37e6bcb0ae0de17cac823caa61b567b62"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-131",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "scripts/check_boundaries.cjs",
+    "scripts/check_redirected_target_dispatch_boundary.cjs"
+  ],
+  "facts": {
+    "scripts/check_boundaries.cjs": 3813,
+    "scripts/check_redirected_target_dispatch_boundary.cjs": 2546
+  },
+  "error": null,
+  "cut": "Make BoundaryManifest the only required-root source. Depends on DA29-006 and current DA28-30 work.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "91835b8f0656bb9770dc81485ed635cb01952e47213d04fc4bce4e1b11c49b69"
+  }
+}

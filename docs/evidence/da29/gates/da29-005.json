@@ -1,31 +1,18 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-005",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Adjudicate scores from corpus v1.3. Depends on DA29-004. Systems: scorecard and denominator ledger.",
   "acceptance": "Each lane records denominator, eligible evidence, rejected evidence, movement, and reviewer rationale. Docs-only work contributes zero.",
   "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/da29/score-adjudication-v1.3.json"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "2e25f6b01bd32ba4ae7eca27ec6bd7291ecae4d70d08c038e11c894aca1c3409"
+    "value": "109bfdf2b0c9f35fd9ab1d39c2fc3903dd85fb86f69a504300658e3d7f847e0e"
   }
 }

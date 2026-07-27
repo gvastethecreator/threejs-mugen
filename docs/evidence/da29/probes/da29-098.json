@@ -1,0 +1,14 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-098",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": false,
+  "entryPoints": [],
+  "facts": {},
+  "error": "no shipped probe mapping for cut",
+  "cut": "Make changed-source freshness visible and blocking. Depends on DA29-004, DA29-088, and DA29-094.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "2b4fe6db138b11104c832153c7d2497434e1f80d6622d5dd7ba634b48826b6b7"
+  }
+}

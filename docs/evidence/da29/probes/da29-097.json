@@ -1,0 +1,14 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-097",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": false,
+  "entryPoints": [],
+  "facts": {},
+  "error": "no shipped probe mapping for cut",
+  "cut": "Revalidate file-handle permissions on reopen and write. Depends on DA29-091 and DA29-094.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "f9d55d53f6f2e27d3f9d5e02be740e1aa2b1f1c1b7dc50479fe0dcc18c37e596"
+  }
+}

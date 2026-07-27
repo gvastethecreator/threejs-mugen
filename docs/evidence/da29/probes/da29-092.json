@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-092",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "src/app/StudioTabs.ts",
+    "src/app/App.ts"
+  ],
+  "facts": {
+    "src/app/StudioTabs.ts": 1326,
+    "src/app/App.ts": 668855
+  },
+  "error": null,
+  "cut": "Add versioned IndexedDB schema and migrations. Depends on DA29-091.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "90b918d5891d5ad7bf3a7f5f97f6a59c558ad3cf9fa3ef8ca99878b5309d19af"
+  }
+}

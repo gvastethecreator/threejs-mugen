@@ -1,20 +1,20 @@
 # DA29-175 architecture note
 
-Wave 17 · revision 119e627410a4
+Wave 17
 
 ## Decision surface
-
 Define IKEMEN module packaging and capability permissions. Depends on DA29-172…174.
 
 ## Acceptance
-
 ADR covers manifest, identity, version, dependencies, requested capabilities, signatures/digests, trust, updates, isolation, diagnostics, and uninstall cleanup.
 
 ## Constraints
-
 Extension power expands attack surface. Allows package design only.
 
-## Status
+## Anchors
+- Authority materializer: scripts/materialize_authority_selector.cjs
+- Authority doc: docs/AUTHORITY_SELECTOR.md
+- Series registry: docs/evidence/da29/series-registry-v1.json
 
-Architecture/control design recorded for series closeout. Implementation remains
-owned by later `[I]` / `[G]` cuts that list this ID as a dependency.
+## Status
+Architecture/control design only. Downstream [I]/[G] cuts own runtime proof.

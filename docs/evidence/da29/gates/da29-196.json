@@ -1,31 +1,22 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-196",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Generate API and format support references. Depends on DA29-034, DA29-035, DA29-090, DA29-168, and DA29-192.",
   "acceptance": "Current registries generate searchable controller/trigger/format/profile/API docs with evidence links, unsupported branches, versions, examples, and stale-reference audit.",
   "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/da29/gates/da29-196-report.json",
     "docs/evidence/controller-coverage-matrix-v1.json",
     "docs/evidence/native-asset-provenance-v1.json",
     "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/compatibility-corpus-v1.2.json"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "fb4d425463f6b78d9e41f2872fa850d6c7eddba5c7e48650f732c8eeafc34bc1"
+    "value": "184921c244c7a485a62c9edc64078889b0693cb75cc1b32f914bd6686e7f5daa"
   }
 }

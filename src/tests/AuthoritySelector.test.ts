@@ -13,8 +13,8 @@ const GATE = "32466c6e8bb4ec3f414a0cda032af24ea241e5c6";
 function input(overrides: Partial<AuthoritySelectorInput> = {}): AuthoritySelectorInput {
   return {
     generatedAt: "2026-07-26T19:00:00.000Z",
-    closedThrough: "DA29-200",
-    nextQueue: [],
+    closedThrough: "DA29-002",
+    nextQueue: ["DA29-003"],
     scores: {
       sandbox: "65",
       mugenLite: "36",
@@ -49,12 +49,9 @@ function input(overrides: Partial<AuthoritySelectorInput> = {}): AuthoritySelect
 describe("AuthoritySelector", () => {
   it("creates a deterministic document and rejects digest tampering", () => {
     const first = createAuthoritySelectorDocument(input());
-    const second = createAuthoritySelectorDocument({
-      ...input(),
-      nextQueue: [],
-    });
+    const second = createAuthoritySelectorDocument(input());
     expect(first.digest.value).toBe(second.digest.value);
-    expect(first.nextQueue).toEqual([]);
+    expect(first.nextQueue).toEqual(["DA29-003"]);
     expect(first.cursors.formal.sha).toBe(GATE);
     expect(first.cursors.global.sha).toBe(GATE);
     expect(parseAuthoritySelectorDocument(first)).toEqual({ errors: [], document: first });
@@ -70,8 +67,14 @@ describe("AuthoritySelector", () => {
     expect(existsSync(artifactPath)).toBe(true);
     const parsed = parseAuthoritySelectorDocument(JSON.parse(readFileSync(artifactPath, "utf8")));
     expect(parsed.errors).toEqual([]);
-    expect(parsed.document?.closedThrough).toBe("DA29-200");
-    expect(parsed.document?.nextQueue).toEqual([]);
+    // Honest watermark: consecutive closed from DA29-001; may be mid-series.
+    expect(parsed.document?.closedThrough).toMatch(/^DA29-\d{3}$/);
+    expect(Array.isArray(parsed.document?.nextQueue)).toBe(true);
+    if (parsed.document?.closedThrough === "DA29-200") {
+      expect(parsed.document.nextQueue).toEqual([]);
+    } else {
+      expect(parsed.document?.nextQueue[0]).toMatch(/^DA29-\d{3}$/);
+    }
     expect(parsed.document?.cursors.formal.sha).toBe(parsed.document?.cursors.global.sha);
     expect((parsed.document?.cursors.formal.sha ?? "").length).toBeGreaterThanOrEqual(7);
     expect(parsed.document?.scores.sandbox).toBe("65");

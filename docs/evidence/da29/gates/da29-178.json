@@ -1,31 +1,22 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-178",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Re-audit deterministic readiness for rollback. Depends on DA29-030, DA29-060, DA29-064, DA29-066, DA29-130, and DA29-156.",
   "acceptance": "Matrix records deterministic owners, snapshot cost, resim speed, desync localization, unsupported systems, team/plural/AI results, and hard blockers.",
   "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/da29/gates/da29-178-report.json",
     "docs/evidence/controller-coverage-matrix-v1.json",
     "docs/evidence/native-asset-provenance-v1.json",
     "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/compatibility-corpus-v1.2.json"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "7da50fc4c716cc140a45895b87922515d508666daa1a196eb4ec70868549af76"
+    "value": "526ab4db95febdb5fb90680fbad5b1bc1aa17a816484ba71657af018ba4365a3"
   }
 }

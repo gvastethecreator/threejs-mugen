@@ -1,0 +1,18 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-073",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "public/stages/rooftop-dojo/rooftop-dojo.png"
+  ],
+  "facts": {
+    "public/stages/rooftop-dojo/rooftop-dojo.png": 2058915
+  },
+  "error": null,
+  "cut": "Reconcile camera, stage, screen, and player bounds. Depends on DA29-041 and DA29-071.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "785dc43ade4848fb8316804b5da838d09914816a0b837d2008a447e90652b6e1"
+  }
+}

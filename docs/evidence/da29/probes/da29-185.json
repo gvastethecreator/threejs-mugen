@@ -1,0 +1,14 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-185",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": false,
+  "entryPoints": [],
+  "facts": {},
+  "error": "no shipped probe mapping for cut",
+  "cut": "Add cancellable batch analysis and transform jobs. Depends on DA29-087, DA29-104, DA29-124, and DA29-125.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "fa88c94eb84fb1562377467702eeeaaef15c10d6d6d844c9c677eb100fac92d6"
+  }
+}

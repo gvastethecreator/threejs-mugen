@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-109",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "src/app/StudioTabs.ts",
+    "src/app/App.ts"
+  ],
+  "facts": {
+    "src/app/StudioTabs.ts": 1326,
+    "src/app/App.ts": 668855
+  },
+  "error": null,
+  "cut": "Make ProjectAssetClosure traverse real project dependencies. Depends on DA29-108 and DA29-088.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "db51f256e7997142da2816b855f976a6b4d5ede4d59bd2fd78db951c1656448d"
+  }
+}

@@ -1,48 +1,49 @@
 {
-  "schema": "Da29CloseoutEvidence/v1",
+  "schema": "Da29CloseoutEvidence/v2",
   "id": "DA29-153",
   "kind": "I",
   "wave": 15,
-  "closedAt": "2026-07-27T03:51:12.533Z",
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:17:51.655Z",
   "cut": "Prove charge, hold, release, and repeated-button semantics. Depends on DA29-152 and DA29-025.",
   "acceptance": "Record/replay routes cover charge duration boundaries, held directions across facing changes, release tokens, repeated presses, negative-edge policy, and failure frames.",
   "risk": "Device sampling can alter thresholds. Allows tested tokens/profile only.",
   "revision": {
-    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-    "headShort": "7e90eeb6267d",
+    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
+    "headShort": "a6e91520081d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
-    "src/mugen",
-    "src/app/App.ts"
+    "src/game",
+    "src/mugen"
   ],
   "commands": [
-    "node scripts/materialize_da29_series_closeouts.cjs --from 153 --to 153",
-    "structural impl evidence DA29-153"
+    "implementation probe DA29-153"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-153.json",
-    "docs/evidence/da29/impl/da29-153.json"
+    "docs/evidence/da29/probes/da29-153.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-153 closed at written kind-I ceiling for wave 15",
-      "unit/static implementation evidence at written ceiling"
+      "DA29-153 closed as implementation-probe",
+      "unit/static implementation probe against shipped entry points"
     ],
     "blocked": [
-      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
-      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "bulk-closing unproven I/G cuts",
       "product/runtime parity beyond named entry points"
     ]
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "a5a7e7fb86f6717b5a07c1da052df88a9727dc9d797d96b5d6f25489880cb033"
+    "value": "0588de42f40abdce2614e346aad97e7ae949ba4f252c3df468131ba2d936c06f"
   }
 }

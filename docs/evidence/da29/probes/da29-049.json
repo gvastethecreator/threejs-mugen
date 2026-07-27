@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-049",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "src/mugen",
+    "src/game"
+  ],
+  "facts": {
+    "src/mugen": 0,
+    "src/game": 0
+  },
+  "error": null,
+  "cut": "Implement one bounded throw/reversal ownership journey. Depends on DA29-048 and DA29-029.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "049b887f485e0da9d662159f1be8fcb3efd62340c7c0035554a800c8918e9cd4"
+  }
+}

@@ -1,15 +1,17 @@
 {
-  "schema": "Da29CloseoutEvidence/v1",
+  "schema": "Da29CloseoutEvidence/v2",
   "id": "DA29-106",
   "kind": "A",
   "wave": 10,
-  "closedAt": "2026-07-27T03:51:12.533Z",
+  "status": "closed",
+  "evidenceClass": "architecture-design",
+  "closedAt": "2026-07-27T04:17:51.655Z",
   "cut": "Define generated audio provenance and safety. Depends on DA29-101 and DA29-079.",
   "acceptance": "Schema and policy cover source/permission, model/tool/version, prompt, seed, duration, sample rate, loudness, peak, trims, transforms, and output digest.",
   "risk": "Audio source rights and unsafe peaks. Allows policy only.",
   "revision": {
-    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-    "headShort": "7e90eeb6267d",
+    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
+    "headShort": "a6e91520081d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -17,28 +19,30 @@
     "docs/evidence/da29/series-registry-v1.json"
   ],
   "commands": [
-    "node scripts/materialize_da29_series_closeouts.cjs --from 106 --to 106"
+    "architecture note DA29-106"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-106.json",
-    "docs/research/da29/da29-106-architecture.md"
+    "docs/research/da29/da29-106-architecture.md",
+    "docs/AUTHORITY_SELECTOR.md",
+    "scripts/materialize_authority_selector.cjs"
   ],
   "claims": {
     "allowed": [
-      "DA29-106 closed at written kind-A ceiling for wave 10",
+      "DA29-106 closed as architecture-design",
       "architecture/control design only"
     ],
     "blocked": [
-      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
-      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone"
+      "bulk-closing unproven I/G cuts"
     ]
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "e9b20414eaebc240f330431551f3715a166ac5ebcf40b75cc853fd7458068b14"
+    "value": "ba7b1913a7f628edaa030b41bd2f83c63687c65b601c27876868365f6f2eac17"
   }
 }

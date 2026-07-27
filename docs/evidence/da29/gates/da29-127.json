@@ -1,31 +1,22 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-127",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Test IndexedDB quota, corruption-like, and blocked-upgrade recovery. Depends on DA29-092, DA29-093, and DA29-099.",
   "acceptance": "Injected quota/abort/blocked/version/store loss routes retain last good data, surface state, allow safe export/reset, and never report false save success.",
   "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/da29/gates/da29-127-report.json",
     "docs/evidence/controller-coverage-matrix-v1.json",
     "docs/evidence/native-asset-provenance-v1.json",
     "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/compatibility-corpus-v1.2.json"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "3bb5fc43b05f1f8c4903db399eb4d09166cd37dc4c2a294ea5b7e34fd96552cc"
+    "value": "2ee8a8e9dab09592de395d41d1da5a04ca923c9da652858c5551bb55706b9d58"
   }
 }

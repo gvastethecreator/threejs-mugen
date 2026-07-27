@@ -1,31 +1,21 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-003",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "browser-matrix",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Run a current full product/browser matrix. Depends on DA29-002. Systems: Play, Studio, Inspect, import, source write, desktop/mobile, console and page errors.",
   "acceptance": "Route manifest, browser/device facts, screenshots, keyboard/focus log, and error-free result at one commit.",
   "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/da29/product-browser-matrix-v1.json",
+    "docs/evidence/da29/browser/match-desktop.png",
+    "docs/evidence/da29/browser/match-mobile.png",
+    "docs/evidence/da29/browser/studio-workbench-desktop.png"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "36660f7192109c6327b10aca3a323923f483023a5a8bd4f0bcab52305846d5f2"
+    "value": "e723968ccef3d04cc6ba07c1b8bad5f8403d5cdab0ecd45370b57f91b7179ab8"
   }
 }

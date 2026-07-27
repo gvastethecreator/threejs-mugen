@@ -1,26 +1,21 @@
-# DA29-173 research notes
+# DA29-173 research inventory
 
-Wave 17 · revision 119e627410a4
+Wave 17
 
 ## Cut
-
 Create the Lua threat model and capability decision. Depends on DA29-089, DA29-126, and DA29-171.
 
 ## Acceptance ceiling
-
 Review covers file/network/time/randomness, host APIs, memory/CPU, infinite loops, modules, persistence, user trust, CSP, browser worker limits, and default deny policy.
 
 ## Risk
-
 Arbitrary script execution is high risk. Allows threat model only.
 
-## Inventory method
+## Live inventory (machine-scanned)
+- package scripts (sample): dev, build, preview, qa:css, qa:css:budget, qa:css:detail, fix:css, qa:stage, qa:stage:repository, qa:stage:repository:native, qa:studio:compatibility-snapshot, qa:studio:project-reopen, qa:studio:gate-evidence, qa:assets:hygiene, materialize:studio:gate-evidence, materialize:repository-stage-journey, materialize:repository-stage-journey:native, qa:smoke, qa:trace, materialize:compatibility-snapshot
+- src/mugen TypeScript files: 278
+- registry id: DA29-173
+- generatedAt: 2026-07-27T04:17:51.655Z
 
-Machine-generated closeout from `docs/MASTER_REVIEW_ROADMAP.md` + series registry.
-This note records the research claim only; it does not authorize runtime, score,
-or formal/global movement.
-
-## Open questions
-
-- Source pin freshness for any normative claim in this cut
-- Fixture ownership if later implementation IDs consume this research
+## Claim
+Research inventory only. No runtime, score, or formal/global credit.

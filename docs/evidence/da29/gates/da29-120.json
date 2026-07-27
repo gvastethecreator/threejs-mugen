@@ -1,31 +1,21 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-120",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "browser-matrix",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Establish current visual regression coverage. Depends on DA29-113…119.",
   "acceptance": "Approved manifest covers key routes, states, themes, viewports, DPR, fonts, animation settle rule, mask policy, and human review; diffs link runtime revision.",
   "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/da29/product-browser-matrix-v1.json",
+    "docs/evidence/da29/browser/match-desktop.png",
+    "docs/evidence/da29/browser/match-mobile.png",
+    "docs/evidence/da29/browser/studio-workbench-desktop.png"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "7d22ce381b3243b998db999f365c9e66a6e468d20529e1d708132770035b0aff"
+    "value": "781ccd515aa1350497e8ff659c8779ef37a992e98dccaa375010ca6488cac114"
   }
 }

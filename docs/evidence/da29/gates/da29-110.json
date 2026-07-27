@@ -1,31 +1,22 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-110",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Enforce public-path hygiene and evidence redaction. Depends on DA29-101 and DA29-109.",
   "acceptance": "Build/evidence scans reject absolute, traversal, temp, user, secret-like, commercial, and unapproved files; exported bundle uses safe relative paths and stable subject IDs.",
   "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/da29/gates/da29-110-report.json",
     "docs/evidence/controller-coverage-matrix-v1.json",
     "docs/evidence/native-asset-provenance-v1.json",
     "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/compatibility-corpus-v1.2.json"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "7789408742f17dc2dc7c52c6603debb470ff44c8868972ca463cfdda26eac8d8"
+    "value": "d69c938b985f97d51f95a62ce5dd987dc035e0c45f287017c0ea76ef80357de1"
   }
 }

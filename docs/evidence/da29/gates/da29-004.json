@@ -1,31 +1,21 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-004",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "browser-matrix",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Rebuild evidence corpus v1.3. Depends on DA29-002 and DA29-003. Systems: evidence envelope, trace/browser/source indices.",
   "acceptance": "Corpus imports all current artifacts with subject, producer, revision, digest type, target, route, and freshness; stale rows fail closed.",
   "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/da29/product-browser-matrix-v1.json",
+    "docs/evidence/da29/browser/match-desktop.png",
+    "docs/evidence/da29/browser/match-mobile.png",
+    "docs/evidence/da29/browser/studio-workbench-desktop.png"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "74225022625245b03cab61c219f833ab80e5fca3f733fb60a8dad1bba57046f6"
+    "value": "16060718904a2a8c1c6e04e3adc8c38ff9ab06814629c61011ebea361aeffd7c"
   }
 }

@@ -1,0 +1,14 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-134",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": false,
+  "entryPoints": [],
+  "facts": {},
+  "error": "no shipped probe mapping for cut",
+  "cut": "Extract generic cryptographic facts behind a MUGEN adapter. Depends on DA29-008, DA29-004, and DA29-133.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "59b0a58e0adacd6a616606dda721ba534bda1d4004895c54ea12afb29d40745d"
+  }
+}

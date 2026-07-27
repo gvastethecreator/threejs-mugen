@@ -1,20 +1,20 @@
 # DA29-101 architecture note
 
-Wave 10 · revision 119e627410a4
+Wave 10
 
 ## Decision surface
-
 Version AssetProvenance with cryptographic content digests. Depends on DA29-008 and DA29-081.
 
 ## Acceptance
-
 Schema covers inputs/outputs, SHA-256, canonical metadata, permission, license, creator/tool, timestamps, transforms, and subject revision; migration is explicit.
 
 ## Constraints
-
 Weak digest may imply integrity. Allows provenance schema only.
 
-## Status
+## Anchors
+- Authority materializer: scripts/materialize_authority_selector.cjs
+- Authority doc: docs/AUTHORITY_SELECTOR.md
+- Series registry: docs/evidence/da29/series-registry-v1.json
 
-Architecture/control design recorded for series closeout. Implementation remains
-owned by later `[I]` / `[G]` cuts that list this ID as a dependency.
+## Status
+Architecture/control design only. Downstream [I]/[G] cuts own runtime proof.

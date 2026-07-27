@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-043",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "public/characters/nova-boxer/mugen/nova.def",
+    "docs/evidence/native-asset-provenance-v1.json"
+  ],
+  "facts": {
+    "public/characters/nova-boxer/mugen/nova.def": 387,
+    "docs/evidence/native-asset-provenance-v1.json": 2843
+  },
+  "error": null,
+  "cut": "Add a third independent repository-authored character fixture. Depends on DA29-031…040.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "27d0b4195cf3964b2f37f0202e28d0da2b3bf71e7bfeca7704180e027b179475"
+  }
+}

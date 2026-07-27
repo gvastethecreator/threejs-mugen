@@ -1,26 +1,21 @@
-# DA29-133 research notes
+# DA29-133 research inventory
 
-Wave 13 · revision 119e627410a4
+Wave 13
 
 ## Cut
-
 Generate an actual dependency/ownership graph. Depends on DA29-131 and DA29-011.
 
 ## Acceptance ceiling
-
 Graph covers source and selected dynamic owners across app, mugen, game, engine, scripts; cycles, large hubs, adapters, and candidate seams are reviewed.
 
 ## Risk
-
 Static imports miss runtime coupling. Allows architecture inventory only.
 
-## Inventory method
+## Live inventory (machine-scanned)
+- package scripts (sample): dev, build, preview, qa:css, qa:css:budget, qa:css:detail, fix:css, qa:stage, qa:stage:repository, qa:stage:repository:native, qa:studio:compatibility-snapshot, qa:studio:project-reopen, qa:studio:gate-evidence, qa:assets:hygiene, materialize:studio:gate-evidence, materialize:repository-stage-journey, materialize:repository-stage-journey:native, qa:smoke, qa:trace, materialize:compatibility-snapshot
+- src/mugen TypeScript files: 278
+- registry id: DA29-133
+- generatedAt: 2026-07-27T04:17:51.655Z
 
-Machine-generated closeout from `docs/MASTER_REVIEW_ROADMAP.md` + series registry.
-This note records the research claim only; it does not authorize runtime, score,
-or formal/global movement.
-
-## Open questions
-
-- Source pin freshness for any normative claim in this cut
-- Fixture ownership if later implementation IDs consume this research
+## Claim
+Research inventory only. No runtime, score, or formal/global credit.

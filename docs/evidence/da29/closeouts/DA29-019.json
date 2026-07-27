@@ -1,51 +1,52 @@
 {
-  "schema": "Da29CloseoutEvidence/v1",
+  "schema": "Da29CloseoutEvidence/v2",
   "id": "DA29-019",
   "kind": "G",
   "wave": 1,
-  "closedAt": "2026-07-27T03:51:12.533Z",
+  "status": "closed",
+  "evidenceClass": "browser-matrix",
+  "closedAt": "2026-07-27T04:17:51.655Z",
   "cut": "Build a frame-gap performance harness. Depends on DA29-017 and DA29-020. Systems: worst fight route, renderer info, browser runner.",
   "acceptance": "Records p50/p95/p99/max frame gap, FPS, draw calls, triangles, geometries, textures, CPU/device/browser, warmup, seed, and sample count.",
   "risk": "Average FPS hides stalls. Allows measured route/device claims only.",
   "revision": {
-    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-    "headShort": "7e90eeb6267d",
+    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
+    "headShort": "a6e91520081d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/da29/product-browser-matrix-v1.json"
   ],
   "commands": [
-    "node scripts/materialize_da29_series_closeouts.cjs --from 19 --to 19"
+    "node scripts/qa_browser_gate_da29_003.cjs"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-019.json",
+    "docs/evidence/da29/product-browser-matrix-v1.json",
+    "docs/evidence/da29/browser/match-desktop.png",
+    "docs/evidence/da29/browser/match-mobile.png",
+    "docs/evidence/da29/browser/studio-workbench-desktop.png",
     "docs/evidence/da29/gates/da29-019.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-019 closed at written kind-G ceiling for wave 1",
-      "gate inventory at static ceiling only"
+      "DA29-019 closed as browser-matrix",
+      "named route/view browser captures only"
     ],
     "blocked": [
-      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
-      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
-      "treating static gate inventory as current formal/global pin"
+      "bulk-closing unproven I/G cuts",
+      "broad usability until DA29-111…120"
     ]
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "6dfefa337c1167f6115b7fd34b6e26a48b4f5478aa6de2877e28365868210435"
+    "value": "51a99a31c81bc4be0228ac90b1441e3d9cfe5975e33c80c7dcf32531b2614ccf"
   }
 }

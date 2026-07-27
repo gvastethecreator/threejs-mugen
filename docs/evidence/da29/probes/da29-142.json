@@ -1,0 +1,14 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-142",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": false,
+  "entryPoints": [],
+  "facts": {},
+  "error": "no shipped probe mapping for cut",
+  "cut": "Add reproducible CI for core checks. Depends on DA29-141.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "1dbd5c5ec500ec6c46a952e2af64c2997b766aeaa0e164bfe3c2ffc0d9402816"
+  }
+}

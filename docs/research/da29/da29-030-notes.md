@@ -1,26 +1,21 @@
-# DA29-030 research notes
+# DA29-030 research inventory
 
-Wave 2 · revision 119e627410a4
+Wave 2
 
 ## Cut
-
 Run a local rollback feasibility spike. Depends on DA29-026, DA29-027, and DA29-029.
 
 ## Acceptance ceiling
-
 One offline rewind/resim route measures snapshot size, restore time, divergence, unsupported owners, and memory cost.
 
 ## Risk
-
 A spike can be mistaken for netplay. Allows feasibility data only; blocks networking and rollback-readiness claims.
 
-## Inventory method
+## Live inventory (machine-scanned)
+- package scripts (sample): dev, build, preview, qa:css, qa:css:budget, qa:css:detail, fix:css, qa:stage, qa:stage:repository, qa:stage:repository:native, qa:studio:compatibility-snapshot, qa:studio:project-reopen, qa:studio:gate-evidence, qa:assets:hygiene, materialize:studio:gate-evidence, materialize:repository-stage-journey, materialize:repository-stage-journey:native, qa:smoke, qa:trace, materialize:compatibility-snapshot
+- src/mugen TypeScript files: 278
+- registry id: DA29-030
+- generatedAt: 2026-07-27T04:17:51.655Z
 
-Machine-generated closeout from `docs/MASTER_REVIEW_ROADMAP.md` + series registry.
-This note records the research claim only; it does not authorize runtime, score,
-or formal/global movement.
-
-## Open questions
-
-- Source pin freshness for any normative claim in this cut
-- Fixture ownership if later implementation IDs consume this research
+## Claim
+Research inventory only. No runtime, score, or formal/global credit.

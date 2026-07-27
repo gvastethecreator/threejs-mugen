@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-024",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "src/game",
+    "src/mugen"
+  ],
+  "facts": {
+    "src/game": 0,
+    "src/mugen": 0
+  },
+  "error": null,
+  "cut": "Persist per-seat SOCD and input profile ownership. Depends on DA29-021 and DA29-023.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "3a3130b5a7f8766f1dfe963d34dc6a568adfbc310c06705b7045dfc115e9bac6"
+  }
+}

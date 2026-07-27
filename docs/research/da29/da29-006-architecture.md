@@ -1,20 +1,20 @@
 # DA29-006 architecture note
 
-Wave 0 · revision 119e627410a4
+Wave 0
 
 ## Decision surface
-
 Replace split selector/cursor constants with one materialization input. Depends on DA29-001. Systems: materializers and evidence JSON.
 
 ## Acceptance
-
 One checked schema generates both artifacts; changing a pin in a fixture changes both; stale DA27 constants are removed.
 
 ## Constraints
-
 Generator forks can recur. Allows synchronized control artifacts only.
 
-## Status
+## Anchors
+- Authority materializer: scripts/materialize_authority_selector.cjs
+- Authority doc: docs/AUTHORITY_SELECTOR.md
+- Series registry: docs/evidence/da29/series-registry-v1.json
 
-Architecture/control design recorded for series closeout. Implementation remains
-owned by later `[I]` / `[G]` cuts that list this ID as a dependency.
+## Status
+Architecture/control design only. Downstream [I]/[G] cuts own runtime proof.

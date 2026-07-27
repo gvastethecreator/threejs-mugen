@@ -1,0 +1,57 @@
+{
+  "schema": "Da29GeneratedGateReport/v1",
+  "id": "DA29-127",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "files": [
+    {
+      "path": "docs/evidence/controller-coverage-matrix-v1.json",
+      "bytes": 1685,
+      "sha256": "41e4323a525e276a11c093cfe9e1bee0eafe6f1bb4ca558860a3b8792f25e1dd"
+    },
+    {
+      "path": "docs/evidence/native-asset-provenance-v1.json",
+      "bytes": 2843,
+      "sha256": "54ea0ee5bf3729aaffd91dc8175f7dc74b1d51c0f52cdc7189a71793f4f36c4e"
+    },
+    {
+      "path": "docs/evidence/scanner-capability-artifact-v1.json",
+      "bytes": 998,
+      "sha256": "2ef4a5c4aa6dff4f1947e2f499e5ece8b1059693605b7f78c21a749ee0d678fd"
+    },
+    {
+      "path": "docs/evidence/compatibility-corpus-v1.2.json",
+      "bytes": 7327,
+      "sha256": "28552bd797b4691feb3a41f830d274ef3126548530640483d571763db6243ef1"
+    },
+    {
+      "path": "docs/evidence/score-adjudication-v1.json",
+      "bytes": 4101,
+      "sha256": "114e631942faa093cce97386b530b9dd2d6fdabab37119aa6343e9efb43e8c38"
+    },
+    {
+      "path": "docs/evidence/browser-subcursors-da28-03-v1.json",
+      "bytes": 7896,
+      "sha256": "34b9ef6f97aaf0b02df03c8c07a4561662884bf5aa0a2eb30a3cd1c2c3c739a2"
+    },
+    {
+      "path": "docs/CONTROLLER_SUPPORT_REGISTRY.md",
+      "bytes": 344730,
+      "sha256": "ef36716587389941d9e182e6347697944b00fa289b0222248d1272e1e8561f32"
+    },
+    {
+      "path": "scripts/check_boundaries.cjs",
+      "bytes": 3813,
+      "sha256": "9d328184938ed77fe14d44d97d149a1461dced922549103caa69dcadb93bfa69"
+    },
+    {
+      "path": "scripts/qa_traces.cjs",
+      "bytes": 215325,
+      "sha256": "09da89b06fcdc61700a9621774b0e58f1f0c1ce9130c5d24029adb357331ef5d"
+    }
+  ],
+  "claimCeiling": "gate report inventory at static ceiling; not formal/global pin",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "9e949b9af95a7e85b06de94bb32575d77b510471435e3906cc1661de601ac3d5"
+  }
+}

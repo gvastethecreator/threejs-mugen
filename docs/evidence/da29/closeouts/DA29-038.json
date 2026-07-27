@@ -1,51 +1,58 @@
 {
-  "schema": "Da29CloseoutEvidence/v1",
+  "schema": "Da29CloseoutEvidence/v2",
   "id": "DA29-038",
   "kind": "G",
   "wave": 3,
-  "closedAt": "2026-07-27T03:51:12.533Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "closedAt": "2026-07-27T04:17:51.655Z",
   "cut": "Audit dynamic parameter evaluation across compiled controllers. Depends on DA29-034, DA29-035, and DA29-037.",
   "acceptance": "Generated matrix finds static-only, deferred, wrong-context, untested, and fail-open fields; sampled tests confirm the classifier.",
   "risk": "Static success can mask dynamic failure. Allows audit findings only.",
   "revision": {
-    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-    "headShort": "7e90eeb6267d",
+    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
+    "headShort": "a6e91520081d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
-    "docs/evidence/authority-selector-v1.json",
     "docs/evidence/controller-coverage-matrix-v1.json",
     "docs/evidence/native-asset-provenance-v1.json",
     "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/compatibility-corpus-v1.2.json"
   ],
   "commands": [
-    "node scripts/materialize_da29_series_closeouts.cjs --from 38 --to 38"
+    "gate report materialize DA29-038"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-038.json",
+    "docs/evidence/da29/gates/da29-038-report.json",
+    "docs/evidence/controller-coverage-matrix-v1.json",
+    "docs/evidence/native-asset-provenance-v1.json",
+    "docs/evidence/scanner-capability-artifact-v1.json",
+    "docs/evidence/compatibility-corpus-v1.2.json",
     "docs/evidence/da29/gates/da29-038.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-038 closed at written kind-G ceiling for wave 3",
-      "gate inventory at static ceiling only"
+      "DA29-038 closed as gate-report",
+      "static gate report inventory only"
     ],
     "blocked": [
-      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
-      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
-      "treating static gate inventory as current formal/global pin"
+      "bulk-closing unproven I/G cuts",
+      "formal/global tip rewrite",
+      "score movement",
+      "broad usability"
     ]
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "2f43719b163a05dd7d41cf2dcf03ea36ffacba596ddb3fbdaee02f206350c10c"
+    "value": "aaf4353e99b717db5cecb656a727f52f2e331e8823bc2ebcb3e963e6c1edc22f"
   }
 }

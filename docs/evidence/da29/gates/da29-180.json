@@ -1,31 +1,18 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-180",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Adjudicate a bounded IKEMEN milestone. Depends on DA29-067, DA29-090, DA29-171…179, and chosen team/runtime gates.",
   "acceptance": "Review separates scanner, source, ZSS, Lua/module, team, replay, and local-network evidence; supported profile, blocked extensions, risks, and scores are explicit.",
   "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/da29/score-adjudication-v1.3.json"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "189401702931ce8f9f76edc3b79368507adb27b40bb4f05c2430cd23387a9056"
+    "value": "0d2131b8e03323fe62a3b171a8899aa07a8700b61a95ea770044f44e00acfc12"
   }
 }

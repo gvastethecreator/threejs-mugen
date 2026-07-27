@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-042",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "src/mugen",
+    "src/game"
+  ],
+  "facts": {
+    "src/mugen": 0,
+    "src/game": 0
+  },
+  "error": null,
+  "cut": "Add a reciprocal Mira contact/guard journey. Depends on DA29-041.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "7cc6cbfd60b780a3cf5f49449f719a5af73feab0b980c71b975057962446e5dc"
+  }
+}

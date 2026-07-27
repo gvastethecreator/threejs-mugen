@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-102",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "src/game",
+    "src/mugen"
+  ],
+  "facts": {
+    "src/game": 0,
+    "src/mugen": 0
+  },
+  "error": null,
+  "cut": "Capture tool, model/version, prompt, inputs, command, seed, and transforms. Depends on DA29-101.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "0bc800b151eea9f93f8eeb4155cd603e3cd359f2c1320214265ef961c4d51ce7"
+  }
+}

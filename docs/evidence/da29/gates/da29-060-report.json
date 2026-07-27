@@ -1,0 +1,32 @@
+{
+  "schema": "Da29GeneratedGateReport/v1",
+  "id": "DA29-060",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "files": [
+    {
+      "path": "src/mugen/runtime/LivePluralCombatOracle.ts",
+      "bytes": 6891,
+      "sha256": "f008cf00a2792192a7aefd5d444aac58e5a9396ae065524ce593ea653e1174f6"
+    },
+    {
+      "path": "src/mugen/runtime/PluralCombatOracle.ts",
+      "bytes": 6514,
+      "sha256": "5e0f4e781324bea1a467c074a3ccf31a4a82745816977301342d78af200595b6"
+    },
+    {
+      "path": "src/tests/LivePluralCombatOracle.test.ts",
+      "bytes": 2898,
+      "sha256": "0746e5c761e0e89d4b339f91a0217b921be40a84c60282b04ca3727c14c96f6d"
+    },
+    {
+      "path": "src/tests/PluralCombatOracle.test.ts",
+      "bytes": 2860,
+      "sha256": "fae743594855311a35957b28761d769a8c43aeb9b6cb35c98e978229a0127cb8"
+    }
+  ],
+  "claimCeiling": "plural oracle unit evidence only; not full browser stress matrix",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "c7939eb6d53414f2af9bef3193436e7d6f4be3b90ca512eb4d667a1d128c6002"
+  }
+}

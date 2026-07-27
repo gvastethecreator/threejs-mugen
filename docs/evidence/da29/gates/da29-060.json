@@ -1,31 +1,22 @@
 {
-  "schema": "Da29GateEvidence/v1",
+  "schema": "Da29GateEvidence/v2",
   "id": "DA29-060",
-  "generatedAt": "2026-07-27T03:51:12.533Z",
-  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-  "measured": false,
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "measuredGate": false,
   "gateSha": null,
-  "inheritance": {
-    "rule": "static-or-prior-matrix-ceiling",
-    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
-    "blocks": [
-      "formal/global tip rewrite",
-      "score movement",
-      "broad usability"
-    ]
-  },
   "cut": "Add a plural-combat deterministic stress journey. Depends on DA29-052…059 and DA29-026.",
   "acceptance": "Fixed-seed route runs roots, nested helpers, three-plus projectiles, effects, clashes, KO, and reset; record/replay checks periodic state and resource counts.",
   "relatedArtifacts": [
-    "docs/evidence/authority-selector-v1.json",
-    "docs/evidence/controller-coverage-matrix-v1.json",
-    "docs/evidence/native-asset-provenance-v1.json",
-    "docs/evidence/scanner-capability-artifact-v1.json",
-    "docs/evidence/compatibility-corpus-v1.2.json",
-    "docs/evidence/score-adjudication-v1.json"
+    "docs/evidence/da29/gates/da29-060-report.json",
+    "src/mugen/runtime/LivePluralCombatOracle.ts",
+    "src/mugen/runtime/PluralCombatOracle.ts",
+    "src/tests/LivePluralCombatOracle.test.ts",
+    "src/tests/PluralCombatOracle.test.ts"
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "38dfbba0324ba9de06e74d39caa3ce56fb9d2a3547117174e47e6bdf2242c931"
+    "value": "17fc5ca842a47c4d26b396512f75e32c12665b80062a15ab223ef22658e864ee"
   }
 }

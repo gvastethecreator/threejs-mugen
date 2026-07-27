@@ -1,48 +1,46 @@
 {
-  "schema": "Da29CloseoutEvidence/v1",
+  "schema": "Da29CloseoutEvidence/v2",
   "id": "DA29-113",
   "kind": "I",
   "wave": 11,
-  "closedAt": "2026-07-27T03:51:12.533Z",
+  "status": "open",
+  "evidenceClass": "unproven",
+  "closedAt": null,
   "cut": "Fix mobile overlay, clipping, reflow, and scroll ownership. Depends on DA29-111 and DA29-112.",
   "acceptance": "320/390/430 widths show full control labels, readable HUD, visible fight area, no two-axis overflow, usable scroll, safe areas, and orientation change.",
   "risk": "Overlay can cover combat. Allows tested viewports only.",
   "revision": {
-    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-    "headShort": "7e90eeb6267d",
+    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
+    "headShort": "a6e91520081d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json",
-    "src/mugen",
-    "src/app/App.ts"
+    "docs/evidence/da29/series-registry-v1.json"
   ],
   "commands": [
-    "node scripts/materialize_da29_series_closeouts.cjs --from 113 --to 113",
-    "structural impl evidence DA29-113"
+    "implementation probe DA29-113"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-113.json",
-    "docs/evidence/da29/impl/da29-113.json"
+    "docs/evidence/da29/probes/da29-113.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-113 closed at written kind-I ceiling for wave 11",
-      "unit/static implementation evidence at written ceiling"
+      "DA29-113 remains open"
     ],
     "blocked": [
-      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
-      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
-      "product/runtime parity beyond named entry points"
+      "bulk-closing unproven I/G cuts",
+      "no shipped probe mapping for cut"
     ]
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "b5fac4fa27445735555e129c1cf0bc701a7c63ea0e0bca0b84a5a9465d4ee0b8"
+    "value": "648189b8c6991230dcf6d479e17a3cab93bf4d9e98202d552c7bea8388a8e6f1"
   }
 }

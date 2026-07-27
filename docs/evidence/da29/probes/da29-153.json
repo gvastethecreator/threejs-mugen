@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-153",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "src/game",
+    "src/mugen"
+  ],
+  "facts": {
+    "src/game": 0,
+    "src/mugen": 0
+  },
+  "error": null,
+  "cut": "Prove charge, hold, release, and repeated-button semantics. Depends on DA29-152 and DA29-025.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "cd5a0eff2b38e57ceb0062836609f89c82fa957592e315a5ab47141498d65d09"
+  }
+}

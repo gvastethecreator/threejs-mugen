@@ -1,48 +1,48 @@
 {
-  "schema": "Da29CloseoutEvidence/v1",
+  "schema": "Da29CloseoutEvidence/v2",
   "id": "DA29-074",
   "kind": "I",
   "wave": 7,
-  "closedAt": "2026-07-27T03:51:12.533Z",
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:17:51.655Z",
   "cut": "Load and render bounded stage layers/parallax. Depends on DA29-073 and DA29-083.",
   "acceptance": "Repository-owned stage proves layer order, delta/parallax, tiling, animation, clipping, camera movement, disposal, and desktop/mobile captures.",
   "risk": "Renderer success does not prove all DEF syntax. Allows one stage subset only.",
   "revision": {
-    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
-    "headShort": "7e90eeb6267d",
+    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
+    "headShort": "a6e91520081d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
-    "src/mugen",
-    "public/stages"
+    "public/stages/rooftop-dojo/rooftop-dojo.png"
   ],
   "commands": [
-    "node scripts/materialize_da29_series_closeouts.cjs --from 74 --to 74",
-    "structural impl evidence DA29-074"
+    "implementation probe DA29-074"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-074.json",
-    "docs/evidence/da29/impl/da29-074.json"
+    "docs/evidence/da29/probes/da29-074.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-074 closed at written kind-I ceiling for wave 7",
-      "unit/static implementation evidence at written ceiling"
+      "DA29-074 closed as implementation-probe",
+      "unit/static implementation probe against shipped entry points"
     ],
     "blocked": [
-      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
-      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "bulk-closing unproven I/G cuts",
       "product/runtime parity beyond named entry points"
     ]
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "9b28ae2441d6dc3bec46b813b7ea3a251380331f1fe7ab92e0e6aa039fb47e31"
+    "value": "60cfcc9bb58c303ba945a302e2ea7a5d2359c98dbe3ad5695c736bc308579861"
   }
 }

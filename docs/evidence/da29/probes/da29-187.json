@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationProbe/v1",
+  "id": "DA29-187",
+  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "ok": true,
+  "entryPoints": [
+    "src/app/StudioTabs.ts",
+    "src/app/App.ts"
+  ],
+  "facts": {
+    "src/app/StudioTabs.ts": 1326,
+    "src/app/App.ts": 668855
+  },
+  "error": null,
+  "cut": "Add project-wide diagnostics search and navigation. Depends on DA29-087, DA29-183, and DA29-185.",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "514f3dbc0e92d8ecd51902face860262eaecbf3aeedda75db557218b5c459a04"
+  }
+}
