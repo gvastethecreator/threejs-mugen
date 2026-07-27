@@ -1,0 +1,19 @@
+{
+  "schema": "Da32A11yBaseline/v1",
+  "id": "DA32-029",
+  "measured": [
+    "focus-visible-samples",
+    "reflow-320-390-zoom",
+    "reduced-motion"
+  ],
+  "open": [
+    "canvas-alternative",
+    "screen-reader-paths",
+    "contrast"
+  ],
+  "claimCeiling": "inventory only; not WCAG certification",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "dd7fd5af98a2912e266b4733100586651652ad6e458ae1a55f8e7d6112250322"
+  }
+}

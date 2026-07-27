@@ -12,7 +12,11 @@
   Browser: 009–015 accepted (provisional when dirty). 012 simulated gamepad.
   016 partial (`qa:smoke` failed/open). 017–040 accepted-model at ceilings.
 - Scores stay `65 / 36 / 20 / 10-12 / 6-8 / 25`.
-- Next program: **DA32** (smoke, device-lab, clause adjudication, a11y SR).
+- **DA32** active: [roadmap](DA32_NEXT_PROGRAM_ROADMAP.md), status
+  `docs/evidence/da32/da32-program-status-v1.json`. Smoke ownership + hit-spark
+  drive harden; gamepad device-lab protocol; clause sample proposes
+  `adjudicatedThrough=DA30-021` (not auto-applied); a11y baseline inventory.
+  Next: close smoke lanes, human accept watermark, hardware gamepad.
 
 ## Historical machine-selector view after DA30-120
 

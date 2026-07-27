@@ -1,0 +1,12 @@
+{
+  "schema": "Da32GamepadDeviceLab/v1",
+  "id": "DA32-009",
+  "physicalDeviceRequiredForFullClaim": true,
+  "simulatedBaseline": true,
+  "hardwareOk": null,
+  "claimCeiling": "protocol + simulated baseline only",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "7706d8e46cffcd30f24f52abaf2e45ad20ed358e07fdcfbf9ccb36a691c4fba2"
+  }
+}

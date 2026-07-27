@@ -18,11 +18,11 @@ and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 | source | 05b / 4aa | family-scoped |
 | Scores | held 65/36/20/10-12/6-8/25 | no movement |
 
-**Next:** **DA32** — close smoke, physical gamepad device-lab, full DA30 clause
-adjudication beyond 020, authoring per-view browser capture, a11y SR paths.
-DA31-001…040 landed at named claim ceilings (`docs/evidence/da31/da31-phase-status-v1.json`).
-Model-only rows do **not** advance `adjudicatedThrough` or scores.
-Machine `closedThrough=DA30-120` remains the generated record.
+**Next:** **DA32** — [roadmap](DA32_NEXT_PROGRAM_ROADMAP.md). Smoke ownership
+ledger, hit-spark drive hardening, gamepad device-lab protocol, clause sample
+proposing `adjudicatedThrough=DA30-021` (not auto-applied), a11y baseline.
+DA31-001…040 remain at named claim ceilings. Scores held. Machine
+`closedThrough=DA30-120`.
 
 ## Historical 2026-07-27 clause repair — DA30-021 / 024 / 025
 

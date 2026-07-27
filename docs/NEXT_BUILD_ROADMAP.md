@@ -12,17 +12,25 @@ DA31 program status: `docs/evidence/da31/da31-phase-status-v1.json`
 (DA31-001…040 with honest ceilings). Phase0 detail remains in
 `da31-phase0-status-v1.json`. Formal pin stays `f5f2315e`.
 
-**Next program: DA32**
+**Active program: DA32** — [DA32_NEXT_PROGRAM_ROADMAP.md](DA32_NEXT_PROGRAM_ROADMAP.md)
+Status: `docs/evidence/da32/da32-program-status-v1.json`
 
-1. Green or explicitly owned `qa:smoke` (DA31-016 partial while smoke failed).
-2. Physical gamepad device-lab (DA31-012 is simulated-only).
-3. Advance `adjudicatedThrough` past DA30-020 with independent clause review.
-4. Per-view authoring browser capture (DA31-028 model routes only today).
-5. Live PlayableMatchRuntime snapshot/replay beyond seeded models (017–019).
-6. Screen-reader / canvas alternative a11y paths (DA31-040 open).
+Landed bootstrap:
 
-`qa:smoke` remains open/failed at last formal sample. Scores held.
-Model-only acceptance does not move scores or adjudicated watermark.
+1. **DA32-001…004** smoke ownership + classification (live via `pnpm qa:smoke` write).
+2. **DA32-002** hit-spark drive requires playing + multi-key retry.
+3. **DA32-009/010** gamepad device-lab protocol + virtual sequence (hardware null).
+4. **DA32-013** clause sample: consecutive pass proposes **DA30-021** only.
+5. **DA32-029** a11y baseline inventory (canvas alt / SR still open).
+
+Still open:
+
+1. Green each smoke lane (runtime-native, mugen-lite, studio-*).
+2. Physical gamepad hardware evidence.
+3. Human accept of proposed `adjudicatedThrough=DA30-021`.
+4. Per-view authoring browser capture; live runtime snapshot/replay.
+
+Scores held. Do not claim smoke green without empty ownership ledger.
 
 ## Historical next-build override — post-DA30-025 repair
 

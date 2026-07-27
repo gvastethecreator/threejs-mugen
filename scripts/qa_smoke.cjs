@@ -1682,21 +1682,44 @@ async function warmRuntimeRenderer(page) {
 }
 
 async function driveRuntimeHitSpark(page) {
-  await page.keyboard.down("ArrowRight");
-  await page.waitForTimeout(760);
-  await page.keyboard.up("ArrowRight");
+  // Ensure match is playing — paused rounds never spawn hit sparks.
+  await page.evaluate(() => {
+    const el = document.querySelector("canvas") || document.body;
+    if (el?.focus) {
+      el.setAttribute("tabindex", "0");
+      el.focus();
+    }
+    const probe = window.__MUGEN_WEB_SANDBOX__?.qaProbe?.();
+    if (probe && probe.playing === false) {
+      document.querySelector('[data-action="play-pause"]')?.click();
+    }
+  });
+  await page.waitForTimeout(200);
+  await page
+    .waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.qaProbe?.()?.playing === true, null, { timeout: 3000 })
+    .catch(() => undefined);
 
-  const attacks = ["KeyZ", "KeyA", "KeyZ"];
+  // Close distance so contact can register.
+  await page.keyboard.down("ArrowRight");
+  await page.waitForTimeout(900);
+  await page.keyboard.up("ArrowRight");
+  await page.waitForTimeout(80);
+
+  const attacks = ["KeyZ", "KeyA", "KeyX", "KeyZ"];
   for (const attack of attacks) {
     await page.keyboard.press(attack);
     const active = await page
-      .waitForFunction(() => (window.__MUGEN_WEB_SANDBOX__?.renderer?.hitSparks?.active ?? 0) > 0, null, { timeout: 1400 })
+      .waitForFunction(() => (window.__MUGEN_WEB_SANDBOX__?.renderer?.hitSparks?.active ?? 0) > 0, null, { timeout: 1800 })
       .then(() => true)
       .catch(() => false);
     if (active) {
       return readHitSparkDiagnostics(page);
     }
-    await page.waitForTimeout(220);
+    // Retry approach + attack once per key
+    await page.keyboard.down("ArrowRight");
+    await page.waitForTimeout(280);
+    await page.keyboard.up("ArrowRight");
+    await page.waitForTimeout(100);
   }
   return readHitSparkDiagnostics(page);
 }
@@ -2103,10 +2126,11 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       const packageDownload = await downloadFromButton(page, exportPackageButton, "project package", { timeout: 20_000, attempts: 1 });
       await packageDownload.saveAs(packagePath);
     } catch {
-      // Bundle may exist on bridge without a captured download event; write a stub marker for smoke path.
+      // Bundle may exist on bridge without a captured download event.
+      // Never write a JSON stub into the .zip path — that breaks inspectPackageZip.
       if (!fs.existsSync(packagePath)) {
         const summary = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectBundle ?? { ok: true, source: "bridge-only" });
-        fs.writeFileSync(packagePath, JSON.stringify(summary), "utf8");
+        fs.writeFileSync(path.join(outDir, "project-package-bridge-only.json"), JSON.stringify(summary, null, 2), "utf8");
       }
     }
   } catch (error) {
@@ -2154,8 +2178,31 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
     await page.screenshot({ path: path.join(outDir, "studio-build-trust-focus.png"), fullPage: true });
   }
   const downloadedArtifact = JSON.parse(fs.readFileSync(tracePath, "utf8"));
-  const downloadedPackage = await inspectPackageZip(packagePath);
-  return page.evaluate(({ downloadedArtifact, sourceFocusAfterClick }) => {
+  let downloadedPackage;
+  try {
+    if (fs.existsSync(packagePath) && fs.statSync(packagePath).size > 4) {
+      const head = fs.readFileSync(packagePath).subarray(0, 4);
+      const isZip = head[0] === 0x50 && head[1] === 0x4b;
+      if (isZip) {
+        downloadedPackage = await inspectPackageZip(packagePath);
+      } else {
+        downloadedPackage = {
+          ok: false,
+          reason: "project-package path is not a zip (bridge-only or partial download)",
+          files: [],
+        };
+      }
+    } else {
+      downloadedPackage = { ok: false, reason: "project-package.zip missing", files: [] };
+    }
+  } catch (error) {
+    downloadedPackage = {
+      ok: false,
+      reason: String(error?.message || error),
+      files: [],
+    };
+  }
+  return page.evaluate(({ downloadedArtifact, sourceFocusAfterClick, downloadedPackage }) => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     return {
       title: document.title,
@@ -2269,9 +2316,13 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
         checksum: downloadedArtifact.trace?.checksum,
         gateCount: downloadedArtifact.gates?.length ?? 0,
       },
-      downloadedPackage: window.__DOWNLOADED_PACKAGE__,
     };
-  }, { downloadedArtifact, sourceFocusAfterClick }).then((result) => ({ ...result, downloadedPackage, importedFixtureLoaded, importedFixtureName }));
+  }, { downloadedArtifact, sourceFocusAfterClick }).then((result) => ({
+    ...result,
+    downloadedPackage,
+    importedFixtureLoaded,
+    importedFixtureName,
+  }));
 }
 
 async function captureStudioModules(page, outDir) {
@@ -5372,8 +5423,91 @@ function assertSmoke(diagnostics) {
     failures.push(`console issues: ${diagnostics.consoleIssues.map((issue) => issue.text).join(" | ")}`);
   }
   if (failures.length) {
+    // DA32: always materialize a structured ownership ledger before failing.
+    try {
+      writeDa32SmokeOwnership(diagnostics, failures);
+    } catch (writeError) {
+      // Keep original smoke failure as primary signal.
+      process.stderr.write(`da32 smoke ownership write failed: ${writeError?.message || writeError}\n`);
+    }
     throw new Error(`QA smoke failed:\n${failures.join("\n")}`);
+  } else {
+    try {
+      writeDa32SmokeOwnership(diagnostics, []);
+    } catch {
+      /* ignore */
+    }
   }
+}
+
+function classifySmokeLane(message) {
+  const m = String(message);
+  if (/^runtime-(desktop|mobile):/.test(m)) return "runtime-native";
+  if (/^mugen-lite visual/.test(m)) return "mugen-lite-visual";
+  if (/^studio-workbench/.test(m)) return "studio-workbench";
+  if (/^studio-build/.test(m)) return "studio-build";
+  if (/^studio-modules/.test(m)) return "studio-modules";
+  if (/^studio-source-relink/.test(m)) return "studio-source-relink";
+  if (/^studio-assets/.test(m)) return "studio-assets";
+  if (/^studio-evidence/.test(m)) return "studio-evidence";
+  if (/^studio-debug/.test(m)) return "studio-debug";
+  if (/^ikemen-scan/.test(m)) return "ikemen-scan";
+  if (/^studio-stage/.test(m)) return "studio-stage";
+  if (/command palette|command-palette|a11y/i.test(m)) return "a11y-command-palette";
+  if (/page errors|console issues/.test(m)) return "console";
+  return "other";
+}
+
+function writeDa32SmokeOwnership(diagnostics, failures) {
+  const crypto = require("crypto");
+  const outRoot = path.resolve(process.cwd(), "docs/evidence/da32");
+  fs.mkdirSync(outRoot, { recursive: true });
+  const byLane = {};
+  for (const f of failures) {
+    const lane = classifySmokeLane(f);
+    if (!byLane[lane]) byLane[lane] = [];
+    byLane[lane].push(f);
+  }
+  const lanes = Object.entries(byLane).map(([id, msgs]) => ({
+    id,
+    status: "open",
+    failureCount: msgs.length,
+    failures: msgs,
+    owner: "DA32-smoke",
+    claimCeiling: "lane open until green at named subject SHA",
+  }));
+  const report = {
+    schema: "Da32SmokeOwnership/v1",
+    id: "DA32-001",
+    generatedAt: new Date().toISOString(),
+    ok: failures.length === 0,
+    failureCount: failures.length,
+    lanes,
+    laneSummary: Object.fromEntries(lanes.map((l) => [l.id, l.failureCount])),
+    runtimeSample: {
+      desktopHitSparks: diagnostics?.checks?.runtimeDesktop?.activeHitSparks,
+      mobileHitSparks: diagnostics?.checks?.runtimeMobile?.activeHitSparks,
+      desktopActors: diagnostics?.checks?.runtimeDesktop?.actorCount,
+      mobileActors: diagnostics?.checks?.runtimeMobile?.actorCount,
+    },
+    claimCeiling: failures.length
+      ? "structured smoke ownership only; full visual matrix not green"
+      : "full qa:smoke green at this subject only",
+    claims: {
+      allowed: failures.length
+        ? ["named open lanes", "failure inventory", "runtime sample counters"]
+        : ["qa:smoke green"],
+      blocked: ["score movement", "public release", "adjudicatedThrough advance from smoke alone"],
+    },
+  };
+  const digest = crypto.createHash("sha256").update(JSON.stringify({ ...report, digest: undefined })).digest("hex");
+  report.digest = { algorithm: "sha-256", value: digest };
+  fs.writeFileSync(path.join(outRoot, "da32-smoke-ownership-v1.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
+  fs.writeFileSync(
+    path.join(outRoot, "da32-smoke-failures.txt"),
+    failures.length ? `${failures.join("\n")}\n` : "none\n",
+    "utf8",
+  );
 }
 
 function expectedPresentationRenderOrder(semantic) {

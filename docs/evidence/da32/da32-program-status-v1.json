@@ -1,0 +1,89 @@
+{
+  "schema": "Da32ProgramStatus/v1",
+  "generatedAt": "2026-07-27T19:03:39.197Z",
+  "tasks": {
+    "DA32-001": {
+      "status": "accepted-ownership",
+      "note": "smoke open failures=69",
+      "artifacts": [
+        "docs/evidence/da32/da32-smoke-ownership-v1.json"
+      ]
+    },
+    "DA32-002": {
+      "status": "accepted-hardening",
+      "note": "driveRuntimeHitSpark requires playing + multi-key retry",
+      "artifacts": [
+        "scripts/qa_smoke.cjs"
+      ]
+    },
+    "DA32-003": {
+      "status": "accepted-classification",
+      "note": "studio lanes classified in ownership ledger",
+      "artifacts": [
+        "docs/evidence/da32/da32-smoke-ownership-v1.json"
+      ]
+    },
+    "DA32-004": {
+      "status": "accepted-classification",
+      "note": "mugen-lite visual lane classified",
+      "artifacts": [
+        "docs/evidence/da32/da32-smoke-ownership-v1.json"
+      ]
+    },
+    "DA32-009": {
+      "status": "accepted-protocol",
+      "note": "device-lab protocol; hardware null",
+      "artifacts": [
+        "docs/evidence/da32/da32-gamepad-device-lab-v1.json",
+        "src/mugen/da32/GamepadDeviceLab.ts"
+      ]
+    },
+    "DA32-010": {
+      "status": "accepted-virtual",
+      "note": "virtual gamepad sequence unit proof",
+      "artifacts": [
+        "src/mugen/da32/GamepadDeviceLab.ts"
+      ]
+    },
+    "DA32-013": {
+      "status": "accepted-sample",
+      "note": "consecutive pass proposes adjudicatedThrough=DA30-021",
+      "artifacts": [
+        "docs/evidence/da32/da32-clause-sample-v1.json"
+      ]
+    },
+    "DA32-014": {
+      "status": "accepted-watermark-rule",
+      "note": "human docs may set adjudicatedThrough=DA30-021 after sample review",
+      "artifacts": [
+        "docs/DA32_NEXT_PROGRAM_ROADMAP.md"
+      ]
+    },
+    "DA32-029": {
+      "status": "accepted-baseline",
+      "note": "a11y inventory; canvas alt and SR open",
+      "artifacts": [
+        "docs/evidence/da32/da32-a11y-baseline-v1.json"
+      ]
+    }
+  },
+  "watermarks": {
+    "recordedThrough": "DA30-120",
+    "adjudicatedThrough": "DA30-020",
+    "proposedAdjudicatedThrough": "DA30-021",
+    "formal": "f5f2315e"
+  },
+  "scoresHeld": true,
+  "next": [
+    "live qa:smoke re-run with ownership write",
+    "close runtime-native hit spark lane",
+    "close mugen-lite visual lane",
+    "studio surface repairs",
+    "hardware gamepad lab"
+  ],
+  "claimCeiling": "DA32 program bootstrap; smoke not claimed green; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "253e298705be34ffdfac1afe7a5dd98f54c96a1d13cf5747c7634db80e385728"
+  }
+}

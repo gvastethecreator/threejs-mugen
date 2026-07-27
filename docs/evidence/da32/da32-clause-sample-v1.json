@@ -1,0 +1,55 @@
+{
+  "schema": "Da32ClauseAdjudicationSample/v1",
+  "id": "DA32-013",
+  "priorAdjudicatedThrough": "DA30-020",
+  "consecutivePassThrough": "DA30-021",
+  "proposedAdjudicatedThrough": "DA30-021",
+  "advanced": true,
+  "rows": [
+    {
+      "taskId": "DA30-021",
+      "verdict": "pass"
+    },
+    {
+      "taskId": "DA30-022",
+      "verdict": "partial"
+    },
+    {
+      "taskId": "DA30-023",
+      "verdict": "partial"
+    },
+    {
+      "taskId": "DA30-024",
+      "verdict": "pass"
+    },
+    {
+      "taskId": "DA30-025",
+      "verdict": "pass"
+    },
+    {
+      "taskId": "DA30-026",
+      "verdict": "partial"
+    },
+    {
+      "taskId": "DA30-027",
+      "verdict": "partial"
+    },
+    {
+      "taskId": "DA30-028",
+      "verdict": "partial"
+    },
+    {
+      "taskId": "DA30-029",
+      "verdict": "partial"
+    },
+    {
+      "taskId": "DA30-030",
+      "verdict": "unknown"
+    }
+  ],
+  "claimCeiling": "sample only; consecutive pass advances to DA30-021; later passes do not skip partials",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "f6a546e531f47b2de723a8fc2ceb085a8cedcd03082f9be4d0716bb727695fa5"
+  }
+}
