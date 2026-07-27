@@ -6,7 +6,16 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
-## 2026-07-26 current authority override
+## 2026-07-27 DA30 audit-hold override
+
+Keep T390/T406 and other bounded issue closeouts at their written ceilings.
+DA29 cannot widen them. DA30-091…100 revalidate source families, lane
+separation, ZSS, module policy, plural topology, team consumers, replay/network
+design, and a bounded IKEMEN adjudication. DA30-097/098 must reuse the detailed
+contracts below and prove each live consumer separately. Scores stay held. See
+the [DA30 plan](../../../docs/DA30_RECOVERY_ROADMAP.md).
+
+## Historical 2026-07-26 current authority override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
 (`closedThrough` DA28-30). T390 ReversalDef topology and T406 active juggle are

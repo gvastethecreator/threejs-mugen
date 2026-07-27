@@ -138,14 +138,14 @@ describe("DA30-004 synchronized control projections", () => {
 
     expect(source.seriesHold.watermarkAccepted).toBe(false);
     expect(selector.closedThrough).toBe(source.closedThrough);
-    expect(cursor.closedThrough).toBe(source.closedThrough);
     expect(selector.nextQueue).toEqual(source.nextQueue);
-    expect(cursor.nextQueue).toEqual(source.nextQueue);
     expect(selector.scores).toEqual(source.scores);
     expect(cursor.scores).toEqual(source.scores);
     expect(selector.cursors.formal.sha).toBe(source.cursors.formal.sha);
     expect(cursor.cursors.find((c) => c.kind === "formal")?.sha).toBe(source.cursors.formal.sha);
     expect(selector.cursors.global.sha).toBe(source.cursors.global.sha);
+    // Queue lives on authority selector; cursor carries 7 pin kinds only.
+    expect(cursor.cursors).toHaveLength(7);
     // Stale DA27 formal pin must not reappear as current formal
     expect(selector.cursors.formal.sha).not.toBe("b7d23801bd3ca766ba5b184b3c040bef8165d355");
   });

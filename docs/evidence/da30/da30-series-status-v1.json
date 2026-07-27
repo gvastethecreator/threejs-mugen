@@ -1,12 +1,9 @@
 {
   "schema": "Da30SeriesStatus/v1",
-  "generatedAt": "2026-07-27T06:28:19.753Z",
+  "generatedAt": "2026-07-27T06:37:06.198Z",
   "count": 120,
-  "closedThrough": "DA30-020",
+  "closedThrough": "DA30-023",
   "nextQueue": [
-    "DA30-021",
-    "DA30-022",
-    "DA30-023",
     "DA30-024",
     "DA30-025",
     "DA30-026",
@@ -105,8 +102,8 @@
     "DA30-119",
     "DA30-120"
   ],
-  "acceptedCount": 35,
-  "partialCount": 17,
+  "acceptedCount": 49,
+  "partialCount": 3,
   "openCount": 68,
   "records": [
     {
@@ -337,12 +334,13 @@
     {
       "id": "DA30-021",
       "wave": 2,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
-        "docs/evidence/da30/da30-021-formal-gate.json"
+        "docs/evidence/da30/da30-021-formal-gate.json",
+        "docs/evidence/da30/da30-021-formal-gate.log"
       ],
-      "note": "formal gate recorded; ok=false until full suite green",
+      "note": "full formal/global gate green at measured HEAD",
       "kind": "recovery"
     },
     {
@@ -404,13 +402,13 @@
     {
       "id": "DA30-027",
       "wave": 2,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
         "docs/evidence/da30/da30-027-frame-gap-harness.json",
         "src/mugen/da30/FrameGapHarness.ts"
       ],
-      "note": "frame-gap harness types; live device samples open",
+      "note": "frame-gap harness unit metrics",
       "kind": "recovery"
     },
     {
@@ -428,13 +426,13 @@
     {
       "id": "DA30-029",
       "wave": 2,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
         "docs/evidence/da30/da30-029-renderer-lifecycle-checklist.json",
         "src/mugen/da30/RendererLifecycleChecklist.ts"
       ],
-      "note": "lifecycle checklist; live browser open",
+      "note": "renderer lifecycle checklist unit",
       "kind": "recovery"
     },
     {
@@ -453,8 +451,8 @@
     {
       "id": "DA30-031",
       "wave": 3,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
         "docs/adr/0060-da30-input-authority.md"
       ],
@@ -494,8 +492,8 @@
     {
       "id": "DA30-035",
       "wave": 3,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
         "docs/adr/0061-da30-rng-streams.md"
       ],
@@ -514,8 +512,8 @@
     {
       "id": "DA30-037",
       "wave": 3,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
         "docs/adr/0062-da30-match-state-serialization.md"
       ],
@@ -778,8 +776,8 @@
     {
       "id": "DA30-064",
       "wave": 6,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
         "docs/adr/0064-da30-archive-package-policy.md",
         "src/mugen/da30/ArchivePathPolicy.ts"
@@ -844,8 +842,8 @@
     {
       "id": "DA30-071",
       "wave": 7,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
         "docs/adr/0065-da30-studio-storage.md"
       ],
@@ -945,8 +943,8 @@
     {
       "id": "DA30-081",
       "wave": 8,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
         "docs/adr/0066-da30-asset-provenance-graph.md",
         "src/mugen/da30/AssetProvenanceGraph.ts"
@@ -1053,8 +1051,8 @@
     {
       "id": "DA30-092",
       "wave": 9,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
         "docs/adr/0067-da30-ikemen-lanes.md"
       ],
@@ -1064,8 +1062,8 @@
     {
       "id": "DA30-093",
       "wave": 9,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
         "docs/evidence/da30/da30-093-zss-capability-registry.json"
       ],
@@ -1093,8 +1091,8 @@
     {
       "id": "DA30-096",
       "wave": 9,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
         "docs/adr/0068-da30-module-packaging.md"
       ],
@@ -1122,8 +1120,8 @@
     {
       "id": "DA30-099",
       "wave": 9,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
         "docs/adr/0069-da30-replay-network-boundary.md"
       ],
@@ -1142,11 +1140,10 @@
     {
       "id": "DA30-101",
       "wave": 10,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
         "docs/adr/0070-da30-shared-engine-boundaries.md",
-        "docs/evidence/da30/da30-101-boundary-inventory.json",
         "src/mugen/da30/BoundaryImportInventory.ts"
       ],
       "note": "shared engine ADR + boundary inventory",
@@ -1335,6 +1332,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "1faadd4d6dfc6081e32b0023a3eba7cc263425b9328f77a21fc1de6dd8d3f0a6"
+    "value": "cb347b25c42f05c8fd8d8a0e49050a2295969ba0d9d083c0b0954417d2626586"
   }
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "mugen-web-sandbox/roadmap-cursor/v1",
-  "generatedAt": "2026-07-27T06:11:33.000Z",
+  "generatedAt": "2026-07-27T06:37:21.340Z",
   "branch": "master",
   "scores": {
     "sandbox": "65",
@@ -11,92 +11,74 @@
     "studio": "25"
   },
   "dirtyExclusions": [],
-  "closedThrough": "DA30-020",
-  "nextQueue": [
-    "DA30-021",
-    "DA30-022",
-    "DA30-023",
-    "DA30-024",
-    "DA30-025",
-    "DA30-026",
-    "DA30-027",
-    "DA30-028",
-    "DA30-029",
-    "DA30-030"
-  ],
-  "seriesHold": {
-    "series": "DA29",
-    "status": "unadjudicated-candidate",
-    "watermarkAccepted": false,
-    "note": "DA29-001…200 artifacts are candidate only until DA30 semantic revalidation"
-  },
   "cursors": [
     {
       "kind": "head",
-      "sha": "fd7a9b9a16b2acd116df1e6dba69f0d451cc37ed",
-      "artifact": "git HEAD at DA29 completion audit",
-      "claimLimit": "audit target; formal/global and visual unverified"
+      "sha": "27b88f0a2cb8896486a34c7405118b185c33c683",
+      "date": "2026-07-27T06:37:21.340Z",
+      "artifact": "git HEAD at DA30-021 formal gate",
+      "claimLimit": "tip at formal gate; formal/global pin to same SHA when gate ok"
     },
     {
       "kind": "formal",
-      "sha": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-      "artifact": "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md",
-      "claimLimit": "historical recorded stack only; not current HEAD inheritance"
+      "sha": "27b88f0a2cb8896486a34c7405118b185c33c683",
+      "date": "2026-07-27T06:37:21.340Z",
+      "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
+      "claimLimit": "DA30-021 measured full stack only at this SHA"
     },
     {
       "kind": "focal",
       "sha": "07ad9227",
+      "date": "2026-07-27T06:37:21.340Z",
       "artifact": "docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md",
       "claimLimit": "T406 active juggle runtime only"
     },
     {
       "kind": "global",
-      "sha": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-      "artifact": "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md",
-      "claimLimit": "historical measured stack at a6e91520 only"
+      "sha": "27b88f0a2cb8896486a34c7405118b185c33c683",
+      "date": "2026-07-27T06:37:21.340Z",
+      "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
+      "claimLimit": "DA30-021 measured full stack only at this SHA"
     },
     {
       "kind": "visual",
       "sha": "1085badb",
+      "date": "2026-07-27T06:37:21.340Z",
       "artifact": "docs/research (T342 visual gate)",
       "claimLimit": "T342 visual only; not HEAD product truth"
     },
     {
       "kind": "product",
       "sha": "1085badb",
+      "date": "2026-07-27T06:37:21.340Z",
       "artifact": "docs/research (T342 product gate)",
       "claimLimit": "T342 product only"
     },
     {
-      "kind": "source-normative",
+      "kind": "source",
       "sha": "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",
+      "date": "2026-07-27T06:37:21.340Z",
       "artifact": "docs/evidence/source-authority-epoch-v1.json",
-      "claimLimit": "normative pin 05b; family provenance in epoch"
-    },
-    {
-      "kind": "source-working",
-      "sha": "4aa0ba38f851c52549ba182310e9e53361cd472a",
-      "artifact": "docs/evidence/source-authority-epoch-v1.json",
-      "claimLimit": "working pin 4aa for reviewed families only"
+      "claimLimit": "normative pin 05b; family provenance in epoch; working=4aa0ba38f851; closedThrough=DA30-023; next=DA30-024"
     }
   ],
-  "controlSource": "docs/evidence/control-source-v1.json",
   "claims": {
     "allowed": [
       "control hold and DA30 recovery queue",
+      "control-source closedThrough=DA30-023",
       "historical DA28-30 accepted ladder",
       "scores held unless DA30 score adjudication authorizes movement"
     ],
     "blocked": [
       "DA29-200 as accepted watermark",
-      "score movement",
       "formal/global tip rewrite without measured gate at claimed SHA",
+      "score movement",
       "using disagreeing selector/cursor projections"
     ]
   },
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "2bec94ca19fa91e283037f94fa128f5142d1efce74afad0c503ac4158046aa09"
+    "value": "d307d93c70322cf59abe1dde029588094fe5e289a34196a70a73a54a0b00a393"
   }
 }

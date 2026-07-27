@@ -1,6 +1,17 @@
 # 06 - Roadmap Control And QA Ledger
 
-## 2026-07-26 current authority override (post-DA28 audit)
+## 2026-07-27 DA30 audit-hold override
+
+The generated DA29-200 watermark is rejected. The selector says DA29-200 while
+the roadmap cursor remains at DA27; 61 R/A cuts close by note shape and 123 I/G
+cuts use a generic non-empty-result rule. DA30-001…020 own control recovery,
+the 200-row verdict ledger, semantic manifests, lineage, raw gates, browser
+facts, failure evidence, and claim compilation. DA30-021 then owns a current
+formal/global gate. Scores stay held. See the
+[audit](../../../docs/research/2026-07-27-da29-completion-audit-and-da30-recovery.md)
+and [DA30 plan](../../../docs/DA30_RECOVERY_ROADMAP.md).
+
+## Historical 2026-07-26 current authority override (post-DA28 audit)
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
 (`closedThrough` DA28-30). Live next head is **empty**. Formal/global is

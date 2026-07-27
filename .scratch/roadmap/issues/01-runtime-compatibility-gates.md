@@ -7,7 +7,18 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
-## 2026-07-26 current authority override
+## 2026-07-27 DA30 audit-hold override
+
+DA29 runtime artifacts remain candidate evidence. The DA29 completion audit
+rejects their task-level watermark because the generic checker does not verify
+acceptance clauses. Complete DA30-001…020 and the current gate DA30-021 before
+runtime revalidation. Then use DA30-031…070, reusing every bounded issue
+closeout below. Start with semantic revalidation; avoid rebuilding closed
+T/Wayfinder behavior. Scores stay held. See the
+[audit](../../../docs/research/2026-07-27-da29-completion-audit-and-da30-recovery.md)
+and [DA30 plan](../../../docs/DA30_RECOVERY_ROADMAP.md).
+
+## Historical 2026-07-26 current authority override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
 (`closedThrough` DA28-30). Generated next head is **empty**; DA29-001 is the

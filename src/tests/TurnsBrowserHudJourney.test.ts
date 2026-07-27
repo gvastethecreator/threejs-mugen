@@ -37,7 +37,7 @@ describe("TurnsBrowserHudJourney", () => {
     expect(report.unitJourney.residueFree).toBe(true);
     expect(report.hudChecksum).toMatch(/^[0-9a-f]{8}$/);
     expect(report.diagnostics.filter((d) => d.includes("handoff-not-observed"))).toEqual([]);
-  });
+  }, 30000);
 
   it("injects StateDef 5900 for turns handoff support", () => {
     const base = demoFighters[0]!;

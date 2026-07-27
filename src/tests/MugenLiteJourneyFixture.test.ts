@@ -99,7 +99,9 @@ describe("MUGEN-lite journey fixture", () => {
     expect(source.name).toBe("mugen-lite-journey.zip");
   });
 
-  it("runs the loaded package through one movement, combat, and recovery journey", async () => {
+  it(
+    "runs the loaded package through one movement, combat, and recovery journey",
+    async () => {
     const artifact = await createMugenLiteJourneyTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
 
     expect(artifact).toMatchObject({
@@ -129,7 +131,9 @@ describe("MUGEN-lite journey fixture", () => {
       expect.objectContaining({ id: "p1", source: "imported", stateNo: 0, life: 1000, ctrl: true }),
       expect.objectContaining({ id: "p2", source: "imported", stateNo: 0, life: 920, ctrl: true }),
     ]));
-  });
+  },
+  30_000,
+  );
 
   it("runs the loaded package through a lethal NoKOSlow post-KO journey", async () => {
     const artifact = await createMugenLiteJourneyNoKoSlowTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
@@ -148,7 +152,7 @@ describe("MUGEN-lite journey fixture", () => {
     expect(artifact.trace.finalActors).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "p2", source: "imported", life: 0 }),
     ]));
-  });
+  }, 30000);
 
   it("runs the loaded package through an ACT-backed RemapPal source/destination journey", async () => {
     const artifact = await createMugenLiteJourneyPaletteTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });

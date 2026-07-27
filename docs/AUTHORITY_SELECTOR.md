@@ -4,7 +4,7 @@ Last updated: 2026-07-27
 Checked control source: [`docs/evidence/control-source-v1.json`](evidence/control-source-v1.json)  
 Projections: [`authority-selector-v1.json`](evidence/authority-selector-v1.json), [`roadmap-cursor-v1.json`](evidence/roadmap-cursor-v1.json)  
 Schema: `mugen-web-sandbox/control-source/v1` → authority-selector + roadmap-cursor  
-`closedThrough`: **DA30-020** · next head **DA30-021** (wave 2 current baselines)
+`closedThrough`: **DA30-023** · next head **DA30-024** (live browser Play journey)
 
 ## Audit hold (DA29)
 
@@ -24,10 +24,10 @@ Plan: [`DA30 recovery roadmap`](DA30_RECOVERY_ROADMAP.md)
 
 | Cursor | SHA / pin | Claim ceiling |
 | --- | --- | --- |
-| current HEAD | `fd7a9b9a…` | audit target; formal/global and visual state unverified |
-| formal | `a6e91520…` historical DA29-002 recorded stack | six recorded zero exits at that SHA; not current HEAD inheritance |
+| current HEAD | `27b88f0a…` | tip at DA30-021 formal gate |
+| formal | `27b88f0a…` DA30-021 measured full stack | typecheck/test/trace/build/boundaries/redirect all exit 0 |
 | focal | `07ad9227` T406 | active StateDef/HitDef juggle under `ikemen-go` |
-| global | `a6e91520…` historical | no inheritance across later commits without re-gate |
+| global | `27b88f0a…` DA30-021 measured | full stack at same SHA only |
 | visual | `1085badb` T342 | broad matrix parent; DA28 browser routes are bounded |
 | product | `1085badb` T342 | local Studio product flows only |
 | source normative | `05b7d98a` | pin identity; family provenance in epoch |
@@ -46,11 +46,12 @@ Held: **65 / 36 / 20 / 10–12 / 6–8 / 25**
 
 ## Accepted ladder
 
-DA26…DA28-30 historical · **DA30-001…020** control recovery + semantic evidence
-infrastructure accepted at written ceilings.  
+DA26…DA28-30 historical · **DA30-001…023** consecutive accepted (control recovery,
+semantic evidence, formal gate, warning policy, route inventory). Additional
+non-consecutive accepted IDs exist (combat modules, Studio pure gates, ADRs).  
 **DA29-001…DA29-200 unadjudicated** (candidate only; pilot revalidation on 012/013/041/072).
 
 ## Next queue
 
-Head: **DA30-021** (current formal/global raw gate). Remainder: DA30-022…120.
-Only `accepted` closeout state advances a watermark (DA30-006).
+Head: **DA30-024** (live Play browser journey). Remainder: DA30-025…120 open or
+partial. Only `accepted` advances consecutive watermark (DA30-006).

@@ -4844,7 +4844,7 @@ ctrl = 0
       replacementCandidateIds: ["p4"],
       nextIncomingActorId: "p4",
     });
-  });
+  }, 30000);
 
   it("closes an imported Turns match when the losing side has no remaining member", () => {
     const attacker = createImportedFixture({

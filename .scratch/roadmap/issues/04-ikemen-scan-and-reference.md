@@ -7,7 +7,17 @@ Labels: ikemen-scan, docs, ready-for-agent
 
 Use Ikemen-GO as a reference source for compatibility planning while keeping near-term support to scanner/reporting unless a bounded runtime feature is explicitly gated.
 
-## 2026-07-26 source and scanner override
+## 2026-07-27 DA30 audit-hold override
+
+The source epoch stays bounded at 05b/4aa and most families remain unreviewed.
+DA29 scanner/source closeouts cannot imply runtime support. DA30-086…100
+separate scanner, source, ZSS, modules, teams, replay design, and adjudication.
+Use source review as input to named execution gates; keep every other operation
+blocked. Scores stay held. See the
+[audit](../../../docs/research/2026-07-27-da29-completion-audit-and-da30-recovery.md)
+and [DA30 plan](../../../docs/DA30_RECOVERY_ROADMAP.md).
+
+## Historical 2026-07-26 source and scanner override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md).
 SourceAuthorityEpoch/v1 is closed (DA26-10): pins 05b/4aa; juggle=`same`.

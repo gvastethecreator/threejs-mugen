@@ -7,7 +7,16 @@ Labels: docs, module-boundary, ready-for-agent
 
 Prepare the project to become a reusable browser game engine without extracting shared core too early from unstable fighting-specific behavior.
 
-## 2026-07-26 boundary override
+## 2026-07-27 DA30 audit-hold override
+
+DA29-139 did not create a non-fighting playable consumer, so reusable-engine
+credit remains blocked. DA30-101…110 require a live dependency graph, two-
+consumer extraction decisions, a repository-owned non-fighting route, shared
+ports, API, CLI, CI, package smoke, and non-vacuous boundaries. Reuse existing
+bounded evidence modules without counting them as a second game consumer. See
+the [DA30 plan](../../../docs/DA30_RECOVERY_ROADMAP.md).
+
+## Historical 2026-07-26 boundary override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
 (`closedThrough` DA28-30). The boundary command consumes some manifest data,

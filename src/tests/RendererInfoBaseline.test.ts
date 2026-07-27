@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
@@ -10,7 +10,6 @@ import {
   validateRendererInfoBaseline,
   type RendererInfoMetrics,
 } from "../game/render/RendererInfoBaseline";
-import { readFileSync } from "node:fs";
 
 describe("RendererInfoBaseline (DA29-072)", () => {
   it("extracts renderer.info fields from ThreeMugenRenderer diagnostics shape", () => {

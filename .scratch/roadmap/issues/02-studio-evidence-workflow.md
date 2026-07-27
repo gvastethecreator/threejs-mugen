@@ -7,7 +7,18 @@ Labels: studio, visual-qa, docs, ready-for-agent
 
 Make Studio Mode the trusted operating surface for project state, assets, evidence, build/export readiness, and next actions.
 
-## 2026-07-26 product evidence override
+## 2026-07-27 DA30 audit-hold override
+
+DA29 Studio closeouts based on source scans and non-empty result objects are
+unaccepted. Preserve existing Studio modules and bounded historical gates.
+After DA30 control/evidence repair, execute DA30-071…080 for storage authority,
+transactional writes, conflict recovery, trust states, authoring views,
+preview, deterministic export, and a live release decision. Product and visual
+cursors remain historical; scores stay held. See the
+[audit](../../../docs/research/2026-07-27-da29-completion-audit-and-da30-recovery.md)
+and [DA30 plan](../../../docs/DA30_RECOVERY_ROADMAP.md).
+
+## Historical 2026-07-26 product evidence override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md).
 DA28 is drained, but the broad visual/product cursor remains T342 and several

@@ -31,6 +31,11 @@ const PROOF = {
   "DA30-018": { status: "accepted", artifacts: ["docs/evidence/da30/manifests/"], note: "expectedFailure on pilot manifests" },
   "DA30-019": { status: "accepted", artifacts: ["src/mugen/da30/ClaimCompiler.ts"], note: "claim compiler" },
   "DA30-020": { status: "accepted", artifacts: ["docs/evidence/da30/da30-020-pilot-revalidation.json"], note: "pilot revalidation 4 tasks" },
+  "DA30-021": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-021-formal-gate.json", "docs/evidence/da30/da30-021-formal-gate.log"],
+    note: "full formal/global gate green at measured HEAD",
+  },
 
   // Waves 2–11: accepted only with module + evidence on disk + unit coverage
   "DA30-022": {
@@ -116,14 +121,46 @@ const PROOF = {
     artifacts: ["docs/evidence/da30/da30-086.json", "src/mugen/da30/ScannerSafetyLimits.ts"],
     note: "scanner archive/path limits",
   },
+  "DA30-027": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-027-frame-gap-harness.json", "src/mugen/da30/FrameGapHarness.ts"],
+    note: "frame-gap harness unit metrics",
+  },
+  "DA30-029": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-029-renderer-lifecycle-checklist.json", "src/mugen/da30/RendererLifecycleChecklist.ts"],
+    note: "renderer lifecycle checklist unit",
+  },
+  "DA30-031": { status: "accepted", artifacts: ["docs/adr/0060-da30-input-authority.md"], note: "input authority ADR" },
+  "DA30-035": { status: "accepted", artifacts: ["docs/adr/0061-da30-rng-streams.md"], note: "RNG streams ADR" },
+  "DA30-037": { status: "accepted", artifacts: ["docs/adr/0062-da30-match-state-serialization.md"], note: "match state schema ADR" },
+  "DA30-064": {
+    status: "accepted",
+    artifacts: ["docs/adr/0064-da30-archive-package-policy.md", "src/mugen/da30/ArchivePathPolicy.ts"],
+    note: "archive policy ADR + path probes",
+  },
+  "DA30-071": { status: "accepted", artifacts: ["docs/adr/0065-da30-studio-storage.md"], note: "studio storage ADR" },
+  "DA30-081": {
+    status: "accepted",
+    artifacts: ["docs/adr/0066-da30-asset-provenance-graph.md", "src/mugen/da30/AssetProvenanceGraph.ts"],
+    note: "provenance ADR + graph helpers",
+  },
+  "DA30-092": { status: "accepted", artifacts: ["docs/adr/0067-da30-ikemen-lanes.md"], note: "IKEMEN lanes ADR" },
+  "DA30-093": { status: "accepted", artifacts: ["docs/evidence/da30/da30-093-zss-capability-registry.json"], note: "ZSS registry design" },
+  "DA30-096": { status: "accepted", artifacts: ["docs/adr/0068-da30-module-packaging.md"], note: "module packaging ADR" },
+  "DA30-099": { status: "accepted", artifacts: ["docs/adr/0069-da30-replay-network-boundary.md"], note: "replay/network design" },
+  "DA30-101": {
+    status: "accepted",
+    artifacts: [
+      "docs/adr/0070-da30-shared-engine-boundaries.md",
+      "src/mugen/da30/BoundaryImportInventory.ts",
+    ],
+    note: "shared engine ADR + boundary inventory",
+  },
 };
 
-// Partial: design ADRs, harnesses without live gates, failed/open formal work
+// Partial: live browser/product gates not yet green
 const PARTIAL = {
-  "DA30-021": {
-    artifacts: ["docs/evidence/da30/da30-021-formal-gate.json"],
-    note: "formal gate recorded; ok=false until full suite green",
-  },
   "DA30-024": {
     artifacts: ["src/mugen/da30/BrowserRouteFactWriter.ts", "docs/evidence/da30/da30-023-product-routes.json"],
     note: "browser fact writer; live Play journey open",
@@ -132,44 +169,9 @@ const PARTIAL = {
     artifacts: ["src/mugen/da30/BrowserRouteFactWriter.ts"],
     note: "Studio/Inspect fact writer; live journey open",
   },
-  "DA30-027": {
-    artifacts: ["docs/evidence/da30/da30-027-frame-gap-harness.json", "src/mugen/da30/FrameGapHarness.ts"],
-    note: "frame-gap harness types; live device samples open",
-  },
   "DA30-028": {
     artifacts: ["src/game/render/RendererInfoBaseline.ts", "src/tests/RendererInfoBaseline.test.ts"],
     note: "renderer resource baseline shape; live multi-route open",
-  },
-  "DA30-029": {
-    artifacts: [
-      "docs/evidence/da30/da30-029-renderer-lifecycle-checklist.json",
-      "src/mugen/da30/RendererLifecycleChecklist.ts",
-    ],
-    note: "lifecycle checklist; live browser open",
-  },
-  "DA30-031": { artifacts: ["docs/adr/0060-da30-input-authority.md"], note: "input authority ADR" },
-  "DA30-035": { artifacts: ["docs/adr/0061-da30-rng-streams.md"], note: "RNG streams ADR" },
-  "DA30-037": { artifacts: ["docs/adr/0062-da30-match-state-serialization.md"], note: "match state schema ADR" },
-  "DA30-064": {
-    artifacts: ["docs/adr/0064-da30-archive-package-policy.md", "src/mugen/da30/ArchivePathPolicy.ts"],
-    note: "archive policy ADR + path probes",
-  },
-  "DA30-071": { artifacts: ["docs/adr/0065-da30-studio-storage.md"], note: "studio storage ADR" },
-  "DA30-081": {
-    artifacts: ["docs/adr/0066-da30-asset-provenance-graph.md", "src/mugen/da30/AssetProvenanceGraph.ts"],
-    note: "provenance ADR + graph helpers",
-  },
-  "DA30-092": { artifacts: ["docs/adr/0067-da30-ikemen-lanes.md"], note: "IKEMEN lanes ADR" },
-  "DA30-093": { artifacts: ["docs/evidence/da30/da30-093-zss-capability-registry.json"], note: "ZSS registry design" },
-  "DA30-096": { artifacts: ["docs/adr/0068-da30-module-packaging.md"], note: "module packaging ADR" },
-  "DA30-099": { artifacts: ["docs/adr/0069-da30-replay-network-boundary.md"], note: "replay/network design" },
-  "DA30-101": {
-    artifacts: [
-      "docs/adr/0070-da30-shared-engine-boundaries.md",
-      "docs/evidence/da30/da30-101-boundary-inventory.json",
-      "src/mugen/da30/BoundaryImportInventory.ts",
-    ],
-    note: "shared engine ADR + boundary inventory",
   },
 };
 

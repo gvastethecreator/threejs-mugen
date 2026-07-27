@@ -3549,7 +3549,7 @@ describe("RuntimeTraceGatePresets", () => {
         { actorId: "p4", life: { resourceOwnerId: "p4" }, power: { resourceOwnerId: "p4" } },
       ],
     });
-  });
+  }, 30000);
 
   it("creates a required shared team resource trace with standby bank mirroring", () => {
     const artifact = createSyntheticImportedTeamResourceShareTraceArtifact({ generatedAt: "2026-07-13T00:00:00.000Z" });

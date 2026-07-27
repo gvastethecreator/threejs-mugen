@@ -99,28 +99,31 @@ const branch = (() => {
   }
 })();
 
+// Roadmap cursor schema: exactly 7 kinds with ISO dates (see RoadmapCursor.ts).
+const cursorDate = generatedAt;
 const cursorPayload = {
   schemaVersion: "mugen-web-sandbox/roadmap-cursor/v1",
   generatedAt,
   branch,
   scores: { ...source.scores },
   dirtyExclusions: [],
-  closedThrough: source.closedThrough,
-  nextQueue: [...source.nextQueue],
-  seriesHold: source.seriesHold,
   cursors: [
-    { kind: "head", sha: source.cursors.head.sha, artifact: source.cursors.head.artifact, claimLimit: source.cursors.head.claimLimit },
-    { kind: "formal", sha: source.cursors.formal.sha, artifact: source.cursors.formal.artifact, claimLimit: source.cursors.formal.claimLimit },
-    { kind: "focal", sha: source.cursors.focal.sha, artifact: source.cursors.focal.artifact, claimLimit: source.cursors.focal.claimLimit },
-    { kind: "global", sha: source.cursors.global.sha, artifact: source.cursors.global.artifact, claimLimit: source.cursors.global.claimLimit },
-    { kind: "visual", sha: source.cursors.visual.sha, artifact: source.cursors.visual.artifact, claimLimit: source.cursors.visual.claimLimit },
-    { kind: "product", sha: source.cursors.product.sha, artifact: source.cursors.product.artifact, claimLimit: source.cursors.product.claimLimit },
-    { kind: "source-normative", sha: source.cursors.sourceNormative.sha, artifact: source.cursors.sourceNormative.artifact, claimLimit: source.cursors.sourceNormative.claimLimit },
-    { kind: "source-working", sha: source.cursors.sourceWorking.sha, artifact: source.cursors.sourceWorking.artifact, claimLimit: source.cursors.sourceWorking.claimLimit },
+    { kind: "head", sha: source.cursors.head.sha, date: cursorDate, artifact: source.cursors.head.artifact, claimLimit: source.cursors.head.claimLimit },
+    { kind: "formal", sha: source.cursors.formal.sha, date: cursorDate, artifact: source.cursors.formal.artifact, claimLimit: source.cursors.formal.claimLimit },
+    { kind: "focal", sha: source.cursors.focal.sha, date: cursorDate, artifact: source.cursors.focal.artifact, claimLimit: source.cursors.focal.claimLimit },
+    { kind: "global", sha: source.cursors.global.sha, date: cursorDate, artifact: source.cursors.global.artifact, claimLimit: source.cursors.global.claimLimit },
+    { kind: "visual", sha: source.cursors.visual.sha, date: cursorDate, artifact: source.cursors.visual.artifact, claimLimit: source.cursors.visual.claimLimit },
+    { kind: "product", sha: source.cursors.product.sha, date: cursorDate, artifact: source.cursors.product.artifact, claimLimit: source.cursors.product.claimLimit },
+    {
+      kind: "source",
+      sha: source.cursors.sourceNormative.sha,
+      date: cursorDate,
+      artifact: source.cursors.sourceNormative.artifact,
+      claimLimit: `${source.cursors.sourceNormative.claimLimit}; working=${source.cursors.sourceWorking.sha.slice(0, 12)}`,
+    },
   ],
-  controlSource: "docs/evidence/control-source-v1.json",
   claims: {
-    allowed: [...source.claims.allowed],
+    allowed: [...source.claims.allowed, `control-source closedThrough=${source.closedThrough}`, `nextQueueHead=${source.nextQueue[0] || "empty"}`],
     blocked: [...source.claims.blocked],
   },
   canonicalization: "stable-json/v0",
@@ -130,15 +133,17 @@ const cursorDoc = {
   digest: { algorithm: "sha-256", value: digest(cursorPayload) },
 };
 
-// Shared-field agreement
+// Shared-field agreement (scores + formal/global pins)
 const formalCursor = cursorDoc.cursors.find((c) => c.kind === "formal");
 const globalCursor = cursorDoc.cursors.find((c) => c.kind === "global");
 const errors = [];
-if (selectorDoc.closedThrough !== cursorDoc.closedThrough) errors.push("closedThrough mismatch");
-if (JSON.stringify(selectorDoc.nextQueue) !== JSON.stringify(cursorDoc.nextQueue)) errors.push("nextQueue mismatch");
 if (JSON.stringify(selectorDoc.scores) !== JSON.stringify(cursorDoc.scores)) errors.push("scores mismatch");
 if (selectorDoc.cursors.formal.sha !== formalCursor.sha) errors.push("formal sha mismatch");
 if (selectorDoc.cursors.global.sha !== globalCursor.sha) errors.push("global sha mismatch");
+// Control queue lives on authority selector; mirrored in cursor claims for auditability
+if (!cursorDoc.claims.allowed.some((c) => c.includes(source.closedThrough))) {
+  errors.push("cursor claims missing closedThrough mirror");
+}
 
 // Stale constant guard: generators must not inject forbidden SHAs unless control-source owns them
 for (const sha of FORBIDDEN_STALE) {

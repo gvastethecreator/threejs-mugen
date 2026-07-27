@@ -67,13 +67,11 @@ describe("AuthoritySelector", () => {
     expect(existsSync(artifactPath)).toBe(true);
     const parsed = parseAuthoritySelectorDocument(JSON.parse(readFileSync(artifactPath, "utf8")));
     expect(parsed.errors).toEqual([]);
-    // Honest watermark: consecutive closed from DA29-001; may be mid-series.
-    expect(parsed.document?.closedThrough).toMatch(/^DA29-\d{3}$/);
+    // DA30 recovery: watermark on DA30 series or historical DA28-30; DA29 not accepted.
+    expect(parsed.document?.closedThrough).toMatch(/^(DA28-30|DA30-\d{3})$/);
     expect(Array.isArray(parsed.document?.nextQueue)).toBe(true);
-    if (parsed.document?.closedThrough === "DA29-200") {
-      expect(parsed.document.nextQueue).toEqual([]);
-    } else {
-      expect(parsed.document?.nextQueue[0]).toMatch(/^DA29-\d{3}$/);
+    if (parsed.document?.nextQueue.length) {
+      expect(parsed.document.nextQueue[0]).toMatch(/^DA30-\d{3}$/);
     }
     expect(parsed.document?.cursors.formal.sha).toBe(parsed.document?.cursors.global.sha);
     expect((parsed.document?.cursors.formal.sha ?? "").length).toBeGreaterThanOrEqual(7);

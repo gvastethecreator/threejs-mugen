@@ -7,7 +7,17 @@ Labels: generated-assets, visual-qa, ready-for-agent
 
 Make imagegen and sprite-atlas-builder output repeatable, inspectable, and playable without pretending generated/native assets prove imported MUGEN compatibility.
 
-## 2026-07-26 asset override
+## 2026-07-27 DA30 audit-hold override
+
+DA29 asset artifacts remain candidate facts; their task closeouts need semantic
+revalidation. DA30-081…090 cover provenance, permissions, transforms, generated
+QA, budgets, scanner safety, profile reasons, incremental analysis, browser/CLI
+parity, and asset-to-export closure. Reuse the bounded policy work below and
+keep native/generated evidence separate from imported compatibility. No
+commercial or third-party asset is authorized. See the
+[DA30 plan](../../../docs/DA30_RECOVERY_ROADMAP.md).
+
+## Historical 2026-07-26 asset override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
 (`closedThrough` DA28-30). Native Nova and Mira exist, but their CMD/CNS/AIR
