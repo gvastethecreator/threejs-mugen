@@ -1,6 +1,6 @@
 {
   "schemaVersion": "mugen-web-sandbox/roadmap-cursor/v1",
-  "generatedAt": "2026-07-27T05:57:18.445Z",
+  "generatedAt": "2026-07-27T06:11:33.000Z",
   "branch": "master",
   "scores": {
     "sandbox": "65",
@@ -11,18 +11,18 @@
     "studio": "25"
   },
   "dirtyExclusions": [],
-  "closedThrough": "DA28-30",
+  "closedThrough": "DA30-020",
   "nextQueue": [
-    "DA30-001",
-    "DA30-002",
-    "DA30-003",
-    "DA30-004",
-    "DA30-005",
-    "DA30-006",
-    "DA30-007",
-    "DA30-008",
-    "DA30-009",
-    "DA30-010"
+    "DA30-021",
+    "DA30-022",
+    "DA30-023",
+    "DA30-024",
+    "DA30-025",
+    "DA30-026",
+    "DA30-027",
+    "DA30-028",
+    "DA30-029",
+    "DA30-030"
   ],
   "seriesHold": {
     "series": "DA29",
@@ -97,6 +97,6 @@
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "4057904c700d7ac6a1d4da2e3ca48a72aa2dd6be35e800a85653277e236f023e"
+    "value": "2bec94ca19fa91e283037f94fa128f5142d1efce74afad0c503ac4158046aa09"
   }
 }

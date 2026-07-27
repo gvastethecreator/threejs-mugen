@@ -1,0 +1,47 @@
+{
+  "schema": "Da30RoadmapSurfaceOwnership/v1",
+  "id": "DA30-009",
+  "generatedAt": "2026-07-27T06:35:00.000Z",
+  "claimCeiling": "doc design only",
+  "owners": [
+    {
+      "concern": "current queue, scores, independent pins",
+      "owner": "docs/evidence/control-source-v1.json",
+      "projections": [
+        "docs/evidence/authority-selector-v1.json",
+        "docs/evidence/roadmap-cursor-v1.json",
+        "docs/AUTHORITY_SELECTOR.md"
+      ]
+    },
+    {
+      "concern": "execution board current head",
+      "owner": "docs/ROADMAP_EXECUTION_BOARD.md",
+      "projections": []
+    },
+    {
+      "concern": "append-only backlog",
+      "owner": "docs/BUILD_EXECUTION_BACKLOG.md",
+      "projections": []
+    },
+    {
+      "concern": "master plans",
+      "owner": "docs/MASTER_REVIEW_ROADMAP.md",
+      "projections": ["docs/DA30_RECOVERY_ROADMAP.md"]
+    },
+    {
+      "concern": "generated summaries",
+      "owner": "scripts/materialize_control_projections.cjs",
+      "projections": [
+        "docs/evidence/authority-selector-v1.json",
+        "docs/evidence/roadmap-cursor-v1.json"
+      ]
+    },
+    {
+      "concern": "archive policy",
+      "owner": "docs/research/ (append-only)",
+      "projections": []
+    }
+  ],
+  "rule": "no current fact requires edits in more than its named owner and projections",
+  "archivePolicy": "historical sections labeled Historical/Previous; failed DA29 watermark preserved under docs/evidence/da30/"
+}

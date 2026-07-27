@@ -1,0 +1,15 @@
+{
+  "schema": "Da30ProductRouteInventory/v1",
+  "id": "DA30-023",
+  "routes": [
+    { "id": "play-match", "path": "/?mode=match", "setup": "load nova vs mira stage rooftop", "expected": "combat HUD + stage", "owner": "App.ts", "viewport": ["desktop", "mobile"] },
+    { "id": "inspect", "path": "/?mode=inspect", "setup": "open package", "expected": "source/capability facts", "owner": "App.ts", "viewport": ["desktop"] },
+    { "id": "studio-workbench", "path": "/?mode=studio", "setup": "open project", "expected": "tabs authoring", "owner": "App.ts", "viewport": ["desktop", "mobile"] },
+    { "id": "studio-import", "path": "/?mode=studio&panel=import", "setup": "pick archive", "expected": "scan result or error", "owner": "Studio", "viewport": ["desktop"] },
+    { "id": "studio-save", "path": "/?mode=studio", "setup": "edit+save", "expected": "revision receipt or trust fail", "owner": "Studio write", "viewport": ["desktop"] },
+    { "id": "select-chars", "path": "/?mode=select", "setup": "roster", "expected": "legal/blocked entries", "owner": "selection", "viewport": ["desktop", "mobile"] },
+    { "id": "error-recovery", "path": "/?mode=studio", "setup": "force quota/permission", "expected": "actionable trust UI", "owner": "Studio trust", "viewport": ["desktop"] }
+  ],
+  "omissions": ["netplay lobby", "arcade mode full", "storyboard player"],
+  "claimCeiling": "route inventory only"
+}

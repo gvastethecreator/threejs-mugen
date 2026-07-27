@@ -1,0 +1,27 @@
+{
+  "schema": "TaskAcceptanceManifest/v1",
+  "taskId": "DA29-041",
+  "claimCeiling": "Nova contact journey unit path only; no imported package breadth",
+  "clauses": [
+    {
+      "id": "c1-journey-keys",
+      "evidenceKind": "unit-observation",
+      "producer": "src/mugen/da29/Da29Wave1Evidence.ts#executeDa29_041",
+      "assertion": "command,stateEntry,collision,contact,damage,hitpause,checksum present",
+      "expectedFailure": "HitDef-count-only theater rejected by checker",
+      "revisionPolicy": "any-fresh",
+      "environment": "vitest",
+      "claim": "shipped CombatResolver contact journey fields"
+    },
+    {
+      "id": "c2-negatives",
+      "evidenceKind": "unit-observation",
+      "producer": "src/mugen/da29/Da29Wave1Evidence.ts",
+      "assertion": "miss, guard, malformed routes asserted",
+      "expectedFailure": "missing negative routes",
+      "revisionPolicy": "any-fresh",
+      "environment": "vitest",
+      "claim": "negative combat routes covered"
+    }
+  ]
+}

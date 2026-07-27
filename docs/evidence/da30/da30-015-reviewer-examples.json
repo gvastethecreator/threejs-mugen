@@ -1,0 +1,24 @@
+{
+  "schema": "Da30ReviewerIndependenceExamples/v1",
+  "id": "DA30-015",
+  "accepted": {
+    "author": "implementer-agent",
+    "runner": "ci-local",
+    "reviewer": "audit-agent-b",
+    "toolProvenance": "vitest+manual",
+    "conflict": "none",
+    "reviewTime": "2026-07-27T06:40:00.000Z",
+    "changedFacts": ["control-source closedThrough"],
+    "label": "independent"
+  },
+  "rejected": {
+    "author": "agent-x",
+    "runner": "agent-x",
+    "reviewer": "agent-x",
+    "toolProvenance": "self",
+    "conflict": "same-author",
+    "reviewTime": "2026-07-27T06:40:00.000Z",
+    "changedFacts": ["score claim"],
+    "label": "self-review-not-independent"
+  }
+}

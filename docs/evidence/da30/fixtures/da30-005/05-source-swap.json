@@ -1,0 +1,7 @@
+{
+  "kind": "source-swap",
+  "expectFail": true,
+  "sourceNormative": "4aa0ba38f851c52549ba182310e9e53361cd472a",
+  "sourceWorking": "4aa0ba38f851c52549ba182310e9e53361cd472a",
+  "normativeClaimedWorking": true
+}

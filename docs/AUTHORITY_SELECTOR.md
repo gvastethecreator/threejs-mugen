@@ -4,7 +4,7 @@ Last updated: 2026-07-27
 Checked control source: [`docs/evidence/control-source-v1.json`](evidence/control-source-v1.json)  
 Projections: [`authority-selector-v1.json`](evidence/authority-selector-v1.json), [`roadmap-cursor-v1.json`](evidence/roadmap-cursor-v1.json)  
 Schema: `mugen-web-sandbox/control-source/v1` → authority-selector + roadmap-cursor  
-`closedThrough`: **DA28-30** · next head **DA30-001** (recovery queue DA30-001…010)
+`closedThrough`: **DA30-020** · next head **DA30-021** (wave 2 current baselines)
 
 ## Audit hold (DA29)
 
@@ -46,11 +46,11 @@ Held: **65 / 36 / 20 / 10–12 / 6–8 / 25**
 
 ## Accepted ladder
 
-DA26-01…30 · DA27-01…09 · **DA28-01…30** accepted at written ceilings.  
-**DA29-001…DA29-200 unadjudicated** (candidate only).
+DA26…DA28-30 historical · **DA30-001…020** control recovery + semantic evidence
+infrastructure accepted at written ceilings.  
+**DA29-001…DA29-200 unadjudicated** (candidate only; pilot revalidation on 012/013/041/072).
 
 ## Next queue
 
-Head: **DA30-001**. Remainder: DA30-002…010 control recovery, then DA30-011…020
-semantic evidence. Only `accepted` closeout state advances a watermark
-(DA30-006).
+Head: **DA30-021** (current formal/global raw gate). Remainder: DA30-022…120.
+Only `accepted` closeout state advances a watermark (DA30-006).

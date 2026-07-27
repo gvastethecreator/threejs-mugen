@@ -1,0 +1,125 @@
+{
+  "schema": "Da30ControlRecoveryGate/v1",
+  "id": "DA30-010",
+  "generatedAt": "2026-07-27T06:09:56.414Z",
+  "headSha": "520b9dd8780d6f94b09739a12103896a0cc0384a",
+  "ok": true,
+  "checklist": [
+    {
+      "id": "shared-closedThrough",
+      "ok": true,
+      "detail": "DA28-30"
+    },
+    {
+      "id": "shared-nextQueue",
+      "ok": true,
+      "detail": "len=10"
+    },
+    {
+      "id": "shared-scores",
+      "ok": true,
+      "detail": "{\"sandbox\":\"65\",\"mugenLite\":\"36\",\"mugenMvp\":\"20\",\"mugenFull\":\"10-12\",\"ikemen\":\"6-8\",\"studio\":\"25\"}"
+    },
+    {
+      "id": "scores-held",
+      "ok": true,
+      "detail": "65"
+    },
+    {
+      "id": "ledger-200",
+      "ok": true,
+      "detail": "count=200"
+    },
+    {
+      "id": "hold-audit",
+      "ok": true,
+      "detail": "da30-001"
+    },
+    {
+      "id": "ref-audit",
+      "ok": true,
+      "detail": "da30-005"
+    },
+    {
+      "id": "da29-watermark-not-accepted",
+      "ok": true,
+      "detail": "false"
+    },
+    {
+      "id": "docs-link-da30",
+      "ok": true,
+      "detail": "roadmap+selector"
+    },
+    {
+      "id": "transitions",
+      "ok": true,
+      "detail": "DA30-006"
+    },
+    {
+      "id": "ownership",
+      "ok": true,
+      "detail": "DA30-009"
+    },
+    {
+      "id": "historical-reconcile",
+      "ok": true,
+      "detail": "DA30-008"
+    }
+  ],
+  "commandLog": [
+    {
+      "name": "materialize_control_projections",
+      "cmd": "node scripts/materialize_control_projections.cjs",
+      "exit": 0,
+      "stdoutDigest": "1c69f79ffd572ada"
+    },
+    {
+      "name": "audit_da30_001",
+      "cmd": "node scripts/audit_da30_001_hold_references.cjs",
+      "exit": 0,
+      "stdoutDigest": "14bc4ea1a72d8c04"
+    },
+    {
+      "name": "audit_da30_005",
+      "cmd": "node scripts/audit_da30_005_control_references.cjs --fixtures-dir docs/evidence/da30/fixtures/da30-005",
+      "exit": 0,
+      "stdoutDigest": "5a92cc1eaa229a4a"
+    }
+  ],
+  "closedThrough": "DA28-30",
+  "nextQueue": [
+    "DA30-001",
+    "DA30-002",
+    "DA30-003",
+    "DA30-004",
+    "DA30-005",
+    "DA30-006",
+    "DA30-007",
+    "DA30-008",
+    "DA30-009",
+    "DA30-010"
+  ],
+  "scores": {
+    "sandbox": "65",
+    "mugenLite": "36",
+    "mugenMvp": "20",
+    "mugenFull": "10-12",
+    "ikemen": "6-8",
+    "studio": "25"
+  },
+  "claims": {
+    "allowed": [
+      "DA30 queue adoption only",
+      "control recovery gate"
+    ],
+    "blocked": [
+      "score movement",
+      "DA29-200 accepted watermark",
+      "runtime product claims"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "9649f1e420e666a61547513d502cc250ca83683bb870171b8437503c27237446"
+  }
+}

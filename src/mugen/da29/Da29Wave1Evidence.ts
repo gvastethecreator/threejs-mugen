@@ -4,7 +4,7 @@
  */
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { resolve } from "node:path";
 import { buildTraceArtifactManifest, validateTraceArtifactManifest } from "./TraceArtifactManifest";
 import { buildCnsControllerCensus, validateCnsControllerCensus } from "./CnsControllerCensus";
 import { parseCns } from "../parsers/CnsParser";

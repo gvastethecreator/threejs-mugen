@@ -1,0 +1,136 @@
+{
+  "schema": "Da30PilotRevalidationPilot/v1",
+  "id": "DA30-020",
+  "generatedAt": "2026-07-27T06:09:55.499Z",
+  "scoresUnchanged": true,
+  "scores": {
+    "sandbox": "65",
+    "mugenLite": "36",
+    "mugenMvp": "20",
+    "mugenFull": "10-12",
+    "ikemen": "6-8",
+    "studio": "25"
+  },
+  "tasks": [
+    {
+      "taskId": "DA29-012",
+      "manifest": "docs/evidence/da30/manifests/da29-012.manifest.json",
+      "clauses": [
+        {
+          "clauseId": "c1-stable-ids",
+          "assertion": "manifest entryCount > 0 and duplicateIds empty",
+          "status": "pass",
+          "note": "{\"entryCount\":643,\"dig\":\"16649ac6e7022a5b\"}",
+          "claim": "trace artifact IDs unique in builder output",
+          "carryoverId": null
+        },
+        {
+          "clauseId": "c2-fields",
+          "assertion": "each entry has id, producerSymbol, inputFixture, profile, sourcePin, outputDigest, owner",
+          "status": "pass",
+          "note": "sample fields",
+          "claim": "required trace fields present in builder",
+          "carryoverId": null
+        }
+      ],
+      "passed": [
+        "c1-stable-ids",
+        "c2-fields"
+      ],
+      "failed": [],
+      "unknown": []
+    },
+    {
+      "taskId": "DA29-013",
+      "manifest": "docs/evidence/da30/manifests/da29-013.manifest.json",
+      "clauses": [
+        {
+          "clauseId": "c1-census",
+          "assertion": "census counts controllers for native packages",
+          "status": "pass",
+          "note": "census keys",
+          "claim": "controller census runs on native fixtures",
+          "carryoverId": null
+        },
+        {
+          "clauseId": "c2-diagnostics",
+          "assertion": "malformed/nested diagnostic matrix rematerialized",
+          "status": "fail",
+          "note": "diagnostic matrix not rematerialized in measured evidence",
+          "claim": "diagnostic matrix complete",
+          "carryoverId": "DA30-063"
+        }
+      ],
+      "passed": [
+        "c1-census"
+      ],
+      "failed": [
+        "c2-diagnostics"
+      ],
+      "unknown": []
+    },
+    {
+      "taskId": "DA29-041",
+      "manifest": "docs/evidence/da30/manifests/da29-041.manifest.json",
+      "clauses": [
+        {
+          "clauseId": "c1-journey-keys",
+          "assertion": "command,stateEntry,collision,contact,damage,hitpause,checksum present",
+          "status": "pass",
+          "note": "",
+          "claim": "shipped CombatResolver contact journey fields",
+          "carryoverId": null
+        },
+        {
+          "clauseId": "c2-negatives",
+          "assertion": "miss, guard, malformed routes asserted",
+          "status": "fail",
+          "note": "miss/guard/malformed routes not in measured 041",
+          "claim": "negative combat routes covered",
+          "carryoverId": "DA30-041"
+        }
+      ],
+      "passed": [
+        "c1-journey-keys"
+      ],
+      "failed": [
+        "c2-negatives"
+      ],
+      "unknown": []
+    },
+    {
+      "taskId": "DA29-072",
+      "manifest": "docs/evidence/da30/manifests/da29-072.manifest.json",
+      "clauses": [
+        {
+          "clauseId": "c1-live-renderer",
+          "assertion": "liveRenderer true with renderer.info metrics",
+          "status": "pass",
+          "note": "liveRenderer=true",
+          "claim": "live renderer metrics captured",
+          "carryoverId": null
+        },
+        {
+          "clauseId": "c2-distinct-routes",
+          "assertion": "five distinct product routes with teardown dispose",
+          "status": "fail",
+          "note": "play/team/stress share URL; teardown not dispose",
+          "claim": "distinct routes and real teardown",
+          "carryoverId": "DA30-028"
+        }
+      ],
+      "passed": [
+        "c1-live-renderer"
+      ],
+      "failed": [
+        "c2-distinct-routes"
+      ],
+      "unknown": []
+    }
+  ],
+  "claimCeiling": "only passed clause claims; no score movement",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "2bc379f6221a721a2a51f7224587c5bb28c07ded6e4e375daf291197ccc9c5eb"
+  }
+}

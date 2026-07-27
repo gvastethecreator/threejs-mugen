@@ -1,0 +1,6 @@
+{
+  "kind": "visual-as-head",
+  "expectFail": true,
+  "visualSha": "1085badb",
+  "claim": "T342 as HEAD product truth"
+}

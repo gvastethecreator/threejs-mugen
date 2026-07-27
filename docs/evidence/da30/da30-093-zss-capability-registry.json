@@ -1,0 +1,11 @@
+{
+  "schema": "Da30ZssCapabilityRegistry/v1",
+  "id": "DA30-093",
+  "note": "design registry; no generic ZSS support row",
+  "operations": [
+    { "id": "decl-var", "owner": "parser", "runtime": "ungranted", "pin": "ikemen-source-review" },
+    { "id": "op-assign", "owner": "compiler", "runtime": "ungranted", "pin": "ikemen-source-review" }
+  ],
+  "unsupported": ["full ZSS language", "Lua bridge"],
+  "claimCeiling": "design only"
+}

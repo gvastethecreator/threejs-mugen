@@ -1,0 +1,5 @@
+{
+  "kind": "product-breadth",
+  "expectFail": true,
+  "claimImportedPackageBreadth": true
+}

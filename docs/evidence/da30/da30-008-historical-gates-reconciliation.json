@@ -1,0 +1,75 @@
+{
+  "schema": "Da30HistoricalGateReconciliation/v1",
+  "id": "DA30-008",
+  "generatedAt": "2026-07-27T06:30:00.000Z",
+  "claimCeiling": "historical bounded facts only",
+  "rows": [
+    {
+      "id": "DA29-002",
+      "preservedFacts": [
+        "six commands recorded with exit 0 at a6e91520081d6308eac3d53b6bf333d4b950d019"
+      ],
+      "rejectedClaims": [
+        "raw command stdout/stderr present in durable log",
+        "exact Vitest counts/versions/duration at pin",
+        "current HEAD inherits formal/global green"
+      ],
+      "missingClausesMappedTo": ["DA30-021", "DA30-016"],
+      "artifactDigests": {
+        "researchNote": "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md",
+        "gateLog": "docs/evidence/da29/da29-002-gate.log"
+      },
+      "verdict": "partial-historical"
+    },
+    {
+      "id": "DA29-003",
+      "preservedFacts": [
+        "three named PNG captures under docs/evidence/da29/browser/"
+      ],
+      "rejectedClaims": [
+        "commit/browser/DPR/focus/error matrix complete",
+        "captures prove current CSS"
+      ],
+      "missingClausesMappedTo": ["DA30-024", "DA30-017"],
+      "artifactDigests": {
+        "matchDesktop": "docs/evidence/da29/browser/match-desktop.png",
+        "matchMobile": "docs/evidence/da29/browser/match-mobile.png",
+        "studio": "docs/evidence/da29/browser/studio-workbench-desktop.png"
+      },
+      "verdict": "partial-historical"
+    },
+    {
+      "id": "DA29-004",
+      "preservedFacts": [
+        "compatibility-corpus-v1.3.json lists imports"
+      ],
+      "rejectedClaims": [
+        "gate valid while selector/cursor disagreed"
+      ],
+      "missingClausesMappedTo": ["DA30-005", "DA30-061"],
+      "verdict": "reopen-historical"
+    },
+    {
+      "id": "DA29-005",
+      "preservedFacts": [
+        "score-adjudication-v1.3.json records movement none for held lanes"
+      ],
+      "rejectedClaims": [
+        "series-level score adjudication while watermark invalid"
+      ],
+      "missingClausesMappedTo": ["DA30-117"],
+      "verdict": "reopen-historical"
+    },
+    {
+      "id": "DA29-007",
+      "preservedFacts": [
+        "scripts/audit_authority_references.cjs exists as drift scanner"
+      ],
+      "rejectedClaims": [
+        "authority reference green while selector/cursor split"
+      ],
+      "missingClausesMappedTo": ["DA30-005"],
+      "verdict": "reopen-historical"
+    }
+  ]
+}

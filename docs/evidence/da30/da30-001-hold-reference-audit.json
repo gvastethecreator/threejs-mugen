@@ -1,8 +1,8 @@
 {
   "schema": "Da30HoldReferenceAudit/v1",
   "id": "DA30-001",
-  "generatedAt": "2026-07-27T05:57:31.337Z",
-  "head": "fd7a9b9a16b2acd116df1e6dba69f0d451cc37ed",
+  "generatedAt": "2026-07-27T06:11:33.292Z",
+  "head": "520b9dd8780d6f94b09739a12103896a0cc0384a",
   "ok": true,
   "scoresHeld": "65 / 36 / 20 / 10-12 / 6-8 / 25",
   "acceptedLadder": "DA26…DA28-30",
@@ -19,8 +19,8 @@
         "points-da30": true,
         "preserved-pins": true
       },
-      "digest": "0d16222de2c4f44d",
-      "bytes": 2763
+      "digest": "2335c9a63b61b7f0",
+      "bytes": 2826
     },
     {
       "path": "docs/ROADMAP_EXECUTION_BOARD.md",
@@ -277,6 +277,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "fd1620ecd03a4cf9d74ac02f0095703c6bd66f390563a7bb4082e9fd7a76170c"
+    "value": "c30e9d660e7406abf68f41719c6a18339983e261be3f6358797950aab40d5820"
   }
 }

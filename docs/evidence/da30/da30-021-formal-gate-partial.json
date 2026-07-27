@@ -1,0 +1,20 @@
+{
+  "schema": "Da30FormalGatePartial/v1",
+  "id": "DA30-021",
+  "status": "partial",
+  "note": "Full stack (full vitest + traces + build + both boundaries) not completed this session. Typecheck and DA30 focused suite green at projection time.",
+  "steps": [
+    { "name": "typecheck", "exit": 0, "command": "pnpm typecheck" },
+    { "name": "da30-focused-tests", "exit": 0, "command": "pnpm exec vitest run src/tests/Da30Wave0*.test.ts", "counts": { "tests": 20 } }
+  ],
+  "missingForAccept": [
+    "pnpm test full suite with counts",
+    "pnpm qa:trace",
+    "pnpm build",
+    "pnpm check:boundaries",
+    "pnpm check:redirect-boundary",
+    "raw stdout/stderr digests and tool versions"
+  ],
+  "claimCeiling": "partial formal evidence only; does not advance formal pin or watermark past DA30-020",
+  "scoresUnchanged": true
+}

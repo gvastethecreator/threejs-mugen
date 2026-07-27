@@ -1,0 +1,1279 @@
+{
+  "schema": "Da30SeriesStatus/v1",
+  "generatedAt": "2026-07-27T06:11:33.165Z",
+  "count": 120,
+  "closedThrough": "DA30-020",
+  "nextQueue": [
+    "DA30-021",
+    "DA30-022",
+    "DA30-023",
+    "DA30-024",
+    "DA30-025",
+    "DA30-026",
+    "DA30-027",
+    "DA30-028",
+    "DA30-029",
+    "DA30-030",
+    "DA30-031",
+    "DA30-032",
+    "DA30-033",
+    "DA30-034",
+    "DA30-035",
+    "DA30-036",
+    "DA30-037",
+    "DA30-038",
+    "DA30-039",
+    "DA30-040",
+    "DA30-041",
+    "DA30-042",
+    "DA30-043",
+    "DA30-044",
+    "DA30-045",
+    "DA30-046",
+    "DA30-047",
+    "DA30-048",
+    "DA30-049",
+    "DA30-050",
+    "DA30-051",
+    "DA30-052",
+    "DA30-053",
+    "DA30-054",
+    "DA30-055",
+    "DA30-056",
+    "DA30-057",
+    "DA30-058",
+    "DA30-059",
+    "DA30-060",
+    "DA30-061",
+    "DA30-062",
+    "DA30-063",
+    "DA30-064",
+    "DA30-065",
+    "DA30-066",
+    "DA30-067",
+    "DA30-068",
+    "DA30-069",
+    "DA30-070",
+    "DA30-071",
+    "DA30-072",
+    "DA30-073",
+    "DA30-074",
+    "DA30-075",
+    "DA30-076",
+    "DA30-077",
+    "DA30-078",
+    "DA30-079",
+    "DA30-080",
+    "DA30-081",
+    "DA30-082",
+    "DA30-083",
+    "DA30-084",
+    "DA30-085",
+    "DA30-086",
+    "DA30-087",
+    "DA30-088",
+    "DA30-089",
+    "DA30-090",
+    "DA30-091",
+    "DA30-092",
+    "DA30-093",
+    "DA30-094",
+    "DA30-095",
+    "DA30-096",
+    "DA30-097",
+    "DA30-098",
+    "DA30-099",
+    "DA30-100",
+    "DA30-101",
+    "DA30-102",
+    "DA30-103",
+    "DA30-104",
+    "DA30-105",
+    "DA30-106",
+    "DA30-107",
+    "DA30-108",
+    "DA30-109",
+    "DA30-110",
+    "DA30-111",
+    "DA30-112",
+    "DA30-113",
+    "DA30-114",
+    "DA30-115",
+    "DA30-116",
+    "DA30-117",
+    "DA30-118",
+    "DA30-119",
+    "DA30-120"
+  ],
+  "acceptedCount": 20,
+  "partialCount": 14,
+  "openCount": 86,
+  "records": [
+    {
+      "id": "DA30-001",
+      "wave": 0,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-001-hold-reference-audit.json"
+      ],
+      "note": "hold audit zero stale",
+      "kind": "control"
+    },
+    {
+      "id": "DA30-002",
+      "wave": 0,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da29-verdict-ledger-v1.json"
+      ],
+      "note": "200-row ledger",
+      "kind": "control"
+    },
+    {
+      "id": "DA30-003",
+      "wave": 0,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/adr/0055-da30-single-control-source.md"
+      ],
+      "note": "ADR single source",
+      "kind": "control"
+    },
+    {
+      "id": "DA30-004",
+      "wave": 0,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/control-source-v1.json",
+        "scripts/materialize_control_projections.cjs"
+      ],
+      "note": "projections agree",
+      "kind": "control"
+    },
+    {
+      "id": "DA30-005",
+      "wave": 0,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-005-control-reference-audit.json"
+      ],
+      "note": "6 negative fixtures",
+      "kind": "control"
+    },
+    {
+      "id": "DA30-006",
+      "wave": 0,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/closeout-state-transitions-v1.json"
+      ],
+      "note": "state transitions",
+      "kind": "control"
+    },
+    {
+      "id": "DA30-007",
+      "wave": 0,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "src/mugen/da30/CloseoutFreshness.ts"
+      ],
+      "note": "css-after-gate fixture fails",
+      "kind": "control"
+    },
+    {
+      "id": "DA30-008",
+      "wave": 0,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-008-historical-gates-reconciliation.json"
+      ],
+      "note": "historical gates",
+      "kind": "control"
+    },
+    {
+      "id": "DA30-009",
+      "wave": 0,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-009-roadmap-surface-ownership.json"
+      ],
+      "note": "ownership map",
+      "kind": "control"
+    },
+    {
+      "id": "DA30-010",
+      "wave": 0,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-010-control-recovery-gate.json"
+      ],
+      "note": "control recovery gate",
+      "kind": "control"
+    },
+    {
+      "id": "DA30-011",
+      "wave": 1,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/adr/0057-task-acceptance-manifest-v1.md",
+        "src/mugen/da30/TaskAcceptanceManifest.ts"
+      ],
+      "note": "manifest schema",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-012",
+      "wave": 1,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "src/mugen/da30/TaskAcceptanceManifest.ts",
+        "src/tests/Da30Wave0And1Recovery.test.ts"
+      ],
+      "note": "validator table tests",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-013",
+      "wave": 1,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/adr/0058-evidence-observation-gate-claim.md",
+        "src/mugen/da30/EvidenceLineage.ts"
+      ],
+      "note": "lineage contracts",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-014",
+      "wave": 1,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "src/mugen/da30/EvidenceLineage.ts"
+      ],
+      "note": "DAG + cycle fixtures",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-015",
+      "wave": 1,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/adr/0059-reviewer-independence-policy.md",
+        "docs/evidence/da30/da30-015-reviewer-examples.json"
+      ],
+      "note": "independence policy",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-016",
+      "wave": 1,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "src/mugen/da30/CommandGateCapture.ts"
+      ],
+      "note": "raw command capture",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-017",
+      "wave": 1,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "src/mugen/da30/BrowserEvidenceFacts.ts"
+      ],
+      "note": "browser facts envelope",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-018",
+      "wave": 1,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/manifests/"
+      ],
+      "note": "expectedFailure on pilot manifests",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-019",
+      "wave": 1,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "src/mugen/da30/ClaimCompiler.ts"
+      ],
+      "note": "claim compiler",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-020",
+      "wave": 1,
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-020-pilot-revalidation.json"
+      ],
+      "note": "pilot revalidation 4 tasks",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-021",
+      "wave": 2,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-022",
+      "wave": 2,
+      "status": "partial",
+      "evidenceClass": "architecture-design",
+      "artifacts": [
+        "docs/evidence/da30/da30-022-warning-policy.json"
+      ],
+      "note": "warning policy matrix",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-023",
+      "wave": 2,
+      "status": "partial",
+      "evidenceClass": "architecture-design",
+      "artifacts": [
+        "docs/evidence/da30/da30-023-product-routes.json"
+      ],
+      "note": "route inventory",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-024",
+      "wave": 2,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-025",
+      "wave": 2,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-026",
+      "wave": 2,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-027",
+      "wave": 2,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-028",
+      "wave": 2,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-029",
+      "wave": 2,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-030",
+      "wave": 2,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-031",
+      "wave": 3,
+      "status": "partial",
+      "evidenceClass": "architecture-design",
+      "artifacts": [
+        "docs/adr/0060-da30-input-authority.md"
+      ],
+      "note": "input authority ADR",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-032",
+      "wave": 3,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-033",
+      "wave": 3,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-034",
+      "wave": 3,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-035",
+      "wave": 3,
+      "status": "partial",
+      "evidenceClass": "architecture-design",
+      "artifacts": [
+        "docs/adr/0061-da30-rng-streams.md"
+      ],
+      "note": "RNG streams ADR",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-036",
+      "wave": 3,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-037",
+      "wave": 3,
+      "status": "partial",
+      "evidenceClass": "architecture-design",
+      "artifacts": [
+        "docs/adr/0062-da30-match-state-serialization.md"
+      ],
+      "note": "match state schema ADR",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-038",
+      "wave": 3,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-039",
+      "wave": 3,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-040",
+      "wave": 3,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-041",
+      "wave": 4,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-042",
+      "wave": 4,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-043",
+      "wave": 4,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-044",
+      "wave": 4,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-045",
+      "wave": 4,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-046",
+      "wave": 4,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-047",
+      "wave": 4,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-048",
+      "wave": 4,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-049",
+      "wave": 4,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-050",
+      "wave": 4,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-051",
+      "wave": 5,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-052",
+      "wave": 5,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-053",
+      "wave": 5,
+      "status": "partial",
+      "evidenceClass": "architecture-design",
+      "artifacts": [
+        "docs/adr/0063-da30-mode-state-machine.md"
+      ],
+      "note": "mode SM ADR",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-054",
+      "wave": 5,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-055",
+      "wave": 5,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-056",
+      "wave": 5,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-057",
+      "wave": 5,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-058",
+      "wave": 5,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-059",
+      "wave": 5,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-060",
+      "wave": 5,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-061",
+      "wave": 6,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-062",
+      "wave": 6,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-063",
+      "wave": 6,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-064",
+      "wave": 6,
+      "status": "partial",
+      "evidenceClass": "architecture-design",
+      "artifacts": [
+        "docs/adr/0064-da30-archive-package-policy.md"
+      ],
+      "note": "archive policy ADR",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-065",
+      "wave": 6,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-066",
+      "wave": 6,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-067",
+      "wave": 6,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-068",
+      "wave": 6,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-069",
+      "wave": 6,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-070",
+      "wave": 6,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-071",
+      "wave": 7,
+      "status": "partial",
+      "evidenceClass": "architecture-design",
+      "artifacts": [
+        "docs/adr/0065-da30-studio-storage.md"
+      ],
+      "note": "studio storage ADR",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-072",
+      "wave": 7,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-073",
+      "wave": 7,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-074",
+      "wave": 7,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-075",
+      "wave": 7,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-076",
+      "wave": 7,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-077",
+      "wave": 7,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-078",
+      "wave": 7,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-079",
+      "wave": 7,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-080",
+      "wave": 7,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-081",
+      "wave": 8,
+      "status": "partial",
+      "evidenceClass": "architecture-design",
+      "artifacts": [
+        "docs/adr/0066-da30-asset-provenance-graph.md"
+      ],
+      "note": "provenance ADR",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-082",
+      "wave": 8,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-083",
+      "wave": 8,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-084",
+      "wave": 8,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-085",
+      "wave": 8,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-086",
+      "wave": 8,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-087",
+      "wave": 8,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-088",
+      "wave": 8,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-089",
+      "wave": 8,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-090",
+      "wave": 8,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-091",
+      "wave": 9,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-092",
+      "wave": 9,
+      "status": "partial",
+      "evidenceClass": "architecture-design",
+      "artifacts": [
+        "docs/adr/0067-da30-ikemen-lanes.md"
+      ],
+      "note": "IKEMEN lanes ADR",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-093",
+      "wave": 9,
+      "status": "partial",
+      "evidenceClass": "architecture-design",
+      "artifacts": [
+        "docs/evidence/da30/da30-093-zss-capability-registry.json"
+      ],
+      "note": "ZSS registry design",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-094",
+      "wave": 9,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-095",
+      "wave": 9,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-096",
+      "wave": 9,
+      "status": "partial",
+      "evidenceClass": "architecture-design",
+      "artifacts": [
+        "docs/adr/0068-da30-module-packaging.md"
+      ],
+      "note": "module packaging ADR",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-097",
+      "wave": 9,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-098",
+      "wave": 9,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-099",
+      "wave": 9,
+      "status": "partial",
+      "evidenceClass": "architecture-design",
+      "artifacts": [
+        "docs/adr/0069-da30-replay-network-boundary.md"
+      ],
+      "note": "replay/network design",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-100",
+      "wave": 9,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-101",
+      "wave": 10,
+      "status": "partial",
+      "evidenceClass": "architecture-design",
+      "artifacts": [
+        "docs/adr/0070-da30-shared-engine-boundaries.md"
+      ],
+      "note": "shared engine ADR",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-102",
+      "wave": 10,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-103",
+      "wave": 10,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-104",
+      "wave": 10,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-105",
+      "wave": 10,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-106",
+      "wave": 10,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-107",
+      "wave": 10,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-108",
+      "wave": 10,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-109",
+      "wave": 10,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-110",
+      "wave": 10,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-111",
+      "wave": 11,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-112",
+      "wave": 11,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-113",
+      "wave": 11,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-114",
+      "wave": 11,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-115",
+      "wave": 11,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-116",
+      "wave": 11,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-117",
+      "wave": 11,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-118",
+      "wave": 11,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-119",
+      "wave": 11,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    },
+    {
+      "id": "DA30-120",
+      "wave": 11,
+      "status": "open",
+      "evidenceClass": "unproven",
+      "artifacts": [],
+      "note": "not yet evidenced",
+      "kind": "recovery"
+    }
+  ],
+  "scoresHeld": true,
+  "scores": {
+    "sandbox": "65",
+    "mugenLite": "36",
+    "mugenMvp": "20",
+    "mugenFull": "10-12",
+    "ikemen": "6-8",
+    "studio": "25"
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "b25c290fe59035174542b2a9c9f44edcd9a6d60a10d256842bb3d09cf104a837"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "TaskAcceptanceManifest/v1",
+  "taskId": "DA29-072",
+  "claimCeiling": "live renderer.info probe only; not five product routes",
+  "clauses": [
+    {
+      "id": "c1-live-renderer",
+      "evidenceKind": "browser-route",
+      "producer": "scripts/qa_da29_072_renderer_info.cjs",
+      "assertion": "liveRenderer true with renderer.info metrics",
+      "expectedFailure": "synthetic seed without liveRenderer rejected",
+      "revisionPolicy": "exact-sha",
+      "environment": "playwright",
+      "claim": "live renderer metrics captured"
+    },
+    {
+      "id": "c2-distinct-routes",
+      "evidenceKind": "browser-route",
+      "producer": "scripts/qa_da29_072_renderer_info.cjs",
+      "assertion": "five distinct product routes with teardown dispose",
+      "expectedFailure": "same URL for play/team/stress",
+      "revisionPolicy": "exact-sha",
+      "environment": "playwright",
+      "claim": "distinct routes and real teardown"
+    }
+  ]
+}

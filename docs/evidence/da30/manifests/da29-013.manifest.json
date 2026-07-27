@@ -1,0 +1,27 @@
+{
+  "schema": "TaskAcceptanceManifest/v1",
+  "taskId": "DA29-013",
+  "claimCeiling": "CNS census inventory only",
+  "clauses": [
+    {
+      "id": "c1-census",
+      "evidenceKind": "unit-observation",
+      "producer": "src/mugen/da29/CnsControllerCensus.ts",
+      "assertion": "census counts controllers for native packages",
+      "expectedFailure": "missing package path fails census",
+      "revisionPolicy": "any-fresh",
+      "environment": "vitest",
+      "claim": "controller census runs on native fixtures"
+    },
+    {
+      "id": "c2-diagnostics",
+      "evidenceKind": "unit-observation",
+      "producer": "src/mugen/da29/CnsControllerCensus.ts",
+      "assertion": "malformed/nested diagnostic matrix rematerialized",
+      "expectedFailure": "absent diagnostic matrix",
+      "revisionPolicy": "any-fresh",
+      "environment": "vitest",
+      "claim": "diagnostic matrix complete"
+    }
+  ]
+}

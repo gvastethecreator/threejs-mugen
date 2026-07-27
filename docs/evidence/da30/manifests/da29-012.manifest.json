@@ -1,0 +1,27 @@
+{
+  "schema": "TaskAcceptanceManifest/v1",
+  "taskId": "DA29-012",
+  "claimCeiling": "trace manifest inventory only; no product breadth",
+  "clauses": [
+    {
+      "id": "c1-stable-ids",
+      "evidenceKind": "unit-observation",
+      "producer": "src/mugen/da29/TraceArtifactManifest.ts",
+      "assertion": "manifest entryCount > 0 and duplicateIds empty",
+      "expectedFailure": "duplicate or empty ids fail validation",
+      "revisionPolicy": "any-fresh",
+      "environment": "vitest",
+      "claim": "trace artifact IDs unique in builder output"
+    },
+    {
+      "id": "c2-fields",
+      "evidenceKind": "unit-observation",
+      "producer": "src/mugen/da29/TraceArtifactManifest.ts",
+      "assertion": "each entry has id, producerSymbol, inputFixture, profile, sourcePin, outputDigest, owner",
+      "expectedFailure": "missing field rejected by validateTraceArtifactManifest",
+      "revisionPolicy": "any-fresh",
+      "environment": "vitest",
+      "claim": "required trace fields present in builder"
+    }
+  ]
+}

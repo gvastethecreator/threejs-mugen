@@ -1,0 +1,6 @@
+{
+  "kind": "formal-mismatch",
+  "expectFail": true,
+  "selectorFormal": "a6e91520081d6308eac3d53b6bf333d4b950d019",
+  "cursorFormal": "b7d23801bd3ca766ba5b184b3c040bef8165d355"
+}

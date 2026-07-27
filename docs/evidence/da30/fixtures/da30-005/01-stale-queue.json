@@ -1,0 +1,7 @@
+{
+  "kind": "stale-queue",
+  "expectFail": true,
+  "closedThrough": "DA29-200",
+  "nextQueue": [],
+  "watermarkAccepted": true
+}

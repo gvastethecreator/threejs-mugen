@@ -673,7 +673,7 @@ export function executeDa29_153(): ExecResult {
 
 export function executeDa29_154(): ExecResult {
   const cns = parseCns(read("public/characters/nova-boxer/mugen/nova.cns"), "nova.cns");
-  const stateMinus1 = cns.controllers.filter((c) => c.stateId === -1 || c.special === "-1");
+  const stateMinus1 = cns.controllers.filter((c) => c.stateId === -1 || String((c as { special?: string }).special ?? "") === "-1");
   return {
     id: "DA29-154",
     functionResults: {

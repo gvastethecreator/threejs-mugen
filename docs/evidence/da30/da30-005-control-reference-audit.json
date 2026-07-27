@@ -1,0 +1,125 @@
+{
+  "schema": "Da30ControlReferenceAudit/v1",
+  "id": "DA30-005",
+  "generatedAt": "2026-07-27T06:11:33.497Z",
+  "ok": true,
+  "live": {
+    "mode": "live",
+    "ok": true,
+    "failures": [],
+    "closedThrough": "DA30-020",
+    "nextQueueHead": "DA30-021",
+    "scores": {
+      "sandbox": "65",
+      "mugenLite": "36",
+      "mugenMvp": "20",
+      "mugenFull": "10-12",
+      "ikemen": "6-8",
+      "studio": "25"
+    },
+    "surfaceCount": 21
+  },
+  "fixtures": {
+    "mode": "fixtures",
+    "ok": true,
+    "results": [
+      {
+        "file": "01-stale-queue.json",
+        "kind": "stale-queue",
+        "expectFail": true,
+        "detected": true,
+        "ok": true,
+        "failures": [
+          {
+            "id": "stale-queue",
+            "detail": "DA29-200 empty queue without hold"
+          }
+        ]
+      },
+      {
+        "file": "02-score-inflate.json",
+        "kind": "score-inflate",
+        "expectFail": true,
+        "detected": true,
+        "ok": true,
+        "failures": [
+          {
+            "id": "score-inflate",
+            "detail": "sandbox 80"
+          }
+        ]
+      },
+      {
+        "file": "03-formal-mismatch.json",
+        "kind": "formal-mismatch",
+        "expectFail": true,
+        "detected": true,
+        "ok": true,
+        "failures": [
+          {
+            "id": "formal-mismatch",
+            "detail": "a6e91520081d6308eac3d53b6bf333d4b950d019 vs b7d23801bd3ca766ba5b184b3c040bef8165d355"
+          }
+        ]
+      },
+      {
+        "file": "04-visual-as-head.json",
+        "kind": "visual-as-head",
+        "expectFail": true,
+        "detected": true,
+        "ok": true,
+        "failures": [
+          {
+            "id": "visual-as-head",
+            "detail": "1085badb"
+          }
+        ]
+      },
+      {
+        "file": "05-source-swap.json",
+        "kind": "source-swap",
+        "expectFail": true,
+        "detected": true,
+        "ok": true,
+        "failures": [
+          {
+            "id": "source-swap",
+            "detail": "normative equals working incorrectly"
+          },
+          {
+            "id": "source-swap",
+            "detail": "working claimed as normative"
+          }
+        ]
+      },
+      {
+        "file": "06-product-breadth.json",
+        "kind": "product-breadth",
+        "expectFail": true,
+        "detected": true,
+        "ok": true,
+        "failures": [
+          {
+            "id": "product-breadth",
+            "detail": "imported package breadth claimed"
+          }
+        ]
+      }
+    ],
+    "fixtureCount": 6
+  },
+  "claims": {
+    "allowed": [
+      "reference consistency only"
+    ],
+    "blocked": [
+      "score movement",
+      "DA29 complete watermark",
+      "formal tip rewrite"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "8d70d8709567f10a324fad73d954c9e3f1acbf4d255435cbb9ef8939b198bac9"
+  }
+}

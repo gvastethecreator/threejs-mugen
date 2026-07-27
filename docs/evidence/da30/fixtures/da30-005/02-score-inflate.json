@@ -1,0 +1,5 @@
+{
+  "kind": "score-inflate",
+  "expectFail": true,
+  "scores": { "sandbox": "80", "mugenLite": "50" }
+}
