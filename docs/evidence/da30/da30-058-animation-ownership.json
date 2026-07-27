@@ -1,0 +1,40 @@
+{
+  "ok": true,
+  "cases": [
+    {
+      "id": "authored-frame",
+      "passed": true,
+      "detail": "frame image 1"
+    },
+    {
+      "id": "no-loop-holds",
+      "passed": true,
+      "detail": "action 200 holds last"
+    },
+    {
+      "id": "palette-choice",
+      "passed": true,
+      "detail": "palette 3 legal"
+    },
+    {
+      "id": "effect-sprite-bank",
+      "passed": true,
+      "detail": "effect bank present"
+    },
+    {
+      "id": "shadow-order",
+      "passed": true,
+      "detail": "shadow draw enabled"
+    },
+    {
+      "id": "missing-group",
+      "passed": true,
+      "detail": "missing group fails lookup"
+    },
+    {
+      "id": "reset-action-0",
+      "passed": true,
+      "detail": "reset to first frame"
+    }
+  ]
+}

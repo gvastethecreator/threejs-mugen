@@ -1,0 +1,47 @@
+{
+  "schema": "Da30PlayableSandboxMatrix/v1",
+  "ok": true,
+  "headSha": "50c5cb53bdd6cac4912e3a696aa2438f16127ba6",
+  "lanes": [
+    {
+      "id": "selection",
+      "passed": true
+    },
+    {
+      "id": "team-route",
+      "passed": true
+    },
+    {
+      "id": "fightscreen",
+      "passed": true
+    },
+    {
+      "id": "audio-signal",
+      "passed": true
+    },
+    {
+      "id": "camera",
+      "passed": true
+    },
+    {
+      "id": "reset-ledger",
+      "passed": true
+    },
+    {
+      "id": "frame-gap-hook",
+      "passed": true,
+      "detail": "measured separately DA30-027"
+    },
+    {
+      "id": "renderer-resources",
+      "passed": true,
+      "detail": "measured separately DA30-028/029"
+    },
+    {
+      "id": "zero-unexpected-errors",
+      "passed": true,
+      "detail": "unit path clean"
+    }
+  ],
+  "claimCeiling": "playable sandbox milestone only; not MUGEN/IKEMEN parity or score movement"
+}

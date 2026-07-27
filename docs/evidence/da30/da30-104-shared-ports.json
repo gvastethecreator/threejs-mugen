@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "ports": [
+    "clock",
+    "input",
+    "renderer",
+    "storage",
+    "evidence",
+    "lifecycle"
+  ],
+  "lifecycle": true
+}

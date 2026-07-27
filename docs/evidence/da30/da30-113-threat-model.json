@@ -1,0 +1,59 @@
+{
+  "schema": "Da30ThreatModelPlan/v1",
+  "rows": [
+    {
+      "zone": "browser",
+      "asset": "project files",
+      "threat": "path traversal on import",
+      "control": "ArchivePathPolicy",
+      "residual": "zip bomb CPU",
+      "releaseBlocker": true
+    },
+    {
+      "zone": "browser",
+      "asset": "secrets",
+      "threat": "env leak in bundle",
+      "control": "no server secrets in vite",
+      "residual": "user pastes key",
+      "releaseBlocker": true
+    },
+    {
+      "zone": "worker",
+      "asset": "scanner",
+      "threat": "malformed package crash",
+      "control": "ScannerSafetyLimits",
+      "residual": "timeout DoS",
+      "releaseBlocker": false
+    },
+    {
+      "zone": "modules",
+      "asset": "lua/ext",
+      "threat": "code exec",
+      "control": "deny/isolate default",
+      "residual": "future host bugs",
+      "releaseBlocker": true
+    },
+    {
+      "zone": "export",
+      "asset": "bundle",
+      "threat": "tampered evidence",
+      "control": "ReleaseDecisionGate digests",
+      "residual": "offline edit",
+      "releaseBlocker": true
+    },
+    {
+      "zone": "deps",
+      "asset": "npm",
+      "threat": "supply chain",
+      "control": "lockfile + audit lane",
+      "residual": "zero-day",
+      "releaseBlocker": false
+    }
+  ],
+  "logging": [
+    "local diagnostics only",
+    "no PII default"
+  ],
+  "disclosure": "security@local-project — coordinated",
+  "ok": true
+}

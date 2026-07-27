@@ -1,0 +1,68 @@
+{
+  "ok": true,
+  "events": [
+    {
+      "kind": "stale-base",
+      "baseRev": 1,
+      "incomingRev": 3,
+      "choice": "retry",
+      "preserved": true
+    },
+    {
+      "kind": "parallel-tab",
+      "baseRev": 1,
+      "incomingRev": 1,
+      "choice": "keep-local",
+      "preserved": true
+    },
+    {
+      "kind": "external-file",
+      "baseRev": 1,
+      "incomingRev": 1,
+      "choice": "retry",
+      "preserved": true
+    },
+    {
+      "kind": "partial-asset",
+      "baseRev": 1,
+      "incomingRev": 1,
+      "choice": "retry",
+      "preserved": true
+    },
+    {
+      "kind": "autosave",
+      "baseRev": 1,
+      "incomingRev": 1,
+      "choice": "retry",
+      "preserved": true
+    },
+    {
+      "kind": "retry",
+      "baseRev": 1,
+      "incomingRev": 1,
+      "choice": "retry",
+      "preserved": true
+    },
+    {
+      "kind": "discard",
+      "baseRev": 1,
+      "incomingRev": 1,
+      "choice": "discard",
+      "preserved": false
+    },
+    {
+      "kind": "export-copy",
+      "baseRev": 1,
+      "incomingRev": 1,
+      "choice": "export-copy",
+      "preserved": true
+    },
+    {
+      "kind": "reopen",
+      "baseRev": 1,
+      "incomingRev": 1,
+      "choice": "retry",
+      "preserved": true
+    }
+  ]
+}

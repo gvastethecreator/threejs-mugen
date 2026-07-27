@@ -1,0 +1,29 @@
+{
+  "ok": true,
+  "modes": [
+    {
+      "mode": "single",
+      "handoff": true,
+      "singleUnchanged": true,
+      "inputOwner": "nova"
+    },
+    {
+      "mode": "simul",
+      "handoff": true,
+      "singleUnchanged": true,
+      "inputOwner": "nova"
+    },
+    {
+      "mode": "tag",
+      "handoff": true,
+      "singleUnchanged": true,
+      "inputOwner": "nova"
+    },
+    {
+      "mode": "turns",
+      "handoff": true,
+      "singleUnchanged": true,
+      "inputOwner": "nova"
+    }
+  ]
+}

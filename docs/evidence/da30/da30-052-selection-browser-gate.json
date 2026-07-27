@@ -1,0 +1,139 @@
+{
+  "schema": "Da30SelectionBrowserGate/v1",
+  "id": "DA30-052",
+  "generatedAt": "2026-07-27T14:03:06.524Z",
+  "headSha": "50c5cb53bdd6cac4912e3a696aa2438f16127ba6",
+  "ok": true,
+  "playUrl": "/",
+  "lanes": [
+    {
+      "id": "desktop-p1-select-present",
+      "passed": true
+    },
+    {
+      "id": "desktop-p1-options",
+      "passed": true,
+      "detail": [
+        "Nova Boxer",
+        "Mira Volt",
+        "Rook Apprentice"
+      ]
+    },
+    {
+      "id": "desktop-p1-change",
+      "passed": true,
+      "detail": "mira-volt"
+    },
+    {
+      "id": "desktop-p1-back-preserve",
+      "passed": true,
+      "detail": "nova-boxer"
+    },
+    {
+      "id": "desktop-p2-change",
+      "passed": true
+    },
+    {
+      "id": "desktop-stage-set",
+      "passed": true
+    },
+    {
+      "id": "desktop-team-tag",
+      "passed": true
+    },
+    {
+      "id": "desktop-team-back-single",
+      "passed": true
+    },
+    {
+      "id": "desktop-keyboard-tab",
+      "passed": true
+    },
+    {
+      "id": "desktop-screenshot",
+      "passed": true,
+      "detail": "D:\\DEV\\threejs-mugen\\mugen-web-sandbox\\docs\\evidence\\da30\\browser\\selection-desktop.png"
+    },
+    {
+      "id": "desktop-console-clean",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "id": "mobile-p1-select-present",
+      "passed": true
+    },
+    {
+      "id": "mobile-p1-options",
+      "passed": true,
+      "detail": [
+        "Nova Boxer",
+        "Mira Volt",
+        "Rook Apprentice"
+      ]
+    },
+    {
+      "id": "mobile-p1-change",
+      "passed": true,
+      "detail": "mira-volt"
+    },
+    {
+      "id": "mobile-p1-back-preserve",
+      "passed": true,
+      "detail": "nova-boxer"
+    },
+    {
+      "id": "mobile-p2-change",
+      "passed": true
+    },
+    {
+      "id": "mobile-stage-set",
+      "passed": true
+    },
+    {
+      "id": "mobile-team-tag",
+      "passed": true
+    },
+    {
+      "id": "mobile-team-back-single",
+      "passed": true
+    },
+    {
+      "id": "mobile-keyboard-tab",
+      "passed": true
+    },
+    {
+      "id": "mobile-screenshot",
+      "passed": true,
+      "detail": "D:\\DEV\\threejs-mugen\\mugen-web-sandbox\\docs\\evidence\\da30\\browser\\selection-mobile.png"
+    },
+    {
+      "id": "mobile-console-clean",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "screenshots": [
+    "D:\\DEV\\threejs-mugen\\mugen-web-sandbox\\docs\\evidence\\da30\\browser\\selection-desktop.png",
+    "D:\\DEV\\threejs-mugen\\mugen-web-sandbox\\docs\\evidence\\da30\\browser\\selection-mobile.png"
+  ],
+  "claimCeiling": "one local versus Match Setup selection flow desktop/mobile; not full screenpack select motif",
+  "claims": {
+    "allowed": [
+      "fighter select change",
+      "stage set",
+      "team mode toggle",
+      "keyboard tab sample",
+      "desktop+mobile shells"
+    ],
+    "blocked": [
+      "full motif select screen",
+      "gamepad physical device",
+      "score movement"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "30369fb0622d608af555b468778cab46ab5af64b6ae4af5953137c64d3292922"
+  }
+}

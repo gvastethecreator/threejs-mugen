@@ -1,0 +1,293 @@
+{
+  "ok": true,
+  "checks": [
+    {
+      "id": "play/keyboard",
+      "route": "play",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "play/focus-order",
+      "route": "play",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "play/focus-visible",
+      "route": "play",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "play/landmarks",
+      "route": "play",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "play/labels",
+      "route": "play",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "play/names-roles-states",
+      "route": "play",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "play/contrast",
+      "route": "play",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "play/zoom-reflow",
+      "route": "play",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "play/reduced-motion",
+      "route": "play",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "play/status-errors",
+      "route": "play",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "play/canvas-alternative",
+      "route": "play",
+      "passed": true,
+      "detail": "text summary region"
+    },
+    {
+      "id": "play/screen-reader-path",
+      "route": "play",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "select/keyboard",
+      "route": "select",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "select/focus-order",
+      "route": "select",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "select/focus-visible",
+      "route": "select",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "select/landmarks",
+      "route": "select",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "select/labels",
+      "route": "select",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "select/names-roles-states",
+      "route": "select",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "select/contrast",
+      "route": "select",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "select/zoom-reflow",
+      "route": "select",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "select/reduced-motion",
+      "route": "select",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "select/status-errors",
+      "route": "select",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "select/canvas-alternative",
+      "route": "select",
+      "passed": true,
+      "detail": "text summary region"
+    },
+    {
+      "id": "select/screen-reader-path",
+      "route": "select",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "studio/keyboard",
+      "route": "studio",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "studio/focus-order",
+      "route": "studio",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "studio/focus-visible",
+      "route": "studio",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "studio/landmarks",
+      "route": "studio",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "studio/labels",
+      "route": "studio",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "studio/names-roles-states",
+      "route": "studio",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "studio/contrast",
+      "route": "studio",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "studio/zoom-reflow",
+      "route": "studio",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "studio/reduced-motion",
+      "route": "studio",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "studio/status-errors",
+      "route": "studio",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "studio/canvas-alternative",
+      "route": "studio",
+      "passed": true,
+      "detail": "text summary region"
+    },
+    {
+      "id": "studio/screen-reader-path",
+      "route": "studio",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "platformer/keyboard",
+      "route": "platformer",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "platformer/focus-order",
+      "route": "platformer",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "platformer/focus-visible",
+      "route": "platformer",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "platformer/landmarks",
+      "route": "platformer",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "platformer/labels",
+      "route": "platformer",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "platformer/names-roles-states",
+      "route": "platformer",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "platformer/contrast",
+      "route": "platformer",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "platformer/zoom-reflow",
+      "route": "platformer",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "platformer/reduced-motion",
+      "route": "platformer",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "platformer/status-errors",
+      "route": "platformer",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "id": "platformer/canvas-alternative",
+      "route": "platformer",
+      "passed": true,
+      "detail": "text summary region"
+    },
+    {
+      "id": "platformer/screen-reader-path",
+      "route": "platformer",
+      "passed": true,
+      "detail": "ok"
+    }
+  ]
+}

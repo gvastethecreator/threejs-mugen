@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "routes": [
+    {
+      "id": "State 5050",
+      "source": "common",
+      "digest": "common:State 5050",
+      "profile": "mugen",
+      "ok": true
+    },
+    {
+      "id": "FightFX spark",
+      "source": "fightfx",
+      "digest": "fx:FightFX spark",
+      "profile": "mugen",
+      "ok": true
+    },
+    {
+      "id": "Common.Fx hit",
+      "source": "common",
+      "digest": "common:Common.Fx hit",
+      "profile": "mugen",
+      "ok": true
+    },
+    {
+      "id": "missing.snd",
+      "source": "missing",
+      "digest": null,
+      "profile": "mugen",
+      "ok": false,
+      "reason": "missing-bank-no-silent-fallback"
+    },
+    {
+      "id": "State 200",
+      "source": "character",
+      "digest": "char:State 200",
+      "profile": "mugen",
+      "ok": true
+    }
+  ],
+  "noSilentFallback": true
+}

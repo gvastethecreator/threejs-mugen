@@ -1,0 +1,118 @@
+{
+  "schema": "Da30MotifFamilyAudit/v1",
+  "rows": [
+    {
+      "family": "system.def motif",
+      "formats": [
+        "def"
+      ],
+      "sections": [
+        "Info",
+        "Files",
+        "Title Info",
+        "Select Info"
+      ],
+      "assets": [
+        "sff",
+        "snd",
+        "fnt"
+      ],
+      "transforms": [
+        "localcoord",
+        "offset"
+      ],
+      "timing": "fade/input windows",
+      "modes": [
+        "title",
+        "select",
+        "versus"
+      ],
+      "scannerState": "partial",
+      "runtimeOwner": "app/motif",
+      "openRisk": "full screenpack fidelity",
+      "extensionLane": "mugen"
+    },
+    {
+      "family": "fight.def lifebar",
+      "formats": [
+        "def"
+      ],
+      "sections": [
+        "Lifebar",
+        "Powerbar",
+        "Face",
+        "Name",
+        "Time"
+      ],
+      "assets": [
+        "sff",
+        "fnt"
+      ],
+      "transforms": [
+        "scale",
+        "offset"
+      ],
+      "timing": "round display",
+      "modes": [
+        "fight"
+      ],
+      "scannerState": "partial",
+      "runtimeOwner": "hud",
+      "openRisk": "team slots",
+      "extensionLane": "mugen"
+    },
+    {
+      "family": "storyboard",
+      "formats": [
+        "def",
+        "air"
+      ],
+      "sections": [
+        "SceneDef",
+        "Scene"
+      ],
+      "assets": [
+        "sff",
+        "snd"
+      ],
+      "transforms": [
+        "layer order"
+      ],
+      "timing": "scene duration",
+      "modes": [
+        "intro",
+        "ending"
+      ],
+      "scannerState": "recognized",
+      "runtimeOwner": "storyboard",
+      "openRisk": "ikemen extensions",
+      "extensionLane": "both"
+    },
+    {
+      "family": "ikemen screenpack ext",
+      "formats": [
+        "def",
+        "zss"
+      ],
+      "sections": [
+        "ext.*"
+      ],
+      "assets": [
+        "lua?",
+        "external"
+      ],
+      "transforms": [
+        "module hooks"
+      ],
+      "timing": "unknown",
+      "modes": [
+        "title+"
+      ],
+      "scannerState": "unknown",
+      "runtimeOwner": "blocked",
+      "openRisk": "lua host",
+      "extensionLane": "ikemen"
+    }
+  ],
+  "ok": true
+}

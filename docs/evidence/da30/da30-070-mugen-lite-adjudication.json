@@ -1,0 +1,35 @@
+{
+  "schema": "Da30MugenLiteAdjudication/v1",
+  "ok": true,
+  "headSha": "50c5cb53bdd6cac4912e3a696aa2438f16127ba6",
+  "denominators": {
+    "corpusRows": 8,
+    "heavyFamilies": 12,
+    "mutationCases": 12,
+    "stageCases": 17,
+    "playLanes": 9
+  },
+  "acceptedClaims": [
+    "corpus-inventory",
+    "unsupported-heavy-fixtures",
+    "parser-mutation-resilience",
+    "stage-breadth-named",
+    "playable-sandbox-matrix"
+  ],
+  "rejectedClaims": [
+    "full-mugen-parity",
+    "ikemen-parity",
+    "score-movement",
+    "public-release"
+  ],
+  "gaps": [
+    "performance-not-in-this-cut",
+    "commercial-corpus-excluded"
+  ],
+  "scoresHeld": true,
+  "nextQueueHint": [
+    "DA30-071",
+    "studio-storage",
+    "DA30-073-writes"
+  ]
+}

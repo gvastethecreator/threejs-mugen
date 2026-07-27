@@ -1,0 +1,17 @@
+{
+  "ok": true,
+  "cases": [
+    {
+      "id": "happy-owners",
+      "passed": true
+    },
+    {
+      "id": "missing-p1-visible",
+      "passed": true
+    },
+    {
+      "id": "standby-slot",
+      "passed": true
+    }
+  ]
+}

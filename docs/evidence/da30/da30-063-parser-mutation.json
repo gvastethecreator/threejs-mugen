@@ -1,0 +1,114 @@
+{
+  "schema": "Da30ParserMutationCorpus/v1",
+  "cases": [
+    {
+      "id": "casing",
+      "input": "[StAtEdEf]\ntYpe = S\n",
+      "kind": "casing",
+      "diagnostic": null,
+      "crashed": false,
+      "accepted": true
+    },
+    {
+      "id": "whitespace",
+      "input": "  [StateDef]  \n  type   =   S  \n",
+      "kind": "whitespace",
+      "diagnostic": null,
+      "crashed": false,
+      "accepted": true
+    },
+    {
+      "id": "duplicate",
+      "input": "[StateDef]\ntype = S\ntype = C\n",
+      "kind": "duplicates",
+      "diagnostic": null,
+      "crashed": false,
+      "accepted": true
+    },
+    {
+      "id": "empty-section",
+      "input": "[]\n",
+      "kind": "sections",
+      "diagnostic": {
+        "line": 1,
+        "col": 1,
+        "code": "empty-section"
+      },
+      "crashed": false,
+      "accepted": false
+    },
+    {
+      "id": "numbers",
+      "input": "[StateDef]\nvalue = 1e999\n",
+      "kind": "numbers",
+      "diagnostic": null,
+      "crashed": false,
+      "accepted": true
+    },
+    {
+      "id": "strings",
+      "input": "[StateDef]\nname = \"unterminated\n",
+      "kind": "strings",
+      "diagnostic": null,
+      "crashed": false,
+      "accepted": true
+    },
+    {
+      "id": "comments",
+      "input": "[StateDef];comment\ntype = S ; trailing\n",
+      "kind": "comments",
+      "diagnostic": null,
+      "crashed": false,
+      "accepted": true
+    },
+    {
+      "id": "include-like",
+      "input": "#include missing.cns\n[StateDef]\n",
+      "kind": "includes",
+      "diagnostic": null,
+      "crashed": false,
+      "accepted": true
+    },
+    {
+      "id": "redirect",
+      "input": "[StateDef]\ntrigger1 = parent,alive\n",
+      "kind": "redirects",
+      "diagnostic": null,
+      "crashed": false,
+      "accepted": true
+    },
+    {
+      "id": "coercion",
+      "input": "[StateDef]\nvalue = true\n",
+      "kind": "coercion",
+      "diagnostic": null,
+      "crashed": false,
+      "accepted": true
+    },
+    {
+      "id": "nul",
+      "input": "[StateDef]\n\u0000type = S\n",
+      "kind": "malformed-bytes",
+      "diagnostic": {
+        "line": 1,
+        "col": 1,
+        "code": "nul-byte"
+      },
+      "crashed": false,
+      "accepted": false
+    },
+    {
+      "id": "huge-line",
+      "input": "[StateDef]\nvalue = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "kind": "limits",
+      "diagnostic": {
+        "line": 2,
+        "col": 1,
+        "code": "line-too-long"
+      },
+      "crashed": false,
+      "accepted": false
+    }
+  ],
+  "ok": true
+}

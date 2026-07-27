@@ -1,0 +1,83 @@
+{
+  "ok": true,
+  "steps": [
+    {
+      "tool": "crop",
+      "version": "1.0.0",
+      "params": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "inputDigest": "41cf6794ba4200b839c53531555f0f3998df4cbb01a4d5cb0b94e3ca5e23947d",
+      "outputDigest": "a0172a43354ed4be9a8210a2eb06b55d6bd358ea38a373086bd8d694e70afeaf"
+    },
+    {
+      "tool": "resize",
+      "version": "1.0.0",
+      "params": {
+        "w": 128,
+        "h": 128
+      },
+      "inputDigest": "a0172a43354ed4be9a8210a2eb06b55d6bd358ea38a373086bd8d694e70afeaf",
+      "outputDigest": "d6ba706f0d09d684f6c87e1f0d284ae7bf26d7785d077173a95bdb88eeddf461"
+    },
+    {
+      "tool": "palette",
+      "version": "1.0.0",
+      "params": {
+        "act": 1
+      },
+      "inputDigest": "d6ba706f0d09d684f6c87e1f0d284ae7bf26d7785d077173a95bdb88eeddf461",
+      "outputDigest": "931415e7ceee1f599f613a1eab892badfb26764f8f7135208d16d083a8d26ed4"
+    },
+    {
+      "tool": "alpha",
+      "version": "1.0.0",
+      "params": {
+        "threshold": 1
+      },
+      "inputDigest": "931415e7ceee1f599f613a1eab892badfb26764f8f7135208d16d083a8d26ed4",
+      "outputDigest": "c81e9e3ace277f61caf7d6e62bcfbe604ab1ef05e6114b8b1969433b9489bbdc"
+    },
+    {
+      "tool": "atlas",
+      "version": "1.0.0",
+      "params": {
+        "pad": 1
+      },
+      "inputDigest": "c81e9e3ace277f61caf7d6e62bcfbe604ab1ef05e6114b8b1969433b9489bbdc",
+      "outputDigest": "edb9336f8bf0dad6440b462385e6d020da5ff030bab690acf50c0d6a8ca69635"
+    },
+    {
+      "tool": "audio-convert",
+      "version": "1.0.0",
+      "params": {
+        "rate": 44100
+      },
+      "inputDigest": "edb9336f8bf0dad6440b462385e6d020da5ff030bab690acf50c0d6a8ca69635",
+      "outputDigest": "894cfe580a72d33ae17568c349ec3edfc6df83eacd7542f5f38f39ef0f3ddab8"
+    },
+    {
+      "tool": "compress",
+      "version": "1.0.0",
+      "params": {
+        "level": 6
+      },
+      "inputDigest": "894cfe580a72d33ae17568c349ec3edfc6df83eacd7542f5f38f39ef0f3ddab8",
+      "outputDigest": "74d681e39bf9fb712e9242c729f38ff9813d8ae64c88602badc7712646f24788"
+    },
+    {
+      "tool": "generate",
+      "version": "1.0.0",
+      "params": {
+        "seed": 42
+      },
+      "inputDigest": "74d681e39bf9fb712e9242c729f38ff9813d8ae64c88602badc7712646f24788",
+      "outputDigest": "2bbee0031738aea319025d9cc0f002d690ff9e3972b5753f2e6de537767d4a81"
+    }
+  ],
+  "deterministic": true,
+  "nondeterminismDeclared": false
+}

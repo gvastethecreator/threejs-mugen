@@ -1,0 +1,20 @@
+{
+  "schema": "Da30HostedPreviewDesign/v1",
+  "ok": true,
+  "claimsBlocked": [
+    "deployment-occurred",
+    "public-hosting-live"
+  ],
+  "components": [
+    "static-hosting",
+    "csp-headers",
+    "cache-keys",
+    "asset-limits",
+    "privacy-boundary",
+    "artifact-promotion",
+    "preview-isolation",
+    "smoke-status",
+    "rollback",
+    "domain-secret-authority"
+  ]
+}

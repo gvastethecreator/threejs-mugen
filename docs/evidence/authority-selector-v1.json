@@ -1,29 +1,8 @@
 {
   "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
-  "generatedAt": "2026-07-27T13:50:07.963Z",
-  "closedThrough": "DA30-051",
-  "nextQueue": [
-    "DA30-052",
-    "DA30-053",
-    "DA30-054",
-    "DA30-055",
-    "DA30-056",
-    "DA30-057",
-    "DA30-058",
-    "DA30-059",
-    "DA30-060",
-    "DA30-061",
-    "DA30-062",
-    "DA30-063",
-    "DA30-064",
-    "DA30-065",
-    "DA30-066",
-    "DA30-067",
-    "DA30-068",
-    "DA30-069",
-    "DA30-070",
-    "DA30-071"
-  ],
+  "generatedAt": "2026-07-27T14:04:18.950Z",
+  "closedThrough": "DA30-120",
+  "nextQueue": [],
   "scores": {
     "sandbox": "65",
     "mugenLite": "36",
@@ -91,6 +70,6 @@
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "9571ccea4cac3192aca0e61ff1ad71035ca49d124f15339caea048429928c0d0"
+    "value": "e13340d77a28d72a6b710342f160237f805199c8c958e5c612fe18a76083bee7"
   }
 }

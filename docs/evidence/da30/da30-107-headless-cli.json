@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "cases": [
+    {
+      "id": "help",
+      "passed": true
+    },
+    {
+      "id": "version",
+      "passed": true
+    },
+    {
+      "id": "import-ok",
+      "passed": true
+    },
+    {
+      "id": "analyze-json",
+      "passed": true
+    },
+    {
+      "id": "build-ok",
+      "passed": true
+    },
+    {
+      "id": "malformed",
+      "passed": true
+    },
+    {
+      "id": "cancel",
+      "passed": true
+    },
+    {
+      "id": "path-policy",
+      "passed": true
+    },
+    {
+      "id": "no-path",
+      "passed": true
+    }
+  ]
+}

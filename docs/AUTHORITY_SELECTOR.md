@@ -23,7 +23,7 @@ Last updated: 2026-07-27
 Checked control source: [`docs/evidence/control-source-v1.json`](evidence/control-source-v1.json)  
 Projections: [`authority-selector-v1.json`](evidence/authority-selector-v1.json), [`roadmap-cursor-v1.json`](evidence/roadmap-cursor-v1.json)  
 Schema: `mugen-web-sandbox/control-source/v1` → authority-selector + roadmap-cursor  
-`closedThrough`: **DA30-051** · next open consecutive **DA30-052** (browser selection journey)
+`closedThrough`: **DA30-120** · next open consecutive **none** (DA30 recovery series complete at machine watermark)
 
 ## Audit hold (DA29)
 
@@ -65,13 +65,14 @@ Held: **65 / 36 / 20 / 10–12 / 6–8 / 25**
 
 ## Accepted ladder
 
-DA26…DA28-30 historical · **DA30-001…051** consecutive accepted through selection
-state model (includes 039 record/replay, 040 rewind spike, 041–050 combat stack,
-051 selection).  
+DA26…DA28-30 historical · **DA30-001…120** consecutive accepted (machine watermark).
+Recovery modules, browser gates 024–029/052, and pure adjudication cuts close the
+series. Scores remain **held**. DA30-120 releases **local-only** authority — not
+public release.  
 **DA29-001…DA29-200 unadjudicated** (candidate only; pilot revalidation on 012/013/041/072).
 
 ## Next queue
 
-First open consecutive: **DA30-052** (selection in browser). Remainder: 053+
-partially accepted non-consecutively (modes ADR) and open product gates.
+Empty under consecutive watermark **DA30-120**. Next program is post-DA30 depth
+(browser product clauses, independent score movement) — not automatic score change.
 Only `accepted` advances consecutive watermark (DA30-006).

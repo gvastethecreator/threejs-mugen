@@ -1,0 +1,55 @@
+{
+  "ok": true,
+  "results": [
+    {
+      "id": "pack-artifact",
+      "passed": true,
+      "detail": "tarball name stable"
+    },
+    {
+      "id": "clean-install",
+      "passed": true,
+      "detail": "temp consumer install"
+    },
+    {
+      "id": "browser-example",
+      "passed": true,
+      "detail": "platformer route"
+    },
+    {
+      "id": "headless-example",
+      "passed": true,
+      "detail": "cli analyze"
+    },
+    {
+      "id": "reject-private",
+      "passed": true,
+      "detail": "@mugen/internal/combat"
+    },
+    {
+      "id": "exports",
+      "passed": true,
+      "detail": "clock,input,renderer,storage,evidence"
+    },
+    {
+      "id": "types",
+      "passed": true,
+      "detail": "d.ts present"
+    },
+    {
+      "id": "licenses",
+      "passed": true,
+      "detail": "LICENSE copied"
+    },
+    {
+      "id": "uninstall",
+      "passed": true,
+      "detail": "clean remove"
+    },
+    {
+      "id": "digest-repro",
+      "passed": true,
+      "detail": "same pack digest"
+    }
+  ]
+}

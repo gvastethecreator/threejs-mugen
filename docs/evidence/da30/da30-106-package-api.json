@@ -1,0 +1,61 @@
+{
+  "schema": "Da30PackageExtensionApi/v1",
+  "surfaces": [
+    {
+      "name": "@mugen/clock",
+      "visibility": "public",
+      "versioned": true,
+      "capability": "tick",
+      "unstable": false
+    },
+    {
+      "name": "@mugen/input",
+      "visibility": "public",
+      "versioned": true,
+      "capability": "seats",
+      "unstable": false
+    },
+    {
+      "name": "@mugen/renderer",
+      "visibility": "public",
+      "versioned": true,
+      "capability": "frame",
+      "unstable": false
+    },
+    {
+      "name": "@mugen/storage",
+      "visibility": "public",
+      "versioned": true,
+      "capability": "revision",
+      "unstable": false
+    },
+    {
+      "name": "@mugen/evidence",
+      "visibility": "public",
+      "versioned": true,
+      "capability": "facts",
+      "unstable": false
+    },
+    {
+      "name": "@mugen/internal/combat",
+      "visibility": "private",
+      "versioned": false,
+      "capability": "hitdef",
+      "unstable": true
+    },
+    {
+      "name": "@mugen/internal/dispatch",
+      "visibility": "private",
+      "versioned": false,
+      "capability": "controllers",
+      "unstable": true
+    }
+  ],
+  "ok": true,
+  "rules": [
+    "tree-shake public entrypoints",
+    "private imports fail package smoke",
+    "deprecation window for public only",
+    "extension limits: no combat hooks"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "Da30LocalReleaseRehearsal/v1",
+  "ok": true,
+  "steps": [
+    {
+      "id": "clean-checkout",
+      "passed": true
+    },
+    {
+      "id": "build",
+      "passed": true
+    },
+    {
+      "id": "pack",
+      "passed": true
+    },
+    {
+      "id": "import-owned-project",
+      "passed": true
+    },
+    {
+      "id": "browser-smoke",
+      "passed": true
+    },
+    {
+      "id": "cli-smoke",
+      "passed": true
+    },
+    {
+      "id": "licenses",
+      "passed": true
+    },
+    {
+      "id": "sbom",
+      "passed": true
+    },
+    {
+      "id": "provenance",
+      "passed": true
+    },
+    {
+      "id": "sign-local-manifest",
+      "passed": true
+    },
+    {
+      "id": "rollback-test",
+      "passed": true
+    }
+  ],
+  "blockers": [],
+  "warnings": [
+    "scores-held-no-movement",
+    "hosted-preview-not-deployed"
+  ]
+}

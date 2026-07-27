@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "unlocked": true,
+  "nonzeroAfterPlay": true,
+  "missingHandled": true,
+  "koPath": true,
+  "claimBlocked": [
+    "heard-perceptual-parity",
+    "every-device-output"
+  ]
+}

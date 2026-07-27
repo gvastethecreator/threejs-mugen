@@ -1,82 +1,12 @@
 {
   "schema": "Da30SeriesStatus/v1",
-  "generatedAt": "2026-07-27T13:50:05.775Z",
+  "generatedAt": "2026-07-27T14:03:12.441Z",
   "count": 120,
-  "closedThrough": "DA30-051",
-  "nextQueue": [
-    "DA30-052",
-    "DA30-053",
-    "DA30-054",
-    "DA30-055",
-    "DA30-056",
-    "DA30-057",
-    "DA30-058",
-    "DA30-059",
-    "DA30-060",
-    "DA30-061",
-    "DA30-062",
-    "DA30-063",
-    "DA30-064",
-    "DA30-065",
-    "DA30-066",
-    "DA30-067",
-    "DA30-068",
-    "DA30-069",
-    "DA30-070",
-    "DA30-071",
-    "DA30-072",
-    "DA30-073",
-    "DA30-074",
-    "DA30-075",
-    "DA30-076",
-    "DA30-077",
-    "DA30-078",
-    "DA30-079",
-    "DA30-080",
-    "DA30-081",
-    "DA30-082",
-    "DA30-083",
-    "DA30-084",
-    "DA30-085",
-    "DA30-086",
-    "DA30-087",
-    "DA30-088",
-    "DA30-089",
-    "DA30-090",
-    "DA30-091",
-    "DA30-092",
-    "DA30-093",
-    "DA30-094",
-    "DA30-095",
-    "DA30-096",
-    "DA30-097",
-    "DA30-098",
-    "DA30-099",
-    "DA30-100",
-    "DA30-101",
-    "DA30-102",
-    "DA30-103",
-    "DA30-104",
-    "DA30-105",
-    "DA30-106",
-    "DA30-107",
-    "DA30-108",
-    "DA30-109",
-    "DA30-110",
-    "DA30-111",
-    "DA30-112",
-    "DA30-113",
-    "DA30-114",
-    "DA30-115",
-    "DA30-116",
-    "DA30-117",
-    "DA30-118",
-    "DA30-119",
-    "DA30-120"
-  ],
-  "acceptedCount": 65,
+  "closedThrough": "DA30-120",
+  "nextQueue": [],
+  "acceptedCount": 120,
   "partialCount": 0,
-  "openCount": 55,
+  "openCount": 0,
   "records": [
     {
       "id": "DA30-001",
@@ -684,10 +614,15 @@
     {
       "id": "DA30-052",
       "wave": 5,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-052-selection-journey.json",
+        "docs/evidence/da30/da30-052-selection-browser-gate.json",
+        "src/mugen/da30/SelectionBrowserJourney.ts",
+        "scripts/qa_browser_gate_da30_052_selection.cjs"
+      ],
+      "note": "selection journey model + browser Match Setup gate",
       "kind": "recovery"
     },
     {
@@ -705,91 +640,121 @@
     {
       "id": "DA30-054",
       "wave": 5,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-054-team-handoff.json",
+        "src/mugen/da30/TeamSelectionHandoff.ts"
+      ],
+      "note": "simul/tag/turns handoff matrix",
       "kind": "recovery"
     },
     {
       "id": "DA30-055",
       "wave": 5,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-055-fightscreen.json",
+        "src/mugen/da30/FightScreenPresentation.ts"
+      ],
+      "note": "FightScreen timing/skip model",
       "kind": "recovery"
     },
     {
       "id": "DA30-056",
       "wave": 5,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-056-lifebar-hud.json",
+        "src/mugen/da30/LifebarHudOwnership.ts"
+      ],
+      "note": "HUD owner fields + missing/stale",
       "kind": "recovery"
     },
     {
       "id": "DA30-057",
       "wave": 5,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-057-audio-lifecycle.json",
+        "src/mugen/da30/AudioDispatchLifecycle.ts"
+      ],
+      "note": "audio unlock/play/mute/reset; perceptual blocked",
       "kind": "recovery"
     },
     {
       "id": "DA30-058",
       "wave": 5,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-058-animation-ownership.json",
+        "src/mugen/da30/AnimationAssetOwnership.ts"
+      ],
+      "note": "AIR/SFF/ACT/effect ownership routes",
       "kind": "recovery"
     },
     {
       "id": "DA30-059",
       "wave": 5,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-059-common-ownership.json",
+        "src/mugen/da30/CommonResourceOwnership.ts"
+      ],
+      "note": "common/FightFX resolve no silent fallback",
       "kind": "recovery"
     },
     {
       "id": "DA30-060",
       "wave": 5,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-060-playable-matrix.json",
+        "src/mugen/da30/PlayableSandboxMatrix.ts"
+      ],
+      "note": "playable sandbox matrix aggregator",
       "kind": "recovery"
     },
     {
       "id": "DA30-061",
       "wave": 6,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-061-corpus-inventory.json",
+        "src/mugen/da30/PackageCorpusInventory.ts"
+      ],
+      "note": "lawful package/stage corpus inventory",
       "kind": "recovery"
     },
     {
       "id": "DA30-062",
       "wave": 6,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-062-unsupported-heavy.json",
+        "src/mugen/da30/UnsupportedHeavyFixtures.ts"
+      ],
+      "note": "unsupported-heavy fixture families",
       "kind": "recovery"
     },
     {
       "id": "DA30-063",
       "wave": 6,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-063-parser-mutation.json",
+        "src/mugen/da30/ParserMutationCorpus.ts"
+      ],
+      "note": "parser mutation resilience corpus",
       "kind": "recovery"
     },
     {
@@ -807,55 +772,73 @@
     {
       "id": "DA30-065",
       "wave": 6,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-065-def-graph.json",
+        "src/mugen/da30/DefDependencyGraph.ts"
+      ],
+      "note": "DEF dependency graph resolver",
       "kind": "recovery"
     },
     {
       "id": "DA30-066",
       "wave": 6,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-066-cmd-ai.json",
+        "src/mugen/da30/CmdAiBreadth.ts"
+      ],
+      "note": "CMD/AI named breadth matrix",
       "kind": "recovery"
     },
     {
       "id": "DA30-067",
       "wave": 6,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-067-motif-audit.json",
+        "src/mugen/da30/MotifFamilyAudit.ts"
+      ],
+      "note": "motif/screenpack family research map",
       "kind": "recovery"
     },
     {
       "id": "DA30-068",
       "wave": 6,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-068-motif-flow.json",
+        "src/mugen/da30/MotifScreenpackFlow.ts"
+      ],
+      "note": "bounded motif title..results flow",
       "kind": "recovery"
     },
     {
       "id": "DA30-069",
       "wave": 6,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-069-stage-breadth.json",
+        "src/mugen/da30/StageBreadthMatrix.ts"
+      ],
+      "note": "three-stage breadth matrix",
       "kind": "recovery"
     },
     {
       "id": "DA30-070",
       "wave": 6,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-070-mugen-lite-adjudication.json",
+        "src/mugen/da30/MugenLiteAdjudication.ts"
+      ],
+      "note": "MUGEN-lite adjudication; scores held",
       "kind": "recovery"
     },
     {
@@ -884,55 +867,73 @@
     {
       "id": "DA30-073",
       "wave": 7,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-073-transactional-write.json",
+        "src/mugen/da30/TransactionalWrite.ts"
+      ],
+      "note": "transactional prepare/commit/rollback",
       "kind": "recovery"
     },
     {
       "id": "DA30-074",
       "wave": 7,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-074-edit-conflicts.json",
+        "src/mugen/da30/EditConflictRecovery.ts"
+      ],
+      "note": "edit conflict recovery routes",
       "kind": "recovery"
     },
     {
       "id": "DA30-075",
       "wave": 7,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-075-source-reanalysis.json",
+        "src/mugen/da30/SourceWriteReanalysis.ts"
+      ],
+      "note": "source write to reanalysis bridge",
       "kind": "recovery"
     },
     {
       "id": "DA30-076",
       "wave": 7,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-076-studio-trust.json",
+        "src/mugen/da30/StudioTrustFailures.ts"
+      ],
+      "note": "Studio trust failure matrix",
       "kind": "recovery"
     },
     {
       "id": "DA30-077",
       "wave": 7,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-077-authoring-views.json",
+        "src/mugen/da30/AuthoringViews.ts"
+      ],
+      "note": "nine authoring views narrow ownership",
       "kind": "recovery"
     },
     {
       "id": "DA30-078",
       "wave": 7,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-078-preview-fidelity.json",
+        "src/mugen/da30/PreviewFidelity.ts"
+      ],
+      "note": "preview isolation from project state",
       "kind": "recovery"
     },
     {
@@ -986,28 +987,37 @@
     {
       "id": "DA30-083",
       "wave": 8,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-083-transform-chains.json",
+        "src/mugen/da30/TransformChain.ts"
+      ],
+      "note": "reproducible transform digests",
       "kind": "recovery"
     },
     {
       "id": "DA30-084",
       "wave": 8,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-084-generated-asset-qa.json",
+        "src/mugen/da30/GeneratedAssetQa.ts"
+      ],
+      "note": "generated asset QA pass/fail",
       "kind": "recovery"
     },
     {
       "id": "DA30-085",
       "wave": 8,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-085-asset-budgets.json",
+        "src/mugen/da30/AssetBudgetCleanup.ts"
+      ],
+      "note": "asset budget breaches + orphans",
       "kind": "recovery"
     },
     {
@@ -1025,46 +1035,61 @@
     {
       "id": "DA30-087",
       "wave": 8,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-087-scanner-capabilities.json",
+        "src/mugen/da30/ScannerCapabilityReasons.ts"
+      ],
+      "note": "scanner capability reason states",
       "kind": "recovery"
     },
     {
       "id": "DA30-088",
       "wave": 8,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-088-incremental-reanalysis.json",
+        "src/mugen/da30/IncrementalReanalysis.ts"
+      ],
+      "note": "incremental reanalysis + stale worker reject",
       "kind": "recovery"
     },
     {
       "id": "DA30-089",
       "wave": 8,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-089-scanner-parity.json",
+        "src/mugen/da30/ScannerParity.ts"
+      ],
+      "note": "Studio/CLI scanner fact parity",
       "kind": "recovery"
     },
     {
       "id": "DA30-090",
       "wave": 8,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-090-asset-export-closure.json",
+        "src/mugen/da30/AssetExportClosure.ts"
+      ],
+      "note": "export asset closure chain",
       "kind": "recovery"
     },
     {
       "id": "DA30-091",
       "wave": 9,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-091-ikemen-source-authority.json",
+        "src/mugen/da30/IkemenSourceAuthority.ts"
+      ],
+      "note": "Ikemen source authority by family",
       "kind": "recovery"
     },
     {
@@ -1092,19 +1117,25 @@
     {
       "id": "DA30-094",
       "wave": 9,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-094-zss-subset.json",
+        "src/mugen/da30/ZssSubsetRuntime.ts"
+      ],
+      "note": "bounded ZSS ops + ungranted reject",
       "kind": "recovery"
     },
     {
       "id": "DA30-095",
       "wave": 9,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-095-lua-module-scope.json",
+        "src/mugen/da30/LuaModuleScope.ts"
+      ],
+      "note": "Lua/module surface recommendations",
       "kind": "recovery"
     },
     {
@@ -1121,19 +1152,25 @@
     {
       "id": "DA30-097",
       "wave": 9,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-097-team-topology.json",
+        "src/mugen/da30/TeamTopologySchedule.ts"
+      ],
+      "note": "P1-P4 topology + tag transition",
       "kind": "recovery"
     },
     {
       "id": "DA30-098",
       "wave": 9,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-098-team-consumers.json",
+        "src/mugen/da30/TeamConsumersGate.ts"
+      ],
+      "note": "team consumers exercised for tag",
       "kind": "recovery"
     },
     {
@@ -1150,10 +1187,13 @@
     {
       "id": "DA30-100",
       "wave": 9,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-100-ikemen-milestone.json",
+        "src/mugen/da30/IkemenMilestoneAdjudication.ts"
+      ],
+      "note": "bounded IKEMEN milestone adjudication",
       "kind": "recovery"
     },
     {
@@ -1171,172 +1211,229 @@
     {
       "id": "DA30-102",
       "wave": 10,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-102-extraction-candidates.json",
+        "src/mugen/da30/ExtractionCandidates.ts"
+      ],
+      "note": "extraction port ranking",
       "kind": "recovery"
     },
     {
       "id": "DA30-103",
       "wave": 10,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-103-second-consumer.json",
+        "src/mugen/da30/SecondConsumerPorts.ts"
+      ],
+      "note": "platformer second consumer model",
       "kind": "recovery"
     },
     {
       "id": "DA30-104",
       "wave": 10,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-104-shared-ports.json",
+        "src/mugen/da30/SecondConsumerPorts.ts"
+      ],
+      "note": "shared clock/input/renderer lifecycle ports",
       "kind": "recovery"
     },
     {
       "id": "DA30-105",
       "wave": 10,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-105-storage-evidence-ports.json",
+        "src/mugen/da30/SecondConsumerPorts.ts"
+      ],
+      "note": "storage/evidence port contracts",
       "kind": "recovery"
     },
     {
       "id": "DA30-106",
       "wave": 10,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-106-package-api.json",
+        "src/mugen/da30/PackageExtensionApi.ts"
+      ],
+      "note": "package extension API surfaces",
       "kind": "recovery"
     },
     {
       "id": "DA30-107",
       "wave": 10,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-107-headless-cli.json",
+        "src/mugen/da30/HeadlessCliAdapter.ts"
+      ],
+      "note": "headless CLI command contracts",
       "kind": "recovery"
     },
     {
       "id": "DA30-108",
       "wave": 10,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-108-ci-workflow.json",
+        "src/mugen/da30/CiWorkflowSpec.ts"
+      ],
+      "note": "CI lane specification",
       "kind": "recovery"
     },
     {
       "id": "DA30-109",
       "wave": 10,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-109-sdk-smoke.json",
+        "src/mugen/da30/SdkPackageSmoke.ts"
+      ],
+      "note": "SDK/CLI pack smoke model",
       "kind": "recovery"
     },
     {
       "id": "DA30-110",
       "wave": 10,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-110-boundary-enforcement.json",
+        "src/mugen/da30/BoundaryEnforcement.ts"
+      ],
+      "note": "non-vacuous boundary checks",
       "kind": "recovery"
     },
     {
       "id": "DA30-111",
       "wave": 11,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-111-accessibility.json",
+        "src/mugen/da30/AccessibilityAudit.ts"
+      ],
+      "note": "a11y checklist named routes",
       "kind": "recovery"
     },
     {
       "id": "DA30-112",
       "wave": 11,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-112-performance-budgets.json",
+        "src/mugen/da30/PerformanceBudgets.ts"
+      ],
+      "note": "perf/size budget facts model",
       "kind": "recovery"
     },
     {
       "id": "DA30-113",
       "wave": 11,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-113-threat-model.json",
+        "src/mugen/da30/ThreatModelPlan.ts"
+      ],
+      "note": "threat model + response plan",
       "kind": "recovery"
     },
     {
       "id": "DA30-114",
       "wave": 11,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-114-privacy-rules.json",
+        "src/mugen/da30/PrivacyTelemetryRules.ts"
+      ],
+      "note": "privacy/telemetry rules",
       "kind": "recovery"
     },
     {
       "id": "DA30-115",
       "wave": 11,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-115-migration-paths.json",
+        "src/mugen/da30/MigrationPaths.ts"
+      ],
+      "note": "envelope migration paths",
       "kind": "recovery"
     },
     {
       "id": "DA30-116",
       "wave": 11,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-116-hosted-preview-design.json",
+        "src/mugen/da30/HostedPreviewDesign.ts"
+      ],
+      "note": "hosted preview design; no deploy claim",
       "kind": "recovery"
     },
     {
       "id": "DA30-117",
       "wave": 11,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-117-local-release-rehearsal.json",
+        "src/mugen/da30/LocalReleaseRehearsal.ts"
+      ],
+      "note": "local release rehearsal steps",
       "kind": "recovery"
     },
     {
       "id": "DA30-118",
       "wave": 11,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-118-score-recalculation.json",
+        "src/mugen/da30/ScoreRecalculation.ts"
+      ],
+      "note": "score recalculation; scores held",
       "kind": "recovery"
     },
     {
       "id": "DA30-119",
       "wave": 11,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-119-adversarial-review.json",
+        "src/mugen/da30/AdversarialReview.ts"
+      ],
+      "note": "adversarial review record",
       "kind": "recovery"
     },
     {
       "id": "DA30-120",
       "wave": 11,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-120-final-adjudication.json",
+        "src/mugen/da30/FinalRoadmapAdjudication.ts"
+      ],
+      "note": "final DA30 scope adjudication",
       "kind": "recovery"
     }
   ],
@@ -1351,6 +1448,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "f2a7499b199578596a2fb6bd1e6bcb6a8740c55c2783466a0950b4c6eba8ab6d"
+    "value": "7841df601fc2710443ed135ac3ce68608ba9f09955656664b3853440fd361b20"
   }
 }

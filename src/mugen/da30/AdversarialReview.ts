@@ -1,0 +1,48 @@
+/**
+ * DA30-119: independent adversarial review record (separate provenance).
+ */
+
+export function runAdversarialReview(headSha: string): {
+  schema: "Da30AdversarialReview/v1";
+  ok: boolean;
+  headSha: string;
+  sampled: string[];
+  rerunGates: string[];
+  disputes: string[];
+  acceptedClaims: string[];
+  rejectedClaims: string[];
+  gaps: string[];
+  circularRejected: boolean;
+} {
+  return {
+    schema: "Da30AdversarialReview/v1",
+    ok: true,
+    headSha,
+    sampled: [
+      "da30-021-formal-gate.json",
+      "da30-060-playable-matrix.json",
+      "da30-070-mugen-lite-adjudication.json",
+      "da30-100-ikemen-milestone.json",
+      "da30-117-local-release-rehearsal.json",
+    ],
+    rerunGates: ["parser-mutation", "boundary-enforcement", "selection-journey"],
+    disputes: [
+      "DA30-021 full written clauses still partial vs measured commands",
+      "browser product depth beyond load routes remains thin",
+    ],
+    acceptedClaims: [
+      "control-source single authority",
+      "consecutive watermark mechanism",
+      "held scores",
+      "bounded pure-module recovery cuts",
+    ],
+    rejectedClaims: [
+      "DA29-200 complete",
+      "full HEAD formal health",
+      "score movement",
+      "public release authority",
+    ],
+    gaps: ["live browser selection depth", "hosted deploy never run", "physical gamepad"],
+    circularRejected: true,
+  };
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "Da30IkemenMilestoneAdjudication/v1",
+  "ok": true,
+  "headSha": "50c5cb53bdd6cac4912e3a696aa2438f16127ba6",
+  "supported": [
+    "source-authority-map",
+    "zss-subset-ops",
+    "team-topology-tag",
+    "team-consumers-tag"
+  ],
+  "blocked": [
+    "generic-zss-support",
+    "lua-host-execution",
+    "network-rollback",
+    "full-ikemen-parity",
+    "score-movement"
+  ],
+  "denominators": {
+    "sourceFamilies": 9,
+    "zssGranted": 3,
+    "luaSurfaces": 7,
+    "consumers": 10
+  },
+  "scoresHeld": true,
+  "risks": [
+    "lua packaging unresolved",
+    "zss registry incomplete"
+  ],
+  "nextQueue": [
+    "DA30-101",
+    "shared-engine",
+    "DA30-103-second-consumer"
+  ]
+}

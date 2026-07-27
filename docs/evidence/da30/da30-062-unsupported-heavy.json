@@ -1,0 +1,138 @@
+{
+  "schema": "Da30UnsupportedHeavyFixtures/v1",
+  "fixtures": [
+    {
+      "family": "HitDef",
+      "variants": [
+        "valid",
+        "malformed",
+        "unknown",
+        "profile-mismatch"
+      ],
+      "provenance": "repo:fixtures/heavy/hitdef",
+      "path": "docs/evidence/da30/fixtures/heavy/hitdef"
+    },
+    {
+      "family": "Projectile",
+      "variants": [
+        "valid",
+        "malformed",
+        "unknown",
+        "profile-mismatch"
+      ],
+      "provenance": "repo:fixtures/heavy/projectile",
+      "path": "docs/evidence/da30/fixtures/heavy/projectile"
+    },
+    {
+      "family": "Helper",
+      "variants": [
+        "valid",
+        "malformed",
+        "unknown",
+        "profile-mismatch"
+      ],
+      "provenance": "repo:fixtures/heavy/helper",
+      "path": "docs/evidence/da30/fixtures/heavy/helper"
+    },
+    {
+      "family": "Explod",
+      "variants": [
+        "valid",
+        "malformed",
+        "unknown",
+        "profile-mismatch"
+      ],
+      "provenance": "repo:fixtures/heavy/explod",
+      "path": "docs/evidence/da30/fixtures/heavy/explod"
+    },
+    {
+      "family": "ReversalDef",
+      "variants": [
+        "valid",
+        "malformed",
+        "unknown",
+        "profile-mismatch"
+      ],
+      "provenance": "repo:fixtures/heavy/reversaldef",
+      "path": "docs/evidence/da30/fixtures/heavy/reversaldef"
+    },
+    {
+      "family": "HitOverride",
+      "variants": [
+        "valid",
+        "malformed",
+        "unknown",
+        "profile-mismatch"
+      ],
+      "provenance": "repo:fixtures/heavy/hitoverride",
+      "path": "docs/evidence/da30/fixtures/heavy/hitoverride"
+    },
+    {
+      "family": "AssertSpecial",
+      "variants": [
+        "valid",
+        "malformed",
+        "unknown",
+        "profile-mismatch"
+      ],
+      "provenance": "repo:fixtures/heavy/assertspecial",
+      "path": "docs/evidence/da30/fixtures/heavy/assertspecial"
+    },
+    {
+      "family": "VarRange",
+      "variants": [
+        "valid",
+        "malformed",
+        "unknown",
+        "profile-mismatch"
+      ],
+      "provenance": "repo:fixtures/heavy/varrange",
+      "path": "docs/evidence/da30/fixtures/heavy/varrange"
+    },
+    {
+      "family": "Redirect",
+      "variants": [
+        "valid",
+        "malformed",
+        "unknown",
+        "profile-mismatch"
+      ],
+      "provenance": "repo:fixtures/heavy/redirect",
+      "path": "docs/evidence/da30/fixtures/heavy/redirect"
+    },
+    {
+      "family": "ZSS-decl",
+      "variants": [
+        "valid",
+        "malformed",
+        "unknown",
+        "profile-mismatch"
+      ],
+      "provenance": "repo:fixtures/heavy/zss-decl",
+      "path": "docs/evidence/da30/fixtures/heavy/zss-decl"
+    },
+    {
+      "family": "AI-cmd",
+      "variants": [
+        "valid",
+        "malformed",
+        "unknown",
+        "profile-mismatch"
+      ],
+      "provenance": "repo:fixtures/heavy/ai-cmd",
+      "path": "docs/evidence/da30/fixtures/heavy/ai-cmd"
+    },
+    {
+      "family": "BGCtrl",
+      "variants": [
+        "valid",
+        "malformed",
+        "unknown",
+        "profile-mismatch"
+      ],
+      "provenance": "repo:fixtures/heavy/bgctrl",
+      "path": "docs/evidence/da30/fixtures/heavy/bgctrl"
+    }
+  ],
+  "ok": true
+}

@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "results": [
+    {
+      "from": "v0",
+      "to": "v1",
+      "ok": true,
+      "mode": "migrate",
+      "preservedOriginal": true,
+      "detail": "n-1 upgrade"
+    },
+    {
+      "from": "v1",
+      "to": "v1",
+      "ok": true,
+      "mode": "migrate",
+      "preservedOriginal": true,
+      "detail": "noop"
+    },
+    {
+      "from": "v9-future",
+      "to": "v1",
+      "ok": true,
+      "mode": "read-only",
+      "preservedOriginal": true,
+      "detail": "unknown future open read-only"
+    },
+    {
+      "from": "corrupt",
+      "to": "v1",
+      "ok": false,
+      "mode": "fail",
+      "preservedOriginal": true,
+      "detail": "failed migration keeps original"
+    },
+    {
+      "from": "partial",
+      "to": "v1",
+      "ok": false,
+      "mode": "fail",
+      "preservedOriginal": true,
+      "detail": "unsupported"
+    }
+  ]
+}

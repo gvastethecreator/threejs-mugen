@@ -1,0 +1,113 @@
+{
+  "ok": true,
+  "facts": [
+    {
+      "symbol": "Sym0",
+      "state": "recognized",
+      "location": {
+        "file": "char.cns",
+        "line": 1
+      },
+      "owner": "scanner",
+      "registryRevision": 1,
+      "profile": "mugen",
+      "nextAction": "await-parse"
+    },
+    {
+      "symbol": "Sym1",
+      "state": "parsed",
+      "location": {
+        "file": "char.cns",
+        "line": 2
+      },
+      "owner": "scanner",
+      "registryRevision": 1,
+      "profile": "mugen",
+      "nextAction": "await-compile"
+    },
+    {
+      "symbol": "Sym2",
+      "state": "compiled",
+      "location": {
+        "file": "char.cns",
+        "line": 3
+      },
+      "owner": "scanner",
+      "registryRevision": 1,
+      "profile": "mugen",
+      "nextAction": "await-execute-proof"
+    },
+    {
+      "symbol": "Sym3",
+      "state": "executed",
+      "location": {
+        "file": "char.cns",
+        "line": 4
+      },
+      "owner": "scanner",
+      "registryRevision": 1,
+      "profile": "mugen",
+      "nextAction": "none"
+    },
+    {
+      "symbol": "Sym4",
+      "state": "unsupported",
+      "location": {
+        "file": "char.cns",
+        "line": 5
+      },
+      "owner": "scanner",
+      "registryRevision": 1,
+      "profile": "mugen",
+      "nextAction": "document-gap"
+    },
+    {
+      "symbol": "Sym5",
+      "state": "blocked",
+      "location": {
+        "file": "char.cns",
+        "line": 6
+      },
+      "owner": "scanner",
+      "registryRevision": 1,
+      "profile": "mugen",
+      "nextAction": "remove-or-gate"
+    },
+    {
+      "symbol": "Sym6",
+      "state": "unknown",
+      "location": {
+        "file": "char.cns",
+        "line": 7
+      },
+      "owner": "scanner",
+      "registryRevision": 1,
+      "profile": "mugen",
+      "nextAction": "classify"
+    },
+    {
+      "symbol": "Sym7",
+      "state": "profile-only",
+      "location": {
+        "file": "char.cns",
+        "line": 8
+      },
+      "owner": "scanner",
+      "registryRevision": 1,
+      "profile": "ikemen",
+      "nextAction": "switch-profile-or-omit"
+    },
+    {
+      "symbol": "Sym8",
+      "state": "malformed",
+      "location": {
+        "file": "char.cns",
+        "line": 9
+      },
+      "owner": "scanner",
+      "registryRevision": 1,
+      "profile": "mugen",
+      "nextAction": "fix-syntax"
+    }
+  ]
+}

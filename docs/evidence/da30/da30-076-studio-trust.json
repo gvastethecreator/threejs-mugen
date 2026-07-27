@@ -1,0 +1,69 @@
+{
+  "ok": true,
+  "failures": [
+    {
+      "kind": "quota",
+      "item": "item-quota",
+      "cause": "storage-quota-exceeded",
+      "retainedWork": true,
+      "safeAction": "export-copy-then-free-space",
+      "retryable": true
+    },
+    {
+      "kind": "permission",
+      "item": "item-permission",
+      "cause": "file-permission-denied",
+      "retainedWork": true,
+      "safeAction": "re-authorize-folder",
+      "retryable": true
+    },
+    {
+      "kind": "stale-evidence",
+      "item": "item-stale-evidence",
+      "cause": "evidence-older-than-revision",
+      "retainedWork": true,
+      "safeAction": "rerun-scanner",
+      "retryable": true
+    },
+    {
+      "kind": "tampered-evidence",
+      "item": "item-tampered-evidence",
+      "cause": "digest-mismatch",
+      "retainedWork": true,
+      "safeAction": "quarantine-and-rebuild-evidence",
+      "retryable": false
+    },
+    {
+      "kind": "scanner-failure",
+      "item": "item-scanner-failure",
+      "cause": "worker-crash",
+      "retainedWork": true,
+      "safeAction": "retry-bounded-scan",
+      "retryable": true
+    },
+    {
+      "kind": "blocked-asset",
+      "item": "item-blocked-asset",
+      "cause": "permission-exclude",
+      "retainedWork": true,
+      "safeAction": "remove-or-replace-asset",
+      "retryable": false
+    },
+    {
+      "kind": "conflict",
+      "item": "item-conflict",
+      "cause": "parallel-edit",
+      "retainedWork": true,
+      "safeAction": "choose-keep-or-export-copy",
+      "retryable": true
+    },
+    {
+      "kind": "cancellation",
+      "item": "item-cancellation",
+      "cause": "user-cancel",
+      "retainedWork": true,
+      "safeAction": "resume-or-discard-pending",
+      "retryable": true
+    }
+  ]
+}

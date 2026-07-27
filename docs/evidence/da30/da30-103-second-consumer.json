@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "noMugenImport": true,
+  "ports": [
+    "clock",
+    "input",
+    "renderer",
+    "storage",
+    "evidence",
+    "lifecycle"
+  ],
+  "platformerScore": 1
+}

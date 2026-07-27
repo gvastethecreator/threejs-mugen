@@ -1,0 +1,50 @@
+{
+  "ok": true,
+  "cases": [
+    {
+      "id": "parse-motion",
+      "passed": true,
+      "detail": "~D, DF, F, X"
+    },
+    {
+      "id": "hold",
+      "passed": true,
+      "detail": "held block"
+    },
+    {
+      "id": "release-priority",
+      "passed": true,
+      "detail": "2"
+    },
+    {
+      "id": "ai-random-stream",
+      "passed": true,
+      "detail": "200,210"
+    },
+    {
+      "id": "empty-cmd",
+      "passed": true,
+      "detail": "empty accepted as blank"
+    },
+    {
+      "id": "ai-level0-deterministic",
+      "passed": true,
+      "detail": "level0 first option"
+    },
+    {
+      "id": "pause-no-ai",
+      "passed": true,
+      "detail": "pause freezes choice externally"
+    },
+    {
+      "id": "reset-buffer",
+      "passed": true,
+      "detail": "reset"
+    },
+    {
+      "id": "replay-seed",
+      "passed": true,
+      "detail": "same seed same stream by construction"
+    }
+  ]
+}

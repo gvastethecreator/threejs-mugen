@@ -1,0 +1,211 @@
+{
+  "ok": true,
+  "journey": {
+    "schema": "Da30SelectionBrowserJourney/v1",
+    "state": {
+      "schema": "Da30SelectionState/v1",
+      "seats": {
+        "p1": {
+          "packageId": "nova-boxer",
+          "revision": "r1",
+          "legal": true,
+          "palette": 1,
+          "profile": "mugen"
+        },
+        "p2": {
+          "packageId": "mira-volt",
+          "revision": "r1",
+          "legal": true,
+          "palette": 2
+        }
+      },
+      "stageId": "rooftop-dojo",
+      "stageRevision": "r1"
+    },
+    "history": [
+      {
+        "schema": "Da30SelectionState/v1",
+        "seats": {
+          "p1": null,
+          "p2": null
+        },
+        "stageId": null,
+        "stageRevision": null
+      },
+      {
+        "schema": "Da30SelectionState/v1",
+        "seats": {
+          "p1": {
+            "packageId": "nova-boxer",
+            "revision": "r1",
+            "legal": true,
+            "palette": 1,
+            "profile": "mugen"
+          },
+          "p2": null
+        },
+        "stageId": null,
+        "stageRevision": null
+      },
+      {
+        "schema": "Da30SelectionState/v1",
+        "seats": {
+          "p1": {
+            "packageId": "nova-boxer",
+            "revision": "r1",
+            "legal": true,
+            "palette": 1,
+            "profile": "mugen"
+          },
+          "p2": {
+            "packageId": "mira-volt",
+            "revision": "r1",
+            "legal": true,
+            "palette": 2
+          }
+        },
+        "stageId": null,
+        "stageRevision": null
+      },
+      {
+        "schema": "Da30SelectionState/v1",
+        "seats": {
+          "p1": {
+            "packageId": "nova-boxer",
+            "revision": "r1",
+            "legal": true,
+            "palette": 1,
+            "profile": "mugen"
+          },
+          "p2": {
+            "packageId": "mira-volt",
+            "revision": "r1",
+            "legal": true,
+            "palette": 2
+          }
+        },
+        "stageId": "rooftop-dojo",
+        "stageRevision": "r1"
+      }
+    ],
+    "steps": [
+      {
+        "action": {
+          "type": "pick",
+          "seat": "p1",
+          "entry": {
+            "packageId": "ghost",
+            "revision": "r0",
+            "legal": false,
+            "blockedReason": "unsupported profile"
+          }
+        },
+        "ok": false,
+        "error": "unsupported profile",
+        "revision": 1
+      },
+      {
+        "action": {
+          "type": "pick",
+          "seat": "p1",
+          "entry": {
+            "packageId": "missing-pack",
+            "revision": "r0",
+            "legal": true,
+            "missing": true
+          }
+        },
+        "ok": false,
+        "error": "missing package",
+        "revision": 2
+      },
+      {
+        "action": {
+          "type": "pick",
+          "seat": "p1",
+          "entry": {
+            "packageId": "nova-boxer",
+            "revision": "r1",
+            "legal": true,
+            "palette": 1,
+            "profile": "mugen"
+          }
+        },
+        "ok": true,
+        "revision": 3
+      },
+      {
+        "action": {
+          "type": "pick",
+          "seat": "p2",
+          "entry": {
+            "packageId": "mira-volt",
+            "revision": "r1",
+            "legal": true,
+            "palette": 2
+          }
+        },
+        "ok": true,
+        "revision": 4
+      },
+      {
+        "action": {
+          "type": "stage",
+          "stageId": "rooftop-dojo",
+          "stageRevision": "r1"
+        },
+        "ok": true,
+        "revision": 5
+      },
+      {
+        "action": {
+          "type": "palette",
+          "seat": "p1",
+          "palette": 3
+        },
+        "ok": true,
+        "revision": 6
+      },
+      {
+        "action": {
+          "type": "order",
+          "seats": [
+            "p2",
+            "p1"
+          ]
+        },
+        "ok": true,
+        "revision": 7
+      },
+      {
+        "action": {
+          "type": "back"
+        },
+        "ok": true,
+        "revision": 8
+      },
+      {
+        "action": {
+          "type": "start"
+        },
+        "ok": true,
+        "revision": 9,
+        "launchIds": [
+          "nova-boxer@r1",
+          "mira-volt@r1",
+          "rooftop-dojo@r1"
+        ]
+      }
+    ],
+    "revision": 9,
+    "seatOrder": [
+      "p2",
+      "p1"
+    ],
+    "started": true,
+    "cancelled": false
+  },
+  "blockedExplained": true,
+  "missingExplained": true,
+  "preservedRevisionOnBack": true
+}

@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "granted": [
+    "let",
+    "if",
+    "map-get"
+  ],
+  "rejected": [
+    "missing-key",
+    "ungranted:call",
+    "ungranted:eval"
+  ],
+  "cases": [
+    {
+      "ok": true,
+      "op": "let",
+      "value": 1
+    },
+    {
+      "ok": true,
+      "op": "if",
+      "value": 2
+    },
+    {
+      "ok": true,
+      "op": "map-get",
+      "value": 9
+    },
+    {
+      "ok": false,
+      "op": "map-get",
+      "error": "missing-key"
+    },
+    {
+      "ok": false,
+      "op": "call",
+      "error": "ungranted:call"
+    },
+    {
+      "ok": false,
+      "op": "eval",
+      "error": "ungranted:eval"
+    }
+  ]
+}

@@ -57,13 +57,25 @@ if (source.seriesHold?.watermarkAccepted === true) fail("DA29 watermark must not
 
 const generatedAt = args["generated-at"] || new Date().toISOString();
 
+function uniqueSorted(values) {
+  return [...new Set(values.map((v) => String(v).trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+}
+
+// Canonical payload must match AuthoritySelector.ts createAuthoritySelectorDocument fields.
+// seriesHold / controlSource are written as non-canonical extras (not in digest).
 const selectorPayload = {
   schemaVersion: "mugen-web-sandbox/authority-selector/v1",
   generatedAt,
   closedThrough: source.closedThrough,
-  nextQueue: [...source.nextQueue],
-  scores: { ...source.scores },
-  seriesHold: source.seriesHold,
+  nextQueue: uniqueSorted(source.nextQueue || []),
+  scores: {
+    sandbox: source.scores.sandbox,
+    mugenLite: source.scores.mugenLite,
+    mugenMvp: source.scores.mugenMvp,
+    mugenFull: source.scores.mugenFull,
+    ikemen: source.scores.ikemen,
+    studio: source.scores.studio,
+  },
   cursors: {
     formal: { ...source.cursors.formal },
     focal: { ...source.cursors.focal },
@@ -76,18 +88,19 @@ const selectorPayload = {
   artifacts: {
     authoritySelectorDoc: "docs/AUTHORITY_SELECTOR.md",
     roadmapCursor: "docs/evidence/roadmap-cursor-v1.json",
-    controlSource: "docs/evidence/control-source-v1.json",
     sourceEpoch: "docs/evidence/source-authority-epoch-v1.json",
     globalCheckpointReport: source.cursors.global.artifact,
   },
   claims: {
-    allowed: [...source.claims.allowed],
-    blocked: [...source.claims.blocked],
+    allowed: uniqueSorted(source.claims.allowed || []),
+    blocked: uniqueSorted(source.claims.blocked || []),
   },
   canonicalization: "stable-json/v0",
 };
 const selectorDoc = {
   ...selectorPayload,
+  seriesHold: source.seriesHold,
+  controlSourceRef: "docs/evidence/control-source-v1.json",
   digest: { algorithm: "sha-256", value: digest(selectorPayload) },
 };
 

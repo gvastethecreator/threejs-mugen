@@ -1,0 +1,64 @@
+{
+  "schema": "Da30CiWorkflowSpec/v1",
+  "runtime": "node-lts-pinned",
+  "lockfile": "pnpm-lock.yaml",
+  "lanes": [
+    {
+      "id": "pr",
+      "steps": [
+        "install-lockfile",
+        "typecheck",
+        "unit",
+        "build",
+        "boundaries",
+        "control-audit",
+        "upload-facts"
+      ],
+      "cacheKeys": [
+        "pnpm-lock",
+        "node-version"
+      ],
+      "fatalWarnings": true
+    },
+    {
+      "id": "nightly",
+      "steps": [
+        "install-lockfile",
+        "typecheck",
+        "unit",
+        "build",
+        "boundaries",
+        "control-audit",
+        "browser-smoke",
+        "upload-facts"
+      ],
+      "cacheKeys": [
+        "pnpm-lock",
+        "node-version",
+        "playwright"
+      ],
+      "fatalWarnings": true
+    },
+    {
+      "id": "release",
+      "steps": [
+        "install-lockfile",
+        "typecheck",
+        "unit",
+        "build",
+        "boundaries",
+        "control-audit",
+        "pack",
+        "sbom",
+        "upload-facts"
+      ],
+      "cacheKeys": [
+        "pnpm-lock",
+        "node-version"
+      ],
+      "fatalWarnings": true
+    }
+  ],
+  "forcedFailureTest": "boundaries-leak-fixture-must-fail",
+  "ok": true
+}

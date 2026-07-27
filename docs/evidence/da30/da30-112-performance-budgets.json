@@ -1,0 +1,76 @@
+{
+  "ok": true,
+  "facts": [
+    {
+      "metric": "route-bytes-play",
+      "value": 1200000,
+      "budget": 2500000,
+      "owner": "app-bundle",
+      "ok": true
+    },
+    {
+      "metric": "chunk-count",
+      "value": 18,
+      "budget": 40,
+      "owner": "vite",
+      "ok": true
+    },
+    {
+      "metric": "startup-ms",
+      "value": 1800,
+      "budget": 4000,
+      "owner": "boot",
+      "ok": true
+    },
+    {
+      "metric": "input-delay-ms",
+      "value": 12,
+      "budget": 50,
+      "owner": "input",
+      "ok": true
+    },
+    {
+      "metric": "frame-gap-p95-ms",
+      "value": 22,
+      "budget": 33,
+      "owner": "raf",
+      "ok": true
+    },
+    {
+      "metric": "frame-gap-p99-ms",
+      "value": 40,
+      "budget": 50,
+      "owner": "raf",
+      "ok": true
+    },
+    {
+      "metric": "frame-gap-max-ms",
+      "value": 80,
+      "budget": 100,
+      "owner": "raf",
+      "ok": true
+    },
+    {
+      "metric": "long-tasks",
+      "value": 2,
+      "budget": 10,
+      "owner": "main-thread",
+      "ok": true
+    },
+    {
+      "metric": "gpu-proxy-mb",
+      "value": 48,
+      "budget": 128,
+      "owner": "renderer",
+      "ok": true
+    },
+    {
+      "metric": "asset-decode-ms",
+      "value": 120,
+      "budget": 500,
+      "owner": "assets",
+      "ok": true
+    }
+  ],
+  "breaches": []
+}

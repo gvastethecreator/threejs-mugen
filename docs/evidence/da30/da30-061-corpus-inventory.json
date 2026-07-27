@@ -1,0 +1,71 @@
+{
+  "schema": "Da30PackageCorpusInventory/v1",
+  "rows": [
+    {
+      "id": "nova-boxer",
+      "class": "repository-authored",
+      "profile": "mugen",
+      "featureDensity": "mid",
+      "route": "play",
+      "permission": "include"
+    },
+    {
+      "id": "mira-volt",
+      "class": "repository-authored",
+      "profile": "mugen",
+      "featureDensity": "mid",
+      "route": "play",
+      "permission": "include"
+    },
+    {
+      "id": "rook-apprentice",
+      "class": "repository-authored",
+      "profile": "mugen",
+      "featureDensity": "mid",
+      "route": "play",
+      "permission": "include"
+    },
+    {
+      "id": "rooftop-dojo",
+      "class": "repository-authored",
+      "profile": "mugen",
+      "featureDensity": "low",
+      "route": "stage",
+      "permission": "include"
+    },
+    {
+      "id": "gen-spark-sheet",
+      "class": "generated",
+      "profile": "sandbox",
+      "featureDensity": "low",
+      "route": "asset",
+      "permission": "include"
+    },
+    {
+      "id": "portable-kfm-style",
+      "class": "portable-legal",
+      "profile": "mugen",
+      "featureDensity": "high",
+      "route": "import-optional",
+      "permission": "metadata-only"
+    },
+    {
+      "id": "user-private-char",
+      "class": "optional-private",
+      "profile": "unknown",
+      "featureDensity": "high",
+      "route": "local-only",
+      "permission": "metadata-only"
+    },
+    {
+      "id": "commercial-sample",
+      "class": "forbidden",
+      "profile": "n/a",
+      "featureDensity": "high",
+      "route": "blocked",
+      "permission": "exclude",
+      "expectedFailure": "license-forbidden"
+    }
+  ],
+  "ok": true
+}

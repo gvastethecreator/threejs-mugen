@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "screens": [
+    "title",
+    "select",
+    "versus",
+    "fight",
+    "results"
+  ],
+  "missingHandled": true,
+  "returnToTitle": true,
+  "mobileFit": true
+}

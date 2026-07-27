@@ -1,0 +1,43 @@
+{
+  "schema": "Da30PrivacyTelemetryRules/v1",
+  "rules": [
+    {
+      "topic": "local-diagnostics",
+      "default": "local-only",
+      "retention": "session",
+      "redaction": "paths"
+    },
+    {
+      "topic": "crash-reports",
+      "default": "opt-in",
+      "retention": "30d",
+      "redaction": "user-assets"
+    },
+    {
+      "topic": "telemetry-metrics",
+      "default": "off",
+      "retention": "n/a",
+      "redaction": "all"
+    },
+    {
+      "topic": "prompts-generated",
+      "default": "local-only",
+      "retention": "project",
+      "redaction": "none-local"
+    },
+    {
+      "topic": "hosted-preview",
+      "default": "off",
+      "retention": "n/a",
+      "redaction": "block-upload"
+    },
+    {
+      "topic": "export-delete",
+      "default": "local-only",
+      "retention": "user-controlled",
+      "redaction": "full-delete"
+    }
+  ],
+  "consentRequired": true,
+  "ok": true
+}

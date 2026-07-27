@@ -1,0 +1,157 @@
+{
+  "schema": "Da30IkemenSourceAuthority/v1",
+  "rows": [
+    {
+      "family": "scheduler",
+      "normativePin": "05b7d98a",
+      "workingPin": "4aa0ba38",
+      "files": [
+        "src/system.go"
+      ],
+      "symbols": [
+        "sys"
+      ],
+      "digestRelation": "unknown",
+      "reviewState": "partial",
+      "consumer": "runtime-schedule",
+      "openQuestions": [
+        "frame-perfect order"
+      ]
+    },
+    {
+      "family": "teams",
+      "normativePin": "05b7d98a",
+      "workingPin": "4aa0ba38",
+      "files": [
+        "src/system.go",
+        "src/char.go"
+      ],
+      "symbols": [
+        "TeamMode"
+      ],
+      "digestRelation": "same",
+      "reviewState": "partial",
+      "consumer": "team-runtime",
+      "openQuestions": [
+        "tag input owner"
+      ]
+    },
+    {
+      "family": "triggers",
+      "normativePin": "05b7d98a",
+      "workingPin": "4aa0ba38",
+      "files": [
+        "src/compiler.go"
+      ],
+      "symbols": [
+        "triggerMap"
+      ],
+      "digestRelation": "ahead",
+      "reviewState": "partial",
+      "consumer": "expression",
+      "openQuestions": [
+        "redirect completeness"
+      ]
+    },
+    {
+      "family": "controllers",
+      "normativePin": "05b7d98a",
+      "workingPin": "4aa0ba38",
+      "files": [
+        "src/compiler.go",
+        "src/bytecode.go"
+      ],
+      "symbols": [
+        "StateController"
+      ],
+      "digestRelation": "ahead",
+      "reviewState": "partial",
+      "consumer": "dispatch",
+      "openQuestions": [
+        "rare controllers"
+      ]
+    },
+    {
+      "family": "projectile",
+      "normativePin": "05b7d98a",
+      "workingPin": "4aa0ba38",
+      "files": [
+        "src/char.go"
+      ],
+      "symbols": [
+        "Projectile"
+      ],
+      "digestRelation": "same",
+      "reviewState": "reviewed",
+      "consumer": "projectile-system",
+      "openQuestions": []
+    },
+    {
+      "family": "ZSS",
+      "normativePin": "05b7d98a",
+      "workingPin": "4aa0ba38",
+      "files": [
+        "src/compiler_zss.go"
+      ],
+      "symbols": [
+        "Zss"
+      ],
+      "digestRelation": "unknown",
+      "reviewState": "open",
+      "consumer": "zss-runtime",
+      "openQuestions": [
+        "bounded ops only"
+      ]
+    },
+    {
+      "family": "Lua/modules",
+      "normativePin": "05b7d98a",
+      "workingPin": "4aa0ba38",
+      "files": [
+        "src/script.go"
+      ],
+      "symbols": [
+        "lua"
+      ],
+      "digestRelation": "unknown",
+      "reviewState": "open",
+      "consumer": "blocked",
+      "openQuestions": [
+        "browser host deny"
+      ]
+    },
+    {
+      "family": "config",
+      "normativePin": "05b7d98a",
+      "workingPin": "4aa0ba38",
+      "files": [
+        "src/config.go"
+      ],
+      "symbols": [
+        "Config"
+      ],
+      "digestRelation": "same",
+      "reviewState": "partial",
+      "consumer": "config-loader",
+      "openQuestions": []
+    },
+    {
+      "family": "screenpack",
+      "normativePin": "05b7d98a",
+      "workingPin": "4aa0ba38",
+      "files": [
+        "src/system.go"
+      ],
+      "symbols": [
+        "motif"
+      ],
+      "digestRelation": "diverged",
+      "reviewState": "open",
+      "consumer": "motif",
+      "openQuestions": [
+        "ikemen extensions"
+      ]
+    }
+  ],
+  "ok": true
+}

@@ -1,0 +1,66 @@
+{
+  "ok": true,
+  "exercised": [
+    {
+      "consumer": "input",
+      "exercised": true,
+      "mode": "tag",
+      "note": "input owner follows active"
+    },
+    {
+      "consumer": "commands",
+      "exercised": true,
+      "mode": "tag",
+      "note": "active only"
+    },
+    {
+      "consumer": "effects",
+      "exercised": true,
+      "mode": "tag",
+      "note": "owner side"
+    },
+    {
+      "consumer": "collision",
+      "exercised": true,
+      "mode": "tag",
+      "note": "active hitboxes"
+    },
+    {
+      "consumer": "ko-round",
+      "exercised": true,
+      "mode": "tag",
+      "note": "handoff on KO"
+    },
+    {
+      "consumer": "camera",
+      "exercised": true,
+      "mode": "tag",
+      "note": "follow active pair"
+    },
+    {
+      "consumer": "hud",
+      "exercised": true,
+      "mode": "tag",
+      "note": "team slots"
+    },
+    {
+      "consumer": "audio",
+      "exercised": true,
+      "mode": "tag",
+      "note": "player bank"
+    },
+    {
+      "consumer": "resources",
+      "exercised": true,
+      "mode": "tag",
+      "note": "life/power banks"
+    },
+    {
+      "consumer": "reset",
+      "exercised": true,
+      "mode": "tag",
+      "note": "round reset ledger"
+    }
+  ],
+  "disabled": []
+}

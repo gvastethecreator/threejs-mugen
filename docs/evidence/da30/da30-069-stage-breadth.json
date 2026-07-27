@@ -1,0 +1,95 @@
+{
+  "ok": true,
+  "stages": [
+    "rooftop-dojo",
+    "neon-alley",
+    "training-grid"
+  ],
+  "cases": [
+    {
+      "id": "three-stages",
+      "passed": true,
+      "detail": "rooftop-dojo,neon-alley,training-grid"
+    },
+    {
+      "id": "rooftop-dojo-localcoord",
+      "passed": true,
+      "detail": "320x240"
+    },
+    {
+      "id": "rooftop-dojo-bounds",
+      "passed": true,
+      "detail": "{\"left\":-160,\"right\":160,\"top\":-240,\"bottom\":0}"
+    },
+    {
+      "id": "rooftop-dojo-layers",
+      "passed": true,
+      "detail": "2"
+    },
+    {
+      "id": "neon-alley-localcoord",
+      "passed": true,
+      "detail": "640x480"
+    },
+    {
+      "id": "neon-alley-bounds",
+      "passed": true,
+      "detail": "{\"left\":-280,\"right\":280,\"top\":-400,\"bottom\":0}"
+    },
+    {
+      "id": "neon-alley-layers",
+      "passed": true,
+      "detail": "3"
+    },
+    {
+      "id": "training-grid-localcoord",
+      "passed": true,
+      "detail": "320x240"
+    },
+    {
+      "id": "training-grid-bounds",
+      "passed": true,
+      "detail": "{\"left\":-200,\"right\":200,\"top\":-240,\"bottom\":0}"
+    },
+    {
+      "id": "training-grid-layers",
+      "passed": true,
+      "detail": "1"
+    },
+    {
+      "id": "animated-layer-present",
+      "passed": true,
+      "detail": "neon"
+    },
+    {
+      "id": "parallax-policy",
+      "passed": true,
+      "detail": "0..1"
+    },
+    {
+      "id": "bgctrl-subset",
+      "passed": true,
+      "detail": "neon bgctrl"
+    },
+    {
+      "id": "missing-sound-ok",
+      "passed": true,
+      "detail": "training-grid silent"
+    },
+    {
+      "id": "malformed-bounds-reject",
+      "passed": true,
+      "detail": "all legal"
+    },
+    {
+      "id": "resetBG-hook",
+      "passed": true,
+      "detail": "external reset clears layer time"
+    },
+    {
+      "id": "resize-hook",
+      "passed": true,
+      "detail": "localcoord scales independently"
+    }
+  ]
+}

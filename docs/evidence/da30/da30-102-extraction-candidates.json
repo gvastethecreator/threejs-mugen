@@ -1,0 +1,79 @@
+{
+  "schema": "Da30ExtractionCandidates/v1",
+  "ranked": [
+    {
+      "port": "clock",
+      "coupling": 2,
+      "stability": 9,
+      "migrationRisk": 2,
+      "consumerNeed": 9,
+      "note": "shared tick",
+      "score": 14
+    },
+    {
+      "port": "input",
+      "coupling": 3,
+      "stability": 8,
+      "migrationRisk": 3,
+      "consumerNeed": 9,
+      "note": "seat bindings",
+      "score": 11
+    },
+    {
+      "port": "evidence",
+      "coupling": 3,
+      "stability": 8,
+      "migrationRisk": 3,
+      "consumerNeed": 6,
+      "note": "facts",
+      "score": 8
+    },
+    {
+      "port": "lifecycle",
+      "coupling": 4,
+      "stability": 7,
+      "migrationRisk": 4,
+      "consumerNeed": 8,
+      "note": "mount/teardown",
+      "score": 7
+    },
+    {
+      "port": "storage",
+      "coupling": 4,
+      "stability": 7,
+      "migrationRisk": 4,
+      "consumerNeed": 7,
+      "note": "revision",
+      "score": 6
+    },
+    {
+      "port": "renderer",
+      "coupling": 5,
+      "stability": 6,
+      "migrationRisk": 5,
+      "consumerNeed": 8,
+      "note": "lifecycle",
+      "score": 4
+    },
+    {
+      "port": "asset",
+      "coupling": 6,
+      "stability": 5,
+      "migrationRisk": 6,
+      "consumerNeed": 7,
+      "note": "decode",
+      "score": 0
+    },
+    {
+      "port": "worker",
+      "coupling": 7,
+      "stability": 5,
+      "migrationRisk": 7,
+      "consumerNeed": 5,
+      "note": "scanner",
+      "score": -4
+    }
+  ],
+  "combatRemainsMugenOwned": true,
+  "ok": true
+}

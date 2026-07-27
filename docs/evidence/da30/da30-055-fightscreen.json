@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "phases": [
+    "idle",
+    "fade-in",
+    "shutter",
+    "intro",
+    "fight",
+    "timer-active"
+  ],
+  "skippedIntro": true,
+  "mobileFit": true,
+  "assets": [
+    "fight.def",
+    "system.sff",
+    "fight.snd"
+  ]
+}

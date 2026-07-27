@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "cases": [
+    {
+      "id": "happy-graph",
+      "passed": true
+    },
+    {
+      "id": "cycle",
+      "passed": true,
+      "error": "cycle:a>b>a"
+    },
+    {
+      "id": "traversal",
+      "passed": true,
+      "error": "traversal:../secret.def"
+    },
+    {
+      "id": "missing",
+      "passed": true,
+      "error": "missing:nope"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "pass": {
+    "id": "spark-sheet",
+    "passed": true,
+    "reasons": []
+  },
+  "fail": {
+    "id": "bad",
+    "passed": false,
+    "reasons": [
+      "dimensions",
+      "alpha",
+      "seams",
+      "palette",
+      "animation-timing",
+      "audio-peak",
+      "audio-rms",
+      "provenance",
+      "path",
+      "budget"
+    ]
+  }
+}
