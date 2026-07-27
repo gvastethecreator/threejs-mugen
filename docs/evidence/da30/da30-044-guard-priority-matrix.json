@@ -1,0 +1,68 @@
+{
+  "cases": [
+    {
+      "id": "stand-guard",
+      "passed": true,
+      "detail": {
+        "holdingBack": true,
+        "stateType": "S"
+      }
+    },
+    {
+      "id": "crouch-guard",
+      "passed": true,
+      "detail": {
+        "stateType": "C"
+      }
+    },
+    {
+      "id": "air-guard-flag",
+      "passed": true,
+      "detail": {
+        "stateType": "A",
+        "guardFlag": "A"
+      }
+    },
+    {
+      "id": "chip-damage",
+      "passed": true,
+      "detail": {
+        "kind": "guard",
+        "damage": 6,
+        "kill": true,
+        "pause": 3,
+        "stun": 5,
+        "push": 6,
+        "powerGain": 12
+      }
+    },
+    {
+      "id": "hit-vs-idle-not-guard",
+      "passed": true,
+      "detail": {
+        "kind": "hit",
+        "damage": 40,
+        "kill": true,
+        "pause": 8,
+        "stun": 16,
+        "push": 10,
+        "powerGain": 35
+      }
+    },
+    {
+      "id": "fallen-hit-policy-callable",
+      "passed": true,
+      "detail": {
+        "fallen": true
+      }
+    },
+    {
+      "id": "high-only-flag-standing",
+      "passed": true,
+      "detail": {
+        "missGuardWrongFlag": true
+      }
+    }
+  ],
+  "ok": true
+}

@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "files": [
+    "rook.air",
+    "rook.cmd",
+    "rook.cns",
+    "rook.def"
+  ],
+  "cnsBytes": 852,
+  "novaBytes": 1345,
+  "miraBytes": 1345,
+  "distinctSizeFromNova": true
+}

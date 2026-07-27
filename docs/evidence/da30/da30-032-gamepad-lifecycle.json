@@ -1,0 +1,25 @@
+{
+  "bindings": [
+    {
+      "seat": 1,
+      "gamepadIndex": 1,
+      "mapping": "non-standard",
+      "status": "mapping-failed",
+      "lastButtons": [
+        false
+      ]
+    },
+    {
+      "seat": 2,
+      "gamepadIndex": 2,
+      "mapping": "standard",
+      "status": "active",
+      "lastButtons": []
+    }
+  ],
+  "status": [
+    "P1:mapping-failed#1",
+    "P2:active#2"
+  ],
+  "ok": true
+}

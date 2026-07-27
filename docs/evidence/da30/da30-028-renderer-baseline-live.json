@@ -1,0 +1,148 @@
+{
+  "schema": "Da30RendererBaselineLive/v1",
+  "id": "DA30-028",
+  "generatedAt": "2026-07-27T13:35:41.146Z",
+  "headSha": "c2245fe868d37144823bcb15eeef174372616a16",
+  "ok": true,
+  "routes": [
+    "play",
+    "studio",
+    "inspect",
+    "play-mobile-url",
+    "studio-assets"
+  ],
+  "uniqueUrlCount": 5,
+  "samples": [
+    {
+      "route": "play",
+      "url": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+      "before": {
+        "calls": 63,
+        "triangles": 202,
+        "geometries": 63,
+        "textures": 16,
+        "programs": null
+      },
+      "after": {
+        "calls": 63,
+        "triangles": 202,
+        "geometries": 63,
+        "textures": 16,
+        "programs": null
+      },
+      "delta": {
+        "calls": 0,
+        "triangles": 0,
+        "geometries": 0,
+        "textures": 0
+      },
+      "teardown": "navigated-about-blank"
+    },
+    {
+      "route": "studio",
+      "url": "/?mode=studio&studio=workbench&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+      "before": {
+        "calls": 7,
+        "triangles": 90,
+        "geometries": 7,
+        "textures": 13,
+        "programs": null
+      },
+      "after": {
+        "calls": 7,
+        "triangles": 90,
+        "geometries": 7,
+        "textures": 13,
+        "programs": null
+      },
+      "delta": {
+        "calls": 0,
+        "triangles": 0,
+        "geometries": 0,
+        "textures": 0
+      },
+      "teardown": "navigated-about-blank"
+    },
+    {
+      "route": "inspect",
+      "url": "/?mode=inspect&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+      "before": {
+        "calls": 59,
+        "triangles": 118,
+        "geometries": 59,
+        "textures": 0,
+        "programs": null
+      },
+      "after": {
+        "calls": 59,
+        "triangles": 118,
+        "geometries": 59,
+        "textures": 0,
+        "programs": null
+      },
+      "delta": {
+        "calls": 0,
+        "triangles": 0,
+        "geometries": 0,
+        "textures": 0
+      },
+      "teardown": "navigated-about-blank"
+    },
+    {
+      "route": "play-mobile-url",
+      "url": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo&viewport=mobile",
+      "before": {
+        "calls": 63,
+        "triangles": 202,
+        "geometries": 63,
+        "textures": 16,
+        "programs": null
+      },
+      "after": {
+        "calls": 63,
+        "triangles": 202,
+        "geometries": 63,
+        "textures": 16,
+        "programs": null
+      },
+      "delta": {
+        "calls": 0,
+        "triangles": 0,
+        "geometries": 0,
+        "textures": 0
+      },
+      "teardown": "navigated-about-blank"
+    },
+    {
+      "route": "studio-assets",
+      "url": "/?mode=studio&studio=assets&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+      "before": {
+        "calls": 7,
+        "triangles": 90,
+        "geometries": 7,
+        "textures": 13,
+        "programs": null
+      },
+      "after": {
+        "calls": 7,
+        "triangles": 90,
+        "geometries": 7,
+        "textures": 13,
+        "programs": null
+      },
+      "delta": {
+        "calls": 0,
+        "triangles": 0,
+        "geometries": 0,
+        "textures": 0
+      },
+      "teardown": "navigated-about-blank"
+    }
+  ],
+  "autoResetNote": "renderer.info sampled via getDiagnostics; autoReset policy not mutated",
+  "claimCeiling": "route resource facts only; dispose API not asserted",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "6b520cc270514cd7083fd17ebb2903af5848b2c3cf86d627ed2065fbab89a636"
+  }
+}

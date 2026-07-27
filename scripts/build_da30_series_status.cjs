@@ -56,6 +56,51 @@ const PROOF = {
     ],
     note: "Studio workbench + Inspect browser journeys",
   },
+  "DA30-026": {
+    status: "accepted",
+    artifacts: [
+      "docs/evidence/da30/da30-026-input-matrix-gate.json",
+      "docs/evidence/da30/browser/input-matrix-desktop.png",
+      "docs/evidence/da30/browser/input-matrix-mobile.png",
+      "scripts/qa_browser_gate_da30_026_input_matrix.cjs",
+    ],
+    note: "keyboard/focus/touch/reduced-motion/simulated gamepad matrix",
+  },
+  "DA30-032": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-032-gamepad-lifecycle.json", "src/mugen/da30/GamepadLifecycle.ts"],
+    note: "gamepad lifecycle pure model",
+  },
+  "DA30-033": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-033-socd-profile-store.json", "src/mugen/da30/SocdProfileStore.ts"],
+    note: "SOCD profile persistence by seat",
+  },
+  "DA30-036": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-036-clock-domain-audit.json", "src/mugen/da30/ClockDomainAudit.ts"],
+    note: "clock domain research inventory",
+  },
+  "DA30-042": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-042-mira-contact.json", "src/mugen/da30/MiraContactRevalidation.ts"],
+    note: "Mira attack vs Nova hit/guard",
+  },
+  "DA30-043": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-043-rook-package.json", "public/characters/rook-apprentice/mugen"],
+    note: "rook package presence and size distinctness",
+  },
+  "DA30-044": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-044-guard-priority-matrix.json", "src/mugen/da30/GuardPriorityMatrix.ts"],
+    note: "guard/chip/priority named cases",
+  },
+  "DA30-049": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-049-round-reset-ledger.json", "src/mugen/da30/RoundResetLedger.ts"],
+    note: "round/match cleanup ledger",
+  },
 
   // Waves 2–11: accepted only with module + evidence on disk + unit coverage
   "DA30-022": {
@@ -143,13 +188,28 @@ const PROOF = {
   },
   "DA30-027": {
     status: "accepted",
-    artifacts: ["docs/evidence/da30/da30-027-frame-gap-harness.json", "src/mugen/da30/FrameGapHarness.ts"],
-    note: "frame-gap harness unit metrics",
+    artifacts: [
+      "docs/evidence/da30/da30-027-frame-gap-live.json",
+      "src/mugen/da30/FrameGapHarness.ts",
+      "scripts/qa_browser_gate_da30_027_028_frame_renderer.cjs",
+    ],
+    note: "live Play frame-gap p50/p95/p99 sample",
+  },
+  "DA30-028": {
+    status: "accepted",
+    artifacts: [
+      "docs/evidence/da30/da30-028-renderer-baseline-live.json",
+      "scripts/qa_browser_gate_da30_027_028_frame_renderer.cjs",
+    ],
+    note: "five-route renderer baselines + blank teardown",
   },
   "DA30-029": {
     status: "accepted",
-    artifacts: ["docs/evidence/da30/da30-029-renderer-lifecycle-checklist.json", "src/mugen/da30/RendererLifecycleChecklist.ts"],
-    note: "renderer lifecycle checklist unit",
+    artifacts: [
+      "docs/evidence/da30/da30-029-renderer-lifecycle-live.json",
+      "src/mugen/da30/RendererLifecycleChecklist.ts",
+    ],
+    note: "route-swap + teardown lifecycle observations",
   },
   "DA30-031": { status: "accepted", artifacts: ["docs/adr/0060-da30-input-authority.md"], note: "input authority ADR" },
   "DA30-035": { status: "accepted", artifacts: ["docs/adr/0061-da30-rng-streams.md"], note: "RNG streams ADR" },
@@ -179,13 +239,8 @@ const PROOF = {
   },
 };
 
-// Partial: live browser/product gates not yet green
-const PARTIAL = {
-  "DA30-028": {
-    artifacts: ["src/game/render/RendererInfoBaseline.ts", "src/tests/RendererInfoBaseline.test.ts"],
-    note: "renderer resource baseline shape; live multi-route open",
-  },
-};
+// Partial: remaining live product gaps
+const PARTIAL = {};
 
 function pad(n) {
   return `DA30-${String(n).padStart(3, "0")}`;

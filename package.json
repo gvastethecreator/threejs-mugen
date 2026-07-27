@@ -40,6 +40,8 @@
     "audit:da30-001-hold": "node scripts/audit_da30_001_hold_references.cjs",
     "qa:browser:da30-024-play": "node scripts/qa_browser_gate_da30_024_play.cjs",
     "qa:browser:da30-025-studio-inspect": "node scripts/qa_browser_gate_da30_025_studio_inspect.cjs",
+    "qa:browser:da30-026-input": "node scripts/qa_browser_gate_da30_026_input_matrix.cjs",
+    "qa:browser:da30-027-028-renderer": "node scripts/qa_browser_gate_da30_027_028_frame_renderer.cjs",
     "materialize:sandbox-fightscreen": "pnpm exec vitest run src/tests/FightScreenFixture.test.ts -t \"materializes the repository public package\"",
     "audit:authority-references": "node scripts/audit_authority_references.cjs",
     "check:boundaries": "node scripts/check_boundaries.cjs",

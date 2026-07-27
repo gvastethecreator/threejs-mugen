@@ -1,22 +1,9 @@
 {
   "schema": "Da30SeriesStatus/v1",
-  "generatedAt": "2026-07-27T07:05:01.714Z",
+  "generatedAt": "2026-07-27T13:35:53.159Z",
   "count": 120,
-  "closedThrough": "DA30-025",
+  "closedThrough": "DA30-038",
   "nextQueue": [
-    "DA30-026",
-    "DA30-027",
-    "DA30-028",
-    "DA30-029",
-    "DA30-030",
-    "DA30-031",
-    "DA30-032",
-    "DA30-033",
-    "DA30-034",
-    "DA30-035",
-    "DA30-036",
-    "DA30-037",
-    "DA30-038",
     "DA30-039",
     "DA30-040",
     "DA30-041",
@@ -100,9 +87,9 @@
     "DA30-119",
     "DA30-120"
   ],
-  "acceptedCount": 51,
-  "partialCount": 1,
-  "openCount": 68,
+  "acceptedCount": 60,
+  "partialCount": 0,
+  "openCount": 60,
   "records": [
     {
       "id": "DA30-001",
@@ -396,10 +383,15 @@
     {
       "id": "DA30-026",
       "wave": 2,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-026-input-matrix-gate.json",
+        "docs/evidence/da30/browser/input-matrix-desktop.png",
+        "docs/evidence/da30/browser/input-matrix-mobile.png",
+        "scripts/qa_browser_gate_da30_026_input_matrix.cjs"
+      ],
+      "note": "keyboard/focus/touch/reduced-motion/simulated gamepad matrix",
       "kind": "recovery"
     },
     {
@@ -408,22 +400,23 @@
       "status": "accepted",
       "evidenceClass": "gate-report",
       "artifacts": [
-        "docs/evidence/da30/da30-027-frame-gap-harness.json",
-        "src/mugen/da30/FrameGapHarness.ts"
+        "docs/evidence/da30/da30-027-frame-gap-live.json",
+        "src/mugen/da30/FrameGapHarness.ts",
+        "scripts/qa_browser_gate_da30_027_028_frame_renderer.cjs"
       ],
-      "note": "frame-gap harness unit metrics",
+      "note": "live Play frame-gap p50/p95/p99 sample",
       "kind": "recovery"
     },
     {
       "id": "DA30-028",
       "wave": 2,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
-        "src/game/render/RendererInfoBaseline.ts",
-        "src/tests/RendererInfoBaseline.test.ts"
+        "docs/evidence/da30/da30-028-renderer-baseline-live.json",
+        "scripts/qa_browser_gate_da30_027_028_frame_renderer.cjs"
       ],
-      "note": "renderer resource baseline shape; live multi-route open",
+      "note": "five-route renderer baselines + blank teardown",
       "kind": "recovery"
     },
     {
@@ -432,10 +425,10 @@
       "status": "accepted",
       "evidenceClass": "gate-report",
       "artifacts": [
-        "docs/evidence/da30/da30-029-renderer-lifecycle-checklist.json",
+        "docs/evidence/da30/da30-029-renderer-lifecycle-live.json",
         "src/mugen/da30/RendererLifecycleChecklist.ts"
       ],
-      "note": "renderer lifecycle checklist unit",
+      "note": "route-swap + teardown lifecycle observations",
       "kind": "recovery"
     },
     {
@@ -465,19 +458,25 @@
     {
       "id": "DA30-032",
       "wave": 3,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-032-gamepad-lifecycle.json",
+        "src/mugen/da30/GamepadLifecycle.ts"
+      ],
+      "note": "gamepad lifecycle pure model",
       "kind": "recovery"
     },
     {
       "id": "DA30-033",
       "wave": 3,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-033-socd-profile-store.json",
+        "src/mugen/da30/SocdProfileStore.ts"
+      ],
+      "note": "SOCD profile persistence by seat",
       "kind": "recovery"
     },
     {
@@ -506,10 +505,13 @@
     {
       "id": "DA30-036",
       "wave": 3,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-036-clock-domain-audit.json",
+        "src/mugen/da30/ClockDomainAudit.ts"
+      ],
+      "note": "clock domain research inventory",
       "kind": "recovery"
     },
     {
@@ -568,28 +570,37 @@
     {
       "id": "DA30-042",
       "wave": 4,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-042-mira-contact.json",
+        "src/mugen/da30/MiraContactRevalidation.ts"
+      ],
+      "note": "Mira attack vs Nova hit/guard",
       "kind": "recovery"
     },
     {
       "id": "DA30-043",
       "wave": 4,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-043-rook-package.json",
+        "public/characters/rook-apprentice/mugen"
+      ],
+      "note": "rook package presence and size distinctness",
       "kind": "recovery"
     },
     {
       "id": "DA30-044",
       "wave": 4,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-044-guard-priority-matrix.json",
+        "src/mugen/da30/GuardPriorityMatrix.ts"
+      ],
+      "note": "guard/chip/priority named cases",
       "kind": "recovery"
     },
     {
@@ -634,10 +645,13 @@
     {
       "id": "DA30-049",
       "wave": 4,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-049-round-reset-ledger.json",
+        "src/mugen/da30/RoundResetLedger.ts"
+      ],
+      "note": "round/match cleanup ledger",
       "kind": "recovery"
     },
     {
@@ -1335,6 +1349,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "7cd9e1b6612e24da304e745c28a50fadff765ed8882f5cf63776ddee5bcbc0de"
+    "value": "c49285d7b88efa4c3efb888952720b5ca43ef594d2aad1fffeff0c8bef588f48"
   }
 }

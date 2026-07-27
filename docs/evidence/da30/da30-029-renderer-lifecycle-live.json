@@ -1,0 +1,31 @@
+{
+  "schema": "Da30RendererLifecycleLive/v1",
+  "id": "DA30-029",
+  "generatedAt": "2026-07-27T13:35:41.148Z",
+  "headSha": "c2245fe868d37144823bcb15eeef174372616a16",
+  "ok": true,
+  "cases": [
+    {
+      "id": "route-swap",
+      "passed": true,
+      "detail": {
+        "uniqueUrlCount": 5
+      }
+    },
+    {
+      "id": "about-blank-teardown",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "id": "metrics-present",
+      "passed": true,
+      "detail": {}
+    }
+  ],
+  "claimCeiling": "tested lifecycle observations only; context-loss not simulated",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "60afa99ef35747ef5df4b9e1c4a2fc5de21909fcf69f0dcf0489e4d7363f4ec1"
+  }
+}

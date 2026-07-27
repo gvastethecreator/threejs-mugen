@@ -1,0 +1,162 @@
+{
+  "schema": "Da30InputMatrixGate/v1",
+  "id": "DA30-026",
+  "generatedAt": "2026-07-27T13:34:27.408Z",
+  "headSha": "c2245fe868d37144823bcb15eeef174372616a16",
+  "ok": true,
+  "playUrl": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+  "lanes": [
+    {
+      "id": "tab-order-sample",
+      "passed": true,
+      "detail": {
+        "count": 24,
+        "sample": [
+          {
+            "i": 0,
+            "tag": "a",
+            "name": "Skip to runtime viewport"
+          },
+          {
+            "i": 1,
+            "tag": "button",
+            "name": "Match mode: play. Status: ready"
+          },
+          {
+            "i": 2,
+            "tag": "button",
+            "name": "Inspect mode: import. Status: empty"
+          },
+          {
+            "i": 3,
+            "tag": "button",
+            "name": "Studio mode: build. Status: 5 issues"
+          },
+          {
+            "i": 4,
+            "tag": "button",
+            "name": "Command\n            Jump to any action\n "
+          },
+          {
+            "i": 5,
+            "tag": "button",
+            "name": "Reset: Restart round"
+          },
+          {
+            "i": 6,
+            "tag": "button",
+            "name": "Inspect: Character data"
+          },
+          {
+            "i": 7,
+            "tag": "button",
+            "name": "Debug: Runtime lens"
+          }
+        ]
+      }
+    },
+    {
+      "id": "focus-loss-recovery",
+      "passed": true,
+      "detail": {
+        "focusedCanvas": true,
+        "afterBlur": "BODY",
+        "afterRecover": "CANVAS"
+      }
+    },
+    {
+      "id": "held-key",
+      "passed": true,
+      "detail": {
+        "key": "d",
+        "heldMs": 250,
+        "sandbox": {
+          "mode": "match",
+          "hasSnapshot": true
+        }
+      }
+    },
+    {
+      "id": "simulated-gamepad-snapshot",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "id": "simulated-standard-gamepad",
+        "pressed0": true
+      }
+    },
+    {
+      "id": "two-seat-keyboard-keys",
+      "passed": true,
+      "detail": {
+        "p1": "a",
+        "p2Candidate": "ArrowLeft"
+      }
+    },
+    {
+      "id": "reduced-motion-query",
+      "passed": true,
+      "detail": {
+        "prefersReducedMotion": false
+      }
+    },
+    {
+      "id": "touch-mobile-chrome",
+      "passed": true,
+      "detail": {
+        "buttonCount": 21,
+        "touchish": 24,
+        "hasCanvas": true,
+        "mentionsControl": true
+      }
+    },
+    {
+      "id": "touch-tap-canvas",
+      "passed": true,
+      "detail": {
+        "x": 0,
+        "y": 44
+      }
+    },
+    {
+      "id": "recovery-reload",
+      "passed": true,
+      "detail": {
+        "recovered": true
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "docs/evidence/da30/browser/input-matrix-desktop.png",
+      "sha256": "5275eff0ee29deed2a5719e8e0ee796b236ca9a513404ad0fef53f1002411a4d",
+      "bytes": 471829
+    },
+    {
+      "path": "docs/evidence/da30/browser/input-matrix-mobile.png",
+      "sha256": "06b95fa316fadc97868eb7c8a609d55fa67c6ed110e2eb43d449e35d09a3dc81",
+      "bytes": 120659
+    }
+  ],
+  "unexpectedConsole": [],
+  "claimCeiling": "tested input/focus/touch/reduced-motion routes on Play only; physical gamepad device not claimed",
+  "claims": {
+    "allowed": [
+      "tab order sample",
+      "focus loss/recovery",
+      "held key",
+      "touch chrome mobile",
+      "reduced motion flag",
+      "simulated gamepad snapshot"
+    ],
+    "blocked": [
+      "every physical gamepad model",
+      "broad mobile UX polish",
+      "score movement"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "3a8069e38817306305b818e4e674d45a296ce7846570e35249ff1f1e9a19abd0"
+  }
+}

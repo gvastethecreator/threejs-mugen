@@ -1,0 +1,32 @@
+{
+  "schema": "Da30FrameGapLive/v1",
+  "id": "DA30-027",
+  "generatedAt": "2026-07-27T13:35:23.393Z",
+  "headSha": "c2245fe868d37144823bcb15eeef174372616a16",
+  "routeId": "play-match",
+  "seed": 1,
+  "warmupFrames": 30,
+  "sampleCount": 120,
+  "p50": 16.700000000000728,
+  "p95": 50,
+  "p99": 50.099999999998545,
+  "max": 50.099999999998545,
+  "fpsEstimate": 39.56217855729926,
+  "longTasksOver50ms": 2,
+  "drawCalls": 63,
+  "browser": "chromium-playwright",
+  "cpuHint": "x64",
+  "gpuHint": "swiftshader",
+  "thresholds": {
+    "p95Ms": 50,
+    "maxMs": 120
+  },
+  "breach": false,
+  "breachOwner": null,
+  "claimCeiling": "measured device/route facts for Play only",
+  "ok": true,
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "4c92e780c6adbb04405e9a0e27fefe6ac5336143d89af18154da0554d08603eb"
+  }
+}
