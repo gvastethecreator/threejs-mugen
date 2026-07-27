@@ -288,6 +288,20 @@ Blocked now:
 - **Delivery:** no current broad visual, accessibility, package, CI, or rollback
   gate supports release readiness.
 
+## Post-audit concurrent state
+
+After the `67481fbc` audit snapshot, another process committed `493dd3e8` and
+`1e491019`. The first adds candidate DA31-001…005 control code, tests, generated
+records, and the audit/roadmap documents. The second commits the human roadmap
+sync from this audit. This automation did not create those commits, run their
+tests, or push them.
+
+The new phase status calls DA31-001…005 accepted and names DA31-006 next. This
+audit preserves that as a machine record. Independent written-clause review is
+still pending. The control source and selector still name DA31-002 while the
+next-build roadmap names DA31-006. Current HEAD is `1e491019`; no formal or
+broad visual gate covers it. The score and compatibility verdicts remain held.
+
 ## Primary sources
 
 - Three.js documents `renderer.info` as a debug and monitoring aid and exposes
@@ -309,6 +323,7 @@ Blocked now:
 
 ## NO CODE CHANGED
 
-This audit changes roadmap, research, and local roadmap task files only. It
-does not change source, runtime, UI, tests, assets, generated control, commits,
-or remote state.
+This automation edited roadmap, research, and local roadmap task files only.
+It did not edit source, runtime, UI, tests, assets, or generated control; it did
+not run a code suite, commit, or push. Concurrent commit `493dd3e8` did add code
+while the audit was running. The audit preserved and excluded that work.

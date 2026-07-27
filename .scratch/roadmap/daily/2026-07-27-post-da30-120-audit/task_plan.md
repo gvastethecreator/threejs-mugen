@@ -36,7 +36,7 @@ roadmap owners and linked issues that need current routing.
 
 ### 5. Verify docs and close
 
-**Status:** in_progress
+**Status:** complete
 
 Run documentation-only structure, whitespace, link, task-ID, changed-path,
 diff-stat, and no-code checks; update automation memory.
@@ -51,10 +51,13 @@ diff-stat, and no-code checks; update automation memory.
 - Existing closed gates are not rebuilt; narrowed or self-attested records are
   revalidated against their original written clauses.
 - Scores remain held unless independent denominator evidence proves movement.
-- Every repo change stays under `docs/` or `.scratch/roadmap/`.
-- No code suite, commit, or push runs.
+- Every edit made by this audit stays under `docs/` or `.scratch/roadmap/`.
+- No code suite, commit, or push runs from this audit.
 
 ## Blockers
 
-- None. Full `pnpm qa:smoke` is recorded open in repo evidence; this audit will
-  not run it because the task is research-only.
+- Full `pnpm qa:smoke` is recorded open in repo evidence; this audit did not
+  run it because the task is research-only.
+- A concurrent process committed DA31-001…005 and this audit's docs. This audit
+  preserved those commits, did not rerun their code checks, and records their
+  phase status as a machine claim pending independent review.

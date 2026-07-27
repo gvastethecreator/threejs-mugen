@@ -2,7 +2,7 @@
 
 ## Current state
 
-- Phase 5 is in progress.
+- Phase 5 is complete.
 - Bootstrap, delta reconstruction, audit, review reconciliation, and roadmap
   writing are complete.
 - Three read-only reviews agreed that DA30-120 is a machine record and scores
@@ -25,10 +25,14 @@
   current overrides in the human roadmap owners, and routing notes in issues
   01…08.
 
-## Verification pending
+## Verification complete
 
-- Run docs-only checks, changed-path proof, diff stat, and planning completion
-  check.
+- Tracked documentation diff passed `git diff --check` before concurrent
+  commits landed.
+- DA31 has 40 unique task definitions from DA31-001 through DA31-040.
+- New local Markdown links resolve and audit-owned files have no trailing
+  whitespace.
+- This audit ran no code suite.
 
 ## Errors and changed approach
 
@@ -37,3 +41,7 @@
 - First module-reference scan counted each module's own file. Re-ran with the
   owner path excluded; no DA30 module has a consumer outside the DA30/test
   island.
+- During final verification, a concurrent process committed `493dd3e8` with
+  DA31-001…005 candidate code and `1e491019` with this audit's document sync.
+  The audit did not create, revert, or push those commits. It updated only docs
+  to record the changed HEAD and the remaining selector/next-task drift.
