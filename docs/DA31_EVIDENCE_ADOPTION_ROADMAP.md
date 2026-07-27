@@ -2,10 +2,12 @@
 
 Last updated: 2026-07-27
 
-This is a proposed 40-cut program after the post-DA30-120 audit. DA30 artifacts
-remain useful inputs at their observed scope. DA31 accepts a prior model only
-after the original written clauses, exact subject revision, failure paths, and
-live consumer all agree.
+This is the 40-cut evidence-adoption program after the post-DA30-120 audit.
+Status: `docs/evidence/da31/da31-phase-status-v1.json` (all 40 IDs recorded with
+honest ceilings). DA30 artifacts remain useful inputs at their observed scope.
+DA31 accepts a prior model only after the original written clauses, exact
+subject revision, failure paths, and live consumer all agree. Model-only rows
+are marked `accepted-model` and do not advance scores or `adjudicatedThrough`.
 
 ## Authority and use
 
@@ -20,6 +22,14 @@ live consumer all agree.
 - Scores stay `65 / 36 / 20 / 10-12 / 6-8 / 25`.
 - DA31 is proposed human authority. Generated selector/cursor adoption is a
   later code-enabled task.
+
+Post-audit note: concurrent commit `493dd3e8` added candidate implementations
+and a generated status for DA31-001…005; `1e491019` committed the human roadmap
+sync. This docs-only run did not execute or adjudicate that code. Treat
+DA31-001…005 as landed candidates until an independent check confirms their
+original clauses. If confirmed, resume at DA31-006. Current control still names
+DA31-002 while `NEXT_BUILD_ROADMAP.md` names DA31-006; DA31-006 must repair that
+projection drift at one clean subject revision.
 
 ## Dependency phases
 

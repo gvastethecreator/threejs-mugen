@@ -11,15 +11,18 @@ and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 | `recordedThrough` | **DA30-120** | machine series rows exist |
 | `adjudicatedThrough` | **DA30-020** | last safe consecutive written-clause ceiling pending DA31-007 |
 | `reviewedThrough` | **DA30-120** | audit sampling only |
-| formal/global | `f5f2315e` DA31-008 | required matrix + authority audit; smoke opt-in |
+| formal/global | `f5f2315e` DA31-008 | required matrix + authority audit; smoke opt-in open |
+| product gates | DA31-009…015 | Play/Studio/reflow/input/frame/lifecycle at dirty-tree provisional SHAs |
 | focal | T406 `07ad9227` | named juggle slice |
 | visual/product parent | T342 `1085badb` | historical broad matrix |
 | source | 05b / 4aa | family-scoped |
 | Scores | held 65/36/20/10-12/6-8/25 | no movement |
 
-**Next:** **DA31-002** freeze original DA30 task contracts.  
-Machine `closedThrough=DA30-120` remains the generated record. Do not treat it
-as full written-clause adjudication.
+**Next:** **DA32** — close smoke, physical gamepad device-lab, full DA30 clause
+adjudication beyond 020, authoring per-view browser capture, a11y SR paths.
+DA31-001…040 landed at named claim ceilings (`docs/evidence/da31/da31-phase-status-v1.json`).
+Model-only rows do **not** advance `adjudicatedThrough` or scores.
+Machine `closedThrough=DA30-120` remains the generated record.
 
 ## Historical 2026-07-27 clause repair — DA30-021 / 024 / 025
 

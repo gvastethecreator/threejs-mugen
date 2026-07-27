@@ -86,10 +86,9 @@
     }
   },
   "next": [
-    "DA31-010",
-    "DA31-011",
-    "DA31-012"
+    "DA32"
   ],
+  "supersededBy": "docs/evidence/da31/da31-phase-status-v1.json",
   "scoresHeld": true,
-  "claimCeiling": "DA31 phase0+009 progress; adjudicatedThrough remains DA30-020; scores held"
+  "claimCeiling": "DA31 phase0+009 archive; full program in da31-phase-status-v1; adjudicatedThrough remains DA30-020; scores held"
 }

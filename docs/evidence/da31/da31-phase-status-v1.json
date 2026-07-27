@@ -1,0 +1,451 @@
+{
+  "schema": "Da31PhaseStatus/v1",
+  "generatedAt": "2026-07-27T18:44:43.214Z",
+  "tasks": {
+    "DA31-001": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/DA31_EVIDENCE_ADOPTION_ROADMAP.md"
+      ],
+      "note": "audit hold",
+      "claimCeiling": "hold only"
+    },
+    "DA31-002": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/evidence/da31/da30-task-contracts-v1.json"
+      ],
+      "note": "contracts frozen",
+      "claimCeiling": "identity only"
+    },
+    "DA31-003": {
+      "status": "accepted",
+      "artifacts": [
+        "src/mugen/da31/DualWatermarkControl.ts"
+      ],
+      "note": "dual watermark",
+      "claimCeiling": "control model"
+    },
+    "DA31-004": {
+      "status": "accepted",
+      "artifacts": [
+        "src/mugen/da31/ClauseVerdict.ts"
+      ],
+      "note": "clause evaluation",
+      "claimCeiling": "row status only"
+    },
+    "DA31-005": {
+      "status": "accepted",
+      "artifacts": [
+        "src/mugen/da31/EvidencePromotion.ts"
+      ],
+      "note": "promotion",
+      "claimCeiling": "hermetic tests"
+    },
+    "DA31-006": {
+      "status": "accepted",
+      "artifacts": [
+        "src/mugen/da31/GateSubjectEnvelope.ts"
+      ],
+      "note": "subject envelope",
+      "claimCeiling": "provisional dirty"
+    },
+    "DA31-007": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/evidence/da31/da30-clause-verdict-ledger-v1.json"
+      ],
+      "note": "120 ledger",
+      "claimCeiling": "row adjudication"
+    },
+    "DA31-008": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/evidence/da31/da31-008-formal-gate.json"
+      ],
+      "note": "formal pin f5f2315e",
+      "claimCeiling": "formal at pin"
+    },
+    "DA31-009": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/evidence/da31/da31-009-play-browser-gate.json"
+      ],
+      "note": "Play journey",
+      "claimCeiling": "two Play routes"
+    },
+    "DA31-010": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/evidence/da31/da31-010-studio-inspect-gate.json",
+        "scripts/qa_browser_gate_da31_010_studio_inspect.cjs"
+      ],
+      "note": "Studio/Inspect desktop+mobile",
+      "claimCeiling": "one named Studio/Inspect process only"
+    },
+    "DA31-011": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/evidence/da31/da31-011-mobile-reflow-gate.json",
+        "scripts/qa_browser_gate_da31_011_mobile_reflow.cjs"
+      ],
+      "note": "reflow 320/390/zoom measured",
+      "claimCeiling": "measured viewport/a11y geometry only"
+    },
+    "DA31-012": {
+      "status": "accepted-simulated",
+      "artifacts": [
+        "docs/evidence/da31/da31-012-gamepad-lifecycle.json",
+        "src/mugen/da30/GamepadLifecycle.ts"
+      ],
+      "note": "simulated lifecycle; physical device-lab not claimed",
+      "claimCeiling": "tested simulated mappings only"
+    },
+    "DA31-013": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/evidence/da31/da31-013-touch-input-gate.json"
+      ],
+      "note": "touch+concurrent on Play mobile",
+      "claimCeiling": "tested mobile/concurrent paths only"
+    },
+    "DA31-014": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/evidence/da31/da31-014-frame-budget-gate.json"
+      ],
+      "note": "frame sample ~3s route budget",
+      "claimCeiling": "measured environment; not full 60s SLA"
+    },
+    "DA31-015": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/evidence/da31/da31-015-renderer-lifecycle-gate.json"
+      ],
+      "note": "5-route lifecycle cycles",
+      "claimCeiling": "owned lifecycle facts only"
+    },
+    "DA31-016": {
+      "status": "partial",
+      "artifacts": [
+        "docs/evidence/da31/da31-016-visual-matrix.json",
+        "scripts/qa_smoke.cjs"
+      ],
+      "note": "smoke=failed",
+      "claimCeiling": "named visual matrix only; smoke may stay open"
+    },
+    "DA31-017": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "seeded dual input log equality + mutation",
+      "claimCeiling": "live input-log determinism model route"
+    },
+    "DA31-018": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "snapshot/restore owner census",
+      "claimCeiling": "one named snapshot/restore route"
+    },
+    "DA31-019": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "round record/replay seeded sim",
+      "claimCeiling": "one deterministic replay route"
+    },
+    "DA31-020": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "causality matrix positive+negative",
+      "claimCeiling": "listed paths only"
+    },
+    "DA31-021": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "support row promotion rejects missing evidence",
+      "claimCeiling": "registry at cited evidence"
+    },
+    "DA31-022": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "corpus inventory consumer via DA30 model",
+      "claimCeiling": "inventory + eligible count"
+    },
+    "DA31-023": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "parser mutation corpus wired in suite",
+      "claimCeiling": "tested syntax cases"
+    },
+    "DA31-024": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "MUGEN-lite scores held",
+      "claimCeiling": "signed hold; no score movement"
+    },
+    "DA31-025": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "IndexedDB storage ADR",
+      "claimCeiling": "chosen authority + spikes"
+    },
+    "DA31-026": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "transactional save fault injection",
+      "claimCeiling": "named save/fault paths"
+    },
+    "DA31-027": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "conflict recovery cases",
+      "claimCeiling": "named conflict paths"
+    },
+    "DA31-028": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "9 authoring view proofs (model routes)",
+      "claimCeiling": "each view independently; browser capture open"
+    },
+    "DA31-029": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "preview/export chain model",
+      "claimCeiling": "one local chain"
+    },
+    "DA31-030": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "second asset provenance chain",
+      "claimCeiling": "that asset only"
+    },
+    "DA31-031": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "scanner/CLI parity cases",
+      "claimCeiling": "named fixtures"
+    },
+    "DA31-032": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "source write reanalysis",
+      "claimCeiling": "named reanalysis"
+    },
+    "DA31-033": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "Ikemen source families",
+      "claimCeiling": "per reviewed family"
+    },
+    "DA31-034": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "ZSS prototype reclass",
+      "claimCeiling": "no owned production ZSS ops"
+    },
+    "DA31-035": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "team consumers partial",
+      "claimCeiling": "exercised consumers only"
+    },
+    "DA31-036": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "IKEMEN scores held",
+      "claimCeiling": "signed hold"
+    },
+    "DA31-037": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "non-fight consumer (assets studio)",
+      "claimCeiling": "two-consumer ports"
+    },
+    "DA31-038": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "shared GateSubjectEnvelope port",
+      "claimCeiling": "that port only"
+    },
+    "DA31-039": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "CLI/package/CI script inventory",
+      "claimCeiling": "local package + named lanes"
+    },
+    "DA31-040": {
+      "status": "accepted-model",
+      "artifacts": [
+        "src/mugen/da31/ProductAdoption.ts",
+        "src/mugen/da31/DeterminismAdoption.ts",
+        "src/mugen/da31/StudioAssetAdoption.ts",
+        "src/mugen/da31/ReleaseIkemenAdoption.ts",
+        "src/tests/Da31Phase1to4Adoption.test.ts"
+      ],
+      "note": "local release review; public blocked",
+      "claimCeiling": "rehearsal + next program DA32"
+    }
+  },
+  "scoresHeld": true,
+  "scores": {
+    "sandbox": "65",
+    "mugenLite": "36",
+    "practical": "20",
+    "remaining": "10-12 / 6-8 / 25"
+  },
+  "watermarks": {
+    "recordedThrough": "DA30-120",
+    "adjudicatedThrough": "DA30-020",
+    "da31Program": "DA31-001…040 landed with honest ceilings"
+  },
+  "open": [
+    "physical gamepad device-lab (DA31-012)",
+    "qa:smoke full green (DA31-016)",
+    "authoring per-view browser capture (DA31-028)",
+    "full PlayableMatchRuntime snapshot (DA31-018 live)",
+    "public release (DA31-040 blocked by design)"
+  ],
+  "nextProgram": "DA32",
+  "claimCeiling": "DA31 cuts accepted at named claim ceilings; model-only rows do not advance adjudicatedThrough or scores",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "32a9712a34ad7bdbe61e1903da248145218144271e63d4e3ad57e79e38255c6f"
+  }
+}

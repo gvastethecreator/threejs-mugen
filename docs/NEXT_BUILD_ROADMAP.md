@@ -8,17 +8,21 @@ and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 Machine rows reach DA30-120. Human adjudication stops at DA30-020 pending a
 full clause ledger. Scores remain held.
 
-Phase 0–1 progress (see `docs/evidence/da31/da31-phase0-status-v1.json`):
-DA31-001…007 accepted; DA31-008 runner ready (clean re-run for authoritative pin);
-DA31-009 Play gate landed (movement/reset/miss/missing-package).
+DA31 program status: `docs/evidence/da31/da31-phase-status-v1.json`
+(DA31-001…040 with honest ceilings). Phase0 detail remains in
+`da31-phase0-status-v1.json`. Formal pin stays `f5f2315e`.
 
-1. DA31-008: authoritative formal+authority matrix on clean tree.
-2. DA31-010…011: Studio/Inspect end-to-end + mobile reflow.
-3. DA31-012…016: gamepad/touch, frame budget, WebGL dispose, smoke restore.
-4. DA31-017…: live determinism and imported corpus.
+**Next program: DA32**
 
-`qa:smoke` is currently open. The authority audit is green only at its named
-revision and scope.
+1. Green or explicitly owned `qa:smoke` (DA31-016 partial while smoke failed).
+2. Physical gamepad device-lab (DA31-012 is simulated-only).
+3. Advance `adjudicatedThrough` past DA30-020 with independent clause review.
+4. Per-view authoring browser capture (DA31-028 model routes only today).
+5. Live PlayableMatchRuntime snapshot/replay beyond seeded models (017–019).
+6. Screen-reader / canvas alternative a11y paths (DA31-040 open).
+
+`qa:smoke` remains open/failed at last formal sample. Scores held.
+Model-only acceptance does not move scores or adjudicated watermark.
 
 ## Historical next-build override — post-DA30-025 repair
 
