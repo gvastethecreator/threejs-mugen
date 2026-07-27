@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## Entry 624 - IKEMEN `stchtmp` ReversalDef state-redirection admission (T415)
+
+Closed T415 in `40c297aa`: active ReversalDef direct contacts and ReversalDef
+clashes now consume the shared pending state-change predicate with the active
+ReversalDef as source. `p1stateno` checks the reverser and `p2stateno` checks
+the getter. Root admission and runtime resolution fail before state, target,
+hitpause, or power mutation.
+
+Focused closure passed 3 files / 75 tests, including direct role swapping,
+clash admission, and pre-mutation resolution. `node --check scripts/qa_traces.cjs`
+and `git diff --check` passed. `pnpm typecheck` reaches only the known
+unrelated unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim allowed: bounded root direct ReversalDef and ReversalDef-clash
+state-redirection admission under local `stateChangeTmp`, `hitTmp`, and
+`actTmp`. Claim blocked: exact state-owner/source ordering,
+Projectile-to-ReversalDef tri-state routing, Helpers, MUGEN, global pause,
+persistent cleanup, camera, teams beyond this clash gate, global checkpoint,
+score movement, and full parity. Research:
+`docs/research/2026-07-27-ikemen-stchtmp-reversal-state-redirect.md`.
+
 ## Entry 623 - IKEMEN `stchtmp` direct state-redirection admission (T414)
 
 Closed T414 in `4dc23da4`: root direct admission, direct combat resolution,

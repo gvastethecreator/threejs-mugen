@@ -1,6 +1,29 @@
 # Workplan
 
-## Current bounded runtime cut - T414 (2026-07-27)
+## Current bounded runtime cut - T415 (2026-07-27)
+
+T415 closes the bounded IKEMEN `stchtmp` ReversalDef state-redirection slice
+in `40c297aa`. Active ReversalDef direct contacts and ReversalDef clashes now
+map `p1stateno` to the reverser and `p2stateno` to the getter before applying
+the shared pending state-change gate. Root admission and runtime resolution
+keep the role swap explicit and fail before state, target, hitpause, or power
+mutation.
+
+Research: `docs/research/2026-07-27-ikemen-stchtmp-reversal-state-redirect.md`.
+Ticket: `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/415-stchtmp-reversal-state-redirect.md`.
+Focused closure passed 3 files / 75 tests, including direct role swapping,
+clash admission, and pre-mutation resolution, plus `node --check
+scripts/qa_traces.cjs` and `git diff --check`. `pnpm typecheck` reaches only
+the known unrelated unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim allowed: bounded root direct ReversalDef and ReversalDef-clash
+state-redirection admission under local `stateChangeTmp`, `hitTmp`, and
+`actTmp`. Claim blocked: exact state-owner/source order, Projectile-to-
+ReversalDef routing, Helpers, MUGEN, global pause, persistent cleanup,
+camera, teams beyond this clash gate, scores, and full parity.
+
+## Previous bounded runtime cut - T414 (2026-07-27)
 
 T414 closes the bounded IKEMEN `stchtmp` direct state-redirection slice in
 `4dc23da4`. Root direct admission, direct combat resolution, and

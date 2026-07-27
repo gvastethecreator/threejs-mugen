@@ -14,7 +14,25 @@ and local release review. Authority:
 [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
 and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 
-## Current runtime compatibility board - T414 (closed bounded, 2026-07-27)
+## Current runtime compatibility board - T415 (closed bounded, 2026-07-27)
+
+T415 closes in `40c297aa`. Active ReversalDef direct contacts and ReversalDef
+clashes now consume the shared `stchtmp` predicate with the ReversalDef as
+source: `p1stateno` targets the reverser and `p2stateno` targets the getter.
+Root admission and runtime resolution keep that role swap explicit and fail
+before state, target, hitpause, or power mutation.
+
+Focused closure passed 3 files / 75 tests, including direct role swapping,
+clash admission, and pre-mutation resolution. `node --check
+scripts/qa_traces.cjs` and diff hygiene passed. `pnpm typecheck` reaches only
+the unrelated pre-existing unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`. Claim blocked: exact
+state-owner/source order, Projectile-to-ReversalDef tri-state routing,
+Helpers, MUGEN, global pause, persistent cleanup, camera, teams beyond this
+clash gate, global checkpoint, score movement, and full parity. Research:
+`docs/research/2026-07-27-ikemen-stchtmp-reversal-state-redirect.md`.
+
+## Previous runtime compatibility board - T414 (closed bounded, 2026-07-27)
 
 T414 closes in `4dc23da4`. Root direct admission, direct combat resolution,
 and equal-priority preparation now consume the bounded `stchtmp` predicate for

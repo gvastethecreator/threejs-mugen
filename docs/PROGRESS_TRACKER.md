@@ -6,7 +6,7 @@
   and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 - Machine record: **DA30-120**. Consecutive human cursor: **DA30-020**
   (`adjudicatedThrough` not advanced by model-only DA31 rows).
-- Formal/global: `f5f2315e` DA31-008; focal: T414 `4dc23da4`; visual/product: T342;
+- Formal/global: `f5f2315e` DA31-008; focal: T415 `40c297aa`; visual/product: T342;
   source: 05b/4aa.
 - DA31-001…040: see `docs/evidence/da31/da31-phase-status-v1.json`.
   Browser: 009–015 accepted (provisional when dirty). 012 simulated gamepad.
@@ -17,6 +17,27 @@
   drive harden; gamepad device-lab protocol; clause sample proposes
   `adjudicatedThrough=DA30-021` (not auto-applied); a11y baseline inventory.
   Next: close smoke lanes, human accept watermark, hardware gamepad.
+
+## Runtime `stchtmp` ReversalDef state redirection - T415 (closed bounded, 2026-07-27)
+
+- `40c297aa` applies the shared pending state-change predicate to active
+  ReversalDef direct contacts and ReversalDef clashes. The active reversal is
+  treated as the source, so its `p1stateno` checks the reverser and its
+  `p2stateno` checks the original attacker.
+- Root admission swaps the source/getter roles for a defender-side reversal
+  and reports `state-change-pending` after contact/depth checks. Runtime
+  resolution rejects before HitOverride, state, target, hitpause, or power
+  mutation.
+- Focal closure: 3 files / 75 tests passed, including both redirect owners,
+  direct role swapping, clash admission, and pre-mutation resolution. `node
+  --check scripts/qa_traces.cjs` and `git diff --check` passed.
+- `pnpm typecheck` reaches only the unrelated pre-existing unused `advanced`
+  at `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+- Claim blocked: exact state-owner/source order, Projectile-to-ReversalDef
+  tri-state routing, Helpers, MUGEN, global pause, persistent cleanup, camera,
+  teams outside this clash gate, scores, and full parity. Scores unchanged.
+
+Research: [IKEMEN `stchtmp` ReversalDef state redirection](research/2026-07-27-ikemen-stchtmp-reversal-state-redirect.md).
 
 ## Runtime `stchtmp` direct state redirection - T414 (closed bounded, 2026-07-27)
 
