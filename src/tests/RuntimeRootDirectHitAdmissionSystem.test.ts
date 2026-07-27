@@ -143,6 +143,45 @@ describe("RuntimeRootDirectHitAdmissionWorld", () => {
     expect(result.admittedPairIds).toEqual(["p1->p2"]);
   });
 
+  it("rejects direct custom state redirects while stchtmp remains pending", () => {
+    const targetRedirect = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [
+        actor("p1", 1, 1, 0, { move: true, p2StateNo: 888 }),
+        actor("p2", 2, 2, 0, { stateChangeTmp: true, hitTmp: 1 }),
+      ],
+      getHurtBoxes: () => hurt,
+    });
+    expect(targetRedirect.decisions).toContainEqual({
+      attackerId: "p1",
+      getterId: "p2",
+      reason: "state-change-pending",
+    });
+    expect(targetRedirect.admittedPairIds).toEqual([]);
+
+    const noContact = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [
+        actor("p1", 1, 1, 100, { move: true, p2StateNo: 888 }),
+        actor("p2", 2, 2, 0, { stateChangeTmp: true, hitTmp: 1 }),
+      ],
+      getHurtBoxes: () => hurt,
+    });
+    expect(noContact.decisions).toContainEqual({ attackerId: "p1", getterId: "p2", reason: "no-contact" });
+
+    const selfRedirect = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [
+        actor("p1", 1, 1, 0, { move: true, p1StateNo: 777, stateChangeTmp: true, actTmp: 1 }),
+        actor("p2", 2, 2, 0),
+      ],
+      getHurtBoxes: () => hurt,
+    });
+    expect(selfRedirect.decisions).toContainEqual({
+      attackerId: "p1",
+      getterId: "p2",
+      reason: "state-change-pending",
+    });
+    expect(selfRedirect.admittedPairIds).toEqual([]);
+  });
+
   it("applies explicit minus and plus HitFlags to root admission", () => {
     const minus = new RuntimeRootDirectHitAdmissionWorld().inspect({
       roots: [
@@ -311,6 +350,11 @@ function actor(
     stateNo?: number;
     guarding?: boolean;
     noFallHitFlag?: boolean;
+    p1StateNo?: number;
+    p2StateNo?: number;
+    hitTmp?: -1 | 0 | 1 | 2;
+    actTmp?: -3 | -2 | -1 | 0 | 1;
+    stateChangeTmp?: boolean;
     x?: number;
   } = {},
 ): RuntimeRootDirectHitAdmissionActor {
@@ -337,6 +381,9 @@ function actor(
       ...(options.noFallHitFlag ? {
         assertSpecial: { flags: ["nofallhitflag"], globalFlags: [], noFallHitFlag: true },
       } : {}),
+      ...(options.hitTmp === undefined ? {} : { hitTmp: options.hitTmp }),
+      ...(options.actTmp === undefined ? {} : { actTmp: options.actTmp }),
+      ...(options.stateChangeTmp === undefined ? {} : { stateChangeTmp: options.stateChangeTmp }),
     },
     currentMove: options.move ? {
       actionId: 200,
@@ -354,6 +401,8 @@ function actor(
       isReversal: options.isReversal,
       affectTeam: options.affectTeam,
       teamSide: options.teamSide,
+      p1StateNo: options.p1StateNo,
+      p2StateNo: options.p2StateNo,
     } : undefined,
     moveTick: options.moveTick ?? 1,
     hasHit: options.hasHit ?? false,

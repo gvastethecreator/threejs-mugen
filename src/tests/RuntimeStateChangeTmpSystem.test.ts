@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  runtimeStateChangeTmpBlocksDirectStateRedirect,
   runtimeStateChangeTmpBlocksProjectile,
   RuntimeStateChangeTmpWorld,
   type RuntimeStateChangeTmpActor,
@@ -23,5 +24,23 @@ describe("RuntimeStateChangeTmpWorld", () => {
     expect(runtimeStateChangeTmpBlocksProjectile({ stateChangeTmp: true, moveType: "I", actTmp: 0 })).toBe(false);
     expect(runtimeStateChangeTmpBlocksProjectile({ stateChangeTmp: true, moveType: "I", hitTmp: -1, actTmp: 0 })).toBe(false);
     expect(runtimeStateChangeTmpBlocksProjectile({ stateChangeTmp: false, moveType: "H", hitTmp: 1, actTmp: 1 })).toBe(false);
+  });
+
+  it("blocks direct custom state redirects for pending target and self changes", () => {
+    expect(runtimeStateChangeTmpBlocksDirectStateRedirect(
+      { stateChangeTmp: false },
+      { stateChangeTmp: true, moveType: "H", hitTmp: 1 },
+      { p2StateNo: 888 },
+    )).toBe(true);
+    expect(runtimeStateChangeTmpBlocksDirectStateRedirect(
+      { stateChangeTmp: true, actTmp: 1 },
+      { stateChangeTmp: false },
+      { p1StateNo: 777 },
+    )).toBe(true);
+    expect(runtimeStateChangeTmpBlocksDirectStateRedirect(
+      { stateChangeTmp: false, actTmp: 0, hitTmp: 0 },
+      { stateChangeTmp: false, actTmp: 0, hitTmp: 0 },
+      { p1StateNo: 777, p2StateNo: 888 },
+    )).toBe(false);
   });
 });

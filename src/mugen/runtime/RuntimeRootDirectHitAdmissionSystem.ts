@@ -12,6 +12,7 @@ import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
 import { runtimeAffectTeamAllows, runtimeTeamSideFromId } from "./RuntimeTeamTopologySystem";
 import type { CharacterRuntimeState, RuntimeTeamState } from "./types";
 import { hasRuntimeHitDefTarget, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
+import { runtimeStateChangeTmpBlocksDirectStateRedirect } from "./RuntimeStateChangeTmpSystem";
 
 export type RuntimeRootDirectHitAdmissionReason =
   | "admitted"
@@ -24,6 +25,7 @@ export type RuntimeRootDirectHitAdmissionReason =
   | "hitby-rejected"
   | RuntimeHitFlagRejectionReason
   | "affectteam-rejected"
+  | "state-change-pending"
   | "missing-hurt-box"
   | "no-contact";
 
@@ -35,7 +37,7 @@ export type RuntimeRootDirectHitAdmissionActor = {
   definition?: { localCoord?: [number, number] };
   runtime: Pick<
     CharacterRuntimeState,
-    | "pos" | "facing" | "hitBy" | "reversal" | "combatDepth" | "assertSpecial" | "stateType" | "moveType" | "hitFall" | "stateNo" | "guarding"
+    | "pos" | "facing" | "hitBy" | "reversal" | "combatDepth" | "assertSpecial" | "stateType" | "moveType" | "hitFall" | "hitTmp" | "actTmp" | "stateChangeTmp" | "stateNo" | "guarding"
   >;
   currentMove?: DemoMove;
   moveTick: number;
@@ -166,13 +168,15 @@ function inspectPair<TActor extends RuntimeRootDirectHitAdmissionActor>(
     : resolveRootAttackBoxes(attacker, move, input);
   if (!attackerBoxes?.length) return "missing-hurt-box";
   if (pairedCollision) {
-    return hasRootCollisionBoxPair(attacker, attackerBoxes, getter, targetBoxes) ? "admitted" : "no-contact";
-  }
-  return attackerBoxes.some((attackerBox) =>
+    if (!hasRootCollisionBoxPair(attacker, attackerBoxes, getter, targetBoxes)) return "no-contact";
+  } else if (!attackerBoxes.some((attackerBox) =>
     hasRuntimeBoxContact(runtimeWorldBox(attacker.runtime, attackerBox), getter.runtime, [...targetBoxes]),
-  )
-    ? "admitted"
-    : "no-contact";
+  )) {
+    return "no-contact";
+  }
+  return runtimeStateChangeTmpBlocksDirectStateRedirect(attacker.runtime, getter.runtime, move)
+    ? "state-change-pending"
+    : "admitted";
 }
 
 function runtimeRootMoveAffectTeamAllows(

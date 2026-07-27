@@ -363,6 +363,32 @@ describe("RuntimeCombatResolutionSystem", () => {
     ]);
   });
 
+  it("does not prepare equal-priority custom state redirects during pending state change", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const world = new RuntimeCombatResolutionWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const left = actor("p3", "P3", contactWorld, {
+      runtime: runtimeState({ pos: { x: -10, y: 0 }, stateChangeTmp: true, actTmp: 1 }),
+      currentMove: move({ priority: 4, p1StateNo: 777 }),
+      moveTick: 1,
+    });
+    const right = actor("p4", "P4", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, facing: -1 }),
+      currentMove: move({ priority: 4 }),
+      moveTick: 1,
+    });
+    const logs: string[] = [];
+    const base = directInputBase(contactWorld, directCombatWorld, logs);
+
+    expect(world.resolvePriorityClash({ left, right, directCombatWorld })).toBeUndefined();
+    expect(world.resolveEqualPriorityOutcomes({ actors: [left, right], ...base })).toBe(0);
+    expect(left.runtime.life).toBe(100);
+    expect(right.runtime.life).toBe(100);
+    expect(left.currentMove).toBeDefined();
+    expect(right.currentMove).toBeDefined();
+    expect(logs).toEqual([]);
+  });
+
   it("clears unconsumed equal-priority candidates before later moves", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const world = new RuntimeCombatResolutionWorld();
@@ -601,6 +627,52 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(defender.runtime.stateNo).toBe(0);
     expect(defender.runtime.life).toBe(100);
     expect(logs).toEqual(["P2 rejected P1 S,NA because active override cannot receive custom-state HitDef"]);
+  });
+
+  const pendingStateRedirectCases: Array<{
+    name: string;
+    attackerRuntime: Partial<CharacterRuntimeState>;
+    defenderRuntime: Partial<CharacterRuntimeState>;
+    move: Partial<DemoMove>;
+  }> = [
+    {
+      name: "target-owned p2stateno",
+      attackerRuntime: { stateNo: 200 },
+      defenderRuntime: { stateChangeTmp: true, hitTmp: 1, actTmp: 1 },
+      move: { p2StateNo: 888 },
+    },
+    {
+      name: "attacker-owned p1stateno",
+      attackerRuntime: { stateNo: 200, stateChangeTmp: true, actTmp: 1 },
+      defenderRuntime: {},
+      move: { p1StateNo: 777 },
+    },
+  ];
+
+  it.each(pendingStateRedirectCases)("rejects $name while stchtmp remains pending", ({ attackerRuntime, defenderRuntime, move: moveOverrides }) => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const world = new RuntimeCombatResolutionWorld();
+    const logs: string[] = [];
+    const attacker = actor("p1", "P1", contactWorld, {
+      runtime: runtimeState(attackerRuntime),
+      currentMove: move({ attr: "S,NA", ...moveOverrides }),
+      moveTick: 2,
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, stateNo: 0, life: 100, ...defenderRuntime }),
+    });
+
+    const result = world.resolveDirect({
+      attacker,
+      defender,
+      ...directInputBase(contactWorld, new RuntimeDirectCombatWorld(contactWorld), logs),
+    });
+
+    expect(result).toEqual({ kind: "skipped", reason: "state-change-pending" });
+    expect(attacker.hasHit).toBe(false);
+    expect(attacker.targets).toEqual([]);
+    expect(defender.runtime.life).toBe(100);
+    expect(logs).toEqual(["P2 rejected P1 S,NA via pending state change"]);
   });
 
   it("rejects target-owned p2getp1state zero HitDefs before HitOverride redirect", () => {

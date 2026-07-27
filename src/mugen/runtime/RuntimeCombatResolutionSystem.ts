@@ -52,6 +52,7 @@ import {
   canRuntimeDirectAirJuggle,
   type RuntimeDirectJuggleActor,
 } from "./RuntimeJuggleSystem";
+import { runtimeStateChangeTmpBlocksDirectStateRedirect } from "./RuntimeStateChangeTmpSystem";
 
 const defaultHurtBoxes: CollisionBox[] = [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
 
@@ -180,6 +181,7 @@ export type RuntimeDirectCombatSkipReason =
   | RuntimeHitFlagRejectionReason
   | "affectteam-rejected"
   | "priority-no-hit"
+  | "state-change-pending"
   | "hitoverride-custom-state-miss";
 
 export class RuntimeCombatResolutionWorld {
@@ -425,6 +427,11 @@ export class RuntimeCombatResolutionWorld {
       input.log(message);
       return { kind: "skipped", reason: "hitby-rejected" };
     }
+    if (runtimeStateChangeTmpBlocksDirectStateRedirect(attacker.runtime, defender.runtime, move)) {
+      const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via pending state change`;
+      input.log(message);
+      return { kind: "skipped", reason: "state-change-pending" };
+    }
     if (!canRuntimeDirectAirJuggle({
       profile: input.runtimeProfile,
       attacker,
@@ -624,6 +631,9 @@ export class RuntimeCombatResolutionWorld {
     }
     if (!canRuntimeBeHitBy(defender.runtime, move.attr ?? "S,NA")
       || findRuntimeHitOverride(defender.runtime, move.attr ?? "S,NA", move.guardFlag ?? "MA")) {
+      return undefined;
+    }
+    if (runtimeStateChangeTmpBlocksDirectStateRedirect(attacker.runtime, defender.runtime, move)) {
       return undefined;
     }
     if (!canRuntimeDirectAirJuggle({
