@@ -10,11 +10,11 @@ Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
 (`closedThrough` DA28-30). T390 ReversalDef topology and T406 active juggle are
-closed at named ceilings. Projectile/Helper/ModifyHitDef, live team transaction,
-and broader IKEMEN topology remain blocked. Source epoch records juggle=`same`
-between 05b/4aa; other families need review. Proposed cuts are DA28-16…18,
-DA28-27, and DA28-29. See
-[AUTHORITY_SELECTOR](../../../docs/AUTHORITY_SELECTOR.md).
+closed at named ceilings. Source epoch records juggle=`same` between 05b/4aa;
+other families need review. DA29-061…070 define and prove bounded
+Single/Simul/Turns/Tag ownership and keep netplay fenced. DA29-067 and
+DA29-087…090 keep IKEMEN source families, scanner facts, and runtime evidence
+separate. See the [master roadmap](../../../docs/MASTER_REVIEW_ROADMAP.md).
 
 ## 2026-07-18 Post-T268 lane override
 

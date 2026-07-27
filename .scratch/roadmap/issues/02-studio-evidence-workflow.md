@@ -10,11 +10,13 @@ Make Studio Mode the trusted operating surface for project state, assets, eviden
 ## 2026-07-26 product evidence override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md).
-DA27 added snapshot, journal, evidence, and analysis bridges plus browser
-runtime cuts, but the broad visual/product cursor remains T342. Snapshot
-durability, real pre-write recovery, and live asset/scanner/evidence decisions
-remain open. Proposed cuts are DA28-21…25 in the
-[post-DA27-09 audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
+DA28 is drained, but the broad visual/product cursor remains T342 and several
+Studio bridges have no live product owner. DA29-091…100 cover store authority,
+IDB migration/errors, byte-true pre-write intent, crash/multi-tab recovery,
+permission refresh, freshness, and one live release decision. DA29-111…120
+cover the current Frame Ledger and trust UX. See the
+[expanded audit](../../../docs/research/2026-07-26-expanded-master-roadmap-audit-post-da28.md)
+and [master roadmap](../../../docs/MASTER_REVIEW_ROADMAP.md).
 
 ## 2026-07-18 Post-Wayfinder-256 Daily Audit Override
 

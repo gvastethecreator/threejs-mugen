@@ -10,10 +10,12 @@ Prepare the project to become a reusable browser game engine without extracting 
 ## 2026-07-26 boundary override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
-(`closedThrough` DA28-30). Boundary script still skips absent roots and the
-new manifest has no real command consumer. DA28-30 must load it in the actual
-boundary command and CI before broad extraction. See the
-[post-DA27-09 audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
+(`closedThrough` DA28-30). The boundary command consumes some manifest data,
+but duplicates required roots and still skips absent future roots. DA29-131…140
+make the manifest authoritative and non-vacuous, generate the dependency graph,
+extract only proven ports, add a non-fighting consumer, and require deletion
+and forbidden-import proof. Do not claim a reusable engine before DA29-140.
+See the [master roadmap](../../../docs/MASTER_REVIEW_ROADMAP.md).
 
 ## 2026-07-18 Post-Wayfinder-256 non-vacuous extraction override
 

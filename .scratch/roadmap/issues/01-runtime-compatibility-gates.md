@@ -10,13 +10,13 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 ## 2026-07-26 current authority override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
-(`closedThrough` DA28-30). Live next head is **empty**. Formal/global is
-`32466c6e`. Native Nova/Mira live routes, controller matrix, and live combat
-bridges are in. Imported breadth and full throw/Simul/Tag parity remain blocked.
-See
-[AUTHORITY_SELECTOR](../../../docs/AUTHORITY_SELECTOR.md),
-[T406](../../../docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md),
-[global](../../../docs/research/2026-07-26-global-checkpoint-da28-02.md).
+(`closedThrough` DA28-30). Generated next head is **empty**; DA29-001 is the
+proposed control-adoption cut. Formal/global stays `32466c6e`. The expanded
+runtime plan uses DA29-021…080: determinism and compiler truth before real
+contact, plural combat, teams, stage, palette, animation, and audio. Start no
+runtime cut until DA29-001/002 establish an adopted queue and current global
+pin. See the [expanded audit](../../../docs/research/2026-07-26-expanded-master-roadmap-audit-post-da28.md)
+and [master roadmap](../../../docs/MASTER_REVIEW_ROADMAP.md).
 
 ## 2026-07-18 Post-Wayfinder-256 Daily Audit Override
 

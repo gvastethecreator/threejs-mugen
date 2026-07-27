@@ -1,12 +1,14 @@
 # 06 - Roadmap Control And QA Ledger
 
-## 2026-07-26 current authority override (post-DA27-09)
+## 2026-07-26 current authority override (post-DA28 audit)
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
 (`closedThrough` DA28-30). Live next head is **empty**. Formal/global is
-`32466c6e`; focal T406 and visual/product T342 remain separate. DA28 series
-drained under claim ceilings. Scores do not move. Run
-`pnpm audit:authority-references` after selector materialization.
+`32466c6e`; focal T406 and visual/product T342 remain separate. DA28 drained
+under claim ceilings. DA29-001…020 repair queue adoption, current-HEAD proof,
+selector/cursor drift, gate/hash taxonomy, registries, browser facts, and
+performance facts. DA29-141…150 add CI and release adjudication. Scores do not
+move from this audit. See the [expanded audit](../../../docs/research/2026-07-26-expanded-master-roadmap-audit-post-da28.md).
 
 Status: ready-for-agent
 Labels: docs, roadmap, ready-for-agent

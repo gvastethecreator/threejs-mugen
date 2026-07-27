@@ -10,11 +10,13 @@ Make imagegen and sprite-atlas-builder output repeatable, inspectable, and playa
 ## 2026-07-26 asset override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
-(`closedThrough` DA28-30). Native Nova and Mira fixtures exist, while the real
-binary transform chain and live release-policy decision remain open. Native
-fixtures cannot raise imported-package coverage. Proposed cuts are DA28-23 and
-DA28-26 in the
-[post-DA27-09 audit](../../../docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
+(`closedThrough` DA28-30). Native Nova and Mira exist, but their CMD/CNS/AIR
+bytes match and current provenance lacks a full tool/input/transform record.
+DA29-101…110 cover cryptographic content identity, reproducible transforms, an
+independent generated record, visual/collision/audio proof, permission policy,
+live asset closure, and public-path hygiene. Native/generated evidence remains
+separate from imported-package compatibility. See the
+[master roadmap](../../../docs/MASTER_REVIEW_ROADMAP.md).
 
 ## 2026-07-18 Post-Wayfinder-256 Daily Audit Override
 
