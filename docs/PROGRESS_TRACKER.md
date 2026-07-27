@@ -6,7 +6,7 @@
   and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 - Machine record: **DA30-120**. Consecutive human cursor: **DA30-020**
   (`adjudicatedThrough` not advanced by model-only DA31 rows).
-- Formal/global: `f5f2315e` DA31-008; focal: T413 `c7214b50`; visual/product: T342;
+- Formal/global: `f5f2315e` DA31-008; focal: T414 `4dc23da4`; visual/product: T342;
   source: 05b/4aa.
 - DA31-001…040: see `docs/evidence/da31/da31-phase-status-v1.json`.
   Browser: 009–015 accepted (provisional when dirty). 012 simulated gamepad.
@@ -17,6 +17,26 @@
   drive harden; gamepad device-lab protocol; clause sample proposes
   `adjudicatedThrough=DA30-021` (not auto-applied); a11y baseline inventory.
   Next: close smoke lanes, human accept watermark, hardware gamepad.
+
+## Runtime `stchtmp` direct state redirection - T414 (closed bounded, 2026-07-27)
+
+- `4dc23da4` applies the typed pending state-change predicate to root direct
+  admission, direct resolution, and equal-priority preparation. Authored
+  `p1stateno`/`p2stateno` redirects now fail closed while the local
+  `stateChangeTmp`/`hitTmp`/`actTmp` contract says the change is pending.
+- Root admission evaluates the new reason after contact and depth checks, so a
+  spatial miss remains `no-contact`. Direct resolution rejects before
+  HitOverride and damage; equal-priority preparation does not queue mutation.
+- Focal closure: 3 files / 70 tests passed, including target/self redirects,
+  the no-contact negative case, and equal-priority non-mutation. `node --check
+  scripts/qa_traces.cjs` and `git diff --check` passed.
+- `pnpm typecheck` reaches only the unrelated pre-existing unused `advanced`
+  at `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+- Claim blocked: exact IKEMEN state-owner identity and source order,
+  ReversalDef, Projectile, Helpers, MUGEN, global pause, persistent cleanup,
+  camera, teams/clashes, scores, and full parity. Scores unchanged.
+
+Research: [IKEMEN `stchtmp` direct state redirection](research/2026-07-27-ikemen-stchtmp-direct-state-redirect.md).
 
 ## Runtime `stchtmp` materialization - T413 (closed bounded, 2026-07-27)
 

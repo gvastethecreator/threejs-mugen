@@ -1,6 +1,28 @@
 # Workplan
 
-## Current bounded runtime cut - T413 (2026-07-27)
+## Current bounded runtime cut - T414 (2026-07-27)
+
+T414 closes the bounded IKEMEN `stchtmp` direct state-redirection slice in
+`4dc23da4`. Root direct admission, direct combat resolution, and
+equal-priority preparation now reject authored `p1stateno`/`p2stateno` while
+the local pending state-change predicate is active. Root admission checks the
+gate after contact and depth resolution; direct resolution fails before
+HitOverride and damage.
+
+Research: `docs/research/2026-07-27-ikemen-stchtmp-direct-state-redirect.md`.
+Ticket: `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/414-stchtmp-direct-state-redirect.md`.
+Focused closure passed 3 files / 70 tests, including equal-priority
+non-mutation, `node --check scripts/qa_traces.cjs`, and `git diff --check`.
+`pnpm typecheck` reaches only the known unrelated unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim allowed: bounded root direct `p1stateno`/`p2stateno` admission and
+resolution under local `stateChangeTmp`, `hitTmp`, and `actTmp` fields.
+Claim blocked: exact state-owner identity and source order, ReversalDef,
+Projectile, Helpers, MUGEN, global pause, persistent cleanup, camera,
+teams/clashes, scores, and full parity.
+
+## Previous bounded runtime cut - T413 (2026-07-27)
 
 T413 closes the bounded IKEMEN `stchtmp` slice in `c7214b50`. Root state
 entry now marks the pending state-change flag, settles ordinary transitions

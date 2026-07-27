@@ -14,7 +14,23 @@ and local release review. Authority:
 [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
 and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 
-## Current runtime compatibility board - T413 (closed bounded, 2026-07-27)
+## Current runtime compatibility board - T414 (closed bounded, 2026-07-27)
+
+T414 closes in `4dc23da4`. Root direct admission, direct combat resolution,
+and equal-priority preparation now consume the bounded `stchtmp` predicate for
+authored `p1stateno`/`p2stateno` redirects. Root admission checks after contact
+and depth resolution; direct routes fail before HitOverride and damage.
+
+Focused closure passed 3 files / 70 tests, including the no-contact negative
+case and equal-priority non-mutation. `node --check scripts/qa_traces.cjs` and
+diff hygiene passed. `pnpm typecheck` reaches only the unrelated pre-existing
+unused `advanced` at `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+Claim blocked: exact state-owner identity/order, ReversalDef, Projectile,
+Helpers, MUGEN, global pause, persistent cleanup, camera, teams/clashes,
+global checkpoint, score movement, and full parity. Research:
+`docs/research/2026-07-27-ikemen-stchtmp-direct-state-redirect.md`.
+
+## Previous runtime compatibility board - T413 (closed bounded, 2026-07-27)
 
 T413 closes in `c7214b50`. Root state entry marks typed `stateChangeTmp`,
 settles ordinary transitions outside hitpause, and retains the marker through

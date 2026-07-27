@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## Entry 623 - IKEMEN `stchtmp` direct state-redirection admission (T414)
+
+Closed T414 in `4dc23da4`: root direct admission, direct combat resolution,
+and equal-priority preparation now reject authored `p1stateno`/`p2stateno`
+redirects while the bounded pending state-change predicate is active. Root
+admission applies the gate after contact and depth checks; direct resolution
+fails before HitOverride and damage.
+
+Focused closure passed 3 files / 70 tests, including target/self redirects,
+the no-contact negative case, and equal-priority non-mutation. `node --check
+scripts/qa_traces.cjs` and `git diff --check` passed. `pnpm typecheck` reaches
+only the known unrelated unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim allowed: bounded root direct `p1stateno`/`p2stateno` admission and
+resolution using local `stateChangeTmp`, `hitTmp`, and `actTmp`. Claim blocked:
+exact IKEMEN state-owner identity and ordering, ReversalDef, Projectile,
+Helpers, MUGEN, global pause, persistent cleanup, camera, teams/clashes,
+global checkpoint, score movement, and full parity. Research:
+`docs/research/2026-07-27-ikemen-stchtmp-direct-state-redirect.md`.
+
 ## Entry 622 - IKEMEN `stchtmp` materialization (T413)
 
 Closed T413 in `c7214b50`: root state entry now marks typed
