@@ -1,5 +1,43 @@
 # Workplan
 
+## Interface desktop layout repair (2026-07-27)
+
+The Match, Inspect, and Studio shells now preserve desktop stage space and
+stack cleanly through 1160px. Match and Inspect toolbars use content height at
+the lower edge; status metrics stay readable. The empty command-palette mount
+does not create a layout track.
+
+Commits: `d8c4dfaa` code and audit, `b4788b85` browser evidence.
+Research: `docs/research/2026-07-27-interface-desktop-audit.md`.
+The 27-case audit, DA31-010 Studio gate, DA31-011 reflow gate, and DA31-009
+Play gate passed against the current UI commit. `pnpm exec vite build` and
+`git diff --check` passed. The full build and CSS budget remain open under the
+known TypeScript and stylesheet debt recorded in the audit.
+
+## Current bounded runtime cuts - T416/T417 (2026-07-27)
+
+T416 closes the local Projectile-to-active-ReversalDef `stchtmp` route in
+`b07c4e88`. A pending redirect returns a tri-state result before normal
+projectile mutation, so the Projectile remains active and keeps its hit
+budget. T417 in `19f1693e` repairs the first falling direct HitDef spend when
+explicit `hitTmp = 0` still represents the pre-contact phase.
+
+Research: `docs/research/2026-07-27-ikemen-stchtmp-projectile-reversal-state-redirect.md`
+and `docs/research/2026-07-27-ikemen-hittmp-first-falling-contact-repair.md`.
+Tickets: `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/416-stchtmp-projectile-reversal-state-redirect.md`
+and `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/417-hittmp-first-falling-contact-repair.md`.
+The focused runtime batch passed 5 files / 135 tests. The final
+`pnpm qa:trace` passed 667 artifacts, including 633 required and 34 optional,
+with 0 failures. `git diff --check` passed. `pnpm typecheck` remains blocked
+only by the known unrelated unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim allowed: bounded local Projectile/ReversalDef pending rejection and
+first falling direct/Helper air-juggle spend. Claim blocked: exact official
+projectile `statePN` source order, persistent state ownership, broader
+Projectile/Helper timing, MUGEN, pause, camera, teams, scores, and full
+parity.
+
 ## Current bounded runtime cut - T415 (2026-07-27)
 
 T415 closes the bounded IKEMEN `stchtmp` ReversalDef state-redirection slice

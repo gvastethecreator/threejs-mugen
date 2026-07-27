@@ -6,7 +6,7 @@
   and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 - Machine record: **DA30-120**. Consecutive human cursor: **DA30-020**
   (`adjudicatedThrough` not advanced by model-only DA31 rows).
-- Formal/global: `f5f2315e` DA31-008; focal: T415 `40c297aa`; visual/product: T342;
+- Formal/global: `f5f2315e` DA31-008; focal: T416/T417 `b07c4e88` + `19f1693e`; visual/product: T342;
   source: 05b/4aa.
 - DA31-001…040: see `docs/evidence/da31/da31-phase-status-v1.json`.
   Browser: 009–015 accepted (provisional when dirty). 012 simulated gamepad.
@@ -17,6 +17,43 @@
   drive harden; gamepad device-lab protocol; clause sample proposes
   `adjudicatedThrough=DA30-021` (not auto-applied); a11y baseline inventory.
   Next: close smoke lanes, human accept watermark, hardware gamepad.
+
+## Interface desktop layout repair - d8c4dfaa/b4788b85 (closed bounded, 2026-07-27)
+
+- Match and Inspect desktop toolbars keep content height at the lower edge;
+  the stage status panel keeps readable four-column metrics.
+- Match, Inspect, and Studio stack into one column through 1160px. The empty
+  command-palette mount no longer adds a layout track.
+- The 27-case live audit had zero console/page/network errors and no document
+  or body overflow. DA31-010 Studio, DA31-011 reflow, and DA31-009 Play
+  browser gates passed against the current UI commit.
+- `pnpm exec vite build` and `git diff --check` passed. Full `pnpm build`
+  still reaches the known unused `advanced` diagnostic; the CSS budget keeps
+  its existing duplicate and shadowed-rule debt.
+
+Research: [desktop and responsive interface audit](research/2026-07-27-interface-desktop-audit.md).
+
+## Runtime `stchtmp` Projectile ReversalDef and first falling air-juggle repair - T416/T417 (closed bounded, 2026-07-27)
+
+- `b07c4e88` carries the shared pending state-change predicate into the local
+  Projectile-to-active-ReversalDef callback. A pending redirect returns a
+  tri-state result before normal hit mutation, leaving the Projectile active
+  with its hit budget intact.
+- `19f1693e` repairs the first falling direct HitDef spend when explicit
+  `hitTmp = 0` still carries the pre-contact phase. Later admission still
+  reads materialized `hitTmp = 2`; the named Helper `inheritJuggle` trace now
+  rejects its over-budget follow-up contact again.
+- Focal closure: 5 files / 135 tests passed. The final `pnpm qa:trace` passed
+  667 artifacts: 633 required, 34 optional, 0 failed. `git diff --check`
+  passed.
+- `pnpm typecheck` remains blocked only by the unrelated pre-existing unused
+  `advanced` at `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+- Claim blocked: exact official Projectile HitDef `statePN` source order,
+  persistent state-owner identity, broader Projectile/Helper timing, MUGEN,
+  pause, camera, teams, scores, and full parity. Scores unchanged.
+
+Research: [Projectile ReversalDef `stchtmp`](research/2026-07-27-ikemen-stchtmp-projectile-reversal-state-redirect.md)
+and [first falling `hittmp` repair](research/2026-07-27-ikemen-hittmp-first-falling-contact-repair.md).
 
 ## Runtime `stchtmp` ReversalDef state redirection - T415 (closed bounded, 2026-07-27)
 
