@@ -49,6 +49,7 @@ import {
 import {
   applyRuntimeDirectAirJuggleHit,
   canRuntimeDirectAirJuggle,
+  type RuntimeDirectJuggleActor,
 } from "./RuntimeJuggleSystem";
 
 const defaultHurtBoxes: CollisionBox[] = [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
@@ -705,6 +706,7 @@ export class RuntimeCombatResolutionWorld {
       defenderLocalCoord: input.defender.definition.localCoord,
       getTargetCollisionBoxes: (target, boxType) =>
         input.getCollisionBoxes?.(target, boxType) ?? (boxType === "clsn2" ? hurtBoxes : undefined),
+      getProjectileJuggleActor: (source, projectile) => runtimeProjectileJuggleActor(source, projectile),
       resolveProjectileHitSource: (attacker, projectile) =>
         runtimeProjectileHitSource(attacker, projectile, input.isHelperRootOwned),
       projectileCollisionMode,
@@ -1120,5 +1122,29 @@ function runtimeProjectileHitSource<TActor extends RuntimeCombatResolutionActor>
     playerNo: helper.playerNo,
     rootId: helper.rootId,
     rootOwned,
+  };
+}
+
+function runtimeProjectileJuggleActor<TActor extends RuntimeCombatResolutionActor>(
+  attacker: TActor,
+  projectile: RuntimeProjectile,
+): RuntimeDirectJuggleActor {
+  const helper = projectile.ownerId === attacker.id
+    ? undefined
+    : attacker.effectActorWorld.helpers(attacker.id).find((candidate) => candidate.serialId === projectile.ownerId);
+  if (!helper) {
+    return {
+      id: attacker.id,
+      definition: attacker.definition,
+      runtime: attacker.runtime,
+    };
+  }
+  return {
+    id: helper.serialId,
+    definition: attacker.definition,
+    runtime: {
+      assertSpecial: helper.assertSpecial,
+      moveType: helper.moveType,
+    },
   };
 }

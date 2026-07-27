@@ -33,6 +33,7 @@ import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
 import {
   applyRuntimeProjectileAirJuggleHit,
   canRuntimeProjectileAirJuggle,
+  type RuntimeDirectJuggleActor,
 } from "./RuntimeJuggleSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import {
@@ -57,6 +58,10 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
   projectiles: RuntimeProjectile[];
   hurtBoxes: CollisionBox[];
   runtimeProfile?: RuntimeCompatibilityProfile;
+  getProjectileJuggleActor?: (
+    attacker: TActor,
+    projectile: RuntimeProjectile,
+  ) => RuntimeDirectJuggleActor | undefined;
   attackerLocalCoord?: readonly [number, number];
   defenderLocalCoord?: readonly [number, number];
   getTargetCollisionBoxes?: (defender: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
@@ -190,17 +195,16 @@ export class RuntimeProjectileCombatWorld {
         continue;
       }
       const targetWasFalling = defender.runtime.moveType === "H" && defender.runtime.hitFall?.falling === true;
-      if (
-        projectile.rootId === attacker.id &&
-        projectile.parentId === attacker.id &&
-        !canRuntimeProjectileAirJuggle({
-          profile: input.runtimeProfile,
-          attacker: projectileJuggleActor(attacker),
-          defender: projectileJuggleActor(defender),
-          airJuggle: projectile.airJuggle ?? 0,
-          targetWasFalling,
-        })
-      ) {
+      const projectileJuggleOwner = projectile.rootId === attacker.id
+        ? input.getProjectileJuggleActor?.(attacker, projectile) ?? projectileJuggleActor(attacker)
+        : undefined;
+      if (projectileJuggleOwner && !canRuntimeProjectileAirJuggle({
+        profile: input.runtimeProfile,
+        attacker: projectileJuggleOwner,
+        defender: projectileJuggleActor(defender),
+        airJuggle: projectile.airJuggle ?? 0,
+        targetWasFalling,
+      })) {
         log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via air.juggle`);
         continue;
       }
@@ -293,10 +297,10 @@ export class RuntimeProjectileCombatWorld {
       defender.runtime.receivedHitSequence = (defender.runtime.receivedHitSequence ?? 0) + 1;
       defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(projectile, false, result.damage, result.stun, result.pause, result.kill, source, false);
       input.applyHitState?.(attacker, defender, projectile);
-      if (projectile.rootId === attacker.id && projectile.parentId === attacker.id) {
+      if (projectileJuggleOwner) {
         applyRuntimeProjectileAirJuggleHit({
           profile: input.runtimeProfile,
-          attacker: projectileJuggleActor(attacker),
+          attacker: projectileJuggleOwner,
           defender: projectileJuggleActor(defender),
           airJuggle: projectile.airJuggle ?? 0,
           targetWasFalling,

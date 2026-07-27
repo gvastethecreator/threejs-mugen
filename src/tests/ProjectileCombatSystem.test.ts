@@ -685,7 +685,7 @@ describe("ProjectileCombatSystem", () => {
     expect(defender.runtime.airJugglePoints).toEqual({ p1: 1 });
   });
 
-  it("keeps projectile air.juggle inactive outside IKEMEN and for helper-owned children", () => {
+  it("keeps projectile air.juggle inactive outside IKEMEN and uses root ownership for helper-parented projectiles", () => {
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
     const defender = actor(
       "p2",
@@ -714,8 +714,82 @@ describe("ProjectileCombatSystem", () => {
     expect(defender.runtime.airJugglePoints).toBeUndefined();
 
     resolve(projectile({ serialId: "helper-projectile", airJuggle: 3, parentId: "helper-1" }), "ikemen-go");
-    expect(defender.runtime.life).toBe(938);
+    expect(defender.runtime.life).toBe(969);
     expect(defender.runtime.airJugglePoints).toBeUndefined();
+  });
+
+  it("uses Helper owner identity for ownprojectile air.juggle and honors its NoJuggleCheck", () => {
+    let projectiles = [projectile({
+      airJuggle: 3,
+      damage: 17,
+      ownerId: "helper-1",
+      rootId: "p1",
+      parentId: "helper-1",
+    })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+    const defender = actor(
+      "p2",
+      "P2",
+      runtimeState({
+        pos: { x: 12, y: 0 },
+        facing: -1,
+        life: 1000,
+        moveType: "H",
+        hitFall: { falling: true, damage: 0, velocity: { y: -1 } },
+      }),
+      undefined,
+      { constants: { "data.airjuggle": 4 } },
+    );
+    const helperJuggleActor = {
+      id: "helper-1",
+      definition: { constants: {} },
+      runtime: { assertSpecial: { flags: [], globalFlags: [], noJuggleCheck: false } },
+    };
+    const resolve = () => new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      runtimeProfile: "ikemen-go",
+      getProjectileJuggleActor: () => helperJuggleActor,
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    resolve();
+    expect(defender.runtime.life).toBe(983);
+    expect(defender.runtime.airJugglePoints).toEqual({ "helper-1": 1 });
+
+    projectiles = [projectile({
+      serialId: "helper-projectile-rejected",
+      airJuggle: 3,
+      damage: 17,
+      ownerId: "helper-1",
+      rootId: "p1",
+      parentId: "helper-1",
+    })];
+    resolve();
+    expect(defender.runtime.life).toBe(983);
+    expect(defender.runtime.airJugglePoints).toEqual({ "helper-1": 1 });
+    expect(projectiles).toHaveLength(1);
+
+    helperJuggleActor.runtime.assertSpecial.noJuggleCheck = true;
+    projectiles = [projectile({
+      serialId: "helper-projectile-bypass",
+      airJuggle: 3,
+      damage: 17,
+      ownerId: "helper-1",
+      rootId: "p1",
+      parentId: "helper-1",
+    })];
+    resolve();
+    expect(defender.runtime.life).toBe(966);
+    expect(defender.runtime.airJugglePoints).toEqual({ "helper-1": 1 });
   });
 
   it("routes projectile guard power and control through runtime resource bounds", () => {

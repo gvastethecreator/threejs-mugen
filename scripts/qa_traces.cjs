@@ -1596,6 +1596,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenProjectileAirJuggleTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-helper-projectile-air-juggle",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenHelperProjectileAirJuggleTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-root-modifyreversaldef-redirect",
       required: true,
       artifact: presets.createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact(),
