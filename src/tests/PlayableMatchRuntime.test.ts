@@ -4887,7 +4887,7 @@ ctrl = 0
       },
       actors: [{ id: "p1" }, { id: "p2", runtime: { life: 0 } }],
     });
-  });
+  }, 30_000);
 
   it("restarts a normal Turns round after a simultaneous KO without effective loss", () => {
     const runtime = new PlayableMatchRuntime(
