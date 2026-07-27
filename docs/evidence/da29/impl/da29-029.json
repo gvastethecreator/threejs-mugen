@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-029",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Define canonical match-state serialization. Depends on DA29-008, DA29-020, and DA29-028.",
   "acceptance": "Versioned serializer covers live deterministic owners, excludes renderer/cache objects, round-trips, rejects unknown versions, and produces SHA-256.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "ad036bebdfa21d7732906b7d3312bac8a0f31f39f247897558fd1d9e373fe359"
+    "value": "d833ee3014f4baaa24e0959f17d9eaaad7c485a5934b648f4d65da310d47c292"
   }
 }

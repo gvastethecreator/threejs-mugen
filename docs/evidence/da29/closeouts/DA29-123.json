@@ -3,13 +3,13 @@
   "id": "DA29-123",
   "kind": "G",
   "wave": 12,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Prove renderer disposal and context recovery. Depends on DA29-071 and DA29-122.",
   "acceptance": "Route teardown, project switch, import failure, context lost/restored, resize, and app shutdown return owned resources to expected baselines without double disposal.",
   "risk": "GPU leaks survive JS cleanup. Allows tested lifecycle only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "c030d848d215cf48d838e372493838d65e81c6c8ecc62a50e0b63fc2175e1461"
+    "value": "feb4512c6e66f58a950ffd323f3aa7fe4ab096d164f00d4710efd7f3b4702570"
   }
 }

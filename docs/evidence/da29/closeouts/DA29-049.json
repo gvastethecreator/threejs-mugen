@@ -3,13 +3,13 @@
   "id": "DA29-049",
   "kind": "I",
   "wave": 4,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Implement one bounded throw/reversal ownership journey. Depends on DA29-048 and DA29-029.",
   "acceptance": "Imported success, miss, interrupted, invalid target, KO, and reset routes prove atomic mutation and replay checksum.",
   "risk": "One throw does not prove all Target controllers. Allows named throw/reversal route only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "a2f02c0baa110f5491abc61860165d6508547c92901347bdd3f460ef031f6b04"
+    "value": "c1a52d8076d75c5d22cfb90e486954807ea98da78b19e876f203bc9c26b233fe"
   }
 }

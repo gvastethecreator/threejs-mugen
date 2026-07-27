@@ -13,9 +13,9 @@ when labeled historical / previous / closed.
 
 | Cursor | SHA / pin | Claim ceiling |
 | --- | --- | --- |
-| formal | `119e6274…` DA29-002 | measured typecheck/test/trace/build/boundaries only |
+| formal | `7e90eeb6…` DA29-002 | measured typecheck/test/trace/build/boundaries only |
 | focal | `07ad9227` T406 | active StateDef/HitDef juggle under `ikemen-go` |
-| global | `119e6274…` DA29-002 | 281·2876 tests / 663 traces / build / boundaries; scores held |
+| global | `7e90eeb6…` DA29-002 | 281·2876 tests / 663 traces / build / boundaries; scores held |
 | visual | `1085badb` T342 | broad matrix parent; DA28 browser routes are bounded |
 | product | `1085badb` T342 | local Studio product flows only |
 | source normative | `05b7d98a` | pin identity; family provenance in epoch |

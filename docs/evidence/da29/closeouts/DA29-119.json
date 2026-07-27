@@ -3,13 +3,13 @@
   "id": "DA29-119",
   "kind": "I",
   "wave": 11,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Make Studio trust failures actionable. Depends on DA29-093, DA29-097, DA29-098, and DA29-100.",
   "acceptance": "Quota, permission, stale evidence, scanner failure, blocked asset, save conflict, and recovery states show cause, affected item, safe action, retry, and retained work.",
   "risk": "Generic errors hide data risk. Allows named product states only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "9bfb8d5c590308352225f9ba2483ddd3c459f61d7a6a9a319e0a87022aefc9e7"
+    "value": "c5240b44d47d02bf29438cc7ead16612ab4e987626df43c4b4486e242d240206"
   }
 }

@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-025",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Record a canonical per-frame input log. Depends on DA29-021 and DA29-020.",
   "acceptance": "Log stores sampled inputs, edges, seat map, clock tick, policy revision, and checksum; same route produces identical canonical bytes.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "2bdc1ce137ea649c8c5a3254b8acaf4f80495f4d0a287bb152aa3c1af0c36ab7"
+    "value": "314c2a3c905f740ebeac98537b8174ffaac21bd24043696d97f21100847dd299"
   }
 }

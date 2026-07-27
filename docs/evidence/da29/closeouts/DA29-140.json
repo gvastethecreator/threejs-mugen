@@ -3,13 +3,13 @@
   "id": "DA29-140",
   "kind": "G",
   "wave": 13,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Prove extraction by deletion and forbidden-import tests. Depends on DA29-139.",
   "acceptance": "Each shared contract survives removal of either adapter in isolation; boundary violations fail; bundle graph shows no fighting code in the non-fighting route; docs name remaining domain coupling.",
   "risk": "Tests may mirror implementation. Allows bounded reusable-engine claim for proven ports only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "c72b2353a681d5f452dff24f15adf7dba85e1fa2e71189c49d25dfa169febaa1"
+    "value": "3cb6d41e5bea18348085619784eacabd9c38ad5d85938ae244aa12555c3b5e76"
   }
 }

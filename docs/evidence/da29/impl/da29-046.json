@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-046",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Prove fall, recovery, bounce, and landing transitions. Depends on DA29-041 and DA29-037.",
   "acceptance": "Imported matrix covers fall flags, velocities, recover windows, ground bounce, landing state, no-recover, and reset with frame-accurate traces.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "9fe28b119d63737c039e33e4f40370bca2c68edfcd2d628e56edd709adce5493"
+    "value": "3f6a0fec6682fc2f5bcbe65fb181c0cfd61f68244954cd9c7add482caefa9507"
   }
 }

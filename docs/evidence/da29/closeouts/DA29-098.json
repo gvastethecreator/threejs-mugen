@@ -3,13 +3,13 @@
   "id": "DA29-098",
   "kind": "I",
   "wave": 9,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Make changed-source freshness visible and blocking. Depends on DA29-004, DA29-088, and DA29-094.",
   "acceptance": "Source mutation invalidates analysis, build, evidence, and release at the same revision; Studio shows reason and exact next action; rerun restores only fresh facts.",
   "risk": "Split freshness logic creates false green. Allows one end-to-end stale/fresh route only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "6f3fbfa63cb72142d417c13168bc19310162c34e3cf0e7f9b7f14c098a1dba36"
+    "value": "c8fa4f779a504cec1423d742fa48ae373887a82c1739d8737e7dcc81e9ed5e04"
   }
 }

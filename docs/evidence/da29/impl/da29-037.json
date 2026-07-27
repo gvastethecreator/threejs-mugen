@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-037",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Prove trigger group and short-circuit order. Depends on DA29-033 and DA29-036.",
   "acceptance": "Imported tests cover `triggerall`, numbered groups, side effects/RNG avoidance, false groups, errors, and evaluation telemetry in official order.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "19d6c29bc3cf7ef8dc7fdbb12c9c553f22ff5c27d29b2700f26d9eccf7cd80de"
+    "value": "04de4396702d8782e916540a4bbc2d54ba72eb9b7b4ca02c61c612da3b811a75"
   }
 }

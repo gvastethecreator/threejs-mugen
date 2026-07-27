@@ -3,13 +3,13 @@
   "id": "DA29-120",
   "kind": "G",
   "wave": 11,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Establish current visual regression coverage. Depends on DA29-113…119.",
   "acceptance": "Approved manifest covers key routes, states, themes, viewports, DPR, fonts, animation settle rule, mask policy, and human review; diffs link runtime revision.",
   "risk": "Pixel tests can bless unusable UI. Allows visual stability only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "aa8fe768c665541eef0d74750907131218cd6f42c71275e933ccb7a048398d1e"
+    "value": "cdf2d6d15499bb56a9dfc81e4522fa41c2b08e9bae6db8528d5bc911d9a16e07"
   }
 }

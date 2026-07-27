@@ -3,13 +3,13 @@
   "id": "DA29-165",
   "kind": "I",
   "wave": 16,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Add a bounded storyboard/cutscene player. Depends on DA29-074, DA29-078, DA29-080, and DA29-161.",
   "acceptance": "Repository-owned storyboard proves scenes, backgrounds, animations, text, audio, timing, skip, end, resize, error handling, and resource cleanup.",
   "risk": "A player can block input/audio lifecycle. Allows named storyboard subset only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "66a2951c94701cf87a02d481b02e5d185e5242e5ea042140e4f4ce5ff2cd426e"
+    "value": "a22fdde742f36bb339610ab3f8e8db838ebc452275e0ab83b40212d9b7ef7fab"
   }
 }

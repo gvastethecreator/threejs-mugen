@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-064",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Make Turns handoff one atomic live transaction. Depends on DA29-061, DA29-029, and current Turns bridge.",
   "acceptance": "KO-to-next-member success and all failure points either commit the full handoff or restore preimage; replay and reset pass.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "f15bddc949ad96228c4c60def62602be3b7329c19f23b167c454c9e34888b470"
+    "value": "cb1e90788f8f4a4de6bbc3ea7680d1cf6672546e9644e4e8838f23123f7f0029"
   }
 }

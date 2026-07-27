@@ -3,13 +3,13 @@
   "id": "DA29-182",
   "kind": "I",
   "wave": 18,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Add transactional undo/redo for source and project edits. Depends on DA29-095, DA29-096, and DA29-181.",
   "acceptance": "Multi-step edits, file writes, asset refs, undo/redo branches, save/reopen, failure compensation, size caps, and crash recovery preserve bytes and revisions.",
   "risk": "History can diverge from external files. Allows tested edit types only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "e23f7d3569c7eb132813216e581da232d8d36dcbcbc9397871ceb9dc71666b27"
+    "value": "cc20ada2577ccd88c30c369bb944fe1b9e0b3653dae239bfd4ed669470ff5a05"
   }
 }

@@ -3,13 +3,13 @@
   "id": "DA29-183",
   "kind": "I",
   "wave": 18,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Add bounded semantic editors for CNS, CMD, and AIR. Depends on DA29-033, DA29-084, DA29-085, DA29-182.",
   "acceptance": "Editors preserve comments/unknown text where promised, show located diagnostics, preview semantic diff, validate before write, undo, reopen, and avoid unsupported silent rewrites.",
   "risk": "Pretty printing can alter behavior. Allows named edit operations only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "6407a99a3e67a8db47bc3a83f96a7580243b341127372dd918d04c9d24ce80d4"
+    "value": "4ae7524682b20b5f0fc94f5471c3d4ff86e8eec1e789dc64d3f93ede99e69854"
   }
 }

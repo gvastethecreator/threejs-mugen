@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-053",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Run three-plus live projectiles from imported states. Depends on DA29-041 and DA29-012.",
   "acceptance": "At least three concurrent projectiles prove spawn, movement, hit/miss/remove, global ordering, owner death/reset, and deterministic trace without synthetic construction.",
   "entryPoints": [
@@ -21,6 +21,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "383cc9d351caec6f488da0c927615ffe72b0160a50f76aa78373446b181c8397"
+    "value": "acf04e33ec29cda6c5009ff0ae736d8c8e0642f39700ea15af71bb3a97e0763c"
   }
 }

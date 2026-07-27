@@ -3,13 +3,13 @@
   "id": "DA29-017",
   "kind": "I",
   "wave": 1,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Generate browser evidence facts from the runner. Depends on DA29-003 and DA29-009.",
   "acceptance": "Facts include route, viewport, DPR, browser, input mode, artifact digests, console/page errors, focus checks, and commit; hand-authored green status is rejected.",
   "risk": "Automation may miss human usability. Allows runner-observed facts only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "7a757b29741fe12f9a56baf66f425c23dfcf0d836361cf6ebeb814d69bec40f3"
+    "value": "a62fb536e90c46b7d09317a1b9e6a249b5bb0e3f0b85085a52280b4d371ab5ce"
   }
 }

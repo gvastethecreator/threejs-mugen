@@ -3,13 +3,13 @@
   "id": "DA29-016",
   "kind": "I",
   "wave": 1,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Add source locations and digests to source-family review. Depends on DA29-008. Systems: Elecbyte/Ikemen manifests.",
   "acceptance": "Each reviewed rule links pin, file, line/range or symbol, excerpt digest, reviewer status, and local consumer; text-only `passed` rows fail schema validation.",
   "risk": "Upstream moves can stale locations. Allows reviewed-rule provenance only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "0a4b593055008e08fc70301e026837354034591094bc1fdc46bbbd266b99082e"
+    "value": "50034cdbf1dc3ea0a9ee62e600e0b0731914389e1d850dd1e4e23f310316f5b7"
   }
 }

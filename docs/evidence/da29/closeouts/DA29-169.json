@@ -3,13 +3,13 @@
   "id": "DA29-169",
   "kind": "G",
   "wave": 16,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Add fourth and fifth independent lawful packages. Depends on DA29-081, DA29-158, and DA29-168.",
   "acceptance": "At least one character-centered and one stage/screenpack-centered package add distinct syntax/asset digests, real journeys, malformed variants, provenance, and coverage delta.",
   "risk": "More packages can repeat easy syntax. Allows five-package corpus breadth only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "ff2ba6e259a1522c83b05bbde02d8c36c8fb570da48286e75502278cf25a92bd"
+    "value": "7f9867269d3ce4f135374600c2d577d924e902a6133cac5063baaf456aee9cfe"
   }
 }

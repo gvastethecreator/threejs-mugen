@@ -3,13 +3,13 @@
   "id": "DA29-159",
   "kind": "I",
   "wave": 15,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Build a real character/stage select journey. Depends on DA29-158, DA29-113…117, and DA29-074.",
   "acceptance": "Keyboard/gamepad desktop/mobile flow chooses legal characters/stage, shows missing/blocked entries, preserves seat/profile, starts the exact package, and returns safely.",
   "risk": "Selection UI can load a different revision. Allows one local versus selection route only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "e36576faf9414fd7b03d55e04eb230fa10362fa2378bb050846ae0a0919cacb9"
+    "value": "9b14de30c2c72062b122b79fe2bea0936edecb2f80e77a9261e8405f8105e3bf"
   }
 }

@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-094",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Journal source-write intent before mutation using actual bytes. Depends on DA29-091 and DA29-008.",
   "acceptance": "Preimage bytes/digest, intended bytes/digest, handle/path identity, project revision, timestamp, and intent state persist before the writable opens; failure blocks write.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "c2e05ac86f5ca1e87e24c97a8a95b6ee4772999c41afd1db2fbec78c84aa71a2"
+    "value": "0e80804eb65da26c3a70b85cfdc7f47fbf4a49678eeca2d3f8e2226e8fe7f38a"
   }
 }

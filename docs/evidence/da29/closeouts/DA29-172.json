@@ -3,13 +3,13 @@
   "id": "DA29-172",
   "kind": "G",
   "wave": 17,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Parse and analyze bounded ZSS without execution. Depends on DA29-089 and DA29-171.",
   "acceptance": "Pinned/repository fixtures produce located AST, imports, declarations, calls, unknowns, caps, deterministic digests, and explicit execution-blocked status.",
   "risk": "Parser recognition can imply runtime. Allows static ZSS analysis only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "4423937391c6ea8750ea891b957c9f6aab92d741270fa22dbb7c963766c0dbe5"
+    "value": "e2289a9e8dc32e75389b9022f5d2fdc529dba8ee63828b9e8fb4f8ba3a129b71"
   }
 }

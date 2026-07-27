@@ -3,13 +3,13 @@
   "id": "DA29-187",
   "kind": "I",
   "wave": 18,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Add project-wide diagnostics search and navigation. Depends on DA29-087, DA29-183, and DA29-185.",
   "acceptance": "Filter/group by file, severity, capability, source rule, stale state, and owner; keyboard navigation opens exact range; large result sets stay responsive.",
   "risk": "Search indices can stale. Allows displayed current revision only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "1664e1036a9fc5ff3e35f15031ef20b947e681f97d9911e4d0c31cb8ba1b5521"
+    "value": "16c00ed3901963f4c77fe302385677dbbe5c460a6b7000bc5a0fe986f4689fe5"
   }
 }

@@ -3,13 +3,13 @@
   "id": "DA29-130",
   "kind": "G",
   "wave": 12,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Run a long deterministic soak. Depends on DA29-121…129.",
   "acceptance": "Named device/browser runs repeated rounds, imports, saves, project switches, audio, pause/resume, and stress for fixed duration; frame, memory, errors, resource counts, and final replay digest pass thresholds.",
   "risk": "Short gates miss cumulative faults. Allows soak configuration only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "8d7afc67bbc0f234cb4bc8cfa0e92fb940039389bffd862e96fd66569840d776"
+    "value": "18b625d3d7ef61a6d3cdff6bca94295baba02c01b21437cf2165995bad6650ef"
   }
 }

@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-023",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Add mapping, deadzone, calibration, and unsupported-pad diagnostics. Depends on DA29-021.",
   "acceptance": "Standard and non-standard fixtures cover axes/buttons, deadzone boundaries, remap persistence, conflicts, and fail-closed unknown mapping.",
   "entryPoints": [
@@ -15,6 +15,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "535583889101dd09cc9e327c780a3b7e08d1bea5349f39ab19573a10c3bde026"
+    "value": "aab6cf3a191b0bffee96a91bf385c7127aee5b45f3795947187de0dbffebd397"
   }
 }

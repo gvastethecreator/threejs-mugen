@@ -3,13 +3,13 @@
   "id": "DA29-170",
   "kind": "G",
   "wave": 16,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Run an adversarial practical-MUGEN milestone review. Depends on the chosen MUGEN tasks, especially DA29-150, DA29-160, and DA29-169.",
   "acceptance": "Review samples unsupported-heavy packages, mutation corpus, profile boundaries, user flows, performance, and failure clarity; accepted/rejected claims and next denominator are signed.",
   "risk": "Friendly fixtures inflate readiness. Allows the reviewed practical-MUGEN milestone only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "a9559b991cec53ac5719c4be52a660057d8e085272d3646cc49492021a4fcbb5"
+    "value": "064a86c82917a365442ec37f6a54307a4372c793578c08a3f25bc1b329fc06d1"
   }
 }

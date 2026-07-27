@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-054",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Prove projectile clash and contact tie-breaks. Depends on DA29-053 and DA29-045.",
   "acceptance": "Same-frame projectile/projectile and projectile/fighter cases cover priority, cancel, hitpause, persistence, ordering, and swapped insertion order.",
   "entryPoints": [
@@ -21,6 +21,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "fdf6c62a8aab3ca6e6cab301901e6f492f9bb7e7b9b607dd8956dc84b91fb23f"
+    "value": "421802afadb44dedaa7e8681141ca56307ea9a1ee5da72a103f5ca5d3e4df225"
   }
 }

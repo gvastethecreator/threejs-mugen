@@ -3,13 +3,13 @@
   "id": "DA29-135",
   "kind": "I",
   "wave": 13,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Extract EvidenceEnvelope only after two productive consumers. Depends on DA29-098, DA29-108, and DA29-134.",
   "acceptance": "Studio and one non-Studio decision consume the shared envelope; MUGEN fields stay in adapters; versioning, canonical bytes, stale/tamper failures, and deletion proof pass.",
   "risk": "Shared envelope may still encode product rules. Allows reusable evidence shape only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "16229e378ac9c5e638be22727c9936a616441b5d0d972f4278153f2a0ac31dcf"
+    "value": "39b1120341f6dd9a83308922f9caa8f910e0d52bb6eb78228c51b456cd38e88b"
   }
 }

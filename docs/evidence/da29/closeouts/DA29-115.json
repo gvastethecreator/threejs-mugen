@@ -3,13 +3,13 @@
   "id": "DA29-115",
   "kind": "G",
   "wave": 11,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Prove focus visibility and non-obscuring overlays. Depends on DA29-113 and DA29-114.",
   "acceptance": "Focus ring remains visible under sticky panels/dialogs at zoom and mobile sizes; no focused control is fully hidden; restore target is correct.",
   "risk": "Dense UI can hide focus. Allows tested overlays only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "b6cea91466b1e7e081e8211e073839cf74ef1148e2d158b02d244a470d6b6c39"
+    "value": "14604a00a8a33f0183a73ac6ccd3252d80a939e7d6cad251c10a954ba31e5928"
   }
 }

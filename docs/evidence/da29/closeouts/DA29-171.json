@@ -3,13 +3,13 @@
   "id": "DA29-171",
   "kind": "A",
   "wave": 17,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Automate upstream source-authority refresh and semantic review. Depends on DA29-016, DA29-090, and current dual pins.",
   "acceptance": "Tool verifies pinned objects, fetch policy, dirty/shallow cache state, changed source families, reviewer decisions, source digests, and selector update without silent pin drift.",
   "risk": "Mutable cache can replace normative source. Allows reviewed source-epoch updates only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "010187fa8e9bd0ce6d8327069beaed9baff935940d47d60376e50c473614469d"
+    "value": "5d8eb860c8b52cfc11d138c66dfaacdb2e4cad1940069e5eec17035612c3982f"
   }
 }

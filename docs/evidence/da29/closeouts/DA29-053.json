@@ -3,13 +3,13 @@
   "id": "DA29-053",
   "kind": "I",
   "wave": 5,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Run three-plus live projectiles from imported states. Depends on DA29-041 and DA29-012.",
   "acceptance": "At least three concurrent projectiles prove spawn, movement, hit/miss/remove, global ordering, owner death/reset, and deterministic trace without synthetic construction.",
   "risk": "Unit schedule may differ from live world. Allows named plural route only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "34a06dca50d3208af1f765cf17dce035753669ff9e8c4be900b8f8de44f4a263"
+    "value": "024cae6a64a1fd99b9c8723588a6b838d30ccb24e3f6d71203e51d9ac556f1d2"
   }
 }

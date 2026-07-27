@@ -3,13 +3,13 @@
   "id": "DA29-046",
   "kind": "I",
   "wave": 4,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Prove fall, recovery, bounce, and landing transitions. Depends on DA29-041 and DA29-037.",
   "acceptance": "Imported matrix covers fall flags, velocities, recover windows, ground bounce, landing state, no-recover, and reset with frame-accurate traces.",
   "risk": "Physics and state order interact. Allows named transition set only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "e8dbb7ce6ef165bee530befc44ea77a6c9843b22775943d68fdb8d787a3fb03b"
+    "value": "3dc6631cbabab5d285738adaf75d5a7363d43f07f63d30411667ee665a4fcb57"
   }
 }

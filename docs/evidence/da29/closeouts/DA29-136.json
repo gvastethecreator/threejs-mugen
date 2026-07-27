@@ -3,13 +3,13 @@
   "id": "DA29-136",
   "kind": "A",
   "wave": 13,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Define a storage port from proven Studio behavior. Depends on DA29-091…100 and DA29-133.",
   "acceptance": "Port covers transaction, revision, watch/conflict, permission, recovery, export, and errors; IDB/file adapters pass the same contract suite where applicable.",
   "risk": "Lowest-common-denominator API. Allows port design and conformance only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -39,6 +39,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "3afad62769aa6b7d04228343103ffcc00540552e78080d4c1ccaa0273bd80d5c"
+    "value": "7b04fefa305ad64cd7b74d1e3c752c0e5f932da6af495c201eee514c787353e7"
   }
 }

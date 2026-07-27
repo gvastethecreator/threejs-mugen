@@ -3,13 +3,13 @@
   "id": "DA29-131",
   "kind": "I",
   "wave": 13,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Make BoundaryManifest the only required-root source. Depends on DA29-006 and current DA28-30 work.",
   "acceptance": "Boundary command loads the versioned manifest; duplicated root lists are removed; schema and command fixtures fail together on drift.",
   "risk": "Split rules give false green. Allows manifest consumption only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "5ca01b48883e5b7152987c43cf192d64fc9e37240b61c6f8e7160ee8b1a5abbd"
+    "value": "1a956d95dc0bbda4c8a1d5cf62b97001eb612192a32916620ab156800f8d8bd7"
   }
 }

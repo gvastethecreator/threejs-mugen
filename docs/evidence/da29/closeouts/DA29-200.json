@@ -3,13 +3,13 @@
   "id": "DA29-200",
   "kind": "G",
   "wave": 19,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Run final product/SDK roadmap adjudication. Depends on the chosen product target and DA29-180…199.",
   "acceptance": "Review records shipped/local-only surfaces, API stability, extension risk, migration state, release/deployment authority, evidence freshness, scores, blocked claims, and the next bounded program.",
   "risk": "A long plan can end in broad unsupported claims. Allows only the signed final scope and next program.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "12e26d99d9a83863d3508234e20616a5716f6fe16842707b5d30c87e08e95ca9"
+    "value": "7f6dd51e633e0991c3c1c14a5f5f993b4d85d3a63e0765ee6b6987840f272185"
   }
 }

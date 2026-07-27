@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-093",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Surface transaction, quota, abort, and durability failures. Depends on DA29-092.",
   "acceptance": "Product and unit tests inject abort, quota, unknown, blocked upgrade, close, and commit errors; memory cannot report success after durable failure.",
   "entryPoints": [
@@ -16,6 +16,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "a01a1511860fab0c97f53a0ccfa529115af0f4828bc45a1729785d57b485c203"
+    "value": "75978a085b20e3c26690bc48da0e731f4732c540364bfe8f2156ab6005514192"
   }
 }

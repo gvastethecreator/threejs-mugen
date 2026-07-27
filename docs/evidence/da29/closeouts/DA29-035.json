@@ -3,13 +3,13 @@
   "id": "DA29-035",
   "kind": "A",
   "wave": 3,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Version the canonical trigger capability registry. Depends on DA29-032 and DA29-033.",
   "acceptance": "Each trigger maps context, redirects, coercion, timing, evaluator owner, tests, traces, and unsupported branches.",
   "risk": "Evaluator context may be incomplete. Allows capability mapping only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -39,6 +39,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "38812e3c4729fd29f679443e6fa32a6c006244468287e4453f3678cdbe5fc459"
+    "value": "c15c6a55fc8a0826c55004d66fad4e5aef87b824f72ed1b0c2d65b8a07926210"
   }
 }

@@ -3,13 +3,13 @@
   "id": "DA29-104",
   "kind": "G",
   "wave": 10,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Prove sprite-atlas transform reproducibility. Depends on DA29-102 and DA29-103.",
   "acceptance": "Given recorded inputs/version/options, atlas metadata and pixels match digest or approved tolerance; trim, pivot, scale, padding, order, and failure cases are tested.",
   "risk": "Tool upgrades change output. Allows named tool revision only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "1db3fb7dcac1464afe2f71163521bf356cfb62a3c936c84a6b13b889c6ef2b45"
+    "value": "e417517af6b66d50dfaab7fe28ab7f5c2eb9ca12c23c0593bc7c1cb1afaf6176"
   }
 }

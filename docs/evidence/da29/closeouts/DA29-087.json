@@ -3,13 +3,13 @@
   "id": "DA29-087",
   "kind": "I",
   "wave": 8,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Replace hard-coded scanner `passed` phases with executed modules. Depends on DA29-013, DA29-082…086.",
   "acceptance": "Scanner runs each phase, records time/input/output/ruleset/digest, propagates errors, supports cancellation, and cannot materialize green text without execution.",
   "risk": "Static green masks broken analyzers. Allows executed scanner facts only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "c8dbc7ab2a53778d34553ed64267c23c6fc8205eff7572652d349877deb74da6"
+    "value": "46a91ce326568a1d1b67f4d244a044e95e5da0ee61aee375e8e7574f3c8683d7"
   }
 }

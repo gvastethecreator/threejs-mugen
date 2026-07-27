@@ -3,13 +3,13 @@
   "id": "DA29-127",
   "kind": "G",
   "wave": 12,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Test IndexedDB quota, corruption-like, and blocked-upgrade recovery. Depends on DA29-092, DA29-093, and DA29-099.",
   "acceptance": "Injected quota/abort/blocked/version/store loss routes retain last good data, surface state, allow safe export/reset, and never report false save success.",
   "risk": "Recovery may destroy evidence. Allows injected routes only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "060a6c63c5fcb04f8377ae3ed69d896245df2d787086e24458768f5e38bab981"
+    "value": "c5b778e8711c0b2c8fda991e6a8c54712ced4b363d8c730a7cadba0a1ba2c6ae"
   }
 }

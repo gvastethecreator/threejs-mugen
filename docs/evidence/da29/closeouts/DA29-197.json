@@ -3,13 +3,13 @@
   "id": "DA29-197",
   "kind": "A",
   "wave": 19,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Define semantic versioning, migration, and deprecation policy. Depends on DA29-181, DA29-192, and DA29-196.",
   "acceptance": "Policy separates project schema, evidence, source/profile, public API, plugin, asset, and runtime compatibility versions with support windows and migration gates.",
   "risk": "One version cannot express all contracts. Allows policy only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -39,6 +39,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "d5d77926d6c432b4b6bd25e378a6392e3546ebe4725d688abc83656c5d8edd8d"
+    "value": "9ab86e0821048c00c78933caf4d7a602dd1164cb447159704f2f26a25ab3fea8"
   }
 }

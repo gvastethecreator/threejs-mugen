@@ -3,13 +3,13 @@
   "id": "DA29-117",
   "kind": "G",
   "wave": 11,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Audit contrast, reduced motion, and flashing. Depends on DA29-003 and DA29-111.",
   "acceptance": "Theme/state contrast, HUD overlays, focus, disabled/error states, screen shake, flashes, transitions, and reduced-motion paths have measured results and fixes.",
   "risk": "Combat effects can cause harm. Allows tested themes/effects only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "6f2d217eb05674e044e5bf898fb5fdfce1e517ee79fa2d23b908a9404dea9e39"
+    "value": "d3acd4ca0b072e21b0b2bec89497318dd6927af7d935dbc31fb1bbe4ee0bd3d6"
   }
 }

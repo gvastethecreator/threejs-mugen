@@ -3,13 +3,13 @@
   "id": "DA29-188",
   "kind": "G",
   "wave": 18,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Export a deterministic playable project bundle. Depends on DA29-100, DA29-109, DA29-110, DA29-148, and DA29-181.",
   "acceptance": "Same project/revision/tool chain yields identical manifest and content digests, safe paths, current evidence, runtime config, and a local play smoke; blocked facts stop export.",
   "risk": "Local bundle is not deployment. Allows deterministic local export only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "d70cf8cbbac510875174e42f710646fcf9501e6c5700d9c033218ca3e74e34cf"
+    "value": "2182feaa1d9cd01cf75d9a73f51f2d20b79131a1ea2c56bac11b04b71003c33f"
   }
 }

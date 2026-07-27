@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-139",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Add a minimal non-fighting second consumer. Depends on DA29-132 and DA29-134…138.",
   "acceptance": "Repository-owned platformer/testbed uses chosen evidence, storage, renderer, and input/clock ports in one playable route; no MUGEN import or copied combat model exists.",
   "entryPoints": [
@@ -15,6 +15,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "42c7e0bd877d0594601e94ce78737d3bff10fe6451910c6ffac65f991d49a5b2"
+    "value": "e0543537c1c8c0a936cf951929980c6219388befaf7bf2953be6b4109e5297d6"
   }
 }

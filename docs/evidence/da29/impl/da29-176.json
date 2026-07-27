@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-176",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Execute one source-reviewed ZSS extension subset. Depends on DA29-172, DA29-175, and a dedicated capability registry.",
   "acceptance": "One repository-owned fixture proves selected declarations/operations, deterministic failure cases, runtime trace, reset, and explicit rejection of every ungranted feature.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "11a2e72f3ca5a0a36b8ae1e1228fc5fd0ec16f60da359ec935a697cbc50259d0"
+    "value": "e20bbe09690c4cd15a9a3bb46078c1b2519c0649397575766b70c73821de87ce"
   }
 }

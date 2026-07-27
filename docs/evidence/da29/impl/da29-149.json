@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-149",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Generate current docs and archive historical views. Depends on DA29-010, DA29-007, and DA29-148.",
   "acceptance": "Current summaries derive from selector/registries/corpus; append-only history retains stable links; size/search checks pass; manual stale overrides fail audit.",
   "entryPoints": [
@@ -15,6 +15,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "2300c57ab17a96587a1e31780aeaf6ea7502acf9a43b56d89cf2a76719011305"
+    "value": "4ae080a50591a02abf0789b425ebdd4d922ab059d48e5d76eb17c9818f767e31"
   }
 }

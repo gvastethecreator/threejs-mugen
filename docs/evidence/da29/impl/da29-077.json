@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-077",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Execute a real ACT palette-selection path. Depends on DA29-082 and DA29-043.",
   "acceptance": "ACT bytes load, selected index changes rendered pixels and palette facts, invalid/missing ACT fails visibly, and sprite-sheet hash fallback is not called palette execution.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "b2f23d5b102e1b07781a6a3fee894cdb8d017de70647fa7f413ec61d86928685"
+    "value": "3a7e1efd7987f9cd6c95d54e38cbd2000658fa647c9ad68611e054ca0860ba93"
   }
 }

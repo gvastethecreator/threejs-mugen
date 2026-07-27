@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-108",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Make AssetReleasePolicy consume live project records. Depends on DA29-103…107.",
   "acceptance": "Product gate evaluates current revisions for permission, license, digests, transforms, visual/collision/playtest facts, and reports exact blockers.",
   "entryPoints": [
@@ -21,6 +21,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "0986f28ab01b32a22a42a62f2aefdfc8b194fbc6ca482a5d2acf2eb7480fa70d"
+    "value": "73e5100cedf1114ad653097c5169f22feba5a6e69010aa2f9614a38cf7068d33"
   }
 }

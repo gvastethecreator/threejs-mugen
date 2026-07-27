@@ -3,13 +3,13 @@
   "id": "DA29-050",
   "kind": "G",
   "wave": 4,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Prove round-reset combat cleanup. Depends on DA29-045…049.",
   "acceptance": "Matrix lists which hits, targets, binds, pauses, projectiles, helpers, effects, inputs, power, vars, and team state clear or persist across round/reset paths.",
   "risk": "Hidden residue causes later-round bugs. Allows tested cleanup invariants only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "519a6a851932f35827897de8a9484eafb7f10eb7cd41a0a8e95fbdefeb95a5a0"
+    "value": "ecc5bfb3c2989b605d87594849d88c60375b6732bc39561e28e1e9f3bf76b620"
   }
 }

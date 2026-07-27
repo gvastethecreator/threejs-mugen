@@ -3,13 +3,13 @@
   "id": "DA29-174",
   "kind": "G",
   "wave": 17,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Prototype a bounded Lua sandbox offline. Depends on DA29-125 and DA29-173.",
   "acceptance": "Repository-owned scripts test allowlisted APIs, deterministic clock/RNG, memory/instruction/time caps, cancellation, errors, no file/network/DOM access, and worker termination.",
   "risk": "Sandbox escape or denial of service. Allows prototype facts only; blocks product execution.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "6b151a3053a38a88b07172f2e57a0e65696487cf366ca74f6092697eb4da77a7"
+    "value": "ec0314ac5a64f463b0673ace123fc4f21c2bb64d29c6cb78e95181163c0c96bb"
   }
 }

@@ -3,13 +3,13 @@
   "id": "DA29-143",
   "kind": "I",
   "wave": 14,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Split pull-request, nightly, and release workflows. Depends on DA29-142 and DA29-130.",
   "acceptance": "PR stays bounded; nightly runs full traces/browser/accessibility/perf/security; release requires fresh corpus and selected long gates; cancellation/concurrency rules work.",
   "risk": "Slow jobs can become stale. Allows workflow topology only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "71c6e5da175b53fba00d17b40c1d57afe9785b789e95baa5c0300ca68246d6b2"
+    "value": "16e39fe9b675a0d0f03b9743bd8b4a8fda1720301c9846360472678b07c98e7f"
   }
 }

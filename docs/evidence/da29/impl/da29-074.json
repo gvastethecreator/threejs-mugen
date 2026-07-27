@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-074",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Load and render bounded stage layers/parallax. Depends on DA29-073 and DA29-083.",
   "acceptance": "Repository-owned stage proves layer order, delta/parallax, tiling, animation, clipping, camera movement, disposal, and desktop/mobile captures.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "939ef789b7a206eecb50a04272b61ffd9756695ec643e6d626c624735e57e46b"
+    "value": "d5c059377de98e83b22c33fd922c0417eb752f5c53641a4d06c4909f7f7cef11"
   }
 }

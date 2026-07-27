@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-113",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Fix mobile overlay, clipping, reflow, and scroll ownership. Depends on DA29-111 and DA29-112.",
   "acceptance": "320/390/430 widths show full control labels, readable HUD, visible fight area, no two-axis overflow, usable scroll, safe areas, and orientation change.",
   "entryPoints": [
@@ -13,6 +13,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "0fb2fa096721ef3d43706ed6c32e7f912fd6ef48b6ba93ab571e3586816b8c26"
+    "value": "4d49ee7d322bdfb0aa1ecbb4c9f22d436e1c1e1b71f61bffeb7ab964ebc4162c"
   }
 }

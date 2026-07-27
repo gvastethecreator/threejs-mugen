@@ -3,13 +3,13 @@
   "id": "DA29-036",
   "kind": "R",
   "wave": 3,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Reconcile expression coercion and error rules. Depends on DA29-032 and DA29-035.",
   "acceptance": "Matrix covers int/float/string/bool, truncation, missing values, divide-by-zero, invalid redirects, and profile differences with source refs.",
   "risk": "Silent coercion causes wide drift. Allows reviewed rules only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -40,6 +40,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "bafcb44be8bb3dd38c3d1d2a742f9649ba7d06d79c3fc4ffe24c40a8b4f360a3"
+    "value": "78253961977d38ad0414eca10dc3a1f67ee61b75bc70d02104f351dcc0ad93ca"
   }
 }

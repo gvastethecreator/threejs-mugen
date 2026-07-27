@@ -3,13 +3,13 @@
   "id": "DA29-110",
   "kind": "G",
   "wave": 10,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Enforce public-path hygiene and evidence redaction. Depends on DA29-101 and DA29-109.",
   "acceptance": "Build/evidence scans reject absolute, traversal, temp, user, secret-like, commercial, and unapproved files; exported bundle uses safe relative paths and stable subject IDs.",
   "risk": "Local paths leak user data. Allows tested bundle hygiene only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "07103c0414a675f151a5c98c66288cc53731641550939d97a16a18ddd3cfd0be"
+    "value": "4dcc64d13d86102de476f62fc1c7c4ee138c5b2dff14fc7d8c0edb246ab15937"
   }
 }

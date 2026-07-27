@@ -1,9 +1,10 @@
 # DA29-002 global checkpoint (measured HEAD re-gate)
 
 **ID:** DA29-002 `[G]`  
-**Measured at:** `119e627410a4a72eee28650ae20422d475dac834`  
+**Measured at:** `119e627410a4a72eee28650ae20422d475dac834` (full stack)  
+**Series commit pin:** `7e90eeb6267defdd619baa62bacd459b8580e200` (closeouts + authority after commit; typecheck + series unit tests re-verified)  
 **Date:** 2026-07-27  
-**Working tree:** included DA29 series materializers, closeouts, and authority drain under test at measurement time (not inherited from `32466c6e`).
+**Note:** Full suite was measured with the DA29 working tree present; formal/global pin advances to the series commit after post-commit typecheck + series tests (not inherited from `32466c6e`).
 
 ## Commands and exit codes
 

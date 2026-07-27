@@ -3,13 +3,13 @@
   "id": "DA29-054",
   "kind": "I",
   "wave": 5,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Prove projectile clash and contact tie-breaks. Depends on DA29-053 and DA29-045.",
   "acceptance": "Same-frame projectile/projectile and projectile/fighter cases cover priority, cancel, hitpause, persistence, ordering, and swapped insertion order.",
   "risk": "Array order may leak into results. Allows tested clash matrix only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "417703ccf72303061c3997ebabe47c73794d3c70a71fb60855b223aef65fd027"
+    "value": "8c41ae0cdcdb869db925480b95358d6a4b4a37020754f810a84727e58e03aa80"
   }
 }

@@ -3,13 +3,13 @@
   "id": "DA29-195",
   "kind": "G",
   "wave": 19,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Publish a fixture and adapter conformance kit locally. Depends on DA29-140, DA29-192, and DA29-194.",
   "acceptance": "Kit provides lawful fixtures, contract tests, negative cases, environment envelope, expected artifacts, version policy, and one external-style sample adapter in the repo.",
   "risk": "Tests may encode current bugs. Allows local conformance kit only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "e7da3da744e848ba14728833e2fa2ad71d0df6dd5ff67f792e7892bdf8bbee0b"
+    "value": "b4442a2179d8d55283da9fdaf1383ef4477671036f5d38d56c8ef5f325f6a3aa"
   }
 }

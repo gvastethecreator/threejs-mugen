@@ -3,13 +3,13 @@
   "id": "DA29-179",
   "kind": "G",
   "wave": 17,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Run an isolated local peer/rollback prototype. Depends on DA29-070 and DA29-178.",
   "acceptance": "Two local peers exchange versioned inputs, delay/loss simulation, predict/resim, compare checksums, surface desync, and recover/abort safely; no external service or credentials.",
   "risk": "Prototype can be mistaken for secure netplay. Allows local prototype data only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "c932d5e25a2cce4037e918a86840100b06de6de1226a47d0bb57be33d86ed46b"
+    "value": "e50768b157c61e1ca6ffd7ec02af99af8bff1a65d726597b94ae53884a65e448"
   }
 }

@@ -3,13 +3,13 @@
   "id": "DA29-177",
   "kind": "G",
   "wave": 17,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Execute one product-authorized Lua/module experiment. Depends on DA29-174, DA29-175, DA29-119, and explicit user trust UX.",
   "acceptance": "Opt-in project route shows capabilities, runs a repository-owned script under caps, records evidence, handles timeout/error/revoke, and leaves default import execution disabled.",
   "risk": "Consent and sandbox may fail. Allows experimental route only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "d31139c8c4fe76bdd7901e2ad06dd7272f8dfa4ec3d224d42695fdb86e148a16"
+    "value": "3a39036b0726a6dde1503aa1fe15458b7ba2e1c88656db28eee447edc8c90218"
   }
 }

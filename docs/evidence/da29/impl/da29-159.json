@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-159",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Build a real character/stage select journey. Depends on DA29-158, DA29-113…117, and DA29-074.",
   "acceptance": "Keyboard/gamepad desktop/mobile flow chooses legal characters/stage, shows missing/blocked entries, preserves seat/profile, starts the exact package, and returns safely.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "40e0fabdbdb2d939bd40ad4c23d580681a4013613d9b06cbfd071ee8b74e53fc"
+    "value": "2aa8f2629b25dc3dbec71f6bace738cd128c148615b6eca4bd9d12dc46e9570e"
   }
 }

@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-166",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Close continue, winquote, intro, and ending flow for one arcade route. Depends on DA29-160, DA29-163…165.",
   "acceptance": "One repository-owned route proves data loading, result ownership, continue choice, quote selection, storyboard handoff, save/reopen state, skip, and safe missing content.",
   "entryPoints": [
@@ -17,6 +17,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "ca8cb3720d126b4422bf5d17432a31e5da2e14dd943a7993ba2b3d8c93466603"
+    "value": "0ab899adef3a72f7c83d4da20731d7ad2884f0811d27670d067c8ced27363539"
   }
 }

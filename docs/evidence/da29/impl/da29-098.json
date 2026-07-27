@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-098",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Make changed-source freshness visible and blocking. Depends on DA29-004, DA29-088, and DA29-094.",
   "acceptance": "Source mutation invalidates analysis, build, evidence, and release at the same revision; Studio shows reason and exact next action; rerun restores only fresh facts.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "de95b456d44eb646e1a5a416068aaea46eb55bc90fa05f58f2f4c38f8c8301b0"
+    "value": "47d659c74fa6327339834bb11743177f2fce96b8d615bc6051be317365916316"
   }
 }

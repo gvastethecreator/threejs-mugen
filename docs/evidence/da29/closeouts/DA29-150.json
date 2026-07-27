@@ -3,13 +3,13 @@
   "id": "DA29-150",
   "kind": "G",
   "wave": 14,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Run final score, compatibility, product, and release adjudication. Depends on all required tasks for the chosen milestone, especially DA29-005 and DA29-147…149.",
   "acceptance": "Independent evidence review records accepted/rejected facts, exact score changes, release decision, supported profiles/routes, known gaps, and next queue; every broad claim links its gate.",
   "risk": "Pressure to call partial work complete. Allows only the signed adjudication result.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "017edf06dab1a4d8d50d2e70f0cd5b02e2b4b312bafbc4683ab8e7e278e9c834"
+    "value": "c52cbe244666175fcf969fe892048a781daa933d9ef7e46a525f0a1301e12eb3"
   }
 }

@@ -3,13 +3,13 @@
   "id": "DA29-185",
   "kind": "I",
   "wave": 18,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Add cancellable batch analysis and transform jobs. Depends on DA29-087, DA29-104, DA29-124, and DA29-125.",
   "acceptance": "Queue reports inputs/revisions/progress, concurrency, cancel/retry, partial outputs, errors, resource caps, and final project facts without blocking core UI.",
   "risk": "Partial batch results can appear current. Allows named job types only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "36d645b1d239ad5cfe37b1cef5a3fa2ff72c36c5b3b7225b6f0db35ea74bd0a2"
+    "value": "16063d070974bb688809d15dd2d14c3f75538af3fe84936f4c271d90a57d571d"
   }
 }

@@ -3,13 +3,13 @@
   "id": "DA29-056",
   "kind": "I",
   "wave": 5,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Close a bounded Explod/ModifyExplod/BindToRoot chain. Depends on DA29-055 and DA29-052.",
   "acceptance": "Imported chain proves create, ID selection, modification, bind, pause, remove, owner death, and browser/render match.",
   "risk": "Effect identity collisions. Allows one controller chain only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "e4eac2797b4d26cb8df8a8d98f40c6cc30f0f1c37896e36a2dd92766860864bb"
+    "value": "98699a174059c5e337250703930c39161f7743d496b5915d63f4f97fe1637e6c"
   }
 }

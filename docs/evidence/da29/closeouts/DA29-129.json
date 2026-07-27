@@ -3,13 +3,13 @@
   "id": "DA29-129",
   "kind": "A",
   "wave": 12,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Set actor, Helper, projectile, effect, trace, and evidence caps. Depends on DA29-060, DA29-122, and DA29-126.",
   "acceptance": "Limits have source/product rationale, deterministic refusal/degradation, visible diagnostics, telemetry, reset behavior, and adversarial tests.",
   "risk": "Caps can alter compatibility. Allows explicit sandbox policy only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -39,6 +39,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "26ec076ee4eddce0f7e592230ce7a72d5e61a4ed6cf2789b09ec27255600769a"
+    "value": "294ce4fdfa28d39d06f8a531f70caa863d0d13ddf77592edb4eb2b71c0bf8c42"
   }
 }

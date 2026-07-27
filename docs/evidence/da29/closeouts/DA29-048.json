@@ -3,13 +3,13 @@
   "id": "DA29-048",
   "kind": "A",
   "wave": 4,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Define atomic throw and custom-state ownership. Depends on DA29-041 and DA29-027.",
   "acceptance": "ADR covers target acquisition, state owner, position/bind, damage, release, interruption, KO, missing target, and rollback boundary with source refs.",
   "risk": "Partial mutation can strand actors. Allows architecture only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -39,6 +39,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "35a3df2fb667232052510f44b19ea9bdaa203ca58613e3b195a2bebe7195b310"
+    "value": "9bbc1e10f4976c228e93dde443a25127fa1947d4fb851264b8c24c53ae548dc4"
   }
 }

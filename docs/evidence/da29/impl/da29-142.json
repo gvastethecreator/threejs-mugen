@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-142",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Add reproducible CI for core checks. Depends on DA29-141.",
   "acceptance": "Pinned runtime installs lockfile, caches safely, runs typecheck/unit/build/boundaries/control audit, uploads facts, and fails on warnings chosen as fatal.",
   "entryPoints": [
@@ -13,6 +13,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "956d94e304908565aec3e97a96878a761f29a83e0880764d6d5643d7bf18d28f"
+    "value": "ce950c1fb5d888d4205ca432d246c2704023e199367876cafe3bcfa9c9408479"
   }
 }

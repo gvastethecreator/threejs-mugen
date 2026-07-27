@@ -3,13 +3,13 @@
   "id": "DA29-077",
   "kind": "I",
   "wave": 7,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Execute a real ACT palette-selection path. Depends on DA29-082 and DA29-043.",
   "acceptance": "ACT bytes load, selected index changes rendered pixels and palette facts, invalid/missing ACT fails visibly, and sprite-sheet hash fallback is not called palette execution.",
   "risk": "Palette fallback can overclaim. Allows one ACT path only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "2cb8ce026ab484643147b59c0d58b44c29c56918cb07cec13728c2a146db7d7d"
+    "value": "eebebc5f363c8b174bbca9acfa9b981764d0a687d94ba5e74ef3836362a5f3f6"
   }
 }

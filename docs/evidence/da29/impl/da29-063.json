@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-063",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Prove Simul KO and round-end policy. Depends on DA29-062 and DA29-050.",
   "acceptance": "Partial KO, double KO, surviving partner, timeout, win attribution, cleanup, and next-round roster state have deterministic traces.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "8d6b6faf10e863ce591614fc166ce62561b07f4caa8b2084d4c73e31e97555d1"
+    "value": "bcb5e8331fa93412ca4e2dc64a6e3ba14007f45e21fc713ef85b4e7438412b47"
   }
 }

@@ -3,13 +3,13 @@
   "id": "DA29-142",
   "kind": "I",
   "wave": 14,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Add reproducible CI for core checks. Depends on DA29-141.",
   "acceptance": "Pinned runtime installs lockfile, caches safely, runs typecheck/unit/build/boundaries/control audit, uploads facts, and fails on warnings chosen as fatal.",
   "risk": "Local-only green. Allows CI execution on named environment only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "75f268d0f01d05e4ac23fc4044bc29bbe0c1fd0f9a5420f242938a6480c4c20c"
+    "value": "ec6f1562f34e9a6b480a5ff529fafa3643302c1ff0aa64ea9e33aa3d32ff5279"
   }
 }

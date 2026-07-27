@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-042",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Add a reciprocal Mira contact/guard journey. Depends on DA29-041.",
   "acceptance": "Distinct input path proves Mira attack plus Nova guard or hit, with authored frames, damage/guard values, failure route, and browser correlation.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "cd035a09522419ce9125b9155036efbe789fc0fae938f0979962d6a4c9aa243a"
+    "value": "e25283f6b4d24cf39f07784b8ad5f9a21324e2e0e5eb3b21d21c5af60c8a48a4"
   }
 }

@@ -3,13 +3,13 @@
   "id": "DA29-156",
   "kind": "I",
   "wave": 15,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Add one deterministic AI-versus-AI route. Depends on DA29-155, DA29-026, and DA29-041.",
   "acceptance": "Fixed seed/difficulty yields stable commands, contacts, winner, frame count, periodic checksums, and clear unsupported AI features across repeated runs.",
   "risk": "One scripted opponent can fake AI breadth. Allows one AI policy/fixture only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "5f5bfdba939354850ab6f3fe520f9ce2df27eab26d545102c5a767da826e7460"
+    "value": "317d5419730491bfffe597bac18d16c4e2637276cc484193bc16fbb0c1b8fc62"
   }
 }

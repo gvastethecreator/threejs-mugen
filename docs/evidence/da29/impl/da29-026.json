@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-026",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Replay the canonical input log. Depends on DA29-025 and DA29-029.",
   "acceptance": "Record/replay tests compare periodic and final state checksums, controller telemetry, winner, and frame count; mismatch reports first divergent owner.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "d7dae21e7959290c38b74a9859e035d57767ecf51589e40cda6e008d8efa2145"
+    "value": "fa4e6d2086a6d3472ba44ec37051fbacb2d5fcb09319514162b745a79fe882dc"
   }
 }

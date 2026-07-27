@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-164",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Widen lifebar and `fight.def` rendering. Depends on DA29-068, DA29-076, DA29-161, and DA29-162.",
   "acceptance": "Imported fixture covers bars, portraits, names, power, timer, combo, round/KO/win elements, layer order, transforms, team variants, resize, and fallback.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "5cdaa370aad100dbf8de28647daf1c0d4eef701efbb215d36c99dc5951de3c5e"
+    "value": "556e21ff35e1e5058f1a30dad605867af7e058982c59b204aa9eca0796f2a2c1"
   }
 }

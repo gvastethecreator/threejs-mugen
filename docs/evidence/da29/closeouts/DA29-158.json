@@ -3,13 +3,13 @@
   "id": "DA29-158",
   "kind": "G",
   "wave": 15,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Parse and validate bounded `select.def` roster data. Depends on DA29-081, DA29-085, and DA29-109.",
   "acceptance": "Repository-owned file covers character/stage rows, random/select rules, ordering, missing/duplicate paths, extra metadata, diagnostics, and safe project closure.",
   "risk": "Roster parse can imply mode support. Allows parsed subset only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "84a9bba34c3230ebbbb144c7a62cc64f49cc3df1a20c040154d67b216bb09127"
+    "value": "83c270c5f378e8acbe8070f814ff6afde2a5b11ad6f945bc37b9a78f6d271538"
   }
 }

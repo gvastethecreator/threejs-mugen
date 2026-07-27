@@ -3,13 +3,13 @@
   "id": "DA29-090",
   "kind": "G",
   "wave": 8,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Prove deterministic scanner reanalysis and semantic diff. Depends on DA29-087 and DA29-088.",
   "acceptance": "Source, ruleset, analyzer, and upstream revisions each trigger a deterministic diff with added/removed/changed findings and stable unchanged rows.",
   "risk": "Timestamp noise obscures meaning. Allows semantic-diff claims only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "69c80fc81d548bd53df6f20114a8084f6a2a42854d8afd8b0bb130a593fcf3db"
+    "value": "3e80c79c0eeb513b5d2fe3ef883b3f44a9cf55ba0f013038504dcc60b4d7d017"
   }
 }

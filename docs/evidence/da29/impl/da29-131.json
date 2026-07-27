@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-131",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Make BoundaryManifest the only required-root source. Depends on DA29-006 and current DA28-30 work.",
   "acceptance": "Boundary command loads the versioned manifest; duplicated root lists are removed; schema and command fixtures fail together on drift.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "f55effa29d9840e79f9658e065db2c0e77732479f3fc111dfa17e84d50a1a898"
+    "value": "ec4399acc2a93712b782a7b237fc0dbcbd7904bfd5c1dc8b22bb81017307e117"
   }
 }

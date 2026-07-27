@@ -3,13 +3,13 @@
   "id": "DA29-181",
   "kind": "A",
   "wave": 18,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Version the saved-project schema and migrations. Depends on DA29-091, DA29-092, and DA29-109.",
   "acceptance": "Schema covers package refs, revisions, settings, analysis/evidence refs, asset graph, source handles, UI state, extensions, migration, export, and unknown-version refusal.",
   "risk": "Project upgrades can lose author work. Allows schema contract only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -39,6 +39,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "3c7f221c39ae99f17e99fda2c9e85e1a9df764cc9cdd560fe5cc4cfab1d1e38c"
+    "value": "48303af2743a8acc2a104984bd696ae4ac92b6864e69f21b1be1b23255b60655"
   }
 }

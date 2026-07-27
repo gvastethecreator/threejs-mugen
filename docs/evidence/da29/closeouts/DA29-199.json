@@ -3,13 +3,13 @@
   "id": "DA29-199",
   "kind": "A",
   "wave": 19,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Define telemetry, crash evidence, and privacy policy. Depends on DA29-008, DA29-144, DA29-190, and DA29-198.",
   "acceptance": "Decision covers opt-in, data minimization, local logs, redaction, retention, user export/delete, crash envelope, performance sampling, consent, and production authority.",
   "risk": "Diagnostics can expose project/user data. Allows policy only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -39,6 +39,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "9a58816fd04f8978fe7097258b1039d19349a79601ebfb30711dab974a8681dc"
+    "value": "a9a1cbe1e99d9a2e14a31e9acee12856f34b08d2e08fcd85f59e98348b795df8"
   }
 }

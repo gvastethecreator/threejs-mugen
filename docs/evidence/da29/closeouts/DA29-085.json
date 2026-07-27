@@ -3,13 +3,13 @@
   "id": "DA29-085",
   "kind": "G",
   "wave": 8,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Harden CNS/CMD recovery and diagnostic limits. Depends on DA29-033 and DA29-081.",
   "acceptance": "Mutation corpus covers truncated blocks, duplicate fields, invalid expressions, encoding/newlines, huge tokens, nested comments, unknown fields, and bounded error counts.",
   "risk": "Error storms can lock the UI. Allows diagnostic robustness only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "5fc6fd0e8919afaad1d9ebb8b9d149cb9b20e9c21162869a00c26aa79ebacabc"
+    "value": "80013fef9f6fb351900bdb442b01232a145e354f4998d3d6ae1ed45273b023fb"
   }
 }

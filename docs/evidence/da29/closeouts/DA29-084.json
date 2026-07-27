@@ -3,13 +3,13 @@
   "id": "DA29-084",
   "kind": "G",
   "wave": 8,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Harden AIR parsing and located diagnostics. Depends on DA29-081.",
   "acceptance": "Valid/malformed fixtures cover actions, elements, loopstart, collision boxes, timing, flips, alpha, whitespace/comments, duplicate actions, and exact locations.",
   "risk": "Recovery may accept bad syntax. Allows parsed AIR subset only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "9648545a7cf04391cdc71681f8a4b762605d63b206f611608f9d1bae61b45f22"
+    "value": "bbc96ac44eb930866948f546534737683356243dd496697d2e7df902bb184f63"
   }
 }

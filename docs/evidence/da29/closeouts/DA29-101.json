@@ -3,13 +3,13 @@
   "id": "DA29-101",
   "kind": "A",
   "wave": 10,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Version AssetProvenance with cryptographic content digests. Depends on DA29-008 and DA29-081.",
   "acceptance": "Schema covers inputs/outputs, SHA-256, canonical metadata, permission, license, creator/tool, timestamps, transforms, and subject revision; migration is explicit.",
   "risk": "Weak digest may imply integrity. Allows provenance schema only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "003aaaa530f725f235a0959fdf40118783b54c5a9726889039ac7bd989e65c88"
+    "value": "5a9593e23c3684ac210b9235dfe12055a7f29b38a65d614d9e00f3ebd159a29c"
   }
 }

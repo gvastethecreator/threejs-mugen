@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-097",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Revalidate file-handle permissions on reopen and write. Depends on DA29-091 and DA29-094.",
   "acceptance": "Granted, prompt, denied, revoked, missing handle, moved file, read-only, and user-cancel routes produce clear product state and no silent data loss.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "fbabedc6d1139ab299f303632c4fa1f398f984758b93897237a1bbb613d932b0"
+    "value": "1b900017b9d50c8ee1a914bc0b21dd269c059f16fcfd5e57225c337e1b4ae6bd"
   }
 }

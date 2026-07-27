@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-092",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Add versioned IndexedDB schema and migrations. Depends on DA29-091.",
   "acceptance": "Upgrade, downgrade rejection, interrupted migration, missing store/index, old snapshot, and rollback tests pass against real IndexedDB, not memory fallback.",
   "entryPoints": [
@@ -15,6 +15,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "acee0ad7b6d8c96dc49c550ad4067d32f2290076e3a84493926e20240baca2b4"
+    "value": "b6a36afc39a918f4d0f392fc2c3b8152b339216f9b83e2754204f3afa71cba26"
   }
 }

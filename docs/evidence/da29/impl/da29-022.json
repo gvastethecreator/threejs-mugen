@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-022",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Handle gamepad connect, disconnect, and reconnect. Depends on DA29-021.",
   "acceptance": "Browser tests cover unplug mid-hold, reconnect with changed index, stale button release, two seats, and keyboard fallback with visible status.",
   "entryPoints": [
@@ -16,6 +16,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "0c3a3a451ef4cee1d6738d65125ab57e4c06f8ac90502459ce5860817a4ad888"
+    "value": "8c69a7c914f19220328fdb3cfc50cb53ff9a19646a8f680dbd23aed3cebcac72"
   }
 }

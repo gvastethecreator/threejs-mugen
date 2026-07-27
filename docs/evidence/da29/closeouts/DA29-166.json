@@ -3,13 +3,13 @@
   "id": "DA29-166",
   "kind": "I",
   "wave": 16,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Close continue, winquote, intro, and ending flow for one arcade route. Depends on DA29-160, DA29-163…165.",
   "acceptance": "One repository-owned route proves data loading, result ownership, continue choice, quote selection, storyboard handoff, save/reopen state, skip, and safe missing content.",
   "risk": "Product flow may imply full arcade parity. Allows one authored route only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "3947b1b8053a948a83ab203286cfa8a238c27eb17b6142773cdf187424044f55"
+    "value": "1faca7149e38b3e10ecda3d0be38d9500f800ddeee577bfc435ff056c51261fd"
   }
 }

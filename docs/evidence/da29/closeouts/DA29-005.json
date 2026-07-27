@@ -3,13 +3,13 @@
   "id": "DA29-005",
   "kind": "G",
   "wave": 0,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Adjudicate scores from corpus v1.3. Depends on DA29-004. Systems: scorecard and denominator ledger.",
   "acceptance": "Each lane records denominator, eligible evidence, rejected evidence, movement, and reviewer rationale. Docs-only work contributes zero.",
   "risk": "Score inflation. Allows only recorded score movement; blocks parity or release claims.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "8bc35d8901ee6aaf6c2762e4e7ec421c2115fc370c2bb3823139012d997a164d"
+    "value": "fc888785ec418f55fa9621f894b2fb6ddd577ac598b7105f9fe36f1ce87f4f40"
   }
 }

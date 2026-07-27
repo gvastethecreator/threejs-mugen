@@ -3,13 +3,13 @@
   "id": "DA29-075",
   "kind": "I",
   "wave": 7,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Close stage shadow/reflection policy. Depends on DA29-074.",
   "acceptance": "Source-backed fixture covers shadow color/intensity/scale/fade and reflection or explicit unsupported diagnostics; capture and cleanup pass.",
   "risk": "Effects can distort sprite fidelity. Allows named subset only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "3e3199045b689d2482050bac0edab35dac33373d2d02ab2e3581c847b5087437"
+    "value": "50a44ded2969915701051eceebfb501329f801540cad6b520835555bcb32090b"
   }
 }

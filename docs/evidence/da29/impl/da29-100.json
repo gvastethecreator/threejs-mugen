@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-100",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Make ProjectReleaseDecision a live product gate. Depends on DA29-098, DA29-108, and DA29-109.",
   "acceptance": "Build/export/release buttons consume one decision with reasons; stale, missing, tampered, blocked asset, and fresh-ready routes match exported evidence.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "bb6a664f21c45c097a511f119d37eaf56218d929e0a0d773a4fc95f86aa5b578"
+    "value": "d62b6568f61953afddcfe77c1a59a820e9c99dcc04d2cca92b6b71ef616b5d87"
   }
 }

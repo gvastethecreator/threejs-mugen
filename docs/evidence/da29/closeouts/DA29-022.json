@@ -3,13 +3,13 @@
   "id": "DA29-022",
   "kind": "I",
   "wave": 2,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Handle gamepad connect, disconnect, and reconnect. Depends on DA29-021.",
   "acceptance": "Browser tests cover unplug mid-hold, reconnect with changed index, stale button release, two seats, and keyboard fallback with visible status.",
   "risk": "Stuck input. Allows those lifecycle routes only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "26d88254156baf557e87edbb3fdd555b7d40dd81f6a67b04674535c267ee5c34"
+    "value": "4b2b600202a14481eebd813d8ce746c5ee21f00bbc3c64736f051961cdf4b41b"
   }
 }

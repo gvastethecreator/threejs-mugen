@@ -3,13 +3,13 @@
   "id": "DA29-111",
   "kind": "R",
   "wave": 11,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Inventory current user routes and viewport states. Depends on DA29-003.",
   "acceptance": "Route map covers first run, import, play, pause, inspect, Studio edit/save/reopen, evidence, build/export, errors, empty/loading, mobile/desktop, and ownership.",
   "risk": "Missing states hide UX debt. Allows inventory only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -40,6 +40,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "5cdd8cc97426786bb4679a1ba6b02effda2672f488e69ab271476d719c9e0ce0"
+    "value": "2d503a33180d2d511957ccdfca90f5d3f2256b6bc1a118a6a16f2792ed7735ea"
   }
 }

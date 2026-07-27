@@ -3,13 +3,13 @@
   "id": "DA29-128",
   "kind": "G",
   "wave": 12,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Prove AudioContext and buffer lifecycle. Depends on DA29-079, DA29-080, and DA29-122.",
   "acceptance": "Repeated play/import/project switch covers context reuse/close, decoded buffer caps, stopped voices, suspend/resume, errors, and memory trend.",
   "risk": "Audio nodes leak silently. Allows tested browser lifecycle only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "8e81fbeb5fdd2f06c4d4398fa75765a7d53e069e4f055b8fe6a7ccbb4893d378"
+    "value": "86b06a9fd08a2922850055814358d34363d74d4d82eb4febdca18e2cafabde9d"
   }
 }

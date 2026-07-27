@@ -3,13 +3,13 @@
   "id": "DA29-167",
   "kind": "G",
   "wave": 16,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Reconcile Common1, FightFX, and shared resource dependency closure. Depends on DA29-016, DA29-080, DA29-109, and DA29-164.",
   "acceptance": "Source/package graph records precedence, shadowing, append rules, profile, paths, digests, missing/ambiguous cases, runtime consumers, and browser output.",
   "risk": "Global resource resolution can contaminate packages. Allows tested closure only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "d40f7cd04b174844916a0cfe4054795e62cd920f362870f1db901f60470db278"
+    "value": "4535606f90f9a4ee7a1c26118479de798e0d8f132964a77dbbcdc51cc3743422"
   }
 }

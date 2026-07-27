@@ -3,13 +3,13 @@
   "id": "DA29-126",
   "kind": "G",
   "wave": 12,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Fuzz ZIP and binary parser resource limits. Depends on DA29-082, DA29-083, and DA29-086.",
   "acceptance": "Seeded corpus covers size/ratio/depth, malformed headers, truncation, integer edges, duplicate paths, cancellation, time/memory caps, and stable rejection.",
   "risk": "Parser denial of service. Allows tested fuzz set only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "999c609f7e57e62289554bf78e9b8b24c657f01fd236de62e809589e21813c19"
+    "value": "d316c321faee6cfa7ece1931bc3a66289cc9e9f8284626bf43e76f2cdbb94922"
   }
 }

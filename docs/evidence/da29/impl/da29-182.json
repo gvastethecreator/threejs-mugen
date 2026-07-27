@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-182",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Add transactional undo/redo for source and project edits. Depends on DA29-095, DA29-096, and DA29-181.",
   "acceptance": "Multi-step edits, file writes, asset refs, undo/redo branches, save/reopen, failure compensation, size caps, and crash recovery preserve bytes and revisions.",
   "entryPoints": [
@@ -19,6 +19,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "4df837ce57a17c208a5b4d0a248f48af82fce863728394dc875843b7d6c04c03"
+    "value": "20c9d20d760d6a0ac4dd4857ff371de20d0d7ab488bbd33eb87e3bd4c91de0fe"
   }
 }

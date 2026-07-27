@@ -3,13 +3,13 @@
   "id": "DA29-097",
   "kind": "I",
   "wave": 9,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Revalidate file-handle permissions on reopen and write. Depends on DA29-091 and DA29-094.",
   "acceptance": "Granted, prompt, denied, revoked, missing handle, moved file, read-only, and user-cancel routes produce clear product state and no silent data loss.",
   "risk": "Browser permission state changes. Allows tested browser routes only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "bfe57d461778554f8af2b1cfe83eb8d58a92f9a03ff0b9ddb25a2859a23b060b"
+    "value": "e5429a2747ddc13564edf04d1346401d7cf2efd188a4128b9cde2ce8efab70f5"
   }
 }

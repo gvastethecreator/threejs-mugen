@@ -3,13 +3,13 @@
   "id": "DA29-061",
   "kind": "A",
   "wave": 6,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Define explicit team-mode domain contracts. Depends on DA29-009 and DA29-050.",
   "acceptance": "Single, Simul, Turns, and Tag contracts name roster, active members, input seats, life/power policy, KO, round transition, camera, HUD, and profile limits.",
   "risk": "One shared model may erase mode rules. Allows architecture only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -39,6 +39,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "b90fb004571d219befc2fc3b4476b400e7e8ba8240dd4601d529f8d4b872f1ab"
+    "value": "e57108e41539298ddec2587ead83d28ba7597ef6b5e957cda8ef92b4c493d463"
   }
 }

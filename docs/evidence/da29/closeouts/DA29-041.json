@@ -3,13 +3,13 @@
   "id": "DA29-041",
   "kind": "I",
   "wave": 4,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Turn Nova's attack-state probe into an actual contact journey. Depends on DA29-002, DA29-020, and DA29-040.",
   "acceptance": "Imported route proves command, state entry, collision, HitDef admission, contact, damage, hitpause, target state, telemetry, and final checksum without synthetic sprites.",
   "risk": "State presence can masquerade as combat. Allows this Nova contact route only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "681f8ba6c931c8f49b196e3dff82bde4beed996bb99e7d49ac8f80b55a5f2867"
+    "value": "88feaa81dcc849cf45c88821eba9dd224c37c9dabe3d8c4d62e2dfb520fe533e"
   }
 }

@@ -3,13 +3,13 @@
   "id": "DA29-190",
   "kind": "G",
   "wave": 18,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Build product help and recovery documentation. Depends on DA29-111, DA29-119, DA29-160, and DA29-187.",
   "acceptance": "In-app/help docs cover import, controls, modes, evidence, save/recovery, permissions, assets, unsupported facts, keyboard access, and error recovery; links are route-tested.",
   "risk": "Docs can drift from product. Allows current documented routes only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "6c72c58e056d82e28866dc8e923b69d5555b8e311e740fb737778401d22e5a9c"
+    "value": "814bc4fd6c7076ecd3a946f3cbedb04b8f78f51ac671d763ae80b23d5f2cc786"
   }
 }

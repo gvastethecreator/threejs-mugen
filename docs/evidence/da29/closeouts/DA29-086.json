@@ -3,13 +3,13 @@
   "id": "DA29-086",
   "kind": "G",
   "wave": 8,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Expand ZIP/VFS security policy. Depends on DA29-081 and DA29-020.",
   "acceptance": "Tests cover traversal, absolute/Unicode-confusable paths, duplicates, case collisions, entry/total/ratio limits, nested archives, cancellation, and deterministic rejection.",
   "risk": "Decompression and path attacks. Allows tested archive policy only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "f5bb999935ffb445380afcd2ce1b7da3fd13a0099efe2e85486630dcb218e677"
+    "value": "1e8e96030a50e9c3fea369b255c89d3f05c28800786237b47c3c4db19776a750"
   }
 }

@@ -3,13 +3,13 @@
   "id": "DA29-040",
   "kind": "G",
   "wave": 3,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Add a compiler differential artifact over the lawful corpus. Depends on DA29-033, DA29-034, and DA29-035.",
   "acceptance": "For each fixture, artifact lists parsed blocks, compiled ops, dropped/unknown fields, diagnostics, canonical digest, and revision; changes require review.",
   "risk": "Matching compiler output does not prove runtime. Allows compiler-delta claims only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "9e19d456e0a6ba7de437b3c576d557453e37744e2df6ea81f09d9310345c28bc"
+    "value": "e807b26ec934a90ae848a5c9506c5fdcabae136973e52d36228bc0bc276cc2f4"
   }
 }

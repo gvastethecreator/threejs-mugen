@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-109",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Make ProjectAssetClosure traverse real project dependencies. Depends on DA29-108 and DA29-088.",
   "acceptance": "Character, stage, screenpack, system, audio, generated, and derived assets are found from the saved project; missing/cycle/stale/extra cases fail or warn by policy.",
   "entryPoints": [
@@ -21,6 +21,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "c3332ec076cc53d312e2fd2efce0cd0f898501f9771124c82071bf3214ca3b9d"
+    "value": "4b982b77918b1aaff6a4756f199b6c063ddfe111d11eb570bdf863c690468b0c"
   }
 }

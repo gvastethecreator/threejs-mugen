@@ -3,13 +3,13 @@
   "id": "DA29-083",
   "kind": "G",
   "wave": 8,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Audit and extend SND parsing breadth. Depends on DA29-081.",
   "acceptance": "Fixtures cover groups/samples, format metadata, decode outcomes, corrupt/truncated data, duplicate IDs, caps, deterministic digests, and audio handoff.",
   "risk": "Decode bombs or unsupported codecs. Allows named SND subset only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "870bf03826aca04221603b5346ee961a2a3eec5b8bc327fd652221a365152979"
+    "value": "8da9a183f451d908afe756881a19f5fc02f263f52c5f3e4e980463121d895992"
   }
 }

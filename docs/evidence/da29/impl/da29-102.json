@@ -1,8 +1,8 @@
 {
   "schema": "Da29ImplementationEvidence/v1",
   "id": "DA29-102",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "cut": "Capture tool, model/version, prompt, inputs, command, seed, and transforms. Depends on DA29-101.",
   "acceptance": "One repository-owned generated record can be reproduced or yields a documented nondeterministic variance; missing fields fail policy.",
   "entryPoints": [
@@ -17,6 +17,6 @@
   "claimCeiling": "unit/static structural closeout; not full product parity",
   "digest": {
     "algorithm": "sha-256",
-    "value": "3e2348fc0a4f089172a7acea0a952ad2918a2d5da87aa5b3d7bacfbd88472ce6"
+    "value": "c857c0e094069898a2dd232645495a33c26c7869c9a5a6abfedff1edd8530680"
   }
 }

@@ -3,13 +3,13 @@
   "id": "DA29-013",
   "kind": "I",
   "wave": 1,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Replace regex controller census with parsed CNS records. Depends on DA29-008. Systems: controller matrix materializer and parser.",
   "acceptance": "StateDef `type = S/C/A/L/U` cannot appear as a controller; malformed and nested fixtures produce located diagnostics; current corpus is rematerialized.",
   "risk": "Wrong denominator. Allows parsed occurrence facts only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "34216d403ff8df1b3b35440d2706aebefb281744f40cfa1acd33fa51bfe95ca8"
+    "value": "5914f03c88c032b4d33ca60d17db1e9315e3cf854673771c676c525693430f62"
   }
 }

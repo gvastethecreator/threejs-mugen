@@ -3,13 +3,13 @@
   "id": "DA29-064",
   "kind": "I",
   "wave": 6,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Make Turns handoff one atomic live transaction. Depends on DA29-061, DA29-029, and current Turns bridge.",
   "acceptance": "KO-to-next-member success and all failure points either commit the full handoff or restore preimage; replay and reset pass.",
   "risk": "Partial handoff corrupts team state. Allows one Turns transaction contract only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "7fe594ea29713f5f6a51128e0122015bdf04deb9997715ca83a418b009d6f61d"
+    "value": "f0d9cdfab814d514bdc128f7fca7acebc84d3b3ac2ab97c1ed2a650cefcade50"
   }
 }

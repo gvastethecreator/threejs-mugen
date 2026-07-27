@@ -3,13 +3,13 @@
   "id": "DA29-042",
   "kind": "I",
   "wave": 4,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Add a reciprocal Mira contact/guard journey. Depends on DA29-041.",
   "acceptance": "Distinct input path proves Mira attack plus Nova guard or hit, with authored frames, damage/guard values, failure route, and browser correlation.",
   "risk": "Shared CNS/AIR limits syntax breadth. Allows reciprocal package route only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "320c51d24b4b240c842f19e826f996ad82f6f3aac72a3b11b5f465b239a716f1"
+    "value": "015d9026deecac6383e8250506243d7bf769ecf0f8555370a7ac846c6646a2de"
   }
 }

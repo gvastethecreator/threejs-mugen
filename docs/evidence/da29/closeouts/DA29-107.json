@@ -3,13 +3,13 @@
   "id": "DA29-107",
   "kind": "R",
   "wave": 10,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Reconcile supported SPDX expressions and permission rules. Depends on DA29-101.",
   "acceptance": "Decision records exact accepted grammar/subset, generated-work declaration, attribution needs, incompatible/unknown cases, and fail-closed examples.",
   "risk": "A parser is not legal approval. Allows policy grammar only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -40,6 +40,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "6d207119b41a61eaba1aba36c97e3e82a2a10d3383842d582df066aa0a1143f6"
+    "value": "be8d3d22c6cd7f2ef8cdeeda9abda775a4e52edff9dfa5cce14059eb8d1f9ea3"
   }
 }

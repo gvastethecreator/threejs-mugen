@@ -3,13 +3,13 @@
   "id": "DA29-004",
   "kind": "G",
   "wave": 0,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Rebuild evidence corpus v1.3. Depends on DA29-002 and DA29-003. Systems: evidence envelope, trace/browser/source indices.",
   "acceptance": "Corpus imports all current artifacts with subject, producer, revision, digest type, target, route, and freshness; stale rows fail closed.",
   "risk": "Mixed revisions can inflate proof. Allows corpus completeness for listed inputs only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "240b1e3159c242709e7748b166230d528d1d82dc6e5b3144bcf6cdc3105c10f5"
+    "value": "70006d1c0b70549a24e90dc4bd113c1aa94a2d8e6535a629a53922cd73092e3f"
   }
 }

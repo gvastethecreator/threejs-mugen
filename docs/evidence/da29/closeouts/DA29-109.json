@@ -3,13 +3,13 @@
   "id": "DA29-109",
   "kind": "I",
   "wave": 10,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Make ProjectAssetClosure traverse real project dependencies. Depends on DA29-108 and DA29-088.",
   "acceptance": "Character, stage, screenpack, system, audio, generated, and derived assets are found from the saved project; missing/cycle/stale/extra cases fail or warn by policy.",
   "risk": "Hidden reference escapes release scan. Allows tested graph closure only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "7c3a26890790fd9582cdc8ff4e20b2ec6b6de1de6c37faa9906ed11fbb039aa9"
+    "value": "58d7a9968106034b0c466144e39d70048b4dbad8f7fefcf995fab1b2cb02a0f8"
   }
 }

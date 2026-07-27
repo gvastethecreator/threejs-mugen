@@ -3,13 +3,13 @@
   "id": "DA29-018",
   "kind": "G",
   "wave": 1,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Establish bundle and load budgets. Depends on DA29-002. Systems: Vite output, route chunks, assets.",
   "acceptance": "Baseline records raw/gzip size, chunk graph, initial route bytes, asset count, and load timings; thresholds have owners and breach policy.",
   "risk": "Arbitrary budgets can block work. Allows baseline and agreed thresholds only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "2c6bd1d1b9a1100a97a220f04c4ecedf1608e8eaf78d6140798c1fbc92b3ee31"
+    "value": "7461510ec872f0b81c47ad2ef5bcbd48207f124fc2f763c260da653195496694"
   }
 }

@@ -3,13 +3,13 @@
   "id": "DA29-008",
   "kind": "A",
   "wave": 0,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Define fingerprint and cryptographic digest vocabulary. Depends on DA29-001. Systems: evidence, Studio, assets, scanner, source manifests.",
   "acceptance": "ADR names SHA-256 content uses, stable behavior fingerprints, canonical bytes, version fields, and migration rules; misleading fields are inventoried.",
   "risk": "Hash names may imply security. Allows terminology and migration design only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "d8d895a9dc4e8c9151d5b38de9631fb893bce539fd78dcf2c43e18a0a0b52031"
+    "value": "b6e56feb8ffd8316d467034c03f0179ffd9916c0764dc6cc2d7df43dcaf6ab50"
   }
 }

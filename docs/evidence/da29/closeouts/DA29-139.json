@@ -3,13 +3,13 @@
   "id": "DA29-139",
   "kind": "I",
   "wave": 13,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Add a minimal non-fighting second consumer. Depends on DA29-132 and DA29-134…138.",
   "acceptance": "Repository-owned platformer/testbed uses chosen evidence, storage, renderer, and input/clock ports in one playable route; no MUGEN import or copied combat model exists.",
   "risk": "Demo-only code can fake reuse. Allows two-consumer proof for used ports only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "2463d4bd30bf8731f90b190a6eaa58e67fc946fcf96a087623d220981a1706c0"
+    "value": "82cd32014e1aa40852d6bd0c10360933377e1de2a71c30d1ffeefd7b8e60f11b"
   }
 }

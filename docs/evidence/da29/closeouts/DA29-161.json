@@ -3,13 +3,13 @@
   "id": "DA29-161",
   "kind": "G",
   "wave": 16,
-  "closedAt": "2026-07-27T03:50:09.290Z",
+  "closedAt": "2026-07-27T03:51:12.533Z",
   "cut": "Import a bounded `system.def`/screenpack package. Depends on DA29-076, DA29-081, and DA29-086.",
   "acceptance": "Repository-owned package proves path resolution, motif sections, sprites, animations, sounds, fonts, localcoord, fallback, malformed fields, and deterministic analysis.",
   "risk": "Parsed motif can exceed rendered support. Allows named screenpack subset only.",
   "revision": {
-    "head": "119e627410a4a72eee28650ae20422d475dac834",
-    "headShort": "119e627410a4",
+    "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
+    "headShort": "7e90eeb6267d",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -46,6 +46,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "2ccac816e4f1a01348547256d157a6d908a3870df93c21a55074e1bf922c229e"
+    "value": "02a6fc0193036971df1141c457d45a950167df63f5a631fc494f761ad0cc3697"
   }
 }

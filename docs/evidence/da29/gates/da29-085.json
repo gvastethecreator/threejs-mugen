@@ -1,8 +1,8 @@
 {
   "schema": "Da29GateEvidence/v1",
   "id": "DA29-085",
-  "generatedAt": "2026-07-27T03:50:09.290Z",
-  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:51:12.533Z",
+  "head": "7e90eeb6267defdd619baa62bacd459b8580e200",
   "measured": false,
   "gateSha": null,
   "inheritance": {
@@ -26,6 +26,6 @@
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "f4eda42ae7133419283618a53c6741de192dc950d2fca3f4b000b0cdc5c8b5fe"
+    "value": "8e7c3790a7b25d350d166718d674116020aa1dbdb8b666e9cce5e0e6fb71b4de"
   }
 }
