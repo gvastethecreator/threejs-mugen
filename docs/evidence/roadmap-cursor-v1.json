@@ -1,6 +1,6 @@
 {
   "schemaVersion": "mugen-web-sandbox/roadmap-cursor/v1",
-  "generatedAt": "2026-07-26T19:31:13.470Z",
+  "generatedAt": "2026-07-27T05:57:18.445Z",
   "branch": "master",
   "scores": {
     "sandbox": "65",
@@ -11,72 +11,92 @@
     "studio": "25"
   },
   "dirtyExclusions": [],
+  "closedThrough": "DA28-30",
+  "nextQueue": [
+    "DA30-001",
+    "DA30-002",
+    "DA30-003",
+    "DA30-004",
+    "DA30-005",
+    "DA30-006",
+    "DA30-007",
+    "DA30-008",
+    "DA30-009",
+    "DA30-010"
+  ],
+  "seriesHold": {
+    "series": "DA29",
+    "status": "unadjudicated-candidate",
+    "watermarkAccepted": false,
+    "note": "DA29-001…200 artifacts are candidate only until DA30 semantic revalidation"
+  },
   "cursors": [
     {
       "kind": "head",
-      "sha": "b7d23801bd3ca766ba5b184b3c040bef8165d355",
-      "date": "2026-07-26T16:27:30-03:00",
-      "artifact": "git HEAD",
-      "claimLimit": "materialize-time tip only; does not inherit formal/global/visual claims"
+      "sha": "fd7a9b9a16b2acd116df1e6dba69f0d451cc37ed",
+      "artifact": "git HEAD at DA29 completion audit",
+      "claimLimit": "audit target; formal/global and visual unverified"
     },
     {
       "kind": "formal",
-      "sha": "b7d23801bd3ca766ba5b184b3c040bef8165d355",
-      "date": "2026-07-26T19:28:00.000Z",
-      "artifact": "docs/BUILD_EXECUTION_BACKLOG.md#entry-598",
-      "claimLimit": "Entry 598 / DA27-06 formal closeout at audited gate SHA only"
+      "sha": "a6e91520081d6308eac3d53b6bf333d4b950d019",
+      "artifact": "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md",
+      "claimLimit": "historical recorded stack only; not current HEAD inheritance"
     },
     {
       "kind": "focal",
       "sha": "07ad9227",
-      "date": "2026-07-26T16:00:00.000Z",
       "artifact": "docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md",
       "claimLimit": "T406 active juggle runtime only"
     },
     {
       "kind": "global",
-      "sha": "b7d23801bd3ca766ba5b184b3c040bef8165d355",
-      "date": "2026-07-26T19:28:00.000Z",
-      "artifact": "docs/research/2026-07-26-global-checkpoint-da27-06.md",
-      "claimLimit": "TypeScript/Vitest 268·2845 / traces 663 / build / boundaries at b7d23801 only"
+      "sha": "a6e91520081d6308eac3d53b6bf333d4b950d019",
+      "artifact": "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md",
+      "claimLimit": "historical measured stack at a6e91520 only"
     },
     {
       "kind": "visual",
       "sha": "1085badb",
-      "date": "2026-07-20T00:00:00.000Z",
       "artifact": "docs/research (T342 visual gate)",
-      "claimLimit": "T342 browser/visual claims only; not HEAD product truth"
+      "claimLimit": "T342 visual only; not HEAD product truth"
     },
     {
       "kind": "product",
       "sha": "1085badb",
-      "date": "2026-07-20T00:00:00.000Z",
       "artifact": "docs/research (T342 product gate)",
-      "claimLimit": "T342 local Studio product flows only"
+      "claimLimit": "T342 product only"
     },
     {
-      "kind": "source",
+      "kind": "source-normative",
       "sha": "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",
-      "date": "2026-07-18T13:00:00.000Z",
-      "artifact": "docs/evidence/source-authority-manifest-v0.json",
-      "claimLimit": "normative pin identity; semantic review remains unclassified"
+      "artifact": "docs/evidence/source-authority-epoch-v1.json",
+      "claimLimit": "normative pin 05b; family provenance in epoch"
+    },
+    {
+      "kind": "source-working",
+      "sha": "4aa0ba38f851c52549ba182310e9e53361cd472a",
+      "artifact": "docs/evidence/source-authority-epoch-v1.json",
+      "claimLimit": "working pin 4aa for reviewed families only"
     }
   ],
+  "controlSource": "docs/evidence/control-source-v1.json",
   "claims": {
     "allowed": [
-      "control cursors with per-cursor SHA/date/artifact/claimLimit",
-      "stale and mismatch evaluation against observed HEAD"
+      "control hold and DA30 recovery queue",
+      "historical DA28-30 accepted ladder",
+      "scores held unless DA30 score adjudication authorizes movement"
     ],
     "blocked": [
-      "rewriting formal/global from live HEAD",
+      "DA29-200 as accepted watermark",
       "score movement",
-      "semantic source review promotion",
-      "visual or product inheritance from older cursors"
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "using disagreeing selector/cursor projections"
     ]
   },
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "2cf9877836b6bf8c9fbf07a9dd6bf9fe3f5bae2aa9793ed703ea3f2fb03dbb00"
+    "value": "4057904c700d7ac6a1d4da2e3ca48a72aa2dd6be35e800a85653277e236f023e"
   }
 }

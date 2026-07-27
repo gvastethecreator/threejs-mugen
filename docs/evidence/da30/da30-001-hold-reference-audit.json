@@ -1,0 +1,282 @@
+{
+  "schema": "Da30HoldReferenceAudit/v1",
+  "id": "DA30-001",
+  "generatedAt": "2026-07-27T05:57:31.337Z",
+  "head": "fd7a9b9a16b2acd116df1e6dba69f0d451cc37ed",
+  "ok": true,
+  "scoresHeld": "65 / 36 / 20 / 10-12 / 6-8 / 25",
+  "acceptedLadder": "DA26…DA28-30",
+  "da29Status": "unadjudicated-candidate",
+  "proposedQueue": "DA30-001…010",
+  "surfaces": [
+    {
+      "path": "docs/AUTHORITY_SELECTOR.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": true,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": true
+      },
+      "digest": "0d16222de2c4f44d",
+      "bytes": 2763
+    },
+    {
+      "path": "docs/ROADMAP_EXECUTION_BOARD.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": true,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": false
+      },
+      "digest": "7137c2c5b4c7c656",
+      "bytes": 445549
+    },
+    {
+      "path": "docs/WORKPLAN.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": true,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": false
+      },
+      "digest": "93825673c3e1b0b4",
+      "bytes": 608246
+    },
+    {
+      "path": "docs/ROADMAP_NAVIGATION.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": true,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": true
+      },
+      "digest": "b8286f53fffd7fa0",
+      "bytes": 10177
+    },
+    {
+      "path": "docs/PROGRESS_TRACKER.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": true,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": true
+      },
+      "digest": "6604eb97750f93cc",
+      "bytes": 439584
+    },
+    {
+      "path": "docs/BUILD_EXECUTION_BACKLOG.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": true,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": true
+      },
+      "digest": "a911e6878fe4f8c8",
+      "bytes": 1928212
+    },
+    {
+      "path": "docs/DELIVERY_ROADMAP.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": true,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": true
+      },
+      "digest": "ce86817df3dedfc4",
+      "bytes": 17512
+    },
+    {
+      "path": "docs/NEXT_BUILD_ROADMAP.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": true,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": true
+      },
+      "digest": "5e5e72dad95951a0",
+      "bytes": 416385
+    },
+    {
+      "path": "docs/ROADMAP_PROGRESS_SYSTEM.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": true,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": true
+      },
+      "digest": "d340cb839d525d6f",
+      "bytes": 21366
+    },
+    {
+      "path": "docs/MASTER_REVIEW_ROADMAP.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": true,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": true
+      },
+      "digest": "d98182745cac36b3",
+      "bytes": 76637
+    },
+    {
+      "path": "docs/DA30_RECOVERY_ROADMAP.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": true,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": true
+      },
+      "digest": "e7c0e089bee6335d",
+      "bytes": 42360
+    },
+    {
+      "path": "docs/research/2026-07-27-da29-completion-audit-and-da30-recovery.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": true,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": true
+      },
+      "digest": "fcaf56a291a8d580",
+      "bytes": 16580
+    },
+    {
+      "path": ".scratch/roadmap/issues/01-runtime-compatibility-gates.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": true,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": false
+      },
+      "digest": "773632eabffbbfc1",
+      "bytes": 546600
+    },
+    {
+      "path": ".scratch/roadmap/issues/02-studio-evidence-workflow.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": false,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": true
+      },
+      "digest": "a4668b8b76d37a58",
+      "bytes": 19956
+    },
+    {
+      "path": ".scratch/roadmap/issues/03-generated-assets-pipeline.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": false,
+        "scores-held": false,
+        "points-da30": true,
+        "preserved-pins": false
+      },
+      "digest": "b74f819446f5ed4c",
+      "bytes": 9594
+    },
+    {
+      "path": ".scratch/roadmap/issues/04-ikemen-scan-and-reference.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": false,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": false
+      },
+      "digest": "a70ec4f7a50284ff",
+      "bytes": 8602
+    },
+    {
+      "path": ".scratch/roadmap/issues/05-modular-engine-boundaries.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": false,
+        "scores-held": false,
+        "points-da30": true,
+        "preserved-pins": false
+      },
+      "digest": "5f60934f6829423f",
+      "bytes": 6488
+    },
+    {
+      "path": ".scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": true,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": true
+      },
+      "digest": "eb88449552576b07",
+      "bytes": 20769
+    },
+    {
+      "path": ".scratch/roadmap/issues/07-ikemen-runtime-topology.md",
+      "present": true,
+      "stale": [],
+      "markers": {
+        "da29-unaccepted": false,
+        "scores-held": true,
+        "points-da30": true,
+        "preserved-pins": false
+      },
+      "digest": "a8a4db351ac86c1d",
+      "bytes": 46630
+    }
+  ],
+  "summary": {
+    "surfaceCount": 19,
+    "missing": [],
+    "staleHits": [],
+    "markerFailures": []
+  },
+  "claims": {
+    "allowed": [
+      "control hold only",
+      "DA29-200 unaccepted as current watermark",
+      "scores held"
+    ],
+    "blocked": [
+      "DA29 series complete",
+      "empty next queue as product truth",
+      "score movement"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "fd1620ecd03a4cf9d74ac02f0095703c6bd66f390563a7bb4082e9fd7a76170c"
+  }
+}

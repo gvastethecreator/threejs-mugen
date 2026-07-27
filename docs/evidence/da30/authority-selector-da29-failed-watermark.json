@@ -1,19 +1,8 @@
 {
   "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
-  "generatedAt": "2026-07-27T05:57:18.445Z",
-  "closedThrough": "DA28-30",
-  "nextQueue": [
-    "DA30-001",
-    "DA30-002",
-    "DA30-003",
-    "DA30-004",
-    "DA30-005",
-    "DA30-006",
-    "DA30-007",
-    "DA30-008",
-    "DA30-009",
-    "DA30-010"
-  ],
+  "generatedAt": "2026-07-27T05:11:16.010Z",
+  "closedThrough": "DA29-200",
+  "nextQueue": [],
   "scores": {
     "sandbox": "65",
     "mugenLite": "36",
@@ -22,17 +11,11 @@
     "ikemen": "6-8",
     "studio": "25"
   },
-  "seriesHold": {
-    "series": "DA29",
-    "status": "unadjudicated-candidate",
-    "watermarkAccepted": false,
-    "note": "DA29-001…200 artifacts are candidate only until DA30 semantic revalidation"
-  },
   "cursors": {
     "formal": {
       "sha": "a6e91520081d6308eac3d53b6bf333d4b950d019",
       "artifact": "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md",
-      "claimLimit": "historical recorded stack only; not current HEAD inheritance"
+      "claimLimit": "DA29-002 current HEAD formal/global re-gate only"
     },
     "focal": {
       "sha": "07ad9227",
@@ -42,7 +25,7 @@
     "global": {
       "sha": "a6e91520081d6308eac3d53b6bf333d4b950d019",
       "artifact": "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md",
-      "claimLimit": "historical measured stack at a6e91520 only"
+      "claimLimit": "DA29-002 measured stack at claimed HEAD only; scores held"
     },
     "visual": {
       "sha": "1085badb",
@@ -68,26 +51,35 @@
   "artifacts": {
     "authoritySelectorDoc": "docs/AUTHORITY_SELECTOR.md",
     "roadmapCursor": "docs/evidence/roadmap-cursor-v1.json",
-    "controlSource": "docs/evidence/control-source-v1.json",
     "sourceEpoch": "docs/evidence/source-authority-epoch-v1.json",
     "globalCheckpointReport": "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md"
   },
   "claims": {
     "allowed": [
-      "control hold and DA30 recovery queue",
-      "historical DA28-30 accepted ladder",
-      "scores held unless DA30 score adjudication authorizes movement"
+      "DA28 ladder closed through DA28-30 before DA29 series adoption",
+      "DA29 closeouts under docs/evidence/da29/closeouts with per-ID digests",
+      "DA29 series identity DA29-001…DA29-200 from series-registry-v1.json",
+      "DA29-002 measured formal/global pin at a6e91520081d",
+      "historical sections may retain old cursors when labeled historical",
+      "scores remain held 65/36/20/10-12/6-8/25 unless DA29-005 authorizes movement",
+      "single current authority selector for docs and issues 01-07"
     ],
     "blocked": [
-      "DA29-200 as accepted watermark",
-      "score movement",
+      "bulk-closing DA29 without per-ID closeout digests",
+      "every physical gamepad device from emulator proof",
       "formal/global tip rewrite without measured gate at claimed SHA",
-      "using disagreeing selector/cursor projections"
+      "full plural projectile parity without browser matrix",
+      "heard hardware audio from offline signal ladder",
+      "IKEMEN Simul/Tag runtime support from research alone",
+      "imported third-party package breadth from Nova/Mira",
+      "projecting T383 or T342 as current global/product without label",
+      "score movement",
+      "using c01d5e70/Entry 585/dirty juggle as live current selectors"
     ]
   },
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "01d705ac53615a7dc07817c7f07e117aaa2c257f6879b30dbd01515b81bad657"
+    "value": "e93401688266ca40584fcdd6eaed908931dee97435af5542e4baae491e06307d"
   }
 }

@@ -1,0 +1,44 @@
+{
+  "schema": "Da30CloseoutStateTransitions/v1",
+  "id": "DA30-006",
+  "generatedAt": "2026-07-27T06:05:00.000Z",
+  "states": [
+    "proposed",
+    "active",
+    "blocked",
+    "partial",
+    "candidate",
+    "accepted",
+    "superseded",
+    "rejected"
+  ],
+  "watermarkRule": "only accepted advances a consecutive watermark",
+  "transitions": [
+    { "from": "proposed", "to": ["active", "blocked", "rejected"], "note": "task enters work or is rejected before start" },
+    { "from": "active", "to": ["partial", "candidate", "blocked", "accepted", "rejected"], "note": "implementation or evidence in progress" },
+    { "from": "blocked", "to": ["active", "rejected", "superseded"], "note": "dependency or environment cleared" },
+    { "from": "partial", "to": ["candidate", "active", "rejected", "superseded"], "note": "some clauses pass" },
+    { "from": "candidate", "to": ["accepted", "partial", "rejected", "superseded"], "note": "useful evidence awaiting semantic adjudication" },
+    { "from": "accepted", "to": ["superseded"], "note": "only supersede on newer accepted revision; never reopen silently" },
+    { "from": "superseded", "to": [], "note": "terminal historical" },
+    { "from": "rejected", "to": ["proposed", "active"], "note": "reopen only via new proposed cut" }
+  ],
+  "invalidTransitions": [
+    { "from": "accepted", "to": "candidate", "reason": "cannot demote accepted without supersede path" },
+    { "from": "rejected", "to": "accepted", "reason": "must re-enter proposed/active with new evidence" },
+    { "from": "superseded", "to": "accepted", "reason": "terminal" },
+    { "from": "proposed", "to": "accepted", "reason": "must pass active evidence path" }
+  ],
+  "da29Mapping": {
+    "generated-closed": "candidate",
+    "generated-open": "proposed",
+    "audit-reopen": "rejected",
+    "audit-control-invalid": "rejected",
+    "audit-partial": "partial",
+    "audit-candidate-bounded": "candidate"
+  },
+  "claims": {
+    "allowed": ["status semantics only"],
+    "blocked": ["advancing watermark from candidate/partial/rejected"]
+  }
+}
