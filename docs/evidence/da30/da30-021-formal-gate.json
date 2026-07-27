@@ -1,0 +1,102 @@
+{
+  "schema": "Da30FormalGate/v1",
+  "id": "DA30-021",
+  "generatedAt": "2026-07-27T06:22:09.009Z",
+  "ok": false,
+  "headSha": "568b88508cb08c00aa81555c3fa9b4fef0cd77ef",
+  "toolVersions": {
+    "node": "v25.5.0",
+    "platform": "win32"
+  },
+  "steps": [
+    {
+      "name": "typecheck",
+      "command": "pnpm typecheck",
+      "startedAt": "2026-07-27T06:18:45.561Z",
+      "endedAt": "2026-07-27T06:18:51.063Z",
+      "durationMs": 5502,
+      "exitCode": 0,
+      "stdoutDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrDigest": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "stdoutBytes": 0,
+      "stderrBytes": 15
+    },
+    {
+      "name": "test",
+      "command": "pnpm test",
+      "startedAt": "2026-07-27T06:18:51.064Z",
+      "endedAt": "2026-07-27T06:20:17.324Z",
+      "durationMs": 86260,
+      "exitCode": 1,
+      "stdoutDigest": "2671d031ae4f281afd359bb936483e027adcb36e88d178c56c674c8617851adb",
+      "stderrDigest": "3b631aad42ead01ad39149f580e33ea60bb850c4e9cc580c247f44826d8485f1",
+      "stdoutBytes": 26043,
+      "stderrBytes": 3960
+    },
+    {
+      "name": "trace",
+      "command": "pnpm qa:trace",
+      "startedAt": "2026-07-27T06:20:17.324Z",
+      "endedAt": "2026-07-27T06:21:57.570Z",
+      "durationMs": 100246,
+      "exitCode": 0,
+      "stdoutDigest": "f4d52643ff7ed3558ceac0900eb0553096b1dc7dd93210976b12d7f6e0ac2b65",
+      "stderrDigest": "3463db6ef572c30df636f7a13ea0f94a26705d175cf54839563de082a2d92701",
+      "stdoutBytes": 157573,
+      "stderrBytes": 29
+    },
+    {
+      "name": "build",
+      "command": "pnpm build",
+      "startedAt": "2026-07-27T06:21:57.570Z",
+      "endedAt": "2026-07-27T06:22:06.421Z",
+      "durationMs": 8851,
+      "exitCode": 1,
+      "stdoutDigest": "f5935dac47550aa1a4f3349590105798d3fcb0d0329e9434ca7586acb558534f",
+      "stderrDigest": "7bf376c56df502511de551f603245d63ac026dfeb754b0fdca16290c3d9e316d",
+      "stdoutBytes": 332,
+      "stderrBytes": 20
+    },
+    {
+      "name": "boundaries",
+      "command": "pnpm check:boundaries",
+      "startedAt": "2026-07-27T06:22:06.422Z",
+      "endedAt": "2026-07-27T06:22:07.737Z",
+      "durationMs": 1315,
+      "exitCode": 0,
+      "stdoutDigest": "4292c357e885383d3f4f4fe5909bbd5d0e743b7a365725348f0410a360c9deed",
+      "stderrDigest": "53281a73750a2fac63c90ceabca4fb1cd8966077c349db7f25f71710ed458074",
+      "stdoutBytes": 23,
+      "stderrBytes": 36
+    },
+    {
+      "name": "redirect",
+      "command": "pnpm check:redirect-boundary",
+      "startedAt": "2026-07-27T06:22:07.738Z",
+      "endedAt": "2026-07-27T06:22:09.006Z",
+      "durationMs": 1268,
+      "exitCode": 0,
+      "stdoutDigest": "a9ff25c30778710d211490000c9f73081e5a36bf34564d293db4646bbc4b0ba1",
+      "stderrDigest": "1fc0e845ba092ee0600caebad6f8ac457968c7b8f8cd6d479ad5c51cedd7109f",
+      "stdoutBytes": 50,
+      "stderrBytes": 61
+    }
+  ],
+  "counts": {
+    "testsPassedGuess": 284
+  },
+  "logPath": "docs/evidence/da30/da30-021-formal-gate.log",
+  "summary": "summary typecheck=0 test=1 trace=0 build=1 boundaries=0 redirect=0 head=568b88508cb08c00aa81555c3fa9b4fef0cd77ef",
+  "claims": {
+    "allowed": [],
+    "blocked": [
+      "score movement",
+      "inheritance of a6e91520 as current formal without this gate",
+      "formal pin advance (gate failed)"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "ac9488a14dd9c0cf4bb60be67a45caf01dc800a3fb18733f8366b1542f4956cc"
+  }
+}
