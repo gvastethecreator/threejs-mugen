@@ -81,6 +81,16 @@ const PROOF = {
     artifacts: ["docs/evidence/da30/da30-036-clock-domain-audit.json", "src/mugen/da30/ClockDomainAudit.ts"],
     note: "clock domain research inventory",
   },
+  "DA30-039": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-039-round-record-replay.json", "src/mugen/da30/RoundRecordReplay.ts"],
+    note: "record/replay round checksums + mutation divergence",
+  },
+  "DA30-040": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-040-rewind-feasibility.json", "src/mugen/da30/RewindFeasibility.ts"],
+    note: "rewind/resim feasibility three depths",
+  },
   "DA30-042": {
     status: "accepted",
     artifacts: ["docs/evidence/da30/da30-042-mira-contact.json", "src/mugen/da30/MiraContactRevalidation.ts"],
@@ -95,6 +105,21 @@ const PROOF = {
     status: "accepted",
     artifacts: ["docs/evidence/da30/da30-044-guard-priority-matrix.json", "src/mugen/da30/GuardPriorityMatrix.ts"],
     note: "guard/chip/priority named cases",
+  },
+  "DA30-045": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-045-helper-journey.json", "src/mugen/da30/HelperNestedJourney.ts"],
+    note: "nested Helper spawn/command/destroy via HelperSystem",
+  },
+  "DA30-047": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-047-throw-custom-state.json", "src/mugen/da30/ThrowCustomStateRoute.ts"],
+    note: "atomic throw/custom-state ownership cases",
+  },
+  "DA30-048": {
+    status: "accepted",
+    artifacts: ["docs/evidence/da30/da30-048-camera-stage-bounds.json", "src/mugen/da30/CameraStageBounds.ts"],
+    note: "screenbound/push/freeze + camera clamp cases",
   },
   "DA30-049": {
     status: "accepted",

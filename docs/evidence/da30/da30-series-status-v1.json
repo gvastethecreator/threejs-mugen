@@ -1,22 +1,9 @@
 {
   "schema": "Da30SeriesStatus/v1",
-  "generatedAt": "2026-07-27T13:35:53.159Z",
+  "generatedAt": "2026-07-27T13:50:05.775Z",
   "count": 120,
-  "closedThrough": "DA30-038",
+  "closedThrough": "DA30-051",
   "nextQueue": [
-    "DA30-039",
-    "DA30-040",
-    "DA30-041",
-    "DA30-042",
-    "DA30-043",
-    "DA30-044",
-    "DA30-045",
-    "DA30-046",
-    "DA30-047",
-    "DA30-048",
-    "DA30-049",
-    "DA30-050",
-    "DA30-051",
     "DA30-052",
     "DA30-053",
     "DA30-054",
@@ -87,9 +74,9 @@
     "DA30-119",
     "DA30-120"
   ],
-  "acceptedCount": 60,
+  "acceptedCount": 65,
   "partialCount": 0,
-  "openCount": 60,
+  "openCount": 55,
   "records": [
     {
       "id": "DA30-001",
@@ -540,19 +527,25 @@
     {
       "id": "DA30-039",
       "wave": 3,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-039-round-record-replay.json",
+        "src/mugen/da30/RoundRecordReplay.ts"
+      ],
+      "note": "record/replay round checksums + mutation divergence",
       "kind": "recovery"
     },
     {
       "id": "DA30-040",
       "wave": 3,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-040-rewind-feasibility.json",
+        "src/mugen/da30/RewindFeasibility.ts"
+      ],
+      "note": "rewind/resim feasibility three depths",
       "kind": "recovery"
     },
     {
@@ -606,10 +599,13 @@
     {
       "id": "DA30-045",
       "wave": 4,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-045-helper-journey.json",
+        "src/mugen/da30/HelperNestedJourney.ts"
+      ],
+      "note": "nested Helper spawn/command/destroy via HelperSystem",
       "kind": "recovery"
     },
     {
@@ -627,19 +623,25 @@
     {
       "id": "DA30-047",
       "wave": 4,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-047-throw-custom-state.json",
+        "src/mugen/da30/ThrowCustomStateRoute.ts"
+      ],
+      "note": "atomic throw/custom-state ownership cases",
       "kind": "recovery"
     },
     {
       "id": "DA30-048",
       "wave": 4,
-      "status": "open",
-      "evidenceClass": "unproven",
-      "artifacts": [],
-      "note": "not yet evidenced",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
+      "artifacts": [
+        "docs/evidence/da30/da30-048-camera-stage-bounds.json",
+        "src/mugen/da30/CameraStageBounds.ts"
+      ],
+      "note": "screenbound/push/freeze + camera clamp cases",
       "kind": "recovery"
     },
     {
@@ -1349,6 +1351,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "c49285d7b88efa4c3efb888952720b5ca43ef594d2aad1fffeff0c8bef588f48"
+    "value": "f2a7499b199578596a2fb6bd1e6bcb6a8740c55c2783466a0950b4c6eba8ab6d"
   }
 }

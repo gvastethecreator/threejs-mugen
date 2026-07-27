@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "frameCount": 48,
+  "finalChecksum": "ed73dbe6",
+  "periodicEvery": 8,
+  "replayOk": true,
+  "divergence": {
+    "tick": 16,
+    "owner": "roots.p2.life"
+  },
+  "sampleFrame": {
+    "tick": 16,
+    "stateChecksum": "9f537a89",
+    "contactEvents": 0,
+    "winner": "none",
+    "resources": {
+      "p1Life": 980,
+      "p2Life": 988,
+      "p1Power": 110,
+      "p2Power": 0
+    }
+  }
+}

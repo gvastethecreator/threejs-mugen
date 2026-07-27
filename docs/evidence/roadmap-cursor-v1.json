@@ -1,6 +1,6 @@
 {
   "schemaVersion": "mugen-web-sandbox/roadmap-cursor/v1",
-  "generatedAt": "2026-07-27T13:35:55.230Z",
+  "generatedAt": "2026-07-27T13:50:07.963Z",
   "branch": "master",
   "scores": {
     "sandbox": "65",
@@ -15,57 +15,57 @@
     {
       "kind": "head",
       "sha": "27b88f0a2cb8896486a34c7405118b185c33c683",
-      "date": "2026-07-27T13:35:55.230Z",
+      "date": "2026-07-27T13:50:07.963Z",
       "artifact": "git HEAD at DA30-021 formal gate",
       "claimLimit": "tip at formal gate; formal/global pin to same SHA when gate ok"
     },
     {
       "kind": "formal",
       "sha": "27b88f0a2cb8896486a34c7405118b185c33c683",
-      "date": "2026-07-27T13:35:55.230Z",
+      "date": "2026-07-27T13:50:07.963Z",
       "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
       "claimLimit": "DA30-021 measured full stack only at this SHA"
     },
     {
       "kind": "focal",
       "sha": "07ad9227",
-      "date": "2026-07-27T13:35:55.230Z",
+      "date": "2026-07-27T13:50:07.963Z",
       "artifact": "docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md",
       "claimLimit": "T406 active juggle runtime only"
     },
     {
       "kind": "global",
       "sha": "27b88f0a2cb8896486a34c7405118b185c33c683",
-      "date": "2026-07-27T13:35:55.230Z",
+      "date": "2026-07-27T13:50:07.963Z",
       "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
       "claimLimit": "DA30-021 measured full stack only at this SHA"
     },
     {
       "kind": "visual",
       "sha": "1085badb",
-      "date": "2026-07-27T13:35:55.230Z",
+      "date": "2026-07-27T13:50:07.963Z",
       "artifact": "docs/research (T342 visual gate)",
       "claimLimit": "T342 visual only; not HEAD product truth"
     },
     {
       "kind": "product",
       "sha": "1085badb",
-      "date": "2026-07-27T13:35:55.230Z",
+      "date": "2026-07-27T13:50:07.963Z",
       "artifact": "docs/research (T342 product gate)",
       "claimLimit": "T342 product only"
     },
     {
       "kind": "source",
       "sha": "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",
-      "date": "2026-07-27T13:35:55.230Z",
+      "date": "2026-07-27T13:50:07.963Z",
       "artifact": "docs/evidence/source-authority-epoch-v1.json",
-      "claimLimit": "normative pin 05b; family provenance in epoch; working=4aa0ba38f851; closedThrough=DA30-038; next=DA30-039"
+      "claimLimit": "normative pin 05b; family provenance in epoch; working=4aa0ba38f851; closedThrough=DA30-051; next=DA30-052"
     }
   ],
   "claims": {
     "allowed": [
       "control hold and DA30 recovery queue",
-      "control-source closedThrough=DA30-038",
+      "control-source closedThrough=DA30-051",
       "historical DA28-30 accepted ladder",
       "scores held unless DA30 score adjudication authorizes movement"
     ],
@@ -79,6 +79,6 @@
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "cbaac7e961bfb54230a202318409f3f13cddb0aaca8e6bd71b0d0051cd0176f7"
+    "value": "867977fb3ea36c2ccb49e9c8fba9ffdebb35644b8e9236677dd8069233650781"
   }
 }

@@ -1,0 +1,42 @@
+{
+  "schema": "Da30RewindFeasibility/v1",
+  "id": "DA30-040",
+  "depths": [
+    {
+      "depthFrames": 8,
+      "snapshotBytes": 574,
+      "restoreMs": 0.2807000000000244,
+      "resimMs": 0.32960000000002765,
+      "resimFrames": 8,
+      "checksumMatch": true
+    },
+    {
+      "depthFrames": 32,
+      "snapshotBytes": 576,
+      "restoreMs": 0.012400000000070577,
+      "resimMs": 1.0330999999998767,
+      "resimFrames": 32,
+      "checksumMatch": true
+    },
+    {
+      "depthFrames": 64,
+      "snapshotBytes": 576,
+      "restoreMs": 0.009900000000016007,
+      "resimMs": 2.3534000000001924,
+      "resimFrames": 64,
+      "checksumMatch": true
+    }
+  ],
+  "unsupportedOwners": [
+    "full-effect-actor-graph",
+    "audio-graph",
+    "gpu-resources"
+  ],
+  "frameBudgetMs": 16.67,
+  "claimCeiling": "feasibility data only; blocks rollback/netplay readiness",
+  "blocks": [
+    "rollback readiness",
+    "netplay readiness"
+  ],
+  "ok": true
+}

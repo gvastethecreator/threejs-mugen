@@ -1,0 +1,106 @@
+{
+  "cases": [
+    {
+      "id": "screenbound-apply",
+      "passed": true,
+      "detail": {
+        "result": {
+          "applied": true,
+          "controllerType": "screenbound",
+          "operation": {
+            "kind": "bounds",
+            "controllerType": "screenbound",
+            "bound": true,
+            "moveCameraX": true,
+            "moveCameraY": false
+          }
+        },
+        "screenBound": {
+          "bound": true,
+          "moveCameraX": true,
+          "moveCameraY": false
+        }
+      }
+    },
+    {
+      "id": "playerpush-apply",
+      "passed": true,
+      "detail": {
+        "result": {
+          "applied": true,
+          "controllerType": "playerpush",
+          "operation": {
+            "kind": "collision",
+            "controllerType": "playerpush",
+            "enabled": true,
+            "priority": 2
+          }
+        },
+        "playerPush": true,
+        "pushPriority": 2
+      }
+    },
+    {
+      "id": "posfreeze-apply",
+      "passed": true,
+      "detail": {
+        "result": {
+          "applied": true,
+          "controllerType": "posfreeze",
+          "operation": {
+            "kind": "bounds",
+            "controllerType": "posfreeze",
+            "x": true,
+            "y": true
+          }
+        },
+        "posFreeze": {
+          "x": true,
+          "y": true,
+          "z": true
+        },
+        "pos": {
+          "x": 100,
+          "y": -10
+        }
+      }
+    },
+    {
+      "id": "stage-edge-clamp",
+      "passed": true,
+      "detail": {
+        "corner": 160,
+        "stage": {
+          "left": -160,
+          "right": 160,
+          "top": -240,
+          "bottom": 0,
+          "localCoord": [
+            320,
+            240
+          ]
+        }
+      }
+    },
+    {
+      "id": "camera-follow-deadzone",
+      "passed": true,
+      "detail": {
+        "cam1": 8,
+        "cam2": 0
+      }
+    },
+    {
+      "id": "localcoord-scale",
+      "passed": true,
+      "detail": {
+        "localCoord": [
+          320,
+          240
+        ],
+        "scale": 1
+      }
+    }
+  ],
+  "ok": true
+}

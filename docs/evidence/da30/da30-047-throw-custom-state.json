@@ -1,0 +1,150 @@
+{
+  "cases": [
+    {
+      "id": "success-atomic-bind",
+      "passed": true,
+      "detail": {
+        "attacker": {
+          "id": "p1",
+          "stateNo": 8100,
+          "life": 1000,
+          "boundTo": "p2",
+          "throwOwner": "p1"
+        },
+        "defender": {
+          "id": "p2",
+          "stateNo": 8200,
+          "life": 1000,
+          "boundTo": "p1",
+          "throwOwner": "p1"
+        },
+        "outcome": "success"
+      }
+    },
+    {
+      "id": "miss-no-bind",
+      "passed": true,
+      "detail": {
+        "attacker": {
+          "id": "p1",
+          "stateNo": 0,
+          "life": 1000,
+          "boundTo": null,
+          "throwOwner": null
+        },
+        "defender": {
+          "id": "p2",
+          "stateNo": 0,
+          "life": 1000,
+          "boundTo": null,
+          "throwOwner": null
+        },
+        "outcome": "miss"
+      }
+    },
+    {
+      "id": "invalid-target",
+      "passed": true,
+      "detail": {
+        "attacker": {
+          "id": "p1",
+          "stateNo": 0,
+          "life": 1000,
+          "boundTo": null,
+          "throwOwner": null
+        },
+        "defender": {
+          "id": "p2",
+          "stateNo": 0,
+          "life": 1000,
+          "boundTo": null,
+          "throwOwner": null
+        },
+        "outcome": "invalid"
+      }
+    },
+    {
+      "id": "interrupt-clears-bind",
+      "passed": true,
+      "detail": {
+        "attacker": {
+          "id": "p1",
+          "stateNo": 0,
+          "life": 1000,
+          "boundTo": null,
+          "throwOwner": null
+        },
+        "defender": {
+          "id": "p2",
+          "stateNo": 0,
+          "life": 1000,
+          "boundTo": null,
+          "throwOwner": null
+        },
+        "outcome": "interrupt"
+      }
+    },
+    {
+      "id": "ko-during-throw",
+      "passed": true,
+      "detail": {
+        "a": {
+          "id": "p1",
+          "stateNo": 8100,
+          "life": 1000,
+          "boundTo": "p2",
+          "throwOwner": "p1"
+        },
+        "d": {
+          "id": "p2",
+          "stateNo": 8200,
+          "life": 0,
+          "boundTo": "p1",
+          "throwOwner": "p1"
+        }
+      }
+    },
+    {
+      "id": "reset-clears-ownership",
+      "passed": true,
+      "detail": {
+        "a": {
+          "id": "p1",
+          "stateNo": 0,
+          "life": 1000,
+          "boundTo": null,
+          "throwOwner": null
+        },
+        "d": {
+          "id": "p2",
+          "stateNo": 0,
+          "life": 0,
+          "boundTo": null,
+          "throwOwner": null
+        }
+      }
+    },
+    {
+      "id": "snapshot-replay-ownership",
+      "passed": true,
+      "detail": {
+        "attacker": {
+          "id": "p1",
+          "stateNo": 8100,
+          "life": 1000,
+          "boundTo": "p2",
+          "throwOwner": "p1"
+        },
+        "defender": {
+          "id": "p2",
+          "stateNo": 8200,
+          "life": 1000,
+          "boundTo": "p1",
+          "throwOwner": "p1"
+        },
+        "outcome": "success"
+      }
+    }
+  ],
+  "ok": true
+}

@@ -23,7 +23,7 @@ Last updated: 2026-07-27
 Checked control source: [`docs/evidence/control-source-v1.json`](evidence/control-source-v1.json)  
 Projections: [`authority-selector-v1.json`](evidence/authority-selector-v1.json), [`roadmap-cursor-v1.json`](evidence/roadmap-cursor-v1.json)  
 Schema: `mugen-web-sandbox/control-source/v1` → authority-selector + roadmap-cursor  
-`closedThrough`: **DA30-038** · next open consecutive **DA30-039** (record/replay full round)
+`closedThrough`: **DA30-051** · next open consecutive **DA30-052** (browser selection journey)
 
 ## Audit hold (DA29)
 
@@ -65,14 +65,13 @@ Held: **65 / 36 / 20 / 10–12 / 6–8 / 25**
 
 ## Accepted ladder
 
-DA26…DA28-30 historical · **DA30-001…038** consecutive accepted (control, formal,
-browser Play/Studio/Inspect, input matrix, frame-gap, renderer baselines,
-gamepad/SOCD, clocks, match snapshot). Additional non-consecutive accepted IDs
-exist later (e.g. combat 041–044, 046, 049).  
+DA26…DA28-30 historical · **DA30-001…051** consecutive accepted through selection
+state model (includes 039 record/replay, 040 rewind spike, 041–050 combat stack,
+051 selection).  
 **DA29-001…DA29-200 unadjudicated** (candidate only; pilot revalidation on 012/013/041/072).
 
 ## Next queue
 
-First open consecutive: **DA30-039** (record/replay one full round). Then
-DA30-040 rewind feasibility, and remaining open product/runtime gates.
+First open consecutive: **DA30-052** (selection in browser). Remainder: 053+
+partially accepted non-consecutively (modes ADR) and open product gates.
 Only `accepted` advances consecutive watermark (DA30-006).
