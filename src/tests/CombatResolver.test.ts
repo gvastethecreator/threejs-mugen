@@ -146,6 +146,20 @@ describe("CombatResolver", () => {
     expect(runtimeHitFlagRejectionReason({ attacker, defender: idle })).toBeUndefined();
   });
 
+  it("prefers materialized hittmp over the compatibility fallback", () => {
+    const attacker = actor();
+    expect(runtimeHitFlagRejectionReason({
+      attacker,
+      defender: actor({ moveType: "H", hitFall: { falling: true, damage: 0, velocity: { y: 0 } }, hitTmp: 1 }),
+      hitFlag: "H+",
+    })).toBeUndefined();
+    expect(runtimeHitFlagRejectionReason({
+      attacker,
+      defender: actor({ moveType: "I", hitFall: { falling: true, damage: 0, velocity: { y: 0 } }, hitTmp: 2 }),
+      hitFlag: "H, L, A",
+    })).toBe("fall-hitflag-rejected");
+  });
+
   it("matches explicit HitFlag state types before the fall and chain filters", () => {
     const attacker = actor();
     expect(runtimeHitFlagRejectionReason({ attacker, defender: actor({ stateType: "S" }), hitFlag: "L" }))

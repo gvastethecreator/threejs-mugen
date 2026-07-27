@@ -6,6 +6,7 @@ import {
   applyRuntimeStateDefJuggle,
   buildRuntimeJuggleTrace,
   canRuntimeDirectAirJuggle,
+  canRuntimeProjectileAirJuggle,
   prepareRuntimeInheritedJugglePoints,
   runtimeAirJuggleBudget,
   runtimeAirJuggleCost,
@@ -139,6 +140,33 @@ describe("RuntimeJuggleSystem", () => {
       defender,
       move: move({ airJuggle: 3 }),
     })).toBe(true);
+  });
+
+  it("uses explicit hittmp before the legacy fall-state fallback", () => {
+    const attacker = actor("p1");
+    const defender = actor("p2", {
+      moveType: "H",
+      hitTmp: 1,
+      airJugglePoints: { p1: 0 },
+    }, { constants: { "data.airjuggle": 4 } });
+    const hit = move({ airJuggle: 3 });
+
+    expect(canRuntimeDirectAirJuggle({ profile: "ikemen-go", attacker, defender, move: hit })).toBe(true);
+    expect(canRuntimeProjectileAirJuggle({
+      profile: "ikemen-go",
+      attacker,
+      defender,
+      airJuggle: 3,
+    })).toBe(true);
+
+    defender.runtime.hitTmp = 2;
+    expect(canRuntimeDirectAirJuggle({ profile: "ikemen-go", attacker, defender, move: hit })).toBe(false);
+    expect(canRuntimeProjectileAirJuggle({
+      profile: "ikemen-go",
+      attacker,
+      defender,
+      airJuggle: 3,
+    })).toBe(false);
   });
 
   it("separates explicit HitDef air.juggle 0 from an omitted field", () => {

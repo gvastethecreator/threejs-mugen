@@ -1,6 +1,7 @@
 import type { CollisionBox } from "../model/CollisionBox";
 import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, RuntimeHitOverrideSlot } from "./types";
 import type { RuntimeCollisionBox } from "./RuntimeCollisionTransformSystem";
+import { runtimeHitTmpValue } from "./RuntimeHitTmpSystem";
 
 export type RuntimeCombatAttack = {
   damage: number;
@@ -216,7 +217,7 @@ export type RuntimeHitFlagRejectionReason =
   | "plus-hitflag-rejected";
 
 type RuntimeHitFlagDefender = Pick<CharacterRuntimeState, "moveType" | "hitFall">
-  & Partial<Pick<CharacterRuntimeState, "stateNo" | "guarding" | "stateType">>;
+  & Partial<Pick<CharacterRuntimeState, "hitTmp" | "stateNo" | "guarding" | "stateType">>;
 
 export function runtimeHitFlagRejectionReason(input: {
   attacker: Pick<CharacterRuntimeState, "assertSpecial">;
@@ -228,7 +229,7 @@ export function runtimeHitFlagRejectionReason(input: {
   if (input.defender.stateType !== undefined && !runtimeHitFlagAllowsStateType(input.hitFlag, input.defender.stateType)) {
     return "state-type-hitflag-rejected";
   }
-  const hitTmp = runtimeHitTmp(input.defender);
+  const hitTmp = runtimeHitTmpValue(input.defender);
   if (hitTmp >= 2 && (!hasRuntimeHitFlag(input.hitFlag, "F") || input.attacker.assertSpecial?.noFallHitFlag === true)) {
     return "fall-hitflag-rejected";
   }
@@ -261,11 +262,6 @@ export function canRuntimeHitFallenTarget(input: {
     ...input,
     defender: input.defender,
   });
-}
-
-function runtimeHitTmp(defender: RuntimeHitFlagDefender): 0 | 1 | 2 {
-  if (defender.moveType !== "H") return 0;
-  return defender.hitFall?.falling === true ? 2 : 1;
 }
 
 function isRuntimeHitFlagGuardState(defender: RuntimeHitFlagDefender): boolean {

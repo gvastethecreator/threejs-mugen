@@ -1,5 +1,6 @@
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+import { runtimeHitTmpValue } from "./RuntimeHitTmpSystem";
 import type { CharacterRuntimeState } from "./types";
 
 export const DEFAULT_RUNTIME_AIR_JUGGLE_POINTS = 15;
@@ -13,7 +14,7 @@ export type RuntimeDirectJuggleActor = {
   runtime: Partial<
     Pick<
       CharacterRuntimeState,
-      "airJugglePoints" | "assertSpecial" | "hitFall" | "juggle" | "juggleOrigin" | "moveType"
+      "airJugglePoints" | "assertSpecial" | "hitFall" | "hitTmp" | "juggle" | "juggleOrigin" | "moveType"
     >
   >;
   inheritJuggle?: 1 | 2;
@@ -93,7 +94,7 @@ export function canRuntimeDirectAirJuggle(input: {
   defender: RuntimeDirectJuggleActor;
   move: DemoMove;
 }): boolean {
-  if (input.profile !== "ikemen-go" || !runtimeDirectDefenderIsFalling(input.defender.runtime)) {
+  if (input.profile !== "ikemen-go" || runtimeHitTmpValue(input.defender.runtime) < 2) {
     return true;
   }
   if (input.attacker.runtime.assertSpecial?.noJuggleCheck) {
@@ -115,7 +116,9 @@ export function applyRuntimeDirectAirJuggleHit(input: {
   const costDecision = runtimeDirectAirJuggleCostDecision(input.attacker, input.move);
   const remainingBefore = runtimeAirJuggleRemaining(input.defender, input.attacker.id);
   const bypassed = input.attacker.runtime.assertSpecial?.noJuggleCheck === true;
-  const fallingContact = input.targetWasFalling || input.defender.runtime.hitFall?.falling === true;
+  const fallingContact = input.targetWasFalling
+    || (input.defender.runtime.hitTmp === undefined && input.defender.runtime.hitFall?.falling === true)
+    || runtimeHitTmpValue(input.defender.runtime) >= 2;
   const charged = !bypassed && fallingContact;
   const remainingAfter = charged ? remainingBefore - costDecision.cost : remainingBefore;
   input.defender.runtime.airJugglePoints = {
@@ -139,11 +142,7 @@ export function applyRuntimeDirectAirJuggleHit(input: {
   };
 }
 
-/**
- * Bounded IKEMEN projectile admission. The local runtime has no `hittmp`
- * counter, so an untracked non-falling first contact is admitted; tracked or
- * falling contacts use the target's per-attacker air-juggle budget.
- */
+/** IKEMEN projectile admission follows the source `hittmp < 2` branch. */
 export function canRuntimeProjectileAirJuggle(input: {
   profile?: RuntimeCompatibilityProfile;
   attacker: RuntimeDirectJuggleActor;
@@ -154,9 +153,7 @@ export function canRuntimeProjectileAirJuggle(input: {
   if (input.profile !== "ikemen-go" || input.attacker.runtime.assertSpecial?.noJuggleCheck) {
     return true;
   }
-  const tracked = input.defender.runtime.airJugglePoints?.[input.attacker.id] !== undefined;
-  const falling = input.targetWasFalling === true || runtimeDirectDefenderIsFalling(input.defender.runtime);
-  if (!tracked && !falling) {
+  if (runtimeHitTmpValue(input.defender.runtime) < 2) {
     return true;
   }
   return runtimeAirJuggleCost({ airJuggle: input.airJuggle }) <= runtimeAirJuggleRemaining(input.defender, input.attacker.id);
@@ -176,7 +173,9 @@ export function applyRuntimeProjectileAirJuggleHit(input: {
   const cost = runtimeAirJuggleCost({ airJuggle: input.airJuggle });
   const remainingBefore = runtimeAirJuggleRemaining(input.defender, input.attacker.id);
   const bypassed = input.attacker.runtime.assertSpecial?.noJuggleCheck === true;
-  const fallingContact = input.targetWasFalling || input.defender.runtime.hitFall?.falling === true;
+  const fallingContact = input.targetWasFalling
+    || (input.defender.runtime.hitTmp === undefined && input.defender.runtime.hitFall?.falling === true)
+    || runtimeHitTmpValue(input.defender.runtime) >= 2;
   const charged = !bypassed && fallingContact;
   const remainingAfter = charged ? remainingBefore - cost : remainingBefore;
   const tracked = input.defender.runtime.airJugglePoints?.[input.attacker.id] !== undefined;
@@ -213,7 +212,9 @@ export function buildRuntimeJuggleTrace(input: {
   const bypassed = input.attacker.runtime.assertSpecial?.noJuggleCheck === true;
   const fallingContact =
     input.hitResult?.fallingContact ??
-    (input.targetWasFalling === true || input.defender.runtime.hitFall?.falling === true);
+    (input.targetWasFalling === true
+      || (input.defender.runtime.hitTmp === undefined && input.defender.runtime.hitFall?.falling === true)
+      || runtimeHitTmpValue(input.defender.runtime) >= 2);
   const admitted = canRuntimeDirectAirJuggle({
     profile: input.profile,
     attacker: input.attacker,
@@ -339,10 +340,4 @@ export function runtimeAirJuggleRemaining(defender: RuntimeDirectJuggleActor, at
 
 function runtimeFiniteInteger(value: number | undefined, fallback: number): number {
   return value === undefined || !Number.isFinite(value) ? fallback : Math.trunc(value);
-}
-
-function runtimeDirectDefenderIsFalling(
-  state: Partial<Pick<CharacterRuntimeState, "moveType" | "hitFall">>,
-): boolean {
-  return state.moveType === "H" && state.hitFall?.falling === true;
 }

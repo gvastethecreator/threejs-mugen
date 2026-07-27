@@ -4,6 +4,7 @@ import {
   type RuntimeFighterAdvanceActor,
   type RuntimeFighterAdvanceHooks,
 } from "../mugen/runtime/RuntimeFighterAdvanceSystem";
+import { RuntimeHitTmpWorld } from "../mugen/runtime/RuntimeHitTmpSystem";
 
 describe("RuntimeFighterAdvanceWorld", () => {
   it("owns the bounded per-fighter advance order", () => {
@@ -40,6 +41,27 @@ describe("RuntimeFighterAdvanceWorld", () => {
       tickStartPos: { x: 8, y: -3, z: 0 },
       preserveImportedStateMoveType: true,
     });
+  });
+
+  it("syncs hittmp after the frame mutation hooks when requested", () => {
+    const actor = advanceActor({ x: 4, y: -2 }, 45, { x: 2, y: 0.5 });
+    actor.runtime.moveType = "H";
+    actor.runtime.hitFall = { falling: true, damage: 0, velocity: { y: -1 } };
+    const synced: string[] = [];
+
+    new RuntimeFighterAdvanceWorld().advance({
+      actor,
+      hooks: {
+        ...orderedHooks([]),
+        syncHitTmp: (current) => {
+          new RuntimeHitTmpWorld().sync(current.runtime);
+          synced.push(`${current.runtime.hitTmp}`);
+        },
+      },
+    });
+
+    expect(synced).toEqual(["2"]);
+    expect(actor.runtime.hitTmp).toBe(2);
   });
 });
 

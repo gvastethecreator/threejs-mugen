@@ -596,6 +596,7 @@ describe("ReversalSystem", () => {
     expect(attacker.runtime.guardControlTime).toBe(0);
     expect(attacker.runtime.guarding).toBe(false);
     expect(attacker.runtime.moveType).toBe("H");
+    expect(attacker.runtime.hitTmp).toBe(-1);
     expect(attacker.removedExplodsOnGetHit).toBe(1);
     expect(reverser.runtime.power).toBe(3000);
     expect(contactWorld.calls).toEqual(["reversed:200"]);

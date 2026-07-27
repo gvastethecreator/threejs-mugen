@@ -27,6 +27,8 @@ import type {
   RuntimeHitDefSpritePrioritySource,
 } from "./HitDefPriorityPolicy";
 
+export type RuntimeHitTmp = -1 | 0 | 1 | 2;
+
 export type CharacterRuntimeState = {
   teamState?: RuntimeTeamState;
   pos: { x: number; y: number };
@@ -50,6 +52,8 @@ export type CharacterRuntimeState = {
   receivedHitSequence?: number;
   hitVars?: RuntimeGetHitVars;
   hitFall?: RuntimeHitFall;
+  /** IKEMEN get-hit phase: 0 idle, 1 getting hit, 2 falling, -1 reversaldef. */
+  hitTmp?: RuntimeHitTmp;
   /** Remaining IKEMEN air-juggle points, keyed by the direct attacking actor id. */
   airJugglePoints?: Record<string, number>;
   /**

@@ -284,6 +284,7 @@ import type {
 } from "./RuntimeTeamRoundHandoffSystem";
 import { RuntimeFighterAdvanceHookSetWorld } from "./RuntimeFighterAdvanceHookSetSystem";
 import { RuntimeFighterAdvanceWorld } from "./RuntimeFighterAdvanceSystem";
+import { RuntimeHitTmpWorld } from "./RuntimeHitTmpSystem";
 import { RuntimeFighterStateWorld, type FighterMatchState } from "./RuntimeFighterStateSystem";
 import {
   RuntimeRootStandbyTransitionWorld,
@@ -395,6 +396,7 @@ const expressionContextWorld = new RuntimeExpressionContextWorld();
 const activeExpressionContextWorld = new RuntimeActiveExpressionContextWorld(expressionContextWorld);
 const fighterAdvanceHookSetWorld = new RuntimeFighterAdvanceHookSetWorld();
 const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
+const hitTmpWorld = new RuntimeHitTmpWorld();
 const matchHelperBindingWorld = new RuntimeMatchHelperBindingWorld();
 const matchActiveWorld = new RuntimeMatchActiveWorld();
 const matchActorRosterWorld = new RuntimeMatchActorRosterWorld();
@@ -4705,6 +4707,7 @@ function advanceFighter(
     },
     preserveFrozenPosition: (actor, tickStartPos) =>
       actorConstraintWorld.preserveFrozenPosition(actor.runtime, tickStartPos),
+    syncHitTmp: (actor) => hitTmpWorld.sync(actor.runtime),
   });
 
   fighterAdvanceWorld.advance({

@@ -11,6 +11,7 @@ import { applyRuntimeHitDefSpritePriorityContact } from "./HitDefSpritePriorityS
 import { applyRuntimePowerDelta } from "./RuntimeResourceSystem";
 import { resetRuntimeHitDefContactMemory, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
 import { findControllerParam } from "./StateProgramExecutor";
+import { markRuntimeHitTmpReversal } from "./RuntimeHitTmpSystem";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeReversalActor = {
@@ -369,6 +370,7 @@ export class RuntimeReversalWorld {
   ): RuntimeReversalOutcome {
     reverser.hasHit = true;
     attacker.hasHit = true;
+    markRuntimeHitTmpReversal(attacker.runtime);
     this.contactWorld.markMoveReversed(attacker.contact, attacker.runtime.stateNo);
     this.contactWorld.markReceivedHits(attacker.contact, attacker.runtime.stateNo, reversal.hitVars?.hitCount ?? 1);
     hooks.rememberTarget(reverser, attacker, reversal.targetId);
