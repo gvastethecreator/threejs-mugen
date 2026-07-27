@@ -57,6 +57,8 @@ export type CharacterRuntimeState = {
   hitTmp?: RuntimeHitTmp;
   /** IKEMEN action phase: positive action, hitpause, or global pause. */
   actTmp?: RuntimeActTmp;
+  /** IKEMEN pending state-change flag, retained through hitpause. */
+  stateChangeTmp?: boolean;
   /** Remaining IKEMEN air-juggle points, keyed by the direct attacking actor id. */
   airJugglePoints?: Record<string, number>;
   /**

@@ -29,6 +29,7 @@ describe("RuntimeStateEntrySystem", () => {
       animations: [205],
       runtime: { stateNo: 0, animNo: 0, ctrl: true, stateType: "S", moveType: "I", physics: "S" },
     });
+    actor.hitPause = 4;
     actor.firedHitDefs.add("200:12:0");
     actor.currentMove = { actionId: 210 };
     actor.currentMoveLabel = "old";
@@ -51,6 +52,7 @@ describe("RuntimeStateEntrySystem", () => {
       stateType: "A",
       moveType: "A",
       physics: "A",
+      stateChangeTmp: true,
       ctrl: false,
       juggle: 6,
       juggleOrigin: "statedef",
@@ -195,6 +197,7 @@ function entryActor(options: {
       animations: new Map(animationEntries),
     },
     runtime: runtimeState(options.runtime),
+    hitPause: 0,
     stateElapsed: 0,
     currentMoveLabel: undefined,
     moveTick: 0,

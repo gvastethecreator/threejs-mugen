@@ -82,6 +82,25 @@ describe("RuntimeFighterAdvanceWorld", () => {
     expect(calls.at(-2)).toBe("acttmp-finish");
     expect(calls.at(-1)).toBe("hittmp-sync");
   });
+
+  it("settles pending state changes before action and get-hit snapshots", () => {
+    const calls: string[] = [];
+    const actor = advanceActor({ x: 0, y: 0 });
+
+    new RuntimeFighterAdvanceWorld().advance({
+      actor,
+      hooks: {
+        ...orderedHooks(calls),
+        settleStateChangeTmp: () => calls.push("stchtmp-settle"),
+        finishActTmp: () => calls.push("acttmp-finish"),
+        syncHitTmp: () => calls.push("hittmp-sync"),
+      },
+    });
+
+    expect(calls.at(-3)).toBe("stchtmp-settle");
+    expect(calls.at(-2)).toBe("acttmp-finish");
+    expect(calls.at(-1)).toBe("hittmp-sync");
+  });
 });
 
 type AdvanceActor = RuntimeFighterAdvanceActor & {

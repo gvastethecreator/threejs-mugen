@@ -3,7 +3,16 @@ import type { CharacterRuntimeState } from "./types";
 export type RuntimeFighterAdvanceActor = {
   runtime: Pick<
     CharacterRuntimeState,
-    "actTmp" | "combatDepth" | "hitFall" | "hitTmp" | "pos" | "renderAngle" | "renderScale" | "clsnScaleMultiplier" | "clsnAngle"
+    "actTmp"
+    | "combatDepth"
+    | "hitFall"
+    | "hitTmp"
+    | "pos"
+    | "renderAngle"
+    | "renderScale"
+    | "clsnScaleMultiplier"
+    | "clsnAngle"
+    | "stateChangeTmp"
   > & Partial<Pick<CharacterRuntimeState, "moveType">>;
 };
 
@@ -26,6 +35,7 @@ export type RuntimeFighterAdvanceHooks<TActor extends RuntimeFighterAdvanceActor
   advanceImportedGroundRecoveryLanding: (actor: TActor) => void;
   advanceCommon1LieDownRecovery: (actor: TActor) => void;
   preserveFrozenPosition: (actor: TActor, tickStartPos: { x: number; y: number; z: number }) => void;
+  settleStateChangeTmp?: (actor: TActor) => void;
   finishActTmp?: (actor: TActor) => void;
   syncHitTmp?: (actor: TActor) => void;
 };
@@ -71,6 +81,7 @@ export class RuntimeFighterAdvanceWorld {
     hooks.advanceImportedGroundRecoveryLanding(actor);
     hooks.advanceCommon1LieDownRecovery(actor);
     hooks.preserveFrozenPosition(actor, tickStartPos);
+    hooks.settleStateChangeTmp?.(actor);
     hooks.finishActTmp?.(actor);
     hooks.syncHitTmp?.(actor);
 

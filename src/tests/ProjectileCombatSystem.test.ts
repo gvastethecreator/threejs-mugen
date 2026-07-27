@@ -214,6 +214,40 @@ describe("ProjectileCombatSystem", () => {
     ]);
   });
 
+  it("rejects a projectile while a getting-hit state change remains pending", () => {
+    let projectiles = [projectile({ removeOnHit: false, damage: 20 })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+    const defender = actor("p2", "P2", runtimeState({
+      pos: { x: 12, y: 0 },
+      facing: -1,
+      life: 100,
+      moveType: "H",
+      hitTmp: 1,
+      actTmp: 1,
+      stateChangeTmp: true,
+    }));
+    const logs: string[] = [];
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      runtimeProfile: "ikemen-go",
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: (line) => logs.push(line),
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(100);
+    expect(projectiles[0]).toMatchObject({ hasHit: false, hitsRemaining: 1 });
+    expect(logs).toContain("P2 rejected P1 projectile S,SP via pending state change");
+  });
+
   it("does not promote a helper-owned projectile to a root win cause", () => {
     let projectiles = [projectile({ attr: "S,HA", damage: 31, parentId: "p1-helper-0", rootId: "p1" })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));

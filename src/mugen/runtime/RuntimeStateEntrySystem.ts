@@ -5,6 +5,7 @@ import { applyRuntimeStateDefJuggle } from "./RuntimeJuggleSystem";
 import { applyRuntimeStateDefControl } from "./RuntimeResourceSystem";
 import { RuntimeStateClockWorld, type RuntimeStateClockResetOptions } from "./RuntimeStateClockSystem";
 import { RuntimeStateMetadataWorld } from "./RuntimeStateMetadataSystem";
+import { RuntimeStateChangeTmpWorld } from "./RuntimeStateChangeTmpSystem";
 import { RuntimeStateAvailabilityWorld, type RuntimeStateAvailabilityProgramState } from "./StateAvailabilitySystem";
 import type { CharacterRuntimeState } from "./types";
 
@@ -26,6 +27,7 @@ export type RuntimeStateEntryActor = {
   };
   runtime: CharacterRuntimeState;
   stateOwner?: RuntimeStateEntryActor;
+  hitPause: number;
   stateElapsed: number;
   currentMove?: RuntimeStateEntryMove;
   currentMoveLabel?: string;
@@ -72,17 +74,20 @@ export type RuntimeStateEntryWorldOptions = {
   availabilityWorld?: RuntimeStateAvailabilityWorld;
   stateClockWorld?: RuntimeStateClockWorld;
   stateMetadataWorld?: RuntimeStateMetadataWorld;
+  stateChangeTmpWorld?: RuntimeStateChangeTmpWorld;
 };
 
 export class RuntimeStateEntryWorld {
   private readonly availabilityWorld: RuntimeStateAvailabilityWorld;
   private readonly stateClockWorld: RuntimeStateClockWorld;
   private readonly stateMetadataWorld: RuntimeStateMetadataWorld;
+  private readonly stateChangeTmpWorld: RuntimeStateChangeTmpWorld;
 
   constructor(options: RuntimeStateEntryWorldOptions = {}) {
     this.availabilityWorld = options.availabilityWorld ?? new RuntimeStateAvailabilityWorld();
     this.stateClockWorld = options.stateClockWorld ?? new RuntimeStateClockWorld();
     this.stateMetadataWorld = options.stateMetadataWorld ?? new RuntimeStateMetadataWorld();
+    this.stateChangeTmpWorld = options.stateChangeTmpWorld ?? new RuntimeStateChangeTmpWorld();
   }
 
   canEnterState<TActor extends RuntimeStateEntryActor>(
@@ -106,6 +111,8 @@ export class RuntimeStateEntryWorld {
       stateType: this.currentStateType(actor),
       moveType: this.currentStateMoveType(actor),
     });
+    this.stateChangeTmpWorld.mark(actor.runtime);
+    this.stateChangeTmpWorld.settle(actor.runtime, actor.hitPause > 0);
     this.stateClockWorld.resetForTransition(actor, result, options);
   }
 

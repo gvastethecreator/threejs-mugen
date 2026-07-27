@@ -286,6 +286,7 @@ import { RuntimeFighterAdvanceHookSetWorld } from "./RuntimeFighterAdvanceHookSe
 import { RuntimeFighterAdvanceWorld } from "./RuntimeFighterAdvanceSystem";
 import { RuntimeActTmpWorld } from "./RuntimeActTmpSystem";
 import { RuntimeHitTmpWorld } from "./RuntimeHitTmpSystem";
+import { RuntimeStateChangeTmpWorld } from "./RuntimeStateChangeTmpSystem";
 import { RuntimeFighterStateWorld, type FighterMatchState } from "./RuntimeFighterStateSystem";
 import {
   RuntimeRootStandbyTransitionWorld,
@@ -355,7 +356,8 @@ import type { ExpressionGameSpace, ExpressionRedirectTarget } from "./Expression
 const compatibilityTelemetryWorld = new RuntimeCompatibilityTelemetryWorld();
 const defaultGuardDistanceWorld = new RuntimeGuardDistanceWorld();
 const stateClockWorld = new RuntimeStateClockWorld();
-const stateEntryWorld = new RuntimeStateEntryWorld({ stateClockWorld });
+const stateChangeTmpWorld = new RuntimeStateChangeTmpWorld();
+const stateEntryWorld = new RuntimeStateEntryWorld({ stateClockWorld, stateChangeTmpWorld });
 const stateEntryRouteWorld = new RuntimeStateEntryRouteWorld();
 const controllerDispatchWorld = new RuntimeControllerDispatchWorld();
 const stateEntrySetupWorld = new RuntimeStateEntrySetupWorld();
@@ -4719,6 +4721,7 @@ function advanceFighter(
     },
     preserveFrozenPosition: (actor, tickStartPos) =>
       actorConstraintWorld.preserveFrozenPosition(actor.runtime, tickStartPos),
+    settleStateChangeTmp: (actor) => stateChangeTmpWorld.settle(actor.runtime, actor.hitPause > 0),
     finishActTmp: (actor) => actTmpWorld.finish(actor.runtime, {
       matchPaused: isMatchPaused(),
       hitPaused: actor.hitPause > 0,

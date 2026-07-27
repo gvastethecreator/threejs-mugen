@@ -29,6 +29,7 @@ export class RuntimeFighterAdvanceHookSetWorld {
       advanceImportedGroundRecoveryLanding: input.advanceImportedGroundRecoveryLanding,
       advanceCommon1LieDownRecovery: input.advanceCommon1LieDownRecovery,
       preserveFrozenPosition: input.preserveFrozenPosition,
+      settleStateChangeTmp: input.settleStateChangeTmp,
       finishActTmp: input.finishActTmp,
       syncHitTmp: input.syncHitTmp,
     };

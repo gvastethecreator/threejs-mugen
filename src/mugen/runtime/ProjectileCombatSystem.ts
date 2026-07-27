@@ -37,6 +37,7 @@ import {
   prepareRuntimeInheritedJugglePoints,
   type RuntimeDirectJuggleActor,
 } from "./RuntimeJuggleSystem";
+import { runtimeStateChangeTmpBlocksProjectile } from "./RuntimeStateChangeTmpSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import {
   recordRuntimeRoundWinType,
@@ -221,6 +222,10 @@ export class RuntimeProjectileCombatWorld {
         targetWasFalling,
       })) {
         log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via air.juggle`);
+        continue;
+      }
+      if (runtimeStateChangeTmpBlocksProjectile(defender.runtime)) {
+        log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via pending state change`);
         continue;
       }
       const override = findRuntimeHitOverride(defender.runtime, projectile.attr ?? "S,SP", projectile.guardFlag ?? "MA");
