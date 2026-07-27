@@ -6,7 +6,7 @@
   and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 - Machine record: **DA30-120**. Consecutive human cursor: **DA30-020**
   (`adjudicatedThrough` not advanced by model-only DA31 rows).
-- Formal/global: `f5f2315e` DA31-008; focal: T406; visual/product: T342;
+- Formal/global: `f5f2315e` DA31-008; focal: T407 `1899eb97`; visual/product: T342;
   source: 05b/4aa.
 - DA31-001…040: see `docs/evidence/da31/da31-phase-status-v1.json`.
   Browser: 009–015 accepted (provisional when dirty). 012 simulated gamepad.
@@ -17,6 +17,24 @@
   drive harden; gamepad device-lab protocol; clause sample proposes
   `adjudicatedThrough=DA30-021` (not auto-applied); a11y baseline inventory.
   Next: close smoke lanes, human accept watermark, hardware gamepad.
+
+## Runtime Projectile air.juggle - T407 (closed bounded, 2026-07-27)
+
+- `1899eb97` carries CNS `Projectile air.juggle` through compiler, spawn,
+  profile bridge, combat admission, and effect snapshots for root-owned
+  IKEMEN projectiles.
+- Falling contacts spend target `data.airjuggle` points by attacker id;
+  over-budget contacts reject before HitOverride and retain the projectile;
+  `NoJuggleCheck` bypasses without spending or resetting attacker `c.juggle`.
+- Focused closure: 6 files / 253 tests passed, required projectile trace passed,
+  `node --check scripts/qa_traces.cjs`, and `git diff --check` passed.
+- `pnpm typecheck` remains blocked by an unrelated pre-existing unused
+  `advanced` at `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+- Claim blocked: exact `hittmp`, MUGEN branch, helper/nested ownership,
+  teams/clashes, ModifyHitDef air.juggle, global gate inheritance, scores, and
+  full parity. Scores unchanged.
+
+Research: [projectile air.juggle](research/2026-07-27-ikemen-projectile-air-juggle.md).
 
 ## Historical machine-selector view after DA30-120
 

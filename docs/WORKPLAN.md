@@ -1,5 +1,20 @@
 # Workplan
 
+## Current bounded runtime cut - T407 (2026-07-27)
+
+T407 closes the root-owned IKEMEN Projectile `air.juggle` slice in
+`1899eb97`. CNS/compiler data reaches `RuntimeProjectile` and snapshots;
+falling contacts spend target `data.airjuggle` points by attacker id, later
+over-budget contacts reject before HitOverride, and `NoJuggleCheck` bypasses
+without resetting attacker `c.juggle`. MUGEN/unknown profiles and child/helper
+projectiles keep the prior path. Exact `hittmp`, helper ancestry, MUGEN branch,
+teams/clashes, ModifyHitDef, scores, and global parity remain open.
+
+Research: `docs/research/2026-07-27-ikemen-projectile-air-juggle.md`.
+Ticket: `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/407-projectile-air-juggle.md`.
+Focused evidence is green; global typecheck is currently blocked by the
+pre-existing unused `advanced` in `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
 ## Post-DA30-120 execution authority (2026-07-27)
 
 Use DA31-002…040 from

@@ -1,5 +1,23 @@
 # Build Execution Backlog
 
+## Entry 616 - Projectile air.juggle (T407)
+
+Closed T407 in `1899eb97`: `Projectile air.juggle` now has a typed compiler
+field, spawn normalization, IKEMEN root-owned admission, falling-contact spend,
+over-budget rejection, NoJuggleCheck bypass, effect snapshot evidence, and a
+required imported trace. Child/helper projectiles and non-IKEMEN profiles retain
+the old route.
+
+Focused closure passed 6 files / 253 tests, the named trace, `node --check
+scripts/qa_traces.cjs`, and `git diff --check`. `pnpm typecheck` remains
+blocked by the unrelated pre-existing unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`. Research:
+`docs/research/2026-07-27-ikemen-projectile-air-juggle.md`.
+
+Claim allowed: bounded root-owned IKEMEN Projectile `air.juggle` path. Claim
+blocked: exact `hittmp`, MUGEN branch, helper/nested ownership, teams/clashes,
+ModifyHitDef, global checkpoint, score movement, and full parity.
+
 ## Entry 615 - Post-DA30-120 evidence adoption audit
 
 Docs-only audit at HEAD `67481fbc` separates the DA30-120 machine record from

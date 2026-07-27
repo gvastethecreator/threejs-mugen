@@ -14,6 +14,27 @@ and local release review. Authority:
 [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
 and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 
+## Current runtime compatibility board - T407 (closed bounded, 2026-07-27)
+
+T407 closes in `1899eb97`. Root-owned CNS Projectiles now carry optional
+`air.juggle` from compiler through runtime spawn and effect snapshots. Under
+`ikemen-go`, admission runs after `HitBy` and before `HitOverride`; falling
+contacts spend target `data.airjuggle` points by direct attacker id, later
+over-budget contacts reject without contact/removal mutation, and
+`NoJuggleCheck` bypasses without spending or resetting attacker `c.juggle`.
+MUGEN/unknown profiles and helper/child projectiles retain the prior path.
+
+Required imported trace:
+`synthetic-imported-ikemen-projectile-air-juggle-golden` proves direct falling
+setup, `4 -> 1` spend, rejection, active projectile retention, and snapshot
+`airJuggle = 3`. Focused closure passed 6 files / 253 tests, trace gate,
+`node --check scripts/qa_traces.cjs`, and diff hygiene. `pnpm typecheck` is
+blocked by the unrelated pre-existing unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`. Claim blocked: exact
+`hittmp`, helper/nested ownership, MUGEN branch, teams/clashes, ModifyHitDef,
+global gate inheritance, scores, and full parity. Scores stay unchanged.
+Research: `docs/research/2026-07-27-ikemen-projectile-air-juggle.md`.
+
 ## Historical audit queue — repair gates before DA30-026
 
 Machine control records DA30-025 at HEAD `c2245fe8`. The written DA30 roadmap
