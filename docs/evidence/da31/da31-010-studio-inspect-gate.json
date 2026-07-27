@@ -1,10 +1,10 @@
 {
   "schema": "Da31StudioInspectGate/v1",
   "id": "DA31-010",
-  "generatedAt": "2026-07-27T18:38:10.914Z",
+  "generatedAt": "2026-07-27T23:52:26.319Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "c4145c95b1856b258cc306f7ee08424e309ea1c5",
+    "subjectSha": "d8c4dfaac09e23de7e6f4bd3b4b6b43aeec6fec7",
     "dirtyTree": true,
     "provisional": true,
     "probePaths": [
@@ -15,7 +15,7 @@
     ],
     "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
   },
-  "headSha": "c4145c95b1856b258cc306f7ee08424e309ea1c5",
+  "headSha": "d8c4dfaac09e23de7e6f4bd3b4b6b43aeec6fec7",
   "ok": true,
   "journeys": [
     {
@@ -86,6 +86,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "6f9827967085fb902bb5e0797723ed39307a5320ddcf89decd4aed8113036a7f"
+    "value": "06a15c995095e9c2cc2c2da7e1630a342d133a1c3d67c5621a70f705a8d0708c"
   }
 }

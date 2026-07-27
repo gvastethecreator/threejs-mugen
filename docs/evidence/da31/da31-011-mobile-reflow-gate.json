@@ -1,10 +1,10 @@
 {
   "schema": "Da31MobileReflowGate/v1",
   "id": "DA31-011",
-  "generatedAt": "2026-07-27T18:41:30.327Z",
+  "generatedAt": "2026-07-27T23:53:16.670Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "c4145c95b1856b258cc306f7ee08424e309ea1c5",
+    "subjectSha": "d8c4dfaac09e23de7e6f4bd3b4b6b43aeec6fec7",
     "dirtyTree": true,
     "provisional": true,
     "probePaths": [
@@ -13,7 +13,7 @@
     "codePaths": [],
     "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
   },
-  "headSha": "c4145c95b1856b258cc306f7ee08424e309ea1c5",
+  "headSha": "d8c4dfaac09e23de7e6f4bd3b4b6b43aeec6fec7",
   "ok": true,
   "cases": [
     {
@@ -26,9 +26,9 @@
           "w": 320,
           "h": 720
         },
-        "scrollWidth": 860,
+        "scrollWidth": 320,
         "scrollHeight": 990,
-        "overflowX": true,
+        "overflowX": false,
         "overflowY": true,
         "requiredControlCount": 61,
         "clippedSample": [
@@ -47,7 +47,7 @@
         "tag": "button",
         "rect": {
           "t": 37,
-          "l": 43,
+          "l": 63,
           "w": 98,
           "h": 38
         }
@@ -64,28 +64,28 @@
           "w": 390,
           "h": 844
         },
-        "scrollWidth": 860,
-        "scrollHeight": 1132,
-        "overflowX": true,
+        "scrollWidth": 390,
+        "scrollHeight": 1112,
+        "overflowX": false,
         "overflowY": true,
         "requiredControlCount": 61,
         "clippedSample": [
           "Skip to runtime viewport",
-          "02Validate\n          validate files\n    ",
-          "03Assets\n          map links\n        \n  ",
           "04Playtest\n          no trace yet\n      ",
           "05Compile\n          compile needed\n     ",
           "06Package\n          package project\n    ",
           "07Publish\n          publish build\n      ",
-          ""
+          "",
+          "",
+          "Open Project"
         ]
       },
       "focus": {
         "focusedVisible": true,
         "tag": "button",
         "rect": {
-          "t": 37,
-          "l": 43,
+          "t": 28,
+          "l": 133,
           "w": 98,
           "h": 38
         }
@@ -102,28 +102,28 @@
           "w": 390,
           "h": 844
         },
-        "scrollWidth": 860,
-        "scrollHeight": 1132,
-        "overflowX": true,
+        "scrollWidth": 390,
+        "scrollHeight": 1112,
+        "overflowX": false,
         "overflowY": true,
         "requiredControlCount": 61,
         "clippedSample": [
           "Skip to runtime viewport",
-          "02Validate\n          validate files\n    ",
-          "03Assets\n          map links\n        \n  ",
           "04Playtest\n          no trace yet\n      ",
           "05Compile\n          compile needed\n     ",
           "06Package\n          package project\n    ",
           "07Publish\n          publish build\n      ",
-          ""
+          "",
+          "",
+          "Open Project"
         ]
       },
       "focus": {
         "focusedVisible": true,
         "tag": "button",
         "rect": {
-          "t": 37,
-          "l": 43,
+          "t": 28,
+          "l": 133,
           "w": 98,
           "h": 38
         }
@@ -140,28 +140,28 @@
           "w": 390,
           "h": 844
         },
-        "scrollWidth": 860,
-        "scrollHeight": 1132,
-        "overflowX": true,
+        "scrollWidth": 390,
+        "scrollHeight": 1112,
+        "overflowX": false,
         "overflowY": true,
         "requiredControlCount": 61,
         "clippedSample": [
           "Skip to runtime viewport",
-          "02Validate\n          validate files\n    ",
-          "03Assets\n          map links\n        \n  ",
           "04Playtest\n          no trace yet\n      ",
           "05Compile\n          compile needed\n     ",
           "06Package\n          package project\n    ",
           "07Publish\n          publish build\n      ",
-          ""
+          "",
+          "",
+          "Open Project"
         ]
       },
       "focus": {
         "focusedVisible": true,
         "tag": "button",
         "rect": {
-          "t": 37,
-          "l": 43,
+          "t": 28,
+          "l": 133,
           "w": 98,
           "h": 38
         }
@@ -178,28 +178,28 @@
           "w": 390,
           "h": 844
         },
-        "scrollWidth": 860,
-        "scrollHeight": 1132,
-        "overflowX": true,
+        "scrollWidth": 390,
+        "scrollHeight": 1112,
+        "overflowX": false,
         "overflowY": true,
         "requiredControlCount": 61,
         "clippedSample": [
           "Skip to runtime viewport",
-          "02Validate\n          validate files\n    ",
-          "03Assets\n          map links\n        \n  ",
           "04Playtest\n          no trace yet\n      ",
           "05Compile\n          compile needed\n     ",
           "06Package\n          package project\n    ",
           "07Publish\n          publish build\n      ",
-          ""
+          "",
+          "",
+          "Open Project"
         ]
       },
       "focus": {
         "focusedVisible": true,
         "tag": "button",
         "rect": {
-          "t": 37,
-          "l": 43,
+          "t": 28,
+          "l": 133,
           "w": 98,
           "h": 38
         }
@@ -222,6 +222,6 @@
   "overflowObserved": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "34c6c23051095f97a543b42bbc107f07cf7bdfdba5ea6e107657d90adf66cd1b"
+    "value": "fe8b5040538653e392c72ebe541a277abb66f064c874c1b3844b1d08ec3c9c07"
   }
 }
