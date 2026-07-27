@@ -2,6 +2,17 @@
 
 Last updated: 2026-07-26
 
+## 2026-07-27 post-DA30-025 continuation checkpoint
+
+Resume from HEAD `c2245fe8`, Entry 613, machine watermark DA30-025, partial
+formal observation `27b88f0a`, browser observation `c47cfa4e`, focal T406,
+visual/product T342, and source 05b/4aa. First repair DA30-021/024/025 against
+their written clauses. Then execute DA30-026 and follow the AUD27 dependency
+chain. Keep non-consecutive accepted ADRs/models as inputs until a live
+consumer closes their dependency. Scores remain held.
+
+Audit: `docs/research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md`.
+
 This guide exists so the project can keep moving without losing the thread. It does not replace the scorecard, execution board, or workplan. It explains how to continue the port in a way that produces usable software instead of scattered experiments.
 
 ## 2026-07-26 continuation checkpoint

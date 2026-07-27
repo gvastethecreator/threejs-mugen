@@ -1,5 +1,13 @@
 # 06 - Roadmap Control And QA Ledger
 
+## 2026-07-27 post-DA30-025 acceptance override
+
+Machine control records DA30-025. Current audit keeps DA30-021/024/025 partial
+against written clauses and proposes separate recorded/adjudicated watermarks.
+Repair manifests, complete formal command coverage, preserve raw facts, and
+sync human authorities before DA30-026. Entry 614 and AUD27-01…05 own this
+control cut. Scores remain held.
+
 ## 2026-07-27 DA30 audit-hold override
 
 The generated DA29-200 watermark is rejected. The selector says DA29-200 while

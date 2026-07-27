@@ -2,6 +2,17 @@
 
 Last updated: 2026-07-26
 
+## Current post-DA30-025 start
+
+Before new implementation, adjudicate DA30-021/024/025 against their written
+clauses. A green command exit, route load, key dispatch, text match, or
+screenshot can support a narrow observation. Task closure requires its named
+semantic deltas, failure cases, revision rule, environment, and claim ceiling.
+
+Run the full formal command manifest at one SHA, store raw logs and exact facts,
+then repair Play and Studio/Inspect journeys. DA30-026 follows. See
+`docs/research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md`.
+
 This checklist turns the roadmap into repeatable execution steps. It is not a new source of truth. Use it with `AGENTS.md`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, and `docs/ROADMAP_EXECUTION_BOARD.md`.
 
 ## Current post-DA28 start

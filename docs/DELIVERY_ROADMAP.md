@@ -4,6 +4,17 @@ Last updated: 2026-07-27
 
 ## Latest delivery authority checkpoint
 
+### Post-DA30-025 audit override
+
+Current HEAD `c2245fe8` has no whole-HEAD formal gate. DA30-021 is a partial
+formal observation at `27b88f0a`; DA30-024/025 are narrow browser observations
+at `c47cfa4e`. Written movement/contact/reset, project/package/save/recovery,
+focus, mobile geometry, and full gate facts remain open. These records cannot
+authorize score, milestone, package, Studio, SDK, or release movement.
+
+Delivery resumes with gate adjudication and repair, then DA30-026 input
+lifecycle. See the [post-DA30-025 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md).
+
 DA29 completion is under audit hold. The machine selector's DA29-200 watermark
 cannot authorize delivery because its cursor, acceptance, and revision gates
 failed review. Accepted historical work ends at DA28-30 at written ceilings.

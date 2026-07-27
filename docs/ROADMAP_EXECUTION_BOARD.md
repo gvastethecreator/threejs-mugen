@@ -1,6 +1,20 @@
 ﻿# Roadmap Execution Board
 
-## Current recovery queue — DA30-001…010 (proposed, 2026-07-27)
+## Current audit queue — repair gates before DA30-026
+
+Machine control records DA30-025 at HEAD `c2245fe8`. The written DA30 roadmap
+still has open clauses in DA30-021, DA30-024, and DA30-025. First adjudicate
+those statuses, add clause manifests, rerun the complete formal gate with raw
+facts, and prove semantic Play plus Studio/Inspect journeys. Then start
+DA30-026 keyboard/gamepad/focus/touch lifecycle.
+
+Keep DA30-027 frame-gap code, DA30-028 renderer baseline, DA30-029 lifecycle
+checklist, and DA30-030 security baseline at their current unit/design scope
+until live route gates pass. Scores remain held. See the
+[post-DA30-025 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md)
+and tasks AUD27-01…28.
+
+## Historical recovery queue — DA30-001…010 (proposed, 2026-07-27)
 
 The DA29 completion audit rejects the generated DA29-200 watermark. The
 selector and roadmap cursor disagree; 61 R/A cuts closed from generated note

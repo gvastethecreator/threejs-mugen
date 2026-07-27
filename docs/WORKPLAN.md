@@ -1,5 +1,14 @@
 # Workplan
 
+## Post-DA30-025 execution authority (2026-07-27)
+
+Use AUD27-01…28 from
+`docs/research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md`.
+The first dependency chain is status adjudication -> clause manifests -> full
+formal rerun -> control sync -> semantic Play/Studio/Inspect gates -> DA30-026
+input lifecycle. Preserve every accepted bounded artifact; live consumers and
+written clauses decide dependency closure. Scores remain held.
+
 ## DA30 evidence recovery and completion program (proposed, 2026-07-27)
 
 The DA29-200 generated watermark is under audit hold. Its artifacts remain

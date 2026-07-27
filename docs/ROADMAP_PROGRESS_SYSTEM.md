@@ -6,6 +6,20 @@ This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO 
 
 ## Current control override: DA29 audit hold and DA30 recovery
 
+### 2026-07-27 post-DA30-025 audit override
+
+At audit HEAD `c2245fe8`, generated control records `closedThrough:
+DA30-025` and next DA30-026. Written-clause review keeps DA30-021/024/025
+partial at task scope. Treat DA30-025 as `recordedThrough`; keep the
+adjudicated ladder at the last clause-complete cut until a signed status table
+and repaired evidence land.
+
+The formal observation at `27b88f0a` covers six exit-zero commands. The Play
+and Studio/Inspect observations at `c47cfa4e` cover route load, captures, and
+error absence at narrow scope. Current HEAD has no whole-HEAD formal or broad
+visual gate. Scores stay held. Full audit:
+`docs/research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md`.
+
 DA29-001…200 are unadjudicated candidate artifacts. The generated selector's
 DA29-200 watermark is quarantined because selector/cursor, acceptance, and
 freshness checks failed the 2026-07-27 audit. Accepted historical work ends at

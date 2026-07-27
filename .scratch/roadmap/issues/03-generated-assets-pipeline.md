@@ -7,6 +7,13 @@ Labels: generated-assets, visual-qa, ready-for-agent
 
 Make imagegen and sprite-atlas-builder output repeatable, inspectable, and playable without pretending generated/native assets prove imported MUGEN compatibility.
 
+## 2026-07-27 post-DA30-025 asset override
+
+No new asset-release claim follows from the current browser observations.
+Continue with AUD27-24 after the revision-bound Studio decision exists. Require
+one transitive asset-to-export graph and keep native/generated evidence outside
+imported MUGEN breadth. DA30-081…090 remain the detailed source tasks.
+
 ## 2026-07-27 DA30 audit-hold override
 
 DA29 asset artifacts remain candidate facts; their task closeouts need semantic

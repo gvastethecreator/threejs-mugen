@@ -2,6 +2,20 @@
 
 Last updated: 2026-07-27
 
+## Current audit route — post-DA30-025
+
+Start with [AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) and the
+[post-DA30-025 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md).
+Generated control records DA30-025, while the audit disputes written completion
+for DA30-021/024/025. Current HEAD is `c2245fe8`; formal/global observation is
+`27b88f0a`; browser observations are `c47cfa4e`; focal remains T406; broad
+visual/product remains T342; scores stay `65 / 36 / 20 / 10-12 / 6-8 / 25`.
+
+Next order: adjudicate the three gate records, materialize their clause
+manifests, rerun the full formal gate, repair semantic Play and Studio/Inspect
+journeys, then execute DA30-026 input lifecycle. DA30-027…120 remain a
+dependency graph; non-consecutive accepted models do not close live consumers.
+
 This is the fast map for agents and humans who need to know where to look, what to update, and when a task is allowed to claim progress.
 
 ## Current authority selector

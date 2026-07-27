@@ -1,5 +1,21 @@
 # Build Execution Backlog
 
+## Entry 614 - Post-DA30-025 roadmap and acceptance audit
+
+Docs-only audit at HEAD `c2245fe8` keeps scores at
+`65 / 36 / 20 / 10-12 / 6-8 / 25`. Generated control records DA30-025.
+Written-clause review keeps DA30-021, DA30-024, and DA30-025 partial at task
+scope: the formal report omits required exact/raw/visual/authority facts; Play
+lacks movement/contact/damage/reset deltas; Studio/Inspect lacks real
+project/package/save/recovery proof and mobile fit. Preserves all artifacts at
+their narrow observed scope and defines AUD27-01…28 across control, input,
+performance, deterministic runtime, MUGEN breadth, Studio, assets, scanner,
+IKEMEN, modular reuse, and local release. Claims allowed: audit, bounded
+observations, held scores. Claims blocked: current-HEAD formal/global health,
+completed browser journeys, score movement, parity, product/SDK/release
+readiness. Report:
+`docs/research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md`.
+
 ## Entry 613 - DA29 completion audit and DA30 recovery roadmap
 
 Docs-only audit at HEAD `fd7a9b9a` rejects the generated DA29-200 watermark.

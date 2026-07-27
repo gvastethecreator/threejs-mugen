@@ -1,6 +1,18 @@
 ﻿# Roadmap Package Milestones
 
-## Current package override - DA29 audit hold / DA30 recovery
+## Current package override — post-DA30-025 audit
+
+DA30-001…020 contain bounded control and semantic-evidence work. Generated
+control then advances through DA30-025. Audit at `c2245fe8` keeps DA30-021,
+DA30-024, and DA30-025 partial against written clauses. Repair the current
+formal and browser gates before package milestones consume DA30-026 onward.
+
+After repair, close input lifecycle and deterministic state before imported
+MUGEN-lite breadth. Studio, assets, scanner, IKEMEN, and modular work must bind
+their accepted ADRs/models to live product consumers. Scores remain held.
+Plan: `docs/research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md`.
+
+## Historical package override - DA29 audit hold / DA30 recovery
 
 The DA29-200 watermark is unaccepted. Preserve DA29 modules and artifacts at
 their narrow demonstrated scope; revalidate them through DA30 clause manifests.

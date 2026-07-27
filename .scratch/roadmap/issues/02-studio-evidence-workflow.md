@@ -7,6 +7,13 @@ Labels: studio, visual-qa, docs, ready-for-agent
 
 Make Studio Mode the trusted operating surface for project state, assets, evidence, build/export readiness, and next actions.
 
+## 2026-07-27 post-DA30-025 Studio override
+
+DA30-025 proves shell and mode load at `c47cfa4e`. Real project open/edit,
+preview, invalid/valid save, reload/reopen, Inspect package analysis, recovery,
+focus, and mobile fit remain open. AUD27-08…10 repair this gate before
+DA30-071…080 product models can claim a live consumer. Scores remain held.
+
 ## 2026-07-27 DA30 audit-hold override
 
 DA29 Studio closeouts based on source scans and non-empty result objects are

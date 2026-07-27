@@ -1,5 +1,16 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-27 post-DA30-025 audit — no score movement
+
+Current machine control records DA30-025. Written acceptance remains partial
+for the current formal, Play, and Studio/Inspect gates. Their narrow facts add
+no denominator-backed compatibility, product, visual, SDK, or release credit.
+
+Scores remain: sandbox **65**, MUGEN-lite **36**, MUGEN MVP **20**, full MUGEN
+**10-12**, IKEMEN **6-8**, Studio **25**. Native/browser observations and docs
+carry zero imported-package breadth credit. See the
+[post-DA30-025 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md).
+
 ## 2026-07-27 DA29 completion audit - no score movement
 
 The audit rejects the generated DA29-200 watermark and grants no new runtime,

@@ -7,6 +7,13 @@ Labels: docs, module-boundary, ready-for-agent
 
 Prepare the project to become a reusable browser game engine without extracting shared core too early from unstable fighting-specific behavior.
 
+## 2026-07-27 post-DA30-025 modular override
+
+Accepted boundary ADRs and inventories remain design inputs. Reuse credit stays
+blocked until AUD27-27 proves one repository-owned non-fighting playable route
+using shared ports, deletion probes, package smoke, and fail-closed imports.
+DA30-101…110 remain the detailed queue.
+
 ## 2026-07-27 DA30 audit-hold override
 
 DA29-139 did not create a non-fighting playable consumer, so reusable-engine

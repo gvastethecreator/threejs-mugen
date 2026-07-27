@@ -53,7 +53,7 @@
       "id": "fallen-hit-policy-callable",
       "passed": true,
       "detail": {
-        "fallen": true
+        "fallen": false
       }
     },
     {

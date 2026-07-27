@@ -6,6 +6,13 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
+## 2026-07-27 post-DA30-025 IKEMEN runtime override
+
+Current DA30 formal/browser observations do not widen T406 or other bounded
+IKEMEN claims. Deterministic input/state/replay must land before source-family
+runtime work. AUD27-26 keeps each source family separate; DA30-097/098 still
+require live plural/team consumers. Scores remain held.
+
 ## 2026-07-27 DA30 audit-hold override
 
 Keep T390/T406 and other bounded issue closeouts at their written ceilings.
