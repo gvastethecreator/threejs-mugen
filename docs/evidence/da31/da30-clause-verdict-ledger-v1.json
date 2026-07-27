@@ -1,0 +1,2976 @@
+{
+  "schema": "Da30ClauseVerdictLedger/v1",
+  "generatedAt": "2026-07-27T17:55:53.672Z",
+  "recordedThrough": "DA30-120",
+  "adjudicatedThrough": "DA30-020",
+  "count": 120,
+  "counts": {
+    "pass": 20,
+    "partial": 98,
+    "fail": 0,
+    "unknown": 2
+  },
+  "samples": [
+    "DA30-001",
+    "DA30-011",
+    "DA30-021",
+    "DA30-031",
+    "DA30-041",
+    "DA30-051",
+    "DA30-061",
+    "DA30-071",
+    "DA30-081",
+    "DA30-091",
+    "DA30-101",
+    "DA30-111",
+    "DA30-026",
+    "DA30-007",
+    "DA30-003",
+    "DA30-024",
+    "DA30-002"
+  ],
+  "rows": [
+    {
+      "id": "DA30-001",
+      "kind": "A",
+      "originalScopeDigest": "7d73015285db1c1841fda0270c9c60bd681d4624b5e3f835cc56264139d60f27",
+      "originalClaimCeiling": "Allows control hold only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-001-hold-reference-audit.json"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "model-or-design",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "hold audit zero stale",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 0
+    },
+    {
+      "id": "DA30-002",
+      "kind": "R",
+      "originalScopeDigest": "8da6b0d5732a33ff4d7aa89ebade32ce8a512ffa82df99fe37fa0d7e19a93f24",
+      "originalClaimCeiling": "Allows audit inventory only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da29-verdict-ledger-v1.json"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "model-or-design",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "200-row ledger",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 0
+    },
+    {
+      "id": "DA30-003",
+      "kind": "A",
+      "originalScopeDigest": "d84783afb22bcfbd0add199b06f7bb64a7f7b24be946283c26ac031d8091e50c",
+      "originalClaimCeiling": "Allows control design only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0055-da30-single-control-source.md"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "architecture",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "ADR single source",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 0
+    },
+    {
+      "id": "DA30-004",
+      "kind": "I",
+      "originalScopeDigest": "86f928aaca4e8cfb370a1f015017e007d08e921c77fda31b1e816d01250a5376",
+      "originalClaimCeiling": "Allows synchronized controls only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/control-source-v1.json",
+        "scripts/materialize_control_projections.cjs"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "model-or-design",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "projections agree",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 0
+    },
+    {
+      "id": "DA30-005",
+      "kind": "G",
+      "originalScopeDigest": "a4022aab5fc08404b3849e5bc42564df561777a03bf12f055ed3af634ce2265a",
+      "originalClaimCeiling": "Allows reference consistency only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-005-control-reference-audit.json"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "model-or-design",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "6 negative fixtures",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 0
+    },
+    {
+      "id": "DA30-006",
+      "kind": "A",
+      "originalScopeDigest": "03e5eb828579693ff2340ffda5bf42365f9015c1350e098110d865ff3c49d984",
+      "originalClaimCeiling": "Allows status semantics only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/closeout-state-transitions-v1.json"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "model-or-design",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "state transitions",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 0
+    },
+    {
+      "id": "DA30-007",
+      "kind": "I",
+      "originalScopeDigest": "74688100493d9fd32975c4de7bbe8cf0af3f540661b9112e228607c9173def22",
+      "originalClaimCeiling": "Allows freshness evaluation only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "src/mugen/da30/CloseoutFreshness.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "css-after-gate fixture fails",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 0
+    },
+    {
+      "id": "DA30-008",
+      "kind": "G",
+      "originalScopeDigest": "9a6e19490f7998a26c5a82c34cca18533d5c1453c7cdac1b566636b463280cf2",
+      "originalClaimCeiling": "Allows historical bounded facts only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-008-historical-gates-reconciliation.json"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "model-or-design",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "historical gates",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 0
+    },
+    {
+      "id": "DA30-009",
+      "kind": "A",
+      "originalScopeDigest": "000eec432565806c723388e23136df790cadeb8ed5dbde160fe2a1827e83a12a",
+      "originalClaimCeiling": "Allows doc design only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-009-roadmap-surface-ownership.json"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "model-or-design",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "ownership map",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 0
+    },
+    {
+      "id": "DA30-010",
+      "kind": "G",
+      "originalScopeDigest": "21689b5b17e73b116c358d14feb434f40d9a2b20d143cdaaecee657df1f92428",
+      "originalClaimCeiling": "Allows DA30 queue adoption only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-010-control-recovery-gate.json"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "model-or-design",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "control recovery gate",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 0
+    },
+    {
+      "id": "DA30-011",
+      "kind": "A",
+      "originalScopeDigest": "6bfafd0e120998f1eddc488a96050b4951f01741dcf34c902d8ba9129de4164b",
+      "originalClaimCeiling": "Allows acceptance design only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0057-task-acceptance-manifest-v1.md",
+        "src/mugen/da30/TaskAcceptanceManifest.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "manifest schema",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 1
+    },
+    {
+      "id": "DA30-012",
+      "kind": "I",
+      "originalScopeDigest": "66cdc9cc87cc83c93f9745c0d985d9da0ff23c25cf82dfe4e4c2ef13a9463d45",
+      "originalClaimCeiling": "Allows manifest shape and invariant claims only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "src/mugen/da30/TaskAcceptanceManifest.ts",
+        "src/tests/Da30Wave0And1Recovery.test.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "validator table tests",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 1
+    },
+    {
+      "id": "DA30-013",
+      "kind": "A",
+      "originalScopeDigest": "0016102dd700a918393fac60a63cf18afb64eb40183e7077302966c229b201d2",
+      "originalClaimCeiling": "Allows evidence architecture only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0058-evidence-observation-gate-claim.md",
+        "src/mugen/da30/EvidenceLineage.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "lineage contracts",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 1
+    },
+    {
+      "id": "DA30-014",
+      "kind": "I",
+      "originalScopeDigest": "78d072daa11a9bcbd30897d99204cc55483a4615ba637276dd8caa4a3d1f5e54",
+      "originalClaimCeiling": "Allows lineage integrity only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "src/mugen/da30/EvidenceLineage.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "DAG + cycle fixtures",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 1
+    },
+    {
+      "id": "DA30-015",
+      "kind": "A",
+      "originalScopeDigest": "c006f4de0c979c18c960a916db840cf636619b2c3803b4e7be9c58073f897a64",
+      "originalClaimCeiling": "Allows review provenance only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0059-reviewer-independence-policy.md",
+        "docs/evidence/da30/da30-015-reviewer-examples.json"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "architecture",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "independence policy",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 1
+    },
+    {
+      "id": "DA30-016",
+      "kind": "I",
+      "originalScopeDigest": "b73ce3b01e0f484fe16c18da03cb0666fb76ded8bbdb8ec1be8aa5c0ec52b565",
+      "originalClaimCeiling": "Allows recorded-command facts only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "src/mugen/da30/CommandGateCapture.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "raw command capture",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 1
+    },
+    {
+      "id": "DA30-017",
+      "kind": "I",
+      "originalScopeDigest": "0479af0bc77a7cde0f30ae59a64c7482548f623e8ea3b1bdd1c7b441f0f43576",
+      "originalClaimCeiling": "Allows named route facts only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "src/mugen/da30/BrowserEvidenceFacts.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "browser facts envelope",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 1
+    },
+    {
+      "id": "DA30-018",
+      "kind": "I",
+      "originalScopeDigest": "672276496aa00f1cfb17c7aebbf5e50fbaf6abfb77374155beac672db3a66610",
+      "originalClaimCeiling": "Allows failure-evidence coverage only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/manifests/"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "model-or-design",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "expectedFailure on pilot manifests",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 1
+    },
+    {
+      "id": "DA30-019",
+      "kind": "I",
+      "originalScopeDigest": "c756a610f9a409edf1d62f7338f8072f3603ce7e952a5aba94fa38c6220bbe99",
+      "originalClaimCeiling": "Allows machine-derived claim ceilings only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "src/mugen/da30/ClaimCompiler.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "claim compiler",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 1
+    },
+    {
+      "id": "DA30-020",
+      "kind": "G",
+      "originalScopeDigest": "58623de76cb133b756e02889be138fe29068ffe170df093a7c6ca19672f1dce9",
+      "originalClaimCeiling": "Allows only passed clause claims",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-020-pilot-revalidation.json"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "model-or-design",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "control-or-early-gate-fixtures",
+      "verdict": "pass",
+      "preservedFact": "pilot revalidation 4 tasks",
+      "missingProof": [],
+      "carryoverId": null,
+      "wave": 1
+    },
+    {
+      "id": "DA30-021",
+      "kind": "G",
+      "originalScopeDigest": "4773142acf42ba5d47faffdc98de33e6dbd87a57c95f259bc85f064131933c3b",
+      "originalClaimCeiling": "Allows formal/global at that SHA only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-021-formal-gate.json",
+        "docs/evidence/da30/da30-021-formal-gate.log",
+        "docs/evidence/da30/formal-logs",
+        "docs/evidence/da30/manifests/da30-021.manifest.json",
+        "scripts/run_da30_021_formal_gate.cjs"
+      ],
+      "artifactsExist": true,
+      "hasManifest": true,
+      "evidenceClass": "manifest-bound",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "manifest-vs-original-roadmap-ceiling",
+      "verdict": "partial",
+      "preservedFact": "repair manifests and measured gates exist at ee23122f-era",
+      "missingProof": [
+        "original-clause-parity-review",
+        "subject-sha-bind",
+        "original-end-to-end-clause-depth",
+        "clean-subject-rebind"
+      ],
+      "carryoverId": "DA31-carry-021",
+      "wave": 2
+    },
+    {
+      "id": "DA30-022",
+      "kind": "A",
+      "originalScopeDigest": "321c113cc392160adb67c0cd0769bdb9b0352fee2da63587012a1b5c7fe2f9d0",
+      "originalClaimCeiling": "Allows policy only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-022-warning-policy.json",
+        "src/mugen/da30/WarningPolicy.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "warning policy matrix + validator",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-022",
+      "wave": 2
+    },
+    {
+      "id": "DA30-023",
+      "kind": "R",
+      "originalScopeDigest": "c0bba39b582bade7c681bb6d985dcd0de912501721e69a0b284fab879599523b",
+      "originalClaimCeiling": "Allows route inventory only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-023-product-routes.json",
+        "src/mugen/da30/ProductRouteInventory.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "product route inventory",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-023",
+      "wave": 2
+    },
+    {
+      "id": "DA30-024",
+      "kind": "G",
+      "originalScopeDigest": "f3fc2c4275c48af013ba3b4c6fc309adb8a09c985ce6a8c64fac4f78da50ca4f",
+      "originalClaimCeiling": "Allows one Play route only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-024-play-browser-gate.json",
+        "docs/evidence/da30/browser/play-desktop.png",
+        "docs/evidence/da30/browser/play-mobile.png",
+        "docs/evidence/da30/manifests/da30-024.manifest.json",
+        "scripts/qa_browser_gate_da30_024_play.cjs"
+      ],
+      "artifactsExist": true,
+      "hasManifest": true,
+      "evidenceClass": "manifest-bound",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "manifest-vs-original-roadmap-ceiling",
+      "verdict": "partial",
+      "preservedFact": "repair manifests and measured gates exist at ee23122f-era",
+      "missingProof": [
+        "original-clause-parity-review",
+        "subject-sha-bind",
+        "original-end-to-end-clause-depth",
+        "clean-subject-rebind"
+      ],
+      "carryoverId": "DA31-carry-024",
+      "wave": 2
+    },
+    {
+      "id": "DA30-025",
+      "kind": "G",
+      "originalScopeDigest": "a259607ca94e1741b22334fcf2014c0d022d61fa484bbf45ee2994fffcafed09",
+      "originalClaimCeiling": "Allows named routes only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-025-studio-inspect-browser-gate.json",
+        "docs/evidence/da30/browser/studio-workbench-desktop.png",
+        "docs/evidence/da30/browser/inspect-desktop.png",
+        "docs/evidence/da30/manifests/da30-025.manifest.json",
+        "scripts/qa_browser_gate_da30_025_studio_inspect.cjs"
+      ],
+      "artifactsExist": true,
+      "hasManifest": true,
+      "evidenceClass": "manifest-bound",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "manifest-vs-original-roadmap-ceiling",
+      "verdict": "partial",
+      "preservedFact": "repair manifests and measured gates exist at ee23122f-era",
+      "missingProof": [
+        "original-clause-parity-review",
+        "subject-sha-bind",
+        "original-end-to-end-clause-depth",
+        "clean-subject-rebind"
+      ],
+      "carryoverId": "DA31-carry-025",
+      "wave": 2
+    },
+    {
+      "id": "DA30-026",
+      "kind": "G",
+      "originalScopeDigest": "991d9d8b9621ab45cd9c9c07fc0e03cbdfb6b17b5910016056000d0476b22883",
+      "originalClaimCeiling": "Allows tested inputs/devices only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-026-input-matrix-gate.json",
+        "docs/evidence/da30/browser/input-matrix-desktop.png",
+        "docs/evidence/da30/browser/input-matrix-mobile.png",
+        "scripts/qa_browser_gate_da30_026_input_matrix.cjs"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "browser-or-formal",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "keyboard/focus/touch/reduced-motion/simulated gamepad matrix",
+      "missingProof": [
+        "original-clause-parity-review",
+        "subject-sha-bind"
+      ],
+      "carryoverId": "DA31-carry-026",
+      "wave": 2
+    },
+    {
+      "id": "DA30-027",
+      "kind": "G",
+      "originalScopeDigest": "6a9c366e6cbcd151342514aff524d873c061114ad0febaaf05ea5d526724f942",
+      "originalClaimCeiling": "Allows measured device/route facts only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-027-frame-gap-live.json",
+        "src/mugen/da30/FrameGapHarness.ts",
+        "scripts/qa_browser_gate_da30_027_028_frame_renderer.cjs"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "live Play frame-gap p50/p95/p99 sample",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-027",
+      "wave": 2
+    },
+    {
+      "id": "DA30-028",
+      "kind": "G",
+      "originalScopeDigest": "b1049209ed2530d55ff4e5754b5789e746208bcadb3f514bd9e67677a19151e9",
+      "originalClaimCeiling": "Allows route resource facts only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-028-renderer-baseline-live.json",
+        "scripts/qa_browser_gate_da30_027_028_frame_renderer.cjs"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "browser-or-formal",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": true,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "five-route renderer baselines + blank teardown",
+      "missingProof": [
+        "original-clause-parity-review",
+        "subject-sha-bind"
+      ],
+      "carryoverId": "DA31-carry-028",
+      "wave": 2
+    },
+    {
+      "id": "DA30-029",
+      "kind": "G",
+      "originalScopeDigest": "1756ad9a6f3f96edaa26080574818a8fd453e096b94d9683f3f3d302181ae26f",
+      "originalClaimCeiling": "Allows tested lifecycle claims only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-029-renderer-lifecycle-live.json",
+        "src/mugen/da30/RendererLifecycleChecklist.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "route-swap + teardown lifecycle observations",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-029",
+      "wave": 2
+    },
+    {
+      "id": "DA30-030",
+      "kind": "G",
+      "originalScopeDigest": "d98e1b9d99422ee0ea03ebc8faccae072a8bbfc870b4f5093038ac952a88b0df",
+      "originalClaimCeiling": "Allows local boundary findings only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-030-security-baseline.json",
+        "src/mugen/da30/SecurityTrustBaseline.ts",
+        "src/mugen/da30/ArchivePathPolicy.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "local security baseline + path probes",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-030",
+      "wave": 2
+    },
+    {
+      "id": "DA30-031",
+      "kind": "A",
+      "originalScopeDigest": "404ad7e9e998789d77bbc1b2d75804c646ba8d1a37b6196d6ab748cebf31347d",
+      "originalClaimCeiling": "Allows input design only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0060-da30-input-authority.md"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "architecture",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "input authority ADR",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-031",
+      "wave": 3
+    },
+    {
+      "id": "DA30-032",
+      "kind": "I",
+      "originalScopeDigest": "baa377d906302d8d1470db5e3a31eab11c6c30ee3719852350f65e85b228c6d5",
+      "originalClaimCeiling": "Allows listed lifecycle routes only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-032-gamepad-lifecycle.json",
+        "src/mugen/da30/GamepadLifecycle.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "gamepad lifecycle pure model",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-032",
+      "wave": 3
+    },
+    {
+      "id": "DA30-033",
+      "kind": "I",
+      "originalScopeDigest": "1689c57a00c9ff290703a6cbb93e80ab14a13fcc4a2ade90e700a47e3fdc7955",
+      "originalClaimCeiling": "Allows versioned profile behavior only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-033-socd-profile-store.json",
+        "src/mugen/da30/SocdProfileStore.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "SOCD profile persistence by seat",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-033",
+      "wave": 3
+    },
+    {
+      "id": "DA30-034",
+      "kind": "I",
+      "originalScopeDigest": "d9784db1f507e61869c3b1310439e983e5cac858dbebba597def1f0c52d89ee4",
+      "originalClaimCeiling": "Allows input-log determinism only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-034-input-log-sample.json",
+        "src/mugen/da30/CanonicalInputLog.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "canonical input log determinism",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-034",
+      "wave": 3
+    },
+    {
+      "id": "DA30-035",
+      "kind": "A",
+      "originalScopeDigest": "18238db11c0a8da8d04bcf83dd0904b86bebeea4b99f9b26fb9afc363a75b81c",
+      "originalClaimCeiling": "Allows RNG ownership design only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0061-da30-rng-streams.md"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "architecture",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "RNG streams ADR",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-035",
+      "wave": 3
+    },
+    {
+      "id": "DA30-036",
+      "kind": "R",
+      "originalScopeDigest": "431bdef8fa0fa88fcdf7ba8d83032d0dd87bcb438a2012abad5365fa28820be2",
+      "originalClaimCeiling": "Allows timing research only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-036-clock-domain-audit.json",
+        "src/mugen/da30/ClockDomainAudit.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "clock domain research inventory",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-036",
+      "wave": 3
+    },
+    {
+      "id": "DA30-037",
+      "kind": "A",
+      "originalScopeDigest": "94c01fdc3a08de1ebc376f378b0a3c518814de679ce485ed25b75e866f4fd291",
+      "originalClaimCeiling": "Allows snapshot design only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0062-da30-match-state-serialization.md"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "architecture",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "match state schema ADR",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-037",
+      "wave": 3
+    },
+    {
+      "id": "DA30-038",
+      "kind": "I",
+      "originalScopeDigest": "63897c9f2c0e82b780e6c3c0f7da790d0ef0fc83b9d33f50bbf68e0de9ab4beb",
+      "originalClaimCeiling": "Allows named snapshot route only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-038-match-state-roundtrip.json",
+        "src/mugen/da30/MatchStateRoundTrip.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "match state serialize roundtrip subset",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-038",
+      "wave": 3
+    },
+    {
+      "id": "DA30-039",
+      "kind": "G",
+      "originalScopeDigest": "502a5060e68bb3d8b5a990e761eb7582b14e4aa77e8cd780a46b0747e4c5976a",
+      "originalClaimCeiling": "Allows one replay route only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-039-round-record-replay.json",
+        "src/mugen/da30/RoundRecordReplay.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "record/replay round checksums + mutation divergence",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-039",
+      "wave": 3
+    },
+    {
+      "id": "DA30-040",
+      "kind": "R",
+      "originalScopeDigest": "f755d5299527fd54bce2d35d62c0aba310617b8a1cb0a84d5aaa9cbd0e55a8fb",
+      "originalClaimCeiling": "Allows feasibility data; blocks rollback/netplay readiness",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-040-rewind-feasibility.json",
+        "src/mugen/da30/RewindFeasibility.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "rewind/resim feasibility three depths",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-040",
+      "wave": 3
+    },
+    {
+      "id": "DA30-041",
+      "kind": "G",
+      "originalScopeDigest": "69dc261110d3f3ef26a70f0ccc2f0cdbf9c8fc06f5aa0fad5870478c17b427a8",
+      "originalClaimCeiling": "Allows this package route only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-041-nova-contact-cases.json",
+        "src/mugen/da30/CombatJourneyRevalidation.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "Nova hit/guard/miss via CombatResolver",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-041",
+      "wave": 4
+    },
+    {
+      "id": "DA30-042",
+      "kind": "G",
+      "originalScopeDigest": "699d666fa4afacee9d8ef891a55a6eff074643bcb05b1fb4b445e247d28a7fac",
+      "originalClaimCeiling": "Allows reciprocal route only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-042-mira-contact.json",
+        "src/mugen/da30/MiraContactRevalidation.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "Mira attack vs Nova hit/guard",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-042",
+      "wave": 4
+    },
+    {
+      "id": "DA30-043",
+      "kind": "G",
+      "originalScopeDigest": "01bb68eda26c2e62d51fabf264d54d20834566296c7a45574de886c383cf6d44",
+      "originalClaimCeiling": "Allows one third native family only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-043-rook-package.json",
+        "public/characters/rook-apprentice/mugen"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "model-or-design",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "unknown",
+      "preservedFact": "rook package presence and size distinctness",
+      "missingProof": [
+        "clause-by-clause-review"
+      ],
+      "carryoverId": "DA31-carry-043",
+      "wave": 4
+    },
+    {
+      "id": "DA30-044",
+      "kind": "G",
+      "originalScopeDigest": "fbc3823be4a2d044d9988a0efe524b1fba56f5f877d75e5f3abe8453549cfa88",
+      "originalClaimCeiling": "Allows listed cases only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-044-guard-priority-matrix.json",
+        "src/mugen/da30/GuardPriorityMatrix.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "guard/chip/priority named cases",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-044",
+      "wave": 4
+    },
+    {
+      "id": "DA30-045",
+      "kind": "I",
+      "originalScopeDigest": "d1fa8aff4a9e0262a3adb5b86d1a7ef62f1d1fdb250231b23d90f61bd2ef1a34",
+      "originalClaimCeiling": "Allows one Helper journey only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-045-helper-journey.json",
+        "src/mugen/da30/HelperNestedJourney.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "nested Helper spawn/command/destroy via HelperSystem",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-045",
+      "wave": 4
+    },
+    {
+      "id": "DA30-046",
+      "kind": "G",
+      "originalScopeDigest": "8e2e14df02db2774d32742a9427699a35a83891824732f277a0619d26b65e582",
+      "originalClaimCeiling": "Allows named matrix only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-046-plural-projectile.json",
+        "src/mugen/da30/PluralProjectileTestHook.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "plural projectile schedule matrix",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-046",
+      "wave": 4
+    },
+    {
+      "id": "DA30-047",
+      "kind": "I",
+      "originalScopeDigest": "2829a419a1a13ee3def2edce7548d242470a339bea763e3972ef42e1c4a621fc",
+      "originalClaimCeiling": "Allows named throw route only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-047-throw-custom-state.json",
+        "src/mugen/da30/ThrowCustomStateRoute.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "atomic throw/custom-state ownership cases",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-047",
+      "wave": 4
+    },
+    {
+      "id": "DA30-048",
+      "kind": "G",
+      "originalScopeDigest": "2a3d0b7064643d2081a76616a9bd860f8cd9776bc0bb665a105c405596b203b6",
+      "originalClaimCeiling": "Allows named stage/camera route only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-048-camera-stage-bounds.json",
+        "src/mugen/da30/CameraStageBounds.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "screenbound/push/freeze + camera clamp cases",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-048",
+      "wave": 4
+    },
+    {
+      "id": "DA30-049",
+      "kind": "G",
+      "originalScopeDigest": "5c8d3d1f82f9487fb80493b06fed36832156ac94238027bcb6d24221d4be5c7e",
+      "originalClaimCeiling": "Allows reset ledger only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-049-round-reset-ledger.json",
+        "src/mugen/da30/RoundResetLedger.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "round/match cleanup ledger",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-049",
+      "wave": 4
+    },
+    {
+      "id": "DA30-050",
+      "kind": "G",
+      "originalScopeDigest": "1a8565803dc044ca0faadce8f89910c590c4047584033d10244790e1fbb91110",
+      "originalClaimCeiling": "Allows registry facts only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-050-controller-registry-export.json",
+        "src/mugen/da30/ControllerSupportProofRegistry.ts",
+        "docs/CONTROLLER_SUPPORT_REGISTRY.md"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "controller support registry export",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-050",
+      "wave": 4
+    },
+    {
+      "id": "DA30-051",
+      "kind": "I",
+      "originalScopeDigest": "563f310c31463162c27ef758daaf88b5ee7ce1c92330003bb98de469e1b75913",
+      "originalClaimCeiling": "Allows selection model only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-051-selection-state.json",
+        "src/mugen/da30/SelectionStateModel.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "selection state model",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-051",
+      "wave": 5
+    },
+    {
+      "id": "DA30-052",
+      "kind": "G",
+      "originalScopeDigest": "d973c63d350958b3b13190fdf27ed976d4f52675bee9837b591fd384f01789df",
+      "originalClaimCeiling": "Allows one local versus flow only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-052-selection-journey.json",
+        "docs/evidence/da30/da30-052-selection-browser-gate.json",
+        "src/mugen/da30/SelectionBrowserJourney.ts",
+        "scripts/qa_browser_gate_da30_052_selection.cjs"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "selection journey model + browser Match Setup gate",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-052",
+      "wave": 5
+    },
+    {
+      "id": "DA30-053",
+      "kind": "A",
+      "originalScopeDigest": "b9db95078567a95eee8a8a9ee1cdf910815f8ba462d79234994ce67cd250cc40",
+      "originalClaimCeiling": "Allows mode design only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0063-da30-mode-state-machine.md",
+        "src/mugen/da30/ModeStateMachine.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "mode SM ADR + pure transitions",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-053",
+      "wave": 5
+    },
+    {
+      "id": "DA30-054",
+      "kind": "I",
+      "originalScopeDigest": "85e053b5bdca7270eff33c2744a512ed06b59ca095b54a694d58a9427649a7fb",
+      "originalClaimCeiling": "Allows exercised team routes only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-054-team-handoff.json",
+        "src/mugen/da30/TeamSelectionHandoff.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "simul/tag/turns handoff matrix",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-054",
+      "wave": 5
+    },
+    {
+      "id": "DA30-055",
+      "kind": "G",
+      "originalScopeDigest": "6121468cf75c92d3ba64439aeaf2ae084aed4f54daea0d605de38c0fa9da1141",
+      "originalClaimCeiling": "Allows named FightScreen subset only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-055-fightscreen.json",
+        "src/mugen/da30/FightScreenPresentation.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "FightScreen timing/skip model",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-055",
+      "wave": 5
+    },
+    {
+      "id": "DA30-056",
+      "kind": "I",
+      "originalScopeDigest": "8f2291f05036b40dc8e7026e532608fed0732cf1ff3cc6a2311c1b34cdef0b18",
+      "originalClaimCeiling": "Allows named HUD fields only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-056-lifebar-hud.json",
+        "src/mugen/da30/LifebarHudOwnership.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "HUD owner fields + missing/stale",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-056",
+      "wave": 5
+    },
+    {
+      "id": "DA30-057",
+      "kind": "G",
+      "originalScopeDigest": "e2e3c0e5bf71b4807a1282c92c0d6a57a87d2b2169fb3e6b80b96dd436a93826",
+      "originalClaimCeiling": ", missing archive, route swap, reset, and post-mixer nonzero output are measured. Heard/perceptual parity stays blocked.",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-057-audio-lifecycle.json",
+        "src/mugen/da30/AudioDispatchLifecycle.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "audio unlock/play/mute/reset; perceptual blocked",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-057",
+      "wave": 5
+    },
+    {
+      "id": "DA30-058",
+      "kind": "G",
+      "originalScopeDigest": "2eeff58c4cb98a51dc5106a5df07fe79eabc9298e7e43f292e088d949727b69f",
+      "originalClaimCeiling": "Allows named asset routes only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-058-animation-ownership.json",
+        "src/mugen/da30/AnimationAssetOwnership.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "AIR/SFF/ACT/effect ownership routes",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-058",
+      "wave": 5
+    },
+    {
+      "id": "DA30-059",
+      "kind": "I",
+      "originalScopeDigest": "8944e650b12519812b5e75b94ba74127e06b44edde1f2e713d5c9d2478b9c080",
+      "originalClaimCeiling": "Allows selected common resources only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-059-common-ownership.json",
+        "src/mugen/da30/CommonResourceOwnership.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "common/FightFX resolve no silent fallback",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-059",
+      "wave": 5
+    },
+    {
+      "id": "DA30-060",
+      "kind": "G",
+      "originalScopeDigest": "99aa8c90eee4298aa722688d8502a9d5206bc64eeb601d9f3ff0f63f50393b3e",
+      "originalClaimCeiling": "Allows playable sandbox milestone only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-060-playable-matrix.json",
+        "src/mugen/da30/PlayableSandboxMatrix.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "playable sandbox matrix aggregator",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-060",
+      "wave": 5
+    },
+    {
+      "id": "DA30-061",
+      "kind": "R",
+      "originalScopeDigest": "282494a13d8411786f8fa92be4ab2578298ca514d4727fedc45dad2ae52bb536",
+      "originalClaimCeiling": "Allows corpus inventory only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-061-corpus-inventory.json",
+        "src/mugen/da30/PackageCorpusInventory.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "lawful package/stage corpus inventory",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-061",
+      "wave": 6
+    },
+    {
+      "id": "DA30-062",
+      "kind": "I",
+      "originalScopeDigest": "03b60a0245b43022c8a103f8efdd32685344e51d6b89e76a5087eb3517b9f4a9",
+      "originalClaimCeiling": "Allows fixture breadth only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-062-unsupported-heavy.json",
+        "src/mugen/da30/UnsupportedHeavyFixtures.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "unsupported-heavy fixture families",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-062",
+      "wave": 6
+    },
+    {
+      "id": "DA30-063",
+      "kind": "G",
+      "originalScopeDigest": "c982970cd65d34b0d0a04062ae8f6b344e0136ab2f95fa3f229f85c9974b31e6",
+      "originalClaimCeiling": "Allows tested syntax resilience only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-063-parser-mutation.json",
+        "src/mugen/da30/ParserMutationCorpus.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "parser mutation resilience corpus",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-063",
+      "wave": 6
+    },
+    {
+      "id": "DA30-064",
+      "kind": "A",
+      "originalScopeDigest": "b6b024cd12bf78d5e73293803c34d19eee5108bf86eb43e1594ffda630d54b8a",
+      "originalClaimCeiling": "Allows import policy only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0064-da30-archive-package-policy.md",
+        "src/mugen/da30/ArchivePathPolicy.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "archive policy ADR + path probes",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-064",
+      "wave": 6
+    },
+    {
+      "id": "DA30-065",
+      "kind": "I",
+      "originalScopeDigest": "eb36f173e60ff1dc10d3c46c86c29741c99a0ba577f1090088f4d7d971f3e492",
+      "originalClaimCeiling": "Allows named graph subset only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-065-def-graph.json",
+        "src/mugen/da30/DefDependencyGraph.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "DEF dependency graph resolver",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-065",
+      "wave": 6
+    },
+    {
+      "id": "DA30-066",
+      "kind": "G",
+      "originalScopeDigest": "549bdd3c2328d7ff0a5626826c6af75b69b0be90abd8b40ec1d8ea26bb6f444d",
+      "originalClaimCeiling": "Allows tested CMD/AI subset only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-066-cmd-ai.json",
+        "src/mugen/da30/CmdAiBreadth.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "CMD/AI named breadth matrix",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-066",
+      "wave": 6
+    },
+    {
+      "id": "DA30-067",
+      "kind": "R",
+      "originalScopeDigest": "3dd90ea68def9cc91b84ad8b4ad7e0cb895e077ead9998a27b235578bab09603",
+      "originalClaimCeiling": "Allows research map only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-067-motif-audit.json",
+        "src/mugen/da30/MotifFamilyAudit.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "motif/screenpack family research map",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-067",
+      "wave": 6
+    },
+    {
+      "id": "DA30-068",
+      "kind": "I",
+      "originalScopeDigest": "3f1ad34ea258ff5bf74ebc71c4f71936662e49c1450e6e78d1a928e24bc2572a",
+      "originalClaimCeiling": "Allows one motif flow only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-068-motif-flow.json",
+        "src/mugen/da30/MotifScreenpackFlow.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "bounded motif title..results flow",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-068",
+      "wave": 6
+    },
+    {
+      "id": "DA30-069",
+      "kind": "G",
+      "originalScopeDigest": "077e353265ee3bd5a87a42f9397c62a03ffe6bdc988fbbeb276051e74a6ff3b9",
+      "originalClaimCeiling": "Allows named stage matrix only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-069-stage-breadth.json",
+        "src/mugen/da30/StageBreadthMatrix.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "three-stage breadth matrix",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-069",
+      "wave": 6
+    },
+    {
+      "id": "DA30-070",
+      "kind": "G",
+      "originalScopeDigest": "1594411c0aeab1d56ca07da6aee6dfd3282ae421da0359e73602dfb161b83ae4",
+      "originalClaimCeiling": "Allows signed bounded milestones only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-070-mugen-lite-adjudication.json",
+        "src/mugen/da30/MugenLiteAdjudication.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "MUGEN-lite adjudication; scores held",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-070",
+      "wave": 6
+    },
+    {
+      "id": "DA30-071",
+      "kind": "A",
+      "originalScopeDigest": "11984e6c21a9b76cf0e7dfd18597a87217a70e656a8ed3c0eda81ebce9ab1900",
+      "originalClaimCeiling": "Allows storage design only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0065-da30-studio-storage.md"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "architecture",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "studio storage ADR",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-071",
+      "wave": 7
+    },
+    {
+      "id": "DA30-072",
+      "kind": "I",
+      "originalScopeDigest": "c297251216db5ac3cc3b75d8e4284c5e7ead8b97885b11532c9f48b64f83b285",
+      "originalClaimCeiling": "Allows project schema only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-072-project-envelope.json",
+        "src/mugen/da30/ProjectEnvelope.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "project envelope schema",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-072",
+      "wave": 7
+    },
+    {
+      "id": "DA30-073",
+      "kind": "I",
+      "originalScopeDigest": "2385a0bff6ee9f7563e64ec821bebe9a7a2d8ff2bd2e56060663bb6a1a5a2ad0",
+      "originalClaimCeiling": "Allows named write paths only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-073-transactional-write.json",
+        "src/mugen/da30/TransactionalWrite.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "transactional prepare/commit/rollback",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-073",
+      "wave": 7
+    },
+    {
+      "id": "DA30-074",
+      "kind": "I",
+      "originalScopeDigest": "d916dc08c9b6d180859e3b638c9bda584a5127d05d8e2da19e49fc1862a58b99",
+      "originalClaimCeiling": "Allows named conflict routes only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-074-edit-conflicts.json",
+        "src/mugen/da30/EditConflictRecovery.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "edit conflict recovery routes",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-074",
+      "wave": 7
+    },
+    {
+      "id": "DA30-075",
+      "kind": "I",
+      "originalScopeDigest": "d08ebbd99c9f0983ffedf0979d0e6935698038b3bc7cdac34504a914ec4f4485",
+      "originalClaimCeiling": "Allows revision bridge only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-075-source-reanalysis.json",
+        "src/mugen/da30/SourceWriteReanalysis.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "source write to reanalysis bridge",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-075",
+      "wave": 7
+    },
+    {
+      "id": "DA30-076",
+      "kind": "G",
+      "originalScopeDigest": "8c49c394ec22b8ea0ffe4fc7d8aba184e75bfe04c851f3a4336a50c34e244c89",
+      "originalClaimCeiling": "Allows named states only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-076-studio-trust.json",
+        "src/mugen/da30/StudioTrustFailures.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "Studio trust failure matrix",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-076",
+      "wave": 7
+    },
+    {
+      "id": "DA30-077",
+      "kind": "I",
+      "originalScopeDigest": "5eedce3df3195c6a8eb3b0ed9dba01f0e9af4d5d7468a342fc0f582cb7e1abc3",
+      "originalClaimCeiling": "Allows named authoring views only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-077-authoring-views.json",
+        "src/mugen/da30/AuthoringViews.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "nine authoring views narrow ownership",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-077",
+      "wave": 7
+    },
+    {
+      "id": "DA30-078",
+      "kind": "G",
+      "originalScopeDigest": "8b97d1624a239589a17a45ded19e01b326dcd335a244158940fb88d9d243d1f5",
+      "originalClaimCeiling": "Allows one Studio preview flow only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-078-preview-fidelity.json",
+        "src/mugen/da30/PreviewFidelity.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "preview isolation from project state",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-078",
+      "wave": 7
+    },
+    {
+      "id": "DA30-079",
+      "kind": "G",
+      "originalScopeDigest": "8f7f354ba78313e7d02e582f2ead3dc60d48752380707831690bce34b3513c6e",
+      "originalClaimCeiling": "Allows deterministic local export only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-079.json",
+        "src/mugen/da30/LocalExportBundle.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "deterministic local export manifest",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-079",
+      "wave": 7
+    },
+    {
+      "id": "DA30-080",
+      "kind": "G",
+      "originalScopeDigest": "474de438b1d56d05e1cfab0de335dd8799b878f5a74e0cd7f3d3ba223071f196",
+      "originalClaimCeiling": "Allows one local decision flow only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-080-release-decision.json",
+        "src/mugen/da30/ReleaseDecisionGate.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "release decision pure gate",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-080",
+      "wave": 7
+    },
+    {
+      "id": "DA30-081",
+      "kind": "A",
+      "originalScopeDigest": "54ab6df5886f0864273ad86c32ee8c72cf9c52868257942e8d0b2c204208f429",
+      "originalClaimCeiling": "Allows provenance design only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0066-da30-asset-provenance-graph.md",
+        "src/mugen/da30/AssetProvenanceGraph.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "provenance ADR + graph helpers",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-081",
+      "wave": 8
+    },
+    {
+      "id": "DA30-082",
+      "kind": "I",
+      "originalScopeDigest": "38effa6da569af2235d8dfbbc59380131c80666f9169303e29ef4f1e3a4616be",
+      "originalClaimCeiling": "Allows listed asset permissions only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-082-asset-provenance.json",
+        "src/mugen/da30/AssetProvenanceEdge.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "asset provenance include/exclude",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-082",
+      "wave": 8
+    },
+    {
+      "id": "DA30-083",
+      "kind": "I",
+      "originalScopeDigest": "4e3709354c4d71c68d0dd5466a4cc991be9bff2405a90c236002941da8134c90",
+      "originalClaimCeiling": "Allows named transforms only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-083-transform-chains.json",
+        "src/mugen/da30/TransformChain.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "reproducible transform digests",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-083",
+      "wave": 8
+    },
+    {
+      "id": "DA30-084",
+      "kind": "G",
+      "originalScopeDigest": "8b13a89dfd70eb92a4c8ec87902a5d3f3356a2cdad35a5827290b03664851304",
+      "originalClaimCeiling": "Allows sample pipeline only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-084-generated-asset-qa.json",
+        "src/mugen/da30/GeneratedAssetQa.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "generated asset QA pass/fail",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-084",
+      "wave": 8
+    },
+    {
+      "id": "DA30-085",
+      "kind": "G",
+      "originalScopeDigest": "8d52da856fc07a640790bee9cbc55733a602d6da9cea508b6ec5d304dbb732dc",
+      "originalClaimCeiling": "Allows named budget facts only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-085-asset-budgets.json",
+        "src/mugen/da30/AssetBudgetCleanup.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "asset budget breaches + orphans",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-085",
+      "wave": 8
+    },
+    {
+      "id": "DA30-086",
+      "kind": "I",
+      "originalScopeDigest": "44e73f53583c6cb72fd3b55fb1fddf005f7baeb7df9fae39914f9f78299fc951",
+      "originalClaimCeiling": "Allows tested scanner safety only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-086.json",
+        "src/mugen/da30/ScannerSafetyLimits.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "scanner archive/path limits",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-086",
+      "wave": 8
+    },
+    {
+      "id": "DA30-087",
+      "kind": "I",
+      "originalScopeDigest": "c414845c010dcc7d50370c362b78c18b2840870a5883d3734687a62f832cde85",
+      "originalClaimCeiling": "Allows scanner facts only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-087-scanner-capabilities.json",
+        "src/mugen/da30/ScannerCapabilityReasons.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "scanner capability reason states",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-087",
+      "wave": 8
+    },
+    {
+      "id": "DA30-088",
+      "kind": "I",
+      "originalScopeDigest": "cd4c49d779a3ca72be6109169f1ebd9c761e9ec3e894ea05a67e79ba3f8e7b8d",
+      "originalClaimCeiling": "Allows reanalysis behavior only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-088-incremental-reanalysis.json",
+        "src/mugen/da30/IncrementalReanalysis.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "incremental reanalysis + stale worker reject",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-088",
+      "wave": 8
+    },
+    {
+      "id": "DA30-089",
+      "kind": "G",
+      "originalScopeDigest": "48a2295e95008b0e1c234b7324f7c0624a3439edbb89ff177cf1cfe3a10e2029",
+      "originalClaimCeiling": "Allows parity for named fixtures only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-089-scanner-parity.json",
+        "src/mugen/da30/ScannerParity.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "Studio/CLI scanner fact parity",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-089",
+      "wave": 8
+    },
+    {
+      "id": "DA30-090",
+      "kind": "G",
+      "originalScopeDigest": "8640513bc7f314bf09bd45f49955a33997a1c407bb1a2f6b18f133519fed8f68",
+      "originalClaimCeiling": "Allows one asset closure chain only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-090-asset-export-closure.json",
+        "src/mugen/da30/AssetExportClosure.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "export asset closure chain",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-090",
+      "wave": 8
+    },
+    {
+      "id": "DA30-091",
+      "kind": "R",
+      "originalScopeDigest": "319e121b6e9aa2a23d06b8db92e86e21f088852943e01a215c232e3a33b27feb",
+      "originalClaimCeiling": "Allows source provenance only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-091-ikemen-source-authority.json",
+        "src/mugen/da30/IkemenSourceAuthority.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "Ikemen source authority by family",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-091",
+      "wave": 9
+    },
+    {
+      "id": "DA30-092",
+      "kind": "A",
+      "originalScopeDigest": "5329718c3a0eeac783c2d70b9e5302717e8e4a7aad51bd1785efe3f3c90ebfbc",
+      "originalClaimCeiling": "Allows lane taxonomy only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0067-da30-ikemen-lanes.md"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "architecture",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "IKEMEN lanes ADR",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-092",
+      "wave": 9
+    },
+    {
+      "id": "DA30-093",
+      "kind": "A",
+      "originalScopeDigest": "dce7957043f896abc25f638dade1cc44913f856894ef3881006fc6c7ee479735",
+      "originalClaimCeiling": "Allows design only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-093-zss-capability-registry.json"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "model-or-design",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "unknown",
+      "preservedFact": "ZSS registry design",
+      "missingProof": [
+        "clause-by-clause-review"
+      ],
+      "carryoverId": "DA31-carry-093",
+      "wave": 9
+    },
+    {
+      "id": "DA30-094",
+      "kind": "I",
+      "originalScopeDigest": "232de6fef065223a0353f0705c52ff3d832ae8e46d365bb64e44bc3a8d52f0cf",
+      "originalClaimCeiling": "Allows named operations only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-094-zss-subset.json",
+        "src/mugen/da30/ZssSubsetRuntime.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "bounded ZSS ops + ungranted reject",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-094",
+      "wave": 9
+    },
+    {
+      "id": "DA30-095",
+      "kind": "R",
+      "originalScopeDigest": "9ac8941766255a8dbb63705d25851b2f1d9df9d7f6f04a4faeb45180d6697772",
+      "originalClaimCeiling": "Allows research decision input only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-095-lua-module-scope.json",
+        "src/mugen/da30/LuaModuleScope.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "Lua/module surface recommendations",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-095",
+      "wave": 9
+    },
+    {
+      "id": "DA30-096",
+      "kind": "A",
+      "originalScopeDigest": "939b47bef101b739c2a51b034d835119168ac4b6fa3add661a3e5f11a9db305a",
+      "originalClaimCeiling": "Allows module design only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0068-da30-module-packaging.md"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "architecture",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "module packaging ADR",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-096",
+      "wave": 9
+    },
+    {
+      "id": "DA30-097",
+      "kind": "G",
+      "originalScopeDigest": "38b5c126e5e4b07b7bbc1606ea8856e673436ac089f9e98b821e27d6dc7447a2",
+      "originalClaimCeiling": "Allows named topology/schedule only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-097-team-topology.json",
+        "src/mugen/da30/TeamTopologySchedule.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "P1-P4 topology + tag transition",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-097",
+      "wave": 9
+    },
+    {
+      "id": "DA30-098",
+      "kind": "G",
+      "originalScopeDigest": "e98f0bb34e1e8121752a8e4fb6252cda0e273dcfee666a6f2b98bec73eeff2df",
+      "originalClaimCeiling": "Allows exercised consumers only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-098-team-consumers.json",
+        "src/mugen/da30/TeamConsumersGate.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "team consumers exercised for tag",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-098",
+      "wave": 9
+    },
+    {
+      "id": "DA30-099",
+      "kind": "R",
+      "originalScopeDigest": "b22660cf62616aac572fbe81a5704c3b46a1858b29ae2dc4f4eebec15926768e",
+      "originalClaimCeiling": "Allows design/feasibility only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0069-da30-replay-network-boundary.md"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "architecture",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "replay/network design",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-099",
+      "wave": 9
+    },
+    {
+      "id": "DA30-100",
+      "kind": "G",
+      "originalScopeDigest": "2b2feff6c3f4f61373736ef76f9efe6d04b2514aec847d2979dd7b1c1f5973f8",
+      "originalClaimCeiling": "Allows signed scope only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-100-ikemen-milestone.json",
+        "src/mugen/da30/IkemenMilestoneAdjudication.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "bounded IKEMEN milestone adjudication",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-100",
+      "wave": 9
+    },
+    {
+      "id": "DA30-101",
+      "kind": "R",
+      "originalScopeDigest": "001441a3063ff3d78aa8f42d60d9df5c64c000ca7d6a4c0b976075843c517f8a",
+      "originalClaimCeiling": "Allows boundary inventory only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/adr/0070-da30-shared-engine-boundaries.md",
+        "src/mugen/da30/BoundaryImportInventory.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "shared engine ADR + boundary inventory",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-101",
+      "wave": 10
+    },
+    {
+      "id": "DA30-102",
+      "kind": "A",
+      "originalScopeDigest": "d00758a1e9d4cf2798f26aa964573ad9fbc0be4e754a50c9872e2b0e4922fcd4",
+      "originalClaimCeiling": "Allows extraction order only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-102-extraction-candidates.json",
+        "src/mugen/da30/ExtractionCandidates.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "extraction port ranking",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-102",
+      "wave": 10
+    },
+    {
+      "id": "DA30-103",
+      "kind": "I",
+      "originalScopeDigest": "8892f3cd88a6a7bc886aa308fd633cea0c9e5b83ef9e050907118f0a4dbcc411",
+      "originalClaimCeiling": "Allows two-consumer proof for used ports only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-103-second-consumer.json",
+        "src/mugen/da30/SecondConsumerPorts.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "platformer second consumer model",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-103",
+      "wave": 10
+    },
+    {
+      "id": "DA30-104",
+      "kind": "I",
+      "originalScopeDigest": "8d07410dcba45415ebab8e6a93ddccd7b6ce11cd6d685cf78f5bc527ecdf1374",
+      "originalClaimCeiling": "Allows these ports only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-104-shared-ports.json",
+        "src/mugen/da30/SecondConsumerPorts.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "shared clock/input/renderer lifecycle ports",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-104",
+      "wave": 10
+    },
+    {
+      "id": "DA30-105",
+      "kind": "I",
+      "originalScopeDigest": "21a47772d1d07b301da6ebf02f94b44932a5ee1c5c8bb344f42916e25d889279",
+      "originalClaimCeiling": "Allows named ports only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-105-storage-evidence-ports.json",
+        "src/mugen/da30/SecondConsumerPorts.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "storage/evidence port contracts",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-105",
+      "wave": 10
+    },
+    {
+      "id": "DA30-106",
+      "kind": "A",
+      "originalScopeDigest": "f2883d20f35055454f4a9fe9274291c3cce03c9759f1bae71cb1ea775a83cdf8",
+      "originalClaimCeiling": "Allows API design only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-106-package-api.json",
+        "src/mugen/da30/PackageExtensionApi.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "package extension API surfaces",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-106",
+      "wave": 10
+    },
+    {
+      "id": "DA30-107",
+      "kind": "I",
+      "originalScopeDigest": "fac2b6407d553658793e93e7277e95ad7073a17c4e42ccf7a7c844e1d0e2c597",
+      "originalClaimCeiling": "Allows named local CLI commands only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-107-headless-cli.json",
+        "src/mugen/da30/HeadlessCliAdapter.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "headless CLI command contracts",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-107",
+      "wave": 10
+    },
+    {
+      "id": "DA30-108",
+      "kind": "I",
+      "originalScopeDigest": "a037b1406ecaa37faee91e9bb13fdf668c03bcd7b97773fbbf9063e6385ec339",
+      "originalClaimCeiling": "Allows named CI environment only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-108-ci-workflow.json",
+        "src/mugen/da30/CiWorkflowSpec.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "CI lane specification",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-108",
+      "wave": 10
+    },
+    {
+      "id": "DA30-109",
+      "kind": "G",
+      "originalScopeDigest": "639a1bd6cd3f2f89a367310daca94564f22d641c40df9341ddf5911c820477b5",
+      "originalClaimCeiling": "Allows local package smoke only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-109-sdk-smoke.json",
+        "src/mugen/da30/SdkPackageSmoke.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "SDK/CLI pack smoke model",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-109",
+      "wave": 10
+    },
+    {
+      "id": "DA30-110",
+      "kind": "G",
+      "originalScopeDigest": "2155629b7fe1fd46051719c24f234668af15b74f4e7deb8962c01b4fb4e7d359",
+      "originalClaimCeiling": "Allows enforced boundary claims only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-110-boundary-enforcement.json",
+        "src/mugen/da30/BoundaryEnforcement.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "non-vacuous boundary checks",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-110",
+      "wave": 10
+    },
+    {
+      "id": "DA30-111",
+      "kind": "G",
+      "originalScopeDigest": "3461f91fa4527b44a1906418c6f0ff1776f40140e931b8a0a23d1090834366cc",
+      "originalClaimCeiling": "Allows named accessibility routes only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-111-accessibility.json",
+        "src/mugen/da30/AccessibilityAudit.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "a11y checklist named routes",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-111",
+      "wave": 11
+    },
+    {
+      "id": "DA30-112",
+      "kind": "G",
+      "originalScopeDigest": "884fd1bcf2f1395aa2f8404b4a7286fa418af86f52cad8522250d40ca266136a",
+      "originalClaimCeiling": "Allows measured environment facts only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-112-performance-budgets.json",
+        "src/mugen/da30/PerformanceBudgets.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "perf/size budget facts model",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-112",
+      "wave": 11
+    },
+    {
+      "id": "DA30-113",
+      "kind": "A",
+      "originalScopeDigest": "c2bdbea603ef00012436e7525c3be7d5bd4d0e0d49a17f8d80771fe482de53de",
+      "originalClaimCeiling": "Allows security plan only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-113-threat-model.json",
+        "src/mugen/da30/ThreatModelPlan.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "threat model + response plan",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-113",
+      "wave": 11
+    },
+    {
+      "id": "DA30-114",
+      "kind": "A",
+      "originalScopeDigest": "db171d82b81f0b7e280ef5e76a9310c97f75b53e7f03ad5651d42b7500c36835",
+      "originalClaimCeiling": "Allows privacy policy design only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-114-privacy-rules.json",
+        "src/mugen/da30/PrivacyTelemetryRules.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "privacy/telemetry rules",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-114",
+      "wave": 11
+    },
+    {
+      "id": "DA30-115",
+      "kind": "I",
+      "originalScopeDigest": "25ff057086d6cd06559db3f72285e1947c90360048150b9a8e77afdc20f660e5",
+      "originalClaimCeiling": "Allows named migration paths only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-115-migration-paths.json",
+        "src/mugen/da30/MigrationPaths.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "envelope migration paths",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-115",
+      "wave": 11
+    },
+    {
+      "id": "DA30-116",
+      "kind": "A",
+      "originalScopeDigest": "f206876ecdc8fd2acee8e8c001193390547eaf353c048fb45f13b10ed8a00d90",
+      "originalClaimCeiling": "Allows deployment design only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-116-hosted-preview-design.json",
+        "src/mugen/da30/HostedPreviewDesign.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "hosted preview design; no deploy claim",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-116",
+      "wave": 11
+    },
+    {
+      "id": "DA30-117",
+      "kind": "G",
+      "originalScopeDigest": "d8c486f5f433d24ac98433f31f8cf13980ff1c1d75d1149296c141b74d7737e1",
+      "originalClaimCeiling": "Allows local rehearsal only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-117-local-release-rehearsal.json",
+        "src/mugen/da30/LocalReleaseRehearsal.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "local release rehearsal steps",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-117",
+      "wave": 11
+    },
+    {
+      "id": "DA30-118",
+      "kind": "G",
+      "originalScopeDigest": "1c2c3b45d6f19adfd7146861e36e94c07dcff80137dbc8b73a6d01ba4ae098d0",
+      "originalClaimCeiling": "Allows recorded score decision only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-118-score-recalculation.json",
+        "src/mugen/da30/ScoreRecalculation.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "score recalculation; scores held",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-118",
+      "wave": 11
+    },
+    {
+      "id": "DA30-119",
+      "kind": "G",
+      "originalScopeDigest": "52bd782a4a212dad1b51de8a365bc72a63e71c522cab8f2cfc807ff0fbe1c249",
+      "originalClaimCeiling": "Allows signed review only",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-119-adversarial-review.json",
+        "src/mugen/da30/AdversarialReview.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "adversarial review record",
+      "missingProof": [
+        "live-consumer",
+        "failure-path-at-product-route"
+      ],
+      "carryoverId": "DA31-carry-119",
+      "wave": 11
+    },
+    {
+      "id": "DA30-120",
+      "kind": "G",
+      "originalScopeDigest": "2e83a1d8bab61bf4ca5b015f2ae1734eab322146a1ea0d23a5ad373d81a878a0",
+      "originalClaimCeiling": "Allows only the signed final scope",
+      "machineStatus": "accepted",
+      "artifacts": [
+        "docs/evidence/da30/da30-120-final-adjudication.json",
+        "src/mugen/da30/FinalRoadmapAdjudication.ts"
+      ],
+      "artifactsExist": true,
+      "hasManifest": false,
+      "evidenceClass": "pure-module",
+      "subjectRevision": "mixed-or-unbound",
+      "liveConsumer": false,
+      "negativeCase": "unproven",
+      "verdict": "partial",
+      "preservedFact": "local-only final record; scores held",
+      "missingProof": [
+        "independent-score-adjudication",
+        "public-release-blocked"
+      ],
+      "carryoverId": "DA31-carry-120",
+      "wave": 11
+    }
+  ],
+  "claimCeiling": "row-level adjudication inventory only; does not move scores or adjudicatedThrough",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "0dceceea72c746c26114b149f1b353f975454ddaf8a582e92aa3cf85a1b98fa1"
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "schema": "Da31PlayBrowserGate/v1",
+  "id": "DA31-009",
+  "generatedAt": "2026-07-27T17:56:51.228Z",
+  "subject": {
+    "schema": "Da31GateSubjectEnvelope/v1",
+    "subjectSha": "1e4910190646126a92ee509c2a388cb1aadaadbe",
+    "dirtyTree": true,
+    "provisional": true,
+    "probePaths": [
+      "scripts/qa_browser_gate_da31_009_play.cjs",
+      "src/app/App.ts"
+    ],
+    "codePaths": [
+      "src/game/input/KeyboardInputAdapter.ts"
+    ],
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+  },
+  "headSha": "1e4910190646126a92ee509c2a388cb1aadaadbe",
+  "ok": true,
+  "packages": {
+    "p1": "nova-boxer",
+    "p2": "mira-volt",
+    "stage": "rooftop-dojo"
+  },
+  "journeys": [
+    {
+      "name": "play-desktop",
+      "viewport": "1440x900",
+      "ok": true,
+      "packages": {
+        "p1": "Nova Boxer",
+        "p2": "Mira Volt",
+        "mode": "match"
+      },
+      "semantic": {
+        "movement": true,
+        "attackState": false,
+        "damage": false,
+        "tickAdvanced": true,
+        "reset": true,
+        "p1StateAfterAtk": 0,
+        "p2LifeDelta": 0,
+        "p1Dx": 53.999999999999915
+      },
+      "screenshot": "docs/evidence/da31/browser/play-desktop.png",
+      "consoleErrorCount": 0
+    },
+    {
+      "name": "play-mobile",
+      "viewport": "390x844",
+      "ok": true,
+      "packages": {
+        "p1": "Nova Boxer",
+        "p2": "Mira Volt",
+        "mode": "match"
+      },
+      "semantic": {
+        "movement": true,
+        "attackState": false,
+        "damage": false,
+        "tickAdvanced": true,
+        "reset": true,
+        "p1StateAfterAtk": 0,
+        "p2LifeDelta": 0,
+        "p1Dx": 49.67999999999992
+      },
+      "screenshot": "docs/evidence/da31/browser/play-mobile.png",
+      "consoleErrorCount": 0
+    },
+    {
+      "name": "play-miss",
+      "viewport": "1280x800",
+      "ok": true,
+      "packages": {
+        "path": "miss-air"
+      },
+      "semantic": {
+        "movement": true,
+        "attackState": true,
+        "damage": false,
+        "tickAdvanced": true,
+        "reset": false
+      },
+      "screenshot": "docs/evidence/da31/browser/play-miss.png",
+      "consoleErrorCount": 0
+    },
+    {
+      "name": "play-missing-package",
+      "viewport": "1280x800",
+      "ok": true,
+      "packages": {
+        "p1": "missing-pack-xyz"
+      },
+      "semantic": {
+        "movement": false,
+        "attackState": false,
+        "damage": false,
+        "tickAdvanced": false,
+        "reset": false
+      },
+      "screenshot": "docs/evidence/da31/browser/play-missing-package.png",
+      "consoleErrorCount": 0,
+      "failedAsExpected": true
+    }
+  ],
+  "unexpectedConsole": [],
+  "claimCeiling": "provisional dirty-tree Play observations only",
+  "claims": {
+    "allowed": [
+      "exact package ids",
+      "movement",
+      "attack state sample",
+      "life delta when observed",
+      "miss path",
+      "missing package failure",
+      "reset"
+    ],
+    "blocked": [
+      "broad stage matrix",
+      "score movement",
+      "all devices"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "a3c151492ac8e06b8e644e24da7d6e3534dc24ef6c103dcf3c6f287bf45acbc7"
+  }
+}

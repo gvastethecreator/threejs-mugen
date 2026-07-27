@@ -17,6 +17,10 @@ import {
   createPromotionReceipt,
   rejectDirtyAsAuthoritative,
 } from "../mugen/da31/EvidencePromotion";
+import {
+  buildGateSubjectEnvelope,
+  rejectAuthoritativeIfDirty,
+} from "../mugen/da31/GateSubjectEnvelope";
 
 const root = process.cwd();
 
@@ -183,5 +187,44 @@ describe("DA31-005 evidence promotion", () => {
     const tmp = resolve(tmpDir, "da31-phase0-probe.json");
     writeFileSync(tmp, `${JSON.stringify({ ok: true, probe: "hermetic" }, null, 2)}\n`, "utf8");
     expect(existsSync(tmp)).toBe(true);
+  });
+});
+
+describe("DA31-006 gate subject envelope", () => {
+  it("marks dirty trees provisional", () => {
+    const dirty = buildGateSubjectEnvelope({
+      subjectSha: "abcdef012345",
+      dirtyTree: true,
+      probePaths: ["scripts/x.cjs"],
+    });
+    expect(dirty.provisional).toBe(true);
+    expect(rejectAuthoritativeIfDirty(dirty)).toBe(true);
+    const clean = buildGateSubjectEnvelope({
+      subjectSha: "abcdef012345",
+      dirtyTree: false,
+    });
+    expect(clean.provisional).toBe(false);
+    expect(rejectAuthoritativeIfDirty(clean)).toBe(false);
+  });
+});
+
+describe("DA31-007 clause verdict ledger", () => {
+  it("has 120 rows and samples every wave", () => {
+    const path = resolve(root, "docs/evidence/da31/da30-clause-verdict-ledger-v1.json");
+    expect(existsSync(path)).toBe(true);
+    const doc = JSON.parse(readFileSync(path, "utf8")) as {
+      count: number;
+      counts: Record<string, number>;
+      samples: string[];
+      adjudicatedThrough: string;
+      rows: Array<{ id: string; verdict: string; wave: number }>;
+    };
+    expect(doc.count).toBe(120);
+    expect(doc.rows).toHaveLength(120);
+    expect(doc.adjudicatedThrough).toBe("DA30-020");
+    expect(doc.samples.length).toBeGreaterThanOrEqual(12);
+    const waves = new Set(doc.rows.map((r) => r.wave));
+    expect(waves.size).toBe(12);
+    expect(doc.counts.pass + doc.counts.partial + doc.counts.fail + doc.counts.unknown).toBe(120);
   });
 });

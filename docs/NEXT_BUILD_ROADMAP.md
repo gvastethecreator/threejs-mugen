@@ -8,15 +8,14 @@ and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 Machine rows reach DA30-120. Human adjudication stops at DA30-020 pending a
 full clause ledger. Scores remain held.
 
-Phase 0 landed (see `docs/evidence/da31/da31-phase0-status-v1.json`):
-DA31-001 hold, DA31-002 contracts, DA31-003 dual watermarks, DA31-004 clause
-verdicts, DA31-005 promotion receipts.
+Phase 0–1 progress (see `docs/evidence/da31/da31-phase0-status-v1.json`):
+DA31-001…007 accepted; DA31-008 runner ready (clean re-run for authoritative pin);
+DA31-009 Play gate landed (movement/reset/miss/missing-package).
 
-1. DA31-006: bind formal/browser evidence to one clean subject revision.
-2. DA31-007: review DA30-001…120 row by row without rebuilding closed facts.
-3. DA31-008: run the current formal, authority, and selected visual matrix.
-4. DA31-009…016: close Play, Studio, mobile, input, performance, disposal, and
-   visual gates before compatibility or score work.
+1. DA31-008: authoritative formal+authority matrix on clean tree.
+2. DA31-010…011: Studio/Inspect end-to-end + mobile reflow.
+3. DA31-012…016: gamepad/touch, frame budget, WebGL dispose, smoke restore.
+4. DA31-017…: live determinism and imported corpus.
 
 `qa:smoke` is currently open. The authority audit is green only at its named
 revision and scope.

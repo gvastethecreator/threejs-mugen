@@ -1,6 +1,6 @@
 {
   "schema": "Da31Phase0Status/v1",
-  "generatedAt": "2026-07-27T17:00:00.000Z",
+  "generatedAt": "2026-07-27T18:00:00.000Z",
   "tasks": {
     "DA31-001": {
       "status": "accepted",
@@ -8,8 +8,6 @@
         "docs/AUTHORITY_SELECTOR.md",
         "docs/PROGRESS_TRACKER.md",
         "docs/NEXT_BUILD_ROADMAP.md",
-        "docs/WORKPLAN.md",
-        "docs/BUILD_EXECUTION_BACKLOG.md",
         "docs/research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md",
         "docs/DA31_EVIDENCE_ADOPTION_ROADMAP.md"
       ],
@@ -49,9 +47,43 @@
         "scripts/promote_evidence_artifact.cjs"
       ],
       "note": "temp evidence path + explicit promotion receipt; dirty=provisional"
+    },
+    "DA31-006": {
+      "status": "accepted",
+      "artifacts": [
+        "src/mugen/da31/GateSubjectEnvelope.ts",
+        "scripts/lib_gate_subject.cjs",
+        "scripts/run_da30_021_formal_gate.cjs",
+        "scripts/qa_browser_gate_da31_009_play.cjs"
+      ],
+      "note": "gates carry subject envelope; dirty trees provisional"
+    },
+    "DA31-007": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/evidence/da31/da30-clause-verdict-ledger-v1.json",
+        "scripts/build_da30_clause_verdict_ledger.cjs"
+      ],
+      "note": "120-row ledger; pass~20 early; remainder partial/unknown until live review"
+    },
+    "DA31-008": {
+      "status": "partial",
+      "artifacts": [
+        "scripts/run_da31_008_formal_gate.cjs"
+      ],
+      "note": "runner ready; authoritative green requires clean-tree re-run after commit"
+    },
+    "DA31-009": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/evidence/da31/da31-009-play-browser-gate.json",
+        "scripts/qa_browser_gate_da31_009_play.cjs",
+        "docs/evidence/da31/browser"
+      ],
+      "note": "desktop/mobile movement+reset; miss path; missing package failure; provisional if dirty"
     }
   },
-  "next": ["DA31-006", "DA31-007", "DA31-008"],
+  "next": ["DA31-008-clean-rerun", "DA31-010", "DA31-011"],
   "scoresHeld": true,
-  "claimCeiling": "phase 0 control/evidence authority only; no product or score claims"
+  "claimCeiling": "DA31 phase0+009 progress; adjudicatedThrough remains DA30-020; scores held"
 }

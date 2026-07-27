@@ -7,6 +7,7 @@ const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { buildSubjectEnvelope } = require("./lib_gate_subject.cjs");
 
 const repoRoot = path.resolve(process.cwd());
 const outDir = path.join(repoRoot, "docs/evidence/da30");
@@ -131,10 +132,15 @@ function runStep(name, command, args, required) {
 
 fs.mkdirSync(rawDir, { recursive: true });
 const head = headSha();
+const subject = buildSubjectEnvelope(repoRoot, {
+  probePaths: ["scripts/run_da30_021_formal_gate.cjs"],
+  codePaths: [],
+});
 const tools = toolVersions();
 const logLines = [];
 logLines.push(`# DA30-021 formal gate log (clause repair)`);
 logLines.push(`head=${head}`);
+logLines.push(`provisional=${subject.provisional}`);
 logLines.push(`started=${new Date().toISOString()}`);
 logLines.push(`tools=${JSON.stringify(tools)}`);
 
@@ -197,6 +203,8 @@ const report = {
   generatedAt: new Date().toISOString(),
   ok: allOk,
   headSha: head,
+  subject,
+  authoritative: allOk && !subject.provisional,
   toolVersions: tools,
   requiredMatrix: required.map((s) => s.name),
   optionalMatrix: optionalResults,
