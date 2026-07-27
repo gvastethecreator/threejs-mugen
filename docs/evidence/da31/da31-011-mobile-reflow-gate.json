@@ -1,0 +1,227 @@
+{
+  "schema": "Da31MobileReflowGate/v1",
+  "id": "DA31-011",
+  "generatedAt": "2026-07-27T18:41:30.327Z",
+  "subject": {
+    "schema": "Da31GateSubjectEnvelope/v1",
+    "subjectSha": "c4145c95b1856b258cc306f7ee08424e309ea1c5",
+    "dirtyTree": true,
+    "provisional": true,
+    "probePaths": [
+      "scripts/qa_browser_gate_da31_011_mobile_reflow.cjs"
+    ],
+    "codePaths": [],
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+  },
+  "headSha": "c4145c95b1856b258cc306f7ee08424e309ea1c5",
+  "ok": true,
+  "cases": [
+    {
+      "id": "w320",
+      "zoom": 1,
+      "reducedMotion": false,
+      "geometry": {
+        "measured": true,
+        "viewport": {
+          "w": 320,
+          "h": 720
+        },
+        "scrollWidth": 860,
+        "scrollHeight": 990,
+        "overflowX": true,
+        "overflowY": true,
+        "requiredControlCount": 61,
+        "clippedSample": [
+          "Skip to runtime viewport",
+          "01Import\n          load source\n        \n",
+          "02Validate\n          validate files\n    ",
+          "03Assets\n          map links\n        \n  ",
+          "04Playtest\n          no trace yet\n      ",
+          "05Compile\n          compile needed\n     ",
+          "06Package\n          package project\n    ",
+          "07Publish\n          publish build\n      "
+        ]
+      },
+      "focus": {
+        "focusedVisible": true,
+        "tag": "button",
+        "rect": {
+          "t": 37,
+          "l": 43,
+          "w": 98,
+          "h": 38
+        }
+      },
+      "screenshot": "docs/evidence/da31/browser/reflow-w320.png"
+    },
+    {
+      "id": "w390",
+      "zoom": 1,
+      "reducedMotion": false,
+      "geometry": {
+        "measured": true,
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "scrollWidth": 860,
+        "scrollHeight": 1132,
+        "overflowX": true,
+        "overflowY": true,
+        "requiredControlCount": 61,
+        "clippedSample": [
+          "Skip to runtime viewport",
+          "02Validate\n          validate files\n    ",
+          "03Assets\n          map links\n        \n  ",
+          "04Playtest\n          no trace yet\n      ",
+          "05Compile\n          compile needed\n     ",
+          "06Package\n          package project\n    ",
+          "07Publish\n          publish build\n      ",
+          ""
+        ]
+      },
+      "focus": {
+        "focusedVisible": true,
+        "tag": "button",
+        "rect": {
+          "t": 37,
+          "l": 43,
+          "w": 98,
+          "h": 38
+        }
+      },
+      "screenshot": "docs/evidence/da31/browser/reflow-w390.png"
+    },
+    {
+      "id": "w390-z200",
+      "zoom": 2,
+      "reducedMotion": false,
+      "geometry": {
+        "measured": true,
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "scrollWidth": 860,
+        "scrollHeight": 1132,
+        "overflowX": true,
+        "overflowY": true,
+        "requiredControlCount": 61,
+        "clippedSample": [
+          "Skip to runtime viewport",
+          "02Validate\n          validate files\n    ",
+          "03Assets\n          map links\n        \n  ",
+          "04Playtest\n          no trace yet\n      ",
+          "05Compile\n          compile needed\n     ",
+          "06Package\n          package project\n    ",
+          "07Publish\n          publish build\n      ",
+          ""
+        ]
+      },
+      "focus": {
+        "focusedVisible": true,
+        "tag": "button",
+        "rect": {
+          "t": 37,
+          "l": 43,
+          "w": 98,
+          "h": 38
+        }
+      },
+      "screenshot": "docs/evidence/da31/browser/reflow-w390-z200.png"
+    },
+    {
+      "id": "w390-z400",
+      "zoom": 4,
+      "reducedMotion": false,
+      "geometry": {
+        "measured": true,
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "scrollWidth": 860,
+        "scrollHeight": 1132,
+        "overflowX": true,
+        "overflowY": true,
+        "requiredControlCount": 61,
+        "clippedSample": [
+          "Skip to runtime viewport",
+          "02Validate\n          validate files\n    ",
+          "03Assets\n          map links\n        \n  ",
+          "04Playtest\n          no trace yet\n      ",
+          "05Compile\n          compile needed\n     ",
+          "06Package\n          package project\n    ",
+          "07Publish\n          publish build\n      ",
+          ""
+        ]
+      },
+      "focus": {
+        "focusedVisible": true,
+        "tag": "button",
+        "rect": {
+          "t": 37,
+          "l": 43,
+          "w": 98,
+          "h": 38
+        }
+      },
+      "screenshot": "docs/evidence/da31/browser/reflow-w390-z400.png"
+    },
+    {
+      "id": "w390-reduced-motion",
+      "zoom": 1,
+      "reducedMotion": true,
+      "geometry": {
+        "measured": true,
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "scrollWidth": 860,
+        "scrollHeight": 1132,
+        "overflowX": true,
+        "overflowY": true,
+        "requiredControlCount": 61,
+        "clippedSample": [
+          "Skip to runtime viewport",
+          "02Validate\n          validate files\n    ",
+          "03Assets\n          map links\n        \n  ",
+          "04Playtest\n          no trace yet\n      ",
+          "05Compile\n          compile needed\n     ",
+          "06Package\n          package project\n    ",
+          "07Publish\n          publish build\n      ",
+          ""
+        ]
+      },
+      "focus": {
+        "focusedVisible": true,
+        "tag": "button",
+        "rect": {
+          "t": 37,
+          "l": 43,
+          "w": 98,
+          "h": 38
+        }
+      },
+      "screenshot": "docs/evidence/da31/browser/reflow-w390-reduced-motion.png"
+    }
+  ],
+  "claimCeiling": "measured viewport/accessibility geometry only; not full mobile polish",
+  "claims": {
+    "allowed": [
+      "geometry samples at 320/390/zoom",
+      "focus rectangles",
+      "reduced-motion flag"
+    ],
+    "blocked": [
+      "pixel-perfect mobile redesign",
+      "score movement"
+    ]
+  },
+  "overflowObserved": true,
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "34c6c23051095f97a543b42bbc107f07cf7bdfdba5ea6e107657d90adf66cd1b"
+  }
+}

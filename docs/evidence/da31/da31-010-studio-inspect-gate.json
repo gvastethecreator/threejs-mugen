@@ -1,0 +1,91 @@
+{
+  "schema": "Da31StudioInspectGate/v1",
+  "id": "DA31-010",
+  "generatedAt": "2026-07-27T18:38:10.914Z",
+  "subject": {
+    "schema": "Da31GateSubjectEnvelope/v1",
+    "subjectSha": "c4145c95b1856b258cc306f7ee08424e309ea1c5",
+    "dirtyTree": true,
+    "provisional": true,
+    "probePaths": [
+      "scripts/qa_browser_gate_da31_010_studio_inspect.cjs"
+    ],
+    "codePaths": [
+      "src/app/App.ts"
+    ],
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+  },
+  "headSha": "c4145c95b1856b258cc306f7ee08424e309ea1c5",
+  "ok": true,
+  "journeys": [
+    {
+      "id": "studio-desktop",
+      "viewport": "1440x900",
+      "ok": true,
+      "steps": {
+        "shell": true,
+        "inspectSignals": true,
+        "edit": true,
+        "invalidSaveRejected": true,
+        "validSave": true,
+        "reopen": true,
+        "returnSafe": true
+      },
+      "screenshot": "docs/evidence/da31/browser/studio-desktop.png",
+      "revisionIds": [
+        "2"
+      ]
+    },
+    {
+      "id": "studio-mobile",
+      "viewport": "390x844",
+      "ok": true,
+      "steps": {
+        "shell": true,
+        "inspectSignals": true,
+        "edit": true,
+        "invalidSaveRejected": true,
+        "validSave": true,
+        "reopen": true,
+        "returnSafe": true
+      },
+      "screenshot": "docs/evidence/da31/browser/studio-mobile.png",
+      "revisionIds": [
+        "2"
+      ]
+    },
+    {
+      "id": "inspect-desktop",
+      "viewport": "1440x900",
+      "ok": true,
+      "steps": {
+        "shell": true,
+        "packageSignals": true,
+        "modeOk": true
+      },
+      "screenshot": "docs/evidence/da31/browser/inspect-desktop.png",
+      "revisionIds": []
+    }
+  ],
+  "unexpectedConsole": [],
+  "claimCeiling": "one named Studio/Inspect process desktop+mobile only",
+  "claims": {
+    "allowed": [
+      "open project/package route",
+      "inspect signals",
+      "invalid save rejected",
+      "valid save",
+      "reopen retain",
+      "return"
+    ],
+    "blocked": [
+      "full authoring suite",
+      "multi-tab conflict complete",
+      "score movement"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "6f9827967085fb902bb5e0797723ed39307a5320ddcf89decd4aed8113036a7f"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "cases": [
+    "play",
+    "studio",
+    "inspect",
+    "studio-assets",
+    "play-mobile"
+  ]
+}

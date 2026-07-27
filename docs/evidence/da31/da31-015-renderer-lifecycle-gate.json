@@ -1,0 +1,100 @@
+{
+  "schema": "Da31RendererLifecycleGate/v1",
+  "id": "DA31-015",
+  "generatedAt": "2026-07-27T18:44:42.839Z",
+  "subject": {
+    "schema": "Da31GateSubjectEnvelope/v1",
+    "subjectSha": "c4145c95b1856b258cc306f7ee08424e309ea1c5",
+    "dirtyTree": true,
+    "provisional": true,
+    "probePaths": [
+      "scripts/qa_browser_gate_da31_012_016_product.cjs"
+    ],
+    "codePaths": [],
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+  },
+  "ok": true,
+  "routes": [
+    {
+      "id": "play",
+      "ok": true,
+      "before": {
+        "geometries": 63,
+        "textures": 16,
+        "programs": 0
+      },
+      "after": {
+        "geometries": 59,
+        "textures": 14,
+        "mounted": true
+      },
+      "unexpected": []
+    },
+    {
+      "id": "studio",
+      "ok": true,
+      "before": {
+        "geometries": 7,
+        "textures": 13,
+        "programs": 0
+      },
+      "after": {
+        "geometries": 7,
+        "textures": 14,
+        "mounted": true
+      },
+      "unexpected": []
+    },
+    {
+      "id": "inspect",
+      "ok": true,
+      "before": {
+        "geometries": 59,
+        "textures": 0,
+        "programs": 0
+      },
+      "after": {
+        "geometries": 55,
+        "textures": 0,
+        "mounted": true
+      },
+      "unexpected": []
+    },
+    {
+      "id": "studio-assets",
+      "ok": true,
+      "before": {
+        "geometries": 7,
+        "textures": 14,
+        "programs": 0
+      },
+      "after": {
+        "geometries": 7,
+        "textures": 14,
+        "mounted": true
+      },
+      "unexpected": []
+    },
+    {
+      "id": "play-mobile",
+      "ok": true,
+      "before": {
+        "geometries": 42,
+        "textures": 15,
+        "programs": 0
+      },
+      "after": {
+        "geometries": 37,
+        "textures": 14,
+        "mounted": true
+      },
+      "unexpected": []
+    }
+  ],
+  "note": "mount/resize/hide/reopen cycles; context-loss not forced on all GPUs",
+  "claimCeiling": "owned lifecycle facts on listed routes only",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "a3688501a2bbea0d881acc798fefdad05bc5165ef7e8e02d1c10fc2357617885"
+  }
+}

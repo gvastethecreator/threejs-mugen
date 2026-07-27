@@ -1,0 +1,50 @@
+{
+  "schema": "Da31VisualMatrix/v1",
+  "id": "DA31-016",
+  "generatedAt": "2026-07-27T18:44:42.842Z",
+  "subject": {
+    "schema": "Da31GateSubjectEnvelope/v1",
+    "subjectSha": "c4145c95b1856b258cc306f7ee08424e309ea1c5",
+    "dirtyTree": true,
+    "provisional": true,
+    "probePaths": [
+      "scripts/qa_browser_gate_da31_012_016_product.cjs"
+    ],
+    "codePaths": [],
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+  },
+  "ok": false,
+  "smokeStatus": "failed",
+  "phase1Gates": {
+    "DA31-010": true,
+    "DA31-011": true,
+    "DA31-012": true,
+    "DA31-013": true,
+    "DA31-014": true,
+    "DA31-015": true
+  },
+  "humanReviewRequired": [
+    "final state desktop/mobile",
+    "hit spark/crop",
+    "Studio surfaces",
+    "focus",
+    "reduced motion",
+    "renderer recovery"
+  ],
+  "claimCeiling": "partial visual matrix; smoke remains open or failed",
+  "claims": {
+    "allowed": [
+      "phase1 gate bundle",
+      "screenshot samples",
+      "smoke:failed"
+    ],
+    "blocked": [
+      "score movement",
+      "public visual health without human review"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "2e1e5aa82fe8cb6bb2a02ef929bfafded6d9e36dec0eb5809de1769dfc442a6a"
+  }
+}
