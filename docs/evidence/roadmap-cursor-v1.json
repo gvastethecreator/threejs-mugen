@@ -1,6 +1,6 @@
 {
   "schemaVersion": "mugen-web-sandbox/roadmap-cursor/v1",
-  "generatedAt": "2026-07-27T14:33:02.725Z",
+  "generatedAt": "2026-07-27T17:47:53.803Z",
   "branch": "master",
   "scores": {
     "sandbox": "65",
@@ -15,71 +15,70 @@
     {
       "kind": "head",
       "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
-      "date": "2026-07-27T14:33:02.725Z",
+      "date": "2026-07-27T17:47:53.803Z",
       "artifact": "git HEAD at DA30-021 formal clause repair",
-      "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
+      "claimLimit": "audit HEAD may lead formal; recordedThrough=DA30-120 adjudicatedThrough=DA30-020"
     },
     {
       "kind": "formal",
       "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
-      "date": "2026-07-27T14:33:02.725Z",
+      "date": "2026-07-27T17:47:53.803Z",
       "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
       "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
     },
     {
       "kind": "focal",
       "sha": "07ad9227",
-      "date": "2026-07-27T14:33:02.725Z",
+      "date": "2026-07-27T17:47:53.803Z",
       "artifact": "docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md",
       "claimLimit": "T406 active juggle runtime only"
     },
     {
       "kind": "global",
       "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
-      "date": "2026-07-27T14:33:02.725Z",
+      "date": "2026-07-27T17:47:53.803Z",
       "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
       "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
     },
     {
       "kind": "visual",
       "sha": "1085badb",
-      "date": "2026-07-27T14:33:02.725Z",
+      "date": "2026-07-27T17:47:53.803Z",
       "artifact": "docs/research (T342 visual gate)",
       "claimLimit": "T342 visual only; not HEAD product truth"
     },
     {
       "kind": "product",
       "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
-      "date": "2026-07-27T14:33:02.725Z",
+      "date": "2026-07-27T17:47:53.803Z",
       "artifact": "docs/evidence/da30/da30-024-play-browser-gate.json",
       "claimLimit": "Play semantic + Studio save/focus/geometry at formal repair SHA"
     },
     {
       "kind": "source",
       "sha": "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",
-      "date": "2026-07-27T14:33:02.725Z",
+      "date": "2026-07-27T17:47:53.803Z",
       "artifact": "docs/evidence/source-authority-epoch-v1.json",
-      "claimLimit": "normative pin 05b; family provenance in epoch; working=4aa0ba38f851"
+      "claimLimit": "normative pin 05b; family provenance in epoch; working=4aa0ba38f851; closedThrough=DA30-120; next=empty"
     }
   ],
   "claims": {
     "allowed": [
       "control hold and DA30 recovery queue",
-      "historical DA28-30 accepted ladder",
-      "scores held unless DA30 score adjudication authorizes movement",
       "control-source closedThrough=DA30-120",
-      "nextQueueHead=empty"
+      "historical DA28-30 accepted ladder",
+      "scores held unless DA30 score adjudication authorizes movement"
     ],
     "blocked": [
       "DA29-200 as accepted watermark",
-      "score movement",
       "formal/global tip rewrite without measured gate at claimed SHA",
+      "score movement",
       "using disagreeing selector/cursor projections"
     ]
   },
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "cfff19d32d73e6cd8b5110e03ff4022434c82868671010a339fb9a0622f97ce3"
+    "value": "14aa9ab1513d73d8f01bc3caa08a4ab634dc9da8e1916aff3b9ea8a102a5a495"
   }
 }

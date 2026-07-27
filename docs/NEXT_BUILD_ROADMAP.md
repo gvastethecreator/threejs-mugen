@@ -2,18 +2,24 @@
 
 ## Current next-build — post-DA30-120
 
-Authority: [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-Machine watermark **DA30-120**, scores held.
+Authority: [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
+and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 
-1. Keep `qa:smoke` and `audit_authority_references` green under DA30 closedThrough.
-2. Deepen Studio save → reopen → conflict recovery beyond first local save.
-3. Mobile geometry polish only where measured overflow blocks real routes.
-4. Independent score adjudication only with separate provenance (no auto move).
-5. Optional: optional formal matrix (smoke/authority) may later join required
-   steps after green.
+Machine rows reach DA30-120. Human adjudication stops at DA30-020 pending a
+full clause ledger. Scores remain held.
 
-DA30-001…120 recovery series is accepted at machine watermark. Further work is
-depth and product quality, not reopening the consecutive ladder without cause.
+Phase 0 landed (see `docs/evidence/da31/da31-phase0-status-v1.json`):
+DA31-001 hold, DA31-002 contracts, DA31-003 dual watermarks, DA31-004 clause
+verdicts, DA31-005 promotion receipts.
+
+1. DA31-006: bind formal/browser evidence to one clean subject revision.
+2. DA31-007: review DA30-001…120 row by row without rebuilding closed facts.
+3. DA31-008: run the current formal, authority, and selected visual matrix.
+4. DA31-009…016: close Play, Studio, mobile, input, performance, disposal, and
+   visual gates before compatibility or score work.
+
+`qa:smoke` is currently open. The authority audit is green only at its named
+revision and scope.
 
 ## Historical next-build override — post-DA30-025 repair
 

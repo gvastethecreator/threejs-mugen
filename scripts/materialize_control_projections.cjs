@@ -101,6 +101,11 @@ const selectorDoc = {
   ...selectorPayload,
   seriesHold: source.seriesHold,
   controlSourceRef: "docs/evidence/control-source-v1.json",
+  // DA31 dual watermarks (non-canonical extras; closedThrough remains recorded alias)
+  recordedThrough: source.recordedThrough || source.closedThrough,
+  adjudicatedThrough: source.adjudicatedThrough || null,
+  reviewedThrough: source.reviewedThrough || null,
+  da31: source.da31 || null,
   digest: { algorithm: "sha-256", value: digest(selectorPayload) },
 };
 

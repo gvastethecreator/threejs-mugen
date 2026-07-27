@@ -2,6 +2,22 @@
 
 ## Current authority (2026-07-27)
 
+- Human authority: [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
+  and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
+- Machine record: **DA30-120**. Proposed consecutive human cursor:
+  **DA30-020**, pending DA31-007.
+- Audit HEAD: `67481fbc`; formal/global: `ee23122f`; focal: T406; broad
+  visual/product: T342; source: 05b/4aa; backlog: Entry 615.
+- `qa:smoke` remains open. Play and Studio reports preserve narrow facts; exact
+  subject identity, mobile fit, and original end-to-end clauses remain open.
+- Scores stay `65 / 36 / 20 / 10-12 / 6-8 / 25`.
+- Phase 0 control work: DA31-001…005 accepted in
+  `docs/evidence/da31/da31-phase0-status-v1.json`.
+- Next program: DA31-006…008 (clean subject, 120-row ledger, re-gate), then
+  DA31-009…040.
+
+## Historical machine-selector view after DA30-120
+
 - Selector: [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) /
   `docs/evidence/authority-selector-v1.json`.
 - Machine watermark: **DA30-120** (`closedThrough`), `nextQueue` empty.

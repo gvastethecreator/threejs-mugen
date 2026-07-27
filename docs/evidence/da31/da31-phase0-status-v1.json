@@ -1,0 +1,57 @@
+{
+  "schema": "Da31Phase0Status/v1",
+  "generatedAt": "2026-07-27T17:00:00.000Z",
+  "tasks": {
+    "DA31-001": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/AUTHORITY_SELECTOR.md",
+        "docs/PROGRESS_TRACKER.md",
+        "docs/NEXT_BUILD_ROADMAP.md",
+        "docs/WORKPLAN.md",
+        "docs/BUILD_EXECUTION_BACKLOG.md",
+        "docs/research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md",
+        "docs/DA31_EVIDENCE_ADOPTION_ROADMAP.md"
+      ],
+      "note": "audit hold published; recordedThrough vs adjudicatedThrough named"
+    },
+    "DA31-002": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/evidence/da31/da30-task-contracts-v1.json",
+        "docs/evidence/da31/fixtures/da30-025-narrowed-contract.json",
+        "scripts/build_da30_task_contracts.cjs",
+        "src/mugen/da31/TaskContractRegistry.ts"
+      ],
+      "note": "120 frozen contracts; narrowed 025 fails equivalence"
+    },
+    "DA31-003": {
+      "status": "accepted",
+      "artifacts": [
+        "docs/adr/0071-da31-dual-watermark-control.md",
+        "src/mugen/da31/DualWatermarkControl.ts",
+        "docs/evidence/control-source-v1.json"
+      ],
+      "note": "dual watermark model; closedThrough aliases recordedThrough"
+    },
+    "DA31-004": {
+      "status": "accepted",
+      "artifacts": [
+        "src/mugen/da31/ClauseVerdict.ts",
+        "src/tests/Da31Phase0Control.test.ts"
+      ],
+      "note": "clause evaluation with negative promotion fixtures"
+    },
+    "DA31-005": {
+      "status": "accepted",
+      "artifacts": [
+        "src/mugen/da31/EvidencePromotion.ts",
+        "scripts/promote_evidence_artifact.cjs"
+      ],
+      "note": "temp evidence path + explicit promotion receipt; dirty=provisional"
+    }
+  },
+  "next": ["DA31-006", "DA31-007", "DA31-008"],
+  "scoresHeld": true,
+  "claimCeiling": "phase 0 control/evidence authority only; no product or score claims"
+}

@@ -1,6 +1,27 @@
 # Authority Selector (current)
 
-## 2026-07-27 clause repair — DA30-021 / 024 / 025
+## 2026-07-27 post-DA30-120 audit hold (DA31-001)
+
+Human authority: [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
+and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
+
+| Cursor | Value | Claim ceiling |
+| --- | --- | --- |
+| Audit HEAD | `67481fbc` | docs-only audit; no whole-HEAD formal at tip |
+| `recordedThrough` | **DA30-120** | machine series rows exist |
+| `adjudicatedThrough` | **DA30-020** | last safe consecutive written-clause ceiling pending DA31-007 |
+| `reviewedThrough` | **DA30-120** | audit sampling only |
+| formal/global | `ee23122f` | required six-command matrix only |
+| focal | T406 `07ad9227` | named juggle slice |
+| visual/product parent | T342 `1085badb` | historical broad matrix |
+| source | 05b / 4aa | family-scoped |
+| Scores | held 65/36/20/10-12/6-8/25 | no movement |
+
+**Next:** **DA31-002** freeze original DA30 task contracts.  
+Machine `closedThrough=DA30-120` remains the generated record. Do not treat it
+as full written-clause adjudication.
+
+## Historical 2026-07-27 clause repair — DA30-021 / 024 / 025
 
 Prior post-025 audit disputed written clauses for formal, Play, and
 Studio/Inspect gates. Repair evidence is on formal head `ee23122f`:
@@ -21,7 +42,7 @@ Last updated: 2026-07-27
 Checked control source: [`docs/evidence/control-source-v1.json`](evidence/control-source-v1.json)  
 Projections: [`authority-selector-v1.json`](evidence/authority-selector-v1.json), [`roadmap-cursor-v1.json`](evidence/roadmap-cursor-v1.json)  
 Schema: `mugen-web-sandbox/control-source/v1` → authority-selector + roadmap-cursor  
-`closedThrough`: **DA30-120** · next open consecutive **none** (DA30 recovery series complete at machine watermark)
+`closedThrough` / machine record: **DA30-120** · human adjudicated ceiling: **DA30-020**
 
 ## Audit hold (DA29)
 

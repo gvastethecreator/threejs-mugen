@@ -1,6 +1,6 @@
 {
   "schema": "mugen-web-sandbox/control-source/v1",
-  "generatedAt": "2026-07-27T14:33:02.629Z",
+  "generatedAt": "2026-07-27T17:47:25.152Z",
   "acceptedLadder": "DA28-30",
   "seriesHold": {
     "series": "DA29",
@@ -22,7 +22,7 @@
     "head": {
       "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
       "artifact": "git HEAD at DA30-021 formal clause repair",
-      "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
+      "claimLimit": "audit HEAD may lead formal; recordedThrough=DA30-120 adjudicatedThrough=DA30-020"
     },
     "formal": {
       "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
@@ -72,5 +72,13 @@
       "formal/global tip rewrite without measured gate at claimed SHA",
       "using disagreeing selector/cursor projections"
     ]
+  },
+  "recordedThrough": "DA30-120",
+  "adjudicatedThrough": "DA30-020",
+  "reviewedThrough": "DA30-120",
+  "da31": {
+    "program": "DA31_EVIDENCE_ADOPTION_ROADMAP",
+    "nextHuman": "DA31-002",
+    "note": "closedThrough aliases recordedThrough; adjudicatedThrough is written-clause ceiling"
   }
 }

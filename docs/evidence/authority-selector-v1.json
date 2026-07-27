@@ -1,6 +1,6 @@
 {
   "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
-  "generatedAt": "2026-07-27T14:33:02.725Z",
+  "generatedAt": "2026-07-27T17:47:53.803Z",
   "closedThrough": "DA30-120",
   "nextQueue": [],
   "scores": {
@@ -68,15 +68,8 @@
     ]
   },
   "canonicalization": "stable-json/v0",
-  "seriesHold": {
-    "series": "DA29",
-    "status": "unadjudicated-candidate",
-    "watermarkAccepted": false,
-    "note": "DA29-001…200 artifacts are candidate only until DA30 semantic revalidation"
-  },
-  "controlSourceRef": "docs/evidence/control-source-v1.json",
   "digest": {
     "algorithm": "sha-256",
-    "value": "8cd2df641f155c0b76e89856a74b908a9de3d53795b1cb7708b2748ae52b8f25"
+    "value": "4fd8a18643988e9db9db26ca4b9b3592a88392de0b3865d83d664b5ce2550fc4"
   }
 }

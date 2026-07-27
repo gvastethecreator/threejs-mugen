@@ -2,7 +2,20 @@
 
 Last updated: 2026-07-27
 
-## Current audit route — post-DA30-025
+## Current audit route — post-DA30-120
+
+Start with the
+[post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
+and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md). Machine control records
+DA30-120; the safe proposed human cursor is DA30-020 pending the clause ledger.
+Audit HEAD is `67481fbc`; formal/global is `ee23122f`; focal is T406; broad
+visual/product is T342; source is 05b/4aa; backlog is Entry 615. Scores stay
+`65 / 36 / 20 / 10-12 / 6-8 / 25`.
+
+Generated selectors describe the machine record. Human implementation routing
+starts with DA31-002…008, then follows the five phases in the DA31 roadmap.
+
+## Historical audit route — post-DA30-025
 
 Start with [AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) and the
 [post-DA30-025 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md).
@@ -20,11 +33,14 @@ This is the fast map for agents and humans who need to know where to look, what 
 
 ## Current authority selector
 
-**Audit-hold source:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) ·
-[completion audit](research/2026-07-27-da29-completion-audit-and-da30-recovery.md)
+**Human authority:** [AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) ·
+[post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md) ·
+[DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md)
 
-- accepted ladder: **DA28-30**; DA29 is unadjudicated
-- audit HEAD: **`fd7a9b9a`**; current formal/global and visual state unverified
+- `recordedThrough`: **DA30-120** (machine)
+- `adjudicatedThrough`: **DA30-020** (written-clause ceiling)
+- formal/global: **`ee23122f`**; audit HEAD: **`67481fbc`**
+- DA29 remains unadjudicated; scores held
 - historical formal/global: **`a6e91520`** with a summary-only DA29-002 record
 - focal: **T406** `07ad9227`
 - visual/product: **T342** `1085badb` (DA28 browser routes are bounded children)

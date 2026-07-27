@@ -1,0 +1,14 @@
+{
+  "id": "DA30-025",
+  "kind": "G",
+  "scope": "Studio shell load only",
+  "acceptance": "Shell and mode load. Allows shell load only.",
+  "dependencies": [],
+  "expectedFailure": "none",
+  "claimCeiling": "Allows shell load only",
+  "source": "fixture-narrowed",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "6d746688ef9be7e54bc3358afcf68a7748cc008f1cdac0d494a1624b46ce0f35"
+  }
+}

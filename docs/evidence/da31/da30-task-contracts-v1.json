@@ -1,0 +1,2086 @@
+{
+  "schema": "Da30TaskContracts/v1",
+  "generatedAt": "2026-07-27T17:47:14.667Z",
+  "sourceRoadmap": "docs/DA30_RECOVERY_ROADMAP.md",
+  "sourceDigest": {
+    "algorithm": "sha-256",
+    "value": "e7c0e089bee6335dc75d07eeda9a7e021866c4c2bcb4c6d33aa2589fc0e12036"
+  },
+  "count": 120,
+  "contracts": [
+    {
+      "id": "DA30-001",
+      "kind": "A",
+      "scope": "Publish the DA29 audit hold. Depends on the 2026-07-27 audit. Systems: selector doc, execution board, tracker, workplan, navigation, issues.",
+      "acceptance": "Every current view marks DA29-200 unaccepted, names the preserved pins and held scores, and points to DA30. Proof: reference audit with zero stale “queue empty/DA29 complete” current claims. Allows control hold only.",
+      "dependencies": [
+        "the 2026-07-27 audit"
+      ],
+      "expectedFailure": "Proof: reference audit with zero stale “queue empty/DA29 complete” current claims.",
+      "claimCeiling": "Allows control hold only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "7d73015285db1c1841fda0270c9c60bd681d4624b5e3f835cc56264139d60f27"
+      }
+    },
+    {
+      "id": "DA30-002",
+      "kind": "R",
+      "scope": "Build a 200-row DA29 verdict ledger. Depends on DA30-001.",
+      "acceptance": "Each ID records acceptance clauses, artifact, producer, revision, validator class, live consumer, verdict, preserved fact, missing proof, and carryover ID. Proof: schema check plus manual samples from all 20 waves. Allows audit inventory only.",
+      "dependencies": [
+        "DA30-001"
+      ],
+      "expectedFailure": "Proof: schema check plus manual samples from all 20 waves.",
+      "claimCeiling": "Allows audit inventory only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "8da6b0d5732a33ff4d7aa89ebade32ce8a512ffa82df99fe37fa0d7e19a93f24"
+      }
+    },
+    {
+      "id": "DA30-003",
+      "kind": "A",
+      "scope": "Choose one source model for current queue, scores, and independent cursors. Depends on DA30-001.",
+      "acceptance": "ADR compares one checked input, event ledger plus projection, and paired generators; chooses ownership, edit flow, failure rule, history, and migration. Proof: decision with alternatives and rollback. Allows control design only.",
+      "dependencies": [
+        "DA30-001"
+      ],
+      "expectedFailure": "failure rule, history, and migration.",
+      "claimCeiling": "Allows control design only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "d84783afb22bcfbd0add199b06f7bb64a7f7b24be946283c26ac031d8091e50c"
+      }
+    },
+    {
+      "id": "DA30-004",
+      "kind": "I",
+      "scope": "Generate selector and roadmap cursor from the chosen source. Depends on DA30-003.",
+      "acceptance": "A fixture pin or queue change updates both outputs; current files agree byte-for-byte on shared fields; stale DA27 constants fail. Proof: focused positive and negative tests plus generated diff. Allows synchronized controls only.",
+      "dependencies": [
+        "DA30-003"
+      ],
+      "expectedFailure": "fail.",
+      "claimCeiling": "Allows synchronized controls only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "86f928aaca4e8cfb370a1f015017e007d08e921c77fda31b1e816d01250a5376"
+      }
+    },
+    {
+      "id": "DA30-005",
+      "kind": "G",
+      "scope": "Audit every current control reference. Depends on DA30-004.",
+      "acceptance": "Scanner covers docs, issues, evidence indexes, backlog heads, and generated files; marked history is exempt; stale queue, score, formal, visual, product, and source facts fail. Proof: six negative fixtures. Allows reference consistency only.",
+      "dependencies": [
+        "DA30-004"
+      ],
+      "expectedFailure": "fail.",
+      "claimCeiling": "Allows reference consistency only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "a4022aab5fc08404b3849e5bc42564df561777a03bf12f055ed3af634ce2265a"
+      }
+    },
+    {
+      "id": "DA30-006",
+      "kind": "A",
+      "scope": "Define closeout state transitions. Depends on DA30-002 and 003.",
+      "acceptance": "Schema defines proposed, active, blocked, partial, candidate, accepted, superseded, and rejected states; only accepted advances a watermark. Proof: transition table and invalid transition cases. Allows status semantics only.",
+      "dependencies": [
+        "DA30-002",
+        "003"
+      ],
+      "expectedFailure": "Proof: transition table and invalid transition cases.",
+      "claimCeiling": "Allows status semantics only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "03e5eb828579693ff2340ffda5bf42365f9015c1350e098110d865ff3c49d984"
+      }
+    },
+    {
+      "id": "DA30-007",
+      "kind": "I",
+      "scope": "Add revision/freshness rules to closeouts. Depends on DA30-006.",
+      "acceptance": "Closeout records implementation SHA, evidence SHA, producer SHA, input digests, dirty exclusions, and valid inheritance; mismatched or post-gate product changes mark stale. Proof: current CSS-after-gate fixture fails. Allows freshness evaluation only.",
+      "dependencies": [
+        "DA30-006"
+      ],
+      "expectedFailure": "Proof: current CSS-after-gate fixture fails.",
+      "claimCeiling": "Allows freshness evaluation only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "74688100493d9fd32975c4de7bbe8cf0af3f540661b9112e228607c9173def22"
+      }
+    },
+    {
+      "id": "DA30-008",
+      "kind": "G",
+      "scope": "Reconcile DA29-002/003/004/005/007 as historical evidence. Depends on DA30-002 and 007.",
+      "acceptance": "Report preserves exact proven facts, rejects missing counts/focus/commit/current-state claims, and maps each missing clause to DA30. Proof: signed verdict rows and artifact digests. Allows historical bounded facts only.",
+      "dependencies": [
+        "DA30-002",
+        "007"
+      ],
+      "expectedFailure": "Proof: signed verdict rows and artifact digests.",
+      "claimCeiling": "Allows historical bounded facts only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "9a6e19490f7998a26c5a82c34cca18533d5c1453c7cdac1b566636b463280cf2"
+      }
+    },
+    {
+      "id": "DA30-009",
+      "kind": "A",
+      "scope": "Compact current roadmap surfaces. Depends on DA30-004 and 006.",
+      "acceptance": "Ownership map names one current selector, one execution view, append-only backlog, master plans, generated summaries, and archive policy. Proof: no current fact requires edits in more than its named owner and projections. Allows doc design only.",
+      "dependencies": [
+        "DA30-004",
+        "006"
+      ],
+      "expectedFailure": "Proof: no current fact requires edits in more than its named owner and projections.",
+      "claimCeiling": "Allows doc design only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "000eec432565806c723388e23136df790cadeb8ed5dbde160fe2a1827e83a12a"
+      }
+    },
+    {
+      "id": "DA30-010",
+      "kind": "G",
+      "scope": "Gate the control recovery. Depends on DA30-002…009.",
+      "acceptance": "One report proves shared controls agree, all 200 DA29 verdict rows exist, current docs link DA30, old claims are historical, and scores stay held. Proof: command log, counts, diffs, and reviewer checklist at one SHA. Allows DA30 queue adoption only.",
+      "dependencies": [
+        "DA30-002…009"
+      ],
+      "expectedFailure": "Proof: command log, counts, diffs, and reviewer checklist at one SHA.",
+      "claimCeiling": "Allows DA30 queue adoption only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "21689b5b17e73b116c358d14feb434f40d9a2b20d143cdaaecee657df1f92428"
+      }
+    },
+    {
+      "id": "DA30-011",
+      "kind": "A",
+      "scope": "Define `TaskAcceptanceManifest/v1`. Depends on DA30-006.",
+      "acceptance": "Each clause has ID, evidence kind, producer, assertion, expected failure, revision policy, environment, and claim. Alternatives include code-owned and doc-owned manifests. Proof: ADR plus JSON schema. Allows acceptance design only.",
+      "dependencies": [
+        "DA30-006"
+      ],
+      "expectedFailure": "failure, revision policy, environment, and claim.",
+      "claimCeiling": "Allows acceptance design only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "6bfafd0e120998f1eddc488a96050b4951f01741dcf34c902d8ba9129de4164b"
+      }
+    },
+    {
+      "id": "DA30-012",
+      "kind": "I",
+      "scope": "Implement manifest validation. Depends on DA30-011.",
+      "acceptance": "Validator rejects missing clauses, duplicate IDs, unknown evidence types, empty assertions, absent negative cases, and claim widening. Proof: table tests and malformed fixtures. Allows manifest shape and invariant claims only.",
+      "dependencies": [
+        "DA30-011"
+      ],
+      "expectedFailure": "negative cases, and claim widening.",
+      "claimCeiling": "Allows manifest shape and invariant claims only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "66cdc9cc87cc83c93f9745c0d985d9da0ff23c25cf82dfe4e4c2ef13a9463d45"
+      }
+    },
+    {
+      "id": "DA30-013",
+      "kind": "A",
+      "scope": "Define observation, gate, adjudication, and claim artifacts. Depends on DA30-011.",
+      "acceptance": "Contracts forbid an observation from declaring its own acceptance; gate outputs cite observations; adjudication cites gates; claims cite adjudication. Proof: type/schema map and invalid-edge examples. Allows evidence architecture only.",
+      "dependencies": [
+        "DA30-011"
+      ],
+      "expectedFailure": "Proof: type/schema map and invalid-edge examples.",
+      "claimCeiling": "Allows evidence architecture only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "0016102dd700a918393fac60a63cf18afb64eb40183e7077302966c229b201d2"
+      }
+    },
+    {
+      "id": "DA30-014",
+      "kind": "I",
+      "scope": "Build evidence lineage validation. Depends on DA30-013 and DA30-007.",
+      "acceptance": "Every edge verifies artifact digest, producer version, subject revision, environment, target clause, and freshness; cycles fail. Proof: valid DAG plus tamper, stale, missing, and circular fixtures. Allows lineage integrity only.",
+      "dependencies": [
+        "DA30-013",
+        "DA30-007"
+      ],
+      "expectedFailure": "fail.",
+      "claimCeiling": "Allows lineage integrity only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "78d072daa11a9bcbd30897d99204cc55483a4615ba637276dd8caa4a3d1f5e54"
+      }
+    },
+    {
+      "id": "DA30-015",
+      "kind": "A",
+      "scope": "Define reviewer identity and independence. Depends on DA30-013.",
+      "acceptance": "Policy records author, runner, reviewer, tool/agent provenance, conflict, review time, and changed facts; same-author review stays labeled self-review. Proof: accepted and rejected examples. Allows review provenance only.",
+      "dependencies": [
+        "DA30-013"
+      ],
+      "expectedFailure": "Proof: accepted and rejected examples.",
+      "claimCeiling": "Allows review provenance only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "c006f4de0c979c18c960a916db840cf636619b2c3803b4e7be9c58073f897a64"
+      }
+    },
+    {
+      "id": "DA30-016",
+      "kind": "I",
+      "scope": "Capture raw command gates. Depends on DA30-014.",
+      "acceptance": "Runner records command, cwd, env allowlist, tool versions, start/end/duration, stdout/stderr digest, exit, warnings, counts, and SHA; reconstruction from summaries fails. Proof: passing and failing command fixtures. Allows recorded-command facts only.",
+      "dependencies": [
+        "DA30-014"
+      ],
+      "expectedFailure": "fails.",
+      "claimCeiling": "Allows recorded-command facts only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "b73ce3b01e0f484fe16c18da03cb0666fb76ded8bbdb8ec1be8aa5c0ec52b565"
+      }
+    },
+    {
+      "id": "DA30-017",
+      "kind": "I",
+      "scope": "Generate browser evidence facts. Depends on DA30-014.",
+      "acceptance": "Runner records route, query/state, browser/version, OS, viewport, DPR, input, commit, screenshot/video/trace digest, console/page errors, focus checks, and result. Proof: one green and one forced-error route. Allows named route facts only.",
+      "dependencies": [
+        "DA30-014"
+      ],
+      "expectedFailure": "Proof: one green and one forced-error route.",
+      "claimCeiling": "Allows named route facts only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "0479af0bc77a7cde0f30ae59a64c7482548f623e8ea3b1bdd1c7b441f0f43576"
+      }
+    },
+    {
+      "id": "DA30-018",
+      "kind": "I",
+      "scope": "Require failure-path evidence. Depends on DA30-012…017.",
+      "acceptance": "Each I/G manifest declares at least one rejection, malformed, stale, missing, permission, or recovery case where relevant; reused success evidence cannot satisfy it. Proof: validator negative fixtures. Allows failure-evidence coverage only.",
+      "dependencies": [
+        "DA30-012…017"
+      ],
+      "expectedFailure": "Proof: validator negative fixtures.",
+      "claimCeiling": "Allows failure-evidence coverage only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "672276496aa00f1cfb17c7aebbf5e50fbaf6abfb77374155beac672db3a66610"
+      }
+    },
+    {
+      "id": "DA30-019",
+      "kind": "I",
+      "scope": "Compile claims from passed clauses. Depends on DA30-012 and 014.",
+      "acceptance": "Allowed claims are an explicit intersection of passed clauses and task ceiling; absent or stale clauses block the claim; scores and release need their own adjudication. Proof: widening and stale tests. Allows machine-derived claim ceilings only.",
+      "dependencies": [
+        "DA30-012",
+        "014"
+      ],
+      "expectedFailure": "Proof: widening and stale tests.",
+      "claimCeiling": "Allows machine-derived claim ceilings only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "c756a610f9a409edf1d62f7338f8072f3603ce7e952a5aba94fa38c6220bbe99"
+      }
+    },
+    {
+      "id": "DA30-020",
+      "kind": "G",
+      "scope": "Pilot semantic revalidation on DA29-012, 013, 041, and 072. Depends on DA30-012…019.",
+      "acceptance": "Four manifests run against existing artifacts; each clause receives pass/fail/unknown; missing proof creates DA30 carryover without changing scores. Proof: clause reports and manual review. Allows only passed clause claims.",
+      "dependencies": [
+        "DA30-012…019"
+      ],
+      "expectedFailure": "fail/unknown; missing proof creates DA30 carryover without changing scores.",
+      "claimCeiling": "Allows only passed clause claims",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "58623de76cb133b756e02889be138fe29068ffe170df093a7c6ca19672f1dce9"
+      }
+    },
+    {
+      "id": "DA30-021",
+      "kind": "G",
+      "scope": "Run a current raw formal/global gate. Depends on DA30-010 and 016.",
+      "acceptance": "Typecheck, full Vitest, aggregate traces, build, both boundary checks, and required QA scripts run at one clean SHA with exact counts, versions, durations, warnings, exits, and raw-log digests. Allows formal/global at that SHA only.",
+      "dependencies": [
+        "DA30-010",
+        "016"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows formal/global at that SHA only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "4773142acf42ba5d47faffdc98de33e6dbd87a57c95f259bc85f064131933c3b"
+      }
+    },
+    {
+      "id": "DA30-022",
+      "kind": "A",
+      "scope": "Set warning and flaky-test policy. Depends on DA30-021.",
+      "acceptance": "Inventory classifies compiler, test, build, browser, WebGL, accessibility, and deprecation warnings; owners, fatal lanes, quarantine, retry limits, and expiry are set. Proof: decision matrix. Allows policy only.",
+      "dependencies": [
+        "DA30-021"
+      ],
+      "expectedFailure": "Proof: decision matrix.",
+      "claimCeiling": "Allows policy only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "321c113cc392160adb67c0cd0769bdb9b0352fee2da63587012a1b5c7fe2f9d0"
+      }
+    },
+    {
+      "id": "DA30-023",
+      "kind": "R",
+      "scope": "Inventory real product routes and states. Depends on DA30-001 and linked issues.",
+      "acceptance": "Machine-readable manifest lists Play, Inspect, Studio, import, save/write, select, error/recovery, desktop/mobile, and user role with exact setup and expected state. Proof: owners and omissions. Allows route inventory only.",
+      "dependencies": [
+        "DA30-001",
+        "linked issues"
+      ],
+      "expectedFailure": "Proof: owners and omissions.",
+      "claimCeiling": "Allows route inventory only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "c0bba39b582bade7c681bb6d985dcd0de912501721e69a0b284fab879599523b"
+      }
+    },
+    {
+      "id": "DA30-024",
+      "kind": "G",
+      "scope": "Gate the core Play route. Depends on DA30-017, 021, and 023.",
+      "acceptance": "Browser journey loads exact packages/stage, starts combat, executes input/contact/round reset, checks canvas/HUD/focus, and records zero unexpected console/page errors at one SHA. Proof: trace, screenshots, facts. Allows one Play route only.",
+      "dependencies": [
+        "DA30-017",
+        "021",
+        "023"
+      ],
+      "expectedFailure": "Proof: trace, screenshots, facts.",
+      "claimCeiling": "Allows one Play route only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "f3fc2c4275c48af013ba3b4c6fc309adb8a09c985ce6a8c64fac4f78da50ca4f"
+      }
+    },
+    {
+      "id": "DA30-025",
+      "kind": "G",
+      "scope": "Gate Studio and Inspect routes. Depends on DA30-017, 021, and 023.",
+      "acceptance": "Browser journeys open a project, inspect source/capability facts, preview, attempt valid/invalid save, retain work, and return safely. Proof: desktop/mobile captures, focus log, state facts, errors. Allows named routes only.",
+      "dependencies": [
+        "DA30-017",
+        "021",
+        "023"
+      ],
+      "expectedFailure": "Proof: desktop/mobile captures, focus log, state facts, errors.",
+      "claimCeiling": "Allows named routes only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "a259607ca94e1741b22334fcf2014c0d022d61fa484bbf45ee2994fffcafed09"
+      }
+    },
+    {
+      "id": "DA30-026",
+      "kind": "G",
+      "scope": "Gate keyboard, gamepad, focus, and mobile input. Depends on DA30-024/025 and input policy work.",
+      "acceptance": "Matrix covers tab order, focus loss, held key, gamepad disconnect/reconnect, two seats, touch/mobile controls, reduced motion, and recovery. Proof: event log and visible status. Allows tested inputs/devices only.",
+      "dependencies": [
+        "DA30-024/025",
+        "input policy work"
+      ],
+      "expectedFailure": "Proof: event log and visible status.",
+      "claimCeiling": "Allows tested inputs/devices only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "991d9d8b9621ab45cd9c9c07fc0e03cbdfb6b17b5910016056000d0476b22883"
+      }
+    },
+    {
+      "id": "DA30-027",
+      "kind": "G",
+      "scope": "Build a frame-gap harness. Depends on DA30-024 and 022.",
+      "acceptance": "Worst owned route records p50/p95/p99/max frame gaps, FPS, long tasks, seed, warmup, sample count, browser, CPU/GPU, draw calls, and memory; thresholds and breach owner are explicit. Allows measured device/route facts only.",
+      "dependencies": [
+        "DA30-024",
+        "022"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows measured device/route facts only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "6a9c366e6cbcd151342514aff524d873c061114ad0febaaf05ea5d526724f942"
+      }
+    },
+    {
+      "id": "DA30-028",
+      "kind": "G",
+      "scope": "Re-run renderer resource baselines. Depends on DA30-024/025 and 027.",
+      "acceptance": "Five distinct route setups record defined-frame calls/primitives/programs/geometries/textures, `info.autoReset` policy, before/after teardown, and repeated-cycle deltas. Proof: route URLs/state differ and teardown calls dispose. Allows route resource facts only.",
+      "dependencies": [
+        "DA30-024/025",
+        "027"
+      ],
+      "expectedFailure": "Proof: route URLs/state differ and teardown calls dispose.",
+      "claimCeiling": "Allows route resource facts only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "b1049209ed2530d55ff4e5754b5789e746208bcadb3f514bd9e67677a19151e9"
+      }
+    },
+    {
+      "id": "DA30-029",
+      "kind": "G",
+      "scope": "Gate renderer lifecycle failures. Depends on DA30-028.",
+      "acceptance": "Repeated route swaps, resize, DPR change, hidden tab, context loss/restore, project reopen, and failed asset load keep bounded resources and recover visibly. Proof: browser facts, deltas, heap/GPU proxies, errors. Allows tested lifecycle claims only.",
+      "dependencies": [
+        "DA30-028"
+      ],
+      "expectedFailure": "failed asset load keep bounded resources and recover visibly.",
+      "claimCeiling": "Allows tested lifecycle claims only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "1756ad9a6f3f96edaa26080574818a8fd453e096b94d9683f3f3d302181ae26f"
+      }
+    },
+    {
+      "id": "DA30-030",
+      "kind": "G",
+      "scope": "Run local security and trust boundary baseline. Depends on DA30-021 and 023.",
+      "acceptance": "Audit covers archive traversal, URLs, blobs, file handles, storage, CSP needs, unsafe eval, worker messages, export paths, secrets, and dependency scripts. Proof: threat list and negative probes. Allows local boundary findings only.",
+      "dependencies": [
+        "DA30-021",
+        "023"
+      ],
+      "expectedFailure": "Proof: threat list and negative probes.",
+      "claimCeiling": "Allows local boundary findings only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "d98e1b9d99422ee0ea03ebc8faccae072a8bbfc870b4f5093038ac952a88b0df"
+      }
+    },
+    {
+      "id": "DA30-031",
+      "kind": "A",
+      "scope": "Reconcile input authority. Depends on DA30-023 and existing MatchInputPolicy contracts.",
+      "acceptance": "ADR names seat ownership, UI/game focus, keyboard/gamepad/touch merge, edge/hold order, demo/replay priority, disconnect, and deterministic sample point. Proof: conflict table. Allows input design only.",
+      "dependencies": [
+        "DA30-023",
+        "existing MatchInputPolicy contracts"
+      ],
+      "expectedFailure": "Proof: conflict table.",
+      "claimCeiling": "Allows input design only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "404ad7e9e998789d77bbc1b2d75804c646ba8d1a37b6196d6ab748cebf31347d"
+      }
+    },
+    {
+      "id": "DA30-032",
+      "kind": "I",
+      "scope": "Close gamepad lifecycle gaps. Depends on DA30-031.",
+      "acceptance": "Tests and browser route cover mid-hold unplug, stale release, changed index reconnect, non-standard mapping failure, two seats, keyboard fallback, and visible status. Allows listed lifecycle routes only.",
+      "dependencies": [
+        "DA30-031"
+      ],
+      "expectedFailure": "failure, two seats, keyboard fallback, and visible status.",
+      "claimCeiling": "Allows listed lifecycle routes only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "baa377d906302d8d1470db5e3a31eab11c6c30ee3719852350f65e85b228c6d5"
+      }
+    },
+    {
+      "id": "DA30-033",
+      "kind": "I",
+      "scope": "Persist input/SOCD profiles by seat. Depends on DA30-031/032.",
+      "acceptance": "Reopen, migration, reset, seat swap, corrupt profile, and replay metadata prove stable ownership and fail-safe defaults. Proof: storage and match snapshots. Allows versioned profile behavior only.",
+      "dependencies": [
+        "DA30-031/032"
+      ],
+      "expectedFailure": "fail-safe defaults.",
+      "claimCeiling": "Allows versioned profile behavior only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "1689c57a00c9ff290703a6cbb93e80ab14a13fcc4a2ade90e700a47e3fdc7955"
+      }
+    },
+    {
+      "id": "DA30-034",
+      "kind": "I",
+      "scope": "Produce a canonical per-frame input log. Depends on DA30-031 and evidence envelope.",
+      "acceptance": "Log stores sampled state, edges, seat map, policy revision, device class, focus, tick, and checksum; same seed/route yields identical canonical bytes. Proof: repeat and mutation tests. Allows input-log determinism only.",
+      "dependencies": [
+        "DA30-031",
+        "evidence envelope"
+      ],
+      "expectedFailure": "Proof: repeat and mutation tests.",
+      "claimCeiling": "Allows input-log determinism only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "d9784db1f507e61869c3b1310439e983e5cac858dbebba597def1f0c52d89ee4"
+      }
+    },
+    {
+      "id": "DA30-035",
+      "kind": "A",
+      "scope": "Assign deterministic RNG streams. Depends on DA30-034.",
+      "acceptance": "ADR separates gameplay, AI, visual, audio, and asset streams with seed derivation, snapshot/reset, and forbidden cross-use. Proof: owner map and planned tests. Allows RNG ownership design only.",
+      "dependencies": [
+        "DA30-034"
+      ],
+      "expectedFailure": "Proof: owner map and planned tests.",
+      "claimCeiling": "Allows RNG ownership design only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "18238db11c0a8da8d04bcf83dd0904b86bebeea4b99f9b26fb9afc363a75b81c"
+      }
+    },
+    {
+      "id": "DA30-036",
+      "kind": "R",
+      "scope": "Audit clock domains against pinned sources. Depends on DA30-020 and source epoch.",
+      "acceptance": "Map covers normal time, pause, superpause, hitpause, input buffers, animation, effects, audio, round, UI, and replay per profile; open order questions stay explicit. Allows timing research only.",
+      "dependencies": [
+        "DA30-020",
+        "source epoch"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows timing research only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "431bdef8fa0fa88fcdf7ba8d83032d0dd87bcb438a2012abad5365fa28820be2"
+      }
+    },
+    {
+      "id": "DA30-037",
+      "kind": "A",
+      "scope": "Define canonical match-state serialization. Depends on DA30-035/036.",
+      "acceptance": "Versioned schema lists every deterministic owner, exclusion, ordering, float policy, unknown-version behavior, migration, and SHA-256 bytes. Proof: ownership census. Allows snapshot design only.",
+      "dependencies": [
+        "DA30-035/036"
+      ],
+      "expectedFailure": "Proof: ownership census.",
+      "claimCeiling": "Allows snapshot design only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "94c01fdc3a08de1ebc376f378b0a3c518814de679ce485ed25b75e866f4fd291"
+      }
+    },
+    {
+      "id": "DA30-038",
+      "kind": "I",
+      "scope": "Round-trip and restore match state. Depends on DA30-037.",
+      "acceptance": "Native route snapshots/restores roots, helpers, projectiles, effects, inputs, clocks, RNG, targets, team and round state; unknown/corrupt data fails atomically. Proof: equality and failure tests. Allows named snapshot route only.",
+      "dependencies": [
+        "DA30-037"
+      ],
+      "expectedFailure": "fails atomically.",
+      "claimCeiling": "Allows named snapshot route only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "63897c9f2c0e82b780e6c3c0f7da790d0ef0fc83b9d33f50bbf68e0de9ab4beb"
+      }
+    },
+    {
+      "id": "DA30-039",
+      "kind": "G",
+      "scope": "Record/replay one full round. Depends on DA30-034 and 038.",
+      "acceptance": "Periodic and final checksums, controller telemetry, contacts, winner, resources, and frame count match; mutation reports first divergent owner/frame. Proof: required trace and deterministic rerun. Allows one replay route only.",
+      "dependencies": [
+        "DA30-034",
+        "038"
+      ],
+      "expectedFailure": "Proof: required trace and deterministic rerun.",
+      "claimCeiling": "Allows one replay route only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "502a5060e68bb3d8b5a990e761eb7582b14e4aa77e8cd780a46b0747e4c5976a"
+      }
+    },
+    {
+      "id": "DA30-040",
+      "kind": "R",
+      "scope": "Run an offline rewind/resim feasibility spike. Depends on DA30-039.",
+      "acceptance": "Measure snapshot size, restore time, resim time, memory, divergence, unsupported owners, and frame budget across three rewind depths. Proof: report and raw samples. Allows feasibility data; blocks rollback/netplay readiness.",
+      "dependencies": [
+        "DA30-039"
+      ],
+      "expectedFailure": "Proof: report and raw samples.",
+      "claimCeiling": "Allows feasibility data; blocks rollback/netplay readiness",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "f755d5299527fd54bce2d35d62c0aba310617b8a1cb0a84d5aaa9cbd0e55a8fb"
+      }
+    },
+    {
+      "id": "DA30-041",
+      "kind": "G",
+      "scope": "Revalidate Nova contact semantically. Depends on DA30-020, 021, and 039.",
+      "acceptance": "Imported command reaches authored state and collision; HitDef admission, contact, damage, hitpause, target state, telemetry, final checksum, miss, guard, and malformed routes are asserted. Allows this package route only.",
+      "dependencies": [
+        "DA30-020",
+        "021",
+        "039"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows this package route only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "69dc261110d3f3ef26a70f0ccc2f0cdbf9c8fc06f5aa0fad5870478c17b427a8"
+      }
+    },
+    {
+      "id": "DA30-042",
+      "kind": "G",
+      "scope": "Revalidate reciprocal Mira contact/guard. Depends on DA30-041.",
+      "acceptance": "Distinct authored CMD/CNS/AIR path proves Mira attack, Nova hit/guard, damage/chip/power/pause, failure, replay, and browser correlation. Allows reciprocal route only.",
+      "dependencies": [
+        "DA30-041"
+      ],
+      "expectedFailure": "failure, replay, and browser correlation.",
+      "claimCeiling": "Allows reciprocal route only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "699d666fa4afacee9d8ef891a55a6eff074643bcb05b1fb4b445e247d28a7fac"
+      }
+    },
+    {
+      "id": "DA30-043",
+      "kind": "G",
+      "scope": "Validate the independent Rook package. Depends on DA30-041 and provenance gate.",
+      "acceptance": "Permission, distinct syntax, asset digests, import, command, animation, collision, contact, malformed variants, reset, and replay pass. Proof compares syntax family with Nova/Mira. Allows one third native family only.",
+      "dependencies": [
+        "DA30-041",
+        "provenance gate"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows one third native family only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "01bb68eda26c2e62d51fabf264d54d20834566296c7a45574de886c383cf6d44"
+      }
+    },
+    {
+      "id": "DA30-044",
+      "kind": "G",
+      "scope": "Gate guard, priority, trade, fall, and recovery matrix. Depends on DA30-041…043.",
+      "acceptance": "Named cases assert high/low/air guard, chip, priority/type, simultaneous trade, miss, fall, bounce, recover/no-recover, landing, pause, and deterministic order. Allows listed cases only.",
+      "dependencies": [
+        "DA30-041…043"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows listed cases only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "fbc3823be4a2d044d9988a0efe524b1fba56f5f877d75e5f3abe8453549cfa88"
+      }
+    },
+    {
+      "id": "DA30-045",
+      "kind": "I",
+      "scope": "Execute a real nested Helper journey. Depends on DA30-037 and existing Helper issue contracts.",
+      "acceptance": "Repository fixture spawns Helper, routes its command/state, resolves parent/root redirects, creates owned effect, destroys cleanly, resets, snapshots, and replays; zero-controller evidence fails. Allows one Helper journey only.",
+      "dependencies": [
+        "DA30-037",
+        "existing Helper issue contracts"
+      ],
+      "expectedFailure": "fails.",
+      "claimCeiling": "Allows one Helper journey only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "d1fa8aff4a9e0262a3adb5b86d1a7ef62f1d1fdb250231b23d90f61bd2ef1a34"
+      }
+    },
+    {
+      "id": "DA30-046",
+      "kind": "G",
+      "scope": "Gate plural projectile lifecycle and clash. Depends on DA30-041 and existing projectile schedule.",
+      "acceptance": "Three owners plus Helper cover spawn, move, hit, clash/cancel, affect-team, depth, removal, pause, reset, snapshot, and stable global order. Proof includes rejected same-side and stale-owner cases. Allows named matrix only.",
+      "dependencies": [
+        "DA30-041",
+        "existing projectile schedule"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows named matrix only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "8e2e14df02db2774d32742a9427699a35a83891824732f277a0619d26b65e582"
+      }
+    },
+    {
+      "id": "DA30-047",
+      "kind": "I",
+      "scope": "Execute one atomic throw/custom-state route. Depends on DA30-037, 041, and existing ownership ADRs.",
+      "acceptance": "Success, miss, interruption, invalid target, KO, reset, snapshot, and replay prove atomic target/state/bind ownership. Failure cannot strand either actor. Allows named throw route only.",
+      "dependencies": [
+        "DA30-037",
+        "041",
+        "existing ownership ADRs"
+      ],
+      "expectedFailure": "Failure cannot strand either actor.",
+      "claimCeiling": "Allows named throw route only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "2829a419a1a13ee3def2edce7548d242470a339bea763e3972ef42e1c4a621fc"
+      }
+    },
+    {
+      "id": "DA30-048",
+      "kind": "G",
+      "scope": "Reconcile camera, stage, screen, and player bounds. Depends on DA30-024 and 041.",
+      "acceptance": "Browser/runtime route covers follow, zoom policy, edge widths, ScreenBound/StageBound, corner pressure, shake, reset, resize, localcoord, and runtime/render correlation. Allows named stage/camera route only.",
+      "dependencies": [
+        "DA30-024",
+        "041"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows named stage/camera route only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "2a3d0b7064643d2081a76616a9bd860f8cd9776bc0bb665a105c405596b203b6"
+      }
+    },
+    {
+      "id": "DA30-049",
+      "kind": "G",
+      "scope": "Prove round and match cleanup. Depends on DA30-044…048.",
+      "acceptance": "Ledger asserts clear/persist behavior for hits, binds, targets, pauses, effects, helpers, projectiles, inputs, vars, power, team state, camera, audio, and renderer resources across round/match reset. Allows reset ledger only.",
+      "dependencies": [
+        "DA30-044…048"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows reset ledger only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "5c8d3d1f82f9487fb80493b06fed36832156ac94238027bcb6d24221d4be5c7e"
+      }
+    },
+    {
+      "id": "DA30-050",
+      "kind": "G",
+      "scope": "Publish controller and trigger support from proof. Depends on DA30-012, 041…049, and source pins.",
+      "acceptance": "One registry separates parse, compile, execute, branch, trace, browser, profile, failure, and source-review states; docs and scanner consume it; no row derives support from name presence. Allows registry facts only.",
+      "dependencies": [
+        "DA30-012",
+        "041…049",
+        "source pins"
+      ],
+      "expectedFailure": "failure, and source-review states; docs and scanner consume it; no row derives support from name presence.",
+      "claimCeiling": "Allows registry facts only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "1a8565803dc044ca0faadce8f89910c590c4047584033d10244790e1fbb91110"
+      }
+    },
+    {
+      "id": "DA30-051",
+      "kind": "I",
+      "scope": "Build exact character/stage selection state. Depends on DA30-023, 043, and 048.",
+      "acceptance": "Data model enforces legal, blocked, missing, duplicate, profile, palette, stage, seat, and revision choices; selected package IDs feed launch without fallback substitution. Proof: state tests. Allows selection model only.",
+      "dependencies": [
+        "DA30-023",
+        "043",
+        "048"
+      ],
+      "expectedFailure": "Proof: state tests.",
+      "claimCeiling": "Allows selection model only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "563f310c31463162c27ef758daaf88b5ee7ce1c92330003bb98de469e1b75913"
+      }
+    },
+    {
+      "id": "DA30-052",
+      "kind": "G",
+      "scope": "Gate selection in browser. Depends on DA30-026 and 051.",
+      "acceptance": "Keyboard/gamepad desktop/mobile journey chooses characters, palettes, order, stage, and profile; blocked/missing entries explain why; back/cancel/start preserve seat and exact revision. Allows one local versus flow only.",
+      "dependencies": [
+        "DA30-026",
+        "051"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows one local versus flow only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "d973c63d350958b3b13190fdf27ed976d4f52675bee9837b591fd384f01789df"
+      }
+    },
+    {
+      "id": "DA30-053",
+      "kind": "A",
+      "scope": "Define mode state machine. Depends on DA30-051 and existing mode docs.",
+      "acceptance": "ADR separates versus, arcade, team modes, demo/watch, training, survival, results, continue, and return paths; names shared and mode-owned state. Proof: transition and failure table. Allows mode design only.",
+      "dependencies": [
+        "DA30-051",
+        "existing mode docs"
+      ],
+      "expectedFailure": "Proof: transition and failure table.",
+      "claimCeiling": "Allows mode design only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "b9db95078567a95eee8a8a9ee1cdf910815f8ba462d79234994ce67cd250cc40"
+      }
+    },
+    {
+      "id": "DA30-054",
+      "kind": "I",
+      "scope": "Close bounded Simul/Tag/Turns team selection and handoff. Depends on DA30-052/053 and existing issue 07 gates.",
+      "acceptance": "One mode per team policy proves roster order, standby/active IDs, input owner, KO/handoff, resources, reset, replay, and unchanged 1v1. Allows exercised team routes only.",
+      "dependencies": [
+        "DA30-052/053",
+        "existing issue 07 gates"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows exercised team routes only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "85e053b5bdca7270eff33c2744a512ed06b59ca095b54a694d58a9427649a7fb"
+      }
+    },
+    {
+      "id": "DA30-055",
+      "kind": "G",
+      "scope": "Gate FightScreen round presentation. Depends on DA30-024, 049, and source-backed FightScreen work.",
+      "acceptance": "Browser/runtime route proves fade, shutter, intro/fight timing, skip policy, announcements, timer/input gates, reset, mobile geometry, and exact source assets. Allows named FightScreen subset only.",
+      "dependencies": [
+        "DA30-024",
+        "049",
+        "source-backed FightScreen work"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows named FightScreen subset only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "6121468cf75c92d3ba64439aeaf2ae084aed4f54daea0d605de38c0fa9da1141"
+      }
+    },
+    {
+      "id": "DA30-056",
+      "kind": "I",
+      "scope": "Reconcile lifebar/HUD ownership. Depends on DA30-049, 054, and 055.",
+      "acceptance": "HUD reads exact actor/team/resource owner for life, power, guard/stun/red life, timer, rounds, combo, and team slots; stale/standby/missing owners fail visibly. Allows named HUD fields only.",
+      "dependencies": [
+        "DA30-049",
+        "054",
+        "055"
+      ],
+      "expectedFailure": "fail visibly.",
+      "claimCeiling": "Allows named HUD fields only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "8f2291f05036b40dc8e7026e532608fed0732cf1ff3cc6a2311c1b34cdef0b18"
+      }
+    },
+    {
+      "id": "DA30-057",
+      "kind": "G",
+      "scope": "Gate audio dispatch and lifecycle. Depends on DA30-024, 049, and owned audio fixtures.",
+      "acceptance": "Gesture unlock, player/common/system banks, channels, hit cancel, KO, BGM, mute/volume, missing archive, route swap, reset, and post-mixer nonzero output are measured. Heard/perceptual parity stays blocked.",
+      "dependencies": [
+        "DA30-024",
+        "049",
+        "owned audio fixtures"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": ", missing archive, route swap, reset, and post-mixer nonzero output are measured. Heard/perceptual parity stays blocked.",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "e2e3c0e5bf71b4807a1282c92c0d6a57a87d2b2169fb3e6b80b96dd436a93826"
+      }
+    },
+    {
+      "id": "DA30-058",
+      "kind": "G",
+      "scope": "Gate animation, palette, sprite, and effect ownership. Depends on DA30-043, 046, and 049.",
+      "acceptance": "AIR/SFF/ACT routes cover authored frames, loop/interpolation policy, palette choice, effect sprite bank, shadow/order, missing resources, reset, and browser correlation. Allows named asset routes only.",
+      "dependencies": [
+        "DA30-043",
+        "046",
+        "049"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows named asset routes only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "2eeff58c4cb98a51dc5106a5df07fe79eabc9298e7e43f292e088d949727b69f"
+      }
+    },
+    {
+      "id": "DA30-059",
+      "kind": "I",
+      "scope": "Execute Common CNS/Fx/FightFX ownership. Depends on DA30-050, 055, 057, and source review.",
+      "acceptance": "One route resolves character/common state, FightFX animation, Common.Fx sound, missing bank failure, source provenance, profile, reset, and replay without silent local fallback. Allows selected common resources only.",
+      "dependencies": [
+        "DA30-050",
+        "055",
+        "057",
+        "source review"
+      ],
+      "expectedFailure": "failure, source provenance, profile, reset, and replay without silent local fallback.",
+      "claimCeiling": "Allows selected common resources only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "8944e650b12519812b5e75b94ba74127e06b44edde1f2e713d5c9d2478b9c080"
+      }
+    },
+    {
+      "id": "DA30-060",
+      "kind": "G",
+      "scope": "Run the playable sandbox product matrix. Depends on DA30-041…059.",
+      "acceptance": "Desktop/mobile Play, selection, one team route, FightScreen, audio signal, camera, reset, error/recovery, focus, frame gaps, renderer resources, and zero unexpected errors share one SHA. Allows playable sandbox milestone only.",
+      "dependencies": [
+        "DA30-041…059"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows playable sandbox milestone only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "99aa8c90eee4298aa722688d8502a9d5206bc64eeb601d9f3ff0f63f50393b3e"
+      }
+    },
+    {
+      "id": "DA30-061",
+      "kind": "R",
+      "scope": "Rebuild lawful package/stage corpus inventory. Depends on DA30-002, provenance rules, and issue history.",
+      "acceptance": "Rows classify repository-authored, generated, portable legal, optional private, and forbidden inputs; record package identity, profile, feature density, route, permissions, and expected failure. Allows corpus inventory only.",
+      "dependencies": [
+        "DA30-002",
+        "provenance rules",
+        "issue history"
+      ],
+      "expectedFailure": "failure.",
+      "claimCeiling": "Allows corpus inventory only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "282494a13d8411786f8fa92be4ab2578298ca514d4727fedc45dad2ae52bb536"
+      }
+    },
+    {
+      "id": "DA30-062",
+      "kind": "I",
+      "scope": "Add unsupported-heavy repository fixtures. Depends on DA30-061 and source census.",
+      "acceptance": "Small authored fixtures isolate at least ten high-risk controller/trigger/format families with valid, malformed, unknown, and profile-mismatch variants; provenance is complete. Allows fixture breadth only.",
+      "dependencies": [
+        "DA30-061",
+        "source census"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows fixture breadth only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "03b60a0245b43022c8a103f8efdd32685344e51d6b89e76a5087eb3517b9f4a9"
+      }
+    },
+    {
+      "id": "DA30-063",
+      "kind": "G",
+      "scope": "Run parser/compiler mutation corpus. Depends on DA30-050 and 062.",
+      "acceptance": "Mutations cover casing, whitespace, duplicates, sections, numbers, strings, comments, includes, redirects, coercion, malformed bytes, and limits; diagnostics have locations and no crashes. Allows tested syntax resilience only.",
+      "dependencies": [
+        "DA30-050",
+        "062"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows tested syntax resilience only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "c982970cd65d34b0d0a04062ae8f6b344e0136ab2f95fa3f229f85c9974b31e6"
+      }
+    },
+    {
+      "id": "DA30-064",
+      "kind": "A",
+      "scope": "Define archive and package profile policy. Depends on DA30-030, 061, and scanner work.",
+      "acceptance": "ADR covers ZIP/path rules, DEF roots, encodings, case, duplicates, size/count/depth caps, URLs, nested archives, profile detection, and quarantine. Allows import policy only.",
+      "dependencies": [
+        "DA30-030",
+        "061",
+        "scanner work"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows import policy only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "b6b024cd12bf78d5e73293803c34d19eee5108bf86eb43e1594ffda630d54b8a"
+      }
+    },
+    {
+      "id": "DA30-065",
+      "kind": "I",
+      "scope": "Execute DEF/system/config dependency graph. Depends on DA30-064.",
+      "acceptance": "Resolver loads exact character, stage, motif, common, sound, font, and palette edges with canonical paths/digests; missing, cycle, ambiguity, traversal, and profile mismatch fail. Allows named graph subset only.",
+      "dependencies": [
+        "DA30-064"
+      ],
+      "expectedFailure": "fail.",
+      "claimCeiling": "Allows named graph subset only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "eb36f173e60ff1dc10d3c46c86c29741c99a0ba577f1090088f4d7d971f3e492"
+      }
+    },
+    {
+      "id": "DA30-066",
+      "kind": "G",
+      "scope": "Gate CMD/AI breadth. Depends on DA30-050, 062, and deterministic input.",
+      "acceptance": "Matrix proves command parsing, buffering, priority, hold/release, AI levels, random stream, state choice, invalid expressions, pause/reset, and replay for named cases. Allows tested CMD/AI subset only.",
+      "dependencies": [
+        "DA30-050",
+        "062",
+        "deterministic input"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows tested CMD/AI subset only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "549bdd3c2328d7ff0a5626826c6af75b69b0be90abd8b40ec1d8ea26bb6f444d"
+      }
+    },
+    {
+      "id": "DA30-067",
+      "kind": "R",
+      "scope": "Audit motif, screenpack, lifebar, and storyboard families. Depends on DA30-061 and pinned references.",
+      "acceptance": "Source-backed matrix names formats, sections, assets, transforms, timing, modes, scanner state, runtime owner, and open risk; MUGEN and IKEMEN extensions stay separate. Allows research map only.",
+      "dependencies": [
+        "DA30-061",
+        "pinned references"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows research map only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "3dd90ea68def9cc91b84ad8b4ad7e0cb895e077ead9998a27b235578bab09603"
+      }
+    },
+    {
+      "id": "DA30-068",
+      "kind": "I",
+      "scope": "Execute one bounded motif/screenpack flow. Depends on DA30-052, 055, 056, 065, and 067.",
+      "acceptance": "Repository fixture proves title/select/versus/fight/results transitions, localcoord, fonts/sounds, missing assets, mobile fit, reset, and return. Allows one motif flow only.",
+      "dependencies": [
+        "DA30-052",
+        "055",
+        "056",
+        "065",
+        "067"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows one motif flow only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "3f1ad34ea258ff5bf74ebc71c4f71936662e49c1450e6e78d1a928e24bc2572a"
+      }
+    },
+    {
+      "id": "DA30-069",
+      "kind": "G",
+      "scope": "Gate stage breadth. Depends on DA30-048, 058, 061, and 063.",
+      "acceptance": "At least three distinct owned stages cover localcoord, camera/bounds, normal/animated layers, parallax policy, BGCtrl subset, sound, resetBG, malformed and missing resources, resize, and browser facts. Allows named stage matrix only.",
+      "dependencies": [
+        "DA30-048",
+        "058",
+        "061",
+        "063"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows named stage matrix only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "077e353265ee3bd5a87a42f9397c62a03ffe6bdc988fbbeb276051e74a6ff3b9"
+      }
+    },
+    {
+      "id": "DA30-070",
+      "kind": "G",
+      "scope": "Adjudicate MUGEN-lite and practical-MUGEN milestones. Depends on DA30-060…069.",
+      "acceptance": "Independent review samples happy, unsupported-heavy, malformed, mutation, profile, product, performance, and failure routes; records denominators, accepted/rejected claims, gaps, scores, and next queue. Allows signed bounded milestones only.",
+      "dependencies": [
+        "DA30-060…069"
+      ],
+      "expectedFailure": "failure routes; records denominators, accepted/rejected claims, gaps, scores, and next queue.",
+      "claimCeiling": "Allows signed bounded milestones only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "1594411c0aeab1d56ca07da6aee6dfd3282ae421da0359e73602dfb161b83ae4"
+      }
+    },
+    {
+      "id": "DA30-071",
+      "kind": "A",
+      "scope": "Choose Studio storage authority. Depends on DA30-003, 030, and current IDB/file work.",
+      "acceptance": "ADR compares IndexedDB, file authority, and port-backed hybrid across consistency, offline, quota, permission, recovery, conflict, migration, backup, and browser support; one option is chosen. Allows storage design only.",
+      "dependencies": [
+        "DA30-003",
+        "030",
+        "current IDB/file work"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows storage design only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "11984e6c21a9b76cf0e7dfd18597a87217a70e656a8ed3c0eda81ebce9ab1900"
+      }
+    },
+    {
+      "id": "DA30-072",
+      "kind": "I",
+      "scope": "Version the Studio project envelope. Depends on DA30-071.",
+      "acceptance": "Envelope records project/revision, source graph, edits, assets, scanner facts, profile, tool chain, evidence, timestamps, and migration; unknown/corrupt versions open read-only or fail safely. Allows project schema only.",
+      "dependencies": [
+        "DA30-071"
+      ],
+      "expectedFailure": "fail safely.",
+      "claimCeiling": "Allows project schema only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "c297251216db5ac3cc3b75d8e4284c5e7ead8b97885b11532c9f48b64f83b285"
+      }
+    },
+    {
+      "id": "DA30-073",
+      "kind": "I",
+      "scope": "Make save/write transactional. Depends on DA30-071/072.",
+      "acceptance": "Prepare, validate, commit, journal, rollback, cancel, quota, permission loss, worker failure, and crash-reopen routes leave either old or new coherent revision. Proof: fault injection. Allows named write paths only.",
+      "dependencies": [
+        "DA30-071/072"
+      ],
+      "expectedFailure": "failure, and crash-reopen routes leave either old or new coherent revision.",
+      "claimCeiling": "Allows named write paths only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "2385a0bff6ee9f7563e64ec821bebe9a7a2d8ff2bd2e56060663bb6a1a5a2ad0"
+      }
+    },
+    {
+      "id": "DA30-074",
+      "kind": "I",
+      "scope": "Handle edit conflicts and recovery. Depends on DA30-073.",
+      "acceptance": "Stale base, parallel tab, external file change, partial asset update, autosave, retry, discard, export-copy, and reopen preserve work and show exact choices. Allows named conflict routes only.",
+      "dependencies": [
+        "DA30-073"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows named conflict routes only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "d916dc08c9b6d180859e3b638c9bda584a5127d05d8e2da19e49fc1862a58b99"
+      }
+    },
+    {
+      "id": "DA30-075",
+      "kind": "I",
+      "scope": "Connect source writes to reanalysis. Depends on DA30-073/074 and scanner revision model.",
+      "acceptance": "Successful source commit creates one revision receipt, invalidates affected facts, schedules bounded reanalysis, and blocks preview/export until current; failed write changes no authority. Allows revision bridge only.",
+      "dependencies": [
+        "DA30-073/074",
+        "scanner revision model"
+      ],
+      "expectedFailure": "failed write changes no authority.",
+      "claimCeiling": "Allows revision bridge only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "d08ebbd99c9f0983ffedf0979d0e6935698038b3bc7cdac34504a914ec4f4485"
+      }
+    },
+    {
+      "id": "DA30-076",
+      "kind": "G",
+      "scope": "Make trust failures actionable in Studio. Depends on DA30-017, 030, and 073…075.",
+      "acceptance": "Browser matrix covers quota, permission, stale/tampered evidence, scanner failure, blocked asset, conflict, cancellation, and recovery with cause, item, retained work, safe action, and retry. Allows named states only.",
+      "dependencies": [
+        "DA30-017",
+        "030",
+        "073…075"
+      ],
+      "expectedFailure": "failure, blocked asset, conflict, cancellation, and recovery with cause, item, retained work, safe action, and retry.",
+      "claimCeiling": "Allows named states only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "8c49c394ec22b8ea0ffe4fc7d8aba184e75bfe04c851f3a4336a50c34e244c89"
+      }
+    },
+    {
+      "id": "DA30-077",
+      "kind": "I",
+      "scope": "Build separate authoring views. Depends on DA30-072 and product route inventory.",
+      "acceptance": "Character, state/controller, command, animation, palette, stage, asset, evidence, and project settings have direct views with validation, source location, undo/redo, keyboard access, and narrow ownership. Allows named authoring views only.",
+      "dependencies": [
+        "DA30-072",
+        "product route inventory"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows named authoring views only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "5eedce3df3195c6a8eb3b0ed9dba01f0e9af4d5d7468a342fc0f582cb7e1abc3"
+      }
+    },
+    {
+      "id": "DA30-078",
+      "kind": "G",
+      "scope": "Gate preview fidelity and isolation. Depends on DA30-075/077 and playable sandbox gate.",
+      "acceptance": "Preview consumes exact unsaved/saved revision by explicit mode, never overwrites project state, reports unsupported facts, resets runtime cleanly, and matches exported config for named route. Allows one Studio preview flow only.",
+      "dependencies": [
+        "DA30-075/077",
+        "playable sandbox gate"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows one Studio preview flow only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "8b97d1624a239589a17a45ded19e01b326dcd335a244158940fb88d9d243d1f5"
+      }
+    },
+    {
+      "id": "DA30-079",
+      "kind": "G",
+      "scope": "Export a deterministic local playable bundle. Depends on DA30-065, 072, 075, 078, and asset gates.",
+      "acceptance": "Same project/revision/tool chain yields identical manifest and content digests, safe paths, current evidence, runtime config, provenance, limits, and local play smoke; blocked facts stop export. Allows deterministic local export only.",
+      "dependencies": [
+        "DA30-065",
+        "072",
+        "075",
+        "078",
+        "asset gates"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows deterministic local export only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "8f7f354ba78313e7d02e582f2ead3dc60d48752380707831690bce34b3513c6e"
+      }
+    },
+    {
+      "id": "DA30-080",
+      "kind": "G",
+      "scope": "Make ProjectReleaseDecision a live product gate. Depends on DA30-076, 079, and claim compiler.",
+      "acceptance": "Build/export/release actions consume one immutable decision; missing, stale, tampered, blocked asset, scanner fail, and fresh-ready routes match exported evidence and explain the next action. Allows one local decision flow only.",
+      "dependencies": [
+        "DA30-076",
+        "079",
+        "claim compiler"
+      ],
+      "expectedFailure": "fail, and fresh-ready routes match exported evidence and explain the next action.",
+      "claimCeiling": "Allows one local decision flow only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "474de438b1d56d05e1cfab0de335dd8799b878f5a74e0cd7f3d3ba223071f196"
+      }
+    },
+    {
+      "id": "DA30-081",
+      "kind": "A",
+      "scope": "Define the asset/provenance graph. Depends on DA30-013, 030, and existing asset policy.",
+      "acceptance": "ADR assigns source, license/permission, creator/tool, prompt when generated, transform chain, digest, consumer, revision, release state, and deletion policy; unknown provenance blocks release. Allows provenance design only.",
+      "dependencies": [
+        "DA30-013",
+        "030",
+        "existing asset policy"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows provenance design only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "54ab6df5886f0864273ad86c32ee8c72cf9c52868257942e8d0b2c204208f429"
+      }
+    },
+    {
+      "id": "DA30-082",
+      "kind": "I",
+      "scope": "Materialize permission and license decisions. Depends on DA30-081.",
+      "acceptance": "Every shipped asset edge has repository-authored/generated/allowed status, evidence, constraints, attribution, and scope; forbidden/unknown/commercial samples stay metadata-only and fail inclusion. Allows listed asset permissions only.",
+      "dependencies": [
+        "DA30-081"
+      ],
+      "expectedFailure": "fail inclusion.",
+      "claimCeiling": "Allows listed asset permissions only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "38effa6da569af2235d8dfbbc59380131c80666f9169303e29ef4f1e3a4616be"
+      }
+    },
+    {
+      "id": "DA30-083",
+      "kind": "I",
+      "scope": "Record reproducible transform chains. Depends on DA30-081/082.",
+      "acceptance": "Crop, resize, palette, alpha, atlas, audio conversion, compression, and generated transforms record tool/version/params/input/output digests; rerun matches or declares nondeterminism. Allows named transforms only.",
+      "dependencies": [
+        "DA30-081/082"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows named transforms only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "4e3709354c4d71c68d0dd5466a4cc991be9bff2405a90c236002941da8134c90"
+      }
+    },
+    {
+      "id": "DA30-084",
+      "kind": "G",
+      "scope": "Gate generated asset QA. Depends on DA30-082/083 and generated-asset contract.",
+      "acceptance": "Owned sample passes dimensions, alpha, seams, palette, animation timing, audio peak/RMS, provenance, path, budget, preview, and rollback; failure samples show useful reasons. Allows sample pipeline only.",
+      "dependencies": [
+        "DA30-082/083",
+        "generated-asset contract"
+      ],
+      "expectedFailure": "failure samples show useful reasons.",
+      "claimCeiling": "Allows sample pipeline only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "8b13a89dfd70eb92a4c8ec87902a5d3f3356a2cdad35a5827290b03664851304"
+      }
+    },
+    {
+      "id": "DA30-085",
+      "kind": "G",
+      "scope": "Enforce asset budgets and cleanup. Depends on DA30-027…029 and 083.",
+      "acceptance": "Per-route/package limits cover count, raw/compressed bytes, decode size, texture dimensions, audio duration, GPU memory proxy, cache, orphan cleanup, and repeated import/export. Allows named budget facts only.",
+      "dependencies": [
+        "DA30-027…029",
+        "083"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows named budget facts only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "8d52da856fc07a640790bee9cbc55733a602d6da9cea508b6ec5d304dbb732dc"
+      }
+    },
+    {
+      "id": "DA30-086",
+      "kind": "I",
+      "scope": "Harden scanner archive/path limits. Depends on DA30-030 and 064.",
+      "acceptance": "ZIP bombs, traversal, absolute/UNC, case collision, symlink metadata, nested archive, huge count, huge file, encoding, cancel, timeout, and worker crash fail safely with capped facts. Allows tested scanner safety only.",
+      "dependencies": [
+        "DA30-030",
+        "064"
+      ],
+      "expectedFailure": "fail safely with capped facts.",
+      "claimCeiling": "Allows tested scanner safety only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "44e73f53583c6cb72fd3b55fb1fddf005f7baeb7df9fae39914f9f78299fc951"
+      }
+    },
+    {
+      "id": "DA30-087",
+      "kind": "I",
+      "scope": "Emit profile-aware capability reasons. Depends on DA30-050, 063, and 086.",
+      "acceptance": "Scanner separates recognized, parsed, compiled, executed, unsupported, blocked, unknown, profile-only, and malformed with source location, owner, next action, and registry revision. Allows scanner facts only.",
+      "dependencies": [
+        "DA30-050",
+        "063",
+        "086"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows scanner facts only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "c414845c010dcc7d50370c362b78c18b2840870a5883d3734687a62f832cde85"
+      }
+    },
+    {
+      "id": "DA30-088",
+      "kind": "I",
+      "scope": "Make reanalysis incremental and revision-bound. Depends on DA30-075 and 087.",
+      "acceptance": "Changed graph nodes invalidate exact dependents, unchanged facts retain digests, cancel/retry is atomic, stale worker output cannot publish, and full rebuild matches incremental output. Allows reanalysis behavior only.",
+      "dependencies": [
+        "DA30-075",
+        "087"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows reanalysis behavior only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "cd4c49d779a3ca72be6109169f1ebd9c761e9ec3e894ea05a67e79ba3f8e7b8d"
+      }
+    },
+    {
+      "id": "DA30-089",
+      "kind": "G",
+      "scope": "Prove scanner parity across Studio and CLI adapter. Depends on DA30-087/088 and CLI design.",
+      "acceptance": "Same package bytes, profile, limits, and registry yield identical canonical facts and failure codes in browser worker and headless adapter; environment-only fields stay separate. Allows parity for named fixtures only.",
+      "dependencies": [
+        "DA30-087/088",
+        "CLI design"
+      ],
+      "expectedFailure": "failure codes in browser worker and headless adapter; environment-only fields stay separate.",
+      "claimCeiling": "Allows parity for named fixtures only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "48a2295e95008b0e1c234b7324f7c0624a3439edbb89ff177cf1cfe3a10e2029"
+      }
+    },
+    {
+      "id": "DA30-090",
+      "kind": "G",
+      "scope": "Gate asset-to-export closure. Depends on DA30-079 and 081…089.",
+      "acceptance": "Project graph proves every exported asset was scanned, permitted, transformed, budgeted, revision-current, included once, and locally loaded; blocked/orphan/stale/tampered edges stop export. Allows one asset closure chain only.",
+      "dependencies": [
+        "DA30-079",
+        "081…089"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows one asset closure chain only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "8640513bc7f314bf09bd45f49955a33997a1c407bb1a2f6b18f133519fed8f68"
+      }
+    },
+    {
+      "id": "DA30-091",
+      "kind": "R",
+      "scope": "Reconcile Ikemen source authority by family. Depends on DA30-002 and source epoch.",
+      "acceptance": "For scheduler, teams, triggers, controllers, projectile, ZSS, Lua/modules, config, and screenpack, record normative/working pin, files/symbols, digest relation, review state, consumer, and open questions. Allows source provenance only.",
+      "dependencies": [
+        "DA30-002",
+        "source epoch"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows source provenance only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "319e121b6e9aa2a23d06b8db92e86e21f088852943e01a215c232e3a33b27feb"
+      }
+    },
+    {
+      "id": "DA30-092",
+      "kind": "A",
+      "scope": "Separate scanner, source, runtime, and product IKEMEN lanes. Depends on DA30-087 and 091.",
+      "acceptance": "Capability model forbids scanner recognition or source review from implying execution; every claim names profile, lane, operation, fixture, trace, and product route. Proof: invalid promotion cases. Allows lane taxonomy only.",
+      "dependencies": [
+        "DA30-087",
+        "091"
+      ],
+      "expectedFailure": "Proof: invalid promotion cases.",
+      "claimCeiling": "Allows lane taxonomy only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "5329718c3a0eeac783c2d70b9e5302717e8e4a7aad51bd1785efe3f3c90ebfbc"
+      }
+    },
+    {
+      "id": "DA30-093",
+      "kind": "A",
+      "scope": "Define a bounded ZSS capability registry. Depends on DA30-091/092.",
+      "acceptance": "Registry names declarations, operations, types, scope, reset, permissions, parser/compiler/runtime owners, diagnostics, unsupported features, and pin references. No generic “ZSS support” row exists. Allows design only.",
+      "dependencies": [
+        "DA30-091/092"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows design only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "dce7957043f896abc25f638dade1cc44913f856894ef3881006fc6c7ee479735"
+      }
+    },
+    {
+      "id": "DA30-094",
+      "kind": "I",
+      "scope": "Execute one source-reviewed ZSS subset. Depends on DA30-093 and deterministic state.",
+      "acceptance": "Owned fixture proves selected declarations/operations, deterministic failures, runtime trace, snapshot/reset, caps, and explicit rejection of every ungranted feature. Allows named operations only.",
+      "dependencies": [
+        "DA30-093",
+        "deterministic state"
+      ],
+      "expectedFailure": "failures, runtime trace, snapshot/reset, caps, and explicit rejection of every ungranted feature.",
+      "claimCeiling": "Allows named operations only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "232de6fef065223a0353f0705c52ff3d832ae8e46d365bb64e44bc3a8d52f0cf"
+      }
+    },
+    {
+      "id": "DA30-095",
+      "kind": "R",
+      "scope": "Bound Lua and external-module scope. Depends on DA30-030 and 091/092.",
+      "acceptance": "Research maps host APIs, filesystem/network/process/time/random access, lifecycle, trust, packaging, diagnostics, and browser constraints; recommends deny, isolate, translate, or omit per surface. Allows research decision input only.",
+      "dependencies": [
+        "DA30-030",
+        "091/092"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows research decision input only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "9ac8941766255a8dbb63705d25851b2f1d9df9d7f6f04a4faeb45180d6697772"
+      }
+    },
+    {
+      "id": "DA30-096",
+      "kind": "A",
+      "scope": "Define module packaging and permissions. Depends on DA30-081 and 095.",
+      "acceptance": "ADR covers manifest, identity, versions, deps, capabilities, digest/signature limits, trust, updates, isolation, budgets, errors, disable, and uninstall cleanup. Allows module design only.",
+      "dependencies": [
+        "DA30-081",
+        "095"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows module design only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "939b47bef101b739c2a51b034d835119168ac4b6fa3add661a3e5f11a9db305a"
+      }
+    },
+    {
+      "id": "DA30-097",
+      "kind": "G",
+      "scope": "Revalidate plural team topology and schedule. Depends on DA30-020, 039, 050, 091, and issue 07.",
+      "acceptance": "Distinct P1-P4 fixture proves complete registry, active/standby, Partner/Enemy/P2 identity, prepared order, Tag transitions, reset, and unchanged 1v1 checksums. Allows named topology/schedule only.",
+      "dependencies": [
+        "DA30-020",
+        "039",
+        "050",
+        "091",
+        "issue 07"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows named topology/schedule only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "38b5c126e5e4b07b7bbc1606ea8856e673436ac089f9e98b821e27d6dc7447a2"
+      }
+    },
+    {
+      "id": "DA30-098",
+      "kind": "G",
+      "scope": "Gate team consumers. Depends on DA30-054, 056, 097.",
+      "acceptance": "Separate evidence covers input, commands, effects, collision/combat, KO/round, camera/render, HUD, audio, resources, and reset for one chosen team mode; unproven consumers remain disabled. Allows exercised consumers only.",
+      "dependencies": [
+        "DA30-054",
+        "056",
+        "097"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows exercised consumers only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "e98f0bb34e1e8121752a8e4fb6252cda0e273dcfee666a6f2b98bec73eeff2df"
+      }
+    },
+    {
+      "id": "DA30-099",
+      "kind": "R",
+      "scope": "Design replay/network boundary. Depends on DA30-039/040 and 097/098.",
+      "acceptance": "ADR/spike plan covers input delay, rollback state, resim, desync hash, spectator, protocol version, transport, security, disconnect, host authority, and browser limits; no network claim is made. Allows design/feasibility only.",
+      "dependencies": [
+        "DA30-039/040",
+        "097/098"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows design/feasibility only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "b22660cf62616aac572fbe81a5704c3b46a1858b29ae2dc4f4eebec15926768e"
+      }
+    },
+    {
+      "id": "DA30-100",
+      "kind": "G",
+      "scope": "Adjudicate a bounded IKEMEN milestone. Depends on DA30-091…099.",
+      "acceptance": "Independent review separates scanner, source, ZSS, modules, team, replay, product, and performance facts; records supported profile/operations, blocked extensions, risks, denominators, scores, and next queue. Allows signed scope only.",
+      "dependencies": [
+        "DA30-091…099"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows signed scope only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "2b2feff6c3f4f61373736ef76f9efe6d04b2514aec847d2979dd7b1c1f5973f8"
+      }
+    },
+    {
+      "id": "DA30-101",
+      "kind": "R",
+      "scope": "Re-audit module boundaries and live imports. Depends on DA30-021 and linked boundary issue.",
+      "acceptance": "Graph lists package owners, forbidden edges, browser globals, app/runtime coupling, cycles, file/LOC weight, test owners, and candidate ports; historical diagrams are checked against imports. Allows boundary inventory only.",
+      "dependencies": [
+        "DA30-021",
+        "linked boundary issue"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows boundary inventory only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "001441a3063ff3d78aa8f42d60d9df5c64c000ca7d6a4c0b976075843c517f8a"
+      }
+    },
+    {
+      "id": "DA30-102",
+      "kind": "A",
+      "scope": "Select extraction candidates from two-consumer needs. Depends on DA30-101 and second-consumer spec.",
+      "acceptance": "ADR ranks clock, input, renderer, storage, evidence, asset, worker, and lifecycle ports by coupling, stability, migration risk, and both consumer needs; combat semantics stay MUGEN-owned. Allows extraction order only.",
+      "dependencies": [
+        "DA30-101",
+        "second-consumer spec"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows extraction order only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "d00758a1e9d4cf2798f26aa964573ad9fbc0be4e754a50c9872e2b0e4922fcd4"
+      }
+    },
+    {
+      "id": "DA30-103",
+      "kind": "I",
+      "scope": "Add a minimal non-fighting playable consumer. Depends on DA30-031, 035…037, 102, and repository-owned assets.",
+      "acceptance": "Platformer/testbed has its own model and uses chosen clock/input/renderer/storage/evidence ports in a browser route; no MUGEN import or copied combat model exists. Allows two-consumer proof for used ports only.",
+      "dependencies": [
+        "DA30-031",
+        "035…037",
+        "102",
+        "repository-owned assets"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows two-consumer proof for used ports only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "8892f3cd88a6a7bc886aa308fd633cea0c9e5b83ef9e050907118f0a4dbcc411"
+      }
+    },
+    {
+      "id": "DA30-104",
+      "kind": "I",
+      "scope": "Extract renderer, clock, and input ports. Depends on DA30-060, 102, and 103.",
+      "acceptance": "Both consumers use one contract with explicit lifecycle, resize, focus, seed, sampling, teardown, and diagnostics; compatibility adapters keep prior MUGEN checksums/routes. Allows these ports only.",
+      "dependencies": [
+        "DA30-060",
+        "102",
+        "103"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows these ports only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "8d07410dcba45415ebab8e6a93ddccd7b6ce11cd6d685cf78f5bc527ecdf1374"
+      }
+    },
+    {
+      "id": "DA30-105",
+      "kind": "I",
+      "scope": "Extract storage and evidence ports. Depends on DA30-072…080, 102, and 103.",
+      "acceptance": "Both consumers use versioned load/save/revision/evidence contracts with atomic failure, cancellation, quota, migration, and no browser globals in core. Allows named ports only.",
+      "dependencies": [
+        "DA30-072…080",
+        "102",
+        "103"
+      ],
+      "expectedFailure": "failure, cancellation, quota, migration, and no browser globals in core.",
+      "claimCeiling": "Allows named ports only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "21a47772d1d07b301da6ebf02f94b44932a5ee1c5c8bb344f42916e25d889279"
+      }
+    },
+    {
+      "id": "DA30-106",
+      "kind": "A",
+      "scope": "Define local package and extension API. Depends on DA30-104/105.",
+      "acceptance": "ADR names public/private modules, versioning, capabilities, lifecycle, errors, cancellation, compatibility, deprecation, tree-shaking, and extension limits; unstable surfaces stay internal. Allows API design only.",
+      "dependencies": [
+        "DA30-104/105"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows API design only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "f2883d20f35055454f4a9fe9274291c3cce03c9759f1bae71cb1ea775a83cdf8"
+      }
+    },
+    {
+      "id": "DA30-107",
+      "kind": "I",
+      "scope": "Add headless import/analyze/build CLI. Depends on DA30-064, 089, 079, 105, and 106.",
+      "acceptance": "Commands have stable exits, JSON facts, stdin/path policy, cancellation, caps, deterministic output, no browser globals, help/version, malformed cases, and Studio parity fixtures. Allows named local CLI commands only.",
+      "dependencies": [
+        "DA30-064",
+        "089",
+        "079",
+        "105",
+        "106"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows named local CLI commands only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "fac2b6407d553658793e93e7277e95ad7073a17c4e42ccf7a7c844e1d0e2c597"
+      }
+    },
+    {
+      "id": "DA30-108",
+      "kind": "I",
+      "scope": "Add reproducible CI workflows. Depends on DA30-016, 022, 030, and 107.",
+      "acceptance": "Pinned runtime installs lockfile, caches by safe keys, runs PR/nightly/release lanes, typecheck/unit/build/boundaries/control audit, uploads facts, enforces fatal warnings, and tests one forced failure. Allows named CI environment only.",
+      "dependencies": [
+        "DA30-016",
+        "022",
+        "030",
+        "107"
+      ],
+      "expectedFailure": "failure.",
+      "claimCeiling": "Allows named CI environment only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "a037b1406ecaa37faee91e9bb13fdf668c03bcd7b97773fbbf9063e6385ec339"
+      }
+    },
+    {
+      "id": "DA30-109",
+      "kind": "G",
+      "scope": "Pack and smoke the local SDK/CLI. Depends on DA30-106…108.",
+      "acceptance": "Clean temp consumers install packed artifacts, run browser and headless examples, reject private imports, verify exports/types/assets/licenses, uninstall cleanly, and reproduce digests. Allows local package smoke only.",
+      "dependencies": [
+        "DA30-106…108"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows local package smoke only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "639a1bd6cd3f2f89a367310daca94564f22d641c40df9341ddf5911c820477b5"
+      }
+    },
+    {
+      "id": "DA30-110",
+      "kind": "G",
+      "scope": "Enforce non-vacuous boundaries. Depends on DA30-101…109.",
+      "acceptance": "Boundary checker fails on app-to-core leaks, MUGEN import in second consumer, browser globals in headless core, private package imports, cycles, and unused ports; both live consumers pass. Allows enforced boundary claims only.",
+      "dependencies": [
+        "DA30-101…109"
+      ],
+      "expectedFailure": "fails on app-to-core leaks, MUGEN import in second consumer, browser globals in headless core, private package imports, cycles, and unused ports; both live consumers pass.",
+      "claimCeiling": "Allows enforced boundary claims only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "2155629b7fe1fd46051719c24f234668af15b74f4e7deb8962c01b4fb4e7d359"
+      }
+    },
+    {
+      "id": "DA30-111",
+      "kind": "G",
+      "scope": "Run full accessibility audit. Depends on DA30-025/026, 052, 076/077, and 103.",
+      "acceptance": "Keyboard, focus order/visibility, landmarks, labels, names/roles/states, contrast, zoom/reflow, reduced motion, status/errors, canvas alternatives, and screen-reader paths pass on desktop/mobile. Allows named accessibility routes only.",
+      "dependencies": [
+        "DA30-025/026",
+        "052",
+        "076/077",
+        "103"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows named accessibility routes only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "3461f91fa4527b44a1906418c6f0ff1776f40140e931b8a0a23d1090834366cc"
+      }
+    },
+    {
+      "id": "DA30-112",
+      "kind": "G",
+      "scope": "Enforce performance and size budgets. Depends on DA30-027…029, 060, 078, and 103.",
+      "acceptance": "PR/release facts cover route bytes, chunks, asset/decode/GPU proxies, startup, input delay, p95/p99/max frame gaps, long tasks, repeated navigation, and breach owners. Allows measured environment facts only.",
+      "dependencies": [
+        "DA30-027…029",
+        "060",
+        "078",
+        "103"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows measured environment facts only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "884fd1bcf2f1395aa2f8404b4a7286fa418af86f52cad8522250d40ca266136a"
+      }
+    },
+    {
+      "id": "DA30-113",
+      "kind": "A",
+      "scope": "Complete product threat model and response plan. Depends on DA30-030, 064, 081, 086, 096, and 107.",
+      "acceptance": "Trust zones, assets, threats, controls, residual risk, logging, disclosure, dependency response, data deletion, CSP/headers, module limits, and release blockers are owned. Allows security plan only.",
+      "dependencies": [
+        "DA30-030",
+        "064",
+        "081",
+        "086",
+        "096",
+        "107"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows security plan only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "c2bdbea603ef00012436e7525c3be7d5bd4d0e0d49a17f8d80771fe482de53de"
+      }
+    },
+    {
+      "id": "DA30-114",
+      "kind": "A",
+      "scope": "Define privacy and telemetry rules. Depends on DA30-013, 017, 113.",
+      "acceptance": "ADR names local diagnostics, opt-in data, redaction, retention, export/delete, crash reports, user assets, paths, prompts, and hosted-preview boundaries; default behavior and consent are explicit. Allows privacy policy design only.",
+      "dependencies": [
+        "DA30-013",
+        "017",
+        "113"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows privacy policy design only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "db171d82b81f0b7e280ef5e76a9310c97f75b53e7f03ad5651d42b7500c36835"
+      }
+    },
+    {
+      "id": "DA30-115",
+      "kind": "I",
+      "scope": "Prove project/evidence/API migrations. Depends on DA30-072, 083, 087, and 106.",
+      "acceptance": "N-1 fixtures migrate deterministically or open read-only; rollback/export copy, unknown future versions, failed migration, partial data, and retry preserve originals. Allows named migration paths only.",
+      "dependencies": [
+        "DA30-072",
+        "083",
+        "087",
+        "106"
+      ],
+      "expectedFailure": "failed migration, partial data, and retry preserve originals.",
+      "claimCeiling": "Allows named migration paths only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "25ff057086d6cd06559db3f72285e1947c90360048150b9a8e77afdc20f660e5"
+      }
+    },
+    {
+      "id": "DA30-116",
+      "kind": "A",
+      "scope": "Design hosted preview and rollback. Depends on DA30-079/080, 109, 113/114.",
+      "acceptance": "Architecture covers static hosting, CSP/headers, cache keys, asset limits, privacy, artifact promotion, preview isolation, smoke, status, rollback, domain and secret authority; no deployment occurs. Allows deployment design only.",
+      "dependencies": [
+        "DA30-079/080",
+        "109",
+        "113/114"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows deployment design only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "f206876ecdc8fd2acee8e8c001193390547eaf353c048fb45f13b10ed8a00d90"
+      }
+    },
+    {
+      "id": "DA30-117",
+      "kind": "G",
+      "scope": "Run a local release rehearsal. Depends on DA30-070, 080, 090, 100, 109…116.",
+      "acceptance": "Clean checkout builds, packs, imports owned project, runs browser/CLI smokes, checks licenses/SBOM/provenance, signs local manifest, tests rollback, and records every warning/blocker. Allows local rehearsal only.",
+      "dependencies": [
+        "DA30-070",
+        "080",
+        "090",
+        "100",
+        "109…116"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows local rehearsal only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "d8c486f5f433d24ac98433f31f8cf13980ff1c1d75d1149296c141b74d7737e1"
+      }
+    },
+    {
+      "id": "DA30-118",
+      "kind": "G",
+      "scope": "Recalculate completion scores. Depends on DA30-002, 019, 070, 100, 112, and 117.",
+      "acceptance": "Each lane has denominator, eligible passed clauses, rejected/stale evidence, confidence, movement, rationale, and blocked claims; docs and task counts contribute zero runtime credit. Allows recorded score decision only.",
+      "dependencies": [
+        "DA30-002",
+        "019",
+        "070",
+        "100",
+        "112",
+        "117"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows recorded score decision only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "1c2c3b45d6f19adfd7146861e36e94c07dcff80137dbc8b73a6d01ba4ae098d0"
+      }
+    },
+    {
+      "id": "DA30-119",
+      "kind": "G",
+      "scope": "Run an independent adversarial review. Depends on DA30-015 and 117/118.",
+      "acceptance": "Reviewer with separate provenance samples success/failure artifacts, reruns selected gates, checks current SHAs, rejects circular facts, records disputes, accepted/rejected claims, gaps, and release view. Allows signed review only.",
+      "dependencies": [
+        "DA30-015",
+        "117/118"
+      ],
+      "expectedFailure": "failure artifacts, reruns selected gates, checks current SHAs, rejects circular facts, records disputes, accepted/rejected claims, gaps, and release view.",
+      "claimCeiling": "Allows signed review only",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "52bd782a4a212dad1b51de8a365bc72a63e71c522cab8f2cfc807ff0fbe1c249"
+      }
+    },
+    {
+      "id": "DA30-120",
+      "kind": "G",
+      "scope": "Adjudicate the remaining product/SDK roadmap. Depends on DA30-119 and every task required by the chosen milestone.",
+      "acceptance": "Final record names shipped, local-only, experimental, and blocked surfaces; API stability, extension risk, migrations, source/profile scope, evidence freshness, scores, release authority, and next bounded program are explicit. Allows only the signed final scope.",
+      "dependencies": [
+        "DA30-119",
+        "every task required by the chosen milestone"
+      ],
+      "expectedFailure": "missing-clause-or-stale-evidence",
+      "claimCeiling": "Allows only the signed final scope",
+      "source": "docs/DA30_RECOVERY_ROADMAP.md",
+      "digest": {
+        "algorithm": "sha-256",
+        "value": "2e83a1d8bab61bf4ca5b015f2ae1734eab322146a1ea0d23a5ad373d81a878a0"
+      }
+    }
+  ],
+  "negativeFixtures": [
+    {
+      "id": "narrowed-da30-025-fails-equivalence",
+      "ok": true,
+      "originalDigest": "a259607ca94e1741b22334fcf2014c0d022d61fa484bbf45ee2994fffcafed09",
+      "narrowedDigest": "6d746688ef9be7e54bc3358afcf68a7748cc008f1cdac0d494a1624b46ce0f35"
+    }
+  ],
+  "claimCeiling": "immutable acceptance identity only; no task acceptance",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "d371eecd60534b948eaf16bde8ceee957755181bb9a790b932df5cc9554c6838"
+  }
+}
