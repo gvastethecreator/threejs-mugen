@@ -1,0 +1,65 @@
+{
+  "schema": "TurnsBrowserMatrixGate/v1",
+  "id": "DA28-09",
+  "generatedAt": "2026-07-27T00:15:47.105Z",
+  "serverMode": "started-vite",
+  "status": "passed",
+  "consoleErrorTotal": 0,
+  "routes": [
+    {
+      "viewport": {
+        "id": "desktop",
+        "width": 1440,
+        "height": 960,
+        "mobile": false
+      },
+      "baseUrl": "http://127.0.0.1:5310/?mode=match&teamMode=turns",
+      "teamModeSelectValue": "turns",
+      "hasTurnsText": true,
+      "hudPanelCount": 1,
+      "teamLifebarCount": 2,
+      "skipLinkCount": 1,
+      "activeTagAfterTab": "A",
+      "pauseToggled": true,
+      "reducedMotion": "reduce",
+      "consoleErrorCount": 0,
+      "consoleErrors": [],
+      "screenshot": "docs/evidence/da28-09-turns-browser/turns-matrix-desktop-1440x960.png",
+      "screenshotSha256": "ab6f7164df23bfda18be9f6da57152c9ffc79163b2972259c7db8c1f02590d8b",
+      "screenshotBytes": 843622
+    },
+    {
+      "viewport": {
+        "id": "mobile",
+        "width": 390,
+        "height": 844,
+        "mobile": true
+      },
+      "baseUrl": "http://127.0.0.1:5310/?mode=match&teamMode=turns",
+      "teamModeSelectValue": "turns",
+      "hasTurnsText": true,
+      "hudPanelCount": 1,
+      "teamLifebarCount": 2,
+      "skipLinkCount": 1,
+      "activeTagAfterTab": "A",
+      "pauseToggled": true,
+      "reducedMotion": "reduce",
+      "consoleErrorCount": 0,
+      "consoleErrors": [],
+      "screenshot": "docs/evidence/da28-09-turns-browser/turns-matrix-mobile-390x844.png",
+      "screenshotSha256": "86dcbccdc5a7b3ce5417767c853496b338f6ade3ea239bb3acf363339fad2c8c",
+      "screenshotBytes": 52428
+    }
+  ],
+  "claims": {
+    "allowed": [
+      "desktop/mobile Turns URL route with reduced motion",
+      "focus/tab path and optional pause toggle",
+      "0 page console errors on matrix viewports"
+    ],
+    "blocked": [
+      "full multi-replacement live combat browser proof for every seat",
+      "score movement"
+    ]
+  }
+}

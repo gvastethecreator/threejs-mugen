@@ -31,6 +31,7 @@
     "materialize:browser-subcursors": "node scripts/materialize_browser_subcursors_da28_03.cjs",
     "materialize:compatibility-corpus-v12": "node scripts/materialize_compatibility_corpus_v12.cjs",
     "materialize:score-adjudication": "node scripts/materialize_score_adjudication_da28_05.cjs",
+    "qa:browser:da28-09-turns": "node scripts/qa_browser_gate_da28_09_turns.cjs",
     "materialize:sandbox-fightscreen": "pnpm exec vitest run src/tests/FightScreenFixture.test.ts -t \"materializes the repository public package\"",
     "audit:authority-references": "node scripts/audit_authority_references.cjs",
     "check:boundaries": "node scripts/check_boundaries.cjs",

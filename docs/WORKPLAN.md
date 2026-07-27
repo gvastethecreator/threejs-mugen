@@ -2,9 +2,9 @@
 
 ## DA28 series (in progress, 2026-07-26)
 
-DA28-01…08 closed through live Turns bridge. Next: **DA28-09** Turns browser
-matrix. Phase order: browser Turns/input; MUGEN-lite execution; MUGEN breadth;
-Studio durability; assets/scanner/source/IKEMEN/boundaries. See
+DA28-01…10 closed through Turns matrix and gamepad. Next: **DA28-11** Nova/Mira
+live execution. Phase order: MUGEN-lite execution; MUGEN breadth; Studio
+durability; assets/scanner/source/IKEMEN/boundaries. See
 `docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md`.
 
 ## Common.Fx + FightScreen - DA27-09 (closed-bounded, 2026-07-26)

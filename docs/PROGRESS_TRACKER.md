@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Gamepad input - DA28-10 (closed-bounded, 2026-07-26)
+
+- Gamepad API polling + App merge. Entry 610. Next: **DA28-11**. Scores held.
+
+## Turns browser matrix - DA28-09 (closed-bounded, 2026-07-26)
+
+- Unit matrix + desktop/mobile browser gate. Entry 609. Scores held.
+
 ## Live Turns bridge - DA28-08 (closed-bounded, 2026-07-26)
 
 - RuntimeTurnsTransaction projected around live handoff. Entry 608. Next:

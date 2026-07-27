@@ -1,10 +1,19 @@
 ﻿# Roadmap Execution Board
 
+## Current gamepad input - DA28-10 (closed-bounded, 2026-07-26)
+
+Gamepad API polling + App keyboard/gamepad merge.
+Next: **DA28-11**. Report: `docs/research/2026-07-26-da28-10-gamepad-input.md`.
+
+## Current Turns browser matrix - DA28-09 (closed-bounded, 2026-07-26)
+
+Unit multi-path matrix + desktop/mobile browser gate.
+Report: `docs/research/2026-07-26-da28-09-turns-browser-matrix.md`.
+
 ## Current live Turns bridge - DA28-08 (closed-bounded, 2026-07-26)
 
 RuntimeTurnsTransaction receipts around live handoff.
-Next: **DA28-09**. Report:
-`docs/research/2026-07-26-da28-08-live-turns-bridge.md`.
+Report: `docs/research/2026-07-26-da28-08-live-turns-bridge.md`.
 
 ## Current live plural oracle - DA28-07 (closed-bounded, 2026-07-26)
 
@@ -95,7 +104,7 @@ vector, DA26-29 BoundaryManifest. Report:
 MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
 deterministic equality. Browser Gamepad API remains open with DA26-13.
 
-Next queue head: **DA28-09** (22 DA28 tasks open after DA28-08).
+Next queue head: **DA28-11** (20 DA28 tasks open after DA28-10).
 
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 

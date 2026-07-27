@@ -1,10 +1,8 @@
 {
   "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
-  "generatedAt": "2026-07-26T23:38:25.757Z",
-  "closedThrough": "DA28-08",
+  "generatedAt": "2026-07-27T00:16:35.409Z",
+  "closedThrough": "DA28-10",
   "nextQueue": [
-    "DA28-09",
-    "DA28-10",
     "DA28-11",
     "DA28-12",
     "DA28-13",
@@ -85,11 +83,14 @@
       "DA28-06 live GlobalProjectileSchedule wired into EffectActorWorld combat order",
       "DA28-07 LivePluralCombatOracle consumes live roots/helpers with mutation integrity",
       "DA28-08 LiveRuntimeTurnsBridge projects handoff into RuntimeTurnsTransaction",
+      "DA28-09 TurnsBrowserMatrix + desktop/mobile browser gate",
+      "DA28-10 GamepadInputAdapter polls Gamepad API into MatchInputPolicy seats",
       "historical sections may retain old cursors when labeled historical",
       "single current authority selector for docs and issues 01-07"
     ],
     "blocked": [
-      "claiming DA28-09..30 product closes from Turns bridge alone",
+      "claiming DA28-11..30 product closes from Turns/gamepad alone",
+      "every physical gamepad device from emulator proof",
       "full plural projectile parity without browser matrix",
       "native Nova/Mira rows raising imported-package coverage",
       "projecting T383 or T342 as current global/product without label",
@@ -100,6 +101,6 @@
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "23c02f450020610d72ab8e35d43711e6bf7f76928f48b774b1014ac81eda3070"
+    "value": "0a9d46bfcf84d75b9bd7ba57f66d695ecfabb0cb4dceb6849c49e57019df203a"
   }
 }

@@ -62,8 +62,8 @@ if (!/^DA2[678]-\d{2}$/.test(closed)) {
 if (!Array.isArray(selector.nextQueue)) {
   fail("nextQueue must be an array");
 }
-if (selector.nextQueue?.[0] !== "DA28-09") {
-  fail(`expected next queue head DA28-09 (Turns browser matrix), got ${selector.nextQueue?.[0]}`);
+if (selector.nextQueue?.[0] !== "DA28-11") {
+  fail(`expected next queue head DA28-11 (Nova/Mira live execution), got ${selector.nextQueue?.[0]}`);
 }
 for (const id of selector.nextQueue || []) {
   if (/^DA26-(0[1-9]|1[0-9]|2[0-9]|30)$/.test(String(id))) {
@@ -72,7 +72,7 @@ for (const id of selector.nextQueue || []) {
   if (/^DA27-0[1-9]$/.test(String(id))) {
     fail(`nextQueue still lists closed id ${id}`);
   }
-  if (/^DA28-0[1-8]$/.test(String(id))) {
+  if (/^DA28-0[1-9]$/.test(String(id)) || id === "DA28-10") {
     fail(`nextQueue still lists closed id ${id}`);
   }
 }

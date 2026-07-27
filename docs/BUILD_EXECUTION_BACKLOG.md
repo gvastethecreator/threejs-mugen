@@ -1,5 +1,19 @@
 # Build Execution Backlog
 
+## Entry 610 - DA28-10 Gamepad input adapter
+
+Closed DA28-10: Gamepad API polling into MatchInputPolicy seats; App merges
+keyboard + gamepad on match step. Report:
+`docs/research/2026-07-26-da28-10-gamepad-input.md`. formal/global stay
+`32466c6e`. Scores held. Next: **DA28-11** Nova/Mira live execution.
+
+## Entry 609 - DA28-09 Turns browser matrix
+
+Closed DA28-09: `TurnsBrowserMatrix/v1` multi-path unit lanes + desktop/mobile
+browser gate under `docs/evidence/da28-09-turns-browser/`. Report:
+`docs/research/2026-07-26-da28-09-turns-browser-matrix.md`. formal/global stay
+`32466c6e`. Scores held. Next was **DA28-10**.
+
 ## Entry 608 - DA28-08 live Turns transaction bridge
 
 Closed DA28-08: `LiveRuntimeTurnsBridge/v1` projects live roots into

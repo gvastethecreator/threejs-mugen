@@ -19,10 +19,8 @@ const generatedAt = args["generated-at"] ?? new Date().toISOString();
 
 const document = createDocument({
   generatedAt,
-  closedThrough: "DA28-08",
+  closedThrough: "DA28-10",
   nextQueue: [
-    "DA28-09",
-    "DA28-10",
     "DA28-11",
     "DA28-12",
     "DA28-13",
@@ -77,14 +75,17 @@ const document = createDocument({
       "DA28-06 live GlobalProjectileSchedule wired into EffectActorWorld combat order",
       "DA28-07 LivePluralCombatOracle consumes live roots/helpers with mutation integrity",
       "DA28-08 LiveRuntimeTurnsBridge projects handoff into RuntimeTurnsTransaction",
+      "DA28-09 TurnsBrowserMatrix + desktop/mobile browser gate",
+      "DA28-10 GamepadInputAdapter polls Gamepad API into MatchInputPolicy seats",
     ],
     blocked: [
       "score movement",
       "projecting T383 or T342 as current global/product without label",
       "using c01d5e70/Entry 585/dirty juggle as live current selectors",
-      "claiming DA28-09..30 product closes from Turns bridge alone",
+      "claiming DA28-11..30 product closes from Turns/gamepad alone",
       "native Nova/Mira rows raising imported-package coverage",
       "full plural projectile parity without browser matrix",
+      "every physical gamepad device from emulator proof",
     ],
   },
 });

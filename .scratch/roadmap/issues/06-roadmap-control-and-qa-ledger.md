@@ -3,10 +3,11 @@
 ## 2026-07-26 current authority override (post-DA27-09)
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
-(`closedThrough` DA28-08). Live next head is **DA28-09**. Formal/global is
-`32466c6e`; focal T406 and visual/product T342 remain separate. DA28-03…08
-closed P0 evidence and live combat/Turns bridges. Scores do not move.
-Run `pnpm audit:authority-references` after selector materialization.
+(`closedThrough` DA28-10). Live next head is **DA28-11**. Formal/global is
+`32466c6e`; focal T406 and visual/product T342 remain separate. DA28-03…10
+closed P0 evidence, live combat/Turns, browser Turns matrix, and gamepad.
+Scores do not move. Run `pnpm audit:authority-references` after selector
+materialization.
 
 Status: ready-for-agent
 Labels: docs, roadmap, ready-for-agent

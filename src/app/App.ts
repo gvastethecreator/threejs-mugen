@@ -43,6 +43,7 @@ import iconArrowForwardUp from "@tabler/icons/outline/arrow-forward-up.svg?raw";
 import iconGrid3x3 from "@tabler/icons/outline/grid-3x3.svg?raw";
 import { MugenAudioSystem } from "../game/audio/MugenAudioSystem";
 import { KeyboardInputAdapter } from "../game/input/KeyboardInputAdapter";
+import { GamepadInputAdapter } from "../game/input/GamepadInputAdapter";
 import { ThreeMugenRenderer } from "../game/render/ThreeMugenRenderer";
 import { AtlasSpriteProvider } from "../game/textures/AtlasSpriteProvider";
 import { CompositeSpriteProvider } from "../game/textures/CompositeSpriteProvider";
@@ -862,6 +863,7 @@ export class App {
   private readonly nativeHitSparks = new NativeHitSparkSpriteProvider();
   private readonly audio = new MugenAudioSystem();
   private readonly keyboard = new KeyboardInputAdapter();
+  private readonly gamepad = new GamepadInputAdapter();
   private readonly commandBuffer = new CommandBuffer();
   private readonly loader = new MugenCharacterLoader();
   private readonly stageLoader = new MugenStageLoader();
@@ -1198,7 +1200,7 @@ export class App {
         this.snapshot =
           this.isInspectorRuntimeSurface()
             ? this.inspectorRuntime.dispatch({ type: "step", ticks: 1 })
-            : this.matchRuntime.step({ p1: this.keyboard.getState() }, { force: true });
+            : this.matchRuntime.step(this.collectMatchInput(), { force: true });
         if (!this.isInspectorRuntimeSurface()) {
           this.audio.processSnapshot(this.snapshot);
         }
@@ -3138,15 +3140,24 @@ export class App {
     };
   }
 
+  /** Merge keyboard (seat 1) with polled gamepads (seats 1–2). DA28-10. */
+  private collectMatchInput(): { p1: Set<string>; p2: Set<string> } {
+    this.gamepad.poll(this.snapshot.tick);
+    const p1 = new Set([...this.keyboard.getState(), ...this.gamepad.getState(1)]);
+    const p2 = this.gamepad.getState(2);
+    return { p1, p2 };
+  }
+
   private onFrame(deltaMs: number): void {
-    this.commandBuffer.push(this.snapshot.tick, this.keyboard.getState());
+    const matchInput = this.collectMatchInput();
+    this.commandBuffer.push(this.snapshot.tick, matchInput.p1);
     if (this.snapshot.playing) {
       this.pendingMs += deltaMs;
       while (this.pendingMs >= 1000 / 60) {
         this.snapshot =
           this.isInspectorRuntimeSurface()
             ? this.inspectorRuntime.step(1)
-            : this.matchRuntime.step({ p1: this.keyboard.getState() });
+            : this.matchRuntime.step(matchInput);
         if (!this.isInspectorRuntimeSurface()) {
           this.audio.processSnapshot(this.snapshot);
         }
@@ -4102,7 +4113,7 @@ export class App {
           this.snapshot =
             this.isInspectorRuntimeSurface()
               ? this.inspectorRuntime.dispatch({ type: "step", ticks: 1 })
-              : this.matchRuntime.step({ p1: this.keyboard.getState() }, { force: true });
+              : this.matchRuntime.step(this.collectMatchInput(), { force: true });
           if (!this.isInspectorRuntimeSurface()) {
             this.audio.processSnapshot(this.snapshot);
           }

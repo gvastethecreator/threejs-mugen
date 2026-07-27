@@ -9,7 +9,7 @@ Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 ## 2026-07-26 current authority override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
-(`closedThrough` DA28-08). T390 ReversalDef topology and T406 active juggle are
+(`closedThrough` DA28-10). T390 ReversalDef topology and T406 active juggle are
 closed at named ceilings. Projectile/Helper/ModifyHitDef, live team transaction,
 and broader IKEMEN topology remain blocked. Source epoch records juggle=`same`
 between 05b/4aa; other families need review. Proposed cuts are DA28-16…18,

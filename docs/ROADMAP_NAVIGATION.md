@@ -9,18 +9,19 @@ This is the fast map for agents and humans who need to know where to look, what 
 **Single source:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) ·
 [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)
 
-- `closedThrough`: **DA28-08** (live Turns transaction bridge)
+- `closedThrough`: **DA28-10** (Turns matrix + gamepad)
 - formal/global: **`32466c6e`** (Entry 604 / DA28-02 gate)
 - focal: **T406** `07ad9227`
-- visual/product: **T342** `1085badb` (DA28-03 subcursors are bounded children)
+- visual/product: **T342** `1085badb` (DA28-03/09 subcursors are bounded children)
 - source: epoch dual pins 05b / 4aa (juggle=`same`)
-- next queue: **DA28-09** … **DA28-30** (22 open)
+- next queue: **DA28-11** … **DA28-30** (20 open)
 - Scores held (DA28-05 adjudication `movement=none`).
 
-Gate pin is `32466c6e`. Entry 608 closed DA28-08. Next live cut is DA28-09.
+Gate pin is `32466c6e`. Entry 610 closed DA28-10. Next live cut is DA28-11.
 Plan source:
 [post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md);
-[live Turns](research/2026-07-26-da28-08-live-turns-bridge.md).
+[Turns matrix](research/2026-07-26-da28-09-turns-browser-matrix.md);
+[gamepad](research/2026-07-26-da28-10-gamepad-input.md).
 
 The T287/T288 selectors below are **historical**.
 
