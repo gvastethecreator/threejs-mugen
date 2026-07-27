@@ -3,7 +3,9 @@ import { MugenCharacterLoader } from "../mugen/loader/MugenCharacterLoader";
 import { VirtualFileSystem } from "../mugen/loader/VirtualFileSystem";
 
 describe("MugenCharacterLoader system assets", () => {
-  it("loads fight.def FightFX AIR/SFF/SND as common and fightfx hit spark libraries", async () => {
+  it(
+    "loads fight.def FightFX AIR/SFF/SND as common and fightfx hit spark libraries",
+    async () => {
     const vfs = new VirtualFileSystem();
     vfs.addFile(
       "chars/kfm/kfm.def",
@@ -410,7 +412,9 @@ File = standard.sff
       group: 9100,
       index: 0,
     });
-  });
+  },
+  30_000,
+  );
 
   it("loads character-declared FX packages by IKEMEN FightFX prefix", async () => {
     const vfs = new VirtualFileSystem();

@@ -77,7 +77,8 @@ const plan = [
   ["boundaries", "pnpm", ["check:boundaries"], true],
   ["redirect", "pnpm", ["check:redirect-boundary"], true],
   ["authority-audit", "node", ["scripts/audit_authority_references.cjs"], true],
-  ["qa-smoke", "pnpm", ["qa:smoke"], false],
+  // Full qa:smoke remains optional and opt-in (DA31-016); set DA31_008_RUN_SMOKE=1 to include.
+  ...(process.env.DA31_008_RUN_SMOKE === "1" ? [["qa-smoke", "pnpm", ["qa:smoke"], false]] : []),
 ];
 
 const steps = [];

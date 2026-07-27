@@ -1,0 +1,69 @@
+$ node scripts/qa_smoke.cjs
+Error: QA smoke failed:
+runtime-desktop: native hit spark renderer did not expose an active spark after KeyA
+runtime-desktop: native hit spark renderer did not expose player AIR spark source metadata
+runtime-desktop: native hit spark renderer did not resolve a player AIR spark sprite
+runtime-desktop: native hit spark renderer did not expose resolved sprite frame/axis diagnostics
+runtime-mobile: native hit spark renderer did not expose an active spark after KeyA
+runtime-mobile: native hit spark renderer did not expose player AIR spark source metadata
+runtime-mobile: native hit spark renderer did not resolve a player AIR spark sprite
+runtime-mobile: native hit spark renderer did not expose resolved sprite frame/axis diagnostics
+mugen-lite visual desktop: ZIP load, imported sprite presentation, or multi-frame canvas proof failed
+mugen-lite visual desktop walk: input-driven pose or idle return proof failed
+mugen-lite visual desktop crouch: input-driven pose or idle return proof failed
+mugen-lite visual desktop jump: input-driven pose or idle return proof failed
+mugen-lite visual desktop: idle/walk/crouch/jump masks were not mutually distinct
+mugen-lite visual desktop getHit: imported combat state/frame/crop proof failed
+mugen-lite visual desktop fallMotion: imported combat state/frame/crop proof failed
+mugen-lite visual desktop fallen: imported combat state/frame/crop proof failed
+mugen-lite visual desktop: combat damage, unique poses, or idle return proof failed
+mugen-lite visual desktop recovery getHit: imported state/frame/crop proof failed
+mugen-lite visual desktop recovery fallMotion: imported state/frame/crop proof failed
+mugen-lite visual desktop recovery fallen: imported state/frame/crop proof failed
+mugen-lite visual desktop recovery recovery: imported state/frame/crop proof failed
+mugen-lite visual desktop: recovery roster, damage, unique poses, or idle return proof failed
+mugen-lite visual desktop: guarded imported contact, exact chip, or idle return proof failed
+mugen-lite visual desktop: legal NoKOSlow KO, normal playback, or reset proof failed
+mugen-lite visual desktop: ACT-backed source/destination RemapPal pixel proof failed
+mugen-lite visual mobile: ZIP load, imported sprite presentation, or multi-frame canvas proof failed
+mugen-lite visual mobile walk: input-driven pose or idle return proof failed
+mugen-lite visual mobile crouch: input-driven pose or idle return proof failed
+mugen-lite visual mobile jump: input-driven pose or idle return proof failed
+mugen-lite visual mobile: idle/walk/crouch/jump masks were not mutually distinct
+mugen-lite visual mobile getHit: imported combat state/frame/crop proof failed
+mugen-lite visual mobile fallMotion: imported combat state/frame/crop proof failed
+mugen-lite visual mobile fallen: imported combat state/frame/crop proof failed
+mugen-lite visual mobile: combat damage, unique poses, or idle return proof failed
+mugen-lite visual mobile recovery getHit: imported state/frame/crop proof failed
+mugen-lite visual mobile recovery fallMotion: imported state/frame/crop proof failed
+mugen-lite visual mobile recovery fallen: imported state/frame/crop proof failed
+mugen-lite visual mobile recovery recovery: imported state/frame/crop proof failed
+mugen-lite visual mobile: recovery roster, damage, unique poses, or idle return proof failed
+mugen-lite visual mobile: guarded imported contact, exact chip, or idle return proof failed
+mugen-lite visual mobile: legal NoKOSlow KO, normal playback, or reset proof failed
+mugen-lite visual mobile: ACT-backed source/destination RemapPal pixel proof failed
+studio-workbench: premium cockpit workbench was missing stage deck, pipeline, health inspector, expanded console, or large playfield
+studio-workbench-tablet: 1024px workbench layout overflowed or lost stage status
+studio-build: Build surface did not render
+studio-build: shared Trust Chain rows were missing targets, deltas, or Build Readiness next actions
+studio-build: project package panel or bridge summary missing
+studio-build: revision-bound evidence envelopes were not surfaced through Evidence/Trust Chain
+studio-build: imported package analysis was not surfaced through Evidence/Trust Chain
+studio-build: promoted compatibility snapshot was not visible as an exportable Build record
+studio-modules: shared module contracts and boundary claims were not visible through Studio Modules and the QA bridge
+studio-source-relink: missing source package did not relink through the Build Center UI
+ikemen-scan: scanner-only IKEMEN ZSS/Lua/screenpack/model-stage findings did not reach Studio Evidence and unsupported reports
+studio-assets: Asset Library did not expose filtered project asset records
+studio-evidence: Evidence surface did not render
+studio-evidence: shared Trust Chain rows were missing targets, deltas, or Build Readiness next actions
+studio-evidence: semantic export digest or Trust Chain contract drifted from Build
+studio-evidence: promoted compatibility snapshot was not visible as validated evidence
+studio-evidence: persisted trace evidence history missing after export
+studio-evidence: trace comparison review did not expose metric and gate diff rows
+studio-evidence: trace frame scrubber did not expose selected frame timeline, frame diff, and world delta data
+studio-debug: Runtime Debug Studio did not expose the actor registry
+studio-debug: targets lens did not expose target-link rows, gate-evidence panel, and URL state
+studio-debug: effect world evidence did not jump to a world-backed trace frame scrubber row
+studio-debug: selected imported actor did not expose CNS execution and command-buffer evidence
+    at assertSmoke (D:\DEV\threejs-mugen\mugen-web-sandbox\scripts\qa_smoke.cjs:5375:11)
+    at main (D:\DEV\threejs-mugen\mugen-web-sandbox\scripts\qa_smoke.cjs:340:5)

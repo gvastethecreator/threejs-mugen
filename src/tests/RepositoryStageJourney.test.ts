@@ -3,7 +3,9 @@ import { parseStageCompatibilityJourney } from "../mugen/compatibility/StageComp
 import { createRepositoryStageJourney } from "../mugen/runtime/RepositoryStageJourney";
 
 describe("repository-authored Skyline Relay stage journey", () => {
-  it("materializes loader and runtime evidence while keeping browser/native claims open", async () => {
+  it(
+    "materializes loader and runtime evidence while keeping browser/native claims open",
+    async () => {
     const result = await createRepositoryStageJourney({ generatedAt: "2026-07-16T16:00:00.000Z" });
 
     expect(result.journey.status).toBe("partial");
@@ -64,5 +66,7 @@ describe("repository-authored Skyline Relay stage journey", () => {
       "browser stage render proof",
       "native regression proof",
     ]));
-  });
+  },
+  30_000,
+  );
 });

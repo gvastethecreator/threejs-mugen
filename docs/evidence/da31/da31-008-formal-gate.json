@@ -1,0 +1,183 @@
+{
+  "schema": "Da31FormalGate/v1",
+  "id": "DA31-008",
+  "generatedAt": "2026-07-27T18:12:43.281Z",
+  "subject": {
+    "schema": "Da31GateSubjectEnvelope/v1",
+    "subjectSha": "0274935ef2df3e3ecc39a265f3027223a6092463",
+    "dirtyTree": true,
+    "provisional": true,
+    "probePaths": [
+      "scripts/run_da31_008_formal_gate.cjs"
+    ],
+    "codePaths": [
+      "src/mugen/da31"
+    ],
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+  },
+  "headSha": "0274935ef2df3e3ecc39a265f3027223a6092463",
+  "ok": false,
+  "authoritative": false,
+  "toolVersions": {
+    "node": "v25.5.0",
+    "platform": "win32",
+    "pnpm": "11.17.0",
+    "typescript": "Version 7.0.2",
+    "vitest": "vitest/4.1.9 win32-x64 node-v25.5.0"
+  },
+  "steps": [
+    {
+      "name": "typecheck",
+      "required": true,
+      "command": "pnpm typecheck",
+      "startedAt": "2026-07-27T17:57:27.677Z",
+      "endedAt": "2026-07-27T17:57:32.615Z",
+      "durationMs": 4937,
+      "exitCode": 0,
+      "stdoutDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrDigest": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+      "stdoutBytes": 0,
+      "stderrBytes": 15,
+      "rawStdoutPath": "docs/evidence/da31/formal-logs/da31-008-typecheck.stdout.txt",
+      "rawStderrPath": "docs/evidence/da31/formal-logs/da31-008-typecheck.stderr.txt",
+      "testsPassed": null
+    },
+    {
+      "name": "test",
+      "required": true,
+      "command": "pnpm test",
+      "startedAt": "2026-07-27T17:57:32.616Z",
+      "endedAt": "2026-07-27T18:00:23.449Z",
+      "durationMs": 170833,
+      "exitCode": 1,
+      "stdoutDigest": "afd703fa0eeb2e77a9434496a6a563fbbe3577aa6a797033c27c1cadd8f0c81f",
+      "stderrDigest": "9b8941be27ac3944ba0bce1f0d9b9e2196bfe275fee4091f46a4dc913dd23092",
+      "stdoutBytes": 34784,
+      "stderrBytes": 2976,
+      "rawStdoutPath": "docs/evidence/da31/formal-logs/da31-008-test.stdout.txt",
+      "rawStderrPath": "docs/evidence/da31/formal-logs/da31-008-test.stderr.txt",
+      "testsPassed": null
+    },
+    {
+      "name": "trace",
+      "required": true,
+      "command": "pnpm qa:trace",
+      "startedAt": "2026-07-27T18:00:23.449Z",
+      "endedAt": "2026-07-27T18:02:16.283Z",
+      "durationMs": 112834,
+      "exitCode": 0,
+      "stdoutDigest": "f4d52643ff7ed3558ceac0900eb0553096b1dc7dd93210976b12d7f6e0ac2b65",
+      "stderrDigest": "3463db6ef572c30df636f7a13ea0f94a26705d175cf54839563de082a2d92701",
+      "stdoutBytes": 157573,
+      "stderrBytes": 29,
+      "rawStdoutPath": "docs/evidence/da31/formal-logs/da31-008-trace.stdout.txt",
+      "rawStderrPath": "docs/evidence/da31/formal-logs/da31-008-trace.stderr.txt",
+      "testsPassed": null
+    },
+    {
+      "name": "build",
+      "required": true,
+      "command": "pnpm build",
+      "startedAt": "2026-07-27T18:02:16.284Z",
+      "endedAt": "2026-07-27T18:02:25.215Z",
+      "durationMs": 8931,
+      "exitCode": 0,
+      "stdoutDigest": "0d7b124eb1d5369c254c1ce9c78f6cecaa383e2ae299824dcd1f0cd10f3eba6e",
+      "stderrDigest": "661758d795452007566f2997e9f25bbdab4de1191a87becb4ead747a53a0f793",
+      "stdoutBytes": 363,
+      "stderrBytes": 380,
+      "rawStdoutPath": "docs/evidence/da31/formal-logs/da31-008-build.stdout.txt",
+      "rawStderrPath": "docs/evidence/da31/formal-logs/da31-008-build.stderr.txt",
+      "testsPassed": null
+    },
+    {
+      "name": "boundaries",
+      "required": true,
+      "command": "pnpm check:boundaries",
+      "startedAt": "2026-07-27T18:02:25.215Z",
+      "endedAt": "2026-07-27T18:02:26.091Z",
+      "durationMs": 876,
+      "exitCode": 0,
+      "stdoutDigest": "4292c357e885383d3f4f4fe5909bbd5d0e743b7a365725348f0410a360c9deed",
+      "stderrDigest": "53281a73750a2fac63c90ceabca4fb1cd8966077c349db7f25f71710ed458074",
+      "stdoutBytes": 23,
+      "stderrBytes": 36,
+      "rawStdoutPath": "docs/evidence/da31/formal-logs/da31-008-boundaries.stdout.txt",
+      "rawStderrPath": "docs/evidence/da31/formal-logs/da31-008-boundaries.stderr.txt",
+      "testsPassed": null
+    },
+    {
+      "name": "redirect",
+      "required": true,
+      "command": "pnpm check:redirect-boundary",
+      "startedAt": "2026-07-27T18:02:26.091Z",
+      "endedAt": "2026-07-27T18:02:26.958Z",
+      "durationMs": 867,
+      "exitCode": 0,
+      "stdoutDigest": "a9ff25c30778710d211490000c9f73081e5a36bf34564d293db4646bbc4b0ba1",
+      "stderrDigest": "1fc0e845ba092ee0600caebad6f8ac457968c7b8f8cd6d479ad5c51cedd7109f",
+      "stdoutBytes": 50,
+      "stderrBytes": 61,
+      "rawStdoutPath": "docs/evidence/da31/formal-logs/da31-008-redirect.stdout.txt",
+      "rawStderrPath": "docs/evidence/da31/formal-logs/da31-008-redirect.stderr.txt",
+      "testsPassed": null
+    },
+    {
+      "name": "authority-audit",
+      "required": true,
+      "command": "node scripts/audit_authority_references.cjs",
+      "startedAt": "2026-07-27T18:02:26.959Z",
+      "endedAt": "2026-07-27T18:02:27.117Z",
+      "durationMs": 158,
+      "exitCode": 0,
+      "stdoutDigest": "cdccb8e94def3c9daa8c44391cb955e028f18b202927258587d6301250d61007",
+      "stderrDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 186,
+      "stderrBytes": 0,
+      "rawStdoutPath": "docs/evidence/da31/formal-logs/da31-008-authority-audit.stdout.txt",
+      "rawStderrPath": "docs/evidence/da31/formal-logs/da31-008-authority-audit.stderr.txt",
+      "testsPassed": null
+    },
+    {
+      "name": "qa-smoke",
+      "required": false,
+      "command": "pnpm qa:smoke",
+      "startedAt": "2026-07-27T18:02:27.117Z",
+      "endedAt": "2026-07-27T18:12:43.280Z",
+      "durationMs": 616163,
+      "exitCode": 1,
+      "stdoutDigest": "70691ee46df8bffd84dd117eb9297af7108f7fc0b6be5f63d6cb30aef0d605b5",
+      "stderrDigest": "514a8505d6310c3e4051e1b1588f03291e2497caa6db1c0f21d7e0202570b514",
+      "stdoutBytes": 46,
+      "stderrBytes": 5831,
+      "rawStdoutPath": "docs/evidence/da31/formal-logs/da31-008-qa-smoke.stdout.txt",
+      "rawStderrPath": "docs/evidence/da31/formal-logs/da31-008-qa-smoke.stderr.txt",
+      "testsPassed": null
+    }
+  ],
+  "counts": {
+    "testsPassed": null,
+    "required": 7,
+    "optional": 1
+  },
+  "optional": [
+    {
+      "name": "qa-smoke",
+      "exitCode": 1,
+      "contributesToFormalPin": false
+    }
+  ],
+  "claimCeiling": "provisional formal observations on dirty tree; pin only when clean",
+  "claims": {
+    "allowed": [],
+    "blocked": [
+      "score movement",
+      "qa-smoke as required",
+      "adjudicatedThrough advance without DA31-007"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "36c77a4ed1c775dd6fe3e7468ae671d1bdd152b1b598a930e8c6d06de886dff5"
+  }
+}
