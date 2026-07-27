@@ -1,6 +1,6 @@
 {
   "schema": "mugen-web-sandbox/control-source/v1",
-  "generatedAt": "2026-07-27T14:26:47.936Z",
+  "generatedAt": "2026-07-27T14:33:02.629Z",
   "acceptedLadder": "DA28-30",
   "seriesHold": {
     "series": "DA29",
@@ -20,19 +20,19 @@
   },
   "cursors": {
     "head": {
-      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
-      "artifact": "git HEAD at DA30-021 formal repair",
-      "claimLimit": "DA30-021 measured required matrix at this SHA (raw logs+counts); optional smoke/authority recorded only"
+      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
+      "artifact": "git HEAD at DA30-021 formal clause repair",
+      "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
     },
     "formal": {
-      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
+      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
       "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
-      "claimLimit": "DA30-021 measured required matrix at this SHA (raw logs+counts); optional smoke/authority recorded only"
+      "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
     },
     "global": {
-      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
+      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
       "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
-      "claimLimit": "DA30-021 measured required matrix at this SHA (raw logs+counts); optional smoke/authority recorded only"
+      "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
     },
     "focal": {
       "sha": "07ad9227",
@@ -45,9 +45,9 @@
       "claimLimit": "T342 visual only; not HEAD product truth"
     },
     "product": {
-      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
+      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
       "artifact": "docs/evidence/da30/da30-024-play-browser-gate.json",
-      "claimLimit": "Play semantic deltas + Studio save/focus/geometry at formal repair SHA; not broad product"
+      "claimLimit": "Play semantic + Studio save/focus/geometry at formal repair SHA"
     },
     "sourceNormative": {
       "sha": "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",

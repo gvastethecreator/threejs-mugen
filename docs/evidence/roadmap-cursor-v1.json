@@ -1,6 +1,6 @@
 {
   "schemaVersion": "mugen-web-sandbox/roadmap-cursor/v1",
-  "generatedAt": "2026-07-27T14:27:30.985Z",
+  "generatedAt": "2026-07-27T14:33:02.725Z",
   "branch": "master",
   "scores": {
     "sandbox": "65",
@@ -14,71 +14,72 @@
   "cursors": [
     {
       "kind": "head",
-      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
-      "date": "2026-07-27T14:27:30.985Z",
-      "artifact": "git HEAD at DA30-021 formal repair",
-      "claimLimit": "DA30-021 measured required matrix at this SHA (raw logs+counts); optional smoke/authority recorded only"
+      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
+      "date": "2026-07-27T14:33:02.725Z",
+      "artifact": "git HEAD at DA30-021 formal clause repair",
+      "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
     },
     {
       "kind": "formal",
-      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
-      "date": "2026-07-27T14:27:30.985Z",
+      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
+      "date": "2026-07-27T14:33:02.725Z",
       "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
-      "claimLimit": "DA30-021 measured required matrix at this SHA (raw logs+counts); optional smoke/authority recorded only"
+      "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
     },
     {
       "kind": "focal",
       "sha": "07ad9227",
-      "date": "2026-07-27T14:27:30.985Z",
+      "date": "2026-07-27T14:33:02.725Z",
       "artifact": "docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md",
       "claimLimit": "T406 active juggle runtime only"
     },
     {
       "kind": "global",
-      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
-      "date": "2026-07-27T14:27:30.985Z",
+      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
+      "date": "2026-07-27T14:33:02.725Z",
       "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
-      "claimLimit": "DA30-021 measured required matrix at this SHA (raw logs+counts); optional smoke/authority recorded only"
+      "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
     },
     {
       "kind": "visual",
       "sha": "1085badb",
-      "date": "2026-07-27T14:27:30.985Z",
+      "date": "2026-07-27T14:33:02.725Z",
       "artifact": "docs/research (T342 visual gate)",
       "claimLimit": "T342 visual only; not HEAD product truth"
     },
     {
       "kind": "product",
-      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
-      "date": "2026-07-27T14:27:30.985Z",
+      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
+      "date": "2026-07-27T14:33:02.725Z",
       "artifact": "docs/evidence/da30/da30-024-play-browser-gate.json",
-      "claimLimit": "Play semantic deltas + Studio save/focus/geometry at formal repair SHA; not broad product"
+      "claimLimit": "Play semantic + Studio save/focus/geometry at formal repair SHA"
     },
     {
       "kind": "source",
       "sha": "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",
-      "date": "2026-07-27T14:27:30.985Z",
+      "date": "2026-07-27T14:33:02.725Z",
       "artifact": "docs/evidence/source-authority-epoch-v1.json",
-      "claimLimit": "normative pin 05b; family provenance in epoch; working=4aa0ba38f851; closedThrough=DA30-120; next=empty"
+      "claimLimit": "normative pin 05b; family provenance in epoch; working=4aa0ba38f851"
     }
   ],
   "claims": {
     "allowed": [
       "control hold and DA30 recovery queue",
-      "control-source closedThrough=DA30-120",
       "historical DA28-30 accepted ladder",
-      "scores held unless DA30 score adjudication authorizes movement"
+      "scores held unless DA30 score adjudication authorizes movement",
+      "control-source closedThrough=DA30-120",
+      "nextQueueHead=empty"
     ],
     "blocked": [
       "DA29-200 as accepted watermark",
-      "formal/global tip rewrite without measured gate at claimed SHA",
       "score movement",
+      "formal/global tip rewrite without measured gate at claimed SHA",
       "using disagreeing selector/cursor projections"
     ]
   },
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "f6ee914667322166600e304bb9ec8029269043cf5d3c4a3eeebd86558cac7ea8"
+    "value": "cfff19d32d73e6cd8b5110e03ff4022434c82868671010a339fb9a0622f97ce3"
   }
 }

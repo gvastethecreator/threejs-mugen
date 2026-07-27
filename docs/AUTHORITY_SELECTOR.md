@@ -3,7 +3,7 @@
 ## 2026-07-27 clause repair — DA30-021 / 024 / 025
 
 Prior post-025 audit disputed written clauses for formal, Play, and
-Studio/Inspect gates. Repair evidence is on formal head `81f8cc45`:
+Studio/Inspect gates. Repair evidence is on formal head `ee23122f`:
 
 - **DA30-021**: required six-command matrix green; raw stdout/stderr files +
   digests; tool versions; exact test counts (3128 passed); optional smoke and
@@ -41,12 +41,12 @@ Plan: [`DA30 recovery roadmap`](DA30_RECOVERY_ROADMAP.md)
 
 | Cursor | SHA / pin | Claim ceiling |
 | --- | --- | --- |
-| current HEAD | `81f8cc45…` | tip at DA30-021 formal clause repair |
-| formal | `81f8cc45…` DA30-021 required matrix | raw logs + digests + exact counts; optional smoke not required |
+| current HEAD | `ee23122f…` | tip at DA30-021 formal clause repair |
+| formal | `ee23122f…` DA30-021 required matrix | raw logs + digests + exact counts; optional smoke not required |
 | focal | `07ad9227` T406 | active StateDef/HitDef juggle under `ikemen-go` |
-| global | `81f8cc45…` DA30-021 measured | same SHA as formal required matrix |
+| global | `ee23122f…` DA30-021 measured | same SHA as formal required matrix |
 | visual | `1085badb` T342 | broad matrix parent; DA28 browser routes are bounded |
-| product | `81f8cc45…` Play/Studio repair | semantic Play + Studio save/focus/geometry only |
+| product | `ee23122f…` Play/Studio repair | semantic Play + Studio save/focus/geometry only |
 | source normative | `05b7d98a` | pin identity; family provenance in epoch |
 | source working | `4aa0ba38` | reviewed families only (juggle=`same`) |
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
-  "generatedAt": "2026-07-27T14:27:30.985Z",
+  "generatedAt": "2026-07-27T14:33:02.725Z",
   "closedThrough": "DA30-120",
   "nextQueue": [],
   "scores": {
@@ -13,9 +13,9 @@
   },
   "cursors": {
     "formal": {
-      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
+      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
       "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
-      "claimLimit": "DA30-021 measured required matrix at this SHA (raw logs+counts); optional smoke/authority recorded only"
+      "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
     },
     "focal": {
       "sha": "07ad9227",
@@ -23,9 +23,9 @@
       "claimLimit": "T406 active juggle runtime only"
     },
     "global": {
-      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
+      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
       "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
-      "claimLimit": "DA30-021 measured required matrix at this SHA (raw logs+counts); optional smoke/authority recorded only"
+      "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
     },
     "visual": {
       "sha": "1085badb",
@@ -33,9 +33,9 @@
       "claimLimit": "T342 visual only; not HEAD product truth"
     },
     "product": {
-      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
+      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
       "artifact": "docs/evidence/da30/da30-024-play-browser-gate.json",
-      "claimLimit": "Play semantic deltas + Studio save/focus/geometry at formal repair SHA; not broad product"
+      "claimLimit": "Play semantic + Studio save/focus/geometry at formal repair SHA"
     },
     "sourceNormative": {
       "sha": "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",
@@ -68,8 +68,15 @@
     ]
   },
   "canonicalization": "stable-json/v0",
+  "seriesHold": {
+    "series": "DA29",
+    "status": "unadjudicated-candidate",
+    "watermarkAccepted": false,
+    "note": "DA29-001…200 artifacts are candidate only until DA30 semantic revalidation"
+  },
+  "controlSourceRef": "docs/evidence/control-source-v1.json",
   "digest": {
     "algorithm": "sha-256",
-    "value": "514a6b55fd91068e1f00eee6b4aa76b93982ee489100732d801c6b523427868d"
+    "value": "8cd2df641f155c0b76e89856a74b908a9de3d53795b1cb7708b2748ae52b8f25"
   }
 }
