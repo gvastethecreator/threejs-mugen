@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-049",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Implement one bounded throw/reversal ownership journey. Depends on DA29-048 and DA29-029.",
+  "acceptance": "Imported success, miss, interrupted, invalid target, KO, and reset routes prove atomic mutation and replay checksum.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/CompatibilityJourney.test.ts",
+    "src/tests/DualCharacterLegalJourney.test.ts",
+    "src/tests/MugenLiteJourneyFixture.test.ts",
+    "src/tests/RepositoryStageJourney.test.ts",
+    "src/tests/RepositoryStageJourneyMaterializer.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "ea46c8e26dcf087ce49000f59ff9bc71d21d84d314574204678d99b0b6bf39d2"
+  }
+}

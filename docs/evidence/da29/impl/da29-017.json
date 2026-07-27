@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-017",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Generate browser evidence facts from the runner. Depends on DA29-003 and DA29-009.",
+  "acceptance": "Facts include route, viewport, DPR, browser, input mode, artifact digests, console/page errors, focus checks, and commit; hand-authored green status is rejected.",
+  "entryPoints": [
+    "scripts/qa_smoke.cjs",
+    "scripts/qa_browser_gate_da28_09_turns.cjs"
+  ],
+  "tests": [
+    "src/tests/BrowserSubcursor.test.ts",
+    "src/tests/CommonEvidenceFacts.test.ts",
+    "src/tests/EvidenceEnvelope.test.ts",
+    "src/tests/EvidenceEnvelopeFactsBridge.test.ts",
+    "src/tests/EvidenceSubject.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "c4524855c31c26b262930235ebc2d08fd906b356973907c88634d2ce254f9e1f"
+  }
+}

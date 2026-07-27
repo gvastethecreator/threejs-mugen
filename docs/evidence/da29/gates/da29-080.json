@@ -1,0 +1,31 @@
+{
+  "schema": "Da29GateEvidence/v1",
+  "id": "DA29-080",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "measured": false,
+  "gateSha": null,
+  "inheritance": {
+    "rule": "static-or-prior-matrix-ceiling",
+    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
+    "blocks": [
+      "formal/global tip rewrite",
+      "score movement",
+      "broad usability"
+    ]
+  },
+  "cut": "Prove Common.Fx and character audio output in browsers. Depends on DA29-079 and DA29-003.",
+  "acceptance": "Gesture-gated Chromium route verifies decoded repository-owned samples, graph connection, non-zero post-mixer signal, pan/volume, overlap, stop/reset, errors, and context close.",
+  "relatedArtifacts": [
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/controller-coverage-matrix-v1.json",
+    "docs/evidence/native-asset-provenance-v1.json",
+    "docs/evidence/scanner-capability-artifact-v1.json",
+    "docs/evidence/compatibility-corpus-v1.2.json",
+    "docs/evidence/score-adjudication-v1.json"
+  ],
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "f02a8f7634d6b37be4feb079095f4ba3c138c0eba6a18d7b1bf3bbf9d512529d"
+  }
+}

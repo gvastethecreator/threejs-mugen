@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-043",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Add a third independent repository-authored character fixture. Depends on DA29-031…040.",
+  "acceptance": "Permission, independent CMD/CNS/AIR syntax, assets, digests, collision, one contact route, malformed variants, and provenance pass.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/AuthoritySelector.test.ts",
+    "src/tests/CharacterRenderer.test.ts",
+    "src/tests/CodeFuManFixture.test.ts",
+    "src/tests/DualCharacterLegalJourney.test.ts",
+    "src/tests/FightScreenFixture.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "12a7725d681e8d66ee8197755cd93293190fc2542e21a920d75f73ace7fe5f8b"
+  }
+}

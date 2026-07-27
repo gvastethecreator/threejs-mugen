@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-075",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Close stage shadow/reflection policy. Depends on DA29-074.",
+  "acceptance": "Source-backed fixture covers shadow color/intensity/scale/fade and reflection or explicit unsupported diagnostics; capture and cleanup pass.",
+  "entryPoints": [
+    "src/mugen",
+    "public/stages"
+  ],
+  "tests": [
+    "src/tests/AssetReleasePolicyV1.test.ts",
+    "src/tests/Da29SeriesCloseout.test.ts",
+    "src/tests/HitDefPriorityPolicy.test.ts",
+    "src/tests/MatchInputPolicySnapshot.test.ts",
+    "src/tests/RepositoryStageFixture.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "42abcc23368dafff239eb94ba0807d200feb5ef5f9fbc31246f2390b7f0b4a29"
+  }
+}

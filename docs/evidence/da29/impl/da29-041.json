@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-041",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Turn Nova's attack-state probe into an actual contact journey. Depends on DA29-002, DA29-020, and DA29-040.",
+  "acceptance": "Imported route proves command, state entry, collision, HitDef admission, contact, damage, hitpause, target state, telemetry, and final checksum without synthetic sprites.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/CompatibilityJourney.test.ts",
+    "src/tests/ContactMemorySystem.test.ts",
+    "src/tests/DizzyStateSystem.test.ts",
+    "src/tests/DualCharacterLegalJourney.test.ts",
+    "src/tests/GetHitStateSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "bce2ecefda2911918853fc9622835c8ec924082bf270ca53041c148d0752efbb"
+  }
+}

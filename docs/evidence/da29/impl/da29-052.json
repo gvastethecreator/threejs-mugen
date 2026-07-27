@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-052",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Prove one nested Helper command/state journey. Depends on DA29-051 and DA29-037.",
+  "acceptance": "Imported route covers root command, helper spawn, helper-owned state/command buffer, parent/root redirects, destroy, and replay.",
+  "entryPoints": [
+    "src/mugen",
+    "src/game"
+  ],
+  "tests": [
+    "src/tests/CommandBuffer.test.ts",
+    "src/tests/CompatibilityJourney.test.ts",
+    "src/tests/DizzyStateSystem.test.ts",
+    "src/tests/DualCharacterLegalJourney.test.ts",
+    "src/tests/GetHitStateSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "e7dc4952ca40f7b99379a27d19a44b89dd6a393956b4e72449a72764168f5776"
+  }
+}

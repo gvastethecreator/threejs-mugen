@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-077",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Execute a real ACT palette-selection path. Depends on DA29-082 and DA29-043.",
+  "acceptance": "ACT bytes load, selected index changes rendered pixels and palette facts, invalid/missing ACT fails visibly, and sprite-sheet hash fallback is not called palette execution.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/AuthoritySelector.test.ts",
+    "src/tests/NativeDualLiveExecution.test.ts",
+    "src/tests/NativeExecutionExtensions.test.ts",
+    "src/tests/RuntimeOpponentSelectionSystem.test.ts",
+    "src/tests/RuntimeRootCnsExecutionSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "b2f23d5b102e1b07781a6a3fee894cdb8d017de70647fa7f413ec61d86928685"
+  }
+}

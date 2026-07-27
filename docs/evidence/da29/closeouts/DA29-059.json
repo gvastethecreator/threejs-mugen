@@ -1,0 +1,50 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-059",
+  "kind": "I",
+  "wave": 5,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Close Helper/projectile numeric identity lifecycle. Depends on DA29-052, DA29-053, and DA29-057.",
+  "acceptance": "IDs allocate, resolve, disable, destroy, never alias stale owners, survive snapshots where required, and fail closed on redirects.",
+  "risk": "Reuse can target a new entity. Allows current identity lifecycle only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/app/StudioIndexedDbSnapshot.ts",
+    "src/app/ProjectStorage.ts",
+    "src/mugen",
+    "src/game"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 59 --to 59",
+    "structural impl evidence DA29-059"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-059.json",
+    "docs/evidence/da29/impl/da29-059.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-059 closed at written kind-I ceiling for wave 5",
+      "unit/static implementation evidence at written ceiling"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "product/runtime parity beyond named entry points"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "99982764c44b8fd121f5e3070e02bdedfb110db556337a6f5c00f39d133bf79a"
+  }
+}

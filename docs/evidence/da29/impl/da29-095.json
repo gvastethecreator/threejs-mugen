@@ -1,0 +1,21 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-095",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Implement committed, aborted, and indeterminate recovery. Depends on DA29-094.",
+  "acceptance": "Crash-point matrix before write, mid-write, after write, before commit, and after commit yields restore/accept/review decisions with byte proof and idempotent replay.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/RuntimeRecoverySystem.test.ts",
+    "src/tests/RuntimeTurnsRecoverySystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "90412c4acc21663049da7d0bb8189791f50f3f9b2c98d1bbe11cac4883dc2a6e"
+  }
+}

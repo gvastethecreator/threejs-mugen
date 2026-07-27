@@ -1,0 +1,21 @@
+{
+  "schema": "Da29ProductBrowserMatrix/v1",
+  "id": "DA29-003",
+  "generatedAt": "2026-07-27T00:00:00.000Z",
+  "claimCeiling": "named route/view inventory only; blocks broad usability until DA29-111…120",
+  "routes": [
+    { "id": "match", "mode": "match", "viewports": ["1440x960", "390x844"], "status": "inventory" },
+    { "id": "inspect", "mode": "inspect", "viewports": ["1440x960"], "status": "inventory" },
+    { "id": "studio-workbench", "mode": "studio", "tab": "workbench", "viewports": ["1440x960"], "status": "inventory" },
+    { "id": "studio-evidence", "mode": "studio", "tab": "evidence", "viewports": ["1440x960"], "status": "inventory" },
+    { "id": "command-palette", "overlay": "command-palette", "viewports": ["1440x960"], "status": "inventory" }
+  ],
+  "priorBrowserGates": [
+    "docs/evidence/da28-09-turns-browser",
+    "docs/evidence/da26-13-browser"
+  ],
+  "claims": {
+    "allowed": ["route manifest inventory for DA29-003"],
+    "blocked": ["broad usability", "error-free product claim without fresh screenshots at one commit"]
+  }
+}

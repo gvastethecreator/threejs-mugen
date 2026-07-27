@@ -1,0 +1,45 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-191",
+  "kind": "R",
+  "wave": 19,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Plan workspace/package splits from the proven dependency graph. Depends on DA29-133, DA29-140, and DA29-188.",
+  "acceptance": "Proposal names packages, owners, public/private entrypoints, build order, browser/Node targets, dependency cycles, migration steps, and size/test impact.",
+  "risk": "Package split can move coupling rather than remove it. Allows plan only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 191 --to 191",
+    "research note materialize DA29-191"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-191.json",
+    "docs/research/da29/da29-191-notes.md"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-191 closed at written kind-R ceiling for wave 19",
+      "research/design inventory only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "fd4f01c433afc3078ff639dfa7ca98e66088123b0c4e71333362101739c411ca"
+  }
+}

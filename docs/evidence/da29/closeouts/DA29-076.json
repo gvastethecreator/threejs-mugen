@@ -1,0 +1,45 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-076",
+  "kind": "R",
+  "wave": 7,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Reconcile FightScreen timing and transform ownership. Depends on DA29-016 and current T287/T288 work.",
+  "acceptance": "Source/local map covers intro, shutter, round/fight/KO/win/time, motif transforms, dialogue, layer order, skip, reset, and open screenpack fields.",
+  "risk": "UI shell can hide timing gaps. Allows design and priority only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 76 --to 76",
+    "research note materialize DA29-076"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-076.json",
+    "docs/research/da29/da29-076-notes.md"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-076 closed at written kind-R ceiling for wave 7",
+      "research/design inventory only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "94a99e952cf4d6ff7de39e472691b788f7f27c9c1b17b40c87936aa53ab357c2"
+  }
+}

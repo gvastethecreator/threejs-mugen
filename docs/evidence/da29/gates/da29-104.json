@@ -1,0 +1,31 @@
+{
+  "schema": "Da29GateEvidence/v1",
+  "id": "DA29-104",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "measured": false,
+  "gateSha": null,
+  "inheritance": {
+    "rule": "static-or-prior-matrix-ceiling",
+    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
+    "blocks": [
+      "formal/global tip rewrite",
+      "score movement",
+      "broad usability"
+    ]
+  },
+  "cut": "Prove sprite-atlas transform reproducibility. Depends on DA29-102 and DA29-103.",
+  "acceptance": "Given recorded inputs/version/options, atlas metadata and pixels match digest or approved tolerance; trim, pivot, scale, padding, order, and failure cases are tested.",
+  "relatedArtifacts": [
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/controller-coverage-matrix-v1.json",
+    "docs/evidence/native-asset-provenance-v1.json",
+    "docs/evidence/scanner-capability-artifact-v1.json",
+    "docs/evidence/compatibility-corpus-v1.2.json",
+    "docs/evidence/score-adjudication-v1.json"
+  ],
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "6fd6a25735bd9bd24372a532c685c86ba28ad062776fba899706a731350476cf"
+  }
+}

@@ -4,15 +4,16 @@ Last updated: 2026-07-26
 
 This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO port, Creator Studio, generated asset pipeline, and future modular engine. It is operational glue: it tells agents where truth lives, how a slice moves, and what must not be claimed.
 
-## Current control override: DA28-02 global re-gate / Entry 604
+## Current control override: post-DA28 expanded audit
 
-Formal/global is Entry 604 at `32466c6e` (270/2850 tests, 663 traces, build,
-boundaries). Focal source remains T406 at `07ad9227`. Broad bounded
-visual/product cursor remains T342 at `1085badb` with DA28-03 subcursors.
-`closedThrough` is DA28-05; next head is DA28-06. Scores remain
-`65 / 36 / 20 / 10-12 / 6-8 / 25` (DA28-05 hold). See
-[P0 closeout](research/2026-07-26-da28-p0-browser-corpus-scores.md) and the
-[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
+DA28-01…30 are closed at their written ceilings. Formal/global remains Entry
+604 at `32466c6e` (270/2850 tests, 663 traces, build, boundaries). Focal stays
+T406 at `07ad9227`; broad visual/product stays T342 at `1085badb` with bounded
+DA28 children. `closedThrough` is DA28-30 and the generated `nextQueue` remains
+empty. The approved next control cut is **DA29-001**, which must adopt a batch
+before implementation. Scores remain `65 / 36 / 20 / 10-12 / 6-8 / 25`.
+See the [expanded audit](research/2026-07-26-expanded-master-roadmap-audit-post-da28.md)
+and [master roadmap](MASTER_REVIEW_ROADMAP.md).
 
 ## Historical control override: T288 / Entry 562 frontier
 

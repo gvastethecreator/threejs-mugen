@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-087",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Replace hard-coded scanner `passed` phases with executed modules. Depends on DA29-013, DA29-082…086.",
+  "acceptance": "Scanner runs each phase, records time/input/output/ruleset/digest, propagates errors, supports cancellation, and cannot materialize green text without execution.",
+  "entryPoints": [
+    "scripts/check_boundaries.cjs",
+    "src/engine/ModuleContracts.ts"
+  ],
+  "tests": [
+    "src/tests/IkemenFeatureScanner.test.ts",
+    "src/tests/NativeDualLiveExecution.test.ts",
+    "src/tests/NativeExecutionExtensions.test.ts",
+    "src/tests/RuntimeRootAdvancePhaseSystem.test.ts",
+    "src/tests/RuntimeRootCnsExecutionSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "d61c16dc6735dacd6c0b5e1610d1da7e7d805f201a39b10fd63c608eaf0c543b"
+  }
+}

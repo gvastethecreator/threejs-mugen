@@ -1,0 +1,48 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-044",
+  "kind": "I",
+  "wave": 4,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Prove guard admission and guard damage. Depends on DA29-042 and DA29-043.",
+  "acceptance": "High/low/air, guard distance, guard flags, chip, power, hitpause, no-guard, and wrong-state routes match pinned rules for named cases.",
+  "risk": "Guard states are order-sensitive. Allows named guard matrix only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 44 --to 44",
+    "structural impl evidence DA29-044"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-044.json",
+    "docs/evidence/da29/impl/da29-044.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-044 closed at written kind-I ceiling for wave 4",
+      "unit/static implementation evidence at written ceiling"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "product/runtime parity beyond named entry points"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "a922b7183417e2fd187a093570db01a54f86412db4fc23d270211fab56738f34"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-012",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Generate a trace artifact manifest. Depends on DA29-011. Systems: trace presets and `qa:trace`.",
+  "acceptance": "Every required trace has stable ID, producer, input fixture, profile, source pin, output digest, and owner; missing/duplicate IDs fail.",
+  "entryPoints": [
+    "scripts/qa_traces.cjs",
+    "src/mugen"
+  ],
+  "tests": [
+    "src/tests/ActorConstraintSystem.test.ts",
+    "src/tests/AnimationControllerSystem.test.ts",
+    "src/tests/AudioEventSystem.test.ts",
+    "src/tests/BoundaryManifest.test.ts",
+    "src/tests/BoundsControllerSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "c03b5883c92f15c8813c5e5227cab2ff9e9b66734e5904ee34d8a0b061f2178f"
+  }
+}

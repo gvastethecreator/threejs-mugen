@@ -1,0 +1,21 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-183",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Add bounded semantic editors for CNS, CMD, and AIR. Depends on DA29-033, DA29-084, DA29-085, DA29-182.",
+  "acceptance": "Editors preserve comments/unknown text where promised, show located diagnostics, preview semantic diff, validate before write, undo, reopen, and avoid unsupported silent rewrites.",
+  "entryPoints": [
+    "src/mugen",
+    "docs/CONTROLLER_SUPPORT_REGISTRY.md"
+  ],
+  "tests": [
+    "src/tests/StudioSemanticDraft.test.ts",
+    "src/tests/StudioSemanticExport.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "b74315955675fde3837e71c73f897781477422cd3554b229c112bb373c72a8df"
+  }
+}

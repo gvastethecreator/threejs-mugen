@@ -1,0 +1,31 @@
+{
+  "schema": "Da29GateEvidence/v1",
+  "id": "DA29-200",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "measured": false,
+  "gateSha": null,
+  "inheritance": {
+    "rule": "static-or-prior-matrix-ceiling",
+    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
+    "blocks": [
+      "formal/global tip rewrite",
+      "score movement",
+      "broad usability"
+    ]
+  },
+  "cut": "Run final product/SDK roadmap adjudication. Depends on the chosen product target and DA29-180…199.",
+  "acceptance": "Review records shipped/local-only surfaces, API stability, extension risk, migration state, release/deployment authority, evidence freshness, scores, blocked claims, and the next bounded program.",
+  "relatedArtifacts": [
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/controller-coverage-matrix-v1.json",
+    "docs/evidence/native-asset-provenance-v1.json",
+    "docs/evidence/scanner-capability-artifact-v1.json",
+    "docs/evidence/compatibility-corpus-v1.2.json",
+    "docs/evidence/score-adjudication-v1.json"
+  ],
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "dcc9c9326da02de9f1ea10eb588efcfc8d8f354ac7506f6beb8852813bd05b8a"
+  }
+}

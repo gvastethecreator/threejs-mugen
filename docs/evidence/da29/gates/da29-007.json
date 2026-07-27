@@ -1,0 +1,31 @@
+{
+  "schema": "Da29GateEvidence/v1",
+  "id": "DA29-007",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "measured": false,
+  "gateSha": null,
+  "inheritance": {
+    "rule": "static-or-prior-matrix-ceiling",
+    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
+    "blocks": [
+      "formal/global tip rewrite",
+      "score movement",
+      "broad usability"
+    ]
+  },
+  "cut": "Expand authority-reference audit. Depends on DA29-006. Systems: current-control docs, issues, reports, generated JSON.",
+  "acceptance": "Negative fixtures prove it catches stale `closedThrough`, next task, pin, counts, visual cursor, and source epoch while exempting marked history.",
+  "relatedArtifacts": [
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/controller-coverage-matrix-v1.json",
+    "docs/evidence/native-asset-provenance-v1.json",
+    "docs/evidence/scanner-capability-artifact-v1.json",
+    "docs/evidence/compatibility-corpus-v1.2.json",
+    "docs/evidence/score-adjudication-v1.json"
+  ],
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "47165b9320230128380cd173b2965e152cd78b5743391637dd5a638e0b70630d"
+  }
+}

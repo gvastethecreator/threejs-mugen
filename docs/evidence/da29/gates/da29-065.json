@@ -1,0 +1,31 @@
+{
+  "schema": "Da29GateEvidence/v1",
+  "id": "DA29-065",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "measured": false,
+  "gateSha": null,
+  "inheritance": {
+    "rule": "static-or-prior-matrix-ceiling",
+    "note": "Full multi-route/browser re-measure not claimed; closeout is gate taxonomy + artifact inventory only",
+    "blocks": [
+      "formal/global tip rewrite",
+      "score movement",
+      "broad usability"
+    ]
+  },
+  "cut": "Correlate Turns UI with live transaction state. Depends on DA29-064 and DA29-017.",
+  "acceptance": "Browser facts link HUD roster, active member, life, handoff receipt, frame, and runtime checksum across win/KO/error routes on desktop/mobile.",
+  "relatedArtifacts": [
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/controller-coverage-matrix-v1.json",
+    "docs/evidence/native-asset-provenance-v1.json",
+    "docs/evidence/scanner-capability-artifact-v1.json",
+    "docs/evidence/compatibility-corpus-v1.2.json",
+    "docs/evidence/score-adjudication-v1.json"
+  ],
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "662bf1b35a9244edece604ae13d1d8f7eb4a1d7a168aab8c975ec6ce69cba55e"
+  }
+}

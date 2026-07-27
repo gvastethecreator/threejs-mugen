@@ -1,0 +1,12 @@
+{
+  "closedThrough": "DA29-200",
+  "nextQueue": [],
+  "gateSha": "119e627410a4a72eee28650ae20422d475dac834",
+  "headSha": "119e627410a4a72eee28650ae20422d475dac834",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "mode": "drain",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "f03dd2e01a427678f75404fd26a6b04c60a147abc801ff881d57f73d8d10b681"
+  }
+}

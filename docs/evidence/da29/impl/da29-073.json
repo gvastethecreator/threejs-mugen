@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-073",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Reconcile camera, stage, screen, and player bounds. Depends on DA29-041 and DA29-071.",
+  "acceptance": "Authored route covers camera follow, zoom, edge widths, ScreenBound/StageBound, corner pressure, shake, reset, and resize with runtime/render correlation.",
+  "entryPoints": [
+    "src/mugen",
+    "public/stages"
+  ],
+  "tests": [
+    "src/tests/BoundsControllerSystem.test.ts",
+    "src/tests/CommonFxFightScreenProof.test.ts",
+    "src/tests/FightScreenAnnouncementRenderer.font.test.ts",
+    "src/tests/FightScreenFixture.test.ts",
+    "src/tests/FightScreenFontRenderer.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "4d84088ea82f5cbe522b5ab2d3f04394923703dcba01777bd33937b40bd7f56c"
+  }
+}

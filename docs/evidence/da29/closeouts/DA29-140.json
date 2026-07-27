@@ -1,0 +1,51 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-140",
+  "kind": "G",
+  "wave": 13,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Prove extraction by deletion and forbidden-import tests. Depends on DA29-139.",
+  "acceptance": "Each shared contract survives removal of either adapter in isolation; boundary violations fail; bundle graph shows no fighting code in the non-fighting route; docs name remaining domain coupling.",
+  "risk": "Tests may mirror implementation. Allows bounded reusable-engine claim for proven ports only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/controller-coverage-matrix-v1.json",
+    "docs/evidence/native-asset-provenance-v1.json",
+    "docs/evidence/scanner-capability-artifact-v1.json",
+    "docs/evidence/compatibility-corpus-v1.2.json",
+    "docs/evidence/score-adjudication-v1.json"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 140 --to 140"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-140.json",
+    "docs/evidence/da29/gates/da29-140.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-140 closed at written kind-G ceiling for wave 13",
+      "gate inventory at static ceiling only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "treating static gate inventory as current formal/global pin"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "c72b2353a681d5f452dff24f15adf7dba85e1fa2e71189c49d25dfa169febaa1"
+  }
+}

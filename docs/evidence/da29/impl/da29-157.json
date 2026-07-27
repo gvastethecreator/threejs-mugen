@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-157",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Add bounded training-mode controls. Depends on DA29-021, DA29-026, DA29-050, and DA29-119.",
+  "acceptance": "Pause/frame-step, dummy state, life/power reset, input display, record/playback, position reset, and error states remain deterministic and keyboard accessible.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/AnimationControllerSystem.test.ts",
+    "src/tests/BoundsControllerSystem.test.ts",
+    "src/tests/ControllerCoverageMatrix.test.ts",
+    "src/tests/HitFallControllerSystem.test.ts",
+    "src/tests/KinematicControllerSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "8280b3e795e6f18578d80e7697a4cc3e9c45ca22e0780d57566e541954175d54"
+  }
+}

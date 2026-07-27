@@ -1,0 +1,48 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-184",
+  "kind": "I",
+  "wave": 18,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Add source diff, external-change, and merge workflow. Depends on DA29-090, DA29-097, DA29-098, and DA29-182.",
+  "acceptance": "Base/local/external revisions show semantic and text changes, conflicts, safe choices, stale evidence, byte result, undo, and reopened integrity.",
+  "risk": "Automatic merge can corrupt syntax. Allows tested merge cases only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 184 --to 184",
+    "structural impl evidence DA29-184"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-184.json",
+    "docs/evidence/da29/impl/da29-184.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-184 closed at written kind-I ceiling for wave 18",
+      "unit/static implementation evidence at written ceiling"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "product/runtime parity beyond named entry points"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "ba4b873fbf0f4b6b5820f4edc1e1a9b7267062ccbd019234f4353eeae71fe37e"
+  }
+}

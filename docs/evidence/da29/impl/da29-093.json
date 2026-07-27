@@ -1,0 +1,21 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-093",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Surface transaction, quota, abort, and durability failures. Depends on DA29-092.",
+  "acceptance": "Product and unit tests inject abort, quota, unknown, blocked upgrade, close, and commit errors; memory cannot report success after durable failure.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/RuntimeTurnsTransaction.test.ts",
+    "src/tests/StudioSourceTransaction.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "a01a1511860fab0c97f53a0ccfa529115af0f4828bc45a1729785d57b485c203"
+  }
+}

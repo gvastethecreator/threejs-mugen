@@ -1,0 +1,48 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-185",
+  "kind": "I",
+  "wave": 18,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Add cancellable batch analysis and transform jobs. Depends on DA29-087, DA29-104, DA29-124, and DA29-125.",
+  "acceptance": "Queue reports inputs/revisions/progress, concurrency, cancel/retry, partial outputs, errors, resource caps, and final project facts without blocking core UI.",
+  "risk": "Partial batch results can appear current. Allows named job types only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 185 --to 185",
+    "structural impl evidence DA29-185"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-185.json",
+    "docs/evidence/da29/impl/da29-185.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-185 closed at written kind-I ceiling for wave 18",
+      "unit/static implementation evidence at written ceiling"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "product/runtime parity beyond named entry points"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "36d645b1d239ad5cfe37b1cef5a3fa2ff72c36c5b3b7225b6f0db35ea74bd0a2"
+  }
+}

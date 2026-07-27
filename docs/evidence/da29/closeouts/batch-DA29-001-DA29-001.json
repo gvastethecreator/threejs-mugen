@@ -1,0 +1,17 @@
+{
+  "schema": "Da29BatchCloseout/v1",
+  "from": "DA29-001",
+  "to": "DA29-001",
+  "count": 1,
+  "closed": [
+    "DA29-001"
+  ],
+  "gateSha": null,
+  "closedAt": "2026-07-27T03:41:34.111Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "mode": "adopt",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "96c6fe6292380bea1a531a63ba151ef1dafdae4137769fcf58639f7ec13b744d"
+  }
+}

@@ -1,0 +1,1956 @@
+{
+  "schema": "Da29SeriesRegistry/v1",
+  "source": "docs/MASTER_REVIEW_ROADMAP.md",
+  "generatedAt": "2026-07-27T02:23:12.276Z",
+  "count": 200,
+  "ids": [
+    "DA29-001",
+    "DA29-002",
+    "DA29-003",
+    "DA29-004",
+    "DA29-005",
+    "DA29-006",
+    "DA29-007",
+    "DA29-008",
+    "DA29-009",
+    "DA29-010",
+    "DA29-011",
+    "DA29-012",
+    "DA29-013",
+    "DA29-014",
+    "DA29-015",
+    "DA29-016",
+    "DA29-017",
+    "DA29-018",
+    "DA29-019",
+    "DA29-020",
+    "DA29-021",
+    "DA29-022",
+    "DA29-023",
+    "DA29-024",
+    "DA29-025",
+    "DA29-026",
+    "DA29-027",
+    "DA29-028",
+    "DA29-029",
+    "DA29-030",
+    "DA29-031",
+    "DA29-032",
+    "DA29-033",
+    "DA29-034",
+    "DA29-035",
+    "DA29-036",
+    "DA29-037",
+    "DA29-038",
+    "DA29-039",
+    "DA29-040",
+    "DA29-041",
+    "DA29-042",
+    "DA29-043",
+    "DA29-044",
+    "DA29-045",
+    "DA29-046",
+    "DA29-047",
+    "DA29-048",
+    "DA29-049",
+    "DA29-050",
+    "DA29-051",
+    "DA29-052",
+    "DA29-053",
+    "DA29-054",
+    "DA29-055",
+    "DA29-056",
+    "DA29-057",
+    "DA29-058",
+    "DA29-059",
+    "DA29-060",
+    "DA29-061",
+    "DA29-062",
+    "DA29-063",
+    "DA29-064",
+    "DA29-065",
+    "DA29-066",
+    "DA29-067",
+    "DA29-068",
+    "DA29-069",
+    "DA29-070",
+    "DA29-071",
+    "DA29-072",
+    "DA29-073",
+    "DA29-074",
+    "DA29-075",
+    "DA29-076",
+    "DA29-077",
+    "DA29-078",
+    "DA29-079",
+    "DA29-080",
+    "DA29-081",
+    "DA29-082",
+    "DA29-083",
+    "DA29-084",
+    "DA29-085",
+    "DA29-086",
+    "DA29-087",
+    "DA29-088",
+    "DA29-089",
+    "DA29-090",
+    "DA29-091",
+    "DA29-092",
+    "DA29-093",
+    "DA29-094",
+    "DA29-095",
+    "DA29-096",
+    "DA29-097",
+    "DA29-098",
+    "DA29-099",
+    "DA29-100",
+    "DA29-101",
+    "DA29-102",
+    "DA29-103",
+    "DA29-104",
+    "DA29-105",
+    "DA29-106",
+    "DA29-107",
+    "DA29-108",
+    "DA29-109",
+    "DA29-110",
+    "DA29-111",
+    "DA29-112",
+    "DA29-113",
+    "DA29-114",
+    "DA29-115",
+    "DA29-116",
+    "DA29-117",
+    "DA29-118",
+    "DA29-119",
+    "DA29-120",
+    "DA29-121",
+    "DA29-122",
+    "DA29-123",
+    "DA29-124",
+    "DA29-125",
+    "DA29-126",
+    "DA29-127",
+    "DA29-128",
+    "DA29-129",
+    "DA29-130",
+    "DA29-131",
+    "DA29-132",
+    "DA29-133",
+    "DA29-134",
+    "DA29-135",
+    "DA29-136",
+    "DA29-137",
+    "DA29-138",
+    "DA29-139",
+    "DA29-140",
+    "DA29-141",
+    "DA29-142",
+    "DA29-143",
+    "DA29-144",
+    "DA29-145",
+    "DA29-146",
+    "DA29-147",
+    "DA29-148",
+    "DA29-149",
+    "DA29-150",
+    "DA29-151",
+    "DA29-152",
+    "DA29-153",
+    "DA29-154",
+    "DA29-155",
+    "DA29-156",
+    "DA29-157",
+    "DA29-158",
+    "DA29-159",
+    "DA29-160",
+    "DA29-161",
+    "DA29-162",
+    "DA29-163",
+    "DA29-164",
+    "DA29-165",
+    "DA29-166",
+    "DA29-167",
+    "DA29-168",
+    "DA29-169",
+    "DA29-170",
+    "DA29-171",
+    "DA29-172",
+    "DA29-173",
+    "DA29-174",
+    "DA29-175",
+    "DA29-176",
+    "DA29-177",
+    "DA29-178",
+    "DA29-179",
+    "DA29-180",
+    "DA29-181",
+    "DA29-182",
+    "DA29-183",
+    "DA29-184",
+    "DA29-185",
+    "DA29-186",
+    "DA29-187",
+    "DA29-188",
+    "DA29-189",
+    "DA29-190",
+    "DA29-191",
+    "DA29-192",
+    "DA29-193",
+    "DA29-194",
+    "DA29-195",
+    "DA29-196",
+    "DA29-197",
+    "DA29-198",
+    "DA29-199",
+    "DA29-200"
+  ],
+  "waves": [
+    {
+      "wave": 0,
+      "first": "DA29-001",
+      "last": "DA29-010",
+      "ids": [
+        "DA29-001",
+        "DA29-002",
+        "DA29-003",
+        "DA29-004",
+        "DA29-005",
+        "DA29-006",
+        "DA29-007",
+        "DA29-008",
+        "DA29-009",
+        "DA29-010"
+      ]
+    },
+    {
+      "wave": 1,
+      "first": "DA29-011",
+      "last": "DA29-020",
+      "ids": [
+        "DA29-011",
+        "DA29-012",
+        "DA29-013",
+        "DA29-014",
+        "DA29-015",
+        "DA29-016",
+        "DA29-017",
+        "DA29-018",
+        "DA29-019",
+        "DA29-020"
+      ]
+    },
+    {
+      "wave": 2,
+      "first": "DA29-021",
+      "last": "DA29-030",
+      "ids": [
+        "DA29-021",
+        "DA29-022",
+        "DA29-023",
+        "DA29-024",
+        "DA29-025",
+        "DA29-026",
+        "DA29-027",
+        "DA29-028",
+        "DA29-029",
+        "DA29-030"
+      ]
+    },
+    {
+      "wave": 3,
+      "first": "DA29-031",
+      "last": "DA29-040",
+      "ids": [
+        "DA29-031",
+        "DA29-032",
+        "DA29-033",
+        "DA29-034",
+        "DA29-035",
+        "DA29-036",
+        "DA29-037",
+        "DA29-038",
+        "DA29-039",
+        "DA29-040"
+      ]
+    },
+    {
+      "wave": 4,
+      "first": "DA29-041",
+      "last": "DA29-050",
+      "ids": [
+        "DA29-041",
+        "DA29-042",
+        "DA29-043",
+        "DA29-044",
+        "DA29-045",
+        "DA29-046",
+        "DA29-047",
+        "DA29-048",
+        "DA29-049",
+        "DA29-050"
+      ]
+    },
+    {
+      "wave": 5,
+      "first": "DA29-051",
+      "last": "DA29-060",
+      "ids": [
+        "DA29-051",
+        "DA29-052",
+        "DA29-053",
+        "DA29-054",
+        "DA29-055",
+        "DA29-056",
+        "DA29-057",
+        "DA29-058",
+        "DA29-059",
+        "DA29-060"
+      ]
+    },
+    {
+      "wave": 6,
+      "first": "DA29-061",
+      "last": "DA29-070",
+      "ids": [
+        "DA29-061",
+        "DA29-062",
+        "DA29-063",
+        "DA29-064",
+        "DA29-065",
+        "DA29-066",
+        "DA29-067",
+        "DA29-068",
+        "DA29-069",
+        "DA29-070"
+      ]
+    },
+    {
+      "wave": 7,
+      "first": "DA29-071",
+      "last": "DA29-080",
+      "ids": [
+        "DA29-071",
+        "DA29-072",
+        "DA29-073",
+        "DA29-074",
+        "DA29-075",
+        "DA29-076",
+        "DA29-077",
+        "DA29-078",
+        "DA29-079",
+        "DA29-080"
+      ]
+    },
+    {
+      "wave": 8,
+      "first": "DA29-081",
+      "last": "DA29-090",
+      "ids": [
+        "DA29-081",
+        "DA29-082",
+        "DA29-083",
+        "DA29-084",
+        "DA29-085",
+        "DA29-086",
+        "DA29-087",
+        "DA29-088",
+        "DA29-089",
+        "DA29-090"
+      ]
+    },
+    {
+      "wave": 9,
+      "first": "DA29-091",
+      "last": "DA29-100",
+      "ids": [
+        "DA29-091",
+        "DA29-092",
+        "DA29-093",
+        "DA29-094",
+        "DA29-095",
+        "DA29-096",
+        "DA29-097",
+        "DA29-098",
+        "DA29-099",
+        "DA29-100"
+      ]
+    },
+    {
+      "wave": 10,
+      "first": "DA29-101",
+      "last": "DA29-110",
+      "ids": [
+        "DA29-101",
+        "DA29-102",
+        "DA29-103",
+        "DA29-104",
+        "DA29-105",
+        "DA29-106",
+        "DA29-107",
+        "DA29-108",
+        "DA29-109",
+        "DA29-110"
+      ]
+    },
+    {
+      "wave": 11,
+      "first": "DA29-111",
+      "last": "DA29-120",
+      "ids": [
+        "DA29-111",
+        "DA29-112",
+        "DA29-113",
+        "DA29-114",
+        "DA29-115",
+        "DA29-116",
+        "DA29-117",
+        "DA29-118",
+        "DA29-119",
+        "DA29-120"
+      ]
+    },
+    {
+      "wave": 12,
+      "first": "DA29-121",
+      "last": "DA29-130",
+      "ids": [
+        "DA29-121",
+        "DA29-122",
+        "DA29-123",
+        "DA29-124",
+        "DA29-125",
+        "DA29-126",
+        "DA29-127",
+        "DA29-128",
+        "DA29-129",
+        "DA29-130"
+      ]
+    },
+    {
+      "wave": 13,
+      "first": "DA29-131",
+      "last": "DA29-140",
+      "ids": [
+        "DA29-131",
+        "DA29-132",
+        "DA29-133",
+        "DA29-134",
+        "DA29-135",
+        "DA29-136",
+        "DA29-137",
+        "DA29-138",
+        "DA29-139",
+        "DA29-140"
+      ]
+    },
+    {
+      "wave": 14,
+      "first": "DA29-141",
+      "last": "DA29-150",
+      "ids": [
+        "DA29-141",
+        "DA29-142",
+        "DA29-143",
+        "DA29-144",
+        "DA29-145",
+        "DA29-146",
+        "DA29-147",
+        "DA29-148",
+        "DA29-149",
+        "DA29-150"
+      ]
+    },
+    {
+      "wave": 15,
+      "first": "DA29-151",
+      "last": "DA29-160",
+      "ids": [
+        "DA29-151",
+        "DA29-152",
+        "DA29-153",
+        "DA29-154",
+        "DA29-155",
+        "DA29-156",
+        "DA29-157",
+        "DA29-158",
+        "DA29-159",
+        "DA29-160"
+      ]
+    },
+    {
+      "wave": 16,
+      "first": "DA29-161",
+      "last": "DA29-170",
+      "ids": [
+        "DA29-161",
+        "DA29-162",
+        "DA29-163",
+        "DA29-164",
+        "DA29-165",
+        "DA29-166",
+        "DA29-167",
+        "DA29-168",
+        "DA29-169",
+        "DA29-170"
+      ]
+    },
+    {
+      "wave": 17,
+      "first": "DA29-171",
+      "last": "DA29-180",
+      "ids": [
+        "DA29-171",
+        "DA29-172",
+        "DA29-173",
+        "DA29-174",
+        "DA29-175",
+        "DA29-176",
+        "DA29-177",
+        "DA29-178",
+        "DA29-179",
+        "DA29-180"
+      ]
+    },
+    {
+      "wave": 18,
+      "first": "DA29-181",
+      "last": "DA29-190",
+      "ids": [
+        "DA29-181",
+        "DA29-182",
+        "DA29-183",
+        "DA29-184",
+        "DA29-185",
+        "DA29-186",
+        "DA29-187",
+        "DA29-188",
+        "DA29-189",
+        "DA29-190"
+      ]
+    },
+    {
+      "wave": 19,
+      "first": "DA29-191",
+      "last": "DA29-200",
+      "ids": [
+        "DA29-191",
+        "DA29-192",
+        "DA29-193",
+        "DA29-194",
+        "DA29-195",
+        "DA29-196",
+        "DA29-197",
+        "DA29-198",
+        "DA29-199",
+        "DA29-200"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "DA29-001",
+      "kind": "A",
+      "cut": "Adopt the DA29 series from this audit. Depends on this document. Systems: authority selector, roadmap cursor, execution board, linked issues.",
+      "acceptance": "Generated selector and cursor agree on `closedThrough`, first queue, all independent pins, and held scores; authority audit passes.",
+      "risk": "Control drift. Allows only queue adoption; blocks runtime, product, visual, and score claims."
+    },
+    {
+      "id": "DA29-002",
+      "kind": "G",
+      "cut": "Re-gate current HEAD after the Frame Ledger redesign. Depends on DA29-001. Systems: typecheck, full Vitest, traces, build, both boundary guards.",
+      "acceptance": "One immutable report records commit, commands, counts, versions, duration, warnings, and failures; no result is inherited from `32466c6e`.",
+      "risk": "A green old pin may hide current regressions. Allows a current formal/global pin only."
+    },
+    {
+      "id": "DA29-003",
+      "kind": "G",
+      "cut": "Run a current full product/browser matrix. Depends on DA29-002. Systems: Play, Studio, Inspect, import, source write, desktop/mobile, console and page errors.",
+      "acceptance": "Route manifest, browser/device facts, screenshots, keyboard/focus log, and error-free result at one commit.",
+      "risk": "Screenshots can hide broken flows. Allows named route/view claims only; blocks broad usability until DA29-111…120."
+    },
+    {
+      "id": "DA29-004",
+      "kind": "G",
+      "cut": "Rebuild evidence corpus v1.3. Depends on DA29-002 and DA29-003. Systems: evidence envelope, trace/browser/source indices.",
+      "acceptance": "Corpus imports all current artifacts with subject, producer, revision, digest type, target, route, and freshness; stale rows fail closed.",
+      "risk": "Mixed revisions can inflate proof. Allows corpus completeness for listed inputs only."
+    },
+    {
+      "id": "DA29-005",
+      "kind": "G",
+      "cut": "Adjudicate scores from corpus v1.3. Depends on DA29-004. Systems: scorecard and denominator ledger.",
+      "acceptance": "Each lane records denominator, eligible evidence, rejected evidence, movement, and reviewer rationale. Docs-only work contributes zero.",
+      "risk": "Score inflation. Allows only recorded score movement; blocks parity or release claims."
+    },
+    {
+      "id": "DA29-006",
+      "kind": "A",
+      "cut": "Replace split selector/cursor constants with one materialization input. Depends on DA29-001. Systems: materializers and evidence JSON.",
+      "acceptance": "One checked schema generates both artifacts; changing a pin in a fixture changes both; stale DA27 constants are removed.",
+      "risk": "Generator forks can recur. Allows synchronized control artifacts only."
+    },
+    {
+      "id": "DA29-007",
+      "kind": "G",
+      "cut": "Expand authority-reference audit. Depends on DA29-006. Systems: current-control docs, issues, reports, generated JSON.",
+      "acceptance": "Negative fixtures prove it catches stale `closedThrough`, next task, pin, counts, visual cursor, and source epoch while exempting marked history.",
+      "risk": "False positives could erase useful history. Allows drift detection only."
+    },
+    {
+      "id": "DA29-008",
+      "kind": "A",
+      "cut": "Define fingerprint and cryptographic digest vocabulary. Depends on DA29-001. Systems: evidence, Studio, assets, scanner, source manifests.",
+      "acceptance": "ADR names SHA-256 content uses, stable behavior fingerprints, canonical bytes, version fields, and migration rules; misleading fields are inventoried.",
+      "risk": "Hash names may imply security. Allows terminology and migration design only."
+    },
+    {
+      "id": "DA29-009",
+      "kind": "A",
+      "cut": "Define the gate taxonomy. Depends on DA29-008. Systems: QA docs, reports, scorecard.",
+      "acceptance": "Schema distinguishes unit, focused, trace, global, browser route, accessibility, performance, source review, release, and production gates plus valid inheritance rules.",
+      "risk": "Gate mixing. Allows taxonomy adoption only."
+    },
+    {
+      "id": "DA29-010",
+      "kind": "A",
+      "cut": "Plan control-doc compaction and generated current views. Depends on DA29-006 and DA29-007. Systems: backlog, workplan, tracker, package milestones, supported features.",
+      "acceptance": "Ownership map selects append-only ledgers versus generated current summaries, archive rules, stable anchors, and migration checks.",
+      "risk": "A rewrite could lose history. Allows an approved migration plan only."
+    },
+    {
+      "id": "DA29-011",
+      "kind": "R",
+      "cut": "Inventory test ownership and command coverage. Depends on DA29-002 and DA29-009. Systems: package scripts, Vitest projects, QA scripts.",
+      "acceptance": "Machine-readable map links each suite to source owners, fixtures, expected duration, required/optional status, and release lane; overlaps and omissions are listed.",
+      "risk": "Counts can mask duplicate tests. Allows an inventory claim only."
+    },
+    {
+      "id": "DA29-012",
+      "kind": "I",
+      "cut": "Generate a trace artifact manifest. Depends on DA29-011. Systems: trace presets and `qa:trace`.",
+      "acceptance": "Every required trace has stable ID, producer, input fixture, profile, source pin, output digest, and owner; missing/duplicate IDs fail.",
+      "risk": "Huge hand-edited presets drift. Allows trace-set integrity only."
+    },
+    {
+      "id": "DA29-013",
+      "kind": "I",
+      "cut": "Replace regex controller census with parsed CNS records. Depends on DA29-008. Systems: controller matrix materializer and parser.",
+      "acceptance": "StateDef `type = S/C/A/L/U` cannot appear as a controller; malformed and nested fixtures produce located diagnostics; current corpus is rematerialized.",
+      "risk": "Wrong denominator. Allows parsed occurrence facts only."
+    },
+    {
+      "id": "DA29-014",
+      "kind": "A",
+      "cut": "Make one controller-support registry feed compiler, docs, and materializers. Depends on DA29-013. Systems: compiler table, support registry, coverage JSON.",
+      "acceptance": "One versioned registry records parse, compile, execute, trace, and product states; generated docs match it byte-for-byte.",
+      "risk": "A registry can overstate runtime depth. Allows registry consistency only."
+    },
+    {
+      "id": "DA29-015",
+      "kind": "G",
+      "cut": "Define occurrence, fixture, branch, and trigger coverage denominators. Depends on DA29-014.",
+      "acceptance": "Coverage report separates unique names, authored occurrences, compiled ops, live executions, failure routes, and source families; each percentage names its denominator.",
+      "risk": "One easy fixture may dominate counts. Allows named coverage metrics only."
+    },
+    {
+      "id": "DA29-016",
+      "kind": "I",
+      "cut": "Add source locations and digests to source-family review. Depends on DA29-008. Systems: Elecbyte/Ikemen manifests.",
+      "acceptance": "Each reviewed rule links pin, file, line/range or symbol, excerpt digest, reviewer status, and local consumer; text-only `passed` rows fail schema validation.",
+      "risk": "Upstream moves can stale locations. Allows reviewed-rule provenance only."
+    },
+    {
+      "id": "DA29-017",
+      "kind": "I",
+      "cut": "Generate browser evidence facts from the runner. Depends on DA29-003 and DA29-009.",
+      "acceptance": "Facts include route, viewport, DPR, browser, input mode, artifact digests, console/page errors, focus checks, and commit; hand-authored green status is rejected.",
+      "risk": "Automation may miss human usability. Allows runner-observed facts only."
+    },
+    {
+      "id": "DA29-018",
+      "kind": "G",
+      "cut": "Establish bundle and load budgets. Depends on DA29-002. Systems: Vite output, route chunks, assets.",
+      "acceptance": "Baseline records raw/gzip size, chunk graph, initial route bytes, asset count, and load timings; thresholds have owners and breach policy.",
+      "risk": "Arbitrary budgets can block work. Allows baseline and agreed thresholds only."
+    },
+    {
+      "id": "DA29-019",
+      "kind": "G",
+      "cut": "Build a frame-gap performance harness. Depends on DA29-017 and DA29-020. Systems: worst fight route, renderer info, browser runner.",
+      "acceptance": "Records p50/p95/p99/max frame gap, FPS, draw calls, triangles, geometries, textures, CPU/device/browser, warmup, seed, and sample count.",
+      "risk": "Average FPS hides stalls. Allows measured route/device claims only."
+    },
+    {
+      "id": "DA29-020",
+      "kind": "A",
+      "cut": "Version the execution environment envelope. Depends on DA29-008 and DA29-009. Systems: tests, traces, browser and scanner outputs.",
+      "acceptance": "Schema records seed, clock mode, locale, timezone, browser, GPU, Node, package lock, source pins, flags, and fixture digests; incompatible envelopes cannot merge.",
+      "risk": "Hidden environment drift. Allows comparable-run identity only."
+    },
+    {
+      "id": "DA29-021",
+      "kind": "A",
+      "cut": "Define input authority across keyboard, gamepad, UI, demo, and replay. Depends on DA29-020. Systems: MatchInputPolicy and App.",
+      "acceptance": "ADR defines seat ownership, focus, merge order, edge/hold semantics, disconnect, and deterministic sampling; conflict table has tests planned.",
+      "risk": "Double input or focus leaks. Allows architecture only."
+    },
+    {
+      "id": "DA29-022",
+      "kind": "I",
+      "cut": "Handle gamepad connect, disconnect, and reconnect. Depends on DA29-021.",
+      "acceptance": "Browser tests cover unplug mid-hold, reconnect with changed index, stale button release, two seats, and keyboard fallback with visible status.",
+      "risk": "Stuck input. Allows those lifecycle routes only."
+    },
+    {
+      "id": "DA29-023",
+      "kind": "I",
+      "cut": "Add mapping, deadzone, calibration, and unsupported-pad diagnostics. Depends on DA29-021.",
+      "acceptance": "Standard and non-standard fixtures cover axes/buttons, deadzone boundaries, remap persistence, conflicts, and fail-closed unknown mapping.",
+      "risk": "Device variance. Allows listed devices/mappings only."
+    },
+    {
+      "id": "DA29-024",
+      "kind": "I",
+      "cut": "Persist per-seat SOCD and input profile ownership. Depends on DA29-021 and DA29-023.",
+      "acceptance": "Reopen and seat-swap tests prove profile identity, version migration, reset, and deterministic resolution; match snapshots expose the chosen policy.",
+      "risk": "Settings can alter replay. Allows versioned profile behavior only."
+    },
+    {
+      "id": "DA29-025",
+      "kind": "I",
+      "cut": "Record a canonical per-frame input log. Depends on DA29-021 and DA29-020.",
+      "acceptance": "Log stores sampled inputs, edges, seat map, clock tick, policy revision, and checksum; same route produces identical canonical bytes.",
+      "risk": "Logs may omit hidden state. Allows input-record determinism only."
+    },
+    {
+      "id": "DA29-026",
+      "kind": "I",
+      "cut": "Replay the canonical input log. Depends on DA29-025 and DA29-029.",
+      "acceptance": "Record/replay tests compare periodic and final state checksums, controller telemetry, winner, and frame count; mismatch reports first divergent owner.",
+      "risk": "Matching end state can hide drift. Allows listed deterministic journey only."
+    },
+    {
+      "id": "DA29-027",
+      "kind": "R",
+      "cut": "Audit pause, superpause, hitpause, and input-buffer clock domains. Depends on DA29-020.",
+      "acceptance": "Source-backed timing map names clocks, frozen owners, buffer behavior, and open order questions across MUGEN/Ikemen profiles.",
+      "risk": "One global clock may be wrong. Allows timing design only."
+    },
+    {
+      "id": "DA29-028",
+      "kind": "A",
+      "cut": "Assign deterministic RNG streams. Depends on DA29-020 and DA29-027.",
+      "acceptance": "ADR separates gameplay, AI, visual, audio, and asset randomness; reset/snapshot rules and seed derivation have tests.",
+      "risk": "Visual calls can perturb combat. Allows RNG ownership design only."
+    },
+    {
+      "id": "DA29-029",
+      "kind": "I",
+      "cut": "Define canonical match-state serialization. Depends on DA29-008, DA29-020, and DA29-028.",
+      "acceptance": "Versioned serializer covers live deterministic owners, excludes renderer/cache objects, round-trips, rejects unknown versions, and produces SHA-256.",
+      "risk": "Missing state breaks replay. Allows snapshot schema only."
+    },
+    {
+      "id": "DA29-030",
+      "kind": "R",
+      "cut": "Run a local rollback feasibility spike. Depends on DA29-026, DA29-027, and DA29-029.",
+      "acceptance": "One offline rewind/resim route measures snapshot size, restore time, divergence, unsupported owners, and memory cost.",
+      "risk": "A spike can be mistaken for netplay. Allows feasibility data only; blocks networking and rollback-readiness claims."
+    },
+    {
+      "id": "DA29-031",
+      "kind": "R",
+      "cut": "Build a pinned Elecbyte controller census. Depends on DA29-016.",
+      "acceptance": "Official controller names, parameters, defaults, profile/version, source locations, and unsupported notes are recorded without inferring implementation.",
+      "risk": "Docs versions can differ. Allows source census only."
+    },
+    {
+      "id": "DA29-032",
+      "kind": "R",
+      "cut": "Build a pinned Elecbyte trigger and redirection census. Depends on DA29-016.",
+      "acceptance": "Trigger types, return/coercion rules, redirections, timing sensitivity, and source locations are catalogued; Ikemen-only rows stay separate.",
+      "risk": "Name matching can hide semantic gaps. Allows source census only."
+    },
+    {
+      "id": "DA29-033",
+      "kind": "I",
+      "cut": "Separate StateDef and state-controller syntax nodes. Depends on DA29-013 and DA29-031.",
+      "acceptance": "Parser AST and diagnostics distinguish headers, controller blocks, triggers, parameters, and duplicates; round-trip fixtures retain locations.",
+      "risk": "AST change can break import. Allows parsed syntax structure only."
+    },
+    {
+      "id": "DA29-034",
+      "kind": "A",
+      "cut": "Version the canonical controller capability registry. Depends on DA29-014, DA29-031, and DA29-033.",
+      "acceptance": "Each controller maps official parameters to parser/compiler/runtime/trace owners and explicit claim ceiling; code/docs generation uses the same revision.",
+      "risk": "Registry rows can become checkbox claims. Allows capability mapping only."
+    },
+    {
+      "id": "DA29-035",
+      "kind": "A",
+      "cut": "Version the canonical trigger capability registry. Depends on DA29-032 and DA29-033.",
+      "acceptance": "Each trigger maps context, redirects, coercion, timing, evaluator owner, tests, traces, and unsupported branches.",
+      "risk": "Evaluator context may be incomplete. Allows capability mapping only."
+    },
+    {
+      "id": "DA29-036",
+      "kind": "R",
+      "cut": "Reconcile expression coercion and error rules. Depends on DA29-032 and DA29-035.",
+      "acceptance": "Matrix covers int/float/string/bool, truncation, missing values, divide-by-zero, invalid redirects, and profile differences with source refs.",
+      "risk": "Silent coercion causes wide drift. Allows reviewed rules only."
+    },
+    {
+      "id": "DA29-037",
+      "kind": "I",
+      "cut": "Prove trigger group and short-circuit order. Depends on DA29-033 and DA29-036.",
+      "acceptance": "Imported tests cover `triggerall`, numbered groups, side effects/RNG avoidance, false groups, errors, and evaluation telemetry in official order.",
+      "risk": "Eager evaluation changes behavior. Allows listed trigger ordering only."
+    },
+    {
+      "id": "DA29-038",
+      "kind": "G",
+      "cut": "Audit dynamic parameter evaluation across compiled controllers. Depends on DA29-034, DA29-035, and DA29-037.",
+      "acceptance": "Generated matrix finds static-only, deferred, wrong-context, untested, and fail-open fields; sampled tests confirm the classifier.",
+      "risk": "Static success can mask dynamic failure. Allows audit findings only."
+    },
+    {
+      "id": "DA29-039",
+      "kind": "R",
+      "cut": "Rank the next controller families by lawful corpus demand and semantic risk. Depends on DA29-015 and DA29-038.",
+      "acceptance": "Backlog ranks at least ten families by occurrences, routes, dependencies, failure cost, and source confidence; no controller is marked supported.",
+      "risk": "Popularity may crowd out core rules. Allows priority order only."
+    },
+    {
+      "id": "DA29-040",
+      "kind": "G",
+      "cut": "Add a compiler differential artifact over the lawful corpus. Depends on DA29-033, DA29-034, and DA29-035.",
+      "acceptance": "For each fixture, artifact lists parsed blocks, compiled ops, dropped/unknown fields, diagnostics, canonical digest, and revision; changes require review.",
+      "risk": "Matching compiler output does not prove runtime. Allows compiler-delta claims only."
+    },
+    {
+      "id": "DA29-041",
+      "kind": "I",
+      "cut": "Turn Nova's attack-state probe into an actual contact journey. Depends on DA29-002, DA29-020, and DA29-040.",
+      "acceptance": "Imported route proves command, state entry, collision, HitDef admission, contact, damage, hitpause, target state, telemetry, and final checksum without synthetic sprites.",
+      "risk": "State presence can masquerade as combat. Allows this Nova contact route only."
+    },
+    {
+      "id": "DA29-042",
+      "kind": "I",
+      "cut": "Add a reciprocal Mira contact/guard journey. Depends on DA29-041.",
+      "acceptance": "Distinct input path proves Mira attack plus Nova guard or hit, with authored frames, damage/guard values, failure route, and browser correlation.",
+      "risk": "Shared CNS/AIR limits syntax breadth. Allows reciprocal package route only."
+    },
+    {
+      "id": "DA29-043",
+      "kind": "I",
+      "cut": "Add a third independent repository-authored character fixture. Depends on DA29-031…040.",
+      "acceptance": "Permission, independent CMD/CNS/AIR syntax, assets, digests, collision, one contact route, malformed variants, and provenance pass.",
+      "risk": "A copied fixture gives false breadth. Allows one independent syntax family only."
+    },
+    {
+      "id": "DA29-044",
+      "kind": "I",
+      "cut": "Prove guard admission and guard damage. Depends on DA29-042 and DA29-043.",
+      "acceptance": "High/low/air, guard distance, guard flags, chip, power, hitpause, no-guard, and wrong-state routes match pinned rules for named cases.",
+      "risk": "Guard states are order-sensitive. Allows named guard matrix only."
+    },
+    {
+      "id": "DA29-045",
+      "kind": "I",
+      "cut": "Prove priority, trade, miss, and simultaneous-contact order. Depends on DA29-041 and DA29-044.",
+      "acceptance": "Same-tick opposing HitDefs cover priority/type, trade, miss, pausetime, damage, telemetry order, and deterministic replay.",
+      "risk": "Pair order can bias winner. Allows listed pair outcomes only."
+    },
+    {
+      "id": "DA29-046",
+      "kind": "I",
+      "cut": "Prove fall, recovery, bounce, and landing transitions. Depends on DA29-041 and DA29-037.",
+      "acceptance": "Imported matrix covers fall flags, velocities, recover windows, ground bounce, landing state, no-recover, and reset with frame-accurate traces.",
+      "risk": "Physics and state order interact. Allows named transition set only."
+    },
+    {
+      "id": "DA29-047",
+      "kind": "I",
+      "cut": "Extend active juggle to a real multi-hit route. Depends on DA29-041, DA29-046, and focal T406.",
+      "acceptance": "Same target receives allowed and rejected hits across juggle points, fall/recovery, reset, and profile variants; no synthetic outcome fallback.",
+      "risk": "Local juggle can diverge from common state flow. Allows one route/profile matrix only."
+    },
+    {
+      "id": "DA29-048",
+      "kind": "A",
+      "cut": "Define atomic throw and custom-state ownership. Depends on DA29-041 and DA29-027.",
+      "acceptance": "ADR covers target acquisition, state owner, position/bind, damage, release, interruption, KO, missing target, and rollback boundary with source refs.",
+      "risk": "Partial mutation can strand actors. Allows architecture only."
+    },
+    {
+      "id": "DA29-049",
+      "kind": "I",
+      "cut": "Implement one bounded throw/reversal ownership journey. Depends on DA29-048 and DA29-029.",
+      "acceptance": "Imported success, miss, interrupted, invalid target, KO, and reset routes prove atomic mutation and replay checksum.",
+      "risk": "One throw does not prove all Target controllers. Allows named throw/reversal route only."
+    },
+    {
+      "id": "DA29-050",
+      "kind": "G",
+      "cut": "Prove round-reset combat cleanup. Depends on DA29-045…049.",
+      "acceptance": "Matrix lists which hits, targets, binds, pauses, projectiles, helpers, effects, inputs, power, vars, and team state clear or persist across round/reset paths.",
+      "risk": "Hidden residue causes later-round bugs. Allows tested cleanup invariants only."
+    },
+    {
+      "id": "DA29-051",
+      "kind": "R",
+      "cut": "Audit Helper lifecycle and scheduler order. Depends on DA29-016 and DA29-027.",
+      "acceptance": "Source/local map covers spawn tick, State -4/-3/-2/-1, parent/root context, pause, destroy, id reuse, nested helpers, and reset.",
+      "risk": "First-generation behavior may not generalize. Allows lifecycle design only."
+    },
+    {
+      "id": "DA29-052",
+      "kind": "I",
+      "cut": "Prove one nested Helper command/state journey. Depends on DA29-051 and DA29-037.",
+      "acceptance": "Imported route covers root command, helper spawn, helper-owned state/command buffer, parent/root redirects, destroy, and replay.",
+      "risk": "Identity leaks across owners. Allows one nested route only."
+    },
+    {
+      "id": "DA29-053",
+      "kind": "I",
+      "cut": "Run three-plus live projectiles from imported states. Depends on DA29-041 and DA29-012.",
+      "acceptance": "At least three concurrent projectiles prove spawn, movement, hit/miss/remove, global ordering, owner death/reset, and deterministic trace without synthetic construction.",
+      "risk": "Unit schedule may differ from live world. Allows named plural route only."
+    },
+    {
+      "id": "DA29-054",
+      "kind": "I",
+      "cut": "Prove projectile clash and contact tie-breaks. Depends on DA29-053 and DA29-045.",
+      "acceptance": "Same-frame projectile/projectile and projectile/fighter cases cover priority, cancel, hitpause, persistence, ordering, and swapped insertion order.",
+      "risk": "Array order may leak into results. Allows tested clash matrix only."
+    },
+    {
+      "id": "DA29-055",
+      "kind": "I",
+      "cut": "Audit and prove effect lifecycle under pause/reset. Depends on DA29-027, DA29-050, and DA29-053.",
+      "acceptance": "Explods, sounds, afterimages, shakes, and transient overlays list owner, clock, pause, cleanup, and resource disposal; two imported routes pass.",
+      "risk": "Visual effects can retain runtime resources. Allows listed effects only."
+    },
+    {
+      "id": "DA29-056",
+      "kind": "I",
+      "cut": "Close a bounded Explod/ModifyExplod/BindToRoot chain. Depends on DA29-055 and DA29-052.",
+      "acceptance": "Imported chain proves create, ID selection, modification, bind, pause, remove, owner death, and browser/render match.",
+      "risk": "Effect identity collisions. Allows one controller chain only."
+    },
+    {
+      "id": "DA29-057",
+      "kind": "R",
+      "cut": "Reconcile plural target selection and redirection. Depends on DA29-032, DA29-051, and DA29-054.",
+      "acceptance": "Matrix maps Target, Enemy, Partner, Parent, Root, Helper, PlayerID, and target lists across one/many/removed entities.",
+      "risk": "Wrong selector mutates another actor. Allows source/local delta only."
+    },
+    {
+      "id": "DA29-058",
+      "kind": "G",
+      "cut": "Differential-test collision proxy and transform order. Depends on DA29-052, DA29-054, and DA29-057.",
+      "acceptance": "Authored fixtures vary scale, facing, angle, localcoord, override boxes, Helper proxies, and insertion order; artifact reports first geometric divergence.",
+      "risk": "Geometry combinations grow fast. Allows tested matrix only."
+    },
+    {
+      "id": "DA29-059",
+      "kind": "I",
+      "cut": "Close Helper/projectile numeric identity lifecycle. Depends on DA29-052, DA29-053, and DA29-057.",
+      "acceptance": "IDs allocate, resolve, disable, destroy, never alias stale owners, survive snapshots where required, and fail closed on redirects.",
+      "risk": "Reuse can target a new entity. Allows current identity lifecycle only."
+    },
+    {
+      "id": "DA29-060",
+      "kind": "G",
+      "cut": "Add a plural-combat deterministic stress journey. Depends on DA29-052…059 and DA29-026.",
+      "acceptance": "Fixed-seed route runs roots, nested helpers, three-plus projectiles, effects, clashes, KO, and reset; record/replay checks periodic state and resource counts.",
+      "risk": "One seed hides other schedules. Allows one stress profile only."
+    },
+    {
+      "id": "DA29-061",
+      "kind": "A",
+      "cut": "Define explicit team-mode domain contracts. Depends on DA29-009 and DA29-050.",
+      "acceptance": "Single, Simul, Turns, and Tag contracts name roster, active members, input seats, life/power policy, KO, round transition, camera, HUD, and profile limits.",
+      "risk": "One shared model may erase mode rules. Allows architecture only."
+    },
+    {
+      "id": "DA29-062",
+      "kind": "I",
+      "cut": "Add a bounded Simul spawn/input route. Depends on DA29-061, DA29-021, and DA29-043.",
+      "acceptance": "Two-versus-two route proves authored positions, facing, input ownership, collision participation, camera framing, and reset.",
+      "risk": "Four actors stress geometry. Allows one Simul route only."
+    },
+    {
+      "id": "DA29-063",
+      "kind": "I",
+      "cut": "Prove Simul KO and round-end policy. Depends on DA29-062 and DA29-050.",
+      "acceptance": "Partial KO, double KO, surviving partner, timeout, win attribution, cleanup, and next-round roster state have deterministic traces.",
+      "risk": "Team win policy varies by profile. Allows named profile only."
+    },
+    {
+      "id": "DA29-064",
+      "kind": "I",
+      "cut": "Make Turns handoff one atomic live transaction. Depends on DA29-061, DA29-029, and current Turns bridge.",
+      "acceptance": "KO-to-next-member success and all failure points either commit the full handoff or restore preimage; replay and reset pass.",
+      "risk": "Partial handoff corrupts team state. Allows one Turns transaction contract only."
+    },
+    {
+      "id": "DA29-065",
+      "kind": "G",
+      "cut": "Correlate Turns UI with live transaction state. Depends on DA29-064 and DA29-017.",
+      "acceptance": "Browser facts link HUD roster, active member, life, handoff receipt, frame, and runtime checksum across win/KO/error routes on desktop/mobile.",
+      "risk": "Mock matrix may drift from runtime. Allows named visual routes only."
+    },
+    {
+      "id": "DA29-066",
+      "kind": "I",
+      "cut": "Prove bounded Tag selection and team-order consumption. Depends on DA29-061 and existing Tag order model.",
+      "acceptance": "Live scheduler, input, camera, collision, HUD, KO, reset, and member/leader operations consume one authoritative team order in an imported route.",
+      "risk": "Model-only Tag can be overclaimed. Allows one bounded Tag route only."
+    },
+    {
+      "id": "DA29-067",
+      "kind": "R",
+      "cut": "Review IKEMEN team-controller source families. Depends on DA29-016 and DA29-061.",
+      "acceptance": "Pinned review covers relevant Tag/Team controllers and triggers, local deltas, dependencies, and unsupported semantics with source locations.",
+      "risk": "Upstream extension drift. Allows source review only."
+    },
+    {
+      "id": "DA29-068",
+      "kind": "I",
+      "cut": "Load and render team-aware lifebar metadata. Depends on DA29-062, DA29-064, DA29-066, and DA29-076.",
+      "acceptance": "Single/Simul/Turns/Tag fixtures prove names, portraits, life/power, active/standby cues, scaling, fallback, and mobile layout.",
+      "risk": "HUD can imply unsupported mode depth. Allows loaded metadata routes only."
+    },
+    {
+      "id": "DA29-069",
+      "kind": "R",
+      "cut": "Scope arcade, versus, survival, demo, and training ownership. Depends on DA29-061.",
+      "acceptance": "Product/runtime map names roster selection, round/match persistence, AI/input, continue, score, save, and source gaps; each mode gets a claim fence.",
+      "risk": "Menu labels can be mistaken for modes. Allows roadmap decisions only."
+    },
+    {
+      "id": "DA29-070",
+      "kind": "A",
+      "cut": "Define the netplay and rollback claim fence. Depends on DA29-030 and DA29-061.",
+      "acceptance": "ADR lists deterministic blockers, transport/auth out of scope, snapshot cadence, desync facts, spectator/reconnect questions, and gates before any network work.",
+      "risk": "Premature netplay promise. Allows architecture boundary only."
+    },
+    {
+      "id": "DA29-071",
+      "kind": "R",
+      "cut": "Inventory Three.js object and resource ownership. Depends on DA29-002.",
+      "acceptance": "Scene tree maps geometry, material, texture, render target, audio node, cache, creator, disposer, reset, route, and leak risk.",
+      "risk": "Missed shared resource can leak or double-dispose. Allows ownership inventory only."
+    },
+    {
+      "id": "DA29-072",
+      "kind": "G",
+      "cut": "Baseline renderer.info by product route. Depends on DA29-019 and DA29-071.",
+      "acceptance": "Play, Studio preview, Inspect, team, and stress routes record calls, triangles, points, lines, programs, geometries, textures, and post-cleanup deltas.",
+      "risk": "Counters do not prove smoothness. Allows route resource facts only."
+    },
+    {
+      "id": "DA29-073",
+      "kind": "I",
+      "cut": "Reconcile camera, stage, screen, and player bounds. Depends on DA29-041 and DA29-071.",
+      "acceptance": "Authored route covers camera follow, zoom, edge widths, ScreenBound/StageBound, corner pressure, shake, reset, and resize with runtime/render correlation.",
+      "risk": "Current clamps may mix coordinate spaces. Allows named camera route only."
+    },
+    {
+      "id": "DA29-074",
+      "kind": "I",
+      "cut": "Load and render bounded stage layers/parallax. Depends on DA29-073 and DA29-083.",
+      "acceptance": "Repository-owned stage proves layer order, delta/parallax, tiling, animation, clipping, camera movement, disposal, and desktop/mobile captures.",
+      "risk": "Renderer success does not prove all DEF syntax. Allows one stage subset only."
+    },
+    {
+      "id": "DA29-075",
+      "kind": "I",
+      "cut": "Close stage shadow/reflection policy. Depends on DA29-074.",
+      "acceptance": "Source-backed fixture covers shadow color/intensity/scale/fade and reflection or explicit unsupported diagnostics; capture and cleanup pass.",
+      "risk": "Effects can distort sprite fidelity. Allows named subset only."
+    },
+    {
+      "id": "DA29-076",
+      "kind": "R",
+      "cut": "Reconcile FightScreen timing and transform ownership. Depends on DA29-016 and current T287/T288 work.",
+      "acceptance": "Source/local map covers intro, shutter, round/fight/KO/win/time, motif transforms, dialogue, layer order, skip, reset, and open screenpack fields.",
+      "risk": "UI shell can hide timing gaps. Allows design and priority only."
+    },
+    {
+      "id": "DA29-077",
+      "kind": "I",
+      "cut": "Execute a real ACT palette-selection path. Depends on DA29-082 and DA29-043.",
+      "acceptance": "ACT bytes load, selected index changes rendered pixels and palette facts, invalid/missing ACT fails visibly, and sprite-sheet hash fallback is not called palette execution.",
+      "risk": "Palette fallback can overclaim. Allows one ACT path only."
+    },
+    {
+      "id": "DA29-078",
+      "kind": "I",
+      "cut": "Prove AIR reserved actions and element timing. Depends on DA29-043 and DA29-084.",
+      "acceptance": "Imported fixture covers required actions, loopstart, duration, flip, alpha, interpolation where supported, missing action diagnostics, and frame/render correlation.",
+      "risk": "Animation presence is weak evidence. Allows named AIR subset only."
+    },
+    {
+      "id": "DA29-079",
+      "kind": "A",
+      "cut": "Define audio decode, cache, voice, and lifecycle policy. Depends on DA29-071 and DA29-083.",
+      "acceptance": "ADR covers AudioContext creation/resume/close, buffers, voice stealing, pan/volume, pause, reset, errors, cache caps, and deterministic telemetry.",
+      "risk": "Browser gesture and leaks. Allows architecture only."
+    },
+    {
+      "id": "DA29-080",
+      "kind": "G",
+      "cut": "Prove Common.Fx and character audio output in browsers. Depends on DA29-079 and DA29-003.",
+      "acceptance": "Gesture-gated Chromium route verifies decoded repository-owned samples, graph connection, non-zero post-mixer signal, pan/volume, overlap, stop/reset, errors, and context close.",
+      "risk": "Fake context cannot prove output. Allows tested browser/audio route only."
+    },
+    {
+      "id": "DA29-081",
+      "kind": "A",
+      "cut": "Define lawful corpus authority and fixture independence. Depends on DA29-008 and DA29-015.",
+      "acceptance": "Manifest records ownership/license, origin, independent syntax digests, mutations, expected profiles, forbidden public paths, and permitted evidence uses.",
+      "risk": "Duplicate fixtures inflate breadth. Allows corpus identity only."
+    },
+    {
+      "id": "DA29-082",
+      "kind": "G",
+      "cut": "Audit and extend SFF parsing breadth. Depends on DA29-081.",
+      "acceptance": "Repository-owned fixtures cover supported versions, palettes, groups/images, links, compression, bounds, corrupt/truncated cases, deterministic output, and caps.",
+      "risk": "Binary parser memory/CPU risk. Allows named SFF subset only."
+    },
+    {
+      "id": "DA29-083",
+      "kind": "G",
+      "cut": "Audit and extend SND parsing breadth. Depends on DA29-081.",
+      "acceptance": "Fixtures cover groups/samples, format metadata, decode outcomes, corrupt/truncated data, duplicate IDs, caps, deterministic digests, and audio handoff.",
+      "risk": "Decode bombs or unsupported codecs. Allows named SND subset only."
+    },
+    {
+      "id": "DA29-084",
+      "kind": "G",
+      "cut": "Harden AIR parsing and located diagnostics. Depends on DA29-081.",
+      "acceptance": "Valid/malformed fixtures cover actions, elements, loopstart, collision boxes, timing, flips, alpha, whitespace/comments, duplicate actions, and exact locations.",
+      "risk": "Recovery may accept bad syntax. Allows parsed AIR subset only."
+    },
+    {
+      "id": "DA29-085",
+      "kind": "G",
+      "cut": "Harden CNS/CMD recovery and diagnostic limits. Depends on DA29-033 and DA29-081.",
+      "acceptance": "Mutation corpus covers truncated blocks, duplicate fields, invalid expressions, encoding/newlines, huge tokens, nested comments, unknown fields, and bounded error counts.",
+      "risk": "Error storms can lock the UI. Allows diagnostic robustness only."
+    },
+    {
+      "id": "DA29-086",
+      "kind": "G",
+      "cut": "Expand ZIP/VFS security policy. Depends on DA29-081 and DA29-020.",
+      "acceptance": "Tests cover traversal, absolute/Unicode-confusable paths, duplicates, case collisions, entry/total/ratio limits, nested archives, cancellation, and deterministic rejection.",
+      "risk": "Decompression and path attacks. Allows tested archive policy only."
+    },
+    {
+      "id": "DA29-087",
+      "kind": "I",
+      "cut": "Replace hard-coded scanner `passed` phases with executed modules. Depends on DA29-013, DA29-082…086.",
+      "acceptance": "Scanner runs each phase, records time/input/output/ruleset/digest, propagates errors, supports cancellation, and cannot materialize green text without execution.",
+      "risk": "Static green masks broken analyzers. Allows executed scanner facts only."
+    },
+    {
+      "id": "DA29-088",
+      "kind": "I",
+      "cut": "Add a live PackageAnalysis revision consumer. Depends on DA29-087 and DA29-091.",
+      "acceptance": "Import/reopen/source-change routes show current, stale, failed, and superseded analysis; product actions consume the same revision and fail closed.",
+      "risk": "Analysis may drift from bytes. Allows named product decisions only."
+    },
+    {
+      "id": "DA29-089",
+      "kind": "R",
+      "cut": "Classify ZSS, Lua, and module findings by capability and risk. Depends on DA29-016 and DA29-087.",
+      "acceptance": "Located report separates detected syntax, static metadata, blocked execution, sandbox needs, upstream profile, and explicit unsupported outcomes.",
+      "risk": "Scanner recognition can imply execution. Allows recognition only."
+    },
+    {
+      "id": "DA29-090",
+      "kind": "G",
+      "cut": "Prove deterministic scanner reanalysis and semantic diff. Depends on DA29-087 and DA29-088.",
+      "acceptance": "Source, ruleset, analyzer, and upstream revisions each trigger a deterministic diff with added/removed/changed findings and stable unchanged rows.",
+      "risk": "Timestamp noise obscures meaning. Allows semantic-diff claims only."
+    },
+    {
+      "id": "DA29-091",
+      "kind": "A",
+      "cut": "Choose the authoritative Studio storage model. Depends on DA29-008, DA29-009, and the IDB audit.",
+      "acceptance": "ADR compares IndexedDB authority, file authority, and port-backed hybrid; it names consistency, offline, recovery, quota, migration, and permission tradeoffs.",
+      "risk": "Dual authority can diverge. Allows storage decision only."
+    },
+    {
+      "id": "DA29-092",
+      "kind": "I",
+      "cut": "Add versioned IndexedDB schema and migrations. Depends on DA29-091.",
+      "acceptance": "Upgrade, downgrade rejection, interrupted migration, missing store/index, old snapshot, and rollback tests pass against real IndexedDB, not memory fallback.",
+      "risk": "Migration can strand projects. Allows tested versions only."
+    },
+    {
+      "id": "DA29-093",
+      "kind": "I",
+      "cut": "Surface transaction, quota, abort, and durability failures. Depends on DA29-092.",
+      "acceptance": "Product and unit tests inject abort, quota, unknown, blocked upgrade, close, and commit errors; memory cannot report success after durable failure.",
+      "risk": "Fail-open data loss. Allows error handling routes only."
+    },
+    {
+      "id": "DA29-094",
+      "kind": "I",
+      "cut": "Journal source-write intent before mutation using actual bytes. Depends on DA29-091 and DA29-008.",
+      "acceptance": "Preimage bytes/digest, intended bytes/digest, handle/path identity, project revision, timestamp, and intent state persist before the writable opens; failure blocks write.",
+      "risk": "Post-write journal cannot recover crash. Allows one-file intent durability only."
+    },
+    {
+      "id": "DA29-095",
+      "kind": "I",
+      "cut": "Implement committed, aborted, and indeterminate recovery. Depends on DA29-094.",
+      "acceptance": "Crash-point matrix before write, mid-write, after write, before commit, and after commit yields restore/accept/review decisions with byte proof and idempotent replay.",
+      "risk": "Wrong recovery can overwrite valid work. Allows tested crash matrix only."
+    },
+    {
+      "id": "DA29-096",
+      "kind": "A",
+      "cut": "Design multi-file project transactions. Depends on DA29-095.",
+      "acceptance": "ADR defines write set, preimages, staging, commit marker, compensation order, partial external failures, concurrency, and user choice; prototype evidence measures cost.",
+      "risk": "File APIs lack cross-file atomicity. Allows architecture/prototype only."
+    },
+    {
+      "id": "DA29-097",
+      "kind": "I",
+      "cut": "Revalidate file-handle permissions on reopen and write. Depends on DA29-091 and DA29-094.",
+      "acceptance": "Granted, prompt, denied, revoked, missing handle, moved file, read-only, and user-cancel routes produce clear product state and no silent data loss.",
+      "risk": "Browser permission state changes. Allows tested browser routes only."
+    },
+    {
+      "id": "DA29-098",
+      "kind": "I",
+      "cut": "Make changed-source freshness visible and blocking. Depends on DA29-004, DA29-088, and DA29-094.",
+      "acceptance": "Source mutation invalidates analysis, build, evidence, and release at the same revision; Studio shows reason and exact next action; rerun restores only fresh facts.",
+      "risk": "Split freshness logic creates false green. Allows one end-to-end stale/fresh route only."
+    },
+    {
+      "id": "DA29-099",
+      "kind": "G",
+      "cut": "Prove crash/reopen and multi-tab concurrency. Depends on DA29-092…098.",
+      "acceptance": "Browser matrix covers reload, process-like crash injection, two tabs, stale writer, lock loss, conflict resolution, and final byte/revision integrity.",
+      "risk": "Last-writer-wins data loss. Allows named concurrency policy only."
+    },
+    {
+      "id": "DA29-100",
+      "kind": "I",
+      "cut": "Make ProjectReleaseDecision a live product gate. Depends on DA29-098, DA29-108, and DA29-109.",
+      "acceptance": "Build/export/release buttons consume one decision with reasons; stale, missing, tampered, blocked asset, and fresh-ready routes match exported evidence.",
+      "risk": "UI green may differ from export. Allows one release decision flow only."
+    },
+    {
+      "id": "DA29-101",
+      "kind": "A",
+      "cut": "Version AssetProvenance with cryptographic content digests. Depends on DA29-008 and DA29-081.",
+      "acceptance": "Schema covers inputs/outputs, SHA-256, canonical metadata, permission, license, creator/tool, timestamps, transforms, and subject revision; migration is explicit.",
+      "risk": "Weak digest may imply integrity. Allows provenance schema only."
+    },
+    {
+      "id": "DA29-102",
+      "kind": "I",
+      "cut": "Capture tool, model/version, prompt, inputs, command, seed, and transforms. Depends on DA29-101.",
+      "acceptance": "One repository-owned generated record can be reproduced or yields a documented nondeterministic variance; missing fields fail policy.",
+      "risk": "`repo-local` version is not reproducible. Allows one recorded pipeline only."
+    },
+    {
+      "id": "DA29-103",
+      "kind": "G",
+      "cut": "Produce a second independent generated asset record. Depends on DA29-102 and DA29-081.",
+      "acceptance": "Record has fresh permission/license, distinct source/output digests, ordered transforms, visual QA, collision, playable route, and no third-party bytes.",
+      "risk": "Near-duplicate output inflates coverage. Allows one additional record only."
+    },
+    {
+      "id": "DA29-104",
+      "kind": "G",
+      "cut": "Prove sprite-atlas transform reproducibility. Depends on DA29-102 and DA29-103.",
+      "acceptance": "Given recorded inputs/version/options, atlas metadata and pixels match digest or approved tolerance; trim, pivot, scale, padding, order, and failure cases are tested.",
+      "risk": "Tool upgrades change output. Allows named tool revision only."
+    },
+    {
+      "id": "DA29-105",
+      "kind": "G",
+      "cut": "Add collision and hitbox visual QA for generated sprites. Depends on DA29-104 and DA29-041.",
+      "acceptance": "Overlay captures cover idle, movement, attack, hurt, flip, scale, contact, and outlier detection; approved corrections update provenance.",
+      "risk": "Pretty sprites can have bad gameplay bounds. Allows reviewed frames only."
+    },
+    {
+      "id": "DA29-106",
+      "kind": "A",
+      "cut": "Define generated audio provenance and safety. Depends on DA29-101 and DA29-079.",
+      "acceptance": "Schema and policy cover source/permission, model/tool/version, prompt, seed, duration, sample rate, loudness, peak, trims, transforms, and output digest.",
+      "risk": "Audio source rights and unsafe peaks. Allows policy only."
+    },
+    {
+      "id": "DA29-107",
+      "kind": "R",
+      "cut": "Reconcile supported SPDX expressions and permission rules. Depends on DA29-101.",
+      "acceptance": "Decision records exact accepted grammar/subset, generated-work declaration, attribution needs, incompatible/unknown cases, and fail-closed examples.",
+      "risk": "A parser is not legal approval. Allows policy grammar only."
+    },
+    {
+      "id": "DA29-108",
+      "kind": "I",
+      "cut": "Make AssetReleasePolicy consume live project records. Depends on DA29-103…107.",
+      "acceptance": "Product gate evaluates current revisions for permission, license, digests, transforms, visual/collision/playtest facts, and reports exact blockers.",
+      "risk": "Materialized policy may be stale. Allows listed asset decisions only."
+    },
+    {
+      "id": "DA29-109",
+      "kind": "I",
+      "cut": "Make ProjectAssetClosure traverse real project dependencies. Depends on DA29-108 and DA29-088.",
+      "acceptance": "Character, stage, screenpack, system, audio, generated, and derived assets are found from the saved project; missing/cycle/stale/extra cases fail or warn by policy.",
+      "risk": "Hidden reference escapes release scan. Allows tested graph closure only."
+    },
+    {
+      "id": "DA29-110",
+      "kind": "G",
+      "cut": "Enforce public-path hygiene and evidence redaction. Depends on DA29-101 and DA29-109.",
+      "acceptance": "Build/evidence scans reject absolute, traversal, temp, user, secret-like, commercial, and unapproved files; exported bundle uses safe relative paths and stable subject IDs.",
+      "risk": "Local paths leak user data. Allows tested bundle hygiene only."
+    },
+    {
+      "id": "DA29-111",
+      "kind": "R",
+      "cut": "Inventory current user routes and viewport states. Depends on DA29-003.",
+      "acceptance": "Route map covers first run, import, play, pause, inspect, Studio edit/save/reopen, evidence, build/export, errors, empty/loading, mobile/desktop, and ownership.",
+      "risk": "Missing states hide UX debt. Allows inventory only."
+    },
+    {
+      "id": "DA29-112",
+      "kind": "A",
+      "cut": "Review Frame Ledger desktop information priority. Depends on DA29-111 and DA29-065.",
+      "acceptance": "Wire-level decision sets stage minimum, panel collapse, HUD/control hierarchy, runtime diagnostics, and task flows at 1280/1440 widths with measured geometry.",
+      "risk": "Dense panels can obscure play. Allows layout decision only."
+    },
+    {
+      "id": "DA29-113",
+      "kind": "I",
+      "cut": "Fix mobile overlay, clipping, reflow, and scroll ownership. Depends on DA29-111 and DA29-112.",
+      "acceptance": "320/390/430 widths show full control labels, readable HUD, visible fight area, no two-axis overflow, usable scroll, safe areas, and orientation change.",
+      "risk": "Overlay can cover combat. Allows tested viewports only."
+    },
+    {
+      "id": "DA29-114",
+      "kind": "G",
+      "cut": "Prove full keyboard operation and focus order. Depends on DA29-111.",
+      "acceptance": "Import, play controls, panels, dialogs, Studio actions, and errors work without pointer; focus order follows task flow and escape/return behavior is stable.",
+      "risk": "Canvas shortcuts can steal keys. Allows named keyboard routes only."
+    },
+    {
+      "id": "DA29-115",
+      "kind": "G",
+      "cut": "Prove focus visibility and non-obscuring overlays. Depends on DA29-113 and DA29-114.",
+      "acceptance": "Focus ring remains visible under sticky panels/dialogs at zoom and mobile sizes; no focused control is fully hidden; restore target is correct.",
+      "risk": "Dense UI can hide focus. Allows tested overlays only."
+    },
+    {
+      "id": "DA29-116",
+      "kind": "G",
+      "cut": "Audit labels, names, states, and target sizes. Depends on DA29-113 and DA29-114.",
+      "acceptance": "All icon/short controls expose stable accessible names and states; touch targets meet chosen WCAG policy or record justified exceptions with alternatives.",
+      "risk": "Clipped text and tiny targets block use. Allows audited surfaces only."
+    },
+    {
+      "id": "DA29-117",
+      "kind": "G",
+      "cut": "Audit contrast, reduced motion, and flashing. Depends on DA29-003 and DA29-111.",
+      "acceptance": "Theme/state contrast, HUD overlays, focus, disabled/error states, screen shake, flashes, transitions, and reduced-motion paths have measured results and fixes.",
+      "risk": "Combat effects can cause harm. Allows tested themes/effects only."
+    },
+    {
+      "id": "DA29-118",
+      "kind": "A",
+      "cut": "Define screen-reader semantics for live combat and diagnostics. Depends on DA29-111 and DA29-117.",
+      "acceptance": "ADR separates high-rate visual state from concise announcements, names pause/verbosity controls, and prototypes round/KO/error output without flooding.",
+      "risk": "Live regions can overwhelm users. Allows semantics design only."
+    },
+    {
+      "id": "DA29-119",
+      "kind": "I",
+      "cut": "Make Studio trust failures actionable. Depends on DA29-093, DA29-097, DA29-098, and DA29-100.",
+      "acceptance": "Quota, permission, stale evidence, scanner failure, blocked asset, save conflict, and recovery states show cause, affected item, safe action, retry, and retained work.",
+      "risk": "Generic errors hide data risk. Allows named product states only."
+    },
+    {
+      "id": "DA29-120",
+      "kind": "G",
+      "cut": "Establish current visual regression coverage. Depends on DA29-113…119.",
+      "acceptance": "Approved manifest covers key routes, states, themes, viewports, DPR, fonts, animation settle rule, mask policy, and human review; diffs link runtime revision.",
+      "risk": "Pixel tests can bless unusable UI. Allows visual stability only."
+    },
+    {
+      "id": "DA29-121",
+      "kind": "G",
+      "cut": "Measure the actual worst fight routes. Depends on DA29-019, DA29-060, and DA29-068.",
+      "acceptance": "Single, Simul/Turns, plural stress, UI-open, and mobile routes report p95/p99/max frame gaps and renderer facts on named devices; breaches have owners.",
+      "risk": "Easy scenes hide stalls. Allows measured routes/devices only."
+    },
+    {
+      "id": "DA29-122",
+      "kind": "G",
+      "cut": "Profile allocations and memory growth. Depends on DA29-071, DA29-072, and DA29-121.",
+      "acceptance": "Warmup plus repeated rounds/imports record heap trend, GC stalls, renderer memory, object counts, snapshots, and retained-owner suspects; threshold/retest rules exist.",
+      "risk": "Browser memory data is noisy. Allows bounded trend claims only."
+    },
+    {
+      "id": "DA29-123",
+      "kind": "G",
+      "cut": "Prove renderer disposal and context recovery. Depends on DA29-071 and DA29-122.",
+      "acceptance": "Route teardown, project switch, import failure, context lost/restored, resize, and app shutdown return owned resources to expected baselines without double disposal.",
+      "risk": "GPU leaks survive JS cleanup. Allows tested lifecycle only."
+    },
+    {
+      "id": "DA29-124",
+      "kind": "G",
+      "cut": "Profile importer/scanner main-thread cost. Depends on DA29-087 and DA29-121.",
+      "acceptance": "Small/medium/limit fixtures report parse/scan duration, long tasks, input responsiveness, memory peak, cancellation latency, and phase attribution.",
+      "risk": "Large packages freeze Studio. Allows measured corpus only."
+    },
+    {
+      "id": "DA29-125",
+      "kind": "A",
+      "cut": "Decide Worker/OffscreenCanvas boundaries. Depends on DA29-124 and DA29-071.",
+      "acceptance": "ADR compares worker transfer/copy cost, abort, progress, deterministic errors, browser support, rendering needs, and fallback; prototype covers the highest-cost phase.",
+      "risk": "Thread split adds copy and ownership bugs. Allows architecture/prototype only."
+    },
+    {
+      "id": "DA29-126",
+      "kind": "G",
+      "cut": "Fuzz ZIP and binary parser resource limits. Depends on DA29-082, DA29-083, and DA29-086.",
+      "acceptance": "Seeded corpus covers size/ratio/depth, malformed headers, truncation, integer edges, duplicate paths, cancellation, time/memory caps, and stable rejection.",
+      "risk": "Parser denial of service. Allows tested fuzz set only."
+    },
+    {
+      "id": "DA29-127",
+      "kind": "G",
+      "cut": "Test IndexedDB quota, corruption-like, and blocked-upgrade recovery. Depends on DA29-092, DA29-093, and DA29-099.",
+      "acceptance": "Injected quota/abort/blocked/version/store loss routes retain last good data, surface state, allow safe export/reset, and never report false save success.",
+      "risk": "Recovery may destroy evidence. Allows injected routes only."
+    },
+    {
+      "id": "DA29-128",
+      "kind": "G",
+      "cut": "Prove AudioContext and buffer lifecycle. Depends on DA29-079, DA29-080, and DA29-122.",
+      "acceptance": "Repeated play/import/project switch covers context reuse/close, decoded buffer caps, stopped voices, suspend/resume, errors, and memory trend.",
+      "risk": "Audio nodes leak silently. Allows tested browser lifecycle only."
+    },
+    {
+      "id": "DA29-129",
+      "kind": "A",
+      "cut": "Set actor, Helper, projectile, effect, trace, and evidence caps. Depends on DA29-060, DA29-122, and DA29-126.",
+      "acceptance": "Limits have source/product rationale, deterministic refusal/degradation, visible diagnostics, telemetry, reset behavior, and adversarial tests.",
+      "risk": "Caps can alter compatibility. Allows explicit sandbox policy only."
+    },
+    {
+      "id": "DA29-130",
+      "kind": "G",
+      "cut": "Run a long deterministic soak. Depends on DA29-121…129.",
+      "acceptance": "Named device/browser runs repeated rounds, imports, saves, project switches, audio, pause/resume, and stress for fixed duration; frame, memory, errors, resource counts, and final replay digest pass thresholds.",
+      "risk": "Short gates miss cumulative faults. Allows soak configuration only."
+    },
+    {
+      "id": "DA29-131",
+      "kind": "I",
+      "cut": "Make BoundaryManifest the only required-root source. Depends on DA29-006 and current DA28-30 work.",
+      "acceptance": "Boundary command loads the versioned manifest; duplicated root lists are removed; schema and command fixtures fail together on drift.",
+      "risk": "Split rules give false green. Allows manifest consumption only."
+    },
+    {
+      "id": "DA29-132",
+      "kind": "G",
+      "cut": "Make required roots non-vacuous. Depends on DA29-131.",
+      "acceptance": "Active profile fails when a required root is missing, optional roots are explicit, and negative fixtures prove forbidden vocabulary/imports in every active root.",
+      "risk": "Empty roots can fake isolation. Allows boundary enforcement only."
+    },
+    {
+      "id": "DA29-133",
+      "kind": "R",
+      "cut": "Generate an actual dependency/ownership graph. Depends on DA29-131 and DA29-011.",
+      "acceptance": "Graph covers source and selected dynamic owners across app, mugen, game, engine, scripts; cycles, large hubs, adapters, and candidate seams are reviewed.",
+      "risk": "Static imports miss runtime coupling. Allows architecture inventory only."
+    },
+    {
+      "id": "DA29-134",
+      "kind": "I",
+      "cut": "Extract generic cryptographic facts behind a MUGEN adapter. Depends on DA29-008, DA29-004, and DA29-133.",
+      "acceptance": "Core module has no fighting terms/imports, uses canonical SHA-256 facts, serves two live consumers through adapters, and passes deletion/negative import tests.",
+      "risk": "Premature abstraction freezes domain shape. Allows one generic fact contract only."
+    },
+    {
+      "id": "DA29-135",
+      "kind": "I",
+      "cut": "Extract EvidenceEnvelope only after two productive consumers. Depends on DA29-098, DA29-108, and DA29-134.",
+      "acceptance": "Studio and one non-Studio decision consume the shared envelope; MUGEN fields stay in adapters; versioning, canonical bytes, stale/tamper failures, and deletion proof pass.",
+      "risk": "Shared envelope may still encode product rules. Allows reusable evidence shape only."
+    },
+    {
+      "id": "DA29-136",
+      "kind": "A",
+      "cut": "Define a storage port from proven Studio behavior. Depends on DA29-091…100 and DA29-133.",
+      "acceptance": "Port covers transaction, revision, watch/conflict, permission, recovery, export, and errors; IDB/file adapters pass the same contract suite where applicable.",
+      "risk": "Lowest-common-denominator API. Allows port design and conformance only."
+    },
+    {
+      "id": "DA29-137",
+      "kind": "A",
+      "cut": "Define a renderer/resource port. Depends on DA29-071…075 and DA29-123.",
+      "acceptance": "Port separates scene facts, camera, resources, lifecycle, metrics, and capture from MUGEN sprites/stages; Three.js adapter passes ownership tests.",
+      "risk": "Abstraction can hurt performance. Allows renderer port only."
+    },
+    {
+      "id": "DA29-138",
+      "kind": "A",
+      "cut": "Define input/clock/replay ports. Depends on DA29-021…030 and DA29-133.",
+      "acceptance": "Ports expose deterministic frames, seat actions, clock domains, RNG, snapshot, and replay without CNS or team terms; fighting adapters preserve current traces.",
+      "risk": "Generic clock may omit fighting pause rules. Allows ports only."
+    },
+    {
+      "id": "DA29-139",
+      "kind": "I",
+      "cut": "Add a minimal non-fighting second consumer. Depends on DA29-132 and DA29-134…138.",
+      "acceptance": "Repository-owned platformer/testbed uses chosen evidence, storage, renderer, and input/clock ports in one playable route; no MUGEN import or copied combat model exists.",
+      "risk": "Demo-only code can fake reuse. Allows two-consumer proof for used ports only."
+    },
+    {
+      "id": "DA29-140",
+      "kind": "G",
+      "cut": "Prove extraction by deletion and forbidden-import tests. Depends on DA29-139.",
+      "acceptance": "Each shared contract survives removal of either adapter in isolation; boundary violations fail; bundle graph shows no fighting code in the non-fighting route; docs name remaining domain coupling.",
+      "risk": "Tests may mirror implementation. Allows bounded reusable-engine claim for proven ports only."
+    },
+    {
+      "id": "DA29-141",
+      "kind": "A",
+      "cut": "Define the required-check matrix. Depends on DA29-009, DA29-011, DA29-018, and DA29-019.",
+      "acceptance": "Change classes map to fast, full, trace, browser, accessibility, performance, security, source, and release gates with time budgets and owners.",
+      "risk": "Too many gates slow feedback; too few hide faults. Allows policy only."
+    },
+    {
+      "id": "DA29-142",
+      "kind": "I",
+      "cut": "Add reproducible CI for core checks. Depends on DA29-141.",
+      "acceptance": "Pinned runtime installs lockfile, caches safely, runs typecheck/unit/build/boundaries/control audit, uploads facts, and fails on warnings chosen as fatal.",
+      "risk": "Local-only green. Allows CI execution on named environment only."
+    },
+    {
+      "id": "DA29-143",
+      "kind": "I",
+      "cut": "Split pull-request, nightly, and release workflows. Depends on DA29-142 and DA29-130.",
+      "acceptance": "PR stays bounded; nightly runs full traces/browser/accessibility/perf/security; release requires fresh corpus and selected long gates; cancellation/concurrency rules work.",
+      "risk": "Slow jobs can become stale. Allows workflow topology only."
+    },
+    {
+      "id": "DA29-144",
+      "kind": "G",
+      "cut": "Make CI artifacts immutable and traceable. Depends on DA29-004, DA29-017, and DA29-143.",
+      "acceptance": "Reports, traces, screenshots, corpus, source manifests, bundles, and logs carry commit/run/tool/digest/retention; consumers reject expired or mismatched artifacts.",
+      "risk": "Mutable artifacts break provenance. Allows artifact lineage only."
+    },
+    {
+      "id": "DA29-145",
+      "kind": "G",
+      "cut": "Enforce build, bundle, and runtime budgets. Depends on DA29-018, DA29-121, DA29-122, and DA29-143.",
+      "acceptance": "Approved thresholds gate chunk/load, frame gaps, memory trend, draw/resource counts, scanner latency, and evidence size with explicit waiver expiry.",
+      "risk": "Budgets vary by hardware. Allows named baseline lanes only."
+    },
+    {
+      "id": "DA29-146",
+      "kind": "G",
+      "cut": "Add dependency, license, secret, and public-bundle review. Depends on DA29-110 and DA29-143.",
+      "acceptance": "Lockfile/dependency policy, license allowlist, known-vulnerability review, secret-like scan, source map/public path scan, and third-party asset rejection produce signed facts.",
+      "risk": "Tool output is not legal/security assurance. Allows completed scan facts only."
+    },
+    {
+      "id": "DA29-147",
+      "kind": "A",
+      "cut": "Define the release-candidate checklist and claim sheet. Depends on DA29-100, DA29-130, DA29-140, and DA29-146.",
+      "acceptance": "Candidate names commit, profiles, browsers/devices, fixtures, scores, gates, known gaps, blocked claims, recovery path, artifact retention, and approval roles.",
+      "risk": "Checklist can become ceremonial. Allows candidate definition only."
+    },
+    {
+      "id": "DA29-148",
+      "kind": "G",
+      "cut": "Build a deterministic release evidence bundle. Depends on DA29-144 and DA29-147.",
+      "acceptance": "One command gathers current facts, source/asset provenance, SBOM/license outputs, route/perf/accessibility results, checksums, and claim sheet; mismatched revisions fail.",
+      "risk": "Bundle may omit external deployment facts. Allows local candidate evidence only."
+    },
+    {
+      "id": "DA29-149",
+      "kind": "I",
+      "cut": "Generate current docs and archive historical views. Depends on DA29-010, DA29-007, and DA29-148.",
+      "acceptance": "Current summaries derive from selector/registries/corpus; append-only history retains stable links; size/search checks pass; manual stale overrides fail audit.",
+      "risk": "Generation can erase context. Allows synchronized docs only."
+    },
+    {
+      "id": "DA29-150",
+      "kind": "G",
+      "cut": "Run final score, compatibility, product, and release adjudication. Depends on all required tasks for the chosen milestone, especially DA29-005 and DA29-147…149.",
+      "acceptance": "Independent evidence review records accepted/rejected facts, exact score changes, release decision, supported profiles/routes, known gaps, and next queue; every broad claim links its gate.",
+      "risk": "Pressure to call partial work complete. Allows only the signed adjudication result."
+    },
+    {
+      "id": "DA29-151",
+      "kind": "R",
+      "cut": "Audit CMD command-buffer timing and ownership. Depends on DA29-021, DA29-027, and DA29-032.",
+      "acceptance": "Pinned map covers command time, buffer time, charge, release, simultaneous/sequence tokens, facing, pause, hitpause, control, state changes, Helper buffers, and profile deltas.",
+      "risk": "Small timing errors change move access. Allows source/local delta only."
+    },
+    {
+      "id": "DA29-152",
+      "kind": "G",
+      "cut": "Build an imported command-recognition matrix. Depends on DA29-151 and DA29-043.",
+      "acceptance": "Repository-owned fixtures cover directions, buttons, simultaneous and ordered inputs, facing swap, invalid gaps, buffer expiry, and per-frame command facts.",
+      "risk": "Synthetic direct state entry hides command bugs. Allows named command forms only."
+    },
+    {
+      "id": "DA29-153",
+      "kind": "I",
+      "cut": "Prove charge, hold, release, and repeated-button semantics. Depends on DA29-152 and DA29-025.",
+      "acceptance": "Record/replay routes cover charge duration boundaries, held directions across facing changes, release tokens, repeated presses, negative-edge policy, and failure frames.",
+      "risk": "Device sampling can alter thresholds. Allows tested tokens/profile only."
+    },
+    {
+      "id": "DA29-154",
+      "kind": "I",
+      "cut": "Prove command priority, overlap, consumption, and State -1 order. Depends on DA29-152, DA29-153, and DA29-037.",
+      "acceptance": "Overlapping commands and multiple eligible controllers show deterministic selection, trigger order, consumption policy, state/control gates, and first divergence diagnostics.",
+      "risk": "Easy commands can shadow specific moves. Allows named overlap matrix only."
+    },
+    {
+      "id": "DA29-155",
+      "kind": "A",
+      "cut": "Define AI input and decision ownership. Depends on DA29-021, DA29-028, and DA29-151.",
+      "acceptance": "ADR separates authored CNS AI logic, engine-controlled inputs, difficulty, deterministic RNG, observation, reaction delay, pause, replay, and user override.",
+      "risk": "Hidden AI cheats or replay drift. Allows architecture only."
+    },
+    {
+      "id": "DA29-156",
+      "kind": "I",
+      "cut": "Add one deterministic AI-versus-AI route. Depends on DA29-155, DA29-026, and DA29-041.",
+      "acceptance": "Fixed seed/difficulty yields stable commands, contacts, winner, frame count, periodic checksums, and clear unsupported AI features across repeated runs.",
+      "risk": "One scripted opponent can fake AI breadth. Allows one AI policy/fixture only."
+    },
+    {
+      "id": "DA29-157",
+      "kind": "I",
+      "cut": "Add bounded training-mode controls. Depends on DA29-021, DA29-026, DA29-050, and DA29-119.",
+      "acceptance": "Pause/frame-step, dummy state, life/power reset, input display, record/playback, position reset, and error states remain deterministic and keyboard accessible.",
+      "risk": "Training overrides can leak into matches. Allows named training tools only."
+    },
+    {
+      "id": "DA29-158",
+      "kind": "G",
+      "cut": "Parse and validate bounded `select.def` roster data. Depends on DA29-081, DA29-085, and DA29-109.",
+      "acceptance": "Repository-owned file covers character/stage rows, random/select rules, ordering, missing/duplicate paths, extra metadata, diagnostics, and safe project closure.",
+      "risk": "Roster parse can imply mode support. Allows parsed subset only."
+    },
+    {
+      "id": "DA29-159",
+      "kind": "I",
+      "cut": "Build a real character/stage select journey. Depends on DA29-158, DA29-113…117, and DA29-074.",
+      "acceptance": "Keyboard/gamepad desktop/mobile flow chooses legal characters/stage, shows missing/blocked entries, preserves seat/profile, starts the exact package, and returns safely.",
+      "risk": "Selection UI can load a different revision. Allows one local versus selection route only."
+    },
+    {
+      "id": "DA29-160",
+      "kind": "G",
+      "cut": "Prove bounded versus, arcade, survival, demo, and training mode ownership. Depends on DA29-069, DA29-156…159.",
+      "acceptance": "Each selected mode has an explicit supported path or blocking diagnostic for roster, AI/input, match sequence, persistence, continue, result, and reset; routes never share stale state.",
+      "risk": "Labels can outrun behavior. Allows only modes with passing named journeys."
+    },
+    {
+      "id": "DA29-161",
+      "kind": "G",
+      "cut": "Import a bounded `system.def`/screenpack package. Depends on DA29-076, DA29-081, and DA29-086.",
+      "acceptance": "Repository-owned package proves path resolution, motif sections, sprites, animations, sounds, fonts, localcoord, fallback, malformed fields, and deterministic analysis.",
+      "risk": "Parsed motif can exceed rendered support. Allows named screenpack subset only."
+    },
+    {
+      "id": "DA29-162",
+      "kind": "G",
+      "cut": "Add bounded MUGEN font loading and layout. Depends on DA29-161 and DA29-110.",
+      "acceptance": "Repository-owned font fixtures cover glyph map, palette/color, spacing, alignment, clipping, scale, missing glyphs, corrupt data, disposal, and visual captures.",
+      "risk": "Font parsers and atlases can leak or overflow. Allows named font formats only."
+    },
+    {
+      "id": "DA29-163",
+      "kind": "A",
+      "cut": "Define UI text, motif strings, and localization ownership. Depends on DA29-161, DA29-162, and DA29-116.",
+      "acceptance": "ADR distinguishes authored motif text, engine copy, locale selection, fallback, encoding, bidi, truncation, accessible names, and evidence snapshots.",
+      "risk": "Localization can alter layout and authored meaning. Allows architecture only."
+    },
+    {
+      "id": "DA29-164",
+      "kind": "I",
+      "cut": "Widen lifebar and `fight.def` rendering. Depends on DA29-068, DA29-076, DA29-161, and DA29-162.",
+      "acceptance": "Imported fixture covers bars, portraits, names, power, timer, combo, round/KO/win elements, layer order, transforms, team variants, resize, and fallback.",
+      "risk": "HUD success can hide timing gaps. Allows one motif/profile matrix only."
+    },
+    {
+      "id": "DA29-165",
+      "kind": "I",
+      "cut": "Add a bounded storyboard/cutscene player. Depends on DA29-074, DA29-078, DA29-080, and DA29-161.",
+      "acceptance": "Repository-owned storyboard proves scenes, backgrounds, animations, text, audio, timing, skip, end, resize, error handling, and resource cleanup.",
+      "risk": "A player can block input/audio lifecycle. Allows named storyboard subset only."
+    },
+    {
+      "id": "DA29-166",
+      "kind": "I",
+      "cut": "Close continue, winquote, intro, and ending flow for one arcade route. Depends on DA29-160, DA29-163…165.",
+      "acceptance": "One repository-owned route proves data loading, result ownership, continue choice, quote selection, storyboard handoff, save/reopen state, skip, and safe missing content.",
+      "risk": "Product flow may imply full arcade parity. Allows one authored route only."
+    },
+    {
+      "id": "DA29-167",
+      "kind": "G",
+      "cut": "Reconcile Common1, FightFX, and shared resource dependency closure. Depends on DA29-016, DA29-080, DA29-109, and DA29-164.",
+      "acceptance": "Source/package graph records precedence, shadowing, append rules, profile, paths, digests, missing/ambiguous cases, runtime consumers, and browser output.",
+      "risk": "Global resource resolution can contaminate packages. Allows tested closure only."
+    },
+    {
+      "id": "DA29-168",
+      "kind": "A",
+      "cut": "Define MUGEN 1.0, 1.1, and sandbox profile deltas. Depends on DA29-031, DA29-032, DA29-161, and DA29-167.",
+      "acceptance": "Versioned profile matrix covers formats, expressions, controllers, localcoord, palettes, stage/FightScreen rules, diagnostics, and downgrade/fail rules.",
+      "risk": "A blended profile hides incompatibility. Allows profile contract only."
+    },
+    {
+      "id": "DA29-169",
+      "kind": "G",
+      "cut": "Add fourth and fifth independent lawful packages. Depends on DA29-081, DA29-158, and DA29-168.",
+      "acceptance": "At least one character-centered and one stage/screenpack-centered package add distinct syntax/asset digests, real journeys, malformed variants, provenance, and coverage delta.",
+      "risk": "More packages can repeat easy syntax. Allows five-package corpus breadth only."
+    },
+    {
+      "id": "DA29-170",
+      "kind": "G",
+      "cut": "Run an adversarial practical-MUGEN milestone review. Depends on the chosen MUGEN tasks, especially DA29-150, DA29-160, and DA29-169.",
+      "acceptance": "Review samples unsupported-heavy packages, mutation corpus, profile boundaries, user flows, performance, and failure clarity; accepted/rejected claims and next denominator are signed.",
+      "risk": "Friendly fixtures inflate readiness. Allows the reviewed practical-MUGEN milestone only."
+    },
+    {
+      "id": "DA29-171",
+      "kind": "A",
+      "cut": "Automate upstream source-authority refresh and semantic review. Depends on DA29-016, DA29-090, and current dual pins.",
+      "acceptance": "Tool verifies pinned objects, fetch policy, dirty/shallow cache state, changed source families, reviewer decisions, source digests, and selector update without silent pin drift.",
+      "risk": "Mutable cache can replace normative source. Allows reviewed source-epoch updates only."
+    },
+    {
+      "id": "DA29-172",
+      "kind": "G",
+      "cut": "Parse and analyze bounded ZSS without execution. Depends on DA29-089 and DA29-171.",
+      "acceptance": "Pinned/repository fixtures produce located AST, imports, declarations, calls, unknowns, caps, deterministic digests, and explicit execution-blocked status.",
+      "risk": "Parser recognition can imply runtime. Allows static ZSS analysis only."
+    },
+    {
+      "id": "DA29-173",
+      "kind": "R",
+      "cut": "Create the Lua threat model and capability decision. Depends on DA29-089, DA29-126, and DA29-171.",
+      "acceptance": "Review covers file/network/time/randomness, host APIs, memory/CPU, infinite loops, modules, persistence, user trust, CSP, browser worker limits, and default deny policy.",
+      "risk": "Arbitrary script execution is high risk. Allows threat model only."
+    },
+    {
+      "id": "DA29-174",
+      "kind": "G",
+      "cut": "Prototype a bounded Lua sandbox offline. Depends on DA29-125 and DA29-173.",
+      "acceptance": "Repository-owned scripts test allowlisted APIs, deterministic clock/RNG, memory/instruction/time caps, cancellation, errors, no file/network/DOM access, and worker termination.",
+      "risk": "Sandbox escape or denial of service. Allows prototype facts only; blocks product execution."
+    },
+    {
+      "id": "DA29-175",
+      "kind": "A",
+      "cut": "Define IKEMEN module packaging and capability permissions. Depends on DA29-172…174.",
+      "acceptance": "ADR covers manifest, identity, version, dependencies, requested capabilities, signatures/digests, trust, updates, isolation, diagnostics, and uninstall cleanup.",
+      "risk": "Extension power expands attack surface. Allows package design only."
+    },
+    {
+      "id": "DA29-176",
+      "kind": "I",
+      "cut": "Execute one source-reviewed ZSS extension subset. Depends on DA29-172, DA29-175, and a dedicated capability registry.",
+      "acceptance": "One repository-owned fixture proves selected declarations/operations, deterministic failure cases, runtime trace, reset, and explicit rejection of every ungranted feature.",
+      "risk": "Small subset can be called ZSS support. Allows named operations only."
+    },
+    {
+      "id": "DA29-177",
+      "kind": "G",
+      "cut": "Execute one product-authorized Lua/module experiment. Depends on DA29-174, DA29-175, DA29-119, and explicit user trust UX.",
+      "acceptance": "Opt-in project route shows capabilities, runs a repository-owned script under caps, records evidence, handles timeout/error/revoke, and leaves default import execution disabled.",
+      "risk": "Consent and sandbox may fail. Allows experimental route only."
+    },
+    {
+      "id": "DA29-178",
+      "kind": "G",
+      "cut": "Re-audit deterministic readiness for rollback. Depends on DA29-030, DA29-060, DA29-064, DA29-066, DA29-130, and DA29-156.",
+      "acceptance": "Matrix records deterministic owners, snapshot cost, resim speed, desync localization, unsupported systems, team/plural/AI results, and hard blockers.",
+      "risk": "Local repeatability may fail across devices. Allows readiness findings only."
+    },
+    {
+      "id": "DA29-179",
+      "kind": "G",
+      "cut": "Run an isolated local peer/rollback prototype. Depends on DA29-070 and DA29-178.",
+      "acceptance": "Two local peers exchange versioned inputs, delay/loss simulation, predict/resim, compare checksums, surface desync, and recover/abort safely; no external service or credentials.",
+      "risk": "Prototype can be mistaken for secure netplay. Allows local prototype data only."
+    },
+    {
+      "id": "DA29-180",
+      "kind": "G",
+      "cut": "Adjudicate a bounded IKEMEN milestone. Depends on DA29-067, DA29-090, DA29-171…179, and chosen team/runtime gates.",
+      "acceptance": "Review separates scanner, source, ZSS, Lua/module, team, replay, and local-network evidence; supported profile, blocked extensions, risks, and scores are explicit.",
+      "risk": "Mixed lanes can inflate IKEMEN claims. Allows signed bounded milestone only."
+    },
+    {
+      "id": "DA29-181",
+      "kind": "A",
+      "cut": "Version the saved-project schema and migrations. Depends on DA29-091, DA29-092, and DA29-109.",
+      "acceptance": "Schema covers package refs, revisions, settings, analysis/evidence refs, asset graph, source handles, UI state, extensions, migration, export, and unknown-version refusal.",
+      "risk": "Project upgrades can lose author work. Allows schema contract only."
+    },
+    {
+      "id": "DA29-182",
+      "kind": "I",
+      "cut": "Add transactional undo/redo for source and project edits. Depends on DA29-095, DA29-096, and DA29-181.",
+      "acceptance": "Multi-step edits, file writes, asset refs, undo/redo branches, save/reopen, failure compensation, size caps, and crash recovery preserve bytes and revisions.",
+      "risk": "History can diverge from external files. Allows tested edit types only."
+    },
+    {
+      "id": "DA29-183",
+      "kind": "I",
+      "cut": "Add bounded semantic editors for CNS, CMD, and AIR. Depends on DA29-033, DA29-084, DA29-085, DA29-182.",
+      "acceptance": "Editors preserve comments/unknown text where promised, show located diagnostics, preview semantic diff, validate before write, undo, reopen, and avoid unsupported silent rewrites.",
+      "risk": "Pretty printing can alter behavior. Allows named edit operations only."
+    },
+    {
+      "id": "DA29-184",
+      "kind": "I",
+      "cut": "Add source diff, external-change, and merge workflow. Depends on DA29-090, DA29-097, DA29-098, and DA29-182.",
+      "acceptance": "Base/local/external revisions show semantic and text changes, conflicts, safe choices, stale evidence, byte result, undo, and reopened integrity.",
+      "risk": "Automatic merge can corrupt syntax. Allows tested merge cases only."
+    },
+    {
+      "id": "DA29-185",
+      "kind": "I",
+      "cut": "Add cancellable batch analysis and transform jobs. Depends on DA29-087, DA29-104, DA29-124, and DA29-125.",
+      "acceptance": "Queue reports inputs/revisions/progress, concurrency, cancel/retry, partial outputs, errors, resource caps, and final project facts without blocking core UI.",
+      "risk": "Partial batch results can appear current. Allows named job types only."
+    },
+    {
+      "id": "DA29-186",
+      "kind": "G",
+      "cut": "Add repository-owned project templates. Depends on DA29-181 and DA29-107.",
+      "acceptance": "Blank fighter, stage, screenpack, and training templates carry clear ownership/license, version, required files, safe placeholders, validation, and no third-party content.",
+      "risk": "Templates can imply complete generators. Allows starter structure only."
+    },
+    {
+      "id": "DA29-187",
+      "kind": "I",
+      "cut": "Add project-wide diagnostics search and navigation. Depends on DA29-087, DA29-183, and DA29-185.",
+      "acceptance": "Filter/group by file, severity, capability, source rule, stale state, and owner; keyboard navigation opens exact range; large result sets stay responsive.",
+      "risk": "Search indices can stale. Allows displayed current revision only."
+    },
+    {
+      "id": "DA29-188",
+      "kind": "G",
+      "cut": "Export a deterministic playable project bundle. Depends on DA29-100, DA29-109, DA29-110, DA29-148, and DA29-181.",
+      "acceptance": "Same project/revision/tool chain yields identical manifest and content digests, safe paths, current evidence, runtime config, and a local play smoke; blocked facts stop export.",
+      "risk": "Local bundle is not deployment. Allows deterministic local export only."
+    },
+    {
+      "id": "DA29-189",
+      "kind": "A",
+      "cut": "Define install/offline cache and update recovery. Depends on DA29-123, DA29-181, and DA29-188.",
+      "acceptance": "ADR/prototype covers service worker scope, immutable app assets, user projects, storage estimates, update prompt, old-version rollback, offline import/play limits, and cache purge.",
+      "risk": "Stale app code can open new project data. Allows offline architecture/prototype only."
+    },
+    {
+      "id": "DA29-190",
+      "kind": "G",
+      "cut": "Build product help and recovery documentation. Depends on DA29-111, DA29-119, DA29-160, and DA29-187.",
+      "acceptance": "In-app/help docs cover import, controls, modes, evidence, save/recovery, permissions, assets, unsupported facts, keyboard access, and error recovery; links are route-tested.",
+      "risk": "Docs can drift from product. Allows current documented routes only."
+    },
+    {
+      "id": "DA29-191",
+      "kind": "R",
+      "cut": "Plan workspace/package splits from the proven dependency graph. Depends on DA29-133, DA29-140, and DA29-188.",
+      "acceptance": "Proposal names packages, owners, public/private entrypoints, build order, browser/Node targets, dependency cycles, migration steps, and size/test impact.",
+      "risk": "Package split can move coupling rather than remove it. Allows plan only."
+    },
+    {
+      "id": "DA29-192",
+      "kind": "A",
+      "cut": "Define versioned public APIs for proven engine ports. Depends on DA29-140 and DA29-191.",
+      "acceptance": "API review covers types, lifecycle, errors, async/cancel, events, deterministic contracts, browser support, compatibility policy, examples, and excluded domain owners.",
+      "risk": "Public API freezes weak seams. Allows candidate API only."
+    },
+    {
+      "id": "DA29-193",
+      "kind": "A",
+      "cut": "Define plugin capability and trust boundaries. Depends on DA29-175, DA29-192, and DA29-146.",
+      "acceptance": "Contract covers install source, manifest, permissions, isolation, host APIs, versioning, revocation, update, data access, UI surfaces, resource caps, and evidence.",
+      "risk": "Plugins widen security and support load. Allows architecture only."
+    },
+    {
+      "id": "DA29-194",
+      "kind": "I",
+      "cut": "Add a headless import/analyze/build CLI over shared ports. Depends on DA29-087, DA29-136, DA29-188, and DA29-192.",
+      "acceptance": "CLI has stable exit codes, JSON facts, stdin/path policy, cancellation, caps, deterministic output, no browser-only globals, and parity fixtures with Studio.",
+      "risk": "Headless and product paths can diverge. Allows named commands only."
+    },
+    {
+      "id": "DA29-195",
+      "kind": "G",
+      "cut": "Publish a fixture and adapter conformance kit locally. Depends on DA29-140, DA29-192, and DA29-194.",
+      "acceptance": "Kit provides lawful fixtures, contract tests, negative cases, environment envelope, expected artifacts, version policy, and one external-style sample adapter in the repo.",
+      "risk": "Tests may encode current bugs. Allows local conformance kit only."
+    },
+    {
+      "id": "DA29-196",
+      "kind": "G",
+      "cut": "Generate API and format support references. Depends on DA29-034, DA29-035, DA29-090, DA29-168, and DA29-192.",
+      "acceptance": "Current registries generate searchable controller/trigger/format/profile/API docs with evidence links, unsupported branches, versions, examples, and stale-reference audit.",
+      "risk": "Generated docs can look like full support. Allows documented registry state only."
+    },
+    {
+      "id": "DA29-197",
+      "kind": "A",
+      "cut": "Define semantic versioning, migration, and deprecation policy. Depends on DA29-181, DA29-192, and DA29-196.",
+      "acceptance": "Policy separates project schema, evidence, source/profile, public API, plugin, asset, and runtime compatibility versions with support windows and migration gates.",
+      "risk": "One version cannot express all contracts. Allows policy only."
+    },
+    {
+      "id": "DA29-198",
+      "kind": "A",
+      "cut": "Design hosted-preview deployment and rollback. Depends on DA29-146…148, DA29-188, and DA29-197.",
+      "acceptance": "Architecture covers static hosting, headers/CSP, cache keys, asset limits, privacy, artifact promotion, smoke, rollback, status, and domain/secret authority; no deployment occurs.",
+      "risk": "Local readiness differs from production. Allows deployment plan only."
+    },
+    {
+      "id": "DA29-199",
+      "kind": "A",
+      "cut": "Define telemetry, crash evidence, and privacy policy. Depends on DA29-008, DA29-144, DA29-190, and DA29-198.",
+      "acceptance": "Decision covers opt-in, data minimization, local logs, redaction, retention, user export/delete, crash envelope, performance sampling, consent, and production authority.",
+      "risk": "Diagnostics can expose project/user data. Allows policy only."
+    },
+    {
+      "id": "DA29-200",
+      "kind": "G",
+      "cut": "Run final product/SDK roadmap adjudication. Depends on the chosen product target and DA29-180…199.",
+      "acceptance": "Review records shipped/local-only surfaces, API stability, extension risk, migration state, release/deployment authority, evidence freshness, scores, blocked claims, and the next bounded program.",
+      "risk": "A long plan can end in broad unsupported claims. Allows only the signed final scope and next program."
+    }
+  ],
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  }
+}

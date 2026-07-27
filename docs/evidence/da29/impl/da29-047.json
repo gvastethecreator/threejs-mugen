@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-047",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Extend active juggle to a real multi-hit route. Depends on DA29-041, DA29-046, and focal T406.",
+  "acceptance": "Same target receives allowed and rejected hits across juggle points, fall/recovery, reset, and profile variants; no synthetic outcome fallback.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/RuntimeActiveControllerDispatchSystem.test.ts",
+    "src/tests/RuntimeActiveControllerHookSetSystem.test.ts",
+    "src/tests/RuntimeActiveControllerRunSystem.test.ts",
+    "src/tests/RuntimeActiveControllerScanSystem.test.ts",
+    "src/tests/RuntimeActiveControllerTelemetrySystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "ef8f092033b035ca754e18a7874b838e695857ef01253a81d1229e7caa1b3c64"
+  }
+}

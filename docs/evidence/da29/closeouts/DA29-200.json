@@ -1,0 +1,51 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-200",
+  "kind": "G",
+  "wave": 19,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Run final product/SDK roadmap adjudication. Depends on the chosen product target and DA29-180…199.",
+  "acceptance": "Review records shipped/local-only surfaces, API stability, extension risk, migration state, release/deployment authority, evidence freshness, scores, blocked claims, and the next bounded program.",
+  "risk": "A long plan can end in broad unsupported claims. Allows only the signed final scope and next program.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/controller-coverage-matrix-v1.json",
+    "docs/evidence/native-asset-provenance-v1.json",
+    "docs/evidence/scanner-capability-artifact-v1.json",
+    "docs/evidence/compatibility-corpus-v1.2.json",
+    "docs/evidence/score-adjudication-v1.json"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 200 --to 200"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-200.json",
+    "docs/evidence/da29/gates/da29-200.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-200 closed at written kind-G ceiling for wave 19",
+      "gate inventory at static ceiling only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "treating static gate inventory as current formal/global pin"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "12e26d99d9a83863d3508234e20616a5716f6fe16842707b5d30c87e08e95ca9"
+  }
+}

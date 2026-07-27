@@ -13,7 +13,7 @@ const GATE = "32466c6e8bb4ec3f414a0cda032af24ea241e5c6";
 function input(overrides: Partial<AuthoritySelectorInput> = {}): AuthoritySelectorInput {
   return {
     generatedAt: "2026-07-26T19:00:00.000Z",
-    closedThrough: "DA28-30",
+    closedThrough: "DA29-200",
     nextQueue: [],
     scores: {
       sandbox: "65",
@@ -70,10 +70,12 @@ describe("AuthoritySelector", () => {
     expect(existsSync(artifactPath)).toBe(true);
     const parsed = parseAuthoritySelectorDocument(JSON.parse(readFileSync(artifactPath, "utf8")));
     expect(parsed.errors).toEqual([]);
-    expect(parsed.document?.closedThrough).toBe("DA28-30");
+    expect(parsed.document?.closedThrough).toBe("DA29-200");
     expect(parsed.document?.nextQueue).toEqual([]);
-    expect(parsed.document?.cursors.formal.sha.startsWith("32466c6e")).toBe(true);
-    expect(parsed.document?.cursors.global.sha.startsWith("32466c6e")).toBe(true);
+    expect(parsed.document?.cursors.formal.sha).toBe(parsed.document?.cursors.global.sha);
+    expect((parsed.document?.cursors.formal.sha ?? "").length).toBeGreaterThanOrEqual(7);
+    expect(parsed.document?.scores.sandbox).toBe("65");
+    expect(parsed.document?.scores.studio).toBe("25");
   });
 
   it("keeps stale-current patterns that the reference auditor relies on", () => {

@@ -1,5 +1,13 @@
 ﻿# Roadmap Execution Board
 
+## Current expanded audit - DA29 proposed (ready for adoption, 2026-07-26)
+
+The post-DA28 audit defines 200 cuts in 20 waves. The generated selector still
+has an empty queue; **DA29-001** is the next control cut to adopt the first
+approved batch. Authority and current-HEAD evidence come before a new runtime
+feature. Sources: [expanded audit](research/2026-07-26-expanded-master-roadmap-audit-post-da28.md)
+and [master roadmap](MASTER_REVIEW_ROADMAP.md).
+
 ## Current DA28 series - drained (closed-bounded, 2026-07-26)
 
 DA28-01…30 closed. `nextQueue` empty. Report:

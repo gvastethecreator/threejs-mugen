@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-025",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Record a canonical per-frame input log. Depends on DA29-021 and DA29-020.",
+  "acceptance": "Log stores sampled inputs, edges, seat map, clock tick, policy revision, and checksum; same route produces identical canonical bytes.",
+  "entryPoints": [
+    "src/mugen",
+    "src/game"
+  ],
+  "tests": [
+    "src/tests/GamepadInputAdapter.test.ts",
+    "src/tests/KeyboardInputAdapter.test.ts",
+    "src/tests/MatchInputPolicySnapshot.test.ts",
+    "src/tests/RuntimeFrameSystem.test.ts",
+    "src/tests/RuntimeInput.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "2bdc1ce137ea649c8c5a3254b8acaf4f80495f4d0a287bb152aa3c1af0c36ab7"
+  }
+}

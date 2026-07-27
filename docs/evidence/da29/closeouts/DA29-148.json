@@ -1,0 +1,51 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-148",
+  "kind": "G",
+  "wave": 14,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Build a deterministic release evidence bundle. Depends on DA29-144 and DA29-147.",
+  "acceptance": "One command gathers current facts, source/asset provenance, SBOM/license outputs, route/perf/accessibility results, checksums, and claim sheet; mismatched revisions fail.",
+  "risk": "Bundle may omit external deployment facts. Allows local candidate evidence only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/controller-coverage-matrix-v1.json",
+    "docs/evidence/native-asset-provenance-v1.json",
+    "docs/evidence/scanner-capability-artifact-v1.json",
+    "docs/evidence/compatibility-corpus-v1.2.json",
+    "docs/evidence/score-adjudication-v1.json"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 148 --to 148"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-148.json",
+    "docs/evidence/da29/gates/da29-148.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-148 closed at written kind-G ceiling for wave 14",
+      "gate inventory at static ceiling only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "treating static gate inventory as current formal/global pin"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "4c37a34cfbe993d47d4006a25373a65196a6e877bb82b958e74fde006f28482d"
+  }
+}

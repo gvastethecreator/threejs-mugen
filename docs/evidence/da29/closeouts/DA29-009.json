@@ -1,0 +1,47 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-009",
+  "kind": "A",
+  "wave": 0,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Define the gate taxonomy. Depends on DA29-008. Systems: QA docs, reports, scorecard.",
+  "acceptance": "Schema distinguishes unit, focused, trace, global, browser route, accessibility, performance, source review, release, and production gates plus valid inheritance rules.",
+  "risk": "Gate mixing. Allows taxonomy adoption only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/AUTHORITY_SELECTOR.md",
+    "scripts/materialize_authority_selector.cjs"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 9 --to 9"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-009.json",
+    "docs/research/da29/da29-009-architecture.md",
+    "docs/evidence/authority-selector-v1.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-009 closed at written kind-A ceiling for wave 0",
+      "architecture/control design only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "4ac8a4fcaa8149c88b42f98895f2054f95ba455e687f31c6bb5e63ae428861ec"
+  }
+}

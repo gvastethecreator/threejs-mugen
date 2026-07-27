@@ -1,0 +1,48 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-017",
+  "kind": "I",
+  "wave": 1,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Generate browser evidence facts from the runner. Depends on DA29-003 and DA29-009.",
+  "acceptance": "Facts include route, viewport, DPR, browser, input mode, artifact digests, console/page errors, focus checks, and commit; hand-authored green status is rejected.",
+  "risk": "Automation may miss human usability. Allows runner-observed facts only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "scripts/qa_smoke.cjs",
+    "scripts/qa_browser_gate_da28_09_turns.cjs"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 17 --to 17",
+    "structural impl evidence DA29-017"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-017.json",
+    "docs/evidence/da29/impl/da29-017.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-017 closed at written kind-I ceiling for wave 1",
+      "unit/static implementation evidence at written ceiling"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "product/runtime parity beyond named entry points"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "7a757b29741fe12f9a56baf66f425c23dfcf0d836361cf6ebeb814d69bec40f3"
+  }
+}

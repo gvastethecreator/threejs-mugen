@@ -1,0 +1,44 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-035",
+  "kind": "A",
+  "wave": 3,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Version the canonical trigger capability registry. Depends on DA29-032 and DA29-033.",
+  "acceptance": "Each trigger maps context, redirects, coercion, timing, evaluator owner, tests, traces, and unsupported branches.",
+  "risk": "Evaluator context may be incomplete. Allows capability mapping only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 35 --to 35"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-035.json",
+    "docs/research/da29/da29-035-architecture.md"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-035 closed at written kind-A ceiling for wave 3",
+      "architecture/control design only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "38812e3c4729fd29f679443e6fa32a6c006244468287e4453f3678cdbe5fc459"
+  }
+}

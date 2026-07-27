@@ -1,0 +1,26 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-059",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Close Helper/projectile numeric identity lifecycle. Depends on DA29-052, DA29-053, and DA29-057.",
+  "acceptance": "IDs allocate, resolve, disable, destroy, never alias stale owners, survive snapshots where required, and fail closed on redirects.",
+  "entryPoints": [
+    "src/app/StudioIndexedDbSnapshot.ts",
+    "src/app/ProjectStorage.ts",
+    "src/mugen",
+    "src/game"
+  ],
+  "tests": [
+    "src/tests/Da29SeriesCloseout.test.ts",
+    "src/tests/EffectLifecycleSystem.test.ts",
+    "src/tests/GlobalProjectileSchedule.test.ts",
+    "src/tests/HelperSystem.test.ts",
+    "src/tests/LiveGlobalProjectileSchedule.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "5e7e526ad7043ace7a59fe9754d715e7c12a8a41e101f8c8e1256192a4e290ed"
+  }
+}

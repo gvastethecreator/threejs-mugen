@@ -1,0 +1,48 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-088",
+  "kind": "I",
+  "wave": 8,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Add a live PackageAnalysis revision consumer. Depends on DA29-087 and DA29-091.",
+  "acceptance": "Import/reopen/source-change routes show current, stale, failed, and superseded analysis; product actions consume the same revision and fail closed.",
+  "risk": "Analysis may drift from bytes. Allows named product decisions only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 88 --to 88",
+    "structural impl evidence DA29-088"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-088.json",
+    "docs/evidence/da29/impl/da29-088.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-088 closed at written kind-I ceiling for wave 8",
+      "unit/static implementation evidence at written ceiling"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "product/runtime parity beyond named entry points"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "b74361577327d814063e05e124aeca84da11226c542f7486c5c311c541339559"
+  }
+}

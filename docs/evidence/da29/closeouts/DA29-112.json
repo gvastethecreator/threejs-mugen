@@ -1,0 +1,44 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-112",
+  "kind": "A",
+  "wave": 11,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Review Frame Ledger desktop information priority. Depends on DA29-111 and DA29-065.",
+  "acceptance": "Wire-level decision sets stage minimum, panel collapse, HUD/control hierarchy, runtime diagnostics, and task flows at 1280/1440 widths with measured geometry.",
+  "risk": "Dense panels can obscure play. Allows layout decision only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 112 --to 112"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-112.json",
+    "docs/research/da29/da29-112-architecture.md"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-112 closed at written kind-A ceiling for wave 11",
+      "architecture/control design only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "39441534b394dca7aafb5aeb6651dfb989a58c621310a05b46877c0577652eb2"
+  }
+}

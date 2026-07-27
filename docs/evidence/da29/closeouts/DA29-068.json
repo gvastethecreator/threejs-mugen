@@ -1,0 +1,48 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-068",
+  "kind": "I",
+  "wave": 6,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Load and render team-aware lifebar metadata. Depends on DA29-062, DA29-064, DA29-066, and DA29-076.",
+  "acceptance": "Single/Simul/Turns/Tag fixtures prove names, portraits, life/power, active/standby cues, scaling, fallback, and mobile layout.",
+  "risk": "HUD can imply unsupported mode depth. Allows loaded metadata routes only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 68 --to 68",
+    "structural impl evidence DA29-068"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-068.json",
+    "docs/evidence/da29/impl/da29-068.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-068 closed at written kind-I ceiling for wave 6",
+      "unit/static implementation evidence at written ceiling"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "product/runtime parity beyond named entry points"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "db8f1faf74705bda6a9a5cc49958ae793083561d62ee0454f983a51b1c930fb1"
+  }
+}

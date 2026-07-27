@@ -1,0 +1,22 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-143",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Split pull-request, nightly, and release workflows. Depends on DA29-142 and DA29-130.",
+  "acceptance": "PR stays bounded; nightly runs full traces/browser/accessibility/perf/security; release requires fresh corpus and selected long gates; cancellation/concurrency rules work.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/AssetReleasePolicyV1.test.ts",
+    "src/tests/ProjectReleaseDecision.test.ts",
+    "src/tests/StudioAssetReleasePolicy.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "3aa7c16088dd8af05b3bdc9cb8ce5485ab01dcbd5cf76f4cd8897dbda048da2e"
+  }
+}

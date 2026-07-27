@@ -1,0 +1,48 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-078",
+  "kind": "I",
+  "wave": 7,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Prove AIR reserved actions and element timing. Depends on DA29-043 and DA29-084.",
+  "acceptance": "Imported fixture covers required actions, loopstart, duration, flip, alpha, interpolation where supported, missing action diagnostics, and frame/render correlation.",
+  "risk": "Animation presence is weak evidence. Allows named AIR subset only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 78 --to 78",
+    "structural impl evidence DA29-078"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-078.json",
+    "docs/evidence/da29/impl/da29-078.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-078 closed at written kind-I ceiling for wave 7",
+      "unit/static implementation evidence at written ceiling"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "product/runtime parity beyond named entry points"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "104930555ee3789d16155bb4b57f323ff073d2fb6f6a6ccb682c1c3b17086a51"
+  }
+}

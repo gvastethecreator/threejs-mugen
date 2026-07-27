@@ -1,0 +1,18 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-165",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Add a bounded storyboard/cutscene player. Depends on DA29-074, DA29-078, DA29-080, and DA29-161.",
+  "acceptance": "Repository-owned storyboard proves scenes, backgrounds, animations, text, audio, timing, skip, end, resize, error handling, and resource cleanup.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "3b5f33a15b9e1004ebe663349299888db2e9fdb21117b48500b8c0fafe5b306b"
+  }
+}

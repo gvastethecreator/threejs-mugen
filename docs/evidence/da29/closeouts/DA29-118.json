@@ -1,0 +1,44 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-118",
+  "kind": "A",
+  "wave": 11,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Define screen-reader semantics for live combat and diagnostics. Depends on DA29-111 and DA29-117.",
+  "acceptance": "ADR separates high-rate visual state from concise announcements, names pause/verbosity controls, and prototypes round/KO/error output without flooding.",
+  "risk": "Live regions can overwhelm users. Allows semantics design only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 118 --to 118"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-118.json",
+    "docs/research/da29/da29-118-architecture.md"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-118 closed at written kind-A ceiling for wave 11",
+      "architecture/control design only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "cbaa944e31995013c5a0d966729ac23ae8fbd0980353e7029be08437e86cdd57"
+  }
+}

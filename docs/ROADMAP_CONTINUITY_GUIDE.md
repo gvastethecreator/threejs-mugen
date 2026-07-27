@@ -7,12 +7,13 @@ This guide exists so the project can keep moving without losing the thread. It d
 ## 2026-07-26 continuation checkpoint
 
 **Current authority:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md)
-(`closedThrough` DA28-05). Formal/global gate `32466c6e` (270/2850, 663 traces);
+(`closedThrough` DA28-30). Formal/global gate `32466c6e` (270/2850, 663 traces);
 focal T406 `07ad9227`; visual/product T342 `1085badb`; source epoch 05b/4aa.
-DA26, DA27, and DA28-01…05 are closed. Continue at **DA28-06** live projectile
-schedule and the rest of the live/input ladder. See the
-[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md)
-and [P0 closeout](research/2026-07-26-da28-p0-browser-corpus-scores.md).
+DA26, DA27, and DA28-01…30 are closed at named ceilings. The generated queue
+is empty. Continue at **DA29-001** control adoption, then current-HEAD global,
+product/browser, corpus, and score gates. See the
+[expanded audit](research/2026-07-26-expanded-master-roadmap-audit-post-da28.md)
+and [master roadmap](MASTER_REVIEW_ROADMAP.md).
 
 ## 2026-07-18 T288 continuation checkpoint
 

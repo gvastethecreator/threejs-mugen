@@ -1,0 +1,51 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-084",
+  "kind": "G",
+  "wave": 8,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Harden AIR parsing and located diagnostics. Depends on DA29-081.",
+  "acceptance": "Valid/malformed fixtures cover actions, elements, loopstart, collision boxes, timing, flips, alpha, whitespace/comments, duplicate actions, and exact locations.",
+  "risk": "Recovery may accept bad syntax. Allows parsed AIR subset only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/controller-coverage-matrix-v1.json",
+    "docs/evidence/native-asset-provenance-v1.json",
+    "docs/evidence/scanner-capability-artifact-v1.json",
+    "docs/evidence/compatibility-corpus-v1.2.json",
+    "docs/evidence/score-adjudication-v1.json"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 84 --to 84"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-084.json",
+    "docs/evidence/da29/gates/da29-084.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-084 closed at written kind-G ceiling for wave 8",
+      "gate inventory at static ceiling only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "treating static gate inventory as current formal/global pin"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "9648545a7cf04391cdc71681f8a4b762605d63b206f611608f9d1bae61b45f22"
+  }
+}

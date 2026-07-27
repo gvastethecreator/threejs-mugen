@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-187",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Add project-wide diagnostics search and navigation. Depends on DA29-087, DA29-183, and DA29-185.",
+  "acceptance": "Filter/group by file, severity, capability, source rule, stale state, and owner; keyboard navigation opens exact range; large result sets stay responsive.",
+  "entryPoints": [
+    "src/app/StudioIndexedDbSnapshot.ts",
+    "src/app/ProjectStorage.ts"
+  ],
+  "tests": [
+    "src/tests/GlobalProjectileSchedule.test.ts",
+    "src/tests/LiveGlobalProjectileSchedule.test.ts",
+    "src/tests/ProjectAssetClosure.test.ts",
+    "src/tests/ProjectCompiler.test.ts",
+    "src/tests/ProjectileCombatSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "babc7626c02e6a4494fecf3a676c0bbe7e31266a090e2364ecbb373715a7fe04"
+  }
+}

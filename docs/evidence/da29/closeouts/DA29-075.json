@@ -1,0 +1,48 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-075",
+  "kind": "I",
+  "wave": 7,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Close stage shadow/reflection policy. Depends on DA29-074.",
+  "acceptance": "Source-backed fixture covers shadow color/intensity/scale/fade and reflection or explicit unsupported diagnostics; capture and cleanup pass.",
+  "risk": "Effects can distort sprite fidelity. Allows named subset only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/mugen",
+    "public/stages"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 75 --to 75",
+    "structural impl evidence DA29-075"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-075.json",
+    "docs/evidence/da29/impl/da29-075.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-075 closed at written kind-I ceiling for wave 7",
+      "unit/static implementation evidence at written ceiling"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "product/runtime parity beyond named entry points"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "3e3199045b689d2482050bac0edab35dac33373d2d02ab2e3581c847b5087437"
+  }
+}

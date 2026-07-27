@@ -1,0 +1,22 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-185",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Add cancellable batch analysis and transform jobs. Depends on DA29-087, DA29-104, DA29-124, and DA29-125.",
+  "acceptance": "Queue reports inputs/revisions/progress, concurrency, cancel/retry, partial outputs, errors, resource caps, and final project facts without blocking core UI.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/PackageAnalysis.test.ts",
+    "src/tests/PackageAnalysisRevision.test.ts",
+    "src/tests/PackageAnalysisRevisionBridge.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "39d60a63009202fe1018ae6b2c750a28ba4987d9f01a3406724ad0a70b921067"
+  }
+}

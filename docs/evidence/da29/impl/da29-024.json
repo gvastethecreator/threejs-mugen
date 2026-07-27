@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-024",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Persist per-seat SOCD and input profile ownership. Depends on DA29-021 and DA29-023.",
+  "acceptance": "Reopen and seat-swap tests prove profile identity, version migration, reset, and deterministic resolution; match snapshots expose the chosen policy.",
+  "entryPoints": [
+    "src/mugen",
+    "src/game"
+  ],
+  "tests": [
+    "src/tests/GamepadInputAdapter.test.ts",
+    "src/tests/KeyboardInputAdapter.test.ts",
+    "src/tests/MatchInputPolicySnapshot.test.ts",
+    "src/tests/RuntimeInput.test.ts",
+    "src/tests/RuntimeInputControlSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "82edaec482fb4242ed5d985e9d04701d04b9df396da70350447493a33c090df4"
+  }
+}

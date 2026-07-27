@@ -1,0 +1,51 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-178",
+  "kind": "G",
+  "wave": 17,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Re-audit deterministic readiness for rollback. Depends on DA29-030, DA29-060, DA29-064, DA29-066, DA29-130, and DA29-156.",
+  "acceptance": "Matrix records deterministic owners, snapshot cost, resim speed, desync localization, unsupported systems, team/plural/AI results, and hard blockers.",
+  "risk": "Local repeatability may fail across devices. Allows readiness findings only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/controller-coverage-matrix-v1.json",
+    "docs/evidence/native-asset-provenance-v1.json",
+    "docs/evidence/scanner-capability-artifact-v1.json",
+    "docs/evidence/compatibility-corpus-v1.2.json",
+    "docs/evidence/score-adjudication-v1.json"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 178 --to 178"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-178.json",
+    "docs/evidence/da29/gates/da29-178.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-178 closed at written kind-G ceiling for wave 17",
+      "gate inventory at static ceiling only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "treating static gate inventory as current formal/global pin"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "3d041da20934746839188e80f80759d83674f30b622a4f00562fdfb9df378829"
+  }
+}

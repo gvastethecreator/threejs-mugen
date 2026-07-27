@@ -1,0 +1,44 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-163",
+  "kind": "A",
+  "wave": 16,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Define UI text, motif strings, and localization ownership. Depends on DA29-161, DA29-162, and DA29-116.",
+  "acceptance": "ADR distinguishes authored motif text, engine copy, locale selection, fallback, encoding, bidi, truncation, accessible names, and evidence snapshots.",
+  "risk": "Localization can alter layout and authored meaning. Allows architecture only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 163 --to 163"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-163.json",
+    "docs/research/da29/da29-163-architecture.md"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-163 closed at written kind-A ceiling for wave 16",
+      "architecture/control design only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "191fc23286d246df630fdf3f28df81c96c178bd6b34792b3f257eb2670d8cdfd"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-154",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Prove command priority, overlap, consumption, and State -1 order. Depends on DA29-152, DA29-153, and DA29-037.",
+  "acceptance": "Overlapping commands and multiple eligible controllers show deterministic selection, trigger order, consumption policy, state/control gates, and first divergence diagnostics.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/CommandBuffer.test.ts",
+    "src/tests/DizzyStateSystem.test.ts",
+    "src/tests/GetHitStateSystem.test.ts",
+    "src/tests/HitDefPriorityPolicy.test.ts",
+    "src/tests/HitStateTransitionSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "7c33559f2f7708496ee2cc7c2981141d4a10dd011c9ead42214c08a851111b7d"
+  }
+}

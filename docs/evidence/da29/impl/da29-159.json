@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-159",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Build a real character/stage select journey. Depends on DA29-158, DA29-113…117, and DA29-074.",
+  "acceptance": "Keyboard/gamepad desktop/mobile flow chooses legal characters/stage, shows missing/blocked entries, preserves seat/profile, starts the exact package, and returns safely.",
+  "entryPoints": [
+    "src/mugen",
+    "public/stages"
+  ],
+  "tests": [
+    "src/tests/AuthoritySelector.test.ts",
+    "src/tests/CharacterRenderer.test.ts",
+    "src/tests/CompatibilityJourney.test.ts",
+    "src/tests/DualCharacterLegalJourney.test.ts",
+    "src/tests/FolderCharacterSource.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "40e0fabdbdb2d939bd40ad4c23d580681a4013613d9b06cbfd071ee8b74e53fc"
+  }
+}

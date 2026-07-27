@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-066",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Prove bounded Tag selection and team-order consumption. Depends on DA29-061 and existing Tag order model.",
+  "acceptance": "Live scheduler, input, camera, collision, HUD, KO, reset, and member/leader operations consume one authoritative team order in an imported route.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/AuthoritySelector.test.ts",
+    "src/tests/PresentationOrder.test.ts",
+    "src/tests/RuntimeActorRunOrderSystem.test.ts",
+    "src/tests/RuntimeFighterRunOrderSystem.test.ts",
+    "src/tests/RuntimeOpponentSelectionSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "528eb25ac50a15de330a3cc979161366839a450a748d94dfe032ec4dfce6923e"
+  }
+}

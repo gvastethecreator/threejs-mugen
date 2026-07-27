@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-135",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Extract EvidenceEnvelope only after two productive consumers. Depends on DA29-098, DA29-108, and DA29-134.",
+  "acceptance": "Studio and one non-Studio decision consume the shared envelope; MUGEN fields stay in adapters; versioning, canonical bytes, stale/tamper failures, and deletion proof pass.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/CommonEvidenceFacts.test.ts",
+    "src/tests/EvidenceEnvelope.test.ts",
+    "src/tests/EvidenceEnvelopeFactsBridge.test.ts",
+    "src/tests/EvidenceSubject.test.ts",
+    "src/tests/GateEvidence.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "66454d05e9eaa34d4adb6f699f99a1d368e5699d3078320109a603e690a00aeb"
+  }
+}

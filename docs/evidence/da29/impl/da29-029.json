@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-029",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Define canonical match-state serialization. Depends on DA29-008, DA29-020, and DA29-028.",
+  "acceptance": "Versioned serializer covers live deterministic owners, excludes renderer/cache objects, round-trips, rejects unknown versions, and produces SHA-256.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/DizzyStateSystem.test.ts",
+    "src/tests/GetHitStateSystem.test.ts",
+    "src/tests/HitStateTransitionSystem.test.ts",
+    "src/tests/MatchInputPolicySnapshot.test.ts",
+    "src/tests/MatchInteractionSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "ad036bebdfa21d7732906b7d3312bac8a0f31f39f247897558fd1d9e373fe359"
+  }
+}

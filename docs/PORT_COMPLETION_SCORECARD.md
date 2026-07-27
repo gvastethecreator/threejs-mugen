@@ -1,5 +1,13 @@
 ﻿# Port Completion Scorecard
 
+## 2026-07-26 post-DA28 expanded audit - no score movement
+
+The audit introduces a 150-task plan and no executable evidence. Scores stay
+`65 / 36 / 20 / 10-12 / 6-8 / 25`. DA28 remains closed at written ceilings;
+the generated queue remains empty until DA29-001. See the
+[expanded audit](research/2026-07-26-expanded-master-roadmap-audit-post-da28.md)
+and [master roadmap](MASTER_REVIEW_ROADMAP.md).
+
 ## 2026-07-26 DA28-05 score adjudication hold - no score movement
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).

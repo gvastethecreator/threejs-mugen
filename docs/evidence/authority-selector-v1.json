@@ -1,7 +1,7 @@
 {
   "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
-  "generatedAt": "2026-07-27T00:38:13.917Z",
-  "closedThrough": "DA28-30",
+  "generatedAt": "2026-07-27T03:50:10.118Z",
+  "closedThrough": "DA29-200",
   "nextQueue": [],
   "scores": {
     "sandbox": "65",
@@ -13,9 +13,9 @@
   },
   "cursors": {
     "formal": {
-      "sha": "32466c6e8bb4ec3f414a0cda032af24ea241e5c6",
-      "artifact": "docs/BUILD_EXECUTION_BACKLOG.md#entry-604",
-      "claimLimit": "Entry 604 formal/global closeout (DA28-02)"
+      "sha": "119e627410a4a72eee28650ae20422d475dac834",
+      "artifact": "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md",
+      "claimLimit": "DA29-002 current HEAD formal/global re-gate only"
     },
     "focal": {
       "sha": "07ad9227",
@@ -23,9 +23,9 @@
       "claimLimit": "T406 active juggle runtime only"
     },
     "global": {
-      "sha": "32466c6e8bb4ec3f414a0cda032af24ea241e5c6",
-      "artifact": "docs/research/2026-07-26-global-checkpoint-da28-02.md",
-      "claimLimit": "global gate TypeScript/Vitest 270·2850 / traces 663 / build / boundaries at 32466c6e only"
+      "sha": "119e627410a4a72eee28650ae20422d475dac834",
+      "artifact": "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md",
+      "claimLimit": "DA29-002 measured stack at claimed HEAD only; scores held"
     },
     "visual": {
       "sha": "1085badb",
@@ -52,28 +52,22 @@
     "authoritySelectorDoc": "docs/AUTHORITY_SELECTOR.md",
     "roadmapCursor": "docs/evidence/roadmap-cursor-v1.json",
     "sourceEpoch": "docs/evidence/source-authority-epoch-v1.json",
-    "globalCheckpointReport": "docs/research/2026-07-26-global-checkpoint-da28-02.md"
+    "globalCheckpointReport": "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md"
   },
   "claims": {
     "allowed": [
-      "DA28-02 global re-gate at 32466c6e with 270/2850 tests and 663 traces",
-      "DA28-03 browser subcursors bound DA27-07/08/09 and DA26-13 under T342 parent",
-      "DA28-04 corpus v1.2 and DA28-05 score adjudication hold frozen scorecard",
-      "DA28-06 live GlobalProjectileSchedule wired into EffectActorWorld combat order",
-      "DA28-07 LivePluralCombatOracle consumes live roots/helpers with mutation integrity",
-      "DA28-08 LiveRuntimeTurnsBridge projects handoff into RuntimeTurnsTransaction",
-      "DA28-09 TurnsBrowserMatrix + desktop/mobile browser gate",
-      "DA28-10 GamepadInputAdapter polls Gamepad API into MatchInputPolicy seats",
-      "DA28-11..13 native Nova/Mira live routes with real package digests",
-      "DA28-14..17 palette/commonfx/projectile/throw bounded extensions",
-      "DA28-18..20 controller matrix, third-fixture plan, fight-screen stage evidence",
-      "DA28-21..22 IndexedDB snapshot + write intent preimage",
-      "DA28-26..30 provenance, source families, scanner artifact, team cut research, BoundaryManifest command",
+      "DA28 ladder closed through DA28-30 before DA29 series adoption",
+      "DA29 closeouts under docs/evidence/da29/closeouts with per-ID digests",
+      "DA29 series identity DA29-001…DA29-200 from series-registry-v1.json",
+      "DA29-002 measured formal/global pin at 119e627410a4",
       "historical sections may retain old cursors when labeled historical",
+      "scores remain held 65/36/20/10-12/6-8/25 unless DA29-005 authorizes movement",
       "single current authority selector for docs and issues 01-07"
     ],
     "blocked": [
+      "bulk-closing DA29 without per-ID closeout digests",
       "every physical gamepad device from emulator proof",
+      "formal/global tip rewrite without measured gate at claimed SHA",
       "full plural projectile parity without browser matrix",
       "heard hardware audio from offline signal ladder",
       "IKEMEN Simul/Tag runtime support from research alone",
@@ -86,6 +80,6 @@
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "615d87e64afeb6b38b3ba84c2125026eff39038d761574506e483f634544e6e5"
+    "value": "272d0dda4beb3069e30a6b740c24ddf5dd6c2f91d1ca2a044c13700870314c62"
   }
 }

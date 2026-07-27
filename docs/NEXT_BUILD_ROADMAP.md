@@ -4,8 +4,11 @@
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
 DA28-01…30 drained under claim ceilings (Entry 611). **nextQueue empty.**
-Open a new series only after a roadmap audit + control adoption.
-Global pin remains `32466c6e` until a new global re-gate. The T287 queue below
+The expanded roadmap audit is complete. **DA29-001** is the next control cut
+to adopt an approved batch; DA29-002 then re-gates current HEAD. Global pin
+remains `32466c6e` until that gate passes. See the
+[expanded audit](research/2026-07-26-expanded-master-roadmap-audit-post-da28.md)
+and [150-task master roadmap](MASTER_REVIEW_ROADMAP.md). The T287 queue below
 is historical.
 
 ## Historical implementation frontier - T287 / Entry 561 (2026-07-18)

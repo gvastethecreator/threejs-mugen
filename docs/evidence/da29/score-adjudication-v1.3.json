@@ -1,0 +1,65 @@
+{
+  "schema": "Da29ScoreAdjudication/v1.3",
+  "generatedAt": "2026-07-27T00:00:00.000Z",
+  "dependsOn": ["DA29-004", "docs/evidence/score-adjudication-v1.json"],
+  "lanes": [
+    {
+      "lane": "sandbox",
+      "heldScore": "65",
+      "denominator": "playable demo routes + native fixtures",
+      "eligibleEvidence": ["docs/evidence/da29/closeouts/DA29-002.json"],
+      "rejectedEvidence": ["docs-only research notes"],
+      "movement": "none",
+      "rationale": "No measured denominator expansion authorized score change"
+    },
+    {
+      "lane": "mugenLite",
+      "heldScore": "36",
+      "denominator": "lite controller/trigger set",
+      "eligibleEvidence": [],
+      "rejectedEvidence": ["static gate inventories without runtime proof"],
+      "movement": "none",
+      "rationale": "Held pending measured corpus v1.3 eligibility"
+    },
+    {
+      "lane": "mugenMvp",
+      "heldScore": "20",
+      "denominator": "MVP feature matrix",
+      "eligibleEvidence": [],
+      "rejectedEvidence": [],
+      "movement": "none",
+      "rationale": "Held"
+    },
+    {
+      "lane": "mugenFull",
+      "heldScore": "10-12",
+      "denominator": "full MUGEN breadth",
+      "eligibleEvidence": [],
+      "rejectedEvidence": ["native fixture work projected as imported packages"],
+      "movement": "none",
+      "rationale": "Held; blocks imported-package breadth claims"
+    },
+    {
+      "lane": "ikemen",
+      "heldScore": "6-8",
+      "denominator": "IKEMEN family cuts",
+      "eligibleEvidence": [],
+      "rejectedEvidence": ["research-only team cut notes"],
+      "movement": "none",
+      "rationale": "Held; Simul/Tag/netplay blocked"
+    },
+    {
+      "lane": "studio",
+      "heldScore": "25",
+      "denominator": "Studio workflows",
+      "eligibleEvidence": [],
+      "rejectedEvidence": [],
+      "movement": "none",
+      "rationale": "Held"
+    }
+  ],
+  "claims": {
+    "allowed": ["record score denominators and hold decision for DA29-005"],
+    "blocked": ["score inflation", "docs-only movement", "parity or release claims from held scores"]
+  }
+}

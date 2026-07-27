@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-119",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Make Studio trust failures actionable. Depends on DA29-093, DA29-097, DA29-098, and DA29-100.",
+  "acceptance": "Quota, permission, stale evidence, scanner failure, blocked asset, save conflict, and recovery states show cause, affected item, safe action, retry, and retained work.",
+  "entryPoints": [
+    "src/app/StudioIndexedDbSnapshot.ts",
+    "src/app/ProjectStorage.ts"
+  ],
+  "tests": [
+    "src/tests/MatchInteractionSystem.test.ts",
+    "src/tests/RuntimeTurnsTransaction.test.ts",
+    "src/tests/StudioAssetPermission.test.ts",
+    "src/tests/StudioAssetProvenance.test.ts",
+    "src/tests/StudioAssetReleasePolicy.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "fd8b9345d4159f66f442e4195839f7d0202f12a12c9fd34ec2b2dfc50435bd64"
+  }
+}

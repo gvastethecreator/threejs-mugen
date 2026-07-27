@@ -1,0 +1,23 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-088",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Add a live PackageAnalysis revision consumer. Depends on DA29-087 and DA29-091.",
+  "acceptance": "Import/reopen/source-change routes show current, stale, failed, and superseded analysis; product actions consume the same revision and fail closed.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/PackageAnalysis.test.ts",
+    "src/tests/PackageAnalysisRevision.test.ts",
+    "src/tests/PackageAnalysisRevisionBridge.test.ts",
+    "src/tests/RepositoryStagePackage.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "1e869b9fdf5b6d1de73584256d5bce69e0e09f51360d85a08fcd6f71dd71a6c3"
+  }
+}

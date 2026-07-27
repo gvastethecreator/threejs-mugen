@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-156",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Add one deterministic AI-versus-AI route. Depends on DA29-155, DA29-026, and DA29-041.",
+  "acceptance": "Fixed seed/difficulty yields stable commands, contacts, winner, frame count, periodic checksums, and clear unsupported AI features across repeated runs.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/RuntimeStateEntryRouteSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "ec65b4ae6aceac00ee0c8e6f9cf834aaf339ac27885d357ba9a71102ab0804b4"
+  }
+}

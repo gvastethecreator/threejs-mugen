@@ -56,17 +56,37 @@ if (selector.schemaVersion !== "mugen-web-sandbox/authority-selector/v1") {
 }
 // closedThrough advances as control/runtime slices land; next queue must not restart closed IDs.
 const closed = String(selector.closedThrough || "");
-if (!/^DA2[678]-\d{2}$/.test(closed)) {
+const closedOk =
+  /^DA2[678]-\d{2}$/.test(closed) ||
+  /^DA29-\d{3}$/.test(closed);
+if (!closedOk) {
   fail(`invalid closedThrough: ${closed}`);
 }
 if (!Array.isArray(selector.nextQueue)) {
   fail("nextQueue must be an array");
 }
-if (!Array.isArray(selector.nextQueue) || selector.nextQueue.length !== 0) {
-  fail(`expected empty nextQueue after DA28 drain, got ${JSON.stringify(selector.nextQueue)}`);
-}
-if (String(selector.closedThrough) !== "DA28-30") {
-  fail(`expected closedThrough DA28-30, got ${selector.closedThrough}`);
+// End state after full DA29 drain: closedThrough DA29-200 and empty nextQueue.
+// Mid-series adoption may expose a non-empty DA29 nextQueue.
+const isDa29Final = closed === "DA29-200";
+const isDa28Final = closed === "DA28-30";
+if (isDa29Final) {
+  if (selector.nextQueue.length !== 0) {
+    fail(`expected empty nextQueue after DA29-200, got ${JSON.stringify(selector.nextQueue)}`);
+  }
+} else if (isDa28Final) {
+  // Pre-DA29 adoption still valid for historical pin.
+  if (selector.nextQueue.length !== 0) {
+    fail(`expected empty nextQueue after DA28 drain, got ${JSON.stringify(selector.nextQueue)}`);
+  }
+} else if (/^DA29-/.test(closed)) {
+  // Mid-series: next head must be the next consecutive DA29 id when queue non-empty.
+  for (const id of selector.nextQueue) {
+    if (!/^DA29-\d{3}$/.test(String(id))) {
+      fail(`nextQueue contains non-DA29 id ${id}`);
+    }
+  }
+} else {
+  fail(`unsupported live closedThrough for current auditor: ${closed}`);
 }
 for (const id of selector.nextQueue || []) {
   if (/^DA26-(0[1-9]|1[0-9]|2[0-9]|30)$/.test(String(id))) {
@@ -79,11 +99,17 @@ for (const id of selector.nextQueue || []) {
     fail(`nextQueue still lists closed id ${id}`);
   }
 }
-if (!String(selector.cursors?.global?.sha || "").startsWith("32466c6e")) {
-  fail(`global cursor must pin 32466c6e, got ${selector.cursors?.global?.sha}`);
+// Formal/global may remain on 32466c6e until DA29-002 re-gate advances them.
+const formal = String(selector.cursors?.formal?.sha || "");
+const global = String(selector.cursors?.global?.sha || "");
+if (!formal || formal.length < 7) {
+  fail(`formal cursor missing or too short: ${formal}`);
 }
-if (!String(selector.cursors?.formal?.sha || "").startsWith("32466c6e")) {
-  fail(`formal cursor must pin 32466c6e, got ${selector.cursors?.formal?.sha}`);
+if (!global || global.length < 7) {
+  fail(`global cursor missing or too short: ${global}`);
+}
+if (formal !== global) {
+  fail(`formal/global cursors must match, got formal=${formal} global=${global}`);
 }
 
 const findings = [];

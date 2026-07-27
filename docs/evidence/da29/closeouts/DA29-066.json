@@ -1,0 +1,48 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-066",
+  "kind": "I",
+  "wave": 6,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Prove bounded Tag selection and team-order consumption. Depends on DA29-061 and existing Tag order model.",
+  "acceptance": "Live scheduler, input, camera, collision, HUD, KO, reset, and member/leader operations consume one authoritative team order in an imported route.",
+  "risk": "Model-only Tag can be overclaimed. Allows one bounded Tag route only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 66 --to 66",
+    "structural impl evidence DA29-066"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-066.json",
+    "docs/evidence/da29/impl/da29-066.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-066 closed at written kind-I ceiling for wave 6",
+      "unit/static implementation evidence at written ceiling"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "product/runtime parity beyond named entry points"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "56015176525701b569d2db465d16bcdbed8c3c581bba1109d69f9e207d656a3a"
+  }
+}

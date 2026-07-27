@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-045",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Prove priority, trade, miss, and simultaneous-contact order. Depends on DA29-041 and DA29-044.",
+  "acceptance": "Same-tick opposing HitDefs cover priority/type, trade, miss, pausetime, damage, telemetry order, and deterministic replay.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/ContactMemorySystem.test.ts",
+    "src/tests/HitDefPriorityPolicy.test.ts",
+    "src/tests/PresentationOrder.test.ts",
+    "src/tests/RuntimeActorRunOrderSystem.test.ts",
+    "src/tests/RuntimeContactPresentationSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "d7cebd213f433ee54620bfea43f34628d74df41f5dd4426acb4ac86b83461aa5"
+  }
+}

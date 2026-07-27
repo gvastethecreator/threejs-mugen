@@ -1,8 +1,15 @@
 # Roadmap Operational Checklist
 
-Last updated: 2026-06-29
+Last updated: 2026-07-26
 
 This checklist turns the roadmap into repeatable execution steps. It is not a new source of truth. Use it with `AGENTS.md`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, and `docs/ROADMAP_EXECUTION_BOARD.md`.
+
+## Current post-DA28 start
+
+The expanded audit is complete and the generated queue remains empty. Execute
+DA29-001 before taking an implementation task from
+`docs/MASTER_REVIEW_ROADMAP.md`. The DA28-02 formal/global pin cannot prove
+current HEAD. A model or materializer alone cannot prove product adoption.
 
 ## Universal Start
 

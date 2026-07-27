@@ -1,0 +1,48 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-016",
+  "kind": "I",
+  "wave": 1,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Add source locations and digests to source-family review. Depends on DA29-008. Systems: Elecbyte/Ikemen manifests.",
+  "acceptance": "Each reviewed rule links pin, file, line/range or symbol, excerpt digest, reviewer status, and local consumer; text-only `passed` rows fail schema validation.",
+  "risk": "Upstream moves can stale locations. Allows reviewed-rule provenance only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 16 --to 16",
+    "structural impl evidence DA29-016"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-016.json",
+    "docs/evidence/da29/impl/da29-016.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-016 closed at written kind-I ceiling for wave 1",
+      "unit/static implementation evidence at written ceiling"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "product/runtime parity beyond named entry points"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "0a4b593055008e08fc70301e026837354034591094bc1fdc46bbbd266b99082e"
+  }
+}

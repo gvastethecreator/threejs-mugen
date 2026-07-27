@@ -1,0 +1,19 @@
+{
+  "schema": "Da29CompatibilityCorpus/v1.3",
+  "id": "DA29-004",
+  "generatedAt": "2026-07-27T00:00:00.000Z",
+  "dependsOn": ["DA29-002", "DA29-003", "docs/evidence/compatibility-corpus-v1.2.json"],
+  "imports": [
+    { "subject": "authority-selector", "path": "docs/evidence/authority-selector-v1.json", "producer": "materialize_authority_selector" },
+    { "subject": "series-registry", "path": "docs/evidence/da29/series-registry-v1.json", "producer": "build_da29_series_registry" },
+    { "subject": "score-adjudication", "path": "docs/evidence/da29/score-adjudication-v1.3.json", "producer": "da29-005" },
+    { "subject": "product-browser-matrix", "path": "docs/evidence/da29/product-browser-matrix-v1.json", "producer": "da29-003" },
+    { "subject": "controller-coverage", "path": "docs/evidence/controller-coverage-matrix-v1.json", "producer": "materialize_da28_remaining" },
+    { "subject": "native-provenance", "path": "docs/evidence/native-asset-provenance-v1.json", "producer": "materialize_da28_remaining" }
+  ],
+  "freshnessRule": "stale rows fail closed when revision missing",
+  "claims": {
+    "allowed": ["corpus completeness for listed imports only"],
+    "blocked": ["mixed-revision proof inflation", "score movement"]
+  }
+}

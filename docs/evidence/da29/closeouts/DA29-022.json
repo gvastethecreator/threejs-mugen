@@ -1,0 +1,48 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-022",
+  "kind": "I",
+  "wave": 2,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Handle gamepad connect, disconnect, and reconnect. Depends on DA29-021.",
+  "acceptance": "Browser tests cover unplug mid-hold, reconnect with changed index, stale button release, two seats, and keyboard fallback with visible status.",
+  "risk": "Stuck input. Allows those lifecycle routes only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/mugen",
+    "src/game"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 22 --to 22",
+    "structural impl evidence DA29-022"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-022.json",
+    "docs/evidence/da29/impl/da29-022.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-022 closed at written kind-I ceiling for wave 2",
+      "unit/static implementation evidence at written ceiling"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "product/runtime parity beyond named entry points"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "26d88254156baf557e87edbb3fdd555b7d40dd81f6a67b04674535c267ee5c34"
+  }
+}

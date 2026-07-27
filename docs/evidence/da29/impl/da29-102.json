@@ -1,0 +1,22 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-102",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Capture tool, model/version, prompt, inputs, command, seed, and transforms. Depends on DA29-101.",
+  "acceptance": "One repository-owned generated record can be reproduced or yields a documented nondeterministic variance; missing fields fail policy.",
+  "entryPoints": [
+    "src/mugen",
+    "src/game"
+  ],
+  "tests": [
+    "src/tests/CommandBuffer.test.ts",
+    "src/tests/RuntimeMatchTickInputSystem.test.ts",
+    "src/tests/StudioModel.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "3e2348fc0a4f089172a7acea0a952ad2918a2d5da87aa5b3d7bacfbd88472ce6"
+  }
+}

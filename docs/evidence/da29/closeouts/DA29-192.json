@@ -1,0 +1,44 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-192",
+  "kind": "A",
+  "wave": 19,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Define versioned public APIs for proven engine ports. Depends on DA29-140 and DA29-191.",
+  "acceptance": "API review covers types, lifecycle, errors, async/cancel, events, deterministic contracts, browser support, compatibility policy, examples, and excluded domain owners.",
+  "risk": "Public API freezes weak seams. Allows candidate API only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 192 --to 192"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-192.json",
+    "docs/research/da29/da29-192-architecture.md"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-192 closed at written kind-A ceiling for wave 19",
+      "architecture/control design only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "0c5e35d883bd8e06017630cda814e21bf30b64779bcdf010cedf8fa2de4290da"
+  }
+}

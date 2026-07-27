@@ -5,13 +5,14 @@ Last updated: 2026-07-26
 ## Latest delivery authority checkpoint
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md)
-(`closedThrough` DA28-05). Formal/global delivery proof is **`32466c6e`**
+(`closedThrough` DA28-30). Formal/global delivery proof is **`32466c6e`**
 (270/2850 tests, 663 traces, build, boundaries). Focal T406 and visual/product
-T342 remain separate cursors. Corpus v1.2 and score adjudication are material
-and hold scores. Next delivery cuts are live projectile/Turns/input (DA28-06…).
-See the
-[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md)
-and [P0 closeout](research/2026-07-26-da28-p0-browser-corpus-scores.md).
+T342 remain separate cursors. Corpus v1.2 and score adjudication hold scores;
+their coverage ends before later DA28 work and the latest Frame Ledger UI. The
+generated queue is empty. DA29-001 adopts the next batch, then DA29-002…005
+restore current delivery evidence before new claims. See the
+[expanded audit](research/2026-07-26-expanded-master-roadmap-audit-post-da28.md)
+and [master roadmap](MASTER_REVIEW_ROADMAP.md).
 
 ## Historical bounded runtime checkpoint - T288 / Entry 562
 

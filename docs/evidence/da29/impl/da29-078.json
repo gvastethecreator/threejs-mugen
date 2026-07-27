@@ -1,0 +1,23 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-078",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Prove AIR reserved actions and element timing. Depends on DA29-043 and DA29-084.",
+  "acceptance": "Imported fixture covers required actions, loopstart, duration, flip, alpha, interpolation where supported, missing action diagnostics, and frame/render correlation.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/MatchInteractionSystem.test.ts",
+    "src/tests/RuntimeTurnsTransaction.test.ts",
+    "src/tests/StudioAssetProvenance.test.ts",
+    "src/tests/StudioSourceTransaction.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "e79e5c7679a708bd9d8616af1310477d2e71b0ee719b3afd60c5ed91b07c203e"
+  }
+}

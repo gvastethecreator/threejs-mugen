@@ -1,0 +1,47 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-081",
+  "kind": "A",
+  "wave": 8,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Define lawful corpus authority and fixture independence. Depends on DA29-008 and DA29-015.",
+  "acceptance": "Manifest records ownership/license, origin, independent syntax digests, mutations, expected profiles, forbidden public paths, and permitted evidence uses.",
+  "risk": "Duplicate fixtures inflate breadth. Allows corpus identity only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/AUTHORITY_SELECTOR.md",
+    "scripts/materialize_authority_selector.cjs"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 81 --to 81"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-081.json",
+    "docs/research/da29/da29-081-architecture.md",
+    "docs/evidence/authority-selector-v1.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-081 closed at written kind-A ceiling for wave 8",
+      "architecture/control design only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "f81f50cb96700b7b56c77d638847a8e9504fd5bf18096807a40ce534ee1e5b06"
+  }
+}

@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Post-DA28 expanded roadmap audit (docs-only, 2026-07-26)
+
+- Audited current HEAD `119e6274` against separate formal/global, focal,
+  visual/product, source, and backlog cursors.
+- Added 200 dependency-linked cuts across 20 waves. Next proposed control cut:
+  **DA29-001**. Generated queue remains empty. Scores held.
+- Sources: [expanded audit](research/2026-07-26-expanded-master-roadmap-audit-post-da28.md)
+  and [master roadmap](MASTER_REVIEW_ROADMAP.md).
+
 ## DA28-11…30 drain (closed-bounded, 2026-07-26)
 
 - Native dual live execution, extensions, Studio IDB, evidence materializers,

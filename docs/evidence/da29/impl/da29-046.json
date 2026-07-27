@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-046",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Prove fall, recovery, bounce, and landing transitions. Depends on DA29-041 and DA29-037.",
+  "acceptance": "Imported matrix covers fall flags, velocities, recover windows, ground bounce, landing state, no-recover, and reset with frame-accurate traces.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/HitStateTransitionSystem.test.ts",
+    "src/tests/RuntimeRecoverySystem.test.ts",
+    "src/tests/RuntimeRootStandbyTransitionSystem.test.ts",
+    "src/tests/RuntimeTurnsRecoverySystem.test.ts",
+    "src/tests/StateTransitionControllerSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "9fe28b119d63737c039e33e4f40370bca2c68edfcd2d628e56edd709adce5493"
+  }
+}

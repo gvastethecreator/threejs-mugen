@@ -1,0 +1,45 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-011",
+  "kind": "R",
+  "wave": 1,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Inventory test ownership and command coverage. Depends on DA29-002 and DA29-009. Systems: package scripts, Vitest projects, QA scripts.",
+  "acceptance": "Machine-readable map links each suite to source owners, fixtures, expected duration, required/optional status, and release lane; overlaps and omissions are listed.",
+  "risk": "Counts can mask duplicate tests. Allows an inventory claim only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 11 --to 11",
+    "research note materialize DA29-011"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-011.json",
+    "docs/research/da29/da29-011-notes.md"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-011 closed at written kind-R ceiling for wave 1",
+      "research/design inventory only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "f60c03a3a962aa1f06aee33cc4b0848acfc643864f99de4379d1d9a4dc468d27"
+  }
+}

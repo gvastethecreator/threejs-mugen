@@ -1,5 +1,19 @@
 # Build Execution Backlog
 
+## Entry 612 - Post-DA28 expanded roadmap audit
+
+Docs-only audit at HEAD `119e6274` reconciles the drained DA28 series against
+live consumers, current evidence, product seams, source rules, and claim
+ceilings. It adds a 200-cut / 20-wave master roadmap. Formal/global stays
+`32466c6e`; focal stays T406 `07ad9227`; visual/product stays T342
+`1085badb`; scores stay `65 / 36 / 20 / 10-12 / 6-8 / 25`. Generated
+`nextQueue` remains empty; next proposed control cut is DA29-001. Claim
+allowed: roadmap and architecture audit at the named HEAD. Claim blocked: new
+runtime/product behavior, current-HEAD gate inheritance, score movement,
+MUGEN/IKEMEN parity, reusable-engine readiness, and release authority. See
+`docs/research/2026-07-26-expanded-master-roadmap-audit-post-da28.md` and
+`docs/MASTER_REVIEW_ROADMAP.md`.
+
 ## Entry 611 - DA28-11…30 drain
 
 Closed DA28-11…30 under claim ceilings: native Nova/Mira live routes + digests,

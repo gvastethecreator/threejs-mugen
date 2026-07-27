@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-134",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Extract generic cryptographic facts behind a MUGEN adapter. Depends on DA29-008, DA29-004, and DA29-133.",
+  "acceptance": "Core module has no fighting terms/imports, uses canonical SHA-256 facts, serves two live consumers through adapters, and passes deletion/negative import tests.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/CommonEvidenceFacts.test.ts",
+    "src/tests/EvidenceEnvelopeFactsBridge.test.ts",
+    "src/tests/MugenAudioSystem.test.ts",
+    "src/tests/MugenCharacterLoader.test.ts",
+    "src/tests/MugenConfigParser.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "b0c3d731665dc4be19effdbc7642d910b975a97e7953e2dca113a5e4bf325457"
+  }
+}

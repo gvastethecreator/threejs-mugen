@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-153",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Prove charge, hold, release, and repeated-button semantics. Depends on DA29-152 and DA29-025.",
+  "acceptance": "Record/replay routes cover charge duration boundaries, held directions across facing changes, release tokens, repeated presses, negative-edge policy, and failure frames.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/AssetReleasePolicyV1.test.ts",
+    "src/tests/ProjectReleaseDecision.test.ts",
+    "src/tests/StudioAssetProvenance.test.ts",
+    "src/tests/StudioAssetReleasePolicy.test.ts",
+    "src/tests/StudioSemanticDraft.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "84fd909d0e5df69aff43e77dba17bf1204a5e05d762c72880b0ca16459c3f6a1"
+  }
+}

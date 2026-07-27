@@ -1,0 +1,26 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-109",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Make ProjectAssetClosure traverse real project dependencies. Depends on DA29-108 and DA29-088.",
+  "acceptance": "Character, stage, screenpack, system, audio, generated, and derived assets are found from the saved project; missing/cycle/stale/extra cases fail or warn by policy.",
+  "entryPoints": [
+    "src/app/StudioIndexedDbSnapshot.ts",
+    "src/app/ProjectStorage.ts",
+    "public/characters",
+    "docs/evidence/native-asset-provenance-v1.json"
+  ],
+  "tests": [
+    "src/tests/GlobalProjectileSchedule.test.ts",
+    "src/tests/LiveGlobalProjectileSchedule.test.ts",
+    "src/tests/ProjectAssetClosure.test.ts",
+    "src/tests/ProjectCompiler.test.ts",
+    "src/tests/ProjectileCombatSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "c3332ec076cc53d312e2fd2efce0cd0f898501f9771124c82071bf3214ca3b9d"
+  }
+}

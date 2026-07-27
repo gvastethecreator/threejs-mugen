@@ -1,0 +1,51 @@
+{
+  "schema": "Da29CloseoutEvidence/v1",
+  "id": "DA29-099",
+  "kind": "G",
+  "wave": 9,
+  "closedAt": "2026-07-27T03:50:09.290Z",
+  "cut": "Prove crash/reopen and multi-tab concurrency. Depends on DA29-092…098.",
+  "acceptance": "Browser matrix covers reload, process-like crash injection, two tabs, stale writer, lock loss, conflict resolution, and final byte/revision integrity.",
+  "risk": "Last-writer-wins data loss. Allows named concurrency policy only.",
+  "revision": {
+    "head": "119e627410a4a72eee28650ae20422d475dac834",
+    "headShort": "119e627410a4",
+    "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
+  },
+  "inputs": [
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/controller-coverage-matrix-v1.json",
+    "docs/evidence/native-asset-provenance-v1.json",
+    "docs/evidence/scanner-capability-artifact-v1.json",
+    "docs/evidence/compatibility-corpus-v1.2.json",
+    "docs/evidence/score-adjudication-v1.json"
+  ],
+  "commands": [
+    "node scripts/materialize_da29_series_closeouts.cjs --from 99 --to 99"
+  ],
+  "gateSha": null,
+  "measuredGate": false,
+  "artifacts": [
+    "docs/evidence/da29/closeouts/DA29-099.json",
+    "docs/evidence/da29/gates/da29-099.json"
+  ],
+  "claims": {
+    "allowed": [
+      "DA29-099 closed at written kind-G ceiling for wave 9",
+      "gate inventory at static ceiling only"
+    ],
+    "blocked": [
+      "score movement unless authorized by DA29-005 adjudication with measured denominators",
+      "imported-package breadth from Nova/Mira native fixtures",
+      "formal/global tip rewrite without measured gate at claimed SHA",
+      "IKEMEN Simul/Tag/netplay parity from research or static closeouts alone",
+      "treating static gate inventory as current formal/global pin"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "1b712ecdeecbfc3104b8f5b7394b9e6ecc5e886070bdb16eef000cf214505cdd"
+  }
+}

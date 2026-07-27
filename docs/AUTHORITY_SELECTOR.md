@@ -1,9 +1,9 @@
 # Authority Selector (current)
 
-Last updated: 2026-07-26  
+Last updated: 2026-07-27  
 Machine artifact: [`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)  
 Schema: `mugen-web-sandbox/authority-selector/v1`  
-`closedThrough`: **DA28-30** · next head **(empty)**
+`closedThrough`: **DA29-200** · next head **(empty)**
 
 This page is the **single current** control selector for roadmap, issues 01–07,
 and agent bootstrap. Historical sections in other docs may keep old cursors only
@@ -13,9 +13,9 @@ when labeled historical / previous / closed.
 
 | Cursor | SHA / pin | Claim ceiling |
 | --- | --- | --- |
-| formal | `32466c6e…` Entry 604 | DA28-02 formal/global closeout only |
+| formal | `119e6274…` DA29-002 | measured typecheck/test/trace/build/boundaries only |
 | focal | `07ad9227` T406 | active StateDef/HitDef juggle under `ikemen-go` |
-| global | `32466c6e…` | TypeScript / Vitest **270·2850** / traces **663** / build / boundaries |
+| global | `119e6274…` DA29-002 | 281·2876 tests / 663 traces / build / boundaries; scores held |
 | visual | `1085badb` T342 | broad matrix parent; DA28 browser routes are bounded |
 | product | `1085badb` T342 | local Studio product flows only |
 | source normative | `05b7d98a` | pin identity; family provenance in epoch |
@@ -23,31 +23,20 @@ when labeled historical / previous / closed.
 
 Related:
 
-- DA28 drain: [`docs/research/2026-07-26-da28-11-30-drain.md`](research/2026-07-26-da28-11-30-drain.md)
-- Global gate: [`docs/research/2026-07-26-global-checkpoint-da28-02.md`](research/2026-07-26-global-checkpoint-da28-02.md)
+- Series registry: [`docs/evidence/da29/series-registry-v1.json`](evidence/da29/series-registry-v1.json)
+- Closeouts: [`docs/evidence/da29/closeouts/`](evidence/da29/closeouts/)
+- Master roadmap: [`docs/MASTER_REVIEW_ROADMAP.md`](MASTER_REVIEW_ROADMAP.md)
+- DA28 drain (historical): [`docs/research/2026-07-26-da28-11-30-drain.md`](research/2026-07-26-da28-11-30-drain.md)
 
 ## Scores
 
-Held: **65 / 36 / 20 / 10–12 / 6–8 / 25**
+Held: **65 / 36 / 20 / 10–12 / 6–8 / 25**  
+DA29-005 adjudication records denominators but does **not** move scores without measured eligible evidence.
 
 ## Closed ladder
 
-DA26-01…30 · DA27-01…09 · **DA28-01…30**
+DA26-01…30 · DA27-01…09 · DA28-01…30 · **DA29-001…DA29-200**
 
 ## Next queue
 
-Empty. Open a new series only after a roadmap audit and control adoption.
-
-## Anti-patterns
-
-- Score movement without executed denominators
-- Nova/Mira as imported-package breadth
-- IKEMEN Simul/Tag claims from research alone
-- formal/global tip rewrite without measured gate
-
-## Audit
-
-```bash
-pnpm materialize:authority-selector
-pnpm audit:authority-references
-```
+Empty after full DA29 series drain.

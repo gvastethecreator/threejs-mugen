@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-131",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Make BoundaryManifest the only required-root source. Depends on DA29-006 and current DA28-30 work.",
+  "acceptance": "Boundary command loads the versioned manifest; duplicated root lists are removed; schema and command fixtures fail together on drift.",
+  "entryPoints": [
+    "scripts/check_boundaries.cjs",
+    "src/engine/ModuleContracts.ts"
+  ],
+  "tests": [
+    "src/tests/ArchitectureBoundaries.test.ts",
+    "src/tests/BoundaryManifest.test.ts",
+    "src/tests/FolderCharacterSource.test.ts",
+    "src/tests/RuntimeAuxiliaryResourceProjectionSystem.test.ts",
+    "src/tests/RuntimeResourceSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "f55effa29d9840e79f9658e065db2c0e77732479f3fc111dfa17e84d50a1a898"
+  }
+}

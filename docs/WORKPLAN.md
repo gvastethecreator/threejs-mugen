@@ -1,6 +1,14 @@
 # Workplan
 
-## DA28 series (in progress, 2026-07-26)
+## DA29 expanded master roadmap (proposed, 2026-07-26)
+
+The post-DA28 audit defines 200 cuts in 20 waves. The generated selector queue
+is still empty. Execute DA29-001 to adopt a bounded batch, then restore current
+HEAD proof before new broad claims. Full contracts:
+`docs/research/2026-07-26-expanded-master-roadmap-audit-post-da28.md` and
+`docs/MASTER_REVIEW_ROADMAP.md`.
+
+## DA28 series (closed-bounded, 2026-07-26)
 
 DA28-01…30 closed under claim ceilings. `nextQueue` empty. See
 `docs/research/2026-07-26-da28-11-30-drain.md`.

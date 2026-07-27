@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-074",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Load and render bounded stage layers/parallax. Depends on DA29-073 and DA29-083.",
+  "acceptance": "Repository-owned stage proves layer order, delta/parallax, tiling, animation, clipping, camera movement, disposal, and desktop/mobile captures.",
+  "entryPoints": [
+    "src/mugen",
+    "public/stages"
+  ],
+  "tests": [
+    "src/tests/CharacterRenderer.test.ts",
+    "src/tests/FightScreenAnnouncementRenderer.font.test.ts",
+    "src/tests/FightScreenFontRenderer.test.ts",
+    "src/tests/HitSparkRenderer.test.ts",
+    "src/tests/RepositoryStageFixture.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "939ef789b7a206eecb50a04272b61ffd9756695ec643e6d626c624735e57e46b"
+  }
+}

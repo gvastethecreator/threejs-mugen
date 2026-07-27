@@ -1,0 +1,20 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-194",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Add a headless import/analyze/build CLI over shared ports. Depends on DA29-087, DA29-136, DA29-188, and DA29-192.",
+  "acceptance": "CLI has stable exit codes, JSON facts, stdin/path policy, cancellation, caps, deterministic output, no browser-only globals, and parity fixtures with Studio.",
+  "entryPoints": [
+    "src/mugen",
+    "src/app/App.ts"
+  ],
+  "tests": [
+    "src/tests/importedFighter.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "3524f1656fcf95a567cf4d819609ceb14f689c8f675c304b30402e548511cf80"
+  }
+}

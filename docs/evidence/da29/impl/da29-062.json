@@ -1,0 +1,24 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-062",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Add a bounded Simul spawn/input route. Depends on DA29-061, DA29-021, and DA29-043.",
+  "acceptance": "Two-versus-two route proves authored positions, facing, input ownership, collision participation, camera framing, and reset.",
+  "entryPoints": [
+    "src/mugen",
+    "src/game"
+  ],
+  "tests": [
+    "src/tests/EffectSpawnSystem.test.ts",
+    "src/tests/GamepadInputAdapter.test.ts",
+    "src/tests/KeyboardInputAdapter.test.ts",
+    "src/tests/MatchInputPolicySnapshot.test.ts",
+    "src/tests/RuntimeInput.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "56ee893c0edc6217fad19c69f7fb900b735f83b4a79ef7ea3e5dd65e966f7909"
+  }
+}

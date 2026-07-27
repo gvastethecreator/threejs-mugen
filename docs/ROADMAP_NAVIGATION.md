@@ -17,10 +17,12 @@ This is the fast map for agents and humans who need to know where to look, what 
 - next queue: **empty**
 - Scores held (DA28-05 adjudication `movement=none`).
 
-Gate pin is `32466c6e`. Entry 611 closed DA28-11…30. Open a new series only after audit.
-Plan source:
-[DA28 drain](research/2026-07-26-da28-11-30-drain.md);
-[post-DA27-09 audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
+Gate pin is `32466c6e`. Entry 611 closed DA28-11…30 and Entry 612 records this
+docs-only audit. **DA29-001** is the next proposed control cut. The generated
+queue remains empty until adoption. Plan sources:
+[expanded audit](research/2026-07-26-expanded-master-roadmap-audit-post-da28.md);
+[master roadmap](MASTER_REVIEW_ROADMAP.md);
+[DA28 drain](research/2026-07-26-da28-11-30-drain.md).
 
 The T287/T288 selectors below are **historical**.
 

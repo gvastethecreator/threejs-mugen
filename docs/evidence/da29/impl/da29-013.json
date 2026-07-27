@@ -1,0 +1,26 @@
+{
+  "schema": "Da29ImplementationEvidence/v1",
+  "id": "DA29-013",
+  "generatedAt": "2026-07-27T03:50:09.290Z",
+  "head": "119e627410a4a72eee28650ae20422d475dac834",
+  "cut": "Replace regex controller census with parsed CNS records. Depends on DA29-008. Systems: controller matrix materializer and parser.",
+  "acceptance": "StateDef `type = S/C/A/L/U` cannot appear as a controller; malformed and nested fixtures produce located diagnostics; current corpus is rematerialized.",
+  "entryPoints": [
+    "src/mugen",
+    "docs/CONTROLLER_SUPPORT_REGISTRY.md",
+    "scripts/qa_smoke.cjs",
+    "scripts/qa_browser_gate_da28_09_turns.cjs"
+  ],
+  "tests": [
+    "src/tests/AnimationControllerSystem.test.ts",
+    "src/tests/BoundsControllerSystem.test.ts",
+    "src/tests/ControllerCoverageMatrix.test.ts",
+    "src/tests/HitFallControllerSystem.test.ts",
+    "src/tests/KinematicControllerSystem.test.ts"
+  ],
+  "claimCeiling": "unit/static structural closeout; not full product parity",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "6eb0356ae7896338160af75ba2532ff2769029a5137918f54eac52702fd930ea"
+  }
+}
