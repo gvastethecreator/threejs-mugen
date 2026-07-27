@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-017",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "ok": true,
   "entryPoints": [
     "scripts/qa_smoke.cjs"
@@ -13,6 +13,6 @@
   "cut": "Generate browser evidence facts from the runner. Depends on DA29-003 and DA29-009.",
   "digest": {
     "algorithm": "sha-256",
-    "value": "26fc813d211a25a31e8775c9eb3b7382386c894054255658b8365e9550fc7f71"
+    "value": "9784cdcb9f75333102985302967d323ea99659d71fd0a6722042351d8bf46ad1"
   }
 }

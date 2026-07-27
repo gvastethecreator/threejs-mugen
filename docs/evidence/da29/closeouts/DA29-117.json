@@ -5,13 +5,13 @@
   "wave": 11,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Audit contrast, reduced motion, and flashing. Depends on DA29-003 and DA29-111.",
   "acceptance": "Theme/state contrast, HUD overlays, focus, disabled/error states, screen shake, flashes, transitions, and reduced-motion paths have measured results and fixes.",
   "risk": "Combat effects can cause harm. Allows tested themes/effects only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -53,6 +53,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "357b4eadce6188d2d4b45a64fd9728a5ad4da45d4fdcc238ef6a0156ac8204b9"
+    "value": "c0fa0ce6e51912d7db5bc66ebf3815b273d8a995b841f7a82a8f235cd2cb59f5"
   }
 }

@@ -5,13 +5,13 @@
   "wave": 6,
   "status": "closed",
   "evidenceClass": "browser-matrix",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Correlate Turns UI with live transaction state. Depends on DA29-064 and DA29-017.",
   "acceptance": "Browser facts link HUD roster, active member, life, handoff receipt, frame, and runtime checksum across win/KO/error routes on desktop/mobile.",
   "risk": "Mock matrix may drift from runtime. Allows named visual routes only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -47,6 +47,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "6c287cd070e3cb0c514281d3a51b2e6572d5b7ca8f183f9f569dcc47c178b315"
+    "value": "5859e26aa70e6f50afc7d55f37b9224d2680fa212fa234503500a5894d84781a"
   }
 }

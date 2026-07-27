@@ -1,0 +1,24 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-190",
+  "generatedAt": "2026-07-27T04:27:24.991Z",
+  "ok": true,
+  "kind": "G",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-190",
+  "anchors": [
+    {
+      "path": "README.md",
+      "bytes": 39839,
+      "sha256": "174d8ec218a56a090acdfdd0fe68099aab30104e4d9ec4f7118cc1e2415ce684"
+    },
+    {
+      "path": "docs/QA_AND_ACCEPTANCE_GATES.md",
+      "bytes": 390109,
+      "sha256": "dde66c724973627e58404d9158e448f0e1e8134f1f7260aef5a81830a6705a33"
+    }
+  ],
+  "facts": {
+    "docCount": 2
+  },
+  "claimCeiling": "local help/QA docs present"
+}

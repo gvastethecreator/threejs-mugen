@@ -1,16 +1,20 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-172",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Parse and analyze bounded ZSS without execution. Depends on DA29-089 and DA29-171.",
   "acceptance": "Pinned/repository fixtures produce located AST, imports, declarations, calls, unknowns, caps, deterministic digests, and explicit execution-blocked status.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-172.json",
+    "docs/evidence/da29/measured/DA29-172.json",
+    "docs/IKEMEN_GO_REFERENCE.md"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "31bb2e4eb279e14c4a5aef62a52cde210567d2efdf8e9f275b0d03504736b7b3"
+    "value": "a78055027f007c2385a97987104cc07d86d8f52ee5ecda7d886c63a4b5d2275d"
   }
 }

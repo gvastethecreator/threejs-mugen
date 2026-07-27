@@ -1,0 +1,19 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-128",
+  "generatedAt": "2026-07-27T04:27:24.878Z",
+  "ok": true,
+  "kind": "G",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-128",
+  "anchors": [
+    {
+      "path": "src/game/audio/MugenAudioSystem.ts",
+      "bytes": 20311,
+      "sha256": "acda09926a4ae8c77a439f18fd7a120e95b9dbab108d58f5e5e5d4e8d62baba3"
+    }
+  ],
+  "facts": {
+    "audioModuleBytes": 20311
+  },
+  "claimCeiling": "audio system module present; full AudioContext recovery broader"
+}

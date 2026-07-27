@@ -1,7 +1,7 @@
 {
   "schema": "Da29GeneratedGateReport/v1",
   "id": "DA29-060",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "files": [
     {
       "path": "src/mugen/runtime/LivePluralCombatOracle.ts",
@@ -27,6 +27,6 @@
   "claimCeiling": "plural oracle unit evidence only; not full browser stress matrix",
   "digest": {
     "algorithm": "sha-256",
-    "value": "c7939eb6d53414f2af9bef3193436e7d6f4be3b90ca512eb4d667a1d128c6002"
+    "value": "71a6bece306312e01b317d322ebd396386f04c26f93db2b5676a3e696cefa714"
   }
 }

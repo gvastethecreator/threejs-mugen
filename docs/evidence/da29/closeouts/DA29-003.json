@@ -5,13 +5,13 @@
   "wave": 0,
   "status": "closed",
   "evidenceClass": "browser-matrix",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Run a current full product/browser matrix. Depends on DA29-002. Systems: Play, Studio, Inspect, import, source write, desktop/mobile, console and page errors.",
   "acceptance": "Route manifest, browser/device facts, screenshots, keyboard/focus log, and error-free result at one commit.",
   "risk": "Screenshots can hide broken flows. Allows named route/view claims only; blocks broad usability until DA29-111…120.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -47,6 +47,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "5216f5f40ec6f885dcaaae9b7e778e6895e1cef2abf32b7c1c3cf2e5327b5c8c"
+    "value": "2b4abf745a7aa13581293512438b1c8a808e8e9371fbaa90ba8a05cbd4d28162"
   }
 }

@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-055",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "ok": true,
   "entryPoints": [
     "src/mugen",
@@ -15,6 +15,6 @@
   "cut": "Audit and prove effect lifecycle under pause/reset. Depends on DA29-027, DA29-050, and DA29-053.",
   "digest": {
     "algorithm": "sha-256",
-    "value": "5b7f20c88b89fccd24528b5b7cfed7a701050e8c47500f9037de052878fea5e5"
+    "value": "e1841a72ce84f77f0e8566df27ae5c1215b8a5615066574113f9d0959d96d55e"
   }
 }

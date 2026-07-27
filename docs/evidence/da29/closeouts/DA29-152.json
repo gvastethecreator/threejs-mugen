@@ -5,13 +5,13 @@
   "wave": 15,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Build an imported command-recognition matrix. Depends on DA29-151 and DA29-043.",
   "acceptance": "Repository-owned fixtures cover directions, buttons, simultaneous and ordered inputs, facing swap, invalid gaps, buffer expiry, and per-frame command facts.",
   "risk": "Synthetic direct state entry hides command bugs. Allows named command forms only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -53,6 +53,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "7f0a4b28e256d485334cff17127b9d6adce4186de671f202c1a3037243e15e05"
+    "value": "45b752eef511885621ba2dfb4d392117c76164637cc1064d85fdae7e0e0b041e"
   }
 }

@@ -5,13 +5,13 @@
   "wave": 4,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Add a third independent repository-authored character fixture. Depends on DA29-031…040.",
   "acceptance": "Permission, independent CMD/CNS/AIR syntax, assets, digests, collision, one contact route, malformed variants, and provenance pass.",
   "risk": "A copied fixture gives false breadth. Allows one independent syntax family only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "48cd7e7de9bd90f3a137397a39b3862c93cdf4cf976369d2fb5bc9db9f4d8abb"
+    "value": "ec1ebb41df18d435539363b4243c20ad57420ec17a713715e6fce6c8884abbf0"
   }
 }

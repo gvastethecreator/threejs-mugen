@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-033",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "ok": true,
   "entryPoints": [
     "docs/CONTROLLER_SUPPORT_REGISTRY.md",
@@ -15,6 +15,6 @@
   "cut": "Separate StateDef and state-controller syntax nodes. Depends on DA29-013 and DA29-031.",
   "digest": {
     "algorithm": "sha-256",
-    "value": "53168a4f5d569247768196d6f9efd4e60082d8f5f42a7b8bd0f08c51f4e85d11"
+    "value": "a91fbb660d791cd13bc3d0addd824f7734d6dcf3236163505721e34eb3de23a2"
   }
 }

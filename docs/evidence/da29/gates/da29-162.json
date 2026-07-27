@@ -1,16 +1,20 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-162",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Add bounded MUGEN font loading and layout. Depends on DA29-161 and DA29-110.",
   "acceptance": "Repository-owned font fixtures cover glyph map, palette/color, spacing, alignment, clipping, scale, missing glyphs, corrupt data, disposal, and visual captures.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-162.json",
+    "docs/evidence/da29/measured/DA29-162.json",
+    "src/game/render/FightScreenAnnouncementRenderer.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "3146f6dda49d70868fedf87e6f39380e69daa14b60bdfc2d520dc1aa6d3d8d12"
+    "value": "ed009493513ac89723b2aac785bca854890b0f2382992b3b5874c8e8cbb3dcd9"
   }
 }

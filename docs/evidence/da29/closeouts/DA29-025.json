@@ -5,13 +5,13 @@
   "wave": 2,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Record a canonical per-frame input log. Depends on DA29-021 and DA29-020.",
   "acceptance": "Log stores sampled inputs, edges, seat map, clock tick, policy revision, and checksum; same route produces identical canonical bytes.",
   "risk": "Logs may omit hidden state. Allows input-record determinism only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "38de4a7b346a014d6c4e595f9d67f2551fcb1d0d8e362d9fd12242cfc10203f8"
+    "value": "ca3d38a2e62d34c5c0e742f55d4e83164102bf529b106b722a7f62042d2bb711"
   }
 }

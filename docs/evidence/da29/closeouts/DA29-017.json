@@ -5,13 +5,13 @@
   "wave": 1,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Generate browser evidence facts from the runner. Depends on DA29-003 and DA29-009.",
   "acceptance": "Facts include route, viewport, DPR, browser, input mode, artifact digests, console/page errors, focus checks, and commit; hand-authored green status is rejected.",
   "risk": "Automation may miss human usability. Allows runner-observed facts only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "3219ad8691225e92d8ac0d53478b4fc9b3fa8c6aca5075cc9dfa1d562ac011b4"
+    "value": "76e70759b90199d0f38d0ae9c1b1a05ae1a856db4edc485251f7cf4167afcaf6"
   }
 }

@@ -1,7 +1,7 @@
 {
   "schema": "Da29GeneratedGateReport/v1",
   "id": "DA29-018",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "files": [
     {
       "path": "docs/evidence/controller-coverage-matrix-v1.json",
@@ -52,6 +52,6 @@
   "claimCeiling": "gate report inventory at static ceiling; not formal/global pin",
   "digest": {
     "algorithm": "sha-256",
-    "value": "6daa09fee51cc3a04afc85b01596d59b3fa7ed0e89e3ba0833d71b2725ccc681"
+    "value": "4663b36d830e690440f85584f21c64808ce06fc255ebd318ce313c2062719657"
   }
 }

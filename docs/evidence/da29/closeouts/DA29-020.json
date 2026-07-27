@@ -5,13 +5,13 @@
   "wave": 1,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Version the execution environment envelope. Depends on DA29-008 and DA29-009. Systems: tests, traces, browser and scanner outputs.",
   "acceptance": "Schema records seed, clock mode, locale, timezone, browser, GPU, Node, package lock, source pins, flags, and fixture digests; incompatible envelopes cannot merge.",
   "risk": "Hidden environment drift. Allows comparable-run identity only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "9bdb526a4f669b64a8accd08f490cb3a0a54ad3c76c72c87160bd69b1f95daf8"
+    "value": "dab7fe2eeb11d2206d8edc45c2e0dc8cad6dbd62e79acd927e7a96baf145447d"
   }
 }

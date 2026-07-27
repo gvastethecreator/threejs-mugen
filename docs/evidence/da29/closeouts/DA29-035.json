@@ -5,13 +5,13 @@
   "wave": 3,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Version the canonical trigger capability registry. Depends on DA29-032 and DA29-033.",
   "acceptance": "Each trigger maps context, redirects, coercion, timing, evaluator owner, tests, traces, and unsupported branches.",
   "risk": "Evaluator context may be incomplete. Allows capability mapping only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "8bb45e456a930c37ae0fe5f8b28741fa85e9b3d485c23891361bc6906ff3f987"
+    "value": "d6ec7d95871de9069771a8ce432793f849d4dc5cf64599a484205878db5db6e3"
   }
 }

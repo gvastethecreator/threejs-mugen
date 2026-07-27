@@ -5,13 +5,13 @@
   "wave": 10,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Capture tool, model/version, prompt, inputs, command, seed, and transforms. Depends on DA29-101.",
   "acceptance": "One repository-owned generated record can be reproduced or yields a documented nondeterministic variance; missing fields fail policy.",
   "risk": "`repo-local` version is not reproducible. Allows one recorded pipeline only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "32d763b4990c93b9e14afd8d2205080afb9c8cf2bb5f0800c691e8e847a1d028"
+    "value": "36f45fa94f19712fb4d1c242de0c588725767142502ae40d36397301fdfbf9e8"
   }
 }

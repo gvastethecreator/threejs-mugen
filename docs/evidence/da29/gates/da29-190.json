@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-190",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Build product help and recovery documentation. Depends on DA29-111, DA29-119, DA29-160, and DA29-187.",
   "acceptance": "In-app/help docs cover import, controls, modes, evidence, save/recovery, permissions, assets, unsupported facts, keyboard access, and error recovery; links are route-tested.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-190.json",
+    "docs/evidence/da29/measured/DA29-190.json",
+    "README.md",
+    "docs/QA_AND_ACCEPTANCE_GATES.md"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "57ae9e956d6b543dae1ee66f14bbb5c0c6e88858dc4747e1f008b3982825e7ff"
+    "value": "b1a86dce7e16343b7f3433b4e4fd7dfef292e501d011375b73bfef052c53d58a"
   }
 }

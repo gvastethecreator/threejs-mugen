@@ -1,0 +1,29 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-195",
+  "generatedAt": "2026-07-27T04:27:24.998Z",
+  "ok": true,
+  "kind": "G",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-195",
+  "anchors": [
+    {
+      "path": "docs/EXTERNAL_FIXTURES.md",
+      "bytes": 6347,
+      "sha256": "e586fcb85af53cd3a86fac4f235b4d777e8753e1437785d1b01d4b0df66e7bc7"
+    },
+    {
+      "path": "docs/evidence/da29/series-registry-v1.json",
+      "bytes": 95463,
+      "sha256": "1a71e4621556512482ea05213c17e8fc0c7155d78d691218f940b987935ddab0"
+    },
+    {
+      "path": "docs/QA_AND_ACCEPTANCE_GATES.md",
+      "bytes": 390109,
+      "sha256": "dde66c724973627e58404d9158e448f0e1e8134f1f7260aef5a81830a6705a33"
+    }
+  ],
+  "facts": {
+    "kitDocs": 3
+  },
+  "claimCeiling": "local fixture/conformance docs present"
+}

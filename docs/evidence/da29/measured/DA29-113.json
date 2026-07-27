@@ -1,0 +1,29 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-113",
+  "generatedAt": "2026-07-27T04:27:24.836Z",
+  "ok": true,
+  "kind": "I",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-113",
+  "anchors": [
+    {
+      "path": "src/styles/redesign.css",
+      "bytes": 46329,
+      "sha256": "414026da98bbb70b7e06cecb03e871a6ee2ac98530c6fb6788af4ceeeca14ec5"
+    },
+    {
+      "path": "src/styles/base/app-shell.css",
+      "bytes": 15469,
+      "sha256": "55d18ac7978b6fcf10118a611d2f1b96481499d3b41b9dce2d67135061325776"
+    },
+    {
+      "path": "src/app/App.ts",
+      "bytes": 668855,
+      "sha256": "579740ae3bf37514051b169e7512e9e0bc4dbdc8f5159030a60121e645877481"
+    }
+  ],
+  "facts": {
+    "hasMedia": true
+  },
+  "claimCeiling": "responsive shell surfaces present"
+}

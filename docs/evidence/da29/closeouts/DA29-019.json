@@ -5,13 +5,13 @@
   "wave": 1,
   "status": "closed",
   "evidenceClass": "browser-matrix",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Build a frame-gap performance harness. Depends on DA29-017 and DA29-020. Systems: worst fight route, renderer info, browser runner.",
   "acceptance": "Records p50/p95/p99/max frame gap, FPS, draw calls, triangles, geometries, textures, CPU/device/browser, warmup, seed, and sample count.",
   "risk": "Average FPS hides stalls. Allows measured route/device claims only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -47,6 +47,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "51a99a31c81bc4be0228ac90b1441e3d9cfe5975e33c80c7dcf32531b2614ccf"
+    "value": "abe9a522b476eba3f433c56fed57a26c71f8ca5c577926cfb7e1156f995f9577"
   }
 }

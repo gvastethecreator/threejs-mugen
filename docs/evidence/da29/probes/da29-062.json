@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-062",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "ok": true,
   "entryPoints": [
     "src/game",
@@ -15,6 +15,6 @@
   "cut": "Add a bounded Simul spawn/input route. Depends on DA29-061, DA29-021, and DA29-043.",
   "digest": {
     "algorithm": "sha-256",
-    "value": "97b8a9b45a0e93b24990b6ab3db556670cec5895634f5e8813e80e30c002798a"
+    "value": "41684ad69ef89b5aeafa91ae447f805d4aadfebb54d1380a7d52a6fc453b1c50"
   }
 }

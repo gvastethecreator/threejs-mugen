@@ -1,0 +1,40 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-142",
+  "generatedAt": "2026-07-27T04:27:24.896Z",
+  "ok": true,
+  "kind": "I",
+  "command": "node -e \"JSON.parse(require('fs').readFileSync('package.json','utf8'))\"",
+  "anchors": [
+    {
+      "path": "package.json",
+      "bytes": 3604,
+      "sha256": "4f7607198f8431bfb1b834ca823faa33d0a51df15b4f0fb69d1b2f8d96f0f190"
+    }
+  ],
+  "facts": {
+    "scripts": [
+      {
+        "name": "typecheck",
+        "cmd": "tsc --noEmit"
+      },
+      {
+        "name": "test",
+        "cmd": "vitest run"
+      },
+      {
+        "name": "qa:trace",
+        "cmd": "node scripts/qa_traces.cjs"
+      },
+      {
+        "name": "build",
+        "cmd": "tsc && vite build"
+      },
+      {
+        "name": "check:boundaries",
+        "cmd": "node scripts/check_boundaries.cjs"
+      }
+    ]
+  },
+  "claimCeiling": "core CI scripts declared"
+}

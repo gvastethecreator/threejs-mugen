@@ -5,13 +5,13 @@
   "wave": 15,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Prove charge, hold, release, and repeated-button semantics. Depends on DA29-152 and DA29-025.",
   "acceptance": "Record/replay routes cover charge duration boundaries, held directions across facing changes, release tokens, repeated presses, negative-edge policy, and failure frames.",
   "risk": "Device sampling can alter thresholds. Allows tested tokens/profile only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "0588de42f40abdce2614e346aad97e7ae949ba4f252c3df468131ba2d936c06f"
+    "value": "3caf2f52c81527f523996a395385e31eff05f37b6c97cfdd836306c3ba946eab"
   }
 }

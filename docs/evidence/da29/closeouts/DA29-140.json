@@ -5,13 +5,13 @@
   "wave": 13,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Prove extraction by deletion and forbidden-import tests. Depends on DA29-139.",
   "acceptance": "Each shared contract survives removal of either adapter in isolation; boundary violations fail; bundle graph shows no fighting code in the non-fighting route; docs name remaining domain coupling.",
   "risk": "Tests may mirror implementation. Allows bounded reusable-engine claim for proven ports only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -53,6 +53,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "5e13e1cffe94600f35311d4dda0898842ccfb534b5d43e3de80dd96818692fa2"
+    "value": "d5f2c6ee71ace5712929263cb51bb3522fd7860c12147351207227f2c632d6fa"
   }
 }

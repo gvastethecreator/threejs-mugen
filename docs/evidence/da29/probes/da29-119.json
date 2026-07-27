@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-119",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "ok": true,
   "entryPoints": [
     "src/app/StudioTabs.ts",
@@ -15,6 +15,6 @@
   "cut": "Make Studio trust failures actionable. Depends on DA29-093, DA29-097, DA29-098, and DA29-100.",
   "digest": {
     "algorithm": "sha-256",
-    "value": "eb75b63ed9a4f7b1201a0a3ce32099c6e08f490c8276195b336e9d0a3d3f3e78"
+    "value": "a2d6f4d017fe2c7ffa28a66dca12d3d6baac2ccf20cdfb073df822c433ebbabe"
   }
 }

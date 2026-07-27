@@ -5,13 +5,13 @@
   "wave": 17,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Re-audit deterministic readiness for rollback. Depends on DA29-030, DA29-060, DA29-064, DA29-066, DA29-130, and DA29-156.",
   "acceptance": "Matrix records deterministic owners, snapshot cost, resim speed, desync localization, unsupported systems, team/plural/AI results, and hard blockers.",
   "risk": "Local repeatability may fail across devices. Allows readiness findings only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -53,6 +53,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "a18c1a341f54fd5d6957009562c5b1f034c293f47b3cfbba65b13c47f261f6ed"
+    "value": "8c8647d460a0bf3d14ba6165ab465891fc619ed1cc20452a58587fa90cc8a922"
   }
 }

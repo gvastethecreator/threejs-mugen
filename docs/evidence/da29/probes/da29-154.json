@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-154",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "ok": true,
   "entryPoints": [
     "src/app/App.ts",
@@ -15,6 +15,6 @@
   "cut": "Prove command priority, overlap, consumption, and State -1 order. Depends on DA29-152, DA29-153, and DA29-037.",
   "digest": {
     "algorithm": "sha-256",
-    "value": "325f78b092628677b33940c9eb61d61cd2c2806ff02464809a79d72825a94bdb"
+    "value": "8316c3a21989cc12e20a7663c1db0f2d348fff8f7d23ad3a053b8416add60abf"
   }
 }

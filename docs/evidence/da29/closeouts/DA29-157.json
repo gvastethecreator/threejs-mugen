@@ -5,13 +5,13 @@
   "wave": 15,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Add bounded training-mode controls. Depends on DA29-021, DA29-026, DA29-050, and DA29-119.",
   "acceptance": "Pause/frame-step, dummy state, life/power reset, input display, record/playback, position reset, and error states remain deterministic and keyboard accessible.",
   "risk": "Training overrides can leak into matches. Allows named training tools only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "2c0bb7ebc11d7fbe0b213f8170cc7627b9141dddcfcd29f80b0e757b44284514"
+    "value": "ae689f9a90d2ebb74a6051ca24bb6478d801b5e09c5fda4abd283708b54681f7"
   }
 }

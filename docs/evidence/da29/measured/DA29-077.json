@@ -1,0 +1,25 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-077",
+  "generatedAt": "2026-07-27T04:27:24.726Z",
+  "ok": true,
+  "kind": "I",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-077",
+  "anchors": [
+    {
+      "path": "src/mugen/model/MugenPalette.ts",
+      "bytes": 194,
+      "sha256": "c18410e13684064356be161ff571aa618ccbdcdc033b814f3bbc45ade57f5e04"
+    },
+    {
+      "path": "public/characters/nova-boxer/mugen/nova.def",
+      "bytes": 387,
+      "sha256": "6334228b8724db4c7239f84d128d3e7169a5275a0869b3b28fc8863e606b9054"
+    }
+  ],
+  "facts": {
+    "paletteModuleBytes": 194,
+    "hasActSurface": true
+  },
+  "claimCeiling": "ACT palette module path + package def presence; not full pixel delta matrix"
+}

@@ -1,16 +1,20 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-123",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prove renderer disposal and context recovery. Depends on DA29-071 and DA29-122.",
   "acceptance": "Route teardown, project switch, import failure, context lost/restored, resize, and app shutdown return owned resources to expected baselines without double disposal.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-123.json",
+    "docs/evidence/da29/measured/DA29-123.json",
+    "src/game/render/ThreeMugenRenderer.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "2c2c0057192f07eeb13588d0780966556a2faa3f8aeb7e7b745ac5c6be815ff5"
+    "value": "16d29d88ac81f7e45e9eb8596a3b4f88d25138f6a7e975cda4fc14f84fb6c2c3"
   }
 }

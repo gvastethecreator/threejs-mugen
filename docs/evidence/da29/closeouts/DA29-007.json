@@ -5,13 +5,13 @@
   "wave": 0,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Expand authority-reference audit. Depends on DA29-006. Systems: current-control docs, issues, reports, generated JSON.",
   "acceptance": "Negative fixtures prove it catches stale `closedThrough`, next task, pin, counts, visual cursor, and source epoch while exempting marked history.",
   "risk": "False positives could erase useful history. Allows drift detection only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "72ebd689d1f35e9cd3e2d41fe679bb41c316faea6da0fd3d037de5612e2db47e"
+    "value": "1652d00c8f4762a04fa63ec02d9763cba31daa7c97d63cf3c25c8119cc2365bd"
   }
 }

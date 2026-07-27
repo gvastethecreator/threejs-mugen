@@ -1,0 +1,24 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-185",
+  "generatedAt": "2026-07-27T04:27:24.982Z",
+  "ok": true,
+  "kind": "I",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-185",
+  "anchors": [
+    {
+      "path": "src/app/ProjectStorage.ts",
+      "bytes": 5238,
+      "sha256": "3a6c5749c453224683149a840d7816a19c88f07a196b6a78ce6aa17dc02a7bb3"
+    },
+    {
+      "path": "src/mugen/compatibility/IkemenFeatureScanner.ts",
+      "bytes": 20474,
+      "sha256": "5006ab50ea871ecaa03ac5db78f2caec132bcc864cf31aae791eee2a147eadb9"
+    }
+  ],
+  "facts": {
+    "batchSurface": true
+  },
+  "claimCeiling": "project storage + scanner as batch analysis hosts"
+}

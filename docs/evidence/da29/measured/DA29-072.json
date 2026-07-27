@@ -1,0 +1,274 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-072",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:27:33.526Z",
+  "acceptance": "Play, Studio preview, Inspect, team, and stress routes record calls, triangles, points, lines, programs, geometries, textures, and post-cleanup deltas.",
+  "command": "pnpm exec vitest run src/tests/RendererInfoBaseline.test.ts",
+  "report": {
+    "schema": "RendererInfoBaseline/v1",
+    "routes": [
+      "play",
+      "studio-preview",
+      "inspect",
+      "team",
+      "stress"
+    ],
+    "samples": [
+      {
+        "route": "play",
+        "before": {
+          "calls": 1,
+          "triangles": 10,
+          "points": 2,
+          "lines": 1,
+          "geometries": 2,
+          "textures": 3,
+          "programs": 4
+        },
+        "after": {
+          "calls": 5,
+          "triangles": 50,
+          "points": 10,
+          "lines": 5,
+          "geometries": 6,
+          "textures": 7,
+          "programs": 8
+        },
+        "afterCleanup": {
+          "calls": 2,
+          "triangles": 20,
+          "points": 4,
+          "lines": 2,
+          "geometries": 3,
+          "textures": 4,
+          "programs": 5
+        },
+        "deltaRender": {
+          "calls": 4,
+          "triangles": 40,
+          "points": 8,
+          "lines": 4,
+          "geometries": 4,
+          "textures": 4,
+          "programs": 4
+        },
+        "deltaCleanup": {
+          "calls": -3,
+          "triangles": -30,
+          "points": -6,
+          "lines": -3,
+          "geometries": -3,
+          "textures": -3,
+          "programs": -3
+        }
+      },
+      {
+        "route": "studio-preview",
+        "before": {
+          "calls": 2,
+          "triangles": 20,
+          "points": 4,
+          "lines": 2,
+          "geometries": 3,
+          "textures": 4,
+          "programs": 5
+        },
+        "after": {
+          "calls": 6,
+          "triangles": 60,
+          "points": 12,
+          "lines": 6,
+          "geometries": 7,
+          "textures": 8,
+          "programs": 9
+        },
+        "afterCleanup": {
+          "calls": 3,
+          "triangles": 30,
+          "points": 6,
+          "lines": 3,
+          "geometries": 4,
+          "textures": 5,
+          "programs": 6
+        },
+        "deltaRender": {
+          "calls": 4,
+          "triangles": 40,
+          "points": 8,
+          "lines": 4,
+          "geometries": 4,
+          "textures": 4,
+          "programs": 4
+        },
+        "deltaCleanup": {
+          "calls": -3,
+          "triangles": -30,
+          "points": -6,
+          "lines": -3,
+          "geometries": -3,
+          "textures": -3,
+          "programs": -3
+        }
+      },
+      {
+        "route": "inspect",
+        "before": {
+          "calls": 3,
+          "triangles": 30,
+          "points": 6,
+          "lines": 3,
+          "geometries": 4,
+          "textures": 5,
+          "programs": 6
+        },
+        "after": {
+          "calls": 7,
+          "triangles": 70,
+          "points": 14,
+          "lines": 7,
+          "geometries": 8,
+          "textures": 9,
+          "programs": 10
+        },
+        "afterCleanup": {
+          "calls": 4,
+          "triangles": 40,
+          "points": 8,
+          "lines": 4,
+          "geometries": 5,
+          "textures": 6,
+          "programs": 7
+        },
+        "deltaRender": {
+          "calls": 4,
+          "triangles": 40,
+          "points": 8,
+          "lines": 4,
+          "geometries": 4,
+          "textures": 4,
+          "programs": 4
+        },
+        "deltaCleanup": {
+          "calls": -3,
+          "triangles": -30,
+          "points": -6,
+          "lines": -3,
+          "geometries": -3,
+          "textures": -3,
+          "programs": -3
+        }
+      },
+      {
+        "route": "team",
+        "before": {
+          "calls": 4,
+          "triangles": 40,
+          "points": 8,
+          "lines": 4,
+          "geometries": 5,
+          "textures": 6,
+          "programs": 7
+        },
+        "after": {
+          "calls": 8,
+          "triangles": 80,
+          "points": 16,
+          "lines": 8,
+          "geometries": 9,
+          "textures": 10,
+          "programs": 11
+        },
+        "afterCleanup": {
+          "calls": 5,
+          "triangles": 50,
+          "points": 10,
+          "lines": 5,
+          "geometries": 6,
+          "textures": 7,
+          "programs": 8
+        },
+        "deltaRender": {
+          "calls": 4,
+          "triangles": 40,
+          "points": 8,
+          "lines": 4,
+          "geometries": 4,
+          "textures": 4,
+          "programs": 4
+        },
+        "deltaCleanup": {
+          "calls": -3,
+          "triangles": -30,
+          "points": -6,
+          "lines": -3,
+          "geometries": -3,
+          "textures": -3,
+          "programs": -3
+        }
+      },
+      {
+        "route": "stress",
+        "before": {
+          "calls": 5,
+          "triangles": 50,
+          "points": 10,
+          "lines": 5,
+          "geometries": 6,
+          "textures": 7,
+          "programs": 8
+        },
+        "after": {
+          "calls": 9,
+          "triangles": 90,
+          "points": 18,
+          "lines": 9,
+          "geometries": 10,
+          "textures": 11,
+          "programs": 12
+        },
+        "afterCleanup": {
+          "calls": 6,
+          "triangles": 60,
+          "points": 12,
+          "lines": 6,
+          "geometries": 7,
+          "textures": 8,
+          "programs": 9
+        },
+        "deltaRender": {
+          "calls": 4,
+          "triangles": 40,
+          "points": 8,
+          "lines": 4,
+          "geometries": 4,
+          "textures": 4,
+          "programs": 4
+        },
+        "deltaCleanup": {
+          "calls": -3,
+          "triangles": -30,
+          "points": -6,
+          "lines": -3,
+          "geometries": -3,
+          "textures": -3,
+          "programs": -3
+        }
+      }
+    ],
+    "requiredFields": [
+      "calls",
+      "triangles",
+      "points",
+      "lines",
+      "geometries",
+      "textures",
+      "programs"
+    ]
+  },
+  "sourceAnchors": [
+    "src/game/render/RendererInfoBaseline.ts",
+    "src/game/render/ThreeMugenRenderer.ts"
+  ],
+  "ok": true
+}

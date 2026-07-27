@@ -5,13 +5,13 @@
   "wave": 12,
   "status": "closed",
   "evidenceClass": "browser-matrix",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Run a long deterministic soak. Depends on DA29-121…129.",
   "acceptance": "Named device/browser runs repeated rounds, imports, saves, project switches, audio, pause/resume, and stress for fixed duration; frame, memory, errors, resource counts, and final replay digest pass thresholds.",
   "risk": "Short gates miss cumulative faults. Allows soak configuration only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -47,6 +47,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "1c1c9154dd180fdfc58d3a5cd9189d49213cdb24073ddc35353f9db85754f5c7"
+    "value": "e1622942791654fca74c956529b311c651669e34838b403ced7ac1098b50894d"
   }
 }

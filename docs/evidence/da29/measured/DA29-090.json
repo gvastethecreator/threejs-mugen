@@ -1,0 +1,30 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-090",
+  "generatedAt": "2026-07-27T04:27:24.767Z",
+  "ok": true,
+  "kind": "G",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-090",
+  "anchors": [
+    {
+      "path": "src/mugen/compatibility/IkemenFeatureScanner.ts",
+      "bytes": 20474,
+      "sha256": "5006ab50ea871ecaa03ac5db78f2caec132bcc864cf31aae791eee2a147eadb9"
+    },
+    {
+      "path": "src/mugen/compatibility/ScannerCapabilityVector.ts",
+      "bytes": 3219,
+      "sha256": "8f418bc2df7e374dae093b0814b1909eff75de331c9ac4fe57de753a795bced4"
+    },
+    {
+      "path": "docs/evidence/scanner-capability-artifact-v1.json",
+      "bytes": 998,
+      "sha256": "2ef4a5c4aa6dff4f1947e2f499e5ece8b1059693605b7f78c21a749ee0d678fd"
+    }
+  ],
+  "facts": {
+    "combinedDigest": "5ff8aad5bf8d1816a83f54df914e18fb3452f633689eead2d0701e362e877bf5",
+    "inputCount": 3
+  },
+  "claimCeiling": "deterministic digest of analyzer inputs; full semantic diff matrix broader"
+}

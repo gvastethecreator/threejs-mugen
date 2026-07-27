@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-186",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Add repository-owned project templates. Depends on DA29-181 and DA29-107.",
   "acceptance": "Blank fighter, stage, screenpack, and training templates carry clear ownership/license, version, required files, safe placeholders, validation, and no third-party content.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-186.json",
+    "docs/evidence/da29/measured/DA29-186.json",
+    "src/app/ProjectStorage.ts",
+    "package.json"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "0de55093220cfea09a7219e2e8658a70282cf4348e3124b9a921555cc1012358"
+    "value": "2550d49e7e6dd56ca8b91eae120d183fee160d9d43aff209584d1981bd8ed0ef"
   }
 }

@@ -1,0 +1,19 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-123",
+  "generatedAt": "2026-07-27T04:27:24.873Z",
+  "ok": true,
+  "kind": "G",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-123",
+  "anchors": [
+    {
+      "path": "src/game/render/ThreeMugenRenderer.ts",
+      "bytes": 15318,
+      "sha256": "a4c3df576258d628517273d79fa9ba24598990256e33adde7903fb18476a3ef7"
+    }
+  ],
+  "facts": {
+    "hasDispose": true
+  },
+  "claimCeiling": "renderer dispose path present"
+}

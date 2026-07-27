@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-029",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "ok": true,
   "entryPoints": [
     "src/mugen",
@@ -15,6 +15,6 @@
   "cut": "Define canonical match-state serialization. Depends on DA29-008, DA29-020, and DA29-028.",
   "digest": {
     "algorithm": "sha-256",
-    "value": "f43d9a1295bc1cef90d6b4a920e997f415fdb00173c9a6a8abf2cc22d513a02e"
+    "value": "fa55f75a8b9245cc3a97fd3de44b6b95e9b6ec33a89c4f0cb1526c02702014c9"
   }
 }

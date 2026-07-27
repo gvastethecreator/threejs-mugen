@@ -1,0 +1,29 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-094",
+  "generatedAt": "2026-07-27T04:27:24.772Z",
+  "ok": true,
+  "kind": "I",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-094",
+  "anchors": [
+    {
+      "path": "src/app/SourceWriteJournal.ts",
+      "bytes": 9736,
+      "sha256": "1ea31f51dcc1549ecf5283bd64b77a81c2681f8eec83f76684228191acc8f7cf"
+    },
+    {
+      "path": "src/app/StudioSourceWrite.ts",
+      "bytes": 11983,
+      "sha256": "800d3e3a958f67ffef6c1d7ff231297e0c88955a36a76b37ba4ef02839742c90"
+    },
+    {
+      "path": "src/app/StudioSourceWriteReceipt.ts",
+      "bytes": 11955,
+      "sha256": "98677821f783b88b0e2ccdc9d87f712202dad61eac2dcf22758e671974c65ccb"
+    }
+  ],
+  "facts": {
+    "journalBytes": 9736
+  },
+  "claimCeiling": "source-write journal modules present; full FS permission matrix broader"
+}

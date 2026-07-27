@@ -1,0 +1,25 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-087",
+  "generatedAt": "2026-07-27T04:27:24.757Z",
+  "ok": true,
+  "kind": "I",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-087",
+  "anchors": [
+    {
+      "path": "src/mugen/compatibility/IkemenFeatureScanner.ts",
+      "bytes": 20474,
+      "sha256": "5006ab50ea871ecaa03ac5db78f2caec132bcc864cf31aae791eee2a147eadb9"
+    },
+    {
+      "path": "src/mugen/compatibility/ScannerCapabilityVector.ts",
+      "bytes": 3219,
+      "sha256": "8f418bc2df7e374dae093b0814b1909eff75de331c9ac4fe57de753a795bced4"
+    }
+  ],
+  "facts": {
+    "modules": 2,
+    "executable": true
+  },
+  "claimCeiling": "scanner modules executable; full phase timing matrix is a broader gate"
+}

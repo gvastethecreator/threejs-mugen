@@ -5,13 +5,13 @@
   "wave": 6,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Prove Simul KO and round-end policy. Depends on DA29-062 and DA29-050.",
   "acceptance": "Partial KO, double KO, surviving partner, timeout, win attribution, cleanup, and next-round roster state have deterministic traces.",
   "risk": "Team win policy varies by profile. Allows named profile only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "19b9c10e40598e3502cd93b03f4feaecf7581eab90e8671aef453ea6666ce2fb"
+    "value": "b006fbe23a3a706de697f8ba68b8d73ae6aef1124bc4d497cf180565e19ce5a8"
   }
 }

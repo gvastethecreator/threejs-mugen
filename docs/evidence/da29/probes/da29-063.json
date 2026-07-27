@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-063",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "ok": true,
   "entryPoints": [
     "src/game",
@@ -15,6 +15,6 @@
   "cut": "Prove Simul KO and round-end policy. Depends on DA29-062 and DA29-050.",
   "digest": {
     "algorithm": "sha-256",
-    "value": "1a8602dd17b046011b57ba90c60a666de1c810b3c48e7b6eebccdd7efb7c65d1"
+    "value": "c07a55f380ca1318b7ad2d629bab406c9226166849c8dd77549d2303f13b92ee"
   }
 }

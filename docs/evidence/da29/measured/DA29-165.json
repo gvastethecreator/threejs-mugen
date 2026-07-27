@@ -1,0 +1,19 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-165",
+  "generatedAt": "2026-07-27T04:27:24.946Z",
+  "ok": true,
+  "kind": "I",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-165",
+  "anchors": [
+    {
+      "path": "src/mugen/runtime/FightScreenAnimationSemantics.ts",
+      "bytes": 3187,
+      "sha256": "8f6e527181d29fb05662a21f8edc56b813501144e2fe800e2bf8f0779363fc9b"
+    }
+  ],
+  "facts": {
+    "animationSemantics": true
+  },
+  "claimCeiling": "fight screen animation semantics present"
+}

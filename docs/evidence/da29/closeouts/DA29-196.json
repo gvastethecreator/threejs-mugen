@@ -5,13 +5,13 @@
   "wave": 19,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Generate API and format support references. Depends on DA29-034, DA29-035, DA29-090, DA29-168, and DA29-192.",
   "acceptance": "Current registries generate searchable controller/trigger/format/profile/API docs with evidence links, unsupported branches, versions, examples, and stale-reference audit.",
   "risk": "Generated docs can look like full support. Allows documented registry state only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -53,6 +53,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "2daf66f98e902c6ff1a558ac843a8aefb7a8f088486a40df2f0eb259d4773b57"
+    "value": "9110cdd6465e2317982d03b6d5ecab3fa779a16d664970a50e68a7234739ac59"
   }
 }

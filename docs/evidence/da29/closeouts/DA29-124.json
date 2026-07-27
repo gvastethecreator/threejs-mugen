@@ -5,13 +5,13 @@
   "wave": 12,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Profile importer/scanner main-thread cost. Depends on DA29-087 and DA29-121.",
   "acceptance": "Small/medium/limit fixtures report parse/scan duration, long tasks, input responsiveness, memory peak, cancellation latency, and phase attribution.",
   "risk": "Large packages freeze Studio. Allows measured corpus only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -53,6 +53,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "3079f3077e126feadf7fb4cc5e38e13edaae569de12e151329a18b7c18cb5c2b"
+    "value": "ec00802fc1e138aca13253bd2bc7d38edd2a8b59f1c248100da0034ee13c5108"
   }
 }

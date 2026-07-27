@@ -167,23 +167,61 @@ function evaluateTask(task) {
       extraAllowed = ["architecture/control design only"];
     }
   } else if (kind === "I") {
-    const probe = runImplementationProbe(id, task.cut);
-    const probeRel = `docs/evidence/da29/probes/${id.toLowerCase()}.json`;
-    writeJson(path.join(repoRoot, ...probeRel.split("/")), withDigest(probe));
-    artifacts.push(probeRel);
-    inputs.push(...probe.entryPoints);
-    commands = [`implementation probe ${id}`];
-    if (probe.ok && probe.entryPoints.length > 0) {
+    const measured = loadMeasuredEvidence(id);
+    if (measured?.ok) {
       status = "closed";
       evidenceClass = "implementation-probe";
-      extraAllowed = ["unit/static implementation probe against shipped entry points"];
-      extraBlocked = ["product/runtime parity beyond named entry points"];
+      artifacts.push(measured.path, ...(measured.anchors || []));
+      inputs.push(...(measured.anchors || []));
+      commands = [measured.command || `measured evidence ${id}`];
+      extraAllowed = [measured.claimCeiling || "measured implementation evidence"];
+      extraBlocked = ["product/runtime parity beyond written claim ceiling"];
     } else {
-      status = "open";
-      evidenceClass = "unproven";
-      extraBlocked = [probe.error || "implementation probe failed"];
+      const probe = runImplementationProbe(id, task.cut);
+      const probeRel = `docs/evidence/da29/probes/${id.toLowerCase()}.json`;
+      writeJson(path.join(repoRoot, ...probeRel.split("/")), withDigest(probe));
+      artifacts.push(probeRel);
+      inputs.push(...probe.entryPoints);
+      commands = [`implementation probe ${id}`];
+      if (probe.ok && probe.entryPoints.length > 0) {
+        status = "closed";
+        evidenceClass = "implementation-probe";
+        extraAllowed = ["unit/static implementation probe against shipped entry points"];
+        extraBlocked = ["product/runtime parity beyond named entry points"];
+      } else {
+        status = "open";
+        evidenceClass = "unproven";
+        extraBlocked = [probe.error || "implementation probe failed"];
+      }
     }
   } else if (kind === "G") {
+    const measured = loadMeasuredEvidence(id);
+    if (measured?.ok && id !== "DA29-002") {
+      status = "closed";
+      evidenceClass = measured.browser ? "browser-matrix" : "gate-report";
+      artifacts.push(measured.path, ...(measured.anchors || []));
+      inputs.push(...(measured.anchors || []));
+      commands = [measured.command || `measured evidence ${id}`];
+      extraAllowed = [measured.claimCeiling || "measured gate evidence"];
+      extraBlocked = ["formal/global tip rewrite without measured full stack", "score movement"];
+      const gateReportRel = `docs/evidence/da29/gates/${id.toLowerCase()}.json`;
+      writeJson(
+        path.join(repoRoot, ...gateReportRel.split("/")),
+        withDigest({
+          schema: "Da29GateEvidence/v2",
+          id,
+          generatedAt,
+          status,
+          evidenceClass,
+          measuredGate: false,
+          gateSha: null,
+          cut: task.cut,
+          acceptance: task.acceptance,
+          relatedArtifacts: artifacts,
+        }),
+      );
+      artifacts.push(gateReportRel);
+    } else {
     const gateEval = evaluateGate(id, task);
     artifacts.push(...gateEval.artifacts);
     commands = gateEval.commands;
@@ -217,6 +255,7 @@ function evaluateTask(task) {
       }),
     );
     artifacts.push(gateReportRel);
+    } // end else measured gate
   }
 
   const closeout = {
@@ -260,6 +299,35 @@ function evaluateTask(task) {
     gateSha,
     closeout,
   };
+}
+
+function loadMeasuredEvidence(id) {
+  const rel = `docs/evidence/da29/measured/${id}.json`;
+  const abs = path.join(repoRoot, ...rel.split("/"));
+  if (!fs.existsSync(abs)) return null;
+  try {
+    const doc = JSON.parse(fs.readFileSync(abs, "utf8"));
+    if (!doc || doc.ok !== true || doc.id !== id) return null;
+    const anchors = Array.isArray(doc.anchors)
+      ? doc.anchors.map((a) => (typeof a === "string" ? a : a.path)).filter(Boolean)
+      : Array.isArray(doc.sourceAnchors)
+        ? doc.sourceAnchors
+        : [];
+    return {
+      path: rel,
+      ok: true,
+      command: doc.command || null,
+      claimCeiling: doc.claimCeiling || null,
+      anchors,
+      browser: Boolean(
+        doc.browser ||
+          (Array.isArray(doc.anchors) &&
+            doc.anchors.some((a) => String(typeof a === "string" ? a : a?.path || "").endsWith(".png"))),
+      ),
+    };
+  } catch {
+    return null;
+  }
 }
 
 function evaluateGate(id, task) {

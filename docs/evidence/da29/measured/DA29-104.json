@@ -1,0 +1,25 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-104",
+  "generatedAt": "2026-07-27T04:27:24.808Z",
+  "ok": true,
+  "kind": "G",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-104",
+  "anchors": [
+    {
+      "path": "docs/evidence/native-asset-provenance-v1.json",
+      "bytes": 2843,
+      "sha256": "54ea0ee5bf3729aaffd91dc8175f7dc74b1d51c0f52cdc7189a71793f4f36c4e"
+    },
+    {
+      "path": "public/characters/nova-boxer/sprite-sheet-alpha.png",
+      "bytes": 341273,
+      "sha256": "8530964cdac11690694a0114aef71e35e21b832994167412609dff3c88b49664"
+    }
+  ],
+  "facts": {
+    "sheetSha": "8530964cdac11690694a0114aef71e35e21b832994167412609dff3c88b49664",
+    "provenanceSha": "54ea0ee5bf3729aaffd91dc8175f7dc74b1d51c0f52cdc7189a71793f4f36c4e"
+  },
+  "claimCeiling": "atlas sheet + provenance digests; full transform pipeline broader"
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-122",
+  "generatedAt": "2026-07-27T04:27:24.867Z",
+  "ok": true,
+  "kind": "G",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-122",
+  "anchors": [
+    {
+      "path": "src/game/render/ThreeMugenRenderer.ts",
+      "bytes": 15318,
+      "sha256": "a4c3df576258d628517273d79fa9ba24598990256e33adde7903fb18476a3ef7"
+    },
+    {
+      "path": "src/game/render/RendererInfoBaseline.ts",
+      "bytes": 4611,
+      "sha256": "851d27a16c10e8ad8ecb397b87ccb1554ead262f64e5da29f72309cf583d5943"
+    }
+  ],
+  "facts": {
+    "baselineModule": true
+  },
+  "claimCeiling": "renderer info baseline anchors; full allocation profile broader"
+}

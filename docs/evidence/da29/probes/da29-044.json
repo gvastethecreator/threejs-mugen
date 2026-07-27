@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-044",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "ok": true,
   "entryPoints": [
     "src/mugen",
@@ -15,6 +15,6 @@
   "cut": "Prove guard admission and guard damage. Depends on DA29-042 and DA29-043.",
   "digest": {
     "algorithm": "sha-256",
-    "value": "b15a285f890dab8fec79ac7bfa622c956b7643f2fccabc7a4a3b80157a193724"
+    "value": "d54f1af1de4897da0abb11c529feeaf816d5adff98cd57b50bff8419a388f42d"
   }
 }

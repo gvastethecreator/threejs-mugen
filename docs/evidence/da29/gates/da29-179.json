@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-179",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Run an isolated local peer/rollback prototype. Depends on DA29-070 and DA29-178.",
   "acceptance": "Two local peers exchange versioned inputs, delay/loss simulation, predict/resim, compare checksums, surface desync, and recover/abort safely; no external service or credentials.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-179.json",
+    "docs/evidence/da29/measured/DA29-179.json",
+    "src/mugen/runtime/LivePluralCombatOracle.ts",
+    "src/tests/LivePluralCombatOracle.test.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "48d7062d41f5047f7dfb5c1aff52b8fb6dfa7a1a8209df74ea652ff4d986d13e"
+    "value": "d25ecbbe0b21e64ddd08c0480b9750ee0f73f4106b43cd19a76dee20d5412efc"
   }
 }

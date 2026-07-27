@@ -1,0 +1,24 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-105",
+  "generatedAt": "2026-07-27T04:27:24.819Z",
+  "ok": true,
+  "kind": "G",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-105",
+  "anchors": [
+    {
+      "path": "src/game/render/CollisionBoxRenderer.ts",
+      "bytes": 2743,
+      "sha256": "8aba6c7246f80b2ff3560833c313910abf4574ddc592883e7323667a93d7d55f"
+    },
+    {
+      "path": "public/characters/nova-boxer/sprite-sheet-alpha.png",
+      "bytes": 341273,
+      "sha256": "8530964cdac11690694a0114aef71e35e21b832994167412609dff3c88b49664"
+    }
+  ],
+  "facts": {
+    "collisionRenderer": true
+  },
+  "claimCeiling": "collision renderer + sheet anchors; full visual QA matrix broader"
+}

@@ -5,13 +5,13 @@
   "wave": 18,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Export a deterministic playable project bundle. Depends on DA29-100, DA29-109, DA29-110, DA29-148, and DA29-181.",
   "acceptance": "Same project/revision/tool chain yields identical manifest and content digests, safe paths, current evidence, runtime config, and a local play smoke; blocked facts stop export.",
   "risk": "Local bundle is not deployment. Allows deterministic local export only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -53,6 +53,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "e17edfbfb154a2135d8eed115d3afc3397f9edefb6facefbd18baed2fabfe17a"
+    "value": "6c93adf87d645ee93056c80e3cf4b4a62c482a04836bd4ffe21ba3a87be87d05"
   }
 }

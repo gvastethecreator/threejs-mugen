@@ -1,0 +1,24 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-139",
+  "generatedAt": "2026-07-27T04:27:24.891Z",
+  "ok": true,
+  "kind": "I",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-139",
+  "anchors": [
+    {
+      "path": "src/engine/ModuleContracts.ts",
+      "bytes": 5673,
+      "sha256": "85a86de08f512bf62db2066345f5a662925a11fa29fc62543a12b70df71c2a70"
+    },
+    {
+      "path": "src/engine/CommonEvidenceFacts.ts",
+      "bytes": 6740,
+      "sha256": "4411e8c0a38c52bf6d0949fe0c4315b44b736058ebff6740fbf7809ecf2a6544"
+    }
+  ],
+  "facts": {
+    "secondConsumer": "engine package facts"
+  },
+  "claimCeiling": "engine package as non-fighting consumer of shared facts"
+}

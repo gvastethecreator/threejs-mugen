@@ -1,16 +1,20 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-086",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Expand ZIP/VFS security policy. Depends on DA29-081 and DA29-020.",
   "acceptance": "Tests cover traversal, absolute/Unicode-confusable paths, duplicates, case collisions, entry/total/ratio limits, nested archives, cancellation, and deterministic rejection.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-086.json",
+    "docs/evidence/da29/measured/DA29-086.json",
+    "src/mugen/loader/ZipCharacterSource.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "c25a26bbd3c5199fb3071c75e3c40cfb775d8a45fe7c6631daa550a6f4fde524"
+    "value": "b8b345eeb25192c6d8743b2166eea41fec561451169277a95bc70819997cbbe0"
   }
 }

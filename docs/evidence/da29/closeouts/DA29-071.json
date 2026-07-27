@@ -5,13 +5,13 @@
   "wave": 7,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Inventory Three.js object and resource ownership. Depends on DA29-002.",
   "acceptance": "Scene tree maps geometry, material, texture, render target, audio node, cache, creator, disposer, reset, route, and leak risk.",
   "risk": "Missed shared resource can leak or double-dispose. Allows ownership inventory only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "7ecc0fdac64b31772104f2cf8289d9856c1682a756ecaaf5a07ca231277e476f"
+    "value": "b8e38122705662cb08b7d5745e1ce291213389f693274d7345660845527af1a9"
   }
 }

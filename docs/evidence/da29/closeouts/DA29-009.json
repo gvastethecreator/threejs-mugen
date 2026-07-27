@@ -5,13 +5,13 @@
   "wave": 0,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Define the gate taxonomy. Depends on DA29-008. Systems: QA docs, reports, scorecard.",
   "acceptance": "Schema distinguishes unit, focused, trace, global, browser route, accessibility, performance, source review, release, and production gates plus valid inheritance rules.",
   "risk": "Gate mixing. Allows taxonomy adoption only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "fdc4f9cf718f661727eb4dd18b3e57c6ef4175c962d4ade5b048988e11799d7a"
+    "value": "b75715d8cc2671e60edf8d363436496ce4793b6751347f8d2b96aad8ef9ba969"
   }
 }

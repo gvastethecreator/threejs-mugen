@@ -5,13 +5,13 @@
   "wave": 12,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Test IndexedDB quota, corruption-like, and blocked-upgrade recovery. Depends on DA29-092, DA29-093, and DA29-099.",
   "acceptance": "Injected quota/abort/blocked/version/store loss routes retain last good data, surface state, allow safe export/reset, and never report false save success.",
   "risk": "Recovery may destroy evidence. Allows injected routes only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -53,6 +53,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "ea4d8b427f6e8060028646cd7c738fa587d536f647196ed85368aae636dfea61"
+    "value": "f1740aae1f54fd6b59122edc281ee2ad0922c173ba6014058f0aa0735f1e7cbe"
   }
 }

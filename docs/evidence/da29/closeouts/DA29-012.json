@@ -5,13 +5,13 @@
   "wave": 1,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Generate a trace artifact manifest. Depends on DA29-011. Systems: trace presets and `qa:trace`.",
   "acceptance": "Every required trace has stable ID, producer, input fixture, profile, source pin, output digest, and owner; missing/duplicate IDs fail.",
   "risk": "Huge hand-edited presets drift. Allows trace-set integrity only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "65495494ca44c9e36dc2b6b285a3e5e5f12d0c2eb9279cb12e7fc6bd20323e92"
+    "value": "20892db62961ecb6e77afa6e8fad59437541c0c8e0d7003f58043720df0b1bd2"
   }
 }

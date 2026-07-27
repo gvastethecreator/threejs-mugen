@@ -5,13 +5,13 @@
   "wave": 14,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Add dependency, license, secret, and public-bundle review. Depends on DA29-110 and DA29-143.",
   "acceptance": "Lockfile/dependency policy, license allowlist, known-vulnerability review, secret-like scan, source map/public path scan, and third-party asset rejection produce signed facts.",
   "risk": "Tool output is not legal/security assurance. Allows completed scan facts only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -53,6 +53,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "aa8e367716bcd713049a590e93bfb219aef8cecdae4d1a642c728b8d7675a4df"
+    "value": "46c1dab5d460dff29f9162f890b0ca9377667d1ef7d10759e60f66c4c2429258"
   }
 }

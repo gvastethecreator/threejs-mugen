@@ -1,0 +1,19 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-172",
+  "generatedAt": "2026-07-27T04:27:24.957Z",
+  "ok": true,
+  "kind": "G",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-172",
+  "anchors": [
+    {
+      "path": "docs/IKEMEN_GO_REFERENCE.md",
+      "bytes": 16447,
+      "sha256": "b820fbef0920eb7e7487e6a36d1894363695b3a739ecfa4bc931e5b46c10a4f2"
+    }
+  ],
+  "facts": {
+    "offlineOnly": true
+  },
+  "claimCeiling": "offline ZSS analysis docs; no execution claim"
+}

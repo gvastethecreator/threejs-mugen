@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-013",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "ok": true,
   "entryPoints": [
     "docs/CONTROLLER_SUPPORT_REGISTRY.md",
@@ -15,6 +15,6 @@
   "cut": "Replace regex controller census with parsed CNS records. Depends on DA29-008. Systems: controller matrix materializer and parser.",
   "digest": {
     "algorithm": "sha-256",
-    "value": "72d01475f3984e56e06ed2309d247204bd606871825a066cc804e38040d1ecf5"
+    "value": "92a82a7fe82db06ede25d0e11f8adf628350eb4452b129febce181970830aecc"
   }
 }

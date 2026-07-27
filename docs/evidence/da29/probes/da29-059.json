@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-059",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "ok": true,
   "entryPoints": [
     "src/app/StudioTabs.ts",
@@ -15,6 +15,6 @@
   "cut": "Close Helper/projectile numeric identity lifecycle. Depends on DA29-052, DA29-053, and DA29-057.",
   "digest": {
     "algorithm": "sha-256",
-    "value": "8f6dcb9bb189d8dc4d03576b4039039410d3c6251767f90b6cc6605346d1398e"
+    "value": "3f027f55bb251ad5d88c4329cd80e8dc137291154ef3c4b680545259ffc35991"
   }
 }

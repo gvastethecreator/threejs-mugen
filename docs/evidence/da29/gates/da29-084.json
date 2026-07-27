@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-084",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Harden AIR parsing and located diagnostics. Depends on DA29-081.",
   "acceptance": "Valid/malformed fixtures cover actions, elements, loopstart, collision boxes, timing, flips, alpha, whitespace/comments, duplicate actions, and exact locations.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-084.json",
+    "docs/evidence/da29/measured/DA29-084.json",
+    "src/mugen/parsers/AirParser.ts",
+    "public/characters/nova-boxer/mugen/nova.air"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "9d768d2cbb1c072432e0301c51e903c8ae4cd2b5eb4f65bec1f32734075919b9"
+    "value": "9e5bc6f80fd9fc9143d33b3a686d4ac83bfe565f3b75fb27bc5c3f70cf042c72"
   }
 }

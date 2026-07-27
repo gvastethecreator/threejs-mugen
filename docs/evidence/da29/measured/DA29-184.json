@@ -1,0 +1,24 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-184",
+  "generatedAt": "2026-07-27T04:27:24.976Z",
+  "ok": true,
+  "kind": "I",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-184",
+  "anchors": [
+    {
+      "path": "src/app/StudioSourceWrite.ts",
+      "bytes": 11983,
+      "sha256": "800d3e3a958f67ffef6c1d7ff231297e0c88955a36a76b37ba4ef02839742c90"
+    },
+    {
+      "path": "src/app/StudioEditHistory.ts",
+      "bytes": 2024,
+      "sha256": "028fd8cacc640020c09a4502ad70c98472f79594f91a88de77f2314034f65fcf"
+    }
+  ],
+  "facts": {
+    "editHistory": true
+  },
+  "claimCeiling": "studio source write/history surfaces"
+}

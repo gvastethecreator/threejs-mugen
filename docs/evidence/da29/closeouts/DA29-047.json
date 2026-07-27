@@ -5,13 +5,13 @@
   "wave": 4,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Extend active juggle to a real multi-hit route. Depends on DA29-041, DA29-046, and focal T406.",
   "acceptance": "Same target receives allowed and rejected hits across juggle points, fall/recovery, reset, and profile variants; no synthetic outcome fallback.",
   "risk": "Local juggle can diverge from common state flow. Allows one route/profile matrix only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "7d6be95d86b453cb84cc64eef5b5ec035a7e6d014c5d8149a8c9fe04658f4ecf"
+    "value": "95cb531cc10f97517bd6fd0a48715b8bd901d3cabe0ba530828863eda0224a56"
   }
 }

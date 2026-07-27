@@ -5,13 +5,13 @@
   "wave": 12,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Measure the actual worst fight routes. Depends on DA29-019, DA29-060, and DA29-068.",
   "acceptance": "Single, Simul/Turns, plural stress, UI-open, and mobile routes report p95/p99/max frame gaps and renderer facts on named devices; breaches have owners.",
   "risk": "Easy scenes hide stalls. Allows measured routes/devices only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -53,6 +53,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "e1eedd27207bee0d48055bd4b178c7f2392e1613f44d4dba4a4638d6de0a700e"
+    "value": "73a89bec9356be49c513c45ad37273c69721ce095a3d2e87466e103ed4d94127"
   }
 }

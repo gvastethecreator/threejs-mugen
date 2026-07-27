@@ -5,13 +5,13 @@
   "wave": 13,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Define input/clock/replay ports. Depends on DA29-021…030 and DA29-133.",
   "acceptance": "Ports expose deterministic frames, seat actions, clock domains, RNG, snapshot, and replay without CNS or team terms; fighting adapters preserve current traces.",
   "risk": "Generic clock may omit fighting pause rules. Allows ports only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "dd2f52d59264deb08c1730b6760efd66f3b690313ac5d6661fced4deff77ca31"
+    "value": "98e5b02b8ad5ff547ae1bb632cde8edf61e66bf49f654c212313afe5fb893daa"
   }
 }

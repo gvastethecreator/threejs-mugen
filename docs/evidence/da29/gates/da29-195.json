@@ -1,16 +1,22 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-195",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Publish a fixture and adapter conformance kit locally. Depends on DA29-140, DA29-192, and DA29-194.",
   "acceptance": "Kit provides lawful fixtures, contract tests, negative cases, environment envelope, expected artifacts, version policy, and one external-style sample adapter in the repo.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-195.json",
+    "docs/evidence/da29/measured/DA29-195.json",
+    "docs/EXTERNAL_FIXTURES.md",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/QA_AND_ACCEPTANCE_GATES.md"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "180c04249eebf3d17480ba676466290facaf752ef5063adcec37523471e17366"
+    "value": "538dcf4e7f6bc42b12ac653a6d9bab5eb5d0b177bb109f9a9aeb4da9037e25b6"
   }
 }

@@ -1,0 +1,24 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-186",
+  "generatedAt": "2026-07-27T04:27:24.985Z",
+  "ok": true,
+  "kind": "G",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-186",
+  "anchors": [
+    {
+      "path": "src/app/ProjectStorage.ts",
+      "bytes": 5238,
+      "sha256": "3a6c5749c453224683149a840d7816a19c88f07a196b6a78ce6aa17dc02a7bb3"
+    },
+    {
+      "path": "package.json",
+      "bytes": 3604,
+      "sha256": "4f7607198f8431bfb1b834ca823faa33d0a51df15b4f0fb69d1b2f8d96f0f190"
+    }
+  ],
+  "facts": {
+    "projectStorage": true
+  },
+  "claimCeiling": "project storage template host present"
+}

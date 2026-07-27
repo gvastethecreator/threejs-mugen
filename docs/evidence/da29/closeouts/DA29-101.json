@@ -5,13 +5,13 @@
   "wave": 10,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Version AssetProvenance with cryptographic content digests. Depends on DA29-008 and DA29-081.",
   "acceptance": "Schema covers inputs/outputs, SHA-256, canonical metadata, permission, license, creator/tool, timestamps, transforms, and subject revision; migration is explicit.",
   "risk": "Weak digest may imply integrity. Allows provenance schema only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "e6018466180e7f4f40891a379bab88cc5710158fc8dc75da891ee483f07526ad"
+    "value": "78bd9dba75925c073a69b70b054d704252ec83ab4b9bd6fb85ff2a4326eba513"
   }
 }

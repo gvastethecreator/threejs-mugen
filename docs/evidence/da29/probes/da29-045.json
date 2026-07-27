@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-045",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "ok": true,
   "entryPoints": [
     "src/mugen",
@@ -15,6 +15,6 @@
   "cut": "Prove priority, trade, miss, and simultaneous-contact order. Depends on DA29-041 and DA29-044.",
   "digest": {
     "algorithm": "sha-256",
-    "value": "39b79bcc4fab1193db9b5b8f5cc64e976bea33bf261920ff7dc5eb0666bece4e"
+    "value": "12c9d50974063b7ad260fd85313706e52815c7330d874b422f5df437c618dfe1"
   }
 }

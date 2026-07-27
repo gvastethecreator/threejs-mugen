@@ -5,13 +5,13 @@
   "wave": 19,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Add a headless import/analyze/build CLI over shared ports. Depends on DA29-087, DA29-136, DA29-188, and DA29-192.",
   "acceptance": "CLI has stable exit codes, JSON facts, stdin/path policy, cancellation, caps, deterministic output, no browser-only globals, and parity fixtures with Studio.",
   "risk": "Headless and product paths can diverge. Allows named commands only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "70507da92a4fcbcffa92bffdb0cd901433d4593522ed6766e23c006437ca1a83"
+    "value": "dcfef5866b77b81011f999f4cf7ce530af43d86d5412b896f784dcdc8d318bba"
   }
 }

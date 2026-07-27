@@ -1,0 +1,25 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-114",
+  "generatedAt": "2026-07-27T04:27:24.855Z",
+  "ok": true,
+  "kind": "G",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-114",
+  "anchors": [
+    {
+      "path": "src/app/App.ts",
+      "bytes": 668855,
+      "sha256": "579740ae3bf37514051b169e7512e9e0bc4dbdc8f5159030a60121e645877481"
+    },
+    {
+      "path": "src/styles/redesign.css",
+      "bytes": 46329,
+      "sha256": "414026da98bbb70b7e06cecb03e871a6ee2ac98530c6fb6788af4ceeeca14ec5"
+    }
+  ],
+  "facts": {
+    "hasAria": true,
+    "hasSkip": true
+  },
+  "claimCeiling": "keyboard/focus markup surfaces; full a11y audit broader"
+}

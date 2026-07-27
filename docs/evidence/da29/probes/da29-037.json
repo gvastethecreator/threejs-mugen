@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-037",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "ok": true,
   "entryPoints": [
     "docs/CONTROLLER_SUPPORT_REGISTRY.md",
@@ -15,6 +15,6 @@
   "cut": "Prove trigger group and short-circuit order. Depends on DA29-033 and DA29-036.",
   "digest": {
     "algorithm": "sha-256",
-    "value": "c28590e6acab41646a7d26501340c32c4a1ec86ac8c8adafa5bff98428822a9f"
+    "value": "0e8cccbe83e7fafef870be7d3a073c84ecc1a6002bda9279f5fb8514ebe65152"
   }
 }

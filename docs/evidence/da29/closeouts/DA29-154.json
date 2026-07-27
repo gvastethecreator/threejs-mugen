@@ -5,13 +5,13 @@
   "wave": 15,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Prove command priority, overlap, consumption, and State -1 order. Depends on DA29-152, DA29-153, and DA29-037.",
   "acceptance": "Overlapping commands and multiple eligible controllers show deterministic selection, trigger order, consumption policy, state/control gates, and first divergence diagnostics.",
   "risk": "Easy commands can shadow specific moves. Allows named overlap matrix only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "a380ca698f0a2e32270a93ecd1c6725c419a60a60aff6b900f60483df5ca9b6e"
+    "value": "1cd8f5f159300187e2a30a37172d84c29d561f286343842dd04ef031c1e411e5"
   }
 }

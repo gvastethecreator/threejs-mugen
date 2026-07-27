@@ -5,13 +5,13 @@
   "wave": 1,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Make one controller-support registry feed compiler, docs, and materializers. Depends on DA29-013. Systems: compiler table, support registry, coverage JSON.",
   "acceptance": "One versioned registry records parse, compile, execute, trace, and product states; generated docs match it byte-for-byte.",
   "risk": "A registry can overstate runtime depth. Allows registry consistency only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "372fbb55be1fdaf6e002bf870d39dbe0e2e915c4b9fe2dcc87eb526079af0a72"
+    "value": "fc86c50e825ad16cedd9e69f90ab8677e1706f12150919f5bb8860f99ad31f51"
   }
 }

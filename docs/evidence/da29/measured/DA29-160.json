@@ -1,0 +1,19 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-160",
+  "generatedAt": "2026-07-27T04:27:24.923Z",
+  "ok": true,
+  "kind": "G",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-160",
+  "anchors": [
+    {
+      "path": "src/app/App.ts",
+      "bytes": 668855,
+      "sha256": "579740ae3bf37514051b169e7512e9e0bc4dbdc8f5159030a60121e645877481"
+    }
+  ],
+  "facts": {
+    "hasModeSwitch": true
+  },
+  "claimCeiling": "mode switch surface present; full arcade/survival broader"
+}

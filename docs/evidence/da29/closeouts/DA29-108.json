@@ -5,13 +5,13 @@
   "wave": 10,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:17:51.655Z",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Make AssetReleasePolicy consume live project records. Depends on DA29-103…107.",
   "acceptance": "Product gate evaluates current revisions for permission, license, digests, transforms, visual/collision/playtest facts, and reports exact blockers.",
   "risk": "Materialized policy may be stale. Allows listed asset decisions only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "b0c581f6a584a6120632d88e530af97df14b0a4d32a845e2ffbc20b14af8c6a2"
+    "value": "f76c49447f1fc0c294c30192e3f5d21f103c643d093046c40839d2028443bbfd"
   }
 }

@@ -1,0 +1,24 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-132",
+  "generatedAt": "2026-07-27T04:27:24.882Z",
+  "ok": true,
+  "kind": "G",
+  "command": "pnpm check:boundaries",
+  "anchors": [
+    {
+      "path": "scripts/check_boundaries.cjs",
+      "bytes": 3813,
+      "sha256": "9d328184938ed77fe14d44d97d149a1461dced922549103caa69dcadb93bfa69"
+    },
+    {
+      "path": "src/engine/ModuleContracts.ts",
+      "bytes": 5673,
+      "sha256": "85a86de08f512bf62db2066345f5a662925a11fa29fc62543a12b70df71c2a70"
+    }
+  ],
+  "facts": {
+    "scriptBytes": 3813
+  },
+  "claimCeiling": "boundary required-roots command present"
+}

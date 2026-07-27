@@ -1,0 +1,24 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-166",
+  "generatedAt": "2026-07-27T04:27:24.952Z",
+  "ok": true,
+  "kind": "I",
+  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-166",
+  "anchors": [
+    {
+      "path": "src/game/render/FightScreenAnnouncementRenderer.ts",
+      "bytes": 73514,
+      "sha256": "6d7310d895ebd856c1c32eddaefae9f417739f1ad9f29a5d5ec6a2ea9207f62e"
+    },
+    {
+      "path": "src/app/App.ts",
+      "bytes": 668855,
+      "sha256": "579740ae3bf37514051b169e7512e9e0bc4dbdc8f5159030a60121e645877481"
+    }
+  ],
+  "facts": {
+    "announcementAndApp": true
+  },
+  "claimCeiling": "announcement + app surfaces for post-match flow"
+}

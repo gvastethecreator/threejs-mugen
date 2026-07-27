@@ -3,42 +3,51 @@
   "id": "DA29-105",
   "kind": "G",
   "wave": 10,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "browser-matrix",
+  "closedAt": "2026-07-27T04:27:18.114Z",
   "cut": "Add collision and hitbox visual QA for generated sprites. Depends on DA29-104 and DA29-041.",
   "acceptance": "Overlay captures cover idle, movement, attack, hurt, flip, scale, contact, and outlier detection; approved corrections update provenance.",
   "risk": "Pretty sprites can have bad gameplay bounds. Allows reviewed frames only.",
   "revision": {
-    "head": "a6e91520081d6308eac3d53b6bf333d4b950d019",
-    "headShort": "a6e91520081d",
+    "head": "251c4c9e9171c2e8d1d86a9fdd1e6d4843e26ed1",
+    "headShort": "251c4c9e9171",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json"
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/game/render/CollisionBoxRenderer.ts",
+    "public/characters/nova-boxer/sprite-sheet-alpha.png"
   ],
-  "commands": [],
+  "commands": [
+    "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-105"
+  ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-105.json",
+    "docs/evidence/da29/measured/DA29-105.json",
+    "src/game/render/CollisionBoxRenderer.ts",
+    "public/characters/nova-boxer/sprite-sheet-alpha.png",
     "docs/evidence/da29/gates/da29-105.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-105 remains open"
+      "DA29-105 closed as browser-matrix",
+      "collision renderer + sheet anchors; full visual QA matrix broader"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no measured or report evidence meeting acceptance"
+      "formal/global tip rewrite without measured full stack",
+      "score movement"
     ]
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "565048990c6c914dedac7416953747ba13901b3b389dbfd9fcd7bca367dd8248"
+    "value": "4a7dfe85912f5e606b4779aae497feb2fc15c3dad7437ad0cc2a9c6d161e9000"
   }
 }

@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-012",
-  "generatedAt": "2026-07-27T04:17:51.655Z",
+  "generatedAt": "2026-07-27T04:27:18.114Z",
   "ok": true,
   "entryPoints": [
     "scripts/qa_traces.cjs"
@@ -13,6 +13,6 @@
   "cut": "Generate a trace artifact manifest. Depends on DA29-011. Systems: trace presets and `qa:trace`.",
   "digest": {
     "algorithm": "sha-256",
-    "value": "0446e1c66c333b7c98d67946a718ee52340de5209138e873d365ceb003fcb8fc"
+    "value": "368a2804cf9c3cbd71de2c8fbb7164008d342efc71be718474a71f9509a9261e"
   }
 }
