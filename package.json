@@ -38,6 +38,8 @@
     "materialize:control-projections": "node scripts/materialize_control_projections.cjs",
     "materialize:da29-verdict-ledger": "node scripts/build_da29_verdict_ledger.cjs",
     "audit:da30-001-hold": "node scripts/audit_da30_001_hold_references.cjs",
+    "qa:browser:da30-024-play": "node scripts/qa_browser_gate_da30_024_play.cjs",
+    "qa:browser:da30-025-studio-inspect": "node scripts/qa_browser_gate_da30_025_studio_inspect.cjs",
     "materialize:sandbox-fightscreen": "pnpm exec vitest run src/tests/FightScreenFixture.test.ts -t \"materializes the repository public package\"",
     "audit:authority-references": "node scripts/audit_authority_references.cjs",
     "check:boundaries": "node scripts/check_boundaries.cjs",

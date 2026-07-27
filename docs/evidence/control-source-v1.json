@@ -8,10 +8,8 @@
     "watermarkAccepted": false,
     "note": "DA29-001…200 artifacts are candidate only until DA30 semantic revalidation"
   },
-  "closedThrough": "DA30-023",
+  "closedThrough": "DA30-025",
   "nextQueue": [
-    "DA30-024",
-    "DA30-025",
     "DA30-026",
     "DA30-027",
     "DA30-028",
@@ -26,10 +24,7 @@
     "DA30-037",
     "DA30-038",
     "DA30-039",
-    "DA30-040",
-    "DA30-041",
-    "DA30-042",
-    "DA30-043"
+    "DA30-040"
   ],
   "scores": {
     "sandbox": "65",

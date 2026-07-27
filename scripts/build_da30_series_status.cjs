@@ -36,6 +36,26 @@ const PROOF = {
     artifacts: ["docs/evidence/da30/da30-021-formal-gate.json", "docs/evidence/da30/da30-021-formal-gate.log"],
     note: "full formal/global gate green at measured HEAD",
   },
+  "DA30-024": {
+    status: "accepted",
+    artifacts: [
+      "docs/evidence/da30/da30-024-play-browser-gate.json",
+      "docs/evidence/da30/browser/play-desktop.png",
+      "docs/evidence/da30/browser/play-mobile.png",
+      "scripts/qa_browser_gate_da30_024_play.cjs",
+    ],
+    note: "Play route live browser journey desktop+mobile",
+  },
+  "DA30-025": {
+    status: "accepted",
+    artifacts: [
+      "docs/evidence/da30/da30-025-studio-inspect-browser-gate.json",
+      "docs/evidence/da30/browser/studio-workbench-desktop.png",
+      "docs/evidence/da30/browser/inspect-desktop.png",
+      "scripts/qa_browser_gate_da30_025_studio_inspect.cjs",
+    ],
+    note: "Studio workbench + Inspect browser journeys",
+  },
 
   // Waves 2–11: accepted only with module + evidence on disk + unit coverage
   "DA30-022": {
@@ -161,14 +181,6 @@ const PROOF = {
 
 // Partial: live browser/product gates not yet green
 const PARTIAL = {
-  "DA30-024": {
-    artifacts: ["src/mugen/da30/BrowserRouteFactWriter.ts", "docs/evidence/da30/da30-023-product-routes.json"],
-    note: "browser fact writer; live Play journey open",
-  },
-  "DA30-025": {
-    artifacts: ["src/mugen/da30/BrowserRouteFactWriter.ts"],
-    note: "Studio/Inspect fact writer; live journey open",
-  },
   "DA30-028": {
     artifacts: ["src/game/render/RendererInfoBaseline.ts", "src/tests/RendererInfoBaseline.test.ts"],
     note: "renderer resource baseline shape; live multi-route open",

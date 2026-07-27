@@ -1,0 +1,132 @@
+{
+  "schema": "Da30StudioInspectBrowserGate/v1",
+  "id": "DA30-025",
+  "generatedAt": "2026-07-27T07:04:50.302Z",
+  "headSha": "c47cfa4e8dfdf7768ed5f942ecd73d281f45fd69",
+  "ok": true,
+  "journeys": [
+    {
+      "id": "studio-workbench-desktop",
+      "url": "/?mode=studio&studio=workbench&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+      "viewport": "1440x900",
+      "screenshot": "docs/evidence/da30/browser/studio-workbench-desktop.png",
+      "screenshotSha256": "c025eba3ddc184d86f37423dbee7a89112751b0c4523d760075a99dc50c738cf",
+      "shellFound": true,
+      "modeOk": true,
+      "dataMode": "studio",
+      "hasSourceOrCapabilityText": true,
+      "saveAttempt": {
+        "attempted": true,
+        "labels": [
+          ">_\n          commands",
+          "playtest",
+          "focus",
+          "match\n          \n        \n        play\n        ready",
+          "inspect\n          \n        \n        import\n        empty",
+          "studio\n          \n        \n        build\n        5 issues",
+          "command\n            jump to any action\n          \n          31",
+          "01import\n          load source\n        \n        next\n        mugen zip/folder",
+          "02validate\n          validate files\n        \n        wait\n        3 fighters / 3 stages",
+          "03assets\n          map links\n        \n        wait\n        5 gates to review",
+          "04playtest\n          no trace yet\n        \n        wait\n        local match live",
+          "05compile\n          compile needed\n        \n        wait\n        manifest v0"
+        ],
+        "clicked": "Build\n                  ERR\n                \n                4 blocked\n                Exports, reports, local projects, and QA outputs"
+      },
+      "focusChecks": [
+        "active=body",
+        "mode=studio"
+      ],
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "unexpectedConsole": []
+    },
+    {
+      "id": "studio-workbench-mobile",
+      "url": "/?mode=studio&studio=workbench&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+      "viewport": "390x844",
+      "screenshot": "docs/evidence/da30/browser/studio-workbench-mobile.png",
+      "screenshotSha256": "72ea9ed9df41ba641d1cf3604c3e530e6f8b9996f9544e2a549b340d92157cc7",
+      "shellFound": true,
+      "modeOk": true,
+      "dataMode": "studio",
+      "hasSourceOrCapabilityText": true,
+      "saveAttempt": {
+        "attempted": true,
+        "labels": [
+          ">_\n          commands",
+          "playtest",
+          "focus",
+          "match\n          \n        \n        play\n        ready",
+          "inspect\n          \n        \n        import\n        empty",
+          "studio\n          \n        \n        build\n        5 issues",
+          "command\n            jump to any action\n          \n          31",
+          "01import\n          load source\n        \n        next\n        mugen zip/folder",
+          "02validate\n          validate files\n        \n        wait\n        3 fighters / 3 stages",
+          "03assets\n          map links\n        \n        wait\n        5 gates to review",
+          "04playtest\n          no trace yet\n        \n        wait\n        local match live",
+          "05compile\n          compile needed\n        \n        wait\n        manifest v0"
+        ],
+        "clicked": "Build\n                  ERR\n                \n                4 blocked\n                Exports, reports, local projects, and QA outputs"
+      },
+      "focusChecks": [
+        "active=body",
+        "mode=studio"
+      ],
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "unexpectedConsole": []
+    },
+    {
+      "id": "inspect-desktop",
+      "url": "/?mode=inspect&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+      "viewport": "1440x900",
+      "screenshot": "docs/evidence/da30/browser/inspect-desktop.png",
+      "screenshotSha256": "9f74b7255bedc03e16178f92cf9ddc67f335cd5975c5cb87994b52fde481f67e",
+      "shellFound": true,
+      "modeOk": true,
+      "dataMode": "inspect",
+      "hasSourceOrCapabilityText": true,
+      "saveAttempt": {
+        "attempted": false,
+        "labels": [
+          "match\n          \n        \n        play\n        ready",
+          "inspect\n          \n        \n        import\n        empty",
+          "studio\n          \n        \n        build\n        5 issues",
+          "command\n            jump to any action\n          \n          31",
+          "open zip\n        local package",
+          "folder\n        local source",
+          "workbench\n        studio state",
+          "report\n        compatibility",
+          "choose zip",
+          "choose folder",
+          "pause",
+          "1f"
+        ]
+      },
+      "focusChecks": [
+        "active=body",
+        "mode=inspect"
+      ],
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "unexpectedConsole": []
+    }
+  ],
+  "unexpectedErrors": [],
+  "claimCeiling": "named Studio workbench + Inspect routes only",
+  "claims": {
+    "allowed": [
+      "Studio/Inspect load, shell, mode attribute, capture at measured SHA"
+    ],
+    "blocked": [
+      "full authoring fidelity",
+      "transactional save product claim",
+      "score movement"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "8438af150e49df7bac36578a16d9132c882f87b7c65f470c61655fc78cfa8347"
+  }
+}

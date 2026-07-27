@@ -1,0 +1,232 @@
+{
+  "schema": "Da30PlayBrowserGate/v1",
+  "id": "DA30-024",
+  "generatedAt": "2026-07-27T07:03:15.050Z",
+  "startedAt": "2026-07-27T07:02:14.323Z",
+  "endedAt": "2026-07-27T07:03:15.050Z",
+  "headSha": "c47cfa4e8dfdf7768ed5f942ecd73d281f45fd69",
+  "ok": true,
+  "playUrl": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+  "packages": {
+    "p1": "nova-boxer",
+    "p2": "mira-volt",
+    "stage": "rooftop-dojo"
+  },
+  "journeys": [
+    {
+      "name": "play-desktop",
+      "viewport": "1440x900",
+      "screenshot": "docs/evidence/da30/browser/play-desktop.png",
+      "screenshotSha256": "cd4fbb62aa567aece83870f3d4056459fba33570b8527a652fbc6088c0cfacf9",
+      "screenshotBytes": 472996,
+      "shellFound": true,
+      "canvasOrStageFound": true,
+      "rendererPresent": true,
+      "focusChecks": [
+        "active=canvas.stage-canvas",
+        "canvasPresent=true",
+        "bodyFocusable=true"
+      ],
+      "hudSignals": {
+        "hasLifeOrMeter": true,
+        "hasMatchChrome": true,
+        "dataMode": "match",
+        "canvasCount": 1
+      },
+      "inputSent": [
+        "a:down",
+        "a:up",
+        "s:down",
+        "s:up",
+        "d:down",
+        "d:up",
+        "w:down",
+        "w:up",
+        "y:down",
+        "y:up",
+        "x:down",
+        "x:up",
+        "b:down",
+        "b:up",
+        " :down",
+        " :up",
+        "d:hold"
+      ],
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "unexpectedConsole": []
+    },
+    {
+      "name": "play-mobile",
+      "viewport": "390x844",
+      "screenshot": "docs/evidence/da30/browser/play-mobile.png",
+      "screenshotSha256": "a8e41459208a6ad5165c5155ab0a5fbb236593639987d0de29b0d7270100139b",
+      "screenshotBytes": 322759,
+      "shellFound": true,
+      "canvasOrStageFound": true,
+      "rendererPresent": true,
+      "focusChecks": [
+        "active=canvas.stage-canvas",
+        "canvasPresent=true",
+        "bodyFocusable=true"
+      ],
+      "hudSignals": {
+        "hasLifeOrMeter": true,
+        "hasMatchChrome": true,
+        "dataMode": "match",
+        "canvasCount": 1
+      },
+      "inputSent": [
+        "a:down",
+        "a:up",
+        "s:down",
+        "s:up",
+        "d:down",
+        "d:up",
+        "w:down",
+        "w:up",
+        "y:down",
+        "y:up",
+        "x:down",
+        "x:up",
+        "b:down",
+        "b:up",
+        " :down",
+        " :up",
+        "d:hold"
+      ],
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "unexpectedConsole": []
+    }
+  ],
+  "browserFacts": [
+    {
+      "route": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+      "queryState": {
+        "mode": "match",
+        "p1": "nova-boxer",
+        "p2": "mira-volt",
+        "stage": "rooftop-dojo"
+      },
+      "browser": "chromium",
+      "browserVersion": "149.0.7827.55",
+      "os": "win32",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "dpr": 1,
+      "input": "keyboard",
+      "commit": "c47cfa4e8dfdf7768ed5f942ecd73d281f45fd69",
+      "screenshotDigest": "cd4fbb62aa567aece83870f3d4056459fba33570b8527a652fbc6088c0cfacf9",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "focusChecks": [
+        "active=canvas.stage-canvas",
+        "canvasPresent=true",
+        "bodyFocusable=true"
+      ],
+      "result": "pass",
+      "journey": "play-desktop",
+      "hudSignals": {
+        "hasLifeOrMeter": true,
+        "hasMatchChrome": true,
+        "dataMode": "match",
+        "canvasCount": 1
+      },
+      "inputSent": [
+        "a:down",
+        "a:up",
+        "s:down",
+        "s:up",
+        "d:down",
+        "d:up",
+        "w:down",
+        "w:up",
+        "y:down",
+        "y:up",
+        "x:down",
+        "x:up",
+        "b:down",
+        "b:up",
+        " :down",
+        " :up",
+        "d:hold"
+      ],
+      "rendererPresent": true
+    },
+    {
+      "route": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+      "queryState": {
+        "mode": "match",
+        "p1": "nova-boxer",
+        "p2": "mira-volt",
+        "stage": "rooftop-dojo"
+      },
+      "browser": "chromium",
+      "browserVersion": "149.0.7827.55",
+      "os": "win32",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "dpr": 2,
+      "input": "keyboard",
+      "commit": "c47cfa4e8dfdf7768ed5f942ecd73d281f45fd69",
+      "screenshotDigest": "a8e41459208a6ad5165c5155ab0a5fbb236593639987d0de29b0d7270100139b",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "focusChecks": [
+        "active=canvas.stage-canvas",
+        "canvasPresent=true",
+        "bodyFocusable=true"
+      ],
+      "result": "pass",
+      "journey": "play-mobile",
+      "hudSignals": {
+        "hasLifeOrMeter": true,
+        "hasMatchChrome": true,
+        "dataMode": "match",
+        "canvasCount": 1
+      },
+      "inputSent": [
+        "a:down",
+        "a:up",
+        "s:down",
+        "s:up",
+        "d:down",
+        "d:up",
+        "w:down",
+        "w:up",
+        "y:down",
+        "y:up",
+        "x:down",
+        "x:up",
+        "b:down",
+        "b:up",
+        " :down",
+        " :up",
+        "d:hold"
+      ],
+      "rendererPresent": true
+    }
+  ],
+  "unexpectedErrors": [],
+  "claimCeiling": "one Play route (match nova vs mira rooftop) desktop+mobile only",
+  "claims": {
+    "allowed": [
+      "Play route load + shell/canvas + keyboard input path + HUD signals at measured SHA"
+    ],
+    "blocked": [
+      "broad usability matrix",
+      "Studio/Inspect (DA30-025)",
+      "score movement",
+      "formal tip rewrite without DA30-021"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "7c1460487b23e37d8f658666e67a5f45e29ad46c778d9fefaf5ba09fb271e7f6"
+  }
+}

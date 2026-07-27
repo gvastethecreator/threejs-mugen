@@ -4,7 +4,7 @@ Last updated: 2026-07-27
 Checked control source: [`docs/evidence/control-source-v1.json`](evidence/control-source-v1.json)  
 Projections: [`authority-selector-v1.json`](evidence/authority-selector-v1.json), [`roadmap-cursor-v1.json`](evidence/roadmap-cursor-v1.json)  
 Schema: `mugen-web-sandbox/control-source/v1` → authority-selector + roadmap-cursor  
-`closedThrough`: **DA30-023** · next head **DA30-024** (live browser Play journey)
+`closedThrough`: **DA30-025** · next head **DA30-026** (keyboard/gamepad/focus matrix)
 
 ## Audit hold (DA29)
 
@@ -46,12 +46,12 @@ Held: **65 / 36 / 20 / 10–12 / 6–8 / 25**
 
 ## Accepted ladder
 
-DA26…DA28-30 historical · **DA30-001…023** consecutive accepted (control recovery,
-semantic evidence, formal gate, warning policy, route inventory). Additional
+DA26…DA28-30 historical · **DA30-001…025** consecutive accepted (control recovery,
+semantic evidence, formal gate, Play + Studio/Inspect browser journeys). Additional
 non-consecutive accepted IDs exist (combat modules, Studio pure gates, ADRs).  
 **DA29-001…DA29-200 unadjudicated** (candidate only; pilot revalidation on 012/013/041/072).
 
 ## Next queue
 
-Head: **DA30-024** (live Play browser journey). Remainder: DA30-025…120 open or
-partial. Only `accepted` advances consecutive watermark (DA30-006).
+Head: **DA30-026** (keyboard/gamepad/focus/mobile matrix). Remainder: DA30-027…120
+open or partial. Only `accepted` advances consecutive watermark (DA30-006).

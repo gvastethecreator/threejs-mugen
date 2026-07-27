@@ -1,11 +1,9 @@
 {
   "schema": "Da30SeriesStatus/v1",
-  "generatedAt": "2026-07-27T06:37:06.198Z",
+  "generatedAt": "2026-07-27T07:05:01.714Z",
   "count": 120,
-  "closedThrough": "DA30-023",
+  "closedThrough": "DA30-025",
   "nextQueue": [
-    "DA30-024",
-    "DA30-025",
     "DA30-026",
     "DA30-027",
     "DA30-028",
@@ -102,8 +100,8 @@
     "DA30-119",
     "DA30-120"
   ],
-  "acceptedCount": 49,
-  "partialCount": 3,
+  "acceptedCount": 51,
+  "partialCount": 1,
   "openCount": 68,
   "records": [
     {
@@ -370,24 +368,29 @@
     {
       "id": "DA30-024",
       "wave": 2,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
-        "src/mugen/da30/BrowserRouteFactWriter.ts",
-        "docs/evidence/da30/da30-023-product-routes.json"
+        "docs/evidence/da30/da30-024-play-browser-gate.json",
+        "docs/evidence/da30/browser/play-desktop.png",
+        "docs/evidence/da30/browser/play-mobile.png",
+        "scripts/qa_browser_gate_da30_024_play.cjs"
       ],
-      "note": "browser fact writer; live Play journey open",
+      "note": "Play route live browser journey desktop+mobile",
       "kind": "recovery"
     },
     {
       "id": "DA30-025",
       "wave": 2,
-      "status": "partial",
-      "evidenceClass": "architecture-design",
+      "status": "accepted",
+      "evidenceClass": "gate-report",
       "artifacts": [
-        "src/mugen/da30/BrowserRouteFactWriter.ts"
+        "docs/evidence/da30/da30-025-studio-inspect-browser-gate.json",
+        "docs/evidence/da30/browser/studio-workbench-desktop.png",
+        "docs/evidence/da30/browser/inspect-desktop.png",
+        "scripts/qa_browser_gate_da30_025_studio_inspect.cjs"
       ],
-      "note": "Studio/Inspect fact writer; live journey open",
+      "note": "Studio workbench + Inspect browser journeys",
       "kind": "recovery"
     },
     {
@@ -1332,6 +1335,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "cb347b25c42f05c8fd8d8a0e49050a2295969ba0d9d083c0b0954417d2626586"
+    "value": "7cd9e1b6612e24da304e745c28a50fadff765ed8882f5cf63776ddee5bcbc0de"
   }
 }
