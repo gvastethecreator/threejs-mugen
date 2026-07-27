@@ -1,6 +1,17 @@
 ﻿# Progress Tracker
 
-## Post-DA28 expanded roadmap audit (docs-only, 2026-07-26)
+## DA29 completion audit and DA30 recovery plan (docs-only, 2026-07-27)
+
+- Audited HEAD `fd7a9b9a` and all DA29 closeout mechanisms. Rejected the
+  DA29-200 watermark: selector/cursor disagree; 61 R/A cuts close from template
+  shape; 123 I/G cuts use a generic non-empty-result check.
+- Preserved narrow candidate artifacts and historical pins. Current HEAD
+  formal/global and visual health remain unverified. Scores held.
+- Added 120 DA30 cuts in 12 waves. Proposed next queue: **DA30-001…010**.
+- Sources: [completion audit](research/2026-07-27-da29-completion-audit-and-da30-recovery.md)
+  and [DA30 roadmap](DA30_RECOVERY_ROADMAP.md).
+
+## Historical post-DA28 expanded roadmap audit (docs-only, 2026-07-26)
 
 - Audited current HEAD `119e6274` against separate formal/global, focal,
   visual/product, source, and backlog cursors.

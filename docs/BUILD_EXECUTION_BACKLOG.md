@@ -1,6 +1,24 @@
 # Build Execution Backlog
 
-## Entry 612 - Post-DA28 expanded roadmap audit
+## Entry 613 - DA29 completion audit and DA30 recovery roadmap
+
+Docs-only audit at HEAD `fd7a9b9a` rejects the generated DA29-200 watermark.
+DA29-001 failed selector/cursor agreement; 20 research and 41 architecture
+cuts closed on generated note shape; 123 I/G cuts closed through a generic
+non-empty-result check; representative Helper, product, reuse, CI, IKEMEN,
+export, CLI, and adjudication claims lack their required routes. Narrow DA29
+artifacts stay available for revalidation. Formal/global `a6e91520`, focal
+T406 `07ad9227`, visual/product T342 `1085badb`, and source pins 05b/4aa stay
+separate; current HEAD gate health is unverified; scores stay
+`65 / 36 / 20 / 10-12 / 6-8 / 25`.
+
+Adds `docs/DA30_RECOVERY_ROADMAP.md` with 120 tasks across 12 waves. Proposed
+next queue is DA30-001…010. Claim allowed: audit verdict and proposed roadmap
+at the named HEAD. Claims blocked: DA29 completion, current gate inheritance,
+score movement, parity, product/SDK readiness, CI, deployment, and release.
+Report: `docs/research/2026-07-27-da29-completion-audit-and-da30-recovery.md`.
+
+## Entry 612 - Post-DA28 expanded roadmap audit (historical)
 
 Docs-only audit at HEAD `119e6274` reconciles the drained DA28 series against
 live consumers, current evidence, product seams, source rules, and claim

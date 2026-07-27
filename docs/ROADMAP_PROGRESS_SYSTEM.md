@@ -1,10 +1,23 @@
 # Roadmap Progress System
 
-Last updated: 2026-07-26
+Last updated: 2026-07-27
 
 This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO port, Creator Studio, generated asset pipeline, and future modular engine. It is operational glue: it tells agents where truth lives, how a slice moves, and what must not be claimed.
 
-## Current control override: post-DA28 expanded audit
+## Current control override: DA29 audit hold and DA30 recovery
+
+DA29-001…200 are unadjudicated candidate artifacts. The generated selector's
+DA29-200 watermark is quarantined because selector/cursor, acceptance, and
+freshness checks failed the 2026-07-27 audit. Accepted historical work ends at
+DA28-30 at written ceilings. Current HEAD is `fd7a9b9a`; formal/global
+`a6e91520`, focal T406 `07ad9227`, visual/product T342 `1085badb`, and source
+05b/4aa remain separate. Current HEAD formal/global and visual health are
+unverified. Proposed next queue: DA30-001…010. Scores stay
+`65 / 36 / 20 / 10-12 / 6-8 / 25`. See the
+[completion audit](research/2026-07-27-da29-completion-audit-and-da30-recovery.md)
+and [DA30 roadmap](DA30_RECOVERY_ROADMAP.md).
+
+## Historical control override: post-DA28 expanded audit
 
 DA28-01…30 are closed at their written ceilings. Formal/global remains Entry
 604 at `32466c6e` (270/2850 tests, 663 traces, build, boundaries). Focal stays

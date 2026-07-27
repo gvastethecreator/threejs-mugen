@@ -1,28 +1,28 @@
 # Roadmap Navigation
 
-Last updated: 2026-07-26
+Last updated: 2026-07-27
 
 This is the fast map for agents and humans who need to know where to look, what to update, and when a task is allowed to claim progress.
 
 ## Current authority selector
 
-**Single source:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) ·
-[`docs/evidence/authority-selector-v1.json`](evidence/authority-selector-v1.json)
+**Audit-hold source:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) ·
+[completion audit](research/2026-07-27-da29-completion-audit-and-da30-recovery.md)
 
-- `closedThrough`: **DA28-30** (DA28 series drained)
-- formal/global: **`32466c6e`** (Entry 604 / DA28-02 gate)
+- accepted ladder: **DA28-30**; DA29 is unadjudicated
+- audit HEAD: **`fd7a9b9a`**; current formal/global and visual state unverified
+- historical formal/global: **`a6e91520`** with a summary-only DA29-002 record
 - focal: **T406** `07ad9227`
 - visual/product: **T342** `1085badb` (DA28 browser routes are bounded children)
 - source: epoch dual pins 05b / 4aa (juggle=`same`)
-- next queue: **empty**
-- Scores held (DA28-05 adjudication `movement=none`).
+- proposed next queue: **DA30-001…010**
+- scores held: `65 / 36 / 20 / 10-12 / 6-8 / 25`.
 
-Gate pin is `32466c6e`. Entry 611 closed DA28-11…30 and Entry 612 records this
-docs-only audit. **DA29-001** is the next proposed control cut. The generated
-queue remains empty until adoption. Plan sources:
-[expanded audit](research/2026-07-26-expanded-master-roadmap-audit-post-da28.md);
-[master roadmap](MASTER_REVIEW_ROADMAP.md);
-[DA28 drain](research/2026-07-26-da28-11-30-drain.md).
+The machine selector still says DA29-200 and is quarantined until DA30-003/004
+replace the split control source. Plan sources:
+[DA29 completion audit](research/2026-07-27-da29-completion-audit-and-da30-recovery.md),
+[DA30 recovery roadmap](DA30_RECOVERY_ROADMAP.md), and
+[DA29 master plan](MASTER_REVIEW_ROADMAP.md).
 
 The T287/T288 selectors below are **historical**.
 

@@ -1,6 +1,18 @@
 ﻿# Next Build Roadmap
 
-## Current next-build override - 2026-07-26
+## Current next-build override — DA30 recovery, 2026-07-27
+
+The DA29-200 watermark failed its completion audit. Treat all DA29 artifacts
+as candidate evidence and preserve their narrow facts. Start with
+**DA30-001…010**: audit hold, 200-row verdict ledger, one control source,
+selector/cursor reconciliation, closeout states, freshness, historical gate
+adjudication, doc compaction, and control gate. Then execute DA30-011…020
+semantic evidence repair. Scores stay held.
+
+See the [completion audit](research/2026-07-27-da29-completion-audit-and-da30-recovery.md)
+and [120-task DA30 roadmap](DA30_RECOVERY_ROADMAP.md).
+
+## Historical next-build override - 2026-07-26
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
 DA28-01…30 drained under claim ceilings (Entry 611). **nextQueue empty.**
@@ -8,7 +20,7 @@ The expanded roadmap audit is complete. **DA29-001** is the next control cut
 to adopt an approved batch; DA29-002 then re-gates current HEAD. Global pin
 remains `32466c6e` until that gate passes. See the
 [expanded audit](research/2026-07-26-expanded-master-roadmap-audit-post-da28.md)
-and [150-task master roadmap](MASTER_REVIEW_ROADMAP.md). The T287 queue below
+and [200-task master roadmap](MASTER_REVIEW_ROADMAP.md). The T287 queue below
 is historical.
 
 ## Historical implementation frontier - T287 / Entry 561 (2026-07-18)

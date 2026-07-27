@@ -1,8 +1,18 @@
 ﻿# Port Completion Scorecard
 
-## 2026-07-26 post-DA28 expanded audit - no score movement
+## 2026-07-27 DA29 completion audit - no score movement
 
-The audit introduces a 150-task plan and no executable evidence. Scores stay
+The audit rejects the generated DA29-200 watermark and grants no new runtime,
+product, visual, compatibility, SDK, or release credit. Useful DA29 artifacts
+remain candidates for clause-level revalidation. Scores stay
+`65 / 36 / 20 / 10-12 / 6-8 / 25`. DA30 adds 120 recovery and completion cuts;
+task counts and docs do not move scores. See the
+[completion audit](research/2026-07-27-da29-completion-audit-and-da30-recovery.md)
+and [DA30 roadmap](DA30_RECOVERY_ROADMAP.md).
+
+## Historical 2026-07-26 post-DA28 expanded audit - no score movement
+
+The audit introduced a 200-task plan and no executable evidence. Scores stayed
 `65 / 36 / 20 / 10-12 / 6-8 / 25`. DA28 remains closed at written ceilings;
 the generated queue remains empty until DA29-001. See the
 [expanded audit](research/2026-07-26-expanded-master-roadmap-audit-post-da28.md)

@@ -1,6 +1,17 @@
 ﻿# Roadmap Execution Board
 
-## Current expanded audit - DA29 proposed (ready for adoption, 2026-07-26)
+## Current recovery queue — DA30-001…010 (proposed, 2026-07-27)
+
+The DA29 completion audit rejects the generated DA29-200 watermark. The
+selector and roadmap cursor disagree; 61 R/A cuts closed from generated note
+shape and 123 I/G cuts closed through a generic non-empty-result rule. DA29
+artifacts remain candidate inputs. Scores stay held. Execute DA30 control and
+semantic-evidence repair before runtime work.
+
+Sources: [completion audit](research/2026-07-27-da29-completion-audit-and-da30-recovery.md)
+and [120-task DA30 roadmap](DA30_RECOVERY_ROADMAP.md).
+
+## Historical expanded audit - DA29 proposed (superseded, 2026-07-26)
 
 The post-DA28 audit defines 200 cuts in 20 waves. The generated selector still
 has an empty queue; **DA29-001** is the next control cut to adopt the first
@@ -8,69 +19,69 @@ approved batch. Authority and current-HEAD evidence come before a new runtime
 feature. Sources: [expanded audit](research/2026-07-26-expanded-master-roadmap-audit-post-da28.md)
 and [master roadmap](MASTER_REVIEW_ROADMAP.md).
 
-## Current DA28 series - drained (closed-bounded, 2026-07-26)
+## Historical DA28 series - drained (closed-bounded, 2026-07-26)
 
 DA28-01…30 closed. `nextQueue` empty. Report:
 `docs/research/2026-07-26-da28-11-30-drain.md`.
 
-## Current gamepad input - DA28-10 (closed-bounded, 2026-07-26)
+## Historical gamepad input - DA28-10 (closed-bounded, 2026-07-26)
 
 Gamepad API polling + App keyboard/gamepad merge.
 Report: `docs/research/2026-07-26-da28-10-gamepad-input.md`.
 
-## Current Turns browser matrix - DA28-09 (closed-bounded, 2026-07-26)
+## Historical Turns browser matrix - DA28-09 (closed-bounded, 2026-07-26)
 
 Unit multi-path matrix + desktop/mobile browser gate.
 Report: `docs/research/2026-07-26-da28-09-turns-browser-matrix.md`.
 
-## Current live Turns bridge - DA28-08 (closed-bounded, 2026-07-26)
+## Historical live Turns bridge - DA28-08 (closed-bounded, 2026-07-26)
 
 RuntimeTurnsTransaction receipts around live handoff.
 Report: `docs/research/2026-07-26-da28-08-live-turns-bridge.md`.
 
-## Current live plural oracle - DA28-07 (closed-bounded, 2026-07-26)
+## Historical live plural oracle - DA28-07 (closed-bounded, 2026-07-26)
 
 Live roots/helpers feed PluralCombatOracle with mutation integrity.
 Report: `docs/research/2026-07-26-da28-07-live-plural-oracle.md`.
 
-## Current live projectiles - DA28-06 (closed-bounded, 2026-07-26)
+## Historical live projectiles - DA28-06 (closed-bounded, 2026-07-26)
 
 GlobalProjectileSchedule ordered through EffectActorWorld combat/clash.
 Report: `docs/research/2026-07-26-da28-06-live-projectile-schedule.md`.
 
-## Current P0 evidence - DA28-03/04/05 (closed, 2026-07-26)
+## Historical P0 evidence - DA28-03/04/05 (closed, 2026-07-26)
 
 Browser subcursors, corpus v1.2, score adjudication hold.
 Report: `docs/research/2026-07-26-da28-p0-browser-corpus-scores.md`.
 
-## Current global re-gate - DA28-02 (closed, 2026-07-26)
+## Historical global re-gate - DA28-02 (closed, 2026-07-26)
 
 Pin `32466c6e`: typecheck, 270/2850 Vitest, 663 traces, build, boundaries.
 Report: `docs/research/2026-07-26-global-checkpoint-da28-02.md`.
 
-## Current DA28-01 adoption (control, 2026-07-26)
+## Historical DA28-01 adoption (control, 2026-07-26)
 
 DA28-02…30 were adopted into the selector nextQueue. Historical after DA28-02.
 Report:
 `docs/research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md`.
 
-## Current planning audit - proposed DA28 (docs-only, 2026-07-26)
+## Historical planning audit - proposed DA28 (docs-only, 2026-07-26)
 
 Entry 602 maps the remaining work after DA27-09 into DA28-01…30. Historical
 note: adoption landed in Entry 603.
 
-## Current Common.Fx + FightScreen - DA27-09 (closed-bounded, 2026-07-26)
+## Historical Common.Fx + FightScreen - DA27-09 (closed-bounded, 2026-07-26)
 
 Common.Fx/FightFX libraries + fake-`AudioContext` unit dispatch + browser
 package, shell, and gesture reachability. Nonzero browser output and heard
 hardware audio remain open.
 Report: `docs/research/2026-07-26-commonfx-fightscreen-da27-09.md`.
 
-## Current qa:smoke matrix - DA27-08 (closed, 2026-07-26)
+## Historical qa:smoke matrix - DA27-08 (closed, 2026-07-26)
 
 Full `pnpm qa:smoke` green. Report: `docs/research/2026-07-26-qa-smoke-da27-08.md`.
 
-## Current Turns browser HUD - DA27-07 (closed-bounded, 2026-07-26)
+## Historical Turns browser HUD - DA27-07 (closed-bounded, 2026-07-26)
 
 Team mode selector, Turns HUD journey, browser evidence.
 Report: `docs/research/2026-07-26-turns-browser-hud-da27-07.md`.
@@ -81,45 +92,45 @@ Pin `b7d23801`: typecheck, 268/2845 Vitest, 663 traces, build, boundaries.
 Superseded by DA28-02 pin `32466c6e`.
 Report: `docs/research/2026-07-26-global-checkpoint-da27-06.md`.
 
-## Current DA27 product wiring (closed-bounded, 2026-07-26)
+## Historical DA27 product wiring (closed-bounded, 2026-07-26)
 
 DA27-01…05 closed: snapshot/journal bridges, envelope facts, dual character
 legal journey, package analysis revision bridge. Report:
 `docs/research/2026-07-26-da27-product-wiring-batch.md`.
 
-## Current DA26 ladder - drained (closed-bounded, 2026-07-26)
+## Historical DA26 ladder - drained (closed-bounded, 2026-07-26)
 
 DA26-01…30 closed under claim ceilings. Report:
 `docs/research/2026-07-26-da26-ladder-drain.md`.
 
-## Current browser gate - DA26-13 (closed-bounded, 2026-07-26)
+## Historical browser gate - DA26-13 (closed-bounded, 2026-07-26)
 
 Desktop/tablet/mobile runtime shell with clean console, contact log, skip link,
 and screenshot SHA evidence. Report:
 `docs/research/2026-07-26-browser-gate-da26-13.md`.
 
-## Current studio/oracle/core batch (closed, 2026-07-26)
+## Historical studio/oracle/core batch (closed, 2026-07-26)
 
 Closed: DA26-18 PluralCombatOracle, DA26-24 StudioProjectSnapshot, DA26-25
 PackageAnalysisRevision diff, DA26-26 SourceWriteJournal, DA26-28 dual
 AssetReleasePolicy chains, DA26-30 CommonEvidenceFacts. Report:
 `docs/research/2026-07-26-studio-oracle-core-batch.md`.
 
-## Current runtime/control batch (closed, 2026-07-26)
+## Historical runtime/control batch (closed, 2026-07-26)
 
 Closed: DA26-15 Turns transaction, DA26-17 projectile schedule, DA26-22
 EvidenceSubject readiness, DA26-23 asset closure, DA26-27 scanner capability
 vector, DA26-29 BoundaryManifest. Report:
 `docs/research/2026-07-26-runtime-control-batch.md`.
 
-## Current input policy - DA26-14 bounded (closed, 2026-07-26)
+## Historical input policy - DA26-14 bounded (closed, 2026-07-26)
 
 MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
 deterministic equality. Browser Gamepad API remains open with DA26-13.
 
 Next queue head: **empty** (DA28 drained).
 
-## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
+## Historical FightScreen fixture - DA26-12 (closed, 2026-07-26)
 
 Sandbox FightScreen CC0 package ships as folder + ZIP with license, stable
 hashes, and loader evidence for round/KO/DKO/draw/time-over/win/skip/fade/
@@ -127,14 +138,14 @@ reset/fallback surfaces. Paths: `public/data/sandbox-fightscreen/`,
 `public/system/sandbox-fightscreen.zip`. Report:
 `docs/research/2026-07-26-sandbox-fightscreen-fixture.md`. Scores do not move.
 
-## Current authority selector - DA26-11 (closed, 2026-07-26)
+## Historical authority selector - DA26-11 (closed, 2026-07-26)
 
 Single live selector: [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md) and
 `docs/evidence/authority-selector-v1.json`. formal/global remain `7d9b15f8`.
 Docs and issues 01–07 point at the selector. Reference auditor:
 `pnpm audit:authority-references`.
 
-## Current source authority - DA26-10 Epoch/Manifest v1 (closed, 2026-07-26)
+## Historical source authority - DA26-10 Epoch/Manifest v1 (closed, 2026-07-26)
 
 SourceAuthorityEpoch/v1 records pins `05b7d98a` and `4aa0ba38` with per-family
 status. Juggle is `same` under pin-era equality; other families start
@@ -143,7 +154,7 @@ inheriting its claims. Artifact:
 `docs/evidence/source-authority-epoch-v1.json`. ADR 0054. Report:
 `docs/research/2026-07-26-source-authority-epoch-v1.md`. Scores do not move.
 
-## Current control cursor - DA26-09 RoadmapCursor/v1 (closed, 2026-07-26)
+## Historical control cursor - DA26-09 RoadmapCursor/v1 (closed, 2026-07-26)
 
 RoadmapCursor/v1 stores the seven control cursors with branch, scores, dirty
 exclusions, and per-cursor SHA/date/artifact/claimLimit. Freshness evaluation
@@ -151,7 +162,7 @@ distinguishes `current`, `stale`, and `mismatch`. formal/global pin DA26-08
 gate `7d9b15f8`. Artifact: `docs/evidence/roadmap-cursor-v1.json`. Report:
 `docs/research/2026-07-26-roadmap-cursor-v1.md`. Scores do not move.
 
-## Current global checkpoint - DA26-08 after T406 (closed, 2026-07-26)
+## Historical global checkpoint - DA26-08 after T406 (closed, 2026-07-26)
 
 Global gate green at **`7d9b15f8`**. TypeScript 7, full Vitest
 (**242 files / 2768 tests**), aggregate traces (**663/663**, 629 required /
@@ -162,7 +173,7 @@ replaces T383 as the latest global runtime cursor. Scores do not move. Browser
 smoke is N/A for this batch. Report:
 `docs/research/2026-07-26-global-checkpoint-after-t406.md`.
 
-## Current runtime compatibility board - T406 (closed, 2026-07-26)
+## Historical runtime compatibility board - T406 (closed, 2026-07-26)
 
 T406 closes in `07ad9227` (DA26-01..07 / Phase 0 after the post-T405 audit). The
 incomplete StateDef juggle write-set that landed inside `c62eabe5` is owned and

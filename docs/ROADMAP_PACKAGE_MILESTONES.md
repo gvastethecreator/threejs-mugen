@@ -1,6 +1,17 @@
 ﻿# Roadmap Package Milestones
 
-## Current package override - DA28 drained / DA29 proposed
+## Current package override - DA29 audit hold / DA30 recovery
+
+The DA29-200 watermark is unaccepted. Preserve DA29 modules and artifacts at
+their narrow demonstrated scope; revalidate them through DA30 clause manifests.
+Accepted historical package work ends at DA28-30 at written ceilings. Current
+HEAD `fd7a9b9a` has no fresh formal/global or visual gate. Scores stay held.
+Execute DA30-001…020 before package work, then use DA30-031…070 for playable,
+MUGEN-lite, and MUGEN milestones. See the
+[completion audit](research/2026-07-27-da29-completion-audit-and-da30-recovery.md)
+and [DA30 roadmap](DA30_RECOVERY_ROADMAP.md).
+
+## Historical package override - DA28 drained / DA29 proposed
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
 DA26, DA27, and DA28-01…30 are closed at named ceilings. Formal/global stays

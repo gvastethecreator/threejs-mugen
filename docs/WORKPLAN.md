@@ -1,6 +1,18 @@
 # Workplan
 
-## DA29 expanded master roadmap (proposed, 2026-07-26)
+## DA30 evidence recovery and completion program (proposed, 2026-07-27)
+
+The DA29-200 generated watermark is under audit hold. Its artifacts remain
+candidate inputs; they need clause-level revalidation. Execute DA30-001…010,
+then DA30-011…020 before any new broad runtime or product claim. The complete
+120-cut plan covers current gates, playable sandbox, MUGEN-lite/MUGEN, Studio,
+assets, scanner, IKEMEN, shared engine, CLI, CI, product quality, release, and
+independent review. Scores stay held.
+
+Contracts: `docs/DA30_RECOVERY_ROADMAP.md` and
+`docs/research/2026-07-27-da29-completion-audit-and-da30-recovery.md`.
+
+## Historical DA29 expanded master roadmap (proposed, 2026-07-26)
 
 The post-DA28 audit defines 200 cuts in 20 waves. The generated selector queue
 is still empty. Execute DA29-001 to adopt a bounded batch, then restore current

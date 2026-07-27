@@ -1,8 +1,19 @@
 # Delivery Roadmap
 
-Last updated: 2026-07-26
+Last updated: 2026-07-27
 
 ## Latest delivery authority checkpoint
+
+DA29 completion is under audit hold. The machine selector's DA29-200 watermark
+cannot authorize delivery because its cursor, acceptance, and revision gates
+failed review. Accepted historical work ends at DA28-30 at written ceilings.
+Current HEAD `fd7a9b9a` remains formally, visually, and product-wise unverified.
+DA30-001…020 repair control and semantic evidence; DA30-021…030 restore current
+delivery facts. Scores stay held. See the
+[completion audit](research/2026-07-27-da29-completion-audit-and-da30-recovery.md)
+and [DA30 roadmap](DA30_RECOVERY_ROADMAP.md).
+
+## Historical DA28 delivery authority checkpoint
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md)
 (`closedThrough` DA28-30). Formal/global delivery proof is **`32466c6e`**

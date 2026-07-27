@@ -1,6 +1,20 @@
 # Master Review Roadmap
 
-Last updated: 2026-07-26
+Last updated: 2026-07-27
+
+## 2026-07-27 completion-audit override
+
+The DA29 generated `closedThrough: DA29-200` watermark is rejected. The
+closeout system did not prove each task's acceptance, and the selector still
+disagrees with `roadmap-cursor-v1.json`. Treat DA29 artifacts as candidate
+inputs for semantic revalidation. Scores remain held.
+
+The current recovery plan is
+[`DA30_RECOVERY_ROADMAP.md`](DA30_RECOVERY_ROADMAP.md): 120 cuts across
+control, evidence, current gates, playable runtime, MUGEN, Studio, assets,
+scanner, IKEMEN, modularization, CI, CLI, accessibility, performance, release,
+and independent review. Start with DA30-001…010. Full audit:
+[`2026-07-27-da29-completion-audit-and-da30-recovery.md`](research/2026-07-27-da29-completion-audit-and-da30-recovery.md).
 
 This is the post-DA28 execution plan. It contains 200 small cuts in 20 system
 waves with explicit dependency links. DA26-DA28 remain closed at their written ceilings. A future
