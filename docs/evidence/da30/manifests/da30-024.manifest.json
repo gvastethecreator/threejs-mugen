@@ -1,0 +1,57 @@
+{
+  "schema": "TaskAcceptanceManifest/v1",
+  "taskId": "DA30-024",
+  "claimCeiling": "one Play route nova/mira/rooftop desktop+mobile with semantic actor deltas; scores held",
+  "clauses": [
+    {
+      "id": "route-shell-canvas",
+      "evidenceKind": "browser-route",
+      "producer": "scripts/qa_browser_gate_da30_024_play.cjs",
+      "assertion": "match route loads shell and canvas without unexpected console errors",
+      "expectedFailure": "missing canvas or page errors fail gate",
+      "revisionPolicy": "exact-sha",
+      "environment": "playwright-chromium",
+      "claim": "Play route loads at measured SHA"
+    },
+    {
+      "id": "movement-delta",
+      "evidenceKind": "browser-route",
+      "producer": "window.__MUGEN_WEB_SANDBOX__.qaProbe",
+      "assertion": "P1 actor world x/y changes after held movement input",
+      "expectedFailure": "zero displacement fails movement clause",
+      "revisionPolicy": "exact-sha",
+      "environment": "playwright-chromium",
+      "claim": "semantic movement observed on named route"
+    },
+    {
+      "id": "tick-advance",
+      "evidenceKind": "browser-route",
+      "producer": "qaProbe.tick",
+      "assertion": "match tick increases while playing after input window",
+      "expectedFailure": "static tick fails clause",
+      "revisionPolicy": "exact-sha",
+      "environment": "playwright-chromium",
+      "claim": "runtime advances during gate"
+    },
+    {
+      "id": "damage-or-explicit-miss",
+      "evidenceKind": "browser-route",
+      "producer": "qaProbe.life",
+      "assertion": "life delta recorded when contact lands; otherwise damageObserved=false without inventing hit",
+      "expectedFailure": "forging damage without life sample is invalid",
+      "revisionPolicy": "exact-sha",
+      "environment": "playwright-chromium",
+      "claim": "damage observed only with life samples"
+    },
+    {
+      "id": "reset-hook",
+      "evidenceKind": "browser-route",
+      "producer": "scripts/qa_browser_gate_da30_024_play.cjs",
+      "assertion": "reset/rematch control click recorded when present",
+      "expectedFailure": "missing control marks resetObserved false without fake pass",
+      "revisionPolicy": "any-fresh",
+      "environment": "playwright-chromium",
+      "claim": "reset hook observation only"
+    }
+  ]
+}

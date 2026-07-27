@@ -1,6 +1,6 @@
 {
   "schema": "Da30SeriesStatus/v1",
-  "generatedAt": "2026-07-27T14:03:12.441Z",
+  "generatedAt": "2026-07-27T14:27:28.195Z",
   "count": 120,
   "closedThrough": "DA30-120",
   "nextQueue": [],
@@ -240,9 +240,12 @@
       "evidenceClass": "gate-report",
       "artifacts": [
         "docs/evidence/da30/da30-021-formal-gate.json",
-        "docs/evidence/da30/da30-021-formal-gate.log"
+        "docs/evidence/da30/da30-021-formal-gate.log",
+        "docs/evidence/da30/formal-logs",
+        "docs/evidence/da30/manifests/da30-021.manifest.json",
+        "scripts/run_da30_021_formal_gate.cjs"
       ],
-      "note": "full formal/global gate green at measured HEAD",
+      "note": "formal/global required matrix + raw logs/counts clause repair",
       "kind": "recovery"
     },
     {
@@ -278,9 +281,10 @@
         "docs/evidence/da30/da30-024-play-browser-gate.json",
         "docs/evidence/da30/browser/play-desktop.png",
         "docs/evidence/da30/browser/play-mobile.png",
+        "docs/evidence/da30/manifests/da30-024.manifest.json",
         "scripts/qa_browser_gate_da30_024_play.cjs"
       ],
-      "note": "Play route live browser journey desktop+mobile",
+      "note": "Play semantic movement/damage/tick/reset via qaProbe",
       "kind": "recovery"
     },
     {
@@ -292,9 +296,10 @@
         "docs/evidence/da30/da30-025-studio-inspect-browser-gate.json",
         "docs/evidence/da30/browser/studio-workbench-desktop.png",
         "docs/evidence/da30/browser/inspect-desktop.png",
+        "docs/evidence/da30/manifests/da30-025.manifest.json",
         "scripts/qa_browser_gate_da30_025_studio_inspect.cjs"
       ],
-      "note": "Studio workbench + Inspect browser journeys",
+      "note": "Studio save/focus/geometry + Inspect package signals",
       "kind": "recovery"
     },
     {
@@ -1448,6 +1453,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "7841df601fc2710443ed135ac3ce68608ba9f09955656664b3853440fd361b20"
+    "value": "9c8679c3d4694e9ed419b3e4a9f46c424b7dc7bec7c5092b0ab74d4fc7a7da68"
   }
 }

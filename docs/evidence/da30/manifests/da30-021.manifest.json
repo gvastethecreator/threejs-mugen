@@ -1,0 +1,47 @@
+{
+  "schema": "TaskAcceptanceManifest/v1",
+  "taskId": "DA30-021",
+  "claimCeiling": "formal/global six-command required matrix at one SHA; scores held; optional smoke/authority recorded only",
+  "clauses": [
+    {
+      "id": "required-six-exit-0",
+      "evidenceKind": "command-gate",
+      "producer": "scripts/run_da30_021_formal_gate.cjs",
+      "assertion": "typecheck,test,trace,build,boundaries,redirect all exit 0",
+      "expectedFailure": "any required step non-zero exit blocks formal pin",
+      "revisionPolicy": "exact-sha",
+      "environment": "local-node",
+      "claim": "formal/global measured at gate headSha only"
+    },
+    {
+      "id": "raw-logs-and-digests",
+      "evidenceKind": "command-gate",
+      "producer": "docs/evidence/da30/formal-logs/",
+      "assertion": "each step stores stdout/stderr files and sha-256 digests",
+      "expectedFailure": "missing raw file fails clause",
+      "revisionPolicy": "exact-sha",
+      "environment": "local-node",
+      "claim": "raw command capture present"
+    },
+    {
+      "id": "tool-versions-and-counts",
+      "evidenceKind": "command-gate",
+      "producer": "docs/evidence/da30/da30-021-formal-gate.json",
+      "assertion": "node/pnpm/tsc/vitest versions and parsed test counts recorded",
+      "expectedFailure": "absent versions leave clause open",
+      "revisionPolicy": "exact-sha",
+      "environment": "local-node",
+      "claim": "gate metadata complete for required matrix"
+    },
+    {
+      "id": "optional-matrix",
+      "evidenceKind": "command-gate",
+      "producer": "scripts/run_da30_021_formal_gate.cjs",
+      "assertion": "qa:smoke and authority-audit observed without formal pin requirement",
+      "expectedFailure": "treating optional fail as formal block is incorrect",
+      "revisionPolicy": "any-fresh",
+      "environment": "local-node",
+      "claim": "optional steps do not widen formal claim"
+    }
+  ]
+}

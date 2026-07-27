@@ -35,7 +35,9 @@ function helperController(params: Record<string, string> = {}): MugenStateContro
     params,
     triggers: [],
     line: 1,
-  } as MugenStateController;
+    stateId: 0,
+    rawHeader: "[State 0, Helper]",
+  } as unknown as MugenStateController;
 }
 
 export type HelperJourneyResult = {

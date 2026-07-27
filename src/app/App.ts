@@ -13662,6 +13662,28 @@ export class App {
           tagPresentationHandoff(): void;
           resetTagPresentation(): void;
         };
+        /** Stable probe for browser gates (DA30-024/025 clause repair). */
+        qaProbe: () => {
+          mode: AppMode;
+          tick: number;
+          playing: boolean;
+          actors: Array<{
+            id: string;
+            label: string;
+            life: number;
+            power: number;
+            x: number;
+            y: number;
+            stateNo: number;
+            animNo: number;
+          }>;
+          round?: { number?: number; phase?: string; time?: number };
+          projectDirty: boolean;
+          projectStorageRevision?: number;
+          storedProjectCount: number;
+          focusTag: string;
+          studioTab: StudioTab;
+        };
       };
     };
     const studio = this.getStudioProjectSummary();
@@ -13731,6 +13753,39 @@ export class App {
             },
           }
         : {}),
+      qaProbe: () => {
+        const snap = this.getRenderableSnapshot();
+        const active = document.activeElement;
+        return {
+          mode: this.mode,
+          tick: snap.tick,
+          playing: snap.playing,
+          actors: (snap.actors ?? []).map((a) => ({
+            id: a.id,
+            label: a.label,
+            life: a.runtime.life,
+            power: a.runtime.power,
+            x: a.runtime.pos.x,
+            y: a.runtime.pos.y,
+            stateNo: a.runtime.stateNo,
+            animNo: a.runtime.animNo,
+          })),
+          round: snap.round
+            ? {
+                number: (snap.round as { number?: number }).number,
+                phase: (snap.round as { phase?: string }).phase,
+                time: (snap.round as { time?: number }).time,
+              }
+            : undefined,
+          projectDirty: this.projectDirty,
+          projectStorageRevision: this.projectStorageRevision,
+          storedProjectCount: this.storedProjects.length,
+          focusTag: active
+            ? `${active.tagName.toLowerCase()}${active.className ? `.${String(active.className).split(" ")[0]}` : ""}`
+            : "none",
+          studioTab: this.studioTab,
+        };
+      },
     };
   }
 

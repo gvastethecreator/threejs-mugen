@@ -1,0 +1,1 @@
+$ node scripts/check_redirected_target_dispatch_boundary.cjs

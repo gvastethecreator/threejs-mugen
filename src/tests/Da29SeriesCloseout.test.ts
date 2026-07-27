@@ -197,9 +197,10 @@ describe("DA29 series closeouts (honest)", () => {
     if (gate002?.status === "closed") {
       expect(gate002.measuredGate).toBe(true);
       expect(gate002.gateSha).toMatch(/^[a-f0-9]{7,40}$/);
-      // Formal pin may remain the historical measured gate SHA while DA30 advances the queue.
+      // Formal/global pins live on control-source (DA30-021+). They need not equal the DA29-002 gate SHA.
       expect(parsed.document?.cursors.formal.sha).toMatch(/^[a-f0-9]{7,40}$/);
-      expect(parsed.document?.cursors.global.sha).toBe(gate002.gateSha);
+      expect(parsed.document?.cursors.global.sha).toMatch(/^[a-f0-9]{7,40}$/);
+      expect(parsed.document?.cursors.formal.sha).toBe(parsed.document?.cursors.global.sha);
     }
 
     // DA29-072 must not close on synthetic seed metrics

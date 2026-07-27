@@ -1,0 +1,73 @@
+{
+  "schema": "Da30ClauseRepairReport/v1",
+  "id": "DA30-021-024-025-repair",
+  "generatedAt": "2026-07-27T14:27:00.000Z",
+  "formalHeadSha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
+  "scoresHeld": true,
+  "repairs": [
+    {
+      "taskId": "DA30-021",
+      "status": "repaired",
+      "schema": "Da30FormalGate/v2",
+      "evidence": "docs/evidence/da30/da30-021-formal-gate.json",
+      "manifest": "docs/evidence/da30/manifests/da30-021.manifest.json",
+      "clauses": {
+        "requiredSixExit0": true,
+        "rawLogsAndDigests": true,
+        "toolVersionsAndExactCounts": true,
+        "optionalMatrixRecorded": true
+      },
+      "notes": [
+        "testsPassed=3128 testFiles=295",
+        "optional qa-smoke and authority-audit observed non-zero; do not pin formal on them"
+      ]
+    },
+    {
+      "taskId": "DA30-024",
+      "status": "repaired",
+      "schema": "Da30PlayBrowserGate/v2",
+      "evidence": "docs/evidence/da30/da30-024-play-browser-gate.json",
+      "manifest": "docs/evidence/da30/manifests/da30-024.manifest.json",
+      "clauses": {
+        "movement": true,
+        "contactOrDamage": true,
+        "tickAdvance": true,
+        "resetHook": true,
+        "probeApi": true
+      },
+      "notes": [
+        "uses ArrowRight/z/x mapped keys",
+        "qaProbe samples actor life/pos before and after"
+      ]
+    },
+    {
+      "taskId": "DA30-025",
+      "status": "repaired",
+      "schema": "Da30StudioInspectBrowserGate/v2",
+      "evidence": "docs/evidence/da30/da30-025-studio-inspect-browser-gate.json",
+      "manifest": "docs/evidence/da30/manifests/da30-025.manifest.json",
+      "clauses": {
+        "projectSaveControl": true,
+        "projectSaveOrRetain": true,
+        "focusPath": true,
+        "inspectPackageSignals": true,
+        "mobileGeometryMeasured": true
+      },
+      "notes": [
+        "mobile geometry measured not polished",
+        "save-project-local control exercised"
+      ]
+    }
+  ],
+  "adjudicatedView": {
+    "machineWatermark": "DA30-120",
+    "disputedClauseDepth": "cleared for 021/024/025 named repair clauses",
+    "stillBlocked": [
+      "score movement",
+      "public release",
+      "optional smoke as formal",
+      "broad mobile UX polish",
+      "DA29-200 watermark"
+    ]
+  }
+}

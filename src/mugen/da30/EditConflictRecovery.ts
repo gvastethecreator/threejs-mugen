@@ -52,7 +52,7 @@ export function runConflictRoutes(): {
     "export-copy",
     "reopen",
   ];
-  const events = kinds.map((kind, i) =>
+  const events = kinds.map((kind) =>
     resolveConflict({
       kind,
       baseRev: 1,

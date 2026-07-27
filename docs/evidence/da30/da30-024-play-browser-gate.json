@@ -1,10 +1,11 @@
 {
-  "schema": "Da30PlayBrowserGate/v1",
+  "schema": "Da30PlayBrowserGate/v2",
   "id": "DA30-024",
-  "generatedAt": "2026-07-27T07:03:15.050Z",
-  "startedAt": "2026-07-27T07:02:14.323Z",
-  "endedAt": "2026-07-27T07:03:15.050Z",
-  "headSha": "c47cfa4e8dfdf7768ed5f942ecd73d281f45fd69",
+  "repair": "semantic-deltas-v1",
+  "generatedAt": "2026-07-27T14:17:43.391Z",
+  "startedAt": "2026-07-27T14:16:56.033Z",
+  "endedAt": "2026-07-27T14:17:43.391Z",
+  "headSha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
   "ok": true,
   "playUrl": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "packages": {
@@ -17,15 +18,16 @@
       "name": "play-desktop",
       "viewport": "1440x900",
       "screenshot": "docs/evidence/da30/browser/play-desktop.png",
-      "screenshotSha256": "cd4fbb62aa567aece83870f3d4056459fba33570b8527a652fbc6088c0cfacf9",
-      "screenshotBytes": 472996,
+      "screenshotSha256": "4b72bfa6f617773a98f9e18592f47f723807182ba04d12608c03fecb1b6ffc55",
+      "screenshotBytes": 468162,
       "shellFound": true,
       "canvasOrStageFound": true,
       "rendererPresent": true,
       "focusChecks": [
         "active=canvas.stage-canvas",
         "canvasPresent=true",
-        "bodyFocusable=true"
+        "probeReady=pending",
+        "probeAvailable=true"
       ],
       "hudSignals": {
         "hasLifeOrMeter": true,
@@ -34,24 +36,133 @@
         "canvasCount": 1
       },
       "inputSent": [
-        "a:down",
-        "a:up",
-        "s:down",
-        "s:up",
-        "d:down",
-        "d:up",
-        "w:down",
-        "w:up",
-        "y:down",
-        "y:up",
-        "x:down",
-        "x:up",
-        "b:down",
-        "b:up",
-        " :down",
-        " :up",
-        "d:hold"
+        "ArrowRight:hold-start",
+        "ArrowRight:hold-end",
+        "z:down",
+        "z:up",
+        "z:down",
+        "z:up",
+        "z:down",
+        "z:up",
+        "approach+x"
       ],
+      "semantic": {
+        "probeAvailable": true,
+        "movementObserved": true,
+        "damageObserved": true,
+        "tickAdvanced": true,
+        "resetObserved": true,
+        "resetControl": {
+          "found": true,
+          "label": "Reset\n        Restart round"
+        },
+        "before": {
+          "available": true,
+          "mode": "match",
+          "tick": 280,
+          "playing": true,
+          "actors": [
+            {
+              "id": "p1",
+              "label": "Nova Boxer",
+              "life": 1000,
+              "x": -125,
+              "y": 0,
+              "stateNo": 0
+            },
+            {
+              "id": "p2",
+              "label": "Mira Volt",
+              "life": 1000,
+              "x": 125,
+              "y": 0,
+              "stateNo": 0
+            }
+          ],
+          "round": {}
+        },
+        "afterMove": {
+          "available": true,
+          "mode": "match",
+          "tick": 349,
+          "playing": true,
+          "actors": [
+            {
+              "id": "p1",
+              "label": "Nova Boxer",
+              "life": 1000,
+              "x": -76.4,
+              "y": 0,
+              "stateNo": 0
+            },
+            {
+              "id": "p2",
+              "label": "Mira Volt",
+              "life": 1000,
+              "x": 125,
+              "y": 0,
+              "stateNo": 0
+            }
+          ],
+          "round": {}
+        },
+        "afterCombat": {
+          "available": true,
+          "mode": "match",
+          "tick": 576,
+          "playing": true,
+          "actors": [
+            {
+              "id": "p1",
+              "label": "Nova Boxer",
+              "life": 1000,
+              "x": 12.16,
+              "y": 0,
+              "stateNo": 0
+            },
+            {
+              "id": "p2",
+              "label": "Mira Volt",
+              "life": 928,
+              "x": 338.86,
+              "y": 0,
+              "stateNo": 0
+            }
+          ],
+          "round": {}
+        },
+        "afterReset": {
+          "available": true,
+          "mode": "match",
+          "tick": 32,
+          "playing": true,
+          "actors": [
+            {
+              "id": "p1",
+              "label": "Nova Boxer",
+              "life": 1000,
+              "x": -125,
+              "y": 0,
+              "stateNo": 0
+            },
+            {
+              "id": "p2",
+              "label": "Mira Volt",
+              "life": 1000,
+              "x": 125,
+              "y": 0,
+              "stateNo": 0
+            }
+          ],
+          "round": {}
+        },
+        "deltas": {
+          "p1Dx": 48.59999999999992,
+          "p1LifeDelta": 0,
+          "p2LifeDelta": -72,
+          "tickDelta": 296
+        }
+      },
       "consoleErrorCount": 0,
       "pageErrorCount": 0,
       "unexpectedConsole": []
@@ -60,15 +171,16 @@
       "name": "play-mobile",
       "viewport": "390x844",
       "screenshot": "docs/evidence/da30/browser/play-mobile.png",
-      "screenshotSha256": "a8e41459208a6ad5165c5155ab0a5fbb236593639987d0de29b0d7270100139b",
-      "screenshotBytes": 322759,
+      "screenshotSha256": "abbfa3e96aa32c8d14317583a5f831b5b86cf5845dfe45e29536e89206637b48",
+      "screenshotBytes": 322504,
       "shellFound": true,
       "canvasOrStageFound": true,
       "rendererPresent": true,
       "focusChecks": [
         "active=canvas.stage-canvas",
         "canvasPresent=true",
-        "bodyFocusable=true"
+        "probeReady=pending",
+        "probeAvailable=true"
       ],
       "hudSignals": {
         "hasLifeOrMeter": true,
@@ -77,156 +189,165 @@
         "canvasCount": 1
       },
       "inputSent": [
-        "a:down",
-        "a:up",
-        "s:down",
-        "s:up",
-        "d:down",
-        "d:up",
-        "w:down",
-        "w:up",
-        "y:down",
-        "y:up",
-        "x:down",
-        "x:up",
-        "b:down",
-        "b:up",
-        " :down",
-        " :up",
-        "d:hold"
+        "ArrowRight:hold-start",
+        "ArrowRight:hold-end",
+        "z:down",
+        "z:up",
+        "z:down",
+        "z:up",
+        "z:down",
+        "z:up",
+        "approach+x"
       ],
+      "semantic": {
+        "probeAvailable": true,
+        "movementObserved": true,
+        "damageObserved": false,
+        "tickAdvanced": true,
+        "resetObserved": true,
+        "resetControl": {
+          "found": true,
+          "label": "Reset\n        Restart round"
+        },
+        "before": {
+          "available": true,
+          "mode": "match",
+          "tick": 282,
+          "playing": true,
+          "actors": [
+            {
+              "id": "p1",
+              "label": "Nova Boxer",
+              "life": 1000,
+              "x": -125,
+              "y": 0,
+              "stateNo": 0
+            },
+            {
+              "id": "p2",
+              "label": "Mira Volt",
+              "life": 1000,
+              "x": 125,
+              "y": 0,
+              "stateNo": 0
+            }
+          ],
+          "round": {}
+        },
+        "afterMove": {
+          "available": true,
+          "mode": "match",
+          "tick": 349,
+          "playing": true,
+          "actors": [
+            {
+              "id": "p1",
+              "label": "Nova Boxer",
+              "life": 1000,
+              "x": -80.72,
+              "y": 0,
+              "stateNo": 0
+            },
+            {
+              "id": "p2",
+              "label": "Mira Volt",
+              "life": 1000,
+              "x": 125,
+              "y": 0,
+              "stateNo": 0
+            }
+          ],
+          "round": {}
+        },
+        "afterCombat": {
+          "available": true,
+          "mode": "match",
+          "tick": 574,
+          "playing": true,
+          "actors": [
+            {
+              "id": "p1",
+              "label": "Nova Boxer",
+              "life": 1000,
+              "x": 1.36,
+              "y": 0,
+              "stateNo": 0
+            },
+            {
+              "id": "p2",
+              "label": "Mira Volt",
+              "life": 1000,
+              "x": 125,
+              "y": 0,
+              "stateNo": 0
+            }
+          ],
+          "round": {}
+        },
+        "afterReset": {
+          "available": true,
+          "mode": "match",
+          "tick": 36,
+          "playing": true,
+          "actors": [
+            {
+              "id": "p1",
+              "label": "Nova Boxer",
+              "life": 1000,
+              "x": -125,
+              "y": 0,
+              "stateNo": 0
+            },
+            {
+              "id": "p2",
+              "label": "Mira Volt",
+              "life": 1000,
+              "x": 125,
+              "y": 0,
+              "stateNo": 0
+            }
+          ],
+          "round": {}
+        },
+        "deltas": {
+          "p1Dx": 44.27999999999993,
+          "p1LifeDelta": 0,
+          "p2LifeDelta": 0,
+          "tickDelta": 292
+        }
+      },
       "consoleErrorCount": 0,
       "pageErrorCount": 0,
       "unexpectedConsole": []
     }
   ],
-  "browserFacts": [
-    {
-      "route": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
-      "queryState": {
-        "mode": "match",
-        "p1": "nova-boxer",
-        "p2": "mira-volt",
-        "stage": "rooftop-dojo"
-      },
-      "browser": "chromium",
-      "browserVersion": "149.0.7827.55",
-      "os": "win32",
-      "viewport": {
-        "width": 1440,
-        "height": 900
-      },
-      "dpr": 1,
-      "input": "keyboard",
-      "commit": "c47cfa4e8dfdf7768ed5f942ecd73d281f45fd69",
-      "screenshotDigest": "cd4fbb62aa567aece83870f3d4056459fba33570b8527a652fbc6088c0cfacf9",
-      "consoleErrors": [],
-      "pageErrors": [],
-      "focusChecks": [
-        "active=canvas.stage-canvas",
-        "canvasPresent=true",
-        "bodyFocusable=true"
-      ],
-      "result": "pass",
-      "journey": "play-desktop",
-      "hudSignals": {
-        "hasLifeOrMeter": true,
-        "hasMatchChrome": true,
-        "dataMode": "match",
-        "canvasCount": 1
-      },
-      "inputSent": [
-        "a:down",
-        "a:up",
-        "s:down",
-        "s:up",
-        "d:down",
-        "d:up",
-        "w:down",
-        "w:up",
-        "y:down",
-        "y:up",
-        "x:down",
-        "x:up",
-        "b:down",
-        "b:up",
-        " :down",
-        " :up",
-        "d:hold"
-      ],
-      "rendererPresent": true
-    },
-    {
-      "route": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
-      "queryState": {
-        "mode": "match",
-        "p1": "nova-boxer",
-        "p2": "mira-volt",
-        "stage": "rooftop-dojo"
-      },
-      "browser": "chromium",
-      "browserVersion": "149.0.7827.55",
-      "os": "win32",
-      "viewport": {
-        "width": 390,
-        "height": 844
-      },
-      "dpr": 2,
-      "input": "keyboard",
-      "commit": "c47cfa4e8dfdf7768ed5f942ecd73d281f45fd69",
-      "screenshotDigest": "a8e41459208a6ad5165c5155ab0a5fbb236593639987d0de29b0d7270100139b",
-      "consoleErrors": [],
-      "pageErrors": [],
-      "focusChecks": [
-        "active=canvas.stage-canvas",
-        "canvasPresent=true",
-        "bodyFocusable=true"
-      ],
-      "result": "pass",
-      "journey": "play-mobile",
-      "hudSignals": {
-        "hasLifeOrMeter": true,
-        "hasMatchChrome": true,
-        "dataMode": "match",
-        "canvasCount": 1
-      },
-      "inputSent": [
-        "a:down",
-        "a:up",
-        "s:down",
-        "s:up",
-        "d:down",
-        "d:up",
-        "w:down",
-        "w:up",
-        "y:down",
-        "y:up",
-        "x:down",
-        "x:up",
-        "b:down",
-        "b:up",
-        " :down",
-        " :up",
-        "d:hold"
-      ],
-      "rendererPresent": true
-    }
-  ],
   "unexpectedErrors": [],
-  "claimCeiling": "one Play route (match nova vs mira rooftop) desktop+mobile only",
+  "claimCeiling": "one Play route nova/mira/rooftop desktop+mobile with semantic deltas only",
   "claims": {
     "allowed": [
-      "Play route load + shell/canvas + keyboard input path + HUD signals at measured SHA"
+      "route load shell/canvas",
+      "qaProbe actor life/pos samples",
+      "movement delta after hold",
+      "tick advance while playing",
+      "damage delta when observed",
+      "reset hook observation"
     ],
     "blocked": [
-      "broad usability matrix",
-      "Studio/Inspect (DA30-025)",
+      "broad usability",
+      "all stages/characters",
       "score movement",
-      "formal tip rewrite without DA30-021"
+      "physical gamepad"
     ]
+  },
+  "clauseStatus": {
+    "movement": true,
+    "contactOrDamage": true,
+    "tickAdvance": true,
+    "resetHook": true,
+    "probeApi": true
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "7c1460487b23e37d8f658666e67a5f45e29ad46c778d9fefaf5ba09fb271e7f6"
+    "value": "a21d34c269fc93b8a56ab6b8ddd941e774f2d78cf1f54211ae3f0b1719d5b582"
   }
 }

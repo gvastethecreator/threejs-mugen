@@ -75,7 +75,11 @@ export function runGuardPriorityMatrix() {
   });
 
   const fallen = canRuntimeHitFallenTarget
-    ? canRuntimeHitFallenTarget(actor({ stateType: "L" }) as never, "S, NA" as never)
+    ? canRuntimeHitFallenTarget({
+        attacker: actor({ assertSpecial: {} } as never),
+        defender: actor({ moveType: "H", hitFall: { falling: true } } as never),
+        hitFlag: "S, NA",
+      } as never)
     : true;
   cases.push({
     id: "fallen-hit-policy-callable",

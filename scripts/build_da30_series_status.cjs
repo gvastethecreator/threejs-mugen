@@ -33,8 +33,14 @@ const PROOF = {
   "DA30-020": { status: "accepted", artifacts: ["docs/evidence/da30/da30-020-pilot-revalidation.json"], note: "pilot revalidation 4 tasks" },
   "DA30-021": {
     status: "accepted",
-    artifacts: ["docs/evidence/da30/da30-021-formal-gate.json", "docs/evidence/da30/da30-021-formal-gate.log"],
-    note: "full formal/global gate green at measured HEAD",
+    artifacts: [
+      "docs/evidence/da30/da30-021-formal-gate.json",
+      "docs/evidence/da30/da30-021-formal-gate.log",
+      "docs/evidence/da30/formal-logs",
+      "docs/evidence/da30/manifests/da30-021.manifest.json",
+      "scripts/run_da30_021_formal_gate.cjs",
+    ],
+    note: "formal/global required matrix + raw logs/counts clause repair",
   },
   "DA30-024": {
     status: "accepted",
@@ -42,9 +48,10 @@ const PROOF = {
       "docs/evidence/da30/da30-024-play-browser-gate.json",
       "docs/evidence/da30/browser/play-desktop.png",
       "docs/evidence/da30/browser/play-mobile.png",
+      "docs/evidence/da30/manifests/da30-024.manifest.json",
       "scripts/qa_browser_gate_da30_024_play.cjs",
     ],
-    note: "Play route live browser journey desktop+mobile",
+    note: "Play semantic movement/damage/tick/reset via qaProbe",
   },
   "DA30-025": {
     status: "accepted",
@@ -52,9 +59,10 @@ const PROOF = {
       "docs/evidence/da30/da30-025-studio-inspect-browser-gate.json",
       "docs/evidence/da30/browser/studio-workbench-desktop.png",
       "docs/evidence/da30/browser/inspect-desktop.png",
+      "docs/evidence/da30/manifests/da30-025.manifest.json",
       "scripts/qa_browser_gate_da30_025_studio_inspect.cjs",
     ],
-    note: "Studio workbench + Inspect browser journeys",
+    note: "Studio save/focus/geometry + Inspect package signals",
   },
   "DA30-026": {
     status: "accepted",

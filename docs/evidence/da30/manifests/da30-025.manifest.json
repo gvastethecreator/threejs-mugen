@@ -1,0 +1,57 @@
+{
+  "schema": "TaskAcceptanceManifest/v1",
+  "taskId": "DA30-025",
+  "claimCeiling": "Studio workbench + Inspect shells with save control, focus path, and mobile geometry facts; scores held",
+  "clauses": [
+    {
+      "id": "studio-shell-mode",
+      "evidenceKind": "browser-route",
+      "producer": "scripts/qa_browser_gate_da30_025_studio_inspect.cjs",
+      "assertion": "studio mode attribute and shell present desktop+mobile",
+      "expectedFailure": "mode mismatch fails route",
+      "revisionPolicy": "exact-sha",
+      "environment": "playwright-chromium",
+      "claim": "Studio shell loads"
+    },
+    {
+      "id": "save-project-local",
+      "evidenceKind": "browser-route",
+      "producer": "data-action=save-project-local",
+      "assertion": "save control present and click updates stored project count/revision or dirty=false",
+      "expectedFailure": "absent save control fails studio clause",
+      "revisionPolicy": "exact-sha",
+      "environment": "playwright-chromium",
+      "claim": "local project save control exercised"
+    },
+    {
+      "id": "focus-tab-path",
+      "evidenceKind": "browser-route",
+      "producer": "keyboard Tab samples",
+      "assertion": "six Tab steps record active element tags",
+      "expectedFailure": "all focus stuck on body with no tab progress is weak",
+      "revisionPolicy": "exact-sha",
+      "environment": "playwright-chromium",
+      "claim": "keyboard focus path sampled"
+    },
+    {
+      "id": "inspect-package-signals",
+      "evidenceKind": "browser-route",
+      "producer": "inspect route body text + probe",
+      "assertion": "inspect route shows package/source/capability signals for repository characters",
+      "expectedFailure": "empty inspect shell fails",
+      "revisionPolicy": "exact-sha",
+      "environment": "playwright-chromium",
+      "claim": "Inspect package surface present"
+    },
+    {
+      "id": "mobile-geometry",
+      "evidenceKind": "browser-route",
+      "producer": "studio-workbench-mobile geometry",
+      "assertion": "records overflow, shell size, and clipped button sample",
+      "expectedFailure": "unmeasured mobile layout leaves clause open",
+      "revisionPolicy": "exact-sha",
+      "environment": "playwright-chromium",
+      "claim": "mobile geometry measured not polished"
+    }
+  ]
+}

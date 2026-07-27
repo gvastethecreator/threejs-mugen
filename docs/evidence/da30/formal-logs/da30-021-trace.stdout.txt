@@ -1,0 +1,5996 @@
+{
+  "status": "passed",
+  "outDir": "D:\\DEV\\threejs-mugen\\mugen-web-sandbox\\.scratch\\qa\\trace-gates",
+  "artifacts": [
+    {
+      "name": "native-hit",
+      "required": true,
+      "status": "passed",
+      "checksum": "2895c048",
+      "gates": [
+        "native-hit-golden"
+      ]
+    },
+    {
+      "name": "native-whiff",
+      "required": true,
+      "status": "passed",
+      "checksum": "c9e3bdda",
+      "gates": [
+        "native-whiff-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-x",
+      "required": true,
+      "status": "passed",
+      "checksum": "4837690b",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-basic-movement",
+      "required": true,
+      "status": "passed",
+      "checksum": "b0178d96",
+      "gates": [
+        "synthetic-imported-basic-movement-golden"
+      ]
+    },
+    {
+      "name": "mugen-lite-journey",
+      "required": true,
+      "status": "passed",
+      "checksum": "80881f71",
+      "gates": [
+        "mugen-lite-journey-golden"
+      ]
+    },
+    {
+      "name": "mugen-lite-journey-nokoslow",
+      "required": true,
+      "status": "passed",
+      "checksum": "3013c0b8",
+      "gates": [
+        "mugen-lite-journey-nokoslow-golden"
+      ]
+    },
+    {
+      "name": "mugen-lite-journey-palette",
+      "required": true,
+      "status": "passed",
+      "checksum": "1291909d",
+      "gates": [
+        "mugen-lite-journey-palette-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-movecontact",
+      "required": true,
+      "status": "passed",
+      "checksum": "2b67c311",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-movehit-counter",
+      "required": true,
+      "status": "passed",
+      "checksum": "5bb3228f",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-movehitreset",
+      "required": true,
+      "status": "passed",
+      "checksum": "bb94d8de",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-movehitpersist",
+      "required": true,
+      "status": "passed",
+      "checksum": "7468b1b5",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdefpersist",
+      "required": true,
+      "status": "passed",
+      "checksum": "b18fc66d",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitcount",
+      "required": true,
+      "status": "passed",
+      "checksum": "8259c7cf",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitcountpersist",
+      "required": true,
+      "status": "passed",
+      "checksum": "af61ef7b",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitadd",
+      "required": true,
+      "status": "passed",
+      "checksum": "a2981fd3",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-variable",
+      "required": true,
+      "status": "passed",
+      "checksum": "c45e7807",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-resource",
+      "required": true,
+      "status": "passed",
+      "checksum": "3e3f4d12",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-resource-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "6b288aaa",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-resource-state-entry-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "8f16046f",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-resource-auxiliary-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "a648c4ca",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-resource-auxiliary-state-entry-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "a1d71883",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-control-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "f4c849a7",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-power-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "b38b3b96",
+      "gates": [
+        "synthetic-imported-target-power-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-life-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "031112c6",
+      "gates": [
+        "synthetic-imported-target-life-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-auxiliary-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "dc02b9b1",
+      "gates": [
+        "synthetic-imported-target-auxiliary-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-auxiliary-state-entry-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "8eb20047",
+      "gates": [
+        "synthetic-imported-target-auxiliary-state-entry-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-power-state-entry-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "d371ebe2",
+      "gates": [
+        "synthetic-imported-target-power-state-entry-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-life-state-entry-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "4dbb0bef",
+      "gates": [
+        "synthetic-imported-target-life-state-entry-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-velocity-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "884a825e",
+      "gates": [
+        "synthetic-imported-target-velocity-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-velocity-state-entry-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "7fd6309f",
+      "gates": [
+        "synthetic-imported-target-velocity-state-entry-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-facing-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "967a5c22",
+      "gates": [
+        "synthetic-imported-target-facing-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-facing-state-entry-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "bd7499fb",
+      "gates": [
+        "synthetic-imported-target-facing-state-entry-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-drop-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "a6fedd48",
+      "gates": [
+        "synthetic-imported-target-drop-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-drop-state-entry-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "aac7e2e1",
+      "gates": [
+        "synthetic-imported-target-drop-state-entry-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-bind-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "1de632d1",
+      "gates": [
+        "synthetic-imported-target-bind-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-bind-state-entry-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "97746f80",
+      "gates": [
+        "synthetic-imported-target-bind-state-entry-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-state-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "8e0962fa",
+      "gates": [
+        "synthetic-imported-target-state-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-state-state-entry-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "9e0a9579",
+      "gates": [
+        "synthetic-imported-target-state-state-entry-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-bind-to-target-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "c21caaf9",
+      "gates": [
+        "synthetic-imported-bind-to-target-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-bind-to-target-state-entry-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "2e51f3af",
+      "gates": [
+        "synthetic-imported-bind-to-target-state-entry-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-control-state-entry-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "ccf351cc",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-redlife",
+      "required": true,
+      "status": "passed",
+      "checksum": "ada6896c",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-guardpoints",
+      "required": true,
+      "status": "passed",
+      "checksum": "b4942998",
+      "gates": [
+        "imported-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-dizzypoints",
+      "required": true,
+      "status": "passed",
+      "checksum": "00d3b052",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-dizzypoints-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "99c5abaf",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-dizzypoints-attack-scale",
+      "required": true,
+      "status": "passed",
+      "checksum": "6c29d6b9",
+      "gates": [
+        "synthetic-imported-dizzypoints-attack-scale-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-dizzy-state",
+      "required": true,
+      "status": "passed",
+      "checksum": "3f9d8787",
+      "gates": [
+        "synthetic-imported-dizzy-state-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-dizzypoints-suppression",
+      "required": true,
+      "status": "passed",
+      "checksum": "29e75f2a",
+      "gates": [
+        "synthetic-imported-dizzypoints-suppression-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-control",
+      "required": true,
+      "status": "passed",
+      "checksum": "0d7d7547",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-control-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "8e25d607",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-lifeadd-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "55250057",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-resourceset-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "99602d75",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-animation",
+      "required": true,
+      "status": "passed",
+      "checksum": "2db8fe79",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-changeanim2-elem",
+      "required": true,
+      "status": "passed",
+      "checksum": "9bf805df",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-animtime",
+      "required": true,
+      "status": "passed",
+      "checksum": "9bb21b21",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-animelemtime",
+      "required": true,
+      "status": "passed",
+      "checksum": "cf989498",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-animelem",
+      "required": true,
+      "status": "passed",
+      "checksum": "25fd59c1",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-animelem-offset",
+      "required": true,
+      "status": "passed",
+      "checksum": "ebaabb67",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-edge-distance",
+      "required": true,
+      "status": "passed",
+      "checksum": "785de452",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-sound",
+      "required": true,
+      "status": "passed",
+      "checksum": "d68ffc6d",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-sound-dynamic-pan",
+      "required": true,
+      "status": "passed",
+      "checksum": "01de3b5f",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-sound-dynamic-value",
+      "required": true,
+      "status": "passed",
+      "checksum": "4398b952",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-noop",
+      "required": true,
+      "status": "passed",
+      "checksum": "e1774f01",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-envshake",
+      "required": true,
+      "status": "passed",
+      "checksum": "34d509b3",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-receiveddamage",
+      "required": true,
+      "status": "passed",
+      "checksum": "a779f257",
+      "gates": [
+        "synthetic-imported-receiveddamage-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdefattr",
+      "required": true,
+      "status": "passed",
+      "checksum": "a87ceb95",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-prevstateno",
+      "required": true,
+      "status": "passed",
+      "checksum": "7906b991",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-prevmovetype",
+      "required": true,
+      "status": "passed",
+      "checksum": "c1eec95b",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-prevanim",
+      "required": true,
+      "status": "passed",
+      "checksum": "380024e1",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-prevstatetype",
+      "required": true,
+      "status": "passed",
+      "checksum": "eaa1aa95",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-enemynear",
+      "required": true,
+      "status": "passed",
+      "checksum": "69eeacce",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-enemy",
+      "required": true,
+      "status": "passed",
+      "checksum": "a9972bc2",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-playerid",
+      "required": true,
+      "status": "passed",
+      "checksum": "c4e9f1db",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-playerid-root-roster",
+      "required": true,
+      "status": "passed",
+      "checksum": "9104c7e6",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-enemynear-index",
+      "required": true,
+      "status": "passed",
+      "checksum": "b97e2eda",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-p2metrics",
+      "required": true,
+      "status": "passed",
+      "checksum": "4e114ddd",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-teamside",
+      "required": true,
+      "status": "passed",
+      "checksum": "f55695b7",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-p2-state-context",
+      "required": true,
+      "status": "passed",
+      "checksum": "caf32557",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-p2-distance",
+      "required": true,
+      "status": "passed",
+      "checksum": "2c584be0",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-owner-metrics",
+      "required": true,
+      "status": "passed",
+      "checksum": "1a61aaeb",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-identity",
+      "required": true,
+      "status": "passed",
+      "checksum": "c9be5cf1",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-selfstatenoexist",
+      "required": true,
+      "status": "passed",
+      "checksum": "f012f577",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-selfanimexist",
+      "required": true,
+      "status": "passed",
+      "checksum": "99930032",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-selfcommand",
+      "required": true,
+      "status": "passed",
+      "checksum": "b181be64",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-stagetime",
+      "required": true,
+      "status": "passed",
+      "checksum": "10e22dd0",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gametime",
+      "required": true,
+      "status": "passed",
+      "checksum": "bab573f3",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gamespace",
+      "required": true,
+      "status": "passed",
+      "checksum": "b6f248ab",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-screenspace",
+      "required": true,
+      "status": "passed",
+      "checksum": "5330bacd",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-config-gamespace",
+      "required": true,
+      "status": "passed",
+      "checksum": "2f3c0a63",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-const-coordinate",
+      "required": true,
+      "status": "passed",
+      "checksum": "ea879c1b",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-const-controller-param",
+      "required": true,
+      "status": "passed",
+      "checksum": "5ec7584a",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-state-context",
+      "required": true,
+      "status": "passed",
+      "checksum": "cb9c3d1e",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-alive",
+      "required": true,
+      "status": "passed",
+      "checksum": "fb2a77ae",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-round-trigger",
+      "required": true,
+      "status": "passed",
+      "checksum": "f0e8ef49",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-round-ko",
+      "required": true,
+      "status": "passed",
+      "checksum": "5c62ab37",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-team-round-handoff",
+      "required": true,
+      "status": "passed",
+      "checksum": "cf5babc8",
+      "gates": [
+        "synthetic-imported-team-round-handoff-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-team-resource-share",
+      "required": true,
+      "status": "passed",
+      "checksum": "bcacf4c7",
+      "gates": [
+        "synthetic-imported-team-resource-shared-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-team-resource-local",
+      "required": true,
+      "status": "passed",
+      "checksum": "41acfd77",
+      "gates": [
+        "synthetic-imported-team-resource-local-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-team-red-life-share",
+      "required": true,
+      "status": "passed",
+      "checksum": "b8f9bb1c",
+      "gates": [
+        "synthetic-imported-team-red-life-shared-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-team-red-life-local",
+      "required": true,
+      "status": "passed",
+      "checksum": "0a0d618e",
+      "gates": [
+        "synthetic-imported-team-red-life-local-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-team-red-life-helper",
+      "required": true,
+      "status": "passed",
+      "checksum": "3730eb50",
+      "gates": [
+        "synthetic-imported-team-red-life-helper-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-red-life-round-reset",
+      "required": true,
+      "status": "passed",
+      "checksum": "a3efe6d3",
+      "gates": [
+        "synthetic-imported-red-life-round-reset-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-match-outcome-state-5900",
+      "required": true,
+      "status": "passed",
+      "checksum": "1b180ad7",
+      "gates": [
+        "synthetic-imported-match-outcome-state-5900-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-round-context-sequence",
+      "required": true,
+      "status": "passed",
+      "checksum": "02c903a5",
+      "gates": [
+        "synthetic-imported-round-context-sequence-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-team-resource-superpause",
+      "required": true,
+      "status": "passed",
+      "checksum": "31f427d5",
+      "gates": [
+        "synthetic-imported-team-resource-superpause-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-team-resource-target",
+      "required": true,
+      "status": "passed",
+      "checksum": "6deea107",
+      "gates": [
+        "synthetic-imported-team-resource-target-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-round-nokoslow",
+      "required": true,
+      "status": "passed",
+      "checksum": "7cf67616",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-round-timeover",
+      "required": true,
+      "status": "passed",
+      "checksum": "54ce1d67",
+      "gates": [
+        "synthetic-imported-round-timeover-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-match-context",
+      "required": true,
+      "status": "passed",
+      "checksum": "ebc7dfb1",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-resource-max",
+      "required": true,
+      "status": "passed",
+      "checksum": "8392b34f",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-numtarget",
+      "required": true,
+      "status": "passed",
+      "checksum": "a6771e81",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-numtarget",
+      "required": true,
+      "status": "passed",
+      "checksum": "72934d69",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-target-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "385f6edb",
+      "gates": [
+        "synthetic-imported-default-target-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-bare-target-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "507d8874",
+      "gates": [
+        "synthetic-imported-bare-target-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-numhelper",
+      "required": true,
+      "status": "passed",
+      "checksum": "31acdab6",
+      "gates": [
+        "synthetic-imported-numhelper-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-numproj",
+      "required": true,
+      "status": "passed",
+      "checksum": "bde13db2",
+      "gates": [
+        "synthetic-imported-numproj-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-numexplod",
+      "required": true,
+      "status": "passed",
+      "checksum": "37cf1554",
+      "gates": [
+        "synthetic-imported-numexplod-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-removeexplod",
+      "required": true,
+      "status": "passed",
+      "checksum": "2387da19",
+      "gates": [
+        "synthetic-imported-removeexplod-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-reject",
+      "required": true,
+      "status": "passed",
+      "checksum": "ce8f6252",
+      "gates": [
+        "synthetic-imported-reject-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitby-allow",
+      "required": true,
+      "status": "passed",
+      "checksum": "701857b7",
+      "gates": [
+        "synthetic-imported-hitby-allow-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitby-reject",
+      "required": true,
+      "status": "passed",
+      "checksum": "808c6efe",
+      "gates": [
+        "synthetic-imported-hitby-reject-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitoverride",
+      "required": true,
+      "status": "passed",
+      "checksum": "d758803c",
+      "gates": [
+        "synthetic-imported-hitoverride-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitoverride-slot-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "be789c26",
+      "gates": [
+        "synthetic-imported-hitoverride-slot-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitoverride-guardflag-filter",
+      "required": true,
+      "status": "passed",
+      "checksum": "61c77bb4",
+      "gates": [
+        "synthetic-imported-hitoverride-guardflag-filter-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitoverride-forceair-forceguard-keepstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "dc8dc8af",
+      "gates": [
+        "synthetic-imported-hitoverride-forceair-forceguard-keepstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "6e0a5ff4",
+      "gates": [
+        "synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitoverride-p2stateno-miss",
+      "required": true,
+      "status": "passed",
+      "checksum": "bdd7836e",
+      "gates": [
+        "synthetic-imported-hitoverride-p2stateno-miss-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitoverride-p2getp1state-zero-miss",
+      "required": true,
+      "status": "passed",
+      "checksum": "3b090144",
+      "gates": [
+        "synthetic-imported-hitoverride-p2getp1state-zero-miss-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitoverride-missonoverride-zero",
+      "required": true,
+      "status": "passed",
+      "checksum": "926b0329",
+      "gates": [
+        "synthetic-imported-hitoverride-missonoverride-zero-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitoverride-missonoverride-zero-forceair-forceguard-keepstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "ee693a17",
+      "gates": [
+        "synthetic-imported-hitoverride-missonoverride-zero-forceair-forceguard-keepstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitoverride-missonoverride-default-forceair-forceguard-keepstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "749ef52e",
+      "gates": [
+        "synthetic-imported-hitoverride-missonoverride-default-forceair-forceguard-keepstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitoverride-missonoverride-default-guardflag-filter",
+      "required": true,
+      "status": "passed",
+      "checksum": "b4241977",
+      "gates": [
+        "synthetic-imported-hitoverride-missonoverride-default-guardflag-filter-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitoverride-missonoverride-zero-slot-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "88678ebc",
+      "gates": [
+        "synthetic-imported-hitoverride-missonoverride-zero-slot-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitoverride-missonoverride-zero-guardflag-filter",
+      "required": true,
+      "status": "passed",
+      "checksum": "d250b3de",
+      "gates": [
+        "synthetic-imported-hitoverride-missonoverride-zero-guardflag-filter-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitoverride-missonoverride-one",
+      "required": true,
+      "status": "passed",
+      "checksum": "62e98a87",
+      "gates": [
+        "synthetic-imported-hitoverride-missonoverride-one-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-hitoverride-p2stateno",
+      "required": true,
+      "status": "passed",
+      "checksum": "077cbca6",
+      "gates": [
+        "synthetic-imported-projectile-hitoverride-p2stateno-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-hitoverride-slot-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "b4ce88e2",
+      "gates": [
+        "synthetic-imported-projectile-hitoverride-slot-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-hitoverride-missonoverride-zero-slot-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "3661fa76",
+      "gates": [
+        "synthetic-imported-projectile-hitoverride-missonoverride-zero-slot-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-hitoverride-missonoverride-zero-guardflag-filter",
+      "required": true,
+      "status": "passed",
+      "checksum": "099207d1",
+      "gates": [
+        "synthetic-imported-projectile-hitoverride-missonoverride-zero-guardflag-filter-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-hitoverride-guardflag-filter",
+      "required": true,
+      "status": "passed",
+      "checksum": "478a2e8f",
+      "gates": [
+        "synthetic-imported-projectile-hitoverride-guardflag-filter-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-hitoverride-forceair-forceguard-keepstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "a39e4c57",
+      "gates": [
+        "synthetic-imported-projectile-hitoverride-forceair-forceguard-keepstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-hitoverride-guardflag-forceair-forceguard-keepstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "e77a3d5d",
+      "gates": [
+        "synthetic-imported-projectile-hitoverride-guardflag-forceair-forceguard-keepstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-hitoverride-missonoverride-zero",
+      "required": true,
+      "status": "passed",
+      "checksum": "41d5e8df",
+      "gates": [
+        "synthetic-imported-projectile-hitoverride-missonoverride-zero-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "c6c8daa1",
+      "gates": [
+        "synthetic-imported-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "417cd4f7",
+      "gates": [
+        "synthetic-imported-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter",
+      "required": true,
+      "status": "passed",
+      "checksum": "ff1c6448",
+      "gates": [
+        "synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-hitoverride-missonoverride-one",
+      "required": true,
+      "status": "passed",
+      "checksum": "4f83c092",
+      "gates": [
+        "synthetic-imported-projectile-hitoverride-missonoverride-one-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-reversal",
+      "required": true,
+      "status": "passed",
+      "checksum": "435173d6",
+      "gates": [
+        "synthetic-imported-helper-projectile-reversal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-reversal",
+      "required": true,
+      "status": "passed",
+      "checksum": "db1b82b8",
+      "gates": [
+        "synthetic-imported-projectile-reversal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-reversal",
+      "required": true,
+      "status": "passed",
+      "checksum": "aeb49b5a",
+      "gates": [
+        "synthetic-imported-custom-state-reversal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-guard-reversal",
+      "required": true,
+      "status": "passed",
+      "checksum": "db743e07",
+      "gates": [
+        "synthetic-imported-guard-reversal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-walkback-guard-reversal",
+      "required": true,
+      "status": "passed",
+      "checksum": "fc0e9ce5",
+      "gates": [
+        "synthetic-imported-walkback-guard-reversal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-crouch-guard-reversal",
+      "required": true,
+      "status": "passed",
+      "checksum": "f8b2eca6",
+      "gates": [
+        "synthetic-imported-crouch-guard-reversal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-air-guard-reversal",
+      "required": true,
+      "status": "passed",
+      "checksum": "9ef73813",
+      "gates": [
+        "synthetic-imported-air-guard-reversal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-reversal",
+      "required": true,
+      "status": "passed",
+      "checksum": "68aa04e5",
+      "gates": [
+        "synthetic-imported-reversal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-damage-scale",
+      "required": true,
+      "status": "passed",
+      "checksum": "30059518",
+      "gates": [
+        "synthetic-imported-damage-scale-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-damage-scale-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "1d75f8e6",
+      "gates": [
+        "synthetic-imported-damage-scale-dynamic-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-data-damage-scale",
+      "required": true,
+      "status": "passed",
+      "checksum": "79cf29d2",
+      "gates": [
+        "synthetic-imported-data-damage-scale-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-fall-defence-up",
+      "required": true,
+      "status": "passed",
+      "checksum": "5ff91c2b",
+      "gates": [
+        "synthetic-imported-fall-defence-up-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-fall-defence-up",
+      "required": true,
+      "status": "passed",
+      "checksum": "b809881d",
+      "gates": [
+        "synthetic-imported-gethitvar-fall-defence-up-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-fall-recover",
+      "required": true,
+      "status": "passed",
+      "checksum": "d6604365",
+      "gates": [
+        "synthetic-imported-gethitvar-fall-recover-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-fall-metadata",
+      "required": true,
+      "status": "passed",
+      "checksum": "05e1acf3",
+      "gates": [
+        "synthetic-imported-gethitvar-fall-metadata-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-fallcount",
+      "required": true,
+      "status": "passed",
+      "checksum": "f49eb315",
+      "gates": [
+        "synthetic-imported-gethitvar-fallcount-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-fall-envshake",
+      "required": true,
+      "status": "passed",
+      "checksum": "58f1eda7",
+      "gates": [
+        "synthetic-imported-gethitvar-fall-envshake-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-down-recover",
+      "required": true,
+      "status": "passed",
+      "checksum": "96421421",
+      "gates": [
+        "synthetic-imported-gethitvar-down-recover-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-hittime",
+      "required": true,
+      "status": "passed",
+      "checksum": "53ab85c4",
+      "gates": [
+        "synthetic-imported-gethitvar-hittime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-hitshaketime",
+      "required": true,
+      "status": "passed",
+      "checksum": "778b0b78",
+      "gates": [
+        "synthetic-imported-gethitvar-hitshaketime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-damage",
+      "required": true,
+      "status": "passed",
+      "checksum": "34849aea",
+      "gates": [
+        "synthetic-imported-gethitvar-damage-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-kill",
+      "required": true,
+      "status": "passed",
+      "checksum": "0124fe10",
+      "gates": [
+        "synthetic-imported-gethitvar-kill-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-guard-kill",
+      "required": true,
+      "status": "passed",
+      "checksum": "4c571d4f",
+      "gates": [
+        "synthetic-imported-gethitvar-guard-kill-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-crouch-guard-kill",
+      "required": true,
+      "status": "passed",
+      "checksum": "f9a8b469",
+      "gates": [
+        "synthetic-imported-gethitvar-crouch-guard-kill-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-air-guard-kill",
+      "required": true,
+      "status": "passed",
+      "checksum": "cbc8768c",
+      "gates": [
+        "synthetic-imported-gethitvar-air-guard-kill-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-hitid-chainid",
+      "required": true,
+      "status": "passed",
+      "checksum": "a8241b92",
+      "gates": [
+        "synthetic-imported-gethitvar-hitid-chainid-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-hitcount",
+      "required": true,
+      "status": "passed",
+      "checksum": "0b4582c9",
+      "gates": [
+        "synthetic-imported-gethitvar-hitcount-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-velocity",
+      "required": true,
+      "status": "passed",
+      "checksum": "6ade2803",
+      "gates": [
+        "synthetic-imported-gethitvar-velocity-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-guard-timing",
+      "required": true,
+      "status": "passed",
+      "checksum": "770b05f9",
+      "gates": [
+        "synthetic-imported-gethitvar-guard-timing-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-guard-hitshaketime",
+      "required": true,
+      "status": "passed",
+      "checksum": "07d9528f",
+      "gates": [
+        "synthetic-imported-gethitvar-guard-hitshaketime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-crouch-guard-hitshaketime",
+      "required": true,
+      "status": "passed",
+      "checksum": "60e62835",
+      "gates": [
+        "synthetic-imported-gethitvar-crouch-guard-hitshaketime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-air-guard-hitshaketime",
+      "required": true,
+      "status": "passed",
+      "checksum": "d077d6af",
+      "gates": [
+        "synthetic-imported-gethitvar-air-guard-hitshaketime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-guarded",
+      "required": true,
+      "status": "passed",
+      "checksum": "05a5427e",
+      "gates": [
+        "synthetic-imported-gethitvar-guarded-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-gethitvar-hit-metadata",
+      "required": true,
+      "status": "passed",
+      "checksum": "127f890a",
+      "gates": [
+        "synthetic-imported-projectile-gethitvar-hit-metadata-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-gethitvar-hitid-chainid",
+      "required": true,
+      "status": "passed",
+      "checksum": "92a40b8c",
+      "gates": [
+        "synthetic-imported-projectile-gethitvar-hitid-chainid-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-gethitvar-hitcount",
+      "required": true,
+      "status": "passed",
+      "checksum": "b120bb66",
+      "gates": [
+        "synthetic-imported-projectile-gethitvar-hitcount-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-hitcount",
+      "required": true,
+      "status": "passed",
+      "checksum": "f6652fbc",
+      "gates": [
+        "synthetic-imported-projectile-hitcount-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-gethitvar-guarded",
+      "required": true,
+      "status": "passed",
+      "checksum": "8e9288f7",
+      "gates": [
+        "synthetic-imported-projectile-gethitvar-guarded-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-gethitvar-guard-kill",
+      "required": true,
+      "status": "passed",
+      "checksum": "9838e529",
+      "gates": [
+        "synthetic-imported-projectile-gethitvar-guard-kill-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-gethitvar-guard-hitshaketime",
+      "required": true,
+      "status": "passed",
+      "checksum": "69e2a2ec",
+      "gates": [
+        "synthetic-imported-projectile-gethitvar-guard-hitshaketime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-gethitvar-air-guard-hitshaketime",
+      "required": true,
+      "status": "passed",
+      "checksum": "3f447805",
+      "gates": [
+        "synthetic-imported-projectile-gethitvar-air-guard-hitshaketime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-air-guard-velocity",
+      "required": true,
+      "status": "passed",
+      "checksum": "a3ed63df",
+      "gates": [
+        "synthetic-imported-projectile-air-guard-velocity-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-air-guard-velocity-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "1513d5f2",
+      "gates": [
+        "synthetic-imported-projectile-air-guard-velocity-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-guard-velocity-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "6c2f8225",
+      "gates": [
+        "synthetic-imported-projectile-guard-velocity-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-guard-timing-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "d54b4233",
+      "gates": [
+        "synthetic-imported-projectile-guard-timing-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-guard-slide-stop",
+      "required": true,
+      "status": "passed",
+      "checksum": "7c45619f",
+      "gates": [
+        "synthetic-imported-projectile-guard-slide-stop-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-air-guard-cornerpush",
+      "required": true,
+      "status": "passed",
+      "checksum": "923a3e9f",
+      "gates": [
+        "synthetic-imported-projectile-air-guard-cornerpush-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-air-guard-cornerpush-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "54953282",
+      "gates": [
+        "synthetic-imported-projectile-air-guard-cornerpush-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-guard-cornerpush-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "b8a29660",
+      "gates": [
+        "synthetic-imported-projectile-guard-cornerpush-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-air-hit-cornerpush-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "b87aed38",
+      "gates": [
+        "synthetic-imported-projectile-air-hit-cornerpush-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-down-hit-cornerpush",
+      "required": true,
+      "status": "passed",
+      "checksum": "5f2a653f",
+      "gates": [
+        "synthetic-imported-projectile-down-hit-cornerpush-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-down-hit-cornerpush-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "b302e3b9",
+      "gates": [
+        "synthetic-imported-projectile-down-hit-cornerpush-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-gethitvar-guarded",
+      "required": true,
+      "status": "passed",
+      "checksum": "59571106",
+      "gates": [
+        "synthetic-imported-helper-projectile-gethitvar-guarded-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-gethitvar-guard-kill",
+      "required": true,
+      "status": "passed",
+      "checksum": "42856efc",
+      "gates": [
+        "synthetic-imported-helper-projectile-gethitvar-guard-kill-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-gethitvar-guard-hitshaketime",
+      "required": true,
+      "status": "passed",
+      "checksum": "06c7128e",
+      "gates": [
+        "synthetic-imported-helper-projectile-gethitvar-guard-hitshaketime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-gethitvar-air-guard-hitshaketime",
+      "required": true,
+      "status": "passed",
+      "checksum": "17918799",
+      "gates": [
+        "synthetic-imported-helper-projectile-gethitvar-air-guard-hitshaketime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-gethitvar-hit-metadata",
+      "required": true,
+      "status": "passed",
+      "checksum": "f963f383",
+      "gates": [
+        "synthetic-imported-helper-projectile-gethitvar-hit-metadata-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-gethitvar-hitid-chainid",
+      "required": true,
+      "status": "passed",
+      "checksum": "f0159737",
+      "gates": [
+        "synthetic-imported-helper-projectile-gethitvar-hitid-chainid-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-gethitvar-hitcount",
+      "required": true,
+      "status": "passed",
+      "checksum": "938f716e",
+      "gates": [
+        "synthetic-imported-helper-projectile-gethitvar-hitcount-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-hitcount",
+      "required": true,
+      "status": "passed",
+      "checksum": "b2794e89",
+      "gates": [
+        "synthetic-imported-helper-projectile-hitcount-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-air-guard-velocity",
+      "required": true,
+      "status": "passed",
+      "checksum": "f4a4004a",
+      "gates": [
+        "synthetic-imported-helper-projectile-air-guard-velocity-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-air-guard-velocity-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "7efd876b",
+      "gates": [
+        "synthetic-imported-helper-projectile-air-guard-velocity-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-guard-velocity-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "93a197d3",
+      "gates": [
+        "synthetic-imported-helper-projectile-guard-velocity-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-guard-timing-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "a2e86617",
+      "gates": [
+        "synthetic-imported-helper-projectile-guard-timing-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-guard-slide-stop",
+      "required": true,
+      "status": "passed",
+      "checksum": "ea9a7427",
+      "gates": [
+        "synthetic-imported-helper-projectile-guard-slide-stop-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-air-guard-cornerpush",
+      "required": true,
+      "status": "passed",
+      "checksum": "0e29404e",
+      "gates": [
+        "synthetic-imported-helper-projectile-air-guard-cornerpush-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-air-guard-cornerpush-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "188c2dfa",
+      "gates": [
+        "synthetic-imported-helper-projectile-air-guard-cornerpush-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-guard-cornerpush-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "8a6a9604",
+      "gates": [
+        "synthetic-imported-helper-projectile-guard-cornerpush-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-air-hit-cornerpush-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "849f608e",
+      "gates": [
+        "synthetic-imported-helper-projectile-air-hit-cornerpush-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-down-hit-cornerpush",
+      "required": true,
+      "status": "passed",
+      "checksum": "5231ad5c",
+      "gates": [
+        "synthetic-imported-helper-projectile-down-hit-cornerpush-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-down-hit-cornerpush-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "fe0c3ff1",
+      "gates": [
+        "synthetic-imported-helper-projectile-down-hit-cornerpush-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-animtype",
+      "required": true,
+      "status": "passed",
+      "checksum": "46ed08f5",
+      "gates": [
+        "synthetic-imported-gethitvar-animtype-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gethitvar-snap",
+      "required": true,
+      "status": "passed",
+      "checksum": "fb3f91ad",
+      "gates": [
+        "synthetic-imported-gethitvar-snap-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-bounds",
+      "required": true,
+      "status": "passed",
+      "checksum": "f8b0071f",
+      "gates": [
+        "synthetic-imported-bounds-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-posfreeze-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "aa669d11",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-screenbound-camera",
+      "required": true,
+      "status": "passed",
+      "checksum": "cffd563a",
+      "gates": [
+        "synthetic-imported-screenbound-camera-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-screenbound-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "9797bdfe",
+      "gates": [
+        "synthetic-imported-screenbound-dynamic-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-gravity",
+      "required": true,
+      "status": "passed",
+      "checksum": "23a22a5e",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-kinematic",
+      "required": true,
+      "status": "passed",
+      "checksum": "50bb0be8",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-dynamic-veladd",
+      "required": true,
+      "status": "passed",
+      "checksum": "b3fc1804",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-dynamic-velmul",
+      "required": true,
+      "status": "passed",
+      "checksum": "d90f5974",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-dynamic-posset",
+      "required": true,
+      "status": "passed",
+      "checksum": "5a7ef00f",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-dynamic-posadd",
+      "required": true,
+      "status": "passed",
+      "checksum": "8ac6b2e6",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-controller-param-bottom",
+      "required": true,
+      "status": "passed",
+      "checksum": "6b9cb22c",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-controller-param-target-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "fa9303f5",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-controller-param-root-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "977884f2",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-width",
+      "required": true,
+      "status": "passed",
+      "checksum": "c2db64b7",
+      "gates": [
+        "synthetic-imported-width-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-transformclsn-scale",
+      "required": true,
+      "status": "passed",
+      "checksum": "6ca39bda",
+      "gates": [
+        "synthetic-imported-transformclsn-scale-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-transformclsn-angle",
+      "required": true,
+      "status": "passed",
+      "checksum": "354a1f7b",
+      "gates": [
+        "synthetic-imported-transformclsn-angle-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-width-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "5efe1f9f",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-statetypeset",
+      "required": true,
+      "status": "passed",
+      "checksum": "2ba498ee",
+      "gates": [
+        "synthetic-imported-statetypeset-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-statetypeset-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "c495a081",
+      "gates": [
+        "synthetic-imported-statetypeset-dynamic-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-playerpush",
+      "required": true,
+      "status": "passed",
+      "checksum": "5ed835c0",
+      "gates": [
+        "synthetic-imported-playerpush-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-playerpush-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "f9c2f609",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-turn",
+      "required": true,
+      "status": "passed",
+      "checksum": "49ba2853",
+      "gates": [
+        "synthetic-imported-turn-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-sprpriority",
+      "required": true,
+      "status": "passed",
+      "checksum": "71b78a86",
+      "gates": [
+        "synthetic-imported-sprpriority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-sprpriority-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "fb13d682",
+      "gates": [
+        "synthetic-imported-sprpriority-dynamic-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-palfx",
+      "required": true,
+      "status": "passed",
+      "checksum": "3e7b914a",
+      "gates": [
+        "synthetic-imported-palfx-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-palfx-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "52a1cd2a",
+      "gates": [
+        "synthetic-imported-palfx-dynamic-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-trans",
+      "required": true,
+      "status": "passed",
+      "checksum": "020e6e9a",
+      "gates": [
+        "synthetic-imported-trans-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-trans-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "a2b672e8",
+      "gates": [
+        "synthetic-imported-trans-dynamic-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-angle",
+      "required": true,
+      "status": "passed",
+      "checksum": "b7c3136d",
+      "gates": [
+        "synthetic-imported-angle-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-anglemul",
+      "required": true,
+      "status": "passed",
+      "checksum": "b0eee6c1",
+      "gates": [
+        "synthetic-imported-anglemul-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-anglemul-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "1fed1c71",
+      "gates": [
+        "synthetic-imported-anglemul-dynamic-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-angle-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "4d00149c",
+      "gates": [
+        "synthetic-imported-angle-dynamic-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-envcolor",
+      "required": true,
+      "status": "passed",
+      "checksum": "a565c0e9",
+      "gates": [
+        "synthetic-imported-envcolor-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-envcolor-under",
+      "required": true,
+      "status": "passed",
+      "checksum": "90401ffb",
+      "gates": [
+        "synthetic-imported-envcolor-under-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-envcolor-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "2a1c6531",
+      "gates": [
+        "synthetic-imported-envcolor-dynamic-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-envshake",
+      "required": true,
+      "status": "passed",
+      "checksum": "34d509b3",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-envshake-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "acb7d33d",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-remappal",
+      "required": true,
+      "status": "passed",
+      "checksum": "6c5d007d",
+      "gates": [
+        "synthetic-imported-remappal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-remappal-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "298865bd",
+      "gates": [
+        "synthetic-imported-remappal-dynamic-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-palfx-remappal",
+      "required": true,
+      "status": "passed",
+      "checksum": "533f938d",
+      "gates": [
+        "synthetic-imported-palfx-remappal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-afterimage",
+      "required": true,
+      "status": "passed",
+      "checksum": "993097b9",
+      "gates": [
+        "synthetic-imported-afterimage-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-afterimage-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "d707beca",
+      "gates": [
+        "synthetic-imported-afterimage-dynamic-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-afterimagetime-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "ff68a22d",
+      "gates": [
+        "synthetic-imported-afterimagetime-dynamic-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "c0fe2abe",
+      "gates": [
+        "synthetic-imported-hitdef-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-sprite-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "a697522d",
+      "gates": [
+        "synthetic-imported-hitdef-sprite-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-kill",
+      "required": true,
+      "status": "passed",
+      "checksum": "21c5e69d",
+      "gates": [
+        "synthetic-imported-hitdef-kill-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-guard-kill",
+      "required": true,
+      "status": "passed",
+      "checksum": "5a2b02dd",
+      "gates": [
+        "synthetic-imported-hitdef-guard-kill-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-guard-ko",
+      "required": true,
+      "status": "passed",
+      "checksum": "330f9686",
+      "gates": [
+        "synthetic-imported-hitdef-guard-ko-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-guard",
+      "required": true,
+      "status": "passed",
+      "checksum": "6b20edd6",
+      "gates": [
+        "imported-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-guard-sound",
+      "required": true,
+      "status": "passed",
+      "checksum": "d7647186",
+      "gates": [
+        "imported-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-hit-sound",
+      "required": true,
+      "status": "passed",
+      "checksum": "76e8447e",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-dynamic-hitsound",
+      "required": true,
+      "status": "passed",
+      "checksum": "264a48a8",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-dynamic-guardsound",
+      "required": true,
+      "status": "passed",
+      "checksum": "a5c48772",
+      "gates": [
+        "imported-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-hit-spark",
+      "required": true,
+      "status": "passed",
+      "checksum": "13737322",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-data-spark",
+      "required": true,
+      "status": "passed",
+      "checksum": "c24268f1",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-common-spark",
+      "required": true,
+      "status": "passed",
+      "checksum": "e52e5058",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-fightfx-spark",
+      "required": true,
+      "status": "passed",
+      "checksum": "1aa33d06",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-hit-effect-package",
+      "required": true,
+      "status": "passed",
+      "checksum": "9660e298",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-guard-spark",
+      "required": true,
+      "status": "passed",
+      "checksum": "2745bcc3",
+      "gates": [
+        "imported-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-data-guard-spark",
+      "required": true,
+      "status": "passed",
+      "checksum": "75e2ef8f",
+      "gates": [
+        "imported-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-common-guard-spark",
+      "required": true,
+      "status": "passed",
+      "checksum": "1d748e3b",
+      "gates": [
+        "imported-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-fightfx-guard-spark",
+      "required": true,
+      "status": "passed",
+      "checksum": "53bfe95c",
+      "gates": [
+        "imported-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-guard-effect-package",
+      "required": true,
+      "status": "passed",
+      "checksum": "0e835057",
+      "gates": [
+        "imported-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-unguardable",
+      "required": true,
+      "status": "passed",
+      "checksum": "77ebdb2c",
+      "gates": [
+        "synthetic-imported-assertspecial-unguardable-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-guarddeny",
+      "required": true,
+      "status": "passed",
+      "checksum": "729db41d",
+      "gates": [
+        "synthetic-imported-assertspecial-guarddeny-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-crouch-guarddeny",
+      "required": true,
+      "status": "passed",
+      "checksum": "f0877a3d",
+      "gates": [
+        "synthetic-imported-assertspecial-crouch-guarddeny-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-air-guarddeny",
+      "required": true,
+      "status": "passed",
+      "checksum": "710a37a4",
+      "gates": [
+        "synthetic-imported-assertspecial-air-guarddeny-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-lifetime",
+      "required": true,
+      "status": "passed",
+      "checksum": "4ae0e896",
+      "gates": [
+        "synthetic-imported-assertspecial-lifetime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-control",
+      "required": true,
+      "status": "passed",
+      "checksum": "144ac7bc",
+      "gates": [
+        "synthetic-imported-assertspecial-control-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-runfirst",
+      "required": true,
+      "status": "passed",
+      "checksum": "56e17803",
+      "gates": [
+        "synthetic-imported-ikemen-runfirst-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-runorder",
+      "required": true,
+      "status": "passed",
+      "checksum": "f291aa76",
+      "gates": [
+        "synthetic-imported-ikemen-runorder-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-helper-runorder",
+      "required": true,
+      "status": "passed",
+      "checksum": "174f927d",
+      "gates": [
+        "synthetic-imported-ikemen-helper-runorder-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-helper-posfreeze-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "c8bf3bac",
+      "gates": [
+        "synthetic-imported-ikemen-helper-posfreeze-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-helper-playerpush-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "b6a5eed9",
+      "gates": [
+        "synthetic-imported-ikemen-helper-playerpush-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-playerpush-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "bf94b006",
+      "gates": [
+        "synthetic-imported-ikemen-root-playerpush-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-screenbound-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "75a818d3",
+      "gates": [
+        "synthetic-imported-ikemen-root-screenbound-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-posfreeze-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "38e52644",
+      "gates": [
+        "synthetic-imported-ikemen-root-posfreeze-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-transformclsn-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "b1974bb3",
+      "gates": [
+        "synthetic-imported-ikemen-root-transformclsn-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-overrideclsn-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "eabc8fd9",
+      "gates": [
+        "synthetic-imported-ikemen-root-overrideclsn-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-nothitby-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "e5580603",
+      "gates": [
+        "synthetic-imported-ikemen-root-nothitby-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-hitoverride-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "486d7947",
+      "gates": [
+        "synthetic-imported-ikemen-root-hitoverride-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-reversaldef-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "098d0f64",
+      "gates": [
+        "synthetic-imported-ikemen-root-reversaldef-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-hitdef-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "f5a28229",
+      "gates": [
+        "synthetic-imported-ikemen-root-hitdef-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyhitdef-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "bf471c72",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyhitdef-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyhitdef-sprite-priority-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "496f4cf5",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyhitdef-sprite-priority-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyhitdef-priority-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "ec3e5500",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyhitdef-priority-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyhitdef-kill-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "95aa7125",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyhitdef-kill-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyhitdef-guard-kill-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "448efa73",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyhitdef-guard-kill-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyhitdef-fall-kill-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "16134533",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyhitdef-fall-kill-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyhitdef-hitonce-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "efad0193",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyhitdef-hitonce-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-direct-air-juggle",
+      "required": true,
+      "status": "passed",
+      "checksum": "373f6dff",
+      "gates": [
+        "synthetic-imported-ikemen-direct-air-juggle-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyreversaldef-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "fff02f30",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyreversaldef-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyreversaldef-core-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "d3f61c34",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyreversaldef-core-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyreversaldef-p2state-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "6294fe5a",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyreversaldef-p2state-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyreversaldef-p2owner-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "b13c4ef3",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyreversaldef-p2owner-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyreversaldef-guardflag-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "9c709176",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyreversaldef-guardflag-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyreversaldef-guardflag-not-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "4fca91b5",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyreversaldef-guardflag-not-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyreversaldef-sprite-priority-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "60836362",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyreversaldef-sprite-priority-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "f4c72396",
+      "gates": [
+        "synthetic-imported-ikemen-root-modifyreversaldef-missonoverride-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-helper-self-tag",
+      "required": true,
+      "status": "passed",
+      "checksum": "08014285",
+      "gates": [
+        "synthetic-imported-ikemen-helper-self-tag-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-tag-side-command",
+      "required": true,
+      "status": "passed",
+      "checksum": "dff92731",
+      "gates": [
+        "synthetic-imported-ikemen-tag-side-command-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-motion",
+      "required": true,
+      "status": "passed",
+      "checksum": "8ee92f65",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-motion-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-direct-hit",
+      "required": true,
+      "status": "passed",
+      "checksum": "4b4cc35e",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-direct-hit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-auto-guard",
+      "required": true,
+      "status": "passed",
+      "checksum": "5e0aaf61",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-auto-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-direct-guard",
+      "required": true,
+      "status": "passed",
+      "checksum": "202b9838",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-direct-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-crouch-guard",
+      "required": true,
+      "status": "passed",
+      "checksum": "9aac9d7d",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-crouch-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-crouch-high-guard-reject",
+      "required": true,
+      "status": "passed",
+      "checksum": "935e6e6d",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-crouch-high-guard-reject-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-crouch-low-guard",
+      "required": true,
+      "status": "passed",
+      "checksum": "748679c8",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-crouch-low-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-standing-low-guard-reject",
+      "required": true,
+      "status": "passed",
+      "checksum": "906e4751",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-standing-low-guard-reject-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-standing-high-guard",
+      "required": true,
+      "status": "passed",
+      "checksum": "bec58061",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-standing-high-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-air-guard",
+      "required": true,
+      "status": "passed",
+      "checksum": "e8856c68",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-air-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-air-guard-landing",
+      "required": true,
+      "status": "passed",
+      "checksum": "fe532005",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-air-guard-landing-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-hitoverride",
+      "required": true,
+      "status": "passed",
+      "checksum": "dd6bc943",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-hitoverride-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-hitoverride-expiry",
+      "required": true,
+      "status": "passed",
+      "checksum": "eae92580",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-hitoverride-expiry-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-depth-miss",
+      "required": true,
+      "status": "passed",
+      "checksum": "d233101e",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-depth-miss-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-depth-velocity",
+      "required": true,
+      "status": "passed",
+      "checksum": "fb9eb533",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-depth-velocity-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-posfreeze-depth",
+      "required": true,
+      "status": "passed",
+      "checksum": "dbf5a925",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-posfreeze-depth-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "4f482882",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-equal-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "205dd2ef",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-equal-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-hit-miss-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "c4842f5d",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-hit-miss-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-hit-dodge-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "3563427c",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-hit-dodge-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-pair-miss-hit-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "62848ab8",
+      "gates": [
+        "synthetic-imported-pair-miss-hit-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-pair-hit-dodge-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "b9c6c7e1",
+      "gates": [
+        "synthetic-imported-pair-hit-dodge-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-reversal-order",
+      "required": true,
+      "status": "passed",
+      "checksum": "481b2116",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-reversal-order-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-reversal-clash",
+      "required": true,
+      "status": "passed",
+      "checksum": "73dd6768",
+      "gates": [
+        "synthetic-imported-ikemen-reversal-clash-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-presentation",
+      "required": true,
+      "status": "passed",
+      "checksum": "97255586",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-presentation-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-active-root-constraint",
+      "required": true,
+      "status": "passed",
+      "checksum": "8f70d7c0",
+      "gates": [
+        "synthetic-imported-ikemen-active-root-constraint-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-pause-buffer",
+      "required": true,
+      "status": "passed",
+      "checksum": "9ee086fe",
+      "gates": [
+        "synthetic-imported-ikemen-pause-buffer-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-actor-pausemove",
+      "required": true,
+      "status": "passed",
+      "checksum": "3c13fe22",
+      "gates": [
+        "synthetic-imported-ikemen-actor-pausemove-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-deferred-pause-activation",
+      "required": true,
+      "status": "passed",
+      "checksum": "21c6792d",
+      "gates": [
+        "synthetic-imported-ikemen-deferred-pause-activation-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-helper-superpause",
+      "required": true,
+      "status": "passed",
+      "checksum": "699f6e39",
+      "gates": [
+        "synthetic-imported-ikemen-helper-superpause-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-local-resource",
+      "required": true,
+      "status": "passed",
+      "checksum": "ddab4141",
+      "gates": [
+        "synthetic-imported-helper-local-resource-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-superpause-p2defmul-stack",
+      "required": true,
+      "status": "passed",
+      "checksum": "b6ba8f45",
+      "gates": [
+        "synthetic-imported-ikemen-superpause-p2defmul-stack-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-superpause-team-defense",
+      "required": true,
+      "status": "passed",
+      "checksum": "05646e55",
+      "gates": [
+        "synthetic-imported-ikemen-superpause-team-defense-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-global-telemetry",
+      "required": true,
+      "status": "passed",
+      "checksum": "fc793d29",
+      "gates": [
+        "synthetic-imported-assertspecial-global-telemetry-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-round-flow-telemetry",
+      "required": true,
+      "status": "passed",
+      "checksum": "10f95bdb",
+      "gates": [
+        "synthetic-imported-assertspecial-round-flow-telemetry-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-juggle-telemetry",
+      "required": true,
+      "status": "passed",
+      "checksum": "9436dfa0",
+      "gates": [
+        "synthetic-imported-assertspecial-juggle-telemetry-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-shadow-telemetry",
+      "required": true,
+      "status": "passed",
+      "checksum": "2b9c8fac",
+      "gates": [
+        "synthetic-imported-assertspecial-shadow-telemetry-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-helper-explod-shadow",
+      "required": true,
+      "status": "passed",
+      "checksum": "83f61b48",
+      "gates": [
+        "synthetic-imported-assertspecial-helper-explod-shadow-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-timerfreeze",
+      "required": true,
+      "status": "passed",
+      "checksum": "408528f1",
+      "gates": [
+        "synthetic-imported-assertspecial-timerfreeze-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-roundnotover",
+      "required": true,
+      "status": "passed",
+      "checksum": "342d49f0",
+      "gates": [
+        "synthetic-imported-assertspecial-roundnotover-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-noko",
+      "required": true,
+      "status": "passed",
+      "checksum": "8c9b569e",
+      "gates": [
+        "synthetic-imported-assertspecial-noko-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-nogetupfromliedown",
+      "required": true,
+      "status": "passed",
+      "checksum": "6c024554",
+      "gates": [
+        "synthetic-imported-assertspecial-nogetupfromliedown-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-assertspecial-nofastrecoverfromliedown",
+      "required": true,
+      "status": "passed",
+      "checksum": "ac457120",
+      "gates": [
+        "synthetic-imported-assertspecial-nofastrecoverfromliedown-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-liedown-fast-recovery",
+      "required": true,
+      "status": "passed",
+      "checksum": "44ac24d1",
+      "gates": [
+        "synthetic-imported-default-liedown-fast-recovery-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-guard-state",
+      "required": true,
+      "status": "passed",
+      "checksum": "ef2c0ee8",
+      "gates": [
+        "synthetic-imported-default-guard-state-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-guard-slide-stop",
+      "required": true,
+      "status": "passed",
+      "checksum": "b8751627",
+      "gates": [
+        "synthetic-imported-default-guard-slide-stop-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-guard-hold-walk-return",
+      "required": true,
+      "status": "passed",
+      "checksum": "92b4bbed",
+      "gates": [
+        "synthetic-imported-default-guard-hold-walk-return-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-crouch-guard-slide-stop",
+      "required": true,
+      "status": "passed",
+      "checksum": "f7beeca7",
+      "gates": [
+        "synthetic-imported-crouch-guard-slide-stop-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-crouch-guard-hold-crouch-return",
+      "required": true,
+      "status": "passed",
+      "checksum": "273cfa6b",
+      "gates": [
+        "synthetic-imported-crouch-guard-hold-crouch-return-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-crouch-guard-state",
+      "required": true,
+      "status": "passed",
+      "checksum": "dc8353a9",
+      "gates": [
+        "synthetic-imported-crouch-guard-state-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-diagonal-crouch-guard-state",
+      "required": true,
+      "status": "passed",
+      "checksum": "8f3805b6",
+      "gates": [
+        "synthetic-imported-diagonal-crouch-guard-state-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-air-guard-state",
+      "required": true,
+      "status": "passed",
+      "checksum": "26bfa7f1",
+      "gates": [
+        "synthetic-imported-air-guard-state-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-air-guard-velocity",
+      "required": true,
+      "status": "passed",
+      "checksum": "771e7a34",
+      "gates": [
+        "synthetic-imported-air-guard-velocity-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-air-guard-velocity-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "03ff954a",
+      "gates": [
+        "synthetic-imported-air-guard-velocity-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-guard-velocity-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "a7165074",
+      "gates": [
+        "synthetic-imported-guard-velocity-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-guard-timing-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "be966fef",
+      "gates": [
+        "synthetic-imported-guard-timing-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-air-guard-cornerpush",
+      "required": true,
+      "status": "passed",
+      "checksum": "17d3c135",
+      "gates": [
+        "synthetic-imported-air-guard-cornerpush-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-air-guard-cornerpush-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "86e21567",
+      "gates": [
+        "synthetic-imported-air-guard-cornerpush-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-guard-cornerpush-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "03254071",
+      "gates": [
+        "synthetic-imported-guard-cornerpush-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-air-hit-cornerpush-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "619cc18b",
+      "gates": [
+        "synthetic-imported-air-hit-cornerpush-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-down-hit-cornerpush",
+      "required": true,
+      "status": "passed",
+      "checksum": "2ae9d973",
+      "gates": [
+        "synthetic-imported-down-hit-cornerpush-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-down-hit-cornerpush-default",
+      "required": true,
+      "status": "passed",
+      "checksum": "cc8d83f8",
+      "gates": [
+        "synthetic-imported-down-hit-cornerpush-default-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-air-guard-landing",
+      "required": true,
+      "status": "passed",
+      "checksum": "e1efdedb",
+      "gates": [
+        "synthetic-imported-air-guard-landing-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-inguarddist",
+      "required": true,
+      "status": "passed",
+      "checksum": "652b9508",
+      "gates": [
+        "synthetic-imported-inguarddist-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-inguarddist-far",
+      "required": true,
+      "status": "passed",
+      "checksum": "d6d99236",
+      "gates": [
+        "synthetic-imported-inguarddist-far-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-guarddist-reversal-no-contact",
+      "required": true,
+      "status": "passed",
+      "checksum": "c4c38068",
+      "gates": [
+        "synthetic-imported-guarddist-reversal-no-contact-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-auto-guard-start",
+      "required": true,
+      "status": "passed",
+      "checksum": "e4939d9f",
+      "gates": [
+        "synthetic-imported-auto-guard-start-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-common1-state-source-override",
+      "required": true,
+      "status": "passed",
+      "checksum": "d8ddcd7c",
+      "gates": [
+        "synthetic-imported-common1-state-source-override-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-common1-state-source-fallback",
+      "required": true,
+      "status": "passed",
+      "checksum": "bc19a85c",
+      "gates": [
+        "synthetic-imported-common1-state-source-fallback-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-auto-guard-end",
+      "required": true,
+      "status": "passed",
+      "checksum": "3fee7f63",
+      "gates": [
+        "synthetic-imported-auto-guard-end-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitstun",
+      "required": true,
+      "status": "passed",
+      "checksum": "9363163b",
+      "gates": [
+        "imported-hitstun-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-fall",
+      "required": true,
+      "status": "passed",
+      "checksum": "b7a6efac",
+      "gates": [
+        "synthetic-imported-fall-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-common-gethit",
+      "required": true,
+      "status": "passed",
+      "checksum": "751b46b2",
+      "gates": [
+        "synthetic-imported-common-gethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-gethit",
+      "required": true,
+      "status": "passed",
+      "checksum": "d13c5c72",
+      "gates": [
+        "imported-default-gethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-crouch-gethit",
+      "required": true,
+      "status": "passed",
+      "checksum": "0ab7ed4e",
+      "gates": [
+        "imported-default-crouch-gethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-crouch-gethit-progression",
+      "required": true,
+      "status": "passed",
+      "checksum": "c9205b3e",
+      "gates": [
+        "imported-default-crouch-gethit-progression-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-air-gethit",
+      "required": true,
+      "status": "passed",
+      "checksum": "3a1efdb2",
+      "gates": [
+        "imported-default-air-gethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-air-fall-gethit",
+      "required": true,
+      "status": "passed",
+      "checksum": "f9c65d5a",
+      "gates": [
+        "imported-default-fall-gethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-air-ground-impact",
+      "required": true,
+      "status": "passed",
+      "checksum": "db0d4d18",
+      "gates": [
+        "imported-default-fall-gethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-air-liedown-recovery",
+      "required": true,
+      "status": "passed",
+      "checksum": "e23ab38f",
+      "gates": [
+        "imported-default-fall-gethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-air-fall-recovery-input",
+      "required": true,
+      "status": "passed",
+      "checksum": "05d5ae9f",
+      "gates": [
+        "imported-default-fall-recovery-input-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-air-fall-recovery-too-early",
+      "required": true,
+      "status": "passed",
+      "checksum": "19a07445",
+      "gates": [
+        "imported-default-fall-recovery-too-early-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-gethit-progression",
+      "required": true,
+      "status": "passed",
+      "checksum": "586698df",
+      "gates": [
+        "imported-default-gethit-progression-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-fall-gethit",
+      "required": true,
+      "status": "passed",
+      "checksum": "30288bf6",
+      "gates": [
+        "imported-default-fall-gethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-fall-recovery",
+      "required": true,
+      "status": "passed",
+      "checksum": "466a0def",
+      "gates": [
+        "synthetic-imported-default-fall-recovery-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-fall-recovery-input",
+      "required": true,
+      "status": "passed",
+      "checksum": "f75be221",
+      "gates": [
+        "synthetic-imported-default-fall-recovery-input-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-fall-recovery-threshold",
+      "required": true,
+      "status": "passed",
+      "checksum": "5b59aa71",
+      "gates": [
+        "synthetic-imported-default-fall-recovery-threshold-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-fall-official-recovery-threshold",
+      "required": true,
+      "status": "passed",
+      "checksum": "bafc9e50",
+      "gates": [
+        "imported-default-fall-ground-recovery-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-fall-recovery-tick-order",
+      "required": true,
+      "status": "passed",
+      "checksum": "0c0f282f",
+      "gates": [
+        "synthetic-imported-default-fall-recovery-tick-order-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-fall-air-recovery-velocity",
+      "required": true,
+      "status": "passed",
+      "checksum": "f6d11936",
+      "gates": [
+        "imported-default-fall-recovery-input-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-fall-official-air-recovery",
+      "required": true,
+      "status": "passed",
+      "checksum": "ea80b840",
+      "gates": [
+        "imported-default-fall-recovery-input-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-fall-ground-recovery",
+      "required": true,
+      "status": "passed",
+      "checksum": "bae2c690",
+      "gates": [
+        "imported-default-fall-ground-recovery-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-fall-ground-recovery-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "70478999",
+      "gates": [
+        "imported-default-fall-ground-recovery-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-fall-official-ground-recovery",
+      "required": true,
+      "status": "passed",
+      "checksum": "80ce2887",
+      "gates": [
+        "imported-default-fall-ground-recovery-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-fall-recovery-too-early",
+      "required": true,
+      "status": "passed",
+      "checksum": "a0b0fbab",
+      "gates": [
+        "synthetic-imported-default-fall-recovery-too-early-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitfall-canrecover",
+      "required": true,
+      "status": "passed",
+      "checksum": "dbbfb043",
+      "gates": [
+        "imported-default-fall-gethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitfall-canrecover-ready",
+      "required": true,
+      "status": "passed",
+      "checksum": "0ee7fbf1",
+      "gates": [
+        "imported-default-fall-gethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitfall-recovery-input-priority",
+      "required": false,
+      "status": "passed",
+      "checksum": "ad209bb1",
+      "gates": [
+        "imported-default-fall-gethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-fall-recovery-input-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "87ebaedb",
+      "gates": [
+        "imported-default-fall-gethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitfall-recover-true",
+      "required": true,
+      "status": "passed",
+      "checksum": "7519c178",
+      "gates": [
+        "imported-default-fall-gethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitfall-recover-false",
+      "required": true,
+      "status": "passed",
+      "checksum": "9af7d518",
+      "gates": [
+        "imported-default-fall-gethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitfall-false",
+      "required": true,
+      "status": "passed",
+      "checksum": "3a5f5896",
+      "gates": [
+        "synthetic-imported-hitfall-false-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-default-fall-official-recovery-too-early",
+      "required": true,
+      "status": "passed",
+      "checksum": "ef859c3c",
+      "gates": [
+        "imported-default-fall-recovery-too-early-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-state-exit",
+      "required": true,
+      "status": "passed",
+      "checksum": "f3febe5f",
+      "gates": [
+        "imported-state-exit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state",
+      "required": true,
+      "status": "passed",
+      "checksum": "1265ad68",
+      "gates": [
+        "synthetic-imported-custom-state-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar",
+      "required": true,
+      "status": "passed",
+      "checksum": "15c6a095",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar-animtype",
+      "required": true,
+      "status": "passed",
+      "checksum": "a56a7e97",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-animtype-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar-type",
+      "required": true,
+      "status": "passed",
+      "checksum": "6be8762e",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-type-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar-yaccel",
+      "required": true,
+      "status": "passed",
+      "checksum": "6e8812f1",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-yaccel-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar-snap",
+      "required": true,
+      "status": "passed",
+      "checksum": "a93f31a6",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-snap-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar-hitcount-hitid-chainid",
+      "required": true,
+      "status": "passed",
+      "checksum": "a22c4522",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-hitcount-hitid-chainid-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar-fall",
+      "required": true,
+      "status": "passed",
+      "checksum": "b08e100a",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-fall-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar-fall-metadata",
+      "required": true,
+      "status": "passed",
+      "checksum": "e909a894",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-fall-metadata-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar-fall-envshake",
+      "required": true,
+      "status": "passed",
+      "checksum": "15b4b396",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-fall-envshake-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar-down-recover",
+      "required": true,
+      "status": "passed",
+      "checksum": "5f54b3e6",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-down-recover-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar-velocity",
+      "required": true,
+      "status": "passed",
+      "checksum": "0a5ae7dc",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-velocity-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar-guarded",
+      "required": true,
+      "status": "passed",
+      "checksum": "6ba3bd23",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-guarded-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar-guard-kill",
+      "required": true,
+      "status": "passed",
+      "checksum": "1a0fad98",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-guard-kill-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-p2stateno-guard-ignored",
+      "required": true,
+      "status": "passed",
+      "checksum": "36900dc8",
+      "gates": [
+        "synthetic-imported-p2stateno-guard-ignored-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar-guard-timing",
+      "required": true,
+      "status": "passed",
+      "checksum": "5bf4eaaa",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-guard-timing-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-custom-state-gethitvar-isbound",
+      "required": true,
+      "status": "passed",
+      "checksum": "6daedb14",
+      "gates": [
+        "synthetic-imported-custom-state-gethitvar-isbound-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-owned-custom-state",
+      "required": true,
+      "status": "passed",
+      "checksum": "abc47880",
+      "gates": [
+        "synthetic-imported-target-owned-custom-state-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-targetstate-custom",
+      "required": true,
+      "status": "passed",
+      "checksum": "32759c3f",
+      "gates": [
+        "synthetic-imported-targetstate-custom-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target",
+      "required": true,
+      "status": "passed",
+      "checksum": "e5728d15",
+      "gates": [
+        "synthetic-imported-target-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "af709aa1",
+      "gates": [
+        "synthetic-imported-target-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-redirect-bottom",
+      "required": true,
+      "status": "passed",
+      "checksum": "e71fa6e1",
+      "gates": [
+        "synthetic-imported-target-redirect-bottom-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-cond-bottom",
+      "required": true,
+      "status": "passed",
+      "checksum": "5754e376",
+      "gates": [
+        "synthetic-imported-target-cond-bottom-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-ifelse-bottom",
+      "required": true,
+      "status": "passed",
+      "checksum": "a81ea29d",
+      "gates": [
+        "synthetic-imported-target-ifelse-bottom-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-dynamic-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "49607d11",
+      "gates": [
+        "synthetic-imported-target-dynamic-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-target-noko",
+      "required": true,
+      "status": "passed",
+      "checksum": "0c70f78e",
+      "gates": [
+        "synthetic-imported-target-noko-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-bindtotarget-head",
+      "required": true,
+      "status": "passed",
+      "checksum": "d1aea66a",
+      "gates": [
+        "synthetic-imported-bindtotarget-head-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-bindtotarget-mid",
+      "required": true,
+      "status": "passed",
+      "checksum": "713bd4b4",
+      "gates": [
+        "synthetic-imported-bindtotarget-mid-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-bindtotarget-depth",
+      "required": true,
+      "status": "passed",
+      "checksum": "f25ef3dd",
+      "gates": [
+        "synthetic-imported-bindtotarget-depth-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-targetbind-depth",
+      "required": true,
+      "status": "passed",
+      "checksum": "f2900731",
+      "gates": [
+        "synthetic-imported-targetbind-depth-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-stage-depth-bound",
+      "required": true,
+      "status": "passed",
+      "checksum": "b9d56283",
+      "gates": [
+        "synthetic-imported-ikemen-stage-depth-bound-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-depth-controller",
+      "required": true,
+      "status": "passed",
+      "checksum": "6ea41ad6",
+      "gates": [
+        "synthetic-imported-ikemen-depth-controller-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-screen-stagebound",
+      "required": true,
+      "status": "passed",
+      "checksum": "0b38ca8f",
+      "gates": [
+        "synthetic-imported-ikemen-screen-stagebound-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-depth-player-push",
+      "required": true,
+      "status": "passed",
+      "checksum": "5870f7de",
+      "gates": [
+        "synthetic-imported-ikemen-depth-player-push-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-depth-bounds-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "ca32f0ae",
+      "gates": [
+        "synthetic-imported-ikemen-depth-bounds-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-ikemen-playerpush-policy",
+      "required": true,
+      "status": "passed",
+      "checksum": "fb580dee",
+      "gates": [
+        "synthetic-imported-ikemen-playerpush-policy-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-targetbind-pause",
+      "required": true,
+      "status": "passed",
+      "checksum": "9a01f834",
+      "gates": [
+        "synthetic-imported-targetbind-pause-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-superpause",
+      "required": true,
+      "status": "passed",
+      "checksum": "8b42cce6",
+      "gates": [
+        "synthetic-imported-superpause-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-superpause-default-anim",
+      "required": true,
+      "status": "passed",
+      "checksum": "318c5e9f",
+      "gates": [
+        "synthetic-imported-superpause-default-anim-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-superpause-anim-disabled",
+      "required": true,
+      "status": "passed",
+      "checksum": "fc7a2ca4",
+      "gates": [
+        "synthetic-imported-superpause-anim-disabled-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-superpause-pausebg",
+      "required": true,
+      "status": "passed",
+      "checksum": "49bcfe16",
+      "gates": [
+        "synthetic-imported-superpause-pausebg-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-superpause-unhittable",
+      "required": true,
+      "status": "passed",
+      "checksum": "2f2d1742",
+      "gates": [
+        "synthetic-imported-superpause-unhittable-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-superpause-sound",
+      "required": true,
+      "status": "passed",
+      "checksum": "3e19cb86",
+      "gates": [
+        "synthetic-imported-superpause-sound-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-superpause-dynamic-params",
+      "required": true,
+      "status": "passed",
+      "checksum": "052bb481",
+      "gates": [
+        "synthetic-imported-superpause-dynamic-params-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-superpause-anim-pos",
+      "required": true,
+      "status": "passed",
+      "checksum": "f7dcdc9d",
+      "gates": [
+        "synthetic-imported-superpause-anim-pos-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-superpause-dynamic-anim-pos",
+      "required": true,
+      "status": "passed",
+      "checksum": "e6bfbf75",
+      "gates": [
+        "synthetic-imported-superpause-dynamic-anim-pos-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-superpause-p2defmul",
+      "required": true,
+      "status": "passed",
+      "checksum": "0a81f478",
+      "gates": [
+        "synthetic-imported-superpause-p2defmul-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-superpause-projectile-freeze",
+      "required": true,
+      "status": "passed",
+      "checksum": "3580c1f9",
+      "gates": [
+        "synthetic-imported-superpause-projectile-freeze-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-superpause-effect-freeze",
+      "required": true,
+      "status": "passed",
+      "checksum": "59b3155f",
+      "gates": [
+        "synthetic-imported-superpause-effect-freeze-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-explod-supermovetime",
+      "required": true,
+      "status": "passed",
+      "checksum": "d349da45",
+      "gates": [
+        "synthetic-imported-explod-supermovetime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-explod-pausemovetime",
+      "required": true,
+      "status": "passed",
+      "checksum": "467c2030",
+      "gates": [
+        "synthetic-imported-explod-pausemovetime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-explod-ignorehitpause",
+      "required": true,
+      "status": "passed",
+      "checksum": "c2b3ade8",
+      "gates": [
+        "synthetic-imported-explod-ignorehitpause-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitpausetime-ignorehitpause",
+      "required": true,
+      "status": "passed",
+      "checksum": "80c202f3",
+      "gates": [
+        "synthetic-imported-hitpausetime-ignorehitpause-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile",
+      "required": true,
+      "status": "passed",
+      "checksum": "fe66784a",
+      "gates": [
+        "synthetic-imported-projectile-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-target-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "83b0a749",
+      "gates": [
+        "synthetic-imported-projectile-target-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-hitdef-projectile-target-mix",
+      "required": true,
+      "status": "passed",
+      "checksum": "bfb23444",
+      "gates": [
+        "synthetic-imported-hitdef-projectile-target-mix-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-target-controllers",
+      "required": true,
+      "status": "passed",
+      "checksum": "b09bb250",
+      "gates": [
+        "synthetic-imported-projectile-target-controllers-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-default-target-controllers",
+      "required": true,
+      "status": "passed",
+      "checksum": "003ae937",
+      "gates": [
+        "synthetic-imported-projectile-default-target-controllers-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-targetstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "4ddd756a",
+      "gates": [
+        "synthetic-imported-projectile-targetstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-default-targetstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "b1ec8b89",
+      "gates": [
+        "synthetic-imported-projectile-default-targetstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-receiveddamage",
+      "required": true,
+      "status": "passed",
+      "checksum": "4c11f798",
+      "gates": [
+        "synthetic-imported-projectile-receiveddamage-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-time",
+      "required": true,
+      "status": "passed",
+      "checksum": "254841d5",
+      "gates": [
+        "synthetic-imported-projectile-time-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-hittime-any",
+      "required": true,
+      "status": "passed",
+      "checksum": "31b9ad07",
+      "gates": [
+        "synthetic-imported-projectile-hittime-any-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-contacttime-any",
+      "required": true,
+      "status": "passed",
+      "checksum": "6acd044b",
+      "gates": [
+        "synthetic-imported-projectile-contacttime-any-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-contacttime-id",
+      "required": true,
+      "status": "passed",
+      "checksum": "38ef006a",
+      "gates": [
+        "synthetic-imported-projectile-contacttime-id-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projcontactpersist",
+      "required": true,
+      "status": "passed",
+      "checksum": "b9b588be",
+      "gates": [
+        "synthetic-imported-projectile-projcontactpersist-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projcontact-suffix",
+      "required": true,
+      "status": "passed",
+      "checksum": "756f850b",
+      "gates": [
+        "synthetic-imported-projectile-projcontact-suffix-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projcontact-suffix-any",
+      "required": true,
+      "status": "passed",
+      "checksum": "237251ce",
+      "gates": [
+        "synthetic-imported-projectile-projcontact-suffix-any-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projcontact-multi-id",
+      "required": true,
+      "status": "passed",
+      "checksum": "f67c9efc",
+      "gates": [
+        "synthetic-imported-projectile-projcontact-multi-id-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projhit-multi-id",
+      "required": true,
+      "status": "passed",
+      "checksum": "dc5dbc99",
+      "gates": [
+        "synthetic-imported-projectile-projhit-multi-id-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projguarded-multi-id",
+      "required": true,
+      "status": "passed",
+      "checksum": "761a2864",
+      "gates": [
+        "synthetic-imported-projectile-projguarded-multi-id-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projhittime-multi-id",
+      "required": true,
+      "status": "passed",
+      "checksum": "c6a5b966",
+      "gates": [
+        "synthetic-imported-projectile-projhittime-multi-id-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projcontacttime-multi-id",
+      "required": true,
+      "status": "passed",
+      "checksum": "f46ef9e7",
+      "gates": [
+        "synthetic-imported-projectile-projcontacttime-multi-id-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projguardedtime-multi-id",
+      "required": true,
+      "status": "passed",
+      "checksum": "391fc500",
+      "gates": [
+        "synthetic-imported-projectile-projguardedtime-multi-id-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projtime-same-id-last-contact",
+      "required": true,
+      "status": "passed",
+      "checksum": "ae784044",
+      "gates": [
+        "synthetic-imported-projectile-projtime-same-id-last-contact-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projtime-same-id-hit-then-guard",
+      "required": true,
+      "status": "passed",
+      "checksum": "848ceb6b",
+      "gates": [
+        "synthetic-imported-projectile-projtime-same-id-hit-then-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projhit-suffix",
+      "required": true,
+      "status": "passed",
+      "checksum": "2b83bca2",
+      "gates": [
+        "synthetic-imported-projectile-projhit-suffix-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projhit-suffix-any",
+      "required": true,
+      "status": "passed",
+      "checksum": "a150d5e9",
+      "gates": [
+        "synthetic-imported-projectile-projhit-suffix-any-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projguarded-suffix",
+      "required": true,
+      "status": "passed",
+      "checksum": "49dff4c6",
+      "gates": [
+        "synthetic-imported-projectile-projguarded-suffix-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-projguarded-suffix-any",
+      "required": true,
+      "status": "passed",
+      "checksum": "ae3b82ea",
+      "gates": [
+        "synthetic-imported-projectile-projguarded-suffix-any-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-guardedtime-any",
+      "required": true,
+      "status": "passed",
+      "checksum": "10840371",
+      "gates": [
+        "synthetic-imported-projectile-guardedtime-any-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-guardedtime-id",
+      "required": true,
+      "status": "passed",
+      "checksum": "3ad8d97e",
+      "gates": [
+        "synthetic-imported-projectile-guardedtime-id-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-motion",
+      "required": true,
+      "status": "passed",
+      "checksum": "4e5c5114",
+      "gates": [
+        "synthetic-imported-projectile-motion-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-guard-distance-latch",
+      "required": true,
+      "status": "passed",
+      "checksum": "02964dea",
+      "gates": [
+        "synthetic-imported-projectile-guard-distance-latch-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-velmul",
+      "required": true,
+      "status": "passed",
+      "checksum": "749b8552",
+      "gates": [
+        "synthetic-imported-projectile-velmul-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-modifyprojectile",
+      "required": true,
+      "status": "passed",
+      "checksum": "63a87da1",
+      "gates": [
+        "synthetic-imported-modifyprojectile-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-modifyprojectile-dynamic-bounds",
+      "required": true,
+      "status": "passed",
+      "checksum": "e2f7a077",
+      "gates": [
+        "synthetic-imported-modifyprojectile-dynamic-bounds-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-modifyprojectile-omitted-bounds",
+      "required": true,
+      "status": "passed",
+      "checksum": "24cbb1dc",
+      "gates": [
+        "synthetic-imported-modifyprojectile-omitted-bounds-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-modifyprojectile-dynamic-params",
+      "required": true,
+      "status": "passed",
+      "checksum": "ca00e755",
+      "gates": [
+        "synthetic-imported-modifyprojectile-dynamic-params-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-contact",
+      "required": true,
+      "status": "passed",
+      "checksum": "09a72705",
+      "gates": [
+        "synthetic-imported-projectile-contact-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-guard",
+      "required": true,
+      "status": "passed",
+      "checksum": "23c02f76",
+      "gates": [
+        "synthetic-imported-projectile-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-guard-ko",
+      "required": true,
+      "status": "passed",
+      "checksum": "37b78c1c",
+      "gates": [
+        "synthetic-imported-projectile-guard-ko-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-guard-kill",
+      "required": true,
+      "status": "passed",
+      "checksum": "0d1d6bbe",
+      "gates": [
+        "synthetic-imported-projectile-guard-kill-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-guard-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "9569cf6a",
+      "gates": [
+        "synthetic-imported-projectile-guard-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-remove-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "8a65629c",
+      "gates": [
+        "synthetic-imported-projectile-remove-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-remove-hit-fallback-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "3bbdfbfc",
+      "gates": [
+        "synthetic-imported-projectile-remove-hit-fallback-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-bounds-remove-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "2c1fe9f6",
+      "gates": [
+        "synthetic-imported-projectile-bounds-remove-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-default-bounds-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "f00bf4f4",
+      "gates": [
+        "synthetic-imported-projectile-default-bounds-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-localcoord-default-bounds-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "6bcdaf6f",
+      "gates": [
+        "synthetic-imported-projectile-localcoord-default-bounds-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-stagebound-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "edb99f3a",
+      "gates": [
+        "synthetic-imported-projectile-stagebound-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-edgebound-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "4c679ea1",
+      "gates": [
+        "synthetic-imported-projectile-edgebound-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-heightbound-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "1164a584",
+      "gates": [
+        "synthetic-imported-projectile-heightbound-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-multihit",
+      "required": true,
+      "status": "passed",
+      "checksum": "5a2fa51a",
+      "gates": [
+        "synthetic-imported-projectile-multihit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-clash",
+      "required": true,
+      "status": "passed",
+      "checksum": "5964891b",
+      "gates": [
+        "synthetic-imported-projectile-clash-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-priority-cancel",
+      "required": true,
+      "status": "passed",
+      "checksum": "0a45e8d4",
+      "gates": [
+        "synthetic-imported-projectile-priority-cancel-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-cancel-remove-fallback-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "f6e6d59e",
+      "gates": [
+        "synthetic-imported-projectile-cancel-remove-fallback-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-canceltime",
+      "required": true,
+      "status": "passed",
+      "checksum": "4feb8564",
+      "gates": [
+        "synthetic-imported-projectile-canceltime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-canceltime-any",
+      "required": true,
+      "status": "passed",
+      "checksum": "f2771e21",
+      "gates": [
+        "synthetic-imported-projectile-canceltime-any-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-canceltime-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "888648f7",
+      "gates": [
+        "synthetic-imported-projectile-canceltime-dynamic-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-projectile-canceltime-var",
+      "required": true,
+      "status": "passed",
+      "checksum": "32a9ef00",
+      "gates": [
+        "synthetic-imported-projectile-canceltime-var-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper",
+      "required": true,
+      "status": "passed",
+      "checksum": "44afe4e6",
+      "gates": [
+        "synthetic-imported-helper-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-velocity",
+      "required": true,
+      "status": "passed",
+      "checksum": "d1566f79",
+      "gates": [
+        "synthetic-imported-helper-velocity-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-ishelper",
+      "required": true,
+      "status": "passed",
+      "checksum": "37877602",
+      "gates": [
+        "synthetic-imported-helper-ishelper-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-enemynear",
+      "required": true,
+      "status": "passed",
+      "checksum": "35498955",
+      "gates": [
+        "synthetic-imported-helper-enemynear-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-parentroot",
+      "required": true,
+      "status": "passed",
+      "checksum": "5154220c",
+      "gates": [
+        "synthetic-imported-helper-parentroot-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-controller-param-parentroot",
+      "required": true,
+      "status": "passed",
+      "checksum": "d470d23a",
+      "gates": [
+        "synthetic-imported-helper-controller-param-parentroot-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-dynamic-veladd",
+      "required": true,
+      "status": "passed",
+      "checksum": "055100cb",
+      "gates": [
+        "synthetic-imported-helper-dynamic-veladd-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-dynamic-velmul",
+      "required": true,
+      "status": "passed",
+      "checksum": "08220a98",
+      "gates": [
+        "synthetic-imported-helper-dynamic-velmul-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-dynamic-posset",
+      "required": true,
+      "status": "passed",
+      "checksum": "50596bc2",
+      "gates": [
+        "synthetic-imported-helper-dynamic-posset-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-dynamic-posadd",
+      "required": true,
+      "status": "passed",
+      "checksum": "97ec15d0",
+      "gates": [
+        "synthetic-imported-helper-dynamic-posadd-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-explod",
+      "required": true,
+      "status": "passed",
+      "checksum": "87ae363f",
+      "gates": [
+        "synthetic-imported-helper-explod-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile",
+      "required": true,
+      "status": "passed",
+      "checksum": "b6269136",
+      "gates": [
+        "synthetic-imported-helper-projectile-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-removeexplod",
+      "required": true,
+      "status": "passed",
+      "checksum": "ff8658a2",
+      "gates": [
+        "synthetic-imported-helper-removeexplod-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-modifyexplod",
+      "required": true,
+      "status": "passed",
+      "checksum": "0749041c",
+      "gates": [
+        "synthetic-imported-helper-modifyexplod-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-modifyprojectile",
+      "required": true,
+      "status": "passed",
+      "checksum": "09d3f7e4",
+      "gates": [
+        "synthetic-imported-helper-modifyprojectile-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-modifyprojectile-dynamic-bounds",
+      "required": true,
+      "status": "passed",
+      "checksum": "f582153e",
+      "gates": [
+        "synthetic-imported-helper-modifyprojectile-dynamic-bounds-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-modifyprojectile-omitted-bounds",
+      "required": true,
+      "status": "passed",
+      "checksum": "9db04bbc",
+      "gates": [
+        "synthetic-imported-helper-modifyprojectile-omitted-bounds-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-modifyprojectile-dynamic-params",
+      "required": true,
+      "status": "passed",
+      "checksum": "f4ac3b9c",
+      "gates": [
+        "synthetic-imported-helper-modifyprojectile-dynamic-params-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projhit",
+      "required": true,
+      "status": "passed",
+      "checksum": "cc4519f2",
+      "gates": [
+        "synthetic-imported-helper-projhit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projhittime-any",
+      "required": true,
+      "status": "passed",
+      "checksum": "77fc1bf6",
+      "gates": [
+        "synthetic-imported-helper-projhittime-any-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-hitoverride-p2stateno",
+      "required": true,
+      "status": "passed",
+      "checksum": "e48d6d5b",
+      "gates": [
+        "synthetic-imported-helper-projectile-hitoverride-p2stateno-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-hitoverride-slot-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "de33ff4c",
+      "gates": [
+        "synthetic-imported-helper-projectile-hitoverride-slot-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-slot-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "34d17e12",
+      "gates": [
+        "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-slot-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-guardflag-filter",
+      "required": true,
+      "status": "passed",
+      "checksum": "fbb76b44",
+      "gates": [
+        "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-guardflag-filter-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-hitoverride-guardflag-filter",
+      "required": true,
+      "status": "passed",
+      "checksum": "c7a5886c",
+      "gates": [
+        "synthetic-imported-helper-projectile-hitoverride-guardflag-filter-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-hitoverride-forceair-forceguard-keepstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "60511534",
+      "gates": [
+        "synthetic-imported-helper-projectile-hitoverride-forceair-forceguard-keepstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "207aaf6b",
+      "gates": [
+        "synthetic-imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-hitoverride-missonoverride-one",
+      "required": true,
+      "status": "passed",
+      "checksum": "ac8c8595",
+      "gates": [
+        "synthetic-imported-helper-projectile-hitoverride-missonoverride-one-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero",
+      "required": true,
+      "status": "passed",
+      "checksum": "8dcd2399",
+      "gates": [
+        "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "fdaf68db",
+      "gates": [
+        "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "7cad2e6a",
+      "gates": [
+        "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter",
+      "required": true,
+      "status": "passed",
+      "checksum": "dca0768b",
+      "gates": [
+        "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-target",
+      "required": true,
+      "status": "passed",
+      "checksum": "7bd63b31",
+      "gates": [
+        "synthetic-imported-helper-projectile-target-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-bare-target",
+      "required": true,
+      "status": "passed",
+      "checksum": "c28fe354",
+      "gates": [
+        "synthetic-imported-helper-projectile-bare-target-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-target-controllers",
+      "required": true,
+      "status": "passed",
+      "checksum": "a204f47c",
+      "gates": [
+        "synthetic-imported-helper-projectile-target-controllers-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-targetstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "402022aa",
+      "gates": [
+        "synthetic-imported-helper-projectile-targetstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-default-targetstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "bbd8e526",
+      "gates": [
+        "synthetic-imported-helper-projectile-default-targetstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-default-target-controllers",
+      "required": true,
+      "status": "passed",
+      "checksum": "3423a66f",
+      "gates": [
+        "synthetic-imported-helper-projectile-default-target-controllers-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-default-target",
+      "required": true,
+      "status": "passed",
+      "checksum": "d7a0f047",
+      "gates": [
+        "synthetic-imported-helper-projectile-default-target-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projguard",
+      "required": true,
+      "status": "passed",
+      "checksum": "093760fc",
+      "gates": [
+        "synthetic-imported-helper-projguard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-guard-ko",
+      "required": true,
+      "status": "passed",
+      "checksum": "4a0223e7",
+      "gates": [
+        "synthetic-imported-helper-projectile-guard-ko-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-guard-kill",
+      "required": true,
+      "status": "passed",
+      "checksum": "fb71622e",
+      "gates": [
+        "synthetic-imported-helper-projectile-guard-kill-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-guard-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "5b0a6b22",
+      "gates": [
+        "synthetic-imported-helper-projectile-guard-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-cancel-remove-fallback-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "cf33c924",
+      "gates": [
+        "synthetic-imported-helper-projectile-cancel-remove-fallback-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-remove-hit-fallback-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "0ed9e229",
+      "gates": [
+        "synthetic-imported-helper-projectile-remove-hit-fallback-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-default-bounds-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "e85d7bbf",
+      "gates": [
+        "synthetic-imported-helper-projectile-default-bounds-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-localcoord-default-bounds-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "46b0164c",
+      "gates": [
+        "synthetic-imported-helper-projectile-localcoord-default-bounds-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-heightbound-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "debb08b1",
+      "gates": [
+        "synthetic-imported-helper-projectile-heightbound-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-edgebound-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "8482f4f3",
+      "gates": [
+        "synthetic-imported-helper-projectile-edgebound-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projectile-stagebound-terminal",
+      "required": true,
+      "status": "passed",
+      "checksum": "488ce550",
+      "gates": [
+        "synthetic-imported-helper-projectile-stagebound-terminal-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projguardedtime-any",
+      "required": true,
+      "status": "passed",
+      "checksum": "f7c2b273",
+      "gates": [
+        "synthetic-imported-helper-projguardedtime-any-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projcontact",
+      "required": true,
+      "status": "passed",
+      "checksum": "7b08d29b",
+      "gates": [
+        "synthetic-imported-helper-projcontact-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projcontacttime-any",
+      "required": true,
+      "status": "passed",
+      "checksum": "5d2ce828",
+      "gates": [
+        "synthetic-imported-helper-projcontacttime-any-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projcontactpersist",
+      "required": true,
+      "status": "passed",
+      "checksum": "ce604f2d",
+      "gates": [
+        "synthetic-imported-helper-projcontactpersist-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projtime-same-id-last-contact",
+      "required": true,
+      "status": "passed",
+      "checksum": "3a070719",
+      "gates": [
+        "synthetic-imported-helper-projtime-same-id-last-contact-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projtime-same-id-hit-then-guard",
+      "required": true,
+      "status": "passed",
+      "checksum": "723fc304",
+      "gates": [
+        "synthetic-imported-helper-projtime-same-id-hit-then-guard-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projcanceltime-any",
+      "required": true,
+      "status": "passed",
+      "checksum": "f7e7fa01",
+      "gates": [
+        "synthetic-imported-helper-projcanceltime-any-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projcanceltime-id",
+      "required": true,
+      "status": "passed",
+      "checksum": "fc412176",
+      "gates": [
+        "synthetic-imported-helper-projcanceltime-id-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-projcanceltime-dynamic",
+      "required": true,
+      "status": "passed",
+      "checksum": "cc78dde2",
+      "gates": [
+        "synthetic-imported-helper-projcanceltime-dynamic-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-hitdef",
+      "required": true,
+      "status": "passed",
+      "checksum": "0195fcbb",
+      "gates": [
+        "synthetic-imported-helper-hitdef-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-hitdef-sprite-priority",
+      "required": true,
+      "status": "passed",
+      "checksum": "23d91f3f",
+      "gates": [
+        "synthetic-imported-helper-hitdef-sprite-priority-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-hitdefpersist",
+      "required": true,
+      "status": "passed",
+      "checksum": "dcdb04bc",
+      "gates": [
+        "synthetic-imported-helper-hitdefpersist-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-hitcountpersist",
+      "required": true,
+      "status": "passed",
+      "checksum": "f2a782cd",
+      "gates": [
+        "synthetic-imported-helper-hitcountpersist-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-movehitpersist",
+      "required": true,
+      "status": "passed",
+      "checksum": "75b52270",
+      "gates": [
+        "synthetic-imported-helper-movehitpersist-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-moveguardedpersist",
+      "required": true,
+      "status": "passed",
+      "checksum": "4b48e97d",
+      "gates": [
+        "synthetic-imported-helper-moveguardedpersist-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-movereversedpersist",
+      "required": true,
+      "status": "passed",
+      "checksum": "ef8ffdf5",
+      "gates": [
+        "synthetic-imported-helper-movereversedpersist-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-target",
+      "required": true,
+      "status": "passed",
+      "checksum": "d16ad431",
+      "gates": [
+        "synthetic-imported-helper-target-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-default-target",
+      "required": true,
+      "status": "passed",
+      "checksum": "ea59edd1",
+      "gates": [
+        "synthetic-imported-helper-default-target-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-bare-target",
+      "required": true,
+      "status": "passed",
+      "checksum": "2693f13c",
+      "gates": [
+        "synthetic-imported-helper-bare-target-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-target-controllers",
+      "required": true,
+      "status": "passed",
+      "checksum": "0a86ffb9",
+      "gates": [
+        "synthetic-imported-helper-target-controllers-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-target-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "9234cefd",
+      "gates": [
+        "synthetic-imported-helper-target-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-bind-to-target-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "9139d342",
+      "gates": [
+        "synthetic-imported-helper-bind-to-target-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-targetstate",
+      "required": true,
+      "status": "passed",
+      "checksum": "4151243c",
+      "gates": [
+        "synthetic-imported-helper-targetstate-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-target-state-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "f533cf5c",
+      "gates": [
+        "synthetic-imported-helper-target-state-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-target-helper-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "412b6253",
+      "gates": [
+        "synthetic-imported-helper-target-helper-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-bind-helper-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "6132bd42",
+      "gates": [
+        "synthetic-imported-helper-bind-helper-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-target-auxiliary-redirect",
+      "required": true,
+      "status": "passed",
+      "checksum": "d56173b3",
+      "gates": [
+        "synthetic-imported-helper-target-auxiliary-redirect-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-numexplod",
+      "required": true,
+      "status": "passed",
+      "checksum": "4328278a",
+      "gates": [
+        "synthetic-imported-helper-numexplod-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-numhelper",
+      "required": true,
+      "status": "passed",
+      "checksum": "4e32e951",
+      "gates": [
+        "synthetic-imported-helper-numhelper-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-numproj",
+      "required": true,
+      "status": "passed",
+      "checksum": "3312a554",
+      "gates": [
+        "synthetic-imported-helper-numproj-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helpervar",
+      "required": true,
+      "status": "passed",
+      "checksum": "cf9710ef",
+      "gates": [
+        "synthetic-imported-helpervar-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-bindtoparent",
+      "required": true,
+      "status": "passed",
+      "checksum": "f9922c0e",
+      "gates": [
+        "synthetic-imported-helper-bindtoparent-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-bindtoroot",
+      "required": true,
+      "status": "passed",
+      "checksum": "bf72306c",
+      "gates": [
+        "synthetic-imported-helper-bindtoroot-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-scale",
+      "required": true,
+      "status": "passed",
+      "checksum": "905e732a",
+      "gates": [
+        "synthetic-imported-helper-scale-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-supermovetime",
+      "required": true,
+      "status": "passed",
+      "checksum": "a899da2c",
+      "gates": [
+        "synthetic-imported-helper-supermovetime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-pausemovetime",
+      "required": true,
+      "status": "passed",
+      "checksum": "0846dfd3",
+      "gates": [
+        "synthetic-imported-helper-pausemovetime-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-helper-ignorehitpause",
+      "required": true,
+      "status": "passed",
+      "checksum": "17269fa8",
+      "gates": [
+        "synthetic-imported-helper-ignorehitpause-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-explod",
+      "required": true,
+      "status": "passed",
+      "checksum": "440e038d",
+      "gates": [
+        "synthetic-imported-explod-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-explod-velocity",
+      "required": true,
+      "status": "passed",
+      "checksum": "5adcfc81",
+      "gates": [
+        "synthetic-imported-explod-velocity-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-modifyexplod",
+      "required": true,
+      "status": "passed",
+      "checksum": "bca75991",
+      "gates": [
+        "synthetic-imported-modifyexplod-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-explod-bind",
+      "required": true,
+      "status": "passed",
+      "checksum": "6e71298b",
+      "gates": [
+        "synthetic-imported-explod-bind-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-explod-scale",
+      "required": true,
+      "status": "passed",
+      "checksum": "52bc1513",
+      "gates": [
+        "synthetic-imported-explod-scale-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-explod-removeongethit",
+      "required": true,
+      "status": "passed",
+      "checksum": "2db9ce94",
+      "gates": [
+        "synthetic-imported-explod-removeongethit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-explod-removeonprojectilehit",
+      "required": true,
+      "status": "passed",
+      "checksum": "9688bca6",
+      "gates": [
+        "synthetic-imported-explod-removeonprojectilehit-golden"
+      ]
+    },
+    {
+      "name": "synthetic-imported-explod-removeonprojectileguard",
+      "required": true,
+      "status": "passed",
+      "checksum": "b59dfa32",
+      "gates": [
+        "synthetic-imported-explod-removeonprojectileguard-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-x",
+      "required": false,
+      "status": "passed",
+      "checksum": "9437d392",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-basic-movement",
+      "required": false,
+      "status": "passed",
+      "checksum": "565cd36d",
+      "gates": [
+        "imported-basic-movement-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-x-hit-sound",
+      "required": false,
+      "status": "passed",
+      "checksum": "9437d392",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-x-hit-spark",
+      "required": false,
+      "status": "passed",
+      "checksum": "9437d392",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-qcf-x",
+      "required": false,
+      "status": "passed",
+      "checksum": "987798eb",
+      "gates": [
+        "imported-qcf-x-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-x-guard",
+      "required": false,
+      "status": "passed",
+      "checksum": "45fb698a",
+      "gates": [
+        "imported-guard-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-guard-state",
+      "required": false,
+      "status": "passed",
+      "checksum": "d6bfada4",
+      "gates": [
+        "kfm-official-default-guard-state-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-guard-slide-stop",
+      "required": false,
+      "status": "passed",
+      "checksum": "d6bfada4",
+      "gates": [
+        "kfm-official-default-guard-slide-stop-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-guard-hold-return",
+      "required": false,
+      "status": "passed",
+      "checksum": "d6bfada4",
+      "gates": [
+        "kfm-official-default-guard-hold-return-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-guard-hold-walk-return",
+      "required": false,
+      "status": "passed",
+      "checksum": "d6bfada4",
+      "gates": [
+        "kfm-official-default-guard-hold-walk-return-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-crouch-guard-state",
+      "required": false,
+      "status": "passed",
+      "checksum": "577480dd",
+      "gates": [
+        "kfm-official-default-crouch-guard-state-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-crouch-guard-slide-stop",
+      "required": false,
+      "status": "passed",
+      "checksum": "577480dd",
+      "gates": [
+        "kfm-official-default-crouch-guard-slide-stop-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-crouch-guard-hold-crouch-return",
+      "required": false,
+      "status": "passed",
+      "checksum": "577480dd",
+      "gates": [
+        "kfm-official-default-crouch-guard-hold-crouch-return-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-air-guard-state",
+      "required": false,
+      "status": "passed",
+      "checksum": "7eec1151",
+      "gates": [
+        "kfm-official-default-air-guard-state-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-auto-guard-start",
+      "required": false,
+      "status": "passed",
+      "checksum": "098a9bb4",
+      "gates": [
+        "kfm-official-auto-guard-start-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-auto-guard-end",
+      "required": false,
+      "status": "passed",
+      "checksum": "c9254238",
+      "gates": [
+        "kfm-official-auto-guard-end-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-x-hitstun",
+      "required": false,
+      "status": "passed",
+      "checksum": "cc316bbd",
+      "gates": [
+        "imported-hitstun-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-gethit",
+      "required": false,
+      "status": "passed",
+      "checksum": "dc616330",
+      "gates": [
+        "imported-default-gethit-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-gethit-progression",
+      "required": false,
+      "status": "passed",
+      "checksum": "bb4a811b",
+      "gates": [
+        "imported-default-gethit-progression-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-crouch-gethit-progression",
+      "required": false,
+      "status": "passed",
+      "checksum": "13fb5a1c",
+      "gates": [
+        "imported-default-crouch-gethit-progression-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-fall-gethit",
+      "required": false,
+      "status": "passed",
+      "checksum": "8e6e689a",
+      "gates": [
+        "imported-default-fall-gethit-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-fall-recovery",
+      "required": false,
+      "status": "passed",
+      "checksum": "03b02f7f",
+      "gates": [
+        "imported-default-fall-recovery-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-fall-recovery-input",
+      "required": false,
+      "status": "passed",
+      "checksum": "a311bf8d",
+      "gates": [
+        "imported-default-fall-recovery-input-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-air-fall-recovery-input",
+      "required": false,
+      "status": "passed",
+      "checksum": "7f32a362",
+      "gates": [
+        "imported-default-fall-recovery-input-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-fall-recovery-threshold",
+      "required": false,
+      "status": "passed",
+      "checksum": "114722fc",
+      "gates": [
+        "imported-default-fall-ground-recovery-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-fall-recovery-too-early",
+      "required": false,
+      "status": "passed",
+      "checksum": "11164984",
+      "gates": [
+        "imported-default-fall-recovery-too-early-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-air-fall-recovery-too-early",
+      "required": false,
+      "status": "passed",
+      "checksum": "e5b231ed",
+      "gates": [
+        "imported-default-fall-recovery-too-early-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-fall-ground-recovery",
+      "required": false,
+      "status": "passed",
+      "checksum": "b73dea72",
+      "gates": [
+        "imported-default-fall-ground-recovery-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-default-fall-ground-recovery-priority",
+      "required": false,
+      "status": "passed",
+      "checksum": "b73dea72",
+      "gates": [
+        "imported-default-fall-ground-recovery-golden"
+      ]
+    },
+    {
+      "name": "kfm-official-x-state-exit",
+      "required": false,
+      "status": "passed",
+      "checksum": "48ab3651",
+      "gates": [
+        "imported-state-exit-golden"
+      ]
+    },
+    {
+      "name": "codefuman-independent-x",
+      "required": false,
+      "status": "passed",
+      "checksum": "84bb5edd",
+      "gates": [
+        "imported-x-golden"
+      ]
+    },
+    {
+      "name": "codefuman-independent-qcf-x",
+      "required": false,
+      "status": "passed",
+      "checksum": "e56f1754",
+      "gates": [
+        "imported-qcf-x-golden"
+      ]
+    },
+    {
+      "name": "codefuman-independent-upper-x",
+      "required": false,
+      "status": "passed",
+      "checksum": "3119c848",
+      "gates": [
+        "imported-upper-x-golden"
+      ]
+    }
+  ],
+  "coverage": {
+    "totalArtifacts": 663,
+    "requiredArtifacts": 629,
+    "optionalArtifacts": 34,
+    "passedArtifacts": 663,
+    "failedArtifacts": 0,
+    "skippedOptionalFixtures": 0,
+    "controllerFamilies": 96,
+    "operationFamilies": 91,
+    "effectKinds": 3,
+    "combatReasons": 6,
+    "matchPauseRoutes": 24,
+    "soundEventTypes": 3,
+    "hitEffectEventKinds": 2,
+    "envShakeEventRoutes": 1,
+    "worldLifecycleRoutes": 11,
+    "roundFrameRoutes": 3,
+    "targetLinkRoutes": 479,
+    "effectStoreRoutes": 662,
+    "effectPayloadKinds": 3,
+    "effectPayloadDeltaRoutes": 22
+  },
+  "skipped": []
+}

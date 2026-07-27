@@ -1,7 +1,7 @@
 /**
- * DA30-024: core Play route browser journey.
- * Loads exact packages/stage, waits for combat shell, sends input, checks HUD/focus/canvas,
- * records console/page errors, screenshots, and browser evidence facts at one SHA.
+ * DA30-024 Play browser gate — clause repair:
+ * semantic state deltas (movement, contact/damage when observable, round/reset hooks)
+ * via __MUGEN_WEB_SANDBOX__.qaProbe, not text-presence alone.
  */
 const { chromium } = require("playwright");
 const crypto = require("node:crypto");
@@ -13,20 +13,35 @@ const net = require("node:net");
 const repoRoot = path.resolve(process.cwd());
 const outDir = path.join(repoRoot, "docs/evidence/da30/browser");
 const reportPath = path.join(repoRoot, "docs/evidence/da30/da30-024-play-browser-gate.json");
-
-const PLAY_URL =
-  "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo";
+const PLAY_URL = "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo";
 
 function sha256(buf) {
   return crypto.createHash("sha256").update(buf).digest("hex");
 }
-
 function headSha() {
   try {
     return execSync("git rev-parse HEAD", { cwd: repoRoot, encoding: "utf8" }).trim();
   } catch {
     return "unknown";
   }
+}
+function isBenignConsole(msg) {
+  const s = String(msg);
+  return /WebGL|swiftshader|ANGLE|GPU process|DevTools|favicon/i.test(s);
+}
+
+async function readProbe(page) {
+  return page.evaluate(() => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    if (!bridge || typeof bridge.qaProbe !== "function") {
+      return { available: false, reason: "qaProbe missing" };
+    }
+    try {
+      return { available: true, ...bridge.qaProbe() };
+    } catch (e) {
+      return { available: false, reason: String(e) };
+    }
+  });
 }
 
 async function main() {
@@ -38,7 +53,6 @@ async function main() {
     cwd: repoRoot,
     stdio: ["ignore", "pipe", "pipe"],
   });
-
   const head = headSha();
   const startedAt = new Date().toISOString();
 
@@ -49,19 +63,8 @@ async function main() {
       args: ["--disable-dev-shm-usage", "--use-gl=angle", "--use-angle=swiftshader"],
     });
 
-    const desktop = await runPlayJourney(browser, base, {
-      name: "play-desktop",
-      w: 1440,
-      h: 900,
-      dpr: 1,
-    });
-    const mobile = await runPlayJourney(browser, base, {
-      name: "play-mobile",
-      w: 390,
-      h: 844,
-      dpr: 2,
-    });
-
+    const desktop = await runPlayJourney(browser, base, { name: "play-desktop", w: 1440, h: 900, dpr: 1 });
+    const mobile = await runPlayJourney(browser, base, { name: "play-mobile", w: 390, h: 844, dpr: 2 });
     await browser.close();
 
     const journeys = [desktop, mobile];
@@ -70,40 +73,24 @@ async function main() {
         .filter((e) => !isBenignConsole(e))
         .map((e) => ({ journey: j.name, kind: "console", message: e })),
     ).concat(
-      journeys.flatMap((j) =>
-        j.pageErrors.map((e) => ({ journey: j.name, kind: "page", message: e })),
-      ),
+      journeys.flatMap((j) => j.pageErrors.map((e) => ({ journey: j.name, kind: "page", message: e }))),
     );
 
-    const ok =
-      journeys.every((j) => j.shellFound && j.canvasOrStageFound) &&
-      unexpectedErrors.length === 0 &&
-      journeys.every((j) => j.screenshotBytes > 1000);
-
-    const facts = journeys.map((j) => ({
-      route: PLAY_URL,
-      queryState: { mode: "match", p1: "nova-boxer", p2: "mira-volt", stage: "rooftop-dojo" },
-      browser: "chromium",
-      browserVersion: j.browserVersion,
-      os: process.platform,
-      viewport: { width: j.w, height: j.h },
-      dpr: j.dpr,
-      input: "keyboard",
-      commit: head,
-      screenshotDigest: j.screenshotSha256,
-      consoleErrors: j.consoleErrors,
-      pageErrors: j.pageErrors,
-      focusChecks: j.focusChecks,
-      result: j.shellFound && j.canvasOrStageFound && j.consoleErrors.filter((e) => !isBenignConsole(e)).length === 0 ? "pass" : "fail",
-      journey: j.name,
-      hudSignals: j.hudSignals,
-      inputSent: j.inputSent,
-      rendererPresent: j.rendererPresent,
-    }));
+    const semanticOk = journeys.every(
+      (j) =>
+        j.shellFound &&
+        j.canvasOrStageFound &&
+        j.semantic.probeAvailable &&
+        j.semantic.movementObserved &&
+        j.semantic.tickAdvanced &&
+        j.screenshotBytes > 1000,
+    );
+    const ok = semanticOk && unexpectedErrors.length === 0;
 
     const report = {
-      schema: "Da30PlayBrowserGate/v1",
+      schema: "Da30PlayBrowserGate/v2",
       id: "DA30-024",
+      repair: "semantic-deltas-v1",
       generatedAt: new Date().toISOString(),
       startedAt,
       endedAt: new Date().toISOString(),
@@ -123,30 +110,38 @@ async function main() {
         focusChecks: j.focusChecks,
         hudSignals: j.hudSignals,
         inputSent: j.inputSent,
+        semantic: j.semantic,
         consoleErrorCount: j.consoleErrors.length,
         pageErrorCount: j.pageErrors.length,
         unexpectedConsole: j.consoleErrors.filter((e) => !isBenignConsole(e)),
       })),
-      browserFacts: facts,
       unexpectedErrors,
-      claimCeiling: "one Play route (match nova vs mira rooftop) desktop+mobile only",
+      claimCeiling: "one Play route nova/mira/rooftop desktop+mobile with semantic deltas only",
       claims: {
         allowed: ok
-          ? ["Play route load + shell/canvas + keyboard input path + HUD signals at measured SHA"]
+          ? [
+              "route load shell/canvas",
+              "qaProbe actor life/pos samples",
+              "movement delta after hold",
+              "tick advance while playing",
+              "damage delta when observed",
+              "reset hook observation",
+            ]
           : [],
-        blocked: [
-          "broad usability matrix",
-          "Studio/Inspect (DA30-025)",
-          "score movement",
-          "formal tip rewrite without DA30-021",
-        ],
+        blocked: ["broad usability", "all stages/characters", "score movement", "physical gamepad"],
+      },
+      clauseStatus: {
+        movement: journeys.every((j) => j.semantic.movementObserved),
+        contactOrDamage: journeys.some((j) => j.semantic.damageObserved),
+        tickAdvance: journeys.every((j) => j.semantic.tickAdvanced),
+        resetHook: journeys.some((j) => j.semantic.resetObserved),
+        probeApi: journeys.every((j) => j.semantic.probeAvailable),
       },
     };
     report.digest = {
       algorithm: "sha-256",
       value: sha256(JSON.stringify({ ...report, digest: undefined })),
     };
-
     fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
     process.stdout.write(
       `${JSON.stringify(
@@ -154,8 +149,8 @@ async function main() {
           status: ok ? "passed" : "failed",
           output: "docs/evidence/da30/da30-024-play-browser-gate.json",
           head: head.slice(0, 12),
-          journeys: journeys.map((j) => j.name),
-          unexpectedErrors: unexpectedErrors.length,
+          movement: report.clauseStatus.movement,
+          damage: report.clauseStatus.contactOrDamage,
           ok,
         },
         null,
@@ -186,7 +181,7 @@ async function runPlayJourney(browser, base, opts) {
   });
 
   await page.goto(`${base}${PLAY_URL}`, { waitUntil: "domcontentloaded", timeout: 120_000 });
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(2500);
 
   let shellFound = false;
   try {
@@ -195,57 +190,106 @@ async function runPlayJourney(browser, base, opts) {
   } catch {
     shellFound = false;
   }
-
-  // Prefer match mode chrome if present
   await page.waitForTimeout(1500);
 
-  const canvasOrStageFound = await page.evaluate(() => {
-    const canvas = document.querySelector("canvas");
-    const stage = document.querySelector("#stage, .stage, [data-stage], .match-stage");
-    return Boolean(canvas || stage);
-  });
+  const canvasOrStageFound = await page.evaluate(() =>
+    Boolean(document.querySelector("canvas") || document.querySelector("#stage, .stage, [data-stage]")),
+  );
 
-  // Focus main shell / canvas for input
   await page.evaluate(() => {
-    const el =
-      document.querySelector("canvas") ||
-      document.querySelector(".app-shell") ||
-      document.querySelector("main") ||
-      document.body;
+    const el = document.querySelector("canvas") || document.querySelector(".app-shell") || document.body;
     if (el && typeof el.focus === "function") {
       el.setAttribute("tabindex", el.getAttribute("tabindex") || "0");
       el.focus();
     }
   });
 
+  // Ensure match is playing if a play control exists
+  await page.evaluate(() => {
+    const btn = [...document.querySelectorAll("button")].find((b) => /play|resume/i.test(b.textContent || ""));
+    if (btn) btn.click();
+  });
+  await page.waitForTimeout(400);
+
+  const before = await readProbe(page);
   const focusChecks = await page.evaluate(() => {
     const active = document.activeElement;
-    const tag = active ? `${active.tagName.toLowerCase()}.${active.className}`.slice(0, 80) : "none";
-    const canvas = document.querySelector("canvas");
-    return [
-      `active=${tag}`,
-      `canvasPresent=${Boolean(canvas)}`,
-      `bodyFocusable=${document.body.tabIndex >= -1}`,
-    ];
+    const tag = active ? `${active.tagName.toLowerCase()}.${String(active.className || "").slice(0, 40)}` : "none";
+    return [`active=${tag}`, `canvasPresent=${Boolean(document.querySelector("canvas"))}`, `probeReady=pending`];
   });
 
-  // Send combat-ish input sequence (WASD + attack keys common in sandbox)
   const inputSent = [];
-  for (const key of ["a", "s", "d", "w", "y", "x", "b", " "]) {
-    await page.keyboard.down(key);
-    inputSent.push(`${key}:down`);
-    await page.waitForTimeout(80);
-    await page.keyboard.up(key);
-    inputSent.push(`${key}:up`);
-    await page.waitForTimeout(40);
-  }
-  // Hold a direction briefly
-  await page.keyboard.down("d");
-  await page.waitForTimeout(200);
-  await page.keyboard.up("d");
-  inputSent.push("d:hold");
+  // Keyboard map: ArrowRight→F (forward), z→a, x→b, c→c (see KeyboardInputAdapter)
+  await page.keyboard.down("ArrowRight");
+  inputSent.push("ArrowRight:hold-start");
+  await page.waitForTimeout(700);
+  await page.keyboard.up("ArrowRight");
+  inputSent.push("ArrowRight:hold-end");
+  await page.waitForTimeout(300);
+  const afterMove = await readProbe(page);
 
+  // Approach + light attack (z maps to a)
+  for (let i = 0; i < 3; i++) {
+    await page.keyboard.down("ArrowRight");
+    await page.waitForTimeout(200);
+    await page.keyboard.up("ArrowRight");
+    await page.keyboard.down("z");
+    inputSent.push("z:down");
+    await page.waitForTimeout(120);
+    await page.keyboard.up("z");
+    inputSent.push("z:up");
+    await page.waitForTimeout(150);
+  }
+  // Hold forward longer then attack
+  await page.keyboard.down("ArrowRight");
+  await page.waitForTimeout(900);
+  await page.keyboard.up("ArrowRight");
+  await page.keyboard.down("x");
+  await page.waitForTimeout(150);
+  await page.keyboard.up("x");
+  inputSent.push("approach+x");
   await page.waitForTimeout(800);
+  const afterCombat = await readProbe(page);
+
+  // Reset / round controls if present
+  const resetClick = await page.evaluate(() => {
+    const btn = [...document.querySelectorAll("button")].find((b) =>
+      /reset|restart|rematch|round/i.test(b.textContent || ""),
+    );
+    if (!btn) return { found: false };
+    btn.click();
+    return { found: true, label: (btn.textContent || "").trim().slice(0, 40) };
+  });
+  await page.waitForTimeout(500);
+  const afterReset = await readProbe(page);
+
+  const p1Before = before.actors?.[0];
+  const p1AfterMove = afterMove.actors?.[0];
+  const p2Before = before.actors?.[1];
+  const p2AfterCombat = afterCombat.actors?.[1];
+  const p1AfterCombat = afterCombat.actors?.[0];
+
+  const movementObserved =
+    before.available &&
+    afterMove.available &&
+    p1Before &&
+    p1AfterMove &&
+    (Math.abs(p1AfterMove.x - p1Before.x) > 0.5 || Math.abs(p1AfterMove.y - p1Before.y) > 0.5);
+
+  const damageObserved =
+    before.available &&
+    afterCombat.available &&
+    ((p2Before && p2AfterCombat && p2AfterCombat.life < p2Before.life) ||
+      (p1Before && p1AfterCombat && p1AfterCombat.life < p1Before.life));
+
+  const tickAdvanced =
+    before.available && afterCombat.available && typeof before.tick === "number" && afterCombat.tick > before.tick;
+
+  const resetObserved =
+    resetClick.found &&
+    afterReset.available &&
+    (afterReset.tick !== afterCombat.tick ||
+      (p1AfterCombat && afterReset.actors?.[0] && afterReset.actors[0].life >= p1AfterCombat.life));
 
   const hudSignals = await page.evaluate(() => {
     const text = (document.body?.innerText || "").slice(0, 4000);
@@ -257,20 +301,12 @@ async function runPlayJourney(browser, base, opts) {
     };
   });
 
-  const rendererPresent = await page.evaluate(() => {
-    try {
-      return Boolean(window.__MUGEN_WEB_SANDBOX__?.renderer || window.__MUGEN_WEB_SANDBOX__);
-    } catch {
-      return false;
-    }
-  });
+  const rendererPresent = await page.evaluate(() => Boolean(window.__MUGEN_WEB_SANDBOX__));
 
   const shotName = `${opts.name}.png`;
   const shotAbs = path.join(outDir, shotName);
   await page.screenshot({ path: shotAbs, fullPage: false });
   const shotBuf = fs.readFileSync(shotAbs);
-
-  const browserVersion = browser.version();
 
   await context.close();
 
@@ -279,13 +315,31 @@ async function runPlayJourney(browser, base, opts) {
     w: opts.w,
     h: opts.h,
     dpr: opts.dpr,
-    browserVersion,
+    browserVersion: browser.version(),
     shellFound,
     canvasOrStageFound,
     rendererPresent,
-    focusChecks,
+    focusChecks: [...focusChecks, `probeAvailable=${before.available}`],
     hudSignals,
     inputSent,
+    semantic: {
+      probeAvailable: Boolean(before.available && afterMove.available && afterCombat.available),
+      movementObserved: Boolean(movementObserved),
+      damageObserved: Boolean(damageObserved),
+      tickAdvanced: Boolean(tickAdvanced),
+      resetObserved: Boolean(resetObserved),
+      resetControl: resetClick,
+      before: summarizeProbe(before),
+      afterMove: summarizeProbe(afterMove),
+      afterCombat: summarizeProbe(afterCombat),
+      afterReset: summarizeProbe(afterReset),
+      deltas: {
+        p1Dx: p1Before && p1AfterMove ? p1AfterMove.x - p1Before.x : null,
+        p1LifeDelta: p1Before && p1AfterCombat ? p1AfterCombat.life - p1Before.life : null,
+        p2LifeDelta: p2Before && p2AfterCombat ? p2AfterCombat.life - p2Before.life : null,
+        tickDelta: before.available && afterCombat.available ? afterCombat.tick - before.tick : null,
+      },
+    },
     consoleErrors: consoleErrors.slice(0, 30),
     pageErrors: pageErrors.slice(0, 30),
     screenshotRel: `docs/evidence/da30/browser/${shotName}`,
@@ -294,12 +348,23 @@ async function runPlayJourney(browser, base, opts) {
   };
 }
 
-function isBenignConsole(msg) {
-  const s = String(msg);
-  // WebGL/SwiftShader noise common in headless CI
-  if (/WebGL|swiftshader|ANGLE|GPU process|DevTools|favicon/i.test(s)) return true;
-  if (/Failed to load resource.*favicon/i.test(s)) return true;
-  return false;
+function summarizeProbe(p) {
+  if (!p || !p.available) return { available: false, reason: p?.reason };
+  return {
+    available: true,
+    mode: p.mode,
+    tick: p.tick,
+    playing: p.playing,
+    actors: (p.actors || []).map((a) => ({
+      id: a.id,
+      label: a.label,
+      life: a.life,
+      x: Number(a.x?.toFixed?.(2) ?? a.x),
+      y: Number(a.y?.toFixed?.(2) ?? a.y),
+      stateNo: a.stateNo,
+    })),
+    round: p.round,
+  };
 }
 
 function findFreePort() {

@@ -1,23 +1,21 @@
 # Authority Selector (current)
 
-## 2026-07-27 audit override — DA30-025 disputed
+## 2026-07-27 clause repair — DA30-021 / 024 / 025
 
-Audit HEAD: `c2245fe8`. Generated control records DA30-025 and next DA30-026.
-The audit keeps this as the machine watermark and disputes task-level
-completion for DA30-021, DA30-024, and DA30-025 against their written clauses.
+Prior post-025 audit disputed written clauses for formal, Play, and
+Studio/Inspect gates. Repair evidence is on formal head `81f8cc45`:
 
-- formal/global observation: `27b88f0a`, six green commands; full written
-  DA30-021 evidence remains partial
-- Play observation: `c47cfa4e`, one native route loads in desktop/mobile;
-  movement, contact, damage, and reset facts remain open
-- Studio/Inspect observation: `c47cfa4e`, shells load; project, package,
-  save/recovery, focus, and mobile-fit facts remain open
-- current HEAD `c2245fe8` has no whole-HEAD formal gate
-- focal T406, visual/product T342, source 05b/4aa, and held scores remain
-  separate
+- **DA30-021**: required six-command matrix green; raw stdout/stderr files +
+  digests; tool versions; exact test counts (3128 passed); optional smoke and
+  authority audit recorded without formal pin
+- **DA30-024**: `qaProbe` movement, damage, tick advance, and reset hook on
+  nova/mira/rooftop desktop+mobile
+- **DA30-025**: Studio `save-project-local`, Tab focus path, Inspect package
+  signals, mobile geometry measurement
 
-Repair these clauses before advancing the adjudicated ladder. See the
-[post-DA30-025 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-025.md).
+Manifests: `docs/evidence/da30/manifests/da30-021|024|025.manifest.json`  
+Repair report: [`da30-021-024-025-clause-repair-v1.json`](evidence/da30/da30-021-024-025-clause-repair-v1.json)  
+Scores remain **held**. Focal T406, visual T342, source 05b/4aa stay separate.
 
 Last updated: 2026-07-27  
 Checked control source: [`docs/evidence/control-source-v1.json`](evidence/control-source-v1.json)  
@@ -43,12 +41,12 @@ Plan: [`DA30 recovery roadmap`](DA30_RECOVERY_ROADMAP.md)
 
 | Cursor | SHA / pin | Claim ceiling |
 | --- | --- | --- |
-| current HEAD | `27b88f0a…` | tip at DA30-021 formal gate |
-| formal | `27b88f0a…` DA30-021 measured full stack | typecheck/test/trace/build/boundaries/redirect all exit 0 |
+| current HEAD | `81f8cc45…` | tip at DA30-021 formal clause repair |
+| formal | `81f8cc45…` DA30-021 required matrix | raw logs + digests + exact counts; optional smoke not required |
 | focal | `07ad9227` T406 | active StateDef/HitDef juggle under `ikemen-go` |
-| global | `27b88f0a…` DA30-021 measured | full stack at same SHA only |
+| global | `81f8cc45…` DA30-021 measured | same SHA as formal required matrix |
 | visual | `1085badb` T342 | broad matrix parent; DA28 browser routes are bounded |
-| product | `1085badb` T342 | local Studio product flows only |
+| product | `81f8cc45…` Play/Studio repair | semantic Play + Studio save/focus/geometry only |
 | source normative | `05b7d98a` | pin identity; family provenance in epoch |
 | source working | `4aa0ba38` | reviewed families only (juggle=`same`) |
 

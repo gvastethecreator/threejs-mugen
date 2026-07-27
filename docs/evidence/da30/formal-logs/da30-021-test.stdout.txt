@@ -1,0 +1,375 @@
+
+ RUN  v4.1.9 D:/DEV/threejs-mugen/mugen-web-sandbox
+
+ ✓ src/tests/MugenAudioSystem.test.ts (19 tests) 845ms
+ ✓ src/tests/Da29Wave10ConsecutiveEvidence.test.ts (70 tests) 541ms
+ ✓ src/tests/DualCharacterLegalJourney.test.ts (1 test) 664ms
+     ✓ loads Nova and Mira packages through independent legal routes  660ms
+ ✓ src/tests/RepositoryStagePackage.test.ts (2 tests) 1400ms
+     ✓ keeps folder and deterministic ZIP transports equivalent  1318ms
+ ✓ src/tests/Da29Wave1ConsecutiveEvidence.test.ts (26 tests) 786ms
+ ✓ src/tests/FightScreenFixture.test.ts (6 tests) 2624ms
+     ✓ loads fight.def timing and FightFX libraries through the real system loader  2197ms
+ ✓ src/tests/NativeExecutionExtensions.test.ts (1 test) 2813ms
+     ✓ covers palette, common.fx signal, projectile ledger, and throw matrix  2810ms
+ ✓ src/tests/EffectActorSystem.test.ts (66 tests) 453ms
+ ✓ src/tests/MugenSystemAssetsLoader.test.ts (3 tests) 3755ms
+     ✓ loads fight.def FightFX AIR/SFF/SND as common and fightfx hit spark libraries  3738ms
+ ✓ src/tests/ArchitectureBoundaries.test.ts (2 tests) 6599ms
+     ✓ keeps MUGEN parser/runtime code renderer-independent  6589ms
+ ✓ src/tests/Da29SeriesCloseout.test.ts (6 tests) 654ms
+     ✓ status ledger matches closeouts and forbids path-exists / PNG-reuse theater  569ms
+ ✓ src/tests/MaterializeControlProjections.test.ts (1 test) 271ms
+ ✓ src/tests/Da29Wave5ConsecutiveEvidence.test.ts (34 tests) 267ms
+ ✓ src/tests/CommonFxFightScreenProof.test.ts (2 tests) 4723ms
+     ✓ loads Common.Fx / FightFX libraries and plays FightScreen SND edges  2325ms
+     ✓ fails closed when audio probe is not injected  2392ms
+ ✓ src/tests/PackageAnalysis.test.ts (9 tests) 172ms
+ ✓ src/tests/HelperSystem.test.ts (47 tests) 149ms
+ ✓ src/tests/RuntimeCompiler.test.ts (65 tests) 159ms
+ ✓ src/tests/RuntimeCnsSubset.test.ts (26 tests) 137ms
+ ✓ src/tests/Da30_052_to_120.test.ts (53 tests) 193ms
+ ✓ src/tests/MugenCharacterLoader.test.ts (13 tests) 135ms
+ ✓ src/tests/StageCompatibilityJourney.test.ts (3 tests) 125ms
+ ✓ src/tests/Da30Wave0ControlRecovery.test.ts (7 tests) 137ms
+ ✓ src/tests/SourceAuthorityEpoch.test.ts (7 tests) 65ms
+ ✓ src/tests/DebugPanel.test.ts (3 tests) 92ms
+ ✓ src/tests/Da30Waves2to11.test.ts (21 tests) 193ms
+ ✓ src/tests/RuntimeTraceArtifact.test.ts (18 tests) 558ms
+     ✓ exports a passed runtime trace gate as a stable evidence artifact  413ms
+ ✓ src/tests/StudioEvidenceStorage.test.ts (3 tests) 874ms
+     ✓ saves trace evidence newest-first with project entry and source package metadata  566ms
+ ✓ src/tests/RuntimeTracePresets.test.ts (2 tests) 1041ms
+     ✓ creates a passed native match smoke trace artifact  612ms
+     ✓ creates a passed imported x-route smoke trace artifact when the imported command routes  424ms
+ ✓ src/tests/ProjectileSystem.test.ts (30 tests) 41ms
+ ✓ src/tests/RuntimeExpressionContextSystem.test.ts (24 tests) 90ms
+ ✓ src/tests/RuntimeCombatResolutionSystem.test.ts (40 tests) 106ms
+ ✓ src/tests/EffectSpawnSystem.test.ts (18 tests) 99ms
+ ✓ src/tests/RuntimeRedLifeShareSystem.test.ts (5 tests) 69ms
+ ✓ src/tests/SourceAuthorityManifest.test.ts (7 tests) 87ms
+ ✓ src/tests/Da30_039_to_048.test.ts (5 tests) 103ms
+ ✓ src/tests/RuntimeControllerDispatchSystem.test.ts (14 tests) 32ms
+ ✓ src/tests/MatchWorld.test.ts (16 tests) 2703ms
+     ✓ is the public match facade while preserving current PlayableMatchRuntime behavior  463ms
+     ✓ forwards official per-side draw limits and accepts live IKEMEN updates  1819ms
+ ✓ src/tests/RepositoryStageJourney.test.ts (2 tests) 2180ms
+     ✓ materializes loader and runtime evidence while keeping browser/native claims open  1601ms
+     ✓ promotes browser and native evidence only when both are explicitly supplied  573ms
+ ✓ src/tests/HitDefSystem.test.ts (23 tests) 48ms
+ ✓ src/tests/RoadmapCursor.test.ts (6 tests) 53ms
+ ✓ src/tests/CombatResolver.test.ts (24 tests) 24ms
+ ✓ src/tests/IkemenFeatureScanner.test.ts (7 tests) 47ms
+ ✓ src/tests/TurnsBrowserMatrix.test.ts (1 test) 4058ms
+     ✓ passes HUD, multi-replace, both sides, pause, fault restore, and replay digest lanes  4055ms
+ ✓ src/tests/TurnsBrowserHudJourney.test.ts (3 tests) 4077ms
+     ✓ runs KO → handoff → stable fight with HUD checksum  3989ms
+ ✓ src/tests/RuntimeTrace.test.ts (11 tests) 3686ms
+     ✓ records deterministic frame checksums for the same replay inputs  554ms
+     ✓ evaluates optional official KFM imported runtime trace when the local fixture is present  772ms
+     ✓ evaluates optional official KFM QCF special trace when the local fixture is present  733ms
+     ✓ evaluates optional official KFM x recovery back to idle when the local fixture is present  902ms
+ ✓ src/tests/RuntimeTeamRoundHandoffIntegration.test.ts (2 tests) 59ms
+ ✓ src/tests/StudioSourceHandle.test.ts (9 tests) 37ms
+ ✓ src/tests/RepositoryStageFixture.test.ts (2 tests) 65ms
+ ✓ src/tests/StudioEvidenceEnvelope.test.ts (2 tests) 44ms
+ ✓ src/tests/ProjectReleaseDecision.test.ts (4 tests) 42ms
+ ✓ src/tests/CodeFuManFixture.test.ts (5 tests) 4043ms
+     ✓ loads the independent character through the production loader  780ms
+     ✓ proves the authored x route in the deterministic runtime trace  1346ms
+     ✓ proves the authored QCF_x special route in the deterministic runtime trace  992ms
+     ✓ proves the authored upper_x route in the deterministic runtime trace  854ms
+ ✓ src/tests/RuntimeRootAdvancePhaseSystem.test.ts (3 tests) 9ms
+ ✓ src/tests/StudioSourceIdentity.test.ts (2 tests) 71ms
+ ✓ src/tests/ProjectileCombatSystem.test.ts (40 tests) 44ms
+ ✓ src/tests/CompatibilityCorpus.test.ts (4 tests) 42ms
+ ✓ src/tests/StudioSemanticExport.test.ts (4 tests) 42ms
+ ✓ src/tests/StageDefParser.test.ts (6 tests) 44ms
+ ✓ src/tests/LiveRuntimeTurnsBridge.test.ts (3 tests) 65ms
+ ✓ src/tests/EvidenceEnvelope.test.ts (3 tests) 84ms
+ ✓ src/tests/RuntimeTurnsJourney.test.ts (3 tests) 29ms
+ ✓ src/tests/AuthoritySelector.test.ts (3 tests) 62ms
+ ✓ src/tests/StudioSourceWrite.test.ts (8 tests) 89ms
+ ✓ src/tests/CompatibilityReport.test.ts (5 tests) 36ms
+ ✓ src/tests/CompatibilityCorpusSnapshot.test.ts (3 tests) 46ms
+ ✓ src/tests/StudioSourceTransaction.test.ts (9 tests) 33ms
+ ✓ src/tests/RuntimeRoundContextSystem.test.ts (3 tests) 15ms
+ ✓ src/tests/EffectLifecycleSystem.test.ts (4 tests) 41ms
+ ✓ src/tests/TargetSystem.test.ts (28 tests) 35ms
+ ✓ src/tests/CompatibilityJourney.test.ts (5 tests) 5477ms
+     ✓ aggregates the current legal fixture without copying its loader, trace, or browser artifacts  5386ms
+ ✓ src/tests/CompatibilityCorpusSnapshotMaterializer.test.ts (4 tests) 4968ms
+     ✓ materializes tracked repository snapshot from the legal journey artifacts  4882ms
+ ✓ src/tests/PackageAnalysisRevisionBridge.test.ts (1 test) 35ms
+ ✓ src/tests/RuntimeRoundSystem.test.ts (27 tests) 31ms
+ ✓ src/tests/Da29RemainingOpenCuts.test.ts (3 tests) 28ms
+ ✓ src/tests/RuntimeHelperCombatSystem.test.ts (11 tests) 36ms
+ ✓ src/tests/StageCompatibilityReport.test.ts (2 tests) 35ms
+ ✓ src/tests/StudioAssetProvenance.test.ts (8 tests) 32ms
+ ✓ src/tests/FolderCharacterSource.test.ts (2 tests) 26ms
+ ✓ src/tests/StudioAssetReleasePolicy.test.ts (3 tests) 29ms
+ ✓ src/tests/RuntimeMatchRoundSystem.test.ts (18 tests) 35ms
+ ✓ src/tests/RuntimeTriggerEvaluationSystem.test.ts (3 tests) 29ms
+ ✓ src/tests/NativeDualLiveExecution.test.ts (1 test) 7090ms
+     ✓ executes Nova and Mira live routes with real digests and independence  7077ms
+ ✓ src/tests/MugenLiteJourneyFixture.test.ts (5 tests) 6493ms
+     ✓ loads one repository-owned MUGEN-format package with visible unsupported gaps  560ms
+     ✓ round-trips the legal package through ZIP transport  1707ms
+     ✓ runs the loaded package through one movement, combat, and recovery journey  2633ms
+     ✓ runs the loaded package through a lethal NoKOSlow post-KO journey  1416ms
+ ✓ src/tests/StudioModel.test.ts (13 tests) 27ms
+ ✓ src/tests/RuntimeRootBodyPushSystem.test.ts (24 tests) 23ms
+ ✓ src/tests/PauseSystem.test.ts (34 tests) 33ms
+ ✓ src/tests/ZipCharacterSource.test.ts (10 tests) 31ms
+ ✓ src/tests/ScoreAdjudication.test.ts (2 tests) 27ms
+ ✓ src/tests/RuntimeRootDirectHitAdmissionSystem.test.ts (23 tests) 26ms
+ ✓ src/tests/SpriteEffectSystem.test.ts (29 tests) 32ms
+ ✓ src/tests/importedFighter.test.ts (15 tests) 26ms
+ ✓ src/tests/RuntimeRootPhaseCapabilitiesSystem.test.ts (6 tests) 31ms
+ ✓ src/tests/CompatibilityCorpusV12.test.ts (2 tests) 24ms
+ ✓ src/tests/BoundaryManifest.test.ts (4 tests) 27ms
+ ✓ src/tests/PackageAnalysisRevision.test.ts (2 tests) 25ms
+ ✓ src/tests/ProjectStorage.test.ts (6 tests) 24ms
+ ✓ src/tests/RuntimeRoundWinPoseSystem.test.ts (4 tests) 28ms
+ ✓ src/tests/ReversalSystem.test.ts (17 tests) 32ms
+ ✓ src/tests/RuntimeTurnsTransaction.test.ts (3 tests) 34ms
+ ✓ src/tests/PluralCombatOracle.test.ts (3 tests) 26ms
+ ✓ src/tests/DirectCombatSystem.test.ts (24 tests) 32ms
+ ✓ src/tests/EvidenceEnvelopeFactsBridge.test.ts (2 tests) 28ms
+ ✓ src/tests/GateEvidence.test.ts (6 tests) 15ms
+ ✓ src/tests/Da30OpenWaveModules.test.ts (8 tests) 31ms
+ ✓ src/tests/StudioSemanticDraft.test.ts (5 tests) 16ms
+ ✓ src/tests/SffParser.test.ts (8 tests) 20ms
+ ✓ src/tests/RuntimeResourceSystem.test.ts (18 tests) 19ms
+ ✓ src/tests/ControllerCoverageMatrix.test.ts (1 test) 35ms
+ ✓ src/tests/EnvColorSystem.test.ts (9 tests) 14ms
+ ✓ src/tests/ActorConstraintSystem.test.ts (15 tests) 24ms
+ ✓ src/tests/stageProjection.test.ts (17 tests) 20ms
+ ✓ src/tests/RuntimeRootStandbyTransitionSystem.test.ts (2 tests) 27ms
+ ✓ src/tests/RuntimeAssertSpecialSystem.test.ts (9 tests) 22ms
+ ✓ src/tests/KinematicControllerSystem.test.ts (6 tests) 22ms
+ ✓ src/tests/CommandBuffer.test.ts (24 tests) 20ms
+ ✓ src/tests/HitSparkRenderer.test.ts (11 tests) 20ms
+ ✓ src/tests/AudioEventSystem.test.ts (25 tests) 24ms
+ ✓ src/tests/RuntimeSnapshotSystem.test.ts (9 tests) 19ms
+ ✓ src/tests/RuntimeMatchTickInputSystem.test.ts (6 tests) 10ms
+ ✓ src/tests/CmdCnsParser.test.ts (13 tests) 24ms
+ ✓ src/tests/RuntimeInputControlSystem.test.ts (6 tests) 12ms
+ ✓ src/tests/Da30Wave0And1Recovery.test.ts (13 tests) 21ms
+ ✓ src/tests/RuntimeAnimationSystem.test.ts (10 tests) 18ms
+ ✓ src/tests/BoundsControllerSystem.test.ts (10 tests) 21ms
+ ✓ src/tests/StateSourceResolver.test.ts (7 tests) 16ms
+ ✓ src/tests/Da30BrowserGates.test.ts (2 tests) 12ms
+ ✓ src/tests/ExplodSystem.test.ts (10 tests) 16ms
+ ✓ src/tests/RuntimeActiveSideEffectDispatchSystem.test.ts (32 tests) 18ms
+ ✓ src/tests/RuntimeHelperProjectileTargetSystem.test.ts (3 tests) 14ms
+ ✓ src/tests/RuntimeRecoverySystem.test.ts (17 tests) 16ms
+ ✓ src/tests/ContactMemorySystem.test.ts (16 tests) 15ms
+ ✓ src/tests/ProjectCompiler.test.ts (3 tests) 16ms
+ ✓ src/tests/RuntimeStateEntrySystem.test.ts (7 tests) 16ms
+ ✓ src/tests/RuntimeInput.test.ts (11 tests) 13ms
+ ✓ src/tests/RuntimeMatchTickBranchSystem.test.ts (3 tests) 8ms
+ ✓ src/tests/EnvShakeSystem.test.ts (11 tests) 16ms
+ ✓ src/tests/StateProgramExecutor.test.ts (5 tests) 24ms
+ ✓ src/tests/RuntimeStateEntrySetupSystem.test.ts (3 tests) 16ms
+ ✓ src/tests/CharacterRenderer.test.ts (5 tests) 17ms
+ ✓ src/tests/RuntimeAuxiliaryResourceProjectionSystem.test.ts (3 tests) 9ms
+ ✓ src/tests/RuntimeCollisionOverrideSystem.test.ts (4 tests) 15ms
+ ✓ src/tests/RuntimeTeamResourceBankSystem.test.ts (8 tests) 15ms
+ ✓ src/tests/RuntimeContactPresentationSystem.test.ts (5 tests) 14ms
+ ✓ src/tests/HitFallControllerSystem.test.ts (7 tests) 16ms
+ ✓ src/tests/RuntimeTurnsContinuationSystem.test.ts (4 tests) 19ms
+ ✓ src/tests/RuntimeStunSystem.test.ts (9 tests) 11ms
+ ✓ src/tests/StateTransitionControllerSystem.test.ts (5 tests) 16ms
+ ✓ src/tests/RuntimeMatchOutcomeSystem.test.ts (9 tests) 67ms
+ ✓ src/tests/StateTypeSystem.test.ts (4 tests) 13ms
+ ✓ src/tests/RuntimeRoundAnnouncementSystem.test.ts (8 tests) 16ms
+ ✓ src/tests/AnimationControllerSystem.test.ts (5 tests) 16ms
+ ✓ src/tests/RuntimeTeamRoundHandoffSystem.test.ts (8 tests) 13ms
+ ✓ src/tests/RuntimeActiveExpressionContextSystem.test.ts (1 test) 18ms
+ ✓ src/tests/RuntimeCompatibilityTelemetrySystem.test.ts (6 tests) 14ms
+ ✓ src/tests/HitDefenseSystem.test.ts (7 tests) 14ms
+ ✓ src/tests/RuntimeCharacterIdentitySystem.test.ts (6 tests) 15ms
+ ✓ src/tests/RuntimeTeamRoundDecisionSystem.test.ts (8 tests) 14ms
+ ✓ src/tests/ThreeMugenRenderer.test.ts (15 tests) 18ms
+ ✓ src/tests/StudioCompatibilitySnapshot.test.ts (2 tests) 10ms
+ ✓ src/tests/BrowserSubcursor.test.ts (2 tests) 12ms
+ ✓ src/tests/RuntimeRootPresentationSystem.test.ts (6 tests) 13ms
+ ✓ src/tests/RuntimeControllerExpressionContextSystem.test.ts (2 tests) 15ms
+ ✓ src/tests/DamageScaleSystem.test.ts (5 tests) 15ms
+ ✓ src/tests/StudioSourceWriteReceipt.test.ts (8 tests) 17ms
+ ✓ src/tests/RuntimeMatchHelperProjectileTargetSystem.test.ts (2 tests) 12ms
+ ✓ src/tests/SourceWriteJournal.test.ts (3 tests) 13ms
+ ✓ src/tests/RuntimeGuardDistanceSystem.test.ts (6 tests) 17ms
+ ✓ src/tests/HitSparkAssetSystem.test.ts (4 tests) 8ms
+ ✓ src/tests/RuntimeMatchTickScheduleSystem.test.ts (6 tests) 11ms
+ ✓ src/tests/RuntimeRedirectedTargetDispatchSystem.test.ts (7 tests) 12ms
+ ✓ src/tests/RuntimeMatchPreFacingAssertSpecialSystem.test.ts (1 test) 17ms
+ ✓ src/tests/RuntimeRootSelectionSystem.test.ts (1 test) 7ms
+ ✓ src/tests/RuntimeKinematicsSystem.test.ts (8 tests) 12ms
+ ✓ src/tests/RuntimeDispatchEvaluationSystem.test.ts (5 tests) 15ms
+ ✓ src/tests/RuntimeActiveControllerScanSystem.test.ts (5 tests) 10ms
+ ✓ src/tests/RuntimeAutoGuardStartSystem.test.ts (3 tests) 8ms
+ ✓ src/tests/GamepadInputAdapter.test.ts (6 tests) 12ms
+ ✓ src/tests/RuntimeJuggleSystem.test.ts (9 tests) 20ms
+ ✓ src/tests/RuntimeStageGameSpaceSystem.test.ts (3 tests) 6ms
+ ✓ src/tests/MatchInteractionSystem.test.ts (5 tests) 14ms
+ ✓ src/tests/ProjectSnapshotBridge.test.ts (2 tests) 13ms
+ ✓ src/tests/ActParser.test.ts (3 tests) 9ms
+ ✓ src/tests/RuntimeMatchHelperTargetStateSystem.test.ts (4 tests) 11ms
+ ✓ src/tests/LiveGlobalProjectileSchedule.test.ts (3 tests) 11ms
+ ✓ src/tests/RuntimeFighterRunOrderSystem.test.ts (5 tests) 15ms
+ ✓ src/tests/RuntimeMatchActorRosterSystem.test.ts (6 tests) 11ms
+ ✓ src/tests/RuntimeHelperTargetStateSystem.test.ts (4 tests) 19ms
+ ✓ src/tests/RuntimeRootInputRoutingSystem.test.ts (4 tests) 8ms
+ ✓ src/tests/RuntimeActiveControllerRunSystem.test.ts (3 tests) 10ms
+ ✓ src/tests/RuntimeFighterStateSystem.test.ts (2 tests) 11ms
+ ✓ src/tests/StudioProjectSnapshot.test.ts (3 tests) 18ms
+ ✓ src/tests/DefParser.test.ts (2 tests) 10ms
+ ✓ src/tests/RuntimeRoundWinTypeSystem.test.ts (16 tests) 9ms
+ ✓ src/tests/RuntimeActiveControllerDispatchSystem.test.ts (5 tests) 11ms
+ ✓ src/tests/RuntimeActiveStateDispatchSystem.test.ts (4 tests) 10ms
+ ✓ src/tests/RuntimeActiveControllerHookSetSystem.test.ts (2 tests) 9ms
+ ✓ src/tests/RuntimeTagTeamOrderSystem.test.ts (6 tests) 15ms
+ ✓ src/tests/RuntimeControllerEvaluationContextSystem.test.ts (2 tests) 10ms
+ ✓ src/tests/RuntimeEffectHelperContextSystem.test.ts (5 tests) 11ms
+ ✓ src/tests/StudioLicenseExpression.test.ts (2 tests) 6ms
+ ✓ src/tests/StudioIndexedDbSnapshot.test.ts (2 tests) 12ms
+ ✓ src/tests/AssetReleasePolicyV1.test.ts (3 tests) 10ms
+ ✓ src/tests/RuntimeStateEntryRouteSystem.test.ts (5 tests) 10ms
+ ✓ src/tests/FightScreenFontRenderer.test.ts (4 tests) 9ms
+ ✓ src/tests/RuntimeMatchPausedBridgeSystem.test.ts (1 test) 8ms
+ ✓ src/tests/RuntimeFighterAdvanceSystem.test.ts (1 test) 6ms
+ ✓ src/tests/projection.test.ts (4 tests) 40ms
+ ✓ src/tests/RuntimeMatchEnvShakeBridgeSystem.test.ts (3 tests) 10ms
+ ✓ src/tests/StudioAssetPermission.test.ts (3 tests) 10ms
+ ✓ src/tests/RuntimeRoundState5900System.test.ts (5 tests) 9ms
+ ✓ src/tests/RuntimeMoveStartSystem.test.ts (2 tests) 7ms
+ ✓ src/tests/RuntimeMatchPresentationSnapshotSystem.test.ts (1 test) 8ms
+ ✓ src/tests/FightScreenAnnouncementRenderer.font.test.ts (11 tests) 151ms
+ ✓ src/tests/RuntimeRandomSystem.test.ts (4 tests) 11ms
+ ✓ src/tests/PresentationOrder.test.ts (6 tests) 10ms
+ ✓ src/tests/RuntimeGlobalAssertSpecialSystem.test.ts (4 tests) 12ms
+ ✓ src/tests/RuntimeMatchStepSystem.test.ts (4 tests) 15ms
+ ✓ src/tests/RuntimeTargetStateEntrySystem.test.ts (3 tests) 12ms
+ ✓ src/tests/StudioProjectNavigationGuard.test.ts (2 tests) 5ms
+ ✓ src/tests/RuntimeHelperCollisionSystem.test.ts (8 tests) 10ms
+ ✓ src/tests/RuntimeTeamTopologySystem.test.ts (5 tests) 9ms
+ ✓ src/tests/SndParser.test.ts (2 tests) 9ms
+ ✓ src/tests/RuntimeFrameSystem.test.ts (8 tests) 10ms
+ ✓ src/tests/ScannerCapabilityVector.test.ts (3 tests) 11ms
+ ✓ src/tests/LivePluralCombatOracle.test.ts (2 tests) 11ms
+ ✓ src/tests/RuntimeStateMetadataSystem.test.ts (2 tests) 7ms
+ ✓ src/tests/SffSpriteProvider.test.ts (2 tests) 9ms
+ ✓ src/tests/StudioEditHistory.test.ts (3 tests) 8ms
+ ✓ src/tests/RuntimeMatchFighterAdvanceSystem.test.ts (3 tests) 12ms
+ ✓ src/tests/RuntimeRoundResourceResetSystem.test.ts (3 tests) 10ms
+ ✓ src/tests/AirParser.test.ts (2 tests) 8ms
+ ✓ src/tests/MatchWorldLifecycleSystem.test.ts (2 tests) 9ms
+ ✓ src/tests/RuntimePausedActorAdvanceSystem.test.ts (4 tests) 9ms
+ ✓ src/tests/HitEffectSystem.test.ts (5 tests) 9ms
+ ✓ src/tests/MatchInputPolicySnapshot.test.ts (4 tests) 8ms
+ ✓ src/tests/RuntimeStateClockSystem.test.ts (3 tests) 13ms
+ ✓ src/tests/SecondCharacterReadiness.test.ts (2 tests) 27ms
+ ✓ src/tests/RuntimeMatchInputControlSystem.test.ts (2 tests) 8ms
+ ✓ src/tests/CommonEvidenceFacts.test.ts (3 tests) 9ms
+ ✓ src/tests/RuntimeRoundPhaseSystem.test.ts (4 tests) 11ms
+ ✓ src/tests/RuntimeOpponentSelectionSystem.test.ts (4 tests) 8ms
+ ✓ src/tests/AssertMeasuredMatchesAcceptance.test.ts (5 tests) 33ms
+ ✓ src/tests/MugenConfigParser.test.ts (2 tests) 8ms
+ ✓ src/tests/RuntimeTeamRoundLifebarSystem.test.ts (3 tests) 9ms
+ ✓ src/tests/SourceWriteJournalBridge.test.ts (2 tests) 9ms
+ ✓ src/tests/RuntimeMatchEnvColorBridgeSystem.test.ts (3 tests) 8ms
+ ✓ src/tests/StudioTabs.test.ts (1 test) 7ms
+ ✓ src/tests/RuntimeIntroSkipSystem.test.ts (2 tests) 7ms
+ ✓ src/tests/GuardSystem.test.ts (4 tests) 9ms
+ ✓ src/tests/RuntimeMatchActorAdvanceSystem.test.ts (4 tests) 13ms
+ ✓ src/tests/RuntimeHitPauseSystem.test.ts (3 tests) 8ms
+ ✓ src/tests/RuntimeRootCnsExecutionSystem.test.ts (1 test) 8ms
+ ✓ src/tests/RuntimeMatchPostFighterSystem.test.ts (1 test) 8ms
+ ✓ src/tests/RuntimeTriggerGateSystem.test.ts (4 tests) 7ms
+ ✓ src/tests/HitOverrideSystem.test.ts (3 tests) 8ms
+ ✓ src/tests/ModuleContracts.test.ts (3 tests) 9ms
+ ✓ src/tests/GlobalProjectileSchedule.test.ts (2 tests) 7ms
+ ✓ src/tests/RuntimeTurnsRecoverySystem.test.ts (2 tests) 8ms
+ ✓ src/tests/RuntimeCombatDepthSystem.test.ts (3 tests) 6ms
+ ✓ src/tests/RuntimeMatchCombatBridgeSystem.test.ts (1 test) 6ms
+ ✓ src/tests/RuntimeOrientationSystem.test.ts (3 tests) 6ms
+ ✓ src/tests/HitStateTransitionSystem.test.ts (3 tests) 8ms
+ ✓ src/tests/RuntimeHitEligibilitySystem.test.ts (3 tests) 15ms
+ ✓ src/tests/RuntimeMatchOpponentContextSystem.test.ts (2 tests) 7ms
+ ✓ src/tests/CompositeSpriteProvider.test.ts (2 tests) 8ms
+ ✓ src/tests/RuntimeMoveLifecycleSystem.test.ts (4 tests) 12ms
+ ✓ src/tests/RuntimeMatchResetSystem.test.ts (1 test) 8ms
+ ✓ src/tests/RuntimeRootMotionAdvanceSystem.test.ts (2 tests) 7ms
+ ✓ src/tests/RuntimeActorRunOrderSystem.test.ts (5 tests) 7ms
+ ✓ src/tests/RuntimeMatchHitPauseSystem.test.ts (2 tests) 6ms
+ ✓ src/tests/EvidenceSubject.test.ts (2 tests) 7ms
+ ✓ src/tests/HitDefPriorityPolicy.test.ts (3 tests) 9ms
+ ✓ src/tests/RuntimeFighterAdvanceHookSetSystem.test.ts (1 test) 7ms
+ ✓ src/tests/RuntimeHitDefContactMemorySystem.test.ts (2 tests) 10ms
+ ✓ src/tests/RuntimeMatchHelperBindingSystem.test.ts (1 test) 7ms
+ ✓ src/tests/RuntimeMatchCombatStateHooksSystem.test.ts (2 tests) 9ms
+ ✓ src/tests/StudioSourceDiagnostics.test.ts (2 tests) 6ms
+ ✓ src/tests/DizzyStateSystem.test.ts (2 tests) 5ms
+ ✓ src/tests/ProjectAssetClosure.test.ts (3 tests) 7ms
+ ✓ src/tests/RuntimeHelperTelemetrySystem.test.ts (4 tests) 20ms
+ ✓ src/tests/StudioAutosave.test.ts (2 tests) 7ms
+ ✓ src/tests/RuntimeRootParticipationSystem.test.ts (1 test) 11ms
+ ✓ src/tests/KeyboardInputAdapter.test.ts (1 test) 5ms
+ ✓ src/tests/GetHitStateSystem.test.ts (3 tests) 8ms
+ ✓ src/tests/SuperPauseTargetDefensePolicy.test.ts (2 tests) 7ms
+ ✓ src/tests/RuntimeAfterImageSampleSystem.test.ts (3 tests) 8ms
+ ✓ src/tests/RuntimeSizeBoxSystem.test.ts (2 tests) 7ms
+ ✓ src/tests/StateAvailabilitySystem.test.ts (3 tests) 8ms
+ ✓ src/tests/RuntimeTagPartnerSelectionSystem.test.ts (2 tests) 5ms
+ ✓ src/tests/RuntimeMatchActiveSystem.test.ts (1 test) 6ms
+ ✓ src/tests/RuntimeMatchFrameStartSystem.test.ts (1 test) 14ms
+ ✓ src/tests/RuntimeActiveControllerTelemetrySystem.test.ts (1 test) 7ms
+ ✓ src/tests/RepositoryStageJourneyMaterializer.test.ts (1 test) 4ms
+ ✓ src/tests/RendererInfoBaseline.test.ts (2 tests) 8ms
+ ✓ src/tests/PlayableMatchRuntime.test.ts (320 tests) 23908ms
+     ✓ keeps actor and round phase synchronized through the KO close window  1762ms
+     ✓ starts reserved win and lose states at the bounded phase-4 handoff  980ms
+     ✓ holds the phase-4 post-KO clock while an imported win pose asserts RoundNotOver  500ms
+     ✓ projects MatchOver at phase 4 and commits it only through next-round ownership  1658ms
+     ✓ automatically continues an imported Turns fight through handoff, reset, and state 5900  3141ms
+     ✓ closes an imported Turns match when the losing side has no remaining member  1395ms
+     ✓ restarts a normal Turns round after a simultaneous KO without effective loss  1431ms
+     ✓ closes a Turns draw as a draw when both official limits are reached  1588ms
+     ✓ blocks automatic Turns continuation when the incoming actor lacks state 5900  1930ms
+     ✓ stops the next-round route after the configured match win  824ms
+ ✓ src/tests/RuntimeTraceGatePresets.test.ts (648 tests) 53466ms
+     ✓ creates a native golden hit artifact with hit evidence  318ms
+     ✓ creates a synthetic imported basic movement artifact with walk, crouch, jump, and idle evidence  1089ms
+     ✓ creates a reusable imported basic movement artifact for fixture-backed QA  928ms
+     ✓ creates a required imported TargetPowerAdd RedirectID artifact  476ms
+     ✓ creates a required imported TargetLifeAdd RedirectID artifact  723ms
+     ✓ creates a required imported Target auxiliary resource RedirectID artifact  426ms
+     ✓ creates a required imported state-entry Target auxiliary resource RedirectID artifact  1761ms
+     ✓ creates a required imported state-entry TargetPowerAdd RedirectID artifact  1559ms
+     ✓ creates a required imported state-entry TargetLifeAdd RedirectID artifact  1417ms
+     ✓ creates a required imported TargetVelAdd/TargetVelSet RedirectID artifact  967ms
+     ✓ creates a required imported State -1 TargetVelAdd/TargetVelSet RedirectID artifact  843ms
+     ✓ creates a required imported TargetFacing RedirectID artifact  857ms
+     ✓ creates a required imported State -1 TargetFacing RedirectID artifact  861ms
+     ✓ creates a required imported TargetDrop RedirectID artifact  716ms
+     ✓ creates a required imported State -1 TargetDrop RedirectID artifact  993ms
+     ✓ creates a required imported TargetBind RedirectID artifact  626ms
+     ✓ creates a required imported State -1 TargetBind RedirectID artifact  661ms
+     ✓ creates a required imported TargetState RedirectID artifact  738ms
+     ✓ creates a required imported State -1 TargetState RedirectID artifact  609ms
+     ✓ creates a required imported BindToTarget RedirectID artifact  355ms
+     ✓ creates a required imported State -1 BindToTarget RedirectID artifact  313ms
+     ✓ creates a synthetic imported round KO artifact with RoundSnapshot evidence  502ms
+     ✓ creates a synthetic imported team round handoff artifact with ordered KO and replacement evidence  1672ms
+     ✓ proves red life is cleared by the explicit next-round transition  759ms
+     ✓ proves match score and state 5900 sequencing at the next-round boundary  752ms
+     ✓ proves per-root round context across a three-round imported sequence  1722ms
+     ✓ creates an imported default Common1 fall recovery artifact for official-style fixtures  361ms
+
+ Test Files  295 passed (295)
+      Tests  3128 passed (3128)
+   Start at  11:22:36
+   Duration  66.91s (transform 176.93s, setup 0ms, import 267.05s, tests 157.81s, environment 18.51s)
+

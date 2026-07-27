@@ -48,7 +48,7 @@ export function tagTransition(s: TopologyState, side: "p1" | "p2"): TopologyStat
   return { ...s, actors, preparedOrder: [...s.preparedOrder, `tag-${standby.id}`] };
 }
 
-export function resetTopology(s: TopologyState): TopologyState {
+export function resetTopology(_s: TopologyState): TopologyState {
   return buildP1P4Topology();
 }
 

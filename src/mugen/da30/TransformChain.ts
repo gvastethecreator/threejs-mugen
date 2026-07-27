@@ -43,7 +43,7 @@ export function runTransformChainCases(): {
   deterministic: boolean;
   nondeterminismDeclared: boolean;
 } {
-  const tools = [
+  const tools: Array<{ tool: string; params: Record<string, string | number | boolean> }> = [
     { tool: "crop", params: { x: 0, y: 0, w: 64, h: 64 } },
     { tool: "resize", params: { w: 128, h: 128 } },
     { tool: "palette", params: { act: 1 } },
@@ -51,7 +51,7 @@ export function runTransformChainCases(): {
     { tool: "atlas", params: { pad: 1 } },
     { tool: "audio-convert", params: { rate: 44100 } },
     { tool: "compress", params: { level: 6 } },
-    { tool: "generate", params: { seed: 42 }, nondet: false },
+    { tool: "generate", params: { seed: 42 } },
   ];
   let dig = digestPayload("source");
   const steps: TransformStep[] = [];

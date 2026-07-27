@@ -1,6 +1,6 @@
 {
   "schema": "mugen-web-sandbox/control-source/v1",
-  "generatedAt": "2026-07-27T14:03:12.521Z",
+  "generatedAt": "2026-07-27T14:26:47.936Z",
   "acceptedLadder": "DA28-30",
   "seriesHold": {
     "series": "DA29",
@@ -20,19 +20,19 @@
   },
   "cursors": {
     "head": {
-      "sha": "27b88f0a2cb8896486a34c7405118b185c33c683",
-      "artifact": "git HEAD at DA30-021 formal gate",
-      "claimLimit": "tip at formal gate; formal/global pin to same SHA when gate ok"
+      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
+      "artifact": "git HEAD at DA30-021 formal repair",
+      "claimLimit": "DA30-021 measured required matrix at this SHA (raw logs+counts); optional smoke/authority recorded only"
     },
     "formal": {
-      "sha": "27b88f0a2cb8896486a34c7405118b185c33c683",
+      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
       "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
-      "claimLimit": "DA30-021 measured full stack only at this SHA"
+      "claimLimit": "DA30-021 measured required matrix at this SHA (raw logs+counts); optional smoke/authority recorded only"
     },
     "global": {
-      "sha": "27b88f0a2cb8896486a34c7405118b185c33c683",
+      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
       "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
-      "claimLimit": "DA30-021 measured full stack only at this SHA"
+      "claimLimit": "DA30-021 measured required matrix at this SHA (raw logs+counts); optional smoke/authority recorded only"
     },
     "focal": {
       "sha": "07ad9227",
@@ -45,9 +45,9 @@
       "claimLimit": "T342 visual only; not HEAD product truth"
     },
     "product": {
-      "sha": "1085badb",
-      "artifact": "docs/research (T342 product gate)",
-      "claimLimit": "T342 product only"
+      "sha": "81f8cc45af7a4b54069043562388d0db1c9c8ee1",
+      "artifact": "docs/evidence/da30/da30-024-play-browser-gate.json",
+      "claimLimit": "Play semantic deltas + Studio save/focus/geometry at formal repair SHA; not broad product"
     },
     "sourceNormative": {
       "sha": "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",

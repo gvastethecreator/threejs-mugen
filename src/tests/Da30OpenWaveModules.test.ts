@@ -54,7 +54,11 @@ describe("DA30 open-wave modules", () => {
     const corrupt = openStore("{not-json");
     expect(corrupt.ok).toBe(false);
     expect(corrupt.store.profiles.p1).toBeTruthy();
-    persist("da30-033-socd-profile-store.json", { ok: true, swapped: true, corruptReason: corrupt.reason });
+    persist("da30-033-socd-profile-store.json", {
+      ok: true,
+      swapped: true,
+      corruptReason: corrupt.ok ? null : corrupt.reason,
+    });
   });
 
   it("DA30-036 clock domain audit inventory", () => {

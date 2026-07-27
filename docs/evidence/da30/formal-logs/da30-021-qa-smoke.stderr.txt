@@ -1,0 +1,9 @@
+$ node scripts/qa_smoke.cjs
+page.waitForFunction: Timeout 5000ms exceeded.
+    at captureMugenLiteRecoveryJourney (D:\DEV\threejs-mugen\mugen-web-sandbox\scripts\qa_smoke.cjs:1075:14)
+    at async captureMugenLiteVisualViewport (D:\DEV\threejs-mugen\mugen-web-sandbox\scripts\qa_smoke.cjs:808:20)
+    at async captureMugenLiteVisual (D:\DEV\threejs-mugen\mugen-web-sandbox\scripts\qa_smoke.cjs:465:19)
+    at async main (D:\DEV\threejs-mugen\mugen-web-sandbox\scripts\qa_smoke.cjs:105:29) {
+  log: [],
+  name: 'TimeoutError'
+}
