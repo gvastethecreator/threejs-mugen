@@ -67,19 +67,24 @@ describe("DA30-010 control recovery gate", () => {
 });
 
 describe("DA30 series status", () => {
-  it("accepts waves 0–1 consecutive and leaves later gates open", () => {
+  it("keeps consecutive watermark at 020 until formal 021; later accepted are non-consecutive", () => {
     const s = j<{
       closedThrough: string;
       acceptedCount: number;
       openCount: number;
       partialCount: number;
       count: number;
+      scoresHeld: boolean;
+      nextQueue: string[];
     }>("docs/evidence/da30/da30-series-status-v1.json");
     expect(s.count).toBe(120);
+    // Consecutive watermark cannot pass open DA30-021 formal gate.
     expect(s.closedThrough).toBe("DA30-020");
-    expect(s.acceptedCount).toBe(20);
+    expect(s.nextQueue[0]).toBe("DA30-021");
+    expect(s.acceptedCount).toBeGreaterThanOrEqual(20);
     expect(s.openCount).toBeGreaterThan(0);
     expect(s.partialCount).toBeGreaterThan(0);
+    expect(s.scoresHeld).toBe(true);
   });
 });
 
