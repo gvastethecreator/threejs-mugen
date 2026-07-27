@@ -1,6 +1,6 @@
 {
   "schema": "mugen-web-sandbox/control-source/v1",
-  "generatedAt": "2026-07-27T17:47:25.152Z",
+  "generatedAt": "2026-07-27T18:30:57.281Z",
   "acceptedLadder": "DA28-30",
   "seriesHold": {
     "series": "DA29",
@@ -20,19 +20,19 @@
   },
   "cursors": {
     "head": {
-      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
-      "artifact": "git HEAD at DA30-021 formal clause repair",
-      "claimLimit": "audit HEAD may lead formal; recordedThrough=DA30-120 adjudicatedThrough=DA30-020"
+      "sha": "f5f2315ed4967d699f37896371ada18c2567f63e",
+      "artifact": "git HEAD at DA31-008 formal",
+      "claimLimit": "DA31-008 required matrix + authority audit at this SHA; smoke opt-in"
     },
     "formal": {
-      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
-      "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
-      "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
+      "sha": "f5f2315ed4967d699f37896371ada18c2567f63e",
+      "artifact": "docs/evidence/da31/da31-008-formal-gate.json",
+      "claimLimit": "DA31-008 required matrix + authority audit at this SHA; smoke opt-in"
     },
     "global": {
-      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
-      "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
-      "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
+      "sha": "f5f2315ed4967d699f37896371ada18c2567f63e",
+      "artifact": "docs/evidence/da31/da31-008-formal-gate.json",
+      "claimLimit": "DA31-008 required matrix + authority audit at this SHA; smoke opt-in"
     },
     "focal": {
       "sha": "07ad9227",

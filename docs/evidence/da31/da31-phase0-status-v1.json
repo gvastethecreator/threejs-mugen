@@ -1,6 +1,6 @@
 {
   "schema": "Da31Phase0Status/v1",
-  "generatedAt": "2026-07-27T18:00:00.000Z",
+  "generatedAt": "2026-07-27T18:30:57.283Z",
   "tasks": {
     "DA31-001": {
       "status": "accepted",
@@ -67,11 +67,13 @@
       "note": "120-row ledger; pass~20 early; remainder partial/unknown until live review"
     },
     "DA31-008": {
-      "status": "partial",
+      "status": "accepted",
       "artifacts": [
+        "docs/evidence/da31/da31-008-formal-gate.json",
+        "docs/evidence/da31/formal-logs",
         "scripts/run_da31_008_formal_gate.cjs"
       ],
-      "note": "runner ready; authoritative green requires clean-tree re-run after commit"
+      "note": "authoritative formal+authority at f5f2315ed496"
     },
     "DA31-009": {
       "status": "accepted",
@@ -83,7 +85,11 @@
       "note": "desktop/mobile movement+reset; miss path; missing package failure; provisional if dirty"
     }
   },
-  "next": ["DA31-008-clean-rerun", "DA31-010", "DA31-011"],
+  "next": [
+    "DA31-010",
+    "DA31-011",
+    "DA31-012"
+  ],
   "scoresHeld": true,
   "claimCeiling": "DA31 phase0+009 progress; adjudicatedThrough remains DA30-020; scores held"
 }

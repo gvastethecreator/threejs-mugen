@@ -1,6 +1,6 @@
 {
   "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
-  "generatedAt": "2026-07-27T17:47:53.803Z",
+  "generatedAt": "2026-07-27T18:30:57.369Z",
   "closedThrough": "DA30-120",
   "nextQueue": [],
   "scores": {
@@ -13,9 +13,9 @@
   },
   "cursors": {
     "formal": {
-      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
-      "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
-      "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
+      "sha": "f5f2315ed4967d699f37896371ada18c2567f63e",
+      "artifact": "docs/evidence/da31/da31-008-formal-gate.json",
+      "claimLimit": "DA31-008 required matrix + authority audit at this SHA; smoke opt-in"
     },
     "focal": {
       "sha": "07ad9227",
@@ -23,9 +23,9 @@
       "claimLimit": "T406 active juggle runtime only"
     },
     "global": {
-      "sha": "ee23122f703be5ed61f1b18c9881384f47ae4cf6",
-      "artifact": "docs/evidence/da30/da30-021-formal-gate.json",
-      "claimLimit": "DA30-021 required matrix at this SHA (raw logs+counts); optional smoke/authority observed only"
+      "sha": "f5f2315ed4967d699f37896371ada18c2567f63e",
+      "artifact": "docs/evidence/da31/da31-008-formal-gate.json",
+      "claimLimit": "DA31-008 required matrix + authority audit at this SHA; smoke opt-in"
     },
     "visual": {
       "sha": "1085badb",
@@ -52,7 +52,7 @@
     "authoritySelectorDoc": "docs/AUTHORITY_SELECTOR.md",
     "roadmapCursor": "docs/evidence/roadmap-cursor-v1.json",
     "sourceEpoch": "docs/evidence/source-authority-epoch-v1.json",
-    "globalCheckpointReport": "docs/evidence/da30/da30-021-formal-gate.json"
+    "globalCheckpointReport": "docs/evidence/da31/da31-008-formal-gate.json"
   },
   "claims": {
     "allowed": [
@@ -68,8 +68,23 @@
     ]
   },
   "canonicalization": "stable-json/v0",
+  "seriesHold": {
+    "series": "DA29",
+    "status": "unadjudicated-candidate",
+    "watermarkAccepted": false,
+    "note": "DA29-001…200 artifacts are candidate only until DA30 semantic revalidation"
+  },
+  "controlSourceRef": "docs/evidence/control-source-v1.json",
+  "recordedThrough": "DA30-120",
+  "adjudicatedThrough": "DA30-020",
+  "reviewedThrough": "DA30-120",
+  "da31": {
+    "program": "DA31_EVIDENCE_ADOPTION_ROADMAP",
+    "nextHuman": "DA31-002",
+    "note": "closedThrough aliases recordedThrough; adjudicatedThrough is written-clause ceiling"
+  },
   "digest": {
     "algorithm": "sha-256",
-    "value": "4fd8a18643988e9db9db26ca4b9b3592a88392de0b3865d83d664b5ce2550fc4"
+    "value": "607d0b9f68d40ccdfd1d4a9f6f2bc02fe5cf7c6f8a788223fdd232b7e4dd39b6"
   }
 }

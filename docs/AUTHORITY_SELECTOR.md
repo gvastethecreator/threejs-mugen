@@ -11,7 +11,7 @@ and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 | `recordedThrough` | **DA30-120** | machine series rows exist |
 | `adjudicatedThrough` | **DA30-020** | last safe consecutive written-clause ceiling pending DA31-007 |
 | `reviewedThrough` | **DA30-120** | audit sampling only |
-| formal/global | `ee23122f` | required six-command matrix only |
+| formal/global | `f5f2315e` DA31-008 | required matrix + authority audit; smoke opt-in |
 | focal | T406 `07ad9227` | named juggle slice |
 | visual/product parent | T342 `1085badb` | historical broad matrix |
 | source | 05b / 4aa | family-scoped |

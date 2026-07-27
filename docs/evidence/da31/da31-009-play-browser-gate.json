@@ -1,10 +1,10 @@
 {
   "schema": "Da31PlayBrowserGate/v1",
   "id": "DA31-009",
-  "generatedAt": "2026-07-27T17:56:51.228Z",
+  "generatedAt": "2026-07-27T18:31:48.195Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "1e4910190646126a92ee509c2a388cb1aadaadbe",
+    "subjectSha": "f5f2315ed4967d699f37896371ada18c2567f63e",
     "dirtyTree": true,
     "provisional": true,
     "probePaths": [
@@ -16,7 +16,7 @@
     ],
     "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
   },
-  "headSha": "1e4910190646126a92ee509c2a388cb1aadaadbe",
+  "headSha": "f5f2315ed4967d699f37896371ada18c2567f63e",
   "ok": true,
   "packages": {
     "p1": "nova-boxer",
@@ -41,7 +41,7 @@
         "reset": true,
         "p1StateAfterAtk": 0,
         "p2LifeDelta": 0,
-        "p1Dx": 53.999999999999915
+        "p1Dx": 60.479999999999905
       },
       "screenshot": "docs/evidence/da31/browser/play-desktop.png",
       "consoleErrorCount": 0
@@ -63,7 +63,7 @@
         "reset": true,
         "p1StateAfterAtk": 0,
         "p2LifeDelta": 0,
-        "p1Dx": 49.67999999999992
+        "p1Dx": 47.519999999999925
       },
       "screenshot": "docs/evidence/da31/browser/play-mobile.png",
       "consoleErrorCount": 0
@@ -124,6 +124,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "a3c151492ac8e06b8e644e24da7d6e3534dc24ef6c103dcf3c6f287bf45acbc7"
+    "value": "87d8a51544d7e8efccfdfad6d16c40cc1509204cfe79ca770e0f988d1cdf31c3"
   }
 }
