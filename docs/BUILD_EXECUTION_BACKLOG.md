@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## Entry 622 - IKEMEN `stchtmp` materialization (T413)
+
+Closed T413 in `c7214b50`: root state entry now marks typed
+`stateChangeTmp`, settles ordinary transitions outside hitpause, and retains
+the marker through hitpause until the next active root advance. Projectile
+admission consumes the marker with `hitTmp` and `actTmp` before HitOverride and
+damage.
+
+Focused closure passed 5 files / 60 tests, a selected PlayableMatchRuntime
+smoke with 2 passed and 318 filtered, `node --check scripts/qa_traces.cjs`, and
+`git diff --check`. The global typecheck was deferred by batch policy; the
+known pre-existing unused `advanced` remains at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim allowed: bounded root `stateChangeTmp` mark/settle behavior and the named
+IKEMEN Projectile admission gate during hitpause. Claim blocked: exact
+`stateChange1`/`stateChange2` order, persistent correction, Explod and sound
+cleanup, global pause, Helpers, MUGEN, direct-contact gates, camera gates,
+teams/clashes, global checkpoint, score movement, and full parity. Research:
+`docs/research/2026-07-27-ikemen-stchtmp-materialization.md`.
+
 ## Entry 621 - IKEMEN `acttmp` materialization (T412)
 
 Closed T412 in `ce6e2b81`: root fighter advance now carries the source
@@ -15,7 +36,7 @@ the unrelated pre-existing unused `advanced` at
 `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
 
 Claim allowed: bounded root `actTmp` prepare/finish materialization. Claim
-blocked: normal global-hitpause branch, Helper action timing, `stchtmp`, camera
+blocked: normal global-hitpause branch, Helper action timing, full `stchtmp` lifecycle, camera
 gates, state-change persistence, exact scheduler order, MUGEN, teams/clashes,
 global checkpoint, score movement, and full parity. Research:
 `docs/research/2026-07-27-ikemen-acttmp-materialization.md`.

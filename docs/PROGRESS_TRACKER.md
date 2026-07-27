@@ -6,7 +6,7 @@
   and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 - Machine record: **DA30-120**. Consecutive human cursor: **DA30-020**
   (`adjudicatedThrough` not advanced by model-only DA31 rows).
-- Formal/global: `f5f2315e` DA31-008; focal: T412 `ce6e2b81`; visual/product: T342;
+- Formal/global: `f5f2315e` DA31-008; focal: T413 `c7214b50`; visual/product: T342;
   source: 05b/4aa.
 - DA31-001…040: see `docs/evidence/da31/da31-phase-status-v1.json`.
   Browser: 009–015 accepted (provisional when dirty). 012 simulated gamepad.
@@ -17,6 +17,26 @@
   drive harden; gamepad device-lab protocol; clause sample proposes
   `adjudicatedThrough=DA30-021` (not auto-applied); a11y baseline inventory.
   Next: close smoke lanes, human accept watermark, hardware gamepad.
+
+## Runtime `stchtmp` materialization - T413 (closed bounded, 2026-07-27)
+
+- `c7214b50` adds optional typed `stateChangeTmp`. Root state entry marks the
+  pending flag, settles ordinary transitions outside hitpause, and retains
+  hitpause transitions until the next active root advance.
+- Projectile admission consumes the pending flag with `hitTmp` and `actTmp`
+  before HitOverride and damage. The source-shaped predicate is bounded to the
+  root Projectile path; Helpers and direct contacts remain outside.
+- Focal closure: 5 files / 60 tests passed, plus a selected
+  PlayableMatchRuntime smoke with 2 passed and 318 filtered, `node --check
+  scripts/qa_traces.cjs`, and `git diff --check`.
+- The global typecheck was deferred by batch policy. The last known error is
+  the unrelated pre-existing unused `advanced` at
+  `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+- Claim blocked: exact `stateChange1`/`stateChange2` order, persistent
+  correction, Explod and sound cleanup, global pause, Helpers, MUGEN, direct
+  gates, camera, teams/clashes, scores, and full parity. Scores unchanged.
+
+Research: [IKEMEN `stchtmp`](research/2026-07-27-ikemen-stchtmp-materialization.md).
 
 ## Runtime `acttmp` materialization - T412 (closed bounded, 2026-07-27)
 
@@ -32,7 +52,7 @@
 - `pnpm typecheck` was run after the batch. The only remaining error is the
   unrelated pre-existing unused `advanced` at
   `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
-- Claim blocked: Helper action timing, `stchtmp`, camera gates, state-change
+- Claim blocked: Helper action timing, full `stchtmp` lifecycle, camera gates, state-change
   persistence, exact scheduler order, MUGEN, teams/clashes, global gate,
   scores, and full parity. Scores unchanged.
 

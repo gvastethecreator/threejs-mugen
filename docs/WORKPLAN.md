@@ -1,5 +1,26 @@
 # Workplan
 
+## Current bounded runtime cut - T413 (2026-07-27)
+
+T413 closes the bounded IKEMEN `stchtmp` slice in `c7214b50`. Root state
+entry now marks the pending state-change flag, settles ordinary transitions
+outside hitpause, and retains the flag through hitpause until the next active
+root advance. Projectile admission consumes the flag with the existing
+`hitTmp` and `actTmp` phase values before HitOverride and damage.
+
+Research: `docs/research/2026-07-27-ikemen-stchtmp-materialization.md`.
+Ticket: `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/413-stchtmp-materialization.md`.
+Focused closure passed 5 files / 60 tests, a selected PlayableMatchRuntime
+smoke with 2 passed and 318 filtered, `node --check scripts/qa_traces.cjs`,
+and `git diff --check`. The global typecheck was deferred by batch policy;
+the known pre-existing unused `advanced` remains at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim blocked: exact `stateChange1`/`stateChange2` order, persistent-controller
+correction, Explod and sound cleanup, global pause, Helpers, MUGEN, direct
+contact gates, camera gates, teams/clashes, global checkpoint, scores, and
+full parity.
+
 ## Current bounded runtime cut - T412 (2026-07-27)
 
 T412 closes the bounded IKEMEN `acttmp` slice in `ce6e2b81`. The runtime now
@@ -15,8 +36,8 @@ Focused closure passed 4 files / 328 tests, `node --check scripts/qa_traces.cjs`
 and `git diff --check`. `pnpm typecheck` reaches only the pre-existing unused
 `advanced` in `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
 
-Claim blocked: normal global-hitpause branch, Helper action timing, `stchtmp`,
-camera gates, state-change persistence, exact scheduler order, MUGEN,
+Claim blocked: normal global-hitpause branch, Helper action timing, full
+`stchtmp` lifecycle, camera gates, state-change persistence, exact scheduler order, MUGEN,
 teams/clashes, global checkpoint, scores, and full parity.
 
 ## Previous bounded runtime cut - T411 (2026-07-27)

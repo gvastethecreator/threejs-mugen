@@ -14,7 +14,24 @@ and local release review. Authority:
 [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
 and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 
-## Current runtime compatibility board - T412 (closed bounded, 2026-07-27)
+## Current runtime compatibility board - T413 (closed bounded, 2026-07-27)
+
+T413 closes in `c7214b50`. Root state entry marks typed `stateChangeTmp`,
+settles ordinary transitions outside hitpause, and retains the marker through
+hitpause until active root advance. Projectile admission consumes it with
+`hitTmp` and `actTmp` before HitOverride and damage.
+
+Focused closure passed 5 files / 60 tests, a selected PlayableMatchRuntime
+smoke with 2 passed and 318 filtered, `node --check scripts/qa_traces.cjs`,
+and diff hygiene. The broad typecheck was deferred by batch policy; the last
+known error is the unrelated pre-existing unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`. Claim blocked: exact
+`stateChange1`/`stateChange2` order, persistent correction, Explod and sound
+cleanup, global pause, Helpers, MUGEN, direct gates, camera, teams/clashes,
+global checkpoint, score movement, and full parity. Research:
+`docs/research/2026-07-27-ikemen-stchtmp-materialization.md`.
+
+## Previous runtime compatibility board - T412 (closed bounded, 2026-07-27)
 
 T412 closes in `ce6e2b81`. Root fighter advance now materializes IKEMEN
 `actTmp` through source-shaped prepare/finish arithmetic: ordinary action
@@ -25,7 +42,7 @@ Focused closure passed 4 files / 328 tests, `node --check
 scripts/qa_traces.cjs`, and diff hygiene. The broad typecheck reaches only the
 unrelated pre-existing unused `advanced` at
 `src/mugen/da32/ClauseAdjudicationSample.ts:149`. Claim blocked: normal
-global-hitpause branch, Helper action timing, `stchtmp`, camera gates,
+global-hitpause branch, Helper action timing, full `stchtmp` lifecycle, camera gates,
 state-change persistence, exact scheduler order, MUGEN, teams/clashes, global
 checkpoint, score movement, and full parity. Research:
 `docs/research/2026-07-27-ikemen-acttmp-materialization.md`.
