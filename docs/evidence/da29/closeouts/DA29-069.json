@@ -5,13 +5,13 @@
   "wave": 6,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:35:26.599Z",
+  "closedAt": "2026-07-27T04:40:28.223Z",
   "cut": "Scope arcade, versus, survival, demo, and training ownership. Depends on DA29-061.",
   "acceptance": "Product/runtime map names roster selection, round/match persistence, AI/input, continue, score, save, and source gaps; each mode gets a claim fence.",
   "risk": "Menu labels can be mistaken for modes. Allows roadmap decisions only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "56615702b70837302592a5600ba0ec91cfb988e6c4e4d85edc1c67f87e83c244"
+    "value": "75c98aeecdd8917dca73e23a86435a1aaa6ee91b1deac8eb66716f2743c82f38"
   }
 }

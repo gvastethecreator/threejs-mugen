@@ -5,13 +5,13 @@
   "wave": 15,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:35:26.599Z",
+  "closedAt": "2026-07-27T04:40:28.223Z",
   "cut": "Audit CMD command-buffer timing and ownership. Depends on DA29-021, DA29-027, and DA29-032.",
   "acceptance": "Pinned map covers command time, buffer time, charge, release, simultaneous/sequence tokens, facing, pause, hitpause, control, state changes, Helper buffers, and profile deltas.",
   "risk": "Small timing errors change move access. Allows source/local delta only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "35b0b17fc75c45da374a5dd5b2106158719d1c9449b2f8f2e95dd85b064b580b"
+    "value": "2d73dd92a52dec0e741e1eff2388f5771cc086116c577e81480038d3cd807173"
   }
 }

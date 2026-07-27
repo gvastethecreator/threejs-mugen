@@ -10,8 +10,8 @@
   "acceptance": "Upgrade, downgrade rejection, interrupted migration, missing store/index, old snapshot, and rollback tests pass against real IndexedDB, not memory fallback.",
   "risk": "Migration can strand projects. Allows tested versions only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "4ee9e99ab8f43704edbcbbecb2a9d4a3f4eb729e4b192e00a83a63116d1dd361"
+    "value": "ad70683fed425307b7a7408fa459a4dbf892b2195716cce7579a1f93d868dc65"
   }
 }

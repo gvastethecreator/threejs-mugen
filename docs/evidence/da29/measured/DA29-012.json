@@ -1,0 +1,47 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-012",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:41:02.443Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-012",
+  "anchors": [
+    {
+      "path": "src/mugen/runtime/RuntimeTraceGatePresets.ts",
+      "bytes": 2453728,
+      "sha256": "08d5a592b29aac8f54983c6385aff65b04283703558367063bbd6734b59c29f8"
+    },
+    {
+      "path": "src/mugen/da29/TraceArtifactManifest.ts",
+      "bytes": 4669,
+      "sha256": "3c4840b1d0a3faafc14ff1156582c4f3b1dd6cdb3c0706ef46e8ae00f777d8e2"
+    }
+  ],
+  "functionResults": {
+    "entryCount": 643,
+    "digest": "16649ac6e7022a5b",
+    "sampleIds": [
+      "code-fu-man-independent-qcf-x",
+      "code-fu-man-independent-upper-x",
+      "code-fu-man-independent-x",
+      "imported-auto-guard-end",
+      "imported-auto-guard-start",
+      "imported-basic-movement",
+      "imported-default-fall-get-hit",
+      "imported-default-fall-ground-recovery"
+    ],
+    "producers": [
+      "createCodeFuManIndependentQcfXTraceArtifact",
+      "createCodeFuManIndependentUpperXTraceArtifact",
+      "createCodeFuManIndependentXTraceArtifact",
+      "createImportedAutoGuardEndTraceArtifact",
+      "createImportedAutoGuardStartTraceArtifact",
+      "createImportedBasicMovementTraceArtifact",
+      "createImportedDefaultFallGetHitTraceArtifact",
+      "createImportedDefaultFallGroundRecoveryTraceArtifact"
+    ],
+    "duplicateIds": []
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-012; broader product claims remain blocked"
+}

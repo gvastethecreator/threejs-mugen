@@ -10,8 +10,8 @@
   "acceptance": "Preimage bytes/digest, intended bytes/digest, handle/path identity, project revision, timestamp, and intent state persist before the writable opens; failure blocks write.",
   "risk": "Post-write journal cannot recover crash. Allows one-file intent durability only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "ca36ce4bcd305f9782461c383315457d41a996e5dcc7c770bd5c4713b213d6bc"
+    "value": "72ef67f3b5cbfac0fd9ef1c5eb0e69f5406789086d84bd56a9bb343edda4ce3d"
   }
 }

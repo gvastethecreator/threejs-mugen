@@ -10,8 +10,8 @@
   "acceptance": "Theme/state contrast, HUD overlays, focus, disabled/error states, screen shake, flashes, transitions, and reduced-motion paths have measured results and fixes.",
   "risk": "Combat effects can cause harm. Allows tested themes/effects only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "e675e6f257471548a390bc54abbd184552c386c6b21ff9d382b03c404b77c5fc"
+    "value": "6573efd50998c79211a0331d8654be2e11a226a46ca067b04b84ee3217cff912"
   }
 }

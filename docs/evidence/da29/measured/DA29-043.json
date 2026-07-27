@@ -1,0 +1,29 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-043",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:41:02.671Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-043",
+  "anchors": [
+    {
+      "path": "public/characters/rook-apprentice/mugen",
+      "bytes": 0,
+      "sha256": "directory"
+    }
+  ],
+  "functionResults": {
+    "package": "rook-apprentice",
+    "files": [
+      "rook.air",
+      "rook.cmd",
+      "rook.cns",
+      "rook.def"
+    ],
+    "hasCns": true,
+    "hasAir": true,
+    "hasCmd": true
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-043; broader product claims remain blocked"
+}

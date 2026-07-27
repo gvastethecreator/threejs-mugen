@@ -1,0 +1,28 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-024",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:41:02.594Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-024",
+  "anchors": [
+    {
+      "path": "src/mugen/runtime/MatchInputPolicySnapshot.ts",
+      "bytes": 5391,
+      "sha256": "af60596858b9c97947948b779dff42d7cfa25e12b0a96cad635b914f8df4f65c"
+    },
+    {
+      "path": "src/game/input/GamepadInputAdapter.ts",
+      "bytes": 8321,
+      "sha256": "adf9dfc89659a51feb2e8433ed30d77706c17b927f5c9f65d46ad64d7999774b"
+    }
+  ],
+  "functionResults": {
+    "bytes": 5389,
+    "hasSocd": true,
+    "hasProfile": true,
+    "hasSnapshot": true
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-024; broader product claims remain blocked"
+}

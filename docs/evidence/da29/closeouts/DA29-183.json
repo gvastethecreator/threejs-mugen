@@ -10,8 +10,8 @@
   "acceptance": "Editors preserve comments/unknown text where promised, show located diagnostics, preview semantic diff, validate before write, undo, reopen, and avoid unsupported silent rewrites.",
   "risk": "Pretty printing can alter behavior. Allows named edit operations only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "40702f5bb9a0701159bfa6378d1850cab727bdb871dc32818b642f02ef756176"
+    "value": "a6d3dc702b8aa4e3d425639cc19d91882dabca7f14af8002254f8781f17d9d42"
   }
 }

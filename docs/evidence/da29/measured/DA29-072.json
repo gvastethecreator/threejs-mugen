@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-072",
   "kind": "G",
-  "generatedAt": "2026-07-27T04:35:51.989Z",
+  "generatedAt": "2026-07-27T04:41:07.451Z",
   "acceptance": "Play, Studio preview, Inspect, team, and stress routes record calls, triangles, points, lines, programs, geometries, textures, and post-cleanup deltas.",
   "command": "pnpm exec vitest run src/tests/RendererInfoBaseline.test.ts",
   "report": {

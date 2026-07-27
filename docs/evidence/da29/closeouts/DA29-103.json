@@ -10,8 +10,8 @@
   "acceptance": "Record has fresh permission/license, distinct source/output digests, ordered transforms, visual QA, collision, playable route, and no third-party bytes.",
   "risk": "Near-duplicate output inflates coverage. Allows one additional record only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "abd0d62bc677cad50967519c7ab36506f851b9de0d5f03aa7cc2b8087772dd7a"
+    "value": "9ae1754a2307e43867ca6c49863d9c5f3b75c24741f23945ee39850c7d3494ef"
   }
 }

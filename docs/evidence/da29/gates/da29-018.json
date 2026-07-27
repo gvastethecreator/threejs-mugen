@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-018",
-  "generatedAt": "2026-07-27T04:35:26.599Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:40:28.223Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Establish bundle and load budgets. Depends on DA29-002. Systems: Vite output, route chunks, assets.",
   "acceptance": "Baseline records raw/gzip size, chunk graph, initial route bytes, asset count, and load timings; thresholds have owners and breach policy.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-018.json",
+    "docs/evidence/da29/measured/DA29-018.json",
+    "package.json",
+    "dist/assets"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "fa0f27f2b54d56b0aaaee76abb9bf966073107311c667d24051d7452ac2609c3"
+    "value": "764b108fb41dde76b6a4a655405973477e5125bd3535c7b8fbc1910c9109b574"
   }
 }

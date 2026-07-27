@@ -10,8 +10,8 @@
   "acceptance": "Imported fixture covers required actions, loopstart, duration, flip, alpha, interpolation where supported, missing action diagnostics, and frame/render correlation.",
   "risk": "Animation presence is weak evidence. Allows named AIR subset only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "2404ba43efdd6d7ea81fd933533e7918bf16b1c5a34c967e47a6b125f6d1d8cd"
+    "value": "6d8ece9d529bb11a1068607a2f81cf8682edc7d2d0be003d04a8555136aa7b03"
   }
 }

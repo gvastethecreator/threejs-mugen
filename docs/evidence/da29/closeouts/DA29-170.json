@@ -10,8 +10,8 @@
   "acceptance": "Review samples unsupported-heavy packages, mutation corpus, profile boundaries, user flows, performance, and failure clarity; accepted/rejected claims and next denominator are signed.",
   "risk": "Friendly fixtures inflate readiness. Allows the reviewed practical-MUGEN milestone only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "763aaefb56d39bcc215fb7270d3716b2940535c5b78427001c8fbcfde0b66131"
+    "value": "7f63dc2ecfc749bcdd869dce427b79cb1afd851d1b0ab93b774c84038d536f56"
   }
 }

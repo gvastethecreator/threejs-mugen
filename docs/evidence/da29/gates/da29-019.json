@@ -1,16 +1,20 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-019",
-  "generatedAt": "2026-07-27T04:35:26.599Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:40:28.223Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Build a frame-gap performance harness. Depends on DA29-017 and DA29-020. Systems: worst fight route, renderer info, browser runner.",
   "acceptance": "Records p50/p95/p99/max frame gap, FPS, draw calls, triangles, geometries, textures, CPU/device/browser, warmup, seed, and sample count.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-019.json",
+    "docs/evidence/da29/measured/DA29-019.json",
+    "src/game/render/RendererInfoBaseline.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "c3c8984916738e965bf7e2aa300e242fd999ff541474820c587dfbc9ef498333"
+    "value": "6fd765fe46f4497a4cdcdf95ac0f74df9b02cac8dbc09c7dfebee4c1acd3e07a"
   }
 }

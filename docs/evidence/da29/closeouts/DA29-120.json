@@ -10,8 +10,8 @@
   "acceptance": "Approved manifest covers key routes, states, themes, viewports, DPR, fonts, animation settle rule, mask policy, and human review; diffs link runtime revision.",
   "risk": "Pixel tests can bless unusable UI. Allows visual stability only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "00f23afa810130bfc7d48f9690c96e7373ca8c75fb2b6db47df5aab6aa6185ff"
+    "value": "f51531fcc4dafdf1550d817befc33e36a6db5ec4039a63e39ad78cbcf7799f2b"
   }
 }

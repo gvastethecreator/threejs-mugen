@@ -10,8 +10,8 @@
   "acceptance": "PR stays bounded; nightly runs full traces/browser/accessibility/perf/security; release requires fresh corpus and selected long gates; cancellation/concurrency rules work.",
   "risk": "Slow jobs can become stale. Allows workflow topology only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "14762d0223646dd7ab9967b889e622828bdac50c4c5255a8bd1b5a2a4cc99750"
+    "value": "6d17bd27c8270c45291278507ac9a40c11f16923e138952ce473ffd97adb6ca8"
   }
 }

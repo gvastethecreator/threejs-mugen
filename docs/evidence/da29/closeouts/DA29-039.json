@@ -5,13 +5,13 @@
   "wave": 3,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:35:26.599Z",
+  "closedAt": "2026-07-27T04:40:28.223Z",
   "cut": "Rank the next controller families by lawful corpus demand and semantic risk. Depends on DA29-015 and DA29-038.",
   "acceptance": "Backlog ranks at least ten families by occurrences, routes, dependencies, failure cost, and source confidence; no controller is marked supported.",
   "risk": "Popularity may crowd out core rules. Allows priority order only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "f7554d6d497e6164d3f66e741ba9e5ff0a47b0f9af088c812ab10992fc99ad14"
+    "value": "c4a3f78311f85b1eb84ab5220bfda54245aaea2090c8e916d6cdf88d99b97c93"
   }
 }

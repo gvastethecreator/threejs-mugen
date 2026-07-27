@@ -10,8 +10,8 @@
   "acceptance": "Record/replay routes cover charge duration boundaries, held directions across facing changes, release tokens, repeated presses, negative-edge policy, and failure frames.",
   "risk": "Device sampling can alter thresholds. Allows tested tokens/profile only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "a26145715fb5203e75b7e19008dfb509665574f36d58c7f3d4eac0e113c767fe"
+    "value": "f941e89c3a7d08daaf5ad33e248afb32eb6c8590026ede32497df08a6c6f2edd"
   }
 }

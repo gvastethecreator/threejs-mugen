@@ -3,48 +3,58 @@
   "id": "DA29-013",
   "kind": "I",
   "wave": 1,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:40:28.223Z",
   "cut": "Replace regex controller census with parsed CNS records. Depends on DA29-008. Systems: controller matrix materializer and parser.",
   "acceptance": "StateDef `type = S/C/A/L/U` cannot appear as a controller; malformed and nested fixtures produce located diagnostics; current corpus is rematerialized.",
   "risk": "Wrong denominator. Allows parsed occurrence facts only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
     "docs/CONTROLLER_SUPPORT_REGISTRY.md",
-    "src/mugen"
+    "src/mugen",
+    "src/mugen/parsers/CnsParser.ts",
+    "src/mugen/da29/CnsControllerCensus.ts",
+    "public/characters/nova-boxer/mugen/nova.cns",
+    "public/characters/mira-volt/mugen/mira.cns"
   ],
   "commands": [
-    "implementation probe DA29-013 (diagnostic only)"
+    "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-013"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-013.json",
-    "docs/evidence/da29/probes/da29-013.json"
+    "docs/evidence/da29/probes/da29-013.json",
+    "docs/evidence/da29/measured/DA29-013.json",
+    "src/mugen/parsers/CnsParser.ts",
+    "src/mugen/da29/CnsControllerCensus.ts",
+    "public/characters/nova-boxer/mugen/nova.cns",
+    "public/characters/mira-volt/mugen/mira.cns"
   ],
   "claims": {
     "allowed": [
-      "DA29-013 remains open"
+      "DA29-013 closed as implementation-probe",
+      "acceptance-executed unit evidence for DA29-013; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence",
-      "path-exists / directory probes do not close [I] cuts"
+      "product/runtime parity beyond written claim ceiling",
+      "path-exists probe as closeout"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "383878bb385e98fcba236c368ed5bf5b2a27647c5195ff0ac96a2e238533dd88"
+    "value": "62eb6bb19211317e8512b1a58a4afa7f6337252b9af23a9282980639a2c8741a"
   }
 }

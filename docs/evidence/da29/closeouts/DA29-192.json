@@ -5,13 +5,13 @@
   "wave": 19,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:35:26.599Z",
+  "closedAt": "2026-07-27T04:40:28.223Z",
   "cut": "Define versioned public APIs for proven engine ports. Depends on DA29-140 and DA29-191.",
   "acceptance": "API review covers types, lifecycle, errors, async/cancel, events, deterministic contracts, browser support, compatibility policy, examples, and excluded domain owners.",
   "risk": "Public API freezes weak seams. Allows candidate API only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "cec5a3009e5894fa3dbee3837b074e8be3d2acccb04dda065c2a1af7be0eabc9"
+    "value": "ac85b24ad213adef02e94c99e9932e07f338b6b67f81c6d1f793faf1999cd4f5"
   }
 }

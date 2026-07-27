@@ -3,48 +3,60 @@
   "id": "DA29-046",
   "kind": "I",
   "wave": 4,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:40:28.223Z",
   "cut": "Prove fall, recovery, bounce, and landing transitions. Depends on DA29-041 and DA29-037.",
   "acceptance": "Imported matrix covers fall flags, velocities, recover windows, ground bounce, landing state, no-recover, and reset with frame-accurate traces.",
   "risk": "Physics and state order interact. Allows named transition set only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
     "src/mugen",
-    "src/game"
+    "src/game",
+    "public/characters/nova-boxer/mugen/nova.cns",
+    "public/characters/nova-boxer/mugen/nova.air",
+    "public/characters/nova-boxer/mugen/nova.cmd",
+    "public/characters/mira-volt/mugen/mira.cns",
+    "public/characters/mira-volt/mugen/mira.air"
   ],
   "commands": [
-    "implementation probe DA29-046 (diagnostic only)"
+    "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-046"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-046.json",
-    "docs/evidence/da29/probes/da29-046.json"
+    "docs/evidence/da29/probes/da29-046.json",
+    "docs/evidence/da29/measured/DA29-046.json",
+    "public/characters/nova-boxer/mugen/nova.cns",
+    "public/characters/nova-boxer/mugen/nova.air",
+    "public/characters/nova-boxer/mugen/nova.cmd",
+    "public/characters/mira-volt/mugen/mira.cns",
+    "public/characters/mira-volt/mugen/mira.air"
   ],
   "claims": {
     "allowed": [
-      "DA29-046 remains open"
+      "DA29-046 closed as implementation-probe",
+      "acceptance-executed unit evidence for DA29-046; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence",
-      "path-exists / directory probes do not close [I] cuts"
+      "product/runtime parity beyond written claim ceiling",
+      "path-exists probe as closeout"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "5928cbeb9a53311b1c6cf2acdb40b1a6cb344440bf77ad2b5c79ce580951200d"
+    "value": "ac08bf9dabbe6acdc7dcfe5ef8a22ef48f8f0f343386f58ad781361514cda2ee"
   }
 }

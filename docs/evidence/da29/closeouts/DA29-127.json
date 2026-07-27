@@ -10,8 +10,8 @@
   "acceptance": "Injected quota/abort/blocked/version/store loss routes retain last good data, surface state, allow safe export/reset, and never report false save success.",
   "risk": "Recovery may destroy evidence. Allows injected routes only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "8b759082772d8b332dec9632903b68dc1df85552be2b728947cb03d829084b00"
+    "value": "dfc181a294f8b50bffa8ae8402f1bd121f52038bfb623907d16d45783adc1e8e"
   }
 }

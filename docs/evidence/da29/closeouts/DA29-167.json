@@ -10,8 +10,8 @@
   "acceptance": "Source/package graph records precedence, shadowing, append rules, profile, paths, digests, missing/ambiguous cases, runtime consumers, and browser output.",
   "risk": "Global resource resolution can contaminate packages. Allows tested closure only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "17a0ecad0449938dd3fe5199a46ecb25422eecd4232251241c6d3939c91cdc25"
+    "value": "1fa80b5d6d0ef37b87db2df63e32dfaa81064fbd41c3c37b3080a85433f6da1d"
   }
 }

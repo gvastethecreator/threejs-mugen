@@ -1,0 +1,35 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-019",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:41:02.569Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-019",
+  "anchors": [
+    {
+      "path": "src/game/render/RendererInfoBaseline.ts",
+      "bytes": 4611,
+      "sha256": "851d27a16c10e8ad8ecb397b87ccb1554ead262f64e5da29f72309cf583d5943"
+    }
+  ],
+  "functionResults": {
+    "harness": {
+      "p50": 16.6,
+      "p95": 18.2,
+      "p99": 22,
+      "max": 33.3,
+      "fps": 60,
+      "drawCalls": 12,
+      "triangles": 240,
+      "geometries": 8,
+      "textures": 5,
+      "warmup": 30,
+      "seed": "da29-019-unit",
+      "sampleCount": 120
+    },
+    "metricFieldsPresent": true,
+    "claim": "unit harness shape; device/browser FPS not claimed"
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-019; broader product claims remain blocked"
+}

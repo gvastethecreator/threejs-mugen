@@ -3,44 +3,58 @@
   "id": "DA29-050",
   "kind": "G",
   "wave": 4,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "closedAt": "2026-07-27T04:40:28.223Z",
   "cut": "Prove round-reset combat cleanup. Depends on DA29-045…049.",
   "acceptance": "Matrix lists which hits, targets, binds, pauses, projectiles, helpers, effects, inputs, power, vars, and team state clear or persist across round/reset paths.",
   "risk": "Hidden residue causes later-round bugs. Allows tested cleanup invariants only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json"
+    "docs/evidence/da29/series-registry-v1.json",
+    "public/characters/nova-boxer/mugen/nova.cns",
+    "public/characters/nova-boxer/mugen/nova.air",
+    "public/characters/nova-boxer/mugen/nova.cmd",
+    "public/characters/mira-volt/mugen/mira.cns",
+    "public/characters/mira-volt/mugen/mira.air"
   ],
-  "commands": [],
+  "commands": [
+    "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-050"
+  ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-050.json",
+    "docs/evidence/da29/measured/DA29-050.json",
+    "public/characters/nova-boxer/mugen/nova.cns",
+    "public/characters/nova-boxer/mugen/nova.air",
+    "public/characters/nova-boxer/mugen/nova.cmd",
+    "public/characters/mira-volt/mugen/mira.cns",
+    "public/characters/mira-volt/mugen/mira.air",
     "docs/evidence/da29/gates/da29-050.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-050 remains open"
+      "DA29-050 closed as gate-report",
+      "acceptance-executed unit evidence for DA29-050; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence for this G id",
-      "shared inventory digests do not close unrelated gates"
+      "formal/global tip rewrite without measured full stack",
+      "score movement"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "5aad084f3b907c87f9ccb2e929f341c3be0bcdc9b5a48a301a7cbe27f35aae75"
+    "value": "3b76b148d78535483685b41e74631aaaf6b99a77a992b46598630173a02ea4f4"
   }
 }

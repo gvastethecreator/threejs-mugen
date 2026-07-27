@@ -10,8 +10,8 @@
   "acceptance": "Pause/frame-step, dummy state, life/power reset, input display, record/playback, position reset, and error states remain deterministic and keyboard accessible.",
   "risk": "Training overrides can leak into matches. Allows named training tools only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "c9207ad853fea08a8355385121922e44b7f1442ba1bbc88188223fa03402bc9a"
+    "value": "1f60724b1cbc41caf6b03c30f6b4efdeb727ae5bea11512e1bea8b3521203b9b"
   }
 }

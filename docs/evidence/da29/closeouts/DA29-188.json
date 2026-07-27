@@ -10,8 +10,8 @@
   "acceptance": "Same project/revision/tool chain yields identical manifest and content digests, safe paths, current evidence, runtime config, and a local play smoke; blocked facts stop export.",
   "risk": "Local bundle is not deployment. Allows deterministic local export only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "0e6065a5741114b069ac677aabf7abbcbb39ad62e20eac38bee17b5377299013"
+    "value": "934530d55fd0724c66e9b45a429361af77ad70e32b9672942c5b85a4d662ea02"
   }
 }

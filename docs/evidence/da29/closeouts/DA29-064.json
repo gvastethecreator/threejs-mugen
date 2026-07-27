@@ -10,8 +10,8 @@
   "acceptance": "KO-to-next-member success and all failure points either commit the full handoff or restore preimage; replay and reset pass.",
   "risk": "Partial handoff corrupts team state. Allows one Turns transaction contract only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "185516977a63b1b00d1b1698777dfb8e203345ddd7011f4661d188f08a0e4d1a"
+    "value": "63996c5489c477daff69adf858259fc9301e74dee457255d366bf0e6424ec4c7"
   }
 }

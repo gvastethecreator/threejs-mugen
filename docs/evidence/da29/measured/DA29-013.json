@@ -1,0 +1,60 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-013",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:41:02.487Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-013",
+  "anchors": [
+    {
+      "path": "src/mugen/parsers/CnsParser.ts",
+      "bytes": 7226,
+      "sha256": "abb329beed1b5246ff52c22e84c51dae0cfa1b626afba8db363ec5052db94b55"
+    },
+    {
+      "path": "src/mugen/da29/CnsControllerCensus.ts",
+      "bytes": 3817,
+      "sha256": "209752a723717da56d7e9c076336481c1db2f7dfbf3f802dc8922460e638c2ca"
+    },
+    {
+      "path": "public/characters/nova-boxer/mugen/nova.cns",
+      "bytes": 1345,
+      "sha256": "2d7db96883b763a90a2767223bd5f11e95521ac9f64a601e6ce4e9942095ee1a"
+    },
+    {
+      "path": "public/characters/mira-volt/mugen/mira.cns",
+      "bytes": 1345,
+      "sha256": "2d7db96883b763a90a2767223bd5f11e95521ac9f64a601e6ce4e9942095ee1a"
+    }
+  ],
+  "functionResults": {
+    "packages": [
+      {
+        "source": "public/characters/nova-boxer/mugen/nova.cns",
+        "controllerCount": 2,
+        "totalOccurrences": 4,
+        "stateDefCount": 10,
+        "rejectedStateDefTypeAsController": 10,
+        "topControllers": [
+          "ChangeState:2",
+          "HitDef:2"
+        ],
+        "digest": "db48db509d684d5d"
+      },
+      {
+        "source": "public/characters/mira-volt/mugen/mira.cns",
+        "controllerCount": 2,
+        "totalOccurrences": 4,
+        "stateDefCount": 10,
+        "rejectedStateDefTypeAsController": 10,
+        "topControllers": [
+          "ChangeState:2",
+          "HitDef:2"
+        ],
+        "digest": "77b55b747b449e54"
+      }
+    ]
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-013; broader product claims remain blocked"
+}

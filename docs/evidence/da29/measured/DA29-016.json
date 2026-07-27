@@ -1,0 +1,34 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-016",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:41:02.532Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-016",
+  "anchors": [
+    {
+      "path": "docs/evidence/source-authority-epoch-v1.json",
+      "bytes": 4521,
+      "sha256": "ec128c6af0826fe34269e284115edfd57640f75279baffe30d3bb8807458b7d6"
+    }
+  ],
+  "functionResults": {
+    "epochKeys": [
+      "schemaVersion",
+      "generatedAt",
+      "epoch",
+      "legacyV0",
+      "claims",
+      "canonicalization",
+      "digest"
+    ],
+    "excerptDigest": "c579a9612bcab7d6",
+    "bytes": 4521,
+    "pinFields": {
+      "hasNormative": true,
+      "hasWorking": true
+    }
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-016; broader product claims remain blocked"
+}

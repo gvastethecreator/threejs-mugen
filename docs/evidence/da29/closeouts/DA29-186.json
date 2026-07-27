@@ -10,8 +10,8 @@
   "acceptance": "Blank fighter, stage, screenpack, and training templates carry clear ownership/license, version, required files, safe placeholders, validation, and no third-party content.",
   "risk": "Templates can imply complete generators. Allows starter structure only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "4bfe1770e43162c3509726747f6afc7f2bd734d82e19d8f8016b00fb992f3811"
+    "value": "8ca2a028e53c7280f04fc7bfd2ecd05341cef28bf87182226b31c0b1dd9107cb"
   }
 }

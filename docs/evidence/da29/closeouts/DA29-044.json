@@ -3,48 +3,60 @@
   "id": "DA29-044",
   "kind": "I",
   "wave": 4,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:40:28.223Z",
   "cut": "Prove guard admission and guard damage. Depends on DA29-042 and DA29-043.",
   "acceptance": "High/low/air, guard distance, guard flags, chip, power, hitpause, no-guard, and wrong-state routes match pinned rules for named cases.",
   "risk": "Guard states are order-sensitive. Allows named guard matrix only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
     "src/mugen",
-    "src/game"
+    "src/game",
+    "public/characters/nova-boxer/mugen/nova.cns",
+    "public/characters/nova-boxer/mugen/nova.air",
+    "public/characters/nova-boxer/mugen/nova.cmd",
+    "public/characters/mira-volt/mugen/mira.cns",
+    "public/characters/mira-volt/mugen/mira.air"
   ],
   "commands": [
-    "implementation probe DA29-044 (diagnostic only)"
+    "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-044"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-044.json",
-    "docs/evidence/da29/probes/da29-044.json"
+    "docs/evidence/da29/probes/da29-044.json",
+    "docs/evidence/da29/measured/DA29-044.json",
+    "public/characters/nova-boxer/mugen/nova.cns",
+    "public/characters/nova-boxer/mugen/nova.air",
+    "public/characters/nova-boxer/mugen/nova.cmd",
+    "public/characters/mira-volt/mugen/mira.cns",
+    "public/characters/mira-volt/mugen/mira.air"
   ],
   "claims": {
     "allowed": [
-      "DA29-044 remains open"
+      "DA29-044 closed as implementation-probe",
+      "acceptance-executed unit evidence for DA29-044; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence",
-      "path-exists / directory probes do not close [I] cuts"
+      "product/runtime parity beyond written claim ceiling",
+      "path-exists probe as closeout"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "33f6a17f86393f0009794ffea2d56b82ac4c06590df6222b950513bd745b8b50"
+    "value": "862e5b19602053a1d1a7dc320dd4d69e64844c8e0f73b4386904076479820363"
   }
 }

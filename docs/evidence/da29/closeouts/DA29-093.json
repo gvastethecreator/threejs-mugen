@@ -10,8 +10,8 @@
   "acceptance": "Product and unit tests inject abort, quota, unknown, blocked upgrade, close, and commit errors; memory cannot report success after durable failure.",
   "risk": "Fail-open data loss. Allows error handling routes only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "f69d8f65b2475c7cf69c0d6686ae1c179b7b1a54765688d51926dd2c529ec7c3"
+    "value": "ac63949708b8031e1d00a11719f56c3e72e832f81a2db75de23a9618672b4a9c"
   }
 }

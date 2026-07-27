@@ -10,8 +10,8 @@
   "acceptance": "Authored fixtures vary scale, facing, angle, localcoord, override boxes, Helper proxies, and insertion order; artifact reports first geometric divergence.",
   "risk": "Geometry combinations grow fast. Allows tested matrix only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "70799f9c2b694633a9b071bfe5022a942e566414e73d223dcc4990c24d737c11"
+    "value": "1927111a53933a23db55a7fe40f565a3110fd3796756190ec1019b50569d5bb4"
   }
 }

@@ -10,8 +10,8 @@
   "acceptance": "IDs allocate, resolve, disable, destroy, never alias stale owners, survive snapshots where required, and fail closed on redirects.",
   "risk": "Reuse can target a new entity. Allows current identity lifecycle only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "acb77a5617f346a724e60feb78115b42c0874012711c6c317716e622280b7752"
+    "value": "7d944456e0815b562a7e547e9d47d825c27b2e143480866f3fcaa8b19d039867"
   }
 }

@@ -10,8 +10,8 @@
   "acceptance": "Matrix records deterministic owners, snapshot cost, resim speed, desync localization, unsupported systems, team/plural/AI results, and hard blockers.",
   "risk": "Local repeatability may fail across devices. Allows readiness findings only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "226813925f189ed6ea2d0645b898432cf1e049e712efa5901bdd4e367e830cc5"
+    "value": "50a04ab765d37f305b2f5523c2ff67e03f9491d4a8f4a148f3e138755d624def"
   }
 }

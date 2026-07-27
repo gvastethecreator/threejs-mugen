@@ -5,13 +5,13 @@
   "wave": 6,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:35:26.599Z",
+  "closedAt": "2026-07-27T04:40:28.223Z",
   "cut": "Review IKEMEN team-controller source families. Depends on DA29-016 and DA29-061.",
   "acceptance": "Pinned review covers relevant Tag/Team controllers and triggers, local deltas, dependencies, and unsupported semantics with source locations.",
   "risk": "Upstream extension drift. Allows source review only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "5415b9b68b8807330acdf6b250049459b9ac1fe9e2115993297966e5aeb13601"
+    "value": "11374e69f7aa22da29fc64d4818253b48c0f03da1d22bd04ea8b573eae82e724"
   }
 }

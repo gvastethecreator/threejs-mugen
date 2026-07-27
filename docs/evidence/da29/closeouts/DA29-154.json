@@ -10,8 +10,8 @@
   "acceptance": "Overlapping commands and multiple eligible controllers show deterministic selection, trigger order, consumption policy, state/control gates, and first divergence diagnostics.",
   "risk": "Easy commands can shadow specific moves. Allows named overlap matrix only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "908373b4366a5dd330289ece01693b35465335a5a9fd3cffe47c1e9f5db3b6a5"
+    "value": "7115cb20c5f6f195d650ef5b5b9954db5205190add45db65697fd9c553465d23"
   }
 }

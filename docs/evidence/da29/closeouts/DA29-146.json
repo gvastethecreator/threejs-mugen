@@ -10,8 +10,8 @@
   "acceptance": "Lockfile/dependency policy, license allowlist, known-vulnerability review, secret-like scan, source map/public path scan, and third-party asset rejection produce signed facts.",
   "risk": "Tool output is not legal/security assurance. Allows completed scan facts only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "a7b090b7b9a877a02cc602f24bdc9b9001b7556b760e107193e21db11b34c831"
+    "value": "2053eea39bc2c0a8477d8421aaf004b89e5420f2c30946805d68e3dc3b901cd3"
   }
 }

@@ -10,8 +10,8 @@
   "acceptance": "Crash-point matrix before write, mid-write, after write, before commit, and after commit yields restore/accept/review decisions with byte proof and idempotent replay.",
   "risk": "Wrong recovery can overwrite valid work. Allows tested crash matrix only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "b316aaf04255056900f37c32b23bd0c8bd646a33309fb3ec944f472ad1ca7043"
+    "value": "8f081a0f6040ff96864f088ca48c91e8c18ca2cbdcd6a23be481facc94498030"
   }
 }

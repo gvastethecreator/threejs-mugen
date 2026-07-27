@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-135",
-  "generatedAt": "2026-07-27T04:35:26.599Z",
+  "generatedAt": "2026-07-27T04:40:28.223Z",
   "ok": true,
   "entryPoints": [
     "docs/evidence/score-adjudication-v1.json",
@@ -16,6 +16,6 @@
   "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "c0a13ab1b2f7b34147978971ad562c04be8ea0921710a72d0972c3c22498fc29"
+    "value": "7443850dcbce602c11f6b304b5f22411904a87aed993c86074bab9acd6c7507e"
   }
 }

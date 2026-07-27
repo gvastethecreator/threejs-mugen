@@ -3,48 +3,52 @@
   "id": "DA29-043",
   "kind": "I",
   "wave": 4,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:40:28.223Z",
   "cut": "Add a third independent repository-authored character fixture. Depends on DA29-031…040.",
   "acceptance": "Permission, independent CMD/CNS/AIR syntax, assets, digests, collision, one contact route, malformed variants, and provenance pass.",
   "risk": "A copied fixture gives false breadth. Allows one independent syntax family only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
     "public/characters/nova-boxer/mugen/nova.def",
-    "docs/evidence/native-asset-provenance-v1.json"
+    "docs/evidence/native-asset-provenance-v1.json",
+    "public/characters/rook-apprentice/mugen"
   ],
   "commands": [
-    "implementation probe DA29-043 (diagnostic only)"
+    "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-043"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-043.json",
-    "docs/evidence/da29/probes/da29-043.json"
+    "docs/evidence/da29/probes/da29-043.json",
+    "docs/evidence/da29/measured/DA29-043.json",
+    "public/characters/rook-apprentice/mugen"
   ],
   "claims": {
     "allowed": [
-      "DA29-043 remains open"
+      "DA29-043 closed as implementation-probe",
+      "acceptance-executed unit evidence for DA29-043; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence",
-      "path-exists / directory probes do not close [I] cuts"
+      "product/runtime parity beyond written claim ceiling",
+      "path-exists probe as closeout"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "9e32a85853a9d7e9860064580699a12a10f127d17867f83b8a48c519b3f8b4de"
+    "value": "1db05ab61f01a831129e006b0a09ff4ef9b2f0d6a4296f9b1f103afa55d0b0d1"
   }
 }

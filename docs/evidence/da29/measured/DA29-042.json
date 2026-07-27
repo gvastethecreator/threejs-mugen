@@ -1,0 +1,26 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-042",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:41:02.667Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-042",
+  "anchors": [
+    {
+      "path": "public/characters/mira-volt/mugen/mira.cns",
+      "bytes": 1345,
+      "sha256": "2d7db96883b763a90a2767223bd5f11e95521ac9f64a601e6ce4e9942095ee1a"
+    },
+    {
+      "path": "public/characters/mira-volt/mugen/mira.air",
+      "bytes": 2484,
+      "sha256": "73a4dbb4343730706d0f9bcf31ef0654ac7ebfae8d18999d4362ee07a18ebd61"
+    }
+  ],
+  "functionResults": {
+    "hitDefCount": 2,
+    "states": 10
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-042; broader product claims remain blocked"
+}

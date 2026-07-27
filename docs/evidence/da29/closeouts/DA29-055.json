@@ -10,8 +10,8 @@
   "acceptance": "Explods, sounds, afterimages, shakes, and transient overlays list owner, clock, pause, cleanup, and resource disposal; two imported routes pass.",
   "risk": "Visual effects can retain runtime resources. Allows listed effects only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "4e2bc8d446d3bbef15076480e38ff78ae8492e669dbf6bc3d60b59f04ca52d6b"
+    "value": "aed6d6c6876cc49e6a2bed608ca8b2268fea351f402493ca5734051f126ecbce"
   }
 }

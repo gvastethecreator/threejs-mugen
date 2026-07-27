@@ -10,8 +10,8 @@
   "acceptance": "Pinned runtime installs lockfile, caches safely, runs typecheck/unit/build/boundaries/control audit, uploads facts, and fails on warnings chosen as fatal.",
   "risk": "Local-only green. Allows CI execution on named environment only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "45636b2685721eb3707d71363b84ae8774826e07f769482dc73b204a4ddd5272"
+    "value": "4fed32797b1258ccf84c77f67e7567103e081395b48a2b4bc7a9654fa580adad"
   }
 }

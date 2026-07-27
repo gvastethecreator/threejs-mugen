@@ -10,8 +10,8 @@
   "acceptance": "Seeded corpus covers size/ratio/depth, malformed headers, truncation, integer edges, duplicate paths, cancellation, time/memory caps, and stable rejection.",
   "risk": "Parser denial of service. Allows tested fuzz set only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "2a8aa11dd3fed62a6972591855cf25907db5040ae1ceed576bdb99bbf06f227d"
+    "value": "9fe1f2092c317d1dc54fb0f9ae40e1ba57d8d7fe5adfb64e75fbc4fa822dee5d"
   }
 }

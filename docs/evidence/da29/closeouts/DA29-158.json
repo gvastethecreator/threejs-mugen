@@ -10,8 +10,8 @@
   "acceptance": "Repository-owned file covers character/stage rows, random/select rules, ordering, missing/duplicate paths, extra metadata, diagnostics, and safe project closure.",
   "risk": "Roster parse can imply mode support. Allows parsed subset only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "490ef3c6f39e8c98aabbc57c900a573e06054d6bb030a2c15b73404e99fc9da7"
+    "value": "29b00e63ee400176cdd92179d8a2cfece5dcfffeffa4d7511ed858d812f03566"
   }
 }

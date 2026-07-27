@@ -10,8 +10,8 @@
   "acceptance": "Scanner runs each phase, records time/input/output/ruleset/digest, propagates errors, supports cancellation, and cannot materialize green text without execution.",
   "risk": "Static green masks broken analyzers. Allows executed scanner facts only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "0ee2cfa575c66ebe2c4230d60c94c6f02510b62dd5cd2ebfef7a64e4285e4fdb"
+    "value": "11ef6deca79a0d4ecadbb6f4879bb47cd1416ce88457a7ef0dc625341026e93e"
   }
 }

@@ -10,8 +10,8 @@
   "acceptance": "Route teardown, project switch, import failure, context lost/restored, resize, and app shutdown return owned resources to expected baselines without double disposal.",
   "risk": "GPU leaks survive JS cleanup. Allows tested lifecycle only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "c349f4233f6f6efe8552ac6d41bb34701c96431458b0f871b4ad80440eb15d80"
+    "value": "b3691e699d1d1eb8f7f7e494b2ed594f33e267b32421038a6eb12c0230b94aab"
   }
 }

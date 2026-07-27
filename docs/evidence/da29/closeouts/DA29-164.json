@@ -10,8 +10,8 @@
   "acceptance": "Imported fixture covers bars, portraits, names, power, timer, combo, round/KO/win elements, layer order, transforms, team variants, resize, and fallback.",
   "risk": "HUD success can hide timing gaps. Allows one motif/profile matrix only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "374f0b03fe08c4cfe0cbe5be032db69be1b2fdb78dc99fb92cd511ec031e25a6"
+    "value": "bb4754eaf8297252f5e285e3e3f7a6421bae23e93f777eadcfbaf9335cfea763"
   }
 }

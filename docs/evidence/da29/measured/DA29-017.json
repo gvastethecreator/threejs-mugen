@@ -1,0 +1,54 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-017",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:41:02.546Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-017",
+  "anchors": [
+    {
+      "path": "docs/evidence/da29/product-browser-matrix-v1.json",
+      "bytes": 1372,
+      "sha256": "1e0f72ca96a6b23c2871a9cb870c79f010225265f720f280973438c539f1a0d6"
+    },
+    {
+      "path": "docs/evidence/da29/browser/match-desktop.png",
+      "bytes": 490592,
+      "sha256": "250b5b727700c8cdaf2c9499e279d9c308383c77fffe286127a52770beb4cd0d"
+    },
+    {
+      "path": "docs/evidence/da29/browser/match-mobile.png",
+      "bytes": 120654,
+      "sha256": "74651bb46f2692a64ed74c6fe6c9d00cbf3cfd6c6f0f56fdf86b6b86f7477c7e"
+    }
+  ],
+  "functionResults": {
+    "routeCount": 3,
+    "routes": [
+      {
+        "id": "match-desktop",
+        "viewport": "1440x960",
+        "sha256": "250b5b727700c8cdaf2c9499e279d9c308383c77fffe286127a52770beb4cd0d",
+        "consoleErrorCount": 0,
+        "status": "captured"
+      },
+      {
+        "id": "match-mobile",
+        "viewport": "390x844",
+        "sha256": "74651bb46f2692a64ed74c6fe6c9d00cbf3cfd6c6f0f56fdf86b6b86f7477c7e",
+        "consoleErrorCount": 0,
+        "status": "captured"
+      },
+      {
+        "id": "studio-workbench-desktop",
+        "viewport": "1440x960",
+        "sha256": "3d02f8d28c6aaf209155e53dc896d5216afdfd2186a7ca4f8a6c9ba36c720ea7",
+        "consoleErrorCount": 0,
+        "status": "captured"
+      }
+    ],
+    "commitBound": false
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-017; broader product claims remain blocked"
+}

@@ -10,8 +10,8 @@
   "acceptance": "Boundary command loads the versioned manifest; duplicated root lists are removed; schema and command fixtures fail together on drift.",
   "risk": "Split rules give false green. Allows manifest consumption only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "fb8f59bddbaf949d0070f72006dc3061a6c218aaf1b3ecdc1a541605057ca03e"
+    "value": "4a460691fbf0a3ca7b0cd828f3bcd1a77479dfc000fa1db9aaaf6f17e7a85c2c"
   }
 }

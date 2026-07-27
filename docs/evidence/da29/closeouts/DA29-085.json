@@ -10,8 +10,8 @@
   "acceptance": "Mutation corpus covers truncated blocks, duplicate fields, invalid expressions, encoding/newlines, huge tokens, nested comments, unknown fields, and bounded error counts.",
   "risk": "Error storms can lock the UI. Allows diagnostic robustness only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "3662a2d9ec472e3bceae2a96732868d0f1920a04d6009a6abfa058344e431d2e"
+    "value": "6f03b6439b5e75c3dac8cc8a827d4c4c251aac45397e7170211e4745976c9880"
   }
 }

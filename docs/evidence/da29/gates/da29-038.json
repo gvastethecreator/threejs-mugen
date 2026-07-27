@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-038",
-  "generatedAt": "2026-07-27T04:35:26.599Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:40:28.223Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Audit dynamic parameter evaluation across compiled controllers. Depends on DA29-034, DA29-035, and DA29-037.",
   "acceptance": "Generated matrix finds static-only, deferred, wrong-context, untested, and fail-open fields; sampled tests confirm the classifier.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-038.json",
+    "docs/evidence/da29/measured/DA29-038.json",
+    "src/mugen/parsers/CnsParser.ts",
+    "public/characters/nova-boxer/mugen/nova.cns"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "e6aff6ca7a8fb5ae04e774735f38963566391257bb3fb9f79d42d17e10e0cf1d"
+    "value": "723d027632f0dae898f02ff27e0917b1383710890112d21a737a1176fd4d1334"
   }
 }

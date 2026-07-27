@@ -10,8 +10,8 @@
   "acceptance": "Browser matrix covers reload, process-like crash injection, two tabs, stale writer, lock loss, conflict resolution, and final byte/revision integrity.",
   "risk": "Last-writer-wins data loss. Allows named concurrency policy only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "5f8b3340de40703440676b86c0b2c4e541788d494c48cab753f027135dc689b4"
+    "value": "1a7d3710725c2345cad18114728d19c4464076aa0be140190ed7442cc49688e9"
   }
 }

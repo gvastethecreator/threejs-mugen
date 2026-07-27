@@ -10,8 +10,8 @@
   "acceptance": "Partial KO, double KO, surviving partner, timeout, win attribution, cleanup, and next-round roster state have deterministic traces.",
   "risk": "Team win policy varies by profile. Allows named profile only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "a0c36f5659ad02d0344fdd9ee0dd06c369a5ea899951c085a3781635f9c02272"
+    "value": "686fd00ce6ba176d4d46f185beda7b5d507ae4b2d29d4f5101f9e96825ab5031"
   }
 }

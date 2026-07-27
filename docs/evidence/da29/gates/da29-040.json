@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-040",
-  "generatedAt": "2026-07-27T04:35:26.599Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:40:28.223Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Add a compiler differential artifact over the lawful corpus. Depends on DA29-033, DA29-034, and DA29-035.",
   "acceptance": "For each fixture, artifact lists parsed blocks, compiled ops, dropped/unknown fields, diagnostics, canonical digest, and revision; changes require review.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-040.json",
+    "docs/evidence/da29/measured/DA29-040.json",
+    "src/mugen/parsers/CnsParser.ts",
+    "public/characters/nova-boxer/mugen/nova.cns"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "529b906aa63ef944e780909ce43db7c8e0260f0227b2fc2b25b4883ed71cc91d"
+    "value": "2ad608db42ad152ec08ceae65cb68c07c386928d30ac27cccf9fda78de96a61c"
   }
 }

@@ -10,8 +10,8 @@
   "acceptance": "Gesture-gated Chromium route verifies decoded repository-owned samples, graph connection, non-zero post-mixer signal, pan/volume, overlap, stop/reset, errors, and context close.",
   "risk": "Fake context cannot prove output. Allows tested browser/audio route only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "dd7c9462f7e769c26849c942bc6ea90cdeb97d2af9588ca7a5137c7c78dc6d2a"
+    "value": "df5c4dbd50f2633ba6e9dfda4570422ad1376e7205f5fe63d6b58bc06141f75b"
   }
 }

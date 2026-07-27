@@ -10,8 +10,8 @@
   "acceptance": "One command gathers current facts, source/asset provenance, SBOM/license outputs, route/perf/accessibility results, checksums, and claim sheet; mismatched revisions fail.",
   "risk": "Bundle may omit external deployment facts. Allows local candidate evidence only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "680b246bf02a0b3ad7a9dc6b1385d52404de547b78a6aba472fa939052fc1748"
+    "value": "7159a47eb0053473af29030829861574573574f761b9b73d6c690b2fc82283ff"
   }
 }

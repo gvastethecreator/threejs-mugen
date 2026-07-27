@@ -3,48 +3,52 @@
   "id": "DA29-022",
   "kind": "I",
   "wave": 2,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:40:28.223Z",
   "cut": "Handle gamepad connect, disconnect, and reconnect. Depends on DA29-021.",
   "acceptance": "Browser tests cover unplug mid-hold, reconnect with changed index, stale button release, two seats, and keyboard fallback with visible status.",
   "risk": "Stuck input. Allows those lifecycle routes only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
     "src/game",
-    "src/mugen"
+    "src/mugen",
+    "src/game/input/GamepadInputAdapter.ts"
   ],
   "commands": [
-    "implementation probe DA29-022 (diagnostic only)"
+    "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-022"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-022.json",
-    "docs/evidence/da29/probes/da29-022.json"
+    "docs/evidence/da29/probes/da29-022.json",
+    "docs/evidence/da29/measured/DA29-022.json",
+    "src/game/input/GamepadInputAdapter.ts"
   ],
   "claims": {
     "allowed": [
-      "DA29-022 remains open"
+      "DA29-022 closed as implementation-probe",
+      "acceptance-executed unit evidence for DA29-022; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence",
-      "path-exists / directory probes do not close [I] cuts"
+      "product/runtime parity beyond written claim ceiling",
+      "path-exists probe as closeout"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "cd36bdc9c63d48a5a8e0c883e2a358e68d595aacd515e5a456ddf6b382a51ea5"
+    "value": "537c7b14fb2ee8ab3fe58d2689b84e896b24bf08fa343c0990474837208eb9c7"
   }
 }

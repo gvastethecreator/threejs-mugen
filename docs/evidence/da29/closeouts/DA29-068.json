@@ -10,8 +10,8 @@
   "acceptance": "Single/Simul/Turns/Tag fixtures prove names, portraits, life/power, active/standby cues, scaling, fallback, and mobile layout.",
   "risk": "HUD can imply unsupported mode depth. Allows loaded metadata routes only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "bbbf95d218fdd9492bb8354e56b1a244d6ddf855143eec5de38f8e3a9da59026"
+    "value": "fa329454e8736dd36051d9725afe59d64eba591b0d754a51268fcaf0a9f4cf1b"
   }
 }

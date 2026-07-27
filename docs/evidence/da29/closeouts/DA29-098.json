@@ -10,8 +10,8 @@
   "acceptance": "Source mutation invalidates analysis, build, evidence, and release at the same revision; Studio shows reason and exact next action; rerun restores only fresh facts.",
   "risk": "Split freshness logic creates false green. Allows one end-to-end stale/fresh route only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "85e4007adc555112c832d6648fa997bf779fc77994f0ab5c07401edba1aeb983"
+    "value": "0408219b96c1f6b3d59d40fe7826ed0670d305b38256caa54fe57a4cb5c4bdc8"
   }
 }

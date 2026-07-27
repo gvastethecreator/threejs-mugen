@@ -10,8 +10,8 @@
   "acceptance": "Keyboard/gamepad desktop/mobile flow chooses legal characters/stage, shows missing/blocked entries, preserves seat/profile, starts the exact package, and returns safely.",
   "risk": "Selection UI can load a different revision. Allows one local versus selection route only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "3356b0dced8037be4446a7b806e2f99af384ce9b0467720b475dea4f38179ba6"
+    "value": "ad0b58f2617011f73f87d07733a6021c09662d097bcf369bd57e66ec25ec0c7b"
   }
 }

@@ -10,8 +10,8 @@
   "acceptance": "Authored route covers camera follow, zoom, edge widths, ScreenBound/StageBound, corner pressure, shake, reset, and resize with runtime/render correlation.",
   "risk": "Current clamps may mix coordinate spaces. Allows named camera route only.",
   "revision": {
-    "head": "a5d78499bc9074029a7feac0086a7830b779e467",
-    "headShort": "a5d78499bc90",
+    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
+    "headShort": "75e04917cdd7",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "22e7dc55189131fef1be5ff9986c542250ecf7475bfbb2f3355e2443acb04f74"
+    "value": "0105fb1aa0bf9e549145f761c6cd578ed64e7191edb8ae931abb8a5c7934114b"
   }
 }
