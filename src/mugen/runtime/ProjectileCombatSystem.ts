@@ -26,9 +26,15 @@ import {
 } from "./ProjectileSystem";
 import { applyRuntimeControl, applyRuntimePowerDelta } from "./RuntimeResourceSystem";
 import type { CharacterRuntimeState, RuntimeHitOverrideSlot } from "./types";
+import type { DemoFighterDefinition } from "./demoFighters";
 import type { MugenAffectTeam } from "../model/MugenTeam";
 import { runtimeAffectTeamAllows, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
 import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
+import {
+  applyRuntimeProjectileAirJuggleHit,
+  canRuntimeProjectileAirJuggle,
+} from "./RuntimeJuggleSystem";
+import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import {
   recordRuntimeRoundWinType,
   runtimeRoundHitSourceMetadata,
@@ -40,6 +46,7 @@ export type RuntimeProjectileCombatActor = {
   playerNo?: number;
   label: string;
   runtime: CharacterRuntimeState;
+  definition?: Pick<DemoFighterDefinition, "constants">;
   hitPause: number;
   hitStun: number;
 };
@@ -49,6 +56,7 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
   defender: TActor;
   projectiles: RuntimeProjectile[];
   hurtBoxes: CollisionBox[];
+  runtimeProfile?: RuntimeCompatibilityProfile;
   attackerLocalCoord?: readonly [number, number];
   defenderLocalCoord?: readonly [number, number];
   getTargetCollisionBoxes?: (defender: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
@@ -181,6 +189,21 @@ export class RuntimeProjectileCombatWorld {
         log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via HitBy/NotHitBy`);
         continue;
       }
+      const targetWasFalling = defender.runtime.moveType === "H" && defender.runtime.hitFall?.falling === true;
+      if (
+        projectile.rootId === attacker.id &&
+        projectile.parentId === attacker.id &&
+        !canRuntimeProjectileAirJuggle({
+          profile: input.runtimeProfile,
+          attacker: projectileJuggleActor(attacker),
+          defender: projectileJuggleActor(defender),
+          airJuggle: projectile.airJuggle ?? 0,
+          targetWasFalling,
+        })
+      ) {
+        log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via air.juggle`);
+        continue;
+      }
       const override = findRuntimeHitOverride(defender.runtime, projectile.attr ?? "S,SP", projectile.guardFlag ?? "MA");
       if (override) {
         if (projectile.missOnOverride === true) {
@@ -270,6 +293,15 @@ export class RuntimeProjectileCombatWorld {
       defender.runtime.receivedHitSequence = (defender.runtime.receivedHitSequence ?? 0) + 1;
       defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(projectile, false, result.damage, result.stun, result.pause, result.kill, source, false);
       input.applyHitState?.(attacker, defender, projectile);
+      if (projectile.rootId === attacker.id && projectile.parentId === attacker.id) {
+        applyRuntimeProjectileAirJuggleHit({
+          profile: input.runtimeProfile,
+          attacker: projectileJuggleActor(attacker),
+          defender: projectileJuggleActor(defender),
+          airJuggle: projectile.airJuggle ?? 0,
+          targetWasFalling,
+        });
+      }
       input.recordReceivedDamage?.(defender, result.damage);
       log(
         `${attacker.label} projectile hit ${defender.label} for ${result.damage}; hits remaining ${projectile.hitsRemaining}, miss ${projectile.missTimeRemaining}; ${describeRuntimeProjectileRemoval(projectile)}`,
@@ -360,6 +392,14 @@ export class RuntimeProjectileCombatWorld {
       );
     }
   }
+}
+
+function projectileJuggleActor(actor: RuntimeProjectileCombatActor) {
+  return {
+    id: actor.id,
+    definition: actor.definition ?? {},
+    runtime: actor.runtime,
+  };
 }
 
 const defaultProjectileCombatWorld = new RuntimeProjectileCombatWorld();

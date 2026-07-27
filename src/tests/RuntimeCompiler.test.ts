@@ -2344,6 +2344,7 @@ value = 1
         missonoverride: "1",
         sprpriority: "7",
         trans: "add",
+        "air.juggle": "3.5",
         projremove: "0",
       }),
     );
@@ -2373,6 +2374,7 @@ value = 1
       hitCount: 2,
       missTime: 3,
       damage: 31,
+      airJuggle: 3.5,
       kill: false,
       guardKill: false,
       attr: "S, SP",

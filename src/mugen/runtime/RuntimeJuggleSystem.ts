@@ -29,6 +29,15 @@ export type RuntimeDirectAirJuggleHitResult = {
   activeJuggle: number | undefined;
 };
 
+export type RuntimeProjectileAirJuggleHitResult = {
+  cost: number;
+  remainingBefore: number;
+  remainingAfter: number;
+  charged: boolean;
+  bypassed: boolean;
+  fallingContact: boolean;
+};
+
 /** Causal snapshot for one direct juggle admission or spend decision. */
 export type RuntimeJuggleTrace = {
   attackerId: string;
@@ -95,6 +104,63 @@ export function applyRuntimeDirectAirJuggleHit(input: {
     fallingContact,
     costOrigin: costDecision.origin,
     activeJuggle: input.attacker.runtime.juggle,
+  };
+}
+
+/**
+ * Bounded IKEMEN projectile admission. The local runtime has no `hittmp`
+ * counter, so an untracked non-falling first contact is admitted; tracked or
+ * falling contacts use the target's per-attacker air-juggle budget.
+ */
+export function canRuntimeProjectileAirJuggle(input: {
+  profile?: RuntimeCompatibilityProfile;
+  attacker: RuntimeDirectJuggleActor;
+  defender: RuntimeDirectJuggleActor;
+  airJuggle: number;
+  targetWasFalling?: boolean;
+}): boolean {
+  if (input.profile !== "ikemen-go" || input.attacker.runtime.assertSpecial?.noJuggleCheck) {
+    return true;
+  }
+  const tracked = input.defender.runtime.airJugglePoints?.[input.attacker.id] !== undefined;
+  const falling = input.targetWasFalling === true || runtimeDirectDefenderIsFalling(input.defender.runtime);
+  if (!tracked && !falling) {
+    return true;
+  }
+  return runtimeAirJuggleCost({ airJuggle: input.airJuggle }) <= runtimeAirJuggleRemaining(input.defender, input.attacker.id);
+}
+
+/** Spend projectile `HitDef air.juggle` points without resetting attacker `c.juggle`. */
+export function applyRuntimeProjectileAirJuggleHit(input: {
+  profile?: RuntimeCompatibilityProfile;
+  attacker: RuntimeDirectJuggleActor;
+  defender: RuntimeDirectJuggleActor;
+  airJuggle: number;
+  targetWasFalling: boolean;
+}): RuntimeProjectileAirJuggleHitResult | undefined {
+  if (input.profile !== "ikemen-go") {
+    return undefined;
+  }
+  const cost = runtimeAirJuggleCost({ airJuggle: input.airJuggle });
+  const remainingBefore = runtimeAirJuggleRemaining(input.defender, input.attacker.id);
+  const bypassed = input.attacker.runtime.assertSpecial?.noJuggleCheck === true;
+  const fallingContact = input.targetWasFalling || input.defender.runtime.hitFall?.falling === true;
+  const charged = !bypassed && fallingContact;
+  const remainingAfter = charged ? remainingBefore - cost : remainingBefore;
+  const tracked = input.defender.runtime.airJugglePoints?.[input.attacker.id] !== undefined;
+  if (fallingContact || tracked) {
+    input.defender.runtime.airJugglePoints = {
+      ...input.defender.runtime.airJugglePoints,
+      [input.attacker.id]: remainingAfter,
+    };
+  }
+  return {
+    cost,
+    remainingBefore,
+    remainingAfter,
+    charged,
+    bypassed,
+    fallingContact,
   };
 }
 

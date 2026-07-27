@@ -235,6 +235,7 @@ export type ProjectileControllerOp = {
   missTime: number;
   trans?: string;
   damage: number;
+  airJuggle?: number;
   kill?: boolean;
   guardKill?: boolean;
   attr?: string;
@@ -2420,6 +2421,7 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     missTime: firstNumber(findParam(controller, "projmisstime")) ?? 0,
     trans: stripMugenString(findParam(controller, "trans")),
     damage: firstNumber(findParam(controller, "damage")) ?? 30,
+    airJuggle: firstNumber(findParam(controller, "air.juggle")),
     kill: booleanNumber(findParam(controller, "kill")),
     guardKill: booleanNumber(findParam(controller, "guard.kill")),
     attr: stripMugenString(findParam(controller, "attr")),

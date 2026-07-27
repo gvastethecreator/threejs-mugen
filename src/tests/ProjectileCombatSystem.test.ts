@@ -633,6 +633,91 @@ describe("ProjectileCombatSystem", () => {
     expect(projectiles).toEqual([]);
   });
 
+  it("tracks root Projectile air.juggle points, rejects over-budget contacts, and honors NoJuggleCheck", () => {
+    let projectiles = [projectile({ airJuggle: 3, damage: 17 })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }), undefined, { constants: {} });
+    const defender = actor(
+      "p2",
+      "P2",
+      runtimeState({
+        pos: { x: 12, y: 0 },
+        facing: -1,
+        life: 1000,
+        moveType: "H",
+        hitFall: { falling: true, damage: 0, velocity: { y: -1 } },
+      }),
+      undefined,
+      { constants: { "data.airjuggle": 4 } },
+    );
+    const logs: string[] = [];
+    const resolve = () => new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      runtimeProfile: "ikemen-go",
+      holdingBack: false,
+      log: (line) => logs.push(line),
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    resolve();
+    expect(defender.runtime.life).toBe(983);
+    expect(defender.runtime.airJugglePoints).toEqual({ p1: 1 });
+    expect(projectiles).toEqual([]);
+
+    projectiles = [projectile({ serialId: "projectile-rejected", airJuggle: 3, damage: 17 })];
+    resolve();
+    expect(defender.runtime.life).toBe(983);
+    expect(defender.runtime.airJugglePoints).toEqual({ p1: 1 });
+    expect(projectiles).toHaveLength(1);
+    expect(projectiles[0]).toMatchObject({ hasHit: false, hitsRemaining: 1 });
+    expect(logs).toContain("P2 rejected P1 projectile S,SP via air.juggle");
+
+    attacker.runtime.assertSpecial = { flags: ["nojugglecheck"], globalFlags: [], noJuggleCheck: true };
+    projectiles = [projectile({ serialId: "projectile-bypass", airJuggle: 3, damage: 17 })];
+    resolve();
+    expect(defender.runtime.life).toBe(966);
+    expect(defender.runtime.airJugglePoints).toEqual({ p1: 1 });
+  });
+
+  it("keeps projectile air.juggle inactive outside IKEMEN and for helper-owned children", () => {
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+    const defender = actor(
+      "p2",
+      "P2",
+      runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 1000, moveType: "H", hitFall: { falling: true, damage: 0, velocity: { y: -1 } } }),
+      undefined,
+      { constants: { "data.airjuggle": 1 } },
+    );
+    const resolve = (entry: RuntimeProjectile, runtimeProfile: "mugen-1.1" | "ikemen-go") => {
+      new RuntimeProjectileCombatWorld().resolveCombat({
+        attacker,
+        defender,
+        projectiles: [entry],
+        hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+        runtimeProfile,
+        holdingBack: false,
+        log: () => undefined,
+        rememberTarget: () => undefined,
+        applyHitOverride: () => undefined,
+        removeProjectilesMarkedForRemoval: () => undefined,
+      });
+    };
+
+    resolve(projectile({ airJuggle: 3 }), "mugen-1.1");
+    expect(defender.runtime.life).toBe(969);
+    expect(defender.runtime.airJugglePoints).toBeUndefined();
+
+    resolve(projectile({ serialId: "helper-projectile", airJuggle: 3, parentId: "helper-1" }), "ikemen-go");
+    expect(defender.runtime.life).toBe(938);
+    expect(defender.runtime.airJugglePoints).toBeUndefined();
+  });
+
   it("routes projectile guard power and control through runtime resource bounds", () => {
     let projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1, guardDamage: 4 })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1, power: 2990 }));
@@ -1174,11 +1259,18 @@ describe("ProjectileCombatSystem", () => {
   });
 });
 
-function actor(id: string, label: string, runtime: CharacterRuntimeState, playerNo?: number) {
+function actor(
+  id: string,
+  label: string,
+  runtime: CharacterRuntimeState,
+  playerNo?: number,
+  definition?: { constants?: Record<string, number> },
+) {
   return {
     id,
     label,
     ...(playerNo === undefined ? {} : { playerNo }),
+    ...(definition === undefined ? {} : { definition }),
     runtime,
     hitPause: 0,
     hitStun: 0,
@@ -1236,6 +1328,7 @@ function projectile(overrides: Partial<RuntimeProjectile> = {}): RuntimeProjecti
     missTimeRemaining: 0,
     opacity: 1,
     damage: 31,
+    airJuggle: undefined,
     kill: true,
     attr: "S,SP",
     targetId: 77,

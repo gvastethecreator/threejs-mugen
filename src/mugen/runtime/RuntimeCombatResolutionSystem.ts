@@ -124,6 +124,7 @@ export type RuntimeCombatResolutionProjectileInput<TActor extends RuntimeCombatR
   hitStateTransitionWorld: RuntimeHitStateTransitionWorld;
   contactPresentationWorld: RuntimeContactPresentationWorld;
   runtimeTick: number;
+  runtimeProfile?: RuntimeCompatibilityProfile;
   stageBounds?: RuntimeStageBounds;
   getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
   getCollisionBoxes?: (actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
@@ -726,6 +727,7 @@ export class RuntimeCombatResolutionWorld {
           }
         : undefined,
       holdingBack: isRuntimeHoldingBack(input.defender.currentInput),
+      runtimeProfile: input.runtimeProfile,
       canDefenderBeHit: input.canDefenderBeHit,
       log: input.log,
       rememberTarget: (source, target, targetId, projectile) => {

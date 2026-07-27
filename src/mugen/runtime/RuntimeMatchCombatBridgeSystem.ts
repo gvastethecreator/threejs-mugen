@@ -148,6 +148,7 @@ export class RuntimeMatchCombatBridgeWorld {
           hitStateTransitionWorld: input.hitStateTransitionWorld,
           contactPresentationWorld: input.contactPresentationWorld,
           runtimeTick: input.runtimeTick,
+          runtimeProfile: input.runtimeProfile,
           stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
           getCollisionBoxes: input.getCollisionBoxes,

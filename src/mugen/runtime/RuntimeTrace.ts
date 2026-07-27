@@ -359,6 +359,7 @@ export type RuntimeTraceEffectPayloadRequirement = {
   minPriority?: number;
   minHitsRemaining?: number;
   maxHitsRemaining?: number;
+  airJuggle?: number;
   hasHit?: boolean;
   removalReason?: Extract<RuntimeTraceEffectSummary, { kind: "projectile" }>["removalReason"];
   terminalReason?: Extract<RuntimeTraceEffectSummary, { kind: "projectile" }>["terminalReason"];
@@ -516,6 +517,7 @@ export type RuntimeTraceFinalActorRequirement = {
   assertSpecialFlags?: string[];
   assertSpecialGlobalFlags?: string[];
   hitFall?: RuntimeTraceHitFallRequirement;
+  airJugglePoints?: Record<string, number>;
   targetCount?: number;
 };
 
@@ -836,6 +838,7 @@ export type RuntimeTraceGateFinalActorEvidence = Pick<
   | "assertSpecialFlags"
   | "assertSpecialGlobalFlags"
   | "hitFall"
+  | "airJugglePoints"
   | "targetCount"
 >;
 
@@ -1449,6 +1452,13 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
         const missing = (expected as string[]).filter((flag) => !actual.includes(flag));
         if (missing.length > 0) {
           failures.push(`Final actor ${actor.id} ${field} missing ${missing.join(",")} (actual ${actual.join(",")})`);
+        }
+        continue;
+      }
+      if (field === "airJugglePoints") {
+        const actual = actor.airJugglePoints;
+        if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+          failures.push(`Final actor ${actor.id} airJugglePoints expected ${String(expected)} (actual ${String(actual)})`);
         }
         continue;
       }
@@ -2385,6 +2395,7 @@ function matchesProjectilePayloadRequirement(
     requirement.minPriority !== undefined ||
     requirement.minHitsRemaining !== undefined ||
     requirement.maxHitsRemaining !== undefined ||
+    requirement.airJuggle !== undefined ||
     requirement.hasHit !== undefined ||
     requirement.removalReason !== undefined ||
     requirement.terminalReason !== undefined ||
@@ -2401,6 +2412,7 @@ function matchesProjectilePayloadRequirement(
     (requirement.minPriority === undefined || effect.priority >= requirement.minPriority) &&
     (requirement.minHitsRemaining === undefined || effect.hitsRemaining >= requirement.minHitsRemaining) &&
     (requirement.maxHitsRemaining === undefined || effect.hitsRemaining <= requirement.maxHitsRemaining) &&
+    (requirement.airJuggle === undefined || effect.airJuggle === requirement.airJuggle) &&
     (requirement.hasHit === undefined || effect.hasHit === requirement.hasHit) &&
     (requirement.removalReason === undefined || effect.removalReason === requirement.removalReason) &&
     (requirement.terminalReason === undefined || effect.terminalReason === requirement.terminalReason) &&
@@ -3049,6 +3061,7 @@ function summarizeFinalActorEvidence(actor: RuntimeTraceActor): RuntimeTraceGate
     assertSpecialFlags: actor.assertSpecialFlags ? [...actor.assertSpecialFlags] : undefined,
     assertSpecialGlobalFlags: actor.assertSpecialGlobalFlags ? [...actor.assertSpecialGlobalFlags] : undefined,
     hitFall: actor.hitFall ? cloneTraceHitFall(actor.hitFall) : undefined,
+    airJugglePoints: actor.airJugglePoints ? { ...actor.airJugglePoints } : undefined,
     targetCount: actor.targetCount,
   };
 }

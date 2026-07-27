@@ -479,6 +479,7 @@ export type ActorEffectSnapshot =
       missTime: number;
       missTimeRemaining: number;
       damage: number;
+      airJuggle?: number;
       hitPause: number;
       hitStun: number;
       guardDamage: number;

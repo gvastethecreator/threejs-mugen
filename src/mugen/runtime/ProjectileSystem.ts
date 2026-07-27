@@ -66,6 +66,8 @@ export type RuntimeProjectile = {
   missTimeRemaining: number;
   opacity: number;
   damage: number;
+  /** Projectile HitDef air.juggle cost used by the bounded IKEMEN path. */
+  airJuggle?: number;
   kill: boolean;
   guardKill: boolean;
   attr?: string;
@@ -197,6 +199,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const affectTeam = operation?.affectTeam ?? normalizeMugenAffectTeam(findControllerParam(input.controller, "affectteam"));
   const teamSide = operation?.teamSide ?? normalizeMugenTeamSide(firstNumber(findControllerParam(input.controller, "teamside")));
   const baseDamage = Math.max(0, operation?.damage ?? firstNumber(findControllerParam(input.controller, "damage")) ?? 30);
+  const airJuggle = operation?.airJuggle ?? firstNumber(findControllerParam(input.controller, "air.juggle"));
+  const normalizedAirJuggle = airJuggle === undefined || !Number.isFinite(airJuggle) ? undefined : Math.trunc(airJuggle);
   const hitPause = Math.max(0, Math.round(operation?.hitPause ?? firstNumber(findControllerParam(input.controller, "pausetime")) ?? 6));
   const hitStun = Math.max(1, Math.round(operation?.hitStun ?? firstNumber(findControllerParam(input.controller, "ground.hittime")) ?? 18));
   const push = Math.abs(groundVelocity?.[0] ?? 18);
@@ -297,6 +301,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     missTimeRemaining: 0,
     opacity: parseProjectileOpacity(operation?.trans ?? findControllerParam(input.controller, "trans")),
     damage: Math.max(0, Math.round(baseDamage * (input.damageScale ?? 1))),
+    ...(normalizedAirJuggle === undefined ? {} : { airJuggle: normalizedAirJuggle }),
     kill,
     guardKill,
     attr,
@@ -588,6 +593,7 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           missTime: projectile.missTime,
           missTimeRemaining: projectile.missTimeRemaining,
           damage: projectile.damage,
+          ...(projectile.airJuggle === undefined ? {} : { airJuggle: projectile.airJuggle }),
           hitPause: projectile.hitPause,
           hitStun: projectile.hitStun,
           guardDamage: projectile.guardDamage,

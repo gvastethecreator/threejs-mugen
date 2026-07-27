@@ -13156,6 +13156,82 @@ air.juggle = 3
   });
 }
 
+export function createSyntheticImportedIkemenProjectileAirJuggleTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const directDamage = 37;
+  const projectileDamage = 17;
+  const targetId = 405;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "direct fall contact arms the target", frames: 2, p1: ["x"], p2: [] },
+    { label: "root Projectile spends three of four points", frames: 4, p1: [], p2: [] },
+    { label: "root Projectile remains active after an over-budget rejection", frames: 8, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-projectile-air-juggle-attacker",
+    displayName: "Synthetic Imported IKEMEN Projectile Air Juggle Attacker",
+    ikemenVersion: "0.99",
+    hitDefDamage: directDamage,
+    groundVelocity: [0, 0],
+    fall: { enabled: true, velocity: { y: -4 } },
+    withProjectile: true,
+    projectileTriggerTime: 2,
+    projectileOffset: [62, -45],
+    projectileVelocity: [0, 0],
+    projectileGroundVelocity: [0, 0],
+    projectileDamage: [projectileDamage, 0],
+    projectileAirJuggle: 3,
+    projectileHits: 2,
+    projectileMissTime: 0,
+    projectileRemoveOnHit: false,
+    projectileId: targetId,
+    withHitDef: true,
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-projectile-air-juggle-defender",
+    displayName: "Synthetic Imported IKEMEN Projectile Air Juggle Defender",
+    ikemenVersion: "0.99",
+    withHitDef: false,
+    dataStats: { airjuggle: 4 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-projectile-air-juggle-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-projectile-air-juggle-golden",
+      label: "Synthetic imported IKEMEN Projectile air.juggle",
+      source: "mixed",
+      notes: [
+        "Bounded IKEMEN trace proves a root-owned Projectile parses air.juggle, spends target data.airjuggle after a falling contact, rejects a later over-budget contact without removing the projectile, and exposes the value in the effect snapshot. Helper/child projectiles, exact hittmp timing, ModifyHitDef, teams, and full projectile parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-projectile-air-juggle-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredExecutedControllers: ["HitDef", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit", "reject"],
+        requiredEventSubstrings: ["via air.juggle"],
+        requiredCombatReasons: ["hit", "reject"],
+        requiredWorldLifecycleEvents: [{ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }],
+        requiredEffectPayloads: [{ actorKind: "projectile", ownerId: "p1", effectId: targetId, airJuggle: 3, minHitsRemaining: 1, hasHit: false }],
+        requiredFinalActors: [
+          { actorId: "p2", source: "imported", actorKind: "player", life: 1000 - directDamage - projectileDamage, airJugglePoints: { p1: 1 } },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -50077,6 +50153,7 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileChainId?: number;
   projectileHitDefHitCount?: number;
   projectileDamage?: [number, number?];
+  projectileAirJuggle?: number;
   projectileP2StateNo?: number;
   projectileP2GetP1State?: boolean;
   projectileMissOnOverride?: boolean;
@@ -51323,7 +51400,7 @@ ${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, op
 ${options.extraSuperPauseP2DefMul === undefined ? "" : extraSuperPauseP2DefMulBlock(options.extraSuperPauseP2DefMul)}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle) : ""}
 ${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secondaryProjectile) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
@@ -55167,6 +55244,7 @@ function projectileControllerBlock(
   edgeBound?: number,
   stageBound?: number,
   heightBound?: [number, number],
+  airJuggle?: number,
   label = "Fast Projectile",
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
@@ -55200,6 +55278,7 @@ function projectileControllerBlock(
   const edgeBoundLine = edgeBound === undefined ? "" : `projedgebound = ${edgeBound}`;
   const stageBoundLine = stageBound === undefined ? "" : `projstagebound = ${stageBound}`;
   const heightBoundLine = heightBound === undefined ? "" : `projheightbound = ${heightBound[0]},${heightBound[1]}`;
+  const airJuggleLine = airJuggle === undefined ? "" : `air.juggle = ${airJuggle}`;
   const cornerPushLines = `
 ${groundCornerPush === undefined ? "" : `ground.cornerpush.veloff = ${groundCornerPush}`}
 ${airCornerPush === undefined ? "" : `air.cornerpush.veloff = ${airCornerPush}`}
@@ -55233,6 +55312,7 @@ ${edgeBoundLine}
 ${stageBoundLine}
 ${heightBoundLine}
 damage = ${damage.join(",")}
+${airJuggleLine}
 ${hitFlagLine}
 ${killLine}
 ${guardKillLine}
