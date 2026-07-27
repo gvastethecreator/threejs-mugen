@@ -52,7 +52,7 @@ export type RuntimeRootDirectHitAdmissionDecision = {
   reason: RuntimeRootDirectHitAdmissionReason;
 };
 
-export type RuntimeRootReversalClashAdmissionReason = "admitted" | "same-side" | "inactive" | "attr-rejected" | "no-contact";
+export type RuntimeRootReversalClashAdmissionReason = "admitted" | "same-side" | "inactive" | "attr-rejected" | "state-change-pending" | "no-contact";
 
 export type RuntimeRootReversalClashAdmissionDecision = {
   attackerId: string;
@@ -136,9 +136,10 @@ function inspectReversalClash<TActor extends RuntimeRootDirectHitAdmissionActor>
   }
   const attackerBoxes = resolveRootAttackBoxes(attacker, attackerMove, input);
   const getterBoxes = resolveRootAttackBoxes(getter, getterMove, input);
-  return hasRootCollisionBoxPair(attacker, attackerBoxes, getter, getterBoxes)
-    ? "admitted"
-    : "no-contact";
+  if (!hasRootCollisionBoxPair(attacker, attackerBoxes, getter, getterBoxes)) return "no-contact";
+  return runtimeStateChangeTmpBlocksDirectStateRedirect(attacker.runtime, getter.runtime, attackerMove)
+    ? "state-change-pending"
+    : "admitted";
 }
 
 function inspectPair<TActor extends RuntimeRootDirectHitAdmissionActor>(
@@ -174,7 +175,11 @@ function inspectPair<TActor extends RuntimeRootDirectHitAdmissionActor>(
   )) {
     return "no-contact";
   }
-  return runtimeStateChangeTmpBlocksDirectStateRedirect(attacker.runtime, getter.runtime, move)
+  const reversalGetter = getter.runtime.reversal !== undefined && getter.currentMove?.isReversal === true;
+  const stateRedirectAttacker = reversalGetter ? getter : attacker;
+  const stateRedirectDefender = reversalGetter ? attacker : getter;
+  const stateRedirectMove = reversalGetter ? getter.currentMove! : move;
+  return runtimeStateChangeTmpBlocksDirectStateRedirect(stateRedirectAttacker.runtime, stateRedirectDefender.runtime, stateRedirectMove)
     ? "state-change-pending"
     : "admitted";
 }

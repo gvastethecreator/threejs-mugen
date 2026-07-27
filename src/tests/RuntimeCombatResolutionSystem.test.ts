@@ -675,6 +675,60 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(logs).toEqual(["P2 rejected P1 S,NA via pending state change"]);
   });
 
+  const pendingReversalStateRedirectCases: Array<{
+    name: string;
+    attackerRuntime: Partial<CharacterRuntimeState>;
+    reverserRuntime: Partial<CharacterRuntimeState>;
+    activation: { p1StateNo?: number; p2StateNo?: number };
+  }> = [
+    {
+      name: "reverser-owned p1stateno",
+      attackerRuntime: {},
+      reverserRuntime: { stateChangeTmp: true, actTmp: 1 },
+      activation: { p1StateNo: 777 },
+    },
+    {
+      name: "target-owned p2stateno",
+      attackerRuntime: { stateChangeTmp: true, hitTmp: 1 },
+      reverserRuntime: {},
+      activation: { p2StateNo: 888 },
+    },
+  ];
+
+  it.each(pendingReversalStateRedirectCases)("rejects ReversalDef $name while stchtmp remains pending", ({ attackerRuntime, reverserRuntime, activation }) => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const reversalWorld = new RuntimeReversalWorld(contactWorld);
+    const attacker = actor("p1", "P1", contactWorld, {
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, ...attackerRuntime }),
+      currentMove: move({ attr: "S,NA" }),
+      moveTick: 2,
+    });
+    const reverser = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ ...reverserRuntime }),
+    });
+    reversalWorld.activate(reverser, {
+      attr: "S,NA",
+      hitbox: { x1: -24, y1: -40, x2: 24, y2: 0 },
+      hitPause: 3,
+      ...activation,
+    });
+    const logs: string[] = [];
+
+    const result = new RuntimeCombatResolutionWorld().resolveDirect({
+      attacker,
+      defender: reverser,
+      ...directInputBase(contactWorld, new RuntimeDirectCombatWorld(contactWorld), logs),
+      reversalWorld,
+    });
+
+    expect(result).toEqual({ kind: "skipped", reason: "state-change-pending" });
+    expect(attacker.hasHit).toBe(false);
+    expect(reverser.hasHit).toBe(false);
+    expect(attacker.targets).toEqual([]);
+    expect(reverser.targets).toEqual([]);
+    expect(logs).toEqual(["P1 rejected P2 S,NA via pending state change"]);
+  });
+
   it("rejects target-owned p2getp1state zero HitDefs before HitOverride redirect", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const world = new RuntimeCombatResolutionWorld();
@@ -1138,6 +1192,46 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(p2.pendingHitDefTargets).toEqual(["p1"]);
     expect(p1.pendingHitDefTargets).toEqual(["p2"]);
     expect(p2.runtime.power).toBe(25);
+  });
+
+  it("rejects a pending ReversalDef clash before state mutation", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const reversalWorld = new RuntimeReversalWorld(contactWorld);
+    const world = new RuntimeCombatResolutionWorld();
+    const reverser = actor("p1", "P1", contactWorld, {
+      runtime: runtimeState({ stateChangeTmp: true, actTmp: 1 }),
+    });
+    const getter = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 18, y: 0 } }),
+    });
+    reversalWorld.activate(reverser, {
+      attr: "S,NA",
+      hitbox: { x1: -40, y1: -40, x2: 40, y2: -1 },
+      hitPause: 3,
+      p1StateNo: 777,
+    });
+    reversalWorld.activate(getter, {
+      attr: "S,NA",
+      hitbox: { x1: -40, y1: -40, x2: 40, y2: -1 },
+      hitPause: 3,
+    });
+    const logs: string[] = [];
+
+    const result = world.resolveReversalClash({
+      reverser,
+      getter,
+      reversalWorld,
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      stateHooks: hooks(),
+      log: (line) => logs.push(line),
+    });
+
+    expect(result).toEqual({ kind: "skipped", reason: "state-change-pending" });
+    expect(reverser.currentMove?.isReversal).toBe(true);
+    expect(getter.currentMove?.isReversal).toBe(true);
+    expect(reverser.hasHit).toBe(false);
+    expect(getter.hasHit).toBe(false);
+    expect(logs).toEqual(["P2 rejected P1 S,NA via pending state change"]);
   });
 
   it("revalidates ReversalDef clash depth before mutation", () => {

@@ -182,6 +182,43 @@ describe("RuntimeRootDirectHitAdmissionWorld", () => {
     expect(selfRedirect.admittedPairIds).toEqual([]);
   });
 
+  it("uses the active ReversalDef payload for pending direct state admission", () => {
+    const attacker = actor("p1", 1, 1, 0, { move: true });
+    const reverser = actor("p2", 2, 2, 0, { reversal: true, stateChangeTmp: true, actTmp: 1 });
+    reverser.currentMove = reversalMove({ p1StateNo: 777 });
+
+    const result = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [attacker, reverser],
+      getHurtBoxes: () => hurt,
+    });
+
+    expect(result.decisions).toContainEqual({
+      attackerId: "p1",
+      getterId: "p2",
+      reason: "state-change-pending",
+    });
+    expect(result.admittedPairIds).toEqual([]);
+  });
+
+  it("rejects pending ReversalDef clash state admission before mutation", () => {
+    const reverser = actor("p1", 1, 1, 0, { reversal: true, stateChangeTmp: true, actTmp: 1 });
+    const getter = actor("p2", 2, 2, 0, { reversal: true });
+    reverser.currentMove = reversalMove({ p1StateNo: 777 });
+    getter.currentMove = reversalMove({ p2StateNo: 888 });
+
+    const result = new RuntimeRootDirectHitAdmissionWorld().inspect({
+      roots: [reverser, getter],
+      getHurtBoxes: () => hurt,
+    });
+
+    expect(result.admittedReversalClashPairIds).toEqual([]);
+    expect(result.reversalClashDecisions).toContainEqual({
+      attackerId: "p1",
+      getterId: "p2",
+      reason: "state-change-pending",
+    });
+  });
+
   it("applies explicit minus and plus HitFlags to root admission", () => {
     const minus = new RuntimeRootDirectHitAdmissionWorld().inspect({
       roots: [
@@ -410,7 +447,7 @@ function actor(
 }
 
 function reversalMove(
-  attrs: { attr?: string; reversalAttr?: string; hitbox?: CollisionBox } = {},
+  attrs: { attr?: string; reversalAttr?: string; hitbox?: CollisionBox; p1StateNo?: number; p2StateNo?: number } = {},
 ): NonNullable<RuntimeRootDirectHitAdmissionActor["currentMove"]> {
   return {
     actionId: 0,
@@ -421,6 +458,8 @@ function reversalMove(
     damage: 0,
     attr: attrs.attr ?? "S,NA",
     reversalAttr: attrs.reversalAttr ?? "S,NA",
+    p1StateNo: attrs.p1StateNo,
+    p2StateNo: attrs.p2StateNo,
     isReversal: true,
     hitPause: 0,
     hitStun: 0,

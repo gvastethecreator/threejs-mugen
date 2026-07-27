@@ -158,7 +158,7 @@ export type RuntimeCombatResolutionReversalClashInput<TActor extends RuntimeComb
 };
 
 export type RuntimeReversalClashResolutionResult =
-  | { kind: "skipped"; reason: "missing-reversal" | "stale-getter" | "already-hit" | "no-match" }
+  | { kind: "skipped"; reason: "missing-reversal" | "stale-getter" | "already-hit" | "no-match" | "state-change-pending" }
   | { kind: "reversal"; message: string };
 
 export type RuntimeDirectCombatResolutionResult =
@@ -272,6 +272,11 @@ export class RuntimeCombatResolutionWorld {
       getterDepth: getterMove.attackDepth ?? input.getter.runtime.combatDepth?.attack,
       getterLocalCoord: input.getter.definition.localCoord,
     })) return { kind: "skipped", reason: "no-match" };
+    if (runtimeStateChangeTmpBlocksDirectStateRedirect(input.reverser.runtime, input.getter.runtime, reversal)) {
+      const message = `${input.getter.label} rejected ${input.reverser.label} ${reversal.attr ?? "S,NA"} via pending state change`;
+      input.log(message);
+      return { kind: "skipped", reason: "state-change-pending" };
+    }
     const outcome = input.reversalWorld.apply(input.reverser, input.getter, reversal, {
       rememberTarget: (source, target, targetId) => this.rememberTarget(source, target, targetId),
       canEnterState: input.stateHooks.canEnterState,
@@ -340,6 +345,11 @@ export class RuntimeCombatResolutionWorld {
       }, { incomingUnguardable: attacker.runtime.assertSpecial?.unguardable })
       : undefined;
     if (reversal) {
+      if (runtimeStateChangeTmpBlocksDirectStateRedirect(defender.runtime, attacker.runtime, reversal)) {
+        const message = `${attacker.label} rejected ${defender.label} ${reversal.attr ?? "S,NA"} via pending state change`;
+        input.log(message);
+        return { kind: "skipped", reason: "state-change-pending" };
+      }
       const reversalHitAttr = reversal.attr ?? "S,NA";
       const reversalGuardFlag = reversal.guardFlag ?? "MA";
       const override = findRuntimeHitOverride(attacker.runtime, reversalHitAttr, reversalGuardFlag, {
