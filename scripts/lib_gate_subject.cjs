@@ -24,7 +24,13 @@ function isDirtyTree(repoRoot) {
         const pathPart = l.replace(/^[MADRCU\?\!\s]+/, "").replace(/^"|"$/g, "");
         if (/^docs\/evidence\/da30\//.test(pathPart)) return false;
         if (/^docs\/evidence\/da29\//.test(pathPart)) return false;
+        if (/^docs\/evidence\/da31\/formal-logs\//.test(pathPart)) return false;
+        if (/^docs\/evidence\/da31\/da31-008-formal-gate\.json$/.test(pathPart)) return false;
+        if (/^docs\/evidence\/authority-selector-v1\.json$/.test(pathPart)) return false;
+        if (/^docs\/evidence\/roadmap-cursor-v1\.json$/.test(pathPart)) return false;
         if (/^\.scratch\//.test(pathPart)) return false;
+        if (/^docs\/DA31_EVIDENCE_ADOPTION_ROADMAP\.md$/.test(pathPart)) return false;
+        if (/^docs\/research\//.test(pathPart)) return false;
         return true;
       });
     return lines.length > 0;
