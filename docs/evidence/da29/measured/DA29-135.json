@@ -1,0 +1,40 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-135",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:58:48.797Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-135",
+  "anchors": [
+    {
+      "path": "src/engine/CommonEvidenceFacts.ts",
+      "bytes": 6740,
+      "sha256": "4411e8c0a38c52bf6d0949fe0c4315b44b736058ebff6740fbf7809ecf2a6544"
+    },
+    {
+      "path": "src/app/EvidenceEnvelope.ts",
+      "bytes": 17626,
+      "sha256": "9e182ec7abe837ae3cff484c1d1717c47b3acf788d985abbbcfa3d4575a89e89"
+    }
+  ],
+  "functionResults": {
+    "bytes": 6738,
+    "hasEnvelope": true,
+    "exports": [
+      "export const COMMON_EVIDENCE_FACTS_SCHEMA",
+      "export const COMMON_EVIDENCE_CANONICALIZATION",
+      "export type CommonEvidenceFactStatus",
+      "export type CommonEvidenceFactFreshness",
+      "export type CommonEvidenceSubject",
+      "export type CommonEvidenceFacts",
+      "export type CommonEvidenceFactsInput",
+      "export function createCommonEvidenceFacts",
+      "export function canonicalizeCommonEvidenceFacts",
+      "export function commonEvidenceFactsEqual",
+      "export function studioConsumerToCommonEvidenceFacts",
+      "export function runtimeConsumerToCommonEvidenceFacts"
+    ]
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-135; broader product claims remain blocked"
+}

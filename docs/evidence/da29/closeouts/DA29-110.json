@@ -3,44 +3,52 @@
   "id": "DA29-110",
   "kind": "G",
   "wave": 10,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Enforce public-path hygiene and evidence redaction. Depends on DA29-101 and DA29-109.",
   "acceptance": "Build/evidence scans reject absolute, traversal, temp, user, secret-like, commercial, and unapproved files; exported bundle uses safe relative paths and stable subject IDs.",
   "risk": "Local paths leak user data. Allows tested bundle hygiene only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json"
+    "docs/evidence/da29/series-registry-v1.json",
+    "scripts/qa_asset_path_hygiene.cjs",
+    "src/app/ProjectAssetClosure.ts"
   ],
-  "commands": [],
+  "commands": [
+    "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-110"
+  ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-110.json",
+    "docs/evidence/da29/measured/DA29-110.json",
+    "scripts/qa_asset_path_hygiene.cjs",
+    "src/app/ProjectAssetClosure.ts",
     "docs/evidence/da29/gates/da29-110.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-110 remains open"
+      "DA29-110 closed as gate-report",
+      "acceptance-executed unit evidence for DA29-110; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence for this G id",
-      "shared inventory digests do not close unrelated gates"
+      "formal/global tip rewrite without measured full stack",
+      "score movement"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "8937f685294dfa62f881ca00c720fa5782c143768e1cac7dc89aac4532b88d9f"
+    "value": "57012dd912c06b02a61a6697b382ba9e4251c682eb87fd564f12910bae5f1a84"
   }
 }

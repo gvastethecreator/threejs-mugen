@@ -5,13 +5,13 @@
   "wave": 8,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Harden CNS/CMD recovery and diagnostic limits. Depends on DA29-033 and DA29-081.",
   "acceptance": "Mutation corpus covers truncated blocks, duplicate fields, invalid expressions, encoding/newlines, huge tokens, nested comments, unknown fields, and bounded error counts.",
   "risk": "Error storms can lock the UI. Allows diagnostic robustness only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -53,6 +53,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "5e7b8a8f0f98788a4869cab706cac318e08ea64cb62377078f3e90f65eb36912"
+    "value": "30121afbc5bee149b12a82392ef34fd3898cf11899c39841063665ca9e9d1c96"
   }
 }

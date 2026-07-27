@@ -1,15 +1,16 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-149",
-  "generatedAt": "2026-07-27T04:27:24.904Z",
-  "ok": true,
   "kind": "I",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-149",
+  "generatedAt": "2026-07-27T04:58:48.878Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-149",
   "anchors": [
     {
       "path": "docs/AUTHORITY_SELECTOR.md",
-      "bytes": 1766,
-      "sha256": "0e6f37d2a19eaa477facc3350e99996416cca77e084f35c3026e5a34ce6ad9c1"
+      "bytes": 2000,
+      "sha256": "161808a6650fd63d369fec48d35f0e6d7b4bac85a1d830f1c41c0810ff1387cf"
     },
     {
       "path": "docs/MASTER_REVIEW_ROADMAP.md",
@@ -19,16 +20,27 @@
     {
       "path": "docs/evidence/authority-selector-v1.json",
       "bytes": 3388,
-      "sha256": "544e558a6a7484ca7358bd29b80e74bf4b11ee3706c61f9d2bd28bfcfa4fd127"
-    },
-    {
-      "path": "docs/evidence/da29/series-registry-v1.json",
-      "bytes": 95463,
-      "sha256": "1a71e4621556512482ea05213c17e8fc0c7155d78d691218f940b987935ddab0"
+      "sha256": "467e010e742e1afca5c5c68f36aa89eab9b722d106297a3c76643500a5e51ef3"
     }
   ],
-  "facts": {
-    "currentDocs": 4
+  "functionResults": {
+    "docs": [
+      {
+        "path": "docs/AUTHORITY_SELECTOR.md",
+        "bytes": 2000,
+        "sha256": "161808a6650f"
+      },
+      {
+        "path": "docs/MASTER_REVIEW_ROADMAP.md",
+        "bytes": 75875,
+        "sha256": "8ddc3bc3593d"
+      },
+      {
+        "path": "docs/evidence/authority-selector-v1.json",
+        "bytes": 3388,
+        "sha256": "467e010e742e"
+      }
+    ]
   },
-  "claimCeiling": "current control docs + series registry present"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-149; broader product claims remain blocked"
 }

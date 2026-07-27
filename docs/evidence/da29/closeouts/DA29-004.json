@@ -5,13 +5,13 @@
   "wave": 0,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Rebuild evidence corpus v1.3. Depends on DA29-002 and DA29-003. Systems: evidence envelope, trace/browser/source indices.",
   "acceptance": "Corpus imports all current artifacts with subject, producer, revision, digest type, target, route, and freshness; stale rows fail closed.",
   "risk": "Mixed revisions can inflate proof. Allows corpus completeness for listed inputs only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -56,6 +56,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "1f83d82480bda0f1e6168cfb7313414b3a21a7f02ca0a898a6e57aec9fd2c92a"
+    "value": "e8dca27614f3e109e91e1b7c3587d276c09eb7b8c4a003da1fb88043fd4e2413"
   }
 }

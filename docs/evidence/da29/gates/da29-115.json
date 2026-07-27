@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-115",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prove focus visibility and non-obscuring overlays. Depends on DA29-113 and DA29-114.",
   "acceptance": "Focus ring remains visible under sticky panels/dialogs at zoom and mobile sizes; no focused control is fully hidden; restore target is correct.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-115.json",
+    "docs/evidence/da29/measured/DA29-115.json",
+    "src/styles/redesign.css",
+    "src/app/App.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "18e54f6e3652362c1f65a15f063abb1477647fb681b8a5b9991be6148b5c559d"
+    "value": "1c2151dbdd99081da45bcf394e01909a9f47dc5918e659f98b1c3f817101abb7"
   }
 }

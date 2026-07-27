@@ -5,13 +5,13 @@
   "wave": 5,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Close a bounded Explod/ModifyExplod/BindToRoot chain. Depends on DA29-055 and DA29-052.",
   "acceptance": "Imported chain proves create, ID selection, modification, bind, pause, remove, owner death, and browser/render match.",
   "risk": "Effect identity collisions. Allows one controller chain only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "ba6d03eddb8350bf67e7619260cbb0fe45ce4b028bc81018f87c32d09205275a"
+    "value": "8478faf3aea54bf16417baddbf4b9e0dea15c9c8450e627b680fe84e86359ce6"
   }
 }

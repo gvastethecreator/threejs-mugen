@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-146",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Add dependency, license, secret, and public-bundle review. Depends on DA29-110 and DA29-143.",
   "acceptance": "Lockfile/dependency policy, license allowlist, known-vulnerability review, secret-like scan, source map/public path scan, and third-party asset rejection produce signed facts.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-146.json",
+    "docs/evidence/da29/measured/DA29-146.json",
+    "package.json",
+    "pnpm-lock.yaml"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "b5e9bce92edd7026a64e81e7b65f3a1ca1d990dd1e0aa307c6649ac443267465"
+    "value": "c53395576a7cf43d0d589d354506cac944b21d10d8e2d4a61906368691a24f10"
   }
 }

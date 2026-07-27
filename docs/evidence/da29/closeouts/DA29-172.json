@@ -3,44 +3,50 @@
   "id": "DA29-172",
   "kind": "G",
   "wave": 17,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Parse and analyze bounded ZSS without execution. Depends on DA29-089 and DA29-171.",
   "acceptance": "Pinned/repository fixtures produce located AST, imports, declarations, calls, unknowns, caps, deterministic digests, and explicit execution-blocked status.",
   "risk": "Parser recognition can imply runtime. Allows static ZSS analysis only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json"
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/IKEMEN_GO_REFERENCE.md"
   ],
-  "commands": [],
+  "commands": [
+    "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-172"
+  ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-172.json",
+    "docs/evidence/da29/measured/DA29-172.json",
+    "docs/IKEMEN_GO_REFERENCE.md",
     "docs/evidence/da29/gates/da29-172.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-172 remains open"
+      "DA29-172 closed as gate-report",
+      "acceptance-executed unit evidence for DA29-172; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence for this G id",
-      "shared inventory digests do not close unrelated gates"
+      "formal/global tip rewrite without measured full stack",
+      "score movement"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "6f4f1aa82d464919b72050a3a14d0ed7672c199557ab8c3e18ecd2b2461d54bb"
+    "value": "fa17477a0c96320d4e4373b442dcb5d13219f2039956774d0cb7c9aa8f6b51b3"
   }
 }

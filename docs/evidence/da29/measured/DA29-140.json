@@ -1,0 +1,36 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-140",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:58:48.826Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-140",
+  "anchors": [
+    {
+      "path": "scripts/check_boundaries.cjs",
+      "bytes": 3813,
+      "sha256": "9d328184938ed77fe14d44d97d149a1461dced922549103caa69dcadb93bfa69"
+    },
+    {
+      "path": "scripts/check_redirected_target_dispatch_boundary.cjs",
+      "bytes": 2546,
+      "sha256": "fbef215be6c11c1437e7bacf5fc9c32fc7269699f61e2a90b6038899b3c3d003"
+    }
+  ],
+  "functionResults": {
+    "boundaryScripts": [
+      {
+        "path": "scripts/check_boundaries.cjs",
+        "bytes": 3813,
+        "sha256": "9d328184938ed77f"
+      },
+      {
+        "path": "scripts/check_redirected_target_dispatch_boundary.cjs",
+        "bytes": 2546,
+        "sha256": "fbef215be6c11c14"
+      }
+    ]
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-140; broader product claims remain blocked"
+}

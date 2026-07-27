@@ -1,0 +1,46 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-170",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:58:49.034Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-170",
+  "anchors": [
+    {
+      "path": "public/characters/nova-boxer",
+      "bytes": 0,
+      "sha256": "directory"
+    },
+    {
+      "path": "public/characters/mira-volt",
+      "bytes": 0,
+      "sha256": "directory"
+    },
+    {
+      "path": "public/characters/rook-apprentice",
+      "bytes": 0,
+      "sha256": "directory"
+    }
+  ],
+  "functionResults": {
+    "packages": [
+      {
+        "id": "nova-boxer",
+        "hasDef": true
+      },
+      {
+        "id": "mira-volt",
+        "hasDef": true
+      },
+      {
+        "id": "rook-apprentice",
+        "hasDef": true
+      }
+    ],
+    "count": 3,
+    "adjudication": "practical-mugen-milestone-unit",
+    "scoresHeld": true
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-170; broader product claims remain blocked"
+}

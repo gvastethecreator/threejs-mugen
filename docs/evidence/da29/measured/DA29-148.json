@@ -1,0 +1,49 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-148",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:58:48.865Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-148",
+  "anchors": [
+    {
+      "path": "docs/evidence/da29/series-registry-v1.json",
+      "bytes": 95463,
+      "sha256": "1a71e4621556512482ea05213c17e8fc0c7155d78d691218f940b987935ddab0"
+    },
+    {
+      "path": "docs/evidence/authority-selector-v1.json",
+      "bytes": 3388,
+      "sha256": "467e010e742e1afca5c5c68f36aa89eab9b722d106297a3c76643500a5e51ef3"
+    },
+    {
+      "path": "docs/evidence/da29/closeout-status-v1.json",
+      "bytes": 46775,
+      "sha256": "daf493f2bd730961a4577bb64382bdedb99109997930d8a13e999a6a3866b005"
+    }
+  ],
+  "functionResults": {
+    "bundle": {
+      "artifacts": [
+        {
+          "path": "docs/evidence/da29/series-registry-v1.json",
+          "sha256": "1a71e4621556512482ea05213c17e8fc0c7155d78d691218f940b987935ddab0",
+          "bytes": 95463
+        },
+        {
+          "path": "docs/evidence/authority-selector-v1.json",
+          "sha256": "467e010e742e1afca5c5c68f36aa89eab9b722d106297a3c76643500a5e51ef3",
+          "bytes": 3388
+        },
+        {
+          "path": "docs/evidence/da29/closeout-status-v1.json",
+          "sha256": "daf493f2bd730961a4577bb64382bdedb99109997930d8a13e999a6a3866b005",
+          "bytes": 46775
+        }
+      ]
+    },
+    "deterministic": true
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-148; broader product claims remain blocked"
+}

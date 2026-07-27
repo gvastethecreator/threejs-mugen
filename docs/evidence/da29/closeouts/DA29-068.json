@@ -5,13 +5,13 @@
   "wave": 6,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Load and render team-aware lifebar metadata. Depends on DA29-062, DA29-064, DA29-066, and DA29-076.",
   "acceptance": "Single/Simul/Turns/Tag fixtures prove names, portraits, life/power, active/standby cues, scaling, fallback, and mobile layout.",
   "risk": "HUD can imply unsupported mode depth. Allows loaded metadata routes only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "2e25f414ff31bd800d7172319f1bd6787ad4ca26ee758f487deef8e816d0d8f9"
+    "value": "0e30f7c210c1de3a8670bc01f8bc3fcbec8d91b567e155ec37b543fef1a0dfa2"
   }
 }

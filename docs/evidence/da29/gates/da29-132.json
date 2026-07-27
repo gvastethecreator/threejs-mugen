@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-132",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Make required roots non-vacuous. Depends on DA29-131.",
   "acceptance": "Active profile fails when a required root is missing, optional roots are explicit, and negative fixtures prove forbidden vocabulary/imports in every active root.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-132.json",
+    "docs/evidence/da29/measured/DA29-132.json",
+    "scripts/check_boundaries.cjs",
+    "src/engine/ModuleContracts.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "d8ec67b82d98313dc70d9b081ea8f0e22ad5b27f2a76190f4329fae0fd40162e"
+    "value": "547070564ca3645fd47b295115a382c35b6318b19ab1ba22d2b70ecc8d774f6f"
   }
 }

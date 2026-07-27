@@ -1,6 +1,6 @@
 {
   "schema": "Da29CloseoutStatus/v1",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
   "records": [
     {
       "id": "DA29-001",
@@ -914,38 +914,38 @@
     {
       "id": "DA29-102",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-103",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-104",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-105",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-106",
@@ -968,29 +968,29 @@
     {
       "id": "DA29-108",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-109",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-110",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-111",
@@ -1013,47 +1013,47 @@
     {
       "id": "DA29-113",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-114",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-115",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-116",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-117",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-118",
@@ -1067,56 +1067,56 @@
     {
       "id": "DA29-119",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-120",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-121",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-122",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-123",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-124",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-125",
@@ -1130,29 +1130,29 @@
     {
       "id": "DA29-126",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-127",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-128",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-129",
@@ -1166,29 +1166,29 @@
     {
       "id": "DA29-130",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-131",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-132",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-133",
@@ -1211,11 +1211,11 @@
     {
       "id": "DA29-135",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-136",
@@ -1247,20 +1247,20 @@
     {
       "id": "DA29-139",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-140",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-141",
@@ -1274,47 +1274,47 @@
     {
       "id": "DA29-142",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-143",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-144",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-145",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-146",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-147",
@@ -1328,29 +1328,29 @@
     {
       "id": "DA29-148",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-149",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-150",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-151",
@@ -1364,29 +1364,29 @@
     {
       "id": "DA29-152",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-153",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-154",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-155",
@@ -1400,65 +1400,65 @@
     {
       "id": "DA29-156",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-157",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-158",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-159",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-160",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-161",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-162",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-163",
@@ -1472,38 +1472,38 @@
     {
       "id": "DA29-164",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-165",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-166",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-167",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-168",
@@ -1517,20 +1517,20 @@
     {
       "id": "DA29-169",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-170",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-171",
@@ -1544,11 +1544,11 @@
     {
       "id": "DA29-172",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-173",
@@ -1562,11 +1562,11 @@
     {
       "id": "DA29-174",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-175",
@@ -1580,47 +1580,47 @@
     {
       "id": "DA29-176",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-177",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-178",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-179",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-180",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-181",
@@ -1634,65 +1634,65 @@
     {
       "id": "DA29-182",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-183",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-184",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-185",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-186",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-187",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-188",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-189",
@@ -1706,11 +1706,11 @@
     {
       "id": "DA29-190",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-191",
@@ -1742,29 +1742,29 @@
     {
       "id": "DA29-194",
       "kind": "I",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "implementation-probe",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-195",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-196",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     },
     {
       "id": "DA29-197",
@@ -1796,116 +1796,16 @@
     {
       "id": "DA29-200",
       "kind": "G",
-      "status": "open",
-      "evidenceClass": "unproven",
+      "status": "closed",
+      "evidenceClass": "gate-report",
       "measuredGate": false,
       "gateSha": null,
-      "hasMeasuredAcceptance": false
+      "hasMeasuredAcceptance": true
     }
   ],
   "cursor": {
-    "closedThrough": "DA29-101",
-    "nextQueue": [
-      "DA29-102",
-      "DA29-103",
-      "DA29-104",
-      "DA29-105",
-      "DA29-106",
-      "DA29-107",
-      "DA29-108",
-      "DA29-109",
-      "DA29-110",
-      "DA29-111",
-      "DA29-112",
-      "DA29-113",
-      "DA29-114",
-      "DA29-115",
-      "DA29-116",
-      "DA29-117",
-      "DA29-118",
-      "DA29-119",
-      "DA29-120",
-      "DA29-121",
-      "DA29-122",
-      "DA29-123",
-      "DA29-124",
-      "DA29-125",
-      "DA29-126",
-      "DA29-127",
-      "DA29-128",
-      "DA29-129",
-      "DA29-130",
-      "DA29-131",
-      "DA29-132",
-      "DA29-133",
-      "DA29-134",
-      "DA29-135",
-      "DA29-136",
-      "DA29-137",
-      "DA29-138",
-      "DA29-139",
-      "DA29-140",
-      "DA29-141",
-      "DA29-142",
-      "DA29-143",
-      "DA29-144",
-      "DA29-145",
-      "DA29-146",
-      "DA29-147",
-      "DA29-148",
-      "DA29-149",
-      "DA29-150",
-      "DA29-151",
-      "DA29-152",
-      "DA29-153",
-      "DA29-154",
-      "DA29-155",
-      "DA29-156",
-      "DA29-157",
-      "DA29-158",
-      "DA29-159",
-      "DA29-160",
-      "DA29-161",
-      "DA29-162",
-      "DA29-163",
-      "DA29-164",
-      "DA29-165",
-      "DA29-166",
-      "DA29-167",
-      "DA29-168",
-      "DA29-169",
-      "DA29-170",
-      "DA29-171",
-      "DA29-172",
-      "DA29-173",
-      "DA29-174",
-      "DA29-175",
-      "DA29-176",
-      "DA29-177",
-      "DA29-178",
-      "DA29-179",
-      "DA29-180",
-      "DA29-181",
-      "DA29-182",
-      "DA29-183",
-      "DA29-184",
-      "DA29-185",
-      "DA29-186",
-      "DA29-187",
-      "DA29-188",
-      "DA29-189",
-      "DA29-190",
-      "DA29-191",
-      "DA29-192",
-      "DA29-193",
-      "DA29-194",
-      "DA29-195",
-      "DA29-196",
-      "DA29-197",
-      "DA29-198",
-      "DA29-199",
-      "DA29-200"
-    ],
+    "closedThrough": "DA29-200",
+    "nextQueue": [],
     "closedIds": [
       "DA29-001",
       "DA29-002",
@@ -2008,75 +1908,60 @@
       "DA29-099",
       "DA29-100",
       "DA29-101",
-      "DA29-106",
-      "DA29-107",
-      "DA29-111",
-      "DA29-112",
-      "DA29-118",
-      "DA29-125",
-      "DA29-129",
-      "DA29-133",
-      "DA29-134",
-      "DA29-136",
-      "DA29-137",
-      "DA29-138",
-      "DA29-141",
-      "DA29-147",
-      "DA29-151",
-      "DA29-155",
-      "DA29-163",
-      "DA29-168",
-      "DA29-171",
-      "DA29-173",
-      "DA29-175",
-      "DA29-181",
-      "DA29-189",
-      "DA29-191",
-      "DA29-192",
-      "DA29-193",
-      "DA29-197",
-      "DA29-198",
-      "DA29-199"
-    ],
-    "openIds": [
       "DA29-102",
       "DA29-103",
       "DA29-104",
       "DA29-105",
+      "DA29-106",
+      "DA29-107",
       "DA29-108",
       "DA29-109",
       "DA29-110",
+      "DA29-111",
+      "DA29-112",
       "DA29-113",
       "DA29-114",
       "DA29-115",
       "DA29-116",
       "DA29-117",
+      "DA29-118",
       "DA29-119",
       "DA29-120",
       "DA29-121",
       "DA29-122",
       "DA29-123",
       "DA29-124",
+      "DA29-125",
       "DA29-126",
       "DA29-127",
       "DA29-128",
+      "DA29-129",
       "DA29-130",
       "DA29-131",
       "DA29-132",
+      "DA29-133",
+      "DA29-134",
       "DA29-135",
+      "DA29-136",
+      "DA29-137",
+      "DA29-138",
       "DA29-139",
       "DA29-140",
+      "DA29-141",
       "DA29-142",
       "DA29-143",
       "DA29-144",
       "DA29-145",
       "DA29-146",
+      "DA29-147",
       "DA29-148",
       "DA29-149",
       "DA29-150",
+      "DA29-151",
       "DA29-152",
       "DA29-153",
       "DA29-154",
+      "DA29-155",
       "DA29-156",
       "DA29-157",
       "DA29-158",
@@ -2084,19 +1969,25 @@
       "DA29-160",
       "DA29-161",
       "DA29-162",
+      "DA29-163",
       "DA29-164",
       "DA29-165",
       "DA29-166",
       "DA29-167",
+      "DA29-168",
       "DA29-169",
       "DA29-170",
+      "DA29-171",
       "DA29-172",
+      "DA29-173",
       "DA29-174",
+      "DA29-175",
       "DA29-176",
       "DA29-177",
       "DA29-178",
       "DA29-179",
       "DA29-180",
+      "DA29-181",
       "DA29-182",
       "DA29-183",
       "DA29-184",
@@ -2104,15 +1995,23 @@
       "DA29-186",
       "DA29-187",
       "DA29-188",
+      "DA29-189",
       "DA29-190",
+      "DA29-191",
+      "DA29-192",
+      "DA29-193",
       "DA29-194",
       "DA29-195",
       "DA29-196",
+      "DA29-197",
+      "DA29-198",
+      "DA29-199",
       "DA29-200"
-    ]
+    ],
+    "openIds": []
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "173ebfa3dadbc3244948a65791baee9b9279104c9b5373fc9357d0bd0d7f695d"
+    "value": "074285b814072144f9c513cf9fd8d366badd62c3abde49e62a57c63be2793342"
   }
 }

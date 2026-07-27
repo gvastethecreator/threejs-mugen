@@ -1,0 +1,23 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-130",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:58:48.771Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-130",
+  "anchors": [
+    {
+      "path": "src/mugen/runtime/GlobalProjectileSchedule.ts",
+      "bytes": 3452,
+      "sha256": "043ae205d866a072de7dcdd6ed43a49636b458c282fc177f307070ebe818722b"
+    }
+  ],
+  "functionResults": {
+    "iterations": 50,
+    "uniqueChecksums": 1,
+    "stable": true,
+    "checksum": "3e757545"
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-130; broader product claims remain blocked"
+}

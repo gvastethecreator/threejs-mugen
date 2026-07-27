@@ -1,0 +1,7 @@
+# DA29-002 measured full-stack gate log (durable reconstruct from checkpoint note)
+# Source: docs/research/da29/2026-07-26-global-checkpoint-da29-002.md
+# Measured SHA: a6e91520081d6308eac3d53b6bf333d4b950d019
+# Commands: pnpm typecheck, pnpm test, pnpm qa:trace, pnpm build, pnpm check:boundaries, pnpm check:redirect-boundary
+# All six steps recorded exit 0 at the measured SHA (not re-run at rematerialization time).
+
+summary typecheck=0 test=0 trace=0 build=0 boundaries=0 redirect=0 head=a6e91520081d6308eac3d53b6bf333d4b950d019

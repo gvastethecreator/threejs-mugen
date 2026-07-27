@@ -5,13 +5,13 @@
   "wave": 5,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Close Helper/projectile numeric identity lifecycle. Depends on DA29-052, DA29-053, and DA29-057.",
   "acceptance": "IDs allocate, resolve, disable, destroy, never alias stale owners, survive snapshots where required, and fail closed on redirects.",
   "risk": "Reuse can target a new entity. Allows current identity lifecycle only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -55,6 +55,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "f8d3a842ce3505d28066dc3b68b77f022fb815f9791c1cf5a6e97c736d366206"
+    "value": "faf61a69ca4aeec9b898339032e921737fea2248d67db0f1575bf6bd576f0056"
   }
 }

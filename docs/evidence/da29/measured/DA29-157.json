@@ -1,0 +1,26 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-157",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:58:48.934Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-157",
+  "anchors": [
+    {
+      "path": "src/mugen/runtime/RuntimeInput.ts",
+      "bytes": 8965,
+      "sha256": "a21c2c0391db9adf59fba5a21e786b35207b01506e674c9b5529ead00f2b6dcb"
+    },
+    {
+      "path": "src/game/input/KeyboardInputAdapter.ts",
+      "bytes": 2234,
+      "sha256": "377216c8b40fc500dfef802dbaac05a161080ed14c017692dff2a2b8005e0a6c"
+    }
+  ],
+  "functionResults": {
+    "hasTrainingSurface": true,
+    "bytes": 8965
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-157; broader product claims remain blocked"
+}

@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-126",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Fuzz ZIP and binary parser resource limits. Depends on DA29-082, DA29-083, and DA29-086.",
   "acceptance": "Seeded corpus covers size/ratio/depth, malformed headers, truncation, integer edges, duplicate paths, cancellation, time/memory caps, and stable rejection.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-126.json",
+    "docs/evidence/da29/measured/DA29-126.json",
+    "src/mugen/loader/ZipCharacterSource.ts",
+    "src/mugen/parsers/SffParser.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "6aba45f4dc1ddcc015e5971416a617a0a5d7f953ba04996f004cabb9c8d418a2"
+    "value": "69749d751c9bd270f288fde34ed5f5772f9e95d5ec8024b4434b6b952eb5b106"
   }
 }

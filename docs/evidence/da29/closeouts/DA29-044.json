@@ -5,13 +5,13 @@
   "wave": 4,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Prove guard admission and guard damage. Depends on DA29-042 and DA29-043.",
   "acceptance": "High/low/air, guard distance, guard flags, chip, power, hitpause, no-guard, and wrong-state routes match pinned rules for named cases.",
   "risk": "Guard states are order-sensitive. Allows named guard matrix only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -57,6 +57,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "61352581fcec1a2987ff881f36aca3a79ee4b36b797eb8b25296af869ad5f119"
+    "value": "43f8eb884612330561891a4eaa9cbea6f266e3a8b0475a45dd76abcad296910b"
   }
 }

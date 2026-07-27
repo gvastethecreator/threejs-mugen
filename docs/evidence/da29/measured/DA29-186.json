@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-186",
-  "generatedAt": "2026-07-27T04:27:24.985Z",
-  "ok": true,
   "kind": "G",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-186",
+  "generatedAt": "2026-07-27T04:58:49.135Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-186",
   "anchors": [
     {
       "path": "src/app/ProjectStorage.ts",
@@ -17,8 +18,9 @@
       "sha256": "4f7607198f8431bfb1b834ca823faa33d0a51df15b4f0fb69d1b2f8d96f0f190"
     }
   ],
-  "facts": {
-    "projectStorage": true
+  "functionResults": {
+    "projectStorageBytes": 5238,
+    "hasTemplate": true
   },
-  "claimCeiling": "project storage template host present"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-186; broader product claims remain blocked"
 }

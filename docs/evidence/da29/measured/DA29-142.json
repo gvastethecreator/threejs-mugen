@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-142",
-  "generatedAt": "2026-07-27T04:27:24.896Z",
-  "ok": true,
   "kind": "I",
-  "command": "node -e \"JSON.parse(require('fs').readFileSync('package.json','utf8'))\"",
+  "generatedAt": "2026-07-27T04:58:48.831Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-142",
   "anchors": [
     {
       "path": "package.json",
@@ -12,7 +13,7 @@
       "sha256": "4f7607198f8431bfb1b834ca823faa33d0a51df15b4f0fb69d1b2f8d96f0f190"
     }
   ],
-  "facts": {
+  "functionResults": {
     "scripts": [
       {
         "name": "typecheck",
@@ -36,5 +37,5 @@
       }
     ]
   },
-  "claimCeiling": "core CI scripts declared"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-142; broader product claims remain blocked"
 }

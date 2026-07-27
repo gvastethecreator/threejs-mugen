@@ -5,13 +5,13 @@
   "wave": 7,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Close stage shadow/reflection policy. Depends on DA29-074.",
   "acceptance": "Source-backed fixture covers shadow color/intensity/scale/fade and reflection or explicit unsupported diagnostics; capture and cleanup pass.",
   "risk": "Effects can distort sprite fidelity. Allows named subset only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "3e3d08b13a497c294e2245b594eaed8211652916040893969122ded25b95b9ed"
+    "value": "42c484f23cfe01cf1f05a65773c362e0f25f89f45bc86bc32c074fedfd20743a"
   }
 }

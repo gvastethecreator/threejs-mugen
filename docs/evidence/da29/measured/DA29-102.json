@@ -1,0 +1,57 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-102",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:58:48.384Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-102",
+  "anchors": [
+    {
+      "path": "docs/evidence/native-asset-provenance-v1.json",
+      "bytes": 2843,
+      "sha256": "54ea0ee5bf3729aaffd91dc8175f7dc74b1d51c0f52cdc7189a71793f4f36c4e"
+    },
+    {
+      "path": "src/app/StudioAssetProvenance.ts",
+      "bytes": 14966,
+      "sha256": "8028109c9964dab229faa637cb84b839c3dad24be6135470369ea1bc99d473bf"
+    }
+  ],
+  "functionResults": {
+    "schema": "NativeAssetProvenance/v1",
+    "packageCount": 2,
+    "digest": "54ea0ee5bf3729aa",
+    "fields": [
+      {
+        "field": "tool",
+        "presentInProvenanceDoc": true
+      },
+      {
+        "field": "model",
+        "presentInProvenanceDoc": false
+      },
+      {
+        "field": "prompt",
+        "presentInProvenanceDoc": false
+      },
+      {
+        "field": "inputs",
+        "presentInProvenanceDoc": false
+      },
+      {
+        "field": "command",
+        "presentInProvenanceDoc": false
+      },
+      {
+        "field": "seed",
+        "presentInProvenanceDoc": false
+      },
+      {
+        "field": "transforms",
+        "presentInProvenanceDoc": false
+      }
+    ]
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-102; broader product claims remain blocked"
+}

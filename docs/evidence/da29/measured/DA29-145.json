@@ -1,0 +1,36 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-145",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:58:48.850Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-145",
+  "anchors": [
+    {
+      "path": "package.json",
+      "bytes": 3604,
+      "sha256": "4f7607198f8431bfb1b834ca823faa33d0a51df15b4f0fb69d1b2f8d96f0f190"
+    },
+    {
+      "path": "dist/assets",
+      "bytes": 0,
+      "sha256": "directory"
+    }
+  ],
+  "functionResults": {
+    "assetCount": 2,
+    "totalBytes": 2446927,
+    "top": [
+      {
+        "path": "dist/assets/index-DwGyX079.js",
+        "bytes": 2159671
+      },
+      {
+        "path": "dist/assets/index-B-j0ZidC.css",
+        "bytes": 287256
+      }
+    ]
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-145; broader product claims remain blocked"
+}

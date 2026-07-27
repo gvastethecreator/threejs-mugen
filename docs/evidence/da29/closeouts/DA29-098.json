@@ -5,13 +5,13 @@
   "wave": 9,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Make changed-source freshness visible and blocking. Depends on DA29-004, DA29-088, and DA29-094.",
   "acceptance": "Source mutation invalidates analysis, build, evidence, and release at the same revision; Studio shows reason and exact next action; rerun restores only fresh facts.",
   "risk": "Split freshness logic creates false green. Allows one end-to-end stale/fresh route only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "c389bd960df906a1c78c6694f89d627035bb1f36fd8f25676b7b1764f7201f83"
+    "value": "c5cca21a496d4c577f7a077144e708fb33b4e4c4fc1e80d873b9fad6020b52e5"
   }
 }

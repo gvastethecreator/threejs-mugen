@@ -1,0 +1,45 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-120",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:58:48.701Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-120",
+  "anchors": [
+    {
+      "path": "docs/evidence/da29/browser/match-desktop.png",
+      "bytes": 490592,
+      "sha256": "250b5b727700c8cdaf2c9499e279d9c308383c77fffe286127a52770beb4cd0d"
+    },
+    {
+      "path": "docs/evidence/da29/browser/match-mobile.png",
+      "bytes": 120654,
+      "sha256": "74651bb46f2692a64ed74c6fe6c9d00cbf3cfd6c6f0f56fdf86b6b86f7477c7e"
+    },
+    {
+      "path": "docs/evidence/da29/browser/studio-workbench-desktop.png",
+      "bytes": 819447,
+      "sha256": "3d02f8d28c6aaf209155e53dc896d5216afdfd2186a7ca4f8a6c9ba36c720ea7"
+    }
+  ],
+  "functionResults": {
+    "captureCount": 3,
+    "digests": [
+      {
+        "path": "docs/evidence/da29/browser/match-desktop.png",
+        "sha256": "250b5b727700c8cd"
+      },
+      {
+        "path": "docs/evidence/da29/browser/match-mobile.png",
+        "sha256": "74651bb46f2692a6"
+      },
+      {
+        "path": "docs/evidence/da29/browser/studio-workbench-desktop.png",
+        "sha256": "3d02f8d28c6aaf20"
+      }
+    ],
+    "claim": "visual regression anchors from DA29-003 matrix; not full pixel baseline suite"
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-120; broader product claims remain blocked"
+}

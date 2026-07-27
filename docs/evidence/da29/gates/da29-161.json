@@ -1,16 +1,20 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-161",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Import a bounded `system.def`/screenpack package. Depends on DA29-076, DA29-081, and DA29-086.",
   "acceptance": "Repository-owned package proves path resolution, motif sections, sprites, animations, sounds, fonts, localcoord, fallback, malformed fields, and deterministic analysis.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-161.json",
+    "docs/evidence/da29/measured/DA29-161.json",
+    "public/system/sandbox-fightscreen.zip"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "3ba06cbbfeba35ad179fdc32c2b765c7c18e8c73c1b950944cd919145c0c62f6"
+    "value": "e158b4bced2935d552e8f211cd2d1cc18728853dc7de2bd8f6ebe09cbe99a758"
   }
 }

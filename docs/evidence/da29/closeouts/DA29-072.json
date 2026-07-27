@@ -5,13 +5,13 @@
   "wave": 7,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Baseline renderer.info by product route. Depends on DA29-019 and DA29-071.",
   "acceptance": "Play, Studio preview, Inspect, team, and stress routes record calls, triangles, points, lines, programs, geometries, textures, and post-cleanup deltas.",
   "risk": "Counters do not prove smoothness. Allows route resource facts only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "3bdfb1fb98b754892304216f71dfe94ada6bf96ce8ad8466f37df3f3af20ed47"
+    "value": "69ca4a4b1ad27b27bfd457601ce94fea2aa4bfdfc444de271c22dc2c612074ce"
   }
 }

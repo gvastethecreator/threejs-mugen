@@ -5,13 +5,13 @@
   "wave": 2,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Assign deterministic RNG streams. Depends on DA29-020 and DA29-027.",
   "acceptance": "ADR separates gameplay, AI, visual, audio, and asset randomness; reset/snapshot rules and seed derivation have tests.",
   "risk": "Visual calls can perturb combat. Allows RNG ownership design only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "8b8dc0454e46d956ec6c42c1de4c66def26ad0d8c108049936cf4e9567c9f233"
+    "value": "66b60715c334ad954c3fbd785ba85e053c3b2fdde33113aa9b4fd548e091f14b"
   }
 }

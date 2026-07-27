@@ -5,13 +5,13 @@
   "wave": 3,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Prove trigger group and short-circuit order. Depends on DA29-033 and DA29-036.",
   "acceptance": "Imported tests cover `triggerall`, numbered groups, side effects/RNG avoidance, false groups, errors, and evaluation telemetry in official order.",
   "risk": "Eager evaluation changes behavior. Allows listed trigger ordering only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -51,6 +51,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "ddc3f0022cac085de8453b6b4c4aea0acef3413b6c1f66b49338d8873e22177e"
+    "value": "5b68b92b1dc255e9588d4451d7c482be6331d367c377bada7e638190765aca4c"
   }
 }

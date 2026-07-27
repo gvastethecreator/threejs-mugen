@@ -5,13 +5,13 @@
   "wave": 15,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Define AI input and decision ownership. Depends on DA29-021, DA29-028, and DA29-151.",
   "acceptance": "ADR separates authored CNS AI logic, engine-controlled inputs, difficulty, deterministic RNG, observation, reaction delay, pause, replay, and user override.",
   "risk": "Hidden AI cheats or replay drift. Allows architecture only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "7e13246395589349f505399fa77033f8688e6a5e63bfc2028de12d1cfff9b386"
+    "value": "478aa901b3063bf02d050e19470f04e6e2a154826509073b2b7c7c75252f977d"
   }
 }

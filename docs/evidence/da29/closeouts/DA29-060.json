@@ -5,13 +5,13 @@
   "wave": 5,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Add a plural-combat deterministic stress journey. Depends on DA29-052…059 and DA29-026.",
   "acceptance": "Fixed-seed route runs roots, nested helpers, three-plus projectiles, effects, clashes, KO, and reset; record/replay checks periodic state and resource counts.",
   "risk": "One seed hides other schedules. Allows one stress profile only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "7402158f8a62091e5b954bfa02c409a34acb4f864ed93d4d618ca8ef841958e2"
+    "value": "1ce18758e8631af3ebfb710f4744810fe21588d05b67ec0f44a3de1222099e5a"
   }
 }

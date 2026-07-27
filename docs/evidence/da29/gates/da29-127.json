@@ -1,16 +1,20 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-127",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Test IndexedDB quota, corruption-like, and blocked-upgrade recovery. Depends on DA29-092, DA29-093, and DA29-099.",
   "acceptance": "Injected quota/abort/blocked/version/store loss routes retain last good data, surface state, allow safe export/reset, and never report false save success.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-127.json",
+    "docs/evidence/da29/measured/DA29-127.json",
+    "src/app/StudioIndexedDbSnapshot.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "052e1c095e15dd3d591e098d2ea632e950d5408202020552a850c364551202a7"
+    "value": "aa900d726b4fac4a4d83e9ca9a33e88b53681ec2e50c831c1b0cb60718eb8700"
   }
 }

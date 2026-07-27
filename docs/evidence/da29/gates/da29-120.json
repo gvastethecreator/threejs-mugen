@@ -1,16 +1,22 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-120",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Establish current visual regression coverage. Depends on DA29-113…119.",
   "acceptance": "Approved manifest covers key routes, states, themes, viewports, DPR, fonts, animation settle rule, mask policy, and human review; diffs link runtime revision.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-120.json",
+    "docs/evidence/da29/measured/DA29-120.json",
+    "docs/evidence/da29/browser/match-desktop.png",
+    "docs/evidence/da29/browser/match-mobile.png",
+    "docs/evidence/da29/browser/studio-workbench-desktop.png"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "26caec78b7fb252db61c2d8fd384da08375ed484d160e1f01eca3e1628327e01"
+    "value": "090529cbf2e4d7772c4c5a674e433c480127e7c9ce1499b5a432ea6bc7d6de51"
   }
 }

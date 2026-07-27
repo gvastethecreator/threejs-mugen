@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-188",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Export a deterministic playable project bundle. Depends on DA29-100, DA29-109, DA29-110, DA29-148, and DA29-181.",
   "acceptance": "Same project/revision/tool chain yields identical manifest and content digests, safe paths, current evidence, runtime config, and a local play smoke; blocked facts stop export.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-188.json",
+    "docs/evidence/da29/measured/DA29-188.json",
+    "src/app/ProjectReleaseDecision.ts",
+    "src/app/ProjectCompiler.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "22e396496210caabe83b936f6fe5a46bf9fdb4820768995b2ab9c6abf90d6721"
+    "value": "21fcbb8676222b2c0556bdd60990f4e0df5574950822d2c5eac1dfafc7fd1f2e"
   }
 }

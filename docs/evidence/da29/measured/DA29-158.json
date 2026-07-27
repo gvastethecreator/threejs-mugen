@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-158",
-  "generatedAt": "2026-07-27T04:27:24.908Z",
-  "ok": true,
   "kind": "G",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-158",
+  "generatedAt": "2026-07-27T04:58:48.944Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-158",
   "anchors": [
     {
       "path": "src/app/App.ts",
@@ -12,8 +13,9 @@
       "sha256": "579740ae3bf37514051b169e7512e9e0bc4dbdc8f5159030a60121e645877481"
     }
   ],
-  "facts": {
-    "rosterSurface": true
+  "functionResults": {
+    "hasRoster": true,
+    "dataMode": true
   },
-  "claimCeiling": "app roster ownership surface; full select.def import broader"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-158; broader product claims remain blocked"
 }

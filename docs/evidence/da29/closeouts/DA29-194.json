@@ -3,47 +3,52 @@
   "id": "DA29-194",
   "kind": "I",
   "wave": 19,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Add a headless import/analyze/build CLI over shared ports. Depends on DA29-087, DA29-136, DA29-188, and DA29-192.",
   "acceptance": "CLI has stable exit codes, JSON facts, stdin/path policy, cancellation, caps, deterministic output, no browser-only globals, and parity fixtures with Studio.",
   "risk": "Headless and product paths can diverge. Allows named commands only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
-    "package.json"
+    "package.json",
+    "scripts/materialize_authority_selector.cjs"
   ],
   "commands": [
-    "implementation probe DA29-194 (diagnostic only)"
+    "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-194"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-194.json",
-    "docs/evidence/da29/probes/da29-194.json"
+    "docs/evidence/da29/probes/da29-194.json",
+    "docs/evidence/da29/measured/DA29-194.json",
+    "package.json",
+    "scripts/materialize_authority_selector.cjs"
   ],
   "claims": {
     "allowed": [
-      "DA29-194 remains open"
+      "DA29-194 closed as implementation-probe",
+      "acceptance-executed unit evidence for DA29-194; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence",
-      "path-exists / directory probes do not close [I] cuts"
+      "product/runtime parity beyond written claim ceiling",
+      "path-exists probe as closeout"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "6d086abdc02a3f3c59100a5070294986e7a916af0834f37e471952c2053652c5"
+    "value": "4c6f187f908f297a352176cf04fa1a2eddd531a6321292edfc2644d407339204"
   }
 }

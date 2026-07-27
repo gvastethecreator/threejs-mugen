@@ -5,13 +5,13 @@
   "wave": 6,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Prove bounded Tag selection and team-order consumption. Depends on DA29-061 and existing Tag order model.",
   "acceptance": "Live scheduler, input, camera, collision, HUD, KO, reset, and member/leader operations consume one authoritative team order in an imported route.",
   "risk": "Model-only Tag can be overclaimed. Allows one bounded Tag route only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -51,6 +51,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "35313f8fb39cc8a704a356448538003b20ca25657a8d616d852d5fd5dbc518ca"
+    "value": "388c1b063afe1b7ac99a336acff83e9bfc563b24da1478ec647ba15b6fb0dde8"
   }
 }

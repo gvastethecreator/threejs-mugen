@@ -5,13 +5,13 @@
   "wave": 5,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Differential-test collision proxy and transform order. Depends on DA29-052, DA29-054, and DA29-057.",
   "acceptance": "Authored fixtures vary scale, facing, angle, localcoord, override boxes, Helper proxies, and insertion order; artifact reports first geometric divergence.",
   "risk": "Geometry combinations grow fast. Allows tested matrix only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "1f1d2e3a1faee4a9f3150538a869fe79a895e5441aed4034517829c14ee00f3d"
+    "value": "be6fd3397dc54f9343aac2ff9e338f5f71c9804127c494346a67279d9cf70f8d"
   }
 }

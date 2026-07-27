@@ -1,24 +1,65 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-122",
-  "generatedAt": "2026-07-27T04:27:24.867Z",
-  "ok": true,
   "kind": "G",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-122",
+  "generatedAt": "2026-07-27T04:58:48.725Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-122",
   "anchors": [
+    {
+      "path": "docs/evidence/da29/measured/DA29-072.json",
+      "bytes": 7170,
+      "sha256": "9e03f9eb143ee75c0c09a76a62ba9c15aba92e0336c6039897f01fe96b084e23"
+    },
     {
       "path": "src/game/render/ThreeMugenRenderer.ts",
       "bytes": 15318,
       "sha256": "a4c3df576258d628517273d79fa9ba24598990256e33adde7903fb18476a3ef7"
-    },
-    {
-      "path": "src/game/render/RendererInfoBaseline.ts",
-      "bytes": 4611,
-      "sha256": "851d27a16c10e8ad8ecb397b87ccb1554ead262f64e5da29f72309cf583d5943"
     }
   ],
-  "facts": {
-    "baselineModule": true
+  "functionResults": {
+    "live072": true,
+    "sampleTotals": [
+      {
+        "route": "play",
+        "afterCalls": 63,
+        "afterTriangles": 202,
+        "afterGeometries": 63,
+        "afterTextures": 13
+      },
+      {
+        "route": "studio-preview",
+        "afterCalls": 7,
+        "afterTriangles": 90,
+        "afterGeometries": 7,
+        "afterTextures": 14
+      },
+      {
+        "route": "inspect",
+        "afterCalls": 59,
+        "afterTriangles": 118,
+        "afterGeometries": 59,
+        "afterTextures": 0
+      },
+      {
+        "route": "team",
+        "afterCalls": 63,
+        "afterTriangles": 202,
+        "afterGeometries": 63,
+        "afterTextures": 16
+      },
+      {
+        "route": "stress",
+        "afterCalls": 63,
+        "afterTriangles": 202,
+        "afterGeometries": 63,
+        "afterTextures": 15
+      }
+    ],
+    "worstRouteHint": "play/stress from renderer baseline",
+    "hasMemory": true,
+    "hasDispose": true
   },
-  "claimCeiling": "renderer info baseline anchors; full allocation profile broader"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-122; broader product claims remain blocked"
 }

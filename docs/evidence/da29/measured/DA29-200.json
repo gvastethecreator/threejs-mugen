@@ -1,0 +1,41 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-200",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:58:49.203Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-200",
+  "anchors": [
+    {
+      "path": "docs/evidence/da29/series-registry-v1.json",
+      "bytes": 95463,
+      "sha256": "1a71e4621556512482ea05213c17e8fc0c7155d78d691218f940b987935ddab0"
+    },
+    {
+      "path": "docs/evidence/da29/closeout-status-v1.json",
+      "bytes": 46775,
+      "sha256": "daf493f2bd730961a4577bb64382bdedb99109997930d8a13e999a6a3866b005"
+    },
+    {
+      "path": "docs/MASTER_REVIEW_ROADMAP.md",
+      "bytes": 75875,
+      "sha256": "8ddc3bc3593d5151d26a0146bb0314df3a6938c8a592828c87e8190d60145268"
+    }
+  ],
+  "functionResults": {
+    "seriesCount": 200,
+    "closedAtFinal": 200,
+    "watermark": "DA29-200",
+    "scores": {
+      "sandbox": "65",
+      "mugenLite": "36",
+      "mugenMvp": "20",
+      "mugenFull": "10-12",
+      "ikemen": "6-8",
+      "studio": "25"
+    },
+    "adjudication": "final-product-sdk-roadmap-unit"
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-200; broader product claims remain blocked"
+}

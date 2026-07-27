@@ -1,0 +1,35 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-124",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:58:48.743Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-124",
+  "anchors": [
+    {
+      "path": "src/mugen/compatibility/IkemenFeatureScanner.ts",
+      "bytes": 20474,
+      "sha256": "5006ab50ea871ecaa03ac5db78f2caec132bcc864cf31aae791eee2a147eadb9"
+    },
+    {
+      "path": "src/mugen/loader/ZipCharacterSource.ts",
+      "bytes": 4903,
+      "sha256": "ea37996c204bd8cd887d765a49a9ab5f936d015ce2cebb8912a35b0c4a919421"
+    }
+  ],
+  "functionResults": {
+    "modules": [
+      {
+        "path": "src/mugen/compatibility/IkemenFeatureScanner.ts",
+        "bytes": 20474
+      },
+      {
+        "path": "src/mugen/loader/ZipCharacterSource.ts",
+        "bytes": 4903
+      }
+    ],
+    "claim": "importer/scanner cost anchors; wall-clock profile not claimed"
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-124; broader product claims remain blocked"
+}

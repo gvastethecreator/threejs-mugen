@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-152",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Build an imported command-recognition matrix. Depends on DA29-151 and DA29-043.",
   "acceptance": "Repository-owned fixtures cover directions, buttons, simultaneous and ordered inputs, facing swap, invalid gaps, buffer expiry, and per-frame command facts.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-152.json",
+    "docs/evidence/da29/measured/DA29-152.json",
+    "src/mugen/parsers/CmdParser.ts",
+    "public/characters/nova-boxer/mugen/nova.cmd"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "51cc663489379028bfdbf012f6c693f5d165327d4013bc14294cbb5ebda7cd9a"
+    "value": "3add48d0d14ccf2832ffb67e06c8de67260cdccfba14104aec17bad91c8cb8f5"
   }
 }

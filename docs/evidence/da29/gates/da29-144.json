@@ -1,16 +1,22 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-144",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Make CI artifacts immutable and traceable. Depends on DA29-004, DA29-017, and DA29-143.",
   "acceptance": "Reports, traces, screenshots, corpus, source manifests, bundles, and logs carry commit/run/tool/digest/retention; consumers reject expired or mismatched artifacts.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-144.json",
+    "docs/evidence/da29/measured/DA29-144.json",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/da29/closeout-status-v1.json"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "e1e7be672d1f04ff29201729683a3958bdd3d17b277693f93917b6849e5fc42a"
+    "value": "933e4f17e65af91367680e8877ea20a427860798c6f1638ab305b6681dae3373"
   }
 }

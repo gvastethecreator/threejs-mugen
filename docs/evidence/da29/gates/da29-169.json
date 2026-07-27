@@ -1,16 +1,22 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-169",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Add fourth and fifth independent lawful packages. Depends on DA29-081, DA29-158, and DA29-168.",
   "acceptance": "At least one character-centered and one stage/screenpack-centered package add distinct syntax/asset digests, real journeys, malformed variants, provenance, and coverage delta.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-169.json",
+    "docs/evidence/da29/measured/DA29-169.json",
+    "public/characters/nova-boxer",
+    "public/characters/mira-volt",
+    "public/characters/rook-apprentice"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "50e7889935ab457309cd93c6e19baa5a06e333b696a55b1bc804a9290c50fcb9"
+    "value": "6c06e9f5cbc8d43493537080bf0be76772f79b37e8ca7a9bba042abf36839bc1"
   }
 }

@@ -5,13 +5,13 @@
   "wave": 8,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Define lawful corpus authority and fixture independence. Depends on DA29-008 and DA29-015.",
   "acceptance": "Manifest records ownership/license, origin, independent syntax digests, mutations, expected profiles, forbidden public paths, and permitted evidence uses.",
   "risk": "Duplicate fixtures inflate breadth. Allows corpus identity only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "092d47421300f3d14eeee19223897cb63b2075b87f5398a13e887313427906bb"
+    "value": "5950bdbca646d01011fcb18c97d788c376aec9fe59e8ba2e9a9c7fd4e18638dd"
   }
 }

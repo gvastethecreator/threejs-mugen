@@ -30,7 +30,7 @@ const nextQueue = args["next-queue"]
   : Array.isArray(drainState?.nextQueue)
     ? drainState.nextQueue
     : [];
-const gatePin = (args["gate-sha"] || drainState?.gateSha || GATE_GLOBAL).trim();
+const gatePin = (args["gate-sha"] || drainState?.measuredGateSha || drainState?.gateSha || GATE_GLOBAL).trim();
 const formalArtifact = gatePin === GATE_GLOBAL
   ? "docs/BUILD_EXECUTION_BACKLOG.md#entry-604"
   : "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md";

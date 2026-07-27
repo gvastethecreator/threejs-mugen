@@ -5,13 +5,13 @@
   "wave": 9,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Implement committed, aborted, and indeterminate recovery. Depends on DA29-094.",
   "acceptance": "Crash-point matrix before write, mid-write, after write, before commit, and after commit yields restore/accept/review decisions with byte proof and idempotent replay.",
   "risk": "Wrong recovery can overwrite valid work. Allows tested crash matrix only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -53,6 +53,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "11537898a76cf0d9f0650d5f1b60563e7133776e193121b1d6ede0b7ea6f9669"
+    "value": "eb3233e7f9cfe89cfa2a2d2fc9625f88d35b8fa08a45d32bc42a0079a9e900de"
   }
 }

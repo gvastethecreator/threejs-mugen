@@ -5,13 +5,13 @@
   "wave": 1,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Inventory test ownership and command coverage. Depends on DA29-002 and DA29-009. Systems: package scripts, Vitest projects, QA scripts.",
   "acceptance": "Machine-readable map links each suite to source owners, fixtures, expected duration, required/optional status, and release lane; overlaps and omissions are listed.",
   "risk": "Counts can mask duplicate tests. Allows an inventory claim only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "26ead8a739e6b9d05ade840eb1d555875a5faf90a90d47ddc915dcc0f7e8516e"
+    "value": "69a6cfc8c63ad409396744e7c054f571ce0dce95982a6460381dd019397c286a"
   }
 }

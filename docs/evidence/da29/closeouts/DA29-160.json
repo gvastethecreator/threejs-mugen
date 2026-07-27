@@ -3,44 +3,50 @@
   "id": "DA29-160",
   "kind": "G",
   "wave": 15,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Prove bounded versus, arcade, survival, demo, and training mode ownership. Depends on DA29-069, DA29-156…159.",
   "acceptance": "Each selected mode has an explicit supported path or blocking diagnostic for roster, AI/input, match sequence, persistence, continue, result, and reset; routes never share stale state.",
   "risk": "Labels can outrun behavior. Allows only modes with passing named journeys.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json"
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/app/App.ts"
   ],
-  "commands": [],
+  "commands": [
+    "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-160"
+  ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-160.json",
+    "docs/evidence/da29/measured/DA29-160.json",
+    "src/app/App.ts",
     "docs/evidence/da29/gates/da29-160.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-160 remains open"
+      "DA29-160 closed as gate-report",
+      "acceptance-executed unit evidence for DA29-160; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence for this G id",
-      "shared inventory digests do not close unrelated gates"
+      "formal/global tip rewrite without measured full stack",
+      "score movement"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "8f03c7979eb3e1cb6ff136be2e1644fcb273489fd6602b690291515e22c5c817"
+    "value": "02f5b175598fa2e5985e6e9bce87a3fec0cb99ec99f9b6bd99cbb8654c44a99a"
   }
 }

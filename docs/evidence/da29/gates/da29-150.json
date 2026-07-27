@@ -1,16 +1,22 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-150",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Run final score, compatibility, product, and release adjudication. Depends on all required tasks for the chosen milestone, especially DA29-005 and DA29-147…149.",
   "acceptance": "Independent evidence review records accepted/rejected facts, exact score changes, release decision, supported profiles/routes, known gaps, and next queue; every broad claim links its gate.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-150.json",
+    "docs/evidence/da29/measured/DA29-150.json",
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/da29/score-adjudication-v1.3.json",
+    "docs/evidence/da29/closeout-status-v1.json"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "0e326698e830641b53be559d4e57662a09f5f27b3348dcca31ca11dcb869d6b1"
+    "value": "197a7261bb23030cab20369a3da48251a0af3eaf55ca2c5ce419e4ebd88b7c2b"
   }
 }

@@ -1,16 +1,20 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-160",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prove bounded versus, arcade, survival, demo, and training mode ownership. Depends on DA29-069, DA29-156…159.",
   "acceptance": "Each selected mode has an explicit supported path or blocking diagnostic for roster, AI/input, match sequence, persistence, continue, result, and reset; routes never share stale state.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-160.json",
+    "docs/evidence/da29/measured/DA29-160.json",
+    "src/app/App.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "1160bd7cf8bd9423c11bf30d449d487afa90623350e4d993dbc13cd6b0487e56"
+    "value": "63aafa6f4b3171b30bb2fae02fce7c4d2bfdf00931b3d41116adb6377781c955"
   }
 }

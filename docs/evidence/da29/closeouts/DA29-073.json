@@ -5,13 +5,13 @@
   "wave": 7,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Reconcile camera, stage, screen, and player bounds. Depends on DA29-041 and DA29-071.",
   "acceptance": "Authored route covers camera follow, zoom, edge widths, ScreenBound/StageBound, corner pressure, shake, reset, and resize with runtime/render correlation.",
   "risk": "Current clamps may mix coordinate spaces. Allows named camera route only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -50,6 +50,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "24842bb25131aaff66af9e8a646388299184559242031d77f7afec4154816f5f"
+    "value": "c0bcdfec020ffb47ad982cc8a50ceca2943af30aac143800885ca9c7cf25ab9d"
   }
 }

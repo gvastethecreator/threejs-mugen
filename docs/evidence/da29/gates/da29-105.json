@@ -1,16 +1,22 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-105",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Add collision and hitbox visual QA for generated sprites. Depends on DA29-104 and DA29-041.",
   "acceptance": "Overlay captures cover idle, movement, attack, hurt, flip, scale, contact, and outlier detection; approved corrections update provenance.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-105.json",
+    "docs/evidence/da29/measured/DA29-105.json",
+    "src/game/render/CollisionBoxRenderer.ts",
+    "public/characters/nova-boxer/mugen/nova.air",
+    "public/characters/nova-boxer/sprite-sheet-alpha.png"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "eec1816e5a780f85e66eb85ea97bc3a1ae6d20bb646b018caa5ef09c2df83fa4"
+    "value": "a72a59c93f936a59a40be263042ead1140704ec31ff386209886a96af9cc1881"
   }
 }

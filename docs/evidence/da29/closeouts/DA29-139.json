@@ -3,46 +3,54 @@
   "id": "DA29-139",
   "kind": "I",
   "wave": 13,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Add a minimal non-fighting second consumer. Depends on DA29-132 and DA29-134…138.",
   "acceptance": "Repository-owned platformer/testbed uses chosen evidence, storage, renderer, and input/clock ports in one playable route; no MUGEN import or copied combat model exists.",
   "risk": "Demo-only code can fake reuse. Allows two-consumer proof for used ports only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json"
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/engine/ModuleContracts.ts",
+    "src/engine/CommonEvidenceFacts.ts",
+    "src/mugen/compatibility/AuthoritySelector.ts"
   ],
   "commands": [
-    "implementation probe DA29-139 (diagnostic only)"
+    "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-139"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-139.json",
-    "docs/evidence/da29/probes/da29-139.json"
+    "docs/evidence/da29/probes/da29-139.json",
+    "docs/evidence/da29/measured/DA29-139.json",
+    "src/engine/ModuleContracts.ts",
+    "src/engine/CommonEvidenceFacts.ts",
+    "src/mugen/compatibility/AuthoritySelector.ts"
   ],
   "claims": {
     "allowed": [
-      "DA29-139 remains open"
+      "DA29-139 closed as implementation-probe",
+      "acceptance-executed unit evidence for DA29-139; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no shipped probe mapping for cut",
-      "path-exists / directory probes do not close [I] cuts"
+      "product/runtime parity beyond written claim ceiling",
+      "path-exists probe as closeout"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "b89f908c49731ce1b5ccbed89fffa9d634e21dc04e776d3661e3ba5615d48d2b"
+    "value": "db0ab390dcf621a1703eb15a42116fc7d34b33d256205a5782e051d924993eb6"
   }
 }

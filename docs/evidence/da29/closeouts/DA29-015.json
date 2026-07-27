@@ -5,13 +5,13 @@
   "wave": 1,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Define occurrence, fixture, branch, and trigger coverage denominators. Depends on DA29-014.",
   "acceptance": "Coverage report separates unique names, authored occurrences, compiled ops, live executions, failure routes, and source families; each percentage names its denominator.",
   "risk": "One easy fixture may dominate counts. Allows named coverage metrics only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "162782f55958cc8b04b70850c0cffd1dd7bf43e99d3305a151a48876ab9c7a12"
+    "value": "0fedcd955dd61ed6fc23cff2415d03d7ea0976950b67678f5e3c616f00524ea9"
   }
 }

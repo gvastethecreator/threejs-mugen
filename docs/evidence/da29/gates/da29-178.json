@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-178",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Re-audit deterministic readiness for rollback. Depends on DA29-030, DA29-060, DA29-064, DA29-066, DA29-130, and DA29-156.",
   "acceptance": "Matrix records deterministic owners, snapshot cost, resim speed, desync localization, unsupported systems, team/plural/AI results, and hard blockers.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-178.json",
+    "docs/evidence/da29/measured/DA29-178.json",
+    "src/mugen/runtime/GlobalProjectileSchedule.ts",
+    "src/mugen/runtime/RuntimeSnapshotSystem.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "44dbbdbb91001e137f2e1c8f8a4d70e0daaa48bf7e3eaaedcd010a24d8782d2b"
+    "value": "7de2d686eec53ce8d2c403701962b9932070d7cb36b7a6f787dd8908fa64280f"
   }
 }

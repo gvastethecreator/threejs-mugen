@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-104",
-  "generatedAt": "2026-07-27T04:27:24.808Z",
-  "ok": true,
   "kind": "G",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-104",
+  "generatedAt": "2026-07-27T04:58:48.481Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-104",
   "anchors": [
     {
       "path": "docs/evidence/native-asset-provenance-v1.json",
@@ -15,11 +16,37 @@
       "path": "public/characters/nova-boxer/sprite-sheet-alpha.png",
       "bytes": 341273,
       "sha256": "8530964cdac11690694a0114aef71e35e21b832994167412609dff3c88b49664"
+    },
+    {
+      "path": "public/characters/mira-volt/sprite-sheet-alpha.png",
+      "bytes": 327827,
+      "sha256": "90a1399ccc0835aae8fc15b32f277bc1003405c52974cea3f56e20b33eca77f9"
+    },
+    {
+      "path": "public/characters/rook-apprentice/sprite-sheet-alpha.png",
+      "bytes": 350458,
+      "sha256": "d31a36ad22673e3a361c29269b9102203978e35ff59d93c390a488f1ffa66172"
     }
   ],
-  "facts": {
-    "sheetSha": "8530964cdac11690694a0114aef71e35e21b832994167412609dff3c88b49664",
-    "provenanceSha": "54ea0ee5bf3729aaffd91dc8175f7dc74b1d51c0f52cdc7189a71793f4f36c4e"
+  "functionResults": {
+    "reproducibility": [
+      {
+        "path": "public/characters/nova-boxer/sprite-sheet-alpha.png",
+        "sha256": "8530964cdac11690694a0114aef71e35e21b832994167412609dff3c88b49664",
+        "rehash": true
+      },
+      {
+        "path": "public/characters/mira-volt/sprite-sheet-alpha.png",
+        "sha256": "90a1399ccc0835aae8fc15b32f277bc1003405c52974cea3f56e20b33eca77f9",
+        "rehash": true
+      },
+      {
+        "path": "public/characters/rook-apprentice/sprite-sheet-alpha.png",
+        "sha256": "d31a36ad22673e3a361c29269b9102203978e35ff59d93c390a488f1ffa66172",
+        "rehash": true
+      }
+    ],
+    "allStable": true
   },
-  "claimCeiling": "atlas sheet + provenance digests; full transform pipeline broader"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-104; broader product claims remain blocked"
 }

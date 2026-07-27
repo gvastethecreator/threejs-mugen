@@ -5,13 +5,13 @@
   "wave": 18,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Version the saved-project schema and migrations. Depends on DA29-091, DA29-092, and DA29-109.",
   "acceptance": "Schema covers package refs, revisions, settings, analysis/evidence refs, asset graph, source handles, UI state, extensions, migration, export, and unknown-version refusal.",
   "risk": "Project upgrades can lose author work. Allows schema contract only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "31a4ddd7a14fb6647d74b58bc6ac93a4e7617932728437b3e5f21ddc6ac9255e"
+    "value": "c1093c94423705896624c1177ae85624a2c5d50517b0fea7641089fe92cf278a"
   }
 }

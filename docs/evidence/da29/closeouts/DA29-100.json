@@ -5,13 +5,13 @@
   "wave": 9,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Make ProjectReleaseDecision a live product gate. Depends on DA29-098, DA29-108, and DA29-109.",
   "acceptance": "Build/export/release buttons consume one decision with reasons; stale, missing, tampered, blocked asset, and fresh-ready routes match exported evidence.",
   "risk": "UI green may differ from export. Allows one release decision flow only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "c33006613507b83ba0b3a2b38935b7d41941fc5d3bf491cc3d821e286312b14a"
+    "value": "6c87d23430833b444b5203596675a3a56b198dcf86900b784c44f014f2004ce3"
   }
 }

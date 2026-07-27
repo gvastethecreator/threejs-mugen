@@ -5,13 +5,13 @@
   "wave": 9,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Surface transaction, quota, abort, and durability failures. Depends on DA29-092.",
   "acceptance": "Product and unit tests inject abort, quota, unknown, blocked upgrade, close, and commit errors; memory cannot report success after durable failure.",
   "risk": "Fail-open data loss. Allows error handling routes only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "fca449b5ab38a90179bb52a9c8241bedcebd480e4220b2c5f936b106068528de"
+    "value": "fb34ac23489ba388e6871fe576c90397b1e5b9229a238af46d7a4a015bacc1cb"
   }
 }

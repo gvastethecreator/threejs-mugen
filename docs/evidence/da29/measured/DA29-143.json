@@ -1,0 +1,46 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-143",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:58:48.833Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-143",
+  "anchors": [
+    {
+      "path": "package.json",
+      "bytes": 3604,
+      "sha256": "4f7607198f8431bfb1b834ca823faa33d0a51df15b4f0fb69d1b2f8d96f0f190"
+    }
+  ],
+  "functionResults": {
+    "scripts": [
+      {
+        "name": "typecheck",
+        "cmd": "tsc --noEmit"
+      },
+      {
+        "name": "test",
+        "cmd": "vitest run"
+      },
+      {
+        "name": "qa:trace",
+        "cmd": "node scripts/qa_traces.cjs"
+      },
+      {
+        "name": "build",
+        "cmd": "tsc && vite build"
+      },
+      {
+        "name": "check:boundaries",
+        "cmd": "node scripts/check_boundaries.cjs"
+      }
+    ],
+    "workflowSplit": [
+      "pull-request=typecheck+test",
+      "nightly=qa:trace",
+      "release=build+boundaries"
+    ]
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-143; broader product claims remain blocked"
+}

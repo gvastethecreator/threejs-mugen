@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-122",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Profile allocations and memory growth. Depends on DA29-071, DA29-072, and DA29-121.",
   "acceptance": "Warmup plus repeated rounds/imports record heap trend, GC stalls, renderer memory, object counts, snapshots, and retained-owner suspects; threshold/retest rules exist.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-122.json",
+    "docs/evidence/da29/measured/DA29-122.json",
+    "docs/evidence/da29/measured/DA29-072.json",
+    "src/game/render/ThreeMugenRenderer.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "3325a8414256b01b37cfd0f4eebc923df5b206756b07ac5d0d76bd6516b7f337"
+    "value": "192ea8c776c242dbc5cc5f0f6a93cf6025fd927bcb075e7b098192bbeb0010cc"
   }
 }

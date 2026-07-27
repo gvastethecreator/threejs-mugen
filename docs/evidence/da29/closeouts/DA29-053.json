@@ -5,13 +5,13 @@
   "wave": 5,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Run three-plus live projectiles from imported states. Depends on DA29-041 and DA29-012.",
   "acceptance": "At least three concurrent projectiles prove spawn, movement, hit/miss/remove, global ordering, owner death/reset, and deterministic trace without synthetic construction.",
   "risk": "Unit schedule may differ from live world. Allows named plural route only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "003542130f258cc9b419d51b619def32825857ebaf2ae7c47325ae58534a3be5"
+    "value": "71d09c9fd89647b738c0f754a6cd104b0e1c802816ab7a1d330966529da99f10"
   }
 }

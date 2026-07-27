@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-132",
-  "generatedAt": "2026-07-27T04:27:24.882Z",
-  "ok": true,
   "kind": "G",
-  "command": "pnpm check:boundaries",
+  "generatedAt": "2026-07-27T04:58:48.789Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-132",
   "anchors": [
     {
       "path": "scripts/check_boundaries.cjs",
@@ -17,8 +18,10 @@
       "sha256": "85a86de08f512bf62db2066345f5a662925a11fa29fc62543a12b70df71c2a70"
     }
   ],
-  "facts": {
-    "scriptBytes": 3813
+  "functionResults": {
+    "hasRequiredRoots": true,
+    "moduleContractsBytes": 5673,
+    "nonVacuous": true
   },
-  "claimCeiling": "boundary required-roots command present"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-132; broader product claims remain blocked"
 }

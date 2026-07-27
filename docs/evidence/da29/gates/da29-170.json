@@ -1,16 +1,22 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-170",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Run an adversarial practical-MUGEN milestone review. Depends on the chosen MUGEN tasks, especially DA29-150, DA29-160, and DA29-169.",
   "acceptance": "Review samples unsupported-heavy packages, mutation corpus, profile boundaries, user flows, performance, and failure clarity; accepted/rejected claims and next denominator are signed.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-170.json",
+    "docs/evidence/da29/measured/DA29-170.json",
+    "public/characters/nova-boxer",
+    "public/characters/mira-volt",
+    "public/characters/rook-apprentice"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "fedcdd0363290ca597517e305da382cb5368e57536b64c8a5734d9303700f9e6"
+    "value": "655e659c4317f9de9b9ff8d080adf05145e30723162bd4bd9559033db305cfff"
   }
 }

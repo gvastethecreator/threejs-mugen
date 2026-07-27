@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-161",
-  "generatedAt": "2026-07-27T04:27:24.934Z",
-  "ok": true,
   "kind": "G",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-161",
+  "generatedAt": "2026-07-27T04:58:48.978Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-161",
   "anchors": [
     {
       "path": "public/system/sandbox-fightscreen.zip",
@@ -12,11 +13,19 @@
       "sha256": "b09e988145844d24b870a2a009a22165b283c9a11598863f7ff3bf1131a5f07f"
     }
   ],
-  "facts": {
-    "packagePaths": [
-      "public/data/sandbox-fightscreen",
-      "public/system/sandbox-fightscreen.zip"
+  "functionResults": {
+    "packages": [
+      {
+        "path": "public/system/sandbox-fightscreen.zip",
+        "bytes": 3073,
+        "isDir": false
+      },
+      {
+        "path": "public/data/sandbox-fightscreen",
+        "bytes": 0,
+        "isDir": true
+      }
     ]
   },
-  "claimCeiling": "sandbox fightscreen package present"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-161; broader product claims remain blocked"
 }

@@ -5,13 +5,13 @@
   "wave": 7,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Prove AIR reserved actions and element timing. Depends on DA29-043 and DA29-084.",
   "acceptance": "Imported fixture covers required actions, loopstart, duration, flip, alpha, interpolation where supported, missing action diagnostics, and frame/render correlation.",
   "risk": "Animation presence is weak evidence. Allows named AIR subset only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -51,6 +51,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "f4ece09923dd6f3f18873b5e63c3db93ff6bcdeab8e3d480f60d8b9fc46ea6b5"
+    "value": "473e98b64e7f03586e57f6a8c973ef7087ec85bac8ff59eabb942dd3d261cd45"
   }
 }

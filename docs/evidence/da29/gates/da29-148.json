@@ -1,16 +1,22 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-148",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Build a deterministic release evidence bundle. Depends on DA29-144 and DA29-147.",
   "acceptance": "One command gathers current facts, source/asset provenance, SBOM/license outputs, route/perf/accessibility results, checksums, and claim sheet; mismatched revisions fail.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-148.json",
+    "docs/evidence/da29/measured/DA29-148.json",
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/evidence/authority-selector-v1.json",
+    "docs/evidence/da29/closeout-status-v1.json"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "e6ea4cab01bcb5346aa8019c84c6c43e4ca42101f1432bad18a5d64be9df4b8f"
+    "value": "325081b61cbe8f5e0642c86c9b38c2ebe471ff36e8f4b0283060c474e9d4a827"
   }
 }

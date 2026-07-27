@@ -5,13 +5,13 @@
   "wave": 3,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Build a pinned Elecbyte controller census. Depends on DA29-016.",
   "acceptance": "Official controller names, parameters, defaults, profile/version, source locations, and unsupported notes are recorded without inferring implementation.",
   "risk": "Docs versions can differ. Allows source census only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "3a7e68022256b909d9d856ec09eb5a653f62ee1bd0e8f21efeafd7614a99a94c"
+    "value": "071f208e64cc71d5eb7e328203a2152568bba55485988134e27fbb51fda81782"
   }
 }

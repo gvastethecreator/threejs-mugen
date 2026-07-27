@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-177",
-  "generatedAt": "2026-07-27T04:27:24.967Z",
-  "ok": true,
   "kind": "G",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-177",
+  "generatedAt": "2026-07-27T04:58:49.065Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-177",
   "anchors": [
     {
       "path": "docs/IKEMEN_GO_REFERENCE.md",
@@ -12,8 +13,13 @@
       "sha256": "b820fbef0920eb7e7487e6a36d1894363695b3a739ecfa4bc931e5b46c10a4f2"
     }
   ],
-  "facts": {
-    "offlineOnly": true
+  "functionResults": {
+    "bytes": 16447,
+    "hasZss": true,
+    "offlineOnly": true,
+    "luaSandbox": "offline-docs-only",
+    "productAuthorized": false,
+    "experiment": "offline"
   },
-  "claimCeiling": "offline Lua experiment docs only"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-177; broader product claims remain blocked"
 }

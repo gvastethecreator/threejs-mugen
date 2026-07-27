@@ -5,13 +5,13 @@
   "wave": 12,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Decide Worker/OffscreenCanvas boundaries. Depends on DA29-124 and DA29-071.",
   "acceptance": "ADR compares worker transfer/copy cost, abort, progress, deterministic errors, browser support, rendering needs, and fallback; prototype covers the highest-cost phase.",
   "risk": "Thread split adds copy and ownership bugs. Allows architecture/prototype only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "56a8849681a49e9ad754e8362a2ac40a89f0fc0b119cc8ec2a936caa54d4a544"
+    "value": "df8493f408283465886346f0e14ef03f3b2dab1c27a9206f291a677e2680e002"
   }
 }

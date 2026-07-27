@@ -1,0 +1,26 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-159",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:58:48.957Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-159",
+  "anchors": [
+    {
+      "path": "src/app/App.ts",
+      "bytes": 668855,
+      "sha256": "579740ae3bf37514051b169e7512e9e0bc4dbdc8f5159030a60121e645877481"
+    }
+  ],
+  "functionResults": {
+    "hasRoster": true,
+    "dataMode": true,
+    "characters": [
+      "nova-boxer",
+      "mira-volt",
+      "rook-apprentice"
+    ]
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-159; broader product claims remain blocked"
+}

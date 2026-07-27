@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-124",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Profile importer/scanner main-thread cost. Depends on DA29-087 and DA29-121.",
   "acceptance": "Small/medium/limit fixtures report parse/scan duration, long tasks, input responsiveness, memory peak, cancellation latency, and phase attribution.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-124.json",
+    "docs/evidence/da29/measured/DA29-124.json",
+    "src/mugen/compatibility/IkemenFeatureScanner.ts",
+    "src/mugen/loader/ZipCharacterSource.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "96bd772ef6afd9e993d7e625baaec96103ff6b76b7a5cadf9f54bb40da2fab88"
+    "value": "4854de32ed56c914adba491b4eb521fe930ca63ff190c7366f558cdc06bd5284"
   }
 }

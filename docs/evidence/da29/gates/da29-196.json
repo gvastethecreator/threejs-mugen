@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-196",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Generate API and format support references. Depends on DA29-034, DA29-035, DA29-090, DA29-168, and DA29-192.",
   "acceptance": "Current registries generate searchable controller/trigger/format/profile/API docs with evidence links, unsupported branches, versions, examples, and stale-reference audit.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-196.json",
+    "docs/evidence/da29/measured/DA29-196.json",
+    "docs/CONTROLLER_SUPPORT_REGISTRY.md",
+    "docs/MASTER_REVIEW_ROADMAP.md"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "f35afd67e0ef13a7bde65949f5a9835de2985f9a7a82b89c8486af529e7f52e3"
+    "value": "599ef02f9c279ba8f39305897672ef9faf1fd8170238329d9b203c11387f714e"
   }
 }

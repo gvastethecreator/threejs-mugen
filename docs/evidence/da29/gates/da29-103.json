@@ -1,16 +1,23 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-103",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Produce a second independent generated asset record. Depends on DA29-102 and DA29-081.",
   "acceptance": "Record has fresh permission/license, distinct source/output digests, ordered transforms, visual QA, collision, playable route, and no third-party bytes.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-103.json",
+    "docs/evidence/da29/measured/DA29-103.json",
+    "docs/evidence/native-asset-provenance-v1.json",
+    "public/characters/nova-boxer/sprite-sheet-alpha.png",
+    "public/characters/mira-volt/sprite-sheet-alpha.png",
+    "public/characters/rook-apprentice/sprite-sheet-alpha.png"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "5bcc9054e45f7298ce73b127d6251c4419f7aa2561be07bfa45734178e5b67ca"
+    "value": "c9336cc1a5a02746f4453ee1d974dbc9cdd40f7df537ebd57255de51a4dd0cfa"
   }
 }

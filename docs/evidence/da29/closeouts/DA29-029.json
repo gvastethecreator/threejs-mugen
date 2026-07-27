@@ -5,13 +5,13 @@
   "wave": 2,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Define canonical match-state serialization. Depends on DA29-008, DA29-020, and DA29-028.",
   "acceptance": "Versioned serializer covers live deterministic owners, excludes renderer/cache objects, round-trips, rejects unknown versions, and produces SHA-256.",
   "risk": "Missing state breaks replay. Allows snapshot schema only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "d81dd20f19db142b686438aff22db9fd015a40e341d40b7628384c3e047add11"
+    "value": "fe6f0d911648178d7a23d1feb21eb54a335d4aabc35457d6b56bf618a0b8d509"
   }
 }

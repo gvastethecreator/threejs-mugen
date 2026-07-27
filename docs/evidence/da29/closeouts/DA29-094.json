@@ -5,13 +5,13 @@
   "wave": 9,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Journal source-write intent before mutation using actual bytes. Depends on DA29-091 and DA29-008.",
   "acceptance": "Preimage bytes/digest, intended bytes/digest, handle/path identity, project revision, timestamp, and intent state persist before the writable opens; failure blocks write.",
   "risk": "Post-write journal cannot recover crash. Allows one-file intent durability only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "1ec2f016bb868985dc253b0bdf9381857d5a92c913885f9c354501cf3b49fc51"
+    "value": "e1f53ea20cb0d6c31d74e9e474a84b26825bdba25175ee961752fae97c1afc3f"
   }
 }

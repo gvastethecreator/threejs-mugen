@@ -5,13 +5,13 @@
   "wave": 16,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Define MUGEN 1.0, 1.1, and sandbox profile deltas. Depends on DA29-031, DA29-032, DA29-161, and DA29-167.",
   "acceptance": "Versioned profile matrix covers formats, expressions, controllers, localcoord, palettes, stage/FightScreen rules, diagnostics, and downgrade/fail rules.",
   "risk": "A blended profile hides incompatibility. Allows profile contract only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "3b9cad706c40a64af609565b572f1a0893bd34fb2aaea4687fd3e724b89f164e"
+    "value": "bc5343579e65045b9495206bfdbb5ae2de320afb4b89f0be8c4ba56cbd82ad15"
   }
 }

@@ -1,0 +1,40 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-150",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:58:48.891Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-150",
+  "anchors": [
+    {
+      "path": "docs/evidence/authority-selector-v1.json",
+      "bytes": 3388,
+      "sha256": "467e010e742e1afca5c5c68f36aa89eab9b722d106297a3c76643500a5e51ef3"
+    },
+    {
+      "path": "docs/evidence/da29/score-adjudication-v1.3.json",
+      "bytes": 2080,
+      "sha256": "d2ef49ecbcd0237c3599096dcbaed743faef69aaa70e7efa86871a1e1d898be9"
+    },
+    {
+      "path": "docs/evidence/da29/closeout-status-v1.json",
+      "bytes": 46775,
+      "sha256": "daf493f2bd730961a4577bb64382bdedb99109997930d8a13e999a6a3866b005"
+    }
+  ],
+  "functionResults": {
+    "scores": {
+      "sandbox": "65",
+      "mugenLite": "36",
+      "mugenMvp": "20",
+      "mugenFull": "10-12",
+      "ikemen": "6-8",
+      "studio": "25"
+    },
+    "held": true,
+    "closedThroughAtAdjudication": "DA29-200",
+    "closedCount": 200
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-150; broader product claims remain blocked"
+}

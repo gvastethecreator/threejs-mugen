@@ -5,13 +5,13 @@
   "wave": 12,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Set actor, Helper, projectile, effect, trace, and evidence caps. Depends on DA29-060, DA29-122, and DA29-126.",
   "acceptance": "Limits have source/product rationale, deterministic refusal/degradation, visible diagnostics, telemetry, reset behavior, and adversarial tests.",
   "risk": "Caps can alter compatibility. Allows explicit sandbox policy only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "118d933d9cd10aceaeae6010939d0c9ed3cd273b7eb5872ba1fc3874a8101676"
+    "value": "d9d68cf97306a414c16b7fa10e831c80a560f077fa3fefdfe14c4b23560a5408"
   }
 }

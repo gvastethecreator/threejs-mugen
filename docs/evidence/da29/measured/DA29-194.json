@@ -1,0 +1,107 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-194",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:58:49.174Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-194",
+  "anchors": [
+    {
+      "path": "package.json",
+      "bytes": 3604,
+      "sha256": "4f7607198f8431bfb1b834ca823faa33d0a51df15b4f0fb69d1b2f8d96f0f190"
+    },
+    {
+      "path": "scripts/materialize_authority_selector.cjs",
+      "bytes": 6868,
+      "sha256": "e4854c0edc63acc6e8fad6a223e18ade5108cad80eb32de60fc701ab85964308"
+    }
+  ],
+  "functionResults": {
+    "cliScripts": [
+      {
+        "name": "qa:css",
+        "cmd": "node scripts/audit_css_duplication.cjs"
+      },
+      {
+        "name": "qa:css:budget",
+        "cmd": "node scripts/audit_css_duplication.cjs --max-bytes=536051 --max-rules=2364 --max-duplicate-selector-keys=0 --max-exact-duplicate-rule-keys=0 --max-repeated-declaration-groups=119 --max-cross-file-overlaps=108 --max-src-style-overlaps=0 --max-cross-file-shadowed-rules=0"
+      },
+      {
+        "name": "qa:css:detail",
+        "cmd": "node scripts/audit_css_duplication.cjs --detail-overlaps --detail-repeated"
+      },
+      {
+        "name": "fix:css",
+        "cmd": "node scripts/audit_css_duplication.cjs --fix-exact --fix-shadowed --fix-cross-file-shadowed"
+      },
+      {
+        "name": "qa:stage",
+        "cmd": "node scripts/qa_stage_compatibility.cjs"
+      },
+      {
+        "name": "qa:stage:repository",
+        "cmd": "node scripts/qa_repository_stage_compatibility.cjs"
+      },
+      {
+        "name": "qa:stage:repository:native",
+        "cmd": "node scripts/qa_repository_stage_native_regression.cjs"
+      },
+      {
+        "name": "qa:studio:compatibility-snapshot",
+        "cmd": "node scripts/qa_studio_compatibility_snapshot.cjs"
+      },
+      {
+        "name": "qa:studio:project-reopen",
+        "cmd": "node scripts/qa_studio_project_reopen.cjs"
+      },
+      {
+        "name": "qa:studio:gate-evidence",
+        "cmd": "node scripts/qa_studio_gate_evidence.cjs"
+      },
+      {
+        "name": "qa:assets:hygiene",
+        "cmd": "node scripts/qa_asset_path_hygiene.cjs"
+      },
+      {
+        "name": "materialize:studio:gate-evidence",
+        "cmd": "node scripts/materialize_studio_gate_evidence.cjs"
+      },
+      {
+        "name": "materialize:repository-stage-journey",
+        "cmd": "node scripts/materialize_repository_stage_journey.cjs"
+      },
+      {
+        "name": "materialize:repository-stage-journey:native",
+        "cmd": "node scripts/materialize_repository_stage_journey_native.cjs"
+      },
+      {
+        "name": "qa:smoke",
+        "cmd": "node scripts/qa_smoke.cjs"
+      },
+      {
+        "name": "qa:trace",
+        "cmd": "node scripts/qa_traces.cjs"
+      },
+      {
+        "name": "materialize:compatibility-snapshot",
+        "cmd": "node scripts/materialize_compatibility_corpus_snapshot.cjs"
+      },
+      {
+        "name": "materialize:source-authority",
+        "cmd": "node scripts/materialize_source_authority_manifest.cjs"
+      },
+      {
+        "name": "materialize:source-authority-epoch",
+        "cmd": "node scripts/materialize_source_authority_epoch.cjs"
+      },
+      {
+        "name": "materialize:roadmap-cursor",
+        "cmd": "node scripts/materialize_roadmap_cursor.cjs"
+      }
+    ],
+    "count": 20
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-194; broader product claims remain blocked"
+}

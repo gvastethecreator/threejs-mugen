@@ -1,16 +1,23 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-104",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prove sprite-atlas transform reproducibility. Depends on DA29-102 and DA29-103.",
   "acceptance": "Given recorded inputs/version/options, atlas metadata and pixels match digest or approved tolerance; trim, pivot, scale, padding, order, and failure cases are tested.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-104.json",
+    "docs/evidence/da29/measured/DA29-104.json",
+    "docs/evidence/native-asset-provenance-v1.json",
+    "public/characters/nova-boxer/sprite-sheet-alpha.png",
+    "public/characters/mira-volt/sprite-sheet-alpha.png",
+    "public/characters/rook-apprentice/sprite-sheet-alpha.png"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "6ee659a549425659409d5be800637a1347e1fe2fa0b48fce6abed7d7621cbfb1"
+    "value": "0b735092935258b50cc8ad3014b99a94aec7cf4703ef07ca577141ee97423e7d"
   }
 }

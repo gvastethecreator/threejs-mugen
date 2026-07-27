@@ -1,16 +1,20 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-177",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Execute one product-authorized Lua/module experiment. Depends on DA29-174, DA29-175, DA29-119, and explicit user trust UX.",
   "acceptance": "Opt-in project route shows capabilities, runs a repository-owned script under caps, records evidence, handles timeout/error/revoke, and leaves default import execution disabled.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-177.json",
+    "docs/evidence/da29/measured/DA29-177.json",
+    "docs/IKEMEN_GO_REFERENCE.md"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "700b8b82b507dc001de42fcece113761763e7ed9cd85118973ab9bee3e0fae53"
+    "value": "ff5a07dc6d4a801c1158ddf275c5fd283b0ea41082c4c41b31d018bd3de32524"
   }
 }

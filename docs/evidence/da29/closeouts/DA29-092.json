@@ -5,13 +5,13 @@
   "wave": 9,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Add versioned IndexedDB schema and migrations. Depends on DA29-091.",
   "acceptance": "Upgrade, downgrade rejection, interrupted migration, missing store/index, old snapshot, and rollback tests pass against real IndexedDB, not memory fallback.",
   "risk": "Migration can strand projects. Allows tested versions only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "7577ae0739f40a1cde2a5cd325654c3cd12c1c7d3acc1843e33fd0bfaa475314"
+    "value": "4682f1791dba9dd1c4057cb9a5dda01972ed0fd550a6325537617b603a419554"
   }
 }

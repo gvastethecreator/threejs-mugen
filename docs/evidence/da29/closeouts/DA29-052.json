@@ -5,13 +5,13 @@
   "wave": 5,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Prove one nested Helper command/state journey. Depends on DA29-051 and DA29-037.",
   "acceptance": "Imported route covers root command, helper spawn, helper-owned state/command buffer, parent/root redirects, destroy, and replay.",
   "risk": "Identity leaks across owners. Allows one nested route only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -53,6 +53,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "5683472e44f7ce327febce40e4edc93a97a0a54bb72a67b8a1f35388c1f810de"
+    "value": "a16604b3d3d5727cd94902eb5d06eec6a2f3a866d0e0a57e5cdb32ad9f6b59b3"
   }
 }

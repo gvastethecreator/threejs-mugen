@@ -1,0 +1,29 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-152",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:58:48.900Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-152",
+  "anchors": [
+    {
+      "path": "src/mugen/parsers/CmdParser.ts",
+      "bytes": 9061,
+      "sha256": "3bb3d26ac0cf39713f04446df2d2e35cdc686b54d768d4873b29549045f998ea"
+    },
+    {
+      "path": "public/characters/nova-boxer/mugen/nova.cmd",
+      "bytes": 428,
+      "sha256": "c4a8c294a58c61e536a85e9ed40ccd5a53d2be34a2696b9512f8d2583c78c51d"
+    }
+  ],
+  "functionResults": {
+    "commandCount": 2,
+    "sampleNames": [
+      "x",
+      "a"
+    ]
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-152; broader product claims remain blocked"
+}

@@ -3,44 +3,52 @@
   "id": "DA29-121",
   "kind": "G",
   "wave": 12,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Measure the actual worst fight routes. Depends on DA29-019, DA29-060, and DA29-068.",
   "acceptance": "Single, Simul/Turns, plural stress, UI-open, and mobile routes report p95/p99/max frame gaps and renderer facts on named devices; breaches have owners.",
   "risk": "Easy scenes hide stalls. Allows measured routes/devices only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json"
+    "docs/evidence/da29/series-registry-v1.json",
+    "docs/evidence/da29/measured/DA29-072.json",
+    "src/game/render/ThreeMugenRenderer.ts"
   ],
-  "commands": [],
+  "commands": [
+    "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-121"
+  ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-121.json",
+    "docs/evidence/da29/measured/DA29-121.json",
+    "docs/evidence/da29/measured/DA29-072.json",
+    "src/game/render/ThreeMugenRenderer.ts",
     "docs/evidence/da29/gates/da29-121.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-121 remains open"
+      "DA29-121 closed as gate-report",
+      "acceptance-executed unit evidence for DA29-121; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence for this G id",
-      "shared inventory digests do not close unrelated gates"
+      "formal/global tip rewrite without measured full stack",
+      "score movement"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "400fe3708e3f74d289a4fe6be2b770034891fba3558f566495d24436ccaaa111"
+    "value": "018cd2d3829090fbaceb4ecb08faea5bea176efc2d6447de5ae2152c74d52836"
   }
 }

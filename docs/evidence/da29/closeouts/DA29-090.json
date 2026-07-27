@@ -5,13 +5,13 @@
   "wave": 8,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Prove deterministic scanner reanalysis and semantic diff. Depends on DA29-087 and DA29-088.",
   "acceptance": "Source, ruleset, analyzer, and upstream revisions each trigger a deterministic diff with added/removed/changed findings and stable unchanged rows.",
   "risk": "Timestamp noise obscures meaning. Allows semantic-diff claims only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "c9897e5793e265379c64cd04ec60bc5c5b464d20e5a0a23e9765617e2e846f0e"
+    "value": "1f5a0269345c1778a5959e74c7abe51ee2b8b1e2e86d4557a568a55ef25951cc"
   }
 }

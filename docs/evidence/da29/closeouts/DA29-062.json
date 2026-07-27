@@ -5,13 +5,13 @@
   "wave": 6,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Add a bounded Simul spawn/input route. Depends on DA29-061, DA29-021, and DA29-043.",
   "acceptance": "Two-versus-two route proves authored positions, facing, input ownership, collision participation, camera framing, and reset.",
   "risk": "Four actors stress geometry. Allows one Simul route only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -51,6 +51,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "c83ff09a3437b169305ca00120095642b839cb772abfbcc0b66631812a090ead"
+    "value": "ea80daf385876da36472a8a5424644a166dd47b20058db7d202cfa27c6c32760"
   }
 }

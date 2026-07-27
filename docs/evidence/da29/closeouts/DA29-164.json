@@ -3,46 +3,52 @@
   "id": "DA29-164",
   "kind": "I",
   "wave": 16,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Widen lifebar and `fight.def` rendering. Depends on DA29-068, DA29-076, DA29-161, and DA29-162.",
   "acceptance": "Imported fixture covers bars, portraits, names, power, timer, combo, round/KO/win elements, layer order, transforms, team variants, resize, and fallback.",
   "risk": "HUD success can hide timing gaps. Allows one motif/profile matrix only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json"
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/game/render/FightScreenAnnouncementRenderer.ts",
+    "src/mugen/runtime/RuntimeTeamRoundLifebarSystem.ts"
   ],
   "commands": [
-    "implementation probe DA29-164 (diagnostic only)"
+    "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-164"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-164.json",
-    "docs/evidence/da29/probes/da29-164.json"
+    "docs/evidence/da29/probes/da29-164.json",
+    "docs/evidence/da29/measured/DA29-164.json",
+    "src/game/render/FightScreenAnnouncementRenderer.ts",
+    "src/mugen/runtime/RuntimeTeamRoundLifebarSystem.ts"
   ],
   "claims": {
     "allowed": [
-      "DA29-164 remains open"
+      "DA29-164 closed as implementation-probe",
+      "acceptance-executed unit evidence for DA29-164; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no shipped probe mapping for cut",
-      "path-exists / directory probes do not close [I] cuts"
+      "product/runtime parity beyond written claim ceiling",
+      "path-exists probe as closeout"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "dade7734ce5b5a2a6d517bb291f2deb84f29f672cdfa2ec483c59b64b7faf2ea"
+    "value": "1ec5bd94e303fd676fd95cd671bf30451ef4cb51db0749d353114120fe4b1e74"
   }
 }

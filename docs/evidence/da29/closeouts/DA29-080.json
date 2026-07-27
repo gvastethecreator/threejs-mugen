@@ -5,13 +5,13 @@
   "wave": 7,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Prove Common.Fx and character audio output in browsers. Depends on DA29-079 and DA29-003.",
   "acceptance": "Gesture-gated Chromium route verifies decoded repository-owned samples, graph connection, non-zero post-mixer signal, pan/volume, overlap, stop/reset, errors, and context close.",
   "risk": "Fake context cannot prove output. Allows tested browser/audio route only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -47,6 +47,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "0da3cc3eaa68035f038f6851c5a58a1980b0e95d6ccae4641982bc571423b2e0"
+    "value": "ee1e3ce6dd79db2af5b70a5e70def4e55b6a4d02714e7c9c331d2e2e0c66e780"
   }
 }

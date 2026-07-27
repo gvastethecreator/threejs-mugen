@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-055",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
   "ok": true,
   "entryPoints": [
     "src/mugen",
@@ -16,6 +16,6 @@
   "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "b02746b3cfc714fda8aa2741d118d5a8bb5c8a925b48d80aa0965149c71e43ab"
+    "value": "d90884b1843d19f315621083735ac8644a4a3e2629d8246fff8ad29ceb025e5a"
   }
 }

@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-180",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Adjudicate a bounded IKEMEN milestone. Depends on DA29-067, DA29-090, DA29-171…179, and chosen team/runtime gates.",
   "acceptance": "Review separates scanner, source, ZSS, Lua/module, team, replay, and local-network evidence; supported profile, blocked extensions, risks, and scores are explicit.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-180.json",
+    "docs/evidence/da29/measured/DA29-180.json",
+    "docs/MASTER_REVIEW_ROADMAP.md",
+    "docs/evidence/da29/series-registry-v1.json"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "9e9da74e18ae5674d6d06ed5f304491341126c50c0cacf7e7ca3a15cff4a080b"
+    "value": "2635a6a18478d5967081dcdeca4f03eda76179968659d0155e001b21207a0056"
   }
 }

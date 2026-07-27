@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-016",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
   "ok": true,
   "entryPoints": [
     "docs/evidence/source-authority-epoch-v1.json"
@@ -14,6 +14,6 @@
   "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "a3e8bb287de00e28309effdaa1a514816a071762211fda08bdd85c01dd56fe43"
+    "value": "420d707ecb026a59cf55fe49e754542e9b6d95a3680a17c7713af78c476fb586"
   }
 }

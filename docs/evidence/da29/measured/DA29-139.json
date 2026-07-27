@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-139",
-  "generatedAt": "2026-07-27T04:27:24.891Z",
-  "ok": true,
   "kind": "I",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-139",
+  "generatedAt": "2026-07-27T04:58:48.814Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-139",
   "anchors": [
     {
       "path": "src/engine/ModuleContracts.ts",
@@ -15,10 +16,17 @@
       "path": "src/engine/CommonEvidenceFacts.ts",
       "bytes": 6740,
       "sha256": "4411e8c0a38c52bf6d0949fe0c4315b44b736058ebff6740fbf7809ecf2a6544"
+    },
+    {
+      "path": "src/mugen/compatibility/AuthoritySelector.ts",
+      "bytes": 14652,
+      "sha256": "eb85d4355695e13639eea5f2b706ec84cfcb2d4efed50c31da5932e38be005fb"
     }
   ],
-  "facts": {
-    "secondConsumer": "engine package facts"
+  "functionResults": {
+    "digest": "0ba4df310d7c1e2b",
+    "closedThrough": "DA29-101",
+    "secondConsumer": "engine/CommonEvidenceFacts + AuthoritySelector"
   },
-  "claimCeiling": "engine package as non-fighting consumer of shared facts"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-139; broader product claims remain blocked"
 }

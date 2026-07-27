@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-117",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Audit contrast, reduced motion, and flashing. Depends on DA29-003 and DA29-111.",
   "acceptance": "Theme/state contrast, HUD overlays, focus, disabled/error states, screen shake, flashes, transitions, and reduced-motion paths have measured results and fixes.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-117.json",
+    "docs/evidence/da29/measured/DA29-117.json",
+    "src/styles/redesign.css",
+    "src/styles/base/tokens.css"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "b760408e78b8cba3bf7555e4723670c0840398bd3353f38ae650c5682a78829d"
+    "value": "3295890b4e9e25673bf4957c15808cd7eece698a4cbabde67a778d06cf1c5d94"
   }
 }

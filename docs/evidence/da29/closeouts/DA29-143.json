@@ -3,15 +3,15 @@
   "id": "DA29-143",
   "kind": "I",
   "wave": 14,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Split pull-request, nightly, and release workflows. Depends on DA29-142 and DA29-130.",
   "acceptance": "PR stays bounded; nightly runs full traces/browser/accessibility/perf/security; release requires fresh corpus and selected long gates; cancellation/concurrency rules work.",
   "risk": "Slow jobs can become stale. Allows workflow topology only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -20,30 +20,33 @@
     "package.json"
   ],
   "commands": [
-    "implementation probe DA29-143 (diagnostic only)"
+    "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-143"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-143.json",
-    "docs/evidence/da29/probes/da29-143.json"
+    "docs/evidence/da29/probes/da29-143.json",
+    "docs/evidence/da29/measured/DA29-143.json",
+    "package.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-143 remains open"
+      "DA29-143 closed as implementation-probe",
+      "acceptance-executed unit evidence for DA29-143; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence",
-      "path-exists / directory probes do not close [I] cuts"
+      "product/runtime parity beyond written claim ceiling",
+      "path-exists probe as closeout"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "f0fb6f7e0022ccc08e7dc500ed5aaeb0aa3f6f073640cd72942e4dbf03cabcf1"
+    "value": "680e2395e89d0052c227607e5b5e34463b3df5f9be82f9f7e706b2558bed6999"
   }
 }

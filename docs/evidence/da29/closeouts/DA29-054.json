@@ -5,13 +5,13 @@
   "wave": 5,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Prove projectile clash and contact tie-breaks. Depends on DA29-053 and DA29-045.",
   "acceptance": "Same-frame projectile/projectile and projectile/fighter cases cover priority, cancel, hitpause, persistence, ordering, and swapped insertion order.",
   "risk": "Array order may leak into results. Allows tested clash matrix only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "5164639ef2846242c9670b5201e252ab18442b65ecce839a00d63b1f988be53e"
+    "value": "6ee3c69a7fb137b8d575a8ed841b993ed1028bf02353510436ef80eb35ceacd1"
   }
 }

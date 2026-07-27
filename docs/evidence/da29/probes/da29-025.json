@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-025",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
   "ok": true,
   "entryPoints": [
     "src/game",
@@ -16,6 +16,6 @@
   "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "f9140e0907704ca9aced36d99be0781ac0b223eeea0d3f8f10050c50f3a47d77"
+    "value": "38e8927c1d5fd02be7e38de1551dec78ff6ca4893371e78c005a2c46036294c9"
   }
 }

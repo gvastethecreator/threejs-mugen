@@ -1,16 +1,20 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-130",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Run a long deterministic soak. Depends on DA29-121…129.",
   "acceptance": "Named device/browser runs repeated rounds, imports, saves, project switches, audio, pause/resume, and stress for fixed duration; frame, memory, errors, resource counts, and final replay digest pass thresholds.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-130.json",
+    "docs/evidence/da29/measured/DA29-130.json",
+    "src/mugen/runtime/GlobalProjectileSchedule.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "310814ba5fe36e87c9284cb895afa65c1fcd1d2a4b7845f52c8a04fd29b23f4e"
+    "value": "4558563b590ec2f9abd4bde75bbdf557ff43ca8eabda56fcfd691f7f230f5881"
   }
 }

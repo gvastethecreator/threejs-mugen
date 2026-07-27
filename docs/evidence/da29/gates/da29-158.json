@@ -1,16 +1,20 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-158",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Parse and validate bounded `select.def` roster data. Depends on DA29-081, DA29-085, and DA29-109.",
   "acceptance": "Repository-owned file covers character/stage rows, random/select rules, ordering, missing/duplicate paths, extra metadata, diagnostics, and safe project closure.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-158.json",
+    "docs/evidence/da29/measured/DA29-158.json",
+    "src/app/App.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "de30ff0a70edd1b11022806581ac6bcc80a64a79fd262e589e5e57fae8b1d0b3"
+    "value": "00c4cbf66827613fd548c8ffd43f20b54e9d05f8773a7278da32f5132f4caaf3"
   }
 }

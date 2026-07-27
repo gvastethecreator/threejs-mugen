@@ -5,13 +5,13 @@
   "wave": 2,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Replay the canonical input log. Depends on DA29-025 and DA29-029.",
   "acceptance": "Record/replay tests compare periodic and final state checksums, controller telemetry, winner, and frame count; mismatch reports first divergent owner.",
   "risk": "Matching end state can hide drift. Allows listed deterministic journey only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -51,6 +51,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "5fcfbf3a2373082ebf4a4df67224539951bb843558583586039561465107dac1"
+    "value": "fb909948825cf0afd70a75271c5dc0797953a7aa229d67a234abce5de96ea3a1"
   }
 }

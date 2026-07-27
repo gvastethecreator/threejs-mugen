@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-121",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Measure the actual worst fight routes. Depends on DA29-019, DA29-060, and DA29-068.",
   "acceptance": "Single, Simul/Turns, plural stress, UI-open, and mobile routes report p95/p99/max frame gaps and renderer facts on named devices; breaches have owners.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-121.json",
+    "docs/evidence/da29/measured/DA29-121.json",
+    "docs/evidence/da29/measured/DA29-072.json",
+    "src/game/render/ThreeMugenRenderer.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "dd180221dae9f911c449ef86a8f1d912f6c4037bcea78f8f28907928f3d01e56"
+    "value": "198fbb1c225264841939ca4b39115016f234a6c76364d66d006a9b7f61c7a29c"
   }
 }

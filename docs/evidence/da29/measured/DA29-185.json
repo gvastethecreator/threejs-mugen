@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-185",
-  "generatedAt": "2026-07-27T04:27:24.982Z",
-  "ok": true,
   "kind": "I",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-185",
+  "generatedAt": "2026-07-27T04:58:49.129Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-185",
   "anchors": [
     {
       "path": "src/app/ProjectStorage.ts",
@@ -17,8 +18,12 @@
       "sha256": "5006ab50ea871ecaa03ac5db78f2caec132bcc864cf31aae791eee2a147eadb9"
     }
   ],
-  "facts": {
-    "batchSurface": true
+  "functionResults": {
+    "modules": [
+      "src/app/ProjectStorage.ts",
+      "src/mugen/compatibility/IkemenFeatureScanner.ts"
+    ],
+    "hasBatch": true
   },
-  "claimCeiling": "project storage + scanner as batch analysis hosts"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-185; broader product claims remain blocked"
 }

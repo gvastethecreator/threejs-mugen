@@ -5,13 +5,13 @@
   "wave": 8,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:50:20.629Z",
+  "closedAt": "2026-07-27T04:58:22.170Z",
   "cut": "Add a live PackageAnalysis revision consumer. Depends on DA29-087 and DA29-091.",
   "acceptance": "Import/reopen/source-change routes show current, stale, failed, and superseded analysis; product actions consume the same revision and fail closed.",
   "risk": "Analysis may drift from bytes. Allows named product decisions only.",
   "revision": {
-    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
-    "headShort": "3bcb89ba1bd5",
+    "head": "d02e7db195902e4d76dfab970a4593dced6ccb75",
+    "headShort": "d02e7db19590",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -52,6 +52,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "e83238c76cbb7f6368fb80e21c7074441dac915f1b4c3078a4911762e96d7d04"
+    "value": "c826ca523cc23c87cac4b77b8588f160a4e3159b56176488599e7a760eebba4a"
   }
 }

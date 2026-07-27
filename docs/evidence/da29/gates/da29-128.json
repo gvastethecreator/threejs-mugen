@@ -1,16 +1,20 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-128",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prove AudioContext and buffer lifecycle. Depends on DA29-079, DA29-080, and DA29-122.",
   "acceptance": "Repeated play/import/project switch covers context reuse/close, decoded buffer caps, stopped voices, suspend/resume, errors, and memory trend.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-128.json",
+    "docs/evidence/da29/measured/DA29-128.json",
+    "src/game/audio/MugenAudioSystem.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "6f4e4ee199cb672011594f3f72eb8131ade5869eefe1209bc3a8ec287ae0016b"
+    "value": "0b41325afa9c82f6d9594aadc23d278a3354caf333e2860b9d9d83ad6817193d"
   }
 }

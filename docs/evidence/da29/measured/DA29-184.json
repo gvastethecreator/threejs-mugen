@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-184",
-  "generatedAt": "2026-07-27T04:27:24.976Z",
-  "ok": true,
   "kind": "I",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-184",
+  "generatedAt": "2026-07-27T04:58:49.120Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-184",
   "anchors": [
     {
       "path": "src/app/StudioSourceWrite.ts",
@@ -17,8 +18,12 @@
       "sha256": "028fd8cacc640020c09a4502ad70c98472f79594f91a88de77f2314034f65fcf"
     }
   ],
-  "facts": {
-    "editHistory": true
+  "functionResults": {
+    "modules": [
+      "src/app/StudioSourceWrite.ts",
+      "src/app/StudioEditHistory.ts"
+    ],
+    "hasDiff": true
   },
-  "claimCeiling": "studio source write/history surfaces"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-184; broader product claims remain blocked"
 }

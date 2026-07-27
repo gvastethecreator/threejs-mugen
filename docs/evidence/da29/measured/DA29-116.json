@@ -1,0 +1,22 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-116",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:58:48.634Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-116",
+  "anchors": [
+    {
+      "path": "src/app/App.ts",
+      "bytes": 668855,
+      "sha256": "579740ae3bf37514051b169e7512e9e0bc4dbdc8f5159030a60121e645877481"
+    }
+  ],
+  "functionResults": {
+    "ariaLabels": 101,
+    "roles": 24,
+    "hasButton": true
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-116; broader product claims remain blocked"
+}

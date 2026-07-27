@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-195",
-  "generatedAt": "2026-07-27T04:27:24.998Z",
-  "ok": true,
   "kind": "G",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-195",
+  "generatedAt": "2026-07-27T04:58:49.185Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-195",
   "anchors": [
     {
       "path": "docs/EXTERNAL_FIXTURES.md",
@@ -22,8 +23,21 @@
       "sha256": "dde66c724973627e58404d9158e448f0e1e8134f1f7260aef5a81830a6705a33"
     }
   ],
-  "facts": {
-    "kitDocs": 3
+  "functionResults": {
+    "kit": [
+      {
+        "path": "docs/EXTERNAL_FIXTURES.md",
+        "sha256": "e586fcb85af5"
+      },
+      {
+        "path": "docs/evidence/da29/series-registry-v1.json",
+        "sha256": "1a71e4621556"
+      },
+      {
+        "path": "docs/QA_AND_ACCEPTANCE_GATES.md",
+        "sha256": "dde66c724973"
+      }
+    ]
   },
-  "claimCeiling": "local fixture/conformance docs present"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-195; broader product claims remain blocked"
 }

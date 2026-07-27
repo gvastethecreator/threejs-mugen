@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-166",
-  "generatedAt": "2026-07-27T04:27:24.952Z",
-  "ok": true,
   "kind": "I",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-166",
+  "generatedAt": "2026-07-27T04:58:49.010Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-166",
   "anchors": [
     {
       "path": "src/game/render/FightScreenAnnouncementRenderer.ts",
@@ -12,13 +13,17 @@
       "sha256": "6d7310d895ebd856c1c32eddaefae9f417739f1ad9f29a5d5ec6a2ea9207f62e"
     },
     {
-      "path": "src/app/App.ts",
-      "bytes": 668855,
-      "sha256": "579740ae3bf37514051b169e7512e9e0bc4dbdc8f5159030a60121e645877481"
+      "path": "src/mugen/runtime/RuntimeRoundWinPoseSystem.ts",
+      "bytes": 6104,
+      "sha256": "485259555261517ca6192f6a5cd67105478a789563127b962501a8b9438647f4"
     }
   ],
-  "facts": {
-    "announcementAndApp": true
+  "functionResults": {
+    "modules": [
+      "src/game/render/FightScreenAnnouncementRenderer.ts",
+      "src/mugen/runtime/RuntimeRoundWinPoseSystem.ts"
+    ],
+    "hasWin": true
   },
-  "claimCeiling": "announcement + app surfaces for post-match flow"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-166; broader product claims remain blocked"
 }

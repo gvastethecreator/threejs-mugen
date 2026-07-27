@@ -1,7 +1,7 @@
 {
   "schema": "Da29ImplementationProbe/v1",
   "id": "DA29-187",
-  "generatedAt": "2026-07-27T04:50:20.629Z",
+  "generatedAt": "2026-07-27T04:58:22.170Z",
   "ok": true,
   "entryPoints": [
     "src/app/StudioTabs.ts",
@@ -16,6 +16,6 @@
   "closesCut": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "ff7d07f090e2d13263c1143a130e2daacaf8419d7969d014a5876beff538f133"
+    "value": "722f8d56718737e26528815efdc235fbac98785a819c05bf721a7ce481ca1d8a"
   }
 }
