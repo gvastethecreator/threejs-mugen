@@ -1,6 +1,25 @@
 # Workplan
 
-## Current bounded runtime cut - T410 (2026-07-27)
+## Current bounded runtime cut - T411 (2026-07-27)
+
+T411 closes the materialized IKEMEN `hittmp` slice in `9d58730c`. The runtime
+stores `-1|0|1|2`, syncs ordinary root fighters after frame mutation, marks
+accepted ReversalDef targets with `-1`, and lets HitFlag plus direct and
+Projectile air-juggle admission consume the explicit value. Missing fields
+retain the older `moveType`/`hitFall` projection for compatibility.
+
+Research: `docs/research/2026-07-27-ikemen-hittmp-materialization.md`.
+Ticket: `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/411-hittmp-materialization.md`.
+Focused closure passed 7 files / 105 tests, `node --check scripts/qa_traces.cjs`,
+and `git diff --check`. `pnpm typecheck` reaches only the pre-existing unused
+`advanced` in `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim blocked: exact source update order, `acttmp`, `stchtmp`, pause and
+hitpause persistence, state-entry reset rules, custom-state or active Helper
+motion, MUGEN, teams/clashes, target-list transfer, global checkpoint, scores,
+and full parity.
+
+## Previous bounded runtime cut - T410 (2026-07-27)
 
 T410 closes the first source-backed IKEMEN `inheritJuggle` slice in
 `1ae8a98e`. Helper controller values `0`, `1`, and `2` now compile as typed

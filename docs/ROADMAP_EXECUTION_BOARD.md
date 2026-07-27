@@ -14,7 +14,24 @@ and local release review. Authority:
 [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
 and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 
-## Current runtime compatibility board - T410 (closed bounded, 2026-07-27)
+## Current runtime compatibility board - T411 (closed bounded, 2026-07-27)
+
+T411 closes in `9d58730c`. The runtime now materializes IKEMEN `hitTmp` as
+`-1|0|1|2`, synchronizes ordinary root fighters after frame mutation, and
+marks accepted ReversalDef targets with `-1` from the idle value. HitFlag,
+direct air-juggle, and Projectile air-juggle admission consume the explicit
+field; missing fields keep the older projection.
+
+Focused closure passed 7 files / 105 tests, `node --check
+scripts/qa_traces.cjs`, and diff hygiene. The broad typecheck reaches only the
+unrelated pre-existing unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`. Claim blocked: exact source
+update order, `acttmp`, `stchtmp`, pause and hitpause persistence, state-entry
+reset rules, custom-state or active Helper motion, MUGEN, teams/clashes,
+target-list transfer, global checkpoint, score movement, and full parity.
+Research: `docs/research/2026-07-27-ikemen-hittmp-materialization.md`.
+
+## Previous runtime compatibility board - T410 (closed bounded, 2026-07-27)
 
 T410 closes in `1ae8a98e`. Helper `inheritjuggle` values `0|1|2` now have
 typed compiler and spawn support under `ikemen-go`, with scalar expressions

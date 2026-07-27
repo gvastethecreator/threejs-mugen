@@ -6,7 +6,7 @@
   and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 - Machine record: **DA30-120**. Consecutive human cursor: **DA30-020**
   (`adjudicatedThrough` not advanced by model-only DA31 rows).
-- Formal/global: `f5f2315e` DA31-008; focal: T410 `1ae8a98e`; visual/product: T342;
+- Formal/global: `f5f2315e` DA31-008; focal: T411 `9d58730c`; visual/product: T342;
   source: 05b/4aa.
 - DA31-001…040: see `docs/evidence/da31/da31-phase-status-v1.json`.
   Browser: 009–015 accepted (provisional when dirty). 012 simulated gamepad.
@@ -17,6 +17,28 @@
   drive harden; gamepad device-lab protocol; clause sample proposes
   `adjudicatedThrough=DA30-021` (not auto-applied); a11y baseline inventory.
   Next: close smoke lanes, human accept watermark, hardware gamepad.
+
+## Runtime `hittmp` materialization - T411 (closed bounded, 2026-07-27)
+
+- `9d58730c` adds optional typed `hitTmp` state with source-shaped values
+  `-1|0|1|2`. Normal root fighters synchronize idle, getting-hit, and falling
+  phases after their frame mutation hooks, while accepted ReversalDef contacts
+  mark the reversed actor with `-1` only from the idle value.
+- HitFlag decisions now prefer explicit `hitTmp`. IKEMEN direct and Projectile
+  air-juggle admission follows the source `hittmp < 2` branch before the local
+  remaining-budget check. Legacy fixtures without the field retain the prior
+  `moveType`/`hitFall` projection.
+- Focal closure: 7 files / 105 tests passed, plus `node --check
+  scripts/qa_traces.cjs` and `git diff --check`.
+- `pnpm typecheck` was run after the batch. The only remaining error is the
+  unrelated pre-existing unused `advanced` at
+  `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+- Claim blocked: exact source update order, `acttmp`, `stchtmp`, pause and
+  hitpause persistence, state-entry reset rules, custom-state or active Helper
+  motion, MUGEN, teams/clashes, target-list transfer, global gate, scores, and
+  full parity. Scores unchanged.
+
+Research: [IKEMEN `hittmp`](research/2026-07-27-ikemen-hittmp-materialization.md).
 
 ## Runtime Helper `inheritJuggle` budget - T410 (closed bounded, 2026-07-27)
 

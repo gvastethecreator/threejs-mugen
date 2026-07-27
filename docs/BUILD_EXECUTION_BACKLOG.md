@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## Entry 620 - IKEMEN `hittmp` materialization (T411)
+
+Closed T411 in `9d58730c`: `CharacterRuntimeState` now carries typed IKEMEN
+`hitTmp` values `-1|0|1|2`. Normal root fighters synchronize idle,
+getting-hit, and falling phases after frame mutation; accepted ReversalDef
+contacts mark the reversed actor with `-1` only from the idle value. HitFlag,
+direct air-juggle, and Projectile air-juggle admission prefer the explicit
+field and keep the older projection when it is absent. MUGEN and unknown
+profiles retain their existing air-juggle behavior.
+
+Focused closure passed 7 files / 105 tests, `node --check
+scripts/qa_traces.cjs`, and `git diff --check`. `pnpm typecheck` reaches only
+the unrelated pre-existing unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim allowed: bounded root `hitTmp` materialization and the named HitFlag and
+air-juggle admission predicates. Claim blocked: exact source update order,
+`acttmp`, `stchtmp`, pause and hitpause persistence, state-entry reset rules,
+custom-state or active Helper motion, MUGEN, teams/clashes, target-list
+transfer, global checkpoint, score movement, and full parity. Research:
+`docs/research/2026-07-27-ikemen-hittmp-materialization.md`.
+
 ## Entry 619 - Helper inheritJuggle budget (T410)
 
 Closed T410 in `1ae8a98e`: typed Helper `inheritjuggle` values `0|1|2` and
