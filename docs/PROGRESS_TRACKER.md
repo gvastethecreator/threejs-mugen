@@ -6,7 +6,7 @@
   and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 - Machine record: **DA30-120**. Consecutive human cursor: **DA30-020**
   (`adjudicatedThrough` not advanced by model-only DA31 rows).
-- Formal/global: `f5f2315e` DA31-008; focal: T408 `0f9dd991`; visual/product: T342;
+- Formal/global: `f5f2315e` DA31-008; focal: T409 `4395f2dd`; visual/product: T342;
   source: 05b/4aa.
 - DA31-001…040: see `docs/evidence/da31/da31-phase-status-v1.json`.
   Browser: 009–015 accepted (provisional when dirty). 012 simulated gamepad.
@@ -17,6 +17,30 @@
   drive harden; gamepad device-lab protocol; clause sample proposes
   `adjudicatedThrough=DA30-021` (not auto-applied); a11y baseline inventory.
   Next: close smoke lanes, human accept watermark, hardware gamepad.
+
+## Runtime Projectile same-frame AP contact - T409 (closed bounded, 2026-07-27)
+
+- `4395f2dd` adds the local equivalent of Ikemen's `ap_projhit` guard to the
+  ordered projectile combat pass. The first accepted `AP` hit, guard, or
+  HitOverride contact marks the active owner/defender pass; later `AP`
+  projectiles reject before HitOverride and damage, while non-`AP` projectiles
+  remain eligible and the next pass starts clear.
+- Required trace
+  `synthetic-imported-ikemen-projectile-same-frame-ap-contact-golden` proves
+  two overlapping imported `AP` projectiles, one accepted contact, one
+  same-frame rejection, retained second-projectile evidence, and final P2 life
+  `983`.
+- Focal closure: 6 files / 258 tests passed, 582 skipped by the filter; the
+  named trace test, `node --check scripts/qa_traces.cjs`, and `git diff --check`
+  passed.
+- `pnpm typecheck` was not rerun in this cut; the known unrelated blocker is
+  the pre-existing unused `advanced` at
+  `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+- Claim blocked: exact `hittmp`/`acttmp`, pause persistence, MUGEN branch,
+  teams/clashes, helper ancestry, `inheritJuggle`, global gate, scores, and
+  full projectile parity. Scores unchanged.
+
+Research: [same-frame AP contact](research/2026-07-27-ikemen-projectile-same-frame-ap-contact.md).
 
 ## Runtime Helper-owned Projectile air.juggle - T408 (closed bounded, 2026-07-27)
 

@@ -14,7 +14,28 @@ and local release review. Authority:
 [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
 and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 
-## Current runtime compatibility board - T408 (closed bounded, 2026-07-27)
+## Current runtime compatibility board - T409 (closed bounded, 2026-07-27)
+
+T409 closes in `4395f2dd`. The ordered projectile combat pass now keeps a
+pass-local `AP` contact mark for each owner/defender pass. The first accepted
+`AP` hit, guard, or HitOverride contact blocks later `AP` projectiles before
+HitOverride and damage; non-`AP` projectiles remain eligible and the next pass
+starts clear.
+
+Required imported trace:
+`synthetic-imported-ikemen-projectile-same-frame-ap-contact-golden` proves
+one accepted contact, one same-frame rejection, retained second-projectile
+evidence, and final P2 life `983`. Focused closure passed 6 files / 258 tests
+with 582 filtered, the named trace, `node --check scripts/qa_traces.cjs`, and
+diff hygiene. The broad typecheck was deferred after the batch; its known
+unrelated blocker is the pre-existing unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`. Claim blocked: exact
+`hittmp`/`acttmp`, pause persistence, MUGEN, teams/clashes, helper ancestry,
+`inheritJuggle`, global checkpoint, score movement, and full parity. Scores
+stay unchanged. Research:
+`docs/research/2026-07-27-ikemen-projectile-same-frame-ap-contact.md`.
+
+## Previous runtime compatibility board - T408 (closed bounded, 2026-07-27)
 
 T408 closes in `0f9dd991`. The T407 Projectile `air.juggle` path now resolves
 the budget owner from `RuntimeProjectile.ownerId` for a root-owned

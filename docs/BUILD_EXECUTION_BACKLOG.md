@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## Entry 618 - Projectile same-frame AP contact (T409)
+
+Closed T409 in `4395f2dd`: the ordered projectile combat pass now applies the
+local Ikemen `ap_projhit` rule. The first accepted `AP` hit, guard, or
+HitOverride contact marks the current owner/defender pass; later `AP`
+projectiles reject before HitOverride and damage, non-`AP` projectiles remain
+eligible, and the next pass starts clear. The required imported trace proves
+one accepted contact, one same-frame rejection, retained second-projectile
+evidence, and exactly one damage application.
+
+Focused closure passed 6 files / 258 tests with 582 filtered, the named trace,
+`node --check scripts/qa_traces.cjs`, and `git diff --check`. The broad
+typecheck was deferred after the batch; the known unrelated blocker is the
+pre-existing unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim allowed: bounded same-frame `AP` admission in the current projectile
+combat world. Claim blocked: exact `hittmp`/`acttmp`, pause persistence, MUGEN,
+teams/clashes, helper ancestry, `inheritJuggle`, global checkpoint, score
+movement, and full parity. Research:
+`docs/research/2026-07-27-ikemen-projectile-same-frame-ap-contact.md`.
+
 ## Entry 617 - Helper-owned Projectile air.juggle (T408)
 
 Closed T408 in `0f9dd991`: the T407 IKEMEN Projectile `air.juggle` path now

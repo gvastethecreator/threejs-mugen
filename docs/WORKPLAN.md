@@ -1,6 +1,27 @@
 # Workplan
 
-## Current bounded runtime cut - T408 (2026-07-27)
+## Current bounded runtime cut - T409 (2026-07-27)
+
+T409 closes the same-frame IKEMEN Projectile `AP` admission slice in
+`4395f2dd`. During one ordered owner/defender combat pass, the first accepted
+`AP` hit, guard, or HitOverride contact sets a local mark; later `AP`
+projectiles are rejected before HitOverride and damage, while non-`AP`
+projectiles remain eligible. A new combat pass clears the mark. The required
+imported trace proves one accepted contact, one same-frame rejection, retained
+second-projectile evidence, and exactly one damage application.
+
+Research: `docs/research/2026-07-27-ikemen-projectile-same-frame-ap-contact.md`.
+Ticket: `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/409-projectile-same-frame-ap-contact.md`.
+Focused closure passed 6 files / 258 tests, 582 filtered tests, the named
+trace, `node --check scripts/qa_traces.cjs`, and `git diff --check`. Global
+typecheck remains blocked by the pre-existing unused `advanced` in
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim blocked: exact `hittmp`/`acttmp`, pause persistence, MUGEN branch,
+teams/clashes, helper ancestry, `inheritJuggle`, global checkpoint, scores,
+and full parity.
+
+## Previous bounded runtime cut - T408 (2026-07-27)
 
 T408 closes the Helper-owned IKEMEN Projectile `air.juggle` slice in
 `0f9dd991`. `RuntimeProjectile.ownerId` now selects the juggle budget key when
