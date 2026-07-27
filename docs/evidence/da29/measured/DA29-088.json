@@ -1,0 +1,38 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-088",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:50:27.626Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-088",
+  "anchors": [
+    {
+      "path": "src/mugen/compatibility/IkemenFeatureScanner.ts",
+      "bytes": 20474,
+      "sha256": "5006ab50ea871ecaa03ac5db78f2caec132bcc864cf31aae791eee2a147eadb9"
+    },
+    {
+      "path": "src/mugen/compatibility/ScannerCapabilityVector.ts",
+      "bytes": 3219,
+      "sha256": "8f418bc2df7e374dae093b0814b1909eff75de331c9ac4fe57de753a795bced4"
+    },
+    {
+      "path": "src/mugen/compatibility/CompatibilityCorpusSnapshot.ts",
+      "bytes": 36839,
+      "sha256": "2edecb076d51217e4614611ab185d0ace8af11f90662ea4906a8aac442c8d32b"
+    }
+  ],
+  "functionResults": {
+    "scanner": {
+      "modules": [
+        "src/mugen/compatibility/IkemenFeatureScanner.ts",
+        "src/mugen/compatibility/ScannerCapabilityVector.ts"
+      ],
+      "executable": true,
+      "totalBytes": 23693
+    },
+    "corpusSnapshot": true
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-088; broader product claims remain blocked"
+}

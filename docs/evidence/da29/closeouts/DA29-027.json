@@ -5,13 +5,13 @@
   "wave": 2,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Audit pause, superpause, hitpause, and input-buffer clock domains. Depends on DA29-020.",
   "acceptance": "Source-backed timing map names clocks, frozen owners, buffer behavior, and open order questions across MUGEN/Ikemen profiles.",
   "risk": "One global clock may be wrong. Allows timing design only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "08a68011ba8833a1a54e92b6d1fd60575a6a0c619a7c21e4aca06225abd05298"
+    "value": "960bed0bdcd5b29c18ded12fbf54129dd61ab09ed46ef47a115c52d4ad69da5a"
   }
 }

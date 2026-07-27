@@ -10,8 +10,8 @@
   "acceptance": "Build/evidence scans reject absolute, traversal, temp, user, secret-like, commercial, and unapproved files; exported bundle uses safe relative paths and stable subject IDs.",
   "risk": "Local paths leak user data. Allows tested bundle hygiene only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "4e228efefefbade4f6f8fb2f0040a5d317d26f905916915e70c5da1fdaaa3851"
+    "value": "8937f685294dfa62f881ca00c720fa5782c143768e1cac7dc89aac4532b88d9f"
   }
 }

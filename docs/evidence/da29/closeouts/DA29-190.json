@@ -10,8 +10,8 @@
   "acceptance": "In-app/help docs cover import, controls, modes, evidence, save/recovery, permissions, assets, unsupported facts, keyboard access, and error recovery; links are route-tested.",
   "risk": "Docs can drift from product. Allows current documented routes only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "80c57ccc0234581a3dd0c14917212aec1e577c4a424f25a0ec5469080f8539ad"
+    "value": "11f005d213250c6e1bef3bd8002e3b455043a9e4fe533845832c96e15f7e5b40"
   }
 }

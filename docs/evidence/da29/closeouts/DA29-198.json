@@ -5,13 +5,13 @@
   "wave": 19,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Design hosted-preview deployment and rollback. Depends on DA29-146…148, DA29-188, and DA29-197.",
   "acceptance": "Architecture covers static hosting, headers/CSP, cache keys, asset limits, privacy, artifact promotion, smoke, rollback, status, and domain/secret authority; no deployment occurs.",
   "risk": "Local readiness differs from production. Allows deployment plan only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "9bb6d31d7a00de63a8c05906c7c93e524a4cdf58adf40c4606768773015372fc"
+    "value": "fcc9090039c736af67b5f64f9e2e8e97f9d245403fea3909e0c2e8b1a2fdeea1"
   }
 }

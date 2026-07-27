@@ -10,8 +10,8 @@
   "acceptance": "Given recorded inputs/version/options, atlas metadata and pixels match digest or approved tolerance; trim, pivot, scale, padding, order, and failure cases are tested.",
   "risk": "Tool upgrades change output. Allows named tool revision only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "21e6cd28d728a7d8782a8d973bd1e06d0523fbb999578f240c0a623774f172a7"
+    "value": "65741a96708ef24a931bce43fded985532f5fff8d69e379aebb385eccd2bb0ab"
   }
 }

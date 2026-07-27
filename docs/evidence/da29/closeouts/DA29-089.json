@@ -5,13 +5,13 @@
   "wave": 8,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Classify ZSS, Lua, and module findings by capability and risk. Depends on DA29-016 and DA29-087.",
   "acceptance": "Located report separates detected syntax, static metadata, blocked execution, sandbox needs, upstream profile, and explicit unsupported outcomes.",
   "risk": "Scanner recognition can imply execution. Allows recognition only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "8606ae5468122f250bfcb7242211246c3aabf9b50916f7da7dc4e043a32df79e"
+    "value": "c232a3cb96ca0ccc821d88a83201cc86ef5bb21a99505655fa4180caeb4be89c"
   }
 }

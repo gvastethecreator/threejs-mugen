@@ -5,13 +5,13 @@
   "wave": 3,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Reconcile expression coercion and error rules. Depends on DA29-032 and DA29-035.",
   "acceptance": "Matrix covers int/float/string/bool, truncation, missing values, divide-by-zero, invalid redirects, and profile differences with source refs.",
   "risk": "Silent coercion causes wide drift. Allows reviewed rules only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "0d59b357f690cd3393abeee5e35337333d3e6e692b1305996c965e023103e626"
+    "value": "b41cd6c9aa3941cc65de62e954e372168b0d912de27185fad29183c797086b3f"
   }
 }

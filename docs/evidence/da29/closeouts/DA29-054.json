@@ -3,48 +3,52 @@
   "id": "DA29-054",
   "kind": "I",
   "wave": 5,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Prove projectile clash and contact tie-breaks. Depends on DA29-053 and DA29-045.",
   "acceptance": "Same-frame projectile/projectile and projectile/fighter cases cover priority, cancel, hitpause, persistence, ordering, and swapped insertion order.",
   "risk": "Array order may leak into results. Allows tested clash matrix only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
     "src/app/StudioTabs.ts",
-    "src/app/App.ts"
+    "src/app/App.ts",
+    "src/mugen/runtime/GlobalProjectileSchedule.ts"
   ],
   "commands": [
-    "implementation probe DA29-054 (diagnostic only)"
+    "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-054"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-054.json",
-    "docs/evidence/da29/probes/da29-054.json"
+    "docs/evidence/da29/probes/da29-054.json",
+    "docs/evidence/da29/measured/DA29-054.json",
+    "src/mugen/runtime/GlobalProjectileSchedule.ts"
   ],
   "claims": {
     "allowed": [
-      "DA29-054 remains open"
+      "DA29-054 closed as implementation-probe",
+      "acceptance-executed unit evidence for DA29-054; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence",
-      "path-exists / directory probes do not close [I] cuts"
+      "product/runtime parity beyond written claim ceiling",
+      "path-exists probe as closeout"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "759930c96d8031f6be4f736af6e766b10d46395f43023898c2d60c6b00710749"
+    "value": "5164639ef2846242c9670b5201e252ab18442b65ecce839a00d63b1f988be53e"
   }
 }

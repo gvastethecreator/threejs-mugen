@@ -5,13 +5,13 @@
   "wave": 3,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Audit dynamic parameter evaluation across compiled controllers. Depends on DA29-034, DA29-035, and DA29-037.",
   "acceptance": "Generated matrix finds static-only, deferred, wrong-context, untested, and fail-open fields; sampled tests confirm the classifier.",
   "risk": "Static success can mask dynamic failure. Allows audit findings only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "41624b93df4e4a4d2e3a0f783ed3ca32f180d12cbcac1798ad0ab86e1ef72748"
+    "value": "cc5419aff7d81b839afe86d1332cdc8cdc9b0828a1c3c0062516dacad1fe1c41"
   }
 }

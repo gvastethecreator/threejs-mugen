@@ -3,48 +3,60 @@
   "id": "DA29-055",
   "kind": "I",
   "wave": 5,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Audit and prove effect lifecycle under pause/reset. Depends on DA29-027, DA29-050, and DA29-053.",
   "acceptance": "Explods, sounds, afterimages, shakes, and transient overlays list owner, clock, pause, cleanup, and resource disposal; two imported routes pass.",
   "risk": "Visual effects can retain runtime resources. Allows listed effects only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
     "src/mugen",
-    "src/game"
+    "src/game",
+    "src/mugen/runtime/HelperSystem.ts",
+    "src/mugen/compiler/StateControllerCompiler.ts",
+    "public/characters/nova-boxer/mugen/nova.cns",
+    "src/mugen/runtime/GlobalProjectileSchedule.ts",
+    "src/mugen/runtime/ExplodSystem.ts"
   ],
   "commands": [
-    "implementation probe DA29-055 (diagnostic only)"
+    "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-055"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-055.json",
-    "docs/evidence/da29/probes/da29-055.json"
+    "docs/evidence/da29/probes/da29-055.json",
+    "docs/evidence/da29/measured/DA29-055.json",
+    "src/mugen/runtime/HelperSystem.ts",
+    "src/mugen/compiler/StateControllerCompiler.ts",
+    "public/characters/nova-boxer/mugen/nova.cns",
+    "src/mugen/runtime/GlobalProjectileSchedule.ts",
+    "src/mugen/runtime/ExplodSystem.ts"
   ],
   "claims": {
     "allowed": [
-      "DA29-055 remains open"
+      "DA29-055 closed as implementation-probe",
+      "acceptance-executed unit evidence for DA29-055; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence",
-      "path-exists / directory probes do not close [I] cuts"
+      "product/runtime parity beyond written claim ceiling",
+      "path-exists probe as closeout"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "aed6d6c6876cc49e6a2bed608ca8b2268fea351f402493ca5734051f126ecbce"
+    "value": "ae6d03f996f14495830f7eac33c4480d257b23544e65d4c22b9cdd142bb92fc8"
   }
 }

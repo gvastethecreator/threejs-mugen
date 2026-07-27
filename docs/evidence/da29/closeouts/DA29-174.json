@@ -10,8 +10,8 @@
   "acceptance": "Repository-owned scripts test allowlisted APIs, deterministic clock/RNG, memory/instruction/time caps, cancellation, errors, no file/network/DOM access, and worker termination.",
   "risk": "Sandbox escape or denial of service. Allows prototype facts only; blocks product execution.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "a51b72dd07678ea9ad53c76bba906af90792bbc146cd7648999ef8a13aa50cda"
+    "value": "db9f4e4ca6a2a64aadae45b8f2be5abcb35e3bbb0991bb37be5f4b61b7f97e3c"
   }
 }

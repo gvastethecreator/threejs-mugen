@@ -1,0 +1,29 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-074",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:50:27.528Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-074",
+  "anchors": [
+    {
+      "path": "src/mugen/parsers/StageDefParser.ts",
+      "bytes": 15189,
+      "sha256": "02f68f186b7c9fb03f9b994288623647cba6754eea574ebbb6c41ee0ea5e7c73"
+    },
+    {
+      "path": "public/stages/rooftop-dojo/rooftop-dojo.png",
+      "bytes": 2058915,
+      "sha256": "2be314f44afecb14ebbf17ae772eabf27ebdfb5e5ca1384062ac12e865d5d13f"
+    }
+  ],
+  "functionResults": {
+    "stageFiles": [
+      "rooftop-dojo.png"
+    ],
+    "hasParser": true,
+    "hasArt": true
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-074; broader product claims remain blocked"
+}

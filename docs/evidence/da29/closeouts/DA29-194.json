@@ -10,8 +10,8 @@
   "acceptance": "CLI has stable exit codes, JSON facts, stdin/path policy, cancellation, caps, deterministic output, no browser-only globals, and parity fixtures with Studio.",
   "risk": "Headless and product paths can diverge. Allows named commands only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "0d203ad4306f0ee67e35093cb99274e26ad893b6c3df047114ddebb025b93f4a"
+    "value": "6d086abdc02a3f3c59100a5070294986e7a916af0834f37e471952c2053652c5"
   }
 }

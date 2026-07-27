@@ -10,8 +10,8 @@
   "acceptance": "Queue reports inputs/revisions/progress, concurrency, cancel/retry, partial outputs, errors, resource caps, and final project facts without blocking core UI.",
   "risk": "Partial batch results can appear current. Allows named job types only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "ed40f21c8bd3f0f863bf8711c700c139a7cbafc6c4f98a0b969334a76fc4afaf"
+    "value": "5fb5f81703498aa161b9a15714195c2e7271e1add5dea327d8377ca1c7905c8f"
   }
 }

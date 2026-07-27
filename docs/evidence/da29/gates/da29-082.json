@@ -1,16 +1,20 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-082",
-  "generatedAt": "2026-07-27T04:40:28.223Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:50:20.629Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Audit and extend SFF parsing breadth. Depends on DA29-081.",
   "acceptance": "Repository-owned fixtures cover supported versions, palettes, groups/images, links, compression, bounds, corrupt/truncated cases, deterministic output, and caps.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-082.json",
+    "docs/evidence/da29/measured/DA29-082.json",
+    "src/mugen/parsers/SffParser.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "0bbc8248fc56ecab57604973aedba4aa500fd72a7035176de1ab1ab2fcbd3517"
+    "value": "be9026dc1a2431658e22984ee91abfa4c97a83fc388e39f823974a5c33c8e1f2"
   }
 }

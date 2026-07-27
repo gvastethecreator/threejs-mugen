@@ -10,8 +10,8 @@
   "acceptance": "Repository-owned package proves path resolution, motif sections, sprites, animations, sounds, fonts, localcoord, fallback, malformed fields, and deterministic analysis.",
   "risk": "Parsed motif can exceed rendered support. Allows named screenpack subset only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "55fd42a3088f2dd66a4bfc1784bf454d450001c082a0f7d6b8a0a4ae26c59014"
+    "value": "51e9deccd97c97a4c8b2b29069520c63e0a19538027e331de756a1e1d6ea3326"
   }
 }

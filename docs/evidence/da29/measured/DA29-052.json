@@ -1,0 +1,39 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-052",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:50:27.427Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-052",
+  "anchors": [
+    {
+      "path": "src/mugen/runtime/HelperSystem.ts",
+      "bytes": 105398,
+      "sha256": "1b6fe3c859121b266c6510608cdbf8ba00f233305d0ad01803b057c35bc4c92a"
+    },
+    {
+      "path": "src/mugen/compiler/StateControllerCompiler.ts",
+      "bytes": 12978,
+      "sha256": "9a904308af9c6ba44f938c0b98dd339a142ea8df2dc14b03fe643c978141c8f4"
+    },
+    {
+      "path": "public/characters/nova-boxer/mugen/nova.cns",
+      "bytes": 1345,
+      "sha256": "2d7db96883b763a90a2767223bd5f11e95521ac9f64a601e6ce4e9942095ee1a"
+    }
+  ],
+  "functionResults": {
+    "helperControllerCount": 0,
+    "compiledCount": 0,
+    "sampleTypes": [],
+    "sampleStateIds": [],
+    "runtimeExports": [
+      "createRuntimeHelper",
+      "advanceRuntimeHelpers",
+      "runtimeHelpersToSnapshots"
+    ],
+    "states": 10
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-052; broader product claims remain blocked"
+}

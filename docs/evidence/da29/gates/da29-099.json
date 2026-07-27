@@ -1,16 +1,22 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-099",
-  "generatedAt": "2026-07-27T04:40:28.223Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:50:20.629Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prove crash/reopen and multi-tab concurrency. Depends on DA29-092…098.",
   "acceptance": "Browser matrix covers reload, process-like crash injection, two tabs, stale writer, lock loss, conflict resolution, and final byte/revision integrity.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-099.json",
+    "docs/evidence/da29/measured/DA29-099.json",
+    "src/app/StudioIndexedDbSnapshot.ts",
+    "src/app/SourceWriteJournal.ts",
+    "src/app/StudioSourceWrite.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "a92140ac6d39ca3e665b2a44619bdff67e327ae5db4e02dc3b8e498f872dcdc9"
+    "value": "a113f7ed997339da31a80ae0c0ea2eae7ce4ef8992e0037e6ee733318bee93d0"
   }
 }

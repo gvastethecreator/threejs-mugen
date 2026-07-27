@@ -5,13 +5,13 @@
   "wave": 19,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Plan workspace/package splits from the proven dependency graph. Depends on DA29-133, DA29-140, and DA29-188.",
   "acceptance": "Proposal names packages, owners, public/private entrypoints, build order, browser/Node targets, dependency cycles, migration steps, and size/test impact.",
   "risk": "Package split can move coupling rather than remove it. Allows plan only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "31f5a1c1920561d2e5bdc38a7a95a7e221d37037faaed99485e140814099c245"
+    "value": "58405f499a8de32e478cfbb724fc9211c9bbf3ad5c11b3c702215416bef0199e"
   }
 }

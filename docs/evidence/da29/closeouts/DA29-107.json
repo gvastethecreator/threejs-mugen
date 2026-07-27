@@ -5,13 +5,13 @@
   "wave": 10,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Reconcile supported SPDX expressions and permission rules. Depends on DA29-101.",
   "acceptance": "Decision records exact accepted grammar/subset, generated-work declaration, attribution needs, incompatible/unknown cases, and fail-closed examples.",
   "risk": "A parser is not legal approval. Allows policy grammar only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "85b811c1d0a2830254d6a2d7055eff82db96d41acf1cfaea6cdf8a490f354b6e"
+    "value": "5ce7110d18b3451187e3c5d60982fc04dcf2535d7b9d6cb86929f2570cea3578"
   }
 }

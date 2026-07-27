@@ -1,0 +1,28 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-092",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:50:27.654Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-092",
+  "anchors": [
+    {
+      "path": "src/app/StudioIndexedDbSnapshot.ts",
+      "bytes": 5096,
+      "sha256": "2f6ede737cb58c76642352dfd75d05630639b8d88d14fe4ee07b51004a2edac8"
+    }
+  ],
+  "functionResults": {
+    "bytes": 5096,
+    "hasSchema": true,
+    "exports": [
+      "export const STUDIO_INDEXEDDB_SNAPSHOT_SCHEMA",
+      "export const STUDIO_SOURCE_WRITE_INTENT_SCHEMA",
+      "export type StudioProjectSnapshotRecord",
+      "export type StudioSourceWriteIntent",
+      "export function clearStudioIndexedDbMemory"
+    ]
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-092; broader product claims remain blocked"
+}

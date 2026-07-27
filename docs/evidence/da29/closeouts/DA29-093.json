@@ -3,48 +3,52 @@
   "id": "DA29-093",
   "kind": "I",
   "wave": 9,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Surface transaction, quota, abort, and durability failures. Depends on DA29-092.",
   "acceptance": "Product and unit tests inject abort, quota, unknown, blocked upgrade, close, and commit errors; memory cannot report success after durable failure.",
   "risk": "Fail-open data loss. Allows error handling routes only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
     "src/app/App.ts",
-    "src/mugen"
+    "src/mugen",
+    "src/app/StudioIndexedDbSnapshot.ts"
   ],
   "commands": [
-    "implementation probe DA29-093 (diagnostic only)"
+    "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-093"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-093.json",
-    "docs/evidence/da29/probes/da29-093.json"
+    "docs/evidence/da29/probes/da29-093.json",
+    "docs/evidence/da29/measured/DA29-093.json",
+    "src/app/StudioIndexedDbSnapshot.ts"
   ],
   "claims": {
     "allowed": [
-      "DA29-093 remains open"
+      "DA29-093 closed as implementation-probe",
+      "acceptance-executed unit evidence for DA29-093; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence",
-      "path-exists / directory probes do not close [I] cuts"
+      "product/runtime parity beyond written claim ceiling",
+      "path-exists probe as closeout"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "ac63949708b8031e1d00a11719f56c3e72e832f81a2db75de23a9618672b4a9c"
+    "value": "fca449b5ab38a90179bb52a9c8241bedcebd480e4220b2c5f936b106068528de"
   }
 }

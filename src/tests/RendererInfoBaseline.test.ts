@@ -59,26 +59,10 @@ describe("RendererInfoBaseline (DA29-072)", () => {
     expect(rendererSource).toContain("this.renderer.info.render.calls");
     expect(rendererSource).toContain("this.renderer.info.memory.geometries");
 
-    // Persist diagnostic artifact that does NOT close the cut (liveRenderer: false).
-    const outDir = resolve(process.cwd(), "docs/evidence/da29/measured");
-    mkdirSync(outDir, { recursive: true });
-    const artifact = {
-      schema: "Da29MeasuredEvidence/v1",
-      id: "DA29-072",
-      kind: "G",
-      generatedAt: new Date().toISOString(),
-      acceptance:
-        "Play, Studio preview, Inspect, team, and stress routes record calls, triangles, points, lines, programs, geometries, textures, and post-cleanup deltas.",
-      command: "pnpm exec vitest run src/tests/RendererInfoBaseline.test.ts",
-      report,
-      sourceAnchors: ["src/game/render/RendererInfoBaseline.ts", "src/game/render/ThreeMugenRenderer.ts"],
-      ok: false,
-      acceptanceExecuted: false,
-      liveRenderer: false,
-      blocked: "synthetic seed metrics cannot close DA29-072; need live getDiagnostics() per product route",
-    };
-    writeFileSync(resolve(outDir, "DA29-072.json"), `${JSON.stringify(artifact, null, 2)}\n`, "utf8");
-    expect(existsSync(resolve(outDir, "DA29-072.json"))).toBe(true);
-    expect(artifact.liveRenderer).toBe(false);
+    // Do NOT overwrite docs/evidence/da29/measured/DA29-072.json here.
+    // Live evidence is produced only by scripts/qa_da29_072_renderer_info.cjs (liveRenderer=true).
+    // Unit shape validation stops at pure functions above.
+    expect(report.samples).toHaveLength(5);
+    expect(report.routes).toEqual([...RENDERER_INFO_PRODUCT_ROUTES]);
   });
 });

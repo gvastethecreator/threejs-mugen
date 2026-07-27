@@ -1,16 +1,20 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-080",
-  "generatedAt": "2026-07-27T04:40:28.223Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:50:20.629Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Prove Common.Fx and character audio output in browsers. Depends on DA29-079 and DA29-003.",
   "acceptance": "Gesture-gated Chromium route verifies decoded repository-owned samples, graph connection, non-zero post-mixer signal, pan/volume, overlap, stop/reset, errors, and context close.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-080.json",
+    "docs/evidence/da29/measured/DA29-080.json",
+    "src/game/audio/MugenAudioSystem.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "c9ccd522963a80b1efe1e5382778c3554bcc2d8f762e72616d91f8a8788ab8eb"
+    "value": "4370f44c420d8bea439e3c62e076bbebe8077173276123562c73f317c1720f60"
   }
 }

@@ -3,44 +3,52 @@
   "id": "DA29-058",
   "kind": "G",
   "wave": 5,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Differential-test collision proxy and transform order. Depends on DA29-052, DA29-054, and DA29-057.",
   "acceptance": "Authored fixtures vary scale, facing, angle, localcoord, override boxes, Helper proxies, and insertion order; artifact reports first geometric divergence.",
   "risk": "Geometry combinations grow fast. Allows tested matrix only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json"
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/mugen/runtime/RuntimeCollisionTransformSystem.ts",
+    "src/mugen/runtime/RuntimeHelperCollisionSystem.ts"
   ],
-  "commands": [],
+  "commands": [
+    "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-058"
+  ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-058.json",
+    "docs/evidence/da29/measured/DA29-058.json",
+    "src/mugen/runtime/RuntimeCollisionTransformSystem.ts",
+    "src/mugen/runtime/RuntimeHelperCollisionSystem.ts",
     "docs/evidence/da29/gates/da29-058.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-058 remains open"
+      "DA29-058 closed as gate-report",
+      "acceptance-executed unit evidence for DA29-058; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence for this G id",
-      "shared inventory digests do not close unrelated gates"
+      "formal/global tip rewrite without measured full stack",
+      "score movement"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "1927111a53933a23db55a7fe40f565a3110fd3796756190ec1019b50569d5bb4"
+    "value": "1f1d2e3a1faee4a9f3150538a869fe79a895e5441aed4034517829c14ee00f3d"
   }
 }

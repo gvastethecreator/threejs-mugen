@@ -10,8 +10,8 @@
   "acceptance": "Current summaries derive from selector/registries/corpus; append-only history retains stable links; size/search checks pass; manual stale overrides fail audit.",
   "risk": "Generation can erase context. Allows synchronized docs only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "9b55f085947ff8f5295a67e7a004a9020c63ff2b06cbf30f0a9983d92f778e23"
+    "value": "cbd1c1aaf5c250350defa7c5d310b71d7cae8da816c08658c5d5097333a22579"
   }
 }

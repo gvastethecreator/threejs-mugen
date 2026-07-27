@@ -1,0 +1,35 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-100",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:50:27.739Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-100",
+  "anchors": [
+    {
+      "path": "src/app/ProjectReleaseDecision.ts",
+      "bytes": 25816,
+      "sha256": "4186fbacbe174da89d563b77912179d9aa6479edba5944ec2167c226070bd609"
+    }
+  ],
+  "functionResults": {
+    "bytes": 25816,
+    "hasDecision": true,
+    "exports": [
+      "export const PROJECT_RELEASE_DECISION_SCHEMA",
+      "export const PROJECT_RELEASE_DECISION_PRODUCER",
+      "export type ProjectReleaseDecisionIntent",
+      "export type ProjectReleaseDecisionStatus",
+      "export type ProjectReleaseEvidenceKind",
+      "export type ProjectReleaseEvidenceStatus",
+      "export type ProjectReleaseFreshness",
+      "export type ProjectReleaseRevisionState",
+      "export type ProjectReleaseBlockReason",
+      "export type ProjectReleaseNextActionKind",
+      "export type ProjectReleaseProject",
+      "export type ProjectReleaseEvidence"
+    ]
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-100; broader product claims remain blocked"
+}

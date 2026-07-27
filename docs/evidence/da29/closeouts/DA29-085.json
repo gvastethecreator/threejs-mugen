@@ -3,44 +3,56 @@
   "id": "DA29-085",
   "kind": "G",
   "wave": 8,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Harden CNS/CMD recovery and diagnostic limits. Depends on DA29-033 and DA29-081.",
   "acceptance": "Mutation corpus covers truncated blocks, duplicate fields, invalid expressions, encoding/newlines, huge tokens, nested comments, unknown fields, and bounded error counts.",
   "risk": "Error storms can lock the UI. Allows diagnostic robustness only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json"
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/mugen/parsers/CnsParser.ts",
+    "src/mugen/parsers/CmdParser.ts",
+    "public/characters/nova-boxer/mugen/nova.cns",
+    "public/characters/nova-boxer/mugen/nova.cmd"
   ],
-  "commands": [],
+  "commands": [
+    "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-085"
+  ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-085.json",
+    "docs/evidence/da29/measured/DA29-085.json",
+    "src/mugen/parsers/CnsParser.ts",
+    "src/mugen/parsers/CmdParser.ts",
+    "public/characters/nova-boxer/mugen/nova.cns",
+    "public/characters/nova-boxer/mugen/nova.cmd",
     "docs/evidence/da29/gates/da29-085.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-085 remains open"
+      "DA29-085 closed as gate-report",
+      "acceptance-executed unit evidence for DA29-085; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence for this G id",
-      "shared inventory digests do not close unrelated gates"
+      "formal/global tip rewrite without measured full stack",
+      "score movement"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "6f03b6439b5e75c3dac8cc8a827d4c4c251aac45397e7170211e4745976c9880"
+    "value": "5e7b8a8f0f98788a4869cab706cac318e08ea64cb62377078f3e90f65eb36912"
   }
 }

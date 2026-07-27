@@ -1,0 +1,32 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-080",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:50:27.580Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-080",
+  "anchors": [
+    {
+      "path": "src/game/audio/MugenAudioSystem.ts",
+      "bytes": 20311,
+      "sha256": "acda09926a4ae8c77a439f18fd7a120e95b9dbab108d58f5e5e5d4e8d62baba3"
+    }
+  ],
+  "functionResults": {
+    "bytes": 20311,
+    "hasPlay": true,
+    "exports": [
+      "export type MugenAudioDiagnostics",
+      "export type RuntimeAudioEventAction",
+      "export type RuntimeSoundPanContext",
+      "export class RuntimeAudioChannelStore",
+      "export class MugenAudioSystem",
+      "export function resolveRuntimeAudioEventAction",
+      "export function resolveRuntimeSoundGain",
+      "export function resolveRuntimeSoundPlaybackRate",
+      "export function resolveRuntimeSoundStereoPan"
+    ]
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-080; broader product claims remain blocked"
+}

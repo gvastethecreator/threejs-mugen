@@ -10,8 +10,8 @@
   "acceptance": "Reports, traces, screenshots, corpus, source manifests, bundles, and logs carry commit/run/tool/digest/retention; consumers reject expired or mismatched artifacts.",
   "risk": "Mutable artifacts break provenance. Allows artifact lineage only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "4f44856ba78bedd4bbb094fb51b3c2ebfbaf9eb3ecf5d7329df53d3f46d9abde"
+    "value": "d02c985c900a588b49f43262e1a0c5d69dd3fd6f2135ccab9652c2ee9c71281d"
   }
 }

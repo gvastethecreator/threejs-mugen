@@ -10,8 +10,8 @@
   "acceptance": "One repository-owned route proves data loading, result ownership, continue choice, quote selection, storyboard handoff, save/reopen state, skip, and safe missing content.",
   "risk": "Product flow may imply full arcade parity. Allows one authored route only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "3a37170e21b1ccba7b6f5d116de7a0230387470cd1d5d60fe657697f2d2099bf"
+    "value": "0a935d5282b5859b7781c10f98bfcd93319cfdefdd5f71adb5b1195e68f5a3de"
   }
 }

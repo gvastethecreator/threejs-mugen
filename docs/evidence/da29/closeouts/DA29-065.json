@@ -3,44 +3,52 @@
   "id": "DA29-065",
   "kind": "G",
   "wave": 6,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "gate-report",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Correlate Turns UI with live transaction state. Depends on DA29-064 and DA29-017.",
   "acceptance": "Browser facts link HUD roster, active member, life, handoff receipt, frame, and runtime checksum across win/KO/error routes on desktop/mobile.",
   "risk": "Mock matrix may drift from runtime. Allows named visual routes only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
-    "docs/evidence/da29/series-registry-v1.json"
+    "docs/evidence/da29/series-registry-v1.json",
+    "src/mugen/runtime/RuntimeTurnsTransaction.ts",
+    "src/mugen/runtime/LiveRuntimeTurnsBridge.ts"
   ],
-  "commands": [],
+  "commands": [
+    "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-065"
+  ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-065.json",
+    "docs/evidence/da29/measured/DA29-065.json",
+    "src/mugen/runtime/RuntimeTurnsTransaction.ts",
+    "src/mugen/runtime/LiveRuntimeTurnsBridge.ts",
     "docs/evidence/da29/gates/da29-065.json"
   ],
   "claims": {
     "allowed": [
-      "DA29-065 remains open"
+      "DA29-065 closed as gate-report",
+      "acceptance-executed unit evidence for DA29-065; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence for this G id",
-      "shared inventory digests do not close unrelated gates"
+      "formal/global tip rewrite without measured full stack",
+      "score movement"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "0c3e1bfeffbcbbc3309e2a75569537a33821361aca07e5c4adeccd57e2e71c2a"
+    "value": "852c9ccf722c354f67ed75267e4d917285fe5fa94123916c38ec020cd582e81a"
   }
 }

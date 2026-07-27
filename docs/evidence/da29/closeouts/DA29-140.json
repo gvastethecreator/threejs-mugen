@@ -10,8 +10,8 @@
   "acceptance": "Each shared contract survives removal of either adapter in isolation; boundary violations fail; bundle graph shows no fighting code in the non-fighting route; docs name remaining domain coupling.",
   "risk": "Tests may mirror implementation. Allows bounded reusable-engine claim for proven ports only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "112fc11d5941b68a222b4f78ba1ce7cca62f8eb8565b4b69e16299912edba524"
+    "value": "4876e594c34116290fb7646c1961b602901a92f6ce14a5165a2ce14deccaa4eb"
   }
 }

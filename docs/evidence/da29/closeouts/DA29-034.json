@@ -5,13 +5,13 @@
   "wave": 3,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Version the canonical controller capability registry. Depends on DA29-014, DA29-031, and DA29-033.",
   "acceptance": "Each controller maps official parameters to parser/compiler/runtime/trace owners and explicit claim ceiling; code/docs generation uses the same revision.",
   "risk": "Registry rows can become checkbox claims. Allows capability mapping only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "8d72b9e10ca49fd6dff99525194a7ab1c9c830d68d407cfa9f6724fbb7df0a07"
+    "value": "e5379e13ed482bad2f82f52da615b6a1b2bb1f740add2c5882c58e3ef938161a"
   }
 }

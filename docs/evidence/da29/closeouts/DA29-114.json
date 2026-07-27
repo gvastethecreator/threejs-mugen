@@ -10,8 +10,8 @@
   "acceptance": "Import, play controls, panels, dialogs, Studio actions, and errors work without pointer; focus order follows task flow and escape/return behavior is stable.",
   "risk": "Canvas shortcuts can steal keys. Allows named keyboard routes only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "6acb643efcae9c327fc8d67c57b634f5d46c5ff6df13b1938ec740624159af2e"
+    "value": "0dd4b90de7c703fe42b9681a7c184d046888a4365756a86f16bdc4f59132cfc3"
   }
 }

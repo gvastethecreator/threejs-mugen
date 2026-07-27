@@ -2,9 +2,12 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-072",
   "kind": "G",
-  "generatedAt": "2026-07-27T04:41:07.451Z",
-  "acceptance": "Play, Studio preview, Inspect, team, and stress routes record calls, triangles, points, lines, programs, geometries, textures, and post-cleanup deltas.",
-  "command": "pnpm exec vitest run src/tests/RendererInfoBaseline.test.ts",
+  "generatedAt": "2026-07-27T04:50:08.420Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "liveRenderer": true,
+  "browser": false,
+  "command": "node scripts/qa_da29_072_renderer_info.cjs",
   "report": {
     "schema": "RendererInfoBaseline/v1",
     "routes": [
@@ -18,241 +21,241 @@
       {
         "route": "play",
         "before": {
-          "calls": 1,
-          "triangles": 10,
-          "points": 2,
-          "lines": 1,
-          "geometries": 2,
-          "textures": 3,
-          "programs": 4
+          "calls": 63,
+          "triangles": 202,
+          "points": 0,
+          "lines": 0,
+          "geometries": 63,
+          "textures": 13,
+          "programs": null
         },
         "after": {
-          "calls": 5,
-          "triangles": 50,
-          "points": 10,
-          "lines": 5,
-          "geometries": 6,
-          "textures": 7,
-          "programs": 8
+          "calls": 63,
+          "triangles": 202,
+          "points": 0,
+          "lines": 0,
+          "geometries": 63,
+          "textures": 13,
+          "programs": null
         },
         "afterCleanup": {
-          "calls": 2,
-          "triangles": 20,
-          "points": 4,
-          "lines": 2,
-          "geometries": 3,
-          "textures": 4,
-          "programs": 5
+          "calls": 63,
+          "triangles": 202,
+          "points": 0,
+          "lines": 0,
+          "geometries": 63,
+          "textures": 13,
+          "programs": null
         },
         "deltaRender": {
-          "calls": 4,
-          "triangles": 40,
-          "points": 8,
-          "lines": 4,
-          "geometries": 4,
-          "textures": 4,
-          "programs": 4
+          "calls": 0,
+          "triangles": 0,
+          "points": 0,
+          "lines": 0,
+          "geometries": 0,
+          "textures": 0,
+          "programs": null
         },
         "deltaCleanup": {
-          "calls": -3,
-          "triangles": -30,
-          "points": -6,
-          "lines": -3,
-          "geometries": -3,
-          "textures": -3,
-          "programs": -3
+          "calls": 0,
+          "triangles": 0,
+          "points": 0,
+          "lines": 0,
+          "geometries": 0,
+          "textures": 0,
+          "programs": null
         }
       },
       {
         "route": "studio-preview",
         "before": {
-          "calls": 2,
-          "triangles": 20,
-          "points": 4,
-          "lines": 2,
-          "geometries": 3,
-          "textures": 4,
-          "programs": 5
+          "calls": 7,
+          "triangles": 90,
+          "points": 0,
+          "lines": 0,
+          "geometries": 7,
+          "textures": 14,
+          "programs": null
         },
         "after": {
-          "calls": 6,
-          "triangles": 60,
-          "points": 12,
-          "lines": 6,
+          "calls": 7,
+          "triangles": 90,
+          "points": 0,
+          "lines": 0,
           "geometries": 7,
-          "textures": 8,
-          "programs": 9
+          "textures": 14,
+          "programs": null
         },
         "afterCleanup": {
-          "calls": 3,
-          "triangles": 30,
-          "points": 6,
-          "lines": 3,
-          "geometries": 4,
-          "textures": 5,
-          "programs": 6
+          "calls": 7,
+          "triangles": 90,
+          "points": 0,
+          "lines": 0,
+          "geometries": 7,
+          "textures": 14,
+          "programs": null
         },
         "deltaRender": {
-          "calls": 4,
-          "triangles": 40,
-          "points": 8,
-          "lines": 4,
-          "geometries": 4,
-          "textures": 4,
-          "programs": 4
+          "calls": 0,
+          "triangles": 0,
+          "points": 0,
+          "lines": 0,
+          "geometries": 0,
+          "textures": 0,
+          "programs": null
         },
         "deltaCleanup": {
-          "calls": -3,
-          "triangles": -30,
-          "points": -6,
-          "lines": -3,
-          "geometries": -3,
-          "textures": -3,
-          "programs": -3
+          "calls": 0,
+          "triangles": 0,
+          "points": 0,
+          "lines": 0,
+          "geometries": 0,
+          "textures": 0,
+          "programs": null
         }
       },
       {
         "route": "inspect",
         "before": {
-          "calls": 3,
-          "triangles": 30,
-          "points": 6,
-          "lines": 3,
-          "geometries": 4,
-          "textures": 5,
-          "programs": 6
+          "calls": 59,
+          "triangles": 118,
+          "points": 0,
+          "lines": 0,
+          "geometries": 59,
+          "textures": 0,
+          "programs": null
         },
         "after": {
-          "calls": 7,
-          "triangles": 70,
-          "points": 14,
-          "lines": 7,
-          "geometries": 8,
-          "textures": 9,
-          "programs": 10
+          "calls": 59,
+          "triangles": 118,
+          "points": 0,
+          "lines": 0,
+          "geometries": 59,
+          "textures": 0,
+          "programs": null
         },
         "afterCleanup": {
-          "calls": 4,
-          "triangles": 40,
-          "points": 8,
-          "lines": 4,
-          "geometries": 5,
-          "textures": 6,
-          "programs": 7
+          "calls": 59,
+          "triangles": 118,
+          "points": 0,
+          "lines": 0,
+          "geometries": 59,
+          "textures": 0,
+          "programs": null
         },
         "deltaRender": {
-          "calls": 4,
-          "triangles": 40,
-          "points": 8,
-          "lines": 4,
-          "geometries": 4,
-          "textures": 4,
-          "programs": 4
+          "calls": 0,
+          "triangles": 0,
+          "points": 0,
+          "lines": 0,
+          "geometries": 0,
+          "textures": 0,
+          "programs": null
         },
         "deltaCleanup": {
-          "calls": -3,
-          "triangles": -30,
-          "points": -6,
-          "lines": -3,
-          "geometries": -3,
-          "textures": -3,
-          "programs": -3
+          "calls": 0,
+          "triangles": 0,
+          "points": 0,
+          "lines": 0,
+          "geometries": 0,
+          "textures": 0,
+          "programs": null
         }
       },
       {
         "route": "team",
         "before": {
-          "calls": 4,
-          "triangles": 40,
-          "points": 8,
-          "lines": 4,
-          "geometries": 5,
-          "textures": 6,
-          "programs": 7
+          "calls": 63,
+          "triangles": 202,
+          "points": 0,
+          "lines": 0,
+          "geometries": 63,
+          "textures": 16,
+          "programs": null
         },
         "after": {
-          "calls": 8,
-          "triangles": 80,
-          "points": 16,
-          "lines": 8,
-          "geometries": 9,
-          "textures": 10,
-          "programs": 11
+          "calls": 63,
+          "triangles": 202,
+          "points": 0,
+          "lines": 0,
+          "geometries": 63,
+          "textures": 16,
+          "programs": null
         },
         "afterCleanup": {
-          "calls": 5,
-          "triangles": 50,
-          "points": 10,
-          "lines": 5,
-          "geometries": 6,
-          "textures": 7,
-          "programs": 8
+          "calls": 63,
+          "triangles": 202,
+          "points": 0,
+          "lines": 0,
+          "geometries": 63,
+          "textures": 16,
+          "programs": null
         },
         "deltaRender": {
-          "calls": 4,
-          "triangles": 40,
-          "points": 8,
-          "lines": 4,
-          "geometries": 4,
-          "textures": 4,
-          "programs": 4
+          "calls": 0,
+          "triangles": 0,
+          "points": 0,
+          "lines": 0,
+          "geometries": 0,
+          "textures": 0,
+          "programs": null
         },
         "deltaCleanup": {
-          "calls": -3,
-          "triangles": -30,
-          "points": -6,
-          "lines": -3,
-          "geometries": -3,
-          "textures": -3,
-          "programs": -3
+          "calls": 0,
+          "triangles": 0,
+          "points": 0,
+          "lines": 0,
+          "geometries": 0,
+          "textures": 0,
+          "programs": null
         }
       },
       {
         "route": "stress",
         "before": {
-          "calls": 5,
-          "triangles": 50,
-          "points": 10,
-          "lines": 5,
-          "geometries": 6,
-          "textures": 7,
-          "programs": 8
+          "calls": 63,
+          "triangles": 202,
+          "points": 0,
+          "lines": 0,
+          "geometries": 63,
+          "textures": 15,
+          "programs": null
         },
         "after": {
-          "calls": 9,
-          "triangles": 90,
-          "points": 18,
-          "lines": 9,
-          "geometries": 10,
-          "textures": 11,
-          "programs": 12
+          "calls": 63,
+          "triangles": 202,
+          "points": 0,
+          "lines": 0,
+          "geometries": 63,
+          "textures": 15,
+          "programs": null
         },
         "afterCleanup": {
-          "calls": 6,
-          "triangles": 60,
-          "points": 12,
-          "lines": 6,
-          "geometries": 7,
-          "textures": 8,
-          "programs": 9
+          "calls": 63,
+          "triangles": 202,
+          "points": 0,
+          "lines": 0,
+          "geometries": 63,
+          "textures": 15,
+          "programs": null
         },
         "deltaRender": {
-          "calls": 4,
-          "triangles": 40,
-          "points": 8,
-          "lines": 4,
-          "geometries": 4,
-          "textures": 4,
-          "programs": 4
+          "calls": 0,
+          "triangles": 0,
+          "points": 0,
+          "lines": 0,
+          "geometries": 0,
+          "textures": 0,
+          "programs": null
         },
         "deltaCleanup": {
-          "calls": -3,
-          "triangles": -30,
-          "points": -6,
-          "lines": -3,
-          "geometries": -3,
-          "textures": -3,
-          "programs": -3
+          "calls": 0,
+          "triangles": 0,
+          "points": 0,
+          "lines": 0,
+          "geometries": 0,
+          "textures": 0,
+          "programs": null
         }
       }
     ],
@@ -264,14 +267,53 @@
       "geometries",
       "textures",
       "programs"
+    ],
+    "live": true
+  },
+  "functionResults": {
+    "routeCount": 5,
+    "anyNonZero": true,
+    "sampleTotals": [
+      {
+        "route": "play",
+        "afterCalls": 63,
+        "afterTriangles": 202,
+        "afterGeometries": 63,
+        "afterTextures": 13
+      },
+      {
+        "route": "studio-preview",
+        "afterCalls": 7,
+        "afterTriangles": 90,
+        "afterGeometries": 7,
+        "afterTextures": 14
+      },
+      {
+        "route": "inspect",
+        "afterCalls": 59,
+        "afterTriangles": 118,
+        "afterGeometries": 59,
+        "afterTextures": 0
+      },
+      {
+        "route": "team",
+        "afterCalls": 63,
+        "afterTriangles": 202,
+        "afterGeometries": 63,
+        "afterTextures": 16
+      },
+      {
+        "route": "stress",
+        "afterCalls": 63,
+        "afterTriangles": 202,
+        "afterGeometries": 63,
+        "afterTextures": 15
+      }
     ]
   },
   "sourceAnchors": [
-    "src/game/render/RendererInfoBaseline.ts",
-    "src/game/render/ThreeMugenRenderer.ts"
+    "src/game/render/ThreeMugenRenderer.ts",
+    "src/game/render/RendererInfoBaseline.ts"
   ],
-  "ok": false,
-  "acceptanceExecuted": false,
-  "liveRenderer": false,
-  "blocked": "synthetic seed metrics cannot close DA29-072; need live getDiagnostics() per product route"
+  "claimCeiling": "live getDiagnostics() per product route; hardware FPS not claimed"
 }

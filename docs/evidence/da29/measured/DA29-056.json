@@ -1,0 +1,31 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-056",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:50:27.457Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-056",
+  "anchors": [
+    {
+      "path": "src/mugen/runtime/ExplodSystem.ts",
+      "bytes": 15372,
+      "sha256": "45e61828aada9cce1526c894d0b72f596c15c280661e3f5e39a7dc8200766dd3"
+    }
+  ],
+  "functionResults": {
+    "bytes": 15372,
+    "hasModify": true,
+    "hasBind": true,
+    "hasExplod": true,
+    "exports": [
+      "export function createRuntimeExplod",
+      "export function removeRuntimeExplods",
+      "export function removeRuntimeExplodsOnGetHit",
+      "export function modifyRuntimeExplods",
+      "export function advanceRuntimeExplods",
+      "export function runtimeExplodsToSnapshots"
+    ]
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-056; broader product claims remain blocked"
+}

@@ -5,13 +5,13 @@
   "wave": 5,
   "status": "closed",
   "evidenceClass": "research-inventory",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Audit Helper lifecycle and scheduler order. Depends on DA29-016 and DA29-027.",
   "acceptance": "Source/local map covers spawn tick, State -4/-3/-2/-1, parent/root context, pause, destroy, id reuse, nested helpers, and reset.",
   "risk": "First-generation behavior may not generalize. Allows lifecycle design only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -42,6 +42,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "e8e03009c81e9a2202d199c13edd5ab941bbe4375371f2f6a842b498f5ebcbcb"
+    "value": "61be622cc6aeb78948a19a5c2b65230cb6bb67ee37a63175e71a409775d83f81"
   }
 }

@@ -10,8 +10,8 @@
   "acceptance": "Two local peers exchange versioned inputs, delay/loss simulation, predict/resim, compare checksums, surface desync, and recover/abort safely; no external service or credentials.",
   "risk": "Prototype can be mistaken for secure netplay. Allows local prototype data only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "58002c78c56b9eeed4baeb746465b8b6628234c5a69e96ee66192986afb041d6"
+    "value": "81e4d6608e3738f620b27ce5130fd4f1391a92d1332c82be944dcf84ffd0ca78"
   }
 }

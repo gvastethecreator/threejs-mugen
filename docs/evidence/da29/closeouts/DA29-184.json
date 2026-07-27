@@ -10,8 +10,8 @@
   "acceptance": "Base/local/external revisions show semantic and text changes, conflicts, safe choices, stale evidence, byte result, undo, and reopened integrity.",
   "risk": "Automatic merge can corrupt syntax. Allows tested merge cases only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "4f48495cba7b1188301e937feaa2b29790bd0b1b110ad220ac0eb482b1f94b04"
+    "value": "2dabe63b934b7a6bdc148e526adc5465e398253abafac1ce6892b5486d188ab7"
   }
 }

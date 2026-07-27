@@ -10,8 +10,8 @@
   "acceptance": "Warmup plus repeated rounds/imports record heap trend, GC stalls, renderer memory, object counts, snapshots, and retained-owner suspects; threshold/retest rules exist.",
   "risk": "Browser memory data is noisy. Allows bounded trend claims only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "1330935f51611a2c2a919a3a732a4620c76a3aff2d9858f2aa083ca53de1e51d"
+    "value": "b8bb93c278e035e40341199267d0c7a9002295834e8d983ad802661333d99fd9"
   }
 }

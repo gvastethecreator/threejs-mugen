@@ -5,13 +5,13 @@
   "wave": 13,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Define a storage port from proven Studio behavior. Depends on DA29-091…100 and DA29-133.",
   "acceptance": "Port covers transaction, revision, watch/conflict, permission, recovery, export, and errors; IDB/file adapters pass the same contract suite where applicable.",
   "risk": "Lowest-common-denominator API. Allows port design and conformance only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "e4b2a1799070ec93254dee953f94e3895b35fa425f7455ad5f67d7db54f1fd5e"
+    "value": "22771260fed1128c308e7faeb2d2f406c05737250bab98965fcd0dec9305dc36"
   }
 }

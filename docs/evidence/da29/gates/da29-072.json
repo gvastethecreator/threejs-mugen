@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-072",
-  "generatedAt": "2026-07-27T04:40:28.223Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:50:20.629Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Baseline renderer.info by product route. Depends on DA29-019 and DA29-071.",
   "acceptance": "Play, Studio preview, Inspect, team, and stress routes record calls, triangles, points, lines, programs, geometries, textures, and post-cleanup deltas.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-072.json",
+    "docs/evidence/da29/measured/DA29-072.json",
+    "src/game/render/ThreeMugenRenderer.ts",
+    "src/game/render/RendererInfoBaseline.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "b0faca335326e06dd718416271ab98aa5ef7022c4b789e0503132c151228bb99"
+    "value": "32d83d91e7d4be887b29f3dc7217a9e5e6b149530f64b7e3b7eba7cdb8962ba8"
   }
 }

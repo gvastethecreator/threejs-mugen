@@ -10,8 +10,8 @@
   "acceptance": "Review records shipped/local-only surfaces, API stability, extension risk, migration state, release/deployment authority, evidence freshness, scores, blocked claims, and the next bounded program.",
   "risk": "A long plan can end in broad unsupported claims. Allows only the signed final scope and next program.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "c170070b923b0aaf8c3d2aaebce3fe248b4491865584dc7d78536f2adfe5ae95"
+    "value": "6f7b894c3fa08412a750c009b45712e8b5631273894dee92da0eb487226ac0bd"
   }
 }

@@ -10,8 +10,8 @@
   "acceptance": "Focus ring remains visible under sticky panels/dialogs at zoom and mobile sizes; no focused control is fully hidden; restore target is correct.",
   "risk": "Dense UI can hide focus. Allows tested overlays only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "b86a5378958f5c14900410b567d789687fd633027ec18ec666209a97bc312ece"
+    "value": "b17548962a3712300473e02dbc68ca2db9aa1bcac7023caf6e24588caebbc7e3"
   }
 }

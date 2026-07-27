@@ -10,8 +10,8 @@
   "acceptance": "One repository-owned fixture proves selected declarations/operations, deterministic failure cases, runtime trace, reset, and explicit rejection of every ungranted feature.",
   "risk": "Small subset can be called ZSS support. Allows named operations only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "54ed83b2e93298f0c320c9f8a247cb738f2708057afbbb682aceb7c91bfab13e"
+    "value": "88b21f6e7c4466007618a8de291f26baecd4d31b5c098f00cbec3053d871d405"
   }
 }

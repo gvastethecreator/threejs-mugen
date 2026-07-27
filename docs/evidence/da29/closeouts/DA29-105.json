@@ -10,8 +10,8 @@
   "acceptance": "Overlay captures cover idle, movement, attack, hurt, flip, scale, contact, and outlier detection; approved corrections update provenance.",
   "risk": "Pretty sprites can have bad gameplay bounds. Allows reviewed frames only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "7a96094d2f1dccda43634beba570bc3d69adb4c7f658ba842cc8fa6ed9b55c4e"
+    "value": "f6c9f1ee4105f9a0aec086da8176d85539aae15133a2ed5bac424dce7b6c45b9"
   }
 }

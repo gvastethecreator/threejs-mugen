@@ -5,13 +5,13 @@
   "wave": 13,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Extract generic cryptographic facts behind a MUGEN adapter. Depends on DA29-008, DA29-004, and DA29-133.",
   "acceptance": "Core module has no fighting terms/imports, uses canonical SHA-256 facts, serves two live consumers through adapters, and passes deletion/negative import tests.",
   "risk": "Premature abstraction freezes domain shape. Allows one generic fact contract only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -47,6 +47,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "1d59f2dd5830bd31affbe551e0bb909fe7463272a6402b62015a6e7c51269283"
+    "value": "9bec5c65580e2321fee957ba63ffb35a91da0816ee6f4fd96a5677916d9398bb"
   }
 }

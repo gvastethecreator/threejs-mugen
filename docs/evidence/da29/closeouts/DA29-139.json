@@ -10,8 +10,8 @@
   "acceptance": "Repository-owned platformer/testbed uses chosen evidence, storage, renderer, and input/clock ports in one playable route; no MUGEN import or copied combat model exists.",
   "risk": "Demo-only code can fake reuse. Allows two-consumer proof for used ports only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -43,6 +43,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "c5a6f26265e324eb019e9632fd01d05c6b118750154965edaccf1778d9a73a26"
+    "value": "b89f908c49731ce1b5ccbed89fffa9d634e21dc04e776d3661e3ba5615d48d2b"
   }
 }

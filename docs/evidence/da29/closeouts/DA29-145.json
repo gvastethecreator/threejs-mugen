@@ -10,8 +10,8 @@
   "acceptance": "Approved thresholds gate chunk/load, frame gaps, memory trend, draw/resource counts, scanner latency, and evidence size with explicit waiver expiry.",
   "risk": "Budgets vary by hardware. Allows named baseline lanes only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "9e41326155e3ac5611b236b061b2a3495ba4584a99a3e4895baefae3742824fc"
+    "value": "b37aaa3ca3d446a58ca529ff47dc8a5fa486208326d9b07bda91442c62366313"
   }
 }

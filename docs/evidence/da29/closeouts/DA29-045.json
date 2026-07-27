@@ -5,13 +5,13 @@
   "wave": 4,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Prove priority, trade, miss, and simultaneous-contact order. Depends on DA29-041 and DA29-044.",
   "acceptance": "Same-tick opposing HitDefs cover priority/type, trade, miss, pausetime, damage, telemetry order, and deterministic replay.",
   "risk": "Pair order can bias winner. Allows listed pair outcomes only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -57,6 +57,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "aeacf36ae5e8d5b4f06d01f1ce3e8ee8905424a3ff9925ce9db44d36d2349027"
+    "value": "e35f99f2b21e861a8a43d42ed494ec1b25eaf177a3145b88c8421aa6d691ada6"
   }
 }

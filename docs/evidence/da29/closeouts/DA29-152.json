@@ -10,8 +10,8 @@
   "acceptance": "Repository-owned fixtures cover directions, buttons, simultaneous and ordered inputs, facing swap, invalid gaps, buffer expiry, and per-frame command facts.",
   "risk": "Synthetic direct state entry hides command bugs. Allows named command forms only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "dd3e005a94b5941641562864befeb1380bf004af49bee7179d68b026bb5150ac"
+    "value": "764cb6a0a51b55099c63c6a7037675c45c330f6dfb584df31b21a005f47039d7"
   }
 }

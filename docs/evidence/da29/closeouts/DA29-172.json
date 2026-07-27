@@ -10,8 +10,8 @@
   "acceptance": "Pinned/repository fixtures produce located AST, imports, declarations, calls, unknowns, caps, deterministic digests, and explicit execution-blocked status.",
   "risk": "Parser recognition can imply runtime. Allows static ZSS analysis only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "83143ea9ac87c4352e82bf04dd5d3581193ea22bb3a4d27f8ee4d3c0f1dd81bc"
+    "value": "6f4f1aa82d464919b72050a3a14d0ed7672c199557ab8c3e18ecd2b2461d54bb"
   }
 }

@@ -10,8 +10,8 @@
   "acceptance": "Current registries generate searchable controller/trigger/format/profile/API docs with evidence links, unsupported branches, versions, examples, and stale-reference audit.",
   "risk": "Generated docs can look like full support. Allows documented registry state only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "0928770668e9fb5ccab8c66d4da9e426ff80ad7df66218184d84bff15c3a3b50"
+    "value": "67f4e0b3ca69f0074a50f8a2ccffcc865ac1b2bc0a2425ce957c6850bca92cf7"
   }
 }

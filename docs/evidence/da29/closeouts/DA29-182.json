@@ -10,8 +10,8 @@
   "acceptance": "Multi-step edits, file writes, asset refs, undo/redo branches, save/reopen, failure compensation, size caps, and crash recovery preserve bytes and revisions.",
   "risk": "History can diverge from external files. Allows tested edit types only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "19cf1a818c59d67dbd23d4f23dfd18a2529a2b9b7b56e92b758ee6f08b3f8a5e"
+    "value": "e4eea91d9ec11b337a5039c5afdb1109939a8f76e49d2282d5adbfdd478426a4"
   }
 }

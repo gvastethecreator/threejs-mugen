@@ -1,7 +1,7 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-019",
-  "generatedAt": "2026-07-27T04:40:28.223Z",
+  "generatedAt": "2026-07-27T04:50:20.629Z",
   "status": "closed",
   "evidenceClass": "gate-report",
   "measuredGate": false,
@@ -15,6 +15,6 @@
   ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "6fd765fe46f4497a4cdcdf95ac0f74df9b02cac8dbc09c7dfebee4c1acd3e07a"
+    "value": "c38d90883604816cf9f118980ebe50d8f0ebc852329cf4245154fbec250a2e63"
   }
 }

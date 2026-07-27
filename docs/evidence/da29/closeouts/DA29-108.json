@@ -10,8 +10,8 @@
   "acceptance": "Product gate evaluates current revisions for permission, license, digests, transforms, visual/collision/playtest facts, and reports exact blockers.",
   "risk": "Materialized policy may be stale. Allows listed asset decisions only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "52a89c3c37ee0547be0669affd20438ee22ec4c8e0a4923ff18d91dc60612e38"
+    "value": "c5ea8d1adcd897eb0bfea94f9ebe7e90a955a389e7aadf8d7a33a074f08d8be2"
   }
 }

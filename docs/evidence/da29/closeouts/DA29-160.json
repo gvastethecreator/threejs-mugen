@@ -10,8 +10,8 @@
   "acceptance": "Each selected mode has an explicit supported path or blocking diagnostic for roster, AI/input, match sequence, persistence, continue, result, and reset; routes never share stale state.",
   "risk": "Labels can outrun behavior. Allows only modes with passing named journeys.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "9f7500e9f6904e5bd345276c54dd8d4cfe5ced69107f7484bcbf012f54d172db"
+    "value": "8f03c7979eb3e1cb6ff136be2e1644fcb273489fd6602b690291515e22c5c817"
   }
 }

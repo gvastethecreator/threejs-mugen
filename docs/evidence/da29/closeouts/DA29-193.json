@@ -5,13 +5,13 @@
   "wave": 19,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Define plugin capability and trust boundaries. Depends on DA29-175, DA29-192, and DA29-146.",
   "acceptance": "Contract covers install source, manifest, permissions, isolation, host APIs, versioning, revocation, update, data access, UI surfaces, resource caps, and evidence.",
   "risk": "Plugins widen security and support load. Allows architecture only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "2eabf4c305265d556cc7dbf9e4c3a57af9c1bb21932ce0db925421f6fcf26dec"
+    "value": "0ec7a8305e301d83facc82a0b5714f2ac8ba034644289b366e7d8a9e9d4cff07"
   }
 }

@@ -10,8 +10,8 @@
   "acceptance": "Active profile fails when a required root is missing, optional roots are explicit, and negative fixtures prove forbidden vocabulary/imports in every active root.",
   "risk": "Empty roots can fake isolation. Allows boundary enforcement only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "c5f97138f4e071fc54856c0ebf59a0f963301d26e0b819491b93610a263fad8f"
+    "value": "68144af7f4f5e1dfa65f4cb9d0e4e3b26eaeacb66f3cc6b1f01db2b1b0bc29fa"
   }
 }

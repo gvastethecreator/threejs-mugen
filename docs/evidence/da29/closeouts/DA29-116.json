@@ -10,8 +10,8 @@
   "acceptance": "All icon/short controls expose stable accessible names and states; touch targets meet chosen WCAG policy or record justified exceptions with alternatives.",
   "risk": "Clipped text and tiny targets block use. Allows audited surfaces only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "37085fee9622b3c5d8b43126d1707517a42617a05805f78fe034674c9f8cad42"
+    "value": "5a589b83d070b02852d76f1cdb9c96745b83d5a5325cc901824ce5692a992767"
   }
 }

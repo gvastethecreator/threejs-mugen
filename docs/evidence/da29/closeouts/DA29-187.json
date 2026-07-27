@@ -10,8 +10,8 @@
   "acceptance": "Filter/group by file, severity, capability, source rule, stale state, and owner; keyboard navigation opens exact range; large result sets stay responsive.",
   "risk": "Search indices can stale. Allows displayed current revision only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "51b9889e1792b369cd9e771629e400047a4d5b899f9c827e3df3465ebcbf1e16"
+    "value": "fd5c47224acd6f164662fc4ed89514f7670ab351f23aa1eebb1435c46a2f052e"
   }
 }

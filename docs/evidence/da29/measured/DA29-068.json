@@ -1,0 +1,21 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-068",
+  "kind": "I",
+  "generatedAt": "2026-07-27T04:50:27.513Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-068",
+  "anchors": [
+    {
+      "path": "src/game/render/FightScreenAnnouncementRenderer.ts",
+      "bytes": 73514,
+      "sha256": "6d7310d895ebd856c1c32eddaefae9f417739f1ad9f29a5d5ec6a2ea9207f62e"
+    }
+  ],
+  "functionResults": {
+    "bytes": 73514,
+    "hasTeam": true
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-068; broader product claims remain blocked"
+}

@@ -1,16 +1,21 @@
 {
   "schema": "Da29GateEvidence/v2",
   "id": "DA29-065",
-  "generatedAt": "2026-07-27T04:40:28.223Z",
-  "status": "open",
-  "evidenceClass": "unproven",
+  "generatedAt": "2026-07-27T04:50:20.629Z",
+  "status": "closed",
+  "evidenceClass": "gate-report",
   "measuredGate": false,
   "gateSha": null,
   "cut": "Correlate Turns UI with live transaction state. Depends on DA29-064 and DA29-017.",
   "acceptance": "Browser facts link HUD roster, active member, life, handoff receipt, frame, and runtime checksum across win/KO/error routes on desktop/mobile.",
-  "relatedArtifacts": [],
+  "relatedArtifacts": [
+    "docs/evidence/da29/closeouts/DA29-065.json",
+    "docs/evidence/da29/measured/DA29-065.json",
+    "src/mugen/runtime/RuntimeTurnsTransaction.ts",
+    "src/mugen/runtime/LiveRuntimeTurnsBridge.ts"
+  ],
   "digest": {
     "algorithm": "sha-256",
-    "value": "1dce6743e21bfc996ae7a725f8b8ac052e2c6570a9870463acb966e51bbac6a5"
+    "value": "711cc94dbd5e108d8e7ca73be37c18418c18edcf1100427b626edb084cd58801"
   }
 }

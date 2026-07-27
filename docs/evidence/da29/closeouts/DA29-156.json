@@ -10,8 +10,8 @@
   "acceptance": "Fixed seed/difficulty yields stable commands, contacts, winner, frame count, periodic checksums, and clear unsupported AI features across repeated runs.",
   "risk": "One scripted opponent can fake AI breadth. Allows one AI policy/fixture only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "1ca1d4b6a18fa1fc1202002d74c734d3dcf0501119dcab7e13fe1c34dbfa1172"
+    "value": "46e5dca2b363fa089c345c505635c2fc7b8f288838ecfa037fb3f1ddaacc28ae"
   }
 }

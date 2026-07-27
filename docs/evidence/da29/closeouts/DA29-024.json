@@ -5,13 +5,13 @@
   "wave": 2,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Persist per-seat SOCD and input profile ownership. Depends on DA29-021 and DA29-023.",
   "acceptance": "Reopen and seat-swap tests prove profile identity, version migration, reset, and deterministic resolution; match snapshots expose the chosen policy.",
   "risk": "Settings can alter replay. Allows versioned profile behavior only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -51,6 +51,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "76d15f93f57436120d2a19d23552f661ee67222c424d3c3850d4e0e49e3cae69"
+    "value": "03df0c1f358cc5dc462427b85eed46fb74a2f6aaebac0290bd146382fecc7884"
   }
 }

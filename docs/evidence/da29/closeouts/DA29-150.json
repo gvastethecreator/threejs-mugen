@@ -10,8 +10,8 @@
   "acceptance": "Independent evidence review records accepted/rejected facts, exact score changes, release decision, supported profiles/routes, known gaps, and next queue; every broad claim links its gate.",
   "risk": "Pressure to call partial work complete. Allows only the signed adjudication result.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "8e7d9233800b1bb29c55d77edf8aa33035ad504f83ceeecc6c095727e1e52f17"
+    "value": "2e424493466f267f47e2bb4fcaf37dbb296e552610f523443e000f2f372a0417"
   }
 }

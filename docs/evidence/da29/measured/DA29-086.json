@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-086",
-  "generatedAt": "2026-07-27T04:27:24.752Z",
-  "ok": true,
   "kind": "G",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-086",
+  "generatedAt": "2026-07-27T04:50:27.614Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-086",
   "anchors": [
     {
       "path": "src/mugen/loader/ZipCharacterSource.ts",
@@ -12,9 +13,13 @@
       "sha256": "ea37996c204bd8cd887d765a49a9ab5f936d015ce2cebb8912a35b0c4a919421"
     }
   ],
-  "facts": {
-    "moduleBytes": 4903,
-    "securitySurface": true
+  "functionResults": {
+    "bytes": 4903,
+    "hasTraversalGuard": true,
+    "exports": [
+      "export class ZipCharacterSourceError",
+      "export class ZipCharacterSource"
+    ]
   },
-  "claimCeiling": "ZIP source security surface present; full attack matrix remains broader gate"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-086; broader product claims remain blocked"
 }

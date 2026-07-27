@@ -10,8 +10,8 @@
   "acceptance": "Repeated play/import/project switch covers context reuse/close, decoded buffer caps, stopped voices, suspend/resume, errors, and memory trend.",
   "risk": "Audio nodes leak silently. Allows tested browser lifecycle only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "25c32d6f682bf6d821b9a93fa0016f3d7059c22b6d7fca5a5a281f4e49afcabf"
+    "value": "d6e3eefaa4603d2be32b7dce7f47701d76599852e556847603750e7878a0f9c5"
   }
 }

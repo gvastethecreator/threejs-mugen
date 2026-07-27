@@ -1,0 +1,39 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-085",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:50:27.611Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-085",
+  "anchors": [
+    {
+      "path": "src/mugen/parsers/CnsParser.ts",
+      "bytes": 7226,
+      "sha256": "abb329beed1b5246ff52c22e84c51dae0cfa1b626afba8db363ec5052db94b55"
+    },
+    {
+      "path": "src/mugen/parsers/CmdParser.ts",
+      "bytes": 9061,
+      "sha256": "3bb3d26ac0cf39713f04446df2d2e35cdc686b54d768d4873b29549045f998ea"
+    },
+    {
+      "path": "public/characters/nova-boxer/mugen/nova.cns",
+      "bytes": 1345,
+      "sha256": "2d7db96883b763a90a2767223bd5f11e95521ac9f64a601e6ce4e9942095ee1a"
+    },
+    {
+      "path": "public/characters/nova-boxer/mugen/nova.cmd",
+      "bytes": 428,
+      "sha256": "c4a8c294a58c61e536a85e9ed40ccd5a53d2be34a2696b9512f8d2583c78c51d"
+    }
+  ],
+  "functionResults": {
+    "cnsStates": 10,
+    "cnsControllers": 4,
+    "cnsDiagnostics": 0,
+    "cmdCommands": 2,
+    "malformedDiagnostics": 1
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-085; broader product claims remain blocked"
+}

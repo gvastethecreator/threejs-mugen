@@ -10,8 +10,8 @@
   "acceptance": "Studio and one non-Studio decision consume the shared envelope; MUGEN fields stay in adapters; versioning, canonical bytes, stale/tamper failures, and deletion proof pass.",
   "risk": "Shared envelope may still encode product rules. Allows reusable evidence shape only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -45,6 +45,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "21a7a5562d9b88497f3cfab7440db7989d9afec0c71e1578c1dc87608bc38d84"
+    "value": "0f86b2a148148ac6fa4d4f1e7b511d03448eacc2fdfd2ec3bb20dcb8b29cc062"
   }
 }

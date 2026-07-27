@@ -5,13 +5,13 @@
   "wave": 14,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Define the required-check matrix. Depends on DA29-009, DA29-011, DA29-018, and DA29-019.",
   "acceptance": "Change classes map to fast, full, trace, browser, accessibility, performance, security, source, and release gates with time budgets and owners.",
   "risk": "Too many gates slow feedback; too few hide faults. Allows policy only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "e8325ac2d59a3bc9efbac0af018aa845ab700f810ac65ef7a28f47fa618df4c7"
+    "value": "34a236b56140a83a6234f74051104dc95c8f57e371295802f3bf0fd43479ba80"
   }
 }

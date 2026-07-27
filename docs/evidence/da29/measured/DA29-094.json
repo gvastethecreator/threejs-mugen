@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-094",
-  "generatedAt": "2026-07-27T04:27:24.772Z",
-  "ok": true,
   "kind": "I",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-094",
+  "generatedAt": "2026-07-27T04:50:27.670Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-094",
   "anchors": [
     {
       "path": "src/app/SourceWriteJournal.ts",
@@ -15,15 +16,11 @@
       "path": "src/app/StudioSourceWrite.ts",
       "bytes": 11983,
       "sha256": "800d3e3a958f67ffef6c1d7ff231297e0c88955a36a76b37ba4ef02839742c90"
-    },
-    {
-      "path": "src/app/StudioSourceWriteReceipt.ts",
-      "bytes": 11955,
-      "sha256": "98677821f783b88b0e2ccdc9d87f712202dad61eac2dcf22758e671974c65ccb"
     }
   ],
-  "facts": {
-    "journalBytes": 9736
+  "functionResults": {
+    "hasIntent": true,
+    "totalBytes": 21713
   },
-  "claimCeiling": "source-write journal modules present; full FS permission matrix broader"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-094; broader product claims remain blocked"
 }

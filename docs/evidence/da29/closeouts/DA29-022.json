@@ -5,13 +5,13 @@
   "wave": 2,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Handle gamepad connect, disconnect, and reconnect. Depends on DA29-021.",
   "acceptance": "Browser tests cover unplug mid-hold, reconnect with changed index, stale button release, two seats, and keyboard fallback with visible status.",
   "risk": "Stuck input. Allows those lifecycle routes only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "537c7b14fb2ee8ab3fe58d2689b84e896b24bf08fa343c0990474837208eb9c7"
+    "value": "223dad6f49f3a0decf1e733731007799e6819eec1897614f2325bee3dc049669"
   }
 }

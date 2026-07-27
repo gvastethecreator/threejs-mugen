@@ -5,13 +5,13 @@
   "wave": 1,
   "status": "closed",
   "evidenceClass": "gate-report",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Establish bundle and load budgets. Depends on DA29-002. Systems: Vite output, route chunks, assets.",
   "acceptance": "Baseline records raw/gzip size, chunk graph, initial route bytes, asset count, and load timings; thresholds have owners and breach policy.",
   "risk": "Arbitrary budgets can block work. Allows baseline and agreed thresholds only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -49,6 +49,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "75a57666193b5f6707d70bedec484821fb62d862d54ae4839f4832446c89a3e1"
+    "value": "3966184c68f1d224ab6a9de1c45d001ea0751e715953a0e4a798d327c8c72fc8"
   }
 }

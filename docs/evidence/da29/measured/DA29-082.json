@@ -1,0 +1,22 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-082",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:50:27.585Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-082",
+  "anchors": [
+    {
+      "path": "src/mugen/parsers/SffParser.ts",
+      "bytes": 33258,
+      "sha256": "e6353fb2350fbc6ae61a878b065f2d2a8076bb777b045761ef4bfa63e54ed02a"
+    }
+  ],
+  "functionResults": {
+    "bytes": 33258,
+    "hasParse": true,
+    "exports": []
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-082; broader product claims remain blocked"
+}

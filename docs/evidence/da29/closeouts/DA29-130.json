@@ -10,8 +10,8 @@
   "acceptance": "Named device/browser runs repeated rounds, imports, saves, project switches, audio, pause/resume, and stress for fixed duration; frame, memory, errors, resource counts, and final replay digest pass thresholds.",
   "risk": "Short gates miss cumulative faults. Allows soak configuration only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -41,6 +41,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "6b9809d400f4c0629fcccdf207ca8b335555fae660154fb8499a6c6e6a8a3914"
+    "value": "28c3f84250f073ee87deeb766468ed8cc858b5f85549d7bf5b2bb222997d752a"
   }
 }

@@ -5,13 +5,13 @@
   "wave": 1,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Add source locations and digests to source-family review. Depends on DA29-008. Systems: Elecbyte/Ikemen manifests.",
   "acceptance": "Each reviewed rule links pin, file, line/range or symbol, excerpt digest, reviewer status, and local consumer; text-only `passed` rows fail schema validation.",
   "risk": "Upstream moves can stale locations. Allows reviewed-rule provenance only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -47,6 +47,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "b0fc970b323ef3fa7ff1ec7bfb87e621af554b545b261121a1b6f24ef5280241"
+    "value": "0ab868208fc975faee6f5fc4fa1dd800d9b3f1dcc6611c5b1ed67dddc9871ca0"
   }
 }

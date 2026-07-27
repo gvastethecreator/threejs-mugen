@@ -3,47 +3,52 @@
   "id": "DA29-074",
   "kind": "I",
   "wave": 7,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Load and render bounded stage layers/parallax. Depends on DA29-073 and DA29-083.",
   "acceptance": "Repository-owned stage proves layer order, delta/parallax, tiling, animation, clipping, camera movement, disposal, and desktop/mobile captures.",
   "risk": "Renderer success does not prove all DEF syntax. Allows one stage subset only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
-    "public/stages/rooftop-dojo/rooftop-dojo.png"
+    "public/stages/rooftop-dojo/rooftop-dojo.png",
+    "src/mugen/parsers/StageDefParser.ts"
   ],
   "commands": [
-    "implementation probe DA29-074 (diagnostic only)"
+    "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-074"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-074.json",
-    "docs/evidence/da29/probes/da29-074.json"
+    "docs/evidence/da29/probes/da29-074.json",
+    "docs/evidence/da29/measured/DA29-074.json",
+    "src/mugen/parsers/StageDefParser.ts",
+    "public/stages/rooftop-dojo/rooftop-dojo.png"
   ],
   "claims": {
     "allowed": [
-      "DA29-074 remains open"
+      "DA29-074 closed as implementation-probe",
+      "acceptance-executed unit evidence for DA29-074; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence",
-      "path-exists / directory probes do not close [I] cuts"
+      "product/runtime parity beyond written claim ceiling",
+      "path-exists probe as closeout"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "7a3df4e96e22f266a6cdf421cede862b63b828d90652fd585a9298d176760169"
+    "value": "05f6769b640437c9c29705949c73ecc56310fd6d57787803f85f94601a5285b0"
   }
 }

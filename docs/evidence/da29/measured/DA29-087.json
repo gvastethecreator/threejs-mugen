@@ -1,10 +1,11 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-087",
-  "generatedAt": "2026-07-27T04:27:24.757Z",
-  "ok": true,
   "kind": "I",
-  "command": "pnpm exec vitest run src/tests/Da29RemainingOpenCuts.test.ts -t DA29-087",
+  "generatedAt": "2026-07-27T04:50:27.620Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-087",
   "anchors": [
     {
       "path": "src/mugen/compatibility/IkemenFeatureScanner.ts",
@@ -17,9 +18,13 @@
       "sha256": "8f418bc2df7e374dae093b0814b1909eff75de331c9ac4fe57de753a795bced4"
     }
   ],
-  "facts": {
-    "modules": 2,
-    "executable": true
+  "functionResults": {
+    "modules": [
+      "src/mugen/compatibility/IkemenFeatureScanner.ts",
+      "src/mugen/compatibility/ScannerCapabilityVector.ts"
+    ],
+    "executable": true,
+    "totalBytes": 23693
   },
-  "claimCeiling": "scanner modules executable; full phase timing matrix is a broader gate"
+  "claimCeiling": "acceptance-executed unit evidence for DA29-087; broader product claims remain blocked"
 }

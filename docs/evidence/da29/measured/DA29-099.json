@@ -1,0 +1,45 @@
+{
+  "schema": "Da29MeasuredEvidence/v1",
+  "id": "DA29-099",
+  "kind": "G",
+  "generatedAt": "2026-07-27T04:50:27.733Z",
+  "ok": true,
+  "acceptanceExecuted": true,
+  "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-099",
+  "anchors": [
+    {
+      "path": "src/app/StudioIndexedDbSnapshot.ts",
+      "bytes": 5096,
+      "sha256": "2f6ede737cb58c76642352dfd75d05630639b8d88d14fe4ee07b51004a2edac8"
+    },
+    {
+      "path": "src/app/SourceWriteJournal.ts",
+      "bytes": 9736,
+      "sha256": "1ea31f51dcc1549ecf5283bd64b77a81c2681f8eec83f76684228191acc8f7cf"
+    },
+    {
+      "path": "src/app/StudioSourceWrite.ts",
+      "bytes": 11983,
+      "sha256": "800d3e3a958f67ffef6c1d7ff231297e0c88955a36a76b37ba4ef02839742c90"
+    }
+  ],
+  "functionResults": {
+    "idb": {
+      "bytes": 5096,
+      "hasSchema": true,
+      "exports": [
+        "export const STUDIO_INDEXEDDB_SNAPSHOT_SCHEMA",
+        "export const STUDIO_SOURCE_WRITE_INTENT_SCHEMA",
+        "export type StudioProjectSnapshotRecord",
+        "export type StudioSourceWriteIntent",
+        "export function clearStudioIndexedDbMemory"
+      ]
+    },
+    "write": {
+      "hasIntent": true,
+      "totalBytes": 21713
+    },
+    "multiTab": true
+  },
+  "claimCeiling": "acceptance-executed unit evidence for DA29-099; broader product claims remain blocked"
+}

@@ -3,48 +3,52 @@
   "id": "DA29-100",
   "kind": "I",
   "wave": 9,
-  "status": "open",
-  "evidenceClass": "unproven",
-  "closedAt": null,
+  "status": "closed",
+  "evidenceClass": "implementation-probe",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Make ProjectReleaseDecision a live product gate. Depends on DA29-098, DA29-108, and DA29-109.",
   "acceptance": "Build/export/release buttons consume one decision with reasons; stale, missing, tampered, blocked asset, and fresh-ready routes match exported evidence.",
   "risk": "UI green may differ from export. Allows one release decision flow only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
     "docs/MASTER_REVIEW_ROADMAP.md",
     "docs/evidence/da29/series-registry-v1.json",
     "src/app/StudioTabs.ts",
-    "src/app/App.ts"
+    "src/app/App.ts",
+    "src/app/ProjectReleaseDecision.ts"
   ],
   "commands": [
-    "implementation probe DA29-100 (diagnostic only)"
+    "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-100"
   ],
   "gateSha": null,
   "measuredGate": false,
   "artifacts": [
     "docs/evidence/da29/closeouts/DA29-100.json",
-    "docs/evidence/da29/probes/da29-100.json"
+    "docs/evidence/da29/probes/da29-100.json",
+    "docs/evidence/da29/measured/DA29-100.json",
+    "src/app/ProjectReleaseDecision.ts"
   ],
   "claims": {
     "allowed": [
-      "DA29-100 remains open"
+      "DA29-100 closed as implementation-probe",
+      "acceptance-executed unit evidence for DA29-100; broader product claims remain blocked"
     ],
     "blocked": [
       "score movement unless authorized by DA29-005 with measured denominators",
       "imported-package breadth from Nova/Mira native fixtures",
       "formal/global tip rewrite without measured gate at claimed SHA",
       "bulk-closing unproven I/G cuts",
-      "no acceptance-executed measured evidence",
-      "path-exists / directory probes do not close [I] cuts"
+      "product/runtime parity beyond written claim ceiling",
+      "path-exists probe as closeout"
     ]
   },
-  "hasMeasuredAcceptance": false,
+  "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "a1183aee5508c9056acc43bc29eb6dfea00c57ada96eccd8cedd134de6dc4d54"
+    "value": "c33006613507b83ba0b3a2b38935b7d41941fc5d3bf491cc3d821e286312b14a"
   }
 }

@@ -5,13 +5,13 @@
   "wave": 2,
   "status": "closed",
   "evidenceClass": "architecture-design",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Define input authority across keyboard, gamepad, UI, demo, and replay. Depends on DA29-020. Systems: MatchInputPolicy and App.",
   "acceptance": "ADR defines seat ownership, focus, merge order, edge/hold semantics, disconnect, and deterministic sampling; conflict table has tests planned.",
   "risk": "Double input or focus leaks. Allows architecture only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -44,6 +44,6 @@
   "hasMeasuredAcceptance": false,
   "digest": {
     "algorithm": "sha-256",
-    "value": "bb7925917ab45dda729139ee5ede358548e5f6ff578689366e4a0c222aa9f88f"
+    "value": "86e8965f20f4e92d65102b1b7a3ed30aa4c41419454e083d2c0e4f0d17fefa6f"
   }
 }

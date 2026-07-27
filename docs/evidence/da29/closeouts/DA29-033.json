@@ -5,13 +5,13 @@
   "wave": 3,
   "status": "closed",
   "evidenceClass": "implementation-probe",
-  "closedAt": "2026-07-27T04:40:28.223Z",
+  "closedAt": "2026-07-27T04:50:20.629Z",
   "cut": "Separate StateDef and state-controller syntax nodes. Depends on DA29-013 and DA29-031.",
   "acceptance": "Parser AST and diagnostics distinguish headers, controller blocks, triggers, parameters, and duplicates; round-trip fixtures retain locations.",
   "risk": "AST change can break import. Allows parsed syntax structure only.",
   "revision": {
-    "head": "75e04917cdd7a97387399c087e73e67d304b8ebe",
-    "headShort": "75e04917cdd7",
+    "head": "3bcb89ba1bd50bc1ceaa2ed8a221f264b37baf53",
+    "headShort": "3bcb89ba1bd5",
     "registryDigest": "e974a2509aed8453ba1ed440841998b74189e4160c686def2f31403f9beb80f0"
   },
   "inputs": [
@@ -51,6 +51,6 @@
   "hasMeasuredAcceptance": true,
   "digest": {
     "algorithm": "sha-256",
-    "value": "6fd0d9904c406401497139a4f9e167f96d21fd933760b9362213965e1e31bdb2"
+    "value": "cc282866b181b3aa9a43f36f5e4815c6b375a7c423d83e023d5019a370ab6eb4"
   }
 }
