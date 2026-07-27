@@ -55,6 +55,8 @@ export type RuntimeProjectileCombatActor = {
   hitStun: number;
 };
 
+export type RuntimeProjectileReversalResult = boolean | "state-change-pending";
+
 export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatActor> = {
   attacker: TActor;
   defender: TActor;
@@ -90,7 +92,7 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
     defender: TActor,
     projectile: RuntimeProjectile,
     attackBox: CollisionBox,
-  ) => boolean;
+  ) => RuntimeProjectileReversalResult;
   applyGuardHit?: (defender: TActor) => void;
   applyHitState?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile) => void;
   markDefenderGotHit?: (defender: TActor) => void;
@@ -178,7 +180,12 @@ export class RuntimeProjectileCombatWorld {
       if (!contactAttackBox) {
         continue;
       }
-      if (input.applyProjectileReversal?.(attacker, defender, projectile, contactAttackBox)) {
+      const reversalResult = input.applyProjectileReversal?.(attacker, defender, projectile, contactAttackBox);
+      if (reversalResult === true) {
+        continue;
+      }
+      if (reversalResult === "state-change-pending") {
+        log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via pending state change`);
         continue;
       }
       if (input.canDefenderBeHit?.(defender) === false) {

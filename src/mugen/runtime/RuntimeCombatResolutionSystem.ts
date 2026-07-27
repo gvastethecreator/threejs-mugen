@@ -780,6 +780,9 @@ export class RuntimeCombatResolutionWorld {
         if (!reversal) {
           return false;
         }
+        if (runtimeStateChangeTmpBlocksDirectStateRedirect(target.runtime, source.runtime, reversal)) {
+          return "state-change-pending";
+        }
         const outcome = input.reversalWorld.apply(target, source, reversal, {
           rememberTarget: (reverser, attacker, targetId) => this.rememberTarget(reverser, attacker, targetId),
           canEnterState: input.stateHooks.canEnterState,

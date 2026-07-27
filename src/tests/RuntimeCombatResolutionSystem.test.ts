@@ -1310,6 +1310,58 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(projectile).toMatchObject({ hasHit: false, hitsRemaining: 1 });
   });
 
+  it("rejects Projectile ReversalDef redirects while either redirect owner is pending", () => {
+    const cases = [
+      { name: "reverser p1", defenderRuntime: { stateChangeTmp: true, actTmp: 1 }, attackerRuntime: {}, p1StateNo: 777, p2StateNo: undefined },
+      { name: "projectile owner p2", defenderRuntime: {}, attackerRuntime: { stateChangeTmp: true, actTmp: 1 }, p1StateNo: undefined, p2StateNo: 888 },
+    ] as const;
+
+    for (const testCase of cases) {
+      const contactWorld = new RuntimeContactMemoryWorld();
+      const reversalWorld = new RuntimeReversalWorld(contactWorld);
+      const projectile = projectileActor({ pos: { x: 0, y: 0 }, facing: 1 });
+      const attacker = actor("p1", "P1", contactWorld, {
+        runtime: runtimeState({ ...testCase.attackerRuntime, stateNo: 300 }),
+        projectiles: [projectile],
+      });
+      const defender = actor("p2", "P2", contactWorld, {
+        runtime: runtimeState({ ...testCase.defenderRuntime, pos: { x: 12, y: 0 }, stateNo: 0, life: 100 }),
+      });
+      reversalWorld.activate(defender, {
+        attr: "S,SP",
+        hitbox: { x1: -20, y1: -24, x2: 30, y2: 12 },
+        hitPause: 5,
+        p1StateNo: testCase.p1StateNo,
+        p2StateNo: testCase.p2StateNo,
+      });
+      const logs: string[] = [];
+
+      new RuntimeCombatResolutionWorld().resolveProjectile({
+        attacker,
+        defender,
+        hitOverrideWorld: new RuntimeHitOverrideWorld(),
+        reversalWorld,
+        effectLifecycleWorld: { markGetHit: (target) => logs.push(`mark:${target.id}`) },
+        guardWorld: new RuntimeGuardWorld(),
+        getHitStateWorld: new RuntimeGetHitStateWorld(),
+        hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+        contactPresentationWorld: new RuntimeContactPresentationWorld(),
+        runtimeTick: 19,
+        getHurtBoxes: () => [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+        stateHooks: hooks(),
+        log: (line) => logs.push(line),
+      });
+
+      expect(logs, testCase.name).toEqual(["P2 rejected P1 projectile S,SP via pending state change"]);
+      expect(attacker.hasHit, testCase.name).toBe(false);
+      expect(defender.hasHit, testCase.name).toBe(false);
+      expect(attacker.runtime.stateNo, testCase.name).toBe(300);
+      expect(defender.runtime.stateNo, testCase.name).toBe(0);
+      expect(defender.runtime.life, testCase.name).toBe(100);
+      expect(projectile, testCase.name).toMatchObject({ hasHit: false, hitsRemaining: 1 });
+    }
+  });
+
   it("routes HitFlag P projectile cancellation through defender contact memory", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const projectile = projectileActor({
