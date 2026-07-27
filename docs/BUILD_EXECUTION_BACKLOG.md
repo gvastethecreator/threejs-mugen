@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## Entry 621 - IKEMEN `acttmp` materialization (T412)
+
+Closed T412 in `ce6e2b81`: root fighter advance now carries the source
+`actionPrepare`/`actionRun` signal through typed `actTmp` state. The prepare
+step seeds `0` for an active action or `-2` for global pause. The finish step
+applies hitpause `-1`, active `+1`, and the explicit simultaneous `-3`
+arithmetic edge. Active roots and legacy/IKEMEN paused root bridges use the
+live pause query.
+
+Focused closure passed 4 files / 328 tests, `node --check
+scripts/qa_traces.cjs`, and `git diff --check`. `pnpm typecheck` reaches only
+the unrelated pre-existing unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim allowed: bounded root `actTmp` prepare/finish materialization. Claim
+blocked: normal global-hitpause branch, Helper action timing, `stchtmp`, camera
+gates, state-change persistence, exact scheduler order, MUGEN, teams/clashes,
+global checkpoint, score movement, and full parity. Research:
+`docs/research/2026-07-27-ikemen-acttmp-materialization.md`.
+
 ## Entry 620 - IKEMEN `hittmp` materialization (T411)
 
 Closed T411 in `9d58730c`: `CharacterRuntimeState` now carries typed IKEMEN

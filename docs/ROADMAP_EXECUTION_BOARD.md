@@ -14,7 +14,23 @@ and local release review. Authority:
 [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
 and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 
-## Current runtime compatibility board - T411 (closed bounded, 2026-07-27)
+## Current runtime compatibility board - T412 (closed bounded, 2026-07-27)
+
+T412 closes in `ce6e2b81`. Root fighter advance now materializes IKEMEN
+`actTmp` through source-shaped prepare/finish arithmetic: ordinary action
+`0 -> 1`, hitpause `-1`, global pause `-2`, and simultaneous signals `-3`.
+Active roots and paused root bridges use the live pause query.
+
+Focused closure passed 4 files / 328 tests, `node --check
+scripts/qa_traces.cjs`, and diff hygiene. The broad typecheck reaches only the
+unrelated pre-existing unused `advanced` at
+`src/mugen/da32/ClauseAdjudicationSample.ts:149`. Claim blocked: normal
+global-hitpause branch, Helper action timing, `stchtmp`, camera gates,
+state-change persistence, exact scheduler order, MUGEN, teams/clashes, global
+checkpoint, score movement, and full parity. Research:
+`docs/research/2026-07-27-ikemen-acttmp-materialization.md`.
+
+## Previous runtime compatibility board - T411 (closed bounded, 2026-07-27)
 
 T411 closes in `9d58730c`. The runtime now materializes IKEMEN `hitTmp` as
 `-1|0|1|2`, synchronizes ordinary root fighters after frame mutation, and

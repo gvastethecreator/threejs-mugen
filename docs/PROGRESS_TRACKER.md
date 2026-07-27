@@ -6,7 +6,7 @@
   and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 - Machine record: **DA30-120**. Consecutive human cursor: **DA30-020**
   (`adjudicatedThrough` not advanced by model-only DA31 rows).
-- Formal/global: `f5f2315e` DA31-008; focal: T411 `9d58730c`; visual/product: T342;
+- Formal/global: `f5f2315e` DA31-008; focal: T412 `ce6e2b81`; visual/product: T342;
   source: 05b/4aa.
 - DA31-001…040: see `docs/evidence/da31/da31-phase-status-v1.json`.
   Browser: 009–015 accepted (provisional when dirty). 012 simulated gamepad.
@@ -17,6 +17,26 @@
   drive harden; gamepad device-lab protocol; clause sample proposes
   `adjudicatedThrough=DA30-021` (not auto-applied); a11y baseline inventory.
   Next: close smoke lanes, human accept watermark, hardware gamepad.
+
+## Runtime `acttmp` materialization - T412 (closed bounded, 2026-07-27)
+
+- `ce6e2b81` adds optional typed `actTmp` state and source-shaped
+  prepare/finish arithmetic. Root fighter advance seeds `0` or `-2` before
+  mutation, then reaches `1`, `-1`, `-2`, or the simultaneous arithmetic edge
+  `-3` after mutation.
+- Active roots and the legacy/IKEMEN paused root bridges read the live pause
+  state. The normal global-hitpause branch, which bypasses fighter advance,
+  remains explicitly outside this cut.
+- Focal closure: 4 files / 328 tests passed, plus `node --check
+  scripts/qa_traces.cjs` and `git diff --check`.
+- `pnpm typecheck` was run after the batch. The only remaining error is the
+  unrelated pre-existing unused `advanced` at
+  `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+- Claim blocked: Helper action timing, `stchtmp`, camera gates, state-change
+  persistence, exact scheduler order, MUGEN, teams/clashes, global gate,
+  scores, and full parity. Scores unchanged.
+
+Research: [IKEMEN `acttmp`](research/2026-07-27-ikemen-acttmp-materialization.md).
 
 ## Runtime `hittmp` materialization - T411 (closed bounded, 2026-07-27)
 

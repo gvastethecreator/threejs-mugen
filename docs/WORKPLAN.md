@@ -1,6 +1,25 @@
 # Workplan
 
-## Current bounded runtime cut - T411 (2026-07-27)
+## Current bounded runtime cut - T412 (2026-07-27)
+
+T412 closes the bounded IKEMEN `acttmp` slice in `ce6e2b81`. The runtime now
+seeds the action phase before root fighter mutation and applies the source
+finish arithmetic after mutation. Unpaused action yields `0 -> 1`, hitpause
+applies `-1`, global pause uses `-2`, and the simultaneous edge keeps the
+arithmetic result `-3`. Active roots and paused root bridges share the live
+pause query.
+
+Research: `docs/research/2026-07-27-ikemen-acttmp-materialization.md`.
+Ticket: `.scratch/wayfinder/mugen-ikemen-threejs-port/tickets/412-acttmp-materialization.md`.
+Focused closure passed 4 files / 328 tests, `node --check scripts/qa_traces.cjs`,
+and `git diff --check`. `pnpm typecheck` reaches only the pre-existing unused
+`advanced` in `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+
+Claim blocked: normal global-hitpause branch, Helper action timing, `stchtmp`,
+camera gates, state-change persistence, exact scheduler order, MUGEN,
+teams/clashes, global checkpoint, scores, and full parity.
+
+## Previous bounded runtime cut - T411 (2026-07-27)
 
 T411 closes the materialized IKEMEN `hittmp` slice in `9d58730c`. The runtime
 stores `-1|0|1|2`, syncs ordinary root fighters after frame mutation, marks
