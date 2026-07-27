@@ -1,9 +1,14 @@
 ﻿# Roadmap Execution Board
 
+## Current DA28 series - drained (closed-bounded, 2026-07-26)
+
+DA28-01…30 closed. `nextQueue` empty. Report:
+`docs/research/2026-07-26-da28-11-30-drain.md`.
+
 ## Current gamepad input - DA28-10 (closed-bounded, 2026-07-26)
 
 Gamepad API polling + App keyboard/gamepad merge.
-Next: **DA28-11**. Report: `docs/research/2026-07-26-da28-10-gamepad-input.md`.
+Report: `docs/research/2026-07-26-da28-10-gamepad-input.md`.
 
 ## Current Turns browser matrix - DA28-09 (closed-bounded, 2026-07-26)
 
@@ -104,7 +109,7 @@ vector, DA26-29 BoundaryManifest. Report:
 MatchInputPolicySnapshot/v1 covers two seats, deadzone, remap, disconnect, and
 deterministic equality. Browser Gamepad API remains open with DA26-13.
 
-Next queue head: **DA28-11** (20 DA28 tasks open after DA28-10).
+Next queue head: **empty** (DA28 drained).
 
 ## Current FightScreen fixture - DA26-12 (closed, 2026-07-26)
 

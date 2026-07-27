@@ -3,10 +3,10 @@
 ## Current next-build override - 2026-07-26
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](AUTHORITY_SELECTOR.md).
-DA28-10 closed gamepad polling; DA28-09 closed Turns browser matrix.
-**Next live cut: DA28-11** Nova/Mira live execution routes. Then DA28-12…30 per
-[audit](research/2026-07-26-daily-roadmap-architecture-audit-post-da27-09.md).
-Global pin is `32466c6e`. The T287 queue below is historical.
+DA28-01…30 drained under claim ceilings (Entry 611). **nextQueue empty.**
+Open a new series only after a roadmap audit + control adoption.
+Global pin remains `32466c6e` until a new global re-gate. The T287 queue below
+is historical.
 
 ## Historical implementation frontier - T287 / Entry 561 (2026-07-18)
 

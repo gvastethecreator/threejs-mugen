@@ -1,29 +1,8 @@
 {
   "schemaVersion": "mugen-web-sandbox/authority-selector/v1",
-  "generatedAt": "2026-07-27T00:16:35.409Z",
-  "closedThrough": "DA28-10",
-  "nextQueue": [
-    "DA28-11",
-    "DA28-12",
-    "DA28-13",
-    "DA28-14",
-    "DA28-15",
-    "DA28-16",
-    "DA28-17",
-    "DA28-18",
-    "DA28-19",
-    "DA28-20",
-    "DA28-21",
-    "DA28-22",
-    "DA28-23",
-    "DA28-24",
-    "DA28-25",
-    "DA28-26",
-    "DA28-27",
-    "DA28-28",
-    "DA28-29",
-    "DA28-30"
-  ],
+  "generatedAt": "2026-07-27T00:38:13.917Z",
+  "closedThrough": "DA28-30",
+  "nextQueue": [],
   "scores": {
     "sandbox": "65",
     "mugenLite": "36",
@@ -85,14 +64,20 @@
       "DA28-08 LiveRuntimeTurnsBridge projects handoff into RuntimeTurnsTransaction",
       "DA28-09 TurnsBrowserMatrix + desktop/mobile browser gate",
       "DA28-10 GamepadInputAdapter polls Gamepad API into MatchInputPolicy seats",
+      "DA28-11..13 native Nova/Mira live routes with real package digests",
+      "DA28-14..17 palette/commonfx/projectile/throw bounded extensions",
+      "DA28-18..20 controller matrix, third-fixture plan, fight-screen stage evidence",
+      "DA28-21..22 IndexedDB snapshot + write intent preimage",
+      "DA28-26..30 provenance, source families, scanner artifact, team cut research, BoundaryManifest command",
       "historical sections may retain old cursors when labeled historical",
       "single current authority selector for docs and issues 01-07"
     ],
     "blocked": [
-      "claiming DA28-11..30 product closes from Turns/gamepad alone",
       "every physical gamepad device from emulator proof",
       "full plural projectile parity without browser matrix",
-      "native Nova/Mira rows raising imported-package coverage",
+      "heard hardware audio from offline signal ladder",
+      "IKEMEN Simul/Tag runtime support from research alone",
+      "imported third-party package breadth from Nova/Mira",
       "projecting T383 or T342 as current global/product without label",
       "score movement",
       "using c01d5e70/Entry 585/dirty juggle as live current selectors"
@@ -101,6 +86,6 @@
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "0a9d46bfcf84d75b9bd7ba57f66d695ecfabb0cb4dceb6849c49e57019df203a"
+    "value": "615d87e64afeb6b38b3ba84c2125026eff39038d761574506e483f634544e6e5"
   }
 }

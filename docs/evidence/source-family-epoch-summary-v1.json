@@ -1,0 +1,44 @@
+{
+  "schema": "SourceFamilyEpochSummary/v1",
+  "generatedAt": "2026-07-27T00:36:33.309Z",
+  "pins": {
+    "normative": "05b7d98af690c73c7bffe5cb4f4eeb6933fa2703",
+    "working": "4aa0ba38f851c52549ba182310e9e53361cd472a"
+  },
+  "families": [
+    {
+      "id": "juggle",
+      "status": "same",
+      "note": "T406 reviewed"
+    },
+    {
+      "id": "hitdef-core",
+      "status": "unreviewed",
+      "note": "epoch missing-file coverage incomplete"
+    },
+    {
+      "id": "projectile",
+      "status": "unreviewed",
+      "note": "live schedule wired; source family open"
+    },
+    {
+      "id": "turns",
+      "status": "partial",
+      "note": "bridge + browser matrix; source map pending DA28-29"
+    },
+    {
+      "id": "input",
+      "status": "partial",
+      "note": "gamepad polling landed; source map open"
+    },
+    {
+      "id": "fight-screen",
+      "status": "partial",
+      "note": "Common.Fx dispatch ladder; full motif open"
+    }
+  ],
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "0516b5b07e5daee7ec3839d26c741064505f92bf2b328f7f39114ab8f49a0482"
+  }
+}

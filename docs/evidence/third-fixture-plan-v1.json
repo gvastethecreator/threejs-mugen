@@ -1,0 +1,22 @@
+{
+  "schema": "ThirdFixturePlan/v1",
+  "generatedAt": "2026-07-27T00:36:33.310Z",
+  "choice": "repo-owned-cc0-scaffold",
+  "id": "orbit-spark",
+  "license": "CC0-1.0",
+  "distinctSyntax": [
+    "ModifyHitDef",
+    "Projectile",
+    "Helper",
+    "TargetState"
+  ],
+  "status": "planned-scaffold",
+  "claimsBlocked": [
+    "shipped third character package",
+    "import breadth raise"
+  ],
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "b04bfc2c357f066e16879b0f05fffb942e5c3d08cf0f0b20049b55256a8051c9"
+  }
+}

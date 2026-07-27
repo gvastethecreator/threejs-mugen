@@ -1,0 +1,86 @@
+{
+  "schema": "NativeAssetProvenance/v1",
+  "generatedAt": "2026-07-27T00:36:33.306Z",
+  "packages": [
+    {
+      "packageId": "nova-boxer",
+      "packageDigest": "600f34bb875152488f41e639a0d8138cc9f9112748a60c4f4b2be402c554dc41",
+      "tool": {
+        "id": "imagegen+atlas",
+        "version": "repo-local"
+      },
+      "license": "CC0-1.0",
+      "files": [
+        {
+          "path": "public/characters/nova-boxer/mugen/nova.def",
+          "bytes": 387,
+          "sha256": "6334228b8724db4c7239f84d128d3e7169a5275a0869b3b28fc8863e606b9054"
+        },
+        {
+          "path": "public/characters/nova-boxer/mugen/nova.cmd",
+          "bytes": 428,
+          "sha256": "c4a8c294a58c61e536a85e9ed40ccd5a53d2be34a2696b9512f8d2583c78c51d"
+        },
+        {
+          "path": "public/characters/nova-boxer/mugen/nova.cns",
+          "bytes": 1345,
+          "sha256": "2d7db96883b763a90a2767223bd5f11e95521ac9f64a601e6ce4e9942095ee1a"
+        },
+        {
+          "path": "public/characters/nova-boxer/mugen/nova.air",
+          "bytes": 2484,
+          "sha256": "73a4dbb4343730706d0f9bcf31ef0654ac7ebfae8d18999d4362ee07a18ebd61"
+        }
+      ],
+      "qa": {
+        "sheet": {
+          "path": "public/characters/nova-boxer/sprite-sheet-alpha.png",
+          "bytes": 341273,
+          "sha256": "8530964cdac11690694a0114aef71e35e21b832994167412609dff3c88b49664"
+        }
+      }
+    },
+    {
+      "packageId": "mira-volt",
+      "packageDigest": "1eb65ff913c4a423ca9aa903524d32af858e6141ee350aeeaffc6ddc4cc5a712",
+      "tool": {
+        "id": "imagegen+atlas",
+        "version": "repo-local"
+      },
+      "license": "CC0-1.0",
+      "files": [
+        {
+          "path": "public/characters/mira-volt/mugen/mira.def",
+          "bytes": 385,
+          "sha256": "a9a8a6593fac250727b8eaf512fddd52d20f2006b25db90e287e53a32cb1f07c"
+        },
+        {
+          "path": "public/characters/mira-volt/mugen/mira.cmd",
+          "bytes": 428,
+          "sha256": "c4a8c294a58c61e536a85e9ed40ccd5a53d2be34a2696b9512f8d2583c78c51d"
+        },
+        {
+          "path": "public/characters/mira-volt/mugen/mira.cns",
+          "bytes": 1345,
+          "sha256": "2d7db96883b763a90a2767223bd5f11e95521ac9f64a601e6ce4e9942095ee1a"
+        },
+        {
+          "path": "public/characters/mira-volt/mugen/mira.air",
+          "bytes": 2484,
+          "sha256": "73a4dbb4343730706d0f9bcf31ef0654ac7ebfae8d18999d4362ee07a18ebd61"
+        }
+      ],
+      "qa": {
+        "sheet": {
+          "path": "public/characters/mira-volt/sprite-sheet-alpha.png",
+          "bytes": 327827,
+          "sha256": "90a1399ccc0835aae8fc15b32f277bc1003405c52974cea3f56e20b33eca77f9"
+        }
+      }
+    }
+  ],
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "25b8f9ddca6c8fdd32a57393a58265281bcda2fb8c74acf61df84b595a82ce90"
+  }
+}

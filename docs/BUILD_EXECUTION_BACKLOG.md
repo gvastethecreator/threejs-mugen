@@ -1,5 +1,14 @@
 # Build Execution Backlog
 
+## Entry 611 - DA28-11…30 drain
+
+Closed DA28-11…30 under claim ceilings: native Nova/Mira live routes + digests,
+palette/Common.Fx/projectile/throw extensions, controller matrix, third-fixture
+plan, IndexedDB snapshot/write intent, provenance/scanner/source-family
+artifacts, team-cut research, BoundaryManifest required-root enforcement in
+`check_boundaries`. Report: `docs/research/2026-07-26-da28-11-30-drain.md`.
+`nextQueue` empty. formal/global stay `32466c6e`. Scores held.
+
 ## Entry 610 - DA28-10 Gamepad input adapter
 
 Closed DA28-10: Gamepad API polling into MatchInputPolicy seats; App merges

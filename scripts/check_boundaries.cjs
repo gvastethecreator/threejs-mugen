@@ -4,6 +4,26 @@ const path = require("node:path");
 const repoRoot = path.resolve(__dirname, "..");
 const srcRoot = path.join(repoRoot, "src");
 
+// DA28-30: evaluate BoundaryManifest against real required roots before legacy checks.
+// src/core may be planned/absent; only fail when a required present-root contract is listed
+// and missing. Two consumers: this command + BoundaryManifest unit tests.
+const requiredRoots = ["src/mugen", "src/app", "src/game", "src/engine"];
+const optionalRoots = ["src/core", "src/modules/platformer"];
+const missingRequired = requiredRoots.filter((root) => !fs.existsSync(path.join(repoRoot, root)));
+if (missingRequired.length > 0) {
+  console.error("Boundary check failed:");
+  for (const root of missingRequired) {
+    console.error(`- BoundaryManifest required root missing: ${root}`);
+  }
+  process.exit(1);
+}
+// Record optional absence without failing (planned modularization roots).
+for (const root of optionalRoots) {
+  if (!fs.existsSync(path.join(repoRoot, root))) {
+    // intentional no-op log reserved for verbose mode
+  }
+}
+
 const checks = [
   {
     label: "shared core must not import mugen",

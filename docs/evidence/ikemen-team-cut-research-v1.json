@@ -1,0 +1,30 @@
+{
+  "schema": "IkemenTeamCutResearch/v1",
+  "generatedAt": "2026-07-27T00:36:33.311Z",
+  "candidates": [
+    "Simul",
+    "Tag",
+    "wider-Turns"
+  ],
+  "chosenCut": "wider-Turns-transaction-hardening",
+  "rejected": [
+    {
+      "id": "Simul",
+      "reason": "needs shared life/power bank product path first"
+    },
+    {
+      "id": "Tag",
+      "reason": "partner selection + intro still thin"
+    }
+  ],
+  "acceptance": [
+    "live Turns bridge",
+    "browser matrix",
+    "source family map later"
+  ],
+  "claimCeiling": "research only — no IKEMEN runtime support claim",
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "2faa49af6dfb9286d0d33ca2e845b7ed3d1f692b1565634b320a5872588a98fa"
+  }
+}

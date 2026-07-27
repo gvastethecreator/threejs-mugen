@@ -10,10 +10,10 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 ## 2026-07-26 current authority override
 
 **Selector:** [docs/AUTHORITY_SELECTOR.md](../../../docs/AUTHORITY_SELECTOR.md)
-(`closedThrough` DA28-10). Live next head is **DA28-11**. Formal/global is
-`32466c6e`. Live projectile, plural oracle, Turns bridge/matrix, and gamepad
-are wired; executed dual-character Nova/Mira routes remain open.
-Cuts continue DA28-11…18. See
+(`closedThrough` DA28-30). Live next head is **empty**. Formal/global is
+`32466c6e`. Native Nova/Mira live routes, controller matrix, and live combat
+bridges are in. Imported breadth and full throw/Simul/Tag parity remain blocked.
+See
 [AUTHORITY_SELECTOR](../../../docs/AUTHORITY_SELECTOR.md),
 [T406](../../../docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md),
 [global](../../../docs/research/2026-07-26-global-checkpoint-da28-02.md).

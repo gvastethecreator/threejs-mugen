@@ -1,0 +1,38 @@
+{
+  "schema": "ScannerCapabilityArtifact/v1",
+  "generatedAt": "2026-07-27T00:36:33.309Z",
+  "phases": [
+    {
+      "id": "parse",
+      "status": "passed",
+      "detail": "def/cmd/cns/air present for nova+mira"
+    },
+    {
+      "id": "compile",
+      "status": "passed",
+      "detail": "native dual live execution builds fighters"
+    },
+    {
+      "id": "runtime",
+      "status": "passed",
+      "detail": "routes executed under PlayableMatchRuntime"
+    },
+    {
+      "id": "import-breadth",
+      "status": "blocked",
+      "detail": "native fixtures only"
+    }
+  ],
+  "downgrade": {
+    "when": "unsupported-phase",
+    "action": "block-execution-claim"
+  },
+  "packageDigests": {
+    "nova-boxer": "600f34bb875152488f41e639a0d8138cc9f9112748a60c4f4b2be402c554dc41",
+    "mira-volt": "1eb65ff913c4a423ca9aa903524d32af858e6141ee350aeeaffc6ddc4cc5a712"
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "6ad4df90bb75f7fb1aa707958e3a517f5365a1deac9074e21947b4d347f736e3"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "ControllerCoverageMatrix/v1",
+  "generatedAt": "2026-07-27T00:36:33.304Z",
+  "packageDigests": {
+    "nova-boxer": "600f34bb875152488f41e639a0d8138cc9f9112748a60c4f4b2be402c554dc41",
+    "mira-volt": "1eb65ff913c4a423ca9aa903524d32af858e6141ee350aeeaffc6ddc4cc5a712"
+  },
+  "rows": [
+    {
+      "controller": "a",
+      "packageId": "mira-volt",
+      "supported": false,
+      "reason": "not-in-supported-controller-set",
+      "occurrences": 2
+    },
+    {
+      "controller": "changestate",
+      "packageId": "mira-volt",
+      "supported": true,
+      "occurrences": 2
+    },
+    {
+      "controller": "hitdef",
+      "packageId": "mira-volt",
+      "supported": true,
+      "occurrences": 2
+    },
+    {
+      "controller": "s",
+      "packageId": "mira-volt",
+      "supported": false,
+      "reason": "not-in-supported-controller-set",
+      "occurrences": 8
+    },
+    {
+      "controller": "a",
+      "packageId": "nova-boxer",
+      "supported": false,
+      "reason": "not-in-supported-controller-set",
+      "occurrences": 2
+    },
+    {
+      "controller": "changestate",
+      "packageId": "nova-boxer",
+      "supported": true,
+      "occurrences": 2
+    },
+    {
+      "controller": "hitdef",
+      "packageId": "nova-boxer",
+      "supported": true,
+      "occurrences": 2
+    },
+    {
+      "controller": "s",
+      "packageId": "nova-boxer",
+      "supported": false,
+      "reason": "not-in-supported-controller-set",
+      "occurrences": 8
+    }
+  ],
+  "supportedCount": 4,
+  "unsupportedCount": 4,
+  "denominator": 8,
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "ceb0e430216e44dff07711f936ca2500b8bb124d3053a5bf01684daa911e89a2"
+  }
+}

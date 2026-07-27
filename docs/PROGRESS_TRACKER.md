@@ -1,5 +1,10 @@
 ﻿# Progress Tracker
 
+## DA28-11…30 drain (closed-bounded, 2026-07-26)
+
+- Native dual live execution, extensions, Studio IDB, evidence materializers,
+  BoundaryManifest command consumer. Entry 611. `nextQueue` empty. Scores held.
+
 ## Gamepad input - DA28-10 (closed-bounded, 2026-07-26)
 
 - Gamepad API polling + App merge. Entry 610. Next: **DA28-11**. Scores held.
