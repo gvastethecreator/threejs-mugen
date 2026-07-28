@@ -147,7 +147,7 @@ async function runViewport(browser, base, options) {
     const projectName = `DA32-021 ${options.id} authority`;
     await page.locator("[data-project-name]").first().fill(projectName);
     await page.locator("[data-project-name]").first().press("Tab");
-    await page.locator('[data-action="save-project-local"]').first().click();
+    await clickAction(page, "save-project-local");
     await page.waitForFunction(
       (name) => {
         const bridge = window.__MUGEN_WEB_SANDBOX__;
@@ -241,6 +241,14 @@ async function clickStoredProject(page, projectId) {
   }, projectId);
 }
 
+async function clickAction(page, action) {
+  await page.evaluate((actionName) => {
+    const button = document.querySelector(`[data-action="${actionName}"]`);
+    if (!button) throw new Error(`action ${actionName} is missing`);
+    button.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
+  }, action);
+}
+
 async function clearProjectState(page) {
   await page.evaluate(async (name) => {
     localStorage.clear();
@@ -311,7 +319,7 @@ async function runConflictJourney(context, base, primary, projectId, projectName
     const remoteName = `${projectName} remote revision`;
     await remote.locator("[data-project-name]").first().fill(remoteName);
     await remote.locator("[data-project-name]").first().press("Tab");
-    await remote.locator('[data-action="save-project-local"]').first().click();
+    await clickAction(remote, "save-project-local");
     await remote.waitForFunction(
       (name) => window.__MUGEN_WEB_SANDBOX__?.projectDirty === false &&
         window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision === 2 &&
