@@ -1,6 +1,6 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T06:09:14.982Z",
+  "generatedAt": "2026-07-28T06:29:16.347Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted",
@@ -52,11 +52,14 @@
       ]
     },
     "DA32-010": {
-      "status": "accepted-virtual",
-      "note": "virtual gamepad sequence unit proof plus live adapter diagnostics",
+      "status": "accepted-browser-virtual",
+      "note": "clean-subject desktop/mobile browser gate covers connect, hold, two seats, disconnect, keyboard fallback, mapping warning, and index-change reconnect; hardware remains open",
       "artifacts": [
-        "src/mugen/da32/GamepadDeviceLab.ts",
-        "src/game/input/GamepadInputAdapter.ts"
+        "scripts/qa_browser_gate_da32_010_gamepad.cjs",
+        "docs/evidence/da32/da32-010-gamepad-browser-gate.json",
+        "src/game/input/GamepadInputAdapter.ts",
+        "src/game/input/KeyboardInputAdapter.ts",
+        "src/app/App.ts"
       ]
     },
     "DA32-013": {
@@ -100,6 +103,6 @@
   "claimCeiling": "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "fafbdd88d7dc59431dc8fa63bde5153f7ebe5fedda9efc25779e9c3efce544b2"
+    "value": "103c13f0fb6340ca03d9e202d3478bca9ec691507856638eeddb983223485a83"
   }
 }

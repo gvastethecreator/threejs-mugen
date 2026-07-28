@@ -19,7 +19,8 @@
   The full `qa:smoke` sample is green at the current subject HEAD. DA32-002
   and DA32-005 still keep their named focal claim ceilings. Next: expand the
   visual matrix, close the remaining Studio lanes, review the proposed human
-  watermark, and continue the hardware gamepad work.
+  watermark, and continue the hardware gamepad work. DA32-010 now has a clean
+  subject virtual browser gate; hardware remains open.
 
 ## DA32 smoke ownership closeout - 8c6d6c80 (green subject checkpoint, 2026-07-28)
 
@@ -69,6 +70,27 @@ movement, public release, and full MUGEN/IKEMEN parity.
 Claim allowed: simulated input diagnostics and the code-level canvas
 alternative. Claim blocked: physical device proof, screen-reader journey,
 contrast audit, WCAG certification, public release, and full parity.
+
+## DA32-010 virtual gamepad browser gate - 1c3aac8e (closed-bounded, 2026-07-28)
+
+- `pnpm qa:browser:da32-010-gamepad` passed against clean subject
+  `1c3aac8e` at desktop `1440x900` and mobile `390x844`; unexpected console
+  errors: zero.
+- The browser gate drives the real `GamepadInputAdapter` through injected
+  `Gamepad` objects and browser connection events. It proves standard P1,
+  non-standard P2, held button-to-action mapping, two-seat binding, unplug
+  clearing, keyboard fallback, and reconnect with changed device index.
+- The App bridge now exposes a copied keyboard state plus copied gamepad
+  diagnostics and the eight-event device window for deterministic browser
+  evidence. The visible Pads metric and live summary are checked after the
+  final reconnect in both viewports.
+- Evidence: `docs/evidence/da32/da32-010-gamepad-browser-gate.json` and
+  `docs/evidence/da32/browser/da32-010-gamepad-desktop.png`,
+  `docs/evidence/da32/browser/da32-010-gamepad-mobile.png`.
+
+Claim allowed: named virtual browser route, two viewports, input mappings, and
+runtime status behavior. Claim blocked: physical hardware, all browser/device
+models, screen-reader flow, contrast, public release, and full parity.
 
 ## Interface desktop layout repair - d8c4dfaa/b4788b85 (closed bounded, 2026-07-27)
 

@@ -102,12 +102,32 @@ const clause = {
 clause.digest = { algorithm: "sha-256", value: sha(JSON.stringify({ ...clause, digest: undefined })) };
 fs.writeFileSync(path.join(outDir, "da32-clause-sample-v1.json"), `${JSON.stringify(clause, null, 2)}\n`, "utf8");
 
+const gamepadBrowserGatePath = path.join(outDir, "da32-010-gamepad-browser-gate.json");
+let gamepadBrowserGate = null;
+if (fs.existsSync(gamepadBrowserGatePath)) {
+  try {
+    gamepadBrowserGate = JSON.parse(fs.readFileSync(gamepadBrowserGatePath, "utf8"));
+  } catch {
+    gamepadBrowserGate = null;
+  }
+}
+const gamepadBrowserGateOk = gamepadBrowserGate?.ok === true;
+
 const gamepad = {
   schema: "Da32GamepadDeviceLab/v1",
   id: "DA32-009",
   physicalDeviceRequiredForFullClaim: true,
   simulatedBaseline: true,
   hardwareOk: null,
+  browserGate: gamepadBrowserGate
+    ? {
+        id: "DA32-010",
+        ok: gamepadBrowserGateOk,
+        headSha: gamepadBrowserGate.headSha,
+        viewports: gamepadBrowserGate.cases?.map((item) => item.viewport) ?? [],
+        report: "docs/evidence/da32/da32-010-gamepad-browser-gate.json",
+      }
+    : null,
   claimCeiling: "protocol + simulated baseline + runtime status diagnostics; physical device claim remains open",
 };
 gamepad.digest = { algorithm: "sha-256", value: sha(JSON.stringify({ ...gamepad, digest: undefined })) };
@@ -216,9 +236,19 @@ const status = {
       ],
     },
     "DA32-010": {
-      status: "accepted-virtual",
-      note: "virtual gamepad sequence unit proof plus live adapter diagnostics",
-      artifacts: ["src/mugen/da32/GamepadDeviceLab.ts", "src/game/input/GamepadInputAdapter.ts"],
+      status: gamepadBrowserGateOk ? "accepted-browser-virtual" : "accepted-virtual",
+      note: gamepadBrowserGateOk
+        ? "clean-subject desktop/mobile browser gate covers connect, hold, two seats, disconnect, keyboard fallback, mapping warning, and index-change reconnect; hardware remains open"
+        : "virtual gamepad sequence unit proof plus live adapter diagnostics",
+      artifacts: gamepadBrowserGateOk
+        ? [
+            "scripts/qa_browser_gate_da32_010_gamepad.cjs",
+            "docs/evidence/da32/da32-010-gamepad-browser-gate.json",
+            "src/game/input/GamepadInputAdapter.ts",
+            "src/game/input/KeyboardInputAdapter.ts",
+            "src/app/App.ts",
+          ]
+        : ["src/mugen/da32/GamepadDeviceLab.ts", "src/game/input/GamepadInputAdapter.ts"],
     },
     "DA32-013": {
       status: "accepted-sample",

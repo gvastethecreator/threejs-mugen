@@ -4,9 +4,19 @@
   "physicalDeviceRequiredForFullClaim": true,
   "simulatedBaseline": true,
   "hardwareOk": null,
+  "browserGate": {
+    "id": "DA32-010",
+    "ok": true,
+    "headSha": "1c3aac8e5f3a2b202bfac44b8c9490e7be7f13e4",
+    "viewports": [
+      "1440x900",
+      "390x844"
+    ],
+    "report": "docs/evidence/da32/da32-010-gamepad-browser-gate.json"
+  },
   "claimCeiling": "protocol + simulated baseline + runtime status diagnostics; physical device claim remains open",
   "digest": {
     "algorithm": "sha-256",
-    "value": "66a21282e9dc1d7b8e7d41bf19499ac0805aa7431fec1fc42f6a9e997c2d6968"
+    "value": "921fefe41f3d54ce5042281e2ed52d28fb0bf4605571ed65272b46d15484443c"
   }
 }
