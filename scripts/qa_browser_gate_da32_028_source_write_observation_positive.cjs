@@ -36,6 +36,37 @@ function isBenign(message) {
   return /WebGL|swiftshader|ANGLE|GPU process|DevTools|favicon/i.test(String(message));
 }
 
+function summarizeIntent(value) {
+  if (!value || typeof value !== "object") return value;
+  const observation = value.observation && typeof value.observation === "object"
+    ? {
+        status: value.observation.status,
+        observedAt: value.observation.observedAt,
+        digest: value.observation.digest,
+        byteLength: value.observation.byteLength,
+        permission: value.observation.permission,
+        diagnostics: value.observation.diagnostics,
+      }
+    : undefined;
+  return {
+    schema: value.schema,
+    intentId: value.intentId,
+    path: value.path,
+    projectId: value.projectId,
+    sourcePackageId: value.sourcePackageId,
+    preimageByteLength: Array.isArray(value.preimageBytes) ? value.preimageBytes.length : undefined,
+    preimageSha256: value.preimageSha256,
+    draftDigest: value.draftDigest,
+    byteLength: value.byteLength,
+    phase: value.phase,
+    writeByteLength: value.writeByteLength,
+    observation,
+    receiptId: value.receiptId,
+    result: value.result,
+    recovery: value.recovery,
+  };
+}
+
 async function main() {
   fs.mkdirSync(outDir, { recursive: true });
   if (!fs.existsSync(fixturePath)) throw new Error(`Required KFM fixture is missing: ${fixturePath}`);
@@ -277,12 +308,12 @@ async function runViewport(browser, base, projectPath, entries, options) {
       viewport: `${options.width}x${options.height}`,
       ok: Object.values(steps).every(Boolean),
       steps,
-      before,
+      before: { ...before, bridge: summarizeIntent(before.bridge) },
       after: {
-        bridge: after.bridge,
+        bridge: summarizeIntent(after.bridge),
         receipt: after.receipt,
         sourceHandle: after.sourceHandle,
-        durableIntent: afterIntent,
+        durableIntent: summarizeIntent(afterIntent),
         writeCalls: after.writeCalls,
       },
       viewportState: viewport,
