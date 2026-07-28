@@ -184,7 +184,7 @@ async function runViewport(browser, base, options) {
     steps.reloadRestoresRow = true;
     const row = page.locator(`[data-stored-project-id="${projectId}"]`).first();
     await row.waitFor({ state: "attached", timeout: 15_000 });
-    await row.click();
+    await clickStoredProject(page, projectId);
     await page.waitForFunction(
       (name) => window.__MUGEN_WEB_SANDBOX__?.project?.name === name &&
         window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision === 1 &&
@@ -229,6 +229,16 @@ async function runViewport(browser, base, options) {
 async function waitForStudio(page) {
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.qaProbe), null, { timeout: 60_000 });
   await page.waitForSelector('[data-action="save-project-local"]', { timeout: 30_000 });
+}
+
+async function clickStoredProject(page, projectId) {
+  await page.evaluate((id) => {
+    const row = [...document.querySelectorAll("[data-stored-project-id]")].find(
+      (element) => element.getAttribute("data-stored-project-id") === id,
+    );
+    if (!row) throw new Error(`stored project row ${id} is missing`);
+    row.click();
+  }, projectId);
 }
 
 async function clearProjectState(page) {
@@ -288,7 +298,7 @@ async function runConflictJourney(context, base, primary, projectId, projectName
       projectId,
       { timeout: 30_000 },
     );
-    await remote.locator(`[data-stored-project-id="${projectId}"]`).first().click();
+    await clickStoredProject(remote, projectId);
     await remote.waitForFunction(
       (name) => window.__MUGEN_WEB_SANDBOX__?.project?.name === name && window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision === 1,
       projectName,
