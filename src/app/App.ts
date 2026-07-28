@@ -99,6 +99,12 @@ import {
 } from "./ProjectStorage";
 import { StudioProjectStore, type StudioProjectStoreBackend } from "./StudioProjectStore";
 import { snapshotAfterProjectSave } from "./ProjectSnapshotBridge";
+import {
+  getStudioIndexedDbSnapshotDiagnostics,
+  retryStudioIndexedDbSnapshot,
+  saveProjectSnapshot,
+  STUDIO_INDEXEDDB_SNAPSHOT_SCHEMA,
+} from "./StudioIndexedDbSnapshot";
 import { StudioEditHistory, type StudioProjectEditState } from "./StudioEditHistory";
 import { listStoredTraceEvidence, saveStoredTraceEvidence, type StoredTraceEvidenceEntry } from "./StudioEvidenceStorage";
 import { StudioAutosave } from "./StudioAutosave";
@@ -2026,9 +2032,12 @@ export class App {
 
   private async retryProjectStorage(): Promise<void> {
     await this.hydrateStoredProjectsFromAuthority();
+    const snapshotStorage = await retryStudioIndexedDbSnapshot();
     this.log(
       this.projectStorageBackend === "indexeddb"
-        ? "IndexedDB project storage is available again."
+        ? snapshotStorage.authoritative
+          ? "IndexedDB project and snapshot storage are available again."
+          : "IndexedDB project storage is available; snapshot storage remains on its fallback."
         : "IndexedDB project storage is still unavailable; the current fallback remains active.",
     );
     this.updateUi();
@@ -2726,7 +2735,7 @@ export class App {
       this.projectStorageBackend = "indexeddb";
       this.mirrorStoredProjectCache(entries);
       const entry = entries.find((candidate) => candidate.id === manifest.id);
-      if (entry) this.saveProjectSnapshotBestEffort(entry);
+      if (entry) await this.saveProjectSnapshotBestEffort(entry);
       return entries;
     }
     this.projectStorageBackend = "localstorage-cache";
@@ -2734,9 +2743,31 @@ export class App {
     return entries;
   }
 
-  private saveProjectSnapshotBestEffort(entry: StoredProjectEntry): void {
+  private async saveProjectSnapshotBestEffort(entry: StoredProjectEntry): Promise<void> {
     try {
-      snapshotAfterProjectSave({ storage: window.localStorage, entry });
+      const bridge = snapshotAfterProjectSave({ storage: window.localStorage, entry });
+      const snapshot = bridge.snapshot;
+      const result = await saveProjectSnapshot({
+        schema: STUDIO_INDEXEDDB_SNAPSHOT_SCHEMA,
+        projectId: entry.id,
+        revision: entry.revision,
+        authoritySha: snapshot.authority.globalSha,
+        analysisDigest: snapshot.analysis.checksum,
+        ...(snapshot.assetClosureChecksum ? { assetClosureDigest: snapshot.assetClosureChecksum } : {}),
+        evidenceRefs: [],
+        payload: JSON.stringify(snapshot),
+        savedAt: snapshot.savedAt,
+      });
+      if (!result.ok) {
+        this.log(`Project snapshot was not stored: ${result.reason}`);
+      }
+      const diagnostics = getStudioIndexedDbSnapshotDiagnostics();
+      if (!diagnostics.authoritative) {
+        this.log(`Project snapshot retained in ${diagnostics.backend} storage${diagnostics.lastError ? `: ${diagnostics.lastError}` : "."}`);
+      }
+      if (!bridge.identityPreserved) {
+        this.log(`Project snapshot local identity check: ${bridge.diagnostics.join(", ")}`);
+      }
     } catch (error) {
       this.log(`Project snapshot unavailable: ${error instanceof Error ? error.message : String(error)}`);
     }
@@ -4684,21 +4715,33 @@ export class App {
   }
 
   private renderProjectStorageStatus(): string {
-    if (this.projectStorageBackend === "indexeddb") return "";
     const diagnostics = this.studioProjectStore.getDiagnostics();
-    const channel = this.projectStorageBackend === "localstorage-cache" ? "local cache" : "memory";
-    const detail = diagnostics.lastError ? ` / ${diagnostics.lastError.slice(0, 180)}` : "";
+    const snapshotDiagnostics = getStudioIndexedDbSnapshotDiagnostics();
+    if (this.projectStorageBackend === "indexeddb" && snapshotDiagnostics.authoritative) return "";
+    const channel =
+      this.projectStorageBackend === "indexeddb"
+        ? "IndexedDB"
+        : this.projectStorageBackend === "localstorage-cache"
+          ? "local cache"
+          : "memory";
+    const snapshotChannel = snapshotDiagnostics.authoritative ? "IndexedDB" : snapshotDiagnostics.backend;
+    const detail = [
+      diagnostics.lastError ? diagnostics.lastError.slice(0, 180) : "",
+      snapshotDiagnostics.lastError ? `snapshot: ${snapshotDiagnostics.lastError.slice(0, 180)}` : "",
+    ]
+      .filter(Boolean)
+      .join(" / ");
     return `
       <section class="studio-project-conflict studio-project-storage-status" role="status" aria-live="polite" aria-label="Project storage fallback">
         <div class="studio-project-conflict-head">
           ${tablerIcon("server", "ui-icon action-icon")}
           <span>
             <strong>Project storage fallback</strong>
-            <small>${escapeHtml(channel)}${escapeHtml(detail)}</small>
+            <small>${escapeHtml(channel)} / snapshot ${escapeHtml(snapshotChannel)}${detail ? ` / ${escapeHtml(detail)}` : ""}</small>
           </span>
         </div>
         <div class="studio-project-conflict-actions">
-          <button type="button" data-action="retry-project-storage" title="Retry IndexedDB project storage">
+          <button type="button" data-action="retry-project-storage" title="Retry IndexedDB project and snapshot storage">
             ${tablerIcon("reset", "ui-icon action-icon")}
             <span>Retry IndexedDB</span>
           </button>
@@ -13812,6 +13855,7 @@ export class App {
         storedProjects: StoredProjectEntry[];
         projectStorageBackend: ProjectStorageBackend;
         studioStorage: ReturnType<StudioProjectStore["getDiagnostics"]>;
+        studioSnapshotStorage: ReturnType<typeof getStudioIndexedDbSnapshotDiagnostics>;
         projectDirty: boolean;
         projectStorageRevision?: number;
         projectStorageConflict?: ProjectStorageConflict;
@@ -13907,6 +13951,7 @@ export class App {
       storedProjects: this.storedProjects,
       projectStorageBackend: this.projectStorageBackend,
       studioStorage: this.studioProjectStore.getDiagnostics(),
+      studioSnapshotStorage: getStudioIndexedDbSnapshotDiagnostics(),
       projectDirty: this.projectDirty,
       projectStorageRevision: this.projectStorageRevision,
       projectStorageConflict: this.projectStorageConflict,

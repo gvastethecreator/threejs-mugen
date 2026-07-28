@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   clearStudioIndexedDbMemory,
+  getStudioIndexedDbSnapshotDiagnostics,
   loadProjectSnapshot,
   replaySourceWriteIntent,
   saveProjectSnapshot,
@@ -8,6 +9,13 @@ import {
 } from "../app/StudioIndexedDbSnapshot";
 
 describe("StudioIndexedDbSnapshot", () => {
+  it("reports memory authority when IndexedDB is unavailable to the test runtime", () => {
+    const diagnostics = getStudioIndexedDbSnapshotDiagnostics();
+    expect(diagnostics.schema).toBe("StudioIndexedDbSnapshot/v1");
+    expect(diagnostics.backend).toBe("memory");
+    expect(diagnostics.authoritative).toBe(false);
+  });
+
   it("saves and reloads project snapshots fail-closed on bad revision", async () => {
     clearStudioIndexedDbMemory();
     const bad = await saveProjectSnapshot({

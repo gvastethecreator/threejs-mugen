@@ -1,0 +1,295 @@
+{
+  "schema": "Da32StudioSnapshotBrowserGate/v1",
+  "id": "DA32-022",
+  "generatedAt": "2026-07-28T07:37:44.046Z",
+  "subject": {
+    "schema": "Da31GateSubjectEnvelope/v1",
+    "subjectSha": "aca763a41d663f70985702a3a638893bcd8fed86",
+    "dirtyTree": true,
+    "provisional": true,
+    "probePaths": [
+      "scripts/qa_browser_gate_da32_022_studio_snapshot.cjs"
+    ],
+    "codePaths": [
+      "src/app/App.ts",
+      "src/app/ProjectSnapshotBridge.ts",
+      "src/app/StudioIndexedDbSnapshot.ts"
+    ],
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+  },
+  "headSha": "aca763a41d663f70985702a3a638893bcd8fed86",
+  "ok": true,
+  "route": "/?mode=studio&studio=workbench&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+  "projectDatabase": "mugen-web-sandbox-projects",
+  "snapshotDatabase": "mugen-web-sandbox-studio",
+  "cases": [
+    {
+      "id": "desktop",
+      "viewport": "1440x900",
+      "ok": true,
+      "steps": {
+        "authorityReady": true,
+        "saved": true,
+        "snapshotRecord": true,
+        "snapshotSurvivesReload": true,
+        "noHorizontalOverflow": true
+      },
+      "projectId": "da32-022-desktop-snapshot",
+      "snapshotBeforeReload": {
+        "available": true,
+        "records": [
+          {
+            "schema": "StudioIndexedDbSnapshot/v1",
+            "projectId": "da32-022-desktop-snapshot",
+            "revision": 1,
+            "authoritySha": "7d9b15f8",
+            "analysisDigest": "analysis:da32-022-desktop-snapshot:r1",
+            "payload": {
+              "schema": "StudioProjectSnapshot/v1",
+              "id": "snap:da32-022-desktop-snapshot:r1",
+              "projectId": "da32-022-desktop-snapshot",
+              "projectName": "DA32-022 desktop snapshot",
+              "projectRevision": 1,
+              "savedAt": "2026-07-28T07:37:34.762Z",
+              "source": {
+                "packageId": "da32-022-desktop-snapshot",
+                "kind": "folder",
+                "fingerprint": "manifest:da32-022-desktop-snapshot:r1",
+                "identityStatus": "matched"
+              },
+              "authority": {
+                "formalSha": "7d9b15f8",
+                "globalSha": "7d9b15f8"
+              },
+              "analysis": {
+                "schemaVersion": "mugen-web-sandbox/package-analysis/v1",
+                "checksum": "analysis:da32-022-desktop-snapshot:r1",
+                "status": "partial",
+                "findingCount": 0
+              },
+              "versions": {
+                "app": "0.0.0-sandbox",
+                "analyzer": "1.0.0",
+                "ruleset": "1.0.0"
+              },
+              "integrity": "2e13bc5c"
+            },
+            "savedAt": "2026-07-28T07:37:34.762Z"
+          }
+        ]
+      },
+      "snapshotAfterReload": {
+        "available": true,
+        "records": [
+          {
+            "schema": "StudioIndexedDbSnapshot/v1",
+            "projectId": "da32-022-desktop-snapshot",
+            "revision": 1,
+            "authoritySha": "7d9b15f8",
+            "analysisDigest": "analysis:da32-022-desktop-snapshot:r1",
+            "payload": {
+              "schema": "StudioProjectSnapshot/v1",
+              "id": "snap:da32-022-desktop-snapshot:r1",
+              "projectId": "da32-022-desktop-snapshot",
+              "projectName": "DA32-022 desktop snapshot",
+              "projectRevision": 1,
+              "savedAt": "2026-07-28T07:37:34.762Z",
+              "source": {
+                "packageId": "da32-022-desktop-snapshot",
+                "kind": "folder",
+                "fingerprint": "manifest:da32-022-desktop-snapshot:r1",
+                "identityStatus": "matched"
+              },
+              "authority": {
+                "formalSha": "7d9b15f8",
+                "globalSha": "7d9b15f8"
+              },
+              "analysis": {
+                "schemaVersion": "mugen-web-sandbox/package-analysis/v1",
+                "checksum": "analysis:da32-022-desktop-snapshot:r1",
+                "status": "partial",
+                "findingCount": 0
+              },
+              "versions": {
+                "app": "0.0.0-sandbox",
+                "analyzer": "1.0.0",
+                "ruleset": "1.0.0"
+              },
+              "integrity": "2e13bc5c"
+            },
+            "savedAt": "2026-07-28T07:37:34.762Z"
+          }
+        ]
+      },
+      "viewportState": {
+        "innerWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-022-studio-snapshot-desktop.png",
+      "consoleErrors": []
+    },
+    {
+      "id": "mobile",
+      "viewport": "390x844",
+      "ok": true,
+      "steps": {
+        "authorityReady": true,
+        "saved": true,
+        "snapshotRecord": true,
+        "snapshotSurvivesReload": true,
+        "noHorizontalOverflow": true
+      },
+      "projectId": "da32-022-mobile-snapshot",
+      "snapshotBeforeReload": {
+        "available": true,
+        "records": [
+          {
+            "schema": "StudioIndexedDbSnapshot/v1",
+            "projectId": "da32-022-mobile-snapshot",
+            "revision": 1,
+            "authoritySha": "7d9b15f8",
+            "analysisDigest": "analysis:da32-022-mobile-snapshot:r1",
+            "payload": {
+              "schema": "StudioProjectSnapshot/v1",
+              "id": "snap:da32-022-mobile-snapshot:r1",
+              "projectId": "da32-022-mobile-snapshot",
+              "projectName": "DA32-022 mobile snapshot",
+              "projectRevision": 1,
+              "savedAt": "2026-07-28T07:37:39.928Z",
+              "source": {
+                "packageId": "da32-022-mobile-snapshot",
+                "kind": "folder",
+                "fingerprint": "manifest:da32-022-mobile-snapshot:r1",
+                "identityStatus": "matched"
+              },
+              "authority": {
+                "formalSha": "7d9b15f8",
+                "globalSha": "7d9b15f8"
+              },
+              "analysis": {
+                "schemaVersion": "mugen-web-sandbox/package-analysis/v1",
+                "checksum": "analysis:da32-022-mobile-snapshot:r1",
+                "status": "partial",
+                "findingCount": 0
+              },
+              "versions": {
+                "app": "0.0.0-sandbox",
+                "analyzer": "1.0.0",
+                "ruleset": "1.0.0"
+              },
+              "integrity": "4d17a5e7"
+            },
+            "savedAt": "2026-07-28T07:37:39.928Z"
+          }
+        ]
+      },
+      "snapshotAfterReload": {
+        "available": true,
+        "records": [
+          {
+            "schema": "StudioIndexedDbSnapshot/v1",
+            "projectId": "da32-022-mobile-snapshot",
+            "revision": 1,
+            "authoritySha": "7d9b15f8",
+            "analysisDigest": "analysis:da32-022-mobile-snapshot:r1",
+            "payload": {
+              "schema": "StudioProjectSnapshot/v1",
+              "id": "snap:da32-022-mobile-snapshot:r1",
+              "projectId": "da32-022-mobile-snapshot",
+              "projectName": "DA32-022 mobile snapshot",
+              "projectRevision": 1,
+              "savedAt": "2026-07-28T07:37:39.928Z",
+              "source": {
+                "packageId": "da32-022-mobile-snapshot",
+                "kind": "folder",
+                "fingerprint": "manifest:da32-022-mobile-snapshot:r1",
+                "identityStatus": "matched"
+              },
+              "authority": {
+                "formalSha": "7d9b15f8",
+                "globalSha": "7d9b15f8"
+              },
+              "analysis": {
+                "schemaVersion": "mugen-web-sandbox/package-analysis/v1",
+                "checksum": "analysis:da32-022-mobile-snapshot:r1",
+                "status": "partial",
+                "findingCount": 0
+              },
+              "versions": {
+                "app": "0.0.0-sandbox",
+                "analyzer": "1.0.0",
+                "ruleset": "1.0.0"
+              },
+              "integrity": "4d17a5e7"
+            },
+            "savedAt": "2026-07-28T07:37:39.928Z"
+          }
+        ]
+      },
+      "viewportState": {
+        "innerWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-022-studio-snapshot-mobile.png",
+      "consoleErrors": []
+    },
+    {
+      "id": "fallback-no-indexeddb",
+      "viewport": "1440x900",
+      "ok": true,
+      "steps": {
+        "noIndexedDb": true,
+        "fallbackVisible": true,
+        "cacheSave": true,
+        "retryKeepsFallback": true,
+        "noHorizontalOverflow": true
+      },
+      "bridge": {
+        "backend": "localstorage-cache",
+        "storage": {
+          "schema": "StudioProjectStore/v1",
+          "database": "mugen-web-sandbox-projects",
+          "backend": "memory",
+          "authoritative": false
+        },
+        "snapshotStorage": {
+          "schema": "StudioIndexedDbSnapshot/v1",
+          "database": "mugen-web-sandbox-studio",
+          "backend": "memory",
+          "authoritative": false
+        }
+      },
+      "viewportState": {
+        "innerWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-022-studio-snapshot-fallback.png",
+      "consoleErrors": []
+    }
+  ],
+  "unexpectedConsole": [],
+  "claimCeiling": "provisional Studio snapshot observations for named viewports",
+  "claims": {
+    "allowed": [
+      "a saved Studio project produces one durable StudioIndexedDbSnapshot/v1 record",
+      "the snapshot record keeps project revision, authority digest, and a JSON project snapshot payload",
+      "the browser can read the snapshot record after a page reload at desktop and mobile sizes",
+      "the no-IndexedDB route exposes memory fallback and keeps project saving available through the cache",
+      "the named routes have no horizontal overflow or unexpected page errors"
+    ],
+    "blocked": [
+      "source-write intent replay in a live editor flow",
+      "quota and eviction recovery",
+      "large binary source blobs",
+      "physical browser coverage",
+      "full Studio authoring and release parity"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "988236eeae9087b5b6f4f15e0cf5ff72d1bd709e82407dd992e8a948741bc9de"
+  }
+}

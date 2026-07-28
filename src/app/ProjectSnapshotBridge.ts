@@ -72,8 +72,19 @@ export function snapshotAfterProjectSave(input: ProjectSnapshotBridgeInput): Pro
     ...(input.assetClosureChecksum ? { assetClosureChecksum: input.assetClosureChecksum } : {}),
   });
 
-  saveStudioProjectSnapshot(input.storage, snapshot);
-  const reopen = reopenStudioProjectIdentity(input.storage, input.entry.id);
+  let reopen: ReturnType<typeof reopenStudioProjectIdentity>;
+  try {
+    saveStudioProjectSnapshot(input.storage, snapshot);
+    reopen = reopenStudioProjectIdentity(input.storage, input.entry.id);
+  } catch (error) {
+    reopen = {
+      identityPreserved: false,
+      diagnostics: [
+        "local-snapshot-write-failed",
+        error instanceof Error ? error.message : String(error),
+      ],
+    };
+  }
   return {
     schema: PROJECT_SNAPSHOT_BRIDGE_SCHEMA,
     snapshot,
