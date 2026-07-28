@@ -36,6 +36,7 @@ describe("CharacterRenderer", () => {
         actorPosition: { x: 40, y: -12 },
         facing: -1,
         sprite: { width: 12, height: 16, axisX: 6, axisY: 14 },
+        frame: { group: 10, index: 0 },
         frameOffset: { x: 0, y: 0 },
         renderScale: { x: 1.5, y: 0.75 },
         spritePriority: 2,

@@ -93,6 +93,7 @@ export class CharacterRenderer {
         actorPosition: { ...actor.runtime.pos },
         facing: actor.runtime.facing,
         sprite: { width: sprite.width, height: sprite.height, axisX: sprite.axisX, axisY: sprite.axisY },
+        frame: { group: frame?.spriteGroup ?? 9000, index: frame?.spriteIndex ?? (actor.id === "p2" ? 2 : 1) },
         frameOffset: { x: frame?.offsetX ?? 0, y: frame?.offsetY ?? 0 },
         renderScale: { ...(actor.runtime.renderScale ?? { x: 1, y: 1 }) },
         spritePriority: priority,
@@ -237,6 +238,7 @@ export type CharacterSpritePresentation = {
   actorPosition: { x: number; y: number };
   facing: 1 | -1;
   sprite: { width: number; height: number; axisX: number; axisY: number };
+  frame: { group: number; index: number };
   frameOffset: { x: number; y: number };
   renderScale: { x: number; y: number };
   spritePriority: number;

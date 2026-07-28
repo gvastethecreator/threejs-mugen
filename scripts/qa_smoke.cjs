@@ -23,6 +23,14 @@ const MUGEN_LITE_JOURNEY_PALETTE_COLORS = [
   [35, 195, 255],
   [255, 210, 45],
 ];
+const QA_STAGE_OVERLAY_SELECTORS = [
+  ".frame-rail",
+  ".stage-toolbar",
+  ".round-hud",
+  ".stage-status",
+  ".studio-stage-deck",
+  ".touch-controls",
+].join(",");
 
 const routeParams = `p1=${DEFAULT_P1}&p2=${DEFAULT_P2}&stage=${DEFAULT_STAGE}`;
 const runtimeRoute = `/?mode=match&${routeParams}`;
@@ -513,6 +521,7 @@ async function captureMugenLiteVisual(page, baseUrl, outDir) {
   });
   const fixtureBuffer = Buffer.from(fixtureBytes);
   fs.writeFileSync(path.join(outDir, "mugen-lite-journey.zip"), fixtureBuffer);
+  await installMugenLiteQaGamepad(page);
   const desktop = await captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, {
     viewport: { width: 1440, height: 960 },
     screenshotPath: path.join(outDir, "mugen-lite-runtime-desktop.png"),
@@ -947,8 +956,8 @@ async function captureMugenLiteGuardJourney(page, options, importedId) {
     };
   });
   const waitMs = 20_000;
-  // Keyboard-driven guard: approach, then hold back (ArrowLeft→B). Prove defensive
-  // states without relying on P2 AI attack (flaky under headless).
+  // Keyboard-driven guard: approach, then hold back while the virtual P2 pad
+  // supplies a deterministic punch. The proof must observe the authored guard hit state.
   await page.evaluate(() => {
     if (!window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing) {
       document.querySelector('[data-action="play-pause"]')?.click();
@@ -969,49 +978,78 @@ async function captureMugenLiteGuardJourney(page, options, importedId) {
 
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false, null, { timeout: waitMs });
   let guardObserved = false;
+  const guardHistory = [];
+  await setMugenLiteQaGamepad(page, { button3: false });
+  await page.keyboard.down("ArrowRight");
+  try {
+    for (let i = 0; i < 12; i += 1) {
+      await stepMugenLiteTick(page);
+    }
+  } finally {
+    await page.keyboard.up("ArrowRight");
+  }
+  await setMugenLiteQaGamepad(page, { button3: true });
+  // Let P2 enter punch startup while P1 stays at the contact point. Hold back
+  // on the last startup tick so the auto-guard window and active hit share one frame.
+  for (let i = 0; i < 5; i += 1) {
+    await stepMugenLiteTick(page);
+  }
   await page.keyboard.down("ArrowLeft");
   try {
-    for (let i = 0; i < 48; i += 1) {
+    for (let i = 0; i < 24; i += 1) {
       await stepMugenLiteTick(page);
-      guardObserved = await page.evaluate(() => {
-        const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((c) => c.id === "p1");
-        const state = actor?.runtime?.stateNo;
-        const guarding = actor?.runtime?.guarding === true;
-        // standing/crouch guard family or explicit guarding flag
-        return guarding ||
-          state === 120 || state === 130 || state === 131 || state === 132 ||
-          state === 140 || state === 150 || state === 151 || state === 152;
+      const sample = await page.evaluate(() => {
+        const bridge = window.__MUGEN_WEB_SANDBOX__;
+        const actors = bridge?.snapshot?.actors ?? [];
+        const actor = actors.find((c) => c.id === "p1");
+        const opponent = actors.find((c) => c.id === "p2");
+        return {
+          tick: bridge?.snapshot?.tick,
+          p1: actor ? {
+            stateNo: actor.runtime?.stateNo,
+            frame: actor.frame?.spriteGroup,
+            guarding: actor.runtime?.guarding,
+            life: actor.runtime?.life,
+            pos: actor.runtime?.pos,
+            input: actor.runtime?.currentInput,
+            hitVars: actor.runtime?.hitVars,
+            guardStun: actor.runtime?.guardStun,
+            targetCount: actor.runtime?.targets?.length,
+          } : undefined,
+          p2: opponent ? {
+            stateNo: opponent.runtime?.stateNo,
+            frame: opponent.frame?.spriteGroup,
+            life: opponent.runtime?.life,
+            pos: opponent.runtime?.pos,
+            input: opponent.runtime?.currentInput,
+            hitVars: opponent.runtime?.hitVars,
+            targetCount: opponent.runtime?.targets?.length,
+          } : undefined,
+          logs: bridge?.snapshot?.logs?.slice(-6),
+        };
       });
+      guardHistory.push(sample);
+      guardObserved = sample.p1?.stateNo === 150 &&
+        sample.p1?.frame === 150 &&
+        sample.p1?.guarding === true;
       if (guardObserved) break;
     }
   } finally {
     await page.keyboard.up("ArrowLeft");
-  }
-  if (!guardObserved) {
-    // Fallback: hold down-back for crouch guard path
-    await page.keyboard.down("ArrowDown");
-    await page.keyboard.down("ArrowLeft");
-    try {
-      for (let i = 0; i < 24; i += 1) {
-        await stepMugenLiteTick(page);
-        guardObserved = await page.evaluate(() => {
-          const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((c) => c.id === "p1");
-          const state = actor?.runtime?.stateNo;
-          return actor?.runtime?.guarding === true ||
-            state === 10 || state === 11 || state === 120 || state === 130 || state === 131 || state === 150;
-        });
-        if (guardObserved) break;
-      }
-    } finally {
-      await page.keyboard.up("ArrowLeft");
-      await page.keyboard.up("ArrowDown");
-    }
+    await setMugenLiteQaGamepad(page, { button3: false });
   }
   if (!guardObserved) {
     const snap = await page.evaluate(() => {
-      const a = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((c) => c.id === "p1");
-      return { stateNo: a?.runtime?.stateNo, guarding: a?.runtime?.guarding, frame: a?.frame?.spriteGroup };
+      const actors = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors ?? [];
+      const p1 = actors.find((c) => c.id === "p1");
+      const p2 = actors.find((c) => c.id === "p2");
+      return {
+        tick: window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick,
+        p1: { stateNo: p1?.runtime?.stateNo, guarding: p1?.runtime?.guarding, frame: p1?.frame?.spriteGroup, life: p1?.runtime?.life },
+        p2: { stateNo: p2?.runtime?.stateNo, frame: p2?.frame?.spriteGroup, life: p2?.runtime?.life, move: p2?.runtime?.currentMove },
+      };
     });
+    snap.history = guardHistory;
     throw new Error(`MUGEN-lite guard state was not observed for p1: ${JSON.stringify(snap)}`);
   }
 
@@ -1033,7 +1071,7 @@ async function captureMugenLiteGuardJourney(page, options, importedId) {
     const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
     return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
   }, null, { timeout: waitMs }).catch(() => null);
-  return { roster, guarded, returnedToIdle: true, guardPath: "keyboard-back" };
+  return { roster, guarded, returnedToIdle: true, guardPath: "keyboard-back+gamepad-p2-punch" };
 }
 
 async function captureMugenLiteNoKoSlowJourney(page, options, importedId) {
@@ -1235,6 +1273,7 @@ async function captureMugenLiteRecoveryJourney(page, options, importedId) {
   const step = page.locator('[data-action="step"]').first();
   // Hold both recovery buttons in same command sample while stepping paused runtime.
   let recoveryObserved = false;
+  await setMugenLiteQaGamepad(page, { button3: true, button4: true });
   await page.keyboard.down("a");
   await page.keyboard.down("s");
   try {
@@ -1249,6 +1288,7 @@ async function captureMugenLiteRecoveryJourney(page, options, importedId) {
   } finally {
     await page.keyboard.up("s");
     await page.keyboard.up("a");
+    await setMugenLiteQaGamepad(page, { button3: false, button4: false });
   }
   if (!recoveryObserved) {
     const snapshot = await page.evaluate(() => {
@@ -1278,6 +1318,45 @@ async function captureMugenLiteRecoveryJourney(page, options, importedId) {
     await page.waitForTimeout(200);
   });
   return { roster, getHit, fallMotion, fallen, recovery, returnedToIdle: true, victimSeat: "p2" };
+}
+
+async function installMugenLiteQaGamepad(page) {
+  await page.addInitScript(() => {
+    const buttons = Array.from({ length: 16 }, () => ({ pressed: false, touched: false, value: 0 }));
+    const pad = {
+      id: "qa-mugen-lite-p2",
+      index: 1,
+      connected: true,
+      mapping: "standard",
+      axes: [0, 0, 0, 0],
+      buttons,
+      timestamp: 0,
+      vibrationActuator: null,
+      hapticActuators: [],
+    };
+    Object.defineProperty(window, "__MUGEN_QA_P2_PAD__", { configurable: true, value: pad });
+    const getGamepads = () => [null, pad];
+    try {
+      Object.defineProperty(Navigator.prototype, "getGamepads", { configurable: true, value: getGamepads });
+    } catch {
+      Object.defineProperty(navigator, "getGamepads", { configurable: true, value: getGamepads });
+    }
+  });
+}
+
+async function setMugenLiteQaGamepad(page, pressedButtons) {
+  await page.evaluate((nextButtons) => {
+    const pad = window.__MUGEN_QA_P2_PAD__;
+    if (!pad) return;
+    for (const [id, pressed] of Object.entries(nextButtons)) {
+      const index = Number(id.replace("button", ""));
+      const button = pad.buttons[index];
+      if (!button) continue;
+      button.pressed = pressed;
+      button.touched = pressed;
+      button.value = pressed ? 1 : 0;
+    }
+  }, pressedButtons);
 }
 
 async function captureMugenLiteCombatJourney(page, options) {
@@ -1368,8 +1447,8 @@ async function stepAndCaptureMugenLiteActorState(page, actorId, stateNo, action,
   throw new Error(`MUGEN-lite ${label} frame was not observed for ${actorId} within ${maxSteps} visible steps`);
 }
 
-function pauseWhenMugenLiteContactAppears(page, label) {
-  return page.evaluate((contactLabel) => new Promise((resolve, reject) => {
+function pauseWhenMugenLiteContactAppears(page, label, maxDistance = 100) {
+  return page.evaluate(({ contactLabel, maxDistance: distanceLimit }) => new Promise((resolve, reject) => {
     let lastSnapshot = {};
     const timeout = window.setTimeout(() => reject(new Error(`MUGEN-lite ${contactLabel} was not observed: ${JSON.stringify(lastSnapshot)}`)), 5000);
     const check = () => {
@@ -1383,7 +1462,7 @@ function pauseWhenMugenLiteContactAppears(page, label) {
         p1: p1 ? { stateNo: p1.runtime?.stateNo, x: p1.runtime?.pos?.x, facing: p1.runtime?.facing } : undefined,
         p2: p2 ? { stateNo: p2.runtime?.stateNo, x: p2.runtime?.pos?.x, facing: p2.runtime?.facing } : undefined,
       };
-      if (p1 && p2 && Math.abs(p2.runtime.pos.x - p1.runtime.pos.x) <= 100) {
+      if (p1 && p2 && Math.abs(p2.runtime.pos.x - p1.runtime.pos.x) <= distanceLimit) {
         window.clearTimeout(timeout);
         if (bridge?.snapshot?.playing) document.querySelector('[data-action="play-pause"]')?.click();
         resolve(undefined);
@@ -1392,7 +1471,7 @@ function pauseWhenMugenLiteContactAppears(page, label) {
       window.setTimeout(check, 4);
     };
     check();
-  }), label);
+  }), { contactLabel: label, maxDistance });
 }
 
 function pauseWhenMugenLiteAttackAppears(page, label) {
@@ -1473,8 +1552,18 @@ function pauseWhenMugenLiteStateAppears(page, stateNo, action, label) {
 }
 
 async function captureMugenLiteVisualState(page, screenshotPath, canvasPath, actorId = "p1", expectedColors) {
+  await page.waitForFunction((expectedActorId) => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === expectedActorId);
+    const rendered = bridge?.renderer?.characters?.find((candidate) => candidate.actorId === expectedActorId);
+    return Boolean(actor && rendered?.sprite && rendered?.frame && rendered.actorPosition &&
+      rendered.frame.group === actor.frame?.spriteGroup &&
+      rendered.frame.index === actor.frame?.spriteIndex &&
+      Math.abs(rendered.actorPosition.x - actor.runtime.pos.x) < 0.001 &&
+      Math.abs(rendered.actorPosition.y - actor.runtime.pos.y) < 0.001);
+  }, actorId, { timeout: 2000 });
   await page.screenshot({ path: screenshotPath, fullPage: true });
-  const canvasPng = await page.locator("canvas").first().screenshot({ path: canvasPath });
+  const canvasPng = await captureStageCanvasScreenshot(page, canvasPath);
   const canvasPixels = await getCanvasPixelStats(page, canvasPng);
   const presentation = await page.evaluate((actorId) => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
@@ -1511,6 +1600,17 @@ async function captureMugenLiteVisualState(page, screenshotPath, canvasPath, act
       actorAssertSpecial: actor?.runtime?.assertSpecial,
       actorPaletteRemap: actor?.runtime?.paletteRemap,
       actorFrame: actor?.frame ? { group: actor.frame.spriteGroup, index: actor.frame.spriteIndex } : null,
+      actorPosition: actor?.runtime?.pos ? { x: actor.runtime.pos.x, y: actor.runtime.pos.y } : null,
+      renderedFrame: renderedActor?.frame,
+      renderedPosition: renderedActor?.meshPosition ? {
+        x: renderedActor.meshPosition.x,
+        y: renderedActor.meshPosition.y,
+        z: renderedActor.meshPosition.z,
+      } : null,
+      renderedMeshScale: renderedActor?.meshScale,
+      rendererCamera: bridge?.renderer?.camera ? { ...bridge.renderer.camera } : null,
+      rendererSize: bridge?.renderer?.size ? { ...bridge.renderer.size } : null,
+      stageCamera: bridge?.snapshot?.stage?.camera ? { ...bridge.snapshot.stage.camera } : null,
       opponent: bridge?.snapshot?.actors
         ?.filter((candidate) => candidate.id !== actorId)
         .map((candidate) => ({ id: candidate.id, source: candidate.source, label: candidate.label, life: candidate.runtime.life })) ?? [],
@@ -3726,14 +3826,17 @@ async function captureStudioDebug(page, outDir, importedFixturePath) {
     }
   }
   const importedP1Id = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.runtimeRoster?.find((entry) => entry.source === "imported")?.id);
-  if (importedP1Id && importedP1Id !== await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.project?.entry?.p1)) {
+  if (importedP1Id) {
+    const currentP1Id = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.project?.entry?.p1);
     await selectStudioTab(page, "workbench");
-    await changeHiddenSelect(page, '[data-studio-fighter-select="p1"]', importedP1Id);
-    await page.waitForFunction((expectedId) => window.__MUGEN_WEB_SANDBOX__?.project?.entry?.p1 === expectedId, importedP1Id);
-    const importedTraceButton = page.locator('button[data-action="export-trace-artifact"]:visible').first();
-    if (await importedTraceButton.count()) {
-      await downloadFromButton(page, importedTraceButton, "imported debug trace", { timeout: 90000, attempts: 2 });
-      await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.traceArtifact));
+    if (importedP1Id !== currentP1Id) {
+      await changeHiddenSelect(page, '[data-studio-fighter-select="p1"]', importedP1Id);
+      await page.waitForFunction((expectedId) => window.__MUGEN_WEB_SANDBOX__?.project?.entry?.p1 === expectedId, importedP1Id);
+      const importedTraceButton = page.locator('button[data-action="export-trace-artifact"]:visible').first();
+      if (await importedTraceButton.count()) {
+        await downloadFromButton(page, importedTraceButton, "imported debug trace", { timeout: 90000, attempts: 2 });
+        await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.traceArtifact));
+      }
     }
     await driveStudioImportedRuntimeEvidence(page);
   }
@@ -3874,35 +3977,80 @@ async function driveStudioImportedRuntimeEvidence(page) {
   });
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.qaProbe?.()?.playing === true, null, { timeout: 3000 });
 
+  await pauseRuntimeAtContact(page, "studio-imported-contact", 80);
+
   let targetObserved = false;
-  for (let attempt = 0; attempt < 4 && !targetObserved; attempt += 1) {
-    await approachRuntimeContact(page);
-    await page.keyboard.down("a");
-    await page.waitForTimeout(RUNTIME_ATTACK_HOLD_MS);
-    await page.keyboard.up("a");
-    targetObserved = await page
-      .waitForFunction(
-        () => (window.__MUGEN_WEB_SANDBOX__?.actorRegistry?.targetLinks?.length ?? 0) > 0,
-        null,
-        { timeout: 1800 },
-      )
-      .then(() => true)
-      .catch(() => false);
-    if (!targetObserved) {
-      await page.waitForTimeout(180);
+  await page.keyboard.down("a");
+  try {
+    for (let count = 0; count < 36; count += 1) {
+      await stepMugenLiteTick(page);
+      targetObserved = await page.evaluate(() => {
+        const bridge = window.__MUGEN_WEB_SANDBOX__;
+        return (bridge?.actorRegistry?.targetLinks?.length ?? 0) > 0;
+      });
+      if (targetObserved) break;
     }
+  } finally {
+    await page.keyboard.up("a");
+  }
+  if (!targetObserved) {
+    const snapshot = await page.evaluate(() => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const p1 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p1");
+      const p2 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p2");
+      return {
+        tick: bridge?.snapshot?.tick,
+        p1: { stateNo: p1?.runtime?.stateNo, frame: p1?.frame?.spriteGroup, pos: p1?.runtime?.pos },
+        p2: { stateNo: p2?.runtime?.stateNo, frame: p2?.frame?.spriteGroup, pos: p2?.runtime?.pos },
+        targetLinks: bridge?.actorRegistry?.targetLinks?.length ?? 0,
+      };
+    });
+    throw new Error(`Studio imported runtime did not expose a live target link: ${JSON.stringify(snapshot)}`);
   }
 
-  await page
-    .waitForFunction(
-      () => window.__MUGEN_WEB_SANDBOX__?.snapshot?.compatibilitySession?.actors
-        ?.find((actor) => actor.actorId === "p1")
-        ?.executedStates?.includes(200),
-      null,
-      { timeout: 3000 },
-    )
-    .catch(() => undefined);
+  await page.waitForFunction(
+    () => window.__MUGEN_WEB_SANDBOX__?.snapshot?.compatibilitySession?.actors
+      ?.find((actor) => actor.actorId === "p1")
+      ?.executedStates?.includes(200),
+    null,
+    { timeout: 3000 },
+  );
 
+  await page.evaluate(() => {
+    if (window.__MUGEN_WEB_SANDBOX__?.qaProbe?.()?.playing) {
+      document.querySelector('[data-action="play-pause"]')?.click();
+    }
+  });
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.qaProbe?.()?.playing === false, null, { timeout: 3000 });
+}
+
+async function pauseRuntimeAtContact(page, label, maxGap = RUNTIME_ATTACK_GAP) {
+  for (let attempt = 0; attempt < 16; attempt += 1) {
+    const direction = await page.evaluate((maxGap) => {
+      const actors = window.__MUGEN_WEB_SANDBOX__?.qaProbe?.()?.actors ?? [];
+      const p1 = actors[0];
+      const p2 = actors[1];
+      if (!p1 || !p2 || Math.abs(p2.x - p1.x) <= maxGap) {
+        return undefined;
+      }
+      return p1.x <= p2.x ? "ArrowRight" : "ArrowLeft";
+    }, maxGap);
+    if (!direction) break;
+    await page.keyboard.down(direction);
+    await page.waitForTimeout(220);
+    await page.keyboard.up(direction);
+    await page.waitForTimeout(80);
+  }
+
+  const contact = await page.evaluate((maxGap) => {
+    const actors = window.__MUGEN_WEB_SANDBOX__?.qaProbe?.()?.actors ?? [];
+    const p1 = actors[0];
+    const p2 = actors[1];
+    return p1 && p2 ? Math.abs(p2.x - p1.x) <= maxGap : false;
+  }, maxGap);
+  if (!contact) {
+    throw new Error(`Studio imported ${label} was not reached within ${maxGap} world units`);
+  }
   await page.evaluate(() => {
     if (window.__MUGEN_WEB_SANDBOX__?.qaProbe?.()?.playing) {
       document.querySelector('[data-action="play-pause"]')?.click();
@@ -4030,6 +4178,32 @@ async function scrollLiveSelectorIntoView(page, selector) {
     await page.waitForTimeout(100);
   }
   await page.locator(selector).first().scrollIntoViewIfNeeded();
+}
+
+async function captureStageCanvasScreenshot(page, canvasPath) {
+  await page.evaluate((selectors) => {
+    document.querySelectorAll(selectors).forEach((element) => {
+      element.setAttribute("data-qa-canvas-hidden", "true");
+      element.setAttribute("data-qa-canvas-previous-visibility", element.style.visibility);
+      element.style.visibility = "hidden";
+    });
+  }, QA_STAGE_OVERLAY_SELECTORS);
+  try {
+    return await page.locator("canvas").first().screenshot({ path: canvasPath });
+  } finally {
+    await page.evaluate(() => {
+      document.querySelectorAll('[data-qa-canvas-hidden="true"]').forEach((element) => {
+        const previous = element.getAttribute("data-qa-canvas-previous-visibility") ?? "";
+        if (previous) {
+          element.style.visibility = previous;
+        } else {
+          element.style.removeProperty("visibility");
+        }
+        element.removeAttribute("data-qa-canvas-hidden");
+        element.removeAttribute("data-qa-canvas-previous-visibility");
+      });
+    });
+  }
 }
 
 async function getCanvasPixelStats(page, canvasPng) {
@@ -4449,10 +4623,10 @@ function assertSmoke(diagnostics) {
     const recoveryMasks = Object.keys(recoveryExpected).map((id) => probe.recovery?.[id]?.spritePixels?.fixtureMaskChecksum);
     if (
       probe.recovery?.roster?.p1 === undefined ||
-      probe.recovery.roster.p1 !== probe.combat?.importedId ||
-      probe.recovery.roster.p2 !== "nova-boxer" ||
-      probe.recovery.roster.actors?.find((actor) => actor.id === "p1")?.source !== "imported" ||
-      probe.recovery.roster.actors?.find((actor) => actor.id === "p2")?.source !== "demo" ||
+      probe.recovery.roster.p1 !== probe.combat?.roster?.p1 ||
+      probe.recovery.roster.p2 !== probe.combat?.roster?.p2 ||
+      probe.recovery.roster.actors?.find((actor) => actor.id === "p1")?.source !== "demo" ||
+      probe.recovery.roster.actors?.find((actor) => actor.id === "p2")?.source !== "imported" ||
       probe.recovery.roster.actors?.find((actor) => actor.id === "p1")?.life !== 1000 ||
       Object.keys(recoveryExpected).some((id) => probe.recovery?.[id]?.actorLife !== 945) ||
       recoveryMasks.some((checksum) => !checksum) ||
