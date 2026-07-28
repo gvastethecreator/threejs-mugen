@@ -1,7 +1,3 @@
-runtime-desktop: native hit spark renderer did not expose an active spark after KeyA
-runtime-desktop: native hit spark renderer did not expose player AIR spark source metadata
-runtime-desktop: native hit spark renderer did not resolve a player AIR spark sprite
-runtime-desktop: native hit spark renderer did not expose resolved sprite frame/axis diagnostics
 mugen-lite visual desktop recovery recovery: imported state/frame/crop proof failed
 mugen-lite visual desktop: recovery roster, damage, unique poses, or idle return proof failed
 mugen-lite visual desktop: guarded imported contact, exact chip, or idle return proof failed
@@ -22,7 +18,6 @@ mugen-lite visual mobile: recovery roster, damage, unique poses, or idle return 
 mugen-lite visual mobile: guarded imported contact, exact chip, or idle return proof failed
 mugen-lite visual mobile: legal NoKOSlow KO, normal playback, or reset proof failed
 mugen-lite visual mobile: ACT-backed source/destination RemapPal pixel proof failed
-studio-workbench: premium cockpit workbench was missing stage deck, pipeline, health inspector, expanded console, or large playfield
 studio-build: Build surface did not render
 studio-build: shared Trust Chain rows were missing targets, deltas, or Build Readiness next actions
 studio-build: project package panel or bridge summary missing

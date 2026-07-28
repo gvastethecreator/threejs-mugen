@@ -1,23 +1,10 @@
 {
   "schema": "Da32SmokeOwnership/v1",
   "id": "DA32-001",
-  "generatedAt": "2026-07-28T02:33:41.488Z",
+  "generatedAt": "2026-07-28T03:18:16.182Z",
   "ok": false,
-  "failureCount": 46,
+  "failureCount": 41,
   "lanes": [
-    {
-      "id": "runtime-native",
-      "status": "open",
-      "failureCount": 4,
-      "failures": [
-        "runtime-desktop: native hit spark renderer did not expose an active spark after KeyA",
-        "runtime-desktop: native hit spark renderer did not expose player AIR spark source metadata",
-        "runtime-desktop: native hit spark renderer did not resolve a player AIR spark sprite",
-        "runtime-desktop: native hit spark renderer did not expose resolved sprite frame/axis diagnostics"
-      ],
-      "owner": "DA32-smoke",
-      "claimCeiling": "lane open until green at named subject SHA"
-    },
     {
       "id": "mugen-lite-visual",
       "status": "open",
@@ -43,16 +30,6 @@
         "mugen-lite visual mobile: guarded imported contact, exact chip, or idle return proof failed",
         "mugen-lite visual mobile: legal NoKOSlow KO, normal playback, or reset proof failed",
         "mugen-lite visual mobile: ACT-backed source/destination RemapPal pixel proof failed"
-      ],
-      "owner": "DA32-smoke",
-      "claimCeiling": "lane open until green at named subject SHA"
-    },
-    {
-      "id": "studio-workbench",
-      "status": "open",
-      "failureCount": 1,
-      "failures": [
-        "studio-workbench: premium cockpit workbench was missing stage deck, pipeline, health inspector, expanded console, or large playfield"
       ],
       "owner": "DA32-smoke",
       "claimCeiling": "lane open until green at named subject SHA"
@@ -143,9 +120,7 @@
     }
   ],
   "laneSummary": {
-    "runtime-native": 4,
     "mugen-lite-visual": 20,
-    "studio-workbench": 1,
     "studio-build": 6,
     "studio-modules": 1,
     "studio-source-relink": 1,
@@ -155,7 +130,7 @@
     "studio-debug": 4
   },
   "runtimeSample": {
-    "desktopHitSparks": 0,
+    "desktopHitSparks": 1,
     "mobileHitSparks": 1,
     "desktopActors": 2,
     "mobileActors": 2
@@ -175,6 +150,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "6f9a2755f7f2f8c3c1222c750033853a68970dfaaa6b6910c8861e216e32f87d"
+    "value": "cb485a05a7afe7466e4d5da2ec96b07dbe9e0e69b14e6a4636172ed0df988f79"
   }
 }
