@@ -2294,6 +2294,16 @@ button[data-studio-tab][aria-current="page"] {
 }
 
 @media (max-width: 620px) {
+  .app-shell.mode-match .stage,
+  .app-shell.mode-inspect .stage {
+    min-height: min(600px, 72vh);
+  }
+
+  .app-shell.mode-match .stage-status,
+  .app-shell.mode-inspect .stage-status {
+    display: none;
+  }
+
   .stage-toolbar {
     top: auto;
     bottom: 78px;

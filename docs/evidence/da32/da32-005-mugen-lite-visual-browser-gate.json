@@ -1,0 +1,229 @@
+{
+  "schema": "Da32MugenLiteVisualBrowserGate/v1",
+  "id": "DA32-005",
+  "generatedAt": "2026-07-28T03:30:07.049Z",
+  "subject": {
+    "schema": "Da31GateSubjectEnvelope/v1",
+    "subjectSha": "e77d36f0efb95edf39dc7fb3d922982eebdb1f7c",
+    "dirtyTree": true,
+    "provisional": true,
+    "probePaths": [
+      "scripts/qa_browser_gate_da32_005_mugen_lite_visual.cjs",
+      "src/mugen/runtime/MugenLiteJourneyFixture.ts"
+    ],
+    "codePaths": [
+      "src/styles/redesign.css",
+      "src/app/App.ts"
+    ],
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+  },
+  "headSha": "e77d36f0efb95edf39dc7fb3d922982eebdb1f7c",
+  "ok": true,
+  "route": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+  "cases": [
+    {
+      "id": "desktop",
+      "viewport": "1440x960",
+      "ok": true,
+      "semantic": {
+        "importedCharacter": true,
+        "matchMode": true,
+        "compatibilityLoaded": true,
+        "twoRendererActors": true,
+        "actorsHaveNativeSprites": true,
+        "rendererHasFrames": true,
+        "canvasMatchesStage": true,
+        "stageHeight": true,
+        "mobileStatusHidden": true,
+        "desktopStatusVisible": true,
+        "touchControlsVisible": true,
+        "touchControlsFitStage": true,
+        "noHorizontalOverflow": true
+      },
+      "state": {
+        "mode": "match",
+        "character": "MUGEN Lite Journey",
+        "compatibilityLoaded": true,
+        "actors": [
+          {
+            "actorId": "p1",
+            "spriteWidth": 32,
+            "spriteHeight": 64,
+            "meshPosition": {
+              "x": 0,
+              "y": 30,
+              "z": 1.12
+            }
+          },
+          {
+            "actorId": "p2",
+            "spriteWidth": 70,
+            "spriteHeight": 114,
+            "meshPosition": {
+              "x": 180,
+              "y": 49,
+              "z": 1.06
+            }
+          }
+        ],
+        "renderCalls": 82,
+        "stage": {
+          "left": 300,
+          "top": 44,
+          "right": 1122,
+          "bottom": 897.609375,
+          "width": 822,
+          "height": 853.609375
+        },
+        "canvas": {
+          "left": 300,
+          "top": 44,
+          "right": 1122,
+          "bottom": 897.609375,
+          "width": 822,
+          "height": 853.609375
+        },
+        "hud": {
+          "left": 312,
+          "top": 92,
+          "right": 1110,
+          "bottom": 224.53125,
+          "width": 798,
+          "height": 132.53125
+        },
+        "status": {
+          "left": 314,
+          "top": 623.609375,
+          "right": 744,
+          "bottom": 771.609375,
+          "width": 430,
+          "height": 148
+        },
+        "touch": {
+          "left": 312,
+          "top": 781.609375,
+          "right": 1110,
+          "bottom": 883.609375,
+          "width": 798,
+          "height": 102
+        },
+        "innerWidth": 1440,
+        "scrollWidth": 1440
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-005-mugen-lite-desktop.png",
+      "consoleErrors": []
+    },
+    {
+      "id": "mobile",
+      "viewport": "390x844",
+      "ok": true,
+      "semantic": {
+        "importedCharacter": true,
+        "matchMode": true,
+        "compatibilityLoaded": true,
+        "twoRendererActors": true,
+        "actorsHaveNativeSprites": true,
+        "rendererHasFrames": true,
+        "canvasMatchesStage": true,
+        "stageHeight": true,
+        "mobileStatusHidden": true,
+        "desktopStatusVisible": true,
+        "touchControlsVisible": true,
+        "touchControlsFitStage": true,
+        "noHorizontalOverflow": true
+      },
+      "state": {
+        "mode": "match",
+        "character": "MUGEN Lite Journey",
+        "compatibilityLoaded": true,
+        "actors": [
+          {
+            "actorId": "p1",
+            "spriteWidth": 32,
+            "spriteHeight": 64,
+            "meshPosition": {
+              "x": -125,
+              "y": 30,
+              "z": 1.12
+            }
+          },
+          {
+            "actorId": "p2",
+            "spriteWidth": 128,
+            "spriteHeight": 128,
+            "meshPosition": {
+              "x": 125,
+              "y": 56,
+              "z": 1.06
+            }
+          }
+        ],
+        "renderCalls": 52,
+        "stage": {
+          "left": 0,
+          "top": 44,
+          "right": 390,
+          "bottom": 644,
+          "width": 390,
+          "height": 600
+        },
+        "canvas": {
+          "left": 0,
+          "top": 44,
+          "right": 390,
+          "bottom": 644,
+          "width": 390,
+          "height": 600
+        },
+        "hud": {
+          "left": 8,
+          "top": 88,
+          "right": 382,
+          "bottom": 220.53125,
+          "width": 374,
+          "height": 132.53125
+        },
+        "status": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "touch": {
+          "left": 8,
+          "top": 552,
+          "right": 382,
+          "bottom": 636,
+          "width": 374,
+          "height": 84
+        },
+        "innerWidth": 390,
+        "scrollWidth": 390
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-005-mugen-lite-mobile.png",
+      "consoleErrors": []
+    }
+  ],
+  "unexpectedConsole": [],
+  "claimCeiling": "provisional dirty-tree imported MUGEN Lite visual observations for named viewports",
+  "claims": {
+    "allowed": [
+      "repository-authored MUGEN Lite ZIP imports through the browser UI",
+      "two imported fighter actors expose native sprite frames to the renderer",
+      "the mobile playfield has enough height for the actors and keeps touch controls visible",
+      "the mobile runtime summary does not occlude the playfield",
+      "the named route has no horizontal overflow or unexpected page errors"
+    ],
+    "blocked": [
+      "all MUGEN Lite states and input paths",
+      "all characters, stages, devices, and screen sizes",
+      "full MUGEN/IKEMEN visual parity"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "76288b6f7e50c05c9941aab78ee183e17b11d158ea84fe091b4cab158428e421"
+  }
+}

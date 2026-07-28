@@ -17,8 +17,10 @@
   drive harden; gamepad device-lab protocol; clause sample proposes
   `adjudicatedThrough=DA30-021` (not auto-applied); a11y baseline inventory.
   The DA32-002 focal browser gate passes on desktop/mobile; the global smoke
-  sample remains open at 46 failures. Next: reconcile that runtime sample,
-  close visual/Studio lanes, human accept watermark, hardware gamepad.
+  sample remains open at 41 failures. DA32-005 now has a passing imported
+  MUGEN Lite visual gate on desktop/mobile. Next: reconcile the runtime sample,
+  expand the visual matrix, close Studio lanes, human accept watermark, and
+  continue the hardware gamepad work.
 
 ## Interface desktop layout repair - d8c4dfaa/b4788b85 (closed bounded, 2026-07-27)
 
@@ -47,6 +49,22 @@ Research: [desktop and responsive interface audit](research/2026-07-27-interface
   ceiling stays focal.
 
 Evidence: `docs/evidence/da32/da32-002-hit-spark-browser-gate.json`.
+
+## Imported MUGEN Lite mobile visibility - DA32-005 (focal, 2026-07-27)
+
+- Narrow Match layouts reserve a `min(600px, 72vh)` stage and hide the centered
+  runtime summary so the imported fighters remain visible above the touch deck.
+  Desktop retains the status panel.
+- `pnpm qa:browser:da32-005-mugen-lite` passed at `1440x960` and `390x844`.
+  It imports the repository fixture through the browser, finds two native
+  renderer actors, checks stage/canvas geometry, touch-control fit, overflow,
+  and page errors. Both cases passed with zero unexpected console errors.
+- Evidence: `docs/evidence/da32/da32-005-mugen-lite-visual-browser-gate.json`.
+  Screenshots are in `docs/evidence/da32/browser/`.
+
+Claim allowed: the named initial MUGEN Lite import view at the two tested
+viewports. Claim blocked: the broader visual state matrix, full roster/stage
+coverage, device coverage, and full MUGEN/IKEMEN parity.
 
 ## TypeScript 7 typecheck unblock - 2026-07-27
 

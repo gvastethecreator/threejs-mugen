@@ -31,6 +31,7 @@ DA32 turns remaining open product and adjudication work into owned lanes.
 | DA32-002 | Harden native hit-spark drive (play + approach + multi-key) | `driveRuntimeHitSpark` requires playing; live contact approach; KeyZ/A/X retry; desktop/mobile focal gate | runtime-native spark lane only |
 | DA32-003 | Classify open Studio lanes | workbench/build/modules/evidence/debug ownership rows | classification only |
 | DA32-004 | Classify mugen-lite visual failures | desktop/mobile journey ownership | classification only |
+| DA32-005 | Restore imported MUGEN Lite playfield visibility | ZIP import + native actors + desktop/mobile layout gate | named fixture and viewports |
 
 ### DA32-002 focal result - 2026-07-27
 
@@ -38,7 +39,7 @@ DA32 turns remaining open product and adjudication work into owned lanes.
   mobile `390x844` with zero unexpected console errors.
 - Each viewport exercised `KeyZ`, `KeyA`, and `KeyX`; each produced a native
   player hit spark, resolved sprite data, axis data, and a life delta.
-- The full `pnpm qa:smoke` run remains open at 46 failures. Its desktop
+- The full `pnpm qa:smoke` run remains open at 41 failures. Its desktop
   runtime sample still misses the spark, so the global smoke lane stays open
   beside this focal pass.
 - Evidence: `docs/evidence/da32/da32-002-hit-spark-browser-gate.json`.
@@ -46,6 +47,24 @@ DA32 turns remaining open product and adjudication work into owned lanes.
 Claim allowed: named runtime route, viewports, input keys, and native
 hit-spark diagnostics in the focal gate. Claim blocked: all characters, stages,
 input devices, and full MUGEN/IKEMEN visual parity.
+
+### DA32-005 focal result - 2026-07-27
+
+- The mobile Match stage now reserves up to `600px` of playfield height and
+  hides the centered runtime summary that covered imported fighters at narrow
+  widths. Desktop keeps the status summary visible.
+- `pnpm qa:browser:da32-005-mugen-lite` passed at `1440x960` and `390x844`.
+  The gate imports the repository-authored ZIP through `#zip-input`, confirms
+  two renderer actors with native sprite dimensions, checks canvas/stage fit,
+  touch-control fit, no horizontal overflow, and zero unexpected console/page
+  errors.
+- Screenshots: `docs/evidence/da32/browser/da32-005-mugen-lite-desktop.png`
+  and `docs/evidence/da32/browser/da32-005-mugen-lite-mobile.png`.
+- The full `pnpm qa:smoke` ledger remains open at 41 failures. The focal gate
+  covers the named initial imported-fighter view only; broader state, roster,
+  stage, device, and MUGEN/IKEMEN parity claims stay blocked.
+
+Evidence: `docs/evidence/da32/da32-005-mugen-lite-visual-browser-gate.json`.
 
 ## Phase 1 — Device lab
 

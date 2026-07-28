@@ -135,6 +135,15 @@ if (fs.existsSync(hitSparkGatePath)) {
     hitSparkGateOk = false;
   }
 }
+const mugenLiteVisualGatePath = path.join(outDir, "da32-005-mugen-lite-visual-browser-gate.json");
+let mugenLiteVisualGateOk = false;
+if (fs.existsSync(mugenLiteVisualGatePath)) {
+  try {
+    mugenLiteVisualGateOk = JSON.parse(fs.readFileSync(mugenLiteVisualGatePath, "utf8")).ok === true;
+  } catch {
+    mugenLiteVisualGateOk = false;
+  }
+}
 
 const status = {
   schema: "Da32ProgramStatus/v1",
@@ -167,6 +176,19 @@ const status = {
       status: "accepted-classification",
       note: "mugen-lite visual lane classified",
       artifacts: ["docs/evidence/da32/da32-smoke-ownership-v1.json"],
+    },
+    "DA32-005": {
+      status: mugenLiteVisualGateOk ? "accepted-focal-gate" : "open-implementation",
+      note: mugenLiteVisualGateOk
+        ? `desktop/mobile imported MUGEN Lite visual gate passed; full smoke remains open failures=${ownership.failureCount}`
+        : "restore imported MUGEN Lite playfield visibility on mobile",
+      artifacts: mugenLiteVisualGateOk
+        ? [
+            "src/styles/redesign.css",
+            "scripts/qa_browser_gate_da32_005_mugen_lite_visual.cjs",
+            "docs/evidence/da32/da32-005-mugen-lite-visual-browser-gate.json",
+          ]
+        : ["src/styles/redesign.css"],
     },
     "DA32-009": {
       status: "accepted-protocol",
@@ -204,7 +226,7 @@ const status = {
   next: [
     "live qa:smoke re-run with ownership write",
     "reconcile global smoke runtime-native sample with focal gate",
-    "close mugen-lite visual lane",
+    mugenLiteVisualGateOk ? "expand mugen-lite visual matrix" : "close mugen-lite visual lane",
     "studio surface repairs",
     "hardware gamepad lab",
   ],

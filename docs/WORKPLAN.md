@@ -1,5 +1,21 @@
 # Workplan
 
+## DA32-005 imported MUGEN Lite mobile visibility (2026-07-27)
+
+The Match stage now reserves up to `600px` on narrow screens and removes the
+centered runtime summary from the mobile playfield. The desktop summary stays
+available. This restores a visible imported fighter lane while preserving the
+touch controls and the rest of the responsive stack.
+
+`pnpm qa:browser:da32-005-mugen-lite` passed at `1440x960` and `390x844`.
+The gate imports `MugenLiteJourneyFixture` through `#zip-input`, confirms two
+renderer actors with native sprite dimensions, checks stage/canvas fit, touch
+controls, overflow, and zero unexpected console/page errors.
+
+Evidence: `docs/evidence/da32/da32-005-mugen-lite-visual-browser-gate.json`.
+The full `pnpm qa:smoke` ledger remains open at 41 failures, so this is a
+focal visual closure for the named fixture and viewports.
+
 ## DA32-002 native hit-spark drive (2026-07-27)
 
 `scripts/qa_smoke.cjs` now keeps the match playing, approaches until the live
@@ -9,7 +25,7 @@ mobile `390x844`, with native
 player spark source, resolved sprite frame, axis data, damage, and zero
 unexpected console errors.
 
-The full `pnpm qa:smoke` run remains open at 46 failures. Its desktop runtime
+The full `pnpm qa:smoke` run remains open at 41 failures. Its desktop runtime
 sample still misses the spark; the focal gate is the current DA32-002 claim
 ceiling. Evidence: `docs/evidence/da32/da32-002-hit-spark-browser-gate.json`.
 
