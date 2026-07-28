@@ -48,6 +48,7 @@ async function main() {
     const cases = [
       await runViewport(browser, base, { id: "desktop", width: 1440, height: 900, conflict: true }),
       await runViewport(browser, base, { id: "mobile", width: 390, height: 844, conflict: false }),
+      await runFallbackProbe(browser, base),
     ];
     await browser.close();
     browser = undefined;
@@ -77,6 +78,7 @@ async function main() {
               "a page reload restores the saved project row and opens its manifest",
               "a second browser page produces a revision conflict while local edits remain dirty",
               "the named desktop and mobile routes have no horizontal overflow or unexpected page errors",
+              "the no-IndexedDB fallback remains visible, saves to the cache, and exposes a retry action",
             ]
           : [],
         blocked: ["storage quota and eviction recovery", "file-system source blobs", "physical browser coverage", "full Studio authoring suite"],
@@ -217,6 +219,87 @@ async function runViewport(browser, base, options) {
       authority,
       cache,
       conflict,
+      viewportState: viewport,
+      screenshot: path.relative(repoRoot, screenshot).replaceAll("\\", "/"),
+      consoleErrors,
+    };
+  } finally {
+    await context.close();
+  }
+}
+
+async function runFallbackProbe(browser, base) {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await context.addInitScript(() => {
+    try {
+      Object.defineProperty(window, "indexedDB", { configurable: true, value: undefined });
+    } catch {
+      // The browser may expose a non-configurable property; the semantic check below records that.
+    }
+  });
+  const page = await context.newPage();
+  const consoleErrors = [];
+  page.setDefaultNavigationTimeout(120_000);
+  page.on("console", (message) => {
+    if (message.type() === "error") consoleErrors.push(message.text());
+  });
+  page.on("pageerror", (error) => consoleErrors.push(String(error?.message || error)));
+
+  try {
+    await page.goto(`${base}${studioRoute}`, { waitUntil: "domcontentloaded" });
+    await waitForStudio(page);
+    await page.waitForFunction(
+      () => window.indexedDB === undefined && window.__MUGEN_WEB_SANDBOX__?.projectStorageBackend === "memory",
+      null,
+      { timeout: 30_000 },
+    );
+    await page.waitForSelector('[data-action="retry-project-storage"]', { timeout: 15_000 });
+    const steps = {
+      noIndexedDb: true,
+      memoryFallbackVisible: false,
+      cacheSave: false,
+      retryVisible: true,
+      retryKeepsFallback: false,
+      noHorizontalOverflow: false,
+    };
+    steps.memoryFallbackVisible = await page.locator(".studio-project-storage-status").innerText().then((text) => /memory|fallback/i.test(text));
+
+    await page.locator("[data-project-name]").first().fill("DA32-021 cache fallback");
+    await page.locator("[data-project-name]").first().press("Tab");
+    await clickAction(page, "save-project-local");
+    await page.waitForFunction(
+      () => window.__MUGEN_WEB_SANDBOX__?.projectStorageBackend === "localstorage-cache" &&
+        window.__MUGEN_WEB_SANDBOX__?.projectDirty === false &&
+        (window.__MUGEN_WEB_SANDBOX__?.storedProjects?.length ?? 0) > 0,
+      null,
+      { timeout: 30_000 },
+    );
+    steps.cacheSave = true;
+    await clickAction(page, "retry-project-storage");
+    await page.waitForFunction(
+      () => window.__MUGEN_WEB_SANDBOX__?.projectStorageBackend === "localstorage-cache",
+      null,
+      { timeout: 15_000 },
+    );
+    steps.retryKeepsFallback = true;
+    const viewport = await page.evaluate(() => ({
+      innerWidth: window.innerWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+      bodyScrollWidth: document.body?.scrollWidth ?? 0,
+    }));
+    steps.noHorizontalOverflow = viewport.scrollWidth <= viewport.innerWidth + 1 && viewport.bodyScrollWidth <= viewport.innerWidth + 1;
+    const screenshot = path.join(outDir, "da32-021-studio-storage-fallback.png");
+    await page.screenshot({ path: screenshot, fullPage: true });
+    return {
+      id: "fallback-no-indexeddb",
+      viewport: "1440x900",
+      ok: Object.values(steps).every(Boolean),
+      steps,
+      bridge: await page.evaluate(() => ({
+        backend: window.__MUGEN_WEB_SANDBOX__?.projectStorageBackend,
+        storage: window.__MUGEN_WEB_SANDBOX__?.studioStorage,
+        storedProjectCount: window.__MUGEN_WEB_SANDBOX__?.storedProjects?.length,
+      })),
       viewportState: viewport,
       screenshot: path.relative(repoRoot, screenshot).replaceAll("\\", "/"),
       consoleErrors,
