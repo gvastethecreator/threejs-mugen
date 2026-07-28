@@ -1,0 +1,131 @@
+{
+  "schema": "Da32A11yRuntimeBrowserGate/v1",
+  "id": "DA32-029",
+  "generatedAt": "2026-07-28T06:05:08.943Z",
+  "subject": {
+    "schema": "Da31GateSubjectEnvelope/v1",
+    "subjectSha": "822f3163108637cadd067ce6db99fbabf2f9b98f",
+    "dirtyTree": false,
+    "provisional": false,
+    "probePaths": [
+      "scripts/qa_browser_gate_da32_029_a11y.cjs"
+    ],
+    "codePaths": [
+      "src/app/App.ts",
+      "src/app/RuntimeA11ySummary.ts",
+      "src/game/render/ThreeMugenRenderer.ts"
+    ],
+    "claimLimit": "subject-bound observation at listed probe/code paths"
+  },
+  "headSha": "822f3163108637cadd067ce6db99fbabf2f9b98f",
+  "ok": true,
+  "route": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+  "cases": [
+    {
+      "id": "desktop",
+      "viewport": "1440x900",
+      "ok": true,
+      "semantic": {
+        "canvasRole": true,
+        "canvasLabel": true,
+        "canvasDescription": true,
+        "canvasFocusable": true,
+        "stageDescription": true,
+        "summaryRole": true,
+        "summaryLive": true,
+        "summaryAtomic": true,
+        "summaryHasText": true,
+        "summaryClipped": true,
+        "padMetric": true,
+        "noHorizontalOverflow": true
+      },
+      "state": {
+        "canvas": {
+          "role": "img",
+          "label": "MUGEN runtime canvas",
+          "describedBy": "runtime-a11y-summary",
+          "tabIndex": 0
+        },
+        "stage": {
+          "describedBy": "runtime-a11y-summary",
+          "label": "Runtime viewport"
+        },
+        "summary": {
+          "role": "status",
+          "live": "polite",
+          "atomic": "true",
+          "text": "Match viewport on Rooftop Dojo. Playing. Round 1, fight, timer 98. Nova Boxer: 1000 of 1000 life, state 0, ready. Mira Volt: 1000 of 1000 life, state 0, ready. Controls: P1 keyboard and gamepad disconnected; P2 gamepad disconnected.",
+          "clipped": true
+        },
+        "padMetric": "Pads P1 off / P2 off",
+        "innerWidth": 1440,
+        "scrollWidth": 1440
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-029-a11y-desktop.png",
+      "consoleErrors": []
+    },
+    {
+      "id": "mobile",
+      "viewport": "390x844",
+      "ok": true,
+      "semantic": {
+        "canvasRole": true,
+        "canvasLabel": true,
+        "canvasDescription": true,
+        "canvasFocusable": true,
+        "stageDescription": true,
+        "summaryRole": true,
+        "summaryLive": true,
+        "summaryAtomic": true,
+        "summaryHasText": true,
+        "summaryClipped": true,
+        "padMetric": true,
+        "noHorizontalOverflow": true
+      },
+      "state": {
+        "canvas": {
+          "role": "img",
+          "label": "MUGEN runtime canvas",
+          "describedBy": "runtime-a11y-summary",
+          "tabIndex": 0
+        },
+        "stage": {
+          "describedBy": "runtime-a11y-summary",
+          "label": "Runtime viewport"
+        },
+        "summary": {
+          "role": "status",
+          "live": "polite",
+          "atomic": "true",
+          "text": "Match viewport on Rooftop Dojo. Playing. Round 1, fight, timer 98. Nova Boxer: 1000 of 1000 life, state 0, ready. Mira Volt: 1000 of 1000 life, state 0, ready. Controls: P1 keyboard and gamepad disconnected; P2 gamepad disconnected.",
+          "clipped": true
+        },
+        "padMetric": "Pads P1 off / P2 off",
+        "innerWidth": 390,
+        "scrollWidth": 390
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-029-a11y-mobile.png",
+      "consoleErrors": []
+    }
+  ],
+  "unexpectedConsole": [],
+  "claimCeiling": "named desktop/mobile DOM canvas alternative and focus contract",
+  "claims": {
+    "allowed": [
+      "canvas role, label, description, and keyboard focus",
+      "atomic polite status region with live runtime text",
+      "P1/P2 gamepad status metric is present",
+      "named route has no horizontal overflow or unexpected page errors"
+    ],
+    "blocked": [
+      "screen-reader journey",
+      "contrast audit",
+      "WCAG certification",
+      "physical gamepad coverage"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "d40c2060622246bfdbca8a18a5d70a2ada36e0db57799eff558750b143e24c2a"
+  }
+}

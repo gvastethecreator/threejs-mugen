@@ -97,6 +97,10 @@ MUGEN/IKEMEN parity remain blocked.
 - The Three.js canvas is focusable, has an image role and label, and points to
   a polite atomic `status` region with a text summary of stage, round, fighter
   life, runtime state, pause, and controller status.
+- `pnpm qa:browser:da32-029-a11y` passed at `1440x900` and `390x844` with
+  zero unexpected console errors. The gate confirms the canvas focus path,
+  live-region attributes, pad metric, clipped summary, and no horizontal
+  overflow. Screenshots are in `docs/evidence/da32/browser/`.
 - Focused proof: `GamepadInputAdapter` plus `RuntimeA11ySummary` and DA32
   program tests pass 18/18; `pnpm typecheck` passes.
 

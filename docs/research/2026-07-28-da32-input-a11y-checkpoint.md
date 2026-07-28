@@ -36,6 +36,9 @@ putting gameplay meaning in canvas pixels alone.
 - `src/game/render/ThreeMugenRenderer.ts` assigns canvas semantics and focus.
 - `src/tests/GamepadInputAdapter.test.ts` and
   `src/tests/RuntimeA11ySummary.test.ts` pass as part of the 18-test focal run.
+- `pnpm qa:browser:da32-029-a11y` passes at `1440x900` and `390x844`; the
+  evidence records the canvas attributes, real focus, status text, pad metric,
+  overflow, screenshots, and zero unexpected console errors.
 - `pnpm typecheck` passes.
 
 ## Open work

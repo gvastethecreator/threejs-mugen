@@ -1,6 +1,6 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T06:02:24.665Z",
+  "generatedAt": "2026-07-28T06:06:07.264Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted",
@@ -74,10 +74,12 @@
       ]
     },
     "DA32-029": {
-      "status": "accepted-baseline",
-      "note": "a11y inventory; canvas alternative partial, SR journey remains open",
+      "status": "accepted-runtime-dom",
+      "note": "desktop/mobile runtime DOM gate passed; canvas alternative partial, SR journey remains open",
       "artifacts": [
-        "docs/evidence/da32/da32-a11y-baseline-v1.json"
+        "docs/evidence/da32/da32-a11y-baseline-v1.json",
+        "scripts/qa_browser_gate_da32_029_a11y.cjs",
+        "docs/evidence/da32/da32-029-a11y-runtime-browser-gate.json"
       ]
     }
   },
@@ -98,6 +100,6 @@
   "claimCeiling": "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "f8155cc73abda815b58e691197a3bf80080ea4d397f317f55447f45d2ffd65af"
+    "value": "2ac440d8dd6a15245391d95393709f3b0ffc7b9d2ac5c90a484a1bfbe30c9999"
   }
 }

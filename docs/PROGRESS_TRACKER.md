@@ -52,6 +52,11 @@ movement, public release, and full MUGEN/IKEMEN parity.
   with stage, round, life, runtime state, pause, and controller text. The
   summary is kept separate from the visual canvas and the screen-reader journey
   remains open.
+- `pnpm qa:browser:da32-029-a11y` passed at `1440x900` and `390x844`, with
+  canvas focus, role/label/description, polite atomic status, pad metric,
+  clipped summary, no horizontal overflow, and zero unexpected console errors.
+  Screenshots: `docs/evidence/da32/browser/da32-029-a11y-desktop.png` and
+  `docs/evidence/da32/browser/da32-029-a11y-mobile.png`.
 - Verification: 18 focused tests passed; `pnpm typecheck`, `node --check
   scripts/qa_smoke.cjs`, and `git diff --check` passed.
 - Sources: [Gamepad API guide](https://developer.mozilla.org/en-US/docs/Games/Techniques/Controls_Gamepad_API),

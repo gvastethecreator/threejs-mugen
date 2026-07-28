@@ -146,6 +146,16 @@ if (fs.existsSync(mugenLiteVisualGatePath)) {
   }
 }
 
+const a11yRuntimeGatePath = path.join(outDir, "da32-029-a11y-runtime-browser-gate.json");
+let a11yRuntimeGateOk = false;
+if (fs.existsSync(a11yRuntimeGatePath)) {
+  try {
+    a11yRuntimeGateOk = JSON.parse(fs.readFileSync(a11yRuntimeGatePath, "utf8")).ok === true;
+  } catch {
+    a11yRuntimeGateOk = false;
+  }
+}
+
 const status = {
   schema: "Da32ProgramStatus/v1",
   generatedAt: new Date().toISOString(),
@@ -221,9 +231,17 @@ const status = {
       artifacts: ["docs/DA32_NEXT_PROGRAM_ROADMAP.md"],
     },
     "DA32-029": {
-      status: "accepted-baseline",
-      note: "a11y inventory; canvas alternative partial, SR journey remains open",
-      artifacts: ["docs/evidence/da32/da32-a11y-baseline-v1.json"],
+      status: a11yRuntimeGateOk ? "accepted-runtime-dom" : "accepted-baseline",
+      note: a11yRuntimeGateOk
+        ? "desktop/mobile runtime DOM gate passed; canvas alternative partial, SR journey remains open"
+        : "a11y inventory; canvas alternative partial, SR journey remains open",
+      artifacts: a11yRuntimeGateOk
+        ? [
+            "docs/evidence/da32/da32-a11y-baseline-v1.json",
+            "scripts/qa_browser_gate_da32_029_a11y.cjs",
+            "docs/evidence/da32/da32-029-a11y-runtime-browser-gate.json",
+          ]
+        : ["docs/evidence/da32/da32-a11y-baseline-v1.json"],
     },
   },
   watermarks: {
