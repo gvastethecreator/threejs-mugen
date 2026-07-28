@@ -1,5 +1,23 @@
 # Workplan
 
+## DA32-030 Studio observed-source finalization (2026-07-28)
+
+The recovery surface now exposes `Accept observed source` only after a fresh
+read records `matches-draft`. The action reads the source again, explicitly
+reimports the linked folder, verifies the resolved VFS path and semantic draft
+digest, then settles the original intent with a committed
+`observed-write-and-reimport` receipt and `recovery = observed`.
+
+Implementation: `bf719ef5`.
+Gate/evidence: `9a0a7d41`,
+`docs/evidence/da32/da32-030-source-write-observation-finalize-browser-gate.json`.
+Verification: desktop `1440x900` and mobile `390x844` pass all fourteen steps,
+zero writable-stream calls, zero `readwrite` permission requests, zero
+unexpected console errors, and no horizontal overflow. The gate is
+provisional while unrelated roadmap documentation remains dirty. Next Studio
+cut: physical crash windows, retry/abandon, quota/eviction, and multi-file
+recovery.
+
 ## DA32-028 Studio positive source-write observation (2026-07-28)
 
 The positive observation route now relinks the KFM fixture through a simulated

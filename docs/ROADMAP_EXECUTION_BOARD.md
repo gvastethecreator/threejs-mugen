@@ -1,6 +1,29 @@
 ﻿# Roadmap Execution Board
 
-## Current Studio product board - DA32-028 (closed-bounded, 2026-07-28)
+## Current Studio product board - DA32-030 (closed-bounded, 2026-07-28)
+
+DA32-030 proves the explicit acceptance route after a positive source
+observation. Studio relinks a KFM fixture, records `matches-draft`, exposes
+`Accept observed source`, reads the file again, explicitly reimports the
+folder, resolves the logical VFS path, verifies the draft digest, and settles
+the original intent with a committed `observed-write-and-reimport` receipt.
+The settled intent keeps `recovery = observed`; the mock handle records zero
+writable-stream calls and zero `readwrite` permission requests.
+
+The provisional desktop/mobile gate passes all fourteen steps at `1440x900` and
+`390x844`, including IndexedDB, bridge, DOM, exact draft bytes, committed
+fingerprint, receipt settlement, overflow, and console checks. Implementation:
+`bf719ef5`; gate/evidence: `9a0a7d41`.
+Evidence:
+`docs/evidence/da32/da32-030-source-write-observation-finalize-browser-gate.json`.
+The fixture keeps one visible missing `sound/kfm.mid` warning. Unrelated
+roadmap documentation changes keep the subject provisional.
+
+Next Studio proof: physical crash windows, retry/abandon, quota and eviction,
+and multi-file transaction boundaries. ZIP rewrite, binary source, release,
+and full parity claims remain blocked.
+
+## Previous Studio product board - DA32-028 (closed-bounded, 2026-07-28)
 
 DA32-028 proves the positive source observation route. Studio relinks the KFM
 fixture through a simulated folder picker, receives read permission, reads the
@@ -17,10 +40,9 @@ Evidence:
 The fixture keeps one visible missing `sound/kfm.mid` warning. Unrelated
 roadmap documentation changes keep the subject provisional.
 
-Next Studio proof: explicit receipt finalization after verified observation,
+Next Studio proof: `matches-draft` acceptance, explicit receipt finalization,
 then physical crash windows, quota and eviction, and multi-file transaction
-boundaries. `matches-draft`, changed bytes, automatic retry, ZIP rewrite,
-binary source, release, and full parity claims remain blocked.
+boundaries.
 
 ## Previous Studio product board - DA32-027 (closed-bounded, 2026-07-28)
 

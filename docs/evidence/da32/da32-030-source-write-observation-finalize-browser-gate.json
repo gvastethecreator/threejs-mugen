@@ -1,10 +1,10 @@
 {
   "schema": "Da32StudioSourceWriteObservationFinalizeBrowserGate/v1",
   "id": "DA32-030",
-  "generatedAt": "2026-07-28T11:29:19.043Z",
+  "generatedAt": "2026-07-28T11:36:22.261Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "9544295d76896444aeef9d518bef612b9b0efaaf",
+    "subjectSha": "9a0a7d410e0fb26090ca50954e84659c929ac0e1",
     "dirtyTree": true,
     "provisional": true,
     "probePaths": [
@@ -19,7 +19,7 @@
     ],
     "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
   },
-  "headSha": "9544295d76896444aeef9d518bef612b9b0efaaf",
+  "headSha": "9a0a7d410e0fb26090ca50954e84659c929ac0e1",
   "ok": true,
   "route": "/?mode=studio&studio=build&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "database": "mugen-web-sandbox-studio",
@@ -80,7 +80,7 @@
           "writeByteLength": 78711,
           "observation": {
             "status": "matches-draft",
-            "observedAt": "2026-07-28T11:29:04.271Z",
+            "observedAt": "2026-07-28T11:36:07.267Z",
             "digest": "3e3ebfd5638ec80e853f1071d710a8f93e8f12bb18ec9c5147c90a6bf11a5ad3",
             "byteLength": 78711,
             "permission": "granted",
@@ -100,7 +100,7 @@
           "path": "chars/kfm/kfm.cns",
           "status": "committed",
           "reason": "observed-write-and-reimport",
-          "observedAt": "2026-07-28T11:29:05.717Z",
+          "observedAt": "2026-07-28T11:36:08.814Z",
           "operation": "directory-exclusive-write-and-reimport",
           "permission": "granted",
           "observedSourceFingerprint": "350dce9c84a40d1a1a299b9111e8d9cd6d90744f7330f1aba16a00e4cb7923b5",
@@ -120,7 +120,7 @@
             "project-bundle"
           ],
           "diagnostics": [],
-          "digest": "fnv1a32:243b8129"
+          "digest": "fnv1a32:157e9d92"
         },
         "intent": {
           "schema": "StudioSourceWriteIntent/v1",
@@ -136,7 +136,7 @@
           "writeByteLength": 78711,
           "observation": {
             "status": "matches-draft",
-            "observedAt": "2026-07-28T11:29:05.721Z",
+            "observedAt": "2026-07-28T11:36:08.819Z",
             "digest": "3e3ebfd5638ec80e853f1071d710a8f93e8f12bb18ec9c5147c90a6bf11a5ad3",
             "byteLength": 78711,
             "permission": "granted",
@@ -162,7 +162,7 @@
           "writeByteLength": 78711,
           "observation": {
             "status": "matches-draft",
-            "observedAt": "2026-07-28T11:29:05.721Z",
+            "observedAt": "2026-07-28T11:36:08.819Z",
             "digest": "3e3ebfd5638ec80e853f1071d710a8f93e8f12bb18ec9c5147c90a6bf11a5ad3",
             "byteLength": 78711,
             "permission": "granted",
@@ -198,7 +198,7 @@
           "warnings": [
             "This source handle is retained for the current browser session only."
           ],
-          "updatedAt": "2026-07-28T11:29:05.717Z"
+          "updatedAt": "2026-07-28T11:36:08.814Z"
         },
         "sourceTransaction": {
           "schemaVersion": "mugen-web-sandbox/source-transaction/v0",
@@ -286,7 +286,7 @@
           "writeByteLength": 78711,
           "observation": {
             "status": "matches-draft",
-            "observedAt": "2026-07-28T11:29:14.340Z",
+            "observedAt": "2026-07-28T11:36:17.488Z",
             "digest": "3e3ebfd5638ec80e853f1071d710a8f93e8f12bb18ec9c5147c90a6bf11a5ad3",
             "byteLength": 78711,
             "permission": "granted",
@@ -306,7 +306,7 @@
           "path": "chars/kfm/kfm.cns",
           "status": "committed",
           "reason": "observed-write-and-reimport",
-          "observedAt": "2026-07-28T11:29:15.620Z",
+          "observedAt": "2026-07-28T11:36:18.962Z",
           "operation": "directory-exclusive-write-and-reimport",
           "permission": "granted",
           "observedSourceFingerprint": "350dce9c84a40d1a1a299b9111e8d9cd6d90744f7330f1aba16a00e4cb7923b5",
@@ -326,7 +326,7 @@
             "project-bundle"
           ],
           "diagnostics": [],
-          "digest": "fnv1a32:1f883289"
+          "digest": "fnv1a32:667c0775"
         },
         "intent": {
           "schema": "StudioSourceWriteIntent/v1",
@@ -342,7 +342,7 @@
           "writeByteLength": 78711,
           "observation": {
             "status": "matches-draft",
-            "observedAt": "2026-07-28T11:29:15.623Z",
+            "observedAt": "2026-07-28T11:36:18.966Z",
             "digest": "3e3ebfd5638ec80e853f1071d710a8f93e8f12bb18ec9c5147c90a6bf11a5ad3",
             "byteLength": 78711,
             "permission": "granted",
@@ -368,7 +368,7 @@
           "writeByteLength": 78711,
           "observation": {
             "status": "matches-draft",
-            "observedAt": "2026-07-28T11:29:15.623Z",
+            "observedAt": "2026-07-28T11:36:18.966Z",
             "digest": "3e3ebfd5638ec80e853f1071d710a8f93e8f12bb18ec9c5147c90a6bf11a5ad3",
             "byteLength": 78711,
             "permission": "granted",
@@ -404,7 +404,7 @@
           "warnings": [
             "This source handle is retained for the current browser session only."
           ],
-          "updatedAt": "2026-07-28T11:29:15.620Z"
+          "updatedAt": "2026-07-28T11:36:18.961Z"
         },
         "sourceTransaction": {
           "schemaVersion": "mugen-web-sandbox/source-transaction/v0",
@@ -460,6 +460,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "88e42bd4abdb3df482ea73c316a6b2e1eef0dc3a735d9fcdef62b3c49606e250"
+    "value": "d0fe9435c4dff53cb86bc7c9843f995e782404f5d0906e7875e64d6cb27c8ef9"
   }
 }

@@ -1,6 +1,6 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T10:55:42.091Z",
+  "generatedAt": "2026-07-28T11:37:18.958Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted",
@@ -149,6 +149,17 @@
         "docs/evidence/da32/da32-028-source-write-observation-positive-browser-gate.json"
       ]
     },
+    "DA32-030": {
+      "status": "accepted-browser-source-observation-finalization-provisional",
+      "note": "desktop/mobile observed-source finalization gate passed on a dirty subject; clean subject pin remains open",
+      "artifacts": [
+        "src/app/App.ts",
+        "src/app/StudioIndexedDbSnapshot.ts",
+        "src/app/StudioSourceWriteReceipt.ts",
+        "scripts/qa_browser_gate_da32_030_source_write_observation_finalize.cjs",
+        "docs/evidence/da32/da32-030-source-write-observation-finalize-browser-gate.json"
+      ]
+    },
     "DA32-013": {
       "status": "accepted-sample",
       "note": "consecutive pass proposes adjudicatedThrough=DA30-021",
@@ -184,13 +195,13 @@
     "retain green smoke ownership at the next subject HEAD",
     "expand runtime visual and Studio matrix",
     "expand mugen-lite visual matrix",
-    "physical source-intent crash/receipt finalization, receipt acceptance, quota, eviction, and multi-file recovery",
+    "physical source-intent crash injection, retry/abandon, quota, eviction, and multi-file recovery",
     "studio surface repairs",
     "hardware gamepad lab"
   ],
   "claimCeiling": "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "7b08d4ce10497fbcc3756ba48321ea7e67df80b77cecd83e01c16ff804968ea9"
+    "value": "2241391e57a33e52f4f2d8fbca416ef0a4073a3b2bb0cf116c491b6094ecc373"
   }
 }

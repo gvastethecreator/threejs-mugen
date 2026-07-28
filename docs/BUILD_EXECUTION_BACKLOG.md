@@ -1,5 +1,24 @@
 # Build Execution Backlog
 
+## Entry 632 - DA32-030 Studio observed-source finalization
+
+Implemented the explicit post-reload acceptance path in `bf719ef5`. A pending
+`write-closed` intent exposes `Accept observed source` only after a fresh read
+records `matches-draft`. The action reads the file again, reimports the linked
+folder, resolves the logical source path in the VFS, verifies the draft digest,
+and settles the original intent with a committed
+`observed-write-and-reimport` receipt and `recovery = observed`.
+
+The provisional gate/evidence commit is `9a0a7d41`:
+`docs/evidence/da32/da32-030-source-write-observation-finalize-browser-gate.json`.
+Desktop `1440x900` and mobile `390x844` pass all fourteen steps, including
+exact draft bytes, committed source fingerprint, zero writable-stream calls,
+zero `readwrite` permission requests, zero unexpected console errors, and no
+horizontal overflow. The fixture leaves one visible missing `sound/kfm.mid`
+warning. Claim blocked: physical crash cuts, automatic retry, abandon,
+quota/eviction, multi-file atomicity, ZIP rewrite, binary source blobs,
+release authority, and full MUGEN/IKEMEN parity.
+
 ## Entry 631 - DA32-028 Studio positive source-write observation
 
 Added the positive observation gate in `57600085`: Studio relinks the KFM

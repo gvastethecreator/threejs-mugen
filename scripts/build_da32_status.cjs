@@ -264,6 +264,17 @@ if (fs.existsSync(studioSourceObservationPositiveGatePath)) {
 }
 const studioSourceObservationPositiveGateOk = studioSourceObservationPositiveGate?.ok === true;
 const studioSourceObservationPositiveGateClean = studioSourceObservationPositiveGate?.subject?.provisional === false;
+const studioSourceObservationFinalizeGatePath = path.join(outDir, "da32-030-source-write-observation-finalize-browser-gate.json");
+let studioSourceObservationFinalizeGate = null;
+if (fs.existsSync(studioSourceObservationFinalizeGatePath)) {
+  try {
+    studioSourceObservationFinalizeGate = JSON.parse(fs.readFileSync(studioSourceObservationFinalizeGatePath, "utf8"));
+  } catch {
+    studioSourceObservationFinalizeGate = null;
+  }
+}
+const studioSourceObservationFinalizeGateOk = studioSourceObservationFinalizeGate?.ok === true;
+const studioSourceObservationFinalizeGateClean = studioSourceObservationFinalizeGate?.subject?.provisional === false;
 
 const status = {
   schema: "Da32ProgramStatus/v1",
@@ -494,6 +505,27 @@ const status = {
           ]
         : ["src/app/App.ts", "src/app/StudioIndexedDbSnapshot.ts"],
     },
+    "DA32-030": {
+      status: studioSourceObservationFinalizeGateOk
+        ? studioSourceObservationFinalizeGateClean
+          ? "accepted-browser-source-observation-finalization"
+          : "accepted-browser-source-observation-finalization-provisional"
+        : "open-implementation",
+      note: studioSourceObservationFinalizeGateOk
+        ? studioSourceObservationFinalizeGateClean
+          ? "clean-subject desktop/mobile gate proves matches-draft acceptance, explicit folder reimport, observed recovery settlement, and zero writable-stream/readwrite requests; crash, retry, quota, eviction, and multi-file recovery remain open"
+          : "desktop/mobile observed-source finalization gate passed on a dirty subject; clean subject pin remains open"
+        : "Studio observed-source finalization browser gate is missing or failed",
+      artifacts: studioSourceObservationFinalizeGateOk
+        ? [
+            "src/app/App.ts",
+            "src/app/StudioIndexedDbSnapshot.ts",
+            "src/app/StudioSourceWriteReceipt.ts",
+            "scripts/qa_browser_gate_da32_030_source_write_observation_finalize.cjs",
+            "docs/evidence/da32/da32-030-source-write-observation-finalize-browser-gate.json",
+          ]
+        : ["src/app/App.ts", "src/app/StudioIndexedDbSnapshot.ts"],
+    },
     "DA32-013": {
       status: "accepted-sample",
       note: "consecutive pass proposes adjudicatedThrough=DA30-021",
@@ -529,9 +561,11 @@ const status = {
     ownership.ok ? "retain green smoke ownership at the next subject HEAD" : "live qa:smoke re-run with ownership write",
     ownership.ok ? "expand runtime visual and Studio matrix" : "reconcile global smoke runtime-native sample with focal gate",
     mugenLiteVisualGateOk ? "expand mugen-lite visual matrix" : "close mugen-lite visual lane",
-    studioSourceObservationPositiveGateOk
-      ? "physical source-intent crash/receipt finalization, receipt acceptance, quota, eviction, and multi-file recovery"
-      : studioSourceObservationGateOk
+    studioSourceObservationFinalizeGateOk
+      ? "physical source-intent crash injection, retry/abandon, quota, eviction, and multi-file recovery"
+      : studioSourceObservationPositiveGateOk
+        ? "matches-draft source observation and explicit receipt finalization"
+        : studioSourceObservationGateOk
         ? "granted-handle source observation classification"
         : studioSourceReceiptRecoveryGateOk
           ? "write-closed source observation after reload"

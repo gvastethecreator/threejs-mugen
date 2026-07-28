@@ -14,6 +14,22 @@ DA31-025…029 then choose storage authority and prove transactions, conflicts,
 recovery, real views, preview, and export revision fidelity. Current proof is
 single-tab and its 390-pixel mobile route has horizontal overflow.
 
+## 2026-07-28 DA32-030 observed-source finalization checkpoint
+
+DA32-030 closes the positive draft-observation acceptance slice. A pending
+`write-closed` intent records `matches-draft`, then the explicit `Accept
+observed source` action performs a second read, reimports the linked KFM folder,
+resolves the logical source path in the prefixed VFS, verifies the draft digest,
+and persists a committed `observed-write-and-reimport` receipt. The settled
+intent records `phase = settled`, `result = committed`, and `recovery = observed`.
+
+The provisional desktop/mobile gate passes fourteen steps per viewport, with
+exact draft bytes, committed source fingerprint, zero writable-stream calls,
+zero `readwrite` permission requests, no overflow, and zero unexpected console
+errors. Evidence:
+`docs/evidence/da32/da32-030-source-write-observation-finalize-browser-gate.json`.
+Implementation: `bf719ef5`; gate/evidence: `9a0a7d41`.
+
 ## 2026-07-28 DA32-028 positive source-write observation checkpoint
 
 DA32-028 proves the positive observation route on a real KFM fixture. Studio

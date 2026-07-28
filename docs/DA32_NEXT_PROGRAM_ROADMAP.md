@@ -20,7 +20,7 @@ DA32 turns remaining open product and adjudication work into owned lanes.
 1. **DA32-001…008** — smoke ownership, hit-spark/runtime repair, mugen-lite visual, Studio surface lanes.
 2. **DA32-009…012** — physical gamepad device-lab protocol + optional hardware evidence.
 3. **DA32-013…020** — consecutive clause adjudication samples past DA30-020.
-4. **DA32-021…028** — project authority, authoring per-view browser capture, live snapshot/replay binding.
+4. **DA32-021…030** — project authority, authoring per-view browser capture, live snapshot/replay binding.
 5. **DA32-029…032** — a11y SR/canvas alternative, local release blockers refresh.
 
 ## Phase 0 — Smoke ownership (current)
@@ -192,6 +192,7 @@ MUGEN/IKEMEN parity remain open.
 | DA32-026 | Rehydrate the settled source-write receipt after reload | validated `SourceWriteReceipt/v1` payload beside the intent, digest rejection, bridge and visible recovery readback, desktop/mobile browser gate | named route and browser harness; physical crash, automatic retry, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
 | DA32-027 | Observe a write-closed source intent after reload | durable `needs-observation`, explicit source read classification, unavailable outcome without receipt settlement, exact preimage replay, desktop/mobile browser gate | named route and no-handle fallback; granted physical handle, crash injection, receipt finalization, retry, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
 | DA32-028 | Verify positive source observation through a granted folder handle | real KFM source read, `matches-preimage`, digest/length persistence, pending retention, zero writable-stream calls, desktop/mobile browser gate | simulated picker and fixture handle; `matches-draft`, changed bytes, physical permissions, crash, receipt finalization, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
+| DA32-030 | Accept a verified draft observation and finalize the source-write intent | `matches-draft` re-read, explicit folder reimport, `observed-write-and-reimport` receipt, settled intent with `recovery: observed`, desktop/mobile browser gate | simulated picker and KFM fixture; physical crash cuts, retry/abandon, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
 
 ### DA32-021 browser gate - c95c871a (2026-07-28)
 
@@ -410,6 +411,31 @@ crash injection, explicit receipt finalization, automatic retry, quota,
 eviction, multi-file recovery, ZIP rewrite, binary blobs, release authority,
 and full MUGEN/IKEMEN authoring parity remain open.
 
+### DA32-030 browser gate - provisional subject `9a0a7d41` (2026-07-28)
+
+- `pnpm qa:browser:da32-030-source-write-observation-finalize` passed at
+  desktop `1440x900` and mobile `390x844`; the gate remains provisional because
+  the shared tree still contains unrelated roadmap work.
+- The gate starts with a real KFM source intent whose external file contains a
+  modified draft. Studio records `matches-draft`, exposes `Accept observed
+  source`, reads the file again, reimports the folder, and settles the original
+  intent with a committed `observed-write-and-reimport` receipt.
+- Both viewports pass all fourteen steps: committed source fingerprint, exact
+  draft bytes, `recovery: observed`, zero writable-stream calls, zero
+  `readwrite` permission requests, zero unexpected console errors, and no
+  horizontal overflow. The fixture keeps one visible `sound/kfm.mid` warning,
+  outside the error claim.
+- Implementation: `bf719ef5`; browser gate and evidence: `9a0a7d41`.
+  Evidence:
+  `docs/evidence/da32/da32-030-source-write-observation-finalize-browser-gate.json`.
+
+Claim ceiling: named KFM folder recovery route, positive draft observation,
+explicit reimport, receipt settlement, observed recovery evidence, and the
+recorded desktop/mobile checks. Physical crash injection at each external
+write/IndexedDB boundary, automatic retry, abandon, quota, eviction,
+multi-file recovery, ZIP rewrite, binary blobs, physical permission prompts,
+release authority, and full MUGEN/IKEMEN authoring parity remain open.
+
 ## Commands
 
 ```bash
@@ -422,6 +448,7 @@ pnpm qa:browser:da32-025-source-write-phase
 pnpm qa:browser:da32-026-source-write-receipt
 pnpm qa:browser:da32-027-source-write-observation
 pnpm qa:browser:da32-028-source-write-observation-positive
+pnpm qa:browser:da32-030-source-write-observation-finalize
 pnpm materialize:da32-status
 pnpm exec vitest run src/tests/Da32Program.test.ts
 ```
