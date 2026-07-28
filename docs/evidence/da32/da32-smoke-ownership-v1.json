@@ -1,23 +1,19 @@
 {
   "schema": "Da32SmokeOwnership/v1",
   "id": "DA32-001",
-  "generatedAt": "2026-07-27T19:03:33.492Z",
+  "generatedAt": "2026-07-28T02:33:41.488Z",
   "ok": false,
-  "failureCount": 69,
+  "failureCount": 46,
   "lanes": [
     {
       "id": "runtime-native",
       "status": "open",
-      "failureCount": 8,
+      "failureCount": 4,
       "failures": [
         "runtime-desktop: native hit spark renderer did not expose an active spark after KeyA",
         "runtime-desktop: native hit spark renderer did not expose player AIR spark source metadata",
         "runtime-desktop: native hit spark renderer did not resolve a player AIR spark sprite",
-        "runtime-desktop: native hit spark renderer did not expose resolved sprite frame/axis diagnostics",
-        "runtime-mobile: native hit spark renderer did not expose an active spark after KeyA",
-        "runtime-mobile: native hit spark renderer did not expose player AIR spark source metadata",
-        "runtime-mobile: native hit spark renderer did not resolve a player AIR spark sprite",
-        "runtime-mobile: native hit spark renderer did not expose resolved sprite frame/axis diagnostics"
+        "runtime-desktop: native hit spark renderer did not expose resolved sprite frame/axis diagnostics"
       ],
       "owner": "DA32-smoke",
       "claimCeiling": "lane open until green at named subject SHA"
@@ -25,25 +21,11 @@
     {
       "id": "mugen-lite-visual",
       "status": "open",
-      "failureCount": 34,
+      "failureCount": 20,
       "failures": [
-        "mugen-lite visual desktop: ZIP load, imported sprite presentation, or multi-frame canvas proof failed",
-        "mugen-lite visual desktop walk: input-driven pose or idle return proof failed",
-        "mugen-lite visual desktop crouch: input-driven pose or idle return proof failed",
-        "mugen-lite visual desktop jump: input-driven pose or idle return proof failed",
-        "mugen-lite visual desktop: idle/walk/crouch/jump masks were not mutually distinct",
-        "mugen-lite visual desktop getHit: imported combat state/frame/crop proof failed",
-        "mugen-lite visual desktop fallMotion: imported combat state/frame/crop proof failed",
-        "mugen-lite visual desktop fallen: imported combat state/frame/crop proof failed",
-        "mugen-lite visual desktop: combat damage, unique poses, or idle return proof failed",
-        "mugen-lite visual desktop recovery getHit: imported state/frame/crop proof failed",
-        "mugen-lite visual desktop recovery fallMotion: imported state/frame/crop proof failed",
-        "mugen-lite visual desktop recovery fallen: imported state/frame/crop proof failed",
         "mugen-lite visual desktop recovery recovery: imported state/frame/crop proof failed",
         "mugen-lite visual desktop: recovery roster, damage, unique poses, or idle return proof failed",
         "mugen-lite visual desktop: guarded imported contact, exact chip, or idle return proof failed",
-        "mugen-lite visual desktop: legal NoKOSlow KO, normal playback, or reset proof failed",
-        "mugen-lite visual desktop: ACT-backed source/destination RemapPal pixel proof failed",
         "mugen-lite visual mobile: ZIP load, imported sprite presentation, or multi-frame canvas proof failed",
         "mugen-lite visual mobile walk: input-driven pose or idle return proof failed",
         "mugen-lite visual mobile crouch: input-driven pose or idle return proof failed",
@@ -68,10 +50,9 @@
     {
       "id": "studio-workbench",
       "status": "open",
-      "failureCount": 2,
+      "failureCount": 1,
       "failures": [
-        "studio-workbench: premium cockpit workbench was missing stage deck, pipeline, health inspector, expanded console, or large playfield",
-        "studio-workbench-tablet: 1024px workbench layout overflowed or lost stage status"
+        "studio-workbench: premium cockpit workbench was missing stage deck, pipeline, health inspector, expanded console, or large playfield"
       ],
       "owner": "DA32-smoke",
       "claimCeiling": "lane open until green at named subject SHA"
@@ -79,18 +60,14 @@
     {
       "id": "studio-build",
       "status": "open",
-      "failureCount": 10,
+      "failureCount": 6,
       "failures": [
         "studio-build: Build surface did not render",
         "studio-build: shared Trust Chain rows were missing targets, deltas, or Build Readiness next actions",
         "studio-build: project package panel or bridge summary missing",
         "studio-build: revision-bound evidence envelopes were not surfaced through Evidence/Trust Chain",
         "studio-build: imported package analysis was not surfaced through Evidence/Trust Chain",
-        "studio-build: promoted compatibility snapshot was not visible as an exportable Build record",
-        "studio-build: downloaded project package did not include required contracts/evidence",
-        "studio-build: downloaded package did not preserve current package EvidenceEnvelope facts",
-        "studio-build: imported fixture source files were not embedded in the project package",
-        "studio-build: downloaded project package did not include one fresh releaseable asset policy and diagnostic-only records"
+        "studio-build: promoted compatibility snapshot was not visible as an exportable Build record"
       ],
       "owner": "DA32-smoke",
       "claimCeiling": "lane open until green at named subject SHA"
@@ -166,10 +143,10 @@
     }
   ],
   "laneSummary": {
-    "runtime-native": 8,
-    "mugen-lite-visual": 34,
-    "studio-workbench": 2,
-    "studio-build": 10,
+    "runtime-native": 4,
+    "mugen-lite-visual": 20,
+    "studio-workbench": 1,
+    "studio-build": 6,
     "studio-modules": 1,
     "studio-source-relink": 1,
     "ikemen-scan": 1,
@@ -179,7 +156,7 @@
   },
   "runtimeSample": {
     "desktopHitSparks": 0,
-    "mobileHitSparks": 0,
+    "mobileHitSparks": 1,
     "desktopActors": 2,
     "mobileActors": 2
   },
@@ -198,6 +175,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "7db7c397154bd75b6d17f88229b16e2555e17af59032b2a4d26ba53a05655d74"
+    "value": "6f9a2755f7f2f8c3c1222c750033853a68970dfaaa6b6910c8861e216e32f87d"
   }
 }

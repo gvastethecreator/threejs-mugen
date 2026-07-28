@@ -1,0 +1,441 @@
+{
+  "schema": "Da32HitSparkBrowserGate/v1",
+  "id": "DA32-002",
+  "generatedAt": "2026-07-28T02:42:54.563Z",
+  "subject": {
+    "schema": "Da31GateSubjectEnvelope/v1",
+    "subjectSha": "3427f1f80572c9e895461753c9a8f20c8b13943b",
+    "dirtyTree": true,
+    "provisional": true,
+    "probePaths": [
+      "scripts/qa_browser_gate_da32_002_hit_spark.cjs",
+      "scripts/qa_smoke.cjs"
+    ],
+    "codePaths": [
+      "src/game/render/HitSparkRenderer.ts",
+      "src/app/App.ts"
+    ],
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+  },
+  "headSha": "3427f1f80572c9e895461753c9a8f20c8b13943b",
+  "ok": true,
+  "route": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+  "cases": [
+    {
+      "id": "desktop",
+      "viewport": "1440x960",
+      "ok": true,
+      "semantic": {
+        "baselineAvailable": true,
+        "resetRoundFound": true,
+        "playingAfterReset": true,
+        "contactApproach": true,
+        "testedKeys": [
+          "KeyZ",
+          "KeyA",
+          "KeyX"
+        ],
+        "successfulKeys": [
+          "KeyZ",
+          "KeyA",
+          "KeyX"
+        ],
+        "activeHitSparks": 1,
+        "playerSourceCount": 1,
+        "resolvedSprites": 1,
+        "spriteFrame": {
+          "source": "player",
+          "actionId": 7002,
+          "frameIndex": 1,
+          "spriteGroup": 7002,
+          "spriteIndex": 1,
+          "offsetX": 0,
+          "offsetY": 0,
+          "duration": 3
+        },
+        "spriteAxis": {
+          "group": 7002,
+          "index": 1,
+          "width": 96,
+          "height": 96,
+          "axisX": 48,
+          "axisY": 48
+        },
+        "damageObserved": true
+      },
+      "baseline": {
+        "available": true,
+        "mode": "match",
+        "playing": true,
+        "tick": 54,
+        "actors": [
+          {
+            "id": "p1",
+            "life": 1000,
+            "x": -125,
+            "stateNo": 0,
+            "animNo": 0
+          },
+          {
+            "id": "p2",
+            "life": 1000,
+            "x": 125,
+            "stateNo": 0,
+            "animNo": 0
+          }
+        ]
+      },
+      "keyResults": [
+        {
+          "key": "KeyZ",
+          "resetFound": true,
+          "playing": true,
+          "contactGap": 98.80000000000018,
+          "approachAttempts": 8,
+          "attempts": 2,
+          "success": true,
+          "p2LifeDelta": -72,
+          "hitSpark": {
+            "active": 1,
+            "fallbackGeometry": false,
+            "resolvedSprites": 1,
+            "sources": {
+              "player": 1
+            },
+            "presentations": [
+              {
+                "source": "player",
+                "actionId": 7002,
+                "lookupStatus": "resolved-sprite",
+                "assetFrame": {
+                  "source": "player",
+                  "actionId": 7002,
+                  "frameIndex": 1,
+                  "spriteGroup": 7002,
+                  "spriteIndex": 1,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "duration": 3
+                },
+                "sprite": {
+                  "group": 7002,
+                  "index": 1,
+                  "width": 96,
+                  "height": 96,
+                  "axisX": 48,
+                  "axisY": 48
+                }
+              }
+            ]
+          }
+        },
+        {
+          "key": "KeyA",
+          "resetFound": true,
+          "playing": true,
+          "contactGap": 103.12000000000018,
+          "approachAttempts": 8,
+          "attempts": 1,
+          "success": true,
+          "p2LifeDelta": -55,
+          "hitSpark": {
+            "active": 1,
+            "fallbackGeometry": false,
+            "resolvedSprites": 1,
+            "sources": {
+              "player": 1
+            },
+            "presentations": [
+              {
+                "source": "player",
+                "actionId": 7001,
+                "lookupStatus": "resolved-sprite",
+                "assetFrame": {
+                  "source": "player",
+                  "actionId": 7001,
+                  "frameIndex": 1,
+                  "spriteGroup": 7001,
+                  "spriteIndex": 1,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "duration": 3
+                },
+                "sprite": {
+                  "group": 7001,
+                  "index": 1,
+                  "width": 96,
+                  "height": 96,
+                  "axisX": 48,
+                  "axisY": 48
+                }
+              }
+            ]
+          }
+        },
+        {
+          "key": "KeyX",
+          "resetFound": true,
+          "playing": true,
+          "contactGap": 96.64000000000019,
+          "approachAttempts": 9,
+          "attempts": 2,
+          "success": true,
+          "p2LifeDelta": -72,
+          "hitSpark": {
+            "active": 1,
+            "fallbackGeometry": false,
+            "resolvedSprites": 1,
+            "sources": {
+              "player": 1
+            },
+            "presentations": [
+              {
+                "source": "player",
+                "actionId": 7002,
+                "lookupStatus": "resolved-sprite",
+                "assetFrame": {
+                  "source": "player",
+                  "actionId": 7002,
+                  "frameIndex": 2,
+                  "spriteGroup": 7002,
+                  "spriteIndex": 2,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "duration": 4
+                },
+                "sprite": {
+                  "group": 7002,
+                  "index": 2,
+                  "width": 96,
+                  "height": 96,
+                  "axisX": 48,
+                  "axisY": 48
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "screenshot": "docs/evidence/da32/browser/da32-002-hit-spark-desktop.png",
+      "consoleErrors": []
+    },
+    {
+      "id": "mobile",
+      "viewport": "390x844",
+      "ok": true,
+      "semantic": {
+        "baselineAvailable": true,
+        "resetRoundFound": true,
+        "playingAfterReset": true,
+        "contactApproach": true,
+        "testedKeys": [
+          "KeyZ",
+          "KeyA",
+          "KeyX"
+        ],
+        "successfulKeys": [
+          "KeyZ",
+          "KeyA",
+          "KeyX"
+        ],
+        "activeHitSparks": 1,
+        "playerSourceCount": 1,
+        "resolvedSprites": 1,
+        "spriteFrame": {
+          "source": "player",
+          "actionId": 7002,
+          "frameIndex": 1,
+          "spriteGroup": 7002,
+          "spriteIndex": 1,
+          "offsetX": 0,
+          "offsetY": 0,
+          "duration": 3
+        },
+        "spriteAxis": {
+          "group": 7002,
+          "index": 1,
+          "width": 96,
+          "height": 96,
+          "axisX": 48,
+          "axisY": 48
+        },
+        "damageObserved": true
+      },
+      "baseline": {
+        "available": true,
+        "mode": "match",
+        "playing": true,
+        "tick": 52,
+        "actors": [
+          {
+            "id": "p1",
+            "life": 1000,
+            "x": -125,
+            "stateNo": 0,
+            "animNo": 0
+          },
+          {
+            "id": "p2",
+            "life": 1000,
+            "x": 125,
+            "stateNo": 0,
+            "animNo": 0
+          }
+        ]
+      },
+      "keyResults": [
+        {
+          "key": "KeyZ",
+          "resetFound": true,
+          "playing": true,
+          "contactGap": 104.20000000000017,
+          "approachAttempts": 9,
+          "attempts": 1,
+          "success": true,
+          "p2LifeDelta": -72,
+          "hitSpark": {
+            "active": 1,
+            "fallbackGeometry": false,
+            "resolvedSprites": 1,
+            "sources": {
+              "player": 1
+            },
+            "presentations": [
+              {
+                "source": "player",
+                "actionId": 7002,
+                "lookupStatus": "resolved-sprite",
+                "assetFrame": {
+                  "source": "player",
+                  "actionId": 7002,
+                  "frameIndex": 1,
+                  "spriteGroup": 7002,
+                  "spriteIndex": 1,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "duration": 3
+                },
+                "sprite": {
+                  "group": 7002,
+                  "index": 1,
+                  "width": 96,
+                  "height": 96,
+                  "axisX": 48,
+                  "axisY": 48
+                }
+              }
+            ]
+          }
+        },
+        {
+          "key": "KeyA",
+          "resetFound": true,
+          "playing": true,
+          "contactGap": 109.60000000000016,
+          "approachAttempts": 9,
+          "attempts": 1,
+          "success": true,
+          "p2LifeDelta": -55,
+          "hitSpark": {
+            "active": 1,
+            "fallbackGeometry": false,
+            "resolvedSprites": 1,
+            "sources": {
+              "player": 1
+            },
+            "presentations": [
+              {
+                "source": "player",
+                "actionId": 7001,
+                "lookupStatus": "resolved-sprite",
+                "assetFrame": {
+                  "source": "player",
+                  "actionId": 7001,
+                  "frameIndex": 0,
+                  "spriteGroup": 7001,
+                  "spriteIndex": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "duration": 3
+                },
+                "sprite": {
+                  "group": 7001,
+                  "index": 0,
+                  "width": 96,
+                  "height": 96,
+                  "axisX": 48,
+                  "axisY": 48
+                }
+              }
+            ]
+          }
+        },
+        {
+          "key": "KeyX",
+          "resetFound": true,
+          "playing": true,
+          "contactGap": 103.12000000000018,
+          "approachAttempts": 9,
+          "attempts": 2,
+          "success": true,
+          "p2LifeDelta": -72,
+          "hitSpark": {
+            "active": 1,
+            "fallbackGeometry": false,
+            "resolvedSprites": 1,
+            "sources": {
+              "player": 1
+            },
+            "presentations": [
+              {
+                "source": "player",
+                "actionId": 7002,
+                "lookupStatus": "resolved-sprite",
+                "assetFrame": {
+                  "source": "player",
+                  "actionId": 7002,
+                  "frameIndex": 0,
+                  "spriteGroup": 7002,
+                  "spriteIndex": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "duration": 3
+                },
+                "sprite": {
+                  "group": 7002,
+                  "index": 0,
+                  "width": 96,
+                  "height": 96,
+                  "axisX": 48,
+                  "axisY": 48
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "screenshot": "docs/evidence/da32/browser/da32-002-hit-spark-mobile.png",
+      "consoleErrors": []
+    }
+  ],
+  "unexpectedConsole": [],
+  "claimCeiling": "provisional dirty-tree native hit-spark observations for named viewports",
+  "claims": {
+    "allowed": [
+      "runtime starts playing after reset",
+      "live P1/P2 approach reaches attack range",
+      "KeyZ/KeyA/KeyX retry path is exercised",
+      "native player hit-spark source metadata",
+      "resolved player hit-spark sprite frame and axis diagnostics"
+    ],
+    "blocked": [
+      "all characters and stages",
+      "all input devices",
+      "full MUGEN/IKEMEN visual parity"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "0154ac3a9793e101fbe22537a952dbd589b605f9ff0046bfd4af8a005b04630d"
+  }
+}

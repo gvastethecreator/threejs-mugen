@@ -16,7 +16,9 @@
   `docs/evidence/da32/da32-program-status-v1.json`. Smoke ownership + hit-spark
   drive harden; gamepad device-lab protocol; clause sample proposes
   `adjudicatedThrough=DA30-021` (not auto-applied); a11y baseline inventory.
-  Next: close smoke lanes, human accept watermark, hardware gamepad.
+  The DA32-002 focal browser gate passes on desktop/mobile; the global smoke
+  sample remains open at 46 failures. Next: reconcile that runtime sample,
+  close visual/Studio lanes, human accept watermark, hardware gamepad.
 
 ## Interface desktop layout repair - d8c4dfaa/b4788b85 (closed bounded, 2026-07-27)
 
@@ -27,11 +29,23 @@
 - The 27-case live audit had zero console/page/network errors and no document
   or body overflow. DA31-010 Studio, DA31-011 reflow, and DA31-009 Play
   browser gates passed against the current UI commit.
-- `pnpm exec vite build` and `git diff --check` passed. Full `pnpm build`
-  still reaches the known unused `advanced` diagnostic; the CSS budget keeps
-  its existing duplicate and shadowed-rule debt.
+- `pnpm build` and `git diff --check` passed. The CSS budget keeps its existing
+  duplicate and shadowed-rule debt.
 
 Research: [desktop and responsive interface audit](research/2026-07-27-interface-desktop-audit.md).
+
+## DA32-002 native hit-spark drive - focal pass, global smoke open (2026-07-27)
+
+- `scripts/qa_smoke.cjs` now waits for `playing`, approaches by live actor
+  distance, and retries the named attack keys after a miss.
+- `pnpm qa:browser:da32-002-hit-spark` passed at desktop `1440x960` and mobile
+  `390x844`. `KeyZ`, `KeyA`, and `KeyX` each produced a player spark with a
+  resolved sprite and axis record; unexpected console errors: zero.
+- The complete `pnpm qa:smoke` run remains open at 46 failures. Desktop still
+  misses its runtime spark sample while the focused gate passes, so the claim
+  ceiling stays focal.
+
+Evidence: `docs/evidence/da32/da32-002-hit-spark-browser-gate.json`.
 
 ## TypeScript 7 typecheck unblock - 2026-07-27
 

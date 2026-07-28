@@ -1699,11 +1699,8 @@ async function driveRuntimeHitSpark(page) {
     .waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.qaProbe?.()?.playing === true, null, { timeout: 3000 })
     .catch(() => undefined);
 
-  // Close distance so contact can register.
-  await page.keyboard.down("ArrowRight");
-  await page.waitForTimeout(900);
-  await page.keyboard.up("ArrowRight");
-  await page.waitForTimeout(80);
+  // Close distance until the live P1/P2 gap reaches attack range.
+  await approachRuntimeContact(page);
 
   const attacks = ["KeyZ", "KeyA", "KeyX", "KeyZ"];
   for (const attack of attacks) {
@@ -1715,13 +1712,31 @@ async function driveRuntimeHitSpark(page) {
     if (active) {
       return readHitSparkDiagnostics(page);
     }
-    // Retry approach + attack once per key
-    await page.keyboard.down("ArrowRight");
-    await page.waitForTimeout(280);
-    await page.keyboard.up("ArrowRight");
-    await page.waitForTimeout(100);
+    // Retry approach + attack once per key after the previous move exits.
+    await approachRuntimeContact(page);
   }
   return readHitSparkDiagnostics(page);
+}
+
+async function approachRuntimeContact(page) {
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    const direction = await page.evaluate(() => {
+      const actors = window.__MUGEN_WEB_SANDBOX__?.qaProbe?.()?.actors ?? [];
+      const p1 = actors[0];
+      const p2 = actors[1];
+      if (!p1 || !p2 || Math.abs(p2.x - p1.x) <= 110) {
+        return undefined;
+      }
+      return p1.x <= p2.x ? "ArrowRight" : "ArrowLeft";
+    });
+    if (!direction) {
+      return;
+    }
+    await page.keyboard.down(direction);
+    await page.waitForTimeout(220);
+    await page.keyboard.up(direction);
+    await page.waitForTimeout(80);
+  }
 }
 
 async function readHitSparkDiagnostics(page) {

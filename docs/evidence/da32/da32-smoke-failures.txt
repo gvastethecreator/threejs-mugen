@@ -2,27 +2,9 @@ runtime-desktop: native hit spark renderer did not expose an active spark after 
 runtime-desktop: native hit spark renderer did not expose player AIR spark source metadata
 runtime-desktop: native hit spark renderer did not resolve a player AIR spark sprite
 runtime-desktop: native hit spark renderer did not expose resolved sprite frame/axis diagnostics
-runtime-mobile: native hit spark renderer did not expose an active spark after KeyA
-runtime-mobile: native hit spark renderer did not expose player AIR spark source metadata
-runtime-mobile: native hit spark renderer did not resolve a player AIR spark sprite
-runtime-mobile: native hit spark renderer did not expose resolved sprite frame/axis diagnostics
-mugen-lite visual desktop: ZIP load, imported sprite presentation, or multi-frame canvas proof failed
-mugen-lite visual desktop walk: input-driven pose or idle return proof failed
-mugen-lite visual desktop crouch: input-driven pose or idle return proof failed
-mugen-lite visual desktop jump: input-driven pose or idle return proof failed
-mugen-lite visual desktop: idle/walk/crouch/jump masks were not mutually distinct
-mugen-lite visual desktop getHit: imported combat state/frame/crop proof failed
-mugen-lite visual desktop fallMotion: imported combat state/frame/crop proof failed
-mugen-lite visual desktop fallen: imported combat state/frame/crop proof failed
-mugen-lite visual desktop: combat damage, unique poses, or idle return proof failed
-mugen-lite visual desktop recovery getHit: imported state/frame/crop proof failed
-mugen-lite visual desktop recovery fallMotion: imported state/frame/crop proof failed
-mugen-lite visual desktop recovery fallen: imported state/frame/crop proof failed
 mugen-lite visual desktop recovery recovery: imported state/frame/crop proof failed
 mugen-lite visual desktop: recovery roster, damage, unique poses, or idle return proof failed
 mugen-lite visual desktop: guarded imported contact, exact chip, or idle return proof failed
-mugen-lite visual desktop: legal NoKOSlow KO, normal playback, or reset proof failed
-mugen-lite visual desktop: ACT-backed source/destination RemapPal pixel proof failed
 mugen-lite visual mobile: ZIP load, imported sprite presentation, or multi-frame canvas proof failed
 mugen-lite visual mobile walk: input-driven pose or idle return proof failed
 mugen-lite visual mobile crouch: input-driven pose or idle return proof failed
@@ -41,17 +23,12 @@ mugen-lite visual mobile: guarded imported contact, exact chip, or idle return p
 mugen-lite visual mobile: legal NoKOSlow KO, normal playback, or reset proof failed
 mugen-lite visual mobile: ACT-backed source/destination RemapPal pixel proof failed
 studio-workbench: premium cockpit workbench was missing stage deck, pipeline, health inspector, expanded console, or large playfield
-studio-workbench-tablet: 1024px workbench layout overflowed or lost stage status
 studio-build: Build surface did not render
 studio-build: shared Trust Chain rows were missing targets, deltas, or Build Readiness next actions
 studio-build: project package panel or bridge summary missing
 studio-build: revision-bound evidence envelopes were not surfaced through Evidence/Trust Chain
 studio-build: imported package analysis was not surfaced through Evidence/Trust Chain
 studio-build: promoted compatibility snapshot was not visible as an exportable Build record
-studio-build: downloaded project package did not include required contracts/evidence
-studio-build: downloaded package did not preserve current package EvidenceEnvelope facts
-studio-build: imported fixture source files were not embedded in the project package
-studio-build: downloaded project package did not include one fresh releaseable asset policy and diagnostic-only records
 studio-modules: shared module contracts and boundary claims were not visible through Studio Modules and the QA bridge
 studio-source-relink: missing source package did not relink through the Build Center UI
 ikemen-scan: scanner-only IKEMEN ZSS/Lua/screenpack/model-stage findings did not reach Studio Evidence and unsupported reports

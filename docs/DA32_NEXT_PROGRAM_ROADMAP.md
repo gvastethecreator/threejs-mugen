@@ -28,9 +28,24 @@ DA32 turns remaining open product and adjudication work into owned lanes.
 | ID | Scope | Acceptance | Ceiling |
 | --- | --- | --- | --- |
 | DA32-001 | Materialize structured `qa:smoke` ownership ledger | Lane map + failure inventory + runtime samples at a run; empty failures only if smoke green | ownership inventory; not score movement |
-| DA32-002 | Harden native hit-spark drive (play + approach + multi-key) | `driveRuntimeHitSpark` requires playing; KeyZ/A/X retry | runtime-native spark lane only |
+| DA32-002 | Harden native hit-spark drive (play + approach + multi-key) | `driveRuntimeHitSpark` requires playing; live contact approach; KeyZ/A/X retry; desktop/mobile focal gate | runtime-native spark lane only |
 | DA32-003 | Classify open Studio lanes | workbench/build/modules/evidence/debug ownership rows | classification only |
 | DA32-004 | Classify mugen-lite visual failures | desktop/mobile journey ownership | classification only |
+
+### DA32-002 focal result - 2026-07-27
+
+- `pnpm qa:browser:da32-002-hit-spark` passed on desktop `1440x960` and
+  mobile `390x844` with zero unexpected console errors.
+- Each viewport exercised `KeyZ`, `KeyA`, and `KeyX`; each produced a native
+  player hit spark, resolved sprite data, axis data, and a life delta.
+- The full `pnpm qa:smoke` run remains open at 46 failures. Its desktop
+  runtime sample still misses the spark, so the global smoke lane stays open
+  beside this focal pass.
+- Evidence: `docs/evidence/da32/da32-002-hit-spark-browser-gate.json`.
+
+Claim allowed: named runtime route, viewports, input keys, and native
+hit-spark diagnostics in the focal gate. Claim blocked: all characters, stages,
+input devices, and full MUGEN/IKEMEN visual parity.
 
 ## Phase 1 — Device lab
 

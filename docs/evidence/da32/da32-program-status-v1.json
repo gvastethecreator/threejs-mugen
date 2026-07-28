@@ -1,19 +1,21 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-27T19:03:39.197Z",
+  "generatedAt": "2026-07-28T02:45:52.423Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted-ownership",
-      "note": "smoke open failures=69",
+      "note": "smoke open failures=46",
       "artifacts": [
         "docs/evidence/da32/da32-smoke-ownership-v1.json"
       ]
     },
     "DA32-002": {
-      "status": "accepted-hardening",
-      "note": "driveRuntimeHitSpark requires playing + multi-key retry",
+      "status": "accepted-focal-gate",
+      "note": "desktop/mobile browser gate passed; full smoke remains open failures=46",
       "artifacts": [
-        "scripts/qa_smoke.cjs"
+        "scripts/qa_smoke.cjs",
+        "scripts/qa_browser_gate_da32_002_hit_spark.cjs",
+        "docs/evidence/da32/da32-002-hit-spark-browser-gate.json"
       ]
     },
     "DA32-003": {
@@ -76,7 +78,7 @@
   "scoresHeld": true,
   "next": [
     "live qa:smoke re-run with ownership write",
-    "close runtime-native hit spark lane",
+    "reconcile global smoke runtime-native sample with focal gate",
     "close mugen-lite visual lane",
     "studio surface repairs",
     "hardware gamepad lab"
@@ -84,6 +86,6 @@
   "claimCeiling": "DA32 program bootstrap; smoke not claimed green; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "253e298705be34ffdfac1afe7a5dd98f54c96a1d13cf5747c7634db80e385728"
+    "value": "184bd947a852520568350415c4e8d1c03ed7be7bd7eeb41db3f26320cfdb85c7"
   }
 }

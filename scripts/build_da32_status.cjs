@@ -126,6 +126,15 @@ fs.writeFileSync(path.join(outDir, "da32-a11y-baseline-v1.json"), `${JSON.string
 const ownership = fs.existsSync(liveOwnership)
   ? JSON.parse(fs.readFileSync(liveOwnership, "utf8"))
   : { failureCount: null, ok: false };
+const hitSparkGatePath = path.join(outDir, "da32-002-hit-spark-browser-gate.json");
+let hitSparkGateOk = false;
+if (fs.existsSync(hitSparkGatePath)) {
+  try {
+    hitSparkGateOk = JSON.parse(fs.readFileSync(hitSparkGatePath, "utf8")).ok === true;
+  } catch {
+    hitSparkGateOk = false;
+  }
+}
 
 const status = {
   schema: "Da32ProgramStatus/v1",
@@ -137,9 +146,17 @@ const status = {
       artifacts: ["docs/evidence/da32/da32-smoke-ownership-v1.json"],
     },
     "DA32-002": {
-      status: "accepted-hardening",
-      note: "driveRuntimeHitSpark requires playing + multi-key retry",
-      artifacts: ["scripts/qa_smoke.cjs"],
+      status: hitSparkGateOk ? "accepted-focal-gate" : "accepted-hardening",
+      note: hitSparkGateOk
+        ? `desktop/mobile browser gate passed; full smoke remains open failures=${ownership.failureCount}`
+        : "driveRuntimeHitSpark requires playing + multi-key retry",
+      artifacts: hitSparkGateOk
+        ? [
+            "scripts/qa_smoke.cjs",
+            "scripts/qa_browser_gate_da32_002_hit_spark.cjs",
+            "docs/evidence/da32/da32-002-hit-spark-browser-gate.json",
+          ]
+        : ["scripts/qa_smoke.cjs"],
     },
     "DA32-003": {
       status: "accepted-classification",
@@ -186,7 +203,7 @@ const status = {
   scoresHeld: true,
   next: [
     "live qa:smoke re-run with ownership write",
-    "close runtime-native hit spark lane",
+    "reconcile global smoke runtime-native sample with focal gate",
     "close mugen-lite visual lane",
     "studio surface repairs",
     "hardware gamepad lab",
