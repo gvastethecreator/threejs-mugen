@@ -220,6 +220,17 @@ if (fs.existsSync(studioSourceWriteRecoveryGatePath)) {
 }
 const studioSourceWriteRecoveryGateOk = studioSourceWriteRecoveryGate?.ok === true;
 const studioSourceWriteRecoveryGateClean = studioSourceWriteRecoveryGate?.subject?.provisional === false;
+const studioSourcePhaseRecoveryGatePath = path.join(outDir, "da32-025-source-write-phase-recovery-browser-gate.json");
+let studioSourcePhaseRecoveryGate = null;
+if (fs.existsSync(studioSourcePhaseRecoveryGatePath)) {
+  try {
+    studioSourcePhaseRecoveryGate = JSON.parse(fs.readFileSync(studioSourcePhaseRecoveryGatePath, "utf8"));
+  } catch {
+    studioSourcePhaseRecoveryGate = null;
+  }
+}
+const studioSourcePhaseRecoveryGateOk = studioSourcePhaseRecoveryGate?.ok === true;
+const studioSourcePhaseRecoveryGateClean = studioSourcePhaseRecoveryGate?.subject?.provisional === false;
 
 const status = {
   schema: "Da32ProgramStatus/v1",
@@ -367,6 +378,26 @@ const status = {
           ]
         : ["src/app/App.ts", "src/app/StudioSourceHandle.ts"],
     },
+    "DA32-025": {
+      status: studioSourcePhaseRecoveryGateOk
+        ? studioSourcePhaseRecoveryGateClean
+          ? "accepted-browser-source-phase-recovery"
+          : "accepted-browser-source-phase-recovery-provisional"
+        : "open-implementation",
+      note: studioSourcePhaseRecoveryGateOk
+        ? studioSourcePhaseRecoveryGateClean
+          ? "clean-subject desktop/mobile gate proves durable write-closed phase readback, exact preimage replay, pending retention, no source-handle write, and no horizontal overflow; physical crash, receipt synthesis, quota, eviction, and multi-file recovery remain open"
+          : "desktop/mobile source-write phase gate passed on a dirty subject; clean subject pin remains open"
+        : "Studio source-write phase recovery browser gate is missing or failed",
+      artifacts: studioSourcePhaseRecoveryGateOk
+        ? [
+            "src/app/App.ts",
+            "src/app/StudioIndexedDbSnapshot.ts",
+            "scripts/qa_browser_gate_da32_025_source_write_phase_recovery.cjs",
+            "docs/evidence/da32/da32-025-source-write-phase-recovery-browser-gate.json",
+          ]
+        : ["src/app/App.ts", "src/app/StudioIndexedDbSnapshot.ts"],
+    },
     "DA32-013": {
       status: "accepted-sample",
       note: "consecutive pass proposes adjudicatedThrough=DA30-021",
@@ -402,11 +433,13 @@ const status = {
     ownership.ok ? "retain green smoke ownership at the next subject HEAD" : "live qa:smoke re-run with ownership write",
     ownership.ok ? "expand runtime visual and Studio matrix" : "reconcile global smoke runtime-native sample with focal gate",
     mugenLiteVisualGateOk ? "expand mugen-lite visual matrix" : "close mugen-lite visual lane",
-    studioSourceWriteRecoveryGateOk
-      ? "source-intent crash, quota, eviction, and multi-file recovery"
-      : studioSourceIntentGateOk
-        ? "permission-aware source relink and write/reimport recovery"
-        : "close source-write intent recovery",
+    studioSourcePhaseRecoveryGateOk
+      ? "source-intent crash/receipt recovery, quota, eviction, and multi-file recovery"
+      : studioSourceWriteRecoveryGateOk
+        ? "incomplete source-write phase recovery"
+        : studioSourceIntentGateOk
+          ? "permission-aware source relink and write/reimport recovery"
+          : "close source-write intent recovery",
     "studio surface repairs",
     "hardware gamepad lab",
   ],

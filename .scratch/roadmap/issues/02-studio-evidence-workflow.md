@@ -14,6 +14,29 @@ DA31-025…029 then choose storage authority and prove transactions, conflicts,
 recovery, real views, preview, and export revision fidelity. Current proof is
 single-tab and its 390-pixel mobile route has horizontal overflow.
 
+## 2026-07-28 DA32-025 source-write phase recovery checkpoint
+
+DA32-025 closes the next source trust slice. The durable
+`StudioSourceWriteIntent/v1` record now keeps the phase at preimage capture,
+writable stream close, explicit reimport, and receipt settlement, with write
+byte length, observed source fingerprint, and receipt id fields when available.
+After reload the recovery surface shows `write-closed` for an incomplete
+operation. Loading the preimage restores exact bytes into the editor, keeps the
+intent pending, and performs no source-handle write.
+
+The clean browser gate passes at desktop `1440x900` and mobile `390x844`: seven
+steps per viewport, direct IndexedDB phase readback, bridge and DOM reflection,
+exact preimage replay, pending retention, no handle write, no horizontal
+overflow, and zero unexpected console errors. Evidence:
+`docs/evidence/da32/da32-025-source-write-phase-recovery-browser-gate.json`.
+Implementation: `4e0d399c`; clean subject and evidence pin: `a258bea7`.
+The global `pnpm qa:smoke` run passes with zero failures at `5c0d0c68`, and the
+folder route checks phase plus receipt fields in the bridge and durable record.
+The claim stays bounded to the named route and harness. Physical crash
+injection, receipt synthesis, automatic retry, quota/eviction, multi-file
+atomic recovery, ZIP rewrite, binary source blobs, and release authority remain
+open.
+
 ## 2026-07-28 DA32-024 source-intent write recovery checkpoint
 
 DA32-024 closes the next source trust slice. A pending

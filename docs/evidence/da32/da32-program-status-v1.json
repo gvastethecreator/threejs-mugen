@@ -1,6 +1,6 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T09:24:09.386Z",
+  "generatedAt": "2026-07-28T09:55:38.379Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted",
@@ -106,6 +106,16 @@
         "docs/evidence/da32/da32-024-source-intent-write-recovery-browser-gate.json"
       ]
     },
+    "DA32-025": {
+      "status": "accepted-browser-source-phase-recovery",
+      "note": "clean-subject desktop/mobile gate proves durable write-closed phase readback, exact preimage replay, pending retention, no source-handle write, and no horizontal overflow; physical crash, receipt synthesis, quota, eviction, and multi-file recovery remain open",
+      "artifacts": [
+        "src/app/App.ts",
+        "src/app/StudioIndexedDbSnapshot.ts",
+        "scripts/qa_browser_gate_da32_025_source_write_phase_recovery.cjs",
+        "docs/evidence/da32/da32-025-source-write-phase-recovery-browser-gate.json"
+      ]
+    },
     "DA32-013": {
       "status": "accepted-sample",
       "note": "consecutive pass proposes adjudicatedThrough=DA30-021",
@@ -141,13 +151,13 @@
     "retain green smoke ownership at the next subject HEAD",
     "expand runtime visual and Studio matrix",
     "expand mugen-lite visual matrix",
-    "source-intent crash, quota, eviction, and multi-file recovery",
+    "source-intent crash/receipt recovery, quota, eviction, and multi-file recovery",
     "studio surface repairs",
     "hardware gamepad lab"
   ],
   "claimCeiling": "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "abc5c9dc875601328c7490f9ca81b94faaa37ab91a673989a482a819180918e0"
+    "value": "7c4bffb827ff8d3358eeca14a62f056c82f247d383e9b2e0708f2ed1e4ec3ea8"
   }
 }

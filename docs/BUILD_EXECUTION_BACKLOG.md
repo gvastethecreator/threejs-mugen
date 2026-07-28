@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## Entry 628 - DA32-025 Studio source-write phase recovery
+
+Closed DA32-025 in `4e0d399c`: `StudioSourceWriteIntent/v1` now records the
+durable phases `preimage-captured`, `write-closed`, `reimported`, and `settled`.
+The intent also keeps the write byte length, observed source fingerprint, and
+receipt id when available. Older records normalize to `preimage-captured`.
+
+The clean browser gate passed at desktop `1440x900` and mobile `390x844` with
+seven steps per viewport: durable phase readback, bridge reflection, visible
+phase, exact preimage replay, pending retention, no source-handle write, and
+overflow. Unexpected console errors were zero. Focused verification passed 40
+tests, `pnpm typecheck`, `pnpm build`, and `git diff --check`. The global
+`pnpm qa:smoke` run passed with zero failures at `5c0d0c68`.
+
+Evidence: `docs/evidence/da32/da32-025-source-write-phase-recovery-browser-gate.json`;
+clean subject `4e0d399c`; evidence pin `a258bea7`.
+Claim allowed: named post-reload phase recovery, exact preimage replay, and
+no-handle-write replay behavior. Claim blocked: physical crash injection,
+receipt synthesis, automatic retry, quota/eviction recovery, multi-file
+atomicity, ZIP rewrite, binary source blobs, release authority, and full
+Studio/MUGEN/IKEMEN parity.
+
 ## Entry 627 - DA32-024 Studio source-intent write recovery
 
 Closed DA32-024 in `42bf475c`: a pending source-write intent can relink a

@@ -188,6 +188,7 @@ MUGEN/IKEMEN parity remain open.
 | DA32-022 | Bind saved Studio projects to durable snapshots | `StudioIndexedDbSnapshot/v1` record, revision/payload readback, reload persistence, backend diagnostics, desktop/mobile/fallback browser gate | named browser snapshot route; source-intent replay, quota, binary blobs, and full authoring remain open |
 | DA32-023 | Recover pending Studio source writes through a live editor | durable `StudioSourceWriteIntent/v1`, exact preimage replay, pending-state retention, desktop/mobile browser gate | named pending-intent recovery route; handle write, permission repair, quota, binary blobs, and full authoring remain open |
 | DA32-024 | Relink a pending source intent and complete explicit folder write/reimport | native folder relink, dirty preimage replay, separate read/write permission state, exact bytes, settled intent, desktop/mobile browser gate | named browser harness and folder route; physical prompts, durable handle restart, crash, quota, multi-file, ZIP rewrite, and full authoring remain open |
+| DA32-025 | Persist incomplete source-write phases for post-reload recovery | durable `write-closed` phase, write byte length, exact preimage replay, pending retention, no-handle-write browser gate | named route and mock browser handles; physical crash, receipt synthesis, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
 
 ### DA32-021 browser gate - c95c871a (2026-07-28)
 
@@ -297,6 +298,33 @@ durable handle restart, crash, quota/eviction, multi-file atomic recovery, ZIP
 rewrite, binary blobs, release authority, and full MUGEN/IKEMEN authoring parity
 remain open.
 
+### DA32-025 browser gate - a258bea7 (2026-07-28)
+
+- `pnpm qa:browser:da32-025-source-write-phase` passed against clean subject
+  `4e0d399c` at desktop `1440x900` and mobile `390x844`; unexpected console
+  errors: zero.
+- The gate seeds a real `StudioSourceWriteIntent/v1` record at phase
+  `write-closed`, reloads the Studio route, reads the phase and write byte
+  length from IndexedDB, and checks the bridge plus the visible recovery
+  surface.
+- `Load preimage` restores the exact persisted bytes while the intent remains
+  pending. The gate records no source-handle write and no horizontal overflow
+  in either viewport.
+- Focused verification passed 40 tests, `pnpm typecheck`, `pnpm build`, and
+  `git diff --check`. The global `pnpm qa:smoke` run passed with zero failures
+  at checkpoint `5c0d0c68`; its folder route also checks the settled phase,
+  write byte length, observed fingerprint, and receipt id.
+- Implementation: `4e0d399c`; clean evidence pin: `a258bea7`. Evidence:
+  `docs/evidence/da32/da32-025-source-write-phase-recovery-browser-gate.json`
+  plus the desktop and mobile captures.
+
+Claim ceiling: named durable phase recovery route, exact preimage replay,
+pending retention, no-handle-write replay behavior, and recorded desktop/mobile
+checks. Physical crash injection, automatic receipt synthesis or retry, quota,
+eviction, multi-file atomic recovery, ZIP rewrite, binary blobs, physical
+permission prompts, release authority, and full MUGEN/IKEMEN authoring parity
+remain open.
+
 ## Commands
 
 ```bash
@@ -305,6 +333,7 @@ pnpm qa:browser:da32-021-storage
 pnpm qa:browser:da32-022-snapshot
 pnpm qa:browser:da32-023-source-intent
 pnpm qa:browser:da32-024-source-intent-write
+pnpm qa:browser:da32-025-source-write-phase
 pnpm materialize:da32-status
 pnpm exec vitest run src/tests/Da32Program.test.ts
 ```

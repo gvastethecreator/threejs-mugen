@@ -23,7 +23,8 @@
   subject virtual browser gate; hardware remains open. DA32-021 now has a clean
   IndexedDB authority browser gate. DA32-022 now has a clean durable snapshot
   browser gate. DA32-023 and DA32-024 now have clean source-intent recovery
-  gates; crash, quota, eviction, multi-file, and source-blob persistence
+  gates. DA32-025 now has a clean incomplete-phase recovery gate. Crash,
+  receipt synthesis, quota, eviction, multi-file, and source-blob persistence
   remain open.
 
 ## DA32 smoke ownership closeout - 8c6d6c80 (green subject checkpoint, 2026-07-28)
@@ -232,6 +233,33 @@ desktop/mobile checks. Claim blocked: physical permission prompts, browser
 variance, restart handle durability, crash/receipt recovery, quota/eviction,
 multi-file atomic recovery, ZIP rewrite, binary source blobs, release
 authority, and full MUGEN/IKEMEN authoring parity.
+
+## DA32-025 Studio source-write phase recovery - a258bea7 (closed-bounded, 2026-07-28)
+
+- `pnpm qa:browser:da32-025-source-write-phase` passed against clean subject
+  `4e0d399c` at desktop `1440x900` and mobile `390x844`; unexpected console
+  errors: zero.
+- `StudioSourceWriteIntent/v1` now stores `preimage-captured`, `write-closed`,
+  `reimported`, or `settled`, plus write byte length, observed source
+  fingerprint, and receipt id when available. Missing phase data defaults to
+  `preimage-captured` for older records.
+- The browser gate reads a real IndexedDB `write-closed` record after reload,
+  shows the phase in the bridge and recovery surface, loads exact preimage
+  bytes, retains the pending intent, and confirms that replay does not write a
+  source handle. Seven steps pass in each viewport.
+- Focused verification passed 40 tests, `pnpm typecheck`, `pnpm build`, and
+  `git diff --check`. The global `pnpm qa:smoke` run passed with zero failures
+  at checkpoint `5c0d0c68`; the folder route checks settled phase and receipt
+  fields in both the bridge and IndexedDB.
+- Research: `docs/research/2026-07-28-da32-025-source-write-phase-recovery.md`.
+  Implementation: `4e0d399c`; clean evidence pin: `a258bea7`. Evidence:
+  `docs/evidence/da32/da32-025-source-write-phase-recovery-browser-gate.json`.
+
+Claim allowed: named durable phase recovery route, exact preimage replay,
+pending retention, no-handle-write replay behavior, and recorded desktop/mobile
+checks. Claim blocked: physical crash injection, automatic receipt synthesis or
+retry, quota/eviction, multi-file recovery, ZIP rewrite, binary source blobs,
+physical prompts, release authority, and full MUGEN/IKEMEN authoring parity.
 
 ## Interface desktop layout repair - d8c4dfaa/b4788b85 (closed bounded, 2026-07-27)
 

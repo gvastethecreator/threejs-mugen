@@ -1,5 +1,25 @@
 # Workplan
 
+## DA32-025 Studio source-write phase recovery (2026-07-28)
+
+The source-write intent now records the durable phase at preimage capture,
+writable stream close, explicit reimport, and receipt settlement. The recovery
+surface shows the last phase after reload and `Load preimage` replays exact
+bytes without requesting permission or writing a source handle.
+
+Implementation: `4e0d399c`.
+Clean browser subject: `4e0d399c`.
+Evidence pin: `a258bea7`.
+Evidence: `docs/evidence/da32/da32-025-source-write-phase-recovery-browser-gate.json`.
+Global smoke checkpoint: `5c0d0c68`; `pnpm qa:smoke` passed with zero failures
+after the phase, write byte length, fingerprint, and receipt id assertions were
+added.
+The desktop `1440x900` and mobile `390x844` cases passed all seven steps with
+zero unexpected console errors and no horizontal overflow. Next Studio cut:
+physical crash or receipt recovery, quota and eviction handling, and multi-file
+transaction design. Automatic retry, ZIP rewrite, binary blobs, and release
+authority remain blocked.
+
 ## DA32-024 Studio source-intent write recovery (2026-07-28)
 
 Studio now relinks a pending source-write intent through the native folder

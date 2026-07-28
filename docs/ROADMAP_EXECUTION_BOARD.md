@@ -1,6 +1,22 @@
 ﻿# Roadmap Execution Board
 
-## Current Studio product board - DA32-024 (closed-bounded, 2026-07-28)
+## Current Studio product board - DA32-025 (closed-bounded, 2026-07-28)
+
+DA32-025 closes the incomplete source-write phase slice. The durable intent
+records the last phase after preimage capture, writable stream close, explicit
+reimport, and receipt settlement. After reload, Studio shows `write-closed`
+when a receipt is still absent. Loading the preimage restores exact editor
+bytes and keeps the intent pending without writing a source handle.
+
+Clean desktop/mobile browser evidence: `4e0d399c`, pinned in `a258bea7`,
+`docs/evidence/da32/da32-025-source-write-phase-recovery-browser-gate.json`.
+Global smoke is green at `5c0d0c68` with zero failures, including settled phase
+and receipt-field checks in the folder write/reimport route.
+Next Studio proof: physical crash or receipt recovery, quota and eviction
+handling, and multi-file transaction boundaries. Automatic retry, ZIP rewrite,
+binary source, release, and full parity claims remain blocked.
+
+## Previous Studio product board - DA32-024 (closed-bounded, 2026-07-28)
 
 DA32-024 closes the pending source-intent write/reimport slice. Studio can
 relink a pending intent through the native folder picker, load the exact
