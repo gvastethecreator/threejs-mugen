@@ -1,12 +1,12 @@
 {
   "schema": "Da32StudioSourceWriteReceiptRecoveryBrowserGate/v1",
   "id": "DA32-026",
-  "generatedAt": "2026-07-28T10:02:44.905Z",
+  "generatedAt": "2026-07-28T10:04:35.967Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "257bc917bdf6405520f0791e8fc466a2ff3ed51f",
-    "dirtyTree": true,
-    "provisional": true,
+    "subjectSha": "f18adb2d4fcaaa4a3501fa8079f86f8f5dcfc158",
+    "dirtyTree": false,
+    "provisional": false,
     "probePaths": [
       "scripts/qa_browser_gate_da32_026_source_write_receipt_recovery.cjs"
     ],
@@ -15,9 +15,9 @@
       "src/app/StudioIndexedDbSnapshot.ts",
       "src/app/StudioSourceWriteReceipt.ts"
     ],
-    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+    "claimLimit": "subject-bound observation at listed probe/code paths"
   },
-  "headSha": "257bc917bdf6405520f0791e8fc466a2ff3ed51f",
+  "headSha": "f18adb2d4fcaaa4a3501fa8079f86f8f5dcfc158",
   "ok": true,
   "route": "/?mode=studio&studio=build&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "database": "mugen-web-sandbox-studio",
@@ -181,7 +181,7 @@
                 "No persistent source handle is linked for this package.",
                 "Source handle read permission has not been granted."
               ],
-              "updatedAt": "2026-07-28T10:02:38.768Z"
+              "updatedAt": "2026-07-28T10:04:29.842Z"
             }
           ]
         },
@@ -448,7 +448,7 @@
                 "No persistent source handle is linked for this package.",
                 "Source handle read permission has not been granted."
               ],
-              "updatedAt": "2026-07-28T10:02:43.909Z"
+              "updatedAt": "2026-07-28T10:04:34.951Z"
             }
           ]
         },
@@ -558,7 +558,7 @@
     }
   ],
   "unexpectedConsole": [],
-  "claimCeiling": "provisional source-write receipt rehydration observations for named viewports",
+  "claimCeiling": "the named Studio route rehydrates a validated settled source-write receipt from the durable intent after reload",
   "claims": {
     "allowed": [
       "the durable intent retains a validated SourceWriteReceipt/v1 payload and receipt id",
@@ -576,6 +576,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "48c8396d8f77f79d84f1619f32b0ad76cb921dfa6604e62e96bddbab532306a6"
+    "value": "b883691026ef83816ff178da71b812c3778f431f5c1dd8a3424325cae44df831"
   }
 }
