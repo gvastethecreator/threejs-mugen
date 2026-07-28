@@ -1,12 +1,12 @@
 {
   "schema": "Da32StudioStorageBrowserGate/v1",
   "id": "DA32-021",
-  "generatedAt": "2026-07-28T07:02:13.164Z",
+  "generatedAt": "2026-07-28T07:25:34.205Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "4e31e4e94e44c90b9bc800aaf7d7eea815a89d45",
-    "dirtyTree": false,
-    "provisional": false,
+    "subjectSha": "ae98a84f73d75f0ccab848aa4c69584a9b55262a",
+    "dirtyTree": true,
+    "provisional": true,
     "probePaths": [
       "scripts/qa_browser_gate_da32_021_studio_storage.cjs"
     ],
@@ -15,9 +15,9 @@
       "src/app/ProjectStorage.ts",
       "src/app/StudioProjectStore.ts"
     ],
-    "claimLimit": "subject-bound observation at listed probe/code paths"
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
   },
-  "headSha": "4e31e4e94e44c90b9bc800aaf7d7eea815a89d45",
+  "headSha": "ae98a84f73d75f0ccab848aa4c69584a9b55262a",
   "ok": true,
   "route": "/?mode=studio&studio=workbench&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "database": "mugen-web-sandbox-projects",
@@ -45,14 +45,14 @@
             "entry": {
               "id": "da32-021-desktop-authority",
               "name": "DA32-021 desktop authority",
-              "savedAt": "2026-07-28T07:02:03.331Z",
+              "savedAt": "2026-07-28T07:25:21.310Z",
               "revision": 1,
               "manifest": {
                 "schemaVersion": "mugen-web-sandbox/project/v0",
                 "id": "da32-021-desktop-authority",
                 "name": "DA32-021 desktop authority",
                 "engineVersion": "mugen-web-sandbox@0.0.0",
-                "generatedAt": "2026-07-28T07:02:03.331Z",
+                "generatedAt": "2026-07-28T07:25:21.309Z",
                 "projectType": "mugen-port",
                 "modules": [
                   "mugen-compat",
@@ -138,7 +138,7 @@
                     "kind": "sprite-atlas",
                     "source": "generated",
                     "status": "warn",
-                    "detail": "atlas loaded / walk QA warn",
+                    "detail": "atlas loading / walk QA loading",
                     "tags": [
                       "sprite-atlas-builder",
                       "roster"
@@ -450,14 +450,14 @@
             "entry": {
               "id": "da32-021-mobile-authority",
               "name": "DA32-021 mobile authority",
-              "savedAt": "2026-07-28T07:02:11.382Z",
+              "savedAt": "2026-07-28T07:25:29.528Z",
               "revision": 1,
               "manifest": {
                 "schemaVersion": "mugen-web-sandbox/project/v0",
                 "id": "da32-021-mobile-authority",
                 "name": "DA32-021 mobile authority",
                 "engineVersion": "mugen-web-sandbox@0.0.0",
-                "generatedAt": "2026-07-28T07:02:11.382Z",
+                "generatedAt": "2026-07-28T07:25:29.528Z",
                 "projectType": "mugen-port",
                 "modules": [
                   "mugen-compat",
@@ -543,7 +543,7 @@
                     "kind": "sprite-atlas",
                     "source": "generated",
                     "status": "warn",
-                    "detail": "atlas loaded / walk QA loading",
+                    "detail": "atlas loaded / walk QA warn",
                     "tags": [
                       "sprite-atlas-builder",
                       "roster"
@@ -810,10 +810,40 @@
       },
       "screenshot": "docs/evidence/da32/browser/da32-021-studio-storage-mobile.png",
       "consoleErrors": []
+    },
+    {
+      "id": "fallback-no-indexeddb",
+      "viewport": "1440x900",
+      "ok": true,
+      "steps": {
+        "noIndexedDb": true,
+        "memoryFallbackVisible": true,
+        "cacheSave": true,
+        "retryVisible": true,
+        "retryKeepsFallback": true,
+        "noHorizontalOverflow": true
+      },
+      "bridge": {
+        "backend": "localstorage-cache",
+        "storage": {
+          "schema": "StudioProjectStore/v1",
+          "database": "mugen-web-sandbox-projects",
+          "backend": "memory",
+          "authoritative": false
+        },
+        "storedProjectCount": 1
+      },
+      "viewportState": {
+        "innerWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-021-studio-storage-fallback.png",
+      "consoleErrors": []
     }
   ],
   "unexpectedConsole": [],
-  "claimCeiling": "browser IndexedDB project authority, local cache mirror, reopen, and desktop revision conflict at named viewports",
+  "claimCeiling": "provisional IndexedDB project authority observations for named viewports",
   "claims": {
     "allowed": [
       "Studio reports IndexedDB as the project authority",
@@ -821,7 +851,8 @@
       "the small localStorage cache mirrors the authoritative entry",
       "a page reload restores the saved project row and opens its manifest",
       "a second browser page produces a revision conflict while local edits remain dirty",
-      "the named desktop and mobile routes have no horizontal overflow or unexpected page errors"
+      "the named desktop and mobile routes have no horizontal overflow or unexpected page errors",
+      "the no-IndexedDB fallback remains visible, saves to the cache, and exposes a retry action"
     ],
     "blocked": [
       "storage quota and eviction recovery",
@@ -832,6 +863,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "3416fd4196aa57bf37fd9334af51986428c01e988454c5ef51a7d6b05bfb0680"
+    "value": "0af0498e55631be8d97401d334d28ad1be09adb1473b82f4be19b0c8acad8694"
   }
 }
