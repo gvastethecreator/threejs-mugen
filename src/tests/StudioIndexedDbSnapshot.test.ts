@@ -169,6 +169,75 @@ describe("StudioIndexedDbSnapshot", () => {
     expect(pending.phase).toBe("write-closed");
   });
 
+  it("persists retry and abandon decisions across the intent lifecycle", async () => {
+    clearStudioIndexedDbMemory();
+    const preimage = new TextEncoder().encode("before-write");
+    const retried = await saveSourceWriteIntent({
+      intentId: "intent-decision-1",
+      path: "chars/kfm/kfm.cns",
+      preimage,
+      phase: "write-closed",
+      writeByteLength: 11,
+      draftDigest: "fnv1a32:write",
+      observation: {
+        status: "needs-observation",
+        diagnostics: [],
+      },
+      recoveryDecision: "retry",
+      recoveryAttempt: 1,
+      recoveryDecidedAt: "2026-07-28T00:00:00.000Z",
+    });
+    expect(retried).toMatchObject({
+      phase: "write-closed",
+      recoveryDecision: "retry",
+      recoveryAttempt: 1,
+      recoveryDecidedAt: "2026-07-28T00:00:00.000Z",
+    });
+
+    const receipt = createSourceWriteReceipt({
+      id: "source-write:intent-decision-1",
+      sourcePackageId: "kfm-folder",
+      sourceName: "KFM",
+      path: "chars/kfm/kfm.cns",
+      status: "rejected",
+      reason: "recovery-abandoned",
+      observedAt: "2026-07-28T00:00:01.000Z",
+      operation: "directory-exclusive-write-and-reimport",
+      invalidatedOutputs: [],
+      diagnostics: ["Recovery was abandoned by the user."],
+    });
+    const abandoned = await saveSourceWriteIntent({
+      intentId: retried.intentId,
+      path: retried.path,
+      preimage,
+      phase: "settled",
+      writeByteLength: retried.writeByteLength,
+      draftDigest: retried.draftDigest,
+      observation: retried.observation,
+      recoveryDecision: "abandon",
+      recoveryAttempt: retried.recoveryAttempt,
+      recoveryDecidedAt: "2026-07-28T00:00:01.000Z",
+      result: "aborted",
+      recovery: "none",
+      receiptId: receipt.id,
+      receipt,
+      createdAt: retried.createdAt,
+    });
+    expect(abandoned).toMatchObject({
+      phase: "settled",
+      result: "aborted",
+      recovery: "none",
+      recoveryDecision: "abandon",
+      recoveryAttempt: 1,
+      receiptId: receipt.id,
+    });
+    expect((await listSourceWriteIntents())[0]).toMatchObject({
+      intentId: retried.intentId,
+      recoveryDecision: "abandon",
+      result: "aborted",
+    });
+  });
+
   it("fails closed when a persisted receipt digest is invalid", async () => {
     clearStudioIndexedDbMemory();
     const receipt = createSourceWriteReceipt({

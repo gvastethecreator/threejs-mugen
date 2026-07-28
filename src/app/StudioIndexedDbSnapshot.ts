@@ -15,6 +15,7 @@ export const STUDIO_INDEXEDDB_SNAPSHOT_DB_VERSION = 1;
 export type StudioIndexedDbSnapshotBackend = "indexeddb" | "memory";
 export type StudioSourceWriteIntentPhase = "preimage-captured" | "write-closed" | "reimported" | "settled";
 export type StudioSourceWriteObservationStatus = "needs-observation" | "matches-preimage" | "matches-draft" | "changed" | "unavailable";
+export type StudioSourceWriteRecoveryDecision = "retry" | "abandon";
 export type StudioSourceWriteObservation = {
   status: StudioSourceWriteObservationStatus;
   observedAt?: string;
@@ -63,6 +64,9 @@ export type StudioSourceWriteIntent = {
   observation?: StudioSourceWriteObservation;
   result?: "committed" | "aborted" | "denied";
   recovery?: "restored" | "observed" | "none";
+  recoveryDecision?: StudioSourceWriteRecoveryDecision;
+  recoveryAttempt?: number;
+  recoveryDecidedAt?: string;
   createdAt: string;
 };
 
@@ -152,6 +156,9 @@ export async function saveSourceWriteIntent(intent: {
   observation?: StudioSourceWriteObservation;
   result?: StudioSourceWriteIntent["result"];
   recovery?: StudioSourceWriteIntent["recovery"];
+  recoveryDecision?: StudioSourceWriteIntent["recoveryDecision"];
+  recoveryAttempt?: number;
+  recoveryDecidedAt?: string;
   createdAt?: string;
 }): Promise<StudioSourceWriteIntent> {
   const preimageBytes = [...intent.preimage];
@@ -183,6 +190,9 @@ export async function saveSourceWriteIntent(intent: {
     ...(observation !== undefined ? { observation } : {}),
     ...(result !== undefined ? { result } : {}),
     ...(intent.recovery !== undefined || previous?.recovery !== undefined ? { recovery: intent.recovery ?? previous?.recovery } : {}),
+    ...(intent.recoveryDecision !== undefined || previous?.recoveryDecision !== undefined ? { recoveryDecision: intent.recoveryDecision ?? previous?.recoveryDecision } : {}),
+    ...(intent.recoveryAttempt !== undefined || previous?.recoveryAttempt !== undefined ? { recoveryAttempt: intent.recoveryAttempt ?? previous?.recoveryAttempt } : {}),
+    ...(intent.recoveryDecidedAt !== undefined || previous?.recoveryDecidedAt !== undefined ? { recoveryDecidedAt: intent.recoveryDecidedAt ?? previous?.recoveryDecidedAt } : {}),
     createdAt: intent.createdAt ?? previous?.createdAt ?? new Date().toISOString(),
   };
   if (record.receipt && parseSourceWriteReceipt(record.receipt).diagnostics.length > 0) {
@@ -345,6 +355,9 @@ function isStudioSourceWriteIntent(value: unknown): value is StudioSourceWriteIn
     (record.observation === undefined || isStudioSourceWriteObservation(record.observation)) &&
     (record.result === undefined || record.result === "committed" || record.result === "aborted" || record.result === "denied") &&
     (record.recovery === undefined || record.recovery === "restored" || record.recovery === "observed" || record.recovery === "none") &&
+    (record.recoveryDecision === undefined || isStudioSourceWriteRecoveryDecision(record.recoveryDecision)) &&
+    (record.recoveryAttempt === undefined || (Number.isSafeInteger(record.recoveryAttempt) && record.recoveryAttempt >= 1)) &&
+    (record.recoveryDecidedAt === undefined || isIsoDate(record.recoveryDecidedAt)) &&
     typeof record.createdAt === "string";
 }
 
@@ -382,6 +395,10 @@ function isStudioSourceWriteObservation(value: unknown): value is StudioSourceWr
 
 function isStudioSourceWriteObservationStatus(value: unknown): value is StudioSourceWriteObservationStatus {
   return value === "needs-observation" || value === "matches-preimage" || value === "matches-draft" || value === "changed" || value === "unavailable";
+}
+
+function isStudioSourceWriteRecoveryDecision(value: unknown): value is StudioSourceWriteRecoveryDecision {
+  return value === "retry" || value === "abandon";
 }
 
 function isSourceTransactionPermission(value: unknown): value is SourceTransactionPermission {

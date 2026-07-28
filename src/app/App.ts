@@ -109,6 +109,7 @@ import {
   saveSourceWriteIntent,
   STUDIO_INDEXEDDB_SNAPSHOT_SCHEMA,
   type StudioSourceWriteObservation,
+  type StudioSourceWriteRecoveryDecision,
   type StudioSourceWriteIntent,
 } from "./StudioIndexedDbSnapshot";
 import { StudioEditHistory, type StudioProjectEditState } from "./StudioEditHistory";
@@ -1293,6 +1294,10 @@ export class App {
         this.discardStudioSourceDocument();
       } else if (action === "replay-source-write-intent") {
         void this.replayStudioSourceWriteIntent();
+      } else if (action === "prepare-source-write-retry") {
+        void this.replayStudioSourceWriteIntent("retry");
+      } else if (action === "abandon-source-write-intent") {
+        void this.abandonStudioSourceWriteIntent();
       } else if (action === "observe-source-write-intent") {
         void this.observeStudioSourceWriteIntent();
       } else if (action === "finalize-observed-source-write-intent") {
@@ -2450,6 +2455,9 @@ export class App {
     observation?: StudioSourceWriteObservation;
     result?: StudioSourceWriteIntent["result"];
     recovery?: StudioSourceWriteIntent["recovery"];
+    recoveryDecision?: StudioSourceWriteRecoveryDecision;
+    recoveryAttempt?: number;
+    recoveryDecidedAt?: string;
     createdAt?: string;
   }): Promise<StudioSourceWriteIntent | undefined> {
     try {
@@ -2807,10 +2815,15 @@ export class App {
     this.updateUi();
   }
 
-  private async replayStudioSourceWriteIntent(): Promise<void> {
-    const intent = this.studioSourceWriteIntent;
+  private async replayStudioSourceWriteIntent(recoveryDecision?: StudioSourceWriteRecoveryDecision): Promise<void> {
+    let intent = this.studioSourceWriteIntent;
     if (!intent || intent.result) {
       this.log("There is no pending source write preimage to load.");
+      return;
+    }
+    if (recoveryDecision && intent.phase !== "write-closed") {
+      this.log("Source write retry requires a pending write-closed intent.");
+      this.updateUi();
       return;
     }
     const replay = await replaySourceWriteIntent(intent.intentId);
@@ -2826,7 +2839,8 @@ export class App {
       return;
     }
     const current = this.studioSourceDocument;
-    if (current?.dirty && !window.confirm(studioProjectDiscardMessage("load the recovered source preimage"))) {
+    const discardLabel = recoveryDecision === "retry" ? "prepare a source write retry" : "load the recovered source preimage";
+    if (current?.dirty && !window.confirm(studioProjectDiscardMessage(discardLabel))) {
       return;
     }
     const sourcePackage = this.getProjectSourcePackages().find((candidate) => candidate.id === sourcePackageId);
@@ -2834,6 +2848,42 @@ export class App {
       this.log(`Source package ${sourcePackageId} is not active; open the matching project before loading the preimage.`);
       this.updateUi();
       return;
+    }
+    if (recoveryDecision) {
+      const recoveryAttempt = (intent.recoveryAttempt ?? 0) + 1;
+      const recoveryRecord = await this.persistStudioSourceWriteIntent({
+        intentId: intent.intentId,
+        path: intent.path,
+        preimage: Uint8Array.from(intent.preimageBytes),
+        projectId: intent.projectId,
+        sourcePackageId: intent.sourcePackageId,
+        baseSourceFingerprint: intent.baseSourceFingerprint,
+        draftDigest: intent.draftDigest,
+        byteLength: intent.byteLength,
+        phase: intent.phase,
+        writeByteLength: intent.writeByteLength,
+        observedSourceFingerprint: intent.observedSourceFingerprint,
+        receiptId: intent.receiptId,
+        receipt: intent.receipt,
+        observation: {
+          status: "needs-observation",
+          observedAt: new Date().toISOString(),
+          permission: intent.observation?.permission,
+          diagnostics: ["A recovery retry was requested; observe the current source again before accepting it."],
+        },
+        result: intent.result,
+        recovery: intent.recovery,
+        recoveryDecision,
+        recoveryAttempt,
+        recoveryDecidedAt: new Date().toISOString(),
+        createdAt: intent.createdAt,
+      });
+      if (!recoveryRecord) {
+        this.log("Source write retry could not be persisted; the pending intent remains unchanged.");
+        this.updateUi();
+        return;
+      }
+      intent = recoveryRecord;
     }
     const text = new TextDecoder().decode(replay.bytes);
     const activePath = this.resolveStudioSourceVfsPath(intent.path);
@@ -2852,7 +2902,78 @@ export class App {
     this.studioSourceDocument = updateStudioSourceDocumentDraft(recoveredDraft, text);
     this.refreshStudioSourceSemanticDraft();
     this.writeUrlState();
-    this.log(`Loaded the ${intent.byteLength ?? replay.bytes.byteLength}-byte source preimage for review; no source handle was written.`);
+    this.log(
+      recoveryDecision === "retry"
+        ? `Prepared source write retry #${intent.recoveryAttempt ?? 1}; review the ${intent.byteLength ?? replay.bytes.byteLength}-byte preimage before saving.`
+        : `Loaded the ${intent.byteLength ?? replay.bytes.byteLength}-byte source preimage for review; no source handle was written.`,
+    );
+    this.updateUi();
+  }
+
+  private async abandonStudioSourceWriteIntent(): Promise<void> {
+    const intent = this.studioSourceWriteIntent;
+    if (!intent || intent.result || intent.phase !== "write-closed") {
+      this.log("Source write abandon requires a pending write-closed intent.");
+      this.updateUi();
+      return;
+    }
+    const sourcePackage = intent.sourcePackageId
+      ? this.getProjectSourcePackages().find((candidate) => candidate.id === intent.sourcePackageId)
+      : undefined;
+    if (!sourcePackage) {
+      this.log("Source write abandon requires the matching source package to be open.");
+      this.updateUi();
+      return;
+    }
+    if (!window.confirm("Abandon this source-write recovery? External bytes will remain untouched and may still differ from the retained preimage.")) {
+      return;
+    }
+    const decidedAt = new Date().toISOString();
+    const receipt = this.recordStudioSourceWriteReceiptForIntent(intent, sourcePackage, {
+      status: "rejected",
+      reason: "recovery-abandoned",
+      permission: intent.observation?.permission,
+      observedSourceFingerprint: intent.observedSourceFingerprint,
+      observedProjectRevision: this.getActiveStudioProjectRevision(),
+      diagnostics: ["Recovery was abandoned by the user; no external source bytes were written or restored."],
+    });
+    const settled = await this.persistStudioSourceWriteIntent({
+      intentId: intent.intentId,
+      path: intent.path,
+      preimage: Uint8Array.from(intent.preimageBytes),
+      projectId: intent.projectId,
+      sourcePackageId: intent.sourcePackageId,
+      baseSourceFingerprint: intent.baseSourceFingerprint,
+      draftDigest: intent.draftDigest,
+      byteLength: intent.byteLength,
+      phase: "settled",
+      writeByteLength: intent.writeByteLength,
+      observedSourceFingerprint: intent.observedSourceFingerprint,
+      receiptId: receipt.id,
+      receipt,
+      observation: intent.observation ?? {
+        status: "needs-observation",
+        observedAt: decidedAt,
+        diagnostics: ["Recovery was abandoned before a source observation was available."],
+      },
+      result: "aborted",
+      recovery: "none",
+      recoveryDecision: "abandon",
+      ...(intent.recoveryAttempt !== undefined ? { recoveryAttempt: intent.recoveryAttempt } : {}),
+      recoveryDecidedAt: decidedAt,
+      createdAt: intent.createdAt,
+    });
+    if (!settled) {
+      this.log("Source write abandon could not be persisted; the pending intent remains unresolved.");
+      this.updateUi();
+      return;
+    }
+    this.studioSourceWriteIntent = settled;
+    if (this.studioSourceDocument?.dirty) {
+      this.studioSourceDocument = discardStudioSourceDocumentDraft(this.studioSourceDocument);
+      this.cancelStudioSourceSemanticPreflight();
+    }
+    this.log(`Abandoned source write recovery for ${intent.path}; no external source bytes were written or restored.`);
     this.updateUi();
   }
 
@@ -8839,9 +8960,12 @@ export class App {
           <small>${escapeHtml(formatBytes(intent.byteLength ?? intent.preimageBytes.length))} preimage / ${escapeHtml(intent.preimageSha256)} / ${escapeHtml(formatDateTime(intent.createdAt))}</small>
           ${observationStatus ? `<small class="list-meta" data-source-write-observation-status="${escapeHtml(observationStatus)}">Source observation: ${escapeHtml(observationStatus)}${observation?.byteLength !== undefined ? ` / ${escapeHtml(formatBytes(observation.byteLength))}` : ""}${observation?.digest ? ` / ${escapeHtml(observation.digest)}` : ""}</small>` : ""}
           ${observation?.diagnostics.length ? `<small class="list-meta">${escapeHtml(observation.diagnostics[0] ?? "")}</small>` : ""}
+          ${intent.recoveryDecision ? `<small class="list-meta" data-source-write-recovery-decision="${escapeHtml(intent.recoveryDecision)}">Recovery decision: ${escapeHtml(intent.recoveryDecision)}${intent.recoveryAttempt !== undefined ? ` / attempt ${intent.recoveryAttempt}` : ""}${intent.recoveryDecidedAt ? ` / ${escapeHtml(formatDateTime(intent.recoveryDecidedAt))}` : ""}</small>` : ""}
           ${receipt ? `<small class="list-meta" data-source-write-receipt="${escapeHtml(receipt.status)}">Write receipt: ${escapeHtml(receipt.status)} / ${escapeHtml(receipt.reason)} / compensation ${escapeHtml(receipt.compensation.status)} / ${escapeHtml(receipt.digest)}</small>` : ""}
           ${pending && phase === "write-closed" ? `<button type="button" data-action="observe-source-write-intent" title="Read the current source bytes without writing or settling the intent">Observe source</button>` : ""}
           ${pending && phase === "write-closed" && observationStatus === "matches-draft" ? `<button type="button" data-action="finalize-observed-source-write-intent" title="Reimport the observed source and finalize its receipt">Accept observed source</button>` : ""}
+          ${pending && phase === "write-closed" ? `<button type="button" data-action="prepare-source-write-retry" title="Persist a retry decision and load the retained preimage without writing the source handle">Prepare retry</button>` : ""}
+          ${pending && phase === "write-closed" ? `<button type="button" data-action="abandon-source-write-intent" title="Close the recovery intent without writing or restoring external source bytes">Abandon recovery</button>` : ""}
           ${pending ? `<button type="button" data-action="replay-source-write-intent" title="Load the durable source preimage into the Studio editor without writing the source handle">Load preimage</button>` : ""}
           ${pending && sourcePackage ? `<button type="button" data-action="relink-source-write-intent" title="Choose the source ${sourcePackage.kind === "folder" ? "folder" : "ZIP"} again before writing the recovered preimage">Relink ${sourcePackage.kind === "folder" ? "folder" : "ZIP"}</button>` : ""}
         </div>

@@ -36,6 +36,20 @@ describe("StudioSourceWriteReceipt", () => {
     expect(isSourceWriteReceiptCommitted(parsed.receipt)).toBe(true);
   });
 
+  it("parses a rejected receipt created by explicit recovery abandon", () => {
+    const parsed = parseSourceWriteReceipt(receipt({
+      status: "rejected",
+      reason: "recovery-abandoned",
+      committedSourceFingerprint: undefined,
+      committedDigest: undefined,
+    }));
+
+    expect(parsed.diagnostics).toEqual([]);
+    expect(parsed.receipt?.status).toBe("rejected");
+    expect(parsed.receipt?.reason).toBe("recovery-abandoned");
+    expect(isSourceWriteReceiptCommitted(parsed.receipt)).toBe(false);
+  });
+
   it("rejects tampered outcome fields before Studio consumes the receipt", () => {
     const tampered = receipt();
     tampered.reason = "write-failed";
