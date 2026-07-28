@@ -1,12 +1,12 @@
 {
   "schema": "Da32StudioSourceIntentWriteRecoveryBrowserGate/v1",
   "id": "DA32-024",
-  "generatedAt": "2026-07-28T08:51:22.253Z",
+  "generatedAt": "2026-07-28T08:58:41.716Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "58c63385df0ec363ac856678eff8e75f6901a8ad",
-    "dirtyTree": false,
-    "provisional": false,
+    "subjectSha": "42bf475c436d74c655b5ffe3dc7f110b0616db9e",
+    "dirtyTree": true,
+    "provisional": true,
     "probePaths": [
       "scripts/qa_browser_gate_da32_024_source_intent_write_recovery.cjs"
     ],
@@ -17,9 +17,9 @@
       "src/app/StudioSourceWrite.ts",
       "src/app/StudioIndexedDbSnapshot.ts"
     ],
-    "claimLimit": "subject-bound observation at listed probe/code paths"
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
   },
-  "headSha": "58c63385df0ec363ac856678eff8e75f6901a8ad",
+  "headSha": "42bf475c436d74c655b5ffe3dc7f110b0616db9e",
   "ok": true,
   "route": "/?mode=studio&studio=build&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "database": "mugen-web-sandbox-studio",
@@ -35,6 +35,7 @@
         "linkedSourceReadable": true,
         "dirtyPreimageLoaded": true,
         "readwritePermission": true,
+        "writePermissionReflected": true,
         "writeReimportCommitted": true,
         "originalIntentSettled": true,
         "exactRecoveredBytesOnHandle": true,
@@ -245,6 +246,7 @@
           "storage": "memory",
           "persisted": false,
           "permission": "granted",
+          "writePermission": "not-requested",
           "state": "granted",
           "fileCount": 14,
           "expectedFingerprint": "c7945cfd17db5fe0852810ba5081d6843d311cf5cb1560f254fc7fb9701c4874",
@@ -257,7 +259,7 @@
           "warnings": [
             "This source handle is retained for the current browser session only."
           ],
-          "updatedAt": "2026-07-28T08:51:11.438Z"
+          "updatedAt": "2026-07-28T08:58:31.874Z"
         },
         "sourceTransaction": {
           "schemaVersion": "mugen-web-sandbox/source-transaction/v0",
@@ -292,6 +294,7 @@
           "storage": "memory",
           "persisted": false,
           "permission": "granted",
+          "writePermission": "granted",
           "state": "granted",
           "fileCount": 14,
           "expectedFingerprint": "5f9d9a6ca845a9e7a9aec4f5d4bb9ff8e2ab1cb18939e8bdf36eadbec3534434",
@@ -304,7 +307,25 @@
           "warnings": [
             "This source handle is retained for the current browser session only."
           ],
-          "updatedAt": "2026-07-28T08:51:13.879Z"
+          "updatedAt": "2026-07-28T08:58:33.863Z"
+        },
+        "sourceTransaction": {
+          "schemaVersion": "mugen-web-sandbox/source-transaction/v0",
+          "id": "source-transaction:kfm-folder",
+          "sourcePackageId": "kfm-folder",
+          "sourceName": "kfm-folder",
+          "sourceKind": "folder",
+          "state": "linked",
+          "permission": "granted",
+          "revisionStatus": "unknown",
+          "expectedFingerprint": "5f9d9a6ca845a9e7a9aec4f5d4bb9ff8e2ab1cb18939e8bdf36eadbec3534434",
+          "observedFingerprint": "5f9d9a6ca845a9e7a9aec4f5d4bb9ff8e2ab1cb18939e8bdf36eadbec3534434",
+          "fingerprintAlgorithm": "sha-256",
+          "canRead": true,
+          "canWrite": true,
+          "nextAction": "none",
+          "invalidatedOutputs": [],
+          "warnings": []
         },
         "receipt": {
           "schemaVersion": "mugen-web-sandbox/source-write-receipt/v1",
@@ -314,7 +335,7 @@
           "path": "kfm-folder/chars/kfm/kfm.cns",
           "status": "committed",
           "reason": "write-and-reimport",
-          "observedAt": "2026-07-28T08:51:13.880Z",
+          "observedAt": "2026-07-28T08:58:33.864Z",
           "operation": "directory-exclusive-write-and-reimport",
           "permission": "granted",
           "baseSourceFingerprint": "c7945cfd17db5fe0852810ba5081d6843d311cf5cb1560f254fc7fb9701c4874",
@@ -335,7 +356,7 @@
             "project-bundle"
           ],
           "diagnostics": [],
-          "digest": "fnv1a32:fb5b26d2"
+          "digest": "fnv1a32:29894bb7"
         },
         "intent": {
           "schema": "StudioSourceWriteIntent/v1",
@@ -474,6 +495,7 @@
         "linkedSourceReadable": true,
         "dirtyPreimageLoaded": true,
         "readwritePermission": true,
+        "writePermissionReflected": true,
         "writeReimportCommitted": true,
         "originalIntentSettled": true,
         "exactRecoveredBytesOnHandle": true,
@@ -684,6 +706,7 @@
           "storage": "memory",
           "persisted": false,
           "permission": "granted",
+          "writePermission": "not-requested",
           "state": "granted",
           "fileCount": 14,
           "expectedFingerprint": "c7945cfd17db5fe0852810ba5081d6843d311cf5cb1560f254fc7fb9701c4874",
@@ -696,7 +719,7 @@
           "warnings": [
             "This source handle is retained for the current browser session only."
           ],
-          "updatedAt": "2026-07-28T08:51:19.156Z"
+          "updatedAt": "2026-07-28T08:58:38.455Z"
         },
         "sourceTransaction": {
           "schemaVersion": "mugen-web-sandbox/source-transaction/v0",
@@ -731,6 +754,7 @@
           "storage": "memory",
           "persisted": false,
           "permission": "granted",
+          "writePermission": "granted",
           "state": "granted",
           "fileCount": 14,
           "expectedFingerprint": "5f9d9a6ca845a9e7a9aec4f5d4bb9ff8e2ab1cb18939e8bdf36eadbec3534434",
@@ -743,7 +767,25 @@
           "warnings": [
             "This source handle is retained for the current browser session only."
           ],
-          "updatedAt": "2026-07-28T08:51:20.566Z"
+          "updatedAt": "2026-07-28T08:58:39.961Z"
+        },
+        "sourceTransaction": {
+          "schemaVersion": "mugen-web-sandbox/source-transaction/v0",
+          "id": "source-transaction:kfm-folder",
+          "sourcePackageId": "kfm-folder",
+          "sourceName": "kfm-folder",
+          "sourceKind": "folder",
+          "state": "linked",
+          "permission": "granted",
+          "revisionStatus": "unknown",
+          "expectedFingerprint": "5f9d9a6ca845a9e7a9aec4f5d4bb9ff8e2ab1cb18939e8bdf36eadbec3534434",
+          "observedFingerprint": "5f9d9a6ca845a9e7a9aec4f5d4bb9ff8e2ab1cb18939e8bdf36eadbec3534434",
+          "fingerprintAlgorithm": "sha-256",
+          "canRead": true,
+          "canWrite": true,
+          "nextAction": "none",
+          "invalidatedOutputs": [],
+          "warnings": []
         },
         "receipt": {
           "schemaVersion": "mugen-web-sandbox/source-write-receipt/v1",
@@ -753,7 +795,7 @@
           "path": "kfm-folder/chars/kfm/kfm.cns",
           "status": "committed",
           "reason": "write-and-reimport",
-          "observedAt": "2026-07-28T08:51:20.567Z",
+          "observedAt": "2026-07-28T08:58:39.962Z",
           "operation": "directory-exclusive-write-and-reimport",
           "permission": "granted",
           "baseSourceFingerprint": "c7945cfd17db5fe0852810ba5081d6843d311cf5cb1560f254fc7fb9701c4874",
@@ -774,7 +816,7 @@
             "project-bundle"
           ],
           "diagnostics": [],
-          "digest": "fnv1a32:c10105d0"
+          "digest": "fnv1a32:4265fa4c"
         },
         "intent": {
           "schema": "StudioSourceWriteIntent/v1",
@@ -905,12 +947,13 @@
     }
   ],
   "unexpectedConsole": [],
-  "claimCeiling": "the named Studio route relinks a folder handle, replays a pending source preimage, and completes explicit write/reimport recovery",
+  "claimCeiling": "provisional source-intent relink/write recovery observations for named viewports",
   "claims": {
     "allowed": [
       "the recovery action uses a native folder handle picker and preserves a granted read handle",
       "a pending StudioSourceWriteIntent/v1 preimage loads as a dirty editor draft when the active source differs",
       "Save & Reimport requests readwrite permission, writes the recovered text, and reimports the folder",
+      "the bridge reports granted read and write permission independently after the recovered write",
       "the original pending intent settles as committed with restored recovery evidence",
       "the named desktop and mobile routes have no horizontal overflow or unexpected page errors"
     ],
@@ -924,6 +967,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "6c2338b01c75c19a7f4d816fa12afb00ee180bb168ea64c3b3335473c71edef2"
+    "value": "28127d8068293059aeaa92fc048059ada7f8c0d7f4f7ae3630018c8f2c813017"
   }
 }
