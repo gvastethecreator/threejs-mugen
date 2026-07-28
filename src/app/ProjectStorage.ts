@@ -53,6 +53,13 @@ export function loadStoredProjectManifest(storage: StorageLike, id: string): Gam
   return loadStoredProject(storage, id)?.manifest;
 }
 
+/** Mirror the authoritative project list into the small localStorage cache. */
+export function replaceStoredProjectCache(storage: StorageLike, entries: StoredProjectEntry[]): StoredProjectEntry[] {
+  const next = entries.map((entry) => ({ ...entry, manifest: { ...entry.manifest } }));
+  writeIndex(storage, { schemaVersion: PROJECT_STORAGE_SCHEMA_VERSION, entries: next });
+  return next;
+}
+
 export function saveStoredProjectManifest(
   storage: StorageLike,
   manifest: GameProjectManifest,

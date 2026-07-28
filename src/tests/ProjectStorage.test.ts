@@ -5,6 +5,7 @@ import {
   PROJECT_STORAGE_KEY,
   PROJECT_STORAGE_SCHEMA_VERSION,
   ProjectStorageConflictError,
+  replaceStoredProjectCache,
   saveStoredProjectManifest,
   type StorageLike,
 } from "../app/ProjectStorage";
@@ -107,6 +108,16 @@ describe("ProjectStorage", () => {
       code: "project-storage-conflict",
       conflict: { projectId: first.id, expectedRevision: 0, actualRevision: 1 },
     });
+  });
+
+  it("replaces the local cache without changing authoritative revisions", () => {
+    const storage = memoryStorage();
+    const saved = manifest("Cache mirror", "nova-boxer");
+    const entries = [{ id: saved.id, name: saved.name, savedAt: "2026-06-25T00:00:00.000Z", revision: 4, manifest: saved }];
+
+    replaceStoredProjectCache(storage, entries);
+
+    expect(listStoredProjects(storage)).toMatchObject([{ id: saved.id, revision: 4, name: "Cache mirror" }]);
   });
 });
 

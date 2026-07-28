@@ -90,13 +90,15 @@ import { FileDropZone } from "./FileDropZone";
 import { compileGameProjectManifest, type CompiledRuntimeManifest } from "./ProjectCompiler";
 import {
   listStoredProjects,
-  loadStoredProject,
   PROJECT_STORAGE_KEY,
   ProjectStorageConflictError,
+  replaceStoredProjectCache,
   saveStoredProjectManifest,
   type ProjectStorageConflict,
   type StoredProjectEntry,
 } from "./ProjectStorage";
+import { StudioProjectStore, type StudioProjectStoreBackend } from "./StudioProjectStore";
+import { snapshotAfterProjectSave } from "./ProjectSnapshotBridge";
 import { StudioEditHistory, type StudioProjectEditState } from "./StudioEditHistory";
 import { listStoredTraceEvidence, saveStoredTraceEvidence, type StoredTraceEvidenceEntry } from "./StudioEvidenceStorage";
 import { StudioAutosave } from "./StudioAutosave";
@@ -229,6 +231,7 @@ import {
 
 type NavigatorTab = "animations" | "states" | "commands";
 type AppMode = "match" | "inspect" | "studio";
+type ProjectStorageBackend = StudioProjectStoreBackend | "localstorage-cache";
 type CommandPaletteTone = "ok" | "warn" | "error" | "active" | "neutral";
 type CommandPaletteAction = {
   id: string;
@@ -921,6 +924,9 @@ export class App {
   private projectStorageConflict?: ProjectStorageConflict;
   private readonly studioEditHistory = new StudioEditHistory();
   private readonly studioAutosave = new StudioAutosave();
+  private readonly studioProjectStore = new StudioProjectStore();
+  private projectStorageBackend: ProjectStorageBackend = this.studioProjectStore.getBackend();
+  private projectSaveInFlight?: Promise<void>;
   private readonly assetPermissionMetadata = new Map<string, AssetPermissionMetadata>();
   private assetPermissionMetadataLoad?: Promise<void>;
   private projectImportWarnings: string[] = [];
@@ -977,6 +983,7 @@ export class App {
     this.installProjectStorageListener();
     this.installAudioUnlock();
     this.updateUi();
+    void this.hydrateStoredProjectsFromAuthority();
     this.loop.start();
     void this.loadAssetPermissionMetadata();
     void this.installRuntimeAtlases();
@@ -1950,6 +1957,71 @@ export class App {
     }
   }
 
+  private async hydrateStoredProjectsFromAuthority(): Promise<void> {
+    const cacheEntries = [...this.storedProjects];
+    try {
+      let entries = await this.studioProjectStore.list();
+      if (this.studioProjectStore.getBackend() === "indexeddb") {
+        if (entries.length === 0 && cacheEntries.length > 0) {
+          entries = await this.studioProjectStore.replace(cacheEntries);
+        }
+        if (this.studioProjectStore.getBackend() === "indexeddb") {
+          this.projectStorageBackend = "indexeddb";
+          this.storedProjects = entries;
+          this.mirrorStoredProjectCache(entries);
+        } else {
+          this.projectStorageBackend = cacheEntries.length > 0 ? "localstorage-cache" : "memory";
+          this.storedProjects = cacheEntries;
+        }
+      } else {
+        this.projectStorageBackend = cacheEntries.length > 0 ? "localstorage-cache" : "memory";
+        this.storedProjects = cacheEntries;
+      }
+      this.refreshCurrentProjectStorageRevision();
+      this.updateUi();
+    } catch (error) {
+      this.projectStorageBackend = cacheEntries.length > 0 ? "localstorage-cache" : "memory";
+      this.storedProjects = cacheEntries;
+      this.log(`Project authority hydration failed: ${error instanceof Error ? error.message : String(error)}`);
+      this.updateUi();
+    }
+  }
+
+  private async readStoredProjectsFromAuthority(): Promise<StoredProjectEntry[]> {
+    const entries = await this.studioProjectStore.list();
+    if (this.studioProjectStore.getBackend() === "indexeddb") {
+      this.projectStorageBackend = "indexeddb";
+      this.mirrorStoredProjectCache(entries);
+      return entries;
+    }
+    const cacheEntries = this.readLocalStoredProjects();
+    this.projectStorageBackend = cacheEntries.length > 0 ? "localstorage-cache" : "memory";
+    return cacheEntries;
+  }
+
+  private readLocalStoredProjects(): StoredProjectEntry[] {
+    try {
+      return listStoredProjects(window.localStorage);
+    } catch (error) {
+      this.log(`Local project storage unavailable: ${error instanceof Error ? error.message : String(error)}`);
+      return [];
+    }
+  }
+
+  private mirrorStoredProjectCache(entries: StoredProjectEntry[]): void {
+    try {
+      replaceStoredProjectCache(window.localStorage, entries);
+    } catch (error) {
+      this.log(`Project cache mirror unavailable: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  private refreshCurrentProjectStorageRevision(): void {
+    const projectId = this.importedProjectManifest?.id;
+    if (!projectId) return;
+    this.projectStorageRevision = this.storedProjects.find((entry) => entry.id === projectId)?.revision;
+  }
+
   private refreshStoredTraceEvidence(): void {
     try {
       this.storedTraceEvidence = listStoredTraceEvidence(window.localStorage);
@@ -2597,29 +2669,64 @@ export class App {
 
   private saveCurrentProjectLocal(options: { automatic?: boolean } = {}): void {
     this.studioAutosave.cancel();
+    if (this.projectSaveInFlight) return;
+    const operation = this.persistCurrentProject(options);
+    this.projectSaveInFlight = operation;
+    void operation.then(
+      () => {
+        if (this.projectSaveInFlight === operation) this.projectSaveInFlight = undefined;
+      },
+      () => {
+        if (this.projectSaveInFlight === operation) this.projectSaveInFlight = undefined;
+      },
+    );
+  }
+
+  private async persistCurrentProject(options: { automatic?: boolean }): Promise<void> {
     const manifest = this.getGameProjectManifest();
     try {
-      this.storedProjects = saveStoredProjectManifest(window.localStorage, manifest, {
-        expectedRevision: this.projectStorageRevision ?? 0,
-      });
+      this.storedProjects = await this.writeProjectToAuthority(manifest, this.projectStorageRevision ?? 0);
       this.projectStorageRevision = this.storedProjects.find((entry) => entry.id === manifest.id)?.revision;
       this.projectStorageConflict = undefined;
       this.importedProjectManifest = manifest;
       this.projectDirty = false;
-      this.log(`${options.automatic ? "Autosaved" : "Saved"} local project ${manifest.id}`);
+      const channel = this.projectStorageBackend === "indexeddb" ? "IndexedDB" : "local cache";
+      this.log(`${options.automatic ? "Autosaved" : "Saved"} project ${manifest.id} to ${channel}`);
       this.updateUi();
     } catch (error) {
       if (error instanceof ProjectStorageConflictError) {
         this.projectStorageConflict = error.conflict;
-        this.refreshStoredProjects();
+        this.storedProjects = await this.readStoredProjectsFromAuthority();
         this.log(
-          `Could not save local project ${manifest.id}: revision conflict (expected ${error.conflict.expectedRevision}, found ${error.conflict.actualRevision}).`,
+          `Could not save project ${manifest.id}: revision conflict (expected ${error.conflict.expectedRevision}, found ${error.conflict.actualRevision}).`,
         );
         this.updateUi();
         return;
       }
-      this.log(`Could not save local project: ${error instanceof Error ? error.message : String(error)}`);
+      this.log(`Could not save project: ${error instanceof Error ? error.message : String(error)}`);
       this.updateUi();
+    }
+  }
+
+  private async writeProjectToAuthority(manifest: GameProjectManifest, expectedRevision: number): Promise<StoredProjectEntry[]> {
+    let entries = await this.studioProjectStore.save(manifest, { expectedRevision });
+    if (this.studioProjectStore.getBackend() === "indexeddb") {
+      this.projectStorageBackend = "indexeddb";
+      this.mirrorStoredProjectCache(entries);
+      const entry = entries.find((candidate) => candidate.id === manifest.id);
+      if (entry) this.saveProjectSnapshotBestEffort(entry);
+      return entries;
+    }
+    this.projectStorageBackend = "localstorage-cache";
+    entries = saveStoredProjectManifest(window.localStorage, manifest, { expectedRevision });
+    return entries;
+  }
+
+  private saveProjectSnapshotBestEffort(entry: StoredProjectEntry): void {
+    try {
+      snapshotAfterProjectSave({ storage: window.localStorage, entry });
+    } catch (error) {
+      this.log(`Project snapshot unavailable: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -2630,14 +2737,14 @@ export class App {
     this.saveCurrentProjectLocal({ automatic: true });
   }
 
-  private openStoredProject(id: string): void {
+  private async openStoredProject(id: string): Promise<void> {
     if (!this.confirmStudioProjectNavigation("open another project")) {
       return;
     }
     try {
-      const entry = loadStoredProject(window.localStorage, id);
+      this.storedProjects = await this.readStoredProjectsFromAuthority();
+      const entry = this.storedProjects.find((candidate) => candidate.id === id);
       if (!entry) {
-        this.refreshStoredProjects();
         this.log(`Stored project ${id} was not found`);
         this.updateUi();
         return;
@@ -2649,13 +2756,14 @@ export class App {
     }
   }
 
-  private reloadExternalProject(): void {
+  private async reloadExternalProject(): Promise<void> {
     const conflict = this.projectStorageConflict;
     if (!conflict) {
       return;
     }
     try {
-      const entry = loadStoredProject(window.localStorage, conflict.projectId);
+      this.storedProjects = await this.readStoredProjectsFromAuthority();
+      const entry = this.storedProjects.find((candidate) => candidate.id === conflict.projectId);
       if (!entry) {
         this.log(`Remote project ${conflict.projectId} is no longer available; keep the local copy or open another project.`);
         this.updateUi();
@@ -2670,12 +2778,13 @@ export class App {
     }
   }
 
-  private keepLocalProjectCopy(): void {
+  private async keepLocalProjectCopy(): Promise<void> {
     if (!this.projectStorageConflict) {
       return;
     }
     const source = this.getGameProjectManifest();
     const copyName = normalizeProjectName(`${source.name} (Local copy)`) ?? "Local Project Copy";
+    this.storedProjects = await this.readStoredProjectsFromAuthority();
     const existingIds = new Set(this.storedProjects.map((entry) => entry.id));
     const baseId = `${source.id}-local`;
     let copyId = baseId;
@@ -2686,7 +2795,7 @@ export class App {
     }
     const copy = { ...source, id: copyId, name: copyName };
     try {
-      this.storedProjects = saveStoredProjectManifest(window.localStorage, copy, { expectedRevision: 0 });
+      this.storedProjects = await this.writeProjectToAuthority(copy, 0);
       this.importedProjectManifest = copy;
       this.projectNameOverride = copy.name;
       this.projectStorageRevision = this.storedProjects.find((entry) => entry.id === copy.id)?.revision;
@@ -13664,6 +13773,8 @@ export class App {
         studioSourceDocument?: StudioSourceDocumentDraft;
         studioSourceWriteReceipt?: SourceWriteReceipt;
         storedProjects: StoredProjectEntry[];
+        projectStorageBackend: ProjectStorageBackend;
+        studioStorage: ReturnType<StudioProjectStore["getDiagnostics"]>;
         projectDirty: boolean;
         projectStorageRevision?: number;
         projectStorageConflict?: ProjectStorageConflict;
@@ -13690,6 +13801,7 @@ export class App {
           round?: { number?: number; phase?: string; time?: number };
           projectDirty: boolean;
           projectStorageRevision?: number;
+          projectStorageBackend: ProjectStorageBackend;
           storedProjectCount: number;
           focusTag: string;
           studioTab: StudioTab;
@@ -13756,6 +13868,8 @@ export class App {
       studioSourceDocument: this.studioSourceDocument ? structuredClone(this.studioSourceDocument) : undefined,
       studioSourceWriteReceipt: this.studioSourceWriteReceipt ? structuredClone(this.studioSourceWriteReceipt) : undefined,
       storedProjects: this.storedProjects,
+      projectStorageBackend: this.projectStorageBackend,
+      studioStorage: this.studioProjectStore.getDiagnostics(),
       projectDirty: this.projectDirty,
       projectStorageRevision: this.projectStorageRevision,
       projectStorageConflict: this.projectStorageConflict,
@@ -13794,6 +13908,7 @@ export class App {
             : undefined,
           projectDirty: this.projectDirty,
           projectStorageRevision: this.projectStorageRevision,
+          projectStorageBackend: this.projectStorageBackend,
           storedProjectCount: this.storedProjects.length,
           focusTag: active
             ? `${active.tagName.toLowerCase()}${active.className ? `.${String(active.className).split(" ")[0]}` : ""}`
@@ -13951,6 +14066,8 @@ export class App {
       const traceCount = this.traceArtifacts.length + this.storedTraceEvidence.length;
       const compiled = this.lastCompiledProject;
       const tabLabel = labelForStudioTab(this.studioTab);
+      const storageLabel = this.projectStorageBackend === "indexeddb" ? "idb" : this.projectStorageBackend === "localstorage-cache" ? "cache" : "memory";
+      const storageTone = this.projectStorageBackend === "indexeddb" ? "ok" : "warn";
       const pauseLabel = this.snapshot.matchPause
         ? `${this.snapshot.matchPause.type === "SuperPause" ? "super" : "pause"} ${this.snapshot.matchPause.remaining}f`
         : actor?.hitPause
@@ -13968,6 +14085,7 @@ export class App {
             ${this.renderStageStatusMetric("Assets", `${summary.stats.characters}c / ${summary.stats.stages}s`, undefined, "assets")}
             ${this.renderStageStatusMetric("Trace", traceCount ? String(traceCount) : "none", traceCount ? "ok" : "warn", "evidence")}
             ${this.renderStageStatusMetric("Build", compiled ? "ready" : "pending", compiled ? "ok" : "warn", "build")}
+            ${this.renderStageStatusMetric("Store", storageLabel, storageTone, "data")}
             ${this.renderStageStatusMetric("Pause", pauseLabel, this.snapshot.matchPause || actor?.hitPause ? "active" : undefined, "pause")}
           </div>
         </div>
