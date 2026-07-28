@@ -37,6 +37,10 @@ export type StudioSourceWriteIntent = {
   path: string;
   preimageBytes: number[];
   preimageSha256: string;
+  projectId?: string;
+  sourcePackageId?: string;
+  draftDigest?: string;
+  byteLength?: number;
   result?: "committed" | "aborted" | "denied";
   recovery?: "restored" | "none";
   createdAt: string;
@@ -115,19 +119,29 @@ export async function saveSourceWriteIntent(intent: {
   intentId: string;
   path: string;
   preimage: Uint8Array;
+  projectId?: string;
+  sourcePackageId?: string;
+  draftDigest?: string;
+  byteLength?: number;
   result?: StudioSourceWriteIntent["result"];
   recovery?: StudioSourceWriteIntent["recovery"];
+  createdAt?: string;
 }): Promise<StudioSourceWriteIntent> {
   const preimageBytes = [...intent.preimage];
+  const previous = memory.intents.get(intent.intentId);
   const record: StudioSourceWriteIntent = {
     schema: STUDIO_SOURCE_WRITE_INTENT_SCHEMA,
     intentId: intent.intentId,
     path: intent.path,
     preimageBytes,
     preimageSha256: fnvHex(preimageBytes),
-    ...(intent.result ? { result: intent.result } : {}),
-    ...(intent.recovery ? { recovery: intent.recovery } : {}),
-    createdAt: new Date().toISOString(),
+    ...(intent.projectId !== undefined || previous?.projectId !== undefined ? { projectId: intent.projectId ?? previous?.projectId } : {}),
+    ...(intent.sourcePackageId !== undefined || previous?.sourcePackageId !== undefined ? { sourcePackageId: intent.sourcePackageId ?? previous?.sourcePackageId } : {}),
+    ...(intent.draftDigest !== undefined || previous?.draftDigest !== undefined ? { draftDigest: intent.draftDigest ?? previous?.draftDigest } : {}),
+    ...(intent.byteLength !== undefined || previous?.byteLength !== undefined ? { byteLength: intent.byteLength ?? previous?.byteLength } : {}),
+    ...(intent.result !== undefined || previous?.result !== undefined ? { result: intent.result ?? previous?.result } : {}),
+    ...(intent.recovery !== undefined || previous?.recovery !== undefined ? { recovery: intent.recovery ?? previous?.recovery } : {}),
+    createdAt: intent.createdAt ?? previous?.createdAt ?? new Date().toISOString(),
   };
   memory.intents.set(record.intentId, record);
   if (backend === "indexeddb" && indexedDbFactory) {
@@ -138,6 +152,21 @@ export async function saveSourceWriteIntent(intent: {
     }
   }
   return record;
+}
+
+export async function listSourceWriteIntents(): Promise<StudioSourceWriteIntent[]> {
+  if (backend === "indexeddb" && indexedDbFactory) {
+    try {
+      const records = await idbGetAll<StudioSourceWriteIntent>("intents");
+      const intents = records.filter(isStudioSourceWriteIntent).sort(compareSourceWriteIntents);
+      memory.intents.clear();
+      for (const intent of intents) memory.intents.set(intent.intentId, intent);
+      return intents;
+    } catch (error) {
+      failover(error);
+    }
+  }
+  return [...memory.intents.values()].sort(compareSourceWriteIntents);
 }
 
 export async function replaySourceWriteIntent(
@@ -151,7 +180,8 @@ export async function replaySourceWriteIntent(
       failover(error);
     }
   }
-  if (!intent) return { ok: false, reason: "missing-intent" };
+  if (!intent || !isStudioSourceWriteIntent(intent)) return { ok: false, reason: "missing-intent" };
+  memory.intents.set(intent.intentId, intent);
   if (intent.result === "committed") {
     return { ok: true, bytes: Uint8Array.from(intent.preimageBytes) };
   }
@@ -197,6 +227,26 @@ async function idbGet<T>(store: string, key: string): Promise<T | undefined> {
   }
 }
 
+async function idbGetAll<T>(store: string): Promise<T[]> {
+  const db = await openDb();
+  try {
+    return await new Promise<T[]>((resolve, reject) => {
+      const tx = db.transaction(store, "readonly");
+      const req = tx.objectStore(store).getAll();
+      let records: T[] = [];
+      req.onsuccess = () => {
+        records = Array.isArray(req.result) ? (req.result as T[]) : [];
+      };
+      req.onerror = () => reject(req.error ?? new Error(`IndexedDB ${store} list failed.`));
+      tx.oncomplete = () => resolve(records);
+      tx.onerror = () => reject(tx.error ?? new Error(`IndexedDB ${store} list transaction failed.`));
+      tx.onabort = () => reject(tx.error ?? new Error(`IndexedDB ${store} list transaction aborted.`));
+    });
+  } finally {
+    db.close();
+  }
+}
+
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     if (!indexedDbFactory) {
@@ -230,4 +280,22 @@ function fnvHex(bytes: number[]): string {
     hash = Math.imul(hash, 16777619);
   }
   return (hash >>> 0).toString(16).padStart(8, "0");
+}
+
+function isStudioSourceWriteIntent(value: unknown): value is StudioSourceWriteIntent {
+  if (!value || typeof value !== "object") return false;
+  const record = value as Partial<StudioSourceWriteIntent>;
+  return record.schema === STUDIO_SOURCE_WRITE_INTENT_SCHEMA &&
+    typeof record.intentId === "string" && record.intentId.trim().length > 0 &&
+    typeof record.path === "string" && record.path.trim().length > 0 &&
+    Array.isArray(record.preimageBytes) && record.preimageBytes.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255) &&
+    typeof record.preimageSha256 === "string" &&
+    (record.result === undefined || record.result === "committed" || record.result === "aborted" || record.result === "denied") &&
+    (record.recovery === undefined || record.recovery === "restored" || record.recovery === "none") &&
+    typeof record.createdAt === "string";
+}
+
+function compareSourceWriteIntents(left: StudioSourceWriteIntent, right: StudioSourceWriteIntent): number {
+  const timeDelta = Date.parse(right.createdAt) - Date.parse(left.createdAt);
+  return Number.isFinite(timeDelta) && timeDelta !== 0 ? timeDelta : right.intentId.localeCompare(left.intentId);
 }

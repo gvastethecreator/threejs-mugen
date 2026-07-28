@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   clearStudioIndexedDbMemory,
   getStudioIndexedDbSnapshotDiagnostics,
+  listSourceWriteIntents,
   loadProjectSnapshot,
   replaySourceWriteIntent,
   saveProjectSnapshot,
@@ -49,15 +50,34 @@ describe("StudioIndexedDbSnapshot", () => {
   it("persists write intent preimage and replays bytes", async () => {
     clearStudioIndexedDbMemory();
     const preimage = new TextEncoder().encode("hello-source");
-    const intent = await saveSourceWriteIntent({
+    const pending = await saveSourceWriteIntent({
       intentId: "intent-1",
       path: "chars/nova/nova.cns",
       preimage,
-      result: "aborted",
-      recovery: "restored",
+      projectId: "project-1",
+      sourcePackageId: "nova",
+      draftDigest: "fnv1a32:deadbeef",
+      byteLength: preimage.byteLength,
     });
-    expect(intent.preimageBytes.length).toBe(preimage.length);
-    expect(intent.preimageSha256).toMatch(/^[0-9a-f]{8}$/);
+    expect(pending.preimageBytes.length).toBe(preimage.length);
+    expect(pending.preimageSha256).toMatch(/^[0-9a-f]{8}$/);
+    const listed = (await listSourceWriteIntents())[0];
+    expect(listed).toMatchObject({
+      intentId: "intent-1",
+      projectId: "project-1",
+      sourcePackageId: "nova",
+    });
+    expect(listed?.result).toBeUndefined();
+    const committed = await saveSourceWriteIntent({
+      intentId: "intent-1",
+      path: pending.path,
+      preimage,
+      result: "committed",
+      recovery: "none",
+      createdAt: pending.createdAt,
+    });
+    expect(committed.createdAt).toBe(pending.createdAt);
+    expect(committed.result).toBe("committed");
     const replay = await replaySourceWriteIntent("intent-1");
     expect(replay.ok).toBe(true);
     expect([...replay.bytes!]).toEqual([...preimage]);

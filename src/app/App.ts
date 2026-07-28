@@ -101,9 +101,13 @@ import { StudioProjectStore, type StudioProjectStoreBackend } from "./StudioProj
 import { snapshotAfterProjectSave } from "./ProjectSnapshotBridge";
 import {
   getStudioIndexedDbSnapshotDiagnostics,
+  listSourceWriteIntents,
+  replaySourceWriteIntent,
   retryStudioIndexedDbSnapshot,
   saveProjectSnapshot,
+  saveSourceWriteIntent,
   STUDIO_INDEXEDDB_SNAPSHOT_SCHEMA,
+  type StudioSourceWriteIntent,
 } from "./StudioIndexedDbSnapshot";
 import { StudioEditHistory, type StudioProjectEditState } from "./StudioEditHistory";
 import { listStoredTraceEvidence, saveStoredTraceEvidence, type StoredTraceEvidenceEntry } from "./StudioEvidenceStorage";
@@ -904,6 +908,8 @@ export class App {
   private importedPackageAnalysisV1?: PackageAnalysisV1Result;
   private studioSourceDocument?: StudioSourceDocumentDraft;
   private studioSourceWriteReceipt?: SourceWriteReceipt;
+  private studioSourceWriteIntents: StudioSourceWriteIntent[] = [];
+  private studioSourceWriteIntent?: StudioSourceWriteIntent;
   private studioSourceSemanticPreflightTimer?: number;
   private readonly memorySourceHandleStore = createMemorySourceHandleStore();
   private sourceHandleStore: SourceHandleStore = this.memorySourceHandleStore;
@@ -979,6 +985,7 @@ export class App {
     this.refreshStoredProjects();
     this.refreshStoredTraceEvidence();
     void this.refreshStoredSourceHandles();
+    void this.refreshStoredSourceWriteIntents();
     this.root.innerHTML = this.template();
     this.renderer.mount(this.root.querySelector<HTMLElement>("#stage")!);
     this.keyboard.start();
@@ -1281,6 +1288,8 @@ export class App {
         void this.saveStudioSourceDocument();
       } else if (action === "discard-source-document") {
         this.discardStudioSourceDocument();
+      } else if (action === "replay-source-write-intent") {
+        void this.replayStudioSourceWriteIntent();
       } else if (action === "focus-source-diagnostic") {
         event.preventDefault();
         const line = Number(target.closest<HTMLElement>("[data-source-diagnostic-line]")?.dataset.sourceDiagnosticLine);
@@ -2033,6 +2042,7 @@ export class App {
   private async retryProjectStorage(): Promise<void> {
     await this.hydrateStoredProjectsFromAuthority();
     const snapshotStorage = await retryStudioIndexedDbSnapshot();
+    await this.refreshStoredSourceWriteIntents();
     this.log(
       this.projectStorageBackend === "indexeddb"
         ? snapshotStorage.authoritative
@@ -2070,6 +2080,20 @@ export class App {
     }
     if (shouldRefreshUi || hadStoredEntries || this.sourceHandleEntries.length > 0) {
       this.updateUi();
+    }
+  }
+
+  private async refreshStoredSourceWriteIntents(): Promise<void> {
+    try {
+      this.studioSourceWriteIntents = await listSourceWriteIntents();
+      this.studioSourceWriteIntent = this.studioSourceWriteIntents.find((intent) => !intent.result) ?? this.studioSourceWriteIntents[0];
+      const pending = this.studioSourceWriteIntents.find((intent) => !intent.result);
+      if (pending) {
+        this.log(`Recoverable source write intent found for ${pending.path}; review the preimage before continuing.`);
+      }
+      this.updateUi();
+    } catch (error) {
+      this.log(`Source write intent storage unavailable: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -2300,6 +2324,32 @@ export class App {
     }
   }
 
+  private async persistStudioSourceWriteIntent(input: {
+    intentId: string;
+    path: string;
+    preimage: Uint8Array;
+    projectId?: string;
+    sourcePackageId?: string;
+    draftDigest?: string;
+    byteLength?: number;
+    result?: StudioSourceWriteIntent["result"];
+    recovery?: StudioSourceWriteIntent["recovery"];
+    createdAt?: string;
+  }): Promise<StudioSourceWriteIntent | undefined> {
+    try {
+      const record = await saveSourceWriteIntent(input);
+      this.studioSourceWriteIntents = [
+        record,
+        ...this.studioSourceWriteIntents.filter((intent) => intent.intentId !== record.intentId),
+      ];
+      this.studioSourceWriteIntent = record;
+      return record;
+    } catch (error) {
+      this.log(`Source write intent could not be persisted: ${error instanceof Error ? error.message : String(error)}`);
+      return undefined;
+    }
+  }
+
   private async saveStudioSourceDocument(): Promise<void> {
     this.cancelStudioSourceSemanticPreflight();
     this.refreshStudioSourceSemanticDraft();
@@ -2312,6 +2362,7 @@ export class App {
     let runtimeWasReimported = false;
     let compensationHandle: SourceHandleLike | undefined;
     let compensationPackageId: string | undefined;
+    let sourceWriteIntent: StudioSourceWriteIntent | undefined;
     const compensateAfterClose = async (): Promise<SourceWriteCompensation | undefined> => {
       if (!writeClosed || !preimage || !compensationHandle || !compensationPackageId) {
         return undefined;
@@ -2414,6 +2465,15 @@ export class App {
       preimage = await captureSourceWritePreimage(latestContext.handle, draft.path);
       compensationHandle = latestContext.handle;
       compensationPackageId = latestContext.sourcePackage.id;
+      sourceWriteIntent = await this.persistStudioSourceWriteIntent({
+        intentId: `source-intent:${this.getGameProjectManifest().id}:${latestContext.sourcePackage.id}:${draft.path}:${preimage.digest}:${Date.now()}`,
+        path: draft.path,
+        preimage: preimage.bytes,
+        projectId: this.getGameProjectManifest().id,
+        sourcePackageId: latestContext.sourcePackage.id,
+        draftDigest: semanticPreflight.draftDigest,
+        byteLength: preimage.byteLength,
+      });
       const result = await writeSourceHandleText(latestContext.handle, draft.path, draft.text);
       writeClosed = true;
       this.studioSourceDocument = commitStudioSourceDocumentDraft(draft);
@@ -2532,6 +2592,67 @@ export class App {
       });
       this.log(`Source document save failed: ${error instanceof Error ? error.message : String(error)}`);
     }
+    if (sourceWriteIntent && this.studioSourceWriteReceipt) {
+      const receipt = this.studioSourceWriteReceipt;
+      await this.persistStudioSourceWriteIntent({
+        intentId: sourceWriteIntent.intentId,
+        path: sourceWriteIntent.path,
+        preimage: Uint8Array.from(sourceWriteIntent.preimageBytes),
+        projectId: sourceWriteIntent.projectId,
+        sourcePackageId: sourceWriteIntent.sourcePackageId,
+        draftDigest: sourceWriteIntent.draftDigest,
+        byteLength: sourceWriteIntent.byteLength,
+        result: receipt.status === "committed" ? "committed" : receipt.status === "blocked" ? "denied" : "aborted",
+        recovery: receipt.compensation.status === "restored" ? "restored" : "none",
+        createdAt: sourceWriteIntent.createdAt,
+      });
+    }
+    this.updateUi();
+  }
+
+  private async replayStudioSourceWriteIntent(): Promise<void> {
+    const intent = this.studioSourceWriteIntent;
+    if (!intent || intent.result) {
+      this.log("There is no pending source write preimage to load.");
+      return;
+    }
+    const replay = await replaySourceWriteIntent(intent.intentId);
+    if (!replay.ok || !replay.bytes) {
+      this.log(`Source write preimage could not be loaded: ${replay.reason ?? "unknown failure"}.`);
+      this.updateUi();
+      return;
+    }
+    const sourcePackageId = intent.sourcePackageId;
+    if (!sourcePackageId) {
+      this.log("Source write preimage loaded, but its source package identity is unavailable; reopen the project before editing it.");
+      this.updateUi();
+      return;
+    }
+    const current = this.studioSourceDocument;
+    if (current?.dirty && !window.confirm(studioProjectDiscardMessage("load the recovered source preimage"))) {
+      return;
+    }
+    const sourcePackage = this.getProjectSourcePackages().find((candidate) => candidate.id === sourcePackageId);
+    if (!sourcePackage) {
+      this.log(`Source package ${sourcePackageId} is not active; open the matching project before loading the preimage.`);
+      this.updateUi();
+      return;
+    }
+    const text = new TextDecoder().decode(replay.bytes);
+    this.mode = "studio";
+    this.studioTab = "build";
+    this.studioFocusedSourcePackageId = sourcePackageId;
+    this.studioFocusedSourcePath = intent.path;
+    this.studioSourceDocument = createStudioSourceDocumentDraft({
+      sourcePackageId,
+      path: intent.path,
+      text,
+      baseSourceFingerprint: this.getActiveStudioSourceFingerprint(sourcePackage),
+      baseProjectRevision: this.getActiveStudioProjectRevision(),
+    });
+    this.refreshStudioSourceSemanticDraft();
+    this.writeUrlState();
+    this.log(`Loaded the ${intent.byteLength ?? replay.bytes.byteLength}-byte source preimage for review; no source handle was written.`);
     this.updateUi();
   }
 
@@ -8177,6 +8298,7 @@ export class App {
       <div class="section">
         <h2>Source Packages</h2>
         ${this.renderSourceImportTransactionNotice()}
+        ${this.renderStudioSourceWriteRecovery()}
       ${
         sourcePackages.length
             ? `<div class="list compact-list">
@@ -8207,6 +8329,32 @@ export class App {
           </span>
         </div>
         <div class="studio-project-conflict-actions"><small>Current runtime/source session was retained.</small></div>
+      </section>
+    `;
+  }
+
+  private renderStudioSourceWriteRecovery(): string {
+    const intent = this.studioSourceWriteIntent;
+    if (!intent) {
+      return "";
+    }
+    const pending = !intent.result;
+    const status: StudioStatus = pending ? "warn" : intent.result === "committed" ? "ok" : intent.result === "denied" ? "blocked" : "fail";
+    const result = intent.result ?? "pending-recovery";
+    return `
+      <section class="studio-project-conflict studio-source-write-recovery" role="${pending ? "alert" : "status"}" aria-live="polite" data-source-write-intent="${escapeHtml(result)}">
+        <div class="studio-project-conflict-head">
+          ${tablerIcon("archive", "ui-icon action-icon")}
+          <span>
+            <strong>Durable source write intent</strong>
+            <small>${escapeHtml(result)} / ${escapeHtml(intent.sourcePackageId ?? "source package unavailable")} / ${escapeHtml(intent.path)}</small>
+          </span>
+          ${this.statusBadge(status)}
+        </div>
+        <div class="studio-project-conflict-actions">
+          <small>${escapeHtml(formatBytes(intent.byteLength ?? intent.preimageBytes.length))} preimage / ${escapeHtml(intent.preimageSha256)} / ${escapeHtml(formatDateTime(intent.createdAt))}</small>
+          ${pending ? `<button type="button" data-action="replay-source-write-intent" title="Load the durable source preimage into the Studio editor without writing the source handle">Load preimage</button>` : ""}
+        </div>
       </section>
     `;
   }
@@ -13852,6 +14000,8 @@ export class App {
         sourceHandles: SourceHandleRecord[];
         studioSourceDocument?: StudioSourceDocumentDraft;
         studioSourceWriteReceipt?: SourceWriteReceipt;
+        studioSourceWriteIntents: StudioSourceWriteIntent[];
+        studioSourceWriteIntent?: StudioSourceWriteIntent;
         storedProjects: StoredProjectEntry[];
         projectStorageBackend: ProjectStorageBackend;
         studioStorage: ReturnType<StudioProjectStore["getDiagnostics"]>;
@@ -13948,6 +14098,8 @@ export class App {
       sourceHandles: this.getSourceHandleRecords(),
       studioSourceDocument: this.studioSourceDocument ? structuredClone(this.studioSourceDocument) : undefined,
       studioSourceWriteReceipt: this.studioSourceWriteReceipt ? structuredClone(this.studioSourceWriteReceipt) : undefined,
+      studioSourceWriteIntents: this.studioSourceWriteIntents.map((intent) => structuredClone(intent)),
+      studioSourceWriteIntent: this.studioSourceWriteIntent ? structuredClone(this.studioSourceWriteIntent) : undefined,
       storedProjects: this.storedProjects,
       projectStorageBackend: this.projectStorageBackend,
       studioStorage: this.studioProjectStore.getDiagnostics(),

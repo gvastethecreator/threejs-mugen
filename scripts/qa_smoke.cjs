@@ -2779,6 +2779,7 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
       sourceTransaction,
       sourceDraft: bridge?.studioSourceDocument,
       sourceWriteReceipt: bridge?.studioSourceWriteReceipt,
+      sourceWriteIntent: bridge?.studioSourceWriteIntent,
       sourceWriteEvidenceRecord: bridge?.studioEvidence?.records?.find((record) => record.id === bridge?.studioSourceWriteReceipt?.id),
       sourceWriteTrustRow: bridge?.studioTrustChain?.find((record) => record.id === "source-write-receipt"),
       bodyHasSourcePackages: bodyText.includes("Source Packages"),
@@ -2792,6 +2793,7 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
       explicitReimport: bridge?.sourceImportTransaction?.reason === "explicit-reimport",
     };
   });
+  after.durableSourceWriteIntent = (await readSourceWriteIntentRecords(page)).find((record) => record.intentId === after.sourceWriteIntent?.intentId);
   return { skipped: false, projectPath, before, after, sourceWritePackage, fixtureEntries: entries.length };
 }
 
@@ -2800,6 +2802,50 @@ async function readZipAsFolderHandleEntries(importedFixturePath) {
   return Promise.all(Object.entries(zip.files)
     .filter(([, entry]) => !entry.dir)
     .map(async ([entryPath, entry]) => ({ path: entryPath, base64: await entry.async("base64") })));
+}
+
+async function readSourceWriteIntentRecords(page) {
+  return page.evaluate((name) => new Promise((resolve) => {
+    const open = indexedDB.open(name);
+    open.onerror = () => resolve([]);
+    open.onsuccess = () => {
+      const db = open.result;
+      if (!db.objectStoreNames.contains("intents")) {
+        db.close();
+        resolve([]);
+        return;
+      }
+      const transaction = db.transaction("intents", "readonly");
+      const request = transaction.objectStore("intents").getAll();
+      let records = [];
+      request.onsuccess = () => {
+        records = Array.isArray(request.result)
+          ? request.result.map((record) => ({
+              schema: record.schema,
+              intentId: record.intentId,
+              path: record.path,
+              preimageSha256: record.preimageSha256,
+              preimageByteLength: Array.isArray(record.preimageBytes) ? record.preimageBytes.length : undefined,
+              projectId: record.projectId,
+              sourcePackageId: record.sourcePackageId,
+              draftDigest: record.draftDigest,
+              result: record.result,
+              recovery: record.recovery,
+              createdAt: record.createdAt,
+            }))
+          : [];
+      };
+      request.onerror = () => { records = []; };
+      transaction.oncomplete = () => {
+        db.close();
+        resolve(records);
+      };
+      transaction.onerror = () => {
+        db.close();
+        resolve([]);
+      };
+    }
+  }), "mugen-web-sandbox-studio");
 }
 
 async function writeChangedSourceRelinkFixture(outDir, importedFixturePath) {
@@ -5300,6 +5346,17 @@ function assertSmoke(diagnostics) {
       !studioFolderHandleRecovery.after?.bodyHasSourceWriteReceipt ||
       !studioFolderHandleRecovery.after?.sourceEditorVisible ||
       studioFolderHandleRecovery.after?.explicitReimport !== true ||
+      studioFolderHandleRecovery.after?.sourceWriteIntent?.schema !== "StudioSourceWriteIntent/v1" ||
+      studioFolderHandleRecovery.after?.sourceWriteIntent?.result !== "committed" ||
+      studioFolderHandleRecovery.after?.sourceWriteIntent?.path !== studioFolderHandleRecovery.after?.sourceWriteReceipt?.path ||
+      !/^fnv1a32:[0-9a-f]{8}$/i.test(String(studioFolderHandleRecovery.after?.sourceWriteIntent?.draftDigest ?? "")) ||
+      studioFolderHandleRecovery.after?.sourceWriteIntent?.draftDigest !== studioFolderHandleRecovery.after?.sourceWriteReceipt?.draftDigest ||
+      studioFolderHandleRecovery.after?.durableSourceWriteIntent?.schema !== "StudioSourceWriteIntent/v1" ||
+      studioFolderHandleRecovery.after?.durableSourceWriteIntent?.result !== "committed" ||
+      studioFolderHandleRecovery.after?.durableSourceWriteIntent?.intentId !== studioFolderHandleRecovery.after?.sourceWriteIntent?.intentId ||
+      studioFolderHandleRecovery.after?.durableSourceWriteIntent?.path !== studioFolderHandleRecovery.after?.sourceWriteIntent?.path ||
+      !Number.isSafeInteger(studioFolderHandleRecovery.after?.durableSourceWriteIntent?.preimageByteLength) ||
+      studioFolderHandleRecovery.after?.durableSourceWriteIntent?.preimageByteLength <= 0 ||
       studioFolderHandleRecovery.after?.sourceWriteReceipt?.schemaVersion !== "mugen-web-sandbox/source-write-receipt/v1" ||
       studioFolderHandleRecovery.after?.sourceWriteReceipt?.status !== "committed" ||
       studioFolderHandleRecovery.after?.sourceWriteReceipt?.reason !== "write-and-reimport" ||
@@ -6129,6 +6186,8 @@ function summarizeDiagnostics(diagnostics) {
             },
             sourceHandle: diagnostics.checks.studioFolderHandleRecovery?.after?.sourceHandle,
             sourceTransaction: diagnostics.checks.studioFolderHandleRecovery?.after?.sourceTransaction,
+            sourceWriteIntent: diagnostics.checks.studioFolderHandleRecovery?.after?.sourceWriteIntent,
+            durableSourceWriteIntent: diagnostics.checks.studioFolderHandleRecovery?.after?.durableSourceWriteIntent,
             sourceWriteReceipt: diagnostics.checks.studioFolderHandleRecovery?.after?.sourceWriteReceipt,
             sourceWriteReceiptCompensation: diagnostics.checks.studioFolderHandleRecovery?.after?.sourceWriteReceipt?.compensation,
             sourceWriteEvidenceRecord: diagnostics.checks.studioFolderHandleRecovery?.after?.sourceWriteEvidenceRecord,
