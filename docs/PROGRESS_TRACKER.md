@@ -33,6 +33,13 @@
 
 Research: [desktop and responsive interface audit](research/2026-07-27-interface-desktop-audit.md).
 
+## TypeScript 7 typecheck unblock - 2026-07-27
+
+- Removed two dead locals from `ClauseAdjudicationSample`; TypeScript 7.0.2
+  now passes the repository typecheck.
+- `Da32Program.test.ts` passes 8/8 tests. `pnpm build` passes with only the
+  existing Vite large-chunk warning.
+
 ## Runtime `stchtmp` Projectile ReversalDef and first falling air-juggle repair - T416/T417 (closed bounded, 2026-07-27)
 
 - `b07c4e88` carries the shared pending state-change predicate into the local

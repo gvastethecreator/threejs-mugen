@@ -11,8 +11,14 @@ Commits: `d8c4dfaa` code and audit, `b4788b85` browser evidence.
 Research: `docs/research/2026-07-27-interface-desktop-audit.md`.
 The 27-case audit, DA31-010 Studio gate, DA31-011 reflow gate, and DA31-009
 Play gate passed against the current UI commit. `pnpm exec vite build` and
-`git diff --check` passed. The full build and CSS budget remain open under the
-known TypeScript and stylesheet debt recorded in the audit.
+`git diff --check` passed. `pnpm build` now passes; CSS budget remains open
+under the stylesheet debt recorded in the audit.
+
+## TypeScript 7 typecheck unblock (2026-07-27)
+
+`ClauseAdjudicationSample` no longer declares unused local values. TypeScript
+7.0.2 typecheck passes, `Da32Program.test.ts` passes 8/8, and `pnpm build`
+passes with the existing Vite large-chunk warning.
 
 ## Current bounded runtime cuts - T416/T417 (2026-07-27)
 

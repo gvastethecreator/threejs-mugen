@@ -145,8 +145,6 @@ export function buildClauseAdjudicationSample(
   }
   // Consecutive rule: can only advance through unbroken pass prefix.
   // DA30-021 is pass, DA30-022 is partial → watermark stays DA30-021 max consecutive.
-  const proposed = consecutivePassThrough ?? priorAdjudicatedThrough;
-  const advanced = proposed !== priorAdjudicatedThrough && proposed > priorAdjudicatedThrough;
   // String compare works for DA30-0xx zero-padded
   const advancedNumeric =
     consecutivePassThrough != null &&

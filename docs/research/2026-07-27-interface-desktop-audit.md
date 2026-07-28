@@ -57,13 +57,14 @@ Results from the current tree:
 
 This closes the reported desktop layout regression and establishes measured
 responsive geometry for the affected routes. It does not close the broader
-mobile visual polish, full smoke gate, runtime play semantics, TypeScript
-typecheck, or CSS duplication debt.
+mobile visual polish, full smoke gate, runtime play semantics, or CSS
+duplication debt.
 
 Known gates remain separate:
 
-- `pnpm build` reaches the pre-existing unused `advanced` diagnostic at
-  `src/mugen/da32/ClauseAdjudicationSample.ts:149`.
+- TypeScript 7.0.2 typecheck and `pnpm build` pass after the dead locals in
+  `src/mugen/da32/ClauseAdjudicationSample.ts` were removed. Vite still emits
+  its existing large-chunk warning.
 - `pnpm qa:css:budget` remains over its existing duplicate-selector and
   cross-file-shadow budgets.
 - `pnpm qa:browser:da31-009-play` fails its desktop movement and damage
