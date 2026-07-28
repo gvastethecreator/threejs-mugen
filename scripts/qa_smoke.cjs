@@ -441,9 +441,9 @@ async function captureRuntime(page, baseUrl, options) {
         label,
         title: document.title,
         mode: bridge?.mode,
-        bodyHasRuntime: document.body.innerText.includes("Runtime"),
-        bodyHasP1: document.body.innerText.includes("Nova Boxer"),
-        bodyHasP2: document.body.innerText.includes("Mira Volt"),
+        bodyHasRuntime: document.body.textContent.includes("Runtime"),
+        bodyHasP1: document.body.textContent.includes("Nova Boxer"),
+        bodyHasP2: document.body.textContent.includes("Mira Volt"),
         actorCount: bridge?.snapshot?.actors?.length ?? 0,
         tickSchedule: bridge?.snapshot?.tickSchedule,
         actorRegistryCount: bridge?.actorRegistry?.actors?.length ?? 0,
@@ -457,7 +457,7 @@ async function captureRuntime(page, baseUrl, options) {
         actorRegistryTargetOwners: bridge?.actorRegistry?.targetLinks?.map((link) => link.ownerId) ?? [],
         actorRegistryEffectStores: bridge?.actorRegistry?.effectStores?.length ?? 0,
         actorRegistryEffectStoreOwners: bridge?.actorRegistry?.effectStores?.map((store) => store.ownerId) ?? [],
-        bodyHasActorRegistry: document.body.innerText.includes("Actor Registry"),
+        bodyHasActorRegistry: document.body.textContent.includes("Actor Registry"),
         actors: bridge?.snapshot?.actors?.map((actor) => ({
           id: actor.id,
           label: actor.label,
@@ -1755,7 +1755,7 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
   await page.screenshot({ path: path.join(outDir, "studio-workbench.png"), fullPage: true });
   const baseline = await evaluateWithStableBridge(page, () => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
-    const bodyText = document.body.innerText;
+    const bodyText = document.body.textContent;
     const bodyTextLower = bodyText.toLowerCase();
     const shell = document.querySelector(".app-shell")?.getBoundingClientRect();
     const rectFor = (selector) => {
@@ -2228,14 +2228,14 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       mode: bridge?.mode,
       studioTab: bridge?.studioTab,
       character: bridge?.character,
-      bodyHasBuild: document.body.innerText.includes("Build Outputs"),
-      bodyHasTrace: document.body.innerText.includes("Trace Evidence"),
-      bodyHasPackage: document.body.innerText.includes("Project Package"),
-      bodyHasPackageAnalysis: document.body.innerText.includes("Package Analysis"),
-      bodyHasTrustChain: document.body.innerText.includes("Build Trust Chain"),
-      bodyHasProjectReleaseDecision: document.body.innerText.includes("Project release decision") || document.body.innerText.includes("Project Release Decision"),
-      bodyHasSemanticExport: document.body.innerText.includes("Deterministic semantic export") || document.body.innerText.includes("Deterministic Semantic Export"),
-      bodyHasCompatibilitySnapshot: document.body.innerText.includes("Compatibility Corpus Snapshot"),
+      bodyHasBuild: document.body.textContent.includes("Build Outputs"),
+      bodyHasTrace: document.body.textContent.includes("Trace Evidence"),
+      bodyHasPackage: document.body.textContent.includes("Project Package"),
+      bodyHasPackageAnalysis: document.body.textContent.includes("Package Analysis"),
+      bodyHasTrustChain: document.body.textContent.includes("Build Trust Chain"),
+      bodyHasProjectReleaseDecision: document.body.textContent.includes("Project release decision") || document.body.textContent.includes("Project Release Decision"),
+      bodyHasSemanticExport: document.body.textContent.includes("Deterministic semantic export") || document.body.textContent.includes("Deterministic Semantic Export"),
+      bodyHasCompatibilitySnapshot: document.body.textContent.includes("Compatibility Corpus Snapshot"),
       trustChainRows: document.querySelectorAll(".studio-trust-contract-row").length,
       trustChainIds: bridge?.studioTrustChain?.map((row) => row.id) ?? [],
       trustChainTargets: bridge?.studioTrustChain?.map((row) => `${row.id}:${row.targetKind}:${row.targetId}`) ?? [],
@@ -2272,7 +2272,7 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
         packageFilePath: row.dataset.packageFilePath,
         studioAssetId: row.dataset.studioAssetId,
       })),
-      bodyHasArchitectureBoundaries: document.body.innerText.includes("Architecture boundaries") || document.body.innerText.includes("Architecture Boundaries"),
+      bodyHasArchitectureBoundaries: document.body.textContent.includes("Architecture boundaries") || document.body.textContent.includes("Architecture Boundaries"),
       compiledProject: Boolean(bridge?.compiledProject),
       projectBundle: bridge?.projectBundle,
       traceArtifactStatus: bridge?.traceArtifact?.status,
@@ -2298,7 +2298,7 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       semanticExport: bridge?.studioSemanticExport ?? bridge?.studioEvidence?.semanticExport,
       semanticExportEvidence: bridge?.studioEvidence?.records?.find((record) => record.id === "semantic-export"),
       semanticExportTrustRow: bridge?.studioTrustChain?.find((record) => record.id === "semantic-export"),
-      bodyHasEvidenceEnvelopes: document.body.innerText.includes("Evidence Envelopes"),
+      bodyHasEvidenceEnvelopes: document.body.textContent.includes("Evidence Envelopes"),
       compatibilitySnapshotStatus: bridge?.studioEvidence?.compatibilitySnapshot?.status,
       compatibilitySnapshotSemanticDigest: bridge?.studioEvidence?.compatibilitySnapshot?.snapshot?.semanticDigest,
       compatibilitySnapshotRecord: bridge?.studioEvidence?.records?.find((record) => record.id === "compat:snapshot"),
@@ -2366,7 +2366,7 @@ async function captureStudioModules(page, outDir) {
     const compiled = bridge?.compiledProject;
     const contracts = compiled?.contracts;
     const modules = bridge?.studio?.modules ?? [];
-    const bodyText = document.body.innerText;
+    const bodyText = document.body.textContent;
     return {
       mode: bridge?.mode,
       studioTab: bridge?.studioTab,
@@ -2407,7 +2407,7 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
       linked: bridge?.project?.sourcePackages?.filter((sourcePackage) => sourcePackage.status === "linked").length ?? 0,
       warnings: bridge?.projectImportWarnings ?? [],
       relinkButtons: document.querySelectorAll('[data-action="relink-source"]').length,
-      bodyHasRelinkCopy: document.body.innerText.includes("Reload the original ZIP or folder"),
+      bodyHasRelinkCopy: document.body.textContent.includes("Reload the original ZIP or folder"),
       sourceTransactions: bridge?.sourceTransactions ?? [],
       sourceHandles: bridge?.sourceHandles ?? [],
     };
@@ -2427,7 +2427,7 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
   const after = await evaluateWithStableBridge(page, () => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const sourcePackages = bridge?.project?.sourcePackages ?? [];
-    const bodyText = document.body.innerText;
+    const bodyText = document.body.textContent;
     return {
       mode: bridge?.mode,
       studioTab: bridge?.studioTab,
@@ -2463,7 +2463,7 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const sourcePackage = bridge?.project?.sourcePackages?.find((candidate) => candidate.id === "kfm-official");
     const transaction = bridge?.sourceImportTransaction;
-    const bodyText = document.body.innerText;
+    const bodyText = document.body.textContent;
     return {
       mode: bridge?.mode,
       studioTab: bridge?.studioTab,
@@ -2733,7 +2733,7 @@ async function captureIkemenScan(page, baseUrl, outDir) {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const scan = bridge?.compatibility?.profiles?.ikemen;
     const unsupported = bridge?.compatibility?.unsupported ?? [];
-    const bodyText = document.body.innerText;
+    const bodyText = document.body.textContent;
     return {
       mode: bridge?.mode,
       studioTab: bridge?.studioTab,
@@ -3164,7 +3164,7 @@ async function captureStudioStage(page, outDir) {
     const layerReports = stageReports.flatMap((stage) => stage.backgrounds?.layers ?? []);
     const controllerReports = stageReports.flatMap((stage) => stage.backgrounds?.controllers?.items ?? []);
     const controllerSummaries = stageReports.map((stage) => stage.backgrounds?.controllers).filter(Boolean);
-    const bodyText = document.body.innerText.toLowerCase();
+    const bodyText = document.body.textContent.toLowerCase();
     return {
       title: document.title,
       mode: bridge?.mode,
@@ -3202,7 +3202,7 @@ async function captureStudioBgCtrlStage(page, baseUrl, outDir) {
     const stage = bridge?.snapshot?.stage;
     const controllerGroups = stage?.bgControllers ?? [];
     const controllers = controllerGroups.flatMap((group) => group.controllers ?? []);
-    const bodyText = document.body.innerText.toLowerCase();
+    const bodyText = document.body.textContent.toLowerCase();
     return {
       title: document.title,
       mode: bridge?.mode,
@@ -3251,11 +3251,11 @@ async function captureStudioEvidence(page, outDir) {
       mode: bridge?.mode,
       studioTab: bridge?.studioTab,
       evidenceFilter: bridge?.studioEvidence?.activeFilter,
-      bodyHasEvidence: document.body.innerText.includes("Evidence Browser"),
-      bodyHasTrustChain: document.body.innerText.includes("Evidence Trust Chain"),
-      bodyHasProjectReleaseDecision: document.body.innerText.includes("Project Release Decision") || document.body.innerText.includes("Project release decision"),
-      bodyHasSemanticExport: document.body.innerText.includes("Deterministic semantic export") || document.body.innerText.includes("Deterministic Semantic Export"),
-      bodyHasCompatibilitySnapshot: document.body.innerText.includes("Compatibility Corpus Snapshot"),
+      bodyHasEvidence: document.body.textContent.includes("Evidence Browser"),
+      bodyHasTrustChain: document.body.textContent.includes("Evidence Trust Chain"),
+      bodyHasProjectReleaseDecision: document.body.textContent.includes("Project Release Decision") || document.body.textContent.includes("Project release decision"),
+      bodyHasSemanticExport: document.body.textContent.includes("Deterministic semantic export") || document.body.textContent.includes("Deterministic Semantic Export"),
+      bodyHasCompatibilitySnapshot: document.body.textContent.includes("Compatibility Corpus Snapshot"),
       trustChainRows: document.querySelectorAll(".studio-trust-contract-row").length,
       trustChainIds: bridge?.studioTrustChain?.map((row) => row.id) ?? [],
       trustChainTargets: bridge?.studioTrustChain?.map((row) => `${row.id}:${row.targetKind}:${row.targetId}`) ?? [],
@@ -3271,15 +3271,15 @@ async function captureStudioEvidence(page, outDir) {
         sourcePackageId: row.dataset.sourcePackageId,
         studioAssetId: row.dataset.studioAssetId,
       })),
-      bodyHasHistory: document.body.innerText.includes("Session Trace History"),
-      bodyHasPersistedHistory: document.body.innerText.includes("Persisted Evidence History"),
-      bodyHasPersistedComparison: document.body.innerText.includes("Comparison:"),
-      bodyHasTraceComparisonReview: document.body.innerText.includes("Trace Comparison Review"),
-      bodyHasGateDiff: document.body.innerText.includes("Gate Diff"),
-      bodyHasTraceFrameScrubber: document.body.innerText.includes("Trace Frame Scrubber"),
+      bodyHasHistory: document.body.textContent.includes("Session Trace History"),
+      bodyHasPersistedHistory: document.body.textContent.includes("Persisted Evidence History"),
+      bodyHasPersistedComparison: document.body.textContent.includes("Comparison:"),
+      bodyHasTraceComparisonReview: document.body.textContent.includes("Trace Comparison Review"),
+      bodyHasGateDiff: document.body.textContent.includes("Gate Diff"),
+      bodyHasTraceFrameScrubber: document.body.textContent.includes("Trace Frame Scrubber"),
       bodyHasTraceFrameDelta: Boolean(document.querySelector("[data-trace-frame-delta]")),
       bodyHasTraceWorldDelta: Boolean(document.querySelector("[data-trace-world-delta]")),
-      bodyHasTrace: document.body.innerText.toLowerCase().includes("trace"),
+      bodyHasTrace: document.body.textContent.toLowerCase().includes("trace"),
       hasArchitectureGateRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "gate:architecture-boundaries")),
       hasArchitectureEvidenceRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "test:architecture-boundaries")),
       architectureEvidenceStatus: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.status,
@@ -3367,18 +3367,18 @@ async function captureStudioAssets(page, outDir) {
       mode: bridge?.mode,
       studioTab: bridge?.studioTab,
       assetFilter: bridge?.studioAssets?.activeFilter,
-      bodyHasAssets: document.body.innerText.includes("Asset Library"),
-      bodyHasProjectAssets: document.body.innerText.includes("Project Assets"),
-      bodyHasReadiness: document.body.innerText.includes("Asset Attention Queue"),
-      bodyHasAssetDetail: document.body.innerText.includes("Asset Detail"),
-      bodyHasReplacementFlow: document.body.innerText.includes("Replacement Flow"),
-      bodyHasSourceRuntimeMap: document.body.innerText.includes("Source / Runtime Map"),
-      bodyHasDependencyGraph: document.body.innerText.includes("Dependency Graph"),
-      bodyHasDependencyDrilldown: document.body.innerText.includes("Dependency Drilldown"),
-      bodyHasMissingReferences: document.body.innerText.includes("Missing / Partial References"),
-      bodyHasRelatedEvidence: document.body.innerText.includes("Related Evidence"),
-      bodyHasProvenance: document.body.innerText.includes("Provenance"),
-      bodyHasNextAction: document.body.innerText.includes("Next action"),
+      bodyHasAssets: document.body.textContent.includes("Asset Library"),
+      bodyHasProjectAssets: document.body.textContent.includes("Project Assets"),
+      bodyHasReadiness: document.body.textContent.includes("Asset Attention Queue"),
+      bodyHasAssetDetail: document.body.textContent.includes("Asset Detail"),
+      bodyHasReplacementFlow: document.body.textContent.includes("Replacement Flow"),
+      bodyHasSourceRuntimeMap: document.body.textContent.includes("Source / Runtime Map"),
+      bodyHasDependencyGraph: document.body.textContent.includes("Dependency Graph"),
+      bodyHasDependencyDrilldown: document.body.textContent.includes("Dependency Drilldown"),
+      bodyHasMissingReferences: document.body.textContent.includes("Missing / Partial References"),
+      bodyHasRelatedEvidence: document.body.textContent.includes("Related Evidence"),
+      bodyHasProvenance: document.body.textContent.includes("Provenance"),
+      bodyHasNextAction: document.body.textContent.includes("Next action"),
       selectedAssetId: bridge?.studioAssets?.selectedAssetId,
       selectedAssetLabel: bridge?.studioAssets?.selectedAsset?.label,
       selectedAssetNextAction: bridge?.studioAssets?.selectedAsset?.nextAction?.label,
@@ -3396,7 +3396,7 @@ async function captureStudioAssets(page, outDir) {
       releasePolicyReadyAssetIds: bridge?.studioAssetReleasePolicies?.filter((record) => record.canRelease).map((record) => record.assetId) ?? [],
       releasePolicyBlocked: bridge?.studioAssetReleasePolicies?.filter((record) => !record.canRelease).length ?? 0,
       selectedReleasePolicyStatus: bridge?.studioAssets?.selectedReleasePolicy?.status,
-      bodyHasReleasePolicy: document.body.innerText.includes("Release schema") || document.body.innerText.includes("release-ready"),
+      bodyHasReleasePolicy: document.body.textContent.includes("Release schema") || document.body.textContent.includes("release-ready"),
       provenanceSchema: bridge?.studioAssets?.provenance?.[0]?.schemaVersion,
       provenanceRecords: provenance.length,
       provenanceReady: provenance.filter((record) => record.canExport).length,
@@ -3473,8 +3473,8 @@ async function captureStudioAssetReplacement(context, baseUrl, outDir) {
         entry: bridge?.project?.entry,
         replacementRole: bridge?.studioAssets?.replacementPlan?.role,
         replacementCandidates: bridge?.studioAssets?.replacementPlan?.candidates?.length ?? 0,
-        bodyHasReplacementFlow: document.body.innerText.includes("Replacement Flow"),
-        bodyHasRefreshNotice: document.body.innerText.includes("compile and trace outputs need refresh"),
+        bodyHasReplacementFlow: document.body.textContent.includes("Replacement Flow"),
+        bodyHasRefreshNotice: document.body.textContent.includes("compile and trace outputs need refresh"),
       };
     });
     return {
@@ -3792,8 +3792,8 @@ async function captureStudioDebug(page, outDir, importedFixturePath) {
     mode: window.__MUGEN_WEB_SANDBOX__?.mode,
     url: window.location.search,
     filterValue: document.querySelector('input[data-filter="navigator"]')?.value,
-    bodyHasStateBrowser: document.body.innerText.includes("States"),
-    bodyHasHitDef: document.body.innerText.includes("HitDef"),
+    bodyHasStateBrowser: document.body.textContent.includes("States"),
+    bodyHasHitDef: document.body.textContent.includes("HitDef"),
     selectedState: document.querySelector("[data-inspector-selected-state]")?.getAttribute("data-inspector-selected-state"),
     selectedController: document
       .querySelector("[data-inspector-selected-controller]")
@@ -3857,7 +3857,7 @@ async function captureStudioDebugWorldEvidenceJump(page) {
     selectedTraceFrameHasWorld: Boolean(window.__MUGEN_WEB_SANDBOX__?.traceFrameScrubber?.selectedFrame?.world),
     selectedTraceFrameEffectStores:
       window.__MUGEN_WEB_SANDBOX__?.traceFrameScrubber?.selectedFrame?.world?.effectStores?.length ?? 0,
-    bodyHasTraceFrameScrubber: document.body.innerText.includes("Trace Frame Scrubber"),
+    bodyHasTraceFrameScrubber: document.body.textContent.includes("Trace Frame Scrubber"),
   }));
 }
 
@@ -3907,10 +3907,10 @@ async function readStudioDebugBridge(page) {
       mode: bridge?.mode,
       studioTab: bridge?.studioTab,
       studioDebugFilter: bridge?.studioDebugFilter,
-      bodyHasDebug: document.body.innerText.includes("Runtime Debug Studio"),
+      bodyHasDebug: document.body.textContent.includes("Runtime Debug Studio"),
       bodyHasDebugLens: Boolean(document.querySelector("[data-debug-filter-panel]")),
-      bodyHasActorRegistry: document.body.innerText.includes("Actor Registry"),
-      bodyHasActorExplorer: document.body.innerText.includes("Actor Explorer"),
+      bodyHasActorRegistry: document.body.textContent.includes("Actor Registry"),
+      bodyHasActorExplorer: document.body.textContent.includes("Actor Explorer"),
       bodyHasActorDetail: Boolean(document.querySelector(`[data-debug-selected-actor="${bridge?.studioDebug?.selectedActorId}"]`)),
       bodyHasExecutionEvidence: Boolean(document.querySelector("[data-debug-execution-evidence]")),
       bodyHasTraceEvidence: Boolean(document.querySelector("[data-debug-trace-evidence]")),
