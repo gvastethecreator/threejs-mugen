@@ -1,12 +1,12 @@
 {
   "schema": "Da32GamepadBrowserGate/v1",
   "id": "DA32-010",
-  "generatedAt": "2026-07-28T06:26:56.931Z",
+  "generatedAt": "2026-07-28T06:32:07.269Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "1c3aac8e5f3a2b202bfac44b8c9490e7be7f13e4",
-    "dirtyTree": false,
-    "provisional": false,
+    "subjectSha": "a4dc2703b0de68612015ccd7a56c5ef00e91ca4d",
+    "dirtyTree": true,
+    "provisional": true,
     "probePaths": [
       "scripts/qa_browser_gate_da32_010_gamepad.cjs",
       "src/mugen/da32/GamepadDeviceLab.ts"
@@ -16,9 +16,9 @@
       "src/app/App.ts",
       "src/game/input/KeyboardInputAdapter.ts"
     ],
-    "claimLimit": "subject-bound observation at listed probe/code paths"
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
   },
-  "headSha": "1c3aac8e5f3a2b202bfac44b8c9490e7be7f13e4",
+  "headSha": "a4dc2703b0de68612015ccd7a56c5ef00e91ca4d",
   "ok": true,
   "route": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "cases": [
@@ -43,7 +43,7 @@
       "journey": {
         "held": {
           "diagnostics": {
-            "tick": 12,
+            "tick": 17,
             "connectedCount": 1,
             "seats": [
               {
@@ -72,13 +72,13 @@
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 0
+              "tick": 12
             }
           ]
         },
         "twoSeatState": {
           "diagnostics": {
-            "tick": 55,
+            "tick": 56,
             "connectedCount": 2,
             "seats": [
               {
@@ -107,14 +107,14 @@
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 0
+              "tick": 12
             },
             {
               "type": "connected",
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 43
+              "tick": 44
             }
           ]
         },
@@ -149,20 +149,20 @@
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 0
+              "tick": 12
             },
             {
               "type": "connected",
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 43
+              "tick": 44
             }
           ]
         },
         "afterDisconnect": {
           "diagnostics": {
-            "tick": 59,
+            "tick": 100,
             "connectedCount": 1,
             "seats": [
               {
@@ -189,14 +189,14 @@
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 0
+              "tick": 12
             },
             {
               "type": "connected",
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 43
+              "tick": 44
             },
             {
               "type": "disconnected",
@@ -209,7 +209,7 @@
         },
         "reconnect": {
           "index": 4,
-          "id": "Virtual Reconnected Pad",
+          "id": "Virtual Standard Pad",
           "mapping": "standard",
           "connected": true,
           "axes": [
@@ -300,18 +300,18 @@
               "value": 0
             }
           ],
-          "timestamp": 22495.10000000149
+          "timestamp": 21849
         },
         "finalState": {
           "diagnostics": {
-            "tick": 62,
+            "tick": 146,
             "connectedCount": 2,
             "seats": [
               {
                 "seat": 1,
                 "connected": true,
                 "index": 4,
-                "id": "Virtual Reconnected Pad",
+                "id": "Virtual Standard Pad",
                 "mapping": "standard",
                 "actions": [
                   "b"
@@ -333,14 +333,14 @@
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 0
+              "tick": 12
             },
             {
               "type": "connected",
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 43
+              "tick": 44
             },
             {
               "type": "disconnected",
@@ -352,9 +352,9 @@
             {
               "type": "connected",
               "index": 4,
-              "id": "Virtual Reconnected Pad",
+              "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 61
+              "tick": 129
             }
           ]
         }
@@ -389,7 +389,7 @@
       "journey": {
         "held": {
           "diagnostics": {
-            "tick": 20,
+            "tick": 15,
             "connectedCount": 1,
             "seats": [
               {
@@ -424,7 +424,7 @@
         },
         "twoSeatState": {
           "diagnostics": {
-            "tick": 30,
+            "tick": 25,
             "connectedCount": 2,
             "seats": [
               {
@@ -460,13 +460,13 @@
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 22
+              "tick": 18
             }
           ]
         },
         "p1Disconnected": {
           "diagnostics": {
-            "tick": 31,
+            "tick": 25,
             "connectedCount": 2,
             "seats": [
               {
@@ -502,13 +502,13 @@
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 22
+              "tick": 18
             }
           ]
         },
         "afterDisconnect": {
           "diagnostics": {
-            "tick": 34,
+            "tick": 26,
             "connectedCount": 1,
             "seats": [
               {
@@ -542,20 +542,20 @@
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 22
+              "tick": 18
             },
             {
               "type": "disconnected",
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 31
+              "tick": 25
             }
           ]
         },
         "reconnect": {
           "index": 4,
-          "id": "Virtual Reconnected Pad",
+          "id": "Virtual Standard Pad",
           "mapping": "standard",
           "connected": true,
           "axes": [
@@ -646,7 +646,7 @@
               "value": 0
             }
           ],
-          "timestamp": 1442.199999999255
+          "timestamp": 1330.5
         },
         "finalState": {
           "diagnostics": {
@@ -657,7 +657,7 @@
                 "seat": 1,
                 "connected": true,
                 "index": 4,
-                "id": "Virtual Reconnected Pad",
+                "id": "Virtual Standard Pad",
                 "mapping": "standard",
                 "actions": [
                   "b"
@@ -686,21 +686,21 @@
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 22
+              "tick": 18
             },
             {
               "type": "disconnected",
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 31
+              "tick": 25
             },
             {
               "type": "connected",
               "index": 4,
-              "id": "Virtual Reconnected Pad",
+              "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 39
+              "tick": 38
             }
           ]
         }
@@ -716,7 +716,7 @@
     }
   ],
   "unexpectedConsole": [],
-  "claimCeiling": "virtual browser gamepad lifecycle, keyboard fallback, and visible status at named viewports",
+  "claimCeiling": "provisional virtual browser gamepad lifecycle observations for named viewports",
   "claims": {
     "allowed": [
       "browser gamepadconnected and gamepaddisconnected events reach the runtime adapter",
@@ -734,6 +734,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "1b0ce7e6cd61d47c220f7fe4dcb082956f1cfb2c197f01686e62891d0e73dded"
+    "value": "cbe68dbda7b3dfadfa0296828f11a6b80184c21c5cf8f1d4c1bedcbaa771b5ef"
   }
 }

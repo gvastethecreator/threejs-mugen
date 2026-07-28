@@ -120,6 +120,26 @@ describe("GamepadInputAdapter", () => {
     expect(adapter.getState(1).size).toBe(0);
   });
 
+  it("keeps a logical seat when a known device reconnects at a new browser index", () => {
+    let pads: Array<Gamepad | null> = [createFakeGamepad({ index: 0, id: "Stable Pad", buttons: [true] })];
+    const adapter = new GamepadInputAdapter({ getGamepads: () => pads });
+
+    adapter.poll(1);
+    expect(adapter.getDiagnostics().seats[0]?.index).toBe(0);
+
+    pads = Array.from({ length: 5 }, () => null);
+    pads[4] = createFakeGamepad({ index: 4, id: "Stable Pad", buttons: [false] });
+    adapter.poll(2);
+
+    expect(adapter.getDiagnostics().seats[0]).toMatchObject({
+      connected: true,
+      index: 4,
+      id: "Stable Pad",
+      mapping: "standard",
+    });
+    expect(adapter.getDiagnostics().seats[1]?.connected).toBe(false);
+  });
+
   it("exposes seat diagnostics for mapping, index, and active actions", () => {
     const pads = [
       createFakeGamepad({ index: 4, id: "Arcade Pad", buttons: [true] }),

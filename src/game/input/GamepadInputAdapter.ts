@@ -74,6 +74,7 @@ export class GamepadInputAdapter {
   private readonly getGamepads: () => ReadonlyArray<Gamepad | null | undefined>;
   private readonly deadzone: number;
   private readonly seatByIndex: Record<number, MatchInputSeatId>;
+  private readonly seatByDeviceId = new Map<string, MatchInputSeatId>();
   private readonly remap: MatchInputRemapTable | undefined;
   private readonly socdMode: RuntimeSocdResolution;
   private lastPolicy?: MatchInputPolicySnapshot;
@@ -122,12 +123,17 @@ export class GamepadInputAdapter {
     for (let index = 0; index < pads.length; index += 1) {
       const pad = pads[index];
       if (!pad || pad.connected === false) continue;
-      const seat = this.seatByIndex[index];
+      const deviceIndex = Number.isInteger(pad.index) ? pad.index : index;
+      const deviceId = pad.id?.trim() ?? "";
+      const seat =
+        (deviceId ? this.seatByDeviceId.get(deviceId) : undefined) ??
+        this.seatByIndex[deviceIndex] ??
+        this.seatByIndex[index];
       if (!seat) continue;
       // First connected pad for a seat wins.
       if (!bySeat.has(seat)) {
-        const deviceIndex = Number.isInteger(pad.index) ? pad.index : index;
         bySeat.set(seat, { pad, index: deviceIndex });
+        if (deviceId) this.seatByDeviceId.set(deviceId, seat);
       }
     }
 

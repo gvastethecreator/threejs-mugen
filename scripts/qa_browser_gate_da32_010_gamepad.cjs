@@ -255,9 +255,9 @@ async function runViewport(browser, base, options) {
     await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === true, null, { timeout: 5_000 });
 
     const reconnect = await createAndConnect(page, {
-      slot: 0,
+      slot: 4,
       index: 4,
-      id: "Virtual Reconnected Pad",
+      id: "Virtual Standard Pad",
       mapping: "standard",
       pressedButtons: [1],
     });
@@ -265,7 +265,7 @@ async function runViewport(browser, base, options) {
       () => {
         const gamepad = window.__MUGEN_WEB_SANDBOX__?.gamepad;
         const seat = gamepad?.diagnostics?.seats?.[0];
-        return seat?.connected === true && seat.index === 4 && seat.id === "Virtual Reconnected Pad" &&
+        return seat?.connected === true && seat.index === 4 && seat.id === "Virtual Standard Pad" &&
           seat.actions.includes("b") && gamepad.events?.some((event) => event.type === "connected" && event.index === 4);
       },
       null,
