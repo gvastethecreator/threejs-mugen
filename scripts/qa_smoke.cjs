@@ -5333,11 +5333,13 @@ function assertSmoke(diagnostics) {
       studioFolderHandleRecovery.after?.sourceHandle?.handleKind !== "directory" ||
       studioFolderHandleRecovery.after?.sourceHandle?.state !== "granted" ||
       studioFolderHandleRecovery.after?.sourceHandle?.canRead !== true ||
+      studioFolderHandleRecovery.after?.sourceHandle?.writePermission !== "granted" ||
       !/^[0-9a-f]{64}$/i.test(String(studioFolderHandleRecovery.after?.sourceHandle?.observedFingerprint ?? "")) ||
       studioFolderHandleRecovery.after?.sourceTransaction?.schemaVersion !== "mugen-web-sandbox/source-transaction/v0" ||
       studioFolderHandleRecovery.after?.sourceTransaction?.state !== "linked" ||
       studioFolderHandleRecovery.after?.sourceTransaction?.canRead !== true ||
-      studioFolderHandleRecovery.after?.sourceTransaction?.canWrite !== false ||
+      studioFolderHandleRecovery.after?.sourceTransaction?.permission !== "granted" ||
+      studioFolderHandleRecovery.after?.sourceTransaction?.canWrite !== true ||
       !studioFolderHandleRecovery.after?.bodyHasSourcePackages ||
       !studioFolderHandleRecovery.after?.bodyHasLinkedCopy ||
       !studioFolderHandleRecovery.after?.bodyHasFolderHandle ||
