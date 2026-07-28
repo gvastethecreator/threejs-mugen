@@ -74,7 +74,7 @@ contrast audit, WCAG certification, public release, and full parity.
 ## DA32-010 virtual gamepad browser gate - b826de72 (closed-bounded, 2026-07-28)
 
 - `pnpm qa:browser:da32-010-gamepad` passed against clean subject
-  `b826de72` at desktop `1440x900` and mobile `390x844`; unexpected console
+  `4ba19168` at desktop `1440x900` and mobile `390x844`; unexpected console
   errors: zero.
 - The browser gate drives the real `GamepadInputAdapter` through injected
   `Gamepad` objects and browser connection events. It proves standard P1,

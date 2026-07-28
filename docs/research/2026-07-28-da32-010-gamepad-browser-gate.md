@@ -36,7 +36,7 @@ Viewports:
 
 ## Evidence
 
-`pnpm qa:browser:da32-010-gamepad` passed on clean subject `b826de72`:
+`pnpm qa:browser:da32-010-gamepad` passed on clean subject `4ba19168`:
 
 - desktop and mobile cases: pass
 - semantic clauses per case: 12/12
