@@ -13615,6 +13615,11 @@ export class App {
         diagnostics?: MugenCharacter["diagnostics"];
         renderer: ReturnType<ThreeMugenRenderer["getDiagnostics"]>;
         audio: ReturnType<MugenAudioSystem["getDiagnostics"]>;
+        keyboard: string[];
+        gamepad: {
+          diagnostics: ReturnType<GamepadInputAdapter["getDiagnostics"]>;
+          events: ReturnType<GamepadInputAdapter["getDeviceEvents"]>;
+        };
         stages: StageCompatibilityReport[];
         atlasMotionQa: Record<string, AtlasMotionQa>;
         runtimeRoster: RuntimeRosterEntry[];
@@ -13702,6 +13707,11 @@ export class App {
       diagnostics: this.character?.diagnostics,
       renderer: this.renderer.getDiagnostics(),
       audio: this.audio.getDiagnostics(),
+      keyboard: [...this.keyboard.getState()],
+      gamepad: {
+        diagnostics: this.gamepad.getDiagnostics(),
+        events: [...this.gamepad.getDeviceEvents()],
+      },
       stages: this.getStageCompatibilityReports(),
       atlasMotionQa: Object.fromEntries(this.atlasMotionQaByFighter),
       runtimeRoster: this.buildRuntimeRosterReport(),

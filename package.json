@@ -48,6 +48,7 @@
     "qa:browser:da31-012-016": "node scripts/qa_browser_gate_da31_012_016_product.cjs",
     "qa:browser:da32-002-hit-spark": "node scripts/qa_browser_gate_da32_002_hit_spark.cjs",
     "qa:browser:da32-005-mugen-lite": "node scripts/qa_browser_gate_da32_005_mugen_lite_visual.cjs",
+    "qa:browser:da32-010-gamepad": "node scripts/qa_browser_gate_da32_010_gamepad.cjs",
     "qa:browser:da32-029-a11y": "node scripts/qa_browser_gate_da32_029_a11y.cjs",
     "materialize:da31-status": "node scripts/build_da31_phase_status.cjs",
     "materialize:da32-status": "node scripts/build_da32_status.cjs",

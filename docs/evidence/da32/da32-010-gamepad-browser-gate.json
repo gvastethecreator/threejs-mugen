@@ -1,0 +1,739 @@
+{
+  "schema": "Da32GamepadBrowserGate/v1",
+  "id": "DA32-010",
+  "generatedAt": "2026-07-28T06:25:15.824Z",
+  "subject": {
+    "schema": "Da31GateSubjectEnvelope/v1",
+    "subjectSha": "46e6c1ad928175247036c36b63711cc79787cc4d",
+    "dirtyTree": true,
+    "provisional": true,
+    "probePaths": [
+      "scripts/qa_browser_gate_da32_010_gamepad.cjs",
+      "src/mugen/da32/GamepadDeviceLab.ts"
+    ],
+    "codePaths": [
+      "src/game/input/GamepadInputAdapter.ts",
+      "src/app/App.ts",
+      "src/game/input/KeyboardInputAdapter.ts"
+    ],
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+  },
+  "headSha": "46e6c1ad928175247036c36b63711cc79787cc4d",
+  "ok": true,
+  "route": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+  "cases": [
+    {
+      "id": "desktop",
+      "viewport": "1440x900",
+      "ok": true,
+      "semantic": {
+        "connectEvent": true,
+        "heldButtonMapsToAction": true,
+        "twoSeatBinding": true,
+        "nonStandardMappingVisible": true,
+        "disconnectClearsActions": true,
+        "disconnectEvent": true,
+        "keyboardFallback": true,
+        "reconnectChangedIndex": true,
+        "reconnectEvent": true,
+        "visibleSeatStatus": true,
+        "liveSummary": true,
+        "noHorizontalOverflow": true
+      },
+      "journey": {
+        "held": {
+          "diagnostics": {
+            "tick": 13,
+            "connectedCount": 1,
+            "seats": [
+              {
+                "seat": 1,
+                "connected": true,
+                "index": 0,
+                "id": "Virtual Standard Pad",
+                "mapping": "standard",
+                "actions": [
+                  "a"
+                ]
+              },
+              {
+                "seat": 2,
+                "connected": false,
+                "index": null,
+                "id": null,
+                "mapping": "disconnected",
+                "actions": []
+              }
+            ]
+          },
+          "events": [
+            {
+              "type": "connected",
+              "index": 0,
+              "id": "Virtual Standard Pad",
+              "mapping": "standard",
+              "tick": 0
+            }
+          ]
+        },
+        "twoSeatState": {
+          "diagnostics": {
+            "tick": 64,
+            "connectedCount": 2,
+            "seats": [
+              {
+                "seat": 1,
+                "connected": true,
+                "index": 0,
+                "id": "Virtual Standard Pad",
+                "mapping": "standard",
+                "actions": [
+                  "a"
+                ]
+              },
+              {
+                "seat": 2,
+                "connected": true,
+                "index": 7,
+                "id": "Virtual Legacy Pad",
+                "mapping": "non-standard",
+                "actions": []
+              }
+            ]
+          },
+          "events": [
+            {
+              "type": "connected",
+              "index": 0,
+              "id": "Virtual Standard Pad",
+              "mapping": "standard",
+              "tick": 0
+            },
+            {
+              "type": "connected",
+              "index": 7,
+              "id": "Virtual Legacy Pad",
+              "mapping": "unknown",
+              "tick": 47
+            }
+          ]
+        },
+        "p1Disconnected": {
+          "diagnostics": {
+            "tick": 65,
+            "connectedCount": 2,
+            "seats": [
+              {
+                "seat": 1,
+                "connected": true,
+                "index": 0,
+                "id": "Virtual Standard Pad",
+                "mapping": "standard",
+                "actions": [
+                  "a"
+                ]
+              },
+              {
+                "seat": 2,
+                "connected": true,
+                "index": 7,
+                "id": "Virtual Legacy Pad",
+                "mapping": "non-standard",
+                "actions": []
+              }
+            ]
+          },
+          "events": [
+            {
+              "type": "connected",
+              "index": 0,
+              "id": "Virtual Standard Pad",
+              "mapping": "standard",
+              "tick": 0
+            },
+            {
+              "type": "connected",
+              "index": 7,
+              "id": "Virtual Legacy Pad",
+              "mapping": "unknown",
+              "tick": 47
+            }
+          ]
+        },
+        "afterDisconnect": {
+          "diagnostics": {
+            "tick": 66,
+            "connectedCount": 1,
+            "seats": [
+              {
+                "seat": 1,
+                "connected": false,
+                "index": null,
+                "id": null,
+                "mapping": "disconnected",
+                "actions": []
+              },
+              {
+                "seat": 2,
+                "connected": true,
+                "index": 7,
+                "id": "Virtual Legacy Pad",
+                "mapping": "non-standard",
+                "actions": []
+              }
+            ]
+          },
+          "events": [
+            {
+              "type": "connected",
+              "index": 0,
+              "id": "Virtual Standard Pad",
+              "mapping": "standard",
+              "tick": 0
+            },
+            {
+              "type": "connected",
+              "index": 7,
+              "id": "Virtual Legacy Pad",
+              "mapping": "unknown",
+              "tick": 47
+            },
+            {
+              "type": "disconnected",
+              "index": 0,
+              "id": "Virtual Standard Pad",
+              "mapping": "standard",
+              "tick": 65
+            }
+          ]
+        },
+        "reconnect": {
+          "index": 4,
+          "id": "Virtual Reconnected Pad",
+          "mapping": "standard",
+          "connected": true,
+          "axes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "buttons": [
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": true,
+              "touched": true,
+              "value": 1
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            }
+          ],
+          "timestamp": 22147.900000002235
+        },
+        "finalState": {
+          "diagnostics": {
+            "tick": 155,
+            "connectedCount": 2,
+            "seats": [
+              {
+                "seat": 1,
+                "connected": true,
+                "index": 4,
+                "id": "Virtual Reconnected Pad",
+                "mapping": "standard",
+                "actions": [
+                  "b"
+                ]
+              },
+              {
+                "seat": 2,
+                "connected": true,
+                "index": 7,
+                "id": "Virtual Legacy Pad",
+                "mapping": "non-standard",
+                "actions": []
+              }
+            ]
+          },
+          "events": [
+            {
+              "type": "connected",
+              "index": 0,
+              "id": "Virtual Standard Pad",
+              "mapping": "standard",
+              "tick": 0
+            },
+            {
+              "type": "connected",
+              "index": 7,
+              "id": "Virtual Legacy Pad",
+              "mapping": "unknown",
+              "tick": 47
+            },
+            {
+              "type": "disconnected",
+              "index": 0,
+              "id": "Virtual Standard Pad",
+              "mapping": "standard",
+              "tick": 65
+            },
+            {
+              "type": "connected",
+              "index": 4,
+              "id": "Virtual Reconnected Pad",
+              "mapping": "standard",
+              "tick": 67
+            }
+          ]
+        }
+      },
+      "statusText": "Runtime Mode\nNova Boxer vs Mira Volt\nRooftop Dojo / state S/A/S / anim 210\nP1\n1000 HP\nCPU\n1000 HP\nCmd\nidle\nTeam\nsingle\nPads\nP1 std / P2 map\nStage\nart PNG\nAtlas\nloaded\nWalk QA\nwarn 1",
+      "summaryText": "Match viewport on Rooftop Dojo. Playing. Round 1, fight, timer 97. Nova Boxer: 1000 of 1000 life, state 210, locked. Mira Volt: 1000 of 1000 life, state 0, ready. Controls: P1 keyboard and standard gamepad; P2 non-standard gamepad.",
+      "viewportState": {
+        "innerWidth": 1440,
+        "scrollWidth": 1440
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-010-gamepad-desktop.png",
+      "consoleErrors": []
+    },
+    {
+      "id": "mobile",
+      "viewport": "390x844",
+      "ok": true,
+      "semantic": {
+        "connectEvent": true,
+        "heldButtonMapsToAction": true,
+        "twoSeatBinding": true,
+        "nonStandardMappingVisible": true,
+        "disconnectClearsActions": true,
+        "disconnectEvent": true,
+        "keyboardFallback": true,
+        "reconnectChangedIndex": true,
+        "reconnectEvent": true,
+        "visibleSeatStatus": true,
+        "liveSummary": true,
+        "noHorizontalOverflow": true
+      },
+      "journey": {
+        "held": {
+          "diagnostics": {
+            "tick": 33,
+            "connectedCount": 1,
+            "seats": [
+              {
+                "seat": 1,
+                "connected": true,
+                "index": 0,
+                "id": "Virtual Standard Pad",
+                "mapping": "standard",
+                "actions": [
+                  "a"
+                ]
+              },
+              {
+                "seat": 2,
+                "connected": false,
+                "index": null,
+                "id": null,
+                "mapping": "disconnected",
+                "actions": []
+              }
+            ]
+          },
+          "events": [
+            {
+              "type": "connected",
+              "index": 0,
+              "id": "Virtual Standard Pad",
+              "mapping": "standard",
+              "tick": 25
+            }
+          ]
+        },
+        "twoSeatState": {
+          "diagnostics": {
+            "tick": 44,
+            "connectedCount": 2,
+            "seats": [
+              {
+                "seat": 1,
+                "connected": true,
+                "index": 0,
+                "id": "Virtual Standard Pad",
+                "mapping": "standard",
+                "actions": [
+                  "a"
+                ]
+              },
+              {
+                "seat": 2,
+                "connected": true,
+                "index": 7,
+                "id": "Virtual Legacy Pad",
+                "mapping": "non-standard",
+                "actions": []
+              }
+            ]
+          },
+          "events": [
+            {
+              "type": "connected",
+              "index": 0,
+              "id": "Virtual Standard Pad",
+              "mapping": "standard",
+              "tick": 25
+            },
+            {
+              "type": "connected",
+              "index": 7,
+              "id": "Virtual Legacy Pad",
+              "mapping": "unknown",
+              "tick": 36
+            }
+          ]
+        },
+        "p1Disconnected": {
+          "diagnostics": {
+            "tick": 45,
+            "connectedCount": 2,
+            "seats": [
+              {
+                "seat": 1,
+                "connected": true,
+                "index": 0,
+                "id": "Virtual Standard Pad",
+                "mapping": "standard",
+                "actions": [
+                  "a"
+                ]
+              },
+              {
+                "seat": 2,
+                "connected": true,
+                "index": 7,
+                "id": "Virtual Legacy Pad",
+                "mapping": "non-standard",
+                "actions": []
+              }
+            ]
+          },
+          "events": [
+            {
+              "type": "connected",
+              "index": 0,
+              "id": "Virtual Standard Pad",
+              "mapping": "standard",
+              "tick": 25
+            },
+            {
+              "type": "connected",
+              "index": 7,
+              "id": "Virtual Legacy Pad",
+              "mapping": "unknown",
+              "tick": 36
+            }
+          ]
+        },
+        "afterDisconnect": {
+          "diagnostics": {
+            "tick": 49,
+            "connectedCount": 1,
+            "seats": [
+              {
+                "seat": 1,
+                "connected": false,
+                "index": null,
+                "id": null,
+                "mapping": "disconnected",
+                "actions": []
+              },
+              {
+                "seat": 2,
+                "connected": true,
+                "index": 7,
+                "id": "Virtual Legacy Pad",
+                "mapping": "non-standard",
+                "actions": []
+              }
+            ]
+          },
+          "events": [
+            {
+              "type": "connected",
+              "index": 0,
+              "id": "Virtual Standard Pad",
+              "mapping": "standard",
+              "tick": 25
+            },
+            {
+              "type": "connected",
+              "index": 7,
+              "id": "Virtual Legacy Pad",
+              "mapping": "unknown",
+              "tick": 36
+            },
+            {
+              "type": "disconnected",
+              "index": 0,
+              "id": "Virtual Standard Pad",
+              "mapping": "standard",
+              "tick": 45
+            }
+          ]
+        },
+        "reconnect": {
+          "index": 4,
+          "id": "Virtual Reconnected Pad",
+          "mapping": "standard",
+          "connected": true,
+          "axes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "buttons": [
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": true,
+              "touched": true,
+              "value": 1
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            },
+            {
+              "pressed": false,
+              "touched": false,
+              "value": 0
+            }
+          ],
+          "timestamp": 2037.800000000745
+        },
+        "finalState": {
+          "diagnostics": {
+            "tick": 75,
+            "connectedCount": 2,
+            "seats": [
+              {
+                "seat": 1,
+                "connected": true,
+                "index": 4,
+                "id": "Virtual Reconnected Pad",
+                "mapping": "standard",
+                "actions": [
+                  "b"
+                ]
+              },
+              {
+                "seat": 2,
+                "connected": true,
+                "index": 7,
+                "id": "Virtual Legacy Pad",
+                "mapping": "non-standard",
+                "actions": []
+              }
+            ]
+          },
+          "events": [
+            {
+              "type": "connected",
+              "index": 0,
+              "id": "Virtual Standard Pad",
+              "mapping": "standard",
+              "tick": 25
+            },
+            {
+              "type": "connected",
+              "index": 7,
+              "id": "Virtual Legacy Pad",
+              "mapping": "unknown",
+              "tick": 36
+            },
+            {
+              "type": "disconnected",
+              "index": 0,
+              "id": "Virtual Standard Pad",
+              "mapping": "standard",
+              "tick": 45
+            },
+            {
+              "type": "connected",
+              "index": 4,
+              "id": "Virtual Reconnected Pad",
+              "mapping": "standard",
+              "tick": 64
+            }
+          ]
+        }
+      },
+      "statusText": "\n          \n            Runtime Mode\n            Nova Boxer vs Mira Volt\n            Rooftop Dojo / state S/A/S / anim 210\n          \n          \n            \n      \n        \n  \n  \n  \n  \n\n        P1\n        1000 HP\n      \n    \n            \n      \n        \n  \n  \n  \n  \n  \n  \n\n        CPU\n        1000 HP\n      \n    \n            \n      \n        \n  \n  \n  \n  \n  \n  \n  \n\n        Cmd\n        idle\n      \n    \n            \n      \n        \n  \n  \n  \n  \n  \n  \n\n        Team\n        single\n      \n    \n            \n      \n        \n  \n  \n  \n  \n  \n  \n\n        Pads\n        P1 std / P2 map\n      \n    \n            \n      \n        \n  \n  \n  \n  \n  \n\n        Stage\n        art PNG\n      \n    \n            \n      \n        \n  \n  \n  \n  \n  \n  \n\n        Atlas\n        loaded\n      \n    \n            \n      \n        \n  \n  \n\n        Walk QA\n        warn 1\n      \n    \n          \n        ",
+      "summaryText": "Match viewport on Rooftop Dojo. Playing. Round 1, fight, timer 98. Nova Boxer: 1000 of 1000 life, state 210, locked. Mira Volt: 1000 of 1000 life, state 0, ready. Controls: P1 keyboard and standard gamepad; P2 non-standard gamepad.",
+      "viewportState": {
+        "innerWidth": 390,
+        "scrollWidth": 390
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-010-gamepad-mobile.png",
+      "consoleErrors": []
+    }
+  ],
+  "unexpectedConsole": [],
+  "claimCeiling": "provisional virtual browser gamepad lifecycle observations for named viewports",
+  "claims": {
+    "allowed": [
+      "browser gamepadconnected and gamepaddisconnected events reach the runtime adapter",
+      "standard and non-standard mappings remain visible per seat",
+      "held virtual input maps to a runtime action and clears after disconnect",
+      "keyboard input remains usable while a gamepad seat is disconnected",
+      "reconnect with a changed device index refreshes the seat diagnostic",
+      "the named route has no horizontal overflow or unexpected page errors"
+    ],
+    "blocked": [
+      "physical gamepad hardware",
+      "all browser implementations",
+      "screen-reader and contrast certification"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "5b664810944d0399f190fecfe9413c7ac68a67b657856bdf09803d19bc8c067a"
+  }
+}
