@@ -68,7 +68,7 @@ async function main() {
       unexpectedConsole,
       claimCeiling: subject.provisional
         ? "provisional IndexedDB project authority observations for named viewports"
-        : "browser IndexedDB project authority, local cache mirror, reopen, and desktop revision conflict at named viewports",
+        : "browser IndexedDB authority, local cache mirror, reopen, desktop revision conflict, and no-IndexedDB fallback at named viewports",
       claims: {
         allowed: ok
           ? [
