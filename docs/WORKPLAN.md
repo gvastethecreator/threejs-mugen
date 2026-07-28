@@ -12,6 +12,8 @@ Implementation: `42bf475c`.
 Clean browser subject: `0c39d9e9`.
 Evidence pin: `ae16132a`.
 Evidence: `docs/evidence/da32/da32-024-source-intent-write-recovery-browser-gate.json`.
+Global smoke checkpoint: `bd9680fb`; `pnpm qa:smoke` passed with zero failures
+after the folder-handle assertion adopted the separate write permission state.
 The desktop `1440x900` and mobile `390x844` cases passed all ten steps with
 zero unexpected console errors and exact recovered bytes on the mock folder
 handle. Next Studio cut: crash/receipt recovery, quota and eviction handling,

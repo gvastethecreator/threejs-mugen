@@ -67,6 +67,9 @@ the recovery panel never writes while loading a preimage.
 
 - Feature commit: `42bf475c`.
 - Clean browser evidence pin: `ae16132a`.
+- Global smoke checkpoint: `bd9680fb`; `pnpm qa:smoke` passed with zero
+  failures after the smoke assertion adopted the separate write permission
+  state.
 - Browser subject recorded in the report: `0c39d9e9`, clean and
   `provisional: false`.
 - Browser result: `ok: true`; desktop `1440x900` and mobile `390x844`; ten

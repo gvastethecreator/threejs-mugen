@@ -11,6 +11,7 @@ transaction.
 
 Clean desktop/mobile browser evidence: `0c39d9e9`, pinned in `ae16132a`,
 `docs/evidence/da32/da32-024-source-intent-write-recovery-browser-gate.json`.
+Global smoke is green at `bd9680fb` with zero failures.
 Next Studio proof: crash/receipt recovery, quota and eviction handling, and
 multi-file transaction boundaries. Physical permission prompts, durable
 browser-restart handle claims, ZIP rewrite, binary source, release, and full

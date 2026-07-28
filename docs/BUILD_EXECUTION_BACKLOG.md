@@ -15,6 +15,9 @@ readwrite request, separate permission reflection, committed write/reimport,
 settled original intent, exact bytes, overflow, and console checks. Focused
 tests pass 26/26 and `node --check` passes for the gate script. Clean browser
 subject: `0c39d9e9`; evidence pin: `ae16132a`.
+The global `pnpm qa:smoke` run then passed with zero failures at checkpoint
+`bd9680fb`; its folder-handle assertion now checks the granted write state and
+the writable source transaction.
 
 Evidence: `docs/evidence/da32/da32-024-source-intent-write-recovery-browser-gate.json`.
 Claim allowed: the named Studio folder route and simulated native picker

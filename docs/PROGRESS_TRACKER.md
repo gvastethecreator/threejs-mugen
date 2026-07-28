@@ -218,6 +218,9 @@ authoring parity.
   recovered write, the bridge reports both as granted, the folder transaction
   reports `canWrite: true`, the reimported text matches the draft, and the
   original intent settles as committed with restored recovery.
+- The global `pnpm qa:smoke` run passed with zero failures at checkpoint
+  `bd9680fb`; its folder-handle assertion now checks the separate granted write
+  state.
 - Evidence: `docs/evidence/da32/da32-024-source-intent-write-recovery-browser-gate.json`
   and desktop/mobile captures. Implementation: `42bf475c`; evidence pin:
   `ae16132a`.

@@ -26,7 +26,8 @@ folder transaction.
 The clean browser gate passes at desktop `1440x900` and mobile `390x844`: ten
 steps per viewport, exact bytes on the mock folder handle, original intent
 settled with restored recovery, no horizontal overflow, and zero unexpected
-console errors. Evidence:
+console errors. The global `pnpm qa:smoke` run also passed with zero failures at
+checkpoint `bd9680fb`. Evidence:
 `docs/evidence/da32/da32-024-source-intent-write-recovery-browser-gate.json`.
 Implementation: `42bf475c`; clean subject: `0c39d9e9`; evidence pin:
 `ae16132a`. The next source lane is crash/receipt recovery plus quota,
