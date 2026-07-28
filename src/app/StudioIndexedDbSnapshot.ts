@@ -4,6 +4,8 @@
  * Falls back to in-memory map when IndexedDB is unavailable (unit/node).
  */
 
+import { parseSourceWriteReceipt, type SourceWriteReceipt } from "./StudioSourceWriteReceipt";
+
 export const STUDIO_INDEXEDDB_SNAPSHOT_SCHEMA = "StudioIndexedDbSnapshot/v1" as const;
 export const STUDIO_SOURCE_WRITE_INTENT_SCHEMA = "StudioSourceWriteIntent/v1" as const;
 export const STUDIO_INDEXEDDB_SNAPSHOT_DB_NAME = "mugen-web-sandbox-studio";
@@ -46,6 +48,7 @@ export type StudioSourceWriteIntent = {
   writeByteLength?: number;
   observedSourceFingerprint?: string;
   receiptId?: string;
+  receipt?: SourceWriteReceipt;
   result?: "committed" | "aborted" | "denied";
   recovery?: "restored" | "none";
   createdAt: string;
@@ -132,6 +135,7 @@ export async function saveSourceWriteIntent(intent: {
   writeByteLength?: number;
   observedSourceFingerprint?: string;
   receiptId?: string;
+  receipt?: SourceWriteReceipt;
   result?: StudioSourceWriteIntent["result"];
   recovery?: StudioSourceWriteIntent["recovery"];
   createdAt?: string;
@@ -152,10 +156,14 @@ export async function saveSourceWriteIntent(intent: {
     ...(intent.writeByteLength !== undefined || previous?.writeByteLength !== undefined ? { writeByteLength: intent.writeByteLength ?? previous?.writeByteLength } : {}),
     ...(intent.observedSourceFingerprint !== undefined || previous?.observedSourceFingerprint !== undefined ? { observedSourceFingerprint: intent.observedSourceFingerprint ?? previous?.observedSourceFingerprint } : {}),
     ...(intent.receiptId !== undefined || previous?.receiptId !== undefined ? { receiptId: intent.receiptId ?? previous?.receiptId } : {}),
+    ...(intent.receipt !== undefined || previous?.receipt !== undefined ? { receipt: intent.receipt ?? previous?.receipt } : {}),
     ...(intent.result !== undefined || previous?.result !== undefined ? { result: intent.result ?? previous?.result } : {}),
     ...(intent.recovery !== undefined || previous?.recovery !== undefined ? { recovery: intent.recovery ?? previous?.recovery } : {}),
     createdAt: intent.createdAt ?? previous?.createdAt ?? new Date().toISOString(),
   };
+  if (record.receipt && parseSourceWriteReceipt(record.receipt).diagnostics.length > 0) {
+    throw new Error("Source write intent receipt is invalid.");
+  }
   memory.intents.set(record.intentId, record);
   if (backend === "indexeddb" && indexedDbFactory) {
     try {
@@ -308,6 +316,7 @@ function isStudioSourceWriteIntent(value: unknown): value is StudioSourceWriteIn
     (record.writeByteLength === undefined || (Number.isSafeInteger(record.writeByteLength) && record.writeByteLength >= 0)) &&
     (record.observedSourceFingerprint === undefined || typeof record.observedSourceFingerprint === "string") &&
     (record.receiptId === undefined || typeof record.receiptId === "string") &&
+    (record.receipt === undefined || parseSourceWriteReceipt(record.receipt).diagnostics.length === 0) &&
     (record.result === undefined || record.result === "committed" || record.result === "aborted" || record.result === "denied") &&
     (record.recovery === undefined || record.recovery === "restored" || record.recovery === "none") &&
     typeof record.createdAt === "string";

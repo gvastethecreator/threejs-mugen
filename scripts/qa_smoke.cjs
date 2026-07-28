@@ -2833,6 +2833,15 @@ async function readSourceWriteIntentRecords(page) {
               writeByteLength: record.writeByteLength,
               observedSourceFingerprint: record.observedSourceFingerprint,
               receiptId: record.receiptId,
+              receipt: record.receipt
+                ? {
+                    schemaVersion: record.receipt.schemaVersion,
+                    id: record.receipt.id,
+                    status: record.receipt.status,
+                    reason: record.receipt.reason,
+                    digest: record.receipt.digest,
+                  }
+                : undefined,
               result: record.result,
               recovery: record.recovery,
               createdAt: record.createdAt,
@@ -5357,6 +5366,9 @@ function assertSmoke(diagnostics) {
       studioFolderHandleRecovery.after?.sourceWriteIntent?.writeByteLength !== studioFolderHandleRecovery.after?.sourceWriteReceipt?.byteLength ||
       studioFolderHandleRecovery.after?.sourceWriteIntent?.observedSourceFingerprint !== studioFolderHandleRecovery.after?.sourceWriteReceipt?.observedSourceFingerprint ||
       studioFolderHandleRecovery.after?.sourceWriteIntent?.receiptId !== studioFolderHandleRecovery.after?.sourceWriteReceipt?.id ||
+      studioFolderHandleRecovery.after?.sourceWriteIntent?.receipt?.id !== studioFolderHandleRecovery.after?.sourceWriteReceipt?.id ||
+      studioFolderHandleRecovery.after?.sourceWriteIntent?.receipt?.status !== "committed" ||
+      studioFolderHandleRecovery.after?.sourceWriteIntent?.receipt?.digest !== studioFolderHandleRecovery.after?.sourceWriteReceipt?.digest ||
       studioFolderHandleRecovery.after?.sourceWriteIntent?.result !== "committed" ||
       studioFolderHandleRecovery.after?.sourceWriteIntent?.path !== studioFolderHandleRecovery.after?.sourceWriteReceipt?.path ||
       !/^fnv1a32:[0-9a-f]{8}$/i.test(String(studioFolderHandleRecovery.after?.sourceWriteIntent?.draftDigest ?? "")) ||
@@ -5366,6 +5378,9 @@ function assertSmoke(diagnostics) {
       studioFolderHandleRecovery.after?.durableSourceWriteIntent?.writeByteLength !== studioFolderHandleRecovery.after?.sourceWriteReceipt?.byteLength ||
       studioFolderHandleRecovery.after?.durableSourceWriteIntent?.observedSourceFingerprint !== studioFolderHandleRecovery.after?.sourceWriteReceipt?.observedSourceFingerprint ||
       studioFolderHandleRecovery.after?.durableSourceWriteIntent?.receiptId !== studioFolderHandleRecovery.after?.sourceWriteReceipt?.id ||
+      studioFolderHandleRecovery.after?.durableSourceWriteIntent?.receipt?.id !== studioFolderHandleRecovery.after?.sourceWriteReceipt?.id ||
+      studioFolderHandleRecovery.after?.durableSourceWriteIntent?.receipt?.status !== "committed" ||
+      studioFolderHandleRecovery.after?.durableSourceWriteIntent?.receipt?.digest !== studioFolderHandleRecovery.after?.sourceWriteReceipt?.digest ||
       studioFolderHandleRecovery.after?.durableSourceWriteIntent?.result !== "committed" ||
       studioFolderHandleRecovery.after?.durableSourceWriteIntent?.intentId !== studioFolderHandleRecovery.after?.sourceWriteIntent?.intentId ||
       studioFolderHandleRecovery.after?.durableSourceWriteIntent?.path !== studioFolderHandleRecovery.after?.sourceWriteIntent?.path ||

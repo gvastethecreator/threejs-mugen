@@ -2089,6 +2089,7 @@ export class App {
     try {
       this.studioSourceWriteIntents = await listSourceWriteIntents();
       this.studioSourceWriteIntent = this.studioSourceWriteIntents.find((intent) => !intent.result) ?? this.studioSourceWriteIntents[0];
+      this.studioSourceWriteReceipt = this.studioSourceWriteIntent?.receipt;
       const pending = this.studioSourceWriteIntents.find((intent) => !intent.result);
       if (pending) {
         this.log(`Recoverable source write intent found for ${pending.path}; review the preimage before continuing.`);
@@ -2353,6 +2354,7 @@ export class App {
     writeByteLength?: number;
     observedSourceFingerprint?: string;
     receiptId?: string;
+    receipt?: SourceWriteReceipt;
     result?: StudioSourceWriteIntent["result"];
     recovery?: StudioSourceWriteIntent["recovery"];
     createdAt?: string;
@@ -2676,6 +2678,7 @@ export class App {
         writeByteLength: sourceWriteIntent.writeByteLength,
         observedSourceFingerprint: receipt.observedSourceFingerprint,
         receiptId: receipt.id,
+        receipt,
         createdAt: sourceWriteIntent.createdAt,
       });
     }
@@ -2696,6 +2699,7 @@ export class App {
         writeByteLength: recoveredSourceWriteIntent.writeByteLength,
         observedSourceFingerprint: receipt.observedSourceFingerprint,
         receiptId: receipt.id,
+        receipt,
         createdAt: recoveredSourceWriteIntent.createdAt,
       });
     }
@@ -8456,6 +8460,7 @@ export class App {
     const status: StudioStatus = pending ? "warn" : intent.result === "committed" ? "ok" : intent.result === "denied" ? "blocked" : "fail";
     const result = intent.result ?? "pending-recovery";
     const phase = intent.phase ?? "preimage-captured";
+    const receipt = this.studioSourceWriteReceipt?.id === intent.receiptId ? this.studioSourceWriteReceipt : undefined;
     const sourcePackage = intent.sourcePackageId
       ? this.getProjectSourcePackages().find((candidate) => candidate.id === intent.sourcePackageId)
       : undefined;
@@ -8471,6 +8476,7 @@ export class App {
         </div>
         <div class="studio-project-conflict-actions">
           <small>${escapeHtml(formatBytes(intent.byteLength ?? intent.preimageBytes.length))} preimage / ${escapeHtml(intent.preimageSha256)} / ${escapeHtml(formatDateTime(intent.createdAt))}</small>
+          ${receipt ? `<small class="list-meta" data-source-write-receipt="${escapeHtml(receipt.status)}">Write receipt: ${escapeHtml(receipt.status)} / ${escapeHtml(receipt.reason)} / compensation ${escapeHtml(receipt.compensation.status)} / ${escapeHtml(receipt.digest)}</small>` : ""}
           ${pending ? `<button type="button" data-action="replay-source-write-intent" title="Load the durable source preimage into the Studio editor without writing the source handle">Load preimage</button>` : ""}
           ${pending && sourcePackage ? `<button type="button" data-action="relink-source-write-intent" title="Choose the source ${sourcePackage.kind === "folder" ? "folder" : "ZIP"} again before writing the recovered preimage">Relink ${sourcePackage.kind === "folder" ? "folder" : "ZIP"}</button>` : ""}
         </div>

@@ -8,6 +8,7 @@ import {
   saveProjectSnapshot,
   saveSourceWriteIntent,
 } from "../app/StudioIndexedDbSnapshot";
+import { createSourceWriteReceipt } from "../app/StudioSourceWriteReceipt";
 
 describe("StudioIndexedDbSnapshot", () => {
   it("reports memory authority when IndexedDB is unavailable to the test runtime", () => {
@@ -69,6 +70,23 @@ describe("StudioIndexedDbSnapshot", () => {
       phase: "preimage-captured",
     });
     expect(listed?.result).toBeUndefined();
+    const receipt = createSourceWriteReceipt({
+      id: "source-write:intent-1",
+      sourcePackageId: "nova",
+      sourceName: "Nova",
+      path: pending.path,
+      status: "committed",
+      reason: "write-and-reimport",
+      observedAt: "2026-07-28T00:00:00.000Z",
+      operation: "directory-exclusive-write-and-reimport",
+      observedSourceFingerprint: "sha256:after",
+      committedSourceFingerprint: "sha256:after",
+      draftDigest: "fnv1a32:draft",
+      committedDigest: "fnv1a32:draft",
+      byteLength: 13,
+      invalidatedOutputs: [],
+      diagnostics: [],
+    });
     const committed = await saveSourceWriteIntent({
       intentId: "intent-1",
       path: pending.path,
@@ -77,6 +95,7 @@ describe("StudioIndexedDbSnapshot", () => {
       writeByteLength: 13,
       observedSourceFingerprint: "b".repeat(64),
       receiptId: "source-write:intent-1",
+      receipt,
       result: "committed",
       recovery: "none",
       createdAt: pending.createdAt,
@@ -89,6 +108,7 @@ describe("StudioIndexedDbSnapshot", () => {
       observedSourceFingerprint: "b".repeat(64),
       receiptId: "source-write:intent-1",
     });
+    expect(committed.receipt).toEqual(receipt);
     const replay = await replaySourceWriteIntent("intent-1");
     expect(replay.ok).toBe(true);
     expect([...replay.bytes!]).toEqual([...preimage]);
@@ -113,5 +133,33 @@ describe("StudioIndexedDbSnapshot", () => {
       writeByteLength: 13,
     });
     expect(listed?.result).toBeUndefined();
+  });
+
+  it("fails closed when a persisted receipt digest is invalid", async () => {
+    clearStudioIndexedDbMemory();
+    const receipt = createSourceWriteReceipt({
+      id: "source-write:invalid-receipt",
+      sourcePackageId: "nova",
+      sourceName: "Nova",
+      path: "chars/nova/nova.cns",
+      status: "committed",
+      reason: "write-and-reimport",
+      observedAt: "2026-07-28T00:00:00.000Z",
+      operation: "directory-exclusive-write-and-reimport",
+      invalidatedOutputs: [],
+      diagnostics: [],
+    });
+    receipt.digest = "fnv1a32:00000000";
+
+    await expect(saveSourceWriteIntent({
+      intentId: "intent-invalid-receipt",
+      path: receipt.path,
+      preimage: new TextEncoder().encode("before"),
+      phase: "settled",
+      receiptId: receipt.id,
+      receipt,
+      result: "committed",
+    })).rejects.toThrow("Source write intent receipt is invalid");
+    expect(await listSourceWriteIntents()).toEqual([]);
   });
 });
