@@ -1,6 +1,6 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T02:45:52.423Z",
+  "generatedAt": "2026-07-28T02:57:02.156Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted-ownership",
@@ -86,6 +86,6 @@
   "claimCeiling": "DA32 program bootstrap; smoke not claimed green; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "184bd947a852520568350415c4e8d1c03ed7be7bd7eeb41db3f26320cfdb85c7"
+    "value": "c47151679dd400bf9209d28c99da538f737db2d08120f1f05b0d65ec3663033e"
   }
 }

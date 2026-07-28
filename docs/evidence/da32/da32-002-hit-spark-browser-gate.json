@@ -1,10 +1,10 @@
 {
   "schema": "Da32HitSparkBrowserGate/v1",
   "id": "DA32-002",
-  "generatedAt": "2026-07-28T02:42:54.563Z",
+  "generatedAt": "2026-07-28T02:56:41.543Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "3427f1f80572c9e895461753c9a8f20c8b13943b",
+    "subjectSha": "eb039065adafb4778d48435c5649605a4c03c746",
     "dirtyTree": true,
     "provisional": true,
     "probePaths": [
@@ -17,7 +17,7 @@
     ],
     "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
   },
-  "headSha": "3427f1f80572c9e895461753c9a8f20c8b13943b",
+  "headSha": "eb039065adafb4778d48435c5649605a4c03c746",
   "ok": true,
   "route": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "cases": [
@@ -46,16 +46,16 @@
         "spriteFrame": {
           "source": "player",
           "actionId": 7002,
-          "frameIndex": 1,
+          "frameIndex": 0,
           "spriteGroup": 7002,
-          "spriteIndex": 1,
+          "spriteIndex": 0,
           "offsetX": 0,
           "offsetY": 0,
           "duration": 3
         },
         "spriteAxis": {
           "group": 7002,
-          "index": 1,
+          "index": 0,
           "width": 96,
           "height": 96,
           "axisX": 48,
@@ -67,7 +67,7 @@
         "available": true,
         "mode": "match",
         "playing": true,
-        "tick": 54,
+        "tick": 17,
         "actors": [
           {
             "id": "p1",
@@ -90,9 +90,9 @@
           "key": "KeyZ",
           "resetFound": true,
           "playing": true,
-          "contactGap": 98.80000000000018,
-          "approachAttempts": 8,
-          "attempts": 2,
+          "contactGap": 78.00000000000001,
+          "approachAttempts": 9,
+          "attempts": 1,
           "success": true,
           "p2LifeDelta": -72,
           "hitSpark": {
@@ -110,16 +110,16 @@
                 "assetFrame": {
                   "source": "player",
                   "actionId": 7002,
-                  "frameIndex": 1,
+                  "frameIndex": 0,
                   "spriteGroup": 7002,
-                  "spriteIndex": 1,
+                  "spriteIndex": 0,
                   "offsetX": 0,
                   "offsetY": 0,
                   "duration": 3
                 },
                 "sprite": {
                   "group": 7002,
-                  "index": 1,
+                  "index": 0,
                   "width": 96,
                   "height": 96,
                   "axisX": 48,
@@ -133,8 +133,8 @@
           "key": "KeyA",
           "resetFound": true,
           "playing": true,
-          "contactGap": 103.12000000000018,
-          "approachAttempts": 8,
+          "contactGap": 89.0800000000002,
+          "approachAttempts": 10,
           "attempts": 1,
           "success": true,
           "p2LifeDelta": -55,
@@ -153,16 +153,16 @@
                 "assetFrame": {
                   "source": "player",
                   "actionId": 7001,
-                  "frameIndex": 1,
+                  "frameIndex": 2,
                   "spriteGroup": 7001,
-                  "spriteIndex": 1,
+                  "spriteIndex": 2,
                   "offsetX": 0,
                   "offsetY": 0,
-                  "duration": 3
+                  "duration": 4
                 },
                 "sprite": {
                   "group": 7001,
-                  "index": 1,
+                  "index": 2,
                   "width": 96,
                   "height": 96,
                   "axisX": 48,
@@ -176,9 +176,9 @@
           "key": "KeyX",
           "resetFound": true,
           "playing": true,
-          "contactGap": 96.64000000000019,
-          "approachAttempts": 9,
-          "attempts": 2,
+          "contactGap": 86.9200000000002,
+          "approachAttempts": 10,
+          "attempts": 1,
           "success": true,
           "p2LifeDelta": -72,
           "hitSpark": {
@@ -196,16 +196,16 @@
                 "assetFrame": {
                   "source": "player",
                   "actionId": 7002,
-                  "frameIndex": 2,
+                  "frameIndex": 0,
                   "spriteGroup": 7002,
-                  "spriteIndex": 2,
+                  "spriteIndex": 0,
                   "offsetX": 0,
                   "offsetY": 0,
-                  "duration": 4
+                  "duration": 3
                 },
                 "sprite": {
                   "group": 7002,
-                  "index": 2,
+                  "index": 0,
                   "width": 96,
                   "height": 96,
                   "axisX": 48,
@@ -265,7 +265,7 @@
         "available": true,
         "mode": "match",
         "playing": true,
-        "tick": 52,
+        "tick": 56,
         "actors": [
           {
             "id": "p1",
@@ -288,8 +288,8 @@
           "key": "KeyZ",
           "resetFound": true,
           "playing": true,
-          "contactGap": 104.20000000000017,
-          "approachAttempts": 9,
+          "contactGap": 86.9200000000002,
+          "approachAttempts": 10,
           "attempts": 1,
           "success": true,
           "p2LifeDelta": -72,
@@ -331,8 +331,8 @@
           "key": "KeyA",
           "resetFound": true,
           "playing": true,
-          "contactGap": 109.60000000000016,
-          "approachAttempts": 9,
+          "contactGap": 82.60000000000021,
+          "approachAttempts": 10,
           "attempts": 1,
           "success": true,
           "p2LifeDelta": -55,
@@ -374,9 +374,9 @@
           "key": "KeyX",
           "resetFound": true,
           "playing": true,
-          "contactGap": 103.12000000000018,
-          "approachAttempts": 9,
-          "attempts": 2,
+          "contactGap": 86.9200000000002,
+          "approachAttempts": 10,
+          "attempts": 1,
           "success": true,
           "p2LifeDelta": -72,
           "hitSpark": {
@@ -394,16 +394,16 @@
                 "assetFrame": {
                   "source": "player",
                   "actionId": 7002,
-                  "frameIndex": 0,
+                  "frameIndex": 1,
                   "spriteGroup": 7002,
-                  "spriteIndex": 0,
+                  "spriteIndex": 1,
                   "offsetX": 0,
                   "offsetY": 0,
                   "duration": 3
                 },
                 "sprite": {
                   "group": 7002,
-                  "index": 0,
+                  "index": 1,
                   "width": 96,
                   "height": 96,
                   "axisX": 48,
@@ -436,6 +436,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "0154ac3a9793e101fbe22537a952dbd589b605f9ff0046bfd4af8a005b04630d"
+    "value": "3a0808fd8cdd7b226d92b7aa3313799d9205e6a32eda5ad3665d2d472cd4741d"
   }
 }

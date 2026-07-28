@@ -11,6 +11,8 @@ const DEFAULT_STAGE = "rooftop-dojo";
 const DEFAULT_OUT_DIR = ".scratch/qa/qa-smoke";
 const DEFAULT_IMPORTED_FIXTURE = ".scratch/fixtures/kfm-official.zip";
 const DEFAULT_CODE_FUMAN_FIXTURE = ".scratch/fixtures/codefuman.zip";
+const RUNTIME_ATTACK_GAP = 96;
+const RUNTIME_ATTACK_HOLD_MS = 120;
 const MUGEN_LITE_FIXTURE_SPRITES = [
   ...[0, 10, 20, 40, 120, 130, 150, 200, 5000, 5050, 5100, 5200].map((group) => [group, 0]),
   [200, 1],
@@ -1704,7 +1706,9 @@ async function driveRuntimeHitSpark(page) {
 
   const attacks = ["KeyZ", "KeyA", "KeyX", "KeyZ"];
   for (const attack of attacks) {
-    await page.keyboard.press(attack);
+    await page.keyboard.down(attack);
+    await page.waitForTimeout(RUNTIME_ATTACK_HOLD_MS);
+    await page.keyboard.up(attack);
     const active = await page
       .waitForFunction(() => (window.__MUGEN_WEB_SANDBOX__?.renderer?.hitSparks?.active ?? 0) > 0, null, { timeout: 1800 })
       .then(() => true)
@@ -1719,16 +1723,16 @@ async function driveRuntimeHitSpark(page) {
 }
 
 async function approachRuntimeContact(page) {
-  for (let attempt = 0; attempt < 12; attempt += 1) {
-    const direction = await page.evaluate(() => {
+  for (let attempt = 0; attempt < 16; attempt += 1) {
+    const direction = await page.evaluate((maxGap) => {
       const actors = window.__MUGEN_WEB_SANDBOX__?.qaProbe?.()?.actors ?? [];
       const p1 = actors[0];
       const p2 = actors[1];
-      if (!p1 || !p2 || Math.abs(p2.x - p1.x) <= 110) {
+      if (!p1 || !p2 || Math.abs(p2.x - p1.x) <= maxGap) {
         return undefined;
       }
       return p1.x <= p2.x ? "ArrowRight" : "ArrowLeft";
-    });
+    }, RUNTIME_ATTACK_GAP);
     if (!direction) {
       return;
     }

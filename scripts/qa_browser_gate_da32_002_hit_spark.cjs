@@ -17,6 +17,8 @@ const outDir = path.join(repoRoot, "docs/evidence/da32/browser");
 const reportPath = path.join(repoRoot, "docs/evidence/da32/da32-002-hit-spark-browser-gate.json");
 const runtimeRoute = "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo";
 const attackKeys = ["KeyZ", "KeyA", "KeyX"];
+const runtimeAttackGap = 96;
+const runtimeAttackHoldMs = 120;
 
 function sha(value) {
   return crypto.createHash("sha256").update(value).digest("hex");
@@ -136,7 +138,7 @@ async function runViewport(browser, base, options) {
       baselineAvailable: baseline.available,
       resetRoundFound: keyResults.every((result) => result.resetFound),
       playingAfterReset: keyResults.every((result) => result.playing),
-      contactApproach: keyResults.every((result) => result.contactGap <= 110),
+      contactApproach: keyResults.every((result) => result.contactGap <= runtimeAttackGap),
       testedKeys: keyResults.map((result) => result.key),
       successfulKeys: keyResults.filter((result) => result.success).map((result) => result.key),
       activeHitSparks: successfulSpark?.active ?? 0,
@@ -192,7 +194,9 @@ async function driveAttack(page, key) {
   let after = before;
 
   for (let retry = 0; retry < 2; retry += 1) {
-    await page.keyboard.press(key);
+    await page.keyboard.down(key);
+    await page.waitForTimeout(runtimeAttackHoldMs);
+    await page.keyboard.up(key);
     attempts += 1;
     success = await page
       .waitForFunction(() => (window.__MUGEN_WEB_SANDBOX__?.renderer?.hitSparks?.active ?? 0) > 0, null, {
@@ -236,14 +240,14 @@ async function ensurePlaying(page) {
 
 async function approachRuntimeContact(page) {
   let attempts = 0;
-  for (; attempts < 12; attempts += 1) {
-    const direction = await page.evaluate(() => {
+  for (; attempts < 16; attempts += 1) {
+    const direction = await page.evaluate((maxGap) => {
       const actors = window.__MUGEN_WEB_SANDBOX__?.qaProbe?.()?.actors ?? [];
       const p1 = actors[0];
       const p2 = actors[1];
-      if (!p1 || !p2 || Math.abs(p2.x - p1.x) <= 110) return undefined;
+      if (!p1 || !p2 || Math.abs(p2.x - p1.x) <= maxGap) return undefined;
       return p1.x <= p2.x ? "ArrowRight" : "ArrowLeft";
-    });
+    }, runtimeAttackGap);
     if (!direction) break;
     await page.keyboard.down(direction);
     await page.waitForTimeout(220);

@@ -3,8 +3,9 @@
 ## DA32-002 native hit-spark drive (2026-07-27)
 
 `scripts/qa_smoke.cjs` now keeps the match playing, approaches until the live
-actors reach attack range, and retries `KeyZ`, `KeyA`, and `KeyX`. The focused
-browser gate passed on desktop `1440x960` and mobile `390x844`, with native
+actors reach attack range, holds each attack for 120 ms, and retries `KeyZ`,
+`KeyA`, and `KeyX`. The focused browser gate passed on desktop `1440x960` and
+mobile `390x844`, with native
 player spark source, resolved sprite frame, axis data, damage, and zero
 unexpected console errors.
 

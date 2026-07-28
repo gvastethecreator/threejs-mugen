@@ -37,7 +37,8 @@ Research: [desktop and responsive interface audit](research/2026-07-27-interface
 ## DA32-002 native hit-spark drive - focal pass, global smoke open (2026-07-27)
 
 - `scripts/qa_smoke.cjs` now waits for `playing`, approaches by live actor
-  distance, and retries the named attack keys after a miss.
+  distance, holds each attack for 120 ms, and retries the named attack keys
+  after a miss.
 - `pnpm qa:browser:da32-002-hit-spark` passed at desktop `1440x960` and mobile
   `390x844`. `KeyZ`, `KeyA`, and `KeyX` each produced a player spark with a
   resolved sprite and axis record; unexpected console errors: zero.
