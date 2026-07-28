@@ -123,19 +123,23 @@ models, screen-reader flow, contrast, public release, and full parity.
   reopens the saved project, and drives a second same-origin page to revision
   2. The first page keeps its pending local name and exposes the revision
   conflict without losing that edit.
+- A no-IndexedDB browser case renders the fallback status, saves through the
+  local cache, keeps the project, and exposes a retry action without overflow.
 - Focused verification: `ProjectStorage` plus `StudioProjectStore` tests pass
-  9/9; `pnpm typecheck`, `node --check scripts/qa_browser_gate_da32_021_studio_storage.cjs`,
+  10/10; `pnpm typecheck`, `node --check scripts/qa_browser_gate_da32_021_studio_storage.cjs`,
   and `git diff --check` pass.
 - Evidence: `docs/evidence/da32/da32-021-studio-storage-browser-gate.json`,
   `docs/evidence/da32/browser/da32-021-studio-storage-desktop.png`, and
-  `docs/evidence/da32/browser/da32-021-studio-storage-mobile.png`.
+  `docs/evidence/da32/browser/da32-021-studio-storage-mobile.png` plus
+  `docs/evidence/da32/browser/da32-021-studio-storage-fallback.png`.
 - Sources: [MDN IndexedDB API](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
   and [MDN IDBTransaction](https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction).
 
 Claim allowed: named browser IndexedDB authority, local cache mirror, reload,
-reopen, and desktop revision conflict. Claim blocked: quota and eviction
-recovery, file-system source blobs, all browser implementations, screen-reader
-flow, public release, and full MUGEN/IKEMEN authoring parity.
+reopen, desktop revision conflict, and no-IndexedDB fallback/retry. Claim
+blocked: quota and eviction recovery, file-system source blobs, all browser
+implementations, screen-reader flow, public release, and full MUGEN/IKEMEN
+authoring parity.
 
 ## Interface desktop layout repair - d8c4dfaa/b4788b85 (closed bounded, 2026-07-27)
 

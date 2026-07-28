@@ -264,7 +264,7 @@ const status = {
     "DA32-021": {
       status: studioStorageGateOk ? "accepted-browser-idb" : "open-implementation",
       note: studioStorageGateOk
-        ? "clean-subject desktop/mobile gate proves IndexedDB authority, local cache mirror, reload reopen, and a desktop revision conflict; quota recovery remains open"
+        ? "clean-subject desktop/mobile gate proves IndexedDB authority, local cache mirror, reload reopen, desktop revision conflict, and no-IndexedDB fallback/retry; quota recovery remains open"
         : "Studio project authority browser gate is missing or failed",
       artifacts: studioStorageGateOk
         ? [

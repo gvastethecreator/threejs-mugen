@@ -51,7 +51,8 @@ project. The fallback remains a lower claim ceiling than persistent IndexedDB.
   atomic revision checks, memory fallback, and diagnostics.
 - `src/app/App.ts` hydrates authority data after the first UI render, migrates
   an existing cache, uses authority data for save/open/reload/copy flows, and
-  exposes `projectStorageBackend` plus `studioStorage` in the QA bridge.
+  exposes `projectStorageBackend` plus `studioStorage` in the QA bridge. A
+  visible fallback status and retry action keep storage failures inspectable.
 - `src/app/ProjectStorage.ts` adds an exact cache replacement helper without
   changing the authority revision.
 - `scripts/qa_browser_gate_da32_021_studio_storage.cjs` uses the real browser
@@ -60,16 +61,17 @@ project. The fallback remains a lower claim ceiling than persistent IndexedDB.
 
 ## Evidence
 
-- Subject: `4e31e4e9`, clean tree, `provisional: false`.
-- Browser result: `ok: true`, desktop `1440x900`, mobile `390x844`, zero
-  unexpected console/page errors.
-- Focused tests: `ProjectStorage` and `StudioProjectStore`, 9/9 passed.
+- Subject: `c95c871a`, clean tree, `provisional: false`.
+- Browser result: `ok: true`, desktop `1440x900`, mobile `390x844`, and a
+  no-IndexedDB fallback case, zero unexpected console/page errors.
+- Focused tests: `ProjectStorage` and `StudioProjectStore`, 10/10 passed.
 - TypeScript 7 typecheck passed.
 
 ## Claim ceiling
 
 Allowed: named browser IndexedDB project authority, local cache mirroring,
-reload/reopen, and the named desktop revision conflict route.
+reload/reopen, the named desktop revision conflict route, and the visible
+no-IndexedDB cache fallback/retry route.
 
 Open: quota and eviction recovery, storage permission failure UX, source
 folder/file blobs, all browser implementations, screen-reader flow, public

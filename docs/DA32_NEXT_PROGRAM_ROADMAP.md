@@ -184,15 +184,20 @@ MUGEN/IKEMEN parity remain open.
 - A reload restores the recent project row. Opening that row restores the
   saved name and revision. A second same-origin page writes revision 2 while
   the first page keeps its local edit dirty and exposes the conflict.
+- A no-IndexedDB browser probe renders the fallback status, saves through the
+  local cache, keeps the stored project, and exposes a retry action without
+  horizontal overflow.
 - Implementation commits: `d2136e66` for the store/App path,
-  `71a9abff` and `a398bd94` for the browser gate. Evidence:
+  `644b85c0` for fallback recovery, and `71a9abff`, `a398bd94`,
+  `8967db00`, `ae98a84f` for the browser gate. The clean evidence subject is
+  `c95c871a`. Evidence:
   `docs/evidence/da32/da32-021-studio-storage-browser-gate.json` and the
-  matching desktop/mobile screenshots.
+  matching desktop, mobile, and fallback screenshots.
 
-Claim ceiling: browser IndexedDB authority, cache mirroring, reopen, and the
-named desktop conflict route. Storage quota and eviction recovery, file-system
-source blobs, physical device coverage, all browser implementations, and full
-MUGEN/IKEMEN authoring parity remain open.
+Claim ceiling: browser IndexedDB authority, cache mirroring, reopen, desktop
+conflict, and the named no-IndexedDB fallback route. Storage quota and eviction
+recovery, file-system source blobs, physical device coverage, all browser
+implementations, and full MUGEN/IKEMEN authoring parity remain open.
 
 ## Commands
 

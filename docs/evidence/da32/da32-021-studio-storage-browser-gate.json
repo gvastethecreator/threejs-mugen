@@ -1,12 +1,12 @@
 {
   "schema": "Da32StudioStorageBrowserGate/v1",
   "id": "DA32-021",
-  "generatedAt": "2026-07-28T07:25:34.205Z",
+  "generatedAt": "2026-07-28T07:26:28.767Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "ae98a84f73d75f0ccab848aa4c69584a9b55262a",
-    "dirtyTree": true,
-    "provisional": true,
+    "subjectSha": "c95c871a2f39f4ebbe825d092794ba15096df278",
+    "dirtyTree": false,
+    "provisional": false,
     "probePaths": [
       "scripts/qa_browser_gate_da32_021_studio_storage.cjs"
     ],
@@ -15,9 +15,9 @@
       "src/app/ProjectStorage.ts",
       "src/app/StudioProjectStore.ts"
     ],
-    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+    "claimLimit": "subject-bound observation at listed probe/code paths"
   },
-  "headSha": "ae98a84f73d75f0ccab848aa4c69584a9b55262a",
+  "headSha": "c95c871a2f39f4ebbe825d092794ba15096df278",
   "ok": true,
   "route": "/?mode=studio&studio=workbench&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "database": "mugen-web-sandbox-projects",
@@ -45,14 +45,14 @@
             "entry": {
               "id": "da32-021-desktop-authority",
               "name": "DA32-021 desktop authority",
-              "savedAt": "2026-07-28T07:25:21.310Z",
+              "savedAt": "2026-07-28T07:26:16.250Z",
               "revision": 1,
               "manifest": {
                 "schemaVersion": "mugen-web-sandbox/project/v0",
                 "id": "da32-021-desktop-authority",
                 "name": "DA32-021 desktop authority",
                 "engineVersion": "mugen-web-sandbox@0.0.0",
-                "generatedAt": "2026-07-28T07:25:21.309Z",
+                "generatedAt": "2026-07-28T07:26:16.250Z",
                 "projectType": "mugen-port",
                 "modules": [
                   "mugen-compat",
@@ -450,14 +450,14 @@
             "entry": {
               "id": "da32-021-mobile-authority",
               "name": "DA32-021 mobile authority",
-              "savedAt": "2026-07-28T07:25:29.528Z",
+              "savedAt": "2026-07-28T07:26:24.524Z",
               "revision": 1,
               "manifest": {
                 "schemaVersion": "mugen-web-sandbox/project/v0",
                 "id": "da32-021-mobile-authority",
                 "name": "DA32-021 mobile authority",
                 "engineVersion": "mugen-web-sandbox@0.0.0",
-                "generatedAt": "2026-07-28T07:25:29.528Z",
+                "generatedAt": "2026-07-28T07:26:24.524Z",
                 "projectType": "mugen-port",
                 "modules": [
                   "mugen-compat",
@@ -843,7 +843,7 @@
     }
   ],
   "unexpectedConsole": [],
-  "claimCeiling": "provisional IndexedDB project authority observations for named viewports",
+  "claimCeiling": "browser IndexedDB authority, local cache mirror, reopen, desktop revision conflict, and no-IndexedDB fallback at named viewports",
   "claims": {
     "allowed": [
       "Studio reports IndexedDB as the project authority",
@@ -863,6 +863,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "0af0498e55631be8d97401d334d28ad1be09adb1473b82f4be19b0c8acad8694"
+    "value": "09ee8f1aa717781ea32491f9727873ed2d7f184465d5ebf351e8526d5af2a780"
   }
 }

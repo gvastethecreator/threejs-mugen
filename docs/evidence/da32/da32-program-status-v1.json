@@ -1,6 +1,6 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T07:04:44.621Z",
+  "generatedAt": "2026-07-28T07:27:23.154Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted",
@@ -64,7 +64,7 @@
     },
     "DA32-021": {
       "status": "accepted-browser-idb",
-      "note": "clean-subject desktop/mobile gate proves IndexedDB authority, local cache mirror, reload reopen, and a desktop revision conflict; quota recovery remains open",
+      "note": "clean-subject desktop/mobile gate proves IndexedDB authority, local cache mirror, reload reopen, desktop revision conflict, and no-IndexedDB fallback/retry; quota recovery remains open",
       "artifacts": [
         "src/app/StudioProjectStore.ts",
         "src/app/ProjectStorage.ts",
@@ -114,6 +114,6 @@
   "claimCeiling": "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "528465edbb7e9cbb2629d1c6f452c0d9991e195caf5584527acf0893058685aa"
+    "value": "92a6b2e9746d0f2b954a98453c53082010d230cebc5e044cfb0e1f4b0662792d"
   }
 }
