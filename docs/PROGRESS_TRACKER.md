@@ -21,7 +21,8 @@
   visual matrix, close the remaining Studio lanes, review the proposed human
   watermark, and continue the hardware gamepad work. DA32-010 now has a clean
   subject virtual browser gate; hardware remains open. DA32-021 now has a clean
-  IndexedDB authority browser gate; quota and source-blob persistence remain
+  IndexedDB authority browser gate. DA32-022 now has a clean durable snapshot
+  browser gate; quota, source-intent replay, and source-blob persistence remain
   open.
 
 ## DA32 smoke ownership closeout - 8c6d6c80 (green subject checkpoint, 2026-07-28)
@@ -56,6 +57,19 @@ movement, public release, and full MUGEN/IKEMEN parity.
 Claim allowed: green local smoke subject at `9d0830b9`. Claim blocked:
 hardware gamepad coverage, storage quota recovery, score movement, public
 release, and full MUGEN/IKEMEN parity.
+
+## Full smoke recheck - 14df21ef (green subject checkpoint, 2026-07-28)
+
+- `pnpm qa:smoke` passed with zero failures in 333.5 seconds after the durable
+  Studio snapshot binding. Runtime desktop/mobile, imported MUGEN Lite, Studio
+  authoring, source relink, evidence, debug, and stage routes passed.
+- `pnpm build` passed with the existing Vite large-chunk warning.
+- `docs/evidence/da32/da32-smoke-ownership-v1.json` records `failureCount: 0`
+  for the current run.
+
+Claim allowed: green local smoke subject at `14df21ef`. Claim blocked:
+hardware gamepad coverage, source-intent replay, storage quota recovery, score
+movement, public release, and full MUGEN/IKEMEN parity.
 
 ## Runtime input and canvas a11y - 47858f49 (partial checkpoint, 2026-07-28)
 
@@ -110,9 +124,9 @@ Claim allowed: named virtual browser route, two viewports, input mappings, and
 runtime status behavior. Claim blocked: physical hardware, all browser/device
 models, screen-reader flow, contrast, public release, and full parity.
 
-## DA32-021 Studio IndexedDB project authority - 4e31e4e9 (closed-bounded, 2026-07-28)
+## DA32-021 Studio IndexedDB project authority - c95c871a (closed-bounded, 2026-07-28)
 
-- `pnpm qa:browser:da32-021-storage` passed against clean subject `4e31e4e9`
+- `pnpm qa:browser:da32-021-storage` passed against clean subject `c95c871a`
   at desktop `1440x900` and mobile `390x844`; unexpected console/page errors:
   zero.
 - `StudioProjectStore` owns the versioned project index in the
@@ -140,6 +154,31 @@ reopen, desktop revision conflict, and no-IndexedDB fallback/retry. Claim
 blocked: quota and eviction recovery, file-system source blobs, all browser
 implementations, screen-reader flow, public release, and full MUGEN/IKEMEN
 authoring parity.
+
+## DA32-022 Studio durable project snapshots - 14df21ef (closed-bounded, 2026-07-28)
+
+- `pnpm qa:browser:da32-022-snapshot` passed against clean subject `14df21ef`
+  at desktop `1440x900`, mobile `390x844`, and a no-IndexedDB fallback case;
+  unexpected console/page errors: zero.
+- App save now bridges the local identity snapshot into
+  `StudioIndexedDbSnapshot/v1` in `mugen-web-sandbox-studio`. The record keeps
+  project revision, authority and analysis digests, saved time, and a JSON
+  payload containing `StudioProjectSnapshot/v1` integrity.
+- Direct object-store readback proves snapshot creation before reload and
+  project id/name/revision/payload survival after reload at both viewports.
+  The App diagnostics expose snapshot backend/error state, and the existing
+  retry action covers project and snapshot stores together.
+- Focused verification: 12/12 tests, `pnpm typecheck`, `node --check
+  scripts/qa_browser_gate_da32_022_studio_snapshot.cjs`, and
+  `git diff --check` pass. Evidence:
+  `docs/evidence/da32/da32-022-studio-snapshot-browser-gate.json` and its
+  three browser captures.
+
+Claim allowed: named browser durable snapshot record, revision/payload
+readback, reload survival, diagnostics, and memory fallback behavior. Claim
+blocked: live source-write intent replay, quota and eviction recovery, binary
+source blobs, physical device coverage, screen-reader flow, public release,
+and full MUGEN/IKEMEN authoring parity.
 
 ## Interface desktop layout repair - d8c4dfaa/b4788b85 (closed bounded, 2026-07-27)
 

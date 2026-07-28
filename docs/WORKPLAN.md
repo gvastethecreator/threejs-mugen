@@ -1,5 +1,19 @@
 # Workplan
 
+## DA32-022 Studio durable project snapshots (2026-07-28)
+
+The Studio save path now writes the verified project snapshot into
+`StudioIndexedDbSnapshot/v1` after the IndexedDB project authority commits.
+The App exposes snapshot backend diagnostics and retries project plus snapshot
+storage together. A focused browser gate reads the real `snapshots` object
+store before and after reload at desktop and mobile sizes, then checks the
+visible no-IndexedDB fallback.
+
+Implementation: `14df21ef`.
+Evidence: `docs/evidence/da32/da32-022-studio-snapshot-browser-gate.json`.
+Next Studio cut: bind persisted source-write intents to a live recovery view;
+quota, eviction, binary source blobs, and release authority remain blocked.
+
 ## DA32-005 imported MUGEN Lite mobile visibility (2026-07-27)
 
 The Match stage now reserves up to `600px` on narrow screens and removes the

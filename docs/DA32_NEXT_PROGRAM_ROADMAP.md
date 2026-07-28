@@ -100,6 +100,19 @@ Claim ceiling: green local smoke subject at `9d0830b9`; this does not advance
 the human adjudication cursor or close hardware, quota recovery, public
 release, or full MUGEN/IKEMEN parity.
 
+### Full smoke recheck - 14df21ef (2026-07-28)
+
+- `pnpm qa:smoke` passed with zero failures in 333.5 seconds after the durable
+  snapshot binding. Runtime desktop/mobile, imported MUGEN Lite, Studio
+  authoring, source relink, evidence, debug, and stage routes passed.
+- `pnpm build` passed with the existing Vite large JavaScript chunk warning.
+- `docs/evidence/da32/da32-smoke-ownership-v1.json` records `failureCount: 0`
+  for the current run.
+
+Claim ceiling: green local smoke subject at `14df21ef`; this does not advance
+the human adjudication cursor or close hardware, source-intent replay, quota
+recovery, public release, or full MUGEN/IKEMEN parity.
+
 ## Runtime input and canvas a11y checkpoint - 47858f49 (2026-07-28)
 
 - `GamepadInputAdapter` now keeps a deterministic diagnostic snapshot for both
@@ -172,10 +185,11 @@ MUGEN/IKEMEN parity remain open.
 | ID | Scope | Acceptance | Ceiling |
 | --- | --- | --- | --- |
 | DA32-021 | Move the Studio project index to an IndexedDB authority | Versioned project object store, local cache mirror, reload/reopen, optimistic revision conflict, desktop/mobile browser gate | named browser route and viewports; quota, eviction, source blobs, and full authoring remain open |
+| DA32-022 | Bind saved Studio projects to durable snapshots | `StudioIndexedDbSnapshot/v1` record, revision/payload readback, reload persistence, backend diagnostics, desktop/mobile/fallback browser gate | named browser snapshot route; source-intent replay, quota, binary blobs, and full authoring remain open |
 
-### DA32-021 browser gate - 4e31e4e9 (2026-07-28)
+### DA32-021 browser gate - c95c871a (2026-07-28)
 
-- `pnpm qa:browser:da32-021-storage` passed against clean subject `4e31e4e9`
+- `pnpm qa:browser:da32-021-storage` passed against clean subject `c95c871a`
   at desktop `1440x900` and mobile `390x844`; unexpected console/page errors:
   zero.
 - The gate clears the prior project state, saves a real Studio manifest into
@@ -199,11 +213,40 @@ conflict, and the named no-IndexedDB fallback route. Storage quota and eviction
 recovery, file-system source blobs, physical device coverage, all browser
 implementations, and full MUGEN/IKEMEN authoring parity remain open.
 
+### DA32-022 browser gate - 14df21ef (2026-07-28)
+
+- `pnpm qa:browser:da32-022-snapshot` passed against clean subject `14df21ef`
+  at desktop `1440x900`, mobile `390x844`, and a no-IndexedDB fallback case;
+  unexpected console/page errors: zero.
+- Saving a project now creates a `StudioProjectSnapshot/v1` identity record
+  and a durable `StudioIndexedDbSnapshot/v1` record in the
+  `mugen-web-sandbox-studio` database. The record carries project revision,
+  authority digest, analysis digest, saved time, and a JSON payload with the
+  snapshot integrity value.
+- The gate reads the `snapshots` object store directly before and after reload.
+  Both viewports prove the same project id, revision, name, payload, and
+  integrity survive the page lifecycle. The App bridge exposes snapshot
+  backend diagnostics and the existing retry action now retries both stores.
+- The no-IndexedDB case keeps the project cache path usable and reports memory
+  snapshot storage without claiming durable persistence.
+- Focused verification: 12/12 tests, `pnpm typecheck`, `node --check
+  scripts/qa_browser_gate_da32_022_studio_snapshot.cjs`, and
+  `git diff --check` pass. Evidence:
+  `docs/evidence/da32/da32-022-studio-snapshot-browser-gate.json` plus the
+  desktop, mobile, and fallback screenshots.
+
+Claim ceiling: named browser snapshot persistence, revision/payload readback,
+reload survival, backend diagnostics, and no-IndexedDB fallback behavior.
+Source-write intent replay in a live editor, quota and eviction recovery,
+large binary source blobs, physical browser coverage, release authority, and
+full MUGEN/IKEMEN authoring parity remain open.
+
 ## Commands
 
 ```bash
 pnpm qa:smoke
 pnpm qa:browser:da32-021-storage
+pnpm qa:browser:da32-022-snapshot
 pnpm materialize:da32-status
 pnpm exec vitest run src/tests/Da32Program.test.ts
 ```

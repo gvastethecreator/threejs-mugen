@@ -187,6 +187,17 @@ if (fs.existsSync(studioStorageGatePath)) {
 }
 const studioStorageGateOk = studioStorageGate?.ok === true;
 
+const studioSnapshotGatePath = path.join(outDir, "da32-022-studio-snapshot-browser-gate.json");
+let studioSnapshotGate = null;
+if (fs.existsSync(studioSnapshotGatePath)) {
+  try {
+    studioSnapshotGate = JSON.parse(fs.readFileSync(studioSnapshotGatePath, "utf8"));
+  } catch {
+    studioSnapshotGate = null;
+  }
+}
+const studioSnapshotGateOk = studioSnapshotGate?.ok === true;
+
 const status = {
   schema: "Da32ProgramStatus/v1",
   generatedAt: new Date().toISOString(),
@@ -275,6 +286,21 @@ const status = {
             "docs/evidence/da32/da32-021-studio-storage-browser-gate.json",
           ]
         : ["src/app/StudioProjectStore.ts", "src/app/App.ts"],
+    },
+    "DA32-022": {
+      status: studioSnapshotGateOk ? "accepted-browser-snapshot" : "open-implementation",
+      note: studioSnapshotGateOk
+        ? "clean-subject desktop/mobile/fallback gate proves durable StudioIndexedDbSnapshot revision and payload readback; source-intent replay and quota recovery remain open"
+        : "Studio durable snapshot browser gate is missing or failed",
+      artifacts: studioSnapshotGateOk
+        ? [
+            "src/app/StudioIndexedDbSnapshot.ts",
+            "src/app/ProjectSnapshotBridge.ts",
+            "src/app/App.ts",
+            "scripts/qa_browser_gate_da32_022_studio_snapshot.cjs",
+            "docs/evidence/da32/da32-022-studio-snapshot-browser-gate.json",
+          ]
+        : ["src/app/StudioIndexedDbSnapshot.ts", "src/app/App.ts"],
     },
     "DA32-013": {
       status: "accepted-sample",

@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## Entry 625 - DA32-022 Studio durable project snapshot binding
+
+Closed DA32-022 in `14df21ef`: the authoritative IndexedDB project save now
+creates a verified local `StudioProjectSnapshot/v1` identity record plus a
+`StudioIndexedDbSnapshot/v1` record keyed by project id. The durable record
+carries revision, authority digest, analysis digest, saved time, and a JSON
+snapshot payload. App diagnostics expose IndexedDB or memory backend state, and
+the existing retry action retries both stores.
+
+The clean DA32-022 browser gate reads the real `snapshots` object store before
+and after reload at desktop `1440x900` and mobile `390x844`, checks payload
+identity/revision/integrity, proves the no-IndexedDB cache fallback, and records
+zero unexpected console/page errors. Focused verification passes 3 files / 12
+tests, TypeScript 7 typecheck, `node --check
+scripts/qa_browser_gate_da32_022_studio_snapshot.cjs`, and `git diff --check`.
+Evidence: `docs/evidence/da32/da32-022-studio-snapshot-browser-gate.json`,
+clean subject `14df21ef`.
+
+Claim allowed: named browser snapshot persistence, revision/payload readback,
+reload survival, diagnostics, and fallback behavior. Claim blocked: live
+source-write intent replay, quota and eviction recovery, large binary source
+blobs, physical browser coverage, release authority, and full Studio/MUGEN/
+IKEMEN parity.
+
 ## Entry 624 - IKEMEN `stchtmp` ReversalDef state-redirection admission (T415)
 
 Closed T415 in `40c297aa`: active ReversalDef direct contacts and ReversalDef

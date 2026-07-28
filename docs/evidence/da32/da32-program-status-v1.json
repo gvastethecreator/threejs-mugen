@@ -1,6 +1,6 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T07:27:23.154Z",
+  "generatedAt": "2026-07-28T07:49:22.580Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted",
@@ -73,6 +73,17 @@
         "docs/evidence/da32/da32-021-studio-storage-browser-gate.json"
       ]
     },
+    "DA32-022": {
+      "status": "accepted-browser-snapshot",
+      "note": "clean-subject desktop/mobile/fallback gate proves durable StudioIndexedDbSnapshot revision and payload readback; source-intent replay and quota recovery remain open",
+      "artifacts": [
+        "src/app/StudioIndexedDbSnapshot.ts",
+        "src/app/ProjectSnapshotBridge.ts",
+        "src/app/App.ts",
+        "scripts/qa_browser_gate_da32_022_studio_snapshot.cjs",
+        "docs/evidence/da32/da32-022-studio-snapshot-browser-gate.json"
+      ]
+    },
     "DA32-013": {
       "status": "accepted-sample",
       "note": "consecutive pass proposes adjudicatedThrough=DA30-021",
@@ -114,6 +125,6 @@
   "claimCeiling": "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "92a6b2e9746d0f2b954a98453c53082010d230cebc5e044cfb0e1f4b0662792d"
+    "value": "767f012dc51d401e42156e7fa191e3e7b6888a97b07e97e1ec7c9721a4c1836f"
   }
 }

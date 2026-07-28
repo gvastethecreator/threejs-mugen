@@ -14,6 +14,20 @@ DA31-025…029 then choose storage authority and prove transactions, conflicts,
 recovery, real views, preview, and export revision fidelity. Current proof is
 single-tab and its 390-pixel mobile route has horizontal overflow.
 
+## 2026-07-28 DA32-022 durable snapshot checkpoint
+
+DA32-021 moved the project index to IndexedDB and DA32-022 now binds each
+authoritative save to `StudioIndexedDbSnapshot/v1`. The clean browser gate reads
+the real snapshot object store before and after reload at `1440x900` and
+`390x844`, checks the snapshot revision and JSON payload, and records the
+no-IndexedDB memory fallback. The App bridge exposes snapshot diagnostics and
+the retry action covers both stores.
+
+Evidence: `docs/evidence/da32/da32-022-studio-snapshot-browser-gate.json`.
+Next: connect persisted source-write intents to a live recovery view. Source
+blob durability, quota/eviction handling, multi-file recovery, and release
+authority remain open.
+
 ## Historical 2026-07-27 post-DA30-025 Studio override
 
 DA30-025 proves shell and mode load at `c47cfa4e`. Real project open/edit,

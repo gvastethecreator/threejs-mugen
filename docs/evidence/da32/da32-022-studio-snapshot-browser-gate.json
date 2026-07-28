@@ -1,10 +1,10 @@
 {
   "schema": "Da32StudioSnapshotBrowserGate/v1",
   "id": "DA32-022",
-  "generatedAt": "2026-07-28T07:37:44.046Z",
+  "generatedAt": "2026-07-28T07:50:48.360Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "aca763a41d663f70985702a3a638893bcd8fed86",
+    "subjectSha": "14df21ef420b09daf12981c99441390d6a34868a",
     "dirtyTree": true,
     "provisional": true,
     "probePaths": [
@@ -17,7 +17,7 @@
     ],
     "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
   },
-  "headSha": "aca763a41d663f70985702a3a638893bcd8fed86",
+  "headSha": "14df21ef420b09daf12981c99441390d6a34868a",
   "ok": true,
   "route": "/?mode=studio&studio=workbench&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "projectDatabase": "mugen-web-sandbox-projects",
@@ -50,7 +50,7 @@
               "projectId": "da32-022-desktop-snapshot",
               "projectName": "DA32-022 desktop snapshot",
               "projectRevision": 1,
-              "savedAt": "2026-07-28T07:37:34.762Z",
+              "savedAt": "2026-07-28T07:50:38.447Z",
               "source": {
                 "packageId": "da32-022-desktop-snapshot",
                 "kind": "folder",
@@ -72,9 +72,9 @@
                 "analyzer": "1.0.0",
                 "ruleset": "1.0.0"
               },
-              "integrity": "2e13bc5c"
+              "integrity": "091a4b3f"
             },
-            "savedAt": "2026-07-28T07:37:34.762Z"
+            "savedAt": "2026-07-28T07:50:38.447Z"
           }
         ]
       },
@@ -93,7 +93,7 @@
               "projectId": "da32-022-desktop-snapshot",
               "projectName": "DA32-022 desktop snapshot",
               "projectRevision": 1,
-              "savedAt": "2026-07-28T07:37:34.762Z",
+              "savedAt": "2026-07-28T07:50:38.447Z",
               "source": {
                 "packageId": "da32-022-desktop-snapshot",
                 "kind": "folder",
@@ -115,9 +115,9 @@
                 "analyzer": "1.0.0",
                 "ruleset": "1.0.0"
               },
-              "integrity": "2e13bc5c"
+              "integrity": "091a4b3f"
             },
-            "savedAt": "2026-07-28T07:37:34.762Z"
+            "savedAt": "2026-07-28T07:50:38.447Z"
           }
         ]
       },
@@ -156,7 +156,7 @@
               "projectId": "da32-022-mobile-snapshot",
               "projectName": "DA32-022 mobile snapshot",
               "projectRevision": 1,
-              "savedAt": "2026-07-28T07:37:39.928Z",
+              "savedAt": "2026-07-28T07:50:43.562Z",
               "source": {
                 "packageId": "da32-022-mobile-snapshot",
                 "kind": "folder",
@@ -178,9 +178,9 @@
                 "analyzer": "1.0.0",
                 "ruleset": "1.0.0"
               },
-              "integrity": "4d17a5e7"
+              "integrity": "1ca71969"
             },
-            "savedAt": "2026-07-28T07:37:39.928Z"
+            "savedAt": "2026-07-28T07:50:43.562Z"
           }
         ]
       },
@@ -199,7 +199,7 @@
               "projectId": "da32-022-mobile-snapshot",
               "projectName": "DA32-022 mobile snapshot",
               "projectRevision": 1,
-              "savedAt": "2026-07-28T07:37:39.928Z",
+              "savedAt": "2026-07-28T07:50:43.562Z",
               "source": {
                 "packageId": "da32-022-mobile-snapshot",
                 "kind": "folder",
@@ -221,9 +221,9 @@
                 "analyzer": "1.0.0",
                 "ruleset": "1.0.0"
               },
-              "integrity": "4d17a5e7"
+              "integrity": "1ca71969"
             },
-            "savedAt": "2026-07-28T07:37:39.928Z"
+            "savedAt": "2026-07-28T07:50:43.562Z"
           }
         ]
       },
@@ -290,6 +290,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "988236eeae9087b5b6f4f15e0cf5ff72d1bd709e82407dd992e8a948741bc9de"
+    "value": "dc6888069cd7afeb90acec7f6a1a1faea1f6faf0d525e89ad4abdcee355fe356"
   }
 }
