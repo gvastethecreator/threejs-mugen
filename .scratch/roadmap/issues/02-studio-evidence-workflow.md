@@ -14,6 +14,27 @@ DA31-025…029 then choose storage authority and prove transactions, conflicts,
 recovery, real views, preview, and export revision fidelity. Current proof is
 single-tab and its 390-pixel mobile route has horizontal overflow.
 
+## 2026-07-28 DA32-026 source-write receipt recovery checkpoint
+
+DA32-026 closes the settled receipt readback slice. A settled
+`StudioSourceWriteIntent/v1` now carries the validated `SourceWriteReceipt/v1`
+payload beside its receipt id. On startup the App restores that receipt to the
+bridge and recovery surface, keeping committed status, reason, compensation,
+and digest visible after reload. A tampered receipt digest fails closed before
+the intent is stored or consumed.
+
+The clean browser gate passes at desktop `1440x900` and mobile `390x844`: six
+steps per viewport, direct IndexedDB receipt readback, bridge and DOM
+rehydration, intact digest/status, no handle write, no horizontal overflow,
+and zero unexpected console errors. Evidence:
+`docs/evidence/da32/da32-026-source-write-receipt-recovery-browser-gate.json`.
+Implementation: `f18adb2d`; clean subject and evidence pin: `5bc4cb90`.
+The global `pnpm qa:smoke` run passes with zero failures at `c632ceba`, and the
+folder route checks receipt fields in the bridge and durable record. The claim
+stays bounded to the named route and harness. Physical crash injection,
+receipt synthesis, automatic retry, quota/eviction, multi-file atomic
+recovery, ZIP rewrite, binary source blobs, and release authority remain open.
+
 ## 2026-07-28 DA32-025 source-write phase recovery checkpoint
 
 DA32-025 closes the next source trust slice. The durable

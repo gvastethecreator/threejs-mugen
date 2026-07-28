@@ -189,6 +189,7 @@ MUGEN/IKEMEN parity remain open.
 | DA32-023 | Recover pending Studio source writes through a live editor | durable `StudioSourceWriteIntent/v1`, exact preimage replay, pending-state retention, desktop/mobile browser gate | named pending-intent recovery route; handle write, permission repair, quota, binary blobs, and full authoring remain open |
 | DA32-024 | Relink a pending source intent and complete explicit folder write/reimport | native folder relink, dirty preimage replay, separate read/write permission state, exact bytes, settled intent, desktop/mobile browser gate | named browser harness and folder route; physical prompts, durable handle restart, crash, quota, multi-file, ZIP rewrite, and full authoring remain open |
 | DA32-025 | Persist incomplete source-write phases for post-reload recovery | durable `write-closed` phase, write byte length, exact preimage replay, pending retention, no-handle-write browser gate | named route and mock browser handles; physical crash, receipt synthesis, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
+| DA32-026 | Rehydrate the settled source-write receipt after reload | validated `SourceWriteReceipt/v1` payload beside the intent, digest rejection, bridge and visible recovery readback, desktop/mobile browser gate | named route and browser harness; physical crash, automatic retry, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
 
 ### DA32-021 browser gate - c95c871a (2026-07-28)
 
@@ -325,6 +326,33 @@ eviction, multi-file atomic recovery, ZIP rewrite, binary blobs, physical
 permission prompts, release authority, and full MUGEN/IKEMEN authoring parity
 remain open.
 
+### DA32-026 browser gate - 5bc4cb90 (2026-07-28)
+
+- `pnpm qa:browser:da32-026-source-write-receipt` passed against clean subject
+  `f18adb2d` at desktop `1440x900` and mobile `390x844`; unexpected console
+  errors: zero.
+- The gate seeds a settled `StudioSourceWriteIntent/v1` with a validated
+  `SourceWriteReceipt/v1` payload, reloads Studio, reads the payload directly
+  from IndexedDB, and checks the bridge plus the visible recovery surface.
+- Receipt id, committed status, and digest remain intact after reload. The
+  route does not write a source handle and has no horizontal overflow in either
+  viewport.
+- Focused verification passed 20 tests, then the receipt integrity test passed
+  5/5 in `StudioIndexedDbSnapshot.test.ts`; `pnpm typecheck`, gate syntax, and
+  `git diff --check` passed. The global `pnpm qa:smoke` run passed with zero
+  failures at checkpoint `c632ceba` and checks receipt fields in both the
+  bridge and durable intent record.
+- Implementation: `f18adb2d`; clean evidence pin: `5bc4cb90`. Evidence:
+  `docs/evidence/da32/da32-026-source-write-receipt-recovery-browser-gate.json`
+  plus the desktop and mobile captures.
+
+Claim ceiling: named validated receipt persistence and rehydration, intact
+digest/status, visible recovery evidence, no-handle-write readback, and the
+recorded desktop/mobile checks. Physical crash injection, automatic receipt
+synthesis or retry, quota, eviction, multi-file atomic recovery, ZIP rewrite,
+binary blobs, physical permission prompts, release authority, and full
+MUGEN/IKEMEN authoring parity remain open.
+
 ## Commands
 
 ```bash
@@ -334,6 +362,7 @@ pnpm qa:browser:da32-022-snapshot
 pnpm qa:browser:da32-023-source-intent
 pnpm qa:browser:da32-024-source-intent-write
 pnpm qa:browser:da32-025-source-write-phase
+pnpm qa:browser:da32-026-source-write-receipt
 pnpm materialize:da32-status
 pnpm exec vitest run src/tests/Da32Program.test.ts
 ```

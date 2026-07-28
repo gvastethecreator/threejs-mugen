@@ -1,6 +1,22 @@
 ﻿# Roadmap Execution Board
 
-## Current Studio product board - DA32-025 (closed-bounded, 2026-07-28)
+## Current Studio product board - DA32-026 (closed-bounded, 2026-07-28)
+
+DA32-026 closes the settled receipt readback slice. A settled source-write
+intent retains the validated `SourceWriteReceipt/v1` payload and restores it
+into the App bridge after reload. The recovery surface keeps the committed
+status, reason, compensation state, and digest visible. Invalid receipt
+digests fail closed before storage consumption.
+
+Clean desktop/mobile browser evidence: `f18adb2d`, pinned in `5bc4cb90`,
+`docs/evidence/da32/da32-026-source-write-receipt-recovery-browser-gate.json`.
+Global smoke is green at `c632ceba` with zero failures, including bridge and
+durable receipt-field checks in the folder write/reimport route.
+Next Studio proof: physical crash or receipt-finalization recovery, quota and
+eviction handling, and multi-file transaction boundaries. Automatic retry, ZIP
+rewrite, binary source, release, and full parity claims remain blocked.
+
+## Previous Studio product board - DA32-025 (closed-bounded, 2026-07-28)
 
 DA32-025 closes the incomplete source-write phase slice. The durable intent
 records the last phase after preimage capture, writable stream close, explicit

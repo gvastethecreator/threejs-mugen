@@ -1,5 +1,24 @@
 # Workplan
 
+## DA32-026 Studio source-write receipt recovery (2026-07-28)
+
+Settled source-write intents now retain the validated `SourceWriteReceipt/v1`
+payload, not only its id. Studio rehydrates the receipt on startup and shows
+the committed status, reason, compensation, and digest in the recovery view.
+Invalid receipt digests fail closed before the intent is written or consumed.
+
+Implementation: `f18adb2d`.
+Clean browser subject: `f18adb2d`.
+Evidence pin: `5bc4cb90`.
+Evidence: `docs/evidence/da32/da32-026-source-write-receipt-recovery-browser-gate.json`.
+Global smoke checkpoint: `c632ceba`; `pnpm qa:smoke` passed with zero failures
+after the bridge and durable record receipt assertions were added.
+The desktop `1440x900` and mobile `390x844` cases passed all six steps with
+zero unexpected console errors and no horizontal overflow. Next Studio cut:
+physical crash or receipt-finalization recovery, quota and eviction handling,
+and multi-file transaction design. Automatic retry, ZIP rewrite, binary blobs,
+and release authority remain blocked.
+
 ## DA32-025 Studio source-write phase recovery (2026-07-28)
 
 The source-write intent now records the durable phase at preimage capture,

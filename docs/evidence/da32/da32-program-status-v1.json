@@ -1,6 +1,6 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T09:55:38.379Z",
+  "generatedAt": "2026-07-28T10:16:21.270Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted",
@@ -116,6 +116,17 @@
         "docs/evidence/da32/da32-025-source-write-phase-recovery-browser-gate.json"
       ]
     },
+    "DA32-026": {
+      "status": "accepted-browser-source-receipt-recovery",
+      "note": "clean-subject desktop/mobile gate proves a validated settled SourceWriteReceipt/v1 payload survives reload in the intent, bridge, and recovery surface with intact digest and status; physical crash, quota, eviction, and multi-file recovery remain open",
+      "artifacts": [
+        "src/app/App.ts",
+        "src/app/StudioIndexedDbSnapshot.ts",
+        "src/app/StudioSourceWriteReceipt.ts",
+        "scripts/qa_browser_gate_da32_026_source_write_receipt_recovery.cjs",
+        "docs/evidence/da32/da32-026-source-write-receipt-recovery-browser-gate.json"
+      ]
+    },
     "DA32-013": {
       "status": "accepted-sample",
       "note": "consecutive pass proposes adjudicatedThrough=DA30-021",
@@ -151,13 +162,13 @@
     "retain green smoke ownership at the next subject HEAD",
     "expand runtime visual and Studio matrix",
     "expand mugen-lite visual matrix",
-    "source-intent crash/receipt recovery, quota, eviction, and multi-file recovery",
+    "physical source-intent crash/receipt finalization, quota, eviction, and multi-file recovery",
     "studio surface repairs",
     "hardware gamepad lab"
   ],
   "claimCeiling": "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "7c4bffb827ff8d3358eeca14a62f056c82f247d383e9b2e0708f2ed1e4ec3ea8"
+    "value": "3385dca6cb5e9b95cf913b8a0802cfd5ccbdd00ea9198ffbdc4aa516ed10e700"
   }
 }

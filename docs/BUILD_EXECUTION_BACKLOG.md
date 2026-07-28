@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## Entry 629 - DA32-026 Studio source-write receipt recovery
+
+Closed DA32-026 in `f18adb2d`: a settled `StudioSourceWriteIntent/v1` now keeps
+the validated `SourceWriteReceipt/v1` payload beside its receipt id. Startup
+rehydrates the selected receipt into the App bridge and recovery surface, while
+tampered receipt digests fail closed before the intent is stored or consumed.
+
+The clean browser gate passed at desktop `1440x900` and mobile `390x844` with
+six steps per viewport: durable receipt id/digest, bridge rehydration, visible
+receipt, committed status/reason, no source-handle write, and overflow.
+Unexpected console errors were zero. Focused verification passed 20 tests,
+then the receipt integrity case passed 5/5 in `StudioIndexedDbSnapshot.test.ts`;
+`pnpm typecheck`, gate syntax, and `git diff --check` passed. The global
+`pnpm qa:smoke` run passed with zero failures at `c632ceba`.
+
+Evidence: `docs/evidence/da32/da32-026-source-write-receipt-recovery-browser-gate.json`;
+clean subject `f18adb2d`; evidence pin `5bc4cb90`.
+Claim allowed: named validated receipt persistence and rehydration. Claim
+blocked: physical crash injection, receipt synthesis, automatic retry,
+quota/eviction recovery, multi-file atomicity, ZIP rewrite, binary source
+blobs, release authority, and full Studio/MUGEN/IKEMEN parity.
+
 ## Entry 628 - DA32-025 Studio source-write phase recovery
 
 Closed DA32-025 in `4e0d399c`: `StudioSourceWriteIntent/v1` now records the

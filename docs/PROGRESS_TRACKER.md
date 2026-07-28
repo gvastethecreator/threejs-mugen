@@ -23,9 +23,9 @@
   subject virtual browser gate; hardware remains open. DA32-021 now has a clean
   IndexedDB authority browser gate. DA32-022 now has a clean durable snapshot
   browser gate. DA32-023 and DA32-024 now have clean source-intent recovery
-  gates. DA32-025 now has a clean incomplete-phase recovery gate. Crash,
-  receipt synthesis, quota, eviction, multi-file, and source-blob persistence
-  remain open.
+  gates. DA32-025 now has a clean incomplete-phase recovery gate. DA32-026 now
+  has a clean receipt rehydration gate. Physical crash, receipt synthesis,
+  quota, eviction, multi-file, and source-blob persistence remain open.
 
 ## DA32 smoke ownership closeout - 8c6d6c80 (green subject checkpoint, 2026-07-28)
 
@@ -233,6 +233,34 @@ desktop/mobile checks. Claim blocked: physical permission prompts, browser
 variance, restart handle durability, crash/receipt recovery, quota/eviction,
 multi-file atomic recovery, ZIP rewrite, binary source blobs, release
 authority, and full MUGEN/IKEMEN authoring parity.
+
+## DA32-026 Studio source-write receipt recovery - 5bc4cb90 (closed-bounded, 2026-07-28)
+
+- `pnpm qa:browser:da32-026-source-write-receipt` passed against clean subject
+  `f18adb2d` at desktop `1440x900` and mobile `390x844`; unexpected console
+  errors: zero.
+- A settled `StudioSourceWriteIntent/v1` now retains the validated
+  `SourceWriteReceipt/v1` payload beside its receipt id. The App restores that
+  payload on startup, so the bridge and recovery surface keep the committed
+  status, reason, compensation state, and digest after reload.
+- The gate reads the real IndexedDB record, checks bridge and DOM rehydration,
+  confirms the receipt digest, confirms no source-handle write, and checks
+  overflow. Six steps pass in each viewport.
+- Focused verification passed 20 tests, then the receipt integrity case passed
+  5/5 in `StudioIndexedDbSnapshot.test.ts`; `pnpm typecheck` and gate syntax
+  passed. The global `pnpm qa:smoke` run passed with zero failures at checkpoint
+  `c632ceba`; its folder route checks receipt fields in both the bridge and the
+  durable record.
+- Research: `docs/research/2026-07-28-da32-026-source-write-receipt-recovery.md`.
+  Implementation: `f18adb2d`; clean evidence pin: `5bc4cb90`. Evidence:
+  `docs/evidence/da32/da32-026-source-write-receipt-recovery-browser-gate.json`.
+
+Claim allowed: named validated receipt persistence and rehydration, intact
+digest/status, visible recovery evidence, no-handle-write readback, and the
+recorded desktop/mobile checks. Claim blocked: physical crash injection,
+automatic receipt synthesis or retry, quota/eviction, multi-file recovery, ZIP
+rewrite, binary source blobs, physical prompts, release authority, and full
+MUGEN/IKEMEN authoring parity.
 
 ## DA32-025 Studio source-write phase recovery - a258bea7 (closed-bounded, 2026-07-28)
 
