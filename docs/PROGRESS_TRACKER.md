@@ -41,6 +41,27 @@ Claim allowed: green `qa:smoke` at commit `8c6d6c80` for the named local
 browser subject and routes. Claim blocked: hardware gamepad coverage, score
 movement, public release, and full MUGEN/IKEMEN parity.
 
+## Runtime input and canvas a11y - 47858f49 (partial checkpoint, 2026-07-28)
+
+- `GamepadInputAdapter` now records both seat diagnostics after each poll:
+  browser index, id, connection state, standard/unknown mapping, and active
+  logical actions. Unplug polling returns a clean disconnected seat.
+- Match status renders the P1/P2 pad state. Unknown mapping receives a warning
+  tone, which keeps the device-lab gap visible in the play surface.
+- The Three.js canvas is focusable and described by a `role=status` live region
+  with stage, round, life, runtime state, pause, and controller text. The
+  summary is kept separate from the visual canvas and the screen-reader journey
+  remains open.
+- Verification: 18 focused tests passed; `pnpm typecheck`, `node --check
+  scripts/qa_smoke.cjs`, and `git diff --check` passed.
+- Sources: [Gamepad API guide](https://developer.mozilla.org/en-US/docs/Games/Techniques/Controls_Gamepad_API),
+  [Gamepad mapping](https://developer.mozilla.org/en-US/docs/Web/API/Gamepad/mapping),
+  and [WAI-ARIA status technique](https://www.w3.org/WAI/WCAG21/Techniques/aria/ARIA22.html).
+
+Claim allowed: simulated input diagnostics and the code-level canvas
+alternative. Claim blocked: physical device proof, screen-reader journey,
+contrast audit, WCAG certification, public release, and full parity.
+
 ## Interface desktop layout repair - d8c4dfaa/b4788b85 (closed bounded, 2026-07-27)
 
 - Match and Inspect desktop toolbars keep content height at the lower edge;

@@ -108,7 +108,7 @@ const gamepad = {
   physicalDeviceRequiredForFullClaim: true,
   simulatedBaseline: true,
   hardwareOk: null,
-  claimCeiling: "protocol + simulated baseline only",
+  claimCeiling: "protocol + simulated baseline + runtime status diagnostics; physical device claim remains open",
 };
 gamepad.digest = { algorithm: "sha-256", value: sha(JSON.stringify({ ...gamepad, digest: undefined })) };
 fs.writeFileSync(path.join(outDir, "da32-gamepad-device-lab-v1.json"), `${JSON.stringify(gamepad, null, 2)}\n`, "utf8");
@@ -117,7 +117,8 @@ const a11y = {
   schema: "Da32A11yBaseline/v1",
   id: "DA32-029",
   measured: ["focus-visible-samples", "reflow-320-390-zoom", "reduced-motion"],
-  open: ["canvas-alternative", "screen-reader-paths", "contrast"],
+  partial: ["canvas-alternative"],
+  open: ["screen-reader-paths", "contrast"],
   claimCeiling: "inventory only; not WCAG certification",
 };
 a11y.digest = { algorithm: "sha-256", value: sha(JSON.stringify({ ...a11y, digest: undefined })) };
@@ -196,13 +197,18 @@ const status = {
     },
     "DA32-009": {
       status: "accepted-protocol",
-      note: "device-lab protocol; hardware null",
-      artifacts: ["docs/evidence/da32/da32-gamepad-device-lab-v1.json", "src/mugen/da32/GamepadDeviceLab.ts"],
+      note: "device-lab protocol + runtime status diagnostics; hardware null",
+      artifacts: [
+        "docs/evidence/da32/da32-gamepad-device-lab-v1.json",
+        "src/mugen/da32/GamepadDeviceLab.ts",
+        "src/game/input/GamepadInputAdapter.ts",
+        "src/app/App.ts",
+      ],
     },
     "DA32-010": {
       status: "accepted-virtual",
-      note: "virtual gamepad sequence unit proof",
-      artifacts: ["src/mugen/da32/GamepadDeviceLab.ts"],
+      note: "virtual gamepad sequence unit proof plus live adapter diagnostics",
+      artifacts: ["src/mugen/da32/GamepadDeviceLab.ts", "src/game/input/GamepadInputAdapter.ts"],
     },
     "DA32-013": {
       status: "accepted-sample",
@@ -216,7 +222,7 @@ const status = {
     },
     "DA32-029": {
       status: "accepted-baseline",
-      note: "a11y inventory; canvas alt and SR open",
+      note: "a11y inventory; canvas alternative partial, SR journey remains open",
       artifacts: ["docs/evidence/da32/da32-a11y-baseline-v1.json"],
     },
   },

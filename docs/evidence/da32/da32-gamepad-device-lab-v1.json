@@ -4,9 +4,9 @@
   "physicalDeviceRequiredForFullClaim": true,
   "simulatedBaseline": true,
   "hardwareOk": null,
-  "claimCeiling": "protocol + simulated baseline only",
+  "claimCeiling": "protocol + simulated baseline + runtime status diagnostics; physical device claim remains open",
   "digest": {
     "algorithm": "sha-256",
-    "value": "7706d8e46cffcd30f24f52abaf2e45ad20ed358e07fdcfbf9ccb36a691c4fba2"
+    "value": "66a21282e9dc1d7b8e7d41bf19499ac0805aa7431fec1fc42f6a9e997c2d6968"
   }
 }

@@ -86,12 +86,30 @@ Claim ceiling: this is a green local subject checkpoint for the named browser
 routes. Hardware gamepad evidence, score movement, public release, and full
 MUGEN/IKEMEN parity remain blocked.
 
+## Runtime input and canvas a11y checkpoint - 47858f49 (2026-07-28)
+
+- `GamepadInputAdapter` now keeps a deterministic diagnostic snapshot for both
+  seats: connected state, browser index, device id, mapping class, and active
+  logical actions. Disconnect polling clears the seat and its actions.
+- Match status exposes `P1/P2` gamepad state and marks an unknown mapping as a
+  warning. The input path remains keyboard-first for P1 and gamepad-enabled for
+  both seats.
+- The Three.js canvas is focusable, has an image role and label, and points to
+  a polite atomic `status` region with a text summary of stage, round, fighter
+  life, runtime state, pause, and controller status.
+- Focused proof: `GamepadInputAdapter` plus `RuntimeA11ySummary` and DA32
+  program tests pass 18/18; `pnpm typecheck` passes.
+
+Claim ceiling: simulated/device diagnostics and a code-level canvas alternative
+are recorded. Physical controller coverage, a screen-reader journey, contrast
+audit, WCAG certification, and full MUGEN/IKEMEN parity remain open.
+
 ## Phase 1 — Device lab
 
 | ID | Scope | Acceptance | Ceiling |
 | --- | --- | --- | --- |
-| DA32-009 | Publish gamepad device-lab protocol | Connect/unplug/remap/two-seat checklist + simulated baseline | protocol + sim; hardware optional |
-| DA32-010 | Virtual Gamepad API probe where supported | Browser probe records index change / disconnect path | named browser only |
+| DA32-009 | Publish gamepad device-lab protocol | Connect/unplug/remap/two-seat checklist + simulated baseline + visible runtime status | protocol + sim + diagnostics; hardware optional |
+| DA32-010 | Virtual Gamepad API probe where supported | Browser probe records index change / disconnect path | named browser only; no hardware claim |
 
 ## Phase 2 — Clause adjudication samples
 
@@ -104,7 +122,7 @@ MUGEN/IKEMEN parity remain blocked.
 
 | ID | Scope | Acceptance | Ceiling |
 | --- | --- | --- | --- |
-| DA32-029 | Canvas alternative / SR baseline inventory | Required roles, live regions, focus, reduced motion, open SR paths listed | inventory; not WCAG certification |
+| DA32-029 | Canvas alternative / SR baseline inventory | Canvas summary and focus contract recorded; SR journey, contrast, and landmark gaps listed | partial implementation; not WCAG certification |
 
 ## Commands
 

@@ -6,14 +6,16 @@
     "reflow-320-390-zoom",
     "reduced-motion"
   ],
+  "partial": [
+    "canvas-alternative"
+  ],
   "open": [
-    "canvas-alternative",
     "screen-reader-paths",
     "contrast"
   ],
   "claimCeiling": "inventory only; not WCAG certification",
   "digest": {
     "algorithm": "sha-256",
-    "value": "dd7fd5af98a2912e266b4733100586651652ad6e458ae1a55f8e7d6112250322"
+    "value": "338e9cf0d851ca1ec185ebfce36e4035997a7f0ce9278a824c7fcf70ed461203"
   }
 }

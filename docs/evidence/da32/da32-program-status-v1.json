@@ -1,6 +1,6 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T05:52:11.934Z",
+  "generatedAt": "2026-07-28T06:02:24.665Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted",
@@ -43,17 +43,20 @@
     },
     "DA32-009": {
       "status": "accepted-protocol",
-      "note": "device-lab protocol; hardware null",
+      "note": "device-lab protocol + runtime status diagnostics; hardware null",
       "artifacts": [
         "docs/evidence/da32/da32-gamepad-device-lab-v1.json",
-        "src/mugen/da32/GamepadDeviceLab.ts"
+        "src/mugen/da32/GamepadDeviceLab.ts",
+        "src/game/input/GamepadInputAdapter.ts",
+        "src/app/App.ts"
       ]
     },
     "DA32-010": {
       "status": "accepted-virtual",
-      "note": "virtual gamepad sequence unit proof",
+      "note": "virtual gamepad sequence unit proof plus live adapter diagnostics",
       "artifacts": [
-        "src/mugen/da32/GamepadDeviceLab.ts"
+        "src/mugen/da32/GamepadDeviceLab.ts",
+        "src/game/input/GamepadInputAdapter.ts"
       ]
     },
     "DA32-013": {
@@ -72,7 +75,7 @@
     },
     "DA32-029": {
       "status": "accepted-baseline",
-      "note": "a11y inventory; canvas alt and SR open",
+      "note": "a11y inventory; canvas alternative partial, SR journey remains open",
       "artifacts": [
         "docs/evidence/da32/da32-a11y-baseline-v1.json"
       ]
@@ -95,6 +98,6 @@
   "claimCeiling": "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "3f8eabb1fd732b8461e642887829d9d358ab35fda9cfdc4dcb73948149e885e7"
+    "value": "f8155cc73abda815b58e691197a3bf80080ea4d397f317f55447f45d2ffd65af"
   }
 }
