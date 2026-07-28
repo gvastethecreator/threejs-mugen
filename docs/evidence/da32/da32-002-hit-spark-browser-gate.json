@@ -1,12 +1,12 @@
 {
   "schema": "Da32HitSparkBrowserGate/v1",
   "id": "DA32-002",
-  "generatedAt": "2026-07-28T02:56:41.543Z",
+  "generatedAt": "2026-07-28T02:58:58.642Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "eb039065adafb4778d48435c5649605a4c03c746",
-    "dirtyTree": true,
-    "provisional": true,
+    "subjectSha": "d0e9ed27818c0df3f21ee0dc90fa32014a9b7805",
+    "dirtyTree": false,
+    "provisional": false,
     "probePaths": [
       "scripts/qa_browser_gate_da32_002_hit_spark.cjs",
       "scripts/qa_smoke.cjs"
@@ -15,9 +15,9 @@
       "src/game/render/HitSparkRenderer.ts",
       "src/app/App.ts"
     ],
-    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+    "claimLimit": "subject-bound observation at listed probe/code paths"
   },
-  "headSha": "eb039065adafb4778d48435c5649605a4c03c746",
+  "headSha": "d0e9ed27818c0df3f21ee0dc90fa32014a9b7805",
   "ok": true,
   "route": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "cases": [
@@ -90,9 +90,9 @@
           "key": "KeyZ",
           "resetFound": true,
           "playing": true,
-          "contactGap": 78.00000000000001,
-          "approachAttempts": 9,
-          "attempts": 1,
+          "contactGap": 83.6800000000002,
+          "approachAttempts": 8,
+          "attempts": 2,
           "success": true,
           "p2LifeDelta": -72,
           "hitSpark": {
@@ -133,7 +133,7 @@
           "key": "KeyA",
           "resetFound": true,
           "playing": true,
-          "contactGap": 89.0800000000002,
+          "contactGap": 92.32000000000019,
           "approachAttempts": 10,
           "attempts": 1,
           "success": true,
@@ -153,16 +153,16 @@
                 "assetFrame": {
                   "source": "player",
                   "actionId": 7001,
-                  "frameIndex": 2,
+                  "frameIndex": 1,
                   "spriteGroup": 7001,
-                  "spriteIndex": 2,
+                  "spriteIndex": 1,
                   "offsetX": 0,
                   "offsetY": 0,
-                  "duration": 4
+                  "duration": 3
                 },
                 "sprite": {
                   "group": 7001,
-                  "index": 2,
+                  "index": 1,
                   "width": 96,
                   "height": 96,
                   "axisX": 48,
@@ -176,8 +176,8 @@
           "key": "KeyX",
           "resetFound": true,
           "playing": true,
-          "contactGap": 86.9200000000002,
-          "approachAttempts": 10,
+          "contactGap": 89.0800000000002,
+          "approachAttempts": 11,
           "attempts": 1,
           "success": true,
           "p2LifeDelta": -72,
@@ -244,16 +244,16 @@
         "spriteFrame": {
           "source": "player",
           "actionId": 7002,
-          "frameIndex": 1,
+          "frameIndex": 2,
           "spriteGroup": 7002,
-          "spriteIndex": 1,
+          "spriteIndex": 2,
           "offsetX": 0,
           "offsetY": 0,
-          "duration": 3
+          "duration": 4
         },
         "spriteAxis": {
           "group": 7002,
-          "index": 1,
+          "index": 2,
           "width": 96,
           "height": 96,
           "axisX": 48,
@@ -265,7 +265,7 @@
         "available": true,
         "mode": "match",
         "playing": true,
-        "tick": 56,
+        "tick": 79,
         "actors": [
           {
             "id": "p1",
@@ -288,7 +288,7 @@
           "key": "KeyZ",
           "resetFound": true,
           "playing": true,
-          "contactGap": 86.9200000000002,
+          "contactGap": 93.40000000000019,
           "approachAttempts": 10,
           "attempts": 1,
           "success": true,
@@ -308,16 +308,16 @@
                 "assetFrame": {
                   "source": "player",
                   "actionId": 7002,
-                  "frameIndex": 1,
+                  "frameIndex": 2,
                   "spriteGroup": 7002,
-                  "spriteIndex": 1,
+                  "spriteIndex": 2,
                   "offsetX": 0,
                   "offsetY": 0,
-                  "duration": 3
+                  "duration": 4
                 },
                 "sprite": {
                   "group": 7002,
-                  "index": 1,
+                  "index": 2,
                   "width": 96,
                   "height": 96,
                   "axisX": 48,
@@ -331,7 +331,7 @@
           "key": "KeyA",
           "resetFound": true,
           "playing": true,
-          "contactGap": 82.60000000000021,
+          "contactGap": 89.0800000000002,
           "approachAttempts": 10,
           "attempts": 1,
           "success": true,
@@ -374,7 +374,7 @@
           "key": "KeyX",
           "resetFound": true,
           "playing": true,
-          "contactGap": 86.9200000000002,
+          "contactGap": 88.0000000000002,
           "approachAttempts": 10,
           "attempts": 1,
           "success": true,
@@ -394,16 +394,16 @@
                 "assetFrame": {
                   "source": "player",
                   "actionId": 7002,
-                  "frameIndex": 1,
+                  "frameIndex": 2,
                   "spriteGroup": 7002,
-                  "spriteIndex": 1,
+                  "spriteIndex": 2,
                   "offsetX": 0,
                   "offsetY": 0,
-                  "duration": 3
+                  "duration": 4
                 },
                 "sprite": {
                   "group": 7002,
-                  "index": 1,
+                  "index": 2,
                   "width": 96,
                   "height": 96,
                   "axisX": 48,
@@ -419,7 +419,7 @@
     }
   ],
   "unexpectedConsole": [],
-  "claimCeiling": "provisional dirty-tree native hit-spark observations for named viewports",
+  "claimCeiling": "native hit-spark drive on the named runtime route at desktop/mobile viewports",
   "claims": {
     "allowed": [
       "runtime starts playing after reset",
@@ -436,6 +436,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "3a0808fd8cdd7b226d92b7aa3313799d9205e6a32eda5ad3665d2d472cd4741d"
+    "value": "1ed2e84eb5ace1492d91a40477abf7513930e4a3c7c52b94d322dc36ce293874"
   }
 }
