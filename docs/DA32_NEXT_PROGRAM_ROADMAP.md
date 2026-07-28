@@ -186,6 +186,7 @@ MUGEN/IKEMEN parity remain open.
 | --- | --- | --- | --- |
 | DA32-021 | Move the Studio project index to an IndexedDB authority | Versioned project object store, local cache mirror, reload/reopen, optimistic revision conflict, desktop/mobile browser gate | named browser route and viewports; quota, eviction, source blobs, and full authoring remain open |
 | DA32-022 | Bind saved Studio projects to durable snapshots | `StudioIndexedDbSnapshot/v1` record, revision/payload readback, reload persistence, backend diagnostics, desktop/mobile/fallback browser gate | named browser snapshot route; source-intent replay, quota, binary blobs, and full authoring remain open |
+| DA32-023 | Recover pending Studio source writes through a live editor | durable `StudioSourceWriteIntent/v1`, exact preimage replay, pending-state retention, desktop/mobile browser gate | named pending-intent recovery route; handle write, permission repair, quota, binary blobs, and full authoring remain open |
 
 ### DA32-021 browser gate - c95c871a (2026-07-28)
 
@@ -241,12 +242,39 @@ Source-write intent replay in a live editor, quota and eviction recovery,
 large binary source blobs, physical browser coverage, release authority, and
 full MUGEN/IKEMEN authoring parity remain open.
 
+### DA32-023 browser gate - ef2bf99c (2026-07-28)
+
+- `pnpm qa:browser:da32-023-source-intent` passed against clean subject
+  `ef2bf99c` at desktop `1440x900` and mobile `390x844`; unexpected console
+  errors: zero.
+- The gate seeds a pending `StudioSourceWriteIntent/v1` record in the real
+  `mugen-web-sandbox-studio` IndexedDB database, loads the Studio project, and
+  checks the bridge plus the visible source-write recovery surface.
+- The recovery action loads the exact preimage text into the source editor,
+  keeps the intent pending, preserves the source package as unlinked, and does
+  not create a persistent file-system handle. Both viewports pass overflow and
+  console checks.
+- `pnpm qa:smoke` also passed with zero failures during the implementation
+  cut. Its source-folder write/reimport assertions now check the bridge intent
+  and the durable intent record after a committed write.
+- Implementation: `96a918b0`; smoke checkpoint: `72a19141`. Evidence:
+  `docs/evidence/da32/da32-023-source-write-intent-browser-gate.json` plus the
+  desktop and mobile captures.
+
+Claim ceiling: named IndexedDB pending-intent recovery, exact source preimage
+loading, pending-state retention, and no-handle-write behavior at the recorded
+route and viewports. Automatic permission repair, handle-backed write after
+recovery, quota and eviction recovery, multi-file transactions, binary source
+blobs, physical browser coverage, release authority, and full MUGEN/IKEMEN
+authoring parity remain open.
+
 ## Commands
 
 ```bash
 pnpm qa:smoke
 pnpm qa:browser:da32-021-storage
 pnpm qa:browser:da32-022-snapshot
+pnpm qa:browser:da32-023-source-intent
 pnpm materialize:da32-status
 pnpm exec vitest run src/tests/Da32Program.test.ts
 ```

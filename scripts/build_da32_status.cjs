@@ -198,6 +198,18 @@ if (fs.existsSync(studioSnapshotGatePath)) {
 }
 const studioSnapshotGateOk = studioSnapshotGate?.ok === true;
 
+const studioSourceIntentGatePath = path.join(outDir, "da32-023-source-write-intent-browser-gate.json");
+let studioSourceIntentGate = null;
+if (fs.existsSync(studioSourceIntentGatePath)) {
+  try {
+    studioSourceIntentGate = JSON.parse(fs.readFileSync(studioSourceIntentGatePath, "utf8"));
+  } catch {
+    studioSourceIntentGate = null;
+  }
+}
+const studioSourceIntentGateOk = studioSourceIntentGate?.ok === true;
+const studioSourceIntentGateClean = studioSourceIntentGate?.subject?.provisional === false;
+
 const status = {
   schema: "Da32ProgramStatus/v1",
   generatedAt: new Date().toISOString(),
@@ -302,6 +314,26 @@ const status = {
           ]
         : ["src/app/StudioIndexedDbSnapshot.ts", "src/app/App.ts"],
     },
+    "DA32-023": {
+      status: studioSourceIntentGateOk
+        ? studioSourceIntentGateClean
+          ? "accepted-browser-source-recovery"
+          : "accepted-browser-source-recovery-provisional"
+        : "open-implementation",
+      note: studioSourceIntentGateOk
+        ? studioSourceIntentGateClean
+          ? "clean-subject desktop/mobile gate proves pending source-intent readback, exact preimage editor load, pending retention, and no handle write; permission repair and quota remain open"
+          : "desktop/mobile source-intent recovery gate passed on a dirty subject; clean subject pin remains open"
+        : "Studio source-write intent recovery browser gate is missing or failed",
+      artifacts: studioSourceIntentGateOk
+        ? [
+            "src/app/StudioIndexedDbSnapshot.ts",
+            "src/app/App.ts",
+            "scripts/qa_browser_gate_da32_023_source_write_intent.cjs",
+            "docs/evidence/da32/da32-023-source-write-intent-browser-gate.json",
+          ]
+        : ["src/app/StudioIndexedDbSnapshot.ts", "src/app/App.ts"],
+    },
     "DA32-013": {
       status: "accepted-sample",
       note: "consecutive pass proposes adjudicatedThrough=DA30-021",
@@ -337,6 +369,7 @@ const status = {
     ownership.ok ? "retain green smoke ownership at the next subject HEAD" : "live qa:smoke re-run with ownership write",
     ownership.ok ? "expand runtime visual and Studio matrix" : "reconcile global smoke runtime-native sample with focal gate",
     mugenLiteVisualGateOk ? "expand mugen-lite visual matrix" : "close mugen-lite visual lane",
+    studioSourceIntentGateOk ? "permission-aware source relink and write/reimport recovery" : "close source-write intent recovery",
     "studio surface repairs",
     "hardware gamepad lab",
   ],

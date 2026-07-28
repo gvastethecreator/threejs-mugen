@@ -1,5 +1,17 @@
 ﻿# Roadmap Execution Board
 
+## Current Studio product board - DA32-023 (closed-bounded, 2026-07-28)
+
+DA32-023 closes the pending source-write recovery slice. IndexedDB now keeps
+`StudioSourceWriteIntent/v1` before and after a source-folder write; the live
+Studio recovery view can load the exact pending preimage into the editor while
+preserving pending status and showing the unlinked-handle boundary.
+
+Clean desktop/mobile browser evidence: `ef2bf99c`,
+`docs/evidence/da32/da32-023-source-write-intent-browser-gate.json`.
+Next Studio proof: permission-aware handle relink and write/reimport recovery.
+Quota, eviction, multi-file, binary source, release, and full parity claims
+remain blocked.
 ## Current audit queue — DA31 evidence adoption
 
 Machine rows exist through DA30-120. Human review stops its consecutive

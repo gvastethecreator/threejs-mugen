@@ -1,6 +1,6 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T07:52:56.844Z",
+  "generatedAt": "2026-07-28T08:28:23.363Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted",
@@ -84,6 +84,16 @@
         "docs/evidence/da32/da32-022-studio-snapshot-browser-gate.json"
       ]
     },
+    "DA32-023": {
+      "status": "accepted-browser-source-recovery",
+      "note": "clean-subject desktop/mobile gate proves pending source-intent readback, exact preimage editor load, pending retention, and no handle write; permission repair and quota remain open",
+      "artifacts": [
+        "src/app/StudioIndexedDbSnapshot.ts",
+        "src/app/App.ts",
+        "scripts/qa_browser_gate_da32_023_source_write_intent.cjs",
+        "docs/evidence/da32/da32-023-source-write-intent-browser-gate.json"
+      ]
+    },
     "DA32-013": {
       "status": "accepted-sample",
       "note": "consecutive pass proposes adjudicatedThrough=DA30-021",
@@ -119,12 +129,13 @@
     "retain green smoke ownership at the next subject HEAD",
     "expand runtime visual and Studio matrix",
     "expand mugen-lite visual matrix",
+    "permission-aware source relink and write/reimport recovery",
     "studio surface repairs",
     "hardware gamepad lab"
   ],
   "claimCeiling": "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "577ea5c9e52edc301eb7a52dc6f4eb47d821116ef48bcc995fedac79f6cd8c92"
+    "value": "edb5e1d586abaf6bd97b825e3214b681e0a4cc8f5564b53ae648060364c7f735"
   }
 }

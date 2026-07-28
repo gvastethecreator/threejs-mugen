@@ -22,8 +22,8 @@
   watermark, and continue the hardware gamepad work. DA32-010 now has a clean
   subject virtual browser gate; hardware remains open. DA32-021 now has a clean
   IndexedDB authority browser gate. DA32-022 now has a clean durable snapshot
-  browser gate; quota, source-intent replay, and source-blob persistence remain
-  open.
+  browser gate. DA32-023 now has a clean source-intent recovery gate; handle
+  permission repair, quota, and source-blob persistence remain open.
 
 ## DA32 smoke ownership closeout - 8c6d6c80 (green subject checkpoint, 2026-07-28)
 
@@ -179,6 +179,31 @@ readback, reload survival, diagnostics, and memory fallback behavior. Claim
 blocked: live source-write intent replay, quota and eviction recovery, binary
 source blobs, physical device coverage, screen-reader flow, public release,
 and full MUGEN/IKEMEN authoring parity.
+
+## DA32-023 Studio source-write intent recovery - ef2bf99c (closed-bounded, 2026-07-28)
+
+- `pnpm qa:browser:da32-023-source-intent` passed against clean subject
+  `ef2bf99c` at desktop `1440x900` and mobile `390x844`; unexpected console
+  errors: zero.
+- A real pending `StudioSourceWriteIntent/v1` record is read from IndexedDB.
+  The App bridge exposes it and the recovery panel names its package, path,
+  byte length, digest, and pending status.
+- The recovery action loads the exact preimage into the source editor. The
+  intent stays pending after load, and the gate confirms the source package
+  remains unlinked with no persistent handle write.
+- The accumulated `pnpm qa:smoke` run passed with zero failures. Source-folder
+  write/reimport now asserts both the committed bridge intent and the durable
+  IndexedDB intent record.
+- Evidence: `docs/evidence/da32/da32-023-source-write-intent-browser-gate.json`
+  and desktop/mobile captures. Implementation: `96a918b0`; smoke checkpoint:
+  `72a19141`.
+
+Claim allowed: named pending source-write intent recovery, exact preimage
+loading, pending retention, and no-handle-write behavior at the recorded route
+and viewports. Claim blocked: automatic permission repair, handle-backed write
+after recovery, quota/eviction repair, multi-file transactions, binary source
+blobs, physical device coverage, public release, and full MUGEN/IKEMEN
+authoring parity.
 
 ## Interface desktop layout repair - d8c4dfaa/b4788b85 (closed bounded, 2026-07-27)
 

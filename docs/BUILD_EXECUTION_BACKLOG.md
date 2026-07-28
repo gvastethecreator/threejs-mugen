@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## Entry 626 - DA32-023 Studio source-write intent recovery
+
+Closed DA32-023 in `96a918b0`: Studio source writes now create a durable
+`StudioSourceWriteIntent/v1` before the file-system write and settle the same
+record from the `SourceWriteReceipt`. The bridge exposes the newest pending
+intent, and the recovery action loads its exact preimage bytes into the live
+source editor while keeping the intent pending and the source handle unlinked.
+
+The clean browser gate reads a seeded pending record from the real IndexedDB
+object store at desktop `1440x900` and mobile `390x844`, checks exact editor
+text, pending retention, no persistent handle write, no overflow, and zero
+unexpected console errors. The accumulated `pnpm qa:smoke` run passed with zero
+failures and checks the committed bridge and durable intent after source-folder
+write/reimport. Evidence:
+`docs/evidence/da32/da32-023-source-write-intent-browser-gate.json`, clean
+subject `ef2bf99c`. Smoke checkpoint: `72a19141`.
+
+Claim allowed: named pending source-write intent recovery and exact preimage
+loading at the recorded route and viewports. Claim blocked: automatic
+permission repair, handle-backed write after recovery, quota/eviction repair,
+multi-file transactions, binary source blobs, physical browser coverage,
+release authority, and full Studio/MUGEN/IKEMEN parity.
+
 ## Entry 625 - DA32-022 Studio durable project snapshot binding
 
 Closed DA32-022 in `14df21ef`: the authoritative IndexedDB project save now

@@ -1,5 +1,23 @@
 # Workplan
 
+## DA32-023 Studio source-write intent recovery (2026-07-28)
+
+The Studio save path now records a durable `StudioSourceWriteIntent/v1` before
+an authorized source write and settles it after the write receipt. Pending
+records can be loaded from IndexedDB into the live source editor as exact
+preimages. The recovery view keeps the intent pending and makes the missing
+source handle state visible; it does not claim a file-system write.
+
+Implementation: `96a918b0`.
+Clean browser subject: `ef2bf99c`.
+Evidence: `docs/evidence/da32/da32-023-source-write-intent-browser-gate.json`.
+The accumulated `pnpm qa:smoke` run passed with zero failures and now checks
+the committed intent in the bridge and the IndexedDB object store after source
+write/reimport.
+Next Studio cut: permission-aware handle relink and write/reimport recovery;
+quota, eviction, multi-file transactions, binary blobs, and release authority
+remain blocked.
+
 ## DA32-022 Studio durable project snapshots (2026-07-28)
 
 The Studio save path now writes the verified project snapshot into
