@@ -75,6 +75,7 @@ export class GamepadInputAdapter {
   private readonly deadzone: number;
   private readonly seatByIndex: Record<number, MatchInputSeatId>;
   private readonly seatByDeviceId = new Map<string, MatchInputSeatId>();
+  private readonly ambiguousDeviceIds = new Set<string>();
   private readonly remap: MatchInputRemapTable | undefined;
   private readonly socdMode: RuntimeSocdResolution;
   private lastPolicy?: MatchInputPolicySnapshot;
@@ -125,15 +126,22 @@ export class GamepadInputAdapter {
       if (!pad || pad.connected === false) continue;
       const deviceIndex = Number.isInteger(pad.index) ? pad.index : index;
       const deviceId = pad.id?.trim() ?? "";
-      const seat =
-        (deviceId ? this.seatByDeviceId.get(deviceId) : undefined) ??
-        this.seatByIndex[deviceIndex] ??
-        this.seatByIndex[index];
+      const rememberedSeat = deviceId && !this.ambiguousDeviceIds.has(deviceId) ? this.seatByDeviceId.get(deviceId) : undefined;
+      const configuredSeat = this.seatByIndex[deviceIndex] ?? this.seatByIndex[index];
+      const seat = [rememberedSeat, configuredSeat].find((candidate) => candidate !== undefined && !bySeat.has(candidate));
       if (!seat) continue;
       // First connected pad for a seat wins.
       if (!bySeat.has(seat)) {
         bySeat.set(seat, { pad, index: deviceIndex });
-        if (deviceId) this.seatByDeviceId.set(deviceId, seat);
+        if (deviceId && !this.ambiguousDeviceIds.has(deviceId)) {
+          const previousSeat = this.seatByDeviceId.get(deviceId);
+          if (previousSeat !== undefined && previousSeat !== seat) {
+            this.ambiguousDeviceIds.add(deviceId);
+            this.seatByDeviceId.delete(deviceId);
+          } else if (previousSeat === undefined) {
+            this.seatByDeviceId.set(deviceId, seat);
+          }
+        }
       }
     }
 
