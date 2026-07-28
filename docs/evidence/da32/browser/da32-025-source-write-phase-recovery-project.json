@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "mugen-web-sandbox/project/v0",
+  "id": "da32-025-source-write-phase-recovery",
+  "name": "DA32-025 Source Write Phase Recovery",
+  "engineVersion": "qa-browser-gate",
+  "generatedAt": "2026-07-28T00:00:00.000Z",
+  "projectType": "mugen-port",
+  "modules": [
+    "mugen-compat",
+    "three-render",
+    "studio-workspace"
+  ],
+  "sourcePackages": [
+    {
+      "id": "phase-source",
+      "name": "Phase Recovery Source",
+      "kind": "folder",
+      "fileCount": 1,
+      "status": "missing",
+      "characterId": "nova-boxer",
+      "characterName": "Nova Boxer",
+      "defPath": "chars/phase/phase.def",
+      "stageIds": [],
+      "stageDefPaths": [],
+      "requiredPaths": [
+        "chars/phase/phase.cns"
+      ]
+    }
+  ],
+  "assets": {
+    "characters": [
+      "nova-boxer",
+      "mira-volt",
+      "rook-apprentice"
+    ],
+    "stages": [
+      "rooftop-dojo"
+    ],
+    "audio": [],
+    "ui": [],
+    "effects": []
+  },
+  "assetRecords": [],
+  "entry": {
+    "mode": "match",
+    "p1": "nova-boxer",
+    "p2": "mira-volt",
+    "stage": "rooftop-dojo"
+  },
+  "compatibility": {
+    "gates": [],
+    "stats": {
+      "characters": 3,
+      "stages": 1,
+      "importedCharacters": 1,
+      "importedStages": 0,
+      "generatedAtlases": 3
+    }
+  }
+}

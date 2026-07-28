@@ -2349,6 +2349,10 @@ export class App {
     sourcePackageId?: string;
     draftDigest?: string;
     byteLength?: number;
+    phase?: StudioSourceWriteIntent["phase"];
+    writeByteLength?: number;
+    observedSourceFingerprint?: string;
+    receiptId?: string;
     result?: StudioSourceWriteIntent["result"];
     recovery?: StudioSourceWriteIntent["recovery"];
     createdAt?: string;
@@ -2510,9 +2514,22 @@ export class App {
         sourcePackageId: latestContext.sourcePackage.id,
         draftDigest: semanticPreflight.draftDigest,
         byteLength: preimage.byteLength,
+        phase: "preimage-captured",
       });
       const result = await writeSourceHandleText(latestContext.handle, draft.path, draft.text);
       writeClosed = true;
+      sourceWriteIntent = await this.persistStudioSourceWriteIntent({
+        intentId: sourceWriteIntent?.intentId ?? `source-intent:${this.getGameProjectManifest().id}:${latestContext.sourcePackage.id}:${draft.path}:${preimage.digest}`,
+        path: sourceWriteIntent?.path ?? draft.path,
+        preimage: preimage.bytes,
+        projectId: sourceWriteIntent?.projectId ?? this.getGameProjectManifest().id,
+        sourcePackageId: sourceWriteIntent?.sourcePackageId ?? latestContext.sourcePackage.id,
+        draftDigest: sourceWriteIntent?.draftDigest ?? semanticPreflight.draftDigest,
+        byteLength: sourceWriteIntent?.byteLength ?? preimage.byteLength,
+        phase: "write-closed",
+        writeByteLength: result.byteLength,
+        createdAt: sourceWriteIntent?.createdAt,
+      }) ?? sourceWriteIntent;
       this.studioSourceDocument = commitStudioSourceDocumentDraft(draft);
       this.invalidateBuildOutputs();
       this.pendingSourceRelinkPackageId = latestContext.sourcePackage.id;
@@ -2524,6 +2541,19 @@ export class App {
       if (accepted) {
         const activePackage = this.getProjectSourcePackages().find((item) => item.id === latestContext.sourcePackage.id) ?? latestContext.sourcePackage;
         const fingerprint = this.importedSourceBundle?.fingerprint;
+        sourceWriteIntent = await this.persistStudioSourceWriteIntent({
+          intentId: sourceWriteIntent?.intentId ?? `source-intent:${this.getGameProjectManifest().id}:${activePackage.id}:${draft.path}:${preimage.digest}`,
+          path: sourceWriteIntent?.path ?? draft.path,
+          preimage: preimage.bytes,
+          projectId: sourceWriteIntent?.projectId ?? this.getGameProjectManifest().id,
+          sourcePackageId: sourceWriteIntent?.sourcePackageId ?? activePackage.id,
+          draftDigest: sourceWriteIntent?.draftDigest ?? semanticPreflight.draftDigest,
+          byteLength: sourceWriteIntent?.byteLength ?? preimage.byteLength,
+          phase: "reimported",
+          writeByteLength: sourceWriteIntent?.writeByteLength ?? result.byteLength,
+          observedSourceFingerprint: fingerprint?.digest,
+          createdAt: sourceWriteIntent?.createdAt,
+        }) ?? sourceWriteIntent;
         await this.persistSourceHandle(
           activePackage,
           latestContext.handle,
@@ -2642,6 +2672,10 @@ export class App {
         byteLength: sourceWriteIntent.byteLength,
         result: receipt.status === "committed" ? "committed" : receipt.status === "blocked" ? "denied" : "aborted",
         recovery: receipt.compensation.status === "restored" ? "restored" : "none",
+        phase: "settled",
+        writeByteLength: sourceWriteIntent.writeByteLength,
+        observedSourceFingerprint: receipt.observedSourceFingerprint,
+        receiptId: receipt.id,
         createdAt: sourceWriteIntent.createdAt,
       });
     }
@@ -2658,6 +2692,10 @@ export class App {
         byteLength: recoveredSourceWriteIntent.byteLength,
         result: receipt.status === "committed" ? "committed" : receipt.status === "blocked" ? "denied" : "aborted",
         recovery: receipt.status === "committed" && draft.text === recoveredText ? "restored" : "none",
+        phase: "settled",
+        writeByteLength: recoveredSourceWriteIntent.writeByteLength,
+        observedSourceFingerprint: receipt.observedSourceFingerprint,
+        receiptId: receipt.id,
         createdAt: recoveredSourceWriteIntent.createdAt,
       });
     }
@@ -8417,16 +8455,17 @@ export class App {
     const pending = !intent.result;
     const status: StudioStatus = pending ? "warn" : intent.result === "committed" ? "ok" : intent.result === "denied" ? "blocked" : "fail";
     const result = intent.result ?? "pending-recovery";
+    const phase = intent.phase ?? "preimage-captured";
     const sourcePackage = intent.sourcePackageId
       ? this.getProjectSourcePackages().find((candidate) => candidate.id === intent.sourcePackageId)
       : undefined;
     return `
-      <section class="studio-project-conflict studio-source-write-recovery" role="${pending ? "alert" : "status"}" aria-live="polite" data-source-write-intent="${escapeHtml(result)}">
+      <section class="studio-project-conflict studio-source-write-recovery" role="${pending ? "alert" : "status"}" aria-live="polite" data-source-write-intent="${escapeHtml(result)}" data-source-write-phase="${escapeHtml(phase)}">
         <div class="studio-project-conflict-head">
           ${tablerIcon("archive", "ui-icon action-icon")}
           <span>
             <strong>Durable source write intent</strong>
-            <small>${escapeHtml(result)} / ${escapeHtml(intent.sourcePackageId ?? "source package unavailable")} / ${escapeHtml(intent.path)}</small>
+            <small>${escapeHtml(result)} / ${escapeHtml(phase)} / ${escapeHtml(intent.sourcePackageId ?? "source package unavailable")} / ${escapeHtml(intent.path)}</small>
           </span>
           ${this.statusBadge(status)}
         </div>

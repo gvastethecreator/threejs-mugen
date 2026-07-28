@@ -66,20 +66,52 @@ describe("StudioIndexedDbSnapshot", () => {
       intentId: "intent-1",
       projectId: "project-1",
       sourcePackageId: "nova",
+      phase: "preimage-captured",
     });
     expect(listed?.result).toBeUndefined();
     const committed = await saveSourceWriteIntent({
       intentId: "intent-1",
       path: pending.path,
       preimage,
+      phase: "settled",
+      writeByteLength: 13,
+      observedSourceFingerprint: "b".repeat(64),
+      receiptId: "source-write:intent-1",
       result: "committed",
       recovery: "none",
       createdAt: pending.createdAt,
     });
     expect(committed.createdAt).toBe(pending.createdAt);
-    expect(committed.result).toBe("committed");
+    expect(committed).toMatchObject({
+      result: "committed",
+      phase: "settled",
+      writeByteLength: 13,
+      observedSourceFingerprint: "b".repeat(64),
+      receiptId: "source-write:intent-1",
+    });
     const replay = await replaySourceWriteIntent("intent-1");
     expect(replay.ok).toBe(true);
     expect([...replay.bytes!]).toEqual([...preimage]);
+  });
+
+  it("retains the last durable phase when a receipt has not settled yet", async () => {
+    clearStudioIndexedDbMemory();
+    const preimage = new TextEncoder().encode("before-write");
+    await saveSourceWriteIntent({
+      intentId: "intent-phase-1",
+      path: "chars/kfm/kfm.cns",
+      preimage,
+      phase: "write-closed",
+      writeByteLength: 13,
+      draftDigest: "fnv1a32:write",
+    });
+
+    const listed = (await listSourceWriteIntents())[0];
+    expect(listed).toMatchObject({
+      intentId: "intent-phase-1",
+      phase: "write-closed",
+      writeByteLength: 13,
+    });
+    expect(listed?.result).toBeUndefined();
   });
 });

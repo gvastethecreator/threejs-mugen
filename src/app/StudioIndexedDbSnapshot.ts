@@ -10,6 +10,7 @@ export const STUDIO_INDEXEDDB_SNAPSHOT_DB_NAME = "mugen-web-sandbox-studio";
 export const STUDIO_INDEXEDDB_SNAPSHOT_DB_VERSION = 1;
 
 export type StudioIndexedDbSnapshotBackend = "indexeddb" | "memory";
+export type StudioSourceWriteIntentPhase = "preimage-captured" | "write-closed" | "reimported" | "settled";
 
 export type StudioIndexedDbSnapshotDiagnostics = {
   schema: typeof STUDIO_INDEXEDDB_SNAPSHOT_SCHEMA;
@@ -41,6 +42,10 @@ export type StudioSourceWriteIntent = {
   sourcePackageId?: string;
   draftDigest?: string;
   byteLength?: number;
+  phase: StudioSourceWriteIntentPhase;
+  writeByteLength?: number;
+  observedSourceFingerprint?: string;
+  receiptId?: string;
   result?: "committed" | "aborted" | "denied";
   recovery?: "restored" | "none";
   createdAt: string;
@@ -123,6 +128,10 @@ export async function saveSourceWriteIntent(intent: {
   sourcePackageId?: string;
   draftDigest?: string;
   byteLength?: number;
+  phase?: StudioSourceWriteIntentPhase;
+  writeByteLength?: number;
+  observedSourceFingerprint?: string;
+  receiptId?: string;
   result?: StudioSourceWriteIntent["result"];
   recovery?: StudioSourceWriteIntent["recovery"];
   createdAt?: string;
@@ -139,6 +148,10 @@ export async function saveSourceWriteIntent(intent: {
     ...(intent.sourcePackageId !== undefined || previous?.sourcePackageId !== undefined ? { sourcePackageId: intent.sourcePackageId ?? previous?.sourcePackageId } : {}),
     ...(intent.draftDigest !== undefined || previous?.draftDigest !== undefined ? { draftDigest: intent.draftDigest ?? previous?.draftDigest } : {}),
     ...(intent.byteLength !== undefined || previous?.byteLength !== undefined ? { byteLength: intent.byteLength ?? previous?.byteLength } : {}),
+    phase: intent.phase ?? previous?.phase ?? "preimage-captured",
+    ...(intent.writeByteLength !== undefined || previous?.writeByteLength !== undefined ? { writeByteLength: intent.writeByteLength ?? previous?.writeByteLength } : {}),
+    ...(intent.observedSourceFingerprint !== undefined || previous?.observedSourceFingerprint !== undefined ? { observedSourceFingerprint: intent.observedSourceFingerprint ?? previous?.observedSourceFingerprint } : {}),
+    ...(intent.receiptId !== undefined || previous?.receiptId !== undefined ? { receiptId: intent.receiptId ?? previous?.receiptId } : {}),
     ...(intent.result !== undefined || previous?.result !== undefined ? { result: intent.result ?? previous?.result } : {}),
     ...(intent.recovery !== undefined || previous?.recovery !== undefined ? { recovery: intent.recovery ?? previous?.recovery } : {}),
     createdAt: intent.createdAt ?? previous?.createdAt ?? new Date().toISOString(),
@@ -158,7 +171,7 @@ export async function listSourceWriteIntents(): Promise<StudioSourceWriteIntent[
   if (backend === "indexeddb" && indexedDbFactory) {
     try {
       const records = await idbGetAll<StudioSourceWriteIntent>("intents");
-      const intents = records.filter(isStudioSourceWriteIntent).sort(compareSourceWriteIntents);
+      const intents = records.filter(isStudioSourceWriteIntent).map(normalizeStudioSourceWriteIntent).sort(compareSourceWriteIntents);
       memory.intents.clear();
       for (const intent of intents) memory.intents.set(intent.intentId, intent);
       return intents;
@@ -181,6 +194,7 @@ export async function replaySourceWriteIntent(
     }
   }
   if (!intent || !isStudioSourceWriteIntent(intent)) return { ok: false, reason: "missing-intent" };
+  intent = normalizeStudioSourceWriteIntent(intent);
   memory.intents.set(intent.intentId, intent);
   if (intent.result === "committed") {
     return { ok: true, bytes: Uint8Array.from(intent.preimageBytes) };
@@ -290,9 +304,24 @@ function isStudioSourceWriteIntent(value: unknown): value is StudioSourceWriteIn
     typeof record.path === "string" && record.path.trim().length > 0 &&
     Array.isArray(record.preimageBytes) && record.preimageBytes.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255) &&
     typeof record.preimageSha256 === "string" &&
+    (record.phase === undefined || isStudioSourceWriteIntentPhase(record.phase)) &&
+    (record.writeByteLength === undefined || (Number.isSafeInteger(record.writeByteLength) && record.writeByteLength >= 0)) &&
+    (record.observedSourceFingerprint === undefined || typeof record.observedSourceFingerprint === "string") &&
+    (record.receiptId === undefined || typeof record.receiptId === "string") &&
     (record.result === undefined || record.result === "committed" || record.result === "aborted" || record.result === "denied") &&
     (record.recovery === undefined || record.recovery === "restored" || record.recovery === "none") &&
     typeof record.createdAt === "string";
+}
+
+function normalizeStudioSourceWriteIntent(intent: StudioSourceWriteIntent): StudioSourceWriteIntent {
+  return {
+    ...intent,
+    phase: intent.phase ?? "preimage-captured",
+  };
+}
+
+function isStudioSourceWriteIntentPhase(value: unknown): value is StudioSourceWriteIntentPhase {
+  return value === "preimage-captured" || value === "write-closed" || value === "reimported" || value === "settled";
 }
 
 function compareSourceWriteIntents(left: StudioSourceWriteIntent, right: StudioSourceWriteIntent): number {
