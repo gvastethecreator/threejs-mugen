@@ -1,6 +1,6 @@
 # DA32 next program roadmap
 
-Last updated: 2026-07-27
+Last updated: 2026-07-28
 
 DA31 closed the 40-cut evidence-adoption program at named claim ceilings.
 DA32 turns remaining open product and adjudication work into owned lanes.
@@ -60,11 +60,31 @@ input devices, and full MUGEN/IKEMEN visual parity.
   errors.
 - Screenshots: `docs/evidence/da32/browser/da32-005-mugen-lite-desktop.png`
   and `docs/evidence/da32/browser/da32-005-mugen-lite-mobile.png`.
-- The full `pnpm qa:smoke` ledger remains open at 41 failures. The focal gate
-  covers the named initial imported-fighter view only; broader state, roster,
-  stage, device, and MUGEN/IKEMEN parity claims stay blocked.
+- The full `pnpm qa:smoke` ledger is green at the current subject checkpoint.
+  The focal gate still covers the named initial imported-fighter view only;
+  broader state, roster, stage, device, and MUGEN/IKEMEN parity claims stay
+  blocked.
 
 Evidence: `docs/evidence/da32/da32-005-mugen-lite-visual-browser-gate.json`.
+
+### Green smoke subject checkpoint - 8c6d6c80 (2026-07-28)
+
+- `pnpm qa:smoke` passed with zero failures at the current subject HEAD.
+- The MUGEN Lite visual lane now captures the renderer canvas with stage
+  controls hidden for the crop, so lower fallen-sprite pixels remain measurable
+  on mobile. The evidence also records the applied frame and mesh position.
+- Studio Debug drives imported KFM through a paused contact route at an
+  80-unit gap, observes a live target link, and then verifies executed state
+  200 before rendering the target lens.
+- Focused renderer coverage passes 5/5; the new frame diagnostic is used by the
+  browser oracle to reject stale mesh presentations.
+
+Evidence: `docs/evidence/da32/da32-smoke-ownership-v1.json`,
+`docs/evidence/da32/da32-program-status-v1.json`, and `.scratch/qa/qa-smoke/`.
+
+Claim ceiling: this is a green local subject checkpoint for the named browser
+routes. Hardware gamepad evidence, score movement, public release, and full
+MUGEN/IKEMEN parity remain blocked.
 
 ## Phase 1 — Device lab
 

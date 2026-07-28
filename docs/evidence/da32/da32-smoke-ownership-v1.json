@@ -1,146 +1,21 @@
 {
   "schema": "Da32SmokeOwnership/v1",
   "id": "DA32-001",
-  "generatedAt": "2026-07-28T03:18:16.182Z",
-  "ok": false,
-  "failureCount": 41,
-  "lanes": [
-    {
-      "id": "mugen-lite-visual",
-      "status": "open",
-      "failureCount": 20,
-      "failures": [
-        "mugen-lite visual desktop recovery recovery: imported state/frame/crop proof failed",
-        "mugen-lite visual desktop: recovery roster, damage, unique poses, or idle return proof failed",
-        "mugen-lite visual desktop: guarded imported contact, exact chip, or idle return proof failed",
-        "mugen-lite visual mobile: ZIP load, imported sprite presentation, or multi-frame canvas proof failed",
-        "mugen-lite visual mobile walk: input-driven pose or idle return proof failed",
-        "mugen-lite visual mobile crouch: input-driven pose or idle return proof failed",
-        "mugen-lite visual mobile jump: input-driven pose or idle return proof failed",
-        "mugen-lite visual mobile: idle/walk/crouch/jump masks were not mutually distinct",
-        "mugen-lite visual mobile getHit: imported combat state/frame/crop proof failed",
-        "mugen-lite visual mobile fallMotion: imported combat state/frame/crop proof failed",
-        "mugen-lite visual mobile fallen: imported combat state/frame/crop proof failed",
-        "mugen-lite visual mobile: combat damage, unique poses, or idle return proof failed",
-        "mugen-lite visual mobile recovery getHit: imported state/frame/crop proof failed",
-        "mugen-lite visual mobile recovery fallMotion: imported state/frame/crop proof failed",
-        "mugen-lite visual mobile recovery fallen: imported state/frame/crop proof failed",
-        "mugen-lite visual mobile recovery recovery: imported state/frame/crop proof failed",
-        "mugen-lite visual mobile: recovery roster, damage, unique poses, or idle return proof failed",
-        "mugen-lite visual mobile: guarded imported contact, exact chip, or idle return proof failed",
-        "mugen-lite visual mobile: legal NoKOSlow KO, normal playback, or reset proof failed",
-        "mugen-lite visual mobile: ACT-backed source/destination RemapPal pixel proof failed"
-      ],
-      "owner": "DA32-smoke",
-      "claimCeiling": "lane open until green at named subject SHA"
-    },
-    {
-      "id": "studio-build",
-      "status": "open",
-      "failureCount": 6,
-      "failures": [
-        "studio-build: Build surface did not render",
-        "studio-build: shared Trust Chain rows were missing targets, deltas, or Build Readiness next actions",
-        "studio-build: project package panel or bridge summary missing",
-        "studio-build: revision-bound evidence envelopes were not surfaced through Evidence/Trust Chain",
-        "studio-build: imported package analysis was not surfaced through Evidence/Trust Chain",
-        "studio-build: promoted compatibility snapshot was not visible as an exportable Build record"
-      ],
-      "owner": "DA32-smoke",
-      "claimCeiling": "lane open until green at named subject SHA"
-    },
-    {
-      "id": "studio-modules",
-      "status": "open",
-      "failureCount": 1,
-      "failures": [
-        "studio-modules: shared module contracts and boundary claims were not visible through Studio Modules and the QA bridge"
-      ],
-      "owner": "DA32-smoke",
-      "claimCeiling": "lane open until green at named subject SHA"
-    },
-    {
-      "id": "studio-source-relink",
-      "status": "open",
-      "failureCount": 1,
-      "failures": [
-        "studio-source-relink: missing source package did not relink through the Build Center UI"
-      ],
-      "owner": "DA32-smoke",
-      "claimCeiling": "lane open until green at named subject SHA"
-    },
-    {
-      "id": "ikemen-scan",
-      "status": "open",
-      "failureCount": 1,
-      "failures": [
-        "ikemen-scan: scanner-only IKEMEN ZSS/Lua/screenpack/model-stage findings did not reach Studio Evidence and unsupported reports"
-      ],
-      "owner": "DA32-smoke",
-      "claimCeiling": "lane open until green at named subject SHA"
-    },
-    {
-      "id": "studio-assets",
-      "status": "open",
-      "failureCount": 1,
-      "failures": [
-        "studio-assets: Asset Library did not expose filtered project asset records"
-      ],
-      "owner": "DA32-smoke",
-      "claimCeiling": "lane open until green at named subject SHA"
-    },
-    {
-      "id": "studio-evidence",
-      "status": "open",
-      "failureCount": 7,
-      "failures": [
-        "studio-evidence: Evidence surface did not render",
-        "studio-evidence: shared Trust Chain rows were missing targets, deltas, or Build Readiness next actions",
-        "studio-evidence: semantic export digest or Trust Chain contract drifted from Build",
-        "studio-evidence: promoted compatibility snapshot was not visible as validated evidence",
-        "studio-evidence: persisted trace evidence history missing after export",
-        "studio-evidence: trace comparison review did not expose metric and gate diff rows",
-        "studio-evidence: trace frame scrubber did not expose selected frame timeline, frame diff, and world delta data"
-      ],
-      "owner": "DA32-smoke",
-      "claimCeiling": "lane open until green at named subject SHA"
-    },
-    {
-      "id": "studio-debug",
-      "status": "open",
-      "failureCount": 4,
-      "failures": [
-        "studio-debug: Runtime Debug Studio did not expose the actor registry",
-        "studio-debug: targets lens did not expose target-link rows, gate-evidence panel, and URL state",
-        "studio-debug: effect world evidence did not jump to a world-backed trace frame scrubber row",
-        "studio-debug: selected imported actor did not expose CNS execution and command-buffer evidence"
-      ],
-      "owner": "DA32-smoke",
-      "claimCeiling": "lane open until green at named subject SHA"
-    }
-  ],
-  "laneSummary": {
-    "mugen-lite-visual": 20,
-    "studio-build": 6,
-    "studio-modules": 1,
-    "studio-source-relink": 1,
-    "ikemen-scan": 1,
-    "studio-assets": 1,
-    "studio-evidence": 7,
-    "studio-debug": 4
-  },
+  "generatedAt": "2026-07-28T05:48:36.338Z",
+  "ok": true,
+  "failureCount": 0,
+  "lanes": [],
+  "laneSummary": {},
   "runtimeSample": {
     "desktopHitSparks": 1,
     "mobileHitSparks": 1,
     "desktopActors": 2,
     "mobileActors": 2
   },
-  "claimCeiling": "structured smoke ownership only; full visual matrix not green",
+  "claimCeiling": "full qa:smoke green at this subject only",
   "claims": {
     "allowed": [
-      "named open lanes",
-      "failure inventory",
-      "runtime sample counters"
+      "qa:smoke green"
     ],
     "blocked": [
       "score movement",
@@ -150,6 +25,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "cb485a05a7afe7466e4d5da2ec96b07dbe9e0e69b14e6a4636172ed0df988f79"
+    "value": "28f848dbef9c539c0aa66a6ffaf0fee849d28ce51ffa7f107ed1b84d8d11d47e"
   }
 }

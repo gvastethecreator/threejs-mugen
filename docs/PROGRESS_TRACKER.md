@@ -16,11 +16,30 @@
   `docs/evidence/da32/da32-program-status-v1.json`. Smoke ownership + hit-spark
   drive harden; gamepad device-lab protocol; clause sample proposes
   `adjudicatedThrough=DA30-021` (not auto-applied); a11y baseline inventory.
-  The DA32-002 focal browser gate passes on desktop/mobile; the global smoke
-  sample remains open at 41 failures. DA32-005 now has a passing imported
-  MUGEN Lite visual gate on desktop/mobile. Next: reconcile the runtime sample,
-  expand the visual matrix, close Studio lanes, human accept watermark, and
-  continue the hardware gamepad work.
+  The full `qa:smoke` sample is green at the current subject HEAD. DA32-002
+  and DA32-005 still keep their named focal claim ceilings. Next: expand the
+  visual matrix, close the remaining Studio lanes, review the proposed human
+  watermark, and continue the hardware gamepad work.
+
+## DA32 smoke ownership closeout - 8c6d6c80 (green subject checkpoint, 2026-07-28)
+
+- `pnpm qa:smoke` passed with zero failures after the browser harness began
+  capturing the stage canvas without HTML controls covering the lower sprite
+  rows.
+- The imported MUGEN Lite desktop/mobile journey now proves the applied frame
+  (`5100/0`), projected position, and fixture pixel crop for combat, fall, and
+  recovery. The mobile fallen crop records 310 fixture-color pixels.
+- Studio Debug now drives the imported KFM runtime while paused at an 80-unit
+  contact gap, then captures a live target link and the executed state 200.
+- `CharacterRenderer` diagnostics expose the frame group/index applied to each
+  mesh, and its focused renderer test passes 5/5.
+- Evidence: `docs/evidence/da32/da32-smoke-ownership-v1.json`,
+  `docs/evidence/da32/da32-program-status-v1.json`, and the current
+  `.scratch/qa/qa-smoke/` captures.
+
+Claim allowed: green `qa:smoke` at commit `8c6d6c80` for the named local
+browser subject and routes. Claim blocked: hardware gamepad coverage, score
+movement, public release, and full MUGEN/IKEMEN parity.
 
 ## Interface desktop layout repair - d8c4dfaa/b4788b85 (closed bounded, 2026-07-27)
 
@@ -36,7 +55,7 @@
 
 Research: [desktop and responsive interface audit](research/2026-07-27-interface-desktop-audit.md).
 
-## DA32-002 native hit-spark drive - focal pass, global smoke open (2026-07-27)
+## DA32-002 native hit-spark drive - focal pass, green global subject (2026-07-27)
 
 - `scripts/qa_smoke.cjs` now waits for `playing`, approaches by live actor
   distance, holds each attack for 120 ms, and retries the named attack keys
@@ -44,9 +63,9 @@ Research: [desktop and responsive interface audit](research/2026-07-27-interface
 - `pnpm qa:browser:da32-002-hit-spark` passed at desktop `1440x960` and mobile
   `390x844`. `KeyZ`, `KeyA`, and `KeyX` each produced a player spark with a
   resolved sprite and axis record; unexpected console errors: zero.
-- The complete `pnpm qa:smoke` run remains open at 46 failures. Desktop still
-  misses its runtime spark sample while the focused gate passes, so the claim
-  ceiling stays focal.
+- The complete `pnpm qa:smoke` run is green at the current subject checkpoint.
+  The claim ceiling stays focal because the gate still names one route,
+  viewport pair, and input set.
 
 Evidence: `docs/evidence/da32/da32-002-hit-spark-browser-gate.json`.
 
@@ -64,7 +83,8 @@ Evidence: `docs/evidence/da32/da32-002-hit-spark-browser-gate.json`.
 
 Claim allowed: the named initial MUGEN Lite import view at the two tested
 viewports. Claim blocked: the broader visual state matrix, full roster/stage
-coverage, device coverage, and full MUGEN/IKEMEN parity.
+coverage, device coverage, and full MUGEN/IKEMEN parity. The complete
+`qa:smoke` subject is green at the current checkpoint.
 
 ## TypeScript 7 typecheck unblock - 2026-07-27
 

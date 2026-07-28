@@ -157,7 +157,9 @@ const status = {
     "DA32-002": {
       status: hitSparkGateOk ? "accepted-focal-gate" : "accepted-hardening",
       note: hitSparkGateOk
-        ? `desktop/mobile browser gate passed; full smoke remains open failures=${ownership.failureCount}`
+        ? ownership.ok
+          ? "desktop/mobile browser gate passed; full qa:smoke green at this subject only"
+          : `desktop/mobile browser gate passed; full smoke remains open failures=${ownership.failureCount}`
         : "driveRuntimeHitSpark requires playing + multi-key retry",
       artifacts: hitSparkGateOk
         ? [
@@ -180,7 +182,9 @@ const status = {
     "DA32-005": {
       status: mugenLiteVisualGateOk ? "accepted-focal-gate" : "open-implementation",
       note: mugenLiteVisualGateOk
-        ? `desktop/mobile imported MUGEN Lite visual gate passed; full smoke remains open failures=${ownership.failureCount}`
+        ? ownership.ok
+          ? "desktop/mobile imported MUGEN Lite visual gate passed; full qa:smoke green at this subject only"
+          : `desktop/mobile imported MUGEN Lite visual gate passed; full smoke remains open failures=${ownership.failureCount}`
         : "restore imported MUGEN Lite playfield visibility on mobile",
       artifacts: mugenLiteVisualGateOk
         ? [
@@ -224,14 +228,16 @@ const status = {
   },
   scoresHeld: true,
   next: [
-    "live qa:smoke re-run with ownership write",
-    "reconcile global smoke runtime-native sample with focal gate",
+    ownership.ok ? "retain green smoke ownership at the next subject HEAD" : "live qa:smoke re-run with ownership write",
+    ownership.ok ? "expand runtime visual and Studio matrix" : "reconcile global smoke runtime-native sample with focal gate",
     mugenLiteVisualGateOk ? "expand mugen-lite visual matrix" : "close mugen-lite visual lane",
     "studio surface repairs",
     "hardware gamepad lab",
   ],
   claimCeiling:
-    "DA32 program bootstrap; smoke not claimed green; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
+    ownership.ok
+      ? "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021"
+      : "DA32 program bootstrap; smoke not claimed green; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
 };
 status.digest = { algorithm: "sha-256", value: sha(JSON.stringify({ ...status, digest: undefined })) };
 fs.writeFileSync(path.join(outDir, "da32-program-status-v1.json"), `${JSON.stringify(status, null, 2)}\n`, "utf8");

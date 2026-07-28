@@ -1,17 +1,17 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T03:31:22.471Z",
+  "generatedAt": "2026-07-28T05:52:11.934Z",
   "tasks": {
     "DA32-001": {
-      "status": "accepted-ownership",
-      "note": "smoke open failures=41",
+      "status": "accepted",
+      "note": "smoke green",
       "artifacts": [
         "docs/evidence/da32/da32-smoke-ownership-v1.json"
       ]
     },
     "DA32-002": {
       "status": "accepted-focal-gate",
-      "note": "desktop/mobile browser gate passed; full smoke remains open failures=41",
+      "note": "desktop/mobile browser gate passed; full qa:smoke green at this subject only",
       "artifacts": [
         "scripts/qa_smoke.cjs",
         "scripts/qa_browser_gate_da32_002_hit_spark.cjs",
@@ -34,7 +34,7 @@
     },
     "DA32-005": {
       "status": "accepted-focal-gate",
-      "note": "desktop/mobile imported MUGEN Lite visual gate passed; full smoke remains open failures=41",
+      "note": "desktop/mobile imported MUGEN Lite visual gate passed; full qa:smoke green at this subject only",
       "artifacts": [
         "src/styles/redesign.css",
         "scripts/qa_browser_gate_da32_005_mugen_lite_visual.cjs",
@@ -86,15 +86,15 @@
   },
   "scoresHeld": true,
   "next": [
-    "live qa:smoke re-run with ownership write",
-    "reconcile global smoke runtime-native sample with focal gate",
+    "retain green smoke ownership at the next subject HEAD",
+    "expand runtime visual and Studio matrix",
     "expand mugen-lite visual matrix",
     "studio surface repairs",
     "hardware gamepad lab"
   ],
-  "claimCeiling": "DA32 program bootstrap; smoke not claimed green; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
+  "claimCeiling": "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "0851cc33c340c394807192b04a51e9520c1235e8ba1f7b1255eb47e6cbf8d6cb"
+    "value": "3f8eabb1fd732b8461e642887829d9d358ab35fda9cfdc4dcb73948149e885e7"
   }
 }
