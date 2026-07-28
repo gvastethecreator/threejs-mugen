@@ -52,6 +52,7 @@
     "qa:browser:da32-021-storage": "node scripts/qa_browser_gate_da32_021_studio_storage.cjs",
     "qa:browser:da32-022-snapshot": "node scripts/qa_browser_gate_da32_022_studio_snapshot.cjs",
     "qa:browser:da32-023-source-intent": "node scripts/qa_browser_gate_da32_023_source_write_intent.cjs",
+    "qa:browser:da32-024-source-intent-write": "node scripts/qa_browser_gate_da32_024_source_intent_write_recovery.cjs",
     "qa:browser:da32-029-a11y": "node scripts/qa_browser_gate_da32_029_a11y.cjs",
     "materialize:da31-status": "node scripts/build_da31_phase_status.cjs",
     "materialize:da32-status": "node scripts/build_da32_status.cjs",

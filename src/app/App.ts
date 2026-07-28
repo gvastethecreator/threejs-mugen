@@ -1290,6 +1290,8 @@ export class App {
         this.discardStudioSourceDocument();
       } else if (action === "replay-source-write-intent") {
         void this.replayStudioSourceWriteIntent();
+      } else if (action === "relink-source-write-intent") {
+        this.relinkStudioSourceWriteIntent();
       } else if (action === "focus-source-diagnostic") {
         event.preventDefault();
         const line = Number(target.closest<HTMLElement>("[data-source-diagnostic-line]")?.dataset.sourceDiagnosticLine);
@@ -2363,6 +2365,16 @@ export class App {
     let compensationHandle: SourceHandleLike | undefined;
     let compensationPackageId: string | undefined;
     let sourceWriteIntent: StudioSourceWriteIntent | undefined;
+    let settledStudioSourceWriteIntent: StudioSourceWriteIntent | undefined;
+    const recoveryIntentPath = this.studioSourceWriteIntent?.path.toLowerCase();
+    const draftPath = draft.path.toLowerCase();
+    const recoveredSourceWriteIntent = this.studioSourceWriteIntent &&
+      !this.studioSourceWriteIntent.result &&
+      this.studioSourceWriteIntent.sourcePackageId === draft.sourcePackageId &&
+      recoveryIntentPath &&
+      (recoveryIntentPath === draftPath || draftPath.endsWith(`/${recoveryIntentPath}`))
+      ? this.studioSourceWriteIntent
+      : undefined;
     const compensateAfterClose = async (): Promise<SourceWriteCompensation | undefined> => {
       if (!writeClosed || !preimage || !compensationHandle || !compensationPackageId) {
         return undefined;
@@ -2594,7 +2606,7 @@ export class App {
     }
     if (sourceWriteIntent && this.studioSourceWriteReceipt) {
       const receipt = this.studioSourceWriteReceipt;
-      await this.persistStudioSourceWriteIntent({
+      settledStudioSourceWriteIntent = await this.persistStudioSourceWriteIntent({
         intentId: sourceWriteIntent.intentId,
         path: sourceWriteIntent.path,
         preimage: Uint8Array.from(sourceWriteIntent.preimageBytes),
@@ -2606,6 +2618,25 @@ export class App {
         recovery: receipt.compensation.status === "restored" ? "restored" : "none",
         createdAt: sourceWriteIntent.createdAt,
       });
+    }
+    if (recoveredSourceWriteIntent && this.studioSourceWriteReceipt) {
+      const receipt = this.studioSourceWriteReceipt;
+      const recoveredText = new TextDecoder().decode(Uint8Array.from(recoveredSourceWriteIntent.preimageBytes));
+      settledStudioSourceWriteIntent = await this.persistStudioSourceWriteIntent({
+        intentId: recoveredSourceWriteIntent.intentId,
+        path: recoveredSourceWriteIntent.path,
+        preimage: Uint8Array.from(recoveredSourceWriteIntent.preimageBytes),
+        projectId: recoveredSourceWriteIntent.projectId,
+        sourcePackageId: recoveredSourceWriteIntent.sourcePackageId,
+        draftDigest: recoveredSourceWriteIntent.draftDigest,
+        byteLength: recoveredSourceWriteIntent.byteLength,
+        result: receipt.status === "committed" ? "committed" : receipt.status === "blocked" ? "denied" : "aborted",
+        recovery: receipt.status === "committed" && draft.text === recoveredText ? "restored" : "none",
+        createdAt: recoveredSourceWriteIntent.createdAt,
+      });
+    }
+    if (settledStudioSourceWriteIntent) {
+      this.studioSourceWriteIntent = settledStudioSourceWriteIntent;
     }
     this.updateUi();
   }
@@ -2639,21 +2670,37 @@ export class App {
       return;
     }
     const text = new TextDecoder().decode(replay.bytes);
+    const activePath = this.resolveStudioSourceVfsPath(intent.path);
+    const activeText = this.importedSourceBundle?.vfs.readText(activePath ?? intent.path);
     this.mode = "studio";
     this.studioTab = "build";
     this.studioFocusedSourcePackageId = sourcePackageId;
     this.studioFocusedSourcePath = intent.path;
-    this.studioSourceDocument = createStudioSourceDocumentDraft({
+    const recoveredDraft = createStudioSourceDocumentDraft({
       sourcePackageId,
-      path: intent.path,
-      text,
+      path: activePath ?? intent.path,
+      text: activeText ?? text,
       baseSourceFingerprint: this.getActiveStudioSourceFingerprint(sourcePackage),
       baseProjectRevision: this.getActiveStudioProjectRevision(),
     });
+    this.studioSourceDocument = updateStudioSourceDocumentDraft(recoveredDraft, text);
     this.refreshStudioSourceSemanticDraft();
     this.writeUrlState();
     this.log(`Loaded the ${intent.byteLength ?? replay.bytes.byteLength}-byte source preimage for review; no source handle was written.`);
     this.updateUi();
+  }
+
+  private relinkStudioSourceWriteIntent(): void {
+    const intent = this.studioSourceWriteIntent;
+    const sourcePackage = intent?.sourcePackageId
+      ? this.getProjectSourcePackages().find((candidate) => candidate.id === intent.sourcePackageId)
+      : undefined;
+    if (!intent || intent.result || !sourcePackage) {
+      this.log("Source write intent relink ignored: pending source package is unavailable.");
+      this.updateUi();
+      return;
+    }
+    void this.handleSourceHandleAction(sourcePackage.id, "link-source-handle");
   }
 
   private discardStudioSourceDocument(): void {
@@ -8341,6 +8388,9 @@ export class App {
     const pending = !intent.result;
     const status: StudioStatus = pending ? "warn" : intent.result === "committed" ? "ok" : intent.result === "denied" ? "blocked" : "fail";
     const result = intent.result ?? "pending-recovery";
+    const sourcePackage = intent.sourcePackageId
+      ? this.getProjectSourcePackages().find((candidate) => candidate.id === intent.sourcePackageId)
+      : undefined;
     return `
       <section class="studio-project-conflict studio-source-write-recovery" role="${pending ? "alert" : "status"}" aria-live="polite" data-source-write-intent="${escapeHtml(result)}">
         <div class="studio-project-conflict-head">
@@ -8354,6 +8404,7 @@ export class App {
         <div class="studio-project-conflict-actions">
           <small>${escapeHtml(formatBytes(intent.byteLength ?? intent.preimageBytes.length))} preimage / ${escapeHtml(intent.preimageSha256)} / ${escapeHtml(formatDateTime(intent.createdAt))}</small>
           ${pending ? `<button type="button" data-action="replay-source-write-intent" title="Load the durable source preimage into the Studio editor without writing the source handle">Load preimage</button>` : ""}
+          ${pending && sourcePackage ? `<button type="button" data-action="relink-source-write-intent" title="Choose the source ${sourcePackage.kind === "folder" ? "folder" : "ZIP"} again before writing the recovered preimage">Relink ${sourcePackage.kind === "folder" ? "folder" : "ZIP"}</button>` : ""}
         </div>
       </section>
     `;
