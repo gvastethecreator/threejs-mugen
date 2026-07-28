@@ -94,6 +94,9 @@ MUGEN/IKEMEN parity remain blocked.
 - Match status exposes `P1/P2` gamepad state and marks an unknown mapping as a
   warning. The input path remains keyboard-first for P1 and gamepad-enabled for
   both seats.
+- `GamepadInputAdapter.start/stop` wires `gamepadconnected` and
+  `gamepaddisconnected`; the adapter records the last eight event samples and
+  re-polls immediately. Unit proof covers listener removal after `stop`.
 - The Three.js canvas is focusable, has an image role and label, and points to
   a polite atomic `status` region with a text summary of stage, round, fighter
   life, runtime state, pause, and controller status.
@@ -102,7 +105,7 @@ MUGEN/IKEMEN parity remain blocked.
   live-region attributes, pad metric, clipped summary, and no horizontal
   overflow. Screenshots are in `docs/evidence/da32/browser/`.
 - Focused proof: `GamepadInputAdapter` plus `RuntimeA11ySummary` and DA32
-  program tests pass 18/18; `pnpm typecheck` passes.
+  program tests pass 19/19; `pnpm typecheck` passes.
 
 Claim ceiling: simulated/device diagnostics and a code-level canvas alternative
 are recorded. Physical controller coverage, a screen-reader journey, contrast

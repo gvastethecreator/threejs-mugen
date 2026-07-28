@@ -48,6 +48,9 @@ movement, public release, and full MUGEN/IKEMEN parity.
   logical actions. Unplug polling returns a clean disconnected seat.
 - Match status renders the P1/P2 pad state. Unknown mapping receives a warning
   tone, which keeps the device-lab gap visible in the play surface.
+- `GamepadInputAdapter.start/stop` now wires browser connect/disconnect events,
+  re-polls on arrival, and keeps an eight-event diagnostic window. The focused
+  test also proves listener removal after stop.
 - The Three.js canvas is focusable and described by a `role=status` live region
   with stage, round, life, runtime state, pause, and controller text. The
   summary is kept separate from the visual canvas and the screen-reader journey
@@ -57,7 +60,7 @@ movement, public release, and full MUGEN/IKEMEN parity.
   clipped summary, no horizontal overflow, and zero unexpected console errors.
   Screenshots: `docs/evidence/da32/browser/da32-029-a11y-desktop.png` and
   `docs/evidence/da32/browser/da32-029-a11y-mobile.png`.
-- Verification: 18 focused tests passed; `pnpm typecheck`, `node --check
+- Verification: 19 focused tests passed; `pnpm typecheck`, `node --check
   scripts/qa_smoke.cjs`, and `git diff --check` passed.
 - Sources: [Gamepad API guide](https://developer.mozilla.org/en-US/docs/Games/Techniques/Controls_Gamepad_API),
   [Gamepad mapping](https://developer.mozilla.org/en-US/docs/Web/API/Gamepad/mapping),
