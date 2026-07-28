@@ -25,9 +25,9 @@
   browser gate. DA32-023 and DA32-024 now have clean source-intent recovery
   gates. DA32-025 now has a clean incomplete-phase recovery gate. DA32-026 now
   has a clean receipt rehydration gate. DA32-027 now has a provisional
-  observation recovery gate. Physical crash, granted-handle classification,
-  receipt synthesis, quota, eviction, multi-file, and source-blob persistence
-  remain open.
+  observation recovery gate and DA32-028 now has a provisional positive
+  granted-handle observation gate. Physical crash, receipt synthesis, quota,
+  eviction, multi-file, and source-blob persistence remain open.
 
 ## DA32 smoke ownership closeout - 8c6d6c80 (green subject checkpoint, 2026-07-28)
 
@@ -235,6 +235,33 @@ desktop/mobile checks. Claim blocked: physical permission prompts, browser
 variance, restart handle durability, crash/receipt recovery, quota/eviction,
 multi-file atomic recovery, ZIP rewrite, binary source blobs, release
 authority, and full MUGEN/IKEMEN authoring parity.
+
+## DA32-028 Studio positive source-write observation - provisional `57600085` (closed-bounded, 2026-07-28)
+
+- `pnpm qa:browser:da32-028-source-write-observation-positive` passed at
+  desktop `1440x900` and mobile `390x844`; the report is provisional because
+  unrelated roadmap documentation remains dirty. Unexpected console errors:
+  zero.
+- The gate relinks the KFM fixture through a simulated folder picker, grants
+  read permission, reads `chars/kfm/kfm.cns`, and stores
+  `observation.status = matches-preimage` with digest and byte length in the
+  bridge and durable intent.
+- The intent remains `write-closed` with no result or receipt. The mock handle
+  records zero `createWritable` calls. All eleven steps pass in both viewports,
+  with no horizontal overflow. The fixture leaves one visible missing
+  `sound/kfm.mid` warning, outside the unexpected-error claim.
+- Gate evidence:
+  `docs/evidence/da32/da32-028-source-write-observation-positive-browser-gate.json`.
+  Implementation/gate: `57600085`; compact evidence follow-up: `ced7d734`.
+  Research:
+  `docs/research/2026-07-28-da32-028-source-write-observation-positive.md`.
+
+Claim allowed: positive readback of real fixture bytes, exact preimage match,
+durable digest/length, pending retention, no writable stream, and the recorded
+desktop/mobile checks. Claim blocked: `matches-draft`, changed bytes, physical
+permissions, crash injection, explicit receipt finalization, automatic retry,
+quota/eviction, multi-file recovery, ZIP rewrite, binary blobs, physical
+prompts, release authority, and full MUGEN/IKEMEN authoring parity.
 
 ## DA32-027 Studio source-write observation - provisional `3027b948` (closed-bounded, 2026-07-28)
 

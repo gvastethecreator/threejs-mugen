@@ -1,5 +1,26 @@
 # Workplan
 
+## DA32-028 Studio positive source-write observation (2026-07-28)
+
+The positive observation route now relinks the KFM fixture through a simulated
+folder handle, grants read permission, reads `chars/kfm/kfm.cns`, and records
+`matches-preimage` with the actual digest and byte length. The intent stays
+`write-closed` with no receipt, and the mock handle confirms zero writable
+stream calls.
+
+Implementation and gate: `57600085`.
+Compact evidence follow-up: `ced7d734`.
+Browser gate: provisional subject because unrelated roadmap documentation
+remains dirty. Evidence:
+`docs/evidence/da32/da32-028-source-write-observation-positive-browser-gate.json`.
+Research:
+`docs/research/2026-07-28-da32-028-source-write-observation-positive.md`.
+Verification: eleven steps pass in each viewport, zero unexpected console
+errors, no horizontal overflow, and `node --check` passes. The fixture keeps
+one visible missing `sound/kfm.mid` warning. Next Studio cut: explicit receipt
+finalization after a verified observation, then crash, quota, eviction, and
+multi-file boundaries.
+
 ## DA32-027 Studio source-write observation (2026-07-28)
 
 Studio now marks a pending `write-closed` source intent as

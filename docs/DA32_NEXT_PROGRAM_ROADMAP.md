@@ -191,6 +191,7 @@ MUGEN/IKEMEN parity remain open.
 | DA32-025 | Persist incomplete source-write phases for post-reload recovery | durable `write-closed` phase, write byte length, exact preimage replay, pending retention, no-handle-write browser gate | named route and mock browser handles; physical crash, receipt synthesis, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
 | DA32-026 | Rehydrate the settled source-write receipt after reload | validated `SourceWriteReceipt/v1` payload beside the intent, digest rejection, bridge and visible recovery readback, desktop/mobile browser gate | named route and browser harness; physical crash, automatic retry, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
 | DA32-027 | Observe a write-closed source intent after reload | durable `needs-observation`, explicit source read classification, unavailable outcome without receipt settlement, exact preimage replay, desktop/mobile browser gate | named route and no-handle fallback; granted physical handle, crash injection, receipt finalization, retry, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
+| DA32-028 | Verify positive source observation through a granted folder handle | real KFM source read, `matches-preimage`, digest/length persistence, pending retention, zero writable-stream calls, desktop/mobile browser gate | simulated picker and fixture handle; `matches-draft`, changed bytes, physical permissions, crash, receipt finalization, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
 
 ### DA32-021 browser gate - c95c871a (2026-07-28)
 
@@ -382,6 +383,33 @@ crash injection, receipt finalization, automatic retry, quota, eviction,
 multi-file recovery, ZIP rewrite, binary blobs, physical permission prompts,
 release authority, and full MUGEN/IKEMEN authoring parity remain open.
 
+### DA32-028 browser gate - provisional subject `57600085` (2026-07-28)
+
+- `pnpm qa:browser:da32-028-source-write-observation-positive` passed at
+  desktop `1440x900` and mobile `390x844`; the current tree keeps the gate
+  provisional because unrelated roadmap documentation remains dirty.
+- The gate relinks the KFM fixture through a simulated folder picker, grants
+  read permission, reads the actual `chars/kfm/kfm.cns` bytes, and records
+  `matches-preimage` with SHA-256 digest and byte length in the bridge and
+  IndexedDB record.
+- The intent remains `write-closed` with no result and no receipt. The mock
+  handle counts zero `createWritable` calls. All eleven steps pass in both
+  viewports, with zero unexpected console errors and no horizontal overflow.
+  The fixture keeps one visible `sound/kfm.mid` warning, outside the error
+  claim.
+- Gate evidence:
+  `docs/evidence/da32/da32-028-source-write-observation-positive-browser-gate.json`.
+  Implementation and gate: `57600085`; compact evidence follow-up:
+  `ced7d734`. Research:
+  `docs/research/2026-07-28-da32-028-source-write-observation-positive.md`.
+
+Claim ceiling: positive readback of real fixture bytes, exact preimage match,
+durable digest/length, pending retention, no writable stream, and the named
+desktop/mobile checks. `matches-draft`, changed bytes, physical permissions,
+crash injection, explicit receipt finalization, automatic retry, quota,
+eviction, multi-file recovery, ZIP rewrite, binary blobs, release authority,
+and full MUGEN/IKEMEN authoring parity remain open.
+
 ## Commands
 
 ```bash
@@ -393,6 +421,7 @@ pnpm qa:browser:da32-024-source-intent-write
 pnpm qa:browser:da32-025-source-write-phase
 pnpm qa:browser:da32-026-source-write-receipt
 pnpm qa:browser:da32-027-source-write-observation
+pnpm qa:browser:da32-028-source-write-observation-positive
 pnpm materialize:da32-status
 pnpm exec vitest run src/tests/Da32Program.test.ts
 ```

@@ -253,6 +253,17 @@ if (fs.existsSync(studioSourceObservationGatePath)) {
 }
 const studioSourceObservationGateOk = studioSourceObservationGate?.ok === true;
 const studioSourceObservationGateClean = studioSourceObservationGate?.subject?.provisional === false;
+const studioSourceObservationPositiveGatePath = path.join(outDir, "da32-028-source-write-observation-positive-browser-gate.json");
+let studioSourceObservationPositiveGate = null;
+if (fs.existsSync(studioSourceObservationPositiveGatePath)) {
+  try {
+    studioSourceObservationPositiveGate = JSON.parse(fs.readFileSync(studioSourceObservationPositiveGatePath, "utf8"));
+  } catch {
+    studioSourceObservationPositiveGate = null;
+  }
+}
+const studioSourceObservationPositiveGateOk = studioSourceObservationPositiveGate?.ok === true;
+const studioSourceObservationPositiveGateClean = studioSourceObservationPositiveGate?.subject?.provisional === false;
 
 const status = {
   schema: "Da32ProgramStatus/v1",
@@ -461,6 +472,28 @@ const status = {
           ]
         : ["src/app/App.ts", "src/app/StudioIndexedDbSnapshot.ts"],
     },
+    "DA32-028": {
+      status: studioSourceObservationPositiveGateOk
+        ? studioSourceObservationPositiveGateClean
+          ? "accepted-browser-source-observation-positive"
+          : "accepted-browser-source-observation-positive-provisional"
+        : "open-implementation",
+      note: studioSourceObservationPositiveGateOk
+        ? studioSourceObservationPositiveGateClean
+          ? "clean-subject desktop/mobile gate proves a granted folder handle can read real KFM source bytes, record matches-preimage, retain write-closed state, and avoid createWritable; receipt finalization, crash, quota, eviction, and multi-file recovery remain open"
+          : "desktop/mobile positive source observation gate passed on a dirty subject; clean subject pin remains open"
+        : "Studio positive source-write observation browser gate is missing or failed",
+      artifacts: studioSourceObservationPositiveGateOk
+        ? [
+            "src/app/App.ts",
+            "src/app/StudioIndexedDbSnapshot.ts",
+            "src/app/StudioSourceWrite.ts",
+            "src/app/StudioSourceHandle.ts",
+            "scripts/qa_browser_gate_da32_028_source_write_observation_positive.cjs",
+            "docs/evidence/da32/da32-028-source-write-observation-positive-browser-gate.json",
+          ]
+        : ["src/app/App.ts", "src/app/StudioIndexedDbSnapshot.ts"],
+    },
     "DA32-013": {
       status: "accepted-sample",
       note: "consecutive pass proposes adjudicatedThrough=DA30-021",
@@ -496,17 +529,19 @@ const status = {
     ownership.ok ? "retain green smoke ownership at the next subject HEAD" : "live qa:smoke re-run with ownership write",
     ownership.ok ? "expand runtime visual and Studio matrix" : "reconcile global smoke runtime-native sample with focal gate",
     mugenLiteVisualGateOk ? "expand mugen-lite visual matrix" : "close mugen-lite visual lane",
-    studioSourceObservationGateOk
-      ? "physical source-intent crash/receipt finalization, granted-handle observation, quota, eviction, and multi-file recovery"
-      : studioSourceReceiptRecoveryGateOk
-        ? "write-closed source observation after reload"
-        : studioSourcePhaseRecoveryGateOk
-          ? "source-write receipt rehydration after reload"
-          : studioSourceWriteRecoveryGateOk
-            ? "incomplete source-write phase recovery"
-            : studioSourceIntentGateOk
-              ? "permission-aware source relink and write/reimport recovery"
-              : "close source-write intent recovery",
+    studioSourceObservationPositiveGateOk
+      ? "physical source-intent crash/receipt finalization, receipt acceptance, quota, eviction, and multi-file recovery"
+      : studioSourceObservationGateOk
+        ? "granted-handle source observation classification"
+        : studioSourceReceiptRecoveryGateOk
+          ? "write-closed source observation after reload"
+          : studioSourcePhaseRecoveryGateOk
+            ? "source-write receipt rehydration after reload"
+            : studioSourceWriteRecoveryGateOk
+              ? "incomplete source-write phase recovery"
+              : studioSourceIntentGateOk
+                ? "permission-aware source relink and write/reimport recovery"
+                : "close source-write intent recovery",
     "studio surface repairs",
     "hardware gamepad lab",
   ],

@@ -14,6 +14,19 @@ DA31-025…029 then choose storage authority and prove transactions, conflicts,
 recovery, real views, preview, and export revision fidelity. Current proof is
 single-tab and its 390-pixel mobile route has horizontal overflow.
 
+## 2026-07-28 DA32-028 positive source-write observation checkpoint
+
+DA32-028 proves the positive observation route on a real KFM fixture. Studio
+relinks the folder through a simulated picker, gets read permission, reads
+`chars/kfm/kfm.cns`, records `matches-preimage` with digest and length, and
+keeps the intent `write-closed` without a receipt. The mock handle records zero
+`createWritable` calls. The provisional desktop/mobile gate passes eleven
+steps per viewport, with direct IndexedDB, bridge and DOM checks, no overflow,
+and zero unexpected console errors. One visible missing `sound/kfm.mid` fixture
+warning remains outside the error claim. Evidence:
+`docs/evidence/da32/da32-028-source-write-observation-positive-browser-gate.json`.
+Implementation/gate: `57600085`; compact evidence: `ced7d734`.
+
 ## 2026-07-28 DA32-027 source-write observation checkpoint
 
 DA32-027 closes the observation-state slice after a source stream reaches

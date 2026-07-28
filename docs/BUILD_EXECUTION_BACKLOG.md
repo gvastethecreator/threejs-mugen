@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## Entry 631 - DA32-028 Studio positive source-write observation
+
+Added the positive observation gate in `57600085`: Studio relinks the KFM
+fixture through a simulated folder picker, receives read permission, reads the
+real `chars/kfm/kfm.cns` bytes, and records `matches-preimage` with digest and
+length. The `write-closed` intent remains pending without a receipt. The mock
+handle fails on any `createWritable` call and the observed count stays zero.
+
+Desktop `1440x900` and mobile `390x844` pass all eleven steps: native relink,
+read permission, real source read, bridge and IndexedDB observation, visible
+status, pending retention, no writable stream, no receipt, overflow, and
+console checks. The gate is provisional because unrelated roadmap documents
+remain dirty. The fixture leaves one visible missing `sound/kfm.mid` warning.
+Evidence was compacted in `ced7d734`:
+`docs/evidence/da32/da32-028-source-write-observation-positive-browser-gate.json`.
+Research:
+`docs/research/2026-07-28-da32-028-source-write-observation-positive.md`.
+Claim allowed: positive fixture readback and exact preimage observation. Claim
+blocked: `matches-draft`, changed bytes, physical permissions, crash/receipt
+finalization, retry, quota/eviction, multi-file atomicity, ZIP rewrite, binary
+source blobs, release authority, and full parity.
+
 ## Entry 630 - DA32-027 Studio source-write observation
 
 Implemented DA32-027 in `3027b948`: a pending `write-closed` intent without a

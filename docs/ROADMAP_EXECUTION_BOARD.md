@@ -1,6 +1,28 @@
 ﻿# Roadmap Execution Board
 
-## Current Studio product board - DA32-027 (closed-bounded, 2026-07-28)
+## Current Studio product board - DA32-028 (closed-bounded, 2026-07-28)
+
+DA32-028 proves the positive source observation route. Studio relinks the KFM
+fixture through a simulated folder picker, receives read permission, reads the
+real `chars/kfm/kfm.cns` bytes, records `matches-preimage` with digest and
+length, and keeps the intent `write-closed` without a receipt. The mock handle
+records zero writable-stream calls.
+
+The provisional desktop/mobile gate passes all eleven steps at `1440x900` and
+`390x844`, including IndexedDB, bridge, DOM, pending retention, no receipt,
+overflow, and console checks. Implementation/gate: `57600085`; compact
+evidence: `ced7d734`.
+Evidence:
+`docs/evidence/da32/da32-028-source-write-observation-positive-browser-gate.json`.
+The fixture keeps one visible missing `sound/kfm.mid` warning. Unrelated
+roadmap documentation changes keep the subject provisional.
+
+Next Studio proof: explicit receipt finalization after verified observation,
+then physical crash windows, quota and eviction, and multi-file transaction
+boundaries. `matches-draft`, changed bytes, automatic retry, ZIP rewrite,
+binary source, release, and full parity claims remain blocked.
+
+## Previous Studio product board - DA32-027 (closed-bounded, 2026-07-28)
 
 DA32-027 closes the observation-state slice after an external source stream
 closes before receipt finalization. Reload marks a pending `write-closed`
