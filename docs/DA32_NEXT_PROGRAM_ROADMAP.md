@@ -86,6 +86,20 @@ Claim ceiling: this is a green local subject checkpoint for the named browser
 routes. Hardware gamepad evidence, score movement, public release, and full
 MUGEN/IKEMEN parity remain blocked.
 
+### Full smoke recheck - 9d0830b9 (2026-07-28)
+
+- `pnpm qa:smoke` passed with zero failures after the Studio project authority
+  slice. The run covered runtime desktop/mobile, imported MUGEN Lite states,
+  Studio authoring, source relink, evidence, debug, and stage routes.
+- `pnpm build` passed. Vite kept the existing large JavaScript chunk warning;
+  it did not fail the build.
+- Live ownership evidence was refreshed in
+  `docs/evidence/da32/da32-smoke-ownership-v1.json` with `failureCount: 0`.
+
+Claim ceiling: green local smoke subject at `9d0830b9`; this does not advance
+the human adjudication cursor or close hardware, quota recovery, public
+release, or full MUGEN/IKEMEN parity.
+
 ## Runtime input and canvas a11y checkpoint - 47858f49 (2026-07-28)
 
 - `GamepadInputAdapter` now keeps a deterministic diagnostic snapshot for both

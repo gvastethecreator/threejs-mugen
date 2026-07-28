@@ -44,6 +44,19 @@ Claim allowed: green `qa:smoke` at commit `8c6d6c80` for the named local
 browser subject and routes. Claim blocked: hardware gamepad coverage, score
 movement, public release, and full MUGEN/IKEMEN parity.
 
+## Full smoke recheck - 9d0830b9 (green subject checkpoint, 2026-07-28)
+
+- `pnpm qa:smoke` passed with zero failures in 372.6 seconds after the Studio
+  IndexedDB authority slice. Runtime desktop/mobile, imported MUGEN Lite,
+  Studio authoring, source relink, evidence, debug, and stage routes passed.
+- `pnpm build` passed with the existing Vite large-chunk warning.
+- `docs/evidence/da32/da32-smoke-ownership-v1.json` now records
+  `failureCount: 0` for this run.
+
+Claim allowed: green local smoke subject at `9d0830b9`. Claim blocked:
+hardware gamepad coverage, storage quota recovery, score movement, public
+release, and full MUGEN/IKEMEN parity.
+
 ## Runtime input and canvas a11y - 47858f49 (partial checkpoint, 2026-07-28)
 
 - `GamepadInputAdapter` now records both seat diagnostics after each poll:
