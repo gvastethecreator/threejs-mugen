@@ -9,7 +9,8 @@ storage together. A focused browser gate reads the real `snapshots` object
 store before and after reload at desktop and mobile sizes, then checks the
 visible no-IndexedDB fallback.
 
-Implementation: `14df21ef`.
+Implementation: `14df21ef`, connection-close fix `22c051bc`.
+Clean browser subject: `c63aabbe`.
 Evidence: `docs/evidence/da32/da32-022-studio-snapshot-browser-gate.json`.
 Next Studio cut: bind persisted source-write intents to a live recovery view;
 quota, eviction, binary source blobs, and release authority remain blocked.

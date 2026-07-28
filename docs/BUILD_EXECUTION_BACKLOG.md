@@ -16,7 +16,7 @@ zero unexpected console/page errors. Focused verification passes 3 files / 12
 tests, TypeScript 7 typecheck, `node --check
 scripts/qa_browser_gate_da32_022_studio_snapshot.cjs`, and `git diff --check`.
 Evidence: `docs/evidence/da32/da32-022-studio-snapshot-browser-gate.json`,
-clean subject `14df21ef`.
+clean subject `c63aabbe` after connection-close fix `22c051bc`.
 
 Claim allowed: named browser snapshot persistence, revision/payload readback,
 reload survival, diagnostics, and fallback behavior. Claim blocked: live

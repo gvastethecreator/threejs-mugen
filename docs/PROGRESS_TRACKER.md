@@ -155,9 +155,9 @@ blocked: quota and eviction recovery, file-system source blobs, all browser
 implementations, screen-reader flow, public release, and full MUGEN/IKEMEN
 authoring parity.
 
-## DA32-022 Studio durable project snapshots - 14df21ef (closed-bounded, 2026-07-28)
+## DA32-022 Studio durable project snapshots - c63aabbe (closed-bounded, 2026-07-28)
 
-- `pnpm qa:browser:da32-022-snapshot` passed against clean subject `14df21ef`
+- `pnpm qa:browser:da32-022-snapshot` passed against clean subject `c63aabbe`
   at desktop `1440x900`, mobile `390x844`, and a no-IndexedDB fallback case;
   unexpected console/page errors: zero.
 - App save now bridges the local identity snapshot into

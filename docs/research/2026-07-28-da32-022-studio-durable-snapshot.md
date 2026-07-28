@@ -58,8 +58,8 @@ unavailable.
 
 ## Evidence
 
-- Implementation commit: `14df21ef`.
-- Browser subject: `14df21ef`, clean tree, `provisional: false`.
+- Implementation commits: `14df21ef` and connection-close fix `22c051bc`.
+- Browser subject: `c63aabbe`, clean tree, `provisional: false`.
 - Browser result: `ok: true`; desktop `1440x900`, mobile `390x844`, and
   no-IndexedDB fallback; zero unexpected console/page errors.
 - Focused tests: 12/12 passed. TypeScript 7 typecheck passed.

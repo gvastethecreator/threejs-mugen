@@ -213,9 +213,9 @@ conflict, and the named no-IndexedDB fallback route. Storage quota and eviction
 recovery, file-system source blobs, physical device coverage, all browser
 implementations, and full MUGEN/IKEMEN authoring parity remain open.
 
-### DA32-022 browser gate - 14df21ef (2026-07-28)
+### DA32-022 browser gate - c63aabbe (2026-07-28)
 
-- `pnpm qa:browser:da32-022-snapshot` passed against clean subject `14df21ef`
+- `pnpm qa:browser:da32-022-snapshot` passed against clean subject `c63aabbe`
   at desktop `1440x900`, mobile `390x844`, and a no-IndexedDB fallback case;
   unexpected console/page errors: zero.
 - Saving a project now creates a `StudioProjectSnapshot/v1` identity record

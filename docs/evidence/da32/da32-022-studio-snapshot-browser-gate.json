@@ -1,12 +1,12 @@
 {
   "schema": "Da32StudioSnapshotBrowserGate/v1",
   "id": "DA32-022",
-  "generatedAt": "2026-07-28T07:50:48.360Z",
+  "generatedAt": "2026-07-28T07:52:14.155Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "14df21ef420b09daf12981c99441390d6a34868a",
-    "dirtyTree": true,
-    "provisional": true,
+    "subjectSha": "c63aabbe52d2c3e68e07849951e965b8734c351c",
+    "dirtyTree": false,
+    "provisional": false,
     "probePaths": [
       "scripts/qa_browser_gate_da32_022_studio_snapshot.cjs"
     ],
@@ -15,9 +15,9 @@
       "src/app/ProjectSnapshotBridge.ts",
       "src/app/StudioIndexedDbSnapshot.ts"
     ],
-    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+    "claimLimit": "subject-bound observation at listed probe/code paths"
   },
-  "headSha": "14df21ef420b09daf12981c99441390d6a34868a",
+  "headSha": "c63aabbe52d2c3e68e07849951e965b8734c351c",
   "ok": true,
   "route": "/?mode=studio&studio=workbench&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "projectDatabase": "mugen-web-sandbox-projects",
@@ -50,7 +50,7 @@
               "projectId": "da32-022-desktop-snapshot",
               "projectName": "DA32-022 desktop snapshot",
               "projectRevision": 1,
-              "savedAt": "2026-07-28T07:50:38.447Z",
+              "savedAt": "2026-07-28T07:52:05.331Z",
               "source": {
                 "packageId": "da32-022-desktop-snapshot",
                 "kind": "folder",
@@ -72,9 +72,9 @@
                 "analyzer": "1.0.0",
                 "ruleset": "1.0.0"
               },
-              "integrity": "091a4b3f"
+              "integrity": "c6bc0465"
             },
-            "savedAt": "2026-07-28T07:50:38.447Z"
+            "savedAt": "2026-07-28T07:52:05.331Z"
           }
         ]
       },
@@ -93,7 +93,7 @@
               "projectId": "da32-022-desktop-snapshot",
               "projectName": "DA32-022 desktop snapshot",
               "projectRevision": 1,
-              "savedAt": "2026-07-28T07:50:38.447Z",
+              "savedAt": "2026-07-28T07:52:05.331Z",
               "source": {
                 "packageId": "da32-022-desktop-snapshot",
                 "kind": "folder",
@@ -115,9 +115,9 @@
                 "analyzer": "1.0.0",
                 "ruleset": "1.0.0"
               },
-              "integrity": "091a4b3f"
+              "integrity": "c6bc0465"
             },
-            "savedAt": "2026-07-28T07:50:38.447Z"
+            "savedAt": "2026-07-28T07:52:05.331Z"
           }
         ]
       },
@@ -156,7 +156,7 @@
               "projectId": "da32-022-mobile-snapshot",
               "projectName": "DA32-022 mobile snapshot",
               "projectRevision": 1,
-              "savedAt": "2026-07-28T07:50:43.562Z",
+              "savedAt": "2026-07-28T07:52:10.097Z",
               "source": {
                 "packageId": "da32-022-mobile-snapshot",
                 "kind": "folder",
@@ -178,9 +178,9 @@
                 "analyzer": "1.0.0",
                 "ruleset": "1.0.0"
               },
-              "integrity": "1ca71969"
+              "integrity": "2272ebda"
             },
-            "savedAt": "2026-07-28T07:50:43.562Z"
+            "savedAt": "2026-07-28T07:52:10.097Z"
           }
         ]
       },
@@ -199,7 +199,7 @@
               "projectId": "da32-022-mobile-snapshot",
               "projectName": "DA32-022 mobile snapshot",
               "projectRevision": 1,
-              "savedAt": "2026-07-28T07:50:43.562Z",
+              "savedAt": "2026-07-28T07:52:10.097Z",
               "source": {
                 "packageId": "da32-022-mobile-snapshot",
                 "kind": "folder",
@@ -221,9 +221,9 @@
                 "analyzer": "1.0.0",
                 "ruleset": "1.0.0"
               },
-              "integrity": "1ca71969"
+              "integrity": "2272ebda"
             },
-            "savedAt": "2026-07-28T07:50:43.562Z"
+            "savedAt": "2026-07-28T07:52:10.097Z"
           }
         ]
       },
@@ -271,7 +271,7 @@
     }
   ],
   "unexpectedConsole": [],
-  "claimCeiling": "provisional Studio snapshot observations for named viewports",
+  "claimCeiling": "saved Studio snapshot records persist in IndexedDB and survive reload at named viewports, with visible no-IndexedDB fallback",
   "claims": {
     "allowed": [
       "a saved Studio project produces one durable StudioIndexedDbSnapshot/v1 record",
@@ -290,6 +290,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "dc6888069cd7afeb90acec7f6a1a1faea1f6faf0d525e89ad4abdcee355fe356"
+    "value": "2a0aec8de7178ae721c80b3300e6c7d03a0fdda0461e7f3e4df6fc1797168de8"
   }
 }
