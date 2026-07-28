@@ -20,7 +20,9 @@
   and DA32-005 still keep their named focal claim ceilings. Next: expand the
   visual matrix, close the remaining Studio lanes, review the proposed human
   watermark, and continue the hardware gamepad work. DA32-010 now has a clean
-  subject virtual browser gate; hardware remains open.
+  subject virtual browser gate; hardware remains open. DA32-021 now has a clean
+  IndexedDB authority browser gate; quota and source-blob persistence remain
+  open.
 
 ## DA32 smoke ownership closeout - 8c6d6c80 (green subject checkpoint, 2026-07-28)
 
@@ -94,6 +96,33 @@ contrast audit, WCAG certification, public release, and full parity.
 Claim allowed: named virtual browser route, two viewports, input mappings, and
 runtime status behavior. Claim blocked: physical hardware, all browser/device
 models, screen-reader flow, contrast, public release, and full parity.
+
+## DA32-021 Studio IndexedDB project authority - 4e31e4e9 (closed-bounded, 2026-07-28)
+
+- `pnpm qa:browser:da32-021-storage` passed against clean subject `4e31e4e9`
+  at desktop `1440x900` and mobile `390x844`; unexpected console/page errors:
+  zero.
+- `StudioProjectStore` owns the versioned project index in the
+  `mugen-web-sandbox-projects` IndexedDB database. App startup migrates the
+  existing local cache when the authority is empty and mirrors successful
+  authority reads/writes back to the v1 cache.
+- The browser gate reads the stored IndexedDB record, reloads the page,
+  reopens the saved project, and drives a second same-origin page to revision
+  2. The first page keeps its pending local name and exposes the revision
+  conflict without losing that edit.
+- Focused verification: `ProjectStorage` plus `StudioProjectStore` tests pass
+  9/9; `pnpm typecheck`, `node --check scripts/qa_browser_gate_da32_021_studio_storage.cjs`,
+  and `git diff --check` pass.
+- Evidence: `docs/evidence/da32/da32-021-studio-storage-browser-gate.json`,
+  `docs/evidence/da32/browser/da32-021-studio-storage-desktop.png`, and
+  `docs/evidence/da32/browser/da32-021-studio-storage-mobile.png`.
+- Sources: [MDN IndexedDB API](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
+  and [MDN IDBTransaction](https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction).
+
+Claim allowed: named browser IndexedDB authority, local cache mirror, reload,
+reopen, and desktop revision conflict. Claim blocked: quota and eviction
+recovery, file-system source blobs, all browser implementations, screen-reader
+flow, public release, and full MUGEN/IKEMEN authoring parity.
 
 ## Interface desktop layout repair - d8c4dfaa/b4788b85 (closed bounded, 2026-07-27)
 

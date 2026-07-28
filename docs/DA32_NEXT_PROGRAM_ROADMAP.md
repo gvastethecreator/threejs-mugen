@@ -20,7 +20,7 @@ DA32 turns remaining open product and adjudication work into owned lanes.
 1. **DA32-001…008** — smoke ownership, hit-spark/runtime repair, mugen-lite visual, Studio surface lanes.
 2. **DA32-009…012** — physical gamepad device-lab protocol + optional hardware evidence.
 3. **DA32-013…020** — consecutive clause adjudication samples past DA30-020.
-4. **DA32-021…028** — authoring per-view browser capture, live snapshot/replay binding.
+4. **DA32-021…028** — project authority, authoring per-view browser capture, live snapshot/replay binding.
 5. **DA32-029…032** — a11y SR/canvas alternative, local release blockers refresh.
 
 ## Phase 0 — Smoke ownership (current)
@@ -153,10 +153,38 @@ MUGEN/IKEMEN parity remain open.
 | --- | --- | --- | --- |
 | DA32-029 | Canvas alternative / SR baseline inventory | Canvas summary and focus contract recorded; SR journey, contrast, and landmark gaps listed | partial implementation; not WCAG certification |
 
+## Phase 4 — Studio project authority
+
+| ID | Scope | Acceptance | Ceiling |
+| --- | --- | --- | --- |
+| DA32-021 | Move the Studio project index to an IndexedDB authority | Versioned project object store, local cache mirror, reload/reopen, optimistic revision conflict, desktop/mobile browser gate | named browser route and viewports; quota, eviction, source blobs, and full authoring remain open |
+
+### DA32-021 browser gate - 4e31e4e9 (2026-07-28)
+
+- `pnpm qa:browser:da32-021-storage` passed against clean subject `4e31e4e9`
+  at desktop `1440x900` and mobile `390x844`; unexpected console/page errors:
+  zero.
+- The gate clears the prior project state, saves a real Studio manifest into
+  the `mugen-web-sandbox-projects` IndexedDB database, reads the stored record
+  directly, and checks the v1 localStorage mirror.
+- A reload restores the recent project row. Opening that row restores the
+  saved name and revision. A second same-origin page writes revision 2 while
+  the first page keeps its local edit dirty and exposes the conflict.
+- Implementation commits: `d2136e66` for the store/App path,
+  `71a9abff` and `a398bd94` for the browser gate. Evidence:
+  `docs/evidence/da32/da32-021-studio-storage-browser-gate.json` and the
+  matching desktop/mobile screenshots.
+
+Claim ceiling: browser IndexedDB authority, cache mirroring, reopen, and the
+named desktop conflict route. Storage quota and eviction recovery, file-system
+source blobs, physical device coverage, all browser implementations, and full
+MUGEN/IKEMEN authoring parity remain open.
+
 ## Commands
 
 ```bash
 pnpm qa:smoke
+pnpm qa:browser:da32-021-storage
 pnpm materialize:da32-status
 pnpm exec vitest run src/tests/Da32Program.test.ts
 ```

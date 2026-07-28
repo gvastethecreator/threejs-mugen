@@ -176,6 +176,17 @@ if (fs.existsSync(a11yRuntimeGatePath)) {
   }
 }
 
+const studioStorageGatePath = path.join(outDir, "da32-021-studio-storage-browser-gate.json");
+let studioStorageGate = null;
+if (fs.existsSync(studioStorageGatePath)) {
+  try {
+    studioStorageGate = JSON.parse(fs.readFileSync(studioStorageGatePath, "utf8"));
+  } catch {
+    studioStorageGate = null;
+  }
+}
+const studioStorageGateOk = studioStorageGate?.ok === true;
+
 const status = {
   schema: "Da32ProgramStatus/v1",
   generatedAt: new Date().toISOString(),
@@ -249,6 +260,21 @@ const status = {
             "src/app/App.ts",
           ]
         : ["src/mugen/da32/GamepadDeviceLab.ts", "src/game/input/GamepadInputAdapter.ts"],
+    },
+    "DA32-021": {
+      status: studioStorageGateOk ? "accepted-browser-idb" : "open-implementation",
+      note: studioStorageGateOk
+        ? "clean-subject desktop/mobile gate proves IndexedDB authority, local cache mirror, reload reopen, and a desktop revision conflict; quota recovery remains open"
+        : "Studio project authority browser gate is missing or failed",
+      artifacts: studioStorageGateOk
+        ? [
+            "src/app/StudioProjectStore.ts",
+            "src/app/ProjectStorage.ts",
+            "src/app/App.ts",
+            "scripts/qa_browser_gate_da32_021_studio_storage.cjs",
+            "docs/evidence/da32/da32-021-studio-storage-browser-gate.json",
+          ]
+        : ["src/app/StudioProjectStore.ts", "src/app/App.ts"],
     },
     "DA32-013": {
       status: "accepted-sample",

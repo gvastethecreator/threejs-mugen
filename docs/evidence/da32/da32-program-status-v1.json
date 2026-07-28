@@ -1,6 +1,6 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T06:37:16.585Z",
+  "generatedAt": "2026-07-28T07:04:44.621Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted",
@@ -62,6 +62,17 @@
         "src/app/App.ts"
       ]
     },
+    "DA32-021": {
+      "status": "accepted-browser-idb",
+      "note": "clean-subject desktop/mobile gate proves IndexedDB authority, local cache mirror, reload reopen, and a desktop revision conflict; quota recovery remains open",
+      "artifacts": [
+        "src/app/StudioProjectStore.ts",
+        "src/app/ProjectStorage.ts",
+        "src/app/App.ts",
+        "scripts/qa_browser_gate_da32_021_studio_storage.cjs",
+        "docs/evidence/da32/da32-021-studio-storage-browser-gate.json"
+      ]
+    },
     "DA32-013": {
       "status": "accepted-sample",
       "note": "consecutive pass proposes adjudicatedThrough=DA30-021",
@@ -103,6 +114,6 @@
   "claimCeiling": "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "d7f6a8ed9906db1fdadc4d9cb837fc6a1d069999b06db62a24923919dd2ad8cb"
+    "value": "528465edbb7e9cbb2629d1c6f452c0d9991e195caf5584527acf0893058685aa"
   }
 }

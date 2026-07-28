@@ -15,6 +15,10 @@ Yes. Keep the existing origin-scoped `localStorage` key, read both the legacy
 legacy entries with an initial revision, and write the migrated index back as
 v1. This is a compatibility migration, not conflict resolution.
 
+The later IndexedDB authority slice is recorded in
+`2026-07-28-da32-021-studio-indexeddb-authority.md`. This document remains the
+historical boundary for the local cache schema migration.
+
 ## Sources
 
 - [MDN: Window.localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
