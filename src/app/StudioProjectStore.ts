@@ -88,6 +88,13 @@ export class StudioProjectStore {
     return this.listMemory();
   }
 
+  async retryPersistent(): Promise<StoredProjectEntry[]> {
+    if (!this.factory) return this.listMemory();
+    this.backend = "indexeddb";
+    this.lastError = undefined;
+    return this.list();
+  }
+
   async load(id: string): Promise<StoredProjectEntry | undefined> {
     const entryId = id.trim();
     if (!entryId) return undefined;

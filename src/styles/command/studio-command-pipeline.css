@@ -88,6 +88,10 @@
   gap: 5px;
 }
 
+.app-shell.mode-studio .studio-project-storage-status .studio-project-conflict-actions {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .app-shell.mode-studio .studio-project-conflict-actions button {
   display: inline-flex;
   min-width: 0;

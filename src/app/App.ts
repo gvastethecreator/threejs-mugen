@@ -1244,6 +1244,8 @@ export class App {
         }
       } else if (action === "save-project-local") {
         this.saveCurrentProjectLocal();
+      } else if (action === "retry-project-storage") {
+        void this.retryProjectStorage();
       } else if (action === "reload-project-remote") {
         this.reloadExternalProject();
       } else if (action === "keep-project-local") {
@@ -1960,7 +1962,7 @@ export class App {
   private async hydrateStoredProjectsFromAuthority(): Promise<void> {
     const cacheEntries = [...this.storedProjects];
     try {
-      let entries = await this.studioProjectStore.list();
+      let entries = await this.studioProjectStore.retryPersistent();
       if (this.studioProjectStore.getBackend() === "indexeddb") {
         if (entries.length === 0 && cacheEntries.length > 0) {
           entries = await this.studioProjectStore.replace(cacheEntries);
@@ -2020,6 +2022,16 @@ export class App {
     const projectId = this.importedProjectManifest?.id;
     if (!projectId) return;
     this.projectStorageRevision = this.storedProjects.find((entry) => entry.id === projectId)?.revision;
+  }
+
+  private async retryProjectStorage(): Promise<void> {
+    await this.hydrateStoredProjectsFromAuthority();
+    this.log(
+      this.projectStorageBackend === "indexeddb"
+        ? "IndexedDB project storage is available again."
+        : "IndexedDB project storage is still unavailable; the current fallback remains active.",
+    );
+    this.updateUi();
   }
 
   private refreshStoredTraceEvidence(): void {
@@ -4591,8 +4603,9 @@ export class App {
               ${tablerIcon("save", "ui-icon action-icon")}
             </button>
           </div>
-          ${this.renderProjectStorageConflict()}
-        </div>
+           ${this.renderProjectStorageConflict()}
+           ${this.renderProjectStorageStatus()}
+         </div>
       `;
     }
 
@@ -4664,6 +4677,30 @@ export class App {
           <button type="button" data-action="keep-project-local" title="Save local edits as a new project copy">
             ${tablerIcon("save", "ui-icon action-icon")}
             <span>Keep Local Copy</span>
+          </button>
+        </div>
+      </section>
+    `;
+  }
+
+  private renderProjectStorageStatus(): string {
+    if (this.projectStorageBackend === "indexeddb") return "";
+    const diagnostics = this.studioProjectStore.getDiagnostics();
+    const channel = this.projectStorageBackend === "localstorage-cache" ? "local cache" : "memory";
+    const detail = diagnostics.lastError ? ` / ${diagnostics.lastError.slice(0, 180)}` : "";
+    return `
+      <section class="studio-project-conflict studio-project-storage-status" role="status" aria-live="polite" aria-label="Project storage fallback">
+        <div class="studio-project-conflict-head">
+          ${tablerIcon("server", "ui-icon action-icon")}
+          <span>
+            <strong>Project storage fallback</strong>
+            <small>${escapeHtml(channel)}${escapeHtml(detail)}</small>
+          </span>
+        </div>
+        <div class="studio-project-conflict-actions">
+          <button type="button" data-action="retry-project-storage" title="Retry IndexedDB project storage">
+            ${tablerIcon("reset", "ui-icon action-icon")}
+            <span>Retry IndexedDB</span>
           </button>
         </div>
       </section>

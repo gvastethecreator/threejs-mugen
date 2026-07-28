@@ -34,7 +34,28 @@ describe("StudioProjectStore", () => {
     expect((await store.list()).map((project) => project.name)).toEqual(["Newest", "New"]);
     expect((await store.load(entries[2]!.id))?.name).toBe("Newest");
   });
+
+  it("keeps the session list and exposes the error when persistent storage fails", async () => {
+    const store = new StudioProjectStore({ indexedDB: failingIndexedDb() });
+
+    await store.list();
+
+    expect(store.getDiagnostics()).toMatchObject({ backend: "memory", authoritative: false });
+    expect(store.getDiagnostics().lastError).toContain("IndexedDB project store could not open");
+    expect(await store.retryPersistent()).toEqual([]);
+    expect(store.getDiagnostics().backend).toBe("memory");
+  });
 });
+
+function failingIndexedDb(): IDBFactory {
+  return {
+    open() {
+      const request = {} as IDBOpenDBRequest;
+      queueMicrotask(() => request.onerror?.(new Event("error")));
+      return request;
+    },
+  } as unknown as IDBFactory;
+}
 
 function entry(project: ReturnType<typeof manifest>, savedAt: string) {
   return { id: project.id, name: project.name, savedAt, revision: 1, manifest: project };
