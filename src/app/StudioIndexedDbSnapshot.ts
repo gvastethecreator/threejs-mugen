@@ -169,22 +169,32 @@ export function clearStudioIndexedDbMemory(): void {
 
 async function idbPut(store: string, key: string, value: unknown): Promise<void> {
   const db = await openDb();
-  await new Promise<void>((resolve, reject) => {
-    const tx = db.transaction(store, "readwrite");
-    tx.objectStore(store).put(value, key);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-  });
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(store, "readwrite");
+      tx.objectStore(store).put(value, key);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error ?? new Error(`IndexedDB ${store} write failed.`));
+      tx.onabort = () => reject(tx.error ?? new Error(`IndexedDB ${store} write aborted.`));
+    });
+  } finally {
+    db.close();
+  }
 }
 
 async function idbGet<T>(store: string, key: string): Promise<T | undefined> {
   const db = await openDb();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(store, "readonly");
-    const req = tx.objectStore(store).get(key);
-    req.onsuccess = () => resolve(req.result as T | undefined);
-    req.onerror = () => reject(req.error);
-  });
+  try {
+    return await new Promise<T | undefined>((resolve, reject) => {
+      const tx = db.transaction(store, "readonly");
+      const req = tx.objectStore(store).get(key);
+      req.onsuccess = () => resolve(req.result as T | undefined);
+      req.onerror = () => reject(req.error ?? new Error(`IndexedDB ${store} read failed.`));
+      tx.onabort = () => reject(tx.error ?? new Error(`IndexedDB ${store} read aborted.`));
+    });
+  } finally {
+    db.close();
+  }
 }
 
 function openDb(): Promise<IDBDatabase> {
