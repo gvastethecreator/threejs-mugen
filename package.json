@@ -57,7 +57,7 @@
     "qa:browser:da32-026-source-write-receipt": "node scripts/qa_browser_gate_da32_026_source_write_receipt_recovery.cjs",
     "qa:browser:da32-027-source-write-observation": "node scripts/qa_browser_gate_da32_027_source_write_observation.cjs",
     "qa:browser:da32-028-source-write-observation-positive": "node scripts/qa_browser_gate_da32_028_source_write_observation_positive.cjs",
-    "qa:browser:da32-029-source-write-observation-finalize": "node scripts/qa_browser_gate_da32_029_source_write_observation_finalize.cjs",
+    "qa:browser:da32-030-source-write-observation-finalize": "node scripts/qa_browser_gate_da32_030_source_write_observation_finalize.cjs",
     "qa:browser:da32-029-a11y": "node scripts/qa_browser_gate_da32_029_a11y.cjs",
     "materialize:da31-status": "node scripts/build_da31_phase_status.cjs",
     "materialize:da32-status": "node scripts/build_da32_status.cjs",

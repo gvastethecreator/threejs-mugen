@@ -1,5 +1,5 @@
 /**
- * DA32-029: accept a verified source observation, reimport the folder, and
+ * DA32-030: accept a verified source observation, reimport the folder, and
  * settle the original write intent with an explicit receipt.
  */
 const { chromium } = require("playwright");
@@ -13,7 +13,7 @@ const { buildSubjectEnvelope } = require("./lib_gate_subject.cjs");
 
 const repoRoot = path.resolve(process.cwd());
 const outDir = path.join(repoRoot, "docs/evidence/da32/browser");
-const reportPath = path.join(repoRoot, "docs/evidence/da32/da32-029-source-write-observation-finalize-browser-gate.json");
+const reportPath = path.join(repoRoot, "docs/evidence/da32/da32-030-source-write-observation-finalize-browser-gate.json");
 const databaseName = "mugen-web-sandbox-studio";
 const fixturePath = path.join(repoRoot, ".scratch", "fixtures", "kfm-official.zip");
 const studioRoute = "/?mode=studio&studio=build&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo";
@@ -92,11 +92,11 @@ async function main() {
   const draftBytes = Buffer.from(draftText, "utf8");
   intent = {
     schema: "StudioSourceWriteIntent/v1",
-    intentId: "source-intent:da32-029:kfm-folder:chars/kfm/kfm.cns:write-closed",
+    intentId: "source-intent:da32-030:kfm-folder:chars/kfm/kfm.cns:write-closed",
     path: sourcePath,
     preimageBytes: [...preimageBytes],
     preimageSha256: fnvBytes(preimageBytes),
-    projectId: "da32-029-source-write-observation-finalize",
+    projectId: "da32-030-source-write-observation-finalize",
     sourcePackageId: "kfm-folder",
     draftDigest: fnvText(draftText),
     byteLength: preimageBytes.byteLength,
@@ -106,7 +106,7 @@ async function main() {
   };
   const projectPath = writeFinalizeProject(entries.length);
   const subject = buildSubjectEnvelope(repoRoot, {
-    probePaths: ["scripts/qa_browser_gate_da32_029_source_write_observation_finalize.cjs"],
+    probePaths: ["scripts/qa_browser_gate_da32_030_source_write_observation_finalize.cjs"],
     codePaths: [
       "src/app/App.ts",
       "src/app/StudioIndexedDbSnapshot.ts",
@@ -141,7 +141,7 @@ async function main() {
     const ok = cases.every((item) => item.ok) && unexpectedConsole.length === 0;
     const report = {
       schema: "Da32StudioSourceWriteObservationFinalizeBrowserGate/v1",
-      id: "DA32-029",
+      id: "DA32-030",
       generatedAt: new Date().toISOString(),
       subject,
       headSha: subject.subjectSha,
@@ -215,7 +215,7 @@ async function runViewport(browser, base, projectPath, entries, options) {
     await waitForStudio(page);
     await page.locator("#project-input").setInputFiles(projectPath);
     await page.waitForFunction(
-      () => window.__MUGEN_WEB_SANDBOX__?.project?.id === "da32-029-source-write-observation-finalize",
+      () => window.__MUGEN_WEB_SANDBOX__?.project?.id === "da32-030-source-write-observation-finalize",
       null,
       { timeout: 30_000 },
     );
@@ -253,7 +253,7 @@ async function runViewport(browser, base, projectPath, entries, options) {
       const handle = bridge?.sourceHandles?.find((candidate) => candidate.sourcePackageId === "kfm-folder");
       return sourcePackage?.status === "linked" && handle?.state === "granted" && handle?.canRead === true;
     }, null, { timeout: 90_000 });
-    steps.nativeRelink = await page.evaluate(() => Boolean(window.__DA32_029_FOLDER_HANDLE__));
+    steps.nativeRelink = await page.evaluate(() => Boolean(window.__DA32_030_FOLDER_HANDLE__));
     await page.evaluate(() => document.querySelector('[data-mode="studio"]')?.dispatchEvent(new MouseEvent("click", { bubbles: true })));
     await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio", null, { timeout: 15_000 });
     await page.waitForSelector('[data-source-write-observation="needs-observation"]', { timeout: 15_000 });
@@ -329,13 +329,13 @@ async function runViewport(browser, base, projectPath, entries, options) {
       intent: window.__MUGEN_WEB_SANDBOX__?.studioSourceWriteIntent,
       sourceHandle: window.__MUGEN_WEB_SANDBOX__?.sourceHandles?.find((candidate) => candidate.sourcePackageId === "kfm-folder"),
       sourceTransaction: window.__MUGEN_WEB_SANDBOX__?.sourceTransactions?.find((candidate) => candidate.sourcePackageId === "kfm-folder"),
-      fileText: await window.__DA32_029_FOLDER_HANDLE__.getDirectoryHandle("chars")
+      fileText: await window.__DA32_030_FOLDER_HANDLE__.getDirectoryHandle("chars")
         .then((chars) => chars.getDirectoryHandle("kfm"))
         .then((kfm) => kfm.getFileHandle("kfm.cns"))
         .then((fileHandle) => fileHandle.getFile())
         .then((file) => file.text()),
-      writeCalls: window.__DA32_029_WRITE_CALLS__ ?? 0,
-      readwritePermissionRequests: window.__DA32_029_READWRITE_PERMISSION_REQUESTS__ ?? 0,
+      writeCalls: window.__DA32_030_WRITE_CALLS__ ?? 0,
+      readwritePermissionRequests: window.__DA32_030_READWRITE_PERMISSION_REQUESTS__ ?? 0,
       records: await new Promise((resolve) => {
         const request = indexedDB.open(database);
         request.onerror = () => resolve([]);
@@ -363,7 +363,7 @@ async function runViewport(browser, base, projectPath, entries, options) {
       bodyScrollWidth: document.body?.scrollWidth ?? 0,
     }));
     steps.noHorizontalOverflow = viewport.scrollWidth <= viewport.innerWidth + 1 && viewport.bodyScrollWidth <= viewport.innerWidth + 1;
-    const screenshot = path.join(outDir, `da32-029-source-write-observation-finalize-${options.id}.png`);
+    const screenshot = path.join(outDir, `da32-030-source-write-observation-finalize-${options.id}.png`);
     await page.screenshot({ path: screenshot, fullPage: true });
     return {
       id: options.id,
@@ -414,7 +414,7 @@ async function installFolderHandle(page, entries) {
         queryPermission: async ({ mode } = {}) => mode === "readwrite" ? "prompt" : "granted",
         requestPermission: async ({ mode } = {}) => {
           if (mode === "readwrite") {
-            window.__DA32_029_READWRITE_PERMISSION_REQUESTS__ = (window.__DA32_029_READWRITE_PERMISSION_REQUESTS__ ?? 0) + 1;
+            window.__DA32_030_READWRITE_PERMISSION_REQUESTS__ = (window.__DA32_030_READWRITE_PERMISSION_REQUESTS__ ?? 0) + 1;
             return "prompt";
           }
           return "granted";
@@ -449,23 +449,23 @@ async function installFolderHandle(page, entries) {
         bytes,
         getFile: async () => new File([fileEntry.bytes], name, { type: "application/octet-stream" }),
         createWritable: async () => {
-          window.__DA32_029_WRITE_CALLS__ = (window.__DA32_029_WRITE_CALLS__ ?? 0) + 1;
-          throw new Error("DA32-029 must not open a writable stream");
+          window.__DA32_030_WRITE_CALLS__ = (window.__DA32_030_WRITE_CALLS__ ?? 0) + 1;
+          throw new Error("DA32-030 must not open a writable stream");
         },
       };
       directory.children.push(fileEntry);
     }
-    window.__DA32_029_FOLDER_HANDLE__ = root;
+    window.__DA32_030_FOLDER_HANDLE__ = root;
     Object.defineProperty(window, "showDirectoryPicker", { configurable: true, value: async () => root });
   }, { fixtureEntries: entries, targetPath: sourcePath, modifiedText: draftText });
 }
 
 function writeFinalizeProject(fileCount) {
-  const projectPath = path.join(outDir, "da32-029-source-write-observation-finalize-project.json");
+  const projectPath = path.join(outDir, "da32-030-source-write-observation-finalize-project.json");
   const project = {
     schemaVersion: "mugen-web-sandbox/project/v0",
-    id: "da32-029-source-write-observation-finalize",
-    name: "DA32-029 Source Write Observation Finalize",
+    id: "da32-030-source-write-observation-finalize",
+    name: "DA32-030 Source Write Observation Finalize",
     engineVersion: "qa-browser-gate",
     generatedAt: "2026-07-28T00:00:00.000Z",
     projectType: "mugen-port",
