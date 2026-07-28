@@ -4586,7 +4586,7 @@ function assertSmoke(diagnostics) {
     studioWorkbench.pipelineStepCount < 7 ||
     !studioWorkbench.rightInspectorVisible ||
     studioWorkbench.activeIssueRows < 1 ||
-    studioWorkbench.navigatorVisible ||
+    !studioWorkbench.navigatorVisible ||
     studioWorkbench.consoleCollapsed ||
     studioWorkbench.consoleHeight < 100 ||
     studioWorkbench.canvasArea < 300000 ||
