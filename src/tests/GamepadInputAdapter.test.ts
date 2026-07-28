@@ -170,4 +170,26 @@ describe("GamepadInputAdapter", () => {
       actions: [],
     });
   });
+
+  it("records browser connect and disconnect events and removes listeners", () => {
+    const target = new EventTarget();
+    const pad = createFakeGamepad({ index: 3, id: "Event Pad", mapping: "standard" });
+    const adapter = new GamepadInputAdapter({ getGamepads: () => [pad] });
+    adapter.start(target);
+
+    const connected = new Event("gamepadconnected");
+    Object.defineProperty(connected, "gamepad", { value: pad });
+    target.dispatchEvent(connected);
+
+    const disconnected = new Event("gamepaddisconnected");
+    Object.defineProperty(disconnected, "gamepad", { value: pad });
+    target.dispatchEvent(disconnected);
+    adapter.stop();
+    target.dispatchEvent(connected);
+
+    expect(adapter.getDeviceEvents()).toEqual([
+      { type: "connected", index: 3, id: "Event Pad", mapping: "standard", tick: 0 },
+      { type: "disconnected", index: 3, id: "Event Pad", mapping: "standard", tick: 0 },
+    ]);
+  });
 });

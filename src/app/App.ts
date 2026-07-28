@@ -970,6 +970,7 @@ export class App {
     this.root.innerHTML = this.template();
     this.renderer.mount(this.root.querySelector<HTMLElement>("#stage")!);
     this.keyboard.start();
+    this.gamepad.start();
     this.installFileDropZone();
     this.installEvents();
     this.installNavigationGuard();

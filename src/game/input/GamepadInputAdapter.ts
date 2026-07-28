@@ -45,6 +45,16 @@ export type GamepadInputDiagnostics = {
   seats: [GamepadSeatDiagnostic, GamepadSeatDiagnostic];
 };
 
+export type GamepadDeviceEvent = {
+  type: "connected" | "disconnected";
+  index: number;
+  id: string;
+  mapping: string;
+  tick: number;
+};
+
+type GamepadEventTarget = Pick<Window, "addEventListener" | "removeEventListener">;
+
 const ACTION_TO_MUGEN: Record<MatchInputAction, string | undefined> = {
   up: "U",
   down: "D",
@@ -68,6 +78,8 @@ export class GamepadInputAdapter {
   private readonly socdMode: RuntimeSocdResolution;
   private lastPolicy?: MatchInputPolicySnapshot;
   private lastDiagnostics: GamepadInputDiagnostics = createDisconnectedDiagnostics(0);
+  private readonly deviceEvents: GamepadDeviceEvent[] = [];
+  private eventTarget?: GamepadEventTarget;
   private lastTick = 0;
 
   constructor(options: GamepadInputAdapterOptions = {}) {
@@ -87,6 +99,20 @@ export class GamepadInputAdapter {
     };
     this.remap = options.remap;
     this.socdMode = options.socdMode ?? 0;
+  }
+
+  start(target: GamepadEventTarget = window): void {
+    if (this.eventTarget) return;
+    this.eventTarget = target;
+    target.addEventListener("gamepadconnected", this.onGamepadConnected);
+    target.addEventListener("gamepaddisconnected", this.onGamepadDisconnected);
+  }
+
+  stop(): void {
+    if (!this.eventTarget) return;
+    this.eventTarget.removeEventListener("gamepadconnected", this.onGamepadConnected);
+    this.eventTarget.removeEventListener("gamepaddisconnected", this.onGamepadDisconnected);
+    this.eventTarget = undefined;
   }
 
   /** Poll pads for a match tick and retain the policy snapshot. */
@@ -131,6 +157,10 @@ export class GamepadInputAdapter {
 
   getDiagnostics(): GamepadInputDiagnostics {
     return this.lastDiagnostics;
+  }
+
+  getDeviceEvents(): readonly GamepadDeviceEvent[] {
+    return this.deviceEvents;
   }
 
   /** MUGEN virtual intents for one seat (empty when disconnected). */
@@ -194,6 +224,29 @@ export class GamepadInputAdapter {
       remap: this.remap,
       socdMode: this.socdMode,
     };
+  }
+
+  private readonly onGamepadConnected = (event: Event): void => {
+    this.recordDeviceEvent("connected", event);
+    this.poll(this.lastTick);
+  };
+
+  private readonly onGamepadDisconnected = (event: Event): void => {
+    this.recordDeviceEvent("disconnected", event);
+    this.poll(this.lastTick);
+  };
+
+  private recordDeviceEvent(type: GamepadDeviceEvent["type"], event: Event): void {
+    const gamepad = (event as GamepadEvent).gamepad;
+    if (!gamepad) return;
+    this.deviceEvents.push({
+      type,
+      index: gamepad.index,
+      id: gamepad.id || "Unnamed gamepad",
+      mapping: gamepad.mapping || "unknown",
+      tick: this.lastTick,
+    });
+    if (this.deviceEvents.length > 8) this.deviceEvents.shift();
   }
 }
 
