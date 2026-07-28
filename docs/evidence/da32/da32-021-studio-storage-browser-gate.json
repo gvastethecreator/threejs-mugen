@@ -1,0 +1,837 @@
+{
+  "schema": "Da32StudioStorageBrowserGate/v1",
+  "id": "DA32-021",
+  "generatedAt": "2026-07-28T07:00:32.970Z",
+  "subject": {
+    "schema": "Da31GateSubjectEnvelope/v1",
+    "subjectSha": "a398bd94b7394535024dd0e6b2336b307d031e0b",
+    "dirtyTree": true,
+    "provisional": true,
+    "probePaths": [
+      "scripts/qa_browser_gate_da32_021_studio_storage.cjs"
+    ],
+    "codePaths": [
+      "src/app/App.ts",
+      "src/app/ProjectStorage.ts",
+      "src/app/StudioProjectStore.ts"
+    ],
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+  },
+  "headSha": "a398bd94b7394535024dd0e6b2336b307d031e0b",
+  "ok": true,
+  "route": "/?mode=studio&studio=workbench&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+  "database": "mugen-web-sandbox-projects",
+  "cases": [
+    {
+      "id": "desktop",
+      "viewport": "1440x900",
+      "ok": true,
+      "steps": {
+        "authorityReady": true,
+        "saved": true,
+        "indexedDbRecord": true,
+        "cacheMirror": true,
+        "reloadRestoresRow": true,
+        "reopenRestoresManifest": true,
+        "conflictRetainsLocalEdit": true,
+        "noHorizontalOverflow": true
+      },
+      "projectId": "da32-021-desktop-authority",
+      "authority": {
+        "available": true,
+        "records": [
+          {
+            "schema": "StudioProjectStore/v1",
+            "entry": {
+              "id": "da32-021-desktop-authority",
+              "name": "DA32-021 desktop authority",
+              "savedAt": "2026-07-28T07:00:23.416Z",
+              "revision": 1,
+              "manifest": {
+                "schemaVersion": "mugen-web-sandbox/project/v0",
+                "id": "da32-021-desktop-authority",
+                "name": "DA32-021 desktop authority",
+                "engineVersion": "mugen-web-sandbox@0.0.0",
+                "generatedAt": "2026-07-28T07:00:23.416Z",
+                "projectType": "mugen-port",
+                "modules": [
+                  "mugen-compat",
+                  "three-render",
+                  "asset-pipeline",
+                  "studio-workspace",
+                  "platformer-module"
+                ],
+                "sourcePackages": [],
+                "assets": {
+                  "characters": [
+                    "nova-boxer",
+                    "mira-volt",
+                    "rook-apprentice"
+                  ],
+                  "stages": [
+                    "rooftop-dojo",
+                    "training-grid",
+                    "bgctrl-lab"
+                  ],
+                  "audio": [],
+                  "ui": [],
+                  "effects": []
+                },
+                "assetRecords": [
+                  {
+                    "id": "nova-boxer",
+                    "label": "Nova Boxer",
+                    "kind": "sprite-atlas",
+                    "source": "generated",
+                    "status": "warn",
+                    "detail": "atlas loaded / walk QA warn",
+                    "tags": [
+                      "sprite-atlas-builder",
+                      "selected"
+                    ],
+                    "severity": "warning",
+                    "affectedAssetId": "nova-boxer",
+                    "affectedSystem": "renderer",
+                    "impact": "Generated fighter is playable with warnings; Studio must keep the atlas QA issue visible.",
+                    "evidenceIds": [
+                      "asset:nova-boxer",
+                      "nova-boxer:qa:evidence"
+                    ],
+                    "blockedBy": [],
+                    "canExport": true,
+                    "nextAction": {
+                      "kind": "regenerate-source",
+                      "label": "Review or regenerate source sprites",
+                      "targetId": "nova-boxer"
+                    }
+                  },
+                  {
+                    "id": "mira-volt",
+                    "label": "Mira Volt",
+                    "kind": "sprite-atlas",
+                    "source": "generated",
+                    "status": "warn",
+                    "detail": "atlas loaded / walk QA warn",
+                    "tags": [
+                      "sprite-atlas-builder",
+                      "selected"
+                    ],
+                    "severity": "warning",
+                    "affectedAssetId": "mira-volt",
+                    "affectedSystem": "renderer",
+                    "impact": "Generated fighter is playable with warnings; Studio must keep the atlas QA issue visible.",
+                    "evidenceIds": [
+                      "asset:mira-volt",
+                      "mira-volt:qa:evidence"
+                    ],
+                    "blockedBy": [],
+                    "canExport": true,
+                    "nextAction": {
+                      "kind": "regenerate-source",
+                      "label": "Review or regenerate source sprites",
+                      "targetId": "mira-volt"
+                    }
+                  },
+                  {
+                    "id": "rook-apprentice",
+                    "label": "Rook Apprentice",
+                    "kind": "sprite-atlas",
+                    "source": "generated",
+                    "status": "warn",
+                    "detail": "atlas loaded / walk QA warn",
+                    "tags": [
+                      "sprite-atlas-builder",
+                      "roster"
+                    ],
+                    "severity": "warning",
+                    "affectedAssetId": "rook-apprentice",
+                    "affectedSystem": "renderer",
+                    "impact": "Generated fighter is playable with warnings; Studio must keep the atlas QA issue visible.",
+                    "evidenceIds": [
+                      "asset:rook-apprentice",
+                      "rook-apprentice:qa:evidence"
+                    ],
+                    "blockedBy": [],
+                    "canExport": true,
+                    "nextAction": {
+                      "kind": "regenerate-source",
+                      "label": "Review or regenerate source sprites",
+                      "targetId": "rook-apprentice"
+                    }
+                  },
+                  {
+                    "id": "rooftop-dojo",
+                    "label": "Rooftop Dojo",
+                    "kind": "stage",
+                    "source": "authored",
+                    "status": "ok",
+                    "detail": "2 authored runtime layers",
+                    "tags": [
+                      "selected",
+                      "playtest"
+                    ],
+                    "severity": "info",
+                    "affectedAssetId": "rooftop-dojo",
+                    "affectedSystem": "stage",
+                    "impact": "Stage is available as authored/native playtest content.",
+                    "evidenceIds": [
+                      "asset:rooftop-dojo"
+                    ],
+                    "blockedBy": [],
+                    "canExport": true,
+                    "nextAction": {
+                      "kind": "open-stage-preview",
+                      "label": "Review stage asset",
+                      "targetId": "rooftop-dojo"
+                    }
+                  },
+                  {
+                    "id": "training-grid",
+                    "label": "Training Grid",
+                    "kind": "stage",
+                    "source": "runtime-demo",
+                    "status": "ok",
+                    "detail": "3 authored runtime layers",
+                    "tags": [
+                      "available",
+                      "playtest"
+                    ],
+                    "severity": "info",
+                    "affectedAssetId": "training-grid",
+                    "affectedSystem": "stage",
+                    "impact": "Stage is available as authored/native playtest content.",
+                    "evidenceIds": [
+                      "asset:training-grid"
+                    ],
+                    "blockedBy": [],
+                    "canExport": true,
+                    "nextAction": {
+                      "kind": "open-stage-preview",
+                      "label": "Review stage asset",
+                      "targetId": "training-grid"
+                    }
+                  },
+                  {
+                    "id": "bgctrl-lab",
+                    "label": "BGCtrl Lab",
+                    "kind": "stage",
+                    "source": "runtime-demo",
+                    "status": "ok",
+                    "detail": "5 authored runtime layers",
+                    "tags": [
+                      "available",
+                      "playtest"
+                    ],
+                    "severity": "info",
+                    "affectedAssetId": "bgctrl-lab",
+                    "affectedSystem": "stage",
+                    "impact": "Stage is available as authored/native playtest content.",
+                    "evidenceIds": [
+                      "asset:bgctrl-lab"
+                    ],
+                    "blockedBy": [],
+                    "canExport": true,
+                    "nextAction": {
+                      "kind": "open-stage-preview",
+                      "label": "Review stage asset",
+                      "targetId": "bgctrl-lab"
+                    }
+                  }
+                ],
+                "entry": {
+                  "mode": "match",
+                  "p1": "nova-boxer",
+                  "p2": "mira-volt",
+                  "stage": "rooftop-dojo"
+                },
+                "compatibility": {
+                  "gates": [
+                    {
+                      "id": "playtest",
+                      "label": "Playable Match",
+                      "status": "ok",
+                      "detail": "two-fighter Three.js playtest is available from Runtime mode",
+                      "severity": "info",
+                      "affectedSystem": "runtime",
+                      "impact": "The project has a runnable local match baseline for verifying runtime, renderer, and Studio changes.",
+                      "evidenceIds": [
+                        "runtime-smoke",
+                        "trace:smoke"
+                      ],
+                      "blockedBy": [],
+                      "canExport": true,
+                      "nextAction": {
+                        "kind": "run-smoke",
+                        "label": "Run visual smoke QA",
+                        "targetId": "playtest"
+                      }
+                    },
+                    {
+                      "id": "mugen-import",
+                      "label": "Real MUGEN Import",
+                      "status": "pending",
+                      "detail": "load a ZIP/folder to validate a real character",
+                      "severity": "warning",
+                      "affectedSystem": "parser",
+                      "impact": "Only native/generated content is loaded, so imported MUGEN compatibility claims remain unproven in this session.",
+                      "evidenceIds": [],
+                      "blockedBy": [
+                        "missing-imported-character"
+                      ],
+                      "canExport": true,
+                      "nextAction": {
+                        "kind": "relink-source",
+                        "label": "Load MUGEN ZIP or folder",
+                        "targetId": "mugen-import"
+                      }
+                    },
+                    {
+                      "id": "sprite-decode",
+                      "label": "Sprite Decode",
+                      "status": "pending",
+                      "detail": "waiting for imported SFF",
+                      "severity": "warning",
+                      "affectedSystem": "renderer",
+                      "impact": "Imported animation preview may use fallback rendering until sprites decode.",
+                      "evidenceIds": [],
+                      "blockedBy": [],
+                      "canExport": true,
+                      "nextAction": {
+                        "kind": "open-evidence",
+                        "label": "Review SFF decode status",
+                        "targetId": "compat:sprites"
+                      }
+                    },
+                    {
+                      "id": "atlas-qa",
+                      "label": "Generated Atlas QA",
+                      "status": "warn",
+                      "detail": "3 generated roster QA reports tracked",
+                      "severity": "warning",
+                      "affectedSystem": "renderer",
+                      "impact": "Generated roster remains playable, but warnings must stay visible in project evidence.",
+                      "evidenceIds": [
+                        "asset:atlas-qa"
+                      ],
+                      "blockedBy": [],
+                      "canExport": true,
+                      "nextAction": {
+                        "kind": "regenerate-source",
+                        "label": "Review generated asset QA",
+                        "targetId": "atlas-qa"
+                      }
+                    },
+                    {
+                      "id": "stage-import",
+                      "label": "Stage Pipeline",
+                      "status": "partial",
+                      "detail": "authored demo stage active; no imported stage loaded",
+                      "severity": "warning",
+                      "affectedSystem": "stage",
+                      "impact": "The match has a native/authored stage, but imported stage compatibility is not proven in this session.",
+                      "evidenceIds": [],
+                      "blockedBy": [],
+                      "canExport": true,
+                      "nextAction": {
+                        "kind": "open-stage-preview",
+                        "label": "Review native stage",
+                        "targetId": "stage-import"
+                      }
+                    },
+                    {
+                      "id": "architecture-boundaries",
+                      "label": "Architecture Boundaries",
+                      "status": "ok",
+                      "detail": "shared engine, MUGEN compatibility, renderer, Studio, and future modules are guarded by import-boundary tests",
+                      "severity": "info",
+                      "affectedSystem": "module",
+                      "impact": "The project has a visible contract that keeps renderer-independent engine code separate from MUGEN parsers/runtime and Studio UI.",
+                      "evidenceIds": [
+                        "test:architecture-boundaries",
+                        "module-contracts"
+                      ],
+                      "blockedBy": [],
+                      "canExport": true,
+                      "nextAction": {
+                        "kind": "open-build",
+                        "label": "Review module boundaries",
+                        "targetId": "architecture-boundaries"
+                      }
+                    },
+                    {
+                      "id": "visual-qa",
+                      "label": "Visual QA",
+                      "status": "partial",
+                      "detail": "desktop/mobile Playwright screenshots and canvas pixel checks are required before UI handoff",
+                      "severity": "warning",
+                      "affectedSystem": "studio",
+                      "impact": "Visible UI, renderer, stage, sprite, and debug changes need screenshots before handoff.",
+                      "evidenceIds": [
+                        "qa-smoke"
+                      ],
+                      "blockedBy": [],
+                      "canExport": true,
+                      "nextAction": {
+                        "kind": "run-smoke",
+                        "label": "Run pnpm qa:smoke",
+                        "targetId": "visual-qa"
+                      }
+                    }
+                  ],
+                  "stats": {
+                    "characters": 3,
+                    "stages": 3,
+                    "importedCharacters": 0,
+                    "importedStages": 0,
+                    "generatedAtlases": 3
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "cache": [
+        {
+          "id": "da32-021-desktop-authority",
+          "name": "DA32-021 desktop authority",
+          "revision": 1
+        }
+      ],
+      "conflict": {
+        "ok": true,
+        "localName": "DA32-021 desktop authority local pending",
+        "remoteName": "DA32-021 desktop authority remote revision",
+        "primary": {
+          "dirty": true,
+          "conflict": {
+            "projectId": "da32-021-desktop-authority",
+            "expectedRevision": 1,
+            "actualRevision": 2
+          },
+          "revision": 1,
+          "name": "DA32-021 desktop authority local pending"
+        },
+        "remote": {
+          "dirty": false,
+          "revision": 2,
+          "name": "DA32-021 desktop authority remote revision"
+        },
+        "consoleErrors": []
+      },
+      "viewportState": {
+        "innerWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-021-studio-storage-desktop.png",
+      "consoleErrors": []
+    },
+    {
+      "id": "mobile",
+      "viewport": "390x844",
+      "ok": true,
+      "steps": {
+        "authorityReady": true,
+        "saved": true,
+        "indexedDbRecord": true,
+        "cacheMirror": true,
+        "reloadRestoresRow": true,
+        "reopenRestoresManifest": true,
+        "conflictRetainsLocalEdit": true,
+        "noHorizontalOverflow": true
+      },
+      "projectId": "da32-021-mobile-authority",
+      "authority": {
+        "available": true,
+        "records": [
+          {
+            "schema": "StudioProjectStore/v1",
+            "entry": {
+              "id": "da32-021-mobile-authority",
+              "name": "DA32-021 mobile authority",
+              "savedAt": "2026-07-28T07:00:31.401Z",
+              "revision": 1,
+              "manifest": {
+                "schemaVersion": "mugen-web-sandbox/project/v0",
+                "id": "da32-021-mobile-authority",
+                "name": "DA32-021 mobile authority",
+                "engineVersion": "mugen-web-sandbox@0.0.0",
+                "generatedAt": "2026-07-28T07:00:31.401Z",
+                "projectType": "mugen-port",
+                "modules": [
+                  "mugen-compat",
+                  "three-render",
+                  "asset-pipeline",
+                  "studio-workspace",
+                  "platformer-module"
+                ],
+                "sourcePackages": [],
+                "assets": {
+                  "characters": [
+                    "nova-boxer",
+                    "mira-volt",
+                    "rook-apprentice"
+                  ],
+                  "stages": [
+                    "rooftop-dojo",
+                    "training-grid",
+                    "bgctrl-lab"
+                  ],
+                  "audio": [],
+                  "ui": [],
+                  "effects": []
+                },
+                "assetRecords": [
+                  {
+                    "id": "nova-boxer",
+                    "label": "Nova Boxer",
+                    "kind": "sprite-atlas",
+                    "source": "generated",
+                    "status": "warn",
+                    "detail": "atlas loaded / walk QA warn",
+                    "tags": [
+                      "sprite-atlas-builder",
+                      "selected"
+                    ],
+                    "severity": "warning",
+                    "affectedAssetId": "nova-boxer",
+                    "affectedSystem": "renderer",
+                    "impact": "Generated fighter is playable with warnings; Studio must keep the atlas QA issue visible.",
+                    "evidenceIds": [
+                      "asset:nova-boxer",
+                      "nova-boxer:qa:evidence"
+                    ],
+                    "blockedBy": [],
+                    "canExport": true,
+                    "nextAction": {
+                      "kind": "regenerate-source",
+                      "label": "Review or regenerate source sprites",
+                      "targetId": "nova-boxer"
+                    }
+                  },
+                  {
+                    "id": "mira-volt",
+                    "label": "Mira Volt",
+                    "kind": "sprite-atlas",
+                    "source": "generated",
+                    "status": "warn",
+                    "detail": "atlas loaded / walk QA warn",
+                    "tags": [
+                      "sprite-atlas-builder",
+                      "selected"
+                    ],
+                    "severity": "warning",
+                    "affectedAssetId": "mira-volt",
+                    "affectedSystem": "renderer",
+                    "impact": "Generated fighter is playable with warnings; Studio must keep the atlas QA issue visible.",
+                    "evidenceIds": [
+                      "asset:mira-volt",
+                      "mira-volt:qa:evidence"
+                    ],
+                    "blockedBy": [],
+                    "canExport": true,
+                    "nextAction": {
+                      "kind": "regenerate-source",
+                      "label": "Review or regenerate source sprites",
+                      "targetId": "mira-volt"
+                    }
+                  },
+                  {
+                    "id": "rook-apprentice",
+                    "label": "Rook Apprentice",
+                    "kind": "sprite-atlas",
+                    "source": "generated",
+                    "status": "warn",
+                    "detail": "atlas loaded / walk QA warn",
+                    "tags": [
+                      "sprite-atlas-builder",
+                      "roster"
+                    ],
+                    "severity": "warning",
+                    "affectedAssetId": "rook-apprentice",
+                    "affectedSystem": "renderer",
+                    "impact": "Generated fighter is playable with warnings; Studio must keep the atlas QA issue visible.",
+                    "evidenceIds": [
+                      "asset:rook-apprentice",
+                      "rook-apprentice:qa:evidence"
+                    ],
+                    "blockedBy": [],
+                    "canExport": true,
+                    "nextAction": {
+                      "kind": "regenerate-source",
+                      "label": "Review or regenerate source sprites",
+                      "targetId": "rook-apprentice"
+                    }
+                  },
+                  {
+                    "id": "rooftop-dojo",
+                    "label": "Rooftop Dojo",
+                    "kind": "stage",
+                    "source": "authored",
+                    "status": "ok",
+                    "detail": "2 authored runtime layers",
+                    "tags": [
+                      "selected",
+                      "playtest"
+                    ],
+                    "severity": "info",
+                    "affectedAssetId": "rooftop-dojo",
+                    "affectedSystem": "stage",
+                    "impact": "Stage is available as authored/native playtest content.",
+                    "evidenceIds": [
+                      "asset:rooftop-dojo"
+                    ],
+                    "blockedBy": [],
+                    "canExport": true,
+                    "nextAction": {
+                      "kind": "open-stage-preview",
+                      "label": "Review stage asset",
+                      "targetId": "rooftop-dojo"
+                    }
+                  },
+                  {
+                    "id": "training-grid",
+                    "label": "Training Grid",
+                    "kind": "stage",
+                    "source": "runtime-demo",
+                    "status": "ok",
+                    "detail": "3 authored runtime layers",
+                    "tags": [
+                      "available",
+                      "playtest"
+                    ],
+                    "severity": "info",
+                    "affectedAssetId": "training-grid",
+                    "affectedSystem": "stage",
+                    "impact": "Stage is available as authored/native playtest content.",
+                    "evidenceIds": [
+                      "asset:training-grid"
+                    ],
+                    "blockedBy": [],
+                    "canExport": true,
+                    "nextAction": {
+                      "kind": "open-stage-preview",
+                      "label": "Review stage asset",
+                      "targetId": "training-grid"
+                    }
+                  },
+                  {
+                    "id": "bgctrl-lab",
+                    "label": "BGCtrl Lab",
+                    "kind": "stage",
+                    "source": "runtime-demo",
+                    "status": "ok",
+                    "detail": "5 authored runtime layers",
+                    "tags": [
+                      "available",
+                      "playtest"
+                    ],
+                    "severity": "info",
+                    "affectedAssetId": "bgctrl-lab",
+                    "affectedSystem": "stage",
+                    "impact": "Stage is available as authored/native playtest content.",
+                    "evidenceIds": [
+                      "asset:bgctrl-lab"
+                    ],
+                    "blockedBy": [],
+                    "canExport": true,
+                    "nextAction": {
+                      "kind": "open-stage-preview",
+                      "label": "Review stage asset",
+                      "targetId": "bgctrl-lab"
+                    }
+                  }
+                ],
+                "entry": {
+                  "mode": "match",
+                  "p1": "nova-boxer",
+                  "p2": "mira-volt",
+                  "stage": "rooftop-dojo"
+                },
+                "compatibility": {
+                  "gates": [
+                    {
+                      "id": "playtest",
+                      "label": "Playable Match",
+                      "status": "ok",
+                      "detail": "two-fighter Three.js playtest is available from Runtime mode",
+                      "severity": "info",
+                      "affectedSystem": "runtime",
+                      "impact": "The project has a runnable local match baseline for verifying runtime, renderer, and Studio changes.",
+                      "evidenceIds": [
+                        "runtime-smoke",
+                        "trace:smoke"
+                      ],
+                      "blockedBy": [],
+                      "canExport": true,
+                      "nextAction": {
+                        "kind": "run-smoke",
+                        "label": "Run visual smoke QA",
+                        "targetId": "playtest"
+                      }
+                    },
+                    {
+                      "id": "mugen-import",
+                      "label": "Real MUGEN Import",
+                      "status": "pending",
+                      "detail": "load a ZIP/folder to validate a real character",
+                      "severity": "warning",
+                      "affectedSystem": "parser",
+                      "impact": "Only native/generated content is loaded, so imported MUGEN compatibility claims remain unproven in this session.",
+                      "evidenceIds": [],
+                      "blockedBy": [
+                        "missing-imported-character"
+                      ],
+                      "canExport": true,
+                      "nextAction": {
+                        "kind": "relink-source",
+                        "label": "Load MUGEN ZIP or folder",
+                        "targetId": "mugen-import"
+                      }
+                    },
+                    {
+                      "id": "sprite-decode",
+                      "label": "Sprite Decode",
+                      "status": "pending",
+                      "detail": "waiting for imported SFF",
+                      "severity": "warning",
+                      "affectedSystem": "renderer",
+                      "impact": "Imported animation preview may use fallback rendering until sprites decode.",
+                      "evidenceIds": [],
+                      "blockedBy": [],
+                      "canExport": true,
+                      "nextAction": {
+                        "kind": "open-evidence",
+                        "label": "Review SFF decode status",
+                        "targetId": "compat:sprites"
+                      }
+                    },
+                    {
+                      "id": "atlas-qa",
+                      "label": "Generated Atlas QA",
+                      "status": "warn",
+                      "detail": "3 generated roster QA reports tracked",
+                      "severity": "warning",
+                      "affectedSystem": "renderer",
+                      "impact": "Generated roster remains playable, but warnings must stay visible in project evidence.",
+                      "evidenceIds": [
+                        "asset:atlas-qa"
+                      ],
+                      "blockedBy": [],
+                      "canExport": true,
+                      "nextAction": {
+                        "kind": "regenerate-source",
+                        "label": "Review generated asset QA",
+                        "targetId": "atlas-qa"
+                      }
+                    },
+                    {
+                      "id": "stage-import",
+                      "label": "Stage Pipeline",
+                      "status": "partial",
+                      "detail": "authored demo stage active; no imported stage loaded",
+                      "severity": "warning",
+                      "affectedSystem": "stage",
+                      "impact": "The match has a native/authored stage, but imported stage compatibility is not proven in this session.",
+                      "evidenceIds": [],
+                      "blockedBy": [],
+                      "canExport": true,
+                      "nextAction": {
+                        "kind": "open-stage-preview",
+                        "label": "Review native stage",
+                        "targetId": "stage-import"
+                      }
+                    },
+                    {
+                      "id": "architecture-boundaries",
+                      "label": "Architecture Boundaries",
+                      "status": "ok",
+                      "detail": "shared engine, MUGEN compatibility, renderer, Studio, and future modules are guarded by import-boundary tests",
+                      "severity": "info",
+                      "affectedSystem": "module",
+                      "impact": "The project has a visible contract that keeps renderer-independent engine code separate from MUGEN parsers/runtime and Studio UI.",
+                      "evidenceIds": [
+                        "test:architecture-boundaries",
+                        "module-contracts"
+                      ],
+                      "blockedBy": [],
+                      "canExport": true,
+                      "nextAction": {
+                        "kind": "open-build",
+                        "label": "Review module boundaries",
+                        "targetId": "architecture-boundaries"
+                      }
+                    },
+                    {
+                      "id": "visual-qa",
+                      "label": "Visual QA",
+                      "status": "partial",
+                      "detail": "desktop/mobile Playwright screenshots and canvas pixel checks are required before UI handoff",
+                      "severity": "warning",
+                      "affectedSystem": "studio",
+                      "impact": "Visible UI, renderer, stage, sprite, and debug changes need screenshots before handoff.",
+                      "evidenceIds": [
+                        "qa-smoke"
+                      ],
+                      "blockedBy": [],
+                      "canExport": true,
+                      "nextAction": {
+                        "kind": "run-smoke",
+                        "label": "Run pnpm qa:smoke",
+                        "targetId": "visual-qa"
+                      }
+                    }
+                  ],
+                  "stats": {
+                    "characters": 3,
+                    "stages": 3,
+                    "importedCharacters": 0,
+                    "importedStages": 0,
+                    "generatedAtlases": 3
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "cache": [
+        {
+          "id": "da32-021-mobile-authority",
+          "name": "DA32-021 mobile authority",
+          "revision": 1
+        }
+      ],
+      "viewportState": {
+        "innerWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-021-studio-storage-mobile.png",
+      "consoleErrors": []
+    }
+  ],
+  "unexpectedConsole": [],
+  "claimCeiling": "provisional IndexedDB project authority observations for named viewports",
+  "claims": {
+    "allowed": [
+      "Studio reports IndexedDB as the project authority",
+      "a saved manifest is present in the named IndexedDB object store",
+      "the small localStorage cache mirrors the authoritative entry",
+      "a page reload restores the saved project row and opens its manifest",
+      "a second browser page produces a revision conflict while local edits remain dirty",
+      "the named desktop and mobile routes have no horizontal overflow or unexpected page errors"
+    ],
+    "blocked": [
+      "storage quota and eviction recovery",
+      "file-system source blobs",
+      "physical browser coverage",
+      "full Studio authoring suite"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "865e72bd6074983853be7f11e648d34587f2c317f0ef3afa2d75772f2cdff5a8"
+  }
+}
