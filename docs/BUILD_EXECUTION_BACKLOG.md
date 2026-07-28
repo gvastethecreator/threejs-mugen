@@ -1,5 +1,23 @@
 # Build Execution Backlog
 
+## Entry 633 - DA32-031 Studio retry/abandon recovery decisions
+
+Added durable `recoveryDecision`, `recoveryAttempt`, and
+`recoveryDecidedAt` fields to `StudioSourceWriteIntent/v1`. `Prepare retry`
+persists the retry decision, resets observation to `needs-observation`, and
+loads the exact preimage without writing a source handle. `Abandon recovery`
+requires confirmation, creates a rejected `recovery-abandoned` receipt, and
+settles the intent as `aborted` with `recovery = none`.
+
+Implementation and gate/evidence subject: `3826f0ea`:
+`docs/evidence/da32/da32-031-source-write-recovery-decisions-browser-gate.json`.
+Desktop `1440x900` and mobile `390x844` pass all eleven steps, including
+durable retry and abandon fields, receipt readback, not-linked handle state,
+zero unexpected console errors, and no horizontal overflow. Claim blocked:
+physical crash cuts, real retry writes, quota/eviction, multi-file atomicity,
+ZIP rewrite, binary source blobs, release authority, and full MUGEN/IKEMEN
+parity.
+
 ## Entry 632 - DA32-030 Studio observed-source finalization
 
 Implemented the explicit post-reload acceptance path in `bf719ef5`. A pending

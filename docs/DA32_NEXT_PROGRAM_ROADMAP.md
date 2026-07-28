@@ -20,7 +20,7 @@ DA32 turns remaining open product and adjudication work into owned lanes.
 1. **DA32-001…008** — smoke ownership, hit-spark/runtime repair, mugen-lite visual, Studio surface lanes.
 2. **DA32-009…012** — physical gamepad device-lab protocol + optional hardware evidence.
 3. **DA32-013…020** — consecutive clause adjudication samples past DA30-020.
-4. **DA32-021…030** — project authority, authoring per-view browser capture, live snapshot/replay binding.
+4. **DA32-021…031** — project authority, authoring per-view browser capture, live snapshot/replay binding.
 5. **DA32-029…032** — a11y SR/canvas alternative, local release blockers refresh.
 
 ## Phase 0 — Smoke ownership (current)
@@ -193,6 +193,7 @@ MUGEN/IKEMEN parity remain open.
 | DA32-027 | Observe a write-closed source intent after reload | durable `needs-observation`, explicit source read classification, unavailable outcome without receipt settlement, exact preimage replay, desktop/mobile browser gate | named route and no-handle fallback; granted physical handle, crash injection, receipt finalization, retry, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
 | DA32-028 | Verify positive source observation through a granted folder handle | real KFM source read, `matches-preimage`, digest/length persistence, pending retention, zero writable-stream calls, desktop/mobile browser gate | simulated picker and fixture handle; `matches-draft`, changed bytes, physical permissions, crash, receipt finalization, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
 | DA32-030 | Accept a verified draft observation and finalize the source-write intent | `matches-draft` re-read, explicit folder reimport, `observed-write-and-reimport` receipt, settled intent with `recovery: observed`, desktop/mobile browser gate | simulated picker and KFM fixture; physical crash cuts, retry/abandon, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
+| DA32-031 | Record explicit retry and abandon decisions for a write-closed source intent | durable retry decision and attempt count, exact preimage replay, rejected abandon receipt, settled `aborted` intent, desktop/mobile browser gate | simulated browser intent without external write; physical crash, real retry write, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
 
 ### DA32-021 browser gate - c95c871a (2026-07-28)
 
@@ -436,6 +437,27 @@ write/IndexedDB boundary, automatic retry, abandon, quota, eviction,
 multi-file recovery, ZIP rewrite, binary blobs, physical permission prompts,
 release authority, and full MUGEN/IKEMEN authoring parity remain open.
 
+### DA32-031 browser gate - provisional subject `3826f0ea` (2026-07-28)
+
+- `pnpm qa:browser:da32-031-source-write-recovery-decisions` passed at desktop
+  `1440x900` and mobile `390x844`; the gate remains provisional because the
+  shared tree still contains unrelated roadmap work.
+- The gate seeds a durable `write-closed` intent, confirms `Prepare retry`
+  persists `recoveryDecision = retry`, `recoveryAttempt = 1`, and the exact
+  preimage, then confirms `Abandon recovery` creates a rejected
+  `recovery-abandoned` receipt and settles the intent as `aborted`.
+- All eleven steps pass in both viewports: durable retry and abandon fields,
+  receipt readback, not-linked handle state with no permissions, zero
+  unexpected console errors, and no horizontal overflow.
+- Implementation and browser gate/evidence subject: `3826f0ea`. Evidence:
+  `docs/evidence/da32/da32-031-source-write-recovery-decisions-browser-gate.json`.
+
+Claim ceiling: named browser retry preparation and abandon settlement for a
+single write-closed intent. Physical stream/IndexedDB crash cuts, retry with a
+real external write, physical prompts, quota, eviction, multi-file recovery,
+ZIP rewrite, binary blobs, release authority, and full MUGEN/IKEMEN authoring
+parity remain open.
+
 ## Commands
 
 ```bash
@@ -449,6 +471,7 @@ pnpm qa:browser:da32-026-source-write-receipt
 pnpm qa:browser:da32-027-source-write-observation
 pnpm qa:browser:da32-028-source-write-observation-positive
 pnpm qa:browser:da32-030-source-write-observation-finalize
+pnpm qa:browser:da32-031-source-write-recovery-decisions
 pnpm materialize:da32-status
 pnpm exec vitest run src/tests/Da32Program.test.ts
 ```

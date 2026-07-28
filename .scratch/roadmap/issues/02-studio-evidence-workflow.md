@@ -14,6 +14,26 @@ DA31-025…029 then choose storage authority and prove transactions, conflicts,
 recovery, real views, preview, and export revision fidelity. Current proof is
 single-tab and its 390-pixel mobile route has horizontal overflow.
 
+## 2026-07-28 DA32-031 recovery decision checkpoint
+
+DA32-031 gives a pending `write-closed` source intent two explicit durable
+decisions. `Prepare retry` records `recoveryDecision = retry`, attempt 1, and
+reloads the exact preimage while leaving source observation pending.
+`Abandon recovery` requires confirmation, records a rejected
+`recovery-abandoned` receipt, and settles the intent as `aborted` with
+`recovery = none`.
+
+The provisional browser gate passes all eleven steps at desktop `1440x900` and
+mobile `390x844`, with durable IndexedDB readback, no linked handle or granted
+permission, no horizontal overflow, and zero unexpected console errors.
+Implementation and gate/evidence subject: `3826f0ea`.
+Evidence:
+`docs/evidence/da32/da32-031-source-write-recovery-decisions-browser-gate.json`.
+Research:
+`docs/research/2026-07-28-da32-031-source-write-recovery-decisions.md`.
+The remaining boundary is physical crash cuts, real retry writes, quota,
+eviction, and multi-file recovery.
+
 ## 2026-07-28 DA32-030 observed-source finalization checkpoint
 
 DA32-030 closes the positive draft-observation acceptance slice. A pending

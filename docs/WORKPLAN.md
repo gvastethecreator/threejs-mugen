@@ -1,5 +1,23 @@
 # Workplan
 
+## DA32-031 Studio retry/abandon recovery decisions (2026-07-28)
+
+The recovery surface now records an explicit `retry` decision and attempt
+number for a pending `write-closed` intent. The action loads the exact
+preimage and leaves source observation pending. `Abandon recovery` requires
+confirmation, creates a rejected `recovery-abandoned` receipt, and settles the
+intent as `aborted` with `recovery = none`.
+
+Implementation and gate/evidence subject: `3826f0ea`.
+Evidence:
+`docs/evidence/da32/da32-031-source-write-recovery-decisions-browser-gate.json`.
+Research:
+`docs/research/2026-07-28-da32-031-source-write-recovery-decisions.md`.
+Verification: desktop `1440x900` and mobile `390x844` pass all eleven steps,
+with zero unexpected console errors, no horizontal overflow, and no linked
+source handle or granted permission. Physical crash cuts, real retry writes,
+quota, eviction, and multi-file recovery remain open.
+
 ## DA32-030 Studio observed-source finalization (2026-07-28)
 
 The recovery surface now exposes `Accept observed source` only after a fresh
@@ -15,7 +33,7 @@ Verification: desktop `1440x900` and mobile `390x844` pass all fourteen steps,
 zero writable-stream calls, zero `readwrite` permission requests, zero
 unexpected console errors, and no horizontal overflow. The gate is
 provisional while unrelated roadmap documentation remains dirty. Next Studio
-cut: physical crash windows, retry/abandon, quota/eviction, and multi-file
+cut: physical crash windows, quota/eviction, and multi-file
 recovery.
 
 ## DA32-028 Studio positive source-write observation (2026-07-28)

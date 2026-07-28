@@ -275,6 +275,17 @@ if (fs.existsSync(studioSourceObservationFinalizeGatePath)) {
 }
 const studioSourceObservationFinalizeGateOk = studioSourceObservationFinalizeGate?.ok === true;
 const studioSourceObservationFinalizeGateClean = studioSourceObservationFinalizeGate?.subject?.provisional === false;
+const studioSourceRecoveryDecisionGatePath = path.join(outDir, "da32-031-source-write-recovery-decisions-browser-gate.json");
+let studioSourceRecoveryDecisionGate = null;
+if (fs.existsSync(studioSourceRecoveryDecisionGatePath)) {
+  try {
+    studioSourceRecoveryDecisionGate = JSON.parse(fs.readFileSync(studioSourceRecoveryDecisionGatePath, "utf8"));
+  } catch {
+    studioSourceRecoveryDecisionGate = null;
+  }
+}
+const studioSourceRecoveryDecisionGateOk = studioSourceRecoveryDecisionGate?.ok === true;
+const studioSourceRecoveryDecisionGateClean = studioSourceRecoveryDecisionGate?.subject?.provisional === false;
 
 const status = {
   schema: "Da32ProgramStatus/v1",
@@ -526,6 +537,27 @@ const status = {
           ]
         : ["src/app/App.ts", "src/app/StudioIndexedDbSnapshot.ts"],
     },
+    "DA32-031": {
+      status: studioSourceRecoveryDecisionGateOk
+        ? studioSourceRecoveryDecisionGateClean
+          ? "accepted-browser-source-recovery-decisions"
+          : "accepted-browser-source-recovery-decisions-provisional"
+        : "open-implementation",
+      note: studioSourceRecoveryDecisionGateOk
+        ? studioSourceRecoveryDecisionGateClean
+          ? "clean-subject desktop/mobile gate proves durable retry preparation and explicit abandon settlement with a rejected receipt; physical crash, quota, eviction, and multi-file recovery remain open"
+          : "desktop/mobile source-recovery decision gate passed on a dirty subject; clean subject pin remains open"
+        : "Studio source-recovery decision browser gate is missing or failed",
+      artifacts: studioSourceRecoveryDecisionGateOk
+        ? [
+            "src/app/App.ts",
+            "src/app/StudioIndexedDbSnapshot.ts",
+            "src/app/StudioSourceWriteReceipt.ts",
+            "scripts/qa_browser_gate_da32_031_source_write_recovery_decisions.cjs",
+            "docs/evidence/da32/da32-031-source-write-recovery-decisions-browser-gate.json",
+          ]
+        : ["src/app/App.ts", "src/app/StudioIndexedDbSnapshot.ts"],
+    },
     "DA32-013": {
       status: "accepted-sample",
       note: "consecutive pass proposes adjudicatedThrough=DA30-021",
@@ -561,9 +593,11 @@ const status = {
     ownership.ok ? "retain green smoke ownership at the next subject HEAD" : "live qa:smoke re-run with ownership write",
     ownership.ok ? "expand runtime visual and Studio matrix" : "reconcile global smoke runtime-native sample with focal gate",
     mugenLiteVisualGateOk ? "expand mugen-lite visual matrix" : "close mugen-lite visual lane",
-    studioSourceObservationFinalizeGateOk
-      ? "physical source-intent crash injection, retry/abandon, quota, eviction, and multi-file recovery"
-      : studioSourceObservationPositiveGateOk
+    studioSourceRecoveryDecisionGateOk
+      ? "physical source-intent crash injection, quota, eviction, and multi-file recovery"
+      : studioSourceObservationFinalizeGateOk
+        ? "durable retry/abandon decisions for write-closed source intents"
+        : studioSourceObservationPositiveGateOk
         ? "matches-draft source observation and explicit receipt finalization"
         : studioSourceObservationGateOk
         ? "granted-handle source observation classification"

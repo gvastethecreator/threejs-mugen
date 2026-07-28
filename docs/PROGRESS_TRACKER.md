@@ -26,9 +26,10 @@
   gates. DA32-025 now has a clean incomplete-phase recovery gate. DA32-026 now
   has a clean receipt rehydration gate. DA32-027 now has a provisional
   observation recovery gate, DA32-028 now has a provisional positive
-  granted-handle observation gate, and DA32-030 now has a provisional draft
-  observation finalization gate. Physical crash, retry, quota, eviction,
-  multi-file, and source-blob persistence remain open.
+  granted-handle observation gate, DA32-030 now has a provisional draft
+  observation finalization gate, and DA32-031 now has a provisional retry/
+  abandon decision gate. Physical crash, quota, eviction, multi-file, and
+  source-blob persistence remain open.
 
 ## DA32 smoke ownership closeout - 8c6d6c80 (green subject checkpoint, 2026-07-28)
 
@@ -289,6 +290,30 @@ recorded desktop/mobile checks. Claim blocked: physical crash cuts, automatic
 retry, abandon, quota/eviction, multi-file recovery, ZIP rewrite, binary source
 blobs, physical prompts, release authority, and full MUGEN/IKEMEN authoring
 parity.
+
+## DA32-031 Studio recovery decisions - provisional `3826f0ea` (closed-bounded, 2026-07-28)
+
+- `pnpm qa:browser:da32-031-source-write-recovery-decisions` passed at desktop
+  `1440x900` and mobile `390x844`; the report is provisional because unrelated
+  roadmap documentation remains dirty. Unexpected console errors: zero.
+- `Prepare retry` persists `recoveryDecision = retry`, `recoveryAttempt = 1`,
+  and `recoveryDecidedAt`, then loads the exact preimage without writing a
+  source handle. `Abandon recovery` requires confirmation, creates a rejected
+  `recovery-abandoned` receipt, and settles the intent as `aborted` with
+  `recovery = none`.
+- All eleven steps pass per viewport, including durable IndexedDB readback,
+  visible actions, receipt settlement, not-linked handle state with no granted
+  permissions, no horizontal overflow, and zero unexpected console errors.
+- Implementation: `3826f0ea`. Gate/evidence:
+  `docs/evidence/da32/da32-031-source-write-recovery-decisions-browser-gate.json`.
+  Research:
+  `docs/research/2026-07-28-da32-031-source-write-recovery-decisions.md`.
+
+Claim allowed: named browser retry preparation and abandon settlement for a
+single write-closed intent. Claim blocked: physical crash cuts, retry with a
+real external write, physical prompts, quota/eviction, multi-file recovery,
+ZIP rewrite, binary source blobs, release authority, and full MUGEN/IKEMEN
+authoring parity.
 
 ## DA32-027 Studio source-write observation - provisional `3027b948` (closed-bounded, 2026-07-28)
 

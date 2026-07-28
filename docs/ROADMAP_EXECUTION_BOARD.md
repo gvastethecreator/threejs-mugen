@@ -1,6 +1,27 @@
 ﻿# Roadmap Execution Board
 
-## Current Studio product board - DA32-030 (closed-bounded, 2026-07-28)
+## Current Studio product board - DA32-031 (closed-bounded, 2026-07-28)
+
+DA32-031 makes the unresolved source-write recovery choice explicit. A pending
+`write-closed` intent exposes `Prepare retry`, which persists
+`recoveryDecision = retry`, increments `recoveryAttempt`, resets observation to
+`needs-observation`, and loads the exact preimage. `Abandon recovery` requires
+confirmation, creates a rejected `recovery-abandoned` receipt, and settles the
+intent as `aborted` with `recovery = none`.
+
+The provisional desktop/mobile gate passes all eleven steps at `1440x900` and
+`390x844`, including IndexedDB, bridge, DOM, exact preimage, receipt
+settlement, not-linked handle state, overflow, and console checks. Implementation
+and gate/evidence subject: `3826f0ea`.
+Evidence:
+`docs/evidence/da32/da32-031-source-write-recovery-decisions-browser-gate.json`.
+The gate records zero unexpected console errors and no granted source handle.
+
+Next Studio proof: physical crash cuts, real retry writes, quota and eviction,
+and multi-file transaction boundaries. ZIP rewrite, binary source, release,
+and full parity claims remain blocked.
+
+## Previous Studio product board - DA32-030 (closed-bounded, 2026-07-28)
 
 DA32-030 proves the explicit acceptance route after a positive source
 observation. Studio relinks a KFM fixture, records `matches-draft`, exposes
