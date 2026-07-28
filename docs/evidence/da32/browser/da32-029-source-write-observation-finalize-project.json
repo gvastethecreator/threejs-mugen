@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "mugen-web-sandbox/project/v0",
+  "id": "da32-029-source-write-observation-finalize",
+  "name": "DA32-029 Source Write Observation Finalize",
+  "engineVersion": "qa-browser-gate",
+  "generatedAt": "2026-07-28T00:00:00.000Z",
+  "projectType": "mugen-port",
+  "modules": [
+    "mugen-compat",
+    "three-render",
+    "studio-workspace"
+  ],
+  "sourcePackages": [
+    {
+      "id": "kfm-folder",
+      "name": "KFM observed draft folder",
+      "kind": "folder",
+      "fileCount": 14,
+      "status": "missing",
+      "characterId": "imported-kfm",
+      "characterName": "Kung Fu Man",
+      "defPath": "chars/kfm/kfm.def",
+      "stageIds": [
+        "kfm"
+      ],
+      "stageDefPaths": [
+        "stages/kfm.def"
+      ],
+      "requiredPaths": [
+        "chars/kfm/kfm.def",
+        "chars/kfm/kfm.sff",
+        "chars/kfm/kfm.air",
+        "chars/kfm/kfm.cmd",
+        "chars/kfm/kfm.cns"
+      ]
+    }
+  ],
+  "assets": {
+    "characters": [
+      "nova-boxer",
+      "mira-volt",
+      "rook-apprentice"
+    ],
+    "stages": [
+      "rooftop-dojo"
+    ],
+    "audio": [],
+    "ui": [],
+    "effects": []
+  },
+  "assetRecords": [],
+  "entry": {
+    "mode": "match",
+    "p1": "nova-boxer",
+    "p2": "mira-volt",
+    "stage": "rooftop-dojo"
+  },
+  "compatibility": {
+    "gates": [],
+    "stats": {
+      "characters": 3,
+      "stages": 1,
+      "importedCharacters": 1,
+      "importedStages": 0,
+      "generatedAtlases": 3
+    }
+  }
+}
