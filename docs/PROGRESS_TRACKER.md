@@ -71,15 +71,18 @@ Claim allowed: simulated input diagnostics and the code-level canvas
 alternative. Claim blocked: physical device proof, screen-reader journey,
 contrast audit, WCAG certification, public release, and full parity.
 
-## DA32-010 virtual gamepad browser gate - 1c3aac8e (closed-bounded, 2026-07-28)
+## DA32-010 virtual gamepad browser gate - b826de72 (closed-bounded, 2026-07-28)
 
 - `pnpm qa:browser:da32-010-gamepad` passed against clean subject
-  `1c3aac8e` at desktop `1440x900` and mobile `390x844`; unexpected console
+  `b826de72` at desktop `1440x900` and mobile `390x844`; unexpected console
   errors: zero.
 - The browser gate drives the real `GamepadInputAdapter` through injected
   `Gamepad` objects and browser connection events. It proves standard P1,
   non-standard P2, held button-to-action mapping, two-seat binding, unplug
-  clearing, keyboard fallback, and reconnect with changed device index.
+  clearing, keyboard fallback, and reconnect with changed device index. The
+  adapter preserves the logical seat from stable device id while the browser
+  array becomes sparse. Duplicate ids fall back to configured index ownership
+  and remain marked ambiguous.
 - The App bridge now exposes a copied keyboard state plus copied gamepad
   diagnostics and the eight-event device window for deterministic browser
   evidence. The visible Pads metric and live summary are checked after the

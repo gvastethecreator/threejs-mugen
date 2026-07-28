@@ -1,7 +1,7 @@
 # DA32-010 virtual gamepad browser gate
 
 Date: 2026-07-28
-Commit: `1c3aac8e`
+Commits: `1c3aac8e`, `a8111e89`, `b826de72`
 
 ## Scope
 
@@ -25,14 +25,18 @@ Viewports:
   the mapping warning.
 - P1 disconnect clears its diagnostic seat and active actions.
 - Keyboard `z` maps to runtime input `a` while P1 gamepad is disconnected.
-- P1 reconnects in the same logical seat with device index 4 and button 1;
-  the diagnostic reports logical action `b`.
+- P1 reconnects in the same logical seat with stable id `Virtual Standard Pad`,
+  device index 4, and button 1; the diagnostic reports logical action `b`.
+- The adapter resolves sparse browser arrays by remembered device id before
+  configured index fallback, so an index change does not drop the logical seat.
+  Duplicate ids become ambiguous and use configured index ownership, which
+  keeps two identical controllers on separate seats.
 - The bridge exposes copied keyboard state, copied seat diagnostics, and the
   last eight device events for browser evidence.
 
 ## Evidence
 
-`pnpm qa:browser:da32-010-gamepad` passed on clean subject `1c3aac8e`:
+`pnpm qa:browser:da32-010-gamepad` passed on clean subject `b826de72`:
 
 - desktop and mobile cases: pass
 - semantic clauses per case: 12/12

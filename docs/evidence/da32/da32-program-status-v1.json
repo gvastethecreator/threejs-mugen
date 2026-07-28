@@ -1,6 +1,6 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T06:29:16.347Z",
+  "generatedAt": "2026-07-28T06:33:35.224Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted",
@@ -103,6 +103,6 @@
   "claimCeiling": "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "103c13f0fb6340ca03d9e202d3478bca9ec691507856638eeddb983223485a83"
+    "value": "f3a08aea3aae99d8129808368fc5c0f89df97200ed8a4fb796e42a2100695ef1"
   }
 }

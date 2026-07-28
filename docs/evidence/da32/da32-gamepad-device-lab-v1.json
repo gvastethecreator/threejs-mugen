@@ -7,7 +7,7 @@
   "browserGate": {
     "id": "DA32-010",
     "ok": true,
-    "headSha": "1c3aac8e5f3a2b202bfac44b8c9490e7be7f13e4",
+    "headSha": "a8111e894f78c5230e08f4b381703082407e86d8",
     "viewports": [
       "1440x900",
       "390x844"
@@ -17,6 +17,6 @@
   "claimCeiling": "protocol + simulated baseline + runtime status diagnostics; physical device claim remains open",
   "digest": {
     "algorithm": "sha-256",
-    "value": "921fefe41f3d54ce5042281e2ed52d28fb0bf4605571ed65272b46d15484443c"
+    "value": "43ebf709c6ac76cc63334dc3be55b06d50c6604fae4d85587f1180faf1b9e4c0"
   }
 }

@@ -1,10 +1,10 @@
 {
   "schema": "Da32GamepadBrowserGate/v1",
   "id": "DA32-010",
-  "generatedAt": "2026-07-28T06:32:07.269Z",
+  "generatedAt": "2026-07-28T06:35:03.614Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "a4dc2703b0de68612015ccd7a56c5ef00e91ca4d",
+    "subjectSha": "a8111e894f78c5230e08f4b381703082407e86d8",
     "dirtyTree": true,
     "provisional": true,
     "probePaths": [
@@ -18,7 +18,7 @@
     ],
     "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
   },
-  "headSha": "a4dc2703b0de68612015ccd7a56c5ef00e91ca4d",
+  "headSha": "a8111e894f78c5230e08f4b381703082407e86d8",
   "ok": true,
   "route": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "cases": [
@@ -43,7 +43,7 @@
       "journey": {
         "held": {
           "diagnostics": {
-            "tick": 17,
+            "tick": 16,
             "connectedCount": 1,
             "seats": [
               {
@@ -72,13 +72,13 @@
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 12
+              "tick": 11
             }
           ]
         },
         "twoSeatState": {
           "diagnostics": {
-            "tick": 56,
+            "tick": 53,
             "connectedCount": 2,
             "seats": [
               {
@@ -107,20 +107,20 @@
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 12
+              "tick": 11
             },
             {
               "type": "connected",
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 44
+              "tick": 42
             }
           ]
         },
         "p1Disconnected": {
           "diagnostics": {
-            "tick": 56,
+            "tick": 53,
             "connectedCount": 2,
             "seats": [
               {
@@ -149,20 +149,20 @@
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 12
+              "tick": 11
             },
             {
               "type": "connected",
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 44
+              "tick": 42
             }
           ]
         },
         "afterDisconnect": {
           "diagnostics": {
-            "tick": 100,
+            "tick": 54,
             "connectedCount": 1,
             "seats": [
               {
@@ -189,21 +189,21 @@
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 12
+              "tick": 11
             },
             {
               "type": "connected",
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 44
+              "tick": 42
             },
             {
               "type": "disconnected",
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 56
+              "tick": 53
             }
           ]
         },
@@ -300,11 +300,11 @@
               "value": 0
             }
           ],
-          "timestamp": 21849
+          "timestamp": 21258.599999997765
         },
         "finalState": {
           "diagnostics": {
-            "tick": 146,
+            "tick": 148,
             "connectedCount": 2,
             "seats": [
               {
@@ -333,28 +333,28 @@
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 12
+              "tick": 11
             },
             {
               "type": "connected",
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 44
+              "tick": 42
             },
             {
               "type": "disconnected",
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 56
+              "tick": 53
             },
             {
               "type": "connected",
               "index": 4,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 129
+              "tick": 130
             }
           ]
         }
@@ -389,7 +389,7 @@
       "journey": {
         "held": {
           "diagnostics": {
-            "tick": 15,
+            "tick": 19,
             "connectedCount": 1,
             "seats": [
               {
@@ -424,7 +424,7 @@
         },
         "twoSeatState": {
           "diagnostics": {
-            "tick": 25,
+            "tick": 28,
             "connectedCount": 2,
             "seats": [
               {
@@ -460,13 +460,13 @@
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 18
+              "tick": 21
             }
           ]
         },
         "p1Disconnected": {
           "diagnostics": {
-            "tick": 25,
+            "tick": 29,
             "connectedCount": 2,
             "seats": [
               {
@@ -502,13 +502,13 @@
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 18
+              "tick": 21
             }
           ]
         },
         "afterDisconnect": {
           "diagnostics": {
-            "tick": 26,
+            "tick": 31,
             "connectedCount": 1,
             "seats": [
               {
@@ -542,14 +542,14 @@
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 18
+              "tick": 21
             },
             {
               "type": "disconnected",
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 25
+              "tick": 29
             }
           ]
         },
@@ -646,11 +646,11 @@
               "value": 0
             }
           ],
-          "timestamp": 1330.5
+          "timestamp": 1480.1000000014901
         },
         "finalState": {
           "diagnostics": {
-            "tick": 43,
+            "tick": 50,
             "connectedCount": 2,
             "seats": [
               {
@@ -686,21 +686,21 @@
               "index": 7,
               "id": "Virtual Legacy Pad",
               "mapping": "unknown",
-              "tick": 18
+              "tick": 21
             },
             {
               "type": "disconnected",
               "index": 0,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 25
+              "tick": 29
             },
             {
               "type": "connected",
               "index": 4,
               "id": "Virtual Standard Pad",
               "mapping": "standard",
-              "tick": 38
+              "tick": 39
             }
           ]
         }
@@ -734,6 +734,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "cbe68dbda7b3dfadfa0296828f11a6b80184c21c5cf8f1d4c1bedcbaa771b5ef"
+    "value": "1a5a94a953f0a4be76ba4aa72666eb79e4866794d907c30826d23fb431aafcbf"
   }
 }

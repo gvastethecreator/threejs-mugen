@@ -118,14 +118,17 @@ audit, WCAG certification, and full MUGEN/IKEMEN parity remain open.
 | DA32-009 | Publish gamepad device-lab protocol | Connect/unplug/remap/two-seat checklist + simulated baseline + visible runtime status | protocol + sim + diagnostics; hardware optional |
 | DA32-010 | Virtual Gamepad API probe where supported | Browser probe records connect, held action, two seats, disconnect, keyboard fallback, mapping warning, and index-change reconnect | named browser only; no hardware claim |
 
-### DA32-010 browser gate - 1c3aac8e (2026-07-28)
+### DA32-010 browser gate - b826de72 (2026-07-28)
 
 - `pnpm qa:browser:da32-010-gamepad` passed on a clean subject at desktop
   `1440x900` and mobile `390x844`; unexpected console/page errors: zero.
 - The gate injects browser `Gamepad` objects, dispatches connection events, and
   reads the live App bridge. It covers standard and non-standard mappings,
   button hold to logical action, two-seat binding, unplug action clearing,
-  keyboard fallback while P1 is disconnected, and reconnect with device index 4.
+  keyboard fallback while P1 is disconnected, and reconnect with device index 4
+  through the same stable device id in a sparse Gamepad array.
+- Duplicate device ids stay on configured index fallback and are marked
+  ambiguous, so two identical controllers do not steal one logical seat.
 - The match surface and the live status summary expose the resulting seat state.
   The report records the event window, per-seat diagnostics, status text, and
   viewport overflow check.
