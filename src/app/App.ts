@@ -101,12 +101,14 @@ import { StudioProjectStore, type StudioProjectStoreBackend } from "./StudioProj
 import { snapshotAfterProjectSave } from "./ProjectSnapshotBridge";
 import {
   getStudioIndexedDbSnapshotDiagnostics,
+  classifySourceWriteObservation,
   listSourceWriteIntents,
   replaySourceWriteIntent,
   retryStudioIndexedDbSnapshot,
   saveProjectSnapshot,
   saveSourceWriteIntent,
   STUDIO_INDEXEDDB_SNAPSHOT_SCHEMA,
+  type StudioSourceWriteObservation,
   type StudioSourceWriteIntent,
 } from "./StudioIndexedDbSnapshot";
 import { StudioEditHistory, type StudioProjectEditState } from "./StudioEditHistory";
@@ -208,6 +210,7 @@ import {
 import {
   captureSourceWritePreimage,
   createSourceWritePlan,
+  readSourceHandleBytes,
   restoreSourceWritePreimage,
   writeSourceHandleText,
   type SourceWritePlan,
@@ -1290,6 +1293,8 @@ export class App {
         this.discardStudioSourceDocument();
       } else if (action === "replay-source-write-intent") {
         void this.replayStudioSourceWriteIntent();
+      } else if (action === "observe-source-write-intent") {
+        void this.observeStudioSourceWriteIntent();
       } else if (action === "relink-source-write-intent") {
         this.relinkStudioSourceWriteIntent();
       } else if (action === "focus-source-diagnostic") {
@@ -2087,7 +2092,34 @@ export class App {
 
   private async refreshStoredSourceWriteIntents(): Promise<void> {
     try {
-      this.studioSourceWriteIntents = await listSourceWriteIntents();
+      let intents = await listSourceWriteIntents();
+      const pendingWriteClosed = intents.find((intent) =>
+        !intent.result &&
+        intent.phase === "write-closed" &&
+        !intent.receipt &&
+        !intent.observation,
+      );
+      if (pendingWriteClosed) {
+        const marked = await saveSourceWriteIntent({
+          intentId: pendingWriteClosed.intentId,
+          path: pendingWriteClosed.path,
+          preimage: Uint8Array.from(pendingWriteClosed.preimageBytes),
+          projectId: pendingWriteClosed.projectId,
+          sourcePackageId: pendingWriteClosed.sourcePackageId,
+          draftDigest: pendingWriteClosed.draftDigest,
+          byteLength: pendingWriteClosed.byteLength,
+          phase: pendingWriteClosed.phase,
+          writeByteLength: pendingWriteClosed.writeByteLength,
+          observedSourceFingerprint: pendingWriteClosed.observedSourceFingerprint,
+          receiptId: pendingWriteClosed.receiptId,
+          result: pendingWriteClosed.result,
+          recovery: pendingWriteClosed.recovery,
+          observation: { status: "needs-observation", diagnostics: [] },
+          createdAt: pendingWriteClosed.createdAt,
+        });
+        intents = [marked, ...intents.filter((intent) => intent.intentId !== marked.intentId)];
+      }
+      this.studioSourceWriteIntents = intents;
       this.studioSourceWriteIntent = this.studioSourceWriteIntents.find((intent) => !intent.result) ?? this.studioSourceWriteIntents[0];
       this.studioSourceWriteReceipt = this.studioSourceWriteIntent?.receipt;
       const pending = this.studioSourceWriteIntents.find((intent) => !intent.result);
@@ -2355,6 +2387,7 @@ export class App {
     observedSourceFingerprint?: string;
     receiptId?: string;
     receipt?: SourceWriteReceipt;
+    observation?: StudioSourceWriteObservation;
     result?: StudioSourceWriteIntent["result"];
     recovery?: StudioSourceWriteIntent["recovery"];
     createdAt?: string;
@@ -2755,6 +2788,104 @@ export class App {
     this.refreshStudioSourceSemanticDraft();
     this.writeUrlState();
     this.log(`Loaded the ${intent.byteLength ?? replay.bytes.byteLength}-byte source preimage for review; no source handle was written.`);
+    this.updateUi();
+  }
+
+  private async observeStudioSourceWriteIntent(): Promise<void> {
+    const intent = this.studioSourceWriteIntent;
+    if (!intent || intent.result || intent.phase !== "write-closed") {
+      this.log("Source write observation requires a pending write-closed intent.");
+      this.updateUi();
+      return;
+    }
+    const persistObservation = async (observation: StudioSourceWriteObservation): Promise<void> => {
+      const record = await this.persistStudioSourceWriteIntent({
+        intentId: intent.intentId,
+        path: intent.path,
+        preimage: Uint8Array.from(intent.preimageBytes),
+        projectId: intent.projectId,
+        sourcePackageId: intent.sourcePackageId,
+        draftDigest: intent.draftDigest,
+        byteLength: intent.byteLength,
+        phase: intent.phase,
+        writeByteLength: intent.writeByteLength,
+        observedSourceFingerprint: intent.observedSourceFingerprint,
+        receiptId: intent.receiptId,
+        receipt: intent.receipt,
+        observation,
+        result: intent.result,
+        recovery: intent.recovery,
+        createdAt: intent.createdAt,
+      });
+      if (record) this.studioSourceWriteIntent = record;
+    };
+    const sourcePackage = intent.sourcePackageId
+      ? this.getProjectSourcePackages().find((candidate) => candidate.id === intent.sourcePackageId)
+      : undefined;
+    const handleEntry = intent.sourcePackageId
+      ? this.sourceHandleEntries.find((entry) => entry.record.sourcePackageId === intent.sourcePackageId)
+      : undefined;
+    if (!sourcePackage || !handleEntry?.handle) {
+      await persistObservation({
+        status: "unavailable",
+        observedAt: new Date().toISOString(),
+        diagnostics: ["The pending source handle is unavailable; the intent remains unresolved."],
+      });
+      this.log("Source write observation could not read the external source because its handle is unavailable.");
+      this.updateUi();
+      return;
+    }
+    try {
+      const permission = await requestSourceHandlePermission(handleEntry.handle);
+      await this.persistSourceHandle(
+        sourcePackage,
+        handleEntry.handle,
+        permission,
+        handleEntry.record.observedFingerprint,
+        handleEntry.record.observedByteLength,
+        handleEntry.record.writePermission,
+      );
+      if (permission !== "granted") {
+        await persistObservation({
+          status: "unavailable",
+          observedAt: new Date().toISOString(),
+          permission,
+          diagnostics: [`Source read permission remains ${permission}; no external bytes were classified.`],
+        });
+        this.log(`Source write observation remains unavailable because read permission is ${permission}.`);
+        this.updateUi();
+        return;
+      }
+      const observed = await readSourceHandleBytes(handleEntry.handle, intent.path);
+      const observedText = new TextDecoder().decode(observed.bytes);
+      const draftMatches = Boolean(intent.draftDigest && fingerprintMugenStateSource(observedText) === intent.draftDigest);
+      const status = classifySourceWriteObservation({
+        observedBytes: observed.bytes,
+        preimageBytes: Uint8Array.from(intent.preimageBytes),
+        draftMatches,
+      });
+      const diagnostics = status === "matches-preimage"
+        ? ["Observed source bytes still match the retained preimage; the external write result remains unresolved."]
+        : status === "matches-draft"
+          ? ["Observed source semantic digest matches the draft; the write receipt remains unresolved."]
+          : ["Observed source bytes differ from both the retained preimage and the draft digest."];
+      await persistObservation({
+        status,
+        observedAt: new Date().toISOString(),
+        digest: observed.digest,
+        byteLength: observed.byteLength,
+        permission,
+        diagnostics,
+      });
+      this.log(`Source write observation recorded as ${status} for ${intent.path}; no receipt was synthesized.`);
+    } catch (error) {
+      await persistObservation({
+        status: "unavailable",
+        observedAt: new Date().toISOString(),
+        diagnostics: [error instanceof Error ? error.message : String(error)],
+      });
+      this.log(`Source write observation failed: ${error instanceof Error ? error.message : String(error)}.`);
+    }
     this.updateUi();
   }
 
@@ -8461,11 +8592,13 @@ export class App {
     const result = intent.result ?? "pending-recovery";
     const phase = intent.phase ?? "preimage-captured";
     const receipt = this.studioSourceWriteReceipt?.id === intent.receiptId ? this.studioSourceWriteReceipt : undefined;
+    const observation = intent.observation;
+    const observationStatus = observation?.status ?? (pending && phase === "write-closed" ? "needs-observation" : undefined);
     const sourcePackage = intent.sourcePackageId
       ? this.getProjectSourcePackages().find((candidate) => candidate.id === intent.sourcePackageId)
       : undefined;
     return `
-      <section class="studio-project-conflict studio-source-write-recovery" role="${pending ? "alert" : "status"}" aria-live="polite" data-source-write-intent="${escapeHtml(result)}" data-source-write-phase="${escapeHtml(phase)}">
+      <section class="studio-project-conflict studio-source-write-recovery" role="${pending ? "alert" : "status"}" aria-live="polite" data-source-write-intent="${escapeHtml(result)}" data-source-write-phase="${escapeHtml(phase)}"${observationStatus ? ` data-source-write-observation="${escapeHtml(observationStatus)}"` : ""}>
         <div class="studio-project-conflict-head">
           ${tablerIcon("archive", "ui-icon action-icon")}
           <span>
@@ -8476,7 +8609,10 @@ export class App {
         </div>
         <div class="studio-project-conflict-actions">
           <small>${escapeHtml(formatBytes(intent.byteLength ?? intent.preimageBytes.length))} preimage / ${escapeHtml(intent.preimageSha256)} / ${escapeHtml(formatDateTime(intent.createdAt))}</small>
+          ${observationStatus ? `<small class="list-meta" data-source-write-observation-status="${escapeHtml(observationStatus)}">Source observation: ${escapeHtml(observationStatus)}${observation?.byteLength !== undefined ? ` / ${escapeHtml(formatBytes(observation.byteLength))}` : ""}${observation?.digest ? ` / ${escapeHtml(observation.digest)}` : ""}</small>` : ""}
+          ${observation?.diagnostics.length ? `<small class="list-meta">${escapeHtml(observation.diagnostics[0] ?? "")}</small>` : ""}
           ${receipt ? `<small class="list-meta" data-source-write-receipt="${escapeHtml(receipt.status)}">Write receipt: ${escapeHtml(receipt.status)} / ${escapeHtml(receipt.reason)} / compensation ${escapeHtml(receipt.compensation.status)} / ${escapeHtml(receipt.digest)}</small>` : ""}
+          ${pending && phase === "write-closed" ? `<button type="button" data-action="observe-source-write-intent" title="Read the current source bytes without writing or settling the intent">Observe source</button>` : ""}
           ${pending ? `<button type="button" data-action="replay-source-write-intent" title="Load the durable source preimage into the Studio editor without writing the source handle">Load preimage</button>` : ""}
           ${pending && sourcePackage ? `<button type="button" data-action="relink-source-write-intent" title="Choose the source ${sourcePackage.kind === "folder" ? "folder" : "ZIP"} again before writing the recovered preimage">Relink ${sourcePackage.kind === "folder" ? "folder" : "ZIP"}</button>` : ""}
         </div>

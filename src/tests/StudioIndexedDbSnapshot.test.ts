@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   clearStudioIndexedDbMemory,
+  classifySourceWriteObservation,
   getStudioIndexedDbSnapshotDiagnostics,
   listSourceWriteIntents,
   loadProjectSnapshot,
@@ -131,8 +132,38 @@ describe("StudioIndexedDbSnapshot", () => {
       intentId: "intent-phase-1",
       phase: "write-closed",
       writeByteLength: 13,
+      observation: { status: "needs-observation", diagnostics: [] },
     });
     expect(listed?.result).toBeUndefined();
+  });
+
+  it("classifies observed bytes without settling the write intent", async () => {
+    clearStudioIndexedDbMemory();
+    const preimage = new TextEncoder().encode("before-write");
+    const observedDraft = new TextEncoder().encode("draft-write");
+    expect(classifySourceWriteObservation({ observedBytes: preimage, preimageBytes: preimage, draftMatches: false })).toBe("matches-preimage");
+    expect(classifySourceWriteObservation({ observedBytes: observedDraft, preimageBytes: preimage, draftMatches: true })).toBe("matches-draft");
+    expect(classifySourceWriteObservation({ observedBytes: new TextEncoder().encode("other"), preimageBytes: preimage, draftMatches: false })).toBe("changed");
+
+    const pending = await saveSourceWriteIntent({
+      intentId: "intent-observation-1",
+      path: "chars/kfm/kfm.cns",
+      preimage,
+      phase: "write-closed",
+      writeByteLength: observedDraft.byteLength,
+      draftDigest: "fnv1a32:write",
+      observation: {
+        status: "matches-draft",
+        observedAt: "2026-07-28T00:00:00.000Z",
+        digest: "sha256:observed",
+        byteLength: observedDraft.byteLength,
+        permission: "granted",
+        diagnostics: ["The source matches the draft semantic digest."],
+      },
+    });
+    expect(pending.observation?.status).toBe("matches-draft");
+    expect(pending.result).toBeUndefined();
+    expect(pending.phase).toBe("write-closed");
   });
 
   it("fails closed when a persisted receipt digest is invalid", async () => {

@@ -5,6 +5,7 @@
  */
 
 import { parseSourceWriteReceipt, type SourceWriteReceipt } from "./StudioSourceWriteReceipt";
+import type { SourceTransactionPermission } from "./StudioSourceTransaction";
 
 export const STUDIO_INDEXEDDB_SNAPSHOT_SCHEMA = "StudioIndexedDbSnapshot/v1" as const;
 export const STUDIO_SOURCE_WRITE_INTENT_SCHEMA = "StudioSourceWriteIntent/v1" as const;
@@ -13,6 +14,15 @@ export const STUDIO_INDEXEDDB_SNAPSHOT_DB_VERSION = 1;
 
 export type StudioIndexedDbSnapshotBackend = "indexeddb" | "memory";
 export type StudioSourceWriteIntentPhase = "preimage-captured" | "write-closed" | "reimported" | "settled";
+export type StudioSourceWriteObservationStatus = "needs-observation" | "matches-preimage" | "matches-draft" | "changed" | "unavailable";
+export type StudioSourceWriteObservation = {
+  status: StudioSourceWriteObservationStatus;
+  observedAt?: string;
+  digest?: string;
+  byteLength?: number;
+  permission?: SourceTransactionPermission;
+  diagnostics: string[];
+};
 
 export type StudioIndexedDbSnapshotDiagnostics = {
   schema: typeof STUDIO_INDEXEDDB_SNAPSHOT_SCHEMA;
@@ -49,6 +59,7 @@ export type StudioSourceWriteIntent = {
   observedSourceFingerprint?: string;
   receiptId?: string;
   receipt?: SourceWriteReceipt;
+  observation?: StudioSourceWriteObservation;
   result?: "committed" | "aborted" | "denied";
   recovery?: "restored" | "none";
   createdAt: string;
@@ -136,12 +147,21 @@ export async function saveSourceWriteIntent(intent: {
   observedSourceFingerprint?: string;
   receiptId?: string;
   receipt?: SourceWriteReceipt;
+  observation?: StudioSourceWriteObservation;
   result?: StudioSourceWriteIntent["result"];
   recovery?: StudioSourceWriteIntent["recovery"];
   createdAt?: string;
 }): Promise<StudioSourceWriteIntent> {
   const preimageBytes = [...intent.preimage];
   const previous = memory.intents.get(intent.intentId);
+  const phase = intent.phase ?? previous?.phase ?? "preimage-captured";
+  const result = intent.result ?? previous?.result;
+  const receipt = intent.receipt ?? previous?.receipt;
+  const observation = intent.observation ?? previous?.observation ?? (
+    phase === "write-closed" && result === undefined && receipt === undefined
+      ? { status: "needs-observation" as const, diagnostics: [] }
+      : undefined
+  );
   const record: StudioSourceWriteIntent = {
     schema: STUDIO_SOURCE_WRITE_INTENT_SCHEMA,
     intentId: intent.intentId,
@@ -152,12 +172,13 @@ export async function saveSourceWriteIntent(intent: {
     ...(intent.sourcePackageId !== undefined || previous?.sourcePackageId !== undefined ? { sourcePackageId: intent.sourcePackageId ?? previous?.sourcePackageId } : {}),
     ...(intent.draftDigest !== undefined || previous?.draftDigest !== undefined ? { draftDigest: intent.draftDigest ?? previous?.draftDigest } : {}),
     ...(intent.byteLength !== undefined || previous?.byteLength !== undefined ? { byteLength: intent.byteLength ?? previous?.byteLength } : {}),
-    phase: intent.phase ?? previous?.phase ?? "preimage-captured",
+    phase,
     ...(intent.writeByteLength !== undefined || previous?.writeByteLength !== undefined ? { writeByteLength: intent.writeByteLength ?? previous?.writeByteLength } : {}),
     ...(intent.observedSourceFingerprint !== undefined || previous?.observedSourceFingerprint !== undefined ? { observedSourceFingerprint: intent.observedSourceFingerprint ?? previous?.observedSourceFingerprint } : {}),
     ...(intent.receiptId !== undefined || previous?.receiptId !== undefined ? { receiptId: intent.receiptId ?? previous?.receiptId } : {}),
-    ...(intent.receipt !== undefined || previous?.receipt !== undefined ? { receipt: intent.receipt ?? previous?.receipt } : {}),
-    ...(intent.result !== undefined || previous?.result !== undefined ? { result: intent.result ?? previous?.result } : {}),
+    ...(receipt !== undefined ? { receipt } : {}),
+    ...(observation !== undefined ? { observation } : {}),
+    ...(result !== undefined ? { result } : {}),
     ...(intent.recovery !== undefined || previous?.recovery !== undefined ? { recovery: intent.recovery ?? previous?.recovery } : {}),
     createdAt: intent.createdAt ?? previous?.createdAt ?? new Date().toISOString(),
   };
@@ -317,9 +338,20 @@ function isStudioSourceWriteIntent(value: unknown): value is StudioSourceWriteIn
     (record.observedSourceFingerprint === undefined || typeof record.observedSourceFingerprint === "string") &&
     (record.receiptId === undefined || typeof record.receiptId === "string") &&
     (record.receipt === undefined || parseSourceWriteReceipt(record.receipt).diagnostics.length === 0) &&
+    (record.observation === undefined || isStudioSourceWriteObservation(record.observation)) &&
     (record.result === undefined || record.result === "committed" || record.result === "aborted" || record.result === "denied") &&
     (record.recovery === undefined || record.recovery === "restored" || record.recovery === "none") &&
     typeof record.createdAt === "string";
+}
+
+export function classifySourceWriteObservation(input: {
+  observedBytes: Uint8Array;
+  preimageBytes: Uint8Array;
+  draftMatches: boolean;
+}): StudioSourceWriteObservationStatus {
+  if (bytesEqual(input.observedBytes, input.preimageBytes)) return "matches-preimage";
+  if (input.draftMatches) return "matches-draft";
+  return "changed";
 }
 
 function normalizeStudioSourceWriteIntent(intent: StudioSourceWriteIntent): StudioSourceWriteIntent {
@@ -331,6 +363,37 @@ function normalizeStudioSourceWriteIntent(intent: StudioSourceWriteIntent): Stud
 
 function isStudioSourceWriteIntentPhase(value: unknown): value is StudioSourceWriteIntentPhase {
   return value === "preimage-captured" || value === "write-closed" || value === "reimported" || value === "settled";
+}
+
+function isStudioSourceWriteObservation(value: unknown): value is StudioSourceWriteObservation {
+  if (!value || typeof value !== "object") return false;
+  const observation = value as Partial<StudioSourceWriteObservation>;
+  return isStudioSourceWriteObservationStatus(observation.status) &&
+    (observation.observedAt === undefined || isIsoDate(observation.observedAt)) &&
+    (observation.digest === undefined || (typeof observation.digest === "string" && observation.digest.trim().length > 0)) &&
+    (observation.byteLength === undefined || (Number.isSafeInteger(observation.byteLength) && observation.byteLength >= 0)) &&
+    (observation.permission === undefined || isSourceTransactionPermission(observation.permission)) &&
+    Array.isArray(observation.diagnostics) && observation.diagnostics.every((item) => typeof item === "string");
+}
+
+function isStudioSourceWriteObservationStatus(value: unknown): value is StudioSourceWriteObservationStatus {
+  return value === "needs-observation" || value === "matches-preimage" || value === "matches-draft" || value === "changed" || value === "unavailable";
+}
+
+function isSourceTransactionPermission(value: unknown): value is SourceTransactionPermission {
+  return value === "not-requested" || value === "prompt" || value === "granted" || value === "denied" || value === "revoked" || value === "unsupported";
+}
+
+function isIsoDate(value: unknown): value is string {
+  return typeof value === "string" && Number.isFinite(Date.parse(value));
+}
+
+function bytesEqual(left: Uint8Array, right: Uint8Array): boolean {
+  if (left.byteLength !== right.byteLength) return false;
+  for (let index = 0; index < left.byteLength; index += 1) {
+    if (left[index] !== right[index]) return false;
+  }
+  return true;
 }
 
 function compareSourceWriteIntents(left: StudioSourceWriteIntent, right: StudioSourceWriteIntent): number {
