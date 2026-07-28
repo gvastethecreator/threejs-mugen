@@ -102,6 +102,10 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.resizeObserver?.disconnect();
     this.target = target;
     this.renderer.domElement.className = "stage-canvas";
+    this.renderer.domElement.setAttribute("role", "img");
+    this.renderer.domElement.setAttribute("aria-label", "MUGEN runtime canvas");
+    this.renderer.domElement.setAttribute("aria-describedby", "runtime-a11y-summary");
+    this.renderer.domElement.tabIndex = 0;
     target.appendChild(this.renderer.domElement);
     this.resize();
     if (typeof ResizeObserver !== "undefined") {

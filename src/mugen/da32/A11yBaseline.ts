@@ -60,9 +60,9 @@ export function buildA11yBaseline(): A11yBaselineReport {
     },
     {
       id: "canvas-alternative",
-      status: "open",
-      evidence: [],
-      note: "match canvas lacks non-visual play state summary for SR",
+      status: "partial",
+      evidence: ["src/app/RuntimeA11ySummary.ts", "src/game/render/ThreeMugenRenderer.ts"],
+      note: "runtime canvas exposes a focused image with a live non-visual play state summary; SR journey proof remains open",
     },
     {
       id: "screen-reader-paths",

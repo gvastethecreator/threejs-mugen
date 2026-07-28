@@ -97,7 +97,7 @@ describe("DA32-029 a11y baseline", () => {
     const report = buildA11yBaseline();
     expect(report.items.length).toBeGreaterThanOrEqual(6);
     expect(report.openCount).toBeGreaterThan(0);
-    expect(report.items.some((i) => i.id === "canvas-alternative" && i.status === "open")).toBe(true);
+    expect(report.items.some((i) => i.id === "canvas-alternative" && i.status === "partial")).toBe(true);
     expect(report.claimCeiling).toMatch(/not WCAG/i);
   });
 });

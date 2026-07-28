@@ -85,6 +85,7 @@ import type { RuntimeTraceArtifact } from "../mugen/runtime/RuntimeTraceArtifact
 import type { RuntimeTraceArtifactFrameSummary } from "../mugen/runtime/RuntimeTraceArtifact";
 import type { MugenSnapshot } from "../mugen/runtime/types";
 import { renderActorRegistry, renderDebugPanel, escapeHtml, type RuntimeRosterEntry } from "./DebugPanel";
+import { buildRuntimeA11ySummary } from "./RuntimeA11ySummary";
 import { FileDropZone } from "./FileDropZone";
 import { compileGameProjectManifest, type CompiledRuntimeManifest } from "./ProjectCompiler";
 import {
@@ -1042,7 +1043,7 @@ export class App {
           </div>
           <div id="navigator"></div>
         </aside>
-        <section class="stage" id="stage" aria-label="Runtime viewport">
+        <section class="stage" id="stage" aria-label="Runtime viewport" aria-describedby="runtime-a11y-summary">
           <div class="frame-rail" id="frame-rail" aria-hidden="true">
             <span class="frame-rail-tick" id="frame-rail-tick">F 0</span>
             <span class="frame-rail-phase" id="frame-rail-phase">idle</span>
@@ -1073,6 +1074,7 @@ export class App {
           </div>
           <div class="round-hud" id="round-hud"></div>
           <div class="stage-status" id="stage-status" aria-live="polite"></div>
+          <div id="runtime-a11y-summary" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
           <div class="studio-stage-deck" id="studio-stage-deck"></div>
           <div class="touch-controls" aria-label="Touch controls">
             <div class="touch-cluster touch-cluster-move">
@@ -3239,6 +3241,7 @@ export class App {
     this.syncShellState();
     this.setHtml("#console", this.renderConsole());
     this.setHtml("#stage-status", this.renderStageStatus());
+    this.setHtml("#runtime-a11y-summary", this.renderRuntimeAccessibilitySummary());
     this.setHtml("#round-hud", this.renderRoundHud());
     this.setHtml("#studio-stage-deck", this.renderStudioStageDeck());
     this.updateFrameRail();
@@ -3256,6 +3259,7 @@ export class App {
     this.setHtml("#right-pane", this.mode === "studio" ? this.renderStudioRightPane() : this.renderRuntimeRightPane());
     this.setHtml("#console", this.renderConsole());
     this.setHtml("#stage-status", this.renderStageStatus());
+    this.setHtml("#runtime-a11y-summary", this.renderRuntimeAccessibilitySummary());
     this.setHtml("#round-hud", this.renderRoundHud());
     this.setHtml("#studio-stage-deck", this.renderStudioStageDeck());
     const commandPaletteMounted = Boolean(this.root.querySelector(".command-palette-panel"));
@@ -13868,6 +13872,15 @@ export class App {
     const frame = actor?.frame;
     if (this.mode === "match") {
       const activeCommands = this.getActiveCommandNames().slice(0, 3);
+      const gamepadDiagnostics = this.gamepad.getDiagnostics();
+      const gamepadLabel = gamepadDiagnostics.seats
+        .map((seat) => `P${seat.seat} ${seat.connected ? (seat.mapping === "standard" ? "std" : "map") : "off"}`)
+        .join(" / ");
+      const gamepadTone = gamepadDiagnostics.seats.some((seat) => seat.mapping === "non-standard")
+        ? "warn"
+        : gamepadDiagnostics.connectedCount > 0
+          ? "ok"
+          : undefined;
       const stage = this.findStage(this.selectedStageId);
       const stageAsset = this.importedStages.some((stagePackage) => stagePackage.stage.id === stage?.id)
         ? "import DEF"
@@ -13898,6 +13911,7 @@ export class App {
             ${this.renderStageStatusMetric("CPU", `${opponent?.runtime.life ?? 0} HP`, "ok", "match")}
             ${this.renderStageStatusMetric("Cmd", activeCommands.length ? activeCommands.join(", ") : "idle", activeCommands.length ? "active" : undefined, "tools")}
             ${this.renderStageStatusMetric("Team", this.selectedTeamMode, this.selectedTeamMode === "turns" ? "active" : undefined, "match")}
+            ${this.renderStageStatusMetric("Pads", gamepadLabel, gamepadTone, "match")}
             ${this.renderStageStatusMetric("Stage", stageAsset, stageAsset === "geometry" ? undefined : "ok", "stage")}
             ${this.renderStageStatusMetric("Atlas", p1Atlas, p1Atlas === "loaded" ? "ok" : p1Atlas === "fallback" ? "warn" : undefined, "assetAtlas")}
             ${this.renderStageStatusMetric("Walk QA", p1QaLabel, p1Qa?.status === "pass" ? "ok" : p1Qa?.status === "fail" ? "error" : p1Qa?.status === "warn" || p1Qa?.status === "missing" ? "warn" : undefined, "activity")}
@@ -13973,6 +13987,28 @@ export class App {
         </div>
       </div>
     `;
+  }
+
+  private renderRuntimeAccessibilitySummary(): string {
+    const diagnostics = this.gamepad.getDiagnostics();
+    return escapeHtml(
+      buildRuntimeA11ySummary({
+        snapshot: this.getRenderableSnapshot(),
+        mode: this.mode,
+        gamepads: [
+          {
+            seat: diagnostics.seats[0].seat,
+            connected: diagnostics.seats[0].connected,
+            mapping: diagnostics.seats[0].mapping,
+          },
+          {
+            seat: diagnostics.seats[1].seat,
+            connected: diagnostics.seats[1].connected,
+            mapping: diagnostics.seats[1].mapping,
+          },
+        ],
+      }),
+    );
   }
 
   private renderStageStatusMetric(label: string, value: string, tone?: "active" | "ok" | "warn" | "error", icon?: StudioIconName): string {

@@ -30,6 +30,21 @@ export type GamepadInputAdapterOptions = {
   socdMode?: RuntimeSocdResolution;
 };
 
+export type GamepadSeatDiagnostic = {
+  seat: MatchInputSeatId;
+  connected: boolean;
+  index: number | null;
+  id: string | null;
+  mapping: "standard" | "non-standard" | "disconnected";
+  actions: MatchInputAction[];
+};
+
+export type GamepadInputDiagnostics = {
+  tick: number;
+  connectedCount: number;
+  seats: [GamepadSeatDiagnostic, GamepadSeatDiagnostic];
+};
+
 const ACTION_TO_MUGEN: Record<MatchInputAction, string | undefined> = {
   up: "U",
   down: "D",
@@ -52,6 +67,7 @@ export class GamepadInputAdapter {
   private readonly remap: MatchInputRemapTable | undefined;
   private readonly socdMode: RuntimeSocdResolution;
   private lastPolicy?: MatchInputPolicySnapshot;
+  private lastDiagnostics: GamepadInputDiagnostics = createDisconnectedDiagnostics(0);
   private lastTick = 0;
 
   constructor(options: GamepadInputAdapterOptions = {}) {
@@ -83,13 +99,24 @@ export class GamepadInputAdapter {
       const seat = this.seatByIndex[index];
       if (!seat) continue;
       // First connected pad for a seat wins.
-      if (!bySeat.has(seat)) bySeat.set(seat, { pad, index });
+      if (!bySeat.has(seat)) {
+        const deviceIndex = Number.isInteger(pad.index) ? pad.index : index;
+        bySeat.set(seat, { pad, index: deviceIndex });
+      }
     }
 
     const p1 = this.seatBuild(1, bySeat.get(1), tick);
     const p2 = this.seatBuild(2, bySeat.get(2), tick);
     const policy = buildMatchInputPolicySnapshot({ tick, p1, p2 });
     this.lastPolicy = policy;
+    this.lastDiagnostics = {
+      tick: policy.tick,
+      connectedCount: policy.seats.filter((seat) => seat.connected).length,
+      seats: [
+        buildGamepadSeatDiagnostic(policy.seats[0], bySeat.get(1)),
+        buildGamepadSeatDiagnostic(policy.seats[1], bySeat.get(2)),
+      ],
+    };
     this.lastTick = tick;
     return policy;
   }
@@ -100,6 +127,10 @@ export class GamepadInputAdapter {
 
   getLastTick(): number {
     return this.lastTick;
+  }
+
+  getDiagnostics(): GamepadInputDiagnostics {
+    return this.lastDiagnostics;
   }
 
   /** MUGEN virtual intents for one seat (empty when disconnected). */
@@ -219,6 +250,33 @@ export function actionsToMugenState(actions: Record<MatchInputAction, boolean>):
   return result;
 }
 
+function buildGamepadSeatDiagnostic(
+  seat: MatchInputSeatSnapshot,
+  bound: { pad: Gamepad; index: number } | undefined,
+): GamepadSeatDiagnostic {
+  return {
+    seat: seat.seat,
+    connected: seat.connected,
+    index: bound?.index ?? null,
+    id: bound?.pad.id || null,
+    mapping: !bound || !seat.connected ? "disconnected" : bound.pad.mapping === "standard" ? "standard" : "non-standard",
+    actions: (Object.entries(seat.actions) as Array<[MatchInputAction, boolean]>)
+      .filter(([, pressed]) => pressed)
+      .map(([action]) => action),
+  };
+}
+
+function createDisconnectedDiagnostics(tick: number): GamepadInputDiagnostics {
+  return {
+    tick,
+    connectedCount: 0,
+    seats: [
+      { seat: 1, connected: false, index: null, id: null, mapping: "disconnected", actions: [] },
+      { seat: 2, connected: false, index: null, id: null, mapping: "disconnected", actions: [] },
+    ],
+  };
+}
+
 /** Test helper: minimal Gamepad-like object. */
 export function createFakeGamepad(input: {
   index?: number;
@@ -226,6 +284,7 @@ export function createFakeGamepad(input: {
   buttons?: Array<boolean | number>;
   axes?: number[];
   id?: string;
+  mapping?: string;
 }): Gamepad {
   const buttons = (input.buttons ?? []).map((value) => {
     if (typeof value === "number") {
@@ -237,7 +296,7 @@ export function createFakeGamepad(input: {
     index: input.index ?? 0,
     id: input.id ?? "fake-pad",
     connected: input.connected !== false,
-    mapping: "standard",
+    mapping: input.mapping ?? "standard",
     axes: input.axes ?? [0, 0, 0, 0],
     buttons,
     timestamp: 0,

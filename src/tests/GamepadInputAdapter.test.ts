@@ -119,4 +119,55 @@ describe("GamepadInputAdapter", () => {
     expect(policy.seats[0]?.connected).toBe(false);
     expect(adapter.getState(1).size).toBe(0);
   });
+
+  it("exposes seat diagnostics for mapping, index, and active actions", () => {
+    const pads = [
+      createFakeGamepad({ index: 4, id: "Arcade Pad", buttons: [true] }),
+      createFakeGamepad({ index: 7, id: "Legacy Pad", buttons: [false], mapping: "" }),
+    ];
+    const adapter = new GamepadInputAdapter({ getGamepads: () => pads });
+
+    adapter.poll(18);
+
+    expect(adapter.getDiagnostics()).toEqual({
+      tick: 18,
+      connectedCount: 2,
+      seats: [
+        {
+          seat: 1,
+          connected: true,
+          index: 4,
+          id: "Arcade Pad",
+          mapping: "standard",
+          actions: ["a"],
+        },
+        {
+          seat: 2,
+          connected: true,
+          index: 7,
+          id: "Legacy Pad",
+          mapping: "non-standard",
+          actions: [],
+        },
+      ],
+    });
+  });
+
+  it("reports a disconnected seat after an unplug without stale actions", () => {
+    const pads: Array<Gamepad | null> = [createFakeGamepad({ buttons: [true] }), null];
+    const adapter = new GamepadInputAdapter({ getGamepads: () => pads });
+
+    adapter.poll(4);
+    pads[0] = null;
+    adapter.poll(5);
+
+    expect(adapter.getDiagnostics().seats[0]).toEqual({
+      seat: 1,
+      connected: false,
+      index: null,
+      id: null,
+      mapping: "disconnected",
+      actions: [],
+    });
+  });
 });
