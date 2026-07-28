@@ -242,6 +242,17 @@ if (fs.existsSync(studioSourceReceiptRecoveryGatePath)) {
 }
 const studioSourceReceiptRecoveryGateOk = studioSourceReceiptRecoveryGate?.ok === true;
 const studioSourceReceiptRecoveryGateClean = studioSourceReceiptRecoveryGate?.subject?.provisional === false;
+const studioSourceObservationGatePath = path.join(outDir, "da32-027-source-write-observation-browser-gate.json");
+let studioSourceObservationGate = null;
+if (fs.existsSync(studioSourceObservationGatePath)) {
+  try {
+    studioSourceObservationGate = JSON.parse(fs.readFileSync(studioSourceObservationGatePath, "utf8"));
+  } catch {
+    studioSourceObservationGate = null;
+  }
+}
+const studioSourceObservationGateOk = studioSourceObservationGate?.ok === true;
+const studioSourceObservationGateClean = studioSourceObservationGate?.subject?.provisional === false;
 
 const status = {
   schema: "Da32ProgramStatus/v1",
@@ -430,6 +441,26 @@ const status = {
           ]
         : ["src/app/App.ts", "src/app/StudioIndexedDbSnapshot.ts"],
     },
+    "DA32-027": {
+      status: studioSourceObservationGateOk
+        ? studioSourceObservationGateClean
+          ? "accepted-browser-source-observation"
+          : "accepted-browser-source-observation-provisional"
+        : "open-implementation",
+      note: studioSourceObservationGateOk
+        ? studioSourceObservationGateClean
+          ? "clean-subject desktop/mobile gate proves write-closed intents persist needs-observation and explicit unavailable outcomes without receipt settlement; physical granted-handle classification, crash injection, quota, eviction, and multi-file recovery remain open"
+          : "desktop/mobile source-write observation gate passed on a dirty subject; clean subject pin remains open"
+        : "Studio source-write observation browser gate is missing or failed",
+      artifacts: studioSourceObservationGateOk
+        ? [
+            "src/app/App.ts",
+            "src/app/StudioIndexedDbSnapshot.ts",
+            "scripts/qa_browser_gate_da32_027_source_write_observation.cjs",
+            "docs/evidence/da32/da32-027-source-write-observation-browser-gate.json",
+          ]
+        : ["src/app/App.ts", "src/app/StudioIndexedDbSnapshot.ts"],
+    },
     "DA32-013": {
       status: "accepted-sample",
       note: "consecutive pass proposes adjudicatedThrough=DA30-021",
@@ -465,15 +496,17 @@ const status = {
     ownership.ok ? "retain green smoke ownership at the next subject HEAD" : "live qa:smoke re-run with ownership write",
     ownership.ok ? "expand runtime visual and Studio matrix" : "reconcile global smoke runtime-native sample with focal gate",
     mugenLiteVisualGateOk ? "expand mugen-lite visual matrix" : "close mugen-lite visual lane",
-    studioSourceReceiptRecoveryGateOk
-      ? "physical source-intent crash/receipt finalization, quota, eviction, and multi-file recovery"
-      : studioSourcePhaseRecoveryGateOk
-        ? "source-write receipt rehydration after reload"
-        : studioSourceWriteRecoveryGateOk
-          ? "incomplete source-write phase recovery"
-          : studioSourceIntentGateOk
-            ? "permission-aware source relink and write/reimport recovery"
-            : "close source-write intent recovery",
+    studioSourceObservationGateOk
+      ? "physical source-intent crash/receipt finalization, granted-handle observation, quota, eviction, and multi-file recovery"
+      : studioSourceReceiptRecoveryGateOk
+        ? "write-closed source observation after reload"
+        : studioSourcePhaseRecoveryGateOk
+          ? "source-write receipt rehydration after reload"
+          : studioSourceWriteRecoveryGateOk
+            ? "incomplete source-write phase recovery"
+            : studioSourceIntentGateOk
+              ? "permission-aware source relink and write/reimport recovery"
+              : "close source-write intent recovery",
     "studio surface repairs",
     "hardware gamepad lab",
   ],

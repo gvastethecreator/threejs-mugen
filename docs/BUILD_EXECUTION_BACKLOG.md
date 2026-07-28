@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## Entry 630 - DA32-027 Studio source-write observation
+
+Implemented DA32-027 in `3027b948`: a pending `write-closed` intent without a
+receipt is durably marked `needs-observation` after reload. Studio exposes an
+explicit Observe source action that reads the target with read permission,
+classifies it against the preimage or draft digest, and records `unavailable`
+when no handle exists. The intent stays `write-closed`; observation never
+creates a receipt. Load preimage remains an exact, no-write recovery action.
+
+The provisional browser gate passed at desktop `1440x900` and mobile `390x844`.
+It checks the IndexedDB record, bridge, recovery DOM, unavailable negative
+path, exact preimage replay, pending retention, no handle write, overflow, and
+zero unexpected console errors. Focused verification passed 11 tests,
+`pnpm typecheck`, `pnpm build`, syntax, and `git diff --check`. Global
+`pnpm qa:smoke` passed with zero failures in 472.5 seconds; its artifact has no
+`subjectSha` and remains a non-formal observation.
+
+Evidence: `docs/evidence/da32/da32-027-source-write-observation-browser-gate.json`;
+research: `docs/research/2026-07-28-da32-027-source-write-observation.md`.
+Claim allowed: named durable observation and unavailable recovery. Claim
+blocked: granted physical handle classification, crash injection, receipt
+finalization, automatic retry, quota/eviction recovery, multi-file atomicity,
+ZIP rewrite, binary source blobs, release authority, and full parity.
+
 ## Entry 629 - DA32-026 Studio source-write receipt recovery
 
 Closed DA32-026 in `f18adb2d`: a settled `StudioSourceWriteIntent/v1` now keeps

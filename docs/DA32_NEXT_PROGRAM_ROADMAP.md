@@ -190,6 +190,7 @@ MUGEN/IKEMEN parity remain open.
 | DA32-024 | Relink a pending source intent and complete explicit folder write/reimport | native folder relink, dirty preimage replay, separate read/write permission state, exact bytes, settled intent, desktop/mobile browser gate | named browser harness and folder route; physical prompts, durable handle restart, crash, quota, multi-file, ZIP rewrite, and full authoring remain open |
 | DA32-025 | Persist incomplete source-write phases for post-reload recovery | durable `write-closed` phase, write byte length, exact preimage replay, pending retention, no-handle-write browser gate | named route and mock browser handles; physical crash, receipt synthesis, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
 | DA32-026 | Rehydrate the settled source-write receipt after reload | validated `SourceWriteReceipt/v1` payload beside the intent, digest rejection, bridge and visible recovery readback, desktop/mobile browser gate | named route and browser harness; physical crash, automatic retry, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
+| DA32-027 | Observe a write-closed source intent after reload | durable `needs-observation`, explicit source read classification, unavailable outcome without receipt settlement, exact preimage replay, desktop/mobile browser gate | named route and no-handle fallback; granted physical handle, crash injection, receipt finalization, retry, quota, eviction, multi-file, ZIP rewrite, and full authoring remain open |
 
 ### DA32-021 browser gate - c95c871a (2026-07-28)
 
@@ -353,6 +354,34 @@ synthesis or retry, quota, eviction, multi-file atomic recovery, ZIP rewrite,
 binary blobs, physical permission prompts, release authority, and full
 MUGEN/IKEMEN authoring parity remain open.
 
+### DA32-027 browser gate - provisional subject `3027b948` (2026-07-28)
+
+- `pnpm qa:browser:da32-027-source-write-observation` passed at desktop
+  `1440x900` and mobile `390x844`; the current tree keeps the gate provisional
+  because unrelated roadmap documentation remains dirty. Unexpected console
+  errors: zero.
+- The gate seeds a raw `write-closed` intent without an observation or receipt,
+  reloads Studio, reads the durable record from IndexedDB, and checks the
+  bridge plus the recovery DOM. Studio persists `needs-observation`.
+- The explicit `Observe source` action runs without a linked handle in the
+  negative path. It records `unavailable`, keeps the intent `write-closed`,
+  creates no receipt, and leaves `Load preimage` available. The preimage bytes
+  reload exactly, with no source-handle write and no horizontal overflow.
+- Focused verification passed 11 tests, `pnpm typecheck`, `pnpm build`, gate
+  syntax, and `git diff --check`. `pnpm qa:smoke` passed with zero failures in
+  472.5 seconds. The smoke artifact has no `subjectSha`, so it remains a
+  global observation rather than a formal HEAD pin.
+- Implementation: `3027b948`. Research:
+  `docs/research/2026-07-28-da32-027-source-write-observation.md`. Evidence:
+  `docs/evidence/da32/da32-027-source-write-observation-browser-gate.json`.
+
+Claim ceiling: durable observation state, explicit unavailable recovery,
+pending retention, exact preimage replay, no-handle-write behavior, and the
+recorded desktop/mobile checks. Granted-handle byte classification, physical
+crash injection, receipt finalization, automatic retry, quota, eviction,
+multi-file recovery, ZIP rewrite, binary blobs, physical permission prompts,
+release authority, and full MUGEN/IKEMEN authoring parity remain open.
+
 ## Commands
 
 ```bash
@@ -363,6 +392,7 @@ pnpm qa:browser:da32-023-source-intent
 pnpm qa:browser:da32-024-source-intent-write
 pnpm qa:browser:da32-025-source-write-phase
 pnpm qa:browser:da32-026-source-write-receipt
+pnpm qa:browser:da32-027-source-write-observation
 pnpm materialize:da32-status
 pnpm exec vitest run src/tests/Da32Program.test.ts
 ```

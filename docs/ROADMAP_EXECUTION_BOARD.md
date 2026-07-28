@@ -1,6 +1,28 @@
 ﻿# Roadmap Execution Board
 
-## Current Studio product board - DA32-026 (closed-bounded, 2026-07-28)
+## Current Studio product board - DA32-027 (closed-bounded, 2026-07-28)
+
+DA32-027 closes the observation-state slice after an external source stream
+closes before receipt finalization. Reload marks a pending `write-closed`
+intent as `needs-observation`; Observe source records a read classification or
+an explicit `unavailable` result without settling the intent or creating a
+receipt. Load preimage remains available and exact.
+
+The provisional desktop/mobile gate covers `1440x900` and `390x844`, direct
+IndexedDB readback, bridge and DOM state, the no-handle negative path, pending
+retention, no source-handle write, overflow, and zero unexpected console
+errors. Implementation: `3027b948`. Evidence:
+`docs/evidence/da32/da32-027-source-write-observation-browser-gate.json`.
+The tree contains unrelated roadmap documentation changes, so this gate is
+not a clean subject pin. Smoke is green with zero failures, but the smoke JSON
+has no subject SHA.
+
+Next Studio proof: granted-handle byte classification, explicit receipt
+finalization, physical crash windows, quota and eviction, and multi-file
+transaction boundaries. Automatic retry, ZIP rewrite, binary source, release,
+and full parity claims remain blocked.
+
+## Previous Studio product board - DA32-026 (closed-bounded, 2026-07-28)
 
 DA32-026 closes the settled receipt readback slice. A settled source-write
 intent retains the validated `SourceWriteReceipt/v1` payload and restores it

@@ -24,8 +24,10 @@
   IndexedDB authority browser gate. DA32-022 now has a clean durable snapshot
   browser gate. DA32-023 and DA32-024 now have clean source-intent recovery
   gates. DA32-025 now has a clean incomplete-phase recovery gate. DA32-026 now
-  has a clean receipt rehydration gate. Physical crash, receipt synthesis,
-  quota, eviction, multi-file, and source-blob persistence remain open.
+  has a clean receipt rehydration gate. DA32-027 now has a provisional
+  observation recovery gate. Physical crash, granted-handle classification,
+  receipt synthesis, quota, eviction, multi-file, and source-blob persistence
+  remain open.
 
 ## DA32 smoke ownership closeout - 8c6d6c80 (green subject checkpoint, 2026-07-28)
 
@@ -233,6 +235,32 @@ desktop/mobile checks. Claim blocked: physical permission prompts, browser
 variance, restart handle durability, crash/receipt recovery, quota/eviction,
 multi-file atomic recovery, ZIP rewrite, binary source blobs, release
 authority, and full MUGEN/IKEMEN authoring parity.
+
+## DA32-027 Studio source-write observation - provisional `3027b948` (closed-bounded, 2026-07-28)
+
+- `pnpm qa:browser:da32-027-source-write-observation` passed at desktop
+  `1440x900` and mobile `390x844`; the report is provisional because unrelated
+  roadmap documentation remains dirty. Unexpected console errors: zero.
+- A pending `write-closed` intent without a receipt is persisted with
+  `observation.status = needs-observation` during reload. The recovery surface
+  and App bridge show that state.
+- `Observe source` records `unavailable` when no linked handle exists. The
+  intent remains `write-closed`, no receipt is synthesized, and `Load preimage`
+  restores the exact editor bytes. The negative route performs no source-handle
+  write and has no horizontal overflow.
+- Focused verification passed 11 tests, `pnpm typecheck`, `pnpm build`, gate
+  syntax, and `git diff --check`. `pnpm qa:smoke` passed with zero failures in
+  472.5 seconds, but its JSON has no `subjectSha` and stays an observation.
+- Implementation: `3027b948`. Research:
+  `docs/research/2026-07-28-da32-027-source-write-observation.md`. Evidence:
+  `docs/evidence/da32/da32-027-source-write-observation-browser-gate.json`.
+
+Claim allowed: durable observation state, explicit unavailable recovery,
+pending retention, exact preimage replay, no-handle-write behavior, and the
+recorded desktop/mobile checks. Claim blocked: granted physical handle
+classification, physical crash injection, receipt finalization, automatic
+retry, quota/eviction, multi-file recovery, ZIP rewrite, binary source blobs,
+physical prompts, release authority, and full MUGEN/IKEMEN authoring parity.
 
 ## DA32-026 Studio source-write receipt recovery - 5bc4cb90 (closed-bounded, 2026-07-28)
 

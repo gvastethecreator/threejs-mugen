@@ -14,6 +14,25 @@ DA31-025…029 then choose storage authority and prove transactions, conflicts,
 recovery, real views, preview, and export revision fidelity. Current proof is
 single-tab and its 390-pixel mobile route has horizontal overflow.
 
+## 2026-07-28 DA32-027 source-write observation checkpoint
+
+DA32-027 closes the observation-state slice after a source stream reaches
+`write-closed` and Studio reloads without a receipt. The durable intent now
+records `observation.status = needs-observation`; the recovery surface and
+bridge expose it. `Observe source` reads the target only with a linked read
+handle, classifies preimage, draft, or changed bytes, and records
+`unavailable` when the handle is missing. It keeps the intent pending and does
+not synthesize a receipt. `Load preimage` still restores exact bytes without a
+source-handle write.
+
+The provisional desktop/mobile gate passes at `1440x900` and `390x844`, with
+direct IndexedDB readback, bridge/DOM checks, pending retention, no horizontal
+overflow, and zero unexpected console errors. Focused tests, typecheck, build,
+syntax, diff check, and global smoke pass; the smoke artifact has no subject
+SHA and the tree retains unrelated roadmap documentation changes. Evidence:
+`docs/evidence/da32/da32-027-source-write-observation-browser-gate.json`.
+Implementation: `3027b948`.
+
 ## 2026-07-28 DA32-026 source-write receipt recovery checkpoint
 
 DA32-026 closes the settled receipt readback slice. A settled

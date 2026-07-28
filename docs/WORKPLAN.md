@@ -1,5 +1,24 @@
 # Workplan
 
+## DA32-027 Studio source-write observation (2026-07-28)
+
+Studio now marks a pending `write-closed` source intent as
+`needs-observation` after reload. The explicit Observe source action reads the
+target only when a read handle is available, classifies preimage, draft, or
+changed bytes, and records `unavailable` when the handle is missing. It keeps
+the intent pending and never creates a receipt from observation alone.
+
+Implementation: `3027b948`.
+Browser gate: provisional subject `3027b948` because unrelated roadmap
+documentation remains dirty.
+Evidence: `docs/evidence/da32/da32-027-source-write-observation-browser-gate.json`.
+Research: `docs/research/2026-07-28-da32-027-source-write-observation.md`.
+Verification: 11 focused tests, `pnpm typecheck`, `pnpm build`, gate syntax,
+`git diff --check`, and `pnpm qa:smoke` with zero failures in 472.5 seconds.
+The smoke JSON has no `subjectSha`; formal/global promotion remains blocked.
+Next Studio cut: granted-handle classification, explicit receipt finalization,
+physical crash windows, quota and eviction, and multi-file boundaries.
+
 ## DA32-026 Studio source-write receipt recovery (2026-07-28)
 
 Settled source-write intents now retain the validated `SourceWriteReceipt/v1`
