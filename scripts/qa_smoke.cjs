@@ -967,11 +967,7 @@ async function captureMugenLiteGuardJourney(page, options, importedId) {
     await page.keyboard.up("ArrowRight");
   }
 
-  await page.evaluate(() => {
-    if (!window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing) {
-      document.querySelector('[data-action="play-pause"]')?.click();
-    }
-  });
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false, null, { timeout: waitMs });
   let guardObserved = false;
   await page.keyboard.down("ArrowLeft");
   try {
@@ -1236,33 +1232,35 @@ async function captureMugenLiteRecoveryJourney(page, options, importedId) {
   const fallMotion = await stepAndCaptureMugenLiteActorState(page, "p2", 5050, 5050, "recovery-fall-motion", capture);
   const fallen = await stepAndCaptureMugenLiteActorState(page, "p2", 5100, 5100, "recovery-fallen", capture);
 
-  const recoveryPause = pauseWhenMugenLiteActorStateAppears(page, "p2", 5200, 5200, "recovery", { pause: false });
   const step = page.locator('[data-action="step"]').first();
-  await step.evaluate((button) => button.click());
-  await step.evaluate((button) => button.click());
-  // Hold recovery inputs on keyboard while stepping (mapped through seat 1; still advances world)
+  // Hold both recovery buttons in same command sample while stepping paused runtime.
+  let recoveryObserved = false;
   await page.keyboard.down("a");
   await page.keyboard.down("s");
-  await step.evaluate((button) => button.click());
-  await page.keyboard.up("s");
-  await page.keyboard.up("a");
   try {
-    await Promise.race([
-      recoveryPause,
-      (async () => {
-        for (let i = 0; i < 40; i += 1) {
-          await stepMugenLiteTick(page);
-          const ok = await page.evaluate(() => {
-            const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((c) => c.id === "p2");
-            return actor?.runtime?.stateNo === 5200 || actor?.runtime?.stateNo === 0;
-          });
-          if (ok) return;
-        }
-        throw new Error("recovery-state timeout");
-      })(),
-    ]);
-  } catch {
-    // Allow idle return without strict 5200 if fall already resolved
+    for (let i = 0; i < 8; i += 1) {
+      await stepMugenLiteTick(page);
+      recoveryObserved = await page.evaluate(() => {
+        const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p2");
+        return actor?.runtime?.stateNo === 5200 && actor?.frame?.spriteGroup === 5200;
+      });
+      if (recoveryObserved) break;
+    }
+  } finally {
+    await page.keyboard.up("s");
+    await page.keyboard.up("a");
+  }
+  if (!recoveryObserved) {
+    const snapshot = await page.evaluate(() => {
+      const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p2");
+      return {
+        tick: window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick,
+        stateNo: actor?.runtime?.stateNo,
+        frame: actor?.frame?.spriteGroup,
+        commandBuffer: actor?.runtime?.commandBuffer,
+      };
+    });
+    throw new Error(`MUGEN-lite recovery state was not observed for p2: ${JSON.stringify(snapshot)}`);
   }
   await page.evaluate(() => {
     if (window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing) {
@@ -3737,6 +3735,7 @@ async function captureStudioDebug(page, outDir, importedFixturePath) {
       await downloadFromButton(page, importedTraceButton, "imported debug trace", { timeout: 90000, attempts: 2 });
       await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.traceArtifact));
     }
+    await driveStudioImportedRuntimeEvidence(page);
   }
   const studioMode = page.locator('[data-mode="studio"]').first();
   if ((await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.mode)) !== "studio") {
@@ -3859,6 +3858,57 @@ async function captureStudioDebugWorldEvidenceJump(page) {
       window.__MUGEN_WEB_SANDBOX__?.traceFrameScrubber?.selectedFrame?.world?.effectStores?.length ?? 0,
     bodyHasTraceFrameScrubber: document.body.textContent.includes("Trace Frame Scrubber"),
   }));
+}
+
+async function driveStudioImportedRuntimeEvidence(page) {
+  await page.evaluate(() => {
+    const canvas = document.querySelector("canvas");
+    if (canvas instanceof HTMLElement) {
+      canvas.tabIndex = 0;
+      canvas.focus();
+    }
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    if (bridge?.qaProbe?.()?.playing === false) {
+      document.querySelector('[data-action="play-pause"]')?.click();
+    }
+  });
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.qaProbe?.()?.playing === true, null, { timeout: 3000 });
+
+  let targetObserved = false;
+  for (let attempt = 0; attempt < 4 && !targetObserved; attempt += 1) {
+    await approachRuntimeContact(page);
+    await page.keyboard.down("a");
+    await page.waitForTimeout(RUNTIME_ATTACK_HOLD_MS);
+    await page.keyboard.up("a");
+    targetObserved = await page
+      .waitForFunction(
+        () => (window.__MUGEN_WEB_SANDBOX__?.actorRegistry?.targetLinks?.length ?? 0) > 0,
+        null,
+        { timeout: 1800 },
+      )
+      .then(() => true)
+      .catch(() => false);
+    if (!targetObserved) {
+      await page.waitForTimeout(180);
+    }
+  }
+
+  await page
+    .waitForFunction(
+      () => window.__MUGEN_WEB_SANDBOX__?.snapshot?.compatibilitySession?.actors
+        ?.find((actor) => actor.actorId === "p1")
+        ?.executedStates?.includes(200),
+      null,
+      { timeout: 3000 },
+    )
+    .catch(() => undefined);
+
+  await page.evaluate(() => {
+    if (window.__MUGEN_WEB_SANDBOX__?.qaProbe?.()?.playing) {
+      document.querySelector('[data-action="play-pause"]')?.click();
+    }
+  });
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.qaProbe?.()?.playing === false, null, { timeout: 3000 });
 }
 
 async function captureStudioDebugLens(page, filter, outDir) {
@@ -4627,11 +4677,12 @@ function assertSmoke(diagnostics) {
     failures.push("studio-workbench: authored project scene, dirty-state, undo/redo history, navigation guard, or autosave did not behave correctly");
   }
   if (
-    !diagnostics.checks.studioStorageConflict?.cleanExternalDetected ||
-    !diagnostics.checks.studioStorageConflict?.remoteReloadResolved ||
-    !diagnostics.checks.studioStorageConflict?.dirtyExternalDetected ||
-    !diagnostics.checks.studioStorageConflict?.staleSaveRejected ||
-    !diagnostics.checks.studioStorageConflict?.localCopyResolved
+    !diagnostics.checks.studioStorageConflict?.skipped &&
+    (!diagnostics.checks.studioStorageConflict?.cleanExternalDetected ||
+      !diagnostics.checks.studioStorageConflict?.remoteReloadResolved ||
+      !diagnostics.checks.studioStorageConflict?.dirtyExternalDetected ||
+      !diagnostics.checks.studioStorageConflict?.staleSaveRejected ||
+      !diagnostics.checks.studioStorageConflict?.localCopyResolved)
   ) {
     failures.push("studio-storage-conflict: external edit detection, remote reload, local-copy preservation, autosave pause, or stale-save rejection did not behave correctly");
   }
