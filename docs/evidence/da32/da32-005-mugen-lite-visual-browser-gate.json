@@ -1,12 +1,12 @@
 {
   "schema": "Da32MugenLiteVisualBrowserGate/v1",
   "id": "DA32-005",
-  "generatedAt": "2026-07-28T03:30:07.049Z",
+  "generatedAt": "2026-07-28T03:32:54.424Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "e77d36f0efb95edf39dc7fb3d922982eebdb1f7c",
-    "dirtyTree": true,
-    "provisional": true,
+    "subjectSha": "98fa4e59958822137bb16e4bbee8c782281d762d",
+    "dirtyTree": false,
+    "provisional": false,
     "probePaths": [
       "scripts/qa_browser_gate_da32_005_mugen_lite_visual.cjs",
       "src/mugen/runtime/MugenLiteJourneyFixture.ts"
@@ -15,9 +15,9 @@
       "src/styles/redesign.css",
       "src/app/App.ts"
     ],
-    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+    "claimLimit": "subject-bound observation at listed probe/code paths"
   },
-  "headSha": "e77d36f0efb95edf39dc7fb3d922982eebdb1f7c",
+  "headSha": "98fa4e59958822137bb16e4bbee8c782281d762d",
   "ok": true,
   "route": "/?mode=match&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "cases": [
@@ -207,7 +207,7 @@
     }
   ],
   "unexpectedConsole": [],
-  "claimCeiling": "provisional dirty-tree imported MUGEN Lite visual observations for named viewports",
+  "claimCeiling": "imported MUGEN Lite actors remain visible in the named runtime route at desktop/mobile viewports",
   "claims": {
     "allowed": [
       "repository-authored MUGEN Lite ZIP imports through the browser UI",
@@ -224,6 +224,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "76288b6f7e50c05c9941aab78ee183e17b11d158ea84fe091b4cab158428e421"
+    "value": "8ced0fb0667dabb096336f7868b5946245984d0681c56d536ea5fb36f8c97ed1"
   }
 }
