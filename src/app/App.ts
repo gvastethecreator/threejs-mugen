@@ -2125,7 +2125,14 @@ export class App {
       const permission = await requestSourceHandlePermission(handle);
       const previousFingerprint = existing?.record.observedFingerprint;
       if (permission !== "granted") {
-        await this.persistSourceHandle(sourcePackage, handle, permission, previousFingerprint, existing?.record.observedByteLength);
+        await this.persistSourceHandle(
+          sourcePackage,
+          handle,
+          permission,
+          previousFingerprint,
+          existing?.record.observedByteLength,
+          existing?.record.writePermission,
+        );
         this.log(`Source handle for ${sourcePackage.name} remains ${permission}; no source bytes were read.`);
         this.updateUi();
         return;
@@ -2151,6 +2158,7 @@ export class App {
           permission,
           observed?.digest ?? rejectedFingerprint ?? previousFingerprint,
           observed?.byteLength ?? existing?.record.observedByteLength,
+          existing?.record.writePermission,
         );
         this.log(accepted
           ? `Recovered source package ${sourcePackage.name} from its persistent handle.`
@@ -2159,7 +2167,14 @@ export class App {
         return;
       }
 
-      await this.persistSourceHandle(sourcePackage, handle, permission, previousFingerprint, existing?.record.observedByteLength);
+      await this.persistSourceHandle(
+        sourcePackage,
+        handle,
+        permission,
+        previousFingerprint,
+        existing?.record.observedByteLength,
+        existing?.record.writePermission,
+      );
       this.log(`Source handle linked for ${sourcePackage.name}.`);
       this.updateUi();
     } catch (error) {
@@ -2412,9 +2427,10 @@ export class App {
         await this.persistSourceHandle(
           context.sourcePackage,
           context.handle,
-          writePermission,
+          context.sourceHandle?.permission ?? "not-requested",
           context.sourceHandle?.observedFingerprint,
           context.sourceHandle?.observedByteLength,
+          writePermission,
         );
         this.recordStudioSourceWriteReceipt(draft, {
           status: "blocked",
@@ -2427,6 +2443,14 @@ export class App {
         this.updateUi();
         return;
       }
+      await this.persistSourceHandle(
+        context.sourcePackage,
+        context.handle,
+        context.sourceHandle?.permission ?? "granted",
+        context.sourceHandle?.observedFingerprint,
+        context.sourceHandle?.observedByteLength,
+        "granted",
+      );
       const latestContext = this.getStudioSourceWriteContext(draft);
       if (!latestContext || latestContext.plan.status !== "ready" || !latestContext.handle) {
         this.recordStudioSourceWriteReceipt(draft, {
@@ -2461,6 +2485,7 @@ export class App {
           "granted",
           observedFingerprint.digest,
           observedFingerprint.byteLength,
+          latestContext.sourceHandle?.writePermission,
         );
         this.recordStudioSourceWriteReceipt(draft, {
           status: "blocked",
@@ -2505,6 +2530,7 @@ export class App {
           "granted",
           fingerprint?.digest,
           fingerprint?.byteLength,
+          "granted",
         );
         const refreshedText = this.importedSourceBundle?.vfs.readText(draft.path);
         if (refreshedText === undefined) {
@@ -2808,12 +2834,14 @@ export class App {
     permission: SourceHandleRecord["permission"],
     observedFingerprint?: string,
     observedByteLength?: number,
+    writePermission: SourceHandleRecord["writePermission"] = "not-requested",
   ): Promise<SourceHandleRecord> {
     let record = createSourceHandleRecord({
       sourcePackage,
       capability: this.sourceHandleCapability,
       storage: this.sourceHandleStorage,
       permission,
+      writePermission,
       handleLinked: true,
       persisted: this.sourceHandleStorage === "indexeddb",
       sourceAvailable: true,
@@ -2834,6 +2862,7 @@ export class App {
         capability: this.sourceHandleCapability,
         storage: "memory",
         permission,
+        writePermission,
         handleLinked: true,
         persisted: false,
         sourceAvailable: true,
@@ -8441,7 +8470,7 @@ export class App {
           }
           <span class="list-meta">Identity: ${escapeHtml(identityStatus)}${sourcePackage.fingerprint ? ` / ${escapeHtml(sourcePackage.fingerprint.slice(0, 12))}...` : ""}</span>
           <span class="list-meta">Transaction: ${escapeHtml(sourceTransaction?.state ?? "missing")} / permission ${escapeHtml(sourceTransaction?.permission ?? "unsupported")} / next ${escapeHtml(sourceTransaction?.nextAction ?? "relink-source")}</span>
-          <span class="list-meta">Handle: ${escapeHtml(sourceHandle?.state ?? "not-linked")} / ${escapeHtml(sourceHandleKind)} / ${escapeHtml(sourceHandle?.storage ?? "memory")} / next ${escapeHtml(sourceHandle?.nextAction ?? "relink-source")}</span>
+          <span class="list-meta">Handle: ${escapeHtml(sourceHandle?.state ?? "not-linked")} / ${escapeHtml(sourceHandleKind)} / ${escapeHtml(sourceHandle?.storage ?? "memory")} / read ${escapeHtml(sourceHandle?.permission ?? "not-requested")} / write ${escapeHtml(sourceHandle?.writePermission ?? "not-requested")} / next ${escapeHtml(sourceHandle?.nextAction ?? "relink-source")}</span>
           ${
             pathRows
               ? `<span class="source-package-path-list" aria-label="Required source paths">${pathRows}${hiddenPathCount ? `<span class="list-meta">+${hiddenPathCount} more required source path(s)</span>` : ""}</span>`
@@ -14603,12 +14632,15 @@ export class App {
     if (!sourcePackages.length) {
       return [];
     }
-    const permission = this.getSourceTransactionPermission();
+    const fallbackPermission = this.getSourceTransactionPermission();
+    const sourceHandles = new Map(this.getSourceHandleRecords().map((record) => [record.sourcePackageId, record]));
     const expectedRevision = this.projectStorageConflict?.expectedRevision ?? this.projectStorageRevision;
     const observedRevision = this.projectStorageConflict?.actualRevision ?? this.projectStorageRevision;
     return sourcePackages.map((sourcePackage) => createSourceTransactionRecord({
       sourcePackage,
-      permission,
+      permission: sourcePackage.kind === "folder"
+        ? sourceHandles.get(sourcePackage.id)?.writePermission ?? fallbackPermission
+        : fallbackPermission,
       expectedRevision,
       observedRevision,
       conflict: Boolean(this.projectStorageConflict),
@@ -14624,6 +14656,7 @@ export class App {
         capability: this.sourceHandleCapability,
         storage: this.sourceHandleStorage,
         permission: entry?.record.permission ?? "not-requested",
+        writePermission: entry?.record.writePermission ?? "not-requested",
         handleLinked: Boolean(entry?.handle),
         persisted: Boolean(entry?.record.persisted),
         sourceAvailable: entry ? entry.record.state !== "missing" : false,

@@ -111,6 +111,7 @@ async function main() {
               "the recovery action uses a native folder handle picker and preserves a granted read handle",
               "a pending StudioSourceWriteIntent/v1 preimage loads as a dirty editor draft when the active source differs",
               "Save & Reimport requests readwrite permission, writes the recovered text, and reimports the folder",
+              "the bridge reports granted read and write permission independently after the recovered write",
               "the original pending intent settles as committed with restored recovery evidence",
               "the named desktop and mobile routes have no horizontal overflow or unexpected page errors",
             ]
@@ -176,6 +177,7 @@ async function runViewport(browser, base, projectPath, entries, options) {
       linkedSourceReadable: false,
       dirtyPreimageLoaded: false,
       readwritePermission: false,
+      writePermissionReflected: false,
       writeReimportCommitted: false,
       originalIntentSettled: false,
       exactRecoveredBytesOnHandle: false,
@@ -290,6 +292,7 @@ async function runViewport(browser, base, projectPath, entries, options) {
       });
       return {
         sourceHandle: bridge?.sourceHandles?.find((candidate) => candidate.sourcePackageId === "kfm-folder"),
+        sourceTransaction: bridge?.sourceTransactions?.find((candidate) => candidate.sourcePackageId === "kfm-folder"),
         receipt: bridge?.studioSourceWriteReceipt,
         intent: bridge?.studioSourceWriteIntent,
         intents: records,
@@ -299,6 +302,12 @@ async function runViewport(browser, base, projectPath, entries, options) {
       };
     });
     steps.readwritePermission = after.writePermissionRequests > 0;
+    steps.writePermissionReflected = Boolean(
+      after.sourceHandle?.permission === "granted" &&
+        after.sourceHandle?.writePermission === "granted" &&
+        after.sourceTransaction?.permission === "granted" &&
+        after.sourceTransaction?.canWrite === true,
+    );
     steps.writeReimportCommitted = Boolean(
       after.receipt?.status === "committed" &&
         after.receipt?.reason === "write-and-reimport",
@@ -327,6 +336,7 @@ async function runViewport(browser, base, projectPath, entries, options) {
       replayed,
       after: {
         sourceHandle: after.sourceHandle,
+        sourceTransaction: after.sourceTransaction,
         receipt: after.receipt,
         intent: after.intent,
         durableIntent: after.intents.find((record) => record.intentId === intent.intentId),

@@ -23,6 +23,7 @@ export type SourceHandleRecord = {
   storage: SourceHandleStorage;
   persisted: boolean;
   permission: SourceHandlePermission;
+  writePermission: SourceHandlePermission;
   state: SourceHandleState;
   fileCount: number;
   expectedFingerprint?: string;
@@ -43,6 +44,7 @@ export type SourceHandleReadInput = {
   permission: SourceHandlePermission;
   handleLinked: boolean;
   persisted: boolean;
+  writePermission?: SourceHandlePermission;
   sourceAvailable?: boolean;
   observedFingerprint?: string;
   observedByteLength?: number;
@@ -54,6 +56,7 @@ export function createSourceHandleRecord(input: SourceHandleReadInput): SourceHa
   const { sourcePackage } = input;
   const observedFingerprint = input.observedFingerprint ?? sourcePackage.observedFingerprint;
   const observedByteLength = input.observedByteLength ?? sourcePackage.observedByteLength;
+  const writePermission = input.writePermission ?? "not-requested";
   const sourceAvailable = input.sourceAvailable ?? input.handleLinked;
   const fingerprintChanged = Boolean(
     sourcePackage.fingerprint &&
@@ -95,6 +98,7 @@ export function createSourceHandleRecord(input: SourceHandleReadInput): SourceHa
     storage: input.storage,
     persisted: input.persisted && input.storage === "indexeddb",
     permission: input.permission,
+    writePermission,
     state,
     fileCount: sourcePackage.fileCount,
     ...(sourcePackage.fingerprint ? { expectedFingerprint: sourcePackage.fingerprint } : {}),
@@ -497,7 +501,10 @@ function parseRecord(value: unknown): SourceHandleRecord | undefined {
   ) {
     return undefined;
   }
-  return value as unknown as SourceHandleRecord;
+  return {
+    ...value,
+    writePermission: isPermission(value.writePermission) ? value.writePermission : "not-requested",
+  } as unknown as SourceHandleRecord;
 }
 
 function isSourceHandleLike(value: unknown): value is SourceHandleLike {

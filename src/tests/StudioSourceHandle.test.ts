@@ -101,6 +101,24 @@ describe("StudioSourceHandle", () => {
     expect(handle.requestPermission).toHaveBeenCalledWith({ mode: "readwrite" });
   });
 
+  it("keeps read and write permission state separate in the source handle record", () => {
+    const record = createSourceHandleRecord({
+      sourcePackage: sourcePackage(),
+      capability: "available",
+      storage: "indexeddb",
+      permission: "granted",
+      writePermission: "prompt",
+      handleLinked: true,
+      persisted: true,
+      sourceAvailable: true,
+    });
+
+    expect(record).toMatchObject({
+      permission: "granted",
+      writePermission: "prompt",
+    });
+  });
+
   it("keeps handles separate from project manifests in the memory fallback store", async () => {
     const store = createMemorySourceHandleStore();
     const handle: SourceHandleLike = { kind: "file", name: "kfm.zip", getFile: vi.fn() };
