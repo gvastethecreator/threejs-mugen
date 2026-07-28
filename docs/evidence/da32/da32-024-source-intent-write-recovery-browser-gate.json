@@ -1,12 +1,12 @@
 {
   "schema": "Da32StudioSourceIntentWriteRecoveryBrowserGate/v1",
   "id": "DA32-024",
-  "generatedAt": "2026-07-28T08:50:04.979Z",
+  "generatedAt": "2026-07-28T08:51:22.253Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "83361bfecbb8a5ec5d8bdf63661e95d69c04ba9f",
-    "dirtyTree": true,
-    "provisional": true,
+    "subjectSha": "58c63385df0ec363ac856678eff8e75f6901a8ad",
+    "dirtyTree": false,
+    "provisional": false,
     "probePaths": [
       "scripts/qa_browser_gate_da32_024_source_intent_write_recovery.cjs"
     ],
@@ -17,9 +17,9 @@
       "src/app/StudioSourceWrite.ts",
       "src/app/StudioIndexedDbSnapshot.ts"
     ],
-    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+    "claimLimit": "subject-bound observation at listed probe/code paths"
   },
-  "headSha": "83361bfecbb8a5ec5d8bdf63661e95d69c04ba9f",
+  "headSha": "58c63385df0ec363ac856678eff8e75f6901a8ad",
   "ok": true,
   "route": "/?mode=studio&studio=build&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "database": "mugen-web-sandbox-studio",
@@ -257,7 +257,7 @@
           "warnings": [
             "This source handle is retained for the current browser session only."
           ],
-          "updatedAt": "2026-07-28T08:49:54.532Z"
+          "updatedAt": "2026-07-28T08:51:11.438Z"
         },
         "sourceTransaction": {
           "schemaVersion": "mugen-web-sandbox/source-transaction/v0",
@@ -304,7 +304,7 @@
           "warnings": [
             "This source handle is retained for the current browser session only."
           ],
-          "updatedAt": "2026-07-28T08:49:56.341Z"
+          "updatedAt": "2026-07-28T08:51:13.879Z"
         },
         "receipt": {
           "schemaVersion": "mugen-web-sandbox/source-write-receipt/v1",
@@ -314,7 +314,7 @@
           "path": "kfm-folder/chars/kfm/kfm.cns",
           "status": "committed",
           "reason": "write-and-reimport",
-          "observedAt": "2026-07-28T08:49:56.341Z",
+          "observedAt": "2026-07-28T08:51:13.880Z",
           "operation": "directory-exclusive-write-and-reimport",
           "permission": "granted",
           "baseSourceFingerprint": "c7945cfd17db5fe0852810ba5081d6843d311cf5cb1560f254fc7fb9701c4874",
@@ -335,7 +335,7 @@
             "project-bundle"
           ],
           "diagnostics": [],
-          "digest": "fnv1a32:5b4a8c28"
+          "digest": "fnv1a32:fb5b26d2"
         },
         "intent": {
           "schema": "StudioSourceWriteIntent/v1",
@@ -696,7 +696,7 @@
           "warnings": [
             "This source handle is retained for the current browser session only."
           ],
-          "updatedAt": "2026-07-28T08:50:01.581Z"
+          "updatedAt": "2026-07-28T08:51:19.156Z"
         },
         "sourceTransaction": {
           "schemaVersion": "mugen-web-sandbox/source-transaction/v0",
@@ -743,7 +743,7 @@
           "warnings": [
             "This source handle is retained for the current browser session only."
           ],
-          "updatedAt": "2026-07-28T08:50:03.106Z"
+          "updatedAt": "2026-07-28T08:51:20.566Z"
         },
         "receipt": {
           "schemaVersion": "mugen-web-sandbox/source-write-receipt/v1",
@@ -753,7 +753,7 @@
           "path": "kfm-folder/chars/kfm/kfm.cns",
           "status": "committed",
           "reason": "write-and-reimport",
-          "observedAt": "2026-07-28T08:50:03.107Z",
+          "observedAt": "2026-07-28T08:51:20.567Z",
           "operation": "directory-exclusive-write-and-reimport",
           "permission": "granted",
           "baseSourceFingerprint": "c7945cfd17db5fe0852810ba5081d6843d311cf5cb1560f254fc7fb9701c4874",
@@ -774,7 +774,7 @@
             "project-bundle"
           ],
           "diagnostics": [],
-          "digest": "fnv1a32:fa56bf34"
+          "digest": "fnv1a32:c10105d0"
         },
         "intent": {
           "schema": "StudioSourceWriteIntent/v1",
@@ -905,7 +905,7 @@
     }
   ],
   "unexpectedConsole": [],
-  "claimCeiling": "provisional source-intent relink/write recovery observations for named viewports",
+  "claimCeiling": "the named Studio route relinks a folder handle, replays a pending source preimage, and completes explicit write/reimport recovery",
   "claims": {
     "allowed": [
       "the recovery action uses a native folder handle picker and preserves a granted read handle",
@@ -924,6 +924,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "e013cefbd0a9df42eaef1bfaec81709a60d7572fa22c3028a3f70c2255891ce5"
+    "value": "6c2338b01c75c19a7f4d816fa12afb00ee180bb168ea64c3b3335473c71edef2"
   }
 }
