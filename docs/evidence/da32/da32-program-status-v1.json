@@ -1,6 +1,6 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T08:28:23.363Z",
+  "generatedAt": "2026-07-28T09:04:17.017Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted",
@@ -94,6 +94,18 @@
         "docs/evidence/da32/da32-023-source-write-intent-browser-gate.json"
       ]
     },
+    "DA32-024": {
+      "status": "accepted-browser-source-write-recovery",
+      "note": "clean-subject desktop/mobile gate proves native folder relink, dirty preimage replay, separate read/write permission, explicit write/reimport, exact bytes, and original intent settlement; crash, quota, eviction, and multi-file recovery remain open",
+      "artifacts": [
+        "src/app/App.ts",
+        "src/app/StudioSourceHandle.ts",
+        "src/app/StudioSourceWrite.ts",
+        "src/app/StudioIndexedDbSnapshot.ts",
+        "scripts/qa_browser_gate_da32_024_source_intent_write_recovery.cjs",
+        "docs/evidence/da32/da32-024-source-intent-write-recovery-browser-gate.json"
+      ]
+    },
     "DA32-013": {
       "status": "accepted-sample",
       "note": "consecutive pass proposes adjudicatedThrough=DA30-021",
@@ -129,13 +141,13 @@
     "retain green smoke ownership at the next subject HEAD",
     "expand runtime visual and Studio matrix",
     "expand mugen-lite visual matrix",
-    "permission-aware source relink and write/reimport recovery",
+    "source-intent crash, quota, eviction, and multi-file recovery",
     "studio surface repairs",
     "hardware gamepad lab"
   ],
   "claimCeiling": "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "edb5e1d586abaf6bd97b825e3214b681e0a4cc8f5564b53ae648060364c7f735"
+    "value": "a8582f13e1b1d74cb42d1151cf0404090b47b2fee2bb8631ca1a0679e7f5c9fb"
   }
 }

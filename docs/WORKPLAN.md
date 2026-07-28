@@ -1,5 +1,23 @@
 # Workplan
 
+## DA32-024 Studio source-intent write recovery (2026-07-28)
+
+Studio now relinks a pending source-write intent through the native folder
+picker, loads the exact preimage as a dirty editor draft when the active source
+differs, and completes an explicit Save & Reimport flow. Read permission and
+`readwrite` permission persist as separate fields, so the bridge and folder
+transaction show the real write capability after recovery.
+
+Implementation: `42bf475c`.
+Clean browser subject: `0c39d9e9`.
+Evidence pin: `ae16132a`.
+Evidence: `docs/evidence/da32/da32-024-source-intent-write-recovery-browser-gate.json`.
+The desktop `1440x900` and mobile `390x844` cases passed all ten steps with
+zero unexpected console errors and exact recovered bytes on the mock folder
+handle. Next Studio cut: crash/receipt recovery, quota and eviction handling,
+and multi-file transaction design; physical permission prompts, ZIP rewrite,
+binary blobs, and release authority remain blocked.
+
 ## DA32-023 Studio source-write intent recovery (2026-07-28)
 
 The Studio save path now records a durable `StudioSourceWriteIntent/v1` before
@@ -14,9 +32,10 @@ Evidence: `docs/evidence/da32/da32-023-source-write-intent-browser-gate.json`.
 The accumulated `pnpm qa:smoke` run passed with zero failures and now checks
 the committed intent in the bridge and the IndexedDB object store after source
 write/reimport.
-Next Studio cut: permission-aware handle relink and write/reimport recovery;
-quota, eviction, multi-file transactions, binary blobs, and release authority
-remain blocked.
+Delivered by DA32-024: permission-aware handle relink and write/reimport
+recovery. Next Studio cut: crash/receipt recovery, quota and eviction handling,
+and multi-file transaction design; binary blobs and release authority remain
+blocked.
 
 ## DA32-022 Studio durable project snapshots (2026-07-28)
 

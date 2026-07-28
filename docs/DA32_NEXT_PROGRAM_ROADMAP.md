@@ -187,6 +187,7 @@ MUGEN/IKEMEN parity remain open.
 | DA32-021 | Move the Studio project index to an IndexedDB authority | Versioned project object store, local cache mirror, reload/reopen, optimistic revision conflict, desktop/mobile browser gate | named browser route and viewports; quota, eviction, source blobs, and full authoring remain open |
 | DA32-022 | Bind saved Studio projects to durable snapshots | `StudioIndexedDbSnapshot/v1` record, revision/payload readback, reload persistence, backend diagnostics, desktop/mobile/fallback browser gate | named browser snapshot route; source-intent replay, quota, binary blobs, and full authoring remain open |
 | DA32-023 | Recover pending Studio source writes through a live editor | durable `StudioSourceWriteIntent/v1`, exact preimage replay, pending-state retention, desktop/mobile browser gate | named pending-intent recovery route; handle write, permission repair, quota, binary blobs, and full authoring remain open |
+| DA32-024 | Relink a pending source intent and complete explicit folder write/reimport | native folder relink, dirty preimage replay, separate read/write permission state, exact bytes, settled intent, desktop/mobile browser gate | named browser harness and folder route; physical prompts, durable handle restart, crash, quota, multi-file, ZIP rewrite, and full authoring remain open |
 
 ### DA32-021 browser gate - c95c871a (2026-07-28)
 
@@ -268,6 +269,31 @@ recovery, quota and eviction recovery, multi-file transactions, binary source
 blobs, physical browser coverage, release authority, and full MUGEN/IKEMEN
 authoring parity remain open.
 
+### DA32-024 browser gate - 0c39d9e9 (2026-07-28)
+
+- `pnpm qa:browser:da32-024-source-intent-write` passed against clean subject
+  `0c39d9e9` at desktop `1440x900` and mobile `390x844`; unexpected console
+  errors: zero.
+- The recovery panel now offers an explicit native folder relink action. The
+  selected folder is read into the active VFS, the exact pending preimage is
+  loaded as a dirty Studio draft when the source differs, and Save & Reimport
+  is the only path that requests write permission and writes the file.
+- The bridge keeps read permission and `readwrite` permission as separate
+  fields. Both are `granted` after the recovered write, the folder transaction
+  reports `canWrite: true`, the imported text matches the draft, and the
+  original pending intent settles as committed with restored recovery.
+- Implementation: `42bf475c`; clean evidence pin: `ae16132a`. Evidence:
+  `docs/evidence/da32/da32-024-source-intent-write-recovery-browser-gate.json`
+  plus the desktop and mobile captures.
+
+Claim ceiling: named Studio folder recovery route, simulated native picker,
+exact preimage replay, dirty-state admission, separate permission reporting,
+explicit write/reimport, intent settlement, exact recovered bytes, and the
+recorded desktop/mobile checks. Physical permission prompts, browser variance,
+durable handle restart, crash, quota/eviction, multi-file atomic recovery, ZIP
+rewrite, binary blobs, release authority, and full MUGEN/IKEMEN authoring parity
+remain open.
+
 ## Commands
 
 ```bash
@@ -275,6 +301,7 @@ pnpm qa:smoke
 pnpm qa:browser:da32-021-storage
 pnpm qa:browser:da32-022-snapshot
 pnpm qa:browser:da32-023-source-intent
+pnpm qa:browser:da32-024-source-intent-write
 pnpm materialize:da32-status
 pnpm exec vitest run src/tests/Da32Program.test.ts
 ```

@@ -1,6 +1,22 @@
 ﻿# Roadmap Execution Board
 
-## Current Studio product board - DA32-023 (closed-bounded, 2026-07-28)
+## Current Studio product board - DA32-024 (closed-bounded, 2026-07-28)
+
+DA32-024 closes the pending source-intent write/reimport slice. Studio can
+relink a pending intent through the native folder picker, load the exact
+preimage as a dirty draft when the active source differs, and write only after
+the explicit Save & Reimport action. Read permission and `readwrite`
+permission stay separate in the source handle record, bridge, and folder
+transaction.
+
+Clean desktop/mobile browser evidence: `0c39d9e9`, pinned in `ae16132a`,
+`docs/evidence/da32/da32-024-source-intent-write-recovery-browser-gate.json`.
+Next Studio proof: crash/receipt recovery, quota and eviction handling, and
+multi-file transaction boundaries. Physical permission prompts, durable
+browser-restart handle claims, ZIP rewrite, binary source, release, and full
+parity claims remain blocked.
+
+## Previous Studio product board - DA32-023 (closed-bounded, 2026-07-28)
 
 DA32-023 closes the pending source-write recovery slice. IndexedDB now keeps
 `StudioSourceWriteIntent/v1` before and after a source-folder write; the live
@@ -9,9 +25,10 @@ preserving pending status and showing the unlinked-handle boundary.
 
 Clean desktop/mobile browser evidence: `ef2bf99c`,
 `docs/evidence/da32/da32-023-source-write-intent-browser-gate.json`.
-Next Studio proof: permission-aware handle relink and write/reimport recovery.
-Quota, eviction, multi-file, binary source, release, and full parity claims
-remain blocked.
+DA32-024 now records the permission-aware handle relink and write/reimport
+recovery. Next Studio proof: crash/receipt recovery, quota and eviction
+handling, and multi-file transaction boundaries. Binary source, release, and
+full parity claims remain blocked.
 ## Current audit queue — DA31 evidence adoption
 
 Machine rows exist through DA30-120. Human review stops its consecutive

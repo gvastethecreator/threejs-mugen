@@ -22,8 +22,9 @@
   watermark, and continue the hardware gamepad work. DA32-010 now has a clean
   subject virtual browser gate; hardware remains open. DA32-021 now has a clean
   IndexedDB authority browser gate. DA32-022 now has a clean durable snapshot
-  browser gate. DA32-023 now has a clean source-intent recovery gate; handle
-  permission repair, quota, and source-blob persistence remain open.
+  browser gate. DA32-023 and DA32-024 now have clean source-intent recovery
+  gates; crash, quota, eviction, multi-file, and source-blob persistence
+  remain open.
 
 ## DA32 smoke ownership closeout - 8c6d6c80 (green subject checkpoint, 2026-07-28)
 
@@ -204,6 +205,30 @@ and viewports. Claim blocked: automatic permission repair, handle-backed write
 after recovery, quota/eviction repair, multi-file transactions, binary source
 blobs, physical device coverage, public release, and full MUGEN/IKEMEN
 authoring parity.
+
+## DA32-024 Studio source-intent write recovery - 0c39d9e9 (closed-bounded, 2026-07-28)
+
+- `pnpm qa:browser:da32-024-source-intent-write` passed against clean subject
+  `0c39d9e9` at desktop `1440x900` and mobile `390x844`; unexpected console
+  errors: zero.
+- The recovery view relinks the pending intent through a native folder picker,
+  loads the exact preimage as a dirty draft when the linked source differs,
+  and gates file mutation behind explicit Save & Reimport.
+- Read permission and `readwrite` permission persist separately. After the
+  recovered write, the bridge reports both as granted, the folder transaction
+  reports `canWrite: true`, the reimported text matches the draft, and the
+  original intent settles as committed with restored recovery.
+- Evidence: `docs/evidence/da32/da32-024-source-intent-write-recovery-browser-gate.json`
+  and desktop/mobile captures. Implementation: `42bf475c`; evidence pin:
+  `ae16132a`.
+
+Claim allowed: named folder route, simulated native-picker relink, exact
+preimage replay, dirty-state admission, separate permission reporting,
+explicit write/reimport, intent settlement, exact bytes, and the recorded
+desktop/mobile checks. Claim blocked: physical permission prompts, browser
+variance, restart handle durability, crash/receipt recovery, quota/eviction,
+multi-file atomic recovery, ZIP rewrite, binary source blobs, release
+authority, and full MUGEN/IKEMEN authoring parity.
 
 ## Interface desktop layout repair - d8c4dfaa/b4788b85 (closed bounded, 2026-07-27)
 

@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## Entry 627 - DA32-024 Studio source-intent write recovery
+
+Closed DA32-024 in `42bf475c`: a pending source-write intent can relink a
+native folder handle, load its exact preimage into the Studio editor as a dirty
+draft when the source differs, and finish through explicit Save & Reimport.
+Source handle read permission and write permission now persist as separate
+states. The bridge and folder transaction expose the granted write capability
+after the write, while old records default the new field to `not-requested`.
+
+The clean browser gate passed at desktop `1440x900` and mobile `390x844` with
+ten steps per viewport: native relink, readable source, dirty preimage,
+readwrite request, separate permission reflection, committed write/reimport,
+settled original intent, exact bytes, overflow, and console checks. Focused
+tests pass 26/26 and `node --check` passes for the gate script. Clean browser
+subject: `0c39d9e9`; evidence pin: `ae16132a`.
+
+Evidence: `docs/evidence/da32/da32-024-source-intent-write-recovery-browser-gate.json`.
+Claim allowed: the named Studio folder route and simulated native picker
+sequence. Claim blocked: physical permission prompts, browser restart handle
+durability, crash/receipt recovery, quota/eviction repair, multi-file atomic
+recovery, ZIP rewrite, binary source blobs, release authority, and full
+Studio/MUGEN/IKEMEN parity.
+
 ## Entry 626 - DA32-023 Studio source-write intent recovery
 
 Closed DA32-023 in `96a918b0`: Studio source writes now create a durable

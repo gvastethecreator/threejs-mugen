@@ -14,6 +14,25 @@ DA31-025…029 then choose storage authority and prove transactions, conflicts,
 recovery, real views, preview, and export revision fidelity. Current proof is
 single-tab and its 390-pixel mobile route has horizontal overflow.
 
+## 2026-07-28 DA32-024 source-intent write recovery checkpoint
+
+DA32-024 closes the next source trust slice. A pending
+`StudioSourceWriteIntent/v1` can be relinked through the native folder picker,
+replayed into the live editor as a dirty preimage when the source differs, and
+written only through the explicit Save & Reimport action. Read permission and
+`readwrite` permission now remain separate in the handle record, bridge, and
+folder transaction.
+
+The clean browser gate passes at desktop `1440x900` and mobile `390x844`: ten
+steps per viewport, exact bytes on the mock folder handle, original intent
+settled with restored recovery, no horizontal overflow, and zero unexpected
+console errors. Evidence:
+`docs/evidence/da32/da32-024-source-intent-write-recovery-browser-gate.json`.
+Implementation: `42bf475c`; clean subject: `0c39d9e9`; evidence pin:
+`ae16132a`. The next source lane is crash/receipt recovery plus quota,
+eviction, and multi-file boundaries. Physical permission prompts, ZIP rewrite,
+binary source blobs, and release authority remain open.
+
 ## 2026-07-28 DA32-023 source-write intent recovery checkpoint
 
 DA32-023 persists `StudioSourceWriteIntent/v1` before a source write, settles
@@ -25,8 +44,9 @@ persistent source handle is written.
 
 Evidence: `docs/evidence/da32/da32-023-source-write-intent-browser-gate.json`.
 Implementation: `96a918b0`; clean subject: `ef2bf99c`.
-Next: permission-aware source-handle relink plus write/reimport recovery.
-Quota, eviction, multi-file recovery, binary source blobs, and release
+Delivered by DA32-024: permission-aware source-handle relink plus
+write/reimport recovery. Next: crash/receipt recovery, quota and eviction
+handling, and multi-file transaction design. Binary source blobs and release
 authority remain open.
 
 ## 2026-07-28 DA32-022 durable snapshot checkpoint
