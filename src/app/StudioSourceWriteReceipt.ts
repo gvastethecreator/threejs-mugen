@@ -11,6 +11,7 @@ export type SourceWriteReceiptReason =
   | "project-conflict"
   | "source-changed"
   | "write-and-reimport"
+  | "observed-write-and-reimport"
   | "reimport-rejected"
   | "write-failed";
 
@@ -195,7 +196,7 @@ function isReceiptStatus(value: unknown): value is SourceWriteReceiptStatus {
 
 function isReceiptReason(value: unknown): value is SourceWriteReceiptReason {
   return value === "semantic-preflight" || value === "plan-blocked" || value === "permission" || value === "project-conflict" ||
-    value === "source-changed" || value === "write-and-reimport" || value === "reimport-rejected" || value === "write-failed";
+    value === "source-changed" || value === "write-and-reimport" || value === "observed-write-and-reimport" || value === "reimport-rejected" || value === "write-failed";
 }
 
 function isPermission(value: unknown): value is SourceTransactionPermission {

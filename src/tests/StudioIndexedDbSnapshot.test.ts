@@ -58,6 +58,7 @@ describe("StudioIndexedDbSnapshot", () => {
       preimage,
       projectId: "project-1",
       sourcePackageId: "nova",
+      baseSourceFingerprint: "sha256:base",
       draftDigest: "fnv1a32:deadbeef",
       byteLength: preimage.byteLength,
     });
@@ -95,6 +96,7 @@ describe("StudioIndexedDbSnapshot", () => {
       phase: "settled",
       writeByteLength: 13,
       observedSourceFingerprint: "b".repeat(64),
+      baseSourceFingerprint: pending.baseSourceFingerprint,
       receiptId: "source-write:intent-1",
       receipt,
       result: "committed",
@@ -108,6 +110,7 @@ describe("StudioIndexedDbSnapshot", () => {
       writeByteLength: 13,
       observedSourceFingerprint: "b".repeat(64),
       receiptId: "source-write:intent-1",
+      baseSourceFingerprint: "sha256:base",
     });
     expect(committed.receipt).toEqual(receipt);
     const replay = await replaySourceWriteIntent("intent-1");

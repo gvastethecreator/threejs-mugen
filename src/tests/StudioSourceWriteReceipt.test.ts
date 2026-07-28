@@ -28,6 +28,14 @@ describe("StudioSourceWriteReceipt", () => {
     expect(isSourceWriteReceiptCommitted(parsed.receipt)).toBe(true);
   });
 
+  it("parses a committed receipt created by observed source recovery", () => {
+    const parsed = parseSourceWriteReceipt(receipt({ reason: "observed-write-and-reimport" }));
+
+    expect(parsed.diagnostics).toEqual([]);
+    expect(parsed.receipt?.reason).toBe("observed-write-and-reimport");
+    expect(isSourceWriteReceiptCommitted(parsed.receipt)).toBe(true);
+  });
+
   it("rejects tampered outcome fields before Studio consumes the receipt", () => {
     const tampered = receipt();
     tampered.reason = "write-failed";

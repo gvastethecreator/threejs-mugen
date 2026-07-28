@@ -52,6 +52,7 @@ export type StudioSourceWriteIntent = {
   preimageSha256: string;
   projectId?: string;
   sourcePackageId?: string;
+  baseSourceFingerprint?: string;
   draftDigest?: string;
   byteLength?: number;
   phase: StudioSourceWriteIntentPhase;
@@ -61,7 +62,7 @@ export type StudioSourceWriteIntent = {
   receipt?: SourceWriteReceipt;
   observation?: StudioSourceWriteObservation;
   result?: "committed" | "aborted" | "denied";
-  recovery?: "restored" | "none";
+  recovery?: "restored" | "observed" | "none";
   createdAt: string;
 };
 
@@ -140,6 +141,7 @@ export async function saveSourceWriteIntent(intent: {
   preimage: Uint8Array;
   projectId?: string;
   sourcePackageId?: string;
+  baseSourceFingerprint?: string;
   draftDigest?: string;
   byteLength?: number;
   phase?: StudioSourceWriteIntentPhase;
@@ -170,6 +172,7 @@ export async function saveSourceWriteIntent(intent: {
     preimageSha256: fnvHex(preimageBytes),
     ...(intent.projectId !== undefined || previous?.projectId !== undefined ? { projectId: intent.projectId ?? previous?.projectId } : {}),
     ...(intent.sourcePackageId !== undefined || previous?.sourcePackageId !== undefined ? { sourcePackageId: intent.sourcePackageId ?? previous?.sourcePackageId } : {}),
+    ...(intent.baseSourceFingerprint !== undefined || previous?.baseSourceFingerprint !== undefined ? { baseSourceFingerprint: intent.baseSourceFingerprint ?? previous?.baseSourceFingerprint } : {}),
     ...(intent.draftDigest !== undefined || previous?.draftDigest !== undefined ? { draftDigest: intent.draftDigest ?? previous?.draftDigest } : {}),
     ...(intent.byteLength !== undefined || previous?.byteLength !== undefined ? { byteLength: intent.byteLength ?? previous?.byteLength } : {}),
     phase,
@@ -334,13 +337,14 @@ function isStudioSourceWriteIntent(value: unknown): value is StudioSourceWriteIn
     Array.isArray(record.preimageBytes) && record.preimageBytes.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255) &&
     typeof record.preimageSha256 === "string" &&
     (record.phase === undefined || isStudioSourceWriteIntentPhase(record.phase)) &&
+    (record.baseSourceFingerprint === undefined || typeof record.baseSourceFingerprint === "string") &&
     (record.writeByteLength === undefined || (Number.isSafeInteger(record.writeByteLength) && record.writeByteLength >= 0)) &&
     (record.observedSourceFingerprint === undefined || typeof record.observedSourceFingerprint === "string") &&
     (record.receiptId === undefined || typeof record.receiptId === "string") &&
     (record.receipt === undefined || parseSourceWriteReceipt(record.receipt).diagnostics.length === 0) &&
     (record.observation === undefined || isStudioSourceWriteObservation(record.observation)) &&
     (record.result === undefined || record.result === "committed" || record.result === "aborted" || record.result === "denied") &&
-    (record.recovery === undefined || record.recovery === "restored" || record.recovery === "none") &&
+    (record.recovery === undefined || record.recovery === "restored" || record.recovery === "observed" || record.recovery === "none") &&
     typeof record.createdAt === "string";
 }
 

@@ -1295,6 +1295,8 @@ export class App {
         void this.replayStudioSourceWriteIntent();
       } else if (action === "observe-source-write-intent") {
         void this.observeStudioSourceWriteIntent();
+      } else if (action === "finalize-observed-source-write-intent") {
+        void this.finalizeObservedStudioSourceWriteIntent();
       } else if (action === "relink-source-write-intent") {
         this.relinkStudioSourceWriteIntent();
       } else if (action === "focus-source-diagnostic") {
@@ -2106,6 +2108,7 @@ export class App {
           preimage: Uint8Array.from(pendingWriteClosed.preimageBytes),
           projectId: pendingWriteClosed.projectId,
           sourcePackageId: pendingWriteClosed.sourcePackageId,
+          baseSourceFingerprint: pendingWriteClosed.baseSourceFingerprint,
           draftDigest: pendingWriteClosed.draftDigest,
           byteLength: pendingWriteClosed.byteLength,
           phase: pendingWriteClosed.phase,
@@ -2341,6 +2344,62 @@ export class App {
     return receipt;
   }
 
+  private recordStudioSourceWriteReceiptForIntent(
+    intent: StudioSourceWriteIntent,
+    sourcePackage: GameProjectSourcePackage,
+    input: {
+      status: SourceWriteReceiptStatus;
+      reason: SourceWriteReceiptReason;
+      diagnostics?: string[];
+      permission?: SourceTransactionPermission;
+      observedSourceFingerprint?: string;
+      committedSourceFingerprint?: string;
+      observedProjectRevision?: number;
+      committedDigest?: string;
+      byteLength?: number;
+    },
+  ): SourceWriteReceipt {
+    const receipt = createSourceWriteReceipt({
+      id: `source-write:${intent.sourcePackageId ?? sourcePackage.id}:${intent.path}`,
+      sourcePackageId: intent.sourcePackageId ?? sourcePackage.id,
+      sourceName: sourcePackage.name,
+      path: intent.path,
+      status: input.status,
+      reason: input.reason,
+      observedAt: new Date().toISOString(),
+      operation: "directory-exclusive-write-and-reimport",
+      ...(input.permission ? { permission: input.permission } : {}),
+      ...(intent.baseSourceFingerprint ? { baseSourceFingerprint: intent.baseSourceFingerprint } : {}),
+      ...(input.observedSourceFingerprint ? { observedSourceFingerprint: input.observedSourceFingerprint } : {}),
+      ...(input.committedSourceFingerprint ? { committedSourceFingerprint: input.committedSourceFingerprint } : {}),
+      ...(input.observedProjectRevision !== undefined ? { observedProjectRevision: input.observedProjectRevision } : {}),
+      ...(intent.draftDigest ? { draftDigest: intent.draftDigest } : {}),
+      ...(input.committedDigest ? { committedDigest: input.committedDigest } : {}),
+      ...(input.byteLength !== undefined ? { byteLength: input.byteLength } : {}),
+      compensation: {
+        status: "not-needed",
+        preimageDigest: intent.preimageSha256,
+        preimageByteLength: intent.preimageBytes.length,
+        diagnostics: [],
+      },
+      invalidatedOutputs: [...SOURCE_TRANSACTION_INVALIDATED_OUTPUTS],
+      diagnostics: [...new Set(input.diagnostics ?? [])],
+    });
+    this.studioSourceWriteReceipt = receipt;
+    try {
+      journalFromSourceWriteReceipt({
+        storage: window.localStorage,
+        receipt,
+        projectId: intent.projectId ?? this.getGameProjectManifest().id,
+        preimageBytes: intent.preimageSha256,
+        writeBytes: input.committedDigest ?? intent.draftDigest ?? intent.path,
+      });
+    } catch {
+      // Receipt persistence remains authoritative when the local journal is unavailable.
+    }
+    return receipt;
+  }
+
   private async compensateStudioSourceWrite(
     sourcePackageId: string,
     handle: SourceHandleLike,
@@ -2380,6 +2439,7 @@ export class App {
     preimage: Uint8Array;
     projectId?: string;
     sourcePackageId?: string;
+    baseSourceFingerprint?: string;
     draftDigest?: string;
     byteLength?: number;
     phase?: StudioSourceWriteIntent["phase"];
@@ -2547,6 +2607,7 @@ export class App {
         preimage: preimage.bytes,
         projectId: this.getGameProjectManifest().id,
         sourcePackageId: latestContext.sourcePackage.id,
+        baseSourceFingerprint: draft.baseSourceFingerprint ?? latestContext.sourcePackage.fingerprint,
         draftDigest: semanticPreflight.draftDigest,
         byteLength: preimage.byteLength,
         phase: "preimage-captured",
@@ -2559,6 +2620,7 @@ export class App {
         preimage: preimage.bytes,
         projectId: sourceWriteIntent?.projectId ?? this.getGameProjectManifest().id,
         sourcePackageId: sourceWriteIntent?.sourcePackageId ?? latestContext.sourcePackage.id,
+        baseSourceFingerprint: sourceWriteIntent?.baseSourceFingerprint ?? draft.baseSourceFingerprint ?? latestContext.sourcePackage.fingerprint,
         draftDigest: sourceWriteIntent?.draftDigest ?? semanticPreflight.draftDigest,
         byteLength: sourceWriteIntent?.byteLength ?? preimage.byteLength,
         phase: "write-closed",
@@ -2582,6 +2644,7 @@ export class App {
           preimage: preimage.bytes,
           projectId: sourceWriteIntent?.projectId ?? this.getGameProjectManifest().id,
           sourcePackageId: sourceWriteIntent?.sourcePackageId ?? activePackage.id,
+          baseSourceFingerprint: sourceWriteIntent?.baseSourceFingerprint ?? draft.baseSourceFingerprint ?? latestContext.sourcePackage.fingerprint,
           draftDigest: sourceWriteIntent?.draftDigest ?? semanticPreflight.draftDigest,
           byteLength: sourceWriteIntent?.byteLength ?? preimage.byteLength,
           phase: "reimported",
@@ -2703,6 +2766,7 @@ export class App {
         preimage: Uint8Array.from(sourceWriteIntent.preimageBytes),
         projectId: sourceWriteIntent.projectId,
         sourcePackageId: sourceWriteIntent.sourcePackageId,
+        baseSourceFingerprint: sourceWriteIntent.baseSourceFingerprint,
         draftDigest: sourceWriteIntent.draftDigest,
         byteLength: sourceWriteIntent.byteLength,
         result: receipt.status === "committed" ? "committed" : receipt.status === "blocked" ? "denied" : "aborted",
@@ -2724,6 +2788,7 @@ export class App {
         preimage: Uint8Array.from(recoveredSourceWriteIntent.preimageBytes),
         projectId: recoveredSourceWriteIntent.projectId,
         sourcePackageId: recoveredSourceWriteIntent.sourcePackageId,
+        baseSourceFingerprint: recoveredSourceWriteIntent.baseSourceFingerprint,
         draftDigest: recoveredSourceWriteIntent.draftDigest,
         byteLength: recoveredSourceWriteIntent.byteLength,
         result: receipt.status === "committed" ? "committed" : receipt.status === "blocked" ? "denied" : "aborted",
@@ -2791,6 +2856,168 @@ export class App {
     this.updateUi();
   }
 
+  private async finalizeObservedStudioSourceWriteIntent(): Promise<void> {
+    const intent = this.studioSourceWriteIntent;
+    if (!intent || intent.result || intent.phase !== "write-closed" || intent.observation?.status !== "matches-draft") {
+      this.log("Observed source acceptance requires a pending write-closed intent that matches the draft.");
+      this.updateUi();
+      return;
+    }
+    const sourcePackage = intent.sourcePackageId
+      ? this.getProjectSourcePackages().find((candidate) => candidate.id === intent.sourcePackageId)
+      : undefined;
+    const handleEntry = intent.sourcePackageId
+      ? this.sourceHandleEntries.find((entry) => entry.record.sourcePackageId === intent.sourcePackageId)
+      : undefined;
+    const handle = handleEntry?.handle;
+    if (!sourcePackage || sourcePackage.kind !== "folder" || !handle) {
+      this.log("Observed source acceptance requires the linked folder handle to remain available.");
+      this.updateUi();
+      return;
+    }
+    const persistObservation = async (observation: StudioSourceWriteObservation, observedSourceFingerprint?: string): Promise<void> => {
+      const record = await this.persistStudioSourceWriteIntent({
+        intentId: intent.intentId,
+        path: intent.path,
+        preimage: Uint8Array.from(intent.preimageBytes),
+        projectId: intent.projectId,
+        sourcePackageId: intent.sourcePackageId,
+        baseSourceFingerprint: intent.baseSourceFingerprint,
+        draftDigest: intent.draftDigest,
+        byteLength: intent.byteLength,
+        phase: intent.phase,
+        writeByteLength: intent.writeByteLength,
+        observedSourceFingerprint: observedSourceFingerprint ?? intent.observedSourceFingerprint,
+        receiptId: intent.receiptId,
+        receipt: intent.receipt,
+        observation,
+        result: intent.result,
+        recovery: intent.recovery,
+        createdAt: intent.createdAt,
+      });
+      if (record) this.studioSourceWriteIntent = record;
+    };
+    try {
+      const permission = await requestSourceHandlePermission(handle);
+      await this.persistSourceHandle(
+        sourcePackage,
+        handle,
+        permission,
+        handleEntry.record.observedFingerprint,
+        handleEntry.record.observedByteLength,
+        handleEntry.record.writePermission,
+      );
+      if (permission !== "granted") {
+        await persistObservation({
+          status: "unavailable",
+          observedAt: new Date().toISOString(),
+          permission,
+          diagnostics: [`Source read permission remains ${permission}; observed source acceptance was paused.`],
+        });
+        this.log(`Observed source acceptance remains unavailable because read permission is ${permission}.`);
+        this.updateUi();
+        return;
+      }
+      const observed = await readSourceHandleBytes(handle, intent.path);
+      const observedText = new TextDecoder().decode(observed.bytes);
+      const draftMatches = Boolean(intent.draftDigest && fingerprintMugenStateSource(observedText) === intent.draftDigest);
+      const status = classifySourceWriteObservation({
+        observedBytes: observed.bytes,
+        preimageBytes: Uint8Array.from(intent.preimageBytes),
+        draftMatches,
+      });
+      if (status !== "matches-draft") {
+        await persistObservation({
+          status,
+          observedAt: new Date().toISOString(),
+          digest: observed.digest,
+          byteLength: observed.byteLength,
+          permission,
+          diagnostics: ["The source changed after the prior observation; accept was paused and the intent remains unresolved."],
+        }, intent.observedSourceFingerprint);
+        this.log(`Observed source acceptance paused because the current source is ${status}.`);
+        this.updateUi();
+        return;
+      }
+
+      this.pendingSourceRelinkPackageId = sourcePackage.id;
+      const accepted = await this.loadFolder(await readSourceHandleFolder(handle), {
+        allowChangedSource: true,
+        skipNavigationGuard: true,
+      });
+      if (!accepted) {
+        this.log("Observed source matched the draft, but explicit source reimport was rejected; the intent remains unresolved.");
+        this.updateUi();
+        return;
+      }
+      const activePackage = this.getProjectSourcePackages().find((candidate) => candidate.id === sourcePackage.id) ?? sourcePackage;
+      const fingerprint = this.importedSourceBundle?.fingerprint;
+      const refreshedPath = this.resolveStudioSourceVfsPath(intent.path);
+      const refreshedText = this.importedSourceBundle?.vfs.readText(refreshedPath ?? intent.path);
+      if (!fingerprint?.digest || refreshedText === undefined || !intent.draftDigest || fingerprintMugenStateSource(refreshedText) !== intent.draftDigest) {
+        await persistObservation({
+          status: "changed",
+          observedAt: new Date().toISOString(),
+          digest: observed.digest,
+          byteLength: observed.byteLength,
+          permission,
+          diagnostics: ["The reimported source did not retain the observed draft digest; the receipt remains unresolved."],
+        }, fingerprint?.digest ?? intent.observedSourceFingerprint);
+        this.log("Observed source reimport completed without the expected draft digest; the receipt remains unresolved.");
+        this.updateUi();
+        return;
+      }
+      await this.persistSourceHandle(activePackage, handle, permission, fingerprint.digest, fingerprint.byteLength, handleEntry.record.writePermission);
+      const receipt = this.recordStudioSourceWriteReceiptForIntent(intent, activePackage, {
+        status: "committed",
+        reason: "observed-write-and-reimport",
+        permission,
+        observedSourceFingerprint: fingerprint.digest,
+        committedSourceFingerprint: fingerprint.digest,
+        observedProjectRevision: this.getActiveStudioProjectRevision(),
+        committedDigest: intent.draftDigest,
+        byteLength: observed.byteLength,
+      });
+      const settled = await this.persistStudioSourceWriteIntent({
+        intentId: intent.intentId,
+        path: intent.path,
+        preimage: Uint8Array.from(intent.preimageBytes),
+        projectId: intent.projectId,
+        sourcePackageId: intent.sourcePackageId,
+        baseSourceFingerprint: intent.baseSourceFingerprint,
+        draftDigest: intent.draftDigest,
+        byteLength: intent.byteLength,
+        phase: "settled",
+        writeByteLength: intent.writeByteLength,
+        observedSourceFingerprint: fingerprint.digest,
+        receiptId: receipt.id,
+        receipt,
+        result: "committed",
+        recovery: "observed",
+        observation: {
+          status: "matches-draft",
+          observedAt: new Date().toISOString(),
+          digest: observed.digest,
+          byteLength: observed.byteLength,
+          permission,
+          diagnostics: ["Observed source matched the draft and was accepted after explicit reimport."],
+        },
+        createdAt: intent.createdAt,
+      });
+      if (settled) this.studioSourceWriteIntent = settled;
+      this.log(`Accepted the observed source for ${intent.path} and finalized its write receipt after explicit reimport.`);
+    } catch (error) {
+      await persistObservation({
+        status: "unavailable",
+        observedAt: new Date().toISOString(),
+        permission: "granted",
+        diagnostics: [error instanceof Error ? error.message : String(error)],
+      });
+      this.log(`Observed source acceptance failed: ${error instanceof Error ? error.message : String(error)}.`);
+    }
+    this.updateUi();
+  }
+
   private async observeStudioSourceWriteIntent(): Promise<void> {
     const intent = this.studioSourceWriteIntent;
     if (!intent || intent.result || intent.phase !== "write-closed") {
@@ -2805,6 +3032,7 @@ export class App {
         preimage: Uint8Array.from(intent.preimageBytes),
         projectId: intent.projectId,
         sourcePackageId: intent.sourcePackageId,
+        baseSourceFingerprint: intent.baseSourceFingerprint,
         draftDigest: intent.draftDigest,
         byteLength: intent.byteLength,
         phase: intent.phase,
@@ -8613,6 +8841,7 @@ export class App {
           ${observation?.diagnostics.length ? `<small class="list-meta">${escapeHtml(observation.diagnostics[0] ?? "")}</small>` : ""}
           ${receipt ? `<small class="list-meta" data-source-write-receipt="${escapeHtml(receipt.status)}">Write receipt: ${escapeHtml(receipt.status)} / ${escapeHtml(receipt.reason)} / compensation ${escapeHtml(receipt.compensation.status)} / ${escapeHtml(receipt.digest)}</small>` : ""}
           ${pending && phase === "write-closed" ? `<button type="button" data-action="observe-source-write-intent" title="Read the current source bytes without writing or settling the intent">Observe source</button>` : ""}
+          ${pending && phase === "write-closed" && observationStatus === "matches-draft" ? `<button type="button" data-action="finalize-observed-source-write-intent" title="Reimport the observed source and finalize its receipt">Accept observed source</button>` : ""}
           ${pending ? `<button type="button" data-action="replay-source-write-intent" title="Load the durable source preimage into the Studio editor without writing the source handle">Load preimage</button>` : ""}
           ${pending && sourcePackage ? `<button type="button" data-action="relink-source-write-intent" title="Choose the source ${sourcePackage.kind === "folder" ? "folder" : "ZIP"} again before writing the recovered preimage">Relink ${sourcePackage.kind === "folder" ? "folder" : "ZIP"}</button>` : ""}
         </div>
