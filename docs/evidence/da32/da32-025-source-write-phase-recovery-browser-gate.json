@@ -1,12 +1,12 @@
 {
   "schema": "Da32StudioSourceWritePhaseRecoveryBrowserGate/v1",
   "id": "DA32-025",
-  "generatedAt": "2026-07-28T09:38:28.661Z",
+  "generatedAt": "2026-07-28T09:42:26.575Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "1c21ea007c933a844a2cef4855842de03e25eecc",
-    "dirtyTree": true,
-    "provisional": true,
+    "subjectSha": "4e0d399c610afac96b38c0d54d5dd73b13ff7a85",
+    "dirtyTree": false,
+    "provisional": false,
     "probePaths": [
       "scripts/qa_browser_gate_da32_025_source_write_phase_recovery.cjs"
     ],
@@ -14,9 +14,9 @@
       "src/app/App.ts",
       "src/app/StudioIndexedDbSnapshot.ts"
     ],
-    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+    "claimLimit": "subject-bound observation at listed probe/code paths"
   },
-  "headSha": "1c21ea007c933a844a2cef4855842de03e25eecc",
+  "headSha": "4e0d399c610afac96b38c0d54d5dd73b13ff7a85",
   "ok": true,
   "route": "/?mode=studio&studio=build&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "database": "mugen-web-sandbox-studio",
@@ -263,7 +263,7 @@
               "No persistent source handle is linked for this package.",
               "Source handle read permission has not been granted."
             ],
-            "updatedAt": "2026-07-28T09:38:22.891Z"
+            "updatedAt": "2026-07-28T09:42:20.183Z"
           }
         ],
         "editorValue": "[Statedef 0]\ntype = S\nphysics = S\nanim = 0\n",
@@ -576,7 +576,7 @@
               "No persistent source handle is linked for this package.",
               "Source handle read permission has not been granted."
             ],
-            "updatedAt": "2026-07-28T09:38:27.600Z"
+            "updatedAt": "2026-07-28T09:42:25.498Z"
           }
         ],
         "editorValue": "[Statedef 0]\ntype = S\nphysics = S\nanim = 0\n",
@@ -649,7 +649,7 @@
     }
   ],
   "unexpectedConsole": [],
-  "claimCeiling": "provisional source-write phase recovery observations for named viewports",
+  "claimCeiling": "the named Studio route reads a durable incomplete source-write phase and replays its exact preimage without settling a receipt",
   "claims": {
     "allowed": [
       "IndexedDB retains the write-closed phase and write byte length before receipt settlement",
@@ -668,6 +668,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "dfc769b0605a149cce44febb204593cedb95dbe61f8023985064ab9b03fd9952"
+    "value": "53167e3b4f744051970701758fb68a6ea1986aca3dfeb670dff067cc51839a58"
   }
 }
