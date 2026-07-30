@@ -6,6 +6,29 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
+## 2026-07-30 active expression root selection (T423, closed-bounded)
+
+El context factory de controllers activos transporta ahora una entrada
+`RuntimeRootSelection/v0` resuelta desde los roots live. `PlayableMatchRuntime`
+la habilita sólo en `ikemen-go` y pasa la policy P2 explícita sin inventar una
+fuente Z; perfiles legacy conservan el fallback caller/opponent. Esto hace
+observable el roster P2-family/Partner desde triggers y parámetros activos,
+manteniendo `EnemyNear` separado.
+
+Prueba live: `PlayableMatchRuntime` evalúa `P2Name` hacia el P4 seleccionado
+después de la orientación automática; el factory cubre la bifurcación legacy.
+Proof ampliado: 6 archivos / 450 tests; `pnpm typecheck` verde. Ledger:
+[`2026-07-30-ikemen-active-expression-selection.md`](../../../docs/research/2026-07-30-ikemen-active-expression-selection.md).
+
+Gates: suite serial 305 archivos / 3231 tests, typecheck, build, boundaries y
+diff hygiene verdes. `qa:trace` conserva el timeout SSR recurrente en
+`StateSourceResolver.ts`; el intento de 124 s no materializó ni cambió
+artefactos. Baseline T419 667/667; no hay score movement.
+
+Claim allowed: selección root/P2-family/Partner names en el factory activo
+IKEMEN. Claim blocked: state/life completos, helpers `type=player`,
+Tag/Simul/Turns, rollback/netplay y full MUGEN/IKEMEN parity.
+
 ## 2026-07-30 P5/P7 partner name reads (T422, closed-bounded)
 
 T422 expone `P5Name` y `P7Name` como índices 1/2 del roster Partner. El pin

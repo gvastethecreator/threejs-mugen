@@ -189,7 +189,7 @@ import {
   RuntimeRootDirectHitAdmissionWorld,
   type RuntimeRootDirectHitAdmissionDiagnostic,
 } from "./RuntimeRootDirectHitAdmissionSystem";
-import { RuntimeRootSelectionWorld } from "./RuntimeRootSelectionSystem";
+import { RuntimeRootSelectionWorld, type RuntimeRootSelectionEntry } from "./RuntimeRootSelectionSystem";
 import { RuntimeOpponentSelectionWorld } from "./RuntimeOpponentSelectionSystem";
 import {
   RuntimeRootInputRoutingWorld,
@@ -7363,11 +7363,23 @@ function activeExpressionContextFactory(
     gameSpace: gameSpace ?? fallbackGameSpaceFromBounds(stageBounds),
     characters,
     playerIdTarget,
+    resolveRootSelection: resolveActiveRootSelection,
+    defaultP2Selection: activeMatchRuntimeProfile === "ikemen-go" ? {} : undefined,
     nextRandom: nextRuntimeRandom,
     animTimeRemaining: getAnimTimeRemaining,
     animElemTime: getAnimElemTime,
     inGuardDist: (actor, opponent) => evaluateRuntimeInGuardDist(actor, opponent),
   });
+}
+
+function resolveActiveRootSelection(
+  actor: FighterMatchState,
+  characters: readonly FighterMatchState[],
+): RuntimeRootSelectionEntry | undefined {
+  if (activeMatchRuntimeProfile !== "ikemen-go") return undefined;
+  return rootSelectionWorld
+    .diagnostic(characters.map((character) => ({ id: character.id, ...character.runtime.teamState })))
+    .entries.find((entry) => entry.actorId === actor.id);
 }
 
 function fallbackGameSpaceFromBounds(stageBounds?: MugenStageDefinition["bounds"]): ExpressionGameSpace | undefined {

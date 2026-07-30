@@ -1,5 +1,24 @@
 # Build Execution Backlog
 
+## Runtime continuation checkpoint — T423 active expression root selection (closed-bounded, 2026-07-30)
+
+T423 conecta `RuntimeRootSelection/v0` al factory que consumen los controllers
+activos. El resolver y el default P2 se habilitan sólo bajo `ikemen-go`; el
+fallback legacy queda sin selección explícita. El camino live ya prueba que
+`P2Name` observa el root P4 seleccionado, y el factory prueba P2-family,
+Partner y el fallback legacy en paralelo.
+
+Proof actual: 4 archivos / 33 tests seleccionados, 6 archivos / 450 tests
+ampliados y `pnpm typecheck`. Research:
+`docs/research/2026-07-30-ikemen-active-expression-selection.md`.
+
+Repository proof: 305 archivos / 3231 tests seriales, typecheck, build,
+boundaries y diff hygiene verdes. `qa:trace` sigue limitado por el timeout SSR
+de Vite en `StateSourceResolver.ts`; el intento de 124 s no materializó y no
+modificó artefactos generados. Claim blocked: estado/vida completos,
+helpers `type=player`, equipo completo, rollback/netplay, score movement y
+full MUGEN/IKEMEN parity.
+
 ## Runtime continuation checkpoint — T422 P5/P7 partner name reads (closed-bounded, 2026-07-30)
 
 T422 añade `P5Name` y `P7Name` sobre los índices 1/2 de `partnerRoster` en el
@@ -8,6 +27,11 @@ legacy quedan separados.
 
 Proof: 3 archivos / 118 tests focales.
 Research: `docs/research/2026-07-30-ikemen-partner-name-reads.md`.
+
+Gates: suite serial 305 archivos / 3230 tests, typecheck, build, boundaries y
+diff hygiene verdes. El runner `qa:trace` quedó bloqueado antes de emitir
+salida por el timeout SSR recurrente de Vite en `StateSourceResolver.ts`; no
+se modificaron artefactos generados. Baseline T419: 667/667.
 
 Claim allowed: nombres P5/P7 source-shaped.
 Claim blocked: Partner state/life completo, Helpers `type=player`, cache exacto,

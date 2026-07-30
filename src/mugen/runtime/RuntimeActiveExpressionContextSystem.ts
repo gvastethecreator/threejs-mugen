@@ -3,6 +3,8 @@ import {
   RuntimeExpressionContextWorld,
   type RuntimeExpressionContextActor,
 } from "./RuntimeExpressionContextSystem";
+import type { RuntimeP2SelectionOptions } from "./RuntimeOpponentSelectionSystem";
+import type { RuntimeRootSelectionEntry } from "./RuntimeRootSelectionSystem";
 
 export type RuntimeActiveExpressionContextRequest<TActor extends RuntimeExpressionContextActor> = {
   actor: TActor;
@@ -10,6 +12,8 @@ export type RuntimeActiveExpressionContextRequest<TActor extends RuntimeExpressi
   opponents?: readonly TActor[];
   characters?: readonly TActor[];
   playerIdTarget?: (playerId: number) => ExpressionRedirectTarget | undefined;
+  rootSelection?: RuntimeRootSelectionEntry;
+  p2Selection?: RuntimeP2SelectionOptions;
   owner: TActor;
   tick?: number;
 };
@@ -23,6 +27,8 @@ export type RuntimeActiveExpressionContextFactoryInput<TActor extends RuntimeExp
   inGuardDist: (actor: TActor, opponent: TActor) => boolean;
   characters?: readonly TActor[];
   playerIdTarget?: (playerId: number) => ExpressionRedirectTarget | undefined;
+  resolveRootSelection?: (actor: TActor, characters: readonly TActor[]) => RuntimeRootSelectionEntry | undefined;
+  defaultP2Selection?: RuntimeP2SelectionOptions;
 };
 
 export class RuntimeActiveExpressionContextWorld {
@@ -31,12 +37,16 @@ export class RuntimeActiveExpressionContextWorld {
   create<TActor extends RuntimeExpressionContextActor>(
     input: RuntimeActiveExpressionContextFactoryInput<TActor> & RuntimeActiveExpressionContextRequest<TActor>,
   ): ExpressionContext {
+    const characters = input.characters ?? [input.actor, input.opponent, ...(input.opponents ?? [])];
+    const rootSelection = input.rootSelection ?? input.resolveRootSelection?.(input.actor, characters);
     return this.expressionContextWorld.create({
       actor: input.actor,
       opponent: input.opponent,
       opponents: input.opponents,
-      characters: input.characters ?? [input.actor, input.opponent, ...(input.opponents ?? [])],
+      characters,
       playerIdTarget: input.playerIdTarget,
+      rootSelection,
+      p2Selection: input.p2Selection ?? input.defaultP2Selection,
       owner: input.owner,
       stageBounds: input.stageBounds,
       gameSpace: input.gameSpace,

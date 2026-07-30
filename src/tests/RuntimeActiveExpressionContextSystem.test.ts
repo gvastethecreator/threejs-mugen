@@ -61,6 +61,49 @@ describe("RuntimeActiveExpressionContextWorld", () => {
     expect(elemReads).toEqual([{ actorId: "p1", elementNumber: 3 }]);
     expect(guardReads).toEqual([{ actorId: "p1", opponentId: "p2" }]);
   });
+
+  it("propagates an explicit IKEMEN root selection while legacy factories stay unselected", () => {
+    const world = new RuntimeActiveExpressionContextWorld();
+    const actor = runtimeActor("p1", { pos: { x: 0, y: 0 }, facing: 1 });
+    const behind = runtimeActor("p2", { pos: { x: -5, y: 0 } });
+    const front = runtimeActor("p4", { pos: { x: 34, y: 0 } });
+    const partner = runtimeActor("p3");
+    const baseFactory = {
+      stageBounds: { left: -160, right: 160 },
+      nextRandom: () => 0.5,
+      animTimeRemaining: () => 0,
+      animElemTime: () => 0,
+      inGuardDist: () => false,
+    };
+    const rootSelection = {
+      actorId: actor.id,
+      side: 1 as const,
+      partnerIds: [partner.id],
+      enemyIds: [behind.id, front.id],
+      p2CandidateIds: [behind.id, front.id],
+    };
+    const ikemenContext = world.createFactory({
+      ...baseFactory,
+      resolveRootSelection: () => rootSelection,
+    })({
+      actor,
+      opponent: behind,
+      opponents: [behind],
+      characters: [actor, behind, front, partner],
+      owner: actor,
+    });
+
+    expect(evaluateExpression('P2Name = "p4" && P4Name = "p2" && P3Name = "p3"', ikemenContext)).toBe(1);
+
+    const legacyContext = world.createFactory(baseFactory)({
+      actor,
+      opponent: behind,
+      opponents: [behind],
+      characters: [actor, behind, front, partner],
+      owner: actor,
+    });
+    expect(evaluateExpression('P2Name = "p2" && P4Name = ""', legacyContext)).toBe(1);
+  });
 });
 
 function runtimeActor(id: string, runtimeOverrides: Partial<CharacterRuntimeState> = {}): RuntimeExpressionContextActor {

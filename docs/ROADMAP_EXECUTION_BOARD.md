@@ -1,5 +1,26 @@
 ﻿# Roadmap Execution Board
 
+## Runtime continuation checkpoint — T423 active expression root selection (closed-bounded, 2026-07-30)
+
+El factory de contextos de controllers activos ya recibe `RuntimeRootSelection/v0`
+por resolver inyectado y transporta la policy P2 explícita. `PlayableMatchRuntime`
+lo habilita sólo en `ikemen-go`; MUGEN/unknown conserva el fallback sin
+selección explícita. La prueba live confirma `P2Name` sobre P4 después de la
+orientación automática del actor; el factory cubre también el fallback legacy.
+
+Prueba focal: 4 archivos / 33 tests seleccionados. Prueba ampliada: 6 archivos
+/ 450 tests. `pnpm typecheck` verde. Ledger:
+`docs/research/2026-07-30-ikemen-active-expression-selection.md`.
+
+Suite serial: 305 archivos / 3231 tests. Typecheck, build, boundaries y diff
+hygiene verdes. `qa:trace` volvió a quedar sin salida por 124 s en el bloqueo
+SSR recurrente de `StateSourceResolver.ts`; el runner se verificó y detuvo sin
+churn de evidencia, y el baseline T419 sigue en 667/667. No hay score movement.
+
+Claim permitido: selección root y P2-family/Partner names en el context factory
+activo IKEMEN. Claim bloqueado: estado/vida completos, helpers `type=player`,
+Tag/Simul/Turns, rollback/netplay y paridad completa.
+
 ## Runtime continuation checkpoint — T422 P5/P7 partner name reads (closed-bounded, 2026-07-30)
 
 T422 expone `P5Name` y `P7Name` con los índices 1 y 2 del roster Partner,

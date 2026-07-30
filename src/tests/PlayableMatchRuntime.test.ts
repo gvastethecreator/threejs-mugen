@@ -3352,9 +3352,13 @@ RedirectID = 999
   });
 
   it("uses the IKEMEN P2 distance policy for live root opponents while legacy profiles keep body order", () => {
-    const p1 = createImportedFixture({ id: "live-p2-p1", withStateMove: false });
-    const p2 = createImportedFixture({ id: "live-p2-p2", withStateMove: false });
-    const reserve = createImportedFixture({ id: "live-p2-reserve", withStateMove: false });
+    const p1 = createImportedFixture({
+      id: "live-p2-p1",
+      withStateMove: false,
+      passiveVarSet: { trigger: 'P2Name = "Live P4"', index: 0, value: 91 },
+    });
+    const p2 = createImportedFixture({ id: "live-p2-p2", displayName: "Live P2", withStateMove: false });
+    const reserve = createImportedFixture({ id: "live-p2-reserve", displayName: "Live P4", withStateMove: false });
     const stage = { ...trainingStage };
     const ikemen = new PlayableMatchRuntime(p1, p2, stage, {
       runtimeProfile: "ikemen-go",
@@ -3371,9 +3375,11 @@ RedirectID = 999
     ikemenInternals.p1.runtime.pos.x = 0;
     ikemenInternals.p1.runtime.facing = 1;
     ikemenInternals.p2.runtime.pos.x = -5;
-    reserveRoot.runtime.pos.x = 34;
+    reserveRoot.runtime.pos.x = -1;
 
     expect(ikemenInternals.opponentForRoot(ikemenInternals.p1).id).toBe(reserveRoot.id);
+    const ikemenSnapshot = ikemen.step({ p1: new Set(), p2: new Set() });
+    expect(ikemenSnapshot.actors[0]?.runtime.vars[0]).toBe(91);
 
     const legacy = new PlayableMatchRuntime(p1, p2, stage, {
       runtimeProfile: "ikemen-go",
