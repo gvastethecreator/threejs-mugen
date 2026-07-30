@@ -179,7 +179,7 @@ MUGEN/IKEMEN parity remain open.
 | ID | Scope | Acceptance | Ceiling |
 | --- | --- | --- | --- |
 | DA32-029 | Canvas alternative / SR baseline inventory | Canvas summary and focus contract recorded; SR journey, contrast, and landmark gaps listed | partial implementation; not WCAG certification |
-| DA32-032 | Stabilize Studio geometry at mobile and the desktop seam | bounded SVG/actions, one active mobile pane, document scroll ownership, breakpoint framing gate at 390, 619-621, 899-901, and 1160-1161 | named browser geometry only; broader mobile IA, touch-stage safe zones, and physical-device journeys remain open |
+| DA32-032 | Stabilize Studio geometry at mobile and the desktop seam | bounded SVG/actions, one active mobile pane, document scroll ownership, unrelated mode-action round trip, breakpoint framing gate at 390, 619-621, 899-901, and 1160-1161 | named browser geometry and mode route only; broader mobile IA, touch-stage safe zones, and physical-device journeys remain open |
 
 ## Phase 4 — Studio project authority
 
@@ -459,7 +459,7 @@ real external write, physical prompts, quota, eviction, multi-file recovery,
 ZIP rewrite, binary blobs, release authority, and full MUGEN/IKEMEN authoring
 parity remain open.
 
-### DA32-032 browser gate - provisional subject `c5d23a67` (2026-07-30)
+### DA32-032 browser gate - provisional subject `0eb9c86c` (2026-07-30)
 
 - Tabler SVGs retain their 24px intrinsic size when a component has no
   icon-specific rule; desktop component rules still reduce them where needed.
@@ -469,8 +469,13 @@ parity remain open.
 - The gate passes at `390`, `619/620/621`, `899/900/901`, and `1160/1161` CSS
   pixels with bounded actions, framed visible regions, four keyboard focus
   samples per viewport, zero horizontal overflow, and zero unexpected errors.
+- The `390px` route also switches Studio -> Match -> Studio after exercising the
+  pane switch. Shell state uses `data-studio-mobile-pane-state`, separate from
+  the `data-studio-mobile-pane` action buttons, so unrelated clicks are not
+  intercepted by the pane handler.
 - The result is provisional while unrelated roadmap work keeps the shared tree
-  dirty. Implementation subject: `c5d23a67`. Evidence:
+  dirty. Action-routing fix: `5998a75d`; smoke harness hardening: `960ea0dd`;
+  status-policy and gate subject: `0eb9c86c`. Evidence:
   `docs/evidence/da32/da32-032-studio-mobile-geometry-browser-gate.json`.
 
 Claim ceiling: named Studio Build route, viewports, pane switch, control bounds,

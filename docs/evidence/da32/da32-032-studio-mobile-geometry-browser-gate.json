@@ -1,10 +1,10 @@
 {
   "schema": "Da32StudioMobileGeometryBrowserGate/v1",
   "id": "DA32-032",
-  "generatedAt": "2026-07-30T11:17:19.764Z",
+  "generatedAt": "2026-07-30T11:41:35.267Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "714beea1c9faa10e6f32948918b664bda8aa284f",
+    "subjectSha": "0eb9c86c769fe52488498fecbddd28426762e92c",
     "dirtyTree": true,
     "provisional": true,
     "probePaths": [
@@ -16,7 +16,7 @@
     ],
     "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
   },
-  "headSha": "714beea1c9faa10e6f32948918b664bda8aa284f",
+  "headSha": "0eb9c86c769fe52488498fecbddd28426762e92c",
   "ok": true,
   "route": "/?mode=studio&studio=build&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "cases": [
@@ -230,22 +230,22 @@
         {
           "ok": true,
           "tag": "button",
-          "label": "Details"
-        },
-        {
-          "ok": true,
-          "tag": "body",
-          "label": "Skip to runtime viewport Fight Lab MUGEN runtime + evidence Matchup Nova Boxer v"
-        },
-        {
-          "ok": true,
-          "tag": "a",
-          "label": "Skip to runtime viewport"
+          "label": "Match play ready"
         },
         {
           "ok": true,
           "tag": "button",
-          "label": ">_ Commands"
+          "label": "Inspect import empty"
+        },
+        {
+          "ok": true,
+          "tag": "button",
+          "label": "Studio build 5 issues"
+        },
+        {
+          "ok": true,
+          "tag": "button",
+          "label": "Command Jump to any action 31"
         }
       ],
       "paneSwitch": {
@@ -253,6 +253,11 @@
         "detailsVisible": true,
         "workflowRestored": true,
         "detailsScreenshot": "docs/evidence/da32/browser/da32-032-studio-mobile-geometry-w390-details.png"
+      },
+      "modeRoundTrip": {
+        "attempted": true,
+        "matchReached": true,
+        "studioRestored": true
       },
       "screenshot": "docs/evidence/da32/browser/da32-032-studio-mobile-geometry-w390.png",
       "consoleErrors": []
@@ -490,6 +495,11 @@
         "detailsVisible": true,
         "workflowRestored": true
       },
+      "modeRoundTrip": {
+        "attempted": false,
+        "matchReached": false,
+        "studioRestored": false
+      },
       "screenshot": null,
       "consoleErrors": []
     },
@@ -725,6 +735,11 @@
         "attempted": true,
         "detailsVisible": true,
         "workflowRestored": true
+      },
+      "modeRoundTrip": {
+        "attempted": false,
+        "matchReached": false,
+        "studioRestored": false
       },
       "screenshot": "docs/evidence/da32/browser/da32-032-studio-mobile-geometry-w620.png",
       "consoleErrors": []
@@ -962,6 +977,11 @@
         "detailsVisible": true,
         "workflowRestored": true
       },
+      "modeRoundTrip": {
+        "attempted": false,
+        "matchReached": false,
+        "studioRestored": false
+      },
       "screenshot": null,
       "consoleErrors": []
     },
@@ -1197,6 +1217,11 @@
         "attempted": true,
         "detailsVisible": true,
         "workflowRestored": true
+      },
+      "modeRoundTrip": {
+        "attempted": false,
+        "matchReached": false,
+        "studioRestored": false
       },
       "screenshot": null,
       "consoleErrors": []
@@ -1434,6 +1459,11 @@
         "detailsVisible": true,
         "workflowRestored": true
       },
+      "modeRoundTrip": {
+        "attempted": false,
+        "matchReached": false,
+        "studioRestored": false
+      },
       "screenshot": "docs/evidence/da32/browser/da32-032-studio-mobile-geometry-w900.png",
       "consoleErrors": []
     },
@@ -1670,6 +1700,11 @@
         "detailsVisible": true,
         "workflowRestored": true
       },
+      "modeRoundTrip": {
+        "attempted": false,
+        "matchReached": false,
+        "studioRestored": false
+      },
       "screenshot": null,
       "consoleErrors": []
     },
@@ -1905,6 +1940,11 @@
         "attempted": true,
         "detailsVisible": true,
         "workflowRestored": true
+      },
+      "modeRoundTrip": {
+        "attempted": false,
+        "matchReached": false,
+        "studioRestored": false
       },
       "screenshot": null,
       "consoleErrors": []
@@ -2151,6 +2191,11 @@
         "detailsVisible": false,
         "workflowRestored": false
       },
+      "modeRoundTrip": {
+        "attempted": false,
+        "matchReached": false,
+        "studioRestored": false
+      },
       "screenshot": "docs/evidence/da32/browser/da32-032-studio-mobile-geometry-w1161.png",
       "consoleErrors": []
     }
@@ -2162,6 +2207,7 @@
       "Tabler SVG defaults remain bounded when a component has no icon-specific CSS",
       "Build actions remain compact and operable at 390, 619-621, 899-901, and 1160-1161 CSS pixels",
       "stacked Studio exposes exactly one keyboard-visible Workflow or Details pane at a time",
+      "the 390px Studio route can switch to Match and return without pane state intercepting unrelated actions",
       "the active Studio pane and console delegate vertical scroll ownership to the document at widths up to 1160px",
       "the named viewports have no horizontal overflow or unexpected page errors"
     ],
@@ -2175,6 +2221,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "30eff25a031b4c342e2898bba811bdc9bb7656eb8c621352a4665d5b63ecb139"
+    "value": "a22a6e17421e4ee680053a86e7cd27fd0064b6bf137da3b0b9fc6bc799541a34"
   }
 }
