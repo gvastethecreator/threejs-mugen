@@ -119,6 +119,7 @@ describe("DA32-032 Studio mobile geometry", () => {
           horizontalOverflow: boolean;
         };
         paneSwitch: { attempted: boolean; detailsVisible: boolean; workflowRestored: boolean };
+        modeRoundTrip: { attempted: boolean; matchReached: boolean; studioRestored: boolean };
       }>;
     };
 
@@ -146,5 +147,9 @@ describe("DA32-032 Studio mobile geometry", () => {
     expect(report.cases
       .filter(({ paneSwitch }) => paneSwitch.attempted)
       .every(({ paneSwitch }) => paneSwitch.detailsVisible && paneSwitch.workflowRestored)).toBe(true);
+    expect(report.cases.filter(({ modeRoundTrip }) => modeRoundTrip.attempted)).toHaveLength(1);
+    expect(report.cases
+      .filter(({ modeRoundTrip }) => modeRoundTrip.attempted)
+      .every(({ modeRoundTrip }) => modeRoundTrip.matchReached && modeRoundTrip.studioRestored)).toBe(true);
   });
 });

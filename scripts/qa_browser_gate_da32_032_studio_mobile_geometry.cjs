@@ -82,6 +82,7 @@ async function main() {
               "Tabler SVG defaults remain bounded when a component has no icon-specific CSS",
               "Build actions remain compact and operable at 390, 619-621, 899-901, and 1160-1161 CSS pixels",
               "stacked Studio exposes exactly one keyboard-visible Workflow or Details pane at a time",
+              "the 390px Studio route can switch to Match and return without pane state intercepting unrelated actions",
               "the active Studio pane and console delegate vertical scroll ownership to the document at widths up to 1160px",
               "the named viewports have no horizontal overflow or unexpected page errors",
             ]
@@ -245,7 +246,7 @@ async function runViewport(browser, base, options) {
         const shell = document.querySelector(".app-shell");
         const left = document.querySelector("#left-pane");
         const right = document.querySelector("#right-pane");
-        return shell?.getAttribute("data-studio-mobile-pane") === "details" &&
+        return shell?.getAttribute("data-studio-mobile-pane-state") === "details" &&
           left instanceof HTMLElement && getComputedStyle(left).display === "none" &&
           right instanceof HTMLElement && getComputedStyle(right).display !== "none" &&
           document.querySelector('[data-studio-mobile-pane="details"]')?.getAttribute("aria-pressed") === "true";
@@ -261,11 +262,28 @@ async function runViewport(browser, base, options) {
         const shell = document.querySelector(".app-shell");
         const left = document.querySelector("#left-pane");
         const right = document.querySelector("#right-pane");
-        return shell?.getAttribute("data-studio-mobile-pane") === "workflow" &&
+        return shell?.getAttribute("data-studio-mobile-pane-state") === "workflow" &&
           left instanceof HTMLElement && getComputedStyle(left).display !== "none" &&
           right instanceof HTMLElement && getComputedStyle(right).display === "none" &&
           document.querySelector('[data-studio-mobile-pane="workflow"]')?.getAttribute("aria-pressed") === "true";
       });
+    }
+
+    let modeRoundTrip = { attempted: false, matchReached: false, studioRestored: false };
+    if (options.width === 390) {
+      modeRoundTrip.attempted = true;
+      await page.locator('button[data-mode="match"]:visible').first().click();
+      modeRoundTrip.matchReached = await page
+        .waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "match", null, { timeout: 10_000 })
+        .then(() => true, () => false);
+      await page.locator('button[data-mode="studio"]:visible').first().click();
+      modeRoundTrip.studioRestored = await page
+        .waitForFunction(
+          () => window.__MUGEN_WEB_SANDBOX__?.mode === "studio" && window.__MUGEN_WEB_SANDBOX__?.studioTab === "build",
+          null,
+          { timeout: 10_000 },
+        )
+        .then(() => true, () => false);
     }
 
     const focus = [];
@@ -300,6 +318,9 @@ async function runViewport(browser, base, options) {
     if (!geometry.paneModeOk || (paneSwitch.attempted && (!paneSwitch.detailsVisible || !paneSwitch.workflowRestored))) {
       failures.push("pane-switch");
     }
+    if (modeRoundTrip.attempted && (!modeRoundTrip.matchReached || !modeRoundTrip.studioRestored)) {
+      failures.push("mode-switch");
+    }
     if (focus.some((item) => !item.ok)) failures.push("keyboard-focus");
     return {
       id: `w${options.width}`,
@@ -309,6 +330,7 @@ async function runViewport(browser, base, options) {
       geometry,
       focus,
       paneSwitch,
+      modeRoundTrip,
       screenshot,
       consoleErrors,
     };

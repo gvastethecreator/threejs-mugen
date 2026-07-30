@@ -2416,8 +2416,8 @@ button[data-studio-tab][aria-current="page"] {
     scrollbar-gutter: auto;
   }
 
-  .app-shell.mode-studio[data-studio-mobile-pane="workflow"] > #right-pane,
-  .app-shell.mode-studio[data-studio-mobile-pane="details"] > #left-pane {
+  .app-shell.mode-studio[data-studio-mobile-pane-state="workflow"] > #right-pane,
+  .app-shell.mode-studio[data-studio-mobile-pane-state="details"] > #left-pane {
     display: none;
   }
 

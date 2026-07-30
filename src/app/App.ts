@@ -4088,7 +4088,7 @@ export class App {
     shell?.setAttribute("data-studio-tab", this.mode === "studio" ? this.studioTab : "");
     shell?.setAttribute("data-left-dock", this.mode === "studio" && !this.studioFocusMode && this.studioLeftDockOpen ? "open" : "closed");
     shell?.setAttribute("data-right-dock", this.mode === "studio" && !this.studioFocusMode && this.studioRightDockOpen ? "open" : "closed");
-    shell?.setAttribute("data-studio-mobile-pane", this.studioMobilePane);
+    shell?.setAttribute("data-studio-mobile-pane-state", this.studioMobilePane);
     shell?.setAttribute("data-focus-mode", this.mode === "studio" && this.studioFocusMode ? "true" : "false");
     for (const button of this.root.querySelectorAll<HTMLElement>("[data-studio-mobile-pane]")) {
       const selected = button.dataset.studioMobilePane === this.studioMobilePane;
