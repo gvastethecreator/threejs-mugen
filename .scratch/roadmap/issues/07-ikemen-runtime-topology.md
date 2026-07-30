@@ -6,6 +6,27 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
+## 2026-07-30 P2-family reads (T420, closed-bounded)
+
+T420 conecta `P4Name` al roster P2 source-shaped de T419. El pin usa
+`enemyNear(c, 1, true)` para P4, compartiendo `p2EnemyList` con P2, mientras
+`EnemyNear` conserva `enemyNearList`. El contexto explícito `rootSelection`
+ahora ordena una sola lista P2 y lee sus índices 0/1 para P2/P4Name; Enemy,
+EnemyNear y callers legacy permanecen separados.
+
+Prueba focal: 2 archivos / 36 tests. Prueba ampliada: 6 archivos / 464 tests.
+Ledger: [`2026-07-30-ikemen-p2-family-reads.md`](../../../docs/research/2026-07-30-ikemen-p2-family-reads.md).
+
+Suite completa: 305 archivos / 3230 tests, typecheck, build, boundaries y
+diff hygiene verdes. El trace baseline T419 sigue en 667/667; los reintentos
+post-T420 quedaron bloqueados antes de materializar por timeout SSR repetido
+en `StateSourceResolver.ts`, sin churn de evidencia.
+
+Claim allowed: P2/P4Name source-shaped dentro del roster 046b/T419.
+Claim blocked: P6/P8, Helpers `type=player`, timing exacto de cache,
+`bindToId`/escala, Tag/Simul/Turns, rollback/netplay, score movement y full
+MUGEN/IKEMEN parity.
+
 ## 2026-07-30 P2 source-shaped distance policy (T419, closed-bounded)
 
 T419 keeps the 046b candidate domain and splits P2 ordering from the legacy

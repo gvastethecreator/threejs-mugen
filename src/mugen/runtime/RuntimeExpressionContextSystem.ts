@@ -83,9 +83,10 @@ export class RuntimeExpressionContextWorld {
     const opponentRoster = this.opponentRoster(input);
     const enemyRoster = this.enemyRoster(input);
     const partnerRoster = this.partnerRoster(input);
-    const selectedP2 = this.selectedP2(input);
+    const p2Roster = this.p2Roster(input);
+    const selectedP2 = input.rootSelection ? p2Roster[0] : input.opponent;
     const selectedP3 = partnerRoster[0];
-    const selectedP4 = enemyRoster[1];
+    const selectedP4 = p2Roster[1];
     const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
 
     return {
@@ -287,6 +288,19 @@ export class RuntimeExpressionContextWorld {
     return input.opponents ?? [input.opponent];
   }
 
+  /**
+   * P2, P4, P6 and P8 share Ikemen's P2 enemy list. Keep that roster separate
+   * from EnemyNear so indexed P2-family reads do not inherit the legacy body
+   * order used by EnemyNear.
+   */
+  private p2Roster<TActor extends RuntimeExpressionContextActor>(input: RuntimeExpressionContextInput<TActor>): readonly TActor[] {
+    if (!input.rootSelection) {
+      return input.opponents ?? [input.opponent];
+    }
+    const candidates = this.actorsForIds(input, input.rootSelection.p2CandidateIds);
+    return this.opponentSelectionWorld.orderP2ByNearest(input.actor, candidates, input.p2Selection);
+  }
+
   private partnerRoster<TActor extends RuntimeExpressionContextActor>(input: RuntimeExpressionContextInput<TActor>): readonly TActor[] {
     if (!input.rootSelection) {
       return [];
@@ -338,17 +352,6 @@ export class RuntimeExpressionContextWorld {
     };
   }
 
-  private selectedP2<TActor extends RuntimeExpressionContextActor>(input: RuntimeExpressionContextInput<TActor>): TActor | undefined {
-    if (!input.rootSelection) {
-      return input.opponent;
-    }
-    const byId = new Map(input.characters?.map((actor) => [actor.id, actor]) ?? []);
-    const candidates = input.rootSelection.p2CandidateIds.flatMap((id) => {
-      const actor = byId.get(id);
-      return actor ? [actor] : [];
-    });
-    return this.opponentSelectionWorld.selectP2Nearest(input.actor, candidates, input.p2Selection);
-  }
 }
 
 function runtimeExpressionStateTime(actor: Pick<RuntimeExpressionContextActor, "runtime" | "stateElapsed">): number {

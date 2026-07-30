@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## Runtime continuation checkpoint — T420 P2-family reads (closed-bounded, 2026-07-30)
+
+T420 hace que `P2` y `P4Name` compartan la lista P2 ordenada por la policy de
+Ikemen en el contexto explícito `rootSelection`. `EnemyNear` y `Enemy` no
+cambian de roster ni orden. El caso de divergencia está cubierto por la prueba
+de contexto; `P6/P8` siguen fuera porque el evaluador local aún no los expone.
+
+Proof: 2 archivos / 36 tests focales y 6 archivos / 464 tests ampliados.
+Research: `docs/research/2026-07-30-ikemen-p2-family-reads.md`.
+
+Repository proof: 305 archivos / 3230 tests, typecheck, build, boundaries y
+diff hygiene verdes. El trace baseline T419 permanece en 667/667; tres
+reintentos posteriores y un probe SSR mínimo fallaron antes de materializar
+por timeout de transporte de Vite en `StateSourceResolver.ts`, sin cambios en
+artefactos generados.
+
+Claim allowed: `P2`/`P4Name` sobre el roster P2 source-shaped acotado a 046b.
+Claim blocked: P6/P8, Helpers `type=player`, timing exacto de cache, equipo
+completo, rollback/netplay, score movement y paridad completa.
+
 ## Runtime continuation checkpoint — T419 P2 source-shaped distance (closed-bounded, 2026-07-30)
 
 T419 keeps P2 ordering behind the existing root-selection eligibility filter
@@ -13,6 +33,12 @@ profiles retain their existing horizontal body order.
 Focused proof: 2 files / 35 tests, plus one live `PlayableMatchRuntime` test.
 Research and ledger:
 `docs/research/2026-07-30-ikemen-p2-source-distance.md`.
+
+Final gates: `pnpm test` 305 files / 3229 tests, `pnpm typecheck`,
+`pnpm build`, `pnpm check:boundaries` and `git diff --check` passed;
+`pnpm qa:trace` passed 667/667 artifacts (633 required, 34 optional) on the
+clean retry after one transient SSR transport timeout. No visual surface
+changed, so smoke is N/A.
 
 Claim allowed: bounded source-shaped P2 X/facing/Z ordering and local cache
 invalidation. Claim blocked: exact upstream frame/cache timing and all

@@ -1,5 +1,48 @@
 ﻿# Roadmap Execution Board
 
+## Runtime continuation checkpoint — T420 P2-family reads (closed-bounded, 2026-07-30)
+
+T420 conecta `P4Name` al mismo roster P2 source-shaped que ya usa `P2` en el
+contexto explícito `rootSelection`. La ruta `EnemyNear` mantiene su lista y
+orden legacy, y la ruta sin selección explícita conserva el comportamiento del
+caller. El cambio corrige la divergencia upstream donde `P4Name` usa el índice
+1 de `p2EnemyList`, no el índice 1 de `EnemyNear`.
+
+Prueba focal: 2 archivos / 36 tests; prueba ampliada de contexto, compilador,
+subset CNS, MatchWorld, runtime live y selector: 6 archivos / 464 tests.
+Ledger: `docs/research/2026-07-30-ikemen-p2-family-reads.md`.
+
+Suite completa: 305 archivos / 3230 tests, typecheck, build, boundaries y
+diff hygiene verdes. `qa:trace` conserva la evidencia T419 de 667/667; tres
+reintentos post-T420 y un probe mínimo de Vite quedan limitados por el mismo
+timeout SSR de 60 s en `StateSourceResolver.ts`, sin churn de artefactos.
+
+Claim permitido: `P2` y `P4Name` comparten el roster P2 source-shaped dentro
+del dominio 046b/T419. Claim bloqueado: `P6/P8`, Helpers `type=player`, cache
+frame-start exacto, `bindToId`/escala, Tag/Simul/Turns, rollback/netplay,
+score movement y paridad MUGEN/IKEMEN.
+
+## Runtime continuation checkpoint — T419 P2 source-shaped distance (closed-bounded, 2026-07-30)
+
+T419 queda cerrado con la policy P2 separada del selector legacy: distancia X
+relativa al facing, penalización behind, Z opcional gobernado por el stage,
+desempates deterministas y cache local invalidada por firma. La matriz 046b de
+candidatos no cambia; tampoco se amplían `EnemyNear`, Helpers, Tag/Simul/Turns
+ni el score.
+
+Puertas finales: `pnpm test` 305 archivos / 3229 tests, `pnpm typecheck`,
+`pnpm build`, `pnpm check:boundaries` y `git diff --check` pasaron;
+`pnpm qa:trace` pasó 667/667 (633 required, 34 optional). No hubo superficie
+visual, por lo que smoke es N/A. Un intento de traza tuvo timeout transitorio
+de transporte SSR; el reintento limpio completó la matriz. Ledger:
+`docs/research/2026-07-30-ikemen-p2-source-distance.md`.
+
+Claim permitido: orden P2 X/facing/Z source-shaped y cache local acotados al
+perfil IKEMEN y al filtro de elegibilidad existente. Claim bloqueado: timing
+exacto del cache upstream, flags completos de `CharList`, `bindToId`/escala,
+Helpers `type=player`, modos de equipo completos, rollback/netplay y paridad
+MUGEN/IKEMEN.
+
 ## Current Studio product board - DA32-031 (closed-bounded, 2026-07-28)
 
 DA32-031 makes the unresolved source-write recovery choice explicit. A pending

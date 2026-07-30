@@ -408,12 +408,12 @@ describe("RuntimeExpressionContextWorld", () => {
         side: 1 as const,
         partnerIds: [partner.id],
         enemyIds: [primaryEnemy.id, secondaryEnemy.id],
-        p2CandidateIds: [primaryEnemy.id],
+        p2CandidateIds: [primaryEnemy.id, secondaryEnemy.id],
       },
     };
 
-    expect(world.evaluateNumber("NumPartner + Partner, Life + Enemy, Life + Enemy(1), Life + P2Life", input)).toBe(3101);
-    expect(world.evaluateNumber('P3Name = "p3" && P4Name = "p4"', input)).toBe(1);
+    expect(world.evaluateNumber("NumPartner + Partner, Life + Enemy, Life + Enemy(1), Life + P2Life", input)).toBe(2801);
+    expect(world.evaluateNumber('P3Name = "p3" && P4Name = "p2"', input)).toBe(1);
     expect(world.evaluateNumber("EnemyNear, Life", input)).toBe(600);
     expect(world.evaluateNumber("Enemy(var(2)), Life", input)).toBe(600);
     expect(world.evaluateNumber("Partner(1), Life", input)).toBe(0);
@@ -461,6 +461,29 @@ describe("RuntimeExpressionContextWorld", () => {
 
     expect(world.evaluateNumber("P2Life", input)).toBe(111);
     expect(world.evaluateNumber("EnemyNear(0), Life + EnemyNear(1), Life", input)).toBe(333);
+  });
+
+  it("uses the same source-shaped P2 roster for P4Name while EnemyNear stays separate", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "P1 Author", { pos: { x: 0, y: 0 }, facing: 1 });
+    const behind = runtimeActor("p2", "Behind P2", { life: 222, pos: { x: -5, y: 0 } });
+    const front = runtimeActor("p4", "Front P2", { life: 111, pos: { x: 34, y: 0 } });
+    const far = runtimeActor("p6", "Far P2", { life: 333, pos: { x: 80, y: 0 } });
+    const input = {
+      actor,
+      opponent: behind,
+      characters: [actor, behind, front, far],
+      rootSelection: {
+        actorId: actor.id,
+        side: 1 as const,
+        partnerIds: [],
+        enemyIds: [behind.id, front.id, far.id],
+        p2CandidateIds: [behind.id, front.id, far.id],
+      },
+    };
+
+    expect(world.evaluateNumber('P2Life + (P4Name = "p2") * 1000', input)).toBe(111 + 1000);
+    expect(world.evaluateNumber("EnemyNear(0), Life + EnemyNear(1), Life", input)).toBe(222 + 111);
   });
 
   it("fails P2 reads closed when an explicit selection has no candidate", () => {
