@@ -65,21 +65,21 @@
   "claims": {
     "allowed": [
       "control hold and DA30 recovery queue",
-      "historical DA28-30 accepted ladder",
-      "scores held unless DA30 score adjudication authorizes movement",
       "control-source closedThrough=DA30-120",
-      "nextQueueHead=empty"
+      "historical DA28-30 accepted ladder",
+      "nextQueueHead=empty",
+      "scores held unless DA30 score adjudication authorizes movement"
     ],
     "blocked": [
       "DA29-200 as accepted watermark",
-      "score movement",
       "formal/global tip rewrite without measured gate at claimed SHA",
+      "score movement",
       "using disagreeing selector/cursor projections"
     ]
   },
   "canonicalization": "stable-json/v0",
   "digest": {
     "algorithm": "sha-256",
-    "value": "775a94e56be46a5b7229a3cc386dc8e9cee232578c8d4f98f11e52d801c80428"
+    "value": "74ccc2805524fb3757e86ef0c38a5636a868cbb89c5dc71ed09019f1047d972f"
   }
 }

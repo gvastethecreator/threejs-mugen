@@ -4,9 +4,14 @@
  */
 const fs = require("node:fs");
 const path = require("node:path");
+const { execFileSync } = require("node:child_process");
+const { auditControlDocuments } = require("./lib_control_authority.cjs");
 
 const repoRoot = path.resolve(process.cwd());
-const selectorPath = path.join(repoRoot, "docs/evidence/authority-selector-v1.json");
+const args = parseArgs(process.argv.slice(2));
+const selectorPath = resolveInputPath(args.selector || "docs/evidence/authority-selector-v1.json");
+const cursorPath = resolveInputPath(args.cursor || "docs/evidence/roadmap-cursor-v1.json");
+const sourcePath = resolveInputPath(args.source || "docs/evidence/control-source-v1.json");
 
 const CURRENT_SURFACES = [
   "docs/AUTHORITY_SELECTOR.md",
@@ -50,8 +55,30 @@ const HISTORICAL_HEADING = /^(#{1,6})\s+.*(historical|previous|closed,|post-t268
 if (!fs.existsSync(selectorPath)) {
   fail(`missing selector artifact: ${selectorPath}`);
 }
+if (!fs.existsSync(cursorPath)) {
+  fail(`missing roadmap cursor artifact: ${cursorPath}`);
+}
+if (!fs.existsSync(sourcePath)) {
+  fail(`missing control source artifact: ${sourcePath}`);
+}
 
 const selector = JSON.parse(fs.readFileSync(selectorPath, "utf8"));
+const cursor = JSON.parse(fs.readFileSync(cursorPath, "utf8"));
+const source = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
+const observedHead = args["observed-head"] || gitHead();
+const auditNow = args.now || new Date().toISOString();
+const maxAgeMs = args["max-age-ms"] ? Number(args["max-age-ms"]) : undefined;
+if (maxAgeMs !== undefined && (!Number.isFinite(maxAgeMs) || maxAgeMs < 0)) {
+  fail(`invalid --max-age-ms: ${args["max-age-ms"]}`);
+}
+const controlAudit = auditControlDocuments({
+  selector,
+  cursor,
+  source,
+  observedHeadSha: observedHead,
+  now: auditNow,
+  maxAgeMs,
+});
 if (selector.schemaVersion !== "mugen-web-sandbox/authority-selector/v1") {
   fail(`unexpected selector schema: ${selector.schemaVersion}`);
 }
@@ -125,6 +152,20 @@ if (formal !== global) {
 
 const findings = [];
 
+for (const detail of controlAudit.integrityErrors) {
+  findings.push({ file: "docs/evidence/authority-selector-v1.json", id: "control-integrity", detail });
+}
+for (const detail of controlAudit.agreementErrors) {
+  findings.push({ file: "docs/evidence/control-source-v1.json", id: "control-agreement", detail });
+}
+if (args["require-current-head"] && !controlAudit.promotionReady) {
+  findings.push({
+    file: "docs/evidence/roadmap-cursor-v1.json",
+    id: "promotion-not-ready",
+    detail: `freshness=${controlAudit.freshness.status}; ${controlAudit.freshness.reasons.join("; ")}`,
+  });
+}
+
 for (const relative of CURRENT_SURFACES) {
   const absolute = path.join(repoRoot, ...relative.split("/"));
   if (!fs.existsSync(absolute)) {
@@ -158,11 +199,22 @@ for (const relative of CURRENT_SURFACES) {
 }
 
 if (findings.length) {
-  process.stdout.write(`${JSON.stringify({ status: "failed", findings }, null, 2)}\n`);
+  process.stdout.write(`${JSON.stringify({
+    status: "failed",
+    integrity: controlAudit.integrityPassed ? "passed" : "failed",
+    freshness: controlAudit.freshness,
+    promotionReady: controlAudit.promotionReady,
+    observedHead,
+    findings,
+  }, null, 2)}\n`);
   process.exitCode = 1;
 } else {
   process.stdout.write(`${JSON.stringify({
-    status: "passed",
+    status: controlAudit.promotionReady ? "passed" : "passed-with-hold",
+    integrity: "passed",
+    freshness: controlAudit.freshness,
+    promotionReady: controlAudit.promotionReady,
+    observedHead,
     closedThrough: selector.closedThrough,
     nextQueueHead: selector.nextQueue[0],
     surfaces: CURRENT_SURFACES.length,
@@ -210,4 +262,32 @@ function fail(message) {
   process.stderr.write(`Authority reference audit failed: ${message}\n`);
   process.exitCode = 1;
   process.exit();
+}
+
+function parseArgs(argv) {
+  const parsed = {};
+  for (let index = 0; index < argv.length; index += 1) {
+    const token = argv[index];
+    if (!token.startsWith("--")) continue;
+    const key = token.slice(2);
+    const next = argv[index + 1];
+    if (!next || next.startsWith("--")) parsed[key] = true;
+    else {
+      parsed[key] = next;
+      index += 1;
+    }
+  }
+  return parsed;
+}
+
+function resolveInputPath(value) {
+  return path.isAbsolute(value) ? value : path.resolve(repoRoot, value);
+}
+
+function gitHead() {
+  try {
+    return execFileSync("git", ["rev-parse", "HEAD"], { cwd: repoRoot, encoding: "utf8" }).trim();
+  } catch (error) {
+    fail(`cannot observe git HEAD: ${error instanceof Error ? error.message : String(error)}`);
+  }
 }

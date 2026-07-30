@@ -26,7 +26,7 @@
     "materialize:compatibility-snapshot": "node scripts/materialize_compatibility_corpus_snapshot.cjs",
     "materialize:source-authority": "node scripts/materialize_source_authority_manifest.cjs",
     "materialize:source-authority-epoch": "node scripts/materialize_source_authority_epoch.cjs",
-    "materialize:roadmap-cursor": "node scripts/materialize_roadmap_cursor.cjs",
+    "materialize:roadmap-cursor": "node scripts/materialize_control_projections.cjs",
     "materialize:authority-selector": "node scripts/materialize_authority_selector.cjs",
     "materialize:browser-subcursors": "node scripts/materialize_browser_subcursors_da28_03.cjs",
     "materialize:compatibility-corpus-v12": "node scripts/materialize_compatibility_corpus_v12.cjs",

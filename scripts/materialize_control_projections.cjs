@@ -141,8 +141,12 @@ const cursorPayload = {
     },
   ],
   claims: {
-    allowed: [...source.claims.allowed, `control-source closedThrough=${source.closedThrough}`, `nextQueueHead=${source.nextQueue[0] || "empty"}`],
-    blocked: [...source.claims.blocked],
+    allowed: uniqueSorted([
+      ...source.claims.allowed,
+      `control-source closedThrough=${source.closedThrough}`,
+      `nextQueueHead=${source.nextQueue[0] || "empty"}`,
+    ]),
+    blocked: uniqueSorted(source.claims.blocked),
   },
   canonicalization: "stable-json/v0",
 };
