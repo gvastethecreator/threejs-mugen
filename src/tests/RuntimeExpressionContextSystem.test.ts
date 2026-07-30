@@ -469,20 +469,21 @@ describe("RuntimeExpressionContextWorld", () => {
     const behind = runtimeActor("p2", "Behind P2", { life: 222, pos: { x: -5, y: 0 } });
     const front = runtimeActor("p4", "Front P2", { life: 111, pos: { x: 34, y: 0 } });
     const far = runtimeActor("p6", "Far P2", { life: 333, pos: { x: 80, y: 0 } });
+    const farther = runtimeActor("p8", "Farther P2", { life: 444, pos: { x: 120, y: 0 } });
     const input = {
       actor,
       opponent: behind,
-      characters: [actor, behind, front, far],
+      characters: [actor, behind, front, far, farther],
       rootSelection: {
         actorId: actor.id,
         side: 1 as const,
         partnerIds: [],
-        enemyIds: [behind.id, front.id, far.id],
-        p2CandidateIds: [behind.id, front.id, far.id],
+        enemyIds: [behind.id, front.id, far.id, farther.id],
+        p2CandidateIds: [behind.id, front.id, far.id, farther.id],
       },
     };
 
-    expect(world.evaluateNumber('P2Life + (P4Name = "p2") * 1000', input)).toBe(111 + 1000);
+    expect(world.evaluateNumber('P2Life + (P4Name = "p2") * 1000 + (P6Name = "p6") * 10 + (P8Name = "p8") * 100', input)).toBe(111 + 1000 + 10 + 100);
     expect(world.evaluateNumber("EnemyNear(0), Life + EnemyNear(1), Life", input)).toBe(222 + 111);
   });
 

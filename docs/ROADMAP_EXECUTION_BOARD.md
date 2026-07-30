@@ -1,5 +1,19 @@
 ﻿# Roadmap Execution Board
 
+## Runtime continuation checkpoint — T421 P6/P8 name reads (closed-bounded, 2026-07-30)
+
+T421 expone `P6Name` y `P8Name` con los índices 2 y 3 del mismo roster P2
+source-shaped que usan P2/P4Name. El compilador y el evaluador reconocen los
+dos identificadores; `Partner`/P5/P7, `EnemyNear` y la ruta legacy no cambian.
+
+Prueba focal: 3 archivos / 118 tests. Ledger:
+`docs/research/2026-07-30-ikemen-p2-family-name-reads.md`.
+
+Claim permitido: nombres P6/P8 source-shaped en el contexto explícito
+`rootSelection` ya filtrado por 046b/T419. Claim bloqueado: P5/P7, lecturas de
+vida/estado P6/P8, Helpers `type=player`, cache frame-start exacto,
+Tag/Simul/Turns, rollback/netplay, score movement y paridad completa.
+
 ## Runtime continuation checkpoint — T420 P2-family reads (closed-bounded, 2026-07-30)
 
 T420 conecta `P4Name` al mismo roster P2 source-shaped que ya usa `P2` en el

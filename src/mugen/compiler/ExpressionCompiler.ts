@@ -250,6 +250,8 @@ const supportedExpressionIdentifiers = new Set([
   "p2name",
   "p3name",
   "p4name",
+  "p6name",
+  "p8name",
   "p2power",
   "p2statetype",
   "physics",

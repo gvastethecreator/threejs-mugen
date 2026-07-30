@@ -1,5 +1,18 @@
 # Build Execution Backlog
 
+## Runtime continuation checkpoint — T421 P6/P8 name reads (closed-bounded, 2026-07-30)
+
+T421 añade `P6Name` y `P8Name` a `ExpressionContext`, compiler y evaluator.
+Ambos leen índices 2/3 de la lista P2 explícita; `Partner`/P5/P7, `EnemyNear`
+y perfiles legacy quedan fuera del corte.
+
+Proof: 3 archivos / 118 tests focales.
+Research: `docs/research/2026-07-30-ikemen-p2-family-name-reads.md`.
+
+Claim allowed: nombres P6/P8 source-shaped sobre el roster 046b/T419.
+Claim blocked: P5/P7, vida/estado P6/P8, Helpers `type=player`, cache exacto,
+equipo completo, rollback/netplay, score movement y paridad completa.
+
 ## Runtime continuation checkpoint — T420 P2-family reads (closed-bounded, 2026-07-30)
 
 T420 hace que `P2` y `P4Name` compartan la lista P2 ordenada por la policy de

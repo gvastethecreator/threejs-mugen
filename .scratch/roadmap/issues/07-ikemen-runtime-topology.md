@@ -6,6 +6,21 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
+## 2026-07-30 P6/P8 name reads (T421, closed-bounded)
+
+T421 expone `P6Name` y `P8Name` como índices 2/3 del roster P2
+source-shaped. El pin llama `enemyNear(c, 2/3, true)`, por lo que ambos
+comparten `p2EnemyList` con P2/P4Name. Compiler/evaluator y la prueba
+explícita `rootSelection` quedan alineados; Partner/P5/P7, EnemyNear y legacy
+siguen separados.
+
+Prueba focal: 3 archivos / 118 tests. Ledger:
+[`2026-07-30-ikemen-p2-family-name-reads.md`](../../../docs/research/2026-07-30-ikemen-p2-family-name-reads.md).
+
+Claim allowed: nombres P6/P8 source-shaped dentro del roster 046b/T419.
+Claim blocked: P5/P7, vida/estado P6/P8, Helpers `type=player`, cache exacto,
+Tag/Simul/Turns, rollback/netplay, score movement y full MUGEN/IKEMEN parity.
+
 ## 2026-07-30 P2-family reads (T420, closed-bounded)
 
 T420 conecta `P4Name` al roster P2 source-shaped de T419. El pin usa

@@ -87,6 +87,8 @@ export class RuntimeExpressionContextWorld {
     const selectedP2 = input.rootSelection ? p2Roster[0] : input.opponent;
     const selectedP3 = partnerRoster[0];
     const selectedP4 = p2Roster[1];
+    const selectedP6 = p2Roster[2];
+    const selectedP8 = p2Roster[3];
     const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
 
     return {
@@ -106,6 +108,8 @@ export class RuntimeExpressionContextWorld {
       opponentAuthorName: selectedP2?.definition.authorName,
       p3Name: selectedP3?.definition.displayName,
       p4Name: selectedP4?.definition.displayName,
+      p6Name: selectedP6?.definition.displayName,
+      p8Name: selectedP8?.definition.displayName,
       teamSide: runtimeActorTeamSide(actor),
       opponentTeamSide: selectedP2 ? runtimeActorTeamSide(selectedP2) : undefined,
       stageBounds: input.stageBounds,
