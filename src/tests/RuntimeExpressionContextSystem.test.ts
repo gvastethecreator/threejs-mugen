@@ -398,25 +398,27 @@ describe("RuntimeExpressionContextWorld", () => {
     const actor = runtimeActor("p1", "P1 Author", { vars: [0, 0, 1] });
     const primaryEnemy = runtimeActor("p2", "P2 Author", { life: 900, pos: { x: 180, y: 0 } });
     const partner = runtimeActor("p3", "P3 Author", { life: 700, pos: { x: -40, y: 0 } });
+    const secondPartner = runtimeActor("p5", "P5 Author", { life: 500, pos: { x: -60, y: 0 } });
+    const thirdPartner = runtimeActor("p7", "P7 Author", { life: 300, pos: { x: -80, y: 0 } });
     const secondaryEnemy = runtimeActor("p4", "P4 Author", { life: 600, pos: { x: 20, y: 0 } });
     const input = {
       actor,
       opponent: primaryEnemy,
-      characters: [actor, primaryEnemy, partner, secondaryEnemy],
+      characters: [actor, primaryEnemy, partner, secondPartner, thirdPartner, secondaryEnemy],
       rootSelection: {
         actorId: actor.id,
         side: 1 as const,
-        partnerIds: [partner.id],
+        partnerIds: [partner.id, secondPartner.id, thirdPartner.id],
         enemyIds: [primaryEnemy.id, secondaryEnemy.id],
         p2CandidateIds: [primaryEnemy.id, secondaryEnemy.id],
       },
     };
 
-    expect(world.evaluateNumber("NumPartner + Partner, Life + Enemy, Life + Enemy(1), Life + P2Life", input)).toBe(2801);
-    expect(world.evaluateNumber('P3Name = "p3" && P4Name = "p2"', input)).toBe(1);
+    expect(world.evaluateNumber("NumPartner + Partner, Life + Enemy, Life + Enemy(1), Life + P2Life", input)).toBe(2803);
+    expect(world.evaluateNumber('P3Name = "p3" && P4Name = "p2" && P5Name = "p5" && P7Name = "p7"', input)).toBe(1);
     expect(world.evaluateNumber("EnemyNear, Life", input)).toBe(600);
     expect(world.evaluateNumber("Enemy(var(2)), Life", input)).toBe(600);
-    expect(world.evaluateNumber("Partner(1), Life", input)).toBe(0);
+    expect(world.evaluateNumber("Partner(1), Life", input)).toBe(500);
   });
 
   it("resolves explicit P2 reads by nearest candidate while preserving Enemy order", () => {

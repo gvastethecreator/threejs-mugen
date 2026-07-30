@@ -1,5 +1,18 @@
 # Build Execution Backlog
 
+## Runtime continuation checkpoint — T422 P5/P7 partner name reads (closed-bounded, 2026-07-30)
+
+T422 añade `P5Name` y `P7Name` sobre los índices 1/2 de `partnerRoster` en el
+contexto explícito. `P3Name`, `Partner(index)`, P2-family, `EnemyNear` y
+legacy quedan separados.
+
+Proof: 3 archivos / 118 tests focales.
+Research: `docs/research/2026-07-30-ikemen-partner-name-reads.md`.
+
+Claim allowed: nombres P5/P7 source-shaped.
+Claim blocked: Partner state/life completo, Helpers `type=player`, cache exacto,
+equipo completo, rollback/netplay, score movement y paridad completa.
+
 ## Runtime continuation checkpoint — T421 P6/P8 name reads (closed-bounded, 2026-07-30)
 
 T421 añade `P6Name` y `P8Name` a `ExpressionContext`, compiler y evaluator.

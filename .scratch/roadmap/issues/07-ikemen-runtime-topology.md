@@ -6,6 +6,20 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
+## 2026-07-30 P5/P7 partner name reads (T422, closed-bounded)
+
+T422 expone `P5Name` y `P7Name` como índices 1/2 del roster Partner. El pin
+llama `partner(1/2, false)`, distinto de `p2EnemyList`; P3Name permanece en el
+índice 0. Compiler/evaluator y la prueba explícita quedan alineados, mientras
+Partner(index), P2-family, EnemyNear y legacy siguen separados.
+
+Prueba focal: 3 archivos / 118 tests. Ledger:
+[`2026-07-30-ikemen-partner-name-reads.md`](../../../docs/research/2026-07-30-ikemen-partner-name-reads.md).
+
+Claim allowed: nombres P5/P7 source-shaped dentro del roster 046b/T419.
+Claim blocked: Partner state/life, Helpers `type=player`, cache exacto,
+Tag/Simul/Turns, rollback/netplay, score movement y full MUGEN/IKEMEN parity.
+
 ## 2026-07-30 P6/P8 name reads (T421, closed-bounded)
 
 T421 expone `P6Name` y `P8Name` como índices 2/3 del roster P2

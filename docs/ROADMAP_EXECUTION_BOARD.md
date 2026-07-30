@@ -1,5 +1,20 @@
 ﻿# Roadmap Execution Board
 
+## Runtime continuation checkpoint — T422 P5/P7 partner name reads (closed-bounded, 2026-07-30)
+
+T422 expone `P5Name` y `P7Name` con los índices 1 y 2 del roster Partner,
+junto a `P3Name` en el índice 0. El pin usa `partner(1/2, false)`; no se
+mezcla con el roster P2 ni con `EnemyNear`. Compiler/evaluator y la prueba
+explícita quedan alineados; `Partner(index)` y legacy no cambian.
+
+Prueba focal: 3 archivos / 118 tests. Ledger:
+`docs/research/2026-07-30-ikemen-partner-name-reads.md`.
+
+Claim permitido: nombres P5/P7 source-shaped en `rootSelection` 046b/T419.
+Claim bloqueado: Partner state/life completo, Helpers `type=player`, cache
+frame-start exacto, Tag/Simul/Turns, rollback/netplay, score movement y
+paridad completa.
+
 ## Runtime continuation checkpoint — T421 P6/P8 name reads (closed-bounded, 2026-07-30)
 
 T421 expone `P6Name` y `P8Name` con los índices 2 y 3 del mismo roster P2

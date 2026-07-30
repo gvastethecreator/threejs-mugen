@@ -40,7 +40,9 @@ export type ExpressionContext = {
   opponentAuthorName?: string;
   p3Name?: string;
   p4Name?: string;
+  p5Name?: string;
   p6Name?: string;
+  p7Name?: string;
   p8Name?: string;
   teamSide?: number;
   opponentTeamSide?: number;
@@ -634,8 +636,14 @@ class ExpressionParser {
     if (lower === "p4name") {
       return this.context.p4Name ?? "";
     }
+    if (lower === "p5name") {
+      return this.context.p5Name ?? "";
+    }
     if (lower === "p6name") {
       return this.context.p6Name ?? "";
+    }
+    if (lower === "p7name") {
+      return this.context.p7Name ?? "";
     }
     if (lower === "p8name") {
       return this.context.p8Name ?? "";
