@@ -46,6 +46,50 @@ function studioTabLocator(page, tab) {
   return page.locator(`button[data-studio-tab="${tab}"]:visible`).first();
 }
 
+async function selectAppMode(page, mode) {
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    if (await page.evaluate((expected) => window.__MUGEN_WEB_SANDBOX__?.mode === expected, mode)) {
+      return;
+    }
+    const clicked = await page.evaluate((expected) => {
+      const buttons = [...document.querySelectorAll(`button[data-mode="${expected}"]`)]
+        .filter((candidate) => !candidate.disabled);
+      const visible = buttons.find((candidate) => {
+        const bounds = candidate.getBoundingClientRect();
+        return bounds.width > 0 && bounds.height > 0;
+      });
+      const button = visible ?? buttons[0];
+      button?.click();
+      return Boolean(button);
+    }, mode);
+    if (!clicked) {
+      throw new Error(`App mode ${mode} has no button route`);
+    }
+    try {
+      await page.waitForFunction((expected) => window.__MUGEN_WEB_SANDBOX__?.mode === expected, mode, { timeout: 10_000 });
+      return;
+    } catch (error) {
+      if (attempt === 3) {
+        const state = await page.evaluate((expected) => ({
+          currentMode: window.__MUGEN_WEB_SANDBOX__?.mode,
+          buttons: [...document.querySelectorAll(`button[data-mode="${expected}"]`)].map((candidate) => {
+            const bounds = candidate.getBoundingClientRect();
+            return {
+              className: candidate.className,
+              disabled: candidate.disabled,
+              width: bounds.width,
+              height: bounds.height,
+              text: candidate.textContent?.trim(),
+            };
+          }),
+        }), mode);
+        throw new Error(`App mode ${mode} selection timed out: ${JSON.stringify(state)}`, { cause: error });
+      }
+      await page.waitForTimeout(250);
+    }
+  }
+}
+
 async function selectStudioTab(page, tab) {
   for (let attempt = 0; attempt < 4; attempt += 1) {
     const state = await evaluateWithStableBridge(page, () => ({
@@ -556,7 +600,7 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     return bridge?.character === "Code Fu Man" && bridge.compatibility?.loaded === true;
   });
-  await page.locator('[data-mode="match"]').first().evaluate((button) => button.click());
+  await selectAppMode(page, "match");
   await page.waitForFunction(() => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
@@ -779,15 +823,45 @@ async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, opti
     mimeType: "application/zip",
     buffer: fixtureBuffer,
   });
-  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.character === "MUGEN Lite Journey");
-  await page.locator('[data-mode="match"]').first().evaluate((button) => button.click());
   await page.waitForFunction(() => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
-    const p1 = bridge?.renderer?.characters?.find((actor) => actor.actorId === "p1");
-    const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
-    return bridge?.mode === "match" && actor?.frame?.spriteGroup === 0 && actor.frame.spriteIndex === 0 &&
-      p1?.sprite?.width === 32 && p1.sprite.height === 64 && p1.sprite.axisX === 16 && p1.sprite.axisY === 62;
+    return bridge?.character === "MUGEN Lite Journey" && bridge.compatibility?.loaded === true;
   });
+  await selectAppMode(page, "match");
+  try {
+    await page.waitForFunction(() => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const p1 = bridge?.renderer?.characters?.find((actor) => actor.actorId === "p1");
+      const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+      return bridge?.mode === "match" && actor?.frame?.spriteGroup === 0 && actor.frame.spriteIndex === 0 &&
+        p1?.sprite?.width === 32 && p1.sprite.height === 64 && p1.sprite.axisX === 16 && p1.sprite.axisY === 62;
+    });
+  } catch (error) {
+    const readiness = await page.evaluate(() => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+      const presentation = bridge?.renderer?.characters?.find((candidate) => candidate.actorId === "p1");
+      return {
+        mode: bridge?.mode,
+        character: bridge?.character,
+        compatibility: bridge?.compatibility ? {
+          loaded: bridge.compatibility.loaded,
+          errors: bridge.compatibility.errors,
+          warnings: bridge.compatibility.warnings,
+        } : undefined,
+        actor: actor ? {
+          frame: actor.frame,
+          runtime: {
+            stateNo: actor.runtime?.stateNo,
+            animNo: actor.runtime?.animNo,
+            ctrl: actor.runtime?.ctrl,
+          },
+        } : undefined,
+        presentation: presentation ? { frame: presentation.frame, sprite: presentation.sprite } : undefined,
+      };
+    });
+    throw new Error(`MUGEN Lite visual readiness timed out: ${JSON.stringify(readiness)}`, { cause: error });
+  }
   await page.waitForTimeout(250);
   const probe = await captureMugenLiteVisualState(page, options.screenshotPath, options.canvasPath);
   await page.locator('[data-action="reset-round"]').first().evaluate((button) => button.click());
