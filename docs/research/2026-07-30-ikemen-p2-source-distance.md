@@ -81,9 +81,20 @@ pnpm exec vitest run src/tests/PlayableMatchRuntime.test.ts -t "uses the IKEMEN 
 1 test passed
 ```
 
-Las puertas globales de T419 deben registrarse en el board después de ejecutar
-`pnpm test`, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace`,
-`pnpm check:boundaries` y `git diff --check` sobre el corte final.
+Puertas globales del corte final:
+
+```text
+pnpm test       305 archivos / 3229 tests passed
+pnpm typecheck  passed
+pnpm build      passed (warning conocido de chunk >500 kB)
+pnpm qa:trace   667/667 artifacts passed (633 required, 34 optional)
+pnpm check:boundaries  passed
+git diff --check      limpio en el delta de T419
+```
+
+No hubo cambio de superficie visual; `pnpm qa:smoke` queda fuera de alcance.
+La ejecución de trazas tuvo un timeout transitorio del transporte SSR durante
+un intento, pero el reintento limpio completó toda la matriz sin fallos.
 
 ## Permitido / bloqueado
 
