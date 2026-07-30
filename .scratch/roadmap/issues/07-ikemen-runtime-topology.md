@@ -6,6 +6,25 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
+## 2026-07-30 P2 source-shaped distance policy (T419, closed-bounded)
+
+T419 keeps the 046b candidate domain and splits P2 ordering from the legacy
+`EnemyNear` selector. `RuntimeOpponentSelectionWorld` now adapts the pinned
+`CharList.enemyNear` distance sequence: relative X/facing, behind adjustment,
+optional stage-gated Z weighting, deterministic identity ties, and a separate
+signature-invalidated local P2 cache. Explicit expression P2 reads and the
+live `ikemen-go` primary opponent consume this policy; legacy profiles retain
+the existing body-distance path.
+
+Focused proof is green at 2 files / 35 tests plus one live
+`PlayableMatchRuntime` test. Ledger:
+[`2026-07-30-ikemen-p2-source-distance.md`](../../../docs/research/2026-07-30-ikemen-p2-source-distance.md).
+
+Claim allowed after this bounded cut: source-shaped P2 X/facing/Z ordering and
+local cache invalidation after the existing eligibility filter. Claim blocked:
+exact frame-start cache timing and all upstream invalidation flags,
+`bindToId`/scale parity, Helper `type=player`, complete Tag/Simul/Turns
+gameplay, rollback/netplay, score movement, and full MUGEN/IKEMEN parity.
 ## 2026-07-30 P2 nearest-candidate consumer (T418, closed-bounded)
 
 La matriz 046b ya filtraba `P2` por `playerType`, `disabled`, `standby` y
