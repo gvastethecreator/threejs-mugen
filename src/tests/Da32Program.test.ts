@@ -101,3 +101,50 @@ describe("DA32-029 a11y baseline", () => {
     expect(report.claimCeiling).toMatch(/not WCAG/i);
   });
 });
+
+describe("DA32-032 Studio mobile geometry", () => {
+  it("records bounded controls, single-pane mobile ownership, and breakpoint seams", () => {
+    const path = resolve(root, "docs/evidence/da32/da32-032-studio-mobile-geometry-browser-gate.json");
+    expect(existsSync(path)).toBe(true);
+    const report = JSON.parse(readFileSync(path, "utf8")) as {
+      ok: boolean;
+      cases: Array<{
+        id: string;
+        ok: boolean;
+        geometry: {
+          iconBoundsOk: boolean;
+          actionBoundsOk: boolean;
+          framingOk: boolean;
+          paneModeOk: boolean;
+          horizontalOverflow: boolean;
+        };
+        paneSwitch: { attempted: boolean; detailsVisible: boolean; workflowRestored: boolean };
+      }>;
+    };
+
+    expect(report.ok).toBe(true);
+    expect(report.cases.map(({ id }) => id)).toEqual([
+      "w390",
+      "w619",
+      "w620",
+      "w621",
+      "w899",
+      "w900",
+      "w901",
+      "w1160",
+      "w1161",
+    ]);
+    expect(report.cases.every(({ ok, geometry }) =>
+      ok &&
+      geometry.iconBoundsOk &&
+      geometry.actionBoundsOk &&
+      geometry.framingOk &&
+      geometry.paneModeOk &&
+      !geometry.horizontalOverflow,
+    )).toBe(true);
+    expect(report.cases.filter(({ paneSwitch }) => paneSwitch.attempted)).toHaveLength(8);
+    expect(report.cases
+      .filter(({ paneSwitch }) => paneSwitch.attempted)
+      .every(({ paneSwitch }) => paneSwitch.detailsVisible && paneSwitch.workflowRestored)).toBe(true);
+  });
+});

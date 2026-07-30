@@ -1,6 +1,6 @@
 {
   "schema": "Da32ProgramStatus/v1",
-  "generatedAt": "2026-07-28T11:57:00.723Z",
+  "generatedAt": "2026-07-30T11:12:22.271Z",
   "tasks": {
     "DA32-001": {
       "status": "accepted",
@@ -171,6 +171,16 @@
         "docs/evidence/da32/da32-031-source-write-recovery-decisions-browser-gate.json"
       ]
     },
+    "DA32-032": {
+      "status": "accepted-browser-mobile-geometry-provisional",
+      "note": "nine-viewport Studio geometry gate passed on a dirty subject; clean subject pin and broader mobile IA remain open",
+      "artifacts": [
+        "src/app/App.ts",
+        "src/styles/redesign.css",
+        "scripts/qa_browser_gate_da32_032_studio_mobile_geometry.cjs",
+        "docs/evidence/da32/da32-032-studio-mobile-geometry-browser-gate.json"
+      ]
+    },
     "DA32-013": {
       "status": "accepted-sample",
       "note": "consecutive pass proposes adjudicatedThrough=DA30-021",
@@ -213,6 +223,6 @@
   "claimCeiling": "DA32 smoke green at this subject only; adjudicatedThrough remains DA30-020 until human accepts proposed DA30-021",
   "digest": {
     "algorithm": "sha-256",
-    "value": "1b3cb4f6d92f3f392117824373036534bc5aa85481d0cb6f3627aef5a599788a"
+    "value": "21953c401a78de73613251334e0499e6050e2e6a893a462313db34b487a44398"
   }
 }

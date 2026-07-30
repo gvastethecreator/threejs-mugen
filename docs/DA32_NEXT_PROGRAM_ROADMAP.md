@@ -1,6 +1,6 @@
 # DA32 next program roadmap
 
-Last updated: 2026-07-28
+Last updated: 2026-07-30
 
 DA31 closed the 40-cut evidence-adoption program at named claim ceilings.
 DA32 turns remaining open product and adjudication work into owned lanes.
@@ -21,7 +21,7 @@ DA32 turns remaining open product and adjudication work into owned lanes.
 2. **DA32-009…012** — physical gamepad device-lab protocol + optional hardware evidence.
 3. **DA32-013…020** — consecutive clause adjudication samples past DA30-020.
 4. **DA32-021…031** — project authority, authoring per-view browser capture, live snapshot/replay binding.
-5. **DA32-029…032** — a11y SR/canvas alternative, local release blockers refresh.
+5. **DA32-029…032** — a11y SR/canvas alternative and mobile Studio stabilization.
 
 ## Phase 0 — Smoke ownership (current)
 
@@ -174,11 +174,12 @@ MUGEN/IKEMEN parity remain open.
 | DA32-013 | Re-adjudicate DA30-021…030 sample rows | Ledger rows with evidence refs and pass/partial/fail | sample only; no bulk 120 claim |
 | DA32-014 | Advance `adjudicatedThrough` only on consecutive passes | If 021 fails, watermark stays 020 | consecutive watermark rule |
 
-## Phase 3 — A11y
+## Phase 3 — A11y and mobile usability
 
 | ID | Scope | Acceptance | Ceiling |
 | --- | --- | --- | --- |
 | DA32-029 | Canvas alternative / SR baseline inventory | Canvas summary and focus contract recorded; SR journey, contrast, and landmark gaps listed | partial implementation; not WCAG certification |
+| DA32-032 | Stabilize Studio geometry at mobile and the desktop seam | bounded SVG/actions, one active mobile pane, document scroll ownership, breakpoint framing gate at 390, 619-621, 899-901, and 1160-1161 | named browser geometry only; broader mobile IA, touch-stage safe zones, and physical-device journeys remain open |
 
 ## Phase 4 — Studio project authority
 
@@ -458,6 +459,25 @@ real external write, physical prompts, quota, eviction, multi-file recovery,
 ZIP rewrite, binary blobs, release authority, and full MUGEN/IKEMEN authoring
 parity remain open.
 
+### DA32-032 browser gate - provisional subject `c5d23a67` (2026-07-30)
+
+- Tabler SVGs retain their 24px intrinsic size when a component has no
+  icon-specific rule; desktop component rules still reduce them where needed.
+- At widths up to 1160px, `Workflow / Details` exposes exactly one Studio pane
+  at a time and both panes plus the console delegate vertical scrolling to the
+  document. The inactive pane is removed from layout and keyboard focus.
+- The gate passes at `390`, `619/620/621`, `899/900/901`, and `1160/1161` CSS
+  pixels with bounded actions, framed visible regions, four keyboard focus
+  samples per viewport, zero horizontal overflow, and zero unexpected errors.
+- The result is provisional while unrelated roadmap work keeps the shared tree
+  dirty. Implementation subject: `c5d23a67`. Evidence:
+  `docs/evidence/da32/da32-032-studio-mobile-geometry-browser-gate.json`.
+
+Claim ceiling: named Studio Build route, viewports, pane switch, control bounds,
+scroll ownership, and framing only. Detail density, desktop Build hierarchy,
+runtime touch-control safe zones, physical devices, screen readers, release
+authority, and full Studio/MUGEN/IKEMEN parity remain open.
+
 ## Commands
 
 ```bash
@@ -472,6 +492,7 @@ pnpm qa:browser:da32-027-source-write-observation
 pnpm qa:browser:da32-028-source-write-observation-positive
 pnpm qa:browser:da32-030-source-write-observation-finalize
 pnpm qa:browser:da32-031-source-write-recovery-decisions
+pnpm qa:browser:da32-032-studio-mobile-geometry
 pnpm materialize:da32-status
 pnpm exec vitest run src/tests/Da32Program.test.ts
 ```

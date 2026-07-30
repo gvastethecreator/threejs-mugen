@@ -286,6 +286,17 @@ if (fs.existsSync(studioSourceRecoveryDecisionGatePath)) {
 }
 const studioSourceRecoveryDecisionGateOk = studioSourceRecoveryDecisionGate?.ok === true;
 const studioSourceRecoveryDecisionGateClean = studioSourceRecoveryDecisionGate?.subject?.provisional === false;
+const studioMobileGeometryGatePath = path.join(outDir, "da32-032-studio-mobile-geometry-browser-gate.json");
+let studioMobileGeometryGate = null;
+if (fs.existsSync(studioMobileGeometryGatePath)) {
+  try {
+    studioMobileGeometryGate = JSON.parse(fs.readFileSync(studioMobileGeometryGatePath, "utf8"));
+  } catch {
+    studioMobileGeometryGate = null;
+  }
+}
+const studioMobileGeometryGateOk = studioMobileGeometryGate?.ok === true;
+const studioMobileGeometryGateClean = studioMobileGeometryGate?.subject?.provisional === false;
 
 const status = {
   schema: "Da32ProgramStatus/v1",
@@ -557,6 +568,26 @@ const status = {
             "docs/evidence/da32/da32-031-source-write-recovery-decisions-browser-gate.json",
           ]
         : ["src/app/App.ts", "src/app/StudioIndexedDbSnapshot.ts"],
+    },
+    "DA32-032": {
+      status: studioMobileGeometryGateOk
+        ? studioMobileGeometryGateClean
+          ? "accepted-browser-mobile-geometry"
+          : "accepted-browser-mobile-geometry-provisional"
+        : "open-implementation",
+      note: studioMobileGeometryGateOk
+        ? studioMobileGeometryGateClean
+          ? "clean-subject breakpoint gate proves bounded icons/actions, one active mobile pane, document scroll ownership, and framed desktop seam"
+          : "nine-viewport Studio geometry gate passed on a dirty subject; clean subject pin and broader mobile IA remain open"
+        : "Studio mobile geometry browser gate is missing or failed",
+      artifacts: studioMobileGeometryGateOk
+        ? [
+            "src/app/App.ts",
+            "src/styles/redesign.css",
+            "scripts/qa_browser_gate_da32_032_studio_mobile_geometry.cjs",
+            "docs/evidence/da32/da32-032-studio-mobile-geometry-browser-gate.json",
+          ]
+        : ["src/app/App.ts", "src/styles/redesign.css"],
     },
     "DA32-013": {
       status: "accepted-sample",

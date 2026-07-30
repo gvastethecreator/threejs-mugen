@@ -1,0 +1,2180 @@
+{
+  "schema": "Da32StudioMobileGeometryBrowserGate/v1",
+  "id": "DA32-032",
+  "generatedAt": "2026-07-30T11:11:56.507Z",
+  "subject": {
+    "schema": "Da31GateSubjectEnvelope/v1",
+    "subjectSha": "c5d23a67b82b6ac900e2e2e1d949ea95e183aa15",
+    "dirtyTree": true,
+    "provisional": true,
+    "probePaths": [
+      "scripts/qa_browser_gate_da32_032_studio_mobile_geometry.cjs"
+    ],
+    "codePaths": [
+      "src/app/App.ts",
+      "src/styles/redesign.css"
+    ],
+    "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
+  },
+  "headSha": "c5d23a67b82b6ac900e2e2e1d949ea95e183aa15",
+  "ok": true,
+  "route": "/?mode=studio&studio=build&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
+  "cases": [
+    {
+      "id": "w390",
+      "viewport": "390x844",
+      "ok": true,
+      "failures": [],
+      "geometry": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "title": "MUGEN Web Sandbox",
+        "heading": "Build & Export",
+        "bodyOverflowY": "visible",
+        "documentScrollHeight": 7878,
+        "bodyScrollHeight": 7878,
+        "documentOwnsScroll": true,
+        "horizontalOverflow": false,
+        "owners": {
+          "left": {
+            "overflowY": "visible",
+            "clientHeight": 6996,
+            "scrollHeight": 6996,
+            "ownsScroll": false
+          },
+          "right": {
+            "overflowY": "visible",
+            "clientHeight": 0,
+            "scrollHeight": 0,
+            "ownsScroll": false
+          },
+          "console": {
+            "overflowY": "visible",
+            "clientHeight": 388,
+            "scrollHeight": 388,
+            "ownsScroll": false
+          }
+        },
+        "paneVisibility": [
+          {
+            "selector": "#left-pane",
+            "visible": true,
+            "display": "block"
+          },
+          {
+            "selector": "#right-pane",
+            "visible": false,
+            "display": "none"
+          }
+        ],
+        "paneSwitchVisible": true,
+        "frameRegions": [
+          {
+            "selector": "#left-pane",
+            "top": 493,
+            "left": 0,
+            "width": 390,
+            "height": 6996,
+            "bottom": 7489,
+            "right": 390
+          },
+          {
+            "selector": "#stage",
+            "top": 80,
+            "left": 0,
+            "width": 390,
+            "height": 354,
+            "bottom": 435,
+            "right": 390
+          }
+        ],
+        "framingOk": true,
+        "icons": [
+          {
+            "className": "ui-icon command-launcher-icon",
+            "top": 637,
+            "left": 23,
+            "width": 24,
+            "height": 24,
+            "bottom": 661,
+            "right": 47
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1101,
+            "left": 39,
+            "width": 15,
+            "height": 15,
+            "bottom": 1116,
+            "right": 54
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1101,
+            "left": 75,
+            "width": 15,
+            "height": 15,
+            "bottom": 1116,
+            "right": 90
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1087,
+            "left": 180,
+            "width": 24,
+            "height": 24,
+            "bottom": 1111,
+            "right": 204
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1087,
+            "left": 322,
+            "width": 24,
+            "height": 24,
+            "bottom": 1111,
+            "right": 346
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1464,
+            "left": 129,
+            "width": 24,
+            "height": 24,
+            "bottom": 1488,
+            "right": 153
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1522,
+            "left": 120,
+            "width": 24,
+            "height": 24,
+            "bottom": 1546,
+            "right": 144
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1571,
+            "left": 126,
+            "width": 24,
+            "height": 24,
+            "bottom": 1595,
+            "right": 150
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1626,
+            "left": 141,
+            "width": 24,
+            "height": 24,
+            "bottom": 1650,
+            "right": 165
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1681,
+            "left": 118,
+            "width": 24,
+            "height": 24,
+            "bottom": 1705,
+            "right": 142
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1737,
+            "left": 127,
+            "width": 24,
+            "height": 24,
+            "bottom": 1761,
+            "right": 151
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 6890,
+            "left": 195,
+            "width": 24,
+            "height": 24,
+            "bottom": 6914,
+            "right": 219
+          }
+        ],
+        "actionButtons": [
+          {
+            "label": "Compile runtime",
+            "top": 1456,
+            "left": 25,
+            "width": 339,
+            "height": 40,
+            "bottom": 1496,
+            "right": 364
+          },
+          {
+            "label": "Export trace artifact",
+            "top": 1514,
+            "left": 25,
+            "width": 339,
+            "height": 40,
+            "bottom": 1554,
+            "right": 364
+          }
+        ],
+        "iconBoundsOk": true,
+        "actionBoundsOk": true,
+        "singleDocumentScroll": true,
+        "paneModeOk": true
+      },
+      "focus": [
+        {
+          "ok": true,
+          "tag": "button",
+          "label": "Details"
+        },
+        {
+          "ok": true,
+          "tag": "body",
+          "label": "Skip to runtime viewport Fight Lab MUGEN runtime + evidence Matchup Nova Boxer v"
+        },
+        {
+          "ok": true,
+          "tag": "a",
+          "label": "Skip to runtime viewport"
+        },
+        {
+          "ok": true,
+          "tag": "button",
+          "label": ">_ Commands"
+        }
+      ],
+      "paneSwitch": {
+        "attempted": true,
+        "detailsVisible": true,
+        "workflowRestored": true,
+        "detailsScreenshot": "docs/evidence/da32/browser/da32-032-studio-mobile-geometry-w390-details.png"
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-032-studio-mobile-geometry-w390.png",
+      "consoleErrors": []
+    },
+    {
+      "id": "w619",
+      "viewport": "619x900",
+      "ok": true,
+      "failures": [],
+      "geometry": {
+        "viewport": {
+          "width": 619,
+          "height": 900
+        },
+        "title": "MUGEN Web Sandbox",
+        "heading": "Build & Export",
+        "bodyOverflowY": "visible",
+        "documentScrollHeight": 6976,
+        "bodyScrollHeight": 6976,
+        "documentOwnsScroll": true,
+        "horizontalOverflow": false,
+        "owners": {
+          "left": {
+            "overflowY": "visible",
+            "clientHeight": 6127,
+            "scrollHeight": 6127,
+            "ownsScroll": false
+          },
+          "right": {
+            "overflowY": "visible",
+            "clientHeight": 0,
+            "scrollHeight": 0,
+            "ownsScroll": false
+          },
+          "console": {
+            "overflowY": "visible",
+            "clientHeight": 360,
+            "scrollHeight": 360,
+            "ownsScroll": false
+          }
+        },
+        "paneVisibility": [
+          {
+            "selector": "#left-pane",
+            "visible": true,
+            "display": "block"
+          },
+          {
+            "selector": "#right-pane",
+            "visible": false,
+            "display": "none"
+          }
+        ],
+        "paneSwitchVisible": true,
+        "frameRegions": [
+          {
+            "selector": "#left-pane",
+            "top": 487,
+            "left": 0,
+            "width": 619,
+            "height": 6127,
+            "bottom": 6614,
+            "right": 619
+          },
+          {
+            "selector": "#stage",
+            "top": 51,
+            "left": 0,
+            "width": 619,
+            "height": 378,
+            "bottom": 429,
+            "right": 619
+          }
+        ],
+        "framingOk": true,
+        "icons": [
+          {
+            "className": "ui-icon command-launcher-icon",
+            "top": 632,
+            "left": 23,
+            "width": 24,
+            "height": 24,
+            "bottom": 656,
+            "right": 47
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1044,
+            "left": 330,
+            "width": 15,
+            "height": 15,
+            "bottom": 1059,
+            "right": 345
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1044,
+            "left": 366,
+            "width": 15,
+            "height": 15,
+            "bottom": 1059,
+            "right": 381
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1029,
+            "left": 409,
+            "width": 24,
+            "height": 24,
+            "bottom": 1053,
+            "right": 433
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1029,
+            "left": 551,
+            "width": 24,
+            "height": 24,
+            "bottom": 1053,
+            "right": 575
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1406,
+            "left": 244,
+            "width": 24,
+            "height": 24,
+            "bottom": 1430,
+            "right": 268
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1464,
+            "left": 234,
+            "width": 24,
+            "height": 24,
+            "bottom": 1488,
+            "right": 258
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1513,
+            "left": 241,
+            "width": 24,
+            "height": 24,
+            "bottom": 1537,
+            "right": 265
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1569,
+            "left": 255,
+            "width": 24,
+            "height": 24,
+            "bottom": 1593,
+            "right": 279
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1624,
+            "left": 233,
+            "width": 24,
+            "height": 24,
+            "bottom": 1648,
+            "right": 257
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1679,
+            "left": 241,
+            "width": 24,
+            "height": 24,
+            "bottom": 1703,
+            "right": 265
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 6062,
+            "left": 424,
+            "width": 24,
+            "height": 24,
+            "bottom": 6086,
+            "right": 448
+          }
+        ],
+        "actionButtons": [
+          {
+            "label": "Compile runtime",
+            "top": 1398,
+            "left": 25,
+            "width": 568,
+            "height": 40,
+            "bottom": 1438,
+            "right": 593
+          },
+          {
+            "label": "Export trace artifact",
+            "top": 1456,
+            "left": 25,
+            "width": 568,
+            "height": 40,
+            "bottom": 1496,
+            "right": 593
+          }
+        ],
+        "iconBoundsOk": true,
+        "actionBoundsOk": true,
+        "singleDocumentScroll": true,
+        "paneModeOk": true
+      },
+      "focus": [
+        {
+          "ok": true,
+          "tag": "button",
+          "label": "Details"
+        },
+        {
+          "ok": true,
+          "tag": "body",
+          "label": "Skip to runtime viewport Fight Lab MUGEN runtime + evidence Matchup Nova Boxer v"
+        },
+        {
+          "ok": true,
+          "tag": "a",
+          "label": "Skip to runtime viewport"
+        },
+        {
+          "ok": true,
+          "tag": "button",
+          "label": ">_ Commands"
+        }
+      ],
+      "paneSwitch": {
+        "attempted": true,
+        "detailsVisible": true,
+        "workflowRestored": true
+      },
+      "screenshot": null,
+      "consoleErrors": []
+    },
+    {
+      "id": "w620",
+      "viewport": "620x900",
+      "ok": true,
+      "failures": [],
+      "geometry": {
+        "viewport": {
+          "width": 620,
+          "height": 900
+        },
+        "title": "MUGEN Web Sandbox",
+        "heading": "Build & Export",
+        "bodyOverflowY": "visible",
+        "documentScrollHeight": 6976,
+        "bodyScrollHeight": 6976,
+        "documentOwnsScroll": true,
+        "horizontalOverflow": false,
+        "owners": {
+          "left": {
+            "overflowY": "visible",
+            "clientHeight": 6127,
+            "scrollHeight": 6127,
+            "ownsScroll": false
+          },
+          "right": {
+            "overflowY": "visible",
+            "clientHeight": 0,
+            "scrollHeight": 0,
+            "ownsScroll": false
+          },
+          "console": {
+            "overflowY": "visible",
+            "clientHeight": 360,
+            "scrollHeight": 360,
+            "ownsScroll": false
+          }
+        },
+        "paneVisibility": [
+          {
+            "selector": "#left-pane",
+            "visible": true,
+            "display": "block"
+          },
+          {
+            "selector": "#right-pane",
+            "visible": false,
+            "display": "none"
+          }
+        ],
+        "paneSwitchVisible": true,
+        "frameRegions": [
+          {
+            "selector": "#left-pane",
+            "top": 487,
+            "left": 0,
+            "width": 620,
+            "height": 6127,
+            "bottom": 6614,
+            "right": 620
+          },
+          {
+            "selector": "#stage",
+            "top": 51,
+            "left": 0,
+            "width": 620,
+            "height": 378,
+            "bottom": 429,
+            "right": 620
+          }
+        ],
+        "framingOk": true,
+        "icons": [
+          {
+            "className": "ui-icon command-launcher-icon",
+            "top": 632,
+            "left": 23,
+            "width": 24,
+            "height": 24,
+            "bottom": 656,
+            "right": 47
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1044,
+            "left": 331,
+            "width": 15,
+            "height": 15,
+            "bottom": 1059,
+            "right": 346
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1044,
+            "left": 367,
+            "width": 15,
+            "height": 15,
+            "bottom": 1059,
+            "right": 382
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1029,
+            "left": 410,
+            "width": 24,
+            "height": 24,
+            "bottom": 1053,
+            "right": 434
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1029,
+            "left": 552,
+            "width": 24,
+            "height": 24,
+            "bottom": 1053,
+            "right": 576
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1406,
+            "left": 244,
+            "width": 24,
+            "height": 24,
+            "bottom": 1430,
+            "right": 268
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1464,
+            "left": 235,
+            "width": 24,
+            "height": 24,
+            "bottom": 1488,
+            "right": 259
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1513,
+            "left": 241,
+            "width": 24,
+            "height": 24,
+            "bottom": 1537,
+            "right": 265
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1569,
+            "left": 256,
+            "width": 24,
+            "height": 24,
+            "bottom": 1593,
+            "right": 280
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1624,
+            "left": 233,
+            "width": 24,
+            "height": 24,
+            "bottom": 1648,
+            "right": 257
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1679,
+            "left": 242,
+            "width": 24,
+            "height": 24,
+            "bottom": 1703,
+            "right": 266
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 6062,
+            "left": 425,
+            "width": 24,
+            "height": 24,
+            "bottom": 6086,
+            "right": 449
+          }
+        ],
+        "actionButtons": [
+          {
+            "label": "Compile runtime",
+            "top": 1398,
+            "left": 25,
+            "width": 569,
+            "height": 40,
+            "bottom": 1438,
+            "right": 594
+          },
+          {
+            "label": "Export trace artifact",
+            "top": 1456,
+            "left": 25,
+            "width": 569,
+            "height": 40,
+            "bottom": 1496,
+            "right": 594
+          }
+        ],
+        "iconBoundsOk": true,
+        "actionBoundsOk": true,
+        "singleDocumentScroll": true,
+        "paneModeOk": true
+      },
+      "focus": [
+        {
+          "ok": true,
+          "tag": "button",
+          "label": "Details"
+        },
+        {
+          "ok": true,
+          "tag": "body",
+          "label": "Skip to runtime viewport Fight Lab MUGEN runtime + evidence Matchup Nova Boxer v"
+        },
+        {
+          "ok": true,
+          "tag": "a",
+          "label": "Skip to runtime viewport"
+        },
+        {
+          "ok": true,
+          "tag": "button",
+          "label": ">_ Commands"
+        }
+      ],
+      "paneSwitch": {
+        "attempted": true,
+        "detailsVisible": true,
+        "workflowRestored": true
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-032-studio-mobile-geometry-w620.png",
+      "consoleErrors": []
+    },
+    {
+      "id": "w621",
+      "viewport": "621x900",
+      "ok": true,
+      "failures": [],
+      "geometry": {
+        "viewport": {
+          "width": 621,
+          "height": 900
+        },
+        "title": "MUGEN Web Sandbox",
+        "heading": "Build & Export",
+        "bodyOverflowY": "visible",
+        "documentScrollHeight": 6976,
+        "bodyScrollHeight": 6976,
+        "documentOwnsScroll": true,
+        "horizontalOverflow": false,
+        "owners": {
+          "left": {
+            "overflowY": "visible",
+            "clientHeight": 6127,
+            "scrollHeight": 6127,
+            "ownsScroll": false
+          },
+          "right": {
+            "overflowY": "visible",
+            "clientHeight": 0,
+            "scrollHeight": 0,
+            "ownsScroll": false
+          },
+          "console": {
+            "overflowY": "visible",
+            "clientHeight": 360,
+            "scrollHeight": 360,
+            "ownsScroll": false
+          }
+        },
+        "paneVisibility": [
+          {
+            "selector": "#left-pane",
+            "visible": true,
+            "display": "block"
+          },
+          {
+            "selector": "#right-pane",
+            "visible": false,
+            "display": "none"
+          }
+        ],
+        "paneSwitchVisible": true,
+        "frameRegions": [
+          {
+            "selector": "#left-pane",
+            "top": 487,
+            "left": 0,
+            "width": 621,
+            "height": 6127,
+            "bottom": 6614,
+            "right": 621
+          },
+          {
+            "selector": "#stage",
+            "top": 51,
+            "left": 0,
+            "width": 621,
+            "height": 378,
+            "bottom": 429,
+            "right": 621
+          }
+        ],
+        "framingOk": true,
+        "icons": [
+          {
+            "className": "ui-icon command-launcher-icon",
+            "top": 632,
+            "left": 23,
+            "width": 24,
+            "height": 24,
+            "bottom": 656,
+            "right": 47
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1044,
+            "left": 332,
+            "width": 15,
+            "height": 15,
+            "bottom": 1059,
+            "right": 347
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1044,
+            "left": 368,
+            "width": 15,
+            "height": 15,
+            "bottom": 1059,
+            "right": 383
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1029,
+            "left": 411,
+            "width": 24,
+            "height": 24,
+            "bottom": 1053,
+            "right": 435
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1029,
+            "left": 553,
+            "width": 24,
+            "height": 24,
+            "bottom": 1053,
+            "right": 577
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1406,
+            "left": 245,
+            "width": 24,
+            "height": 24,
+            "bottom": 1430,
+            "right": 269
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1464,
+            "left": 235,
+            "width": 24,
+            "height": 24,
+            "bottom": 1488,
+            "right": 259
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1513,
+            "left": 242,
+            "width": 24,
+            "height": 24,
+            "bottom": 1537,
+            "right": 266
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1569,
+            "left": 256,
+            "width": 24,
+            "height": 24,
+            "bottom": 1593,
+            "right": 280
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1624,
+            "left": 234,
+            "width": 24,
+            "height": 24,
+            "bottom": 1648,
+            "right": 258
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1679,
+            "left": 242,
+            "width": 24,
+            "height": 24,
+            "bottom": 1703,
+            "right": 266
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 6062,
+            "left": 426,
+            "width": 24,
+            "height": 24,
+            "bottom": 6086,
+            "right": 450
+          }
+        ],
+        "actionButtons": [
+          {
+            "label": "Compile runtime",
+            "top": 1398,
+            "left": 25,
+            "width": 570,
+            "height": 40,
+            "bottom": 1438,
+            "right": 595
+          },
+          {
+            "label": "Export trace artifact",
+            "top": 1456,
+            "left": 25,
+            "width": 570,
+            "height": 40,
+            "bottom": 1496,
+            "right": 595
+          }
+        ],
+        "iconBoundsOk": true,
+        "actionBoundsOk": true,
+        "singleDocumentScroll": true,
+        "paneModeOk": true
+      },
+      "focus": [
+        {
+          "ok": true,
+          "tag": "button",
+          "label": "Details"
+        },
+        {
+          "ok": true,
+          "tag": "body",
+          "label": "Skip to runtime viewport Fight Lab MUGEN runtime + evidence Matchup Nova Boxer v"
+        },
+        {
+          "ok": true,
+          "tag": "a",
+          "label": "Skip to runtime viewport"
+        },
+        {
+          "ok": true,
+          "tag": "button",
+          "label": ">_ Commands"
+        }
+      ],
+      "paneSwitch": {
+        "attempted": true,
+        "detailsVisible": true,
+        "workflowRestored": true
+      },
+      "screenshot": null,
+      "consoleErrors": []
+    },
+    {
+      "id": "w899",
+      "viewport": "899x900",
+      "ok": true,
+      "failures": [],
+      "geometry": {
+        "viewport": {
+          "width": 899,
+          "height": 900
+        },
+        "title": "MUGEN Web Sandbox",
+        "heading": "Build & Export",
+        "bodyOverflowY": "visible",
+        "documentScrollHeight": 6517,
+        "bodyScrollHeight": 6517,
+        "documentOwnsScroll": true,
+        "horizontalOverflow": false,
+        "owners": {
+          "left": {
+            "overflowY": "visible",
+            "clientHeight": 5692,
+            "scrollHeight": 5692,
+            "ownsScroll": false
+          },
+          "right": {
+            "overflowY": "visible",
+            "clientHeight": 0,
+            "scrollHeight": 0,
+            "ownsScroll": false
+          },
+          "console": {
+            "overflowY": "visible",
+            "clientHeight": 337,
+            "scrollHeight": 337,
+            "ownsScroll": false
+          }
+        },
+        "paneVisibility": [
+          {
+            "selector": "#left-pane",
+            "visible": true,
+            "display": "block"
+          },
+          {
+            "selector": "#right-pane",
+            "visible": false,
+            "display": "none"
+          }
+        ],
+        "paneSwitchVisible": true,
+        "frameRegions": [
+          {
+            "selector": "#left-pane",
+            "top": 487,
+            "left": 0,
+            "width": 899,
+            "height": 5692,
+            "bottom": 6179,
+            "right": 899
+          },
+          {
+            "selector": "#stage",
+            "top": 51,
+            "left": 0,
+            "width": 899,
+            "height": 378,
+            "bottom": 429,
+            "right": 899
+          }
+        ],
+        "framingOk": true,
+        "icons": [
+          {
+            "className": "ui-icon command-launcher-icon",
+            "top": 632,
+            "left": 23,
+            "width": 24,
+            "height": 24,
+            "bottom": 656,
+            "right": 47
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 934,
+            "left": 610,
+            "width": 15,
+            "height": 15,
+            "bottom": 949,
+            "right": 625
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 934,
+            "left": 646,
+            "width": 15,
+            "height": 15,
+            "bottom": 949,
+            "right": 661
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 919,
+            "left": 689,
+            "width": 24,
+            "height": 24,
+            "bottom": 943,
+            "right": 713
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 919,
+            "left": 831,
+            "width": 24,
+            "height": 24,
+            "bottom": 943,
+            "right": 855
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1296,
+            "left": 384,
+            "width": 24,
+            "height": 24,
+            "bottom": 1320,
+            "right": 408
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1354,
+            "left": 374,
+            "width": 24,
+            "height": 24,
+            "bottom": 1378,
+            "right": 398
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1403,
+            "left": 381,
+            "width": 24,
+            "height": 24,
+            "bottom": 1427,
+            "right": 405
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1459,
+            "left": 395,
+            "width": 24,
+            "height": 24,
+            "bottom": 1483,
+            "right": 419
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1514,
+            "left": 373,
+            "width": 24,
+            "height": 24,
+            "bottom": 1538,
+            "right": 397
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1569,
+            "left": 381,
+            "width": 24,
+            "height": 24,
+            "bottom": 1593,
+            "right": 405
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 5639,
+            "left": 704,
+            "width": 24,
+            "height": 24,
+            "bottom": 5663,
+            "right": 728
+          }
+        ],
+        "actionButtons": [
+          {
+            "label": "Compile runtime",
+            "top": 1288,
+            "left": 25,
+            "width": 848,
+            "height": 40,
+            "bottom": 1328,
+            "right": 873
+          },
+          {
+            "label": "Export trace artifact",
+            "top": 1346,
+            "left": 25,
+            "width": 848,
+            "height": 40,
+            "bottom": 1386,
+            "right": 873
+          }
+        ],
+        "iconBoundsOk": true,
+        "actionBoundsOk": true,
+        "singleDocumentScroll": true,
+        "paneModeOk": true
+      },
+      "focus": [
+        {
+          "ok": true,
+          "tag": "button",
+          "label": "Details"
+        },
+        {
+          "ok": true,
+          "tag": "body",
+          "label": "Skip to runtime viewport Fight Lab MUGEN runtime + evidence Matchup Nova Boxer v"
+        },
+        {
+          "ok": true,
+          "tag": "a",
+          "label": "Skip to runtime viewport"
+        },
+        {
+          "ok": true,
+          "tag": "button",
+          "label": ">_ Commands"
+        }
+      ],
+      "paneSwitch": {
+        "attempted": true,
+        "detailsVisible": true,
+        "workflowRestored": true
+      },
+      "screenshot": null,
+      "consoleErrors": []
+    },
+    {
+      "id": "w900",
+      "viewport": "900x900",
+      "ok": true,
+      "failures": [],
+      "geometry": {
+        "viewport": {
+          "width": 900,
+          "height": 900
+        },
+        "title": "MUGEN Web Sandbox",
+        "heading": "Build & Export",
+        "bodyOverflowY": "visible",
+        "documentScrollHeight": 6517,
+        "bodyScrollHeight": 6517,
+        "documentOwnsScroll": true,
+        "horizontalOverflow": false,
+        "owners": {
+          "left": {
+            "overflowY": "visible",
+            "clientHeight": 5692,
+            "scrollHeight": 5692,
+            "ownsScroll": false
+          },
+          "right": {
+            "overflowY": "visible",
+            "clientHeight": 0,
+            "scrollHeight": 0,
+            "ownsScroll": false
+          },
+          "console": {
+            "overflowY": "visible",
+            "clientHeight": 337,
+            "scrollHeight": 337,
+            "ownsScroll": false
+          }
+        },
+        "paneVisibility": [
+          {
+            "selector": "#left-pane",
+            "visible": true,
+            "display": "block"
+          },
+          {
+            "selector": "#right-pane",
+            "visible": false,
+            "display": "none"
+          }
+        ],
+        "paneSwitchVisible": true,
+        "frameRegions": [
+          {
+            "selector": "#left-pane",
+            "top": 487,
+            "left": 0,
+            "width": 900,
+            "height": 5692,
+            "bottom": 6179,
+            "right": 900
+          },
+          {
+            "selector": "#stage",
+            "top": 51,
+            "left": 0,
+            "width": 900,
+            "height": 378,
+            "bottom": 429,
+            "right": 900
+          }
+        ],
+        "framingOk": true,
+        "icons": [
+          {
+            "className": "ui-icon command-launcher-icon",
+            "top": 632,
+            "left": 23,
+            "width": 24,
+            "height": 24,
+            "bottom": 656,
+            "right": 47
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 934,
+            "left": 611,
+            "width": 15,
+            "height": 15,
+            "bottom": 949,
+            "right": 626
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 934,
+            "left": 647,
+            "width": 15,
+            "height": 15,
+            "bottom": 949,
+            "right": 662
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 919,
+            "left": 690,
+            "width": 24,
+            "height": 24,
+            "bottom": 943,
+            "right": 714
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 919,
+            "left": 832,
+            "width": 24,
+            "height": 24,
+            "bottom": 943,
+            "right": 856
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1296,
+            "left": 384,
+            "width": 24,
+            "height": 24,
+            "bottom": 1320,
+            "right": 408
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1354,
+            "left": 375,
+            "width": 24,
+            "height": 24,
+            "bottom": 1378,
+            "right": 399
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1403,
+            "left": 381,
+            "width": 24,
+            "height": 24,
+            "bottom": 1427,
+            "right": 405
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1459,
+            "left": 396,
+            "width": 24,
+            "height": 24,
+            "bottom": 1483,
+            "right": 420
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1514,
+            "left": 373,
+            "width": 24,
+            "height": 24,
+            "bottom": 1538,
+            "right": 397
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1569,
+            "left": 382,
+            "width": 24,
+            "height": 24,
+            "bottom": 1593,
+            "right": 406
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 5639,
+            "left": 705,
+            "width": 24,
+            "height": 24,
+            "bottom": 5663,
+            "right": 729
+          }
+        ],
+        "actionButtons": [
+          {
+            "label": "Compile runtime",
+            "top": 1288,
+            "left": 25,
+            "width": 849,
+            "height": 40,
+            "bottom": 1328,
+            "right": 874
+          },
+          {
+            "label": "Export trace artifact",
+            "top": 1346,
+            "left": 25,
+            "width": 849,
+            "height": 40,
+            "bottom": 1386,
+            "right": 874
+          }
+        ],
+        "iconBoundsOk": true,
+        "actionBoundsOk": true,
+        "singleDocumentScroll": true,
+        "paneModeOk": true
+      },
+      "focus": [
+        {
+          "ok": true,
+          "tag": "button",
+          "label": "Details"
+        },
+        {
+          "ok": true,
+          "tag": "body",
+          "label": "Skip to runtime viewport Fight Lab MUGEN runtime + evidence Matchup Nova Boxer v"
+        },
+        {
+          "ok": true,
+          "tag": "a",
+          "label": "Skip to runtime viewport"
+        },
+        {
+          "ok": true,
+          "tag": "button",
+          "label": ">_ Commands"
+        }
+      ],
+      "paneSwitch": {
+        "attempted": true,
+        "detailsVisible": true,
+        "workflowRestored": true
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-032-studio-mobile-geometry-w900.png",
+      "consoleErrors": []
+    },
+    {
+      "id": "w901",
+      "viewport": "901x900",
+      "ok": true,
+      "failures": [],
+      "geometry": {
+        "viewport": {
+          "width": 901,
+          "height": 900
+        },
+        "title": "MUGEN Web Sandbox",
+        "heading": "Build & Export",
+        "bodyOverflowY": "visible",
+        "documentScrollHeight": 6545,
+        "bodyScrollHeight": 6545,
+        "documentOwnsScroll": true,
+        "horizontalOverflow": false,
+        "owners": {
+          "left": {
+            "overflowY": "visible",
+            "clientHeight": 5486,
+            "scrollHeight": 5486,
+            "ownsScroll": false
+          },
+          "right": {
+            "overflowY": "visible",
+            "clientHeight": 0,
+            "scrollHeight": 0,
+            "ownsScroll": false
+          },
+          "console": {
+            "overflowY": "visible",
+            "clientHeight": 337,
+            "scrollHeight": 337,
+            "ownsScroll": false
+          }
+        },
+        "paneVisibility": [
+          {
+            "selector": "#left-pane",
+            "visible": true,
+            "display": "block"
+          },
+          {
+            "selector": "#right-pane",
+            "visible": false,
+            "display": "none"
+          }
+        ],
+        "paneSwitchVisible": true,
+        "frameRegions": [
+          {
+            "selector": "#left-pane",
+            "top": 721,
+            "left": 0,
+            "width": 901,
+            "height": 5486,
+            "bottom": 6207,
+            "right": 901
+          },
+          {
+            "selector": "#stage",
+            "top": 123,
+            "left": 0,
+            "width": 901,
+            "height": 540,
+            "bottom": 663,
+            "right": 901
+          }
+        ],
+        "framingOk": true,
+        "icons": [
+          {
+            "className": "ui-icon command-launcher-icon",
+            "top": 865,
+            "left": 23,
+            "width": 24,
+            "height": 24,
+            "bottom": 889,
+            "right": 47
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1168,
+            "left": 612,
+            "width": 15,
+            "height": 15,
+            "bottom": 1183,
+            "right": 627
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1168,
+            "left": 648,
+            "width": 15,
+            "height": 15,
+            "bottom": 1183,
+            "right": 663
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1153,
+            "left": 691,
+            "width": 24,
+            "height": 24,
+            "bottom": 1177,
+            "right": 715
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1153,
+            "left": 833,
+            "width": 24,
+            "height": 24,
+            "bottom": 1177,
+            "right": 857
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1539,
+            "left": 42,
+            "width": 24,
+            "height": 24,
+            "bottom": 1563,
+            "right": 66
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1539,
+            "left": 210,
+            "width": 22,
+            "height": 24,
+            "bottom": 1563,
+            "right": 232
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1531,
+            "left": 382,
+            "width": 24,
+            "height": 24,
+            "bottom": 1555,
+            "right": 406
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1531,
+            "left": 568,
+            "width": 24,
+            "height": 24,
+            "bottom": 1555,
+            "right": 592
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1521,
+            "left": 738,
+            "width": 24,
+            "height": 24,
+            "bottom": 1545,
+            "right": 762
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1597,
+            "left": 39,
+            "width": 24,
+            "height": 24,
+            "bottom": 1621,
+            "right": 63
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 5667,
+            "left": 706,
+            "width": 24,
+            "height": 24,
+            "bottom": 5691,
+            "right": 730
+          }
+        ],
+        "actionButtons": [
+          {
+            "label": "Compile runtime",
+            "top": 1522,
+            "left": 25,
+            "width": 164,
+            "height": 58,
+            "bottom": 1580,
+            "right": 189
+          },
+          {
+            "label": "Export trace artifact",
+            "top": 1522,
+            "left": 197,
+            "width": 164,
+            "height": 58,
+            "bottom": 1580,
+            "right": 360
+          }
+        ],
+        "iconBoundsOk": true,
+        "actionBoundsOk": true,
+        "singleDocumentScroll": true,
+        "paneModeOk": true
+      },
+      "focus": [
+        {
+          "ok": true,
+          "tag": "button",
+          "label": "Details"
+        },
+        {
+          "ok": true,
+          "tag": "body",
+          "label": "Skip to runtime viewport Fight Lab MUGEN runtime + evidence Matchup Nova Boxer v"
+        },
+        {
+          "ok": true,
+          "tag": "a",
+          "label": "Skip to runtime viewport"
+        },
+        {
+          "ok": true,
+          "tag": "button",
+          "label": ">_ Commands"
+        }
+      ],
+      "paneSwitch": {
+        "attempted": true,
+        "detailsVisible": true,
+        "workflowRestored": true
+      },
+      "screenshot": null,
+      "consoleErrors": []
+    },
+    {
+      "id": "w1160",
+      "viewport": "1160x900",
+      "ok": true,
+      "failures": [],
+      "geometry": {
+        "viewport": {
+          "width": 1160,
+          "height": 900
+        },
+        "title": "MUGEN Web Sandbox",
+        "heading": "Build & Export",
+        "bodyOverflowY": "visible",
+        "documentScrollHeight": 6359,
+        "bodyScrollHeight": 6359,
+        "documentOwnsScroll": true,
+        "horizontalOverflow": false,
+        "owners": {
+          "left": {
+            "overflowY": "visible",
+            "clientHeight": 5302,
+            "scrollHeight": 5302,
+            "ownsScroll": false
+          },
+          "right": {
+            "overflowY": "visible",
+            "clientHeight": 0,
+            "scrollHeight": 0,
+            "ownsScroll": false
+          },
+          "console": {
+            "overflowY": "visible",
+            "clientHeight": 335,
+            "scrollHeight": 335,
+            "ownsScroll": false
+          }
+        },
+        "paneVisibility": [
+          {
+            "selector": "#left-pane",
+            "visible": true,
+            "display": "block"
+          },
+          {
+            "selector": "#right-pane",
+            "visible": false,
+            "display": "none"
+          }
+        ],
+        "paneSwitchVisible": true,
+        "frameRegions": [
+          {
+            "selector": "#left-pane",
+            "top": 721,
+            "left": 0,
+            "width": 1160,
+            "height": 5302,
+            "bottom": 6023,
+            "right": 1160
+          },
+          {
+            "selector": "#stage",
+            "top": 123,
+            "left": 0,
+            "width": 1160,
+            "height": 540,
+            "bottom": 663,
+            "right": 1160
+          }
+        ],
+        "framingOk": true,
+        "icons": [
+          {
+            "className": "ui-icon command-launcher-icon",
+            "top": 865,
+            "left": 23,
+            "width": 24,
+            "height": 24,
+            "bottom": 889,
+            "right": 47
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1130,
+            "left": 871,
+            "width": 15,
+            "height": 15,
+            "bottom": 1145,
+            "right": 886
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1130,
+            "left": 907,
+            "width": 15,
+            "height": 15,
+            "bottom": 1145,
+            "right": 922
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1115,
+            "left": 950,
+            "width": 24,
+            "height": 24,
+            "bottom": 1139,
+            "right": 974
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1115,
+            "left": 1092,
+            "width": 24,
+            "height": 24,
+            "bottom": 1139,
+            "right": 1116
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1501,
+            "left": 49,
+            "width": 24,
+            "height": 24,
+            "bottom": 1525,
+            "right": 73
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1501,
+            "left": 225,
+            "width": 24,
+            "height": 24,
+            "bottom": 1525,
+            "right": 249
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1493,
+            "left": 418,
+            "width": 24,
+            "height": 24,
+            "bottom": 1517,
+            "right": 442
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1493,
+            "left": 619,
+            "width": 24,
+            "height": 24,
+            "bottom": 1517,
+            "right": 643
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1483,
+            "left": 804,
+            "width": 24,
+            "height": 24,
+            "bottom": 1507,
+            "right": 828
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1493,
+            "left": 977,
+            "width": 24,
+            "height": 24,
+            "bottom": 1517,
+            "right": 1001
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 5483,
+            "left": 965,
+            "width": 24,
+            "height": 24,
+            "bottom": 5507,
+            "right": 989
+          }
+        ],
+        "actionButtons": [
+          {
+            "label": "Compile runtime",
+            "top": 1484,
+            "left": 25,
+            "width": 178,
+            "height": 58,
+            "bottom": 1542,
+            "right": 203
+          },
+          {
+            "label": "Export trace artifact",
+            "top": 1484,
+            "left": 211,
+            "width": 178,
+            "height": 58,
+            "bottom": 1542,
+            "right": 389
+          }
+        ],
+        "iconBoundsOk": true,
+        "actionBoundsOk": true,
+        "singleDocumentScroll": true,
+        "paneModeOk": true
+      },
+      "focus": [
+        {
+          "ok": true,
+          "tag": "button",
+          "label": "Details"
+        },
+        {
+          "ok": true,
+          "tag": "body",
+          "label": "Skip to runtime viewport Fight Lab MUGEN runtime + evidence Matchup Nova Boxer v"
+        },
+        {
+          "ok": true,
+          "tag": "a",
+          "label": "Skip to runtime viewport"
+        },
+        {
+          "ok": true,
+          "tag": "button",
+          "label": ">_ Commands"
+        }
+      ],
+      "paneSwitch": {
+        "attempted": true,
+        "detailsVisible": true,
+        "workflowRestored": true
+      },
+      "screenshot": null,
+      "consoleErrors": []
+    },
+    {
+      "id": "w1161",
+      "viewport": "1161x900",
+      "ok": true,
+      "failures": [],
+      "geometry": {
+        "viewport": {
+          "width": 1161,
+          "height": 900
+        },
+        "title": "MUGEN Web Sandbox",
+        "heading": "Build & Export",
+        "bodyOverflowY": "hidden",
+        "documentScrollHeight": 900,
+        "bodyScrollHeight": 900,
+        "documentOwnsScroll": false,
+        "horizontalOverflow": false,
+        "owners": {
+          "left": {
+            "overflowY": "auto",
+            "clientHeight": 826,
+            "scrollHeight": 7829,
+            "ownsScroll": true
+          },
+          "right": {
+            "overflowY": "auto",
+            "clientHeight": 676,
+            "scrollHeight": 8920,
+            "ownsScroll": true
+          },
+          "console": {
+            "overflowY": "auto",
+            "clientHeight": 149,
+            "scrollHeight": 149,
+            "ownsScroll": false
+          }
+        },
+        "paneVisibility": [
+          {
+            "selector": "#left-pane",
+            "visible": true,
+            "display": "block"
+          },
+          {
+            "selector": "#right-pane",
+            "visible": true,
+            "display": "block"
+          }
+        ],
+        "paneSwitchVisible": false,
+        "frameRegions": [
+          {
+            "selector": "#left-pane",
+            "top": 74,
+            "left": 0,
+            "width": 279,
+            "height": 826,
+            "bottom": 900,
+            "right": 279
+          },
+          {
+            "selector": "#stage",
+            "top": 74,
+            "left": 279,
+            "width": 546,
+            "height": 676,
+            "bottom": 750,
+            "right": 824
+          },
+          {
+            "selector": "#right-pane",
+            "top": 74,
+            "left": 824,
+            "width": 337,
+            "height": 676,
+            "bottom": 750,
+            "right": 1161
+          }
+        ],
+        "framingOk": true,
+        "icons": [
+          {
+            "className": "ui-icon action-icon",
+            "top": 613,
+            "left": 154,
+            "width": 15,
+            "height": 15,
+            "bottom": 628,
+            "right": 169
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 613,
+            "left": 190,
+            "width": 15,
+            "height": 15,
+            "bottom": 628,
+            "right": 205
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 598,
+            "left": 233,
+            "width": 24,
+            "height": 24,
+            "bottom": 622,
+            "right": 257
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 598,
+            "left": 375,
+            "width": 24,
+            "height": 24,
+            "bottom": 622,
+            "right": 399
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1063,
+            "left": 34,
+            "width": 24,
+            "height": 24,
+            "bottom": 1087,
+            "right": 58
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1113,
+            "left": 34,
+            "width": 24,
+            "height": 24,
+            "bottom": 1137,
+            "right": 58
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1153,
+            "left": 34,
+            "width": 24,
+            "height": 24,
+            "bottom": 1177,
+            "right": 58
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1193,
+            "left": 34,
+            "width": 24,
+            "height": 24,
+            "bottom": 1217,
+            "right": 58
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1233,
+            "left": 34,
+            "width": 24,
+            "height": 24,
+            "bottom": 1257,
+            "right": 58
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 1274,
+            "left": 34,
+            "width": 24,
+            "height": 24,
+            "bottom": 1298,
+            "right": 58
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 7198,
+            "left": 74,
+            "width": 24,
+            "height": 24,
+            "bottom": 7222,
+            "right": 98
+          },
+          {
+            "className": "ui-icon action-icon",
+            "top": 7420,
+            "left": 997,
+            "width": 24,
+            "height": 24,
+            "bottom": 7444,
+            "right": 1021
+          }
+        ],
+        "actionButtons": [
+          {
+            "label": "Compile runtime",
+            "top": 1056,
+            "left": 25,
+            "width": 218,
+            "height": 40,
+            "bottom": 1096,
+            "right": 243
+          },
+          {
+            "label": "Export trace artifact",
+            "top": 1106,
+            "left": 25,
+            "width": 218,
+            "height": 40,
+            "bottom": 1146,
+            "right": 243
+          }
+        ],
+        "iconBoundsOk": true,
+        "actionBoundsOk": true,
+        "singleDocumentScroll": true,
+        "paneModeOk": true
+      },
+      "focus": [
+        {
+          "ok": true,
+          "tag": "a",
+          "label": "Skip to runtime viewport"
+        },
+        {
+          "ok": true,
+          "tag": "button",
+          "label": ">_ Commands"
+        },
+        {
+          "ok": true,
+          "tag": "button",
+          "label": "Playtest"
+        },
+        {
+          "ok": true,
+          "tag": "button",
+          "label": "Focus"
+        }
+      ],
+      "paneSwitch": {
+        "attempted": false,
+        "detailsVisible": false,
+        "workflowRestored": false
+      },
+      "screenshot": "docs/evidence/da32/browser/da32-032-studio-mobile-geometry-w1161.png",
+      "consoleErrors": []
+    }
+  ],
+  "unexpectedConsole": [],
+  "claimCeiling": "provisional live Studio geometry at named viewports and breakpoint seams",
+  "claims": {
+    "allowed": [
+      "Tabler SVG defaults remain bounded when a component has no icon-specific CSS",
+      "Build actions remain compact and operable at 390, 619-621, 899-901, and 1160-1161 CSS pixels",
+      "stacked Studio exposes exactly one keyboard-visible Workflow or Details pane at a time",
+      "the active Studio pane and console delegate vertical scroll ownership to the document at widths up to 1160px",
+      "the named viewports have no horizontal overflow or unexpected page errors"
+    ],
+    "blocked": [
+      "animated mobile drawers, persistent pane URL state, or wide-screen dock replacement",
+      "desktop Build information-architecture simplification",
+      "runtime touch-control safe-zone redesign",
+      "physical device and screen-reader journeys",
+      "full Studio or MUGEN/IKEMEN parity"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha-256",
+    "value": "bc4e568120cd16aab490dc0e3279c7b1299dbb379bb63266224998eedd4e0ab8"
+  }
+}
