@@ -163,7 +163,26 @@ and local release review. Authority:
 [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
 and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 
-## Current runtime compatibility board - T415 (closed bounded, 2026-07-27)
+## Current runtime compatibility board - T418 (closed bounded, 2026-07-30)
+
+T418 closes the narrow consumer gap left by the 046b root-selection matrix:
+the filtered P2 candidate set now resolves through the shared nearest-body
+selection boundary instead of taking the first roster id. `Enemy` keeps stable
+root enumeration and `Partner` remains a same-side addressable roster.
+
+Focused proof is green at 3 files / 46 tests; closure also passes 305 test
+files / 3223 tests, TypeScript, build, boundaries, diff hygiene, and
+`pnpm qa:trace` at 667/667 artifacts (633 required, 34 optional):
+`RuntimeOpponentSelectionSystem`, `RuntimeExpressionContextSystem`, and
+`MatchWorld`. The implementation is in
+`docs/research/2026-07-30-ikemen-p2-nearest-selection.md`.
+
+Claim allowed: bounded P2 nearest-body selection
+after the existing eligibility filter. Claim blocked: exact P2 cache refresh,
+Z/behind-facing policy, Helper `type=player`, Tag/Simul/Turns gameplay,
+rollback/netplay, score movement, and full parity.
+
+## Previous runtime compatibility board - T415 (closed bounded, 2026-07-27)
 
 T415 closes in `40c297aa`. Active ReversalDef direct contacts and ReversalDef
 clashes now consume the shared `stchtmp` predicate with the ReversalDef as

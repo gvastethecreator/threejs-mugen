@@ -342,10 +342,11 @@ export class RuntimeExpressionContextWorld {
       return input.opponent;
     }
     const byId = new Map(input.characters?.map((actor) => [actor.id, actor]) ?? []);
-    return input.rootSelection.p2CandidateIds.flatMap((id) => {
+    const candidates = input.rootSelection.p2CandidateIds.flatMap((id) => {
       const actor = byId.get(id);
       return actor ? [actor] : [];
-    })[0];
+    });
+    return this.opponentSelectionWorld.selectNearest(input.actor, candidates);
   }
 }
 

@@ -22,6 +22,16 @@ describe("RuntimeOpponentSelectionWorld", () => {
     ]);
   });
 
+  it("selects the nearest candidate without changing the stable roster order", () => {
+    const world = new RuntimeOpponentSelectionWorld();
+    const actor = opponent("p1", 0);
+    const far = opponent("p3", 160);
+    const near = opponent("p5", 80);
+
+    expect(world.selectNearest(actor, [far, near])?.id).toBe("p5");
+    expect(world.orderByNearest(actor, [far, near]).map((entry) => entry.id)).toEqual(["p5", "p3"]);
+  });
+
   it("keeps non-finite positions sorted after finite candidates with stable ties", () => {
     const world = new RuntimeOpponentSelectionWorld();
     const actor = opponent("p1", 0);

@@ -21,6 +21,19 @@ export class RuntimeOpponentSelectionWorld {
     return this.orderRuntimeContainersByNearest(actor, opponents);
   }
 
+  /**
+   * Selects the source-shaped P2 candidate from an already filtered roster.
+   * The roster's domain (Enemy/P2 eligibility) is owned by the caller; this
+   * boundary only applies nearest-body ordering and the stable input-order tie
+   * break used by the runtime opponent list.
+   */
+  selectNearest<TActor extends RuntimeOpponentSelectionActor>(
+    actor: TActor,
+    opponents: readonly TActor[],
+  ): TActor | undefined {
+    return this.orderRuntimeContainersByNearest(actor, opponents)[0];
+  }
+
   buildOpponentRoster<
     TRuntime extends RuntimeOpponentSelectionRuntime,
     TActor extends RuntimeOpponentRosterActor<TRuntime>,

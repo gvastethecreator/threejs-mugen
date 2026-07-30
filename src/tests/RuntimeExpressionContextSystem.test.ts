@@ -419,6 +419,28 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(world.evaluateNumber("Partner(1), Life", input)).toBe(0);
   });
 
+  it("resolves explicit P2 reads by nearest candidate while preserving Enemy order", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "P1 Author", { pos: { x: 0, y: 0 } });
+    const far = runtimeActor("p3", "Far P2", { life: 333, pos: { x: 160, y: 0 } });
+    const near = runtimeActor("p5", "Near P2", { life: 875, pos: { x: 80, y: 0 } });
+    const input = {
+      actor,
+      opponent: far,
+      characters: [actor, far, near],
+      rootSelection: {
+        actorId: actor.id,
+        side: 1 as const,
+        partnerIds: [],
+        enemyIds: [far.id, near.id],
+        p2CandidateIds: [far.id, near.id],
+      },
+    };
+
+    expect(world.evaluateNumber("P2Life", input)).toBe(875);
+    expect(world.evaluateNumber("EnemyNear(0), Life + EnemyNear(1), Life", input)).toBe(1208);
+  });
+
   it("fails P2 reads closed when an explicit selection has no candidate", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author");

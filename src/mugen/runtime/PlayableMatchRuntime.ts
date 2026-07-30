@@ -190,6 +190,7 @@ import {
   type RuntimeRootDirectHitAdmissionDiagnostic,
 } from "./RuntimeRootDirectHitAdmissionSystem";
 import { RuntimeRootSelectionWorld } from "./RuntimeRootSelectionSystem";
+import { RuntimeOpponentSelectionWorld } from "./RuntimeOpponentSelectionSystem";
 import {
   RuntimeRootInputRoutingWorld,
   type RuntimeRootInputRoute,
@@ -370,6 +371,7 @@ const activeControllerHookSetWorld = new RuntimeActiveControllerHookSetWorld();
 const activeControllerTelemetryWorld = new RuntimeActiveControllerTelemetryWorld();
 const dispatchEvaluationWorld = new RuntimeDispatchEvaluationWorld();
 const rootStandbyTransitionWorld = new RuntimeRootStandbyTransitionWorld();
+const opponentSelectionWorld = new RuntimeOpponentSelectionWorld();
 const controllerEvaluationContextWorld = new RuntimeControllerEvaluationContextWorld();
 const matchPreFacingAssertSpecialWorld = new RuntimeMatchPreFacingAssertSpecialWorld(controllerEvaluationContextWorld);
 const autoGuardStartWorld = new RuntimeAutoGuardStartWorld();
@@ -3187,8 +3189,12 @@ export class PlayableMatchRuntime {
     const selection = rootSelectionWorld.diagnostic(
       roots.map((root) => ({ id: root.id, ...root.runtime.teamState })),
     ).entries.find((entry) => entry.actorId === fighter.id);
-    const selectedId = selection?.p2CandidateIds[0];
-    return roots.find((root) => root.id === selectedId) ?? (runtimeTeamSide(fighter) === 1 ? this.activeRoots[1] : this.activeRoots[0]);
+    const candidates = selection?.p2CandidateIds.flatMap((id) => {
+      const root = roots.find((candidate) => candidate.id === id);
+      return root ? [root] : [];
+    }) ?? [];
+    return opponentSelectionWorld.selectNearest(fighter, candidates)
+      ?? (runtimeTeamSide(fighter) === 1 ? this.activeRoots[1] : this.activeRoots[0]);
   }
 
   private currentRootAdvancePhaseOf(fighter: FighterMatchState): RuntimeRootAdvancePhase {

@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## Runtime continuation checkpoint — T418 P2 nearest-candidate read (closed-bounded, 2026-07-30)
+
+The existing 046b root-selection matrix correctly filtered P2 candidates but
+its live consumers still chose `p2CandidateIds[0]`. T418 adds the named
+`RuntimeOpponentSelectionWorld.selectNearest` boundary and wires it into
+`RuntimeExpressionContextWorld` plus `PlayableMatchRuntime.opponentForRoot`.
+`Enemy` stable root enumeration and `Partner` same-side addressability remain
+unchanged.
+
+Focused red/green proof: `RuntimeOpponentSelectionSystem.test.ts`,
+`RuntimeExpressionContextSystem.test.ts`, and `MatchWorld.test.ts` — 46 tests
+passed. Closure also passes 305 test files / 3223 tests, TypeScript, build,
+boundaries, diff hygiene, and `pnpm qa:trace` 667/667 (633 required, 34
+optional). Research and port ledger:
+`docs/research/2026-07-30-ikemen-p2-nearest-selection.md`.
+
+Claim allowed: bounded P2 nearest-body selection after the existing
+eligibility filter. Claim blocked: exact P2 cache refresh, Z/behind-facing policy, Helper `type=player`,
+Tag/Simul/Turns gameplay, rollback/netplay, score movement, and full
+MUGEN/IKEMEN parity.
+
 ## Entry 633 - DA32-031 Studio retry/abandon recovery decisions
 
 Added durable `recoveryDecision`, `recoveryAttempt`, and
