@@ -58,6 +58,10 @@ html body {
   z-index: var(--z-console);
 }
 
+.studio-mobile-pane-switch {
+  display: none;
+}
+
 .app-shell.mode-match {
   --left-rail: clamp(248px, 17vw, 292px);
   --right-rail: clamp(268px, 19vw, 320px);
@@ -2356,6 +2360,87 @@ button[data-studio-tab][aria-current="page"] {
   .app-shell > #left-pane,
   .app-shell > #right-pane {
     max-height: 36vh;
+  }
+
+  /* Studio mobile uses the document as its only scroll owner. */
+  html {
+    overflow-x: clip;
+    overflow-y: auto;
+  }
+
+  body {
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+
+  .app-shell.mode-studio {
+    grid-template-rows: auto auto auto auto auto auto;
+    grid-template-areas:
+      "chrome"
+      "stage"
+      "pane-switch"
+      "left"
+      "right"
+      "console";
+  }
+
+  .app-shell.mode-studio > .studio-mobile-pane-switch {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-chrome);
+    grid-area: pane-switch;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    padding: 6px;
+    border-block: 1px solid var(--border);
+    background: var(--surface-flat-recessed);
+  }
+
+  .app-shell.mode-studio > .studio-mobile-pane-switch button {
+    min-height: 44px;
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+  }
+
+  .app-shell.mode-studio > .studio-mobile-pane-switch button.is-active {
+    border-color: color-mix(in srgb, var(--accent) 48%, var(--control-border));
+    background: color-mix(in srgb, var(--accent) 12%, var(--surface-chip));
+    color: var(--text-warm);
+    box-shadow: inset 0 -2px 0 var(--accent);
+  }
+
+  .app-shell.mode-studio > #left-pane,
+  .app-shell.mode-studio > #right-pane {
+    max-height: none;
+    overflow: visible;
+    overscroll-behavior: auto;
+    padding-bottom: 0;
+    scrollbar-gutter: auto;
+  }
+
+  .app-shell.mode-studio[data-studio-mobile-pane="workflow"] > #right-pane,
+  .app-shell.mode-studio[data-studio-mobile-pane="details"] > #left-pane {
+    display: none;
+  }
+
+  .app-shell.mode-studio > #console {
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .app-shell.mode-studio .console-list {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+/* Compact desktop seam: keep all three Studio columns framed before the wide workstation has room. */
+@media (min-width: 1161px) and (max-width: 1359px) {
+  .app-shell.mode-studio,
+  .app-shell.mode-studio[data-studio-tab] {
+    grid-template-columns: minmax(220px, 24%) minmax(0, 1fr) minmax(280px, 29%);
   }
 }
 

@@ -59,6 +59,7 @@
     "qa:browser:da32-028-source-write-observation-positive": "node scripts/qa_browser_gate_da32_028_source_write_observation_positive.cjs",
     "qa:browser:da32-030-source-write-observation-finalize": "node scripts/qa_browser_gate_da32_030_source_write_observation_finalize.cjs",
     "qa:browser:da32-031-source-write-recovery-decisions": "node scripts/qa_browser_gate_da32_031_source_write_recovery_decisions.cjs",
+    "qa:browser:da32-032-studio-mobile-geometry": "node scripts/qa_browser_gate_da32_032_studio_mobile_geometry.cjs",
     "qa:browser:da32-029-a11y": "node scripts/qa_browser_gate_da32_029_a11y.cjs",
     "materialize:da31-status": "node scripts/build_da31_phase_status.cjs",
     "materialize:da32-status": "node scripts/build_da32_status.cjs",

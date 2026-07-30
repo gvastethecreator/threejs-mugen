@@ -353,10 +353,10 @@ const TABLER_ICONS: Record<StudioIconName, string> = {
 };
 
 function tablerIcon(name: StudioIconName, className = "ui-icon"): string {
-  return TABLER_ICONS[name]
-    .replace("<svg", `<svg class="${className}" aria-hidden="true" focusable="false"`)
-    .replace(/width="24"/, "")
-    .replace(/height="24"/, "");
+  return TABLER_ICONS[name].replace(
+    "<svg",
+    `<svg class="${className}" aria-hidden="true" focusable="false"`,
+  );
 }
 
 function runtimeControlContent(icon: StudioIconName, label: string): string {
@@ -972,6 +972,7 @@ export class App {
   private commandPaletteReturnFocus?: HTMLElement;
   private studioLeftDockOpen = true;
   private studioRightDockOpen = true;
+  private studioMobilePane: "workflow" | "details" = "workflow";
   private studioFocusMode = false;
   private studioViewportDefaultsApplied = false;
   private pendingMs = 0;
@@ -1114,6 +1115,10 @@ export class App {
             </div>
           </div>
         </section>
+        <nav class="studio-mobile-pane-switch" id="studio-mobile-pane-switch" aria-label="Mobile Studio panels">
+          <button type="button" data-studio-mobile-pane="workflow" aria-controls="left-pane" aria-pressed="true">Workflow</button>
+          <button type="button" data-studio-mobile-pane="details" aria-controls="right-pane" aria-pressed="false">Details</button>
+        </nav>
         <aside class="pane pane-right" id="right-pane" aria-label="Runtime inspector"></aside>
         <section class="console" id="console" aria-label="Console and warnings"></section>
         <div id="command-palette-root"></div>
@@ -1192,6 +1197,12 @@ export class App {
       }
       if (commandId) {
         this.executeCommandPaletteAction(commandId);
+        return;
+      }
+      const mobilePane = target.closest<HTMLElement>("[data-studio-mobile-pane]")?.dataset.studioMobilePane;
+      if (mobilePane === "workflow" || mobilePane === "details") {
+        this.studioMobilePane = mobilePane;
+        this.syncShellState();
         return;
       }
       if (action === "open-command-palette") {
@@ -1358,6 +1369,7 @@ export class App {
       const studioTab = parseStudioTab(target.closest<HTMLElement>("[data-studio-tab]")?.dataset.studioTab);
       if (studioTab) {
         this.studioTab = studioTab;
+        this.studioMobilePane = "workflow";
         this.mode = "studio";
         this.snapshot = this.getActiveSnapshot();
         this.writeUrlState();
@@ -4076,7 +4088,13 @@ export class App {
     shell?.setAttribute("data-studio-tab", this.mode === "studio" ? this.studioTab : "");
     shell?.setAttribute("data-left-dock", this.mode === "studio" && !this.studioFocusMode && this.studioLeftDockOpen ? "open" : "closed");
     shell?.setAttribute("data-right-dock", this.mode === "studio" && !this.studioFocusMode && this.studioRightDockOpen ? "open" : "closed");
+    shell?.setAttribute("data-studio-mobile-pane", this.studioMobilePane);
     shell?.setAttribute("data-focus-mode", this.mode === "studio" && this.studioFocusMode ? "true" : "false");
+    for (const button of this.root.querySelectorAll<HTMLElement>("[data-studio-mobile-pane]")) {
+      const selected = button.dataset.studioMobilePane === this.studioMobilePane;
+      button.setAttribute("aria-pressed", String(selected));
+      button.classList.toggle("is-active", selected);
+    }
     this.applyStudioViewportDefaults();
     this.updateFrameRail();
   }
