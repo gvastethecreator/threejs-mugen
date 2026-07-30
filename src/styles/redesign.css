@@ -2347,6 +2347,14 @@ button[data-studio-tab][aria-current="page"] {
   .app-shell.mode-studio {
     --left-rail: minmax(0, 1fr);
     --right-rail: minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto auto auto;
+    grid-template-areas:
+      "chrome"
+      "stage"
+      "pane-switch"
+      "left"
+      "right"
+      "console";
   }
 
   .app-shell > #left-pane,
@@ -2371,17 +2379,6 @@ button[data-studio-tab][aria-current="page"] {
   body {
     overflow-x: clip;
     overflow-y: visible;
-  }
-
-  .app-shell.mode-studio {
-    grid-template-rows: auto auto auto auto auto auto;
-    grid-template-areas:
-      "chrome"
-      "stage"
-      "pane-switch"
-      "left"
-      "right"
-      "console";
   }
 
   .app-shell.mode-studio > .studio-mobile-pane-switch {
