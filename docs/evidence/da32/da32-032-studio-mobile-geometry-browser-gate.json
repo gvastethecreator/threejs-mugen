@@ -1,10 +1,10 @@
 {
   "schema": "Da32StudioMobileGeometryBrowserGate/v1",
   "id": "DA32-032",
-  "generatedAt": "2026-07-30T11:11:56.507Z",
+  "generatedAt": "2026-07-30T11:17:19.764Z",
   "subject": {
     "schema": "Da31GateSubjectEnvelope/v1",
-    "subjectSha": "c5d23a67b82b6ac900e2e2e1d949ea95e183aa15",
+    "subjectSha": "714beea1c9faa10e6f32948918b664bda8aa284f",
     "dirtyTree": true,
     "provisional": true,
     "probePaths": [
@@ -16,7 +16,7 @@
     ],
     "claimLimit": "provisional dirty-tree observation only; not authoritative formal/product pin"
   },
-  "headSha": "c5d23a67b82b6ac900e2e2e1d949ea95e183aa15",
+  "headSha": "714beea1c9faa10e6f32948918b664bda8aa284f",
   "ok": true,
   "route": "/?mode=studio&studio=build&p1=nova-boxer&p2=mira-volt&stage=rooftop-dojo",
   "cases": [
@@ -2175,6 +2175,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "bc4e568120cd16aab490dc0e3279c7b1299dbb379bb63266224998eedd4e0ab8"
+    "value": "30eff25a031b4c342e2898bba811bdc9bb7656eb8c621352a4665d5b63ecb139"
   }
 }
