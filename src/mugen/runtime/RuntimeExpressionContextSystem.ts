@@ -7,7 +7,7 @@ import type { RuntimeContactKind, RuntimeContactMemory, RuntimeContactMemoryWorl
 import type { RuntimeEffectActorCountKind, RuntimeEffectActorWorld } from "./EffectActorSystem";
 import { evaluateExpression, type ExpressionContext, type ExpressionGameSpace, type ExpressionRedirectTarget } from "./ExpressionEvaluator";
 import { runtimeHitVar } from "./RuntimeHitVarSystem";
-import { RuntimeOpponentSelectionWorld } from "./RuntimeOpponentSelectionSystem";
+import { RuntimeOpponentSelectionWorld, type RuntimeP2SelectionOptions } from "./RuntimeOpponentSelectionSystem";
 import { resolveRuntimePushSizeBox, usesMugenPlayerPushMinimumWidth } from "./RuntimeRootBodyPushSystem";
 import type { RuntimeRootSelectionEntry } from "./RuntimeRootSelectionSystem";
 import { runtimeTeamSide } from "./RuntimeTeamTopologySystem";
@@ -62,6 +62,7 @@ export type RuntimeExpressionContextInput<TActor extends RuntimeExpressionContex
   characters?: readonly TActor[];
   playerIdTarget?: (playerId: number) => ExpressionRedirectTarget | undefined;
   rootSelection?: RuntimeRootSelectionEntry;
+  p2Selection?: RuntimeP2SelectionOptions;
   owner?: TActor;
   stageBounds?: { left: number; right: number };
   gameSpace?: ExpressionGameSpace;
@@ -346,7 +347,7 @@ export class RuntimeExpressionContextWorld {
       const actor = byId.get(id);
       return actor ? [actor] : [];
     });
-    return this.opponentSelectionWorld.selectNearest(input.actor, candidates);
+    return this.opponentSelectionWorld.selectP2Nearest(input.actor, candidates, input.p2Selection);
   }
 }
 

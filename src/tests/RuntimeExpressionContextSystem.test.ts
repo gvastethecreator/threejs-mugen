@@ -441,6 +441,28 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(world.evaluateNumber("EnemyNear(0), Life + EnemyNear(1), Life", input)).toBe(1208);
   });
 
+  it("uses the source-shaped P2 policy for explicit root selections without changing EnemyNear", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "P1 Author", { pos: { x: 0, y: 0 }, facing: 1 });
+    const behind = runtimeActor("p4", "Behind P2", { life: 222, pos: { x: -5, y: 0 } });
+    const front = runtimeActor("p2", "Front P2", { life: 111, pos: { x: 34, y: 0 } });
+    const input = {
+      actor,
+      opponent: behind,
+      characters: [actor, behind, front],
+      rootSelection: {
+        actorId: actor.id,
+        side: 1 as const,
+        partnerIds: [],
+        enemyIds: [behind.id, front.id],
+        p2CandidateIds: [behind.id, front.id],
+      },
+    };
+
+    expect(world.evaluateNumber("P2Life", input)).toBe(111);
+    expect(world.evaluateNumber("EnemyNear(0), Life + EnemyNear(1), Life", input)).toBe(333);
+  });
+
   it("fails P2 reads closed when an explicit selection has no candidate", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author");

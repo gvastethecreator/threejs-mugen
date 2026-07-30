@@ -71,12 +71,72 @@ describe("RuntimeOpponentSelectionWorld", () => {
     expect(roster.map((entry) => entry.id)).toEqual(["p2-near", "p2-tie", "p2-far"]);
     expect(roster.map((entry) => entry.state)).toEqual([near.runtime, tied.runtime, far.runtime]);
   });
+
+  it("orders P2 candidates with facing-aware behind penalty instead of legacy body distance", () => {
+    const world = new RuntimeOpponentSelectionWorld();
+    const actor = opponent("p1", 0, { facing: 1 });
+    const behind = opponent("p4", -5);
+    const front = opponent("p2", 34);
+
+    expect(world.orderP2ByNearest(actor, [behind, front]).map((entry) => entry.id)).toEqual(["p2", "p4"]);
+    expect(world.selectP2Nearest(actor, [behind, front])?.id).toBe("p2");
+  });
+
+  it("applies the source-shaped Z weighting and treats invalid depth as the neutral plane", () => {
+    const world = new RuntimeOpponentSelectionWorld();
+    const actor = opponent("p1", 0, { facing: 1, combatDepth: { position: 0 } });
+    const xNear = opponent("x-near", 30, { combatDepth: { position: 0 } });
+    const zNear = opponent("z-near", 0, { combatDepth: { position: 3 } });
+
+    expect(world.orderP2ByNearest(actor, [zNear, xNear], { zEnabled: true }).map((entry) => entry.id)).toEqual([
+      "x-near",
+      "z-near",
+    ]);
+    expect(
+      world.p2Distance(actor, opponent("invalid-z", 10, { combatDepth: { position: Number.NaN } }), { zEnabled: true }),
+    ).toBe(10);
+  });
+
+  it("uses deterministic identity ties and invalidates the separate P2 cache when positions change", () => {
+    const world = new RuntimeOpponentSelectionWorld();
+    const actor = opponent("p1", 0, { facing: 1 });
+    const higherPlayerNo = opponent("same-a", 35);
+    const lowerPlayerNo = opponent("same-b", -5);
+    higherPlayerNo.playerNo = 5;
+    lowerPlayerNo.playerNo = 3;
+
+    expect(world.orderP2ByNearest(actor, [higherPlayerNo, lowerPlayerNo]).map((entry) => entry.id)).toEqual([
+      "same-b",
+      "same-a",
+    ]);
+
+    const near = opponent("near", 80);
+    const far = opponent("far", 160);
+    expect(world.selectP2Nearest(actor, [far, near])?.id).toBe("near");
+    const replacement = opponent("near", 80);
+    expect(world.selectP2Nearest(actor, [far, replacement])).toBe(replacement);
+    near.runtime.pos.x = 260;
+    expect(world.selectP2Nearest(actor, [far, near])?.id).toBe("far");
+  });
+
+  it("keeps legacy EnemyNear ordering horizontal and stable even when P2 policy sees orientation and depth", () => {
+    const world = new RuntimeOpponentSelectionWorld();
+    const actor = opponent("p1", 0, { facing: -1, combatDepth: { position: 0 } });
+    const left = opponent("left", -80, { combatDepth: { position: 8 } });
+    const right = opponent("right", 80, { combatDepth: { position: 0 } });
+
+    expect(world.orderByNearest(actor, [right, left]).map((entry) => entry.id)).toEqual(["right", "left"]);
+  });
 });
 
 type TestOpponent = RuntimeOpponentSelectionActor & { id: string };
 
-function opponent(id: string, x: number): TestOpponent {
-  return { id, runtime: { pos: { x, y: 0 } } };
+function opponent(
+  id: string,
+  x: number,
+  runtime: Partial<RuntimeOpponentSelectionActor["runtime"]> = {},
+): TestOpponent {
+  return { id, runtime: { pos: { x, y: 0 }, ...runtime } };
 }
 
 function runtimeState(x: number): RuntimeOpponentSelectionActor["runtime"] {

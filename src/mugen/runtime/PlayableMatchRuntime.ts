@@ -3193,7 +3193,10 @@ export class PlayableMatchRuntime {
       const root = roots.find((candidate) => candidate.id === id);
       return root ? [root] : [];
     }) ?? [];
-    return opponentSelectionWorld.selectNearest(fighter, candidates)
+    const selected = this.runtimeProfile === "ikemen-go"
+      ? opponentSelectionWorld.selectP2Nearest(fighter, candidates, { zEnabled: this.stage.depthBounds !== undefined })
+      : opponentSelectionWorld.selectNearest(fighter, candidates);
+    return selected
       ?? (runtimeTeamSide(fighter) === 1 ? this.activeRoots[1] : this.activeRoots[0]);
   }
 

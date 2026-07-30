@@ -163,7 +163,27 @@ and local release review. Authority:
 [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
 and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).
 
-## Current runtime compatibility board - T418 (closed bounded, 2026-07-30)
+## Current runtime compatibility board - T419 (closed bounded, 2026-07-30)
+
+T419 replaces the horizontal-only P2 ordering gap with a named source-shaped
+policy after the existing eligibility filter. `RuntimeOpponentSelectionWorld`
+now keeps P2 distance separate from legacy `EnemyNear`: relative X/facing,
+the upstream behind adjustment, optional stage-gated Z weighting, deterministic
+identity ties, and a signature-invalidated P2-only cache are covered by tests.
+The explicit expression context and the live IKEMEN primary opponent consume
+the policy; non-IKEMEN profiles retain the previous body-distance selector.
+
+Focused proof is green at 2 files / 35 tests, plus the live
+`PlayableMatchRuntime` policy test. Research and port ledger:
+[`2026-07-30-ikemen-p2-source-distance.md`](research/2026-07-30-ikemen-p2-source-distance.md).
+
+Claim allowed: bounded source-shaped P2 X/facing/Z ordering with local cache
+invalidation after the existing eligibility filter. Claim blocked: exact
+frame-start cache timing and all upstream invalidation flags, full
+`bindToId`/scale semantics, Helper `type=player`, complete Tag/Simul/Turns
+gameplay, rollback/netplay, score movement, and full MUGEN/IKEMEN parity.
+
+## Previous runtime compatibility board - T418 (closed bounded, 2026-07-30)
 
 T418 closes the narrow consumer gap left by the 046b root-selection matrix:
 the filtered P2 candidate set now resolves through the shared nearest-body

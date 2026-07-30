@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## Runtime continuation checkpoint — T419 P2 source-shaped distance (closed-bounded, 2026-07-30)
+
+T419 keeps P2 ordering behind the existing root-selection eligibility filter
+but adds a separate source-shaped boundary. Relative X/facing, the upstream
+behind rule, optional stage-gated Z weighting, deterministic identity ties, and
+a signature-invalidated P2-only cache are covered in
+`RuntimeOpponentSelectionSystem.test.ts`. Explicit expression P2 reads and
+the live IKEMEN primary opponent use the new policy; `EnemyNear` and legacy
+profiles retain their existing horizontal body order.
+
+Focused proof: 2 files / 35 tests, plus one live `PlayableMatchRuntime` test.
+Research and ledger:
+`docs/research/2026-07-30-ikemen-p2-source-distance.md`.
+
+Claim allowed: bounded source-shaped P2 X/facing/Z ordering and local cache
+invalidation. Claim blocked: exact upstream frame/cache timing and all
+`CharList` flags, full `bindToId`/scale semantics, Helper `type=player`,
+complete Tag/Simul/Turns gameplay, rollback/netplay, score movement, and full
+MUGEN/IKEMEN parity.
+
 ## Runtime continuation checkpoint — T418 P2 nearest-candidate read (closed-bounded, 2026-07-30)
 
 The existing 046b root-selection matrix correctly filtered P2 candidates but

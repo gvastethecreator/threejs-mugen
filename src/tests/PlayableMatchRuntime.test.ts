@@ -3351,6 +3351,46 @@ RedirectID = 999
     expect(snapshot.compatibilitySession?.actors.find((actor) => actor.actorId === "p1")?.executedOperations["team-standby:tagout"]).toBe(1);
   });
 
+  it("uses the IKEMEN P2 distance policy for live root opponents while legacy profiles keep body order", () => {
+    const p1 = createImportedFixture({ id: "live-p2-p1", withStateMove: false });
+    const p2 = createImportedFixture({ id: "live-p2-p2", withStateMove: false });
+    const reserve = createImportedFixture({ id: "live-p2-reserve", withStateMove: false });
+    const stage = { ...trainingStage };
+    const ikemen = new PlayableMatchRuntime(p1, p2, stage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, reserve],
+    });
+    const ikemenInternals = ikemen as unknown as {
+      p1: { id: string; runtime: { pos: { x: number; y: number }; facing: 1 | -1 } };
+      p2: { id: string; runtime: { pos: { x: number; y: number }; facing: 1 | -1 } };
+      reserveRoots: Array<{ id: string; runtime: { pos: { x: number; y: number }; facing: 1 | -1; teamState?: { standby?: boolean } } }>;
+      opponentForRoot: (fighter: unknown) => { id: string };
+    };
+    const reserveRoot = ikemenInternals.reserveRoots[1]!;
+    reserveRoot.runtime.teamState!.standby = false;
+    ikemenInternals.p1.runtime.pos.x = 0;
+    ikemenInternals.p1.runtime.facing = 1;
+    ikemenInternals.p2.runtime.pos.x = -5;
+    reserveRoot.runtime.pos.x = 34;
+
+    expect(ikemenInternals.opponentForRoot(ikemenInternals.p1).id).toBe(reserveRoot.id);
+
+    const legacy = new PlayableMatchRuntime(p1, p2, stage, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, reserve],
+    });
+    const legacyInternals = legacy as unknown as typeof ikemenInternals;
+    (legacy as unknown as { runtimeProfile: string }).runtimeProfile = "unknown";
+    const legacyReserve = legacyInternals.reserveRoots[1]!;
+    legacyReserve.runtime.teamState!.standby = false;
+    legacyInternals.p1.runtime.pos.x = 0;
+    legacyInternals.p1.runtime.facing = 1;
+    legacyInternals.p2.runtime.pos.x = -5;
+    legacyReserve.runtime.pos.x = 34;
+
+    expect(legacyInternals.opponentForRoot(legacyInternals.p1).id).toBe(legacyInternals.p2.id);
+  });
+
   it("blocks typed TagOut execution outside the explicit IKEMEN profile", () => {
     const tagOutP1 = createImportedFixture({
       id: "legacy-tag-out",
