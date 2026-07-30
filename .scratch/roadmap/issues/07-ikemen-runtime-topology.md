@@ -6,6 +6,26 @@ Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`
 Pinned upstream revision: `05b7d98af690c73c7bffe5cb4f4eeb6933fa2703`
 
+## 2026-07-30 P2 nearest-candidate consumer (T418, closed-bounded)
+
+La matriz 046b ya filtraba `P2` por `playerType`, `disabled`, `standby` y
+`overKo`, pero los dos consumidores live tomaban el primer `p2CandidateIds`
+sin aplicar la proximidad corporal. Este corte añade
+`RuntimeOpponentSelectionWorld.selectNearest` y lo reutiliza desde el contexto
+de expresiones y `PlayableMatchRuntime.opponentForRoot`. `Enemy` conserva la
+enumeración estable y `Partner` sigue siendo addressable por root-slot.
+
+Prueba focal verde: 3 archivos / 46 tests en
+`RuntimeOpponentSelectionSystem`, `RuntimeExpressionContextSystem` y
+`MatchWorld`. Cierre: `pnpm test` 305 archivos / 3223 tests, `pnpm typecheck`,
+`pnpm build`, `pnpm check:boundaries`, `git diff --check` y `pnpm qa:trace`
+667/667 (633 required, 34 optional, 0 failed). Investigación y ledger:
+[`2026-07-30-ikemen-p2-nearest-selection.md`](../../../docs/research/2026-07-30-ikemen-p2-nearest-selection.md).
+
+Claim allowed al cerrar los gates: selección P2 nearest-body acotada después
+del filtro de elegibilidad existente. Claim blocked: cache/refresh exacto,
+distancia Z, penalización behind-facing, Helper `type=player`, Tag/Simul/Turns
+completos, rollback/netplay y paridad completa.
 ## 2026-07-27 post-DA30-120 IKEMEN runtime override
 
 DA31-033…036 own family-scoped source review, one real ZSS slice, live team
