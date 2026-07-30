@@ -41,6 +41,12 @@ Focused proof is green at 2 files / 35 tests plus one live
 `PlayableMatchRuntime` test. Ledger:
 [`2026-07-30-ikemen-p2-source-distance.md`](../../../docs/research/2026-07-30-ikemen-p2-source-distance.md).
 
+Final gates are green: `pnpm test` 305 files / 3229 tests, `pnpm typecheck`,
+`pnpm build`, `pnpm check:boundaries`, `git diff --check`, and
+`pnpm qa:trace` 667/667 (633 required, 34 optional). Build keeps the known
+large-chunk warning; the first trace attempt timed out in SSR transport, and
+the clean retry passed. No visual surface changed, so smoke is N/A.
+
 Claim allowed after this bounded cut: source-shaped P2 X/facing/Z ordering and
 local cache invalidation after the existing eligibility filter. Claim blocked:
 exact frame-start cache timing and all upstream invalidation flags,
