@@ -1,6 +1,21 @@
 # Roadmap Continuity Guide
 
-Last updated: 2026-07-27
+Last updated: 2026-07-30
+
+## 2026-07-30 official parity continuation checkpoint
+
+Resume from commit `9d79e3f5` as the latest closed runtime checkpoint and
+recheck Git before editing. Open the
+[official comparison](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md)
+and issue 09, then implement **T424**. Keep the existing dirty roadmap/DA32
+work untouched unless the selected task explicitly owns a small top-level
+update.
+
+After T424 closes with focused and required-trace evidence, execute T425's
+source decision, then T426 and T427 in order. Do not recreate negative-state
+order/append/keyctrl, T419-T423 selection/name work, or first-pass
+Common1/FightFX loading. No score or watermark moved when this queue was
+selected.
 
 ## 2026-07-27 post-DA30-120 continuation checkpoint
 

@@ -1,5 +1,17 @@
 # 06 - Roadmap Control And QA Ledger
 
+## 2026-07-30 official-source queue selection
+
+Elecbyte's M.U.G.E.N 1.1 docs and the official Ikemen-GO README/wiki were
+compared with the current loader, scanner, and live runtime. The active queue
+is T424-T427: same-tick state chaining, P2 source-epoch reconciliation,
+imported `select.def` roster/stage authority, then live ZSS loading. Contracts
+live in issues 09-12 and the
+[official comparison](../../../docs/research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md).
+
+This is docs/static-gap evidence only. T423 remains the latest implemented
+runtime checkpoint; scores, watermarks, and delivery authority do not move.
+
 ## 2026-07-27 post-DA30-120 acceptance override
 
 Machine rows reach DA30-120; proposed consecutive human adjudication stops at

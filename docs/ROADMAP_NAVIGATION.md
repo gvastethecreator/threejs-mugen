@@ -1,6 +1,20 @@
 # Roadmap Navigation
 
-Last updated: 2026-07-27
+Last updated: 2026-07-30
+
+## Current implementation route — official parity queue (2026-07-30)
+
+Start with the
+[official M.U.G.E.N / Ikemen-GO comparison](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md),
+then the [execution board](ROADMAP_EXECUTION_BOARD.md). The executable cursor
+is **T424 / issue 09**. T425-T427 are ordered follow-ups with explicit source,
+product, and VM dependencies; T423 is the latest implemented checkpoint.
+
+Use issue 09 for the current state-chain contract, issue 10 for P2 source-epoch
+reconciliation, issue 11 for imported `select.def`, and issue 12 for the live
+ZSS path. The DA32 and older selectors below remain evidence/control context;
+they do not override this new implementation queue. Scores and delivery
+authority remain held.
 
 ## Current audit route — post-DA30-120
 

@@ -1,5 +1,25 @@
 ﻿# Next Build Roadmap
 
+## Current next-build — official M.U.G.E.N / Ikemen queue (2026-07-30)
+
+Start with **T424**, the shared M.U.G.E.N current-state transition loop for
+roots and helpers. It closes the Elecbyte rule that a `ChangeState` continues
+at the destination state in the same tick, with deterministic cycle
+protection. Then execute **T425** only after recording whether the current
+Ikemen P2 wiki contract belongs to the normative 05b source epoch.
+
+After those runtime cuts, **T426** makes imported `select.def` own one real
+roster/stage selection path, and **T427** connects a declared ZSS subset from
+the package loader to shared IR and `PlayableMatchRuntime`. Exact contracts:
+[research decision](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md)
+and issues [09](../.scratch/roadmap/issues/09-mugen-current-state-transition-loop.md),
+[10](../.scratch/roadmap/issues/10-ikemen-p2-stable-switch-contract.md),
+[11](../.scratch/roadmap/issues/11-mugen-select-def-playable-roster.md), and
+[12](../.scratch/roadmap/issues/12-ikemen-zss-live-state-pipeline.md).
+
+T423 remains the latest implemented checkpoint. Scores, human watermarks,
+formal/global authority, and delivery authority remain unchanged.
+
 ## Current next-build — post-DA30-120
 
 Authority: [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)

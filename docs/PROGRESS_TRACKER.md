@@ -1,5 +1,23 @@
 ﻿# Progress Tracker
 
+## Current roadmap decision — official-source task selection (2026-07-30)
+
+- Compared Elecbyte's M.U.G.E.N 1.1 file/CNS/controller documentation with the
+  official Ikemen-GO README, extension wiki, and normative 05b source boundary.
+- Static inspection confirms existing proof for negative-state order, Ikemen
+  negative-state append, helper `keyctrl`, first-pass Common1/FightFX loading,
+  and T419-T423 P2 roster/name wiring; none is replanned.
+- New queue: **T424** same-tick root/helper state chaining; **T425** Ikemen P2
+  retention/source reconciliation; **T426** imported `select.def` playable
+  roster/stage authority; **T427** loader-to-live-runtime ZSS state pipeline.
+- Research: [official comparison](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md).
+  Task contracts: issues [09](../.scratch/roadmap/issues/09-mugen-current-state-transition-loop.md),
+  [10](../.scratch/roadmap/issues/10-ikemen-p2-stable-switch-contract.md),
+  [11](../.scratch/roadmap/issues/11-mugen-select-def-playable-roster.md), and
+  [12](../.scratch/roadmap/issues/12-ikemen-zss-live-state-pipeline.md).
+- This is planning/static-gap evidence only. Latest implementation remains
+  T423; scores stay `65 / 36 / 20 / 10-12 / 6-8 / 25`.
+
 ## Current authority (2026-07-27)
 
 - Human authority: [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)

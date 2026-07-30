@@ -1,6 +1,26 @@
 # Roadmap Operational Checklist
 
-Last updated: 2026-07-27
+Last updated: 2026-07-30
+
+## Current T424-T427 start (2026-07-30)
+
+1. Recheck Git and preserve the existing dirty DA32/roadmap work.
+2. Read the official comparison and the one selected issue; do not execute
+   multiple runtime tasks at once.
+3. Start T424 with a failing root chain test, then add helper and cycle cases.
+4. Preserve the already-proven special-state schedule and legacy `unknown`
+   profile behavior.
+5. Require a named imported trace before closing T424.
+6. For T425, record the current-wiki versus 05b decision before code.
+7. For T426, require a real selection consumer and browser proof.
+8. For T427, require loader/shared-IR/live-runtime evidence; the DA30 model is
+   not a product consumer.
+9. Keep scores, watermarks, and delivery authority held until independent
+   evidence adjudication.
+
+Task authority:
+[official comparison](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md)
+and issues 09-12.
 
 ## Current post-DA30-120 start
 

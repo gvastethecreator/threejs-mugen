@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## Planned runtime/package queue — T424-T427 (selected 2026-07-30)
+
+These entries are **planned**, not closed, and add no compatibility credit:
+
+1. **T424 / issue 09 — M.U.G.E.N same-tick state transition chain.** Root and
+   helper destination states continue in the same tick; trailing controllers
+   skip; cycles produce a bounded diagnostic. First executable task.
+2. **T425 / issue 10 — Ikemen stable P2 switch contract.** Reconcile the
+   current official wiki's 30-pixel retention rule with source pin 05b, then
+   implement and trace the adopted epoch without changing legacy selectors.
+3. **T426 / issue 11 — M.U.G.E.N `select.def` playable roster/stage
+   authority.** Build a located/fingerprinted manifest and one real product
+   consumer with hostile-path and browser proof.
+4. **T427 / issue 12 — Ikemen live ZSS state pipeline.** Lower a declared ZSS
+   grammar/controller subset through the real loader into shared IR and the
+   match runtime, including direct/fallback/mixed sources and fail-closed gaps.
+
+Research authority:
+`docs/research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md`.
+Latest implementation remains T423; scores and watermarks remain unchanged.
+
 ## Runtime continuation checkpoint — T423 active expression root selection (closed-bounded, 2026-07-30)
 
 T423 conecta `RuntimeRootSelection/v0` al factory que consumen los controllers

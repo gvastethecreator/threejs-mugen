@@ -1,5 +1,24 @@
 ﻿# Roadmap Execution Board
 
+## Current official-parity queue — T424-T427 selected (2026-07-30)
+
+Authority: [official M.U.G.E.N / Ikemen-GO comparison](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md).
+The latest implemented runtime checkpoint remains T423. The next executable
+task is T424; T425-T427 are queued behind their written dependencies.
+
+| Order | Task | Lane | Status | Exit evidence | Issue |
+| --- | --- | --- | --- | --- | --- |
+| 1 | T424 M.U.G.E.N same-tick current-state transition chain | R1 | ready / immediate | Root + helper red/green order/cycle tests, required imported trace, expanded runtime gates | [09](../.scratch/roadmap/issues/09-mugen-current-state-transition-loop.md) |
+| 2 | T425 Ikemen stable P2 switch contract | I2 | queued / source decision first | 05b-vs-wiki decision, 29/30/>30 and invalidation tests, live `P2Name`, trace if behavior changes | [10](../.scratch/roadmap/issues/10-ikemen-p2-stable-switch-contract.md) |
+| 3 | T426 M.U.G.E.N `select.def` playable roster/stage authority | R1 | queued | Versioned manifest, hostile VFS cases, real product consumer, browser proof | [11](../.scratch/roadmap/issues/11-mugen-select-def-playable-roster.md) |
+| 4 | T427 Ikemen live ZSS state pipeline | I2 | queued after T424 | Direct/fallback/mixed loader tests, shared IR, live runtime trace, located unsupported diagnostics | [12](../.scratch/roadmap/issues/12-ikemen-zss-live-state-pipeline.md) |
+
+Selection rule: the official Ikemen wiki delegates legacy behavior to
+Elecbyte's M.U.G.E.N 1.1 docs. Shared VM/package gaps therefore outrank broad
+Ikemen feature breadth, while T425 closes the bounded P2 thread started by
+T419-T423. This planning update adds no runtime evidence and does not move the
+scores (`65 / 36 / 20 / 10-12 / 6-8 / 25`).
+
 ## Runtime continuation checkpoint — T423 active expression root selection (closed-bounded, 2026-07-30)
 
 El factory de contextos de controllers activos ya recibe `RuntimeRootSelection/v0`

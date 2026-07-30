@@ -1,5 +1,29 @@
 # Workplan
 
+## Current execution override — T424-T427 official parity queue (2026-07-30)
+
+The immediate implementation task is **T424**. Add a shared, typed
+current-state transition result and bounded continuation loop for imported
+roots/helpers. Preserve the already-proven special-state schedule and prove a
+destination-state chain, trailing-controller skip, and cycle diagnostic before
+running expanded runtime gates.
+
+Continue in this order:
+
+1. **T424** — M.U.G.E.N same-tick state chain (`R1`, executable now).
+2. **T425** — Ikemen stable P2 target (`I2`, source-epoch decision before code).
+3. **T426** — imported `select.def` roster/stage manifest plus one live product
+   consumer (`R1`, browser evidence when UI changes).
+4. **T427** — direct/fallback/mixed ZSS through the real loader, shared state
+   IR, and match runtime (`I2`, after T424).
+
+The detailed comparison and task contracts live in
+[`2026-07-30-official-mugen-ikemen-roadmap-comparison.md`](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md)
+and issues 09-12. Each task updates its relevant support, QA, research, board,
+tracker, backlog, and issue entries as evidence lands. Do not change the
+scorecard until a later independent adjudication accepts new runtime/product
+evidence.
+
 ## DA32-031 Studio retry/abandon recovery decisions (2026-07-28)
 
 The recovery surface now records an explicit `retry` decision and attempt

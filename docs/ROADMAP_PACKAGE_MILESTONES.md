@@ -1,5 +1,26 @@
 ﻿# Roadmap Package Milestones
 
+## Current package override — official parity queue (2026-07-30)
+
+R1 resumes with T424's same-tick current-state transition chain and then
+T426's imported `select.def` roster/stage consumer. I2 keeps one bounded
+continuation in T425, but only after the current P2 wiki and normative 05b
+source epoch are reconciled; T427 begins real ZSS execution after T424.
+
+Milestone effects remain prospective:
+
+- T424 may strengthen the runtime compatibility evidence ledger, but cannot
+  move MUGEN-lite/MVP/full scores without trace and independent adjudication.
+- T425 may strengthen one explicit Ikemen P2 contract only.
+- T426 is the next package/product discriminator because it replaces
+  scanner-only `select.def` recognition with a live roster/stage consumer.
+- T427 can move ZSS from recognized/unsupported to one named executed subset,
+  never to generic ZSS or Ikemen parity.
+
+Authority and dependencies:
+[official comparison](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md).
+Current scores and milestone bands stay held.
+
 ## Current package override — post-DA30-120 audit
 
 DA30-001…120 are recorded machine rows. Package milestones consume only
