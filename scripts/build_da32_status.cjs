@@ -295,7 +295,11 @@ if (fs.existsSync(studioMobileGeometryGatePath)) {
     studioMobileGeometryGate = null;
   }
 }
-const studioMobileGeometryGateOk = studioMobileGeometryGate?.ok === true;
+const studioMobileModeRoundTrip = studioMobileGeometryGate?.cases?.find((entry) => entry?.id === "w390")?.modeRoundTrip;
+const studioMobileModeRoundTripOk = studioMobileModeRoundTrip?.attempted === true &&
+  studioMobileModeRoundTrip?.matchReached === true &&
+  studioMobileModeRoundTrip?.studioRestored === true;
+const studioMobileGeometryGateOk = studioMobileGeometryGate?.ok === true && studioMobileModeRoundTripOk;
 const studioMobileGeometryGateClean = studioMobileGeometryGate?.subject?.provisional === false;
 
 const status = {
@@ -577,8 +581,8 @@ const status = {
         : "open-implementation",
       note: studioMobileGeometryGateOk
         ? studioMobileGeometryGateClean
-          ? "clean-subject breakpoint gate proves bounded icons/actions, one active mobile pane, document scroll ownership, and framed desktop seam"
-          : "nine-viewport Studio geometry gate passed on a dirty subject; clean subject pin and broader mobile IA remain open"
+              ? "clean-subject breakpoint gate proves bounded icons/actions, one active mobile pane, mode navigation, document scroll ownership, and framed desktop seam"
+              : "nine-viewport Studio geometry and mode-route gate passed on a dirty subject; clean subject pin and broader mobile IA remain open"
         : "Studio mobile geometry browser gate is missing or failed",
       artifacts: studioMobileGeometryGateOk
         ? [
