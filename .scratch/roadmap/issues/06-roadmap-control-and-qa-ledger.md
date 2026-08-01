@@ -12,7 +12,16 @@ live in issues 09-12 and the
 This is docs/static-gap evidence only. T423 remains the latest implemented
 runtime checkpoint; scores, watermarks, and delivery authority do not move.
 
-## 2026-07-27 post-DA30-120 acceptance override
+## 2026-07-28 post-DA32-026 acceptance override
+
+Machine record queda en DA30-120 y adjudicación humana en DA30-020. DA30-021
+sigue como propuesta. Formal/global es `f5f2315e`; el smoke verde más reciente
+no guarda `subjectSha`; los cortes posteriores son focales. El siguiente cierre
+de control debe ligar smoke a SHA, gatear un HEAD limpio y sincronizar cursores
+sin mover scores. Ver AUD28-01…06 en la
+[auditoría diaria](../../../docs/research/2026-07-28-daily-roadmap-architecture-audit-post-da32-026.md).
+
+## Historical 2026-07-27 post-DA30-120 acceptance override
 
 Machine rows reach DA30-120; proposed consecutive human adjudication stops at
 DA30-020. DA31-002…008 own immutable original contracts, separate recorded,

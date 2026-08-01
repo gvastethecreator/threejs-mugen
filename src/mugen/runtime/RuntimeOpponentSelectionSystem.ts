@@ -49,7 +49,9 @@ export class RuntimeOpponentSelectionWorld {
   /**
    * Orders an already filtered P2 roster using Ikemen's relative X/facing
    * distance policy. It intentionally remains separate from EnemyNear's
-   * legacy body-distance order and caches only this P2 result.
+   * legacy body-distance order and caches only this P2 result. The normative
+   * 05b source pin clears P2 cache on observable position/candidate changes;
+   * it does not implement a 30-pixel target-retention hysteresis.
    */
   orderP2ByNearest<TActor extends RuntimeOpponentSelectionActor>(
     actor: TActor,

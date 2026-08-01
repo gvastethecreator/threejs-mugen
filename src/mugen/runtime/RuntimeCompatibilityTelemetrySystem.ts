@@ -1,4 +1,5 @@
 import type { ControllerOp } from "../compiler/ControllerOps";
+import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenCommand } from "../model/MugenCommand";
 import type { MugenStateController } from "../model/MugenState";
 import type { CommandInputHistorySample } from "./CommandBuffer";
@@ -7,6 +8,10 @@ import type {
   RuntimeControllerTraceEvent,
   RuntimeRedirectedTargetDispatchObservation,
 } from "./types";
+import type {
+  RuntimeStateTransition,
+  RuntimeStateTransitionCycleDiagnostic,
+} from "./RuntimeStateTransitionSystem";
 
 export type RuntimeCompatibilityTelemetryActor = {
   id: string;
@@ -35,6 +40,7 @@ export type RuntimeCompatibilityTelemetryActor = {
   executedControllerCounts: Record<string, number>;
   executedOperationCounts: Record<string, number>;
   controllerEvents: RuntimeControllerTraceEvent[];
+  stateTransitionCycles?: RuntimeStateTransitionCycleDiagnostic[];
   nextControllerEventSequence: number;
   nextRedirectedTargetDispatchSequence: number;
   compatibilityTick: number;
@@ -108,6 +114,27 @@ export class RuntimeCompatibilityTelemetryWorld {
     this.appendControllerEvent(actor, undefined, key, options);
   }
 
+  recordStateTransitionCycle(
+    actor: RuntimeCompatibilityTelemetryActor,
+    transition: RuntimeStateTransition<ControllerIr>,
+    budget: number,
+  ): void {
+    if (!this.isImportedActor(actor)) {
+      return;
+    }
+    const cycles = actor.stateTransitionCycles ?? (actor.stateTransitionCycles = []);
+    cycles.push({
+      fromState: transition.fromState,
+      ...(transition.fromSpecial === undefined ? {} : { fromSpecial: transition.fromSpecial }),
+      toState: transition.toState,
+      controller: transition.controller.type,
+      budget,
+    });
+    while (cycles.length > 8) {
+      cycles.shift();
+    }
+  }
+
   recordRedirectedTargetDispatch(
     actor: RuntimeCompatibilityTelemetryActor,
     observation: Omit<RuntimeRedirectedTargetDispatchObservation, "telemetryId">,
@@ -161,6 +188,9 @@ export class RuntimeCompatibilityTelemetryWorld {
         }
         if (actor.lastExecutedState !== undefined) {
           session.lastExecutedState = actor.lastExecutedState;
+        }
+        if (actor.stateTransitionCycles && actor.stateTransitionCycles.length > 0) {
+          session.stateTransitionCycles = actor.stateTransitionCycles.map((cycle) => ({ ...cycle }));
         }
         return session;
       });

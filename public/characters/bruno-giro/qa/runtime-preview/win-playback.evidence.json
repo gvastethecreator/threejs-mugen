@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "kind": "screenshot-evidence",
+  "evidence_kind": "runtime-playback",
+  "applicable": true,
+  "artifact": {
+    "path": "qa/runtime-preview/win-playback.gif",
+    "sha256": "33e7532a614dddf45c6f54e28439f948dd8e0a4191c057cf300c2deccf32fad9",
+    "size_bytes": 28677,
+    "media_type": "image/gif",
+    "width": 256,
+    "height": 256
+  },
+  "sources": [
+    {
+      "role": "manifest",
+      "path": "manifest.json",
+      "sha256": "f7a62556cddc9ff2cbe192f640fadd360c08a004d4513df1ab8ad7e351d1e92d",
+      "size_bytes": 12758
+    },
+    {
+      "role": "atlas",
+      "path": "sprite-sheet-alpha.png",
+      "sha256": "73261c1542474aa016792a4d8b956497a3963c08be4400e00d2d33e42668352f",
+      "size_bytes": 1617352
+    }
+  ],
+  "input_fingerprint": "sha256:1b6dedf39118b6ab3825ca2f31de46d07ce6e8db90ab486d1a90413c5c407334",
+  "state": "win",
+  "frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "durations_ms": [
+    125,
+    125,
+    125,
+    125,
+    125,
+    125
+  ],
+  "viewport": {
+    "width": 256,
+    "height": 256,
+    "dpr": 1.0
+  },
+  "renderer": {
+    "name": "spritesheet-expert-pillow-runtime-preview",
+    "version": "12.3.0"
+  },
+  "color_space": "sRGB",
+  "background": "#101018",
+  "sampling": "nearest",
+  "overlays": [],
+  "placements": [
+    {
+      "frame": 0,
+      "x": 32,
+      "y": 32,
+      "width": 192,
+      "height": 192,
+      "source_rect": {
+        "x": 0,
+        "y": 2496,
+        "w": 192,
+        "h": 192
+      }
+    },
+    {
+      "frame": 1,
+      "x": 32,
+      "y": 32,
+      "width": 192,
+      "height": 192,
+      "source_rect": {
+        "x": 192,
+        "y": 2496,
+        "w": 192,
+        "h": 192
+      }
+    },
+    {
+      "frame": 2,
+      "x": 32,
+      "y": 32,
+      "width": 192,
+      "height": 192,
+      "source_rect": {
+        "x": 384,
+        "y": 2496,
+        "w": 192,
+        "h": 192
+      }
+    },
+    {
+      "frame": 3,
+      "x": 32,
+      "y": 32,
+      "width": 192,
+      "height": 192,
+      "source_rect": {
+        "x": 576,
+        "y": 2496,
+        "w": 192,
+        "h": 192
+      }
+    },
+    {
+      "frame": 4,
+      "x": 32,
+      "y": 32,
+      "width": 192,
+      "height": 192,
+      "source_rect": {
+        "x": 768,
+        "y": 2496,
+        "w": 192,
+        "h": 192
+      }
+    },
+    {
+      "frame": 5,
+      "x": 32,
+      "y": 32,
+      "width": 192,
+      "height": 192,
+      "source_rect": {
+        "x": 960,
+        "y": 2496,
+        "w": 192,
+        "h": 192
+      }
+    }
+  ],
+  "captured_at": "2026-08-01T15:37:00.063776Z"
+}

@@ -1,0 +1,271 @@
+{
+  "ok": true,
+  "engine": "asset-slot-review",
+  "run_dir": "X:\\threejs-mugen\\mugen-web-sandbox\\.scratch\\content-pack\\runs\\satirical-fightfx-v1-prepared",
+  "asset_kind": "vfx",
+  "manual_review_required": true,
+  "quality_gate_note": "Self-repeat tiles/textures must pass numeric edge coverage and opposite-edge checks. Adjacency and overlay modes still require a hash-bound role-aware visual review; a contact sheet alone is not proof.",
+  "overlay": "qa/asset-slot-overlay.png",
+  "tile_repeat_review": null,
+  "tile_repeat_item_reviews": {},
+  "tile_adjacency_review": null,
+  "repeat_validation": {
+    "ok": true,
+    "max_edge_error": 0.12,
+    "min_edge_coverage": 0.98,
+    "records": [],
+    "errors": []
+  },
+  "errors": [],
+  "warnings": [],
+  "records": [
+    {
+      "state": "vfx",
+      "frame": 0,
+      "label": "electric-comment",
+      "file": "frames\\vfx\\frame-0.png",
+      "bbox": [
+        15,
+        8,
+        113,
+        120
+      ],
+      "suggested_pivot": [
+        64,
+        120
+      ],
+      "pivot": [
+        64,
+        120
+      ],
+      "category": "satirical-fightfx",
+      "nontransparent_pixels": 4728,
+      "edge_pixels": 0,
+      "edge_touch": false,
+      "occupancy": 0.2886,
+      "strategy_class": "compact_prop",
+      "repeat_mode": null,
+      "tile_role": null,
+      "repeat_metrics": null,
+      "ok": true,
+      "errors": []
+    },
+    {
+      "state": "vfx",
+      "frame": 1,
+      "label": "receipt-snap",
+      "file": "frames\\vfx\\frame-1.png",
+      "bbox": [
+        15,
+        8,
+        112,
+        120
+      ],
+      "suggested_pivot": [
+        64,
+        120
+      ],
+      "pivot": [
+        64,
+        120
+      ],
+      "category": "satirical-fightfx",
+      "nontransparent_pixels": 3888,
+      "edge_pixels": 0,
+      "edge_touch": false,
+      "occupancy": 0.2373,
+      "strategy_class": "compact_prop",
+      "repeat_mode": null,
+      "tile_role": null,
+      "repeat_metrics": null,
+      "ok": true,
+      "errors": []
+    },
+    {
+      "state": "vfx",
+      "frame": 2,
+      "label": "scooter-dust",
+      "file": "frames\\vfx\\frame-2.png",
+      "bbox": [
+        8,
+        10,
+        120,
+        117
+      ],
+      "suggested_pivot": [
+        64,
+        117
+      ],
+      "pivot": [
+        64,
+        120
+      ],
+      "category": "satirical-fightfx",
+      "nontransparent_pixels": 7559,
+      "edge_pixels": 0,
+      "edge_touch": false,
+      "occupancy": 0.4614,
+      "strategy_class": "compact_prop",
+      "repeat_mode": null,
+      "tile_role": null,
+      "repeat_metrics": null,
+      "ok": true,
+      "errors": []
+    },
+    {
+      "state": "vfx",
+      "frame": 3,
+      "label": "cardboard-impact",
+      "file": "frames\\vfx\\frame-3.png",
+      "bbox": [
+        8,
+        14,
+        120,
+        113
+      ],
+      "suggested_pivot": [
+        64,
+        113
+      ],
+      "pivot": [
+        64,
+        120
+      ],
+      "category": "satirical-fightfx",
+      "nontransparent_pixels": 6177,
+      "edge_pixels": 0,
+      "edge_touch": false,
+      "occupancy": 0.377,
+      "strategy_class": "compact_prop",
+      "repeat_mode": null,
+      "tile_role": null,
+      "repeat_metrics": null,
+      "ok": true,
+      "errors": []
+    },
+    {
+      "state": "vfx",
+      "frame": 4,
+      "label": "wifi-fold",
+      "file": "frames\\vfx\\frame-4.png",
+      "bbox": [
+        8,
+        12,
+        120,
+        115
+      ],
+      "suggested_pivot": [
+        64,
+        115
+      ],
+      "pivot": [
+        64,
+        120
+      ],
+      "category": "satirical-fightfx",
+      "nontransparent_pixels": 5441,
+      "edge_pixels": 0,
+      "edge_touch": false,
+      "occupancy": 0.3321,
+      "strategy_class": "compact_prop",
+      "repeat_mode": null,
+      "tile_role": null,
+      "repeat_metrics": null,
+      "ok": true,
+      "errors": []
+    },
+    {
+      "state": "vfx",
+      "frame": 5,
+      "label": "coupon-slash",
+      "file": "frames\\vfx\\frame-5.png",
+      "bbox": [
+        8,
+        9,
+        120,
+        118
+      ],
+      "suggested_pivot": [
+        64,
+        118
+      ],
+      "pivot": [
+        64,
+        120
+      ],
+      "category": "satirical-fightfx",
+      "nontransparent_pixels": 6676,
+      "edge_pixels": 0,
+      "edge_touch": false,
+      "occupancy": 0.4075,
+      "strategy_class": "compact_prop",
+      "repeat_mode": null,
+      "tile_role": null,
+      "repeat_metrics": null,
+      "ok": true,
+      "errors": []
+    },
+    {
+      "state": "vfx",
+      "frame": 6,
+      "label": "guard-spark",
+      "file": "frames\\vfx\\frame-6.png",
+      "bbox": [
+        8,
+        15,
+        120,
+        112
+      ],
+      "suggested_pivot": [
+        64,
+        112
+      ],
+      "pivot": [
+        64,
+        120
+      ],
+      "category": "satirical-fightfx",
+      "nontransparent_pixels": 5024,
+      "edge_pixels": 0,
+      "edge_touch": false,
+      "occupancy": 0.3066,
+      "strategy_class": "compact_prop",
+      "repeat_mode": null,
+      "tile_role": null,
+      "repeat_metrics": null,
+      "ok": true,
+      "errors": []
+    },
+    {
+      "state": "vfx",
+      "frame": 7,
+      "label": "comic-ko",
+      "file": "frames\\vfx\\frame-7.png",
+      "bbox": [
+        10,
+        8,
+        118,
+        120
+      ],
+      "suggested_pivot": [
+        64,
+        120
+      ],
+      "pivot": [
+        64,
+        120
+      ],
+      "category": "satirical-fightfx",
+      "nontransparent_pixels": 7007,
+      "edge_pixels": 0,
+      "edge_touch": false,
+      "occupancy": 0.4277,
+      "strategy_class": "compact_prop",
+      "repeat_mode": null,
+      "tile_role": null,
+      "repeat_metrics": null,
+      "ok": true,
+      "errors": []
+    }
+  ]
+}

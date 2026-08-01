@@ -135,6 +135,8 @@ describe("createImportedFighterDefinition", () => {
       hitSparkLibraries: {
         common: {
           source: "common",
+          scale: 0.75,
+          localCoord: [640, 480],
           airPath: "data/fightfx.air",
           sffPath: "data/fightfx.sff",
           diagnostics: [],
@@ -157,6 +159,8 @@ describe("createImportedFighterDefinition", () => {
       spriteGroup: 9100,
       spriteIndex: 0,
     });
+    expect(fighter?.hitSparkLibraries?.common?.scale).toBe(0.75);
+    expect(fighter?.hitSparkLibraries?.common?.localCoord).toEqual([640, 480]);
     expect(fighter?.hitSparkLibraries?.fightfx?.animations.get(7002)?.frames[0]).toMatchObject({
       spriteGroup: 9101,
       spriteIndex: 0,
@@ -290,6 +294,44 @@ describe("createImportedFighterDefinition", () => {
 
     expect(fighter?.stateMoves?.get(200)?.hitFlag).toBe("MAF");
     expect(fighter?.stateMoves?.get(210)?.hitFlag).toBe("H,L,A,F");
+  });
+
+  it("keeps imported air.fall separate from the base fall flag", () => {
+    const animations = new Map<number, MugenAnimationAction>([
+      [0, action(0, [[0, 0, 0]])],
+      [200, action(200, [[200, 0, 0], [200, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+    ]);
+    const character = fakeCharacter(animations, true, [
+      state(200, 200, [controller(200, "HitDef", { damage: "30", fall: "0", "air.fall": "1" })]),
+    ]);
+
+    const fighter = createImportedFighterDefinition(character);
+
+    expect(fighter?.stateMoves?.get(200)?.fall).toEqual({ enabled: false, airFall: true });
+  });
+
+  it("carries imported down.velocity X and authored air fallback", () => {
+    const animations = new Map<number, MugenAnimationAction>([
+      [0, action(0, [[0, 0, 0]])],
+      [200, action(200, [[200, 0, 0], [200, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+    ]);
+    const character = fakeCharacter(animations, true, [
+      state(200, 200, [controller(200, "HitDef", {
+        damage: "30",
+        "fall": "1",
+        "fall.zvelocity": "2.5",
+        "air.velocity": "-6,-8",
+        "down.velocity": "-2,0",
+      })]),
+    ]);
+
+    const fighter = createImportedFighterDefinition(character);
+
+    expect(fighter?.stateMoves?.get(200)).toMatchObject({
+      downVelocityX: -2,
+      downVelocityY: 0,
+      fall: { enabled: true, velocity: { z: 2.5 } },
+    });
   });
 
   it("preserves explicit and default attack depth on imported state moves", () => {

@@ -1,4 +1,4 @@
-import { createCompatibilityReport } from "../compatibility/CompatibilityReport";
+import { createCompatibilityReport, type CompatibilityReport } from "../compatibility/CompatibilityReport";
 import { scanIkemenFeatures } from "../compatibility/IkemenFeatureScanner";
 import { UnsupportedFeatureTracker } from "../compatibility/UnsupportedFeatureTracker";
 import { compileRuntimeProgram, isRuntimeExecutableController } from "../compiler/StateControllerCompiler";
@@ -14,12 +14,17 @@ import { parseCns } from "../parsers/CnsParser";
 import { parseDef } from "../parsers/DefParser";
 import { parseSnd } from "../parsers/SndParser";
 import { SffParser } from "../parsers/SffParser";
+import { parseZss, type ZssParseResult } from "../parsers/ZssParser";
 import { PathResolver } from "./PathResolver";
 import { loadMugenSystemAssets } from "./MugenSystemAssetsLoader";
 import type { VirtualFileSystem } from "./VirtualFileSystem";
 
 export class MugenCharacterLoader {
-  async load(sourceName: string, vfs: VirtualFileSystem): Promise<MugenCharacter> {
+  async load(
+    sourceName: string,
+    vfs: VirtualFileSystem,
+    options: { defPath?: string } = {},
+  ): Promise<MugenCharacter> {
     const diagnostics: MugenDiagnostic[] = [];
     const unsupported = new UnsupportedFeatureTracker();
     const resolver = new PathResolver(vfs.listFiles());
@@ -27,23 +32,22 @@ export class MugenCharacterLoader {
       paths: vfs.listFiles(),
       readText: (path) => vfs.readText(path),
     });
-    for (const finding of ikemen.findings) {
-      unsupported.report("ikemen", finding.feature, {
-        severity: finding.severity,
-        location: finding.location,
-        raw: finding.raw,
-        fallback: finding.fallback,
-      });
-    }
-    const defPath = this.findDefPath(sourceName, resolver);
+    const requestedDefPath = options.defPath?.trim();
+    const resolvedRequestedDefPath = requestedDefPath ? resolver.resolve("", requestedDefPath) : undefined;
+    const defPath = requestedDefPath
+      ? (resolvedRequestedDefPath && resolver.exists(resolvedRequestedDefPath) ? resolvedRequestedDefPath : undefined)
+      : this.findDefPath(sourceName, resolver);
 
     if (!defPath) {
       diagnostics.push({
         severity: "error",
         format: "loader",
-        message: "No .def file found in character package",
+        message: requestedDefPath
+          ? "Requested character definition was not found: " + requestedDefPath
+          : "No .def file found in character package",
       });
       const files = createEmptyFiles();
+      reportIkemenFindings(unsupported, ikemen);
       return {
         sourceName,
         defPath: "",
@@ -79,7 +83,7 @@ export class MugenCharacterLoader {
     const defText = vfs.readText(defPath) ?? "";
     const definition = parseDef(defText, defPath);
     diagnostics.push(...definition.diagnostics);
-    const files = this.resolveFiles(defPath, definition.files, resolver, diagnostics);
+    const files = this.resolveFiles(defPath, definition, resolver, diagnostics, unsupported);
     const systemAssets = await loadMugenSystemAssets(vfs, resolver, {
       characterDefPath: defPath,
       characterDefinition: definition,
@@ -184,6 +188,26 @@ export class MugenCharacterLoader {
       diagnostics.push(...parsed.diagnostics);
       return result;
     };
+    const parsedZssByPath = new Map<string, { text: string; parsed: ZssParseResult }>();
+    const parseZssFile = (path: string): { text: string; parsed: ZssParseResult } => {
+      const cached = parsedZssByPath.get(path);
+      if (cached) {
+        return cached;
+      }
+      const text = vfs.readText(path) ?? "";
+      const parsed = parseZss(text, path);
+      const result = { text, parsed };
+      parsedZssByPath.set(path, result);
+      diagnostics.push(...parsed.diagnostics);
+      if (parsed.zss.status === "blocked") {
+        unsupported.report("zss", "ZSS grammar source", {
+          severity: "error",
+          location: path,
+          fallback: "The malformed ZSS source contributes no states or controllers to the runtime.",
+        });
+      }
+      return result;
+    };
 
     const commonConstantPaths = resolveGlobalCommonConstantPaths(systemAssets?.gameConfig, resolver, diagnostics);
     const supportedCommonConstantPaths = commonConstantPaths.filter((path) => {
@@ -222,7 +246,9 @@ export class MugenCharacterLoader {
       ...globalCnsStatePaths.map((path) => ({ kind: "common" as const, path })),
     ];
     for (const stateFile of stateFiles) {
-      const { text, parsed } = parseCnsFile(stateFile.path);
+      const { text, parsed } = /\.zss$/i.test(stateFile.path)
+        ? parseZssFile(stateFile.path)
+        : parseCnsFile(stateFile.path);
       stateSources.push({ ...stateFile, text, states: parsed.states });
       Object.assign(constants, parsed.constants);
     }
@@ -310,13 +336,15 @@ export class MugenCharacterLoader {
 
     for (const controller of [...states.flatMap((state) => state.controllers), ...stateEntryControllers]) {
       if (!isRuntimeExecutableController(controller.type)) {
-        unsupported.report("controller", controller.type || "Unknown", {
+        unsupported.report(isZssPath(controller.source?.path) ? "zss" : "controller", controller.type || "Unknown", {
           location: `${controller.stateId}`,
           raw: controller.rawHeader,
           fallback: "Controller is parsed and listed but not executed",
         });
       }
     }
+
+    reportIkemenFindings(unsupported, ikemen);
 
     const runtimeProgram = compileRuntimeProgram({
       commands,
@@ -339,6 +367,7 @@ export class MugenCharacterLoader {
       soundArchive,
       palettes,
       ikemen,
+      zss: createZssCompatibilityReport(ikemen, parsedZssByPath, states, unsupported.list()),
       diagnostics,
       unsupported: unsupported.list(),
     });
@@ -364,6 +393,10 @@ export class MugenCharacterLoader {
       diagnostics,
       compatibility,
     };
+  }
+
+  async loadAt(sourceName: string, vfs: VirtualFileSystem, defPath: string): Promise<MugenCharacter> {
+    return this.load(sourceName, vfs, { defPath });
   }
 
   private findDefPath(sourceName: string, resolver: PathResolver): string | undefined {
@@ -392,10 +425,12 @@ export class MugenCharacterLoader {
 
   private resolveFiles(
     defPath: string,
-    files: MugenCharacter["definition"]["files"],
+    definition: MugenCharacter["definition"],
     resolver: PathResolver,
     diagnostics: MugenDiagnostic[],
+    unsupported: UnsupportedFeatureTracker,
   ): ResolvedCharacterFiles {
+    const files = definition.files;
     const missing: string[] = [];
     const resolve = (path: string | undefined, options: { allowGlobalCommon?: boolean } = {}): string | undefined => {
       const resolved = resolver.resolve(defPath, path);
@@ -412,14 +447,65 @@ export class MugenCharacterLoader {
       }
       return finalPath;
     };
+    const ikemenProfile = Boolean(definition.info.ikemenVersion?.trim());
+    const resolveState = (path: string | undefined, options: { allowGlobalCommon?: boolean } = {}): string | undefined => {
+      if (!path) {
+        return undefined;
+      }
+      const direct = resolver.resolve(defPath, path);
+      const directGlobal = options.allowGlobalCommon ? findGlobalCommon(path, resolver) : undefined;
+      const directPath = [direct, directGlobal].find((candidate) => resolver.exists(candidate));
+      const fallbackReference = isZssPath(path) ? undefined : `${path}.zss`;
+      const fallback = fallbackReference
+        ? [
+            resolver.resolve(defPath, fallbackReference),
+            options.allowGlobalCommon ? findGlobalCommon(fallbackReference, resolver) : undefined,
+          ].find((candidate) => resolver.exists(candidate))
+        : undefined;
+      const selected = directPath ?? fallback;
+      if (!selected) {
+        missing.push(path);
+        diagnostics.push({
+          severity: "warning",
+          format: "loader",
+          file: defPath,
+          message: `Referenced file was not found: ${path}`,
+        });
+        return undefined;
+      }
+      if (!isZssPath(selected)) {
+        return selected;
+      }
+      if (ikemenProfile) {
+        return selected;
+      }
+      const reference = findStateReferenceLocation(definition, defPath, path);
+      unsupported.report("zss", fallback ? "ZSS fallback requires Ikemen profile" : "ZSS state source requires Ikemen profile", {
+        severity: "error",
+        location: reference.location,
+        raw: reference.raw,
+        fallback: "Declare ikemenversion before loading this ZSS state source; no ZSS states were compiled for the M.U.G.E.N profile.",
+      });
+      diagnostics.push({
+        severity: "error",
+        format: "zss",
+        file: defPath,
+        ...(reference.line === undefined ? {} : { line: reference.line }),
+        raw: reference.raw,
+        message: fallback
+          ? `ZSS fallback is unavailable outside an Ikemen profile: ${path}`
+          : `ZSS state source is unavailable outside an Ikemen profile: ${path}`,
+      });
+      return undefined;
+    };
 
     return {
       def: defPath,
       cmd: resolve(files.cmd),
       cns: resolve(files.cns),
-      states: (files.states ?? []).map((path) => resolve(path)).filter((path): path is string => Boolean(path)),
+      states: (files.states ?? []).map((path) => resolveState(path)).filter((path): path is string => Boolean(path)),
       commonStates: (files.commonStates ?? [])
-        .map((path) => resolve(path, { allowGlobalCommon: true }))
+        .map((path) => resolveState(path, { allowGlobalCommon: true }))
         .filter((path): path is string => Boolean(path)),
       sprite: resolve(files.sprite),
       anim: resolve(files.anim),
@@ -621,6 +707,86 @@ function commonConstantConfigRank(key: string): number {
 function commonAnimationConfigRank(key: string): number {
   const normalized = key.toLowerCase();
   return normalized === "air" ? 0 : Number(normalized.slice("air".length)) + 1;
+}
+
+function reportIkemenFindings(
+  unsupported: UnsupportedFeatureTracker,
+  ikemen: ReturnType<typeof scanIkemenFeatures>,
+): void {
+  for (const finding of ikemen.findings) {
+    unsupported.report("ikemen", finding.feature, {
+      severity: finding.severity,
+      location: finding.location,
+      raw: finding.raw,
+      fallback: finding.fallback,
+    });
+  }
+}
+
+function isZssPath(path: string | undefined): boolean {
+  return /\.zss$/i.test(path ?? "");
+}
+
+function findStateReferenceLocation(
+  definition: MugenCharacter["definition"],
+  defPath: string,
+  reference: string,
+): { location: string; line?: number; raw?: string } {
+  const normalizedReference = reference.trim().replace(/^['"]|['"]$/g, "").toLowerCase();
+  for (let index = 0; index < definition.rawLines.length; index += 1) {
+    const raw = definition.rawLines[index] ?? "";
+    const match = /^\s*(st\d*|stcommon\d*|common\d*)\s*=\s*(.*?)\s*(?:;.*)?$/i.exec(raw);
+    if (!match?.[2]) {
+      continue;
+    }
+    const value = match[2].trim().replace(/^['"]|['"]$/g, "").toLowerCase();
+    if (value === normalizedReference) {
+      const line = index + 1;
+      return { location: `${defPath}:${line}`, line, raw };
+    }
+  }
+  return { location: defPath, raw: reference };
+}
+
+function createZssCompatibilityReport(
+  ikemen: ReturnType<typeof scanIkemenFeatures>,
+  parsedZssByPath: ReadonlyMap<string, { text: string; parsed: ZssParseResult }>,
+  states: readonly MugenCharacter["states"][number][],
+  unsupported: ReturnType<UnsupportedFeatureTracker["list"]>,
+): CompatibilityReport["zss"] {
+  const compiledSourcePaths = [...parsedZssByPath.entries()]
+    .filter(([, value]) => value.parsed.zss.status === "compiled")
+    .map(([path]) => path)
+    .sort((left, right) => left.localeCompare(right));
+  const zssControllers = states.flatMap((state) => state.controllers).filter((controller) => isZssPath(controller.source?.path));
+  const compiledStateIds = [...new Set([
+    ...states.filter((state) => isZssPath(state.source?.path)).map((state) => state.id),
+    ...zssControllers.map((controller) => controller.stateId),
+  ])].sort((left, right) => left - right);
+  const blocked = unsupported.filter((item) => item.format === "zss");
+  const recognized = [...new Set(ikemen.files.zss)].sort((left, right) => left.localeCompare(right));
+  if (recognized.length === 0 && compiledSourcePaths.length === 0 && blocked.length === 0) {
+    return undefined;
+  }
+  return {
+    recognized,
+    compiled: {
+      sourcePaths: compiledSourcePaths,
+      stateIds: compiledStateIds,
+      controllers: zssControllers.length,
+    },
+    executed: {
+      stateIds: [],
+      controllers: 0,
+    },
+    blocked: {
+      count: blocked.reduce((total, item) => total + item.count, 0),
+      features: [...new Set(blocked.map((item) => item.feature))].sort((left, right) => left.localeCompare(right)),
+      locations: [...new Set(blocked.map((item) => item.location).filter((location): location is string => Boolean(location)))].sort(
+        (left, right) => left.localeCompare(right),
+      ),
+    },
+  };
 }
 
 function createEmptyFiles(): ResolvedCharacterFiles {

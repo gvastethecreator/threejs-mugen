@@ -1,23 +1,399 @@
 ﻿# Roadmap Execution Board
 
-## Current official-parity queue — T424-T427 selected (2026-07-30)
+## Current official-parity queue — T424-T481 closed-bounded; T471 content active (2026-08-01)
 
 Authority: [official M.U.G.E.N / Ikemen-GO comparison](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md).
-The latest implemented runtime checkpoint remains T423. The next executable
-task is T424; T425-T427 are queued behind their written dependencies.
+T424 through T438, T463/T464 and T465-T480 are closed-bounded with final
+gates. T475 is the preceding closed source-selected R1 airborne-only `air.fall`
+slice; T476 is the closed lying-target `down.velocity.x` continuation; T477 is
+the closed signed `fall.xvelocity` bounce correction; T478 is the closed CommonFX
+visual-scale and localcoord propagation; T480 is the closed Ikemen
+`fall.zvelocity` depth continuation. T481 closes the three-component HitDef
+velocity-Z continuation and T471 is the active content provider-row lane;
+its generated-report path hygiene now passes, while spritesheet promotion
+gates remain red and scores remain held.
 
 | Order | Task | Lane | Status | Exit evidence | Issue |
 | --- | --- | --- | --- | --- | --- |
-| 1 | T424 M.U.G.E.N same-tick current-state transition chain | R1 | ready / immediate | Root + helper red/green order/cycle tests, required imported trace, expanded runtime gates | [09](../.scratch/roadmap/issues/09-mugen-current-state-transition-loop.md) |
-| 2 | T425 Ikemen stable P2 switch contract | I2 | queued / source decision first | 05b-vs-wiki decision, 29/30/>30 and invalidation tests, live `P2Name`, trace if behavior changes | [10](../.scratch/roadmap/issues/10-ikemen-p2-stable-switch-contract.md) |
-| 3 | T426 M.U.G.E.N `select.def` playable roster/stage authority | R1 | queued | Versioned manifest, hostile VFS cases, real product consumer, browser proof | [11](../.scratch/roadmap/issues/11-mugen-select-def-playable-roster.md) |
-| 4 | T427 Ikemen live ZSS state pipeline | I2 | queued after T424 | Direct/fallback/mixed loader tests, shared IR, live runtime trace, located unsupported diagnostics | [12](../.scratch/roadmap/issues/12-ikemen-zss-live-state-pipeline.md) |
+| 1 | T424 M.U.G.E.N same-tick current-state transition chain | R1 | closed-bounded | Root + helper same-tick order, cycle telemetry, 305/3234 suite, build/boundaries, 667/667 trace artifacts | [09](../.scratch/roadmap/issues/09-mugen-current-state-transition-loop.md) |
+| 2 | T425 Ikemen stable P2 switch contract | I2 | closed-bounded | 05b decision (no wiki-only 30 px), one-pixel/KO invalidation, live controller `P2Name`, required trace 668/668 | [10](../.scratch/roadmap/issues/10-ikemen-p2-stable-switch-contract.md) |
+| 3 | T426 M.U.G.E.N `select.def` playable roster/stage authority | R1 | closed-bounded | Manifest, hostile VFS cases, owner-routed roster consumer, desktop/mobile browser reimport, 668/668 trace, smoke, 307/3245 suite | [11](../.scratch/roadmap/issues/11-mugen-select-def-playable-roster.md) |
+| 4 | T427 Ikemen live ZSS state pipeline | I2 | closed-bounded | Direct/fallback/mixed loader tests, shared IR, live trace `47c627a2`, 669/669 trace corpus | [12](../.scratch/roadmap/issues/12-ikemen-zss-live-state-pipeline.md) |
+| 5 | T428 Ikemen ZSS HitPause wrapper semantics | I2 | closed-bounded | Mixed CNS/ZSS global-pause fixture, source-located wrapped execution, frozen unwrapped control, 310/3257 suite, trace `b6533370` in 670/670 | [13](../.scratch/roadmap/issues/13-ikemen-zss-hitpause-wrapper-semantics.md) |
+| 6 | T429 Ikemen ZSS combined wrapper persistence | I2 | closed-bounded | ZSS-only pause cadence/reset, source-located M.U.G.E.N rejection, trace `4ff43eb7` in 671/671, 311/3260 suite, production build | [14](../.scratch/roadmap/issues/14-ikemen-zss-combined-wrapper-persistence.md) |
+| 7 | T430 M.U.G.E.N CNS persistent cadence | R1 | closed-bounded | Raw CNS positive `persistent = 2` normal trigger-count cadence/reset, trace `f7c32a53` in 676/676 | [15](../.scratch/roadmap/issues/15-mugen-cns-persistent-cadence.md) |
+| 8 | T431 M.U.G.E.N CNS persistent zero | R1 | closed-bounded | Raw CNS `persistent = 0` once per normal state entry via `200 -> 201 -> 200`, trace `d13ad12a` in 673/673 | [16](../.scratch/roadmap/issues/16-mugen-cns-persistent-zero.md) |
+| 9 | T432 M.U.G.E.N CNS HitPause persistent zero | R1 | closed-bounded | Paired raw CNS zero once per paused state entry, trace `94b49516` in 674/674 | [17](../.scratch/roadmap/issues/17-mugen-cns-hitpause-persistent-zero.md) |
+| 10 | T433 M.U.G.E.N CNS HitPause persistent cadence | R1 | closed-bounded | Paired raw CNS `ignorehitpause = 1` + `persistent = 2` at pause ticks 2/4/6, trace `d6d00fd0` in 675/675 | [18](../.scratch/roadmap/issues/18-mugen-cns-hitpause-persistent-cadence.md) |
+| 11 | T434 M.U.G.E.N CNS persistent trigger count | R1 | closed-bounded | Raw CNS `persistent = 2` counts sparse trigger passes, trace `3eb88436` in 676/676 | [19](../.scratch/roadmap/issues/19-mugen-cns-persistent-trigger-count.md) |
+| 12 | T435 M.U.G.E.N CNS `StateDef -2` persistent | R1 | closed-bounded | Raw CNS `-2` persistent `= 2` survives current-state entry, trace `6fce3962` in 677/677 | [20](../.scratch/roadmap/issues/20-mugen-cns-special-persistent.md) |
+| 13 | T436 M.U.G.E.N CNS `StateDef -3` persistent | R1 | closed-bounded | Raw CNS `-3` persistent `= 2` survives current-state entry with no `stateOwner`, trace `b2719d71` in 678/678 | [21](../.scratch/roadmap/issues/21-mugen-cns-state-minus-three-persistent.md) |
+| 14 | T437 M.U.G.E.N CNS `StateDef -1` persistent | R1 | closed-bounded | Imported CMD setup `persistent = 2` counts sparse trigger passes across `0 -> 200`, trace `ba3d289d` in 679/679 | [22](../.scratch/roadmap/issues/22-mugen-cns-state-minus-one-persistent.md) |
+| 15 | T438 M.U.G.E.N CNS `StateDef -1` persistent zero | R1 | closed-bounded | Imported CMD setup `persistent = 0` fires once per controller/actor cycle, trace `27e1ffb7` in 680/680 | [23](../.scratch/roadmap/issues/23-mugen-cns-state-minus-one-persistent-zero.md) |
+| 16 | T463 M.U.G.E.N CMD `StateDef -1` `ChangeState` persistent zero | R1 | closed-bounded | State-entry persistence hook before value resolution; one tick-1 route survives `0 -> 200 -> 201 -> 0`, trace `88931500` in 681/681 | [48](../.scratch/roadmap/issues/48-mugen-cmd-state-minus-one-changestate-persistent-zero.md) |
+| 17 | T464 M.U.G.E.N CMD `StateDef -1` `ChangeState` persistent cadence | R1 | closed-bounded | Static `persistent = 2` routes on trigger passes 1/3 at ticks 1/4 across repeated state chains, trace `3681fafa` in 682/682 | [49](../.scratch/roadmap/issues/49-mugen-cmd-state-minus-one-changestate-persistent.md) |
+| 18 | T465 M.U.G.E.N guard timing cadence | R1 | closed-bounded | Separate default-runtime slide/control countdowns; authored `GetHitVar` values remain stable; direct/projectile/reset coverage; 324/3289 suite, typecheck, build, boundaries, 682/682 traces | [50](../.scratch/roadmap/issues/50-mugen-guard-timing-cadence.md) |
+| 19 | T466 M.U.G.E.N `airguard.ctrltime` resolution | R1 | closed-bounded | HitDef/projectile parse + resolver fallback/override; air guard selects override while ground guard is unchanged; 324/3289 suite, typecheck, build, boundaries, 682/682 traces | [51](../.scratch/roadmap/issues/51-mugen-airguard-ctrl-time.md) |
+| 20 | T467 M.U.G.E.N `air.hittime` resolution | R1 | closed-bounded | HitDef/ModifyHitDef/projectile parse + imported/runtime propagation; airborne normal hits select authored/default 20 while ground hits retain `ground.hittime`; focused/compiler/runtime regressions, trace 682/682 | [52](../.scratch/roadmap/issues/52-mugen-air-hit-time.md) |
+| 21 | T468 M.U.G.E.N `air.hittime` / `fall=1` precedence | R1 | closed-bounded | Airborne falling direct hits use the bounded ground `hitStun` fallback; non-falling air hits keep authored/default `air.hittime`; ground/guard/projectile paths unchanged; focused resolver + fall traces | [53](../.scratch/roadmap/issues/53-mugen-air-hit-time-fall-interaction.md) |
+| 22 | T469 M.U.G.E.N `down.hittime` / `down.velocity` interaction | R1 | closed-bounded | Lying hits carry authored/default 20-tick down timing; non-zero down Y launches into air timing; direct/ModifyHitDef/projectile compiler and resolver coverage; 324/3292 suite, typecheck, build, boundaries, 682/682 traces | [54](../.scratch/roadmap/issues/54-mugen-down-hit-time.md) |
+| 23 | T472 M.U.G.E.N `down.bounce` hit-fall contract | R1 | closed-bounded | Typed direct/ModifyHitDef/Projectile propagation, explicit `HitFallVel` false/true gate, projectile fall metadata; 198 focused, 324/3294 full, typecheck/build/boundaries, 682/682 trace | [57](../.scratch/roadmap/issues/57-mugen-down-bounce.md) |
+| 24 | T473 M.U.G.E.N `fall.recover` / `fall.recovertime` defaults | R1 | closed-bounded | Shared direct/projectile default resolver; 102 focused, 324/3296 full, typecheck/build/boundaries, 682/682 trace | [58](../.scratch/roadmap/issues/58-mugen-fall-recovery-defaults.md) |
+| 25 | T474 M.U.G.E.N `fall.yvelocity` localcoord defaults | R1 | closed-bounded | Shared localcoord-aware default resolver; 105 focused, 324/3299 full, typecheck/build/boundaries, 682/682 trace | [59](../.scratch/roadmap/issues/59-mugen-fall-yvelocity-localcoord.md) |
+| 26 | T475 M.U.G.E.N `air.fall` airborne-only selection | R1 | closed-bounded | Typed compiler/HitDef/projectile flag; standing vs airborne resolver/materialization; focused compiler/runtime regressions, full gates, 682/682 trace | [60](../.scratch/roadmap/issues/60-mugen-air-fall-default-selection.md) |
+| 27 | T476 M.U.G.E.N/Ikemen `down.velocity.x` propagation | R1 | closed-bounded | Typed X propagation with official sign; 247 focused, 324/3308 full, typecheck/build/boundaries, 682/682 trace | [61](../.scratch/roadmap/issues/61-mugen-down-velocity-x.md) |
+| 28 | T477 M.U.G.E.N/Ikemen `fall.xvelocity` signed bounce | R1 | closed-bounded | Direct/projectile fall X remains authored and signed across opposite facing; 121 focused, 324/3310 full, typecheck/build/boundaries and 682/682 trace pass | [62](../.scratch/roadmap/issues/62-mugen-fall-xvelocity-sign.md) |
+| 29 | T478 Ikemen CommonFX `fx.scale` propagation | I2 | closed-bounded | DEF metadata -> imported library -> AIR frame -> resolved sprite dimensions/offsets; 38 focused, 324/3313 full, typecheck/build/boundaries, 682/682 trace | [63](../.scratch/roadmap/issues/63-ikemen-commonfx-scale.md) |
+| 30 | T479 Ikemen CommonFX `localcoord` scale projection | I2 | closed-bounded | Package/character coordinate ratio derives effective AIR scale; 39 focused, 324/3314 full, typecheck/build/boundaries, 682/682 trace; exact timing/cache/palette/layer/audio remain open | [64](../.scratch/roadmap/issues/64-ikemen-commonfx-localcoord.md) |
+| 31 | T480 Ikemen-GO `fall.zvelocity` depth propagation | I2 | closed-bounded | HitDef/imported/projectile/HitFallSet metadata reaches `combatDepth.velocity`; 7 files/230 focused, 324/3316 full, typecheck/build/boundaries, 682/682 trace; exact M.U.G.E.N Z/Common1 depth physics remain open | [65](../.scratch/roadmap/issues/65-ikemen-fall-zvelocity.md) |
+| 32 | T481 Ikemen-GO HitDef velocity Z propagation | I2 | closed-bounded | Three-component ground/air/down/guard/airguard vectors reach direct/projectile contact and explicit `combatDepth.velocity`; 251 focused, 324/3317 full, typecheck/build/boundaries, 682/682 trace; ModifyHitDef/Common1 Z physics remain open | [66](../.scratch/roadmap/issues/66-ikemen-hitdef-velocity-z.md) |
 
 Selection rule: the official Ikemen wiki delegates legacy behavior to
 Elecbyte's M.U.G.E.N 1.1 docs. Shared VM/package gaps therefore outrank broad
-Ikemen feature breadth, while T425 closes the bounded P2 thread started by
-T419-T423. This planning update adds no runtime evidence and does not move the
-scores (`65 / 36 / 20 / 10-12 / 6-8 / 25`).
+Ikemen feature breadth. T427 closed the source-to-runtime cut, T428 closed
+the basic wrapper pause filter, and T429 closed the combined paused-ZSS
+cadence. T430/T431 close normal raw-CNS interval/zero behavior and T432 closes
+the paired raw-CNS paused zero gap. T433 closes paired raw-CNS positive paused
+cadence, T434 corrects normal raw-CNS positive cadence to count trigger
+passes, T435 closes `StateDef -2`, T436 closes `StateDef -3` with its
+no-`stateOwner` boundary, and T437 closes imported CMD `StateDef -1` setup
+`persistent = 2`; T438 closes its matching imported `persistent = 0`
+setup one-shot route, and T463 applies that same isolated marker to the static
+State -1 `ChangeState` route. T464 applies the isolated T437 positive
+trigger-count map to that same static route. T465/T466/T467 close the bounded
+guard and direct-hit timing parameter seams; T468 gives `fall=1` precedence over
+airborne `air.hittime` in the effective resolver stun. T469 closes the bounded
+lie-down timing/velocity seam; T472 carries the explicit bounce flag into the
+hit-fall seam with explicit false/true coverage; T473 applies the documented
+fall recovery defaults at direct/projectile materialization; T474 applies the
+localcoord-aware omitted fall velocity at the same seam; T475 keeps `air.fall`
+airborne-only while preserving the base fall flag; T476 carries authored
+horizontal `down.velocity` into lie-down direct/projectile contacts; T477 keeps
+authored fall bounce X signed without facing mirroring; T478 closes the bounded
+CommonFX `fx.scale` metadata seam, T479 derives the package/character
+`localcoord` scale, and T480 carries Ikemen `fall.zvelocity` into depth
+without changing the score movement; T481 carries authored HitDef velocity Z
+through direct/projectile context selection without changing the score movement.
+Exact Common1 default, landing tables, bounce lifetime, velocity scaling,
+recovery-state choreography, and M.U.G.E.N Z parity remain outside the claim.
+
+## User-directed content expansion queue — T439-T462 (in progress)
+
+The original-content queue is separate from official parity: six satirical,
+original fighters, eight classic-uniform recolors, shared VFX/FightFX, four
+parallax stages, and roster/runtime integration. The eight classic packs now
+expose regenerated subdued Imagegen 4x4 action grids, 14-state atlases, CC0
+permission manifests and MUGEN-lite DEF/CMD/CNS/AIR templates; binary SFF,
+palettes, collision audit and per-package trace remain open. T461 tracks the
+v2 classic regeneration and T462 tracks the v2 four-stage regeneration. T462 is
+closed-bounded for generation, parallax proof and browser selection; T457-
+T460 still own closure steps. T470 closes the spritesheet coverage audit across
+all public character packages; T471 is the active provider-row regeneration
+before T461 can be promoted. Bruno Giro has four fresh Imagegen rows with
+provenance, alignment and fourteen fresh runtime previews; aggregate
+identity/contract gates remain red. Contracts live in [ROADMAP_CONTENT_PACK.md](ROADMAP_CONTENT_PACK.md);
+issues 24-47 and 55-56 own bounded deliverables. T465 through T481 are
+closed-bounded; T471 remains the active source-selected content cursor.
+
+| Order | Task | Lane | Status | Issue |
+| --- | --- | --- | --- | --- |
+| 15 | T439 Don Rayo | C1 | in progress | [24](../.scratch/roadmap/issues/24-content-don-rayo.md) |
+| 16 | T440 La Jefa del Combo | C1 | in progress | [25](../.scratch/roadmap/issues/25-content-la-jefa-del-combo.md) |
+| 17 | T441 Turbo Abuela | C1 | in progress | [26](../.scratch/roadmap/issues/26-content-turbo-abuela.md) |
+| 18 | T442 Tanque de Cartón | C1 | in progress | [27](../.scratch/roadmap/issues/27-content-tanque-de-carton.md) |
+| 19 | T443 Monje Wi‑Fi | C1 | in progress | [28](../.scratch/roadmap/issues/28-content-monje-wifi.md) |
+| 20 | T444 Sombra del Súper | C1 | in progress | [29](../.scratch/roadmap/issues/29-content-sombra-del-super.md) |
+| 21 | T445 VFX/FightFX satírico | C2 | in progress | [30](../.scratch/roadmap/issues/30-content-vfx-fightfx.md) |
+| 22 | T446 stages parallax | C3 | in progress | [31](../.scratch/roadmap/issues/31-content-parallax-stages.md) |
+| 23 | T447 roster/runtime integration | C4 | in progress | [32](../.scratch/roadmap/issues/32-content-roster-runtime-integration.md) |
+| 24 | T448 variantes de vestuario homenaje | C1 | planificada | [33](../.scratch/roadmap/issues/33-content-homage-costume-variants.md) |
+| 25 | T449 Mara Cinta | C1 | in progress | [34](../.scratch/roadmap/issues/34-content-mara-cinta.md) |
+| 26 | T450 Toro Pixel | C1 | in progress | [35](../.scratch/roadmap/issues/35-content-toro-pixel.md) |
+| 27 | T451 Nico Guante | C1 | in progress | [36](../.scratch/roadmap/issues/36-content-nico-guante.md) |
+| 28 | T452 Luna Codo | C1 | in progress | [37](../.scratch/roadmap/issues/37-content-luna-codo.md) |
+| 29 | T453 Sargento Pila | C1 | in progress | [38](../.scratch/roadmap/issues/38-content-sargento-pila.md) |
+| 30 | T454 Bruno Giro | C1 | in progress | [39](../.scratch/roadmap/issues/39-content-bruno-giro.md) |
+| 31 | T455 Vera Patada | C1 | in progress | [40](../.scratch/roadmap/issues/40-content-vera-patada.md) |
+| 32 | T456 Rulo Viento | C1 | in progress | [41](../.scratch/roadmap/issues/41-content-rulo-viento.md) |
+| 33 | T461 classic roster v2 sobrio/Baki | C1 | in progress | [46](../.scratch/roadmap/issues/46-content-classic-baki-regeneration.md) |
+| 34 | T462 escenarios v2 sobrios/parallax | C3 | closed-bounded | [47](../.scratch/roadmap/issues/47-content-stages-baki-regeneration.md) |
+| 35 | T470 spritesheet coverage audit | C1 | closed-bounded | [55](../.scratch/roadmap/issues/55-content-spritesheet-coverage-audit.md) |
+| 36 | T471 provider regeneration de filas bloqueadas | C1 | in progress | Mara/Rulo `guard-v3` rechazadas con 35/27 blockers; Nova/Rook atlas recompuesto con provenance/alineación/playback verdes pero animation/identity/visual rojos; tres anchors sólo motion references; [56](../.scratch/roadmap/issues/56-content-spritesheet-provider-regeneration.md) |
+| 37 | T457 classic palettes | C1 | planned | [42](../.scratch/roadmap/issues/42-content-classic-palettes.md) |
+| 38 | T458 classic SFF bridge | C2 | planned | [43](../.scratch/roadmap/issues/43-content-classic-sff-bridge.md) |
+| 39 | T459 classic collision QA | C2 | planned | [44](../.scratch/roadmap/issues/44-content-classic-collision-qa.md) |
+| 40 | T460 classic roster traces | C4 | planned | [45](../.scratch/roadmap/issues/45-content-classic-traces.md) |
+
+## Runtime continuation checkpoint — T427 live ZSS state pipeline (closed-bounded, 2026-07-30)
+
+Direct `.zss`, missing-CNS `.cns.zss` fallback, and deterministic CNS/ZSS
+source mixing now flow through `MugenCharacterLoader`, shared state IR, and
+`PlayableMatchRuntime` only under `ikemen-go`. The exact executable list is
+`Null`, `PosAdd`, `ChangeState`, and `VelSet`; syntax/controller violations
+block the whole source and M.U.G.E.N gets a located rejection. Required
+`ikemen-zss-live` trace checksum is `47c627a2`; `pnpm qa:trace` passed 669/669
+artifacts (635 required).
+
+## Runtime continuation checkpoint — T428 ZSS HitPause wrapper (closed-bounded, 2026-07-30)
+
+A separate CC0 mixed fixture preserves the T427 route while CNS `StateDef 200`
+starts global hit pause. Appended ZSS `StateDef -2` executes source-located
+`ignoreHitPause VelSet` during the pause and leaves its unwrapped `PosAdd`
+frozen; M.U.G.E.N rejects the same ZSS source. Required
+`ikemen-zss-hitpause-wrapper` checksum is `b6533370`; the trace corpus passed
+670/670 artifacts (636 required). T429 addresses only the next official
+combined `persistent(n)` cadence gap, not generic ZSS support.
+
+## Runtime continuation checkpoint — T429 combined wrapper persistence (closed-bounded, 2026-07-30)
+
+During real CNS-owned HitPause, a source-located ZSS
+`ignoreHitPause persistent(2)` controller runs on scheduler ticks 2 and 4,
+skips tick 3, then resets after the CNS state-200-to-201 transition and runs
+again on tick 5. The actor/controller-local counter is ZSS-only; the unwrapped
+ZSS `PosAdd` stays frozen and CNS persistence is unchanged. Loader/source-order
+tests preserve the located M.U.G.E.N rejection. Required
+`ikemen-zss-combined-persistent-wrapper` checksum is `4ff43eb7` in a passing
+671/671 trace corpus (637 required); typecheck and 311/3260 suite pass.
+
+After a monitored build allowed the slow `vite:prepare-out-dir` copy to finish,
+`pnpm build` passed in 3m59s; it emits only the existing large-chunk advisory.
+No UI changed, so smoke is N/A; no score movement or general ZSS/CNS
+persistence claim follows. T430 owns the separate raw-CNS positive cadence gap.
+
+## Runtime continuation checkpoint — T430 M.U.G.E.N CNS persistent cadence (closed-bounded, 2026-07-30)
+
+ Raw CNS `persistent = 2` now counts trigger-passing ordinary active-root
+normal scans, skips the second trigger, runs on the third, and resets on state
+entry. Required `mugen-cns-persistent-cadence` checksum `f7c32a53` remains
+passed in the expanded 676/676 corpus; T434 adds sparse-trigger checksum
+`3eb88436`. Focused coverage, typecheck, full suite, build, and boundaries pass.
+Paused CNS, zero values, helpers, special states, dynamic values, and generic VM
+parity remain out of scope.
+
+## Runtime continuation checkpoint — T431 M.U.G.E.N CNS persistent zero (closed-bounded, 2026-07-30)
+
+Raw CNS `persistent = 0` now claims the first trigger-passing ordinary
+active-root normal scan once per state entry. The fixture proves executions at
+ticks 1 and 4 around `200 -> 201 -> 200`, with repeated scans skipped and an
+unparameterized controller still running. Required
+`mugen-cns-persistent-zero` checksum `d13ad12a` passed in 673/673 artifacts
+(639 required); focused coverage, typecheck, 3264-test suite, build, and
+boundaries pass. Direct same-id `ChangeState` timing stays blocked because the
+current state clock does not reset there.
+
+## Runtime continuation checkpoint — T432 M.U.G.E.N CNS HitPause persistent zero (closed-bounded, 2026-07-30)
+
+The paired raw-CNS `ignorehitpause = 1` plus `persistent = 0` controller now
+executes once on its first eligible paused scan, skips later scans, and executes
+again after `200 -> 201 -> 200`; its unwrapped sibling stays frozen. Required
+`mugen-cns-hitpause-persistent-zero` checksum `94b49516` passed in 674/674
+artifacts (640 required), alongside focused 5/333 coverage, typecheck, full
+314/3266 suite, build, and boundaries. No UI changed, so smoke is N/A. Raw
+positive paused cadence, unpaired wrappers, ZSS zero, helpers/specials, and
+generic controller-VM parity remain out of scope.
+
+## Runtime continuation checkpoint — T433 M.U.G.E.N CNS HitPause persistent cadence (closed-bounded, 2026-07-30)
+
+T433 audits only a paired raw-CNS `ignorehitpause = 1` plus `persistent = 2`
+controller in an ordinary active-root current state. It must use paused
+scheduler passes rather than frozen state time for first/skip/interval/reset
+behavior; trace `d6d00fd0` passed in 675/675 artifacts, with 6/335 focused,
+315/3268 full suite, typecheck, build, and boundaries. All other values,
+wrappers, actor scopes, and VM timing remain blocked.
+
+## Runtime continuation checkpoint — T434 M.U.G.E.N CNS persistent trigger count (closed-bounded, 2026-07-30)
+
+T434 aligns raw-CNS normal `persistent = 2` with the official trigger-pass
+contract. Sparse trigger proof executes on the first and third trigger passes,
+not on a state-time modulo; trace `3eb88436` passed in 676/676 artifacts, with
+316/3270 full suite, typecheck, build, boundaries, and hygiene. Pause, ZSS,
+globals/specials, helpers, and generic VM timing remain blocked.
+
+## Runtime continuation checkpoint — T435 M.U.G.E.N CNS State -2 persistent (closed-bounded, 2026-07-30)
+
+Raw CNS `StateDef -2` is checked every tick before the current state. Its
+`persistent = 2` controller counts sparse trigger passes at ticks 1 and 4,
+skips tick 3, and keeps its separate counter across the `0 -> 200` transition.
+Trace `6fce3962` passed in 677/677 artifacts (643 required); focused 1/2,
+317/3272 full suite, typecheck, build, boundaries, and hygiene pass. This does
+not claim `-3`/`-1`, player-owned custom states, pause, helpers, dynamic values,
+or generic VM parity.
+
+## Runtime continuation checkpoint — T436 M.U.G.E.N CNS State -3 persistent (closed-bounded, 2026-07-30)
+
+Raw CNS `StateDef -3` now has the same bounded trigger-count route as `-2`:
+`persistent = 2` executes on sparse trigger passes 1 and 4 and skips pass 3
+across the `0 -> 200` transition. The counter is separate and survives current
+state entry, while the runtime admits it only when `fighter.stateOwner` is
+undefined, matching the official exclusion for another player's state.
+Trace `b2719d71` passed in 678/678 artifacts (644 required); focused 1/2,
+318/3274 full suite, typecheck, build, boundaries, and hygiene pass. No UI
+changed, so smoke is N/A. `-2`/`-1` expansion, custom-state ownership, pause,
+helpers, dynamic values, and generic VM parity remain blocked.
+
+## Runtime continuation checkpoint — T464 M.U.G.E.N CMD State -1 ChangeState persistent cadence (closed-bounded, 2026-08-01)
+
+The static State -1 `ChangeState` route now reuses T437's isolated positive
+trigger-count map. Sparse eligible triggers at StageTime 1/3/4 route on the
+first and third passes (ticks 1/4), skip tick 3, and preserve the counter
+through each `0 -> 200 -> 201 -> 0` chain. Required trace
+`mugen-cns-state-minus-one-changestate-persistent` checksum `3681fafa` passes
+in 682/682 artifacts (648 required, 34 optional); 324/3287 full tests,
+typecheck, build and boundaries pass. No UI changed, so smoke is N/A.
+
+## Runtime continuation checkpoint — T465 M.U.G.E.N guard timing cadence (closed-bounded, 2026-08-01)
+
+The runtime now keeps authored `guardSlideTime` / `guardControlTime` stable for
+`GetHitVar(slidetime)` / `GetHitVar(ctrltime)` and tracks separate remaining
+windows for the default guard route. Direct and projectile guards seed those
+windows; normal hits, hit overrides, reversals, and intro reset clear them.
+Default runtime slide velocity stops and control returns at their respective
+boundaries, while imported authored guard states remain in charge of Common1
+presentation. Focused 102-test guard/stun suite, full 324/3289 suite,
+typecheck, build, boundaries, and the 682/682 trace corpus pass. UI smoke is
+N/A because no visible surface changed.
+
+## Runtime continuation checkpoint — T466 M.U.G.E.N air-guard control time (closed-bounded, 2026-08-01)
+
+`airguard.ctrltime` now parses and compiles for HitDef and ModifyHitDef,
+resolves to `guard.ctrltime` when omitted, and carries through imported
+fighters and projectiles. CombatResolver chooses the explicit air value only
+for air guard contacts; ground guard keeps the ground value. Focused
+HitDef/projectile/combat suite (149 tests), full 324/3289 suite, typecheck,
+build, boundaries, and 682/682 traces pass. No checksum changed and UI smoke
+is N/A.
+
+## Runtime continuation checkpoint — T467 M.U.G.E.N air hit time (closed-bounded, 2026-08-01)
+
+`air.hittime` now parses and compiles for HitDef, ModifyHitDef, and Projectile, propagates
+through imported/runtime moves and projectiles, and is selected only for
+airborne normal hits. Omitted values use the official 20-tick default; ground
+hits retain `ground.hittime`, and guard timing is unchanged. Focused compiler,
+HitDef, projectile, and combat regressions pass; `pnpm qa:trace` remains
+682/682 with unchanged checksums. Final suite, typecheck, build, boundaries,
+and diff hygiene pass: full suite 324 files / 3290 tests, with content gates
+recorded separately below; UI smoke is N/A.
+
+## Runtime continuation checkpoint — T468 M.U.G.E.N air hit time / fall interaction (closed-bounded, 2026-08-01)
+
+The effective direct-hit resolver now gives `fall=1` precedence over airborne
+`air.hittime`: an airborne falling hit uses the existing bounded ground
+`hitStun` fallback, while an airborne non-falling hit keeps the authored/default
+20-tick `air.hittime`. Ground hits, guard contacts, projectile no-fall paths,
+and direct `runtime.hitFall` metadata are unchanged. Focused resolver coverage
+is 27 tests and the targeted fall trace subset is 2 tests. Final closeout passes
+324 files / 3291 tests, typecheck, build, boundaries, `qa:trace` 682/682, and
+diff hygiene. This is a resolver cut only, not exact Common1 fall/landing or
+`GetHitVar(hittime)` lifetime parity; UI smoke is N/A.
+
+## Runtime continuation checkpoint — T469 M.U.G.E.N down hit time / velocity interaction (closed-bounded, 2026-08-01)
+
+The typed HitDef, ModifyHitDef, Projectile, imported move, and projectile
+contracts now carry `down.hittime` plus the effective Y component of
+`down.velocity`. The resolver selects the bounded 20-tick/default or authored
+down timing while a defender is lying down with zero vertical velocity, and
+switches to airborne timing when the down hit launches vertically. Focused
+compiler/HitDef/projectile/combat coverage and the existing down-hit trace
+subset pass. Final closeout passes 324 files / 3292 tests, typecheck, build,
+boundaries, `qa:trace` 682/682, and diff hygiene; UI smoke is N/A. Exact
+lie-down Common1 tables, bounce/recovery, and full `GetHitVar` lifetime parity
+remain outside the claim.
+
+## Runtime continuation checkpoint — T472 M.U.G.E.N `down.bounce` (closed-bounded, 2026-08-01)
+
+`down.bounce` now compiles on direct HitDef, ModifyHitDef and Projectile
+controllers, persists on direct/projectile fall metadata, and gates
+`HitFallVel`: explicit `0` clears bounce velocity while omitted/`1` preserve
+the current compatibility path. Focused coverage passes 198 tests; the full
+suite passes 324 files / 3294 tests; typecheck, build, boundaries and
+`qa:trace` pass 682/682 artifacts. UI smoke is N/A because no visible surface
+changed. Exact Common1 default and landing parity stay outside the claim.
+
+## Runtime continuation checkpoint — T473 M.U.G.E.N fall recovery defaults (closed-bounded, 2026-08-01)
+
+The shared runtime resolver now applies the official enabled-fall defaults:
+omitted `fall.recover` becomes `true` and omitted `fall.recovertime` becomes
+`4`. Explicit `recover = 0`, authored times, and disabled falls remain
+unchanged across direct and projectile materialization. Focused coverage is
+102 tests and the full suite is 324 files / 3296 tests; typecheck, build,
+boundaries and `qa:trace` 682/682 pass. UI smoke is N/A because no visible
+surface changed; exact Common1 recovery-state choreography is outside the
+bounded claim.
+
+## Runtime continuation checkpoint — T474 M.U.G.E.N localcoord fall velocity defaults (closed-bounded, 2026-08-01)
+
+The shared runtime helper now resolves omitted `fall.yvelocity` from the
+documented 320px baseline: `-4.5` at 320px, `-9` at 640px, and `-18` at
+1280px. Direct hits read the defender localcoord; projectiles read their
+carried localcoord. Authored fall Y velocity, authored hit velocity, and
+invalid/missing localcoord fallback remain unchanged. Focused coverage is 105
+tests and the full suite is 324 files / 3299 tests; typecheck, build,
+boundaries and `qa:trace` 682/682 pass. UI smoke is N/A because no visible
+surface changed; exact Common1 landing physics and non-linear viewport scaling
+remain outside the bounded claim.
+
+## Previous runtime checkpoint — T463 M.U.G.E.N CMD State -1 ChangeState persistent zero (closed-bounded, 2026-08-01)
+
+`RuntimeStateEntryRouteWorld` now invokes a bounded persistence admission hook
+after triggers and before static/dynamic destination resolution. The raw CMD
+State -1 `persistent = 0` marker is actor/controller-local and survives the
+same-tick `0 -> 200 -> 201` chain plus the later idle return to state 0, so
+eligible StageTime triggers at ticks 3/4 cannot reroute. Required trace
+`mugen-cns-state-minus-one-changestate-persistent-zero` checksum `88931500`
+passes in 681/681 artifacts (647 required, 34 optional); 323/3285 full tests,
+typecheck, build and boundaries pass. No UI changed, so smoke is N/A.
+
+## Previous runtime checkpoint — T438 M.U.G.E.N CNS State -1 persistent zero (closed-bounded, 2026-07-30)
+
+Imported CMD `StateDef -1` setup controllers now honor raw `persistent = 0`
+as one execution per controller/actor cycle. The fixture covers repeated
+scans, a `0 -> 200` transition, reset on the next cycle, and the existing
+input/AI ownership seam. Required trace `27e1ffb7` passed in 680/680
+artifacts (646 required, 34 optional); focused coverage, full suite,
+typecheck, build, boundaries, hygiene, and docs pass. State -1 ChangeState,
+helpers, pause, dynamic values, and generic VM parity remain blocked.
+
+## Runtime continuation checkpoint — T437 M.U.G.E.N CNS State -1 persistent (closed-bounded, 2026-07-30)
+
+Imported CMD `StateDef -1` setup controllers now apply the bounded raw-CNS
+`persistent = 2` trigger-count contract. The separate counter executes on
+trigger passes 1 and 4, skips pass 3, and survives the current `0 -> 200`
+transition. Required trace `ba3d289d` passed in 679/679 artifacts (645
+required, 34 optional); full suite 319/3276, typecheck, build, boundaries,
+hygiene, and docs pass. State -1 `ChangeState`, `persistent = 0`, helpers,
+pause, dynamic values, and generic VM parity remain blocked.
+
+## Runtime continuation checkpoint — T425 stable P2 switch (closed-bounded, 2026-07-30)
+
+The normative 05b pin remains the runtime authority: the current wiki's
+30-pixel retention wording is not ported because neither 05b nor reviewed
+current master has that branch. Local P2 cache invalidates on source-visible
+candidate/position changes. Controller value expressions now receive the same
+live P2 roster bindings as active triggers, so `VarSet value = P2Name` sees
+the refreshed P4 candidate.
+
+Focused proof: 5 files / 342 tests. Final gates: serial suite 305 files /
+3240 tests, `pnpm typecheck`, `pnpm build`, `pnpm check:boundaries`, and
+`git diff --check` passed. Required
+`synthetic-imported-ikemen-p2-value` trace checksum is `fa72c6f2`;
+`pnpm qa:trace` passed 668/668 artifacts (634 required, 34 optional).
+Claim remains bounded to explicit `ikemen-go` P2 selection and live controller
+values; full CharList timing, teams, rollback/netplay, and wiki-only hysteresis
+remain blocked.
+
+## Runtime continuation checkpoint — T424 current-state transition chain (closed-bounded, 2026-07-30)
+
+Root/helper current-state `ChangeState` now returns typed transition metadata
+and continues the destination in the same tick. Source tails skip. Special-state
+order remains unchanged. Shared 32-transition budget prevents authored cycles
+from hanging a frame; imported root diagnostics land in
+`compatibilitySession.stateTransitionCycles`.
+
+Focused proof: 5 files / 403 tests passed. Final gates: serial suite 305 files
+/ 3234 tests, `pnpm typecheck`, `pnpm build`, `pnpm check:boundaries`, and
+`git diff --check` passed; `pnpm qa:trace` passed 667/667 artifacts (633
+required, 34 optional). Claim ceiling: tested imported root/helper profiles,
+not full CNS/ZSS or complete parity.
 
 ## Runtime continuation checkpoint — T423 active expression root selection (closed-bounded, 2026-07-30)
 
@@ -49,6 +425,11 @@ explícita quedan alineados; `Partner(index)` y legacy no cambian.
 
 Prueba focal: 3 archivos / 118 tests. Ledger:
 `docs/research/2026-07-30-ikemen-partner-name-reads.md`.
+
+Suite serial: 305 archivos / 3230 tests, typecheck, build, boundaries y diff
+hygiene verdes. `qa:trace` quedó sin materializar por el mismo bloqueo SSR de
+Vite en `StateSourceResolver.ts`; no hubo churn de evidencia y el baseline
+T419 continúa en 667/667.
 
 Claim permitido: nombres P5/P7 source-shaped en `rootSelection` 046b/T419.
 Claim bloqueado: Partner state/life completo, Helpers `type=player`, cache
@@ -2496,7 +2877,7 @@ Issue: `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md`
 
 Build next:
 
-- Current proof: `IkemenFeatureScanner` recognizes source-mapped character `fightfx.prefix` metadata, runtime carries that metadata into bounded F-prefixed FightFX hit-spark and hit-sound trace events, and character `[Files] fx` packages can be loaded/selected by matching FightFX prefix for runtime spark frames plus prefixed SND lookup. Full `sys.ffx` lifetime/refcount/cache semantics, exact channel fallback, exact visual/audio parity, ZSS `[Statedef ...]` / `[State ...]` execution, IKEMEN-GO data ZSS presentation/text-system controllers `LifeBarAction`, `GameMakeAnim`, `Text`, `ModifyText`, `RemoveText`, and `RedLifeSet`, plus the text-count trigger `NumText`, remain scanner-only unsupported findings with focused scanner coverage.
+- Current proof: `IkemenFeatureScanner` recognizes source-mapped character `fightfx.prefix` metadata, runtime carries that metadata into bounded F-prefixed FightFX hit-spark and hit-sound trace events, and character `[Files] fx` packages can be loaded/selected by matching FightFX prefix for runtime spark frames plus prefixed SND lookup. Full `sys.ffx` lifetime/refcount/cache semantics, exact channel fallback, exact visual/audio parity, general ZSS `[Statedef ...]` / `[State ...]` execution outside T427's character-state subset, IKEMEN-GO data ZSS presentation/text-system controllers `LifeBarAction`, `GameMakeAnim`, `Text`, `ModifyText`, `RemoveText`, and `RedLifeSet`, plus the text-count trigger `NumText`, remain scanner-only unsupported findings with focused scanner coverage.
 - Map more Ikemen-GO source/docs signals into scanner-only findings.
 - Keep every finding classified as recognized, unsupported, or unknown unless runtime execution is gated.
 
@@ -2550,7 +2931,7 @@ Use `docs/ROADMAP_PROGRESS_SYSTEM.md` for package lifecycle, update matrix, and 
 ## Current Anti-Claims
 
 - No full MUGEN/IKEMEN parity.
-- No ZSS/Lua execution.
+- No general ZSS/Lua execution.
 - No rollback/netplay.
 - No full helper/custom-state/throw VM.
 - No full screenpack/lifebar engine.

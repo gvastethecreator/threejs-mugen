@@ -575,6 +575,52 @@ describe("HitSparkRenderer helpers", () => {
     });
     renderer.dispose();
   });
+
+  it("applies authored CommonFX scale to the resolved sprite and AIR offset", async () => {
+    const provider = new RecordingSpriteProvider([
+      sprite(14201, 0, { width: 32, height: 24, axisX: 10, axisY: 18 }),
+    ]);
+    const renderer = new HitSparkRenderer(provider, fakeTextureStore());
+    const sourceActor: ActorSnapshot = {
+      ...actor,
+      hitEffectEvents: [{
+        type: "HitSpark",
+        kind: "hit",
+        sparkNo: 7001,
+        raw: "7001",
+        stateNo: 200,
+        tick: 1,
+        runtimeTick: 10,
+        assetFrame: {
+          source: "common",
+          actionId: 7001,
+          frameIndex: 0,
+          spriteGroup: 14201,
+          spriteIndex: 0,
+          offsetX: 12,
+          offsetY: -6,
+          duration: 3,
+          scale: 2,
+        },
+      }],
+    };
+
+    await renderer.update([sourceActor], 11);
+
+    const sparkGroup = renderer.group.children[0] as THREE.Group;
+    const baseRenderOrder = renderer.getDiagnostics().presentations[0]?.renderOrder ?? 0;
+    const spriteMesh = sparkGroup.children.find(
+      (child) => child instanceof THREE.Mesh && child.renderOrder === baseRenderOrder + 2,
+    ) as THREE.Mesh;
+    const expectedSize = 44 + Math.abs(7001 % 5);
+
+    expect(spriteMesh.scale.x).toBeCloseTo((32 * 2) / expectedSize, 4);
+    expect(spriteMesh.scale.y).toBeCloseTo((24 * 2) / expectedSize, 4);
+    expect(Math.abs(spriteMesh.position.x)).toBeCloseTo((18 * 2) / expectedSize, 3);
+    expect(spriteMesh.position.y).toBeCloseTo((12 * 2) / expectedSize, 3);
+    expect(renderer.getDiagnostics().presentations[0]?.assetFrame?.scale).toBe(2);
+    renderer.dispose();
+  });
 });
 
 class RecordingSpriteProvider implements SpriteProvider {

@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "kind": "sprite-provider-attempt-provenance",
+  "source_type": "imagegen",
+  "art_engine": "imagegen",
+  "fixture": false,
+  "verification_status": "hash-verified-candidate-not-promoted",
+  "identity_anchor": {
+    "path": "characters/mara-cinta/base-source.png",
+    "sha256": "84c7b7987916015d992c17029df6169fbb6267919212e9979cc74aa46eb7c1f6"
+  },
+  "candidate": {
+    "path": "run/provider/imagegen/guard/guard.png",
+    "sha256": "a8bb9228a76ae146ab45d0c14d697938be08c91ade42d2e5ef2dc90dd69dcdda",
+    "size_bytes": 1568574,
+    "mime": "image/png",
+    "width": 1254,
+    "height": 1254,
+    "states": ["guard"]
+  },
+  "request": {
+    "path": "run/request.base.json",
+    "sha256": "cc282b4e6d9f1bbd4158524a11ab00fc23869a0c23bf6b5a69138b89c89cbba0"
+  }
+}

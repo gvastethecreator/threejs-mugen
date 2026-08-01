@@ -28,6 +28,59 @@ import { trainingStage } from "./demoStage";
 import { MugenCharacterLoader } from "../loader/MugenCharacterLoader";
 import { ZipCharacterSource } from "../loader/ZipCharacterSource";
 import { createImportedFighterDefinition } from "./importedFighter";
+import {
+  createIkemenZssCombinedPersistentFixtureZipBytes,
+  createIkemenZssHitPauseFixtureZipBytes,
+  createIkemenZssLiveFixtureZipBytes,
+  IKEMEN_ZSS_COMBINED_PERSISTENT_FIXTURE_MANIFEST,
+  IKEMEN_ZSS_HITPAUSE_FIXTURE_MANIFEST,
+  IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST,
+  type IkemenZssFixtureMode,
+} from "./IkemenZssLiveFixture";
+import {
+  createMugenCnsPersistentFixtureZipBytes,
+  MUGEN_CNS_PERSISTENT_FIXTURE_MANIFEST,
+} from "./MugenCnsPersistentFixture";
+import {
+  createMugenCnsPersistentZeroFixtureZipBytes,
+  MUGEN_CNS_PERSISTENT_ZERO_FIXTURE_MANIFEST,
+} from "./MugenCnsPersistentZeroFixture";
+import {
+  createMugenCnsPersistentTriggerCountFixtureZipBytes,
+  MUGEN_CNS_PERSISTENT_TRIGGER_COUNT_FIXTURE_MANIFEST,
+} from "./MugenCnsPersistentTriggerCountFixture";
+import {
+  createMugenCnsSpecialPersistentFixtureZipBytes,
+  MUGEN_CNS_SPECIAL_PERSISTENT_FIXTURE_MANIFEST,
+} from "./MugenCnsSpecialPersistentFixture";
+import {
+  createMugenCnsStateMinusThreePersistentFixtureZipBytes,
+  MUGEN_CNS_STATE_MINUS_THREE_PERSISTENT_FIXTURE_MANIFEST,
+} from "./MugenCnsStateMinusThreePersistentFixture";
+import {
+  createMugenCnsStateMinusOnePersistentFixtureZipBytes,
+  MUGEN_CNS_STATE_MINUS_ONE_PERSISTENT_FIXTURE_MANIFEST,
+} from "./MugenCnsStateMinusOnePersistentFixture";
+import {
+  createMugenCnsStateMinusOnePersistentZeroFixtureZipBytes,
+  MUGEN_CNS_STATE_MINUS_ONE_PERSISTENT_ZERO_FIXTURE_MANIFEST,
+} from "./MugenCnsStateMinusOnePersistentZeroFixture";
+import {
+  createMugenCnsStateMinusOneChangeStatePersistentZeroFixtureZipBytes,
+  MUGEN_CNS_STATE_MINUS_ONE_CHANGESTATE_PERSISTENT_ZERO_FIXTURE_MANIFEST,
+} from "./MugenCnsStateMinusOneChangeStatePersistentZeroFixture";
+import {
+  createMugenCnsStateMinusOneChangeStatePersistentFixtureZipBytes,
+  MUGEN_CNS_STATE_MINUS_ONE_CHANGESTATE_PERSISTENT_FIXTURE_MANIFEST,
+} from "./MugenCnsStateMinusOneChangeStatePersistentFixture";
+import {
+  createMugenCnsHitPausePersistentZeroFixtureZipBytes,
+  MUGEN_CNS_HITPAUSE_PERSISTENT_ZERO_FIXTURE_MANIFEST,
+} from "./MugenCnsHitPausePersistentZeroFixture";
+import {
+  createMugenCnsHitPausePersistentCadenceFixtureZipBytes,
+  MUGEN_CNS_HITPAUSE_PERSISTENT_CADENCE_FIXTURE_MANIFEST,
+} from "./MugenCnsHitPausePersistentCadenceFixture";
 import { createMugenLiteJourneyZipBytes, MUGEN_LITE_JOURNEY_MANIFEST } from "./MugenLiteJourneyFixture";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import type { RuntimeTeamRoundMode } from "./RuntimeTeamRoundDecisionSystem";
@@ -122,6 +175,1199 @@ export async function createMugenLiteJourneyTraceArtifact(
         { actorId: "p1", source: "imported", stateNo: 0, animNo: 0, life: 1000, ctrl: true },
         { actorId: "p2", source: "imported", stateNo: 0, animNo: 0, life: 920, ctrl: true },
       ],
+    }],
+  });
+}
+
+export async function createIkemenZssLiveTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  return createIkemenZssTraceArtifact("direct", options);
+}
+
+export async function createIkemenZssFallbackTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  return createIkemenZssTraceArtifact("fallback", options);
+}
+
+/**
+ * T428 closes the parser-to-scheduler gap for one narrow ZSS wrapper path.
+ * The CNS state starts the pause; the ZSS -2 source proves that only its
+ * lowered ignoreHitPause controller is admitted while the sibling PosAdd is
+ * frozen by the same live scheduler filter.
+ */
+export async function createIkemenZssHitPauseTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const { p1 } = await loadIkemenZssHitPauseTraceFighters();
+  const script = expandRuntimeTraceScript([
+    { label: "ikemen-zss-hitpause-wrapper", frames: 3, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1,
+      p2: demoFighters[1]!,
+      stage: options.stage ?? ikemenZssHitPauseStage,
+      runtimeProfile: options.runtimeProfile ?? "ikemen-go",
+    }),
+    script,
+    { label: "ikemen-zss-hitpause-wrapper-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "ikemen-zss-hitpause-wrapper-golden",
+      label: "Repository-owned IKEMEN ZSS ignoreHitPause wrapper route",
+      source: "imported",
+      fixturePath: IKEMEN_ZSS_HITPAUSE_FIXTURE_MANIFEST.entry,
+      notes: [
+        `${IKEMEN_ZSS_HITPAUSE_FIXTURE_MANIFEST.schema} loads a CC0 mixed CNS/ZSS ZIP through the character loader. CNS StateDef 200 starts a real hit pause; appended ZSS StateDef -2 executes wrapped VelSet while its comparable unwrapped PosAdd remains frozen. This does not claim ZSS-authored HitDef, general wrapper parity, new ZSS controllers, Lua, screenpack ZSS, or broad IKEMEN compatibility.`,
+      ],
+    },
+    gates: [{
+      label: "ikemen-zss-hitpause-wrapper-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["HitDef", "changeState", "velSet"],
+      requiredControllerEventSequences: [{
+        label: "CNS pause origin precedes the parsed ZSS wrapper",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "changeState",
+            sourcePath: IKEMEN_ZSS_HITPAUSE_FIXTURE_MANIFEST.directStatePath,
+          },
+          {
+            tick: 1,
+            stateNo: 200,
+            controller: "HitDef",
+            sourcePath: IKEMEN_ZSS_HITPAUSE_FIXTURE_MANIFEST.cnsStatePath,
+          },
+          {
+            tick: 2,
+            stateNo: 200,
+            controller: "velSet",
+            sourcePath: IKEMEN_ZSS_HITPAUSE_FIXTURE_MANIFEST.directStatePath,
+          },
+        ],
+      }],
+      requiredActorFrames: [{
+        actorId: "p1",
+        source: "imported",
+        stateNo: 200,
+        observedVelXAtLeast: 2,
+        minFrames: 1,
+      }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 200 }],
+    }],
+  });
+}
+
+/**
+ * T429 proves the documented combined ZSS wrapper against the pause clock.
+ * `stateElapsed` remains frozen under HitPause, so cadence is intentionally
+ * tracked per parsed controller and reset by the CNS-owned state entry.
+ */
+export async function createIkemenZssCombinedPersistentTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const { p1 } = await loadIkemenZssCombinedPersistentTraceFighters();
+  const script = expandRuntimeTraceScript([
+    { label: "ikemen-zss-combined-persistent-wrapper", frames: 5, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1,
+      p2: demoFighters[1]!,
+      stage: options.stage ?? ikemenZssHitPauseStage,
+      runtimeProfile: options.runtimeProfile ?? "ikemen-go",
+    }),
+    script,
+    { label: "ikemen-zss-combined-persistent-wrapper-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "ikemen-zss-combined-persistent-wrapper-golden",
+      label: "Repository-owned IKEMEN ZSS combined wrapper cadence route",
+      source: "imported",
+      fixturePath: IKEMEN_ZSS_COMBINED_PERSISTENT_FIXTURE_MANIFEST.entry,
+      notes: [
+        `${IKEMEN_ZSS_COMBINED_PERSISTENT_FIXTURE_MANIFEST.schema} loads a CC0 mixed CNS/ZSS ZIP through the character loader. CNS StateDef 200 starts the real hit pause; source-located ZSS StateDef -2 runs ignoreHitPause persistent(2) on pause ticks 2 and 4, skips tick 3, then resets on the CNS transition to 201 and runs again on tick 5. Unwrapped PosAdd remains frozen. This proves only a constant positive combined wrapper in the named direct character-state ZSS subset, not dynamic persistent values, CNS persistent parity, new ZSS controllers, Lua, system ZSS, or broad IKEMEN compatibility.`,
+      ],
+    },
+    gates: [{
+      label: "ikemen-zss-combined-persistent-wrapper-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [200, 201],
+      requiredExecutedControllers: ["HitDef", "ChangeState", "changeState", "velSet"],
+      requiredControllerEventSequences: [{
+        label: "CNS pause and state entry reset preserve parsed ZSS cadence",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "changeState",
+            sourcePath: IKEMEN_ZSS_COMBINED_PERSISTENT_FIXTURE_MANIFEST.directStatePath,
+          },
+          {
+            tick: 1,
+            stateNo: 200,
+            controller: "HitDef",
+            sourcePath: IKEMEN_ZSS_COMBINED_PERSISTENT_FIXTURE_MANIFEST.cnsStatePath,
+          },
+          {
+            tick: 2,
+            stateNo: 200,
+            controller: "velSet",
+            sourcePath: IKEMEN_ZSS_COMBINED_PERSISTENT_FIXTURE_MANIFEST.directStatePath,
+          },
+          {
+            tick: 4,
+            stateNo: 200,
+            controller: "velSet",
+            sourcePath: IKEMEN_ZSS_COMBINED_PERSISTENT_FIXTURE_MANIFEST.directStatePath,
+          },
+          {
+            tick: 4,
+            stateNo: 200,
+            controller: "ChangeState",
+            sourcePath: IKEMEN_ZSS_COMBINED_PERSISTENT_FIXTURE_MANIFEST.cnsStatePath,
+          },
+          {
+            tick: 5,
+            stateNo: 201,
+            controller: "velSet",
+            sourcePath: IKEMEN_ZSS_COMBINED_PERSISTENT_FIXTURE_MANIFEST.directStatePath,
+          },
+        ],
+      }],
+      requiredActorFrames: [{
+        actorId: "p1",
+        source: "imported",
+        stateNo: 201,
+        observedVelXAtLeast: 2,
+        minFrames: 1,
+      }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 201 }],
+    }],
+  });
+}
+
+/**
+ * T430 admits only a positive raw-CNS interval during ordinary active-root
+ * execution. The interval counts trigger-passing scans and resets on state
+ * entry; it remains separate from T429's paused-ZSS counter.
+ */
+export async function createMugenCnsPersistentTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const p1 = await loadMugenCnsPersistentTraceFighter();
+  const script = expandRuntimeTraceScript([
+    { label: "mugen-cns-persistent-cadence", frames: 5, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1,
+      p2: demoFighters[1]!,
+      stage: options.stage ?? trainingStage,
+      runtimeProfile: options.runtimeProfile ?? "mugen-1.1",
+    }),
+    script,
+    { label: "mugen-cns-persistent-cadence-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "mugen-cns-persistent-cadence-golden",
+      label: "Repository-owned M.U.G.E.N CNS persistent cadence route",
+      source: "imported",
+      fixturePath: MUGEN_CNS_PERSISTENT_FIXTURE_MANIFEST.entry,
+      notes: [
+        `${MUGEN_CNS_PERSISTENT_FIXTURE_MANIFEST.schema} loads a CC0 raw-CNS ZIP through the character loader. In the ordinary active root state, positive persistent = 2 executes VelSet on the first and third trigger-passing scans (state-200 ticks 1 and 3), skips the second scan, then state entry resets the controller-local trigger count and state-201 VelSet executes on tick 4. The adjacent unparameterized PosAdd remains ungated. This proves only a positive constant raw-CNS trigger-count cadence in this named normal root route, not persistent = 0 semantics, dynamic values, raw CNS ignorehitpause, globals/specials/helpers, generic controller timing, or M.U.G.E.N parity.`,
+      ],
+    },
+    gates: [{
+      label: "mugen-cns-persistent-cadence-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [200, 201],
+      requiredExecutedControllers: ["ChangeState", "VelSet", "PosAdd"],
+      requiredControllerEventSequences: [{
+        label: "raw CNS positive cadence skips then resets after state entry",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 1,
+            stateNo: 200,
+            controller: "VelSet",
+            sourcePath: MUGEN_CNS_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 3,
+            stateNo: 200,
+            controller: "VelSet",
+            sourcePath: MUGEN_CNS_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 4,
+            stateNo: 200,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 4,
+            stateNo: 201,
+            controller: "VelSet",
+            sourcePath: MUGEN_CNS_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+        ],
+      }],
+      requiredActorFrames: [{
+        actorId: "p1",
+        source: "imported",
+        stateNo: 201,
+        observedVelXAtLeast: 3,
+        minFrames: 1,
+      }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 201 }],
+    }],
+  });
+}
+
+/**
+ * T434 aligns raw-CNS positive persistence with Elecbyte trigger persistency:
+ * the interval counts trigger-passing activations, not elapsed state ticks.
+ */
+export async function createMugenCnsPersistentTriggerCountTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const p1 = await loadMugenCnsPersistentTriggerCountTraceFighter();
+  const script = expandRuntimeTraceScript([
+    { label: "mugen-cns-persistent-trigger-count", frames: 6, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1,
+      p2: demoFighters[1]!,
+      stage: options.stage ?? trainingStage,
+      runtimeProfile: options.runtimeProfile ?? "mugen-1.1",
+    }),
+    script,
+    { label: "mugen-cns-persistent-trigger-count-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "mugen-cns-persistent-trigger-count-golden",
+      label: "Repository-owned M.U.G.E.N CNS trigger persistency route",
+      source: "imported",
+      fixturePath: MUGEN_CNS_PERSISTENT_TRIGGER_COUNT_FIXTURE_MANIFEST.entry,
+      notes: [
+        `${MUGEN_CNS_PERSISTENT_TRIGGER_COUNT_FIXTURE_MANIFEST.schema} loads a CC0 raw-CNS ZIP through the character loader. In ordinary active-root state 200, one PosAdd has persistent = 2 and sparse StageTime triggers 1, 3, and 4; it executes on the first and third trigger pass (ticks 1 and 4), not on the second trigger at tick 3. This aligns the bounded raw-CNS interval with Elecbyte trigger persistency and does not claim paused, global/special, helper, dynamic, or generic VM parity.`,
+      ],
+    },
+    gates: [{
+      label: "mugen-cns-persistent-trigger-count-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [200, 201],
+      requiredExecutedControllers: ["ChangeState", "PosAdd"],
+      requiredControllerEventSequences: [{
+        label: "raw CNS persistent interval counts trigger-passing activations",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_PERSISTENT_TRIGGER_COUNT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 1,
+            stateNo: 200,
+            controller: "PosAdd",
+            sourcePath: MUGEN_CNS_PERSISTENT_TRIGGER_COUNT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 4,
+            stateNo: 200,
+            controller: "PosAdd",
+            sourcePath: MUGEN_CNS_PERSISTENT_TRIGGER_COUNT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 5,
+            stateNo: 200,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_PERSISTENT_TRIGGER_COUNT_FIXTURE_MANIFEST.statePath,
+          },
+        ],
+      }],
+      requiredActorFrames: [{
+        actorId: "p1",
+        source: "imported",
+        stateNo: 201,
+        minFrames: 1,
+      }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 201 }],
+    }],
+  });
+}
+
+/**
+ * T435 extends the trigger-count contract to the ordinary M.U.G.E.N -2
+ * special state. Its counter survives current-state changes because -2 is
+ * checked every tick rather than entered as the current state.
+ */
+export async function createMugenCnsSpecialPersistentTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const p1 = await loadMugenCnsSpecialPersistentTraceFighter();
+  const script = expandRuntimeTraceScript([
+    { label: "mugen-cns-special-persistent", frames: 5, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1,
+      p2: demoFighters[1]!,
+      stage: options.stage ?? trainingStage,
+      runtimeProfile: options.runtimeProfile ?? "mugen-1.1",
+    }),
+    script,
+    { label: "mugen-cns-special-persistent-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "mugen-cns-special-persistent-golden",
+      label: "Repository-owned M.U.G.E.N CNS special-state persistent route",
+      source: "imported",
+      fixturePath: MUGEN_CNS_SPECIAL_PERSISTENT_FIXTURE_MANIFEST.entry,
+      notes: [
+        `${MUGEN_CNS_SPECIAL_PERSISTENT_FIXTURE_MANIFEST.schema} loads a CC0 raw-CNS ZIP through the character loader. State -2 is checked every tick before the current state; its persistent = 2 PosAdd has sparse StageTime triggers 1, 3, and 4 and executes on the first and third trigger passes at ticks 1 and 4, surviving the state-0-to-200 transition. This proves only the named raw-CNS -2 special-state route, not -3/-1, pause, helper, dynamic, or generic VM parity.`,
+      ],
+    },
+    gates: [{
+      label: "mugen-cns-special-persistent-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["PosAdd", "ChangeState", "VelSet"],
+      requiredControllerEventSequences: [{
+        label: "raw CNS -2 persistent counts trigger passes across current-state changes",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "PosAdd",
+            sourcePath: MUGEN_CNS_SPECIAL_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_SPECIAL_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 1,
+            stateNo: 200,
+            controller: "VelSet",
+            sourcePath: MUGEN_CNS_SPECIAL_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 4,
+            stateNo: 200,
+            controller: "PosAdd",
+            sourcePath: MUGEN_CNS_SPECIAL_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+        ],
+      }],
+      requiredActorFrames: [{
+        actorId: "p1",
+        source: "imported",
+        stateNo: 200,
+        minFrames: 1,
+      }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 200 }],
+    }],
+  });
+}
+
+/**
+ * T436 extends the trigger-count contract to the ordinary M.U.G.E.N -3
+ * global state. Its counter survives current-state changes, but the route is
+ * only admitted when the actor is not executing another player's state.
+ */
+export async function createMugenCnsStateMinusThreePersistentTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const p1 = await loadMugenCnsStateMinusThreePersistentTraceFighter();
+  const script = expandRuntimeTraceScript([
+    { label: "mugen-cns-state-minus-three-persistent", frames: 5, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1,
+      p2: demoFighters[1]!,
+      stage: options.stage ?? trainingStage,
+      runtimeProfile: options.runtimeProfile ?? "mugen-1.1",
+    }),
+    script,
+    { label: "mugen-cns-state-minus-three-persistent-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "mugen-cns-state-minus-three-persistent-golden",
+      label: "Repository-owned M.U.G.E.N CNS State -3 persistent route",
+      source: "imported",
+      fixturePath: MUGEN_CNS_STATE_MINUS_THREE_PERSISTENT_FIXTURE_MANIFEST.entry,
+      notes: [
+        `${MUGEN_CNS_STATE_MINUS_THREE_PERSISTENT_FIXTURE_MANIFEST.schema} loads a CC0 raw-CNS ZIP through the character loader. State -3 is checked every tick before the current state when the actor is not using another player's state; its persistent = 2 PosAdd has sparse StageTime triggers 1, 3, and 4 and executes on the first and third trigger passes at ticks 1 and 4, surviving the state-0-to-200 transition. This proves only the named raw-CNS -3 route, not -2/-1, player-owned custom states, pause, helper, dynamic, or generic VM parity.`,
+      ],
+    },
+    gates: [{
+      label: "mugen-cns-state-minus-three-persistent-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["PosAdd", "ChangeState", "VelSet"],
+      requiredControllerEventSequences: [{
+        label: "raw CNS -3 persistent counts trigger passes across current-state changes",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "PosAdd",
+            sourcePath: MUGEN_CNS_STATE_MINUS_THREE_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_STATE_MINUS_THREE_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 1,
+            stateNo: 200,
+            controller: "VelSet",
+            sourcePath: MUGEN_CNS_STATE_MINUS_THREE_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 4,
+            stateNo: 200,
+            controller: "PosAdd",
+            sourcePath: MUGEN_CNS_STATE_MINUS_THREE_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+        ],
+      }],
+      requiredActorFrames: [{
+        actorId: "p1",
+        source: "imported",
+        stateNo: 200,
+        minFrames: 1,
+      }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 200 }],
+    }],
+  });
+}
+
+/**
+ * T437 applies the trigger-count contract to imported command State -1 setup
+ * controllers. The counter survives current-state changes and is separate
+ * from all root-state and special-state maps.
+ */
+export async function createMugenCnsStateMinusOnePersistentTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const p1 = await loadMugenCnsStateMinusOnePersistentTraceFighter();
+  const script = expandRuntimeTraceScript([
+    { label: "mugen-cns-state-minus-one-persistent", frames: 5, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1,
+      p2: demoFighters[1]!,
+      stage: options.stage ?? trainingStage,
+      runtimeProfile: options.runtimeProfile ?? "mugen-1.1",
+    }),
+    script,
+    { label: "mugen-cns-state-minus-one-persistent-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "mugen-cns-state-minus-one-persistent-golden",
+      label: "Repository-owned M.U.G.E.N CNS State -1 persistent route",
+      source: "imported",
+      fixturePath: MUGEN_CNS_STATE_MINUS_ONE_PERSISTENT_FIXTURE_MANIFEST.entry,
+      notes: [
+        `${MUGEN_CNS_STATE_MINUS_ONE_PERSISTENT_FIXTURE_MANIFEST.schema} loads a CC0 raw-CNS/CMD ZIP through the character loader. Imported command State -1 setup is scanned before the current state; its persistent = 2 VarSet has sparse StageTime triggers 1, 3, and 4 and executes on the first and third trigger passes at ticks 1 and 4, surviving the state-0-to-200 transition. This proves only the named raw State -1 setup route, not ChangeState routing cadence, -2/-3, pause, helper, dynamic, or generic VM parity.`,
+      ],
+    },
+    gates: [{
+      label: "mugen-cns-state-minus-one-persistent-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["VarSet", "ChangeState", "VelSet"],
+      requiredControllerEventSequences: [{
+        label: "raw State -1 persistent counts trigger passes across current-state changes",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "VarSet",
+          },
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_STATE_MINUS_ONE_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 1,
+            stateNo: 200,
+            controller: "VelSet",
+            sourcePath: MUGEN_CNS_STATE_MINUS_ONE_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 4,
+            stateNo: 200,
+            controller: "VarSet",
+          },
+        ],
+      }],
+      requiredActorFrames: [{
+        actorId: "p1",
+        source: "imported",
+        stateNo: 200,
+        minFrames: 1,
+      }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 200 }],
+    }],
+  });
+}
+
+/**
+ * T438 isolates raw persistent = 0 on an imported CMD State -1 setup
+ * controller. Its marker is separate from normal-state zero and survives
+ * current-state entry.
+ */
+export async function createMugenCnsStateMinusOnePersistentZeroTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const p1 = await loadMugenCnsStateMinusOnePersistentZeroTraceFighter();
+  const script = expandRuntimeTraceScript([
+    { label: "mugen-cns-state-minus-one-persistent-zero", frames: 5, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1,
+      p2: demoFighters[1]!,
+      stage: options.stage ?? trainingStage,
+      runtimeProfile: options.runtimeProfile ?? "mugen-1.1",
+    }),
+    script,
+    { label: "mugen-cns-state-minus-one-persistent-zero-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "mugen-cns-state-minus-one-persistent-zero-golden",
+      label: "Repository-owned M.U.G.E.N CNS State -1 persistent zero route",
+      source: "imported",
+      fixturePath: MUGEN_CNS_STATE_MINUS_ONE_PERSISTENT_ZERO_FIXTURE_MANIFEST.entry,
+      notes: [
+        `${MUGEN_CNS_STATE_MINUS_ONE_PERSISTENT_ZERO_FIXTURE_MANIFEST.schema} loads a CC0 raw-CNS/CMD ZIP through the character loader. Imported command State -1 setup is scanned before the current state; its persistent = 0 VarSet has sparse StageTime triggers 1, 3, and 4 and executes only on the first trigger pass at tick 1, surviving the state-0-to-200 transition. This proves only the named raw State -1 setup zero route, not ChangeState cadence, positive intervals, -2/-3, pause, helper, dynamic, or generic VM parity.`,
+      ],
+    },
+    gates: [{
+      label: "mugen-cns-state-minus-one-persistent-zero-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["VarSet", "ChangeState", "VelSet"],
+      requiredControllerEventSequences: [{
+        label: "raw State -1 persistent zero activates once across current-state changes",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { tick: 1, stateNo: 0, controller: "VarSet" },
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_STATE_MINUS_ONE_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 1,
+            stateNo: 200,
+            controller: "VelSet",
+            sourcePath: MUGEN_CNS_STATE_MINUS_ONE_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+        ],
+      }],
+      requiredActorFrames: [{
+        actorId: "p1",
+        source: "imported",
+        stateNo: 200,
+        minFrames: 1,
+      }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 200 }],
+    }],
+  });
+}
+
+/**
+ * T463 applies the T438 State -1 zero marker to ChangeState routing. The
+ * marker survives the same-tick 200 -> 201 destination chain and blocks the
+ * later StageTime trigger passes.
+ */
+export async function createMugenCnsStateMinusOneChangeStatePersistentZeroTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const p1 = await loadMugenCnsStateMinusOneChangeStatePersistentZeroTraceFighter();
+  const script = expandRuntimeTraceScript([
+    { label: "mugen-cns-state-minus-one-changestate-persistent-zero", frames: 5, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1,
+      p2: demoFighters[1]!,
+      stage: options.stage ?? trainingStage,
+      runtimeProfile: options.runtimeProfile ?? "mugen-1.1",
+    }),
+    script,
+    { label: "mugen-cns-state-minus-one-changestate-persistent-zero-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "mugen-cns-state-minus-one-changestate-persistent-zero-golden",
+      label: "Repository-owned M.U.G.E.N CNS State -1 ChangeState persistent zero route",
+      source: "imported",
+      fixturePath: MUGEN_CNS_STATE_MINUS_ONE_CHANGESTATE_PERSISTENT_ZERO_FIXTURE_MANIFEST.entry,
+      notes: [
+        `${MUGEN_CNS_STATE_MINUS_ONE_CHANGESTATE_PERSISTENT_ZERO_FIXTURE_MANIFEST.schema} loads a CC0 raw-CNS/CMD ZIP through the character loader. Imported command State -1 routes persistent = 0 ChangeState only at its first trigger pass, then preserves the one-shot marker through the same-tick 200 -> 201 current-state chain and later StageTime triggers. This proves only the named raw State -1 ChangeState zero route, not positive intervals, failed-value activation order, pause, helpers, custom owners, dynamic values, ZSS, or generic VM parity.`,
+      ],
+    },
+    gates: [{
+      label: "mugen-cns-state-minus-one-changestate-persistent-zero-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 201],
+      requiredExecutedControllers: ["ChangeState", "VelSet"],
+      requiredControllerEventSequences: [{
+        label: "raw State -1 ChangeState persistent zero routes once across current-state changes",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "ChangeState",
+          },
+          {
+            tick: 1,
+            stateNo: 200,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_STATE_MINUS_ONE_CHANGESTATE_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 1,
+            stateNo: 201,
+            controller: "VelSet",
+            sourcePath: MUGEN_CNS_STATE_MINUS_ONE_CHANGESTATE_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+        ],
+      }],
+      requiredActorFrames: [{ actorId: "p1", source: "imported", stateNo: 201, minFrames: 1 }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 0 }],
+    }],
+  });
+}
+
+/**
+ * T464 applies the T437 positive State -1 trigger-count map to static
+ * ChangeState routing. The counter survives destination/current-state entry
+ * and counts only trigger-passing scans.
+ */
+export async function createMugenCnsStateMinusOneChangeStatePersistentTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const p1 = await loadMugenCnsStateMinusOneChangeStatePersistentTraceFighter();
+  const script = expandRuntimeTraceScript([
+    { label: "mugen-cns-state-minus-one-changestate-persistent", frames: 5, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1,
+      p2: demoFighters[1]!,
+      stage: options.stage ?? trainingStage,
+      runtimeProfile: options.runtimeProfile ?? "mugen-1.1",
+    }),
+    script,
+    { label: "mugen-cns-state-minus-one-changestate-persistent-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "mugen-cns-state-minus-one-changestate-persistent-golden",
+      label: "Repository-owned M.U.G.E.N CNS State -1 ChangeState persistent route",
+      source: "imported",
+      fixturePath: MUGEN_CNS_STATE_MINUS_ONE_CHANGESTATE_PERSISTENT_FIXTURE_MANIFEST.entry,
+      notes: [
+        `${MUGEN_CNS_STATE_MINUS_ONE_CHANGESTATE_PERSISTENT_FIXTURE_MANIFEST.schema} loads a CC0 raw-CNS/CMD ZIP through the character loader. Imported command State -1 routes static persistent = 2 ChangeState on the first and third trigger-passing scans at ticks 1 and 4, skips tick 3, and preserves the counter through each 0 -> 200 -> 201 -> 0 chain. This proves only the named raw State -1 static ChangeState interval-two route, not other intervals, failed-value activation order, pause, helpers, custom owners, dynamic values, ZSS, or generic VM parity.`,
+      ],
+    },
+    gates: [{
+      label: "mugen-cns-state-minus-one-changestate-persistent-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 201],
+      requiredExecutedControllers: ["ChangeState", "VelSet"],
+      requiredControllerEventSequences: [{
+        label: "raw State -1 ChangeState interval counts trigger passes across current-state changes",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { tick: 1, stateNo: 0, controller: "ChangeState" },
+          {
+            tick: 1,
+            stateNo: 200,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_STATE_MINUS_ONE_CHANGESTATE_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 1,
+            stateNo: 201,
+            controller: "VelSet",
+            sourcePath: MUGEN_CNS_STATE_MINUS_ONE_CHANGESTATE_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          { tick: 4, stateNo: 0, controller: "ChangeState" },
+          {
+            tick: 4,
+            stateNo: 200,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_STATE_MINUS_ONE_CHANGESTATE_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 4,
+            stateNo: 201,
+            controller: "VelSet",
+            sourcePath: MUGEN_CNS_STATE_MINUS_ONE_CHANGESTATE_PERSISTENT_FIXTURE_MANIFEST.statePath,
+          },
+        ],
+      }],
+      requiredActorFrames: [{ actorId: "p1", source: "imported", stateNo: 201, minFrames: 2 }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 0 }],
+    }],
+  });
+}
+
+/**
+ * T431 isolates Elecbyte's raw CNS `persistent = 0` one-shot rule. The
+ * fixture routes through state 201 before re-entering state 200, so the same
+ * parsed controller can prove that root state entry clears its marker.
+ */
+export async function createMugenCnsPersistentZeroTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const p1 = await loadMugenCnsPersistentZeroTraceFighter();
+  const script = expandRuntimeTraceScript([
+    { label: "mugen-cns-persistent-zero", frames: 5, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1,
+      p2: demoFighters[1]!,
+      stage: options.stage ?? trainingStage,
+      runtimeProfile: options.runtimeProfile ?? "mugen-1.1",
+    }),
+    script,
+    { label: "mugen-cns-persistent-zero-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "mugen-cns-persistent-zero-golden",
+      label: "Repository-owned M.U.G.E.N CNS persistent zero route",
+      source: "imported",
+      fixturePath: MUGEN_CNS_PERSISTENT_ZERO_FIXTURE_MANIFEST.entry,
+      notes: [
+        `${MUGEN_CNS_PERSISTENT_ZERO_FIXTURE_MANIFEST.schema} loads a CC0 raw-CNS ZIP through the character loader. In ordinary active root state 200, persistent = 0 PosAdd executes at tick 1, skips ticks 2 and 3, then state-200 -> 201 -> 200 re-entry at tick 4 clears the marker and executes that same controller once again. The unparameterized VelSet keeps running. This proves only first trigger-passing raw-CNS zero activation once per normal root state entry, not direct same-id ChangeState timing, ZSS persistent(0), positive/negative/dynamic values, raw CNS ignorehitpause, globals/specials/helpers, blocked-dispatch behavior, generic VM timing, or M.U.G.E.N parity.`,
+      ],
+    },
+    gates: [{
+      label: "mugen-cns-persistent-zero-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [200, 201],
+      requiredExecutedControllers: ["ChangeState", "PosAdd", "VelSet"],
+      requiredControllerEventSequences: [{
+        label: "raw CNS persistent zero executes once and resets after state re-entry",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 1,
+            stateNo: 200,
+            controller: "PosAdd",
+            sourcePath: MUGEN_CNS_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 4,
+            stateNo: 200,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 4,
+            stateNo: 201,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 4,
+            stateNo: 200,
+            controller: "PosAdd",
+            sourcePath: MUGEN_CNS_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+        ],
+      }],
+      requiredActorFrames: [{
+        actorId: "p1",
+        source: "imported",
+        stateNo: 200,
+        observedVelXAtLeast: 1,
+        minFrames: 1,
+      }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 200 }],
+    }],
+  });
+}
+
+/**
+ * T432 reuses T431's raw-CNS zero marker only after the existing HitPause scan
+ * has selected a controller with `ignorehitpause = 1`. The fixture crosses an
+ * intermediate state while the pause clock still advances, so re-entry is
+ * visible without relying on direct same-id ChangeState timing.
+ */
+export async function createMugenCnsHitPausePersistentZeroTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const p1 = await loadMugenCnsHitPausePersistentZeroTraceFighter();
+  const script = expandRuntimeTraceScript([
+    { label: "mugen-cns-hitpause-persistent-zero", frames: 6, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1,
+      p2: demoFighters[1]!,
+      stage: options.stage ?? ikemenZssHitPauseStage,
+      runtimeProfile: options.runtimeProfile ?? "mugen-1.1",
+    }),
+    script,
+    { label: "mugen-cns-hitpause-persistent-zero-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "mugen-cns-hitpause-persistent-zero-golden",
+      label: "Repository-owned M.U.G.E.N CNS HitPause persistent zero route",
+      source: "imported",
+      fixturePath: MUGEN_CNS_HITPAUSE_PERSISTENT_ZERO_FIXTURE_MANIFEST.entry,
+      notes: [
+        `${MUGEN_CNS_HITPAUSE_PERSISTENT_ZERO_FIXTURE_MANIFEST.schema} loads a CC0 raw-CNS ZIP through the character loader. CNS StateDef 200 starts real HitPause. Its paired ignorehitpause = 1 and persistent = 0 PosAdd executes on the first eligible pause scan, skips repeated scans, then executes once again after the bounded 200 -> 201 -> 200 re-entry. The unwrapped VelSet remains frozen. This proves only the named paired raw-CNS paused one-shot route, not raw positive paused cadence, unpaired ignorehitpause, ZSS persistent(0), helpers/specials, direct same-id timing, dynamic values, generic VM timing, or M.U.G.E.N parity.`,
+      ],
+    },
+    gates: [{
+      label: "mugen-cns-hitpause-persistent-zero-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [200, 201],
+      requiredExecutedControllers: ["HitDef", "ChangeState", "PosAdd"],
+      requiredControllerEventSequences: [{
+        label: "paired raw CNS zero executes once per HitPause state entry",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_HITPAUSE_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 1,
+            stateNo: 200,
+            controller: "HitDef",
+            sourcePath: MUGEN_CNS_HITPAUSE_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 2,
+            stateNo: 200,
+            controller: "PosAdd",
+            sourcePath: MUGEN_CNS_HITPAUSE_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 5,
+            stateNo: 200,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_HITPAUSE_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 6,
+            stateNo: 201,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_HITPAUSE_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 6,
+            stateNo: 200,
+            controller: "PosAdd",
+            sourcePath: MUGEN_CNS_HITPAUSE_PERSISTENT_ZERO_FIXTURE_MANIFEST.statePath,
+          },
+        ],
+      }],
+      requiredActorFrames: [{
+        actorId: "p1",
+        source: "imported",
+        stateNo: 200,
+        minFrames: 1,
+      }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 200 }],
+    }],
+  });
+}
+
+/**
+ * T433 gives paired raw-CNS positive persistence its own HitPause-pass counter.
+ * The fixture crosses 200 -> 201 -> 200 while the pause clock remains active,
+ * proving first/skip/interval cadence and reset without reusing the state clock.
+ */
+export async function createMugenCnsHitPausePersistentCadenceTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): Promise<RuntimeTraceArtifact> {
+  const p1 = await loadMugenCnsHitPausePersistentCadenceTraceFighter();
+  const script = expandRuntimeTraceScript([
+    { label: "mugen-cns-hitpause-persistent-cadence", frames: 6, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1,
+      p2: demoFighters[1]!,
+      stage: options.stage ?? ikemenZssHitPauseStage,
+      runtimeProfile: options.runtimeProfile ?? "mugen-1.1",
+    }),
+    script,
+    { label: "mugen-cns-hitpause-persistent-cadence-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "mugen-cns-hitpause-persistent-cadence-golden",
+      label: "Repository-owned M.U.G.E.N CNS HitPause persistent cadence route",
+      source: "imported",
+      fixturePath: MUGEN_CNS_HITPAUSE_PERSISTENT_CADENCE_FIXTURE_MANIFEST.entry,
+      notes: [
+        `${MUGEN_CNS_HITPAUSE_PERSISTENT_CADENCE_FIXTURE_MANIFEST.schema} loads a CC0 raw-CNS ZIP through the character loader. CNS StateDef 200 starts real HitPause. Its paired ignorehitpause = 1 and persistent = 2 PosAdd executes on pause passes 1 and 3, then starts again after the bounded 200 -> 201 -> 200 re-entry. The unwrapped VelSet remains frozen. This proves only the named paired raw-CNS paused positive cadence route, not raw zero/other intervals, unpaired ignorehitpause, ZSS persistent, helpers/specials, direct same-id timing, dynamic values, generic VM timing, or M.U.G.E.N parity.`,
+      ],
+    },
+    gates: [{
+      label: "mugen-cns-hitpause-persistent-cadence-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [200, 201],
+      requiredExecutedControllers: ["HitDef", "ChangeState", "PosAdd"],
+      requiredControllerEventSequences: [{
+        label: "paired raw CNS positive cadence uses pause-pass interval and resets on re-entry",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          {
+            tick: 1,
+            stateNo: 0,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_HITPAUSE_PERSISTENT_CADENCE_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 1,
+            stateNo: 200,
+            controller: "HitDef",
+            sourcePath: MUGEN_CNS_HITPAUSE_PERSISTENT_CADENCE_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 2,
+            stateNo: 200,
+            controller: "PosAdd",
+            sourcePath: MUGEN_CNS_HITPAUSE_PERSISTENT_CADENCE_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 4,
+            stateNo: 200,
+            controller: "PosAdd",
+            sourcePath: MUGEN_CNS_HITPAUSE_PERSISTENT_CADENCE_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 5,
+            stateNo: 200,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_HITPAUSE_PERSISTENT_CADENCE_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 6,
+            stateNo: 201,
+            controller: "ChangeState",
+            sourcePath: MUGEN_CNS_HITPAUSE_PERSISTENT_CADENCE_FIXTURE_MANIFEST.statePath,
+          },
+          {
+            tick: 6,
+            stateNo: 200,
+            controller: "PosAdd",
+            sourcePath: MUGEN_CNS_HITPAUSE_PERSISTENT_CADENCE_FIXTURE_MANIFEST.statePath,
+          },
+        ],
+      }],
+      requiredActorFrames: [{
+        actorId: "p1",
+        source: "imported",
+        stateNo: 200,
+        minFrames: 1,
+      }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 200 }],
+    }],
+  });
+}
+
+async function createIkemenZssTraceArtifact(
+  mode: IkemenZssFixtureMode,
+  options: RuntimeTraceGatePresetOptions,
+): Promise<RuntimeTraceArtifact> {
+  const { p1, p2 } = await loadIkemenZssLiveTraceFighters(mode);
+  const sourcePath = mode === "direct"
+    ? IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath
+    : IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.fallbackStatePath;
+  const routeId = mode === "direct" ? "ikemen-zss-live" : "ikemen-zss-fallback";
+  const sourceLabel = mode === "direct" ? "direct ZSS" : ".cns.zss fallback ZSS";
+  const script = expandRuntimeTraceScript([
+    { label: routeId, frames: 6, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1,
+      p2: { ...p2, id: `${p2.id}-p2` },
+      stage: options.stage ?? trainingStage,
+      runtimeProfile: options.runtimeProfile ?? "ikemen-go",
+    }),
+    script,
+    { label: `${routeId}-golden` },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: `${routeId}-golden`,
+      label: `Repository-owned IKEMEN ${sourceLabel} state route`,
+      source: "imported",
+      fixturePath: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.entry,
+      notes: [
+        `${IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.schema} loads a CC0 ZIP through the character loader, lowers ${sourceLabel} into the shared state IR, and executes StateDef 0 -> 100 -> 101 with PosAdd, persistent(2) VelSet, and source-located controller telemetry. Functions, loops, local variables, Lua, non-granted controllers, screenpack ZSS, and broad IKEMEN compatibility remain blocked.`,
+      ],
+    },
+    gates: [{
+      label: `${routeId}-golden`,
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [100, 101],
+      requiredExecutedControllers: [
+        { type: "changeState", minCount: 2 },
+        { type: "posAdd", minCount: 3 },
+        { type: "velSet", minCount: 2 },
+      ],
+      requiredControllerEventSequences: [{
+        label: `${sourceLabel} controller and state order`,
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 0, controller: "posAdd", sourcePath },
+          { stateNo: 0, controller: "changeState", sourcePath },
+          { stateNo: 100, controller: "velSet", sourcePath },
+          { stateNo: 100, controller: "changeState", sourcePath },
+          { stateNo: 101, controller: "posAdd", sourcePath },
+        ],
+      }],
+      requiredActorFrameSequences: [{
+        label: "ZSS state progression",
+        steps: [
+          { actorId: "p1", source: "imported", stateNo: 0, animNo: 0 },
+          { actorId: "p1", source: "imported", stateNo: 100, animNo: 0 },
+          { actorId: "p1", source: "imported", stateNo: 101, animNo: 0, effectiveCtrl: false },
+        ],
+      }],
+      requiredActorFrames: [
+        { actorId: "p1", source: "imported", stateNo: 100, observedVelXAtLeast: 2, minFrames: 2 },
+        { actorId: "p1", source: "imported", stateNo: 101, observedPosXAtLeast: -90, minFrames: 1 },
+      ],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 101, animNo: 0, ctrl: false }],
     }],
   });
 }
@@ -241,6 +1487,210 @@ async function loadMugenLiteJourneyTraceFighters(): Promise<{ p1: DemoFighterDef
   if (!p1 || !p2) throw new Error("MUGEN-lite journey package did not produce runtime fighters");
   return { p1, p2 };
 }
+
+async function loadIkemenZssLiveTraceFighters(mode: IkemenZssFixtureMode = "direct"): Promise<{ p1: DemoFighterDefinition; p2: DemoFighterDefinition }> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(new File([await createIkemenZssLiveFixtureZipBytes(mode)], `ikemen-zss-${mode}.zip`));
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  const p2 = createImportedFighterDefinition(character);
+  if (!p1 || !p2) {
+    throw new Error("IKEMEN ZSS fixture did not produce runtime fighters");
+  }
+  return { p1, p2 };
+}
+
+async function loadIkemenZssHitPauseTraceFighters(): Promise<{ p1: DemoFighterDefinition; p2: DemoFighterDefinition }> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(
+    new File([await createIkemenZssHitPauseFixtureZipBytes()], "ikemen-zss-hitpause-wrapper.zip"),
+  );
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  const p2 = createImportedFighterDefinition(character);
+  if (!p1 || !p2) {
+    throw new Error("IKEMEN ZSS hit-pause fixture did not produce runtime fighters");
+  }
+  return { p1, p2 };
+}
+
+async function loadIkemenZssCombinedPersistentTraceFighters(): Promise<{ p1: DemoFighterDefinition; p2: DemoFighterDefinition }> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(
+    new File(
+      [await createIkemenZssCombinedPersistentFixtureZipBytes()],
+      "ikemen-zss-combined-persistent-wrapper.zip",
+    ),
+  );
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  const p2 = createImportedFighterDefinition(character);
+  if (!p1 || !p2) {
+    throw new Error("IKEMEN ZSS combined persistent fixture did not produce runtime fighters");
+  }
+  return { p1, p2 };
+}
+
+async function loadMugenCnsPersistentTraceFighter(): Promise<DemoFighterDefinition> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(
+    new File([await createMugenCnsPersistentFixtureZipBytes()], "mugen-cns-persistent-cadence.zip"),
+  );
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  if (!p1) {
+    throw new Error("M.U.G.E.N CNS persistent fixture did not produce a runtime fighter");
+  }
+  return p1;
+}
+
+async function loadMugenCnsPersistentZeroTraceFighter(): Promise<DemoFighterDefinition> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(
+    new File([await createMugenCnsPersistentZeroFixtureZipBytes()], "mugen-cns-persistent-zero.zip"),
+  );
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  if (!p1) {
+    throw new Error("M.U.G.E.N CNS persistent-zero fixture did not produce a runtime fighter");
+  }
+  return p1;
+}
+
+async function loadMugenCnsPersistentTriggerCountTraceFighter(): Promise<DemoFighterDefinition> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(
+    new File([await createMugenCnsPersistentTriggerCountFixtureZipBytes()], "mugen-cns-persistent-trigger-count.zip"),
+  );
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  if (!p1) {
+    throw new Error("M.U.G.E.N CNS persistent trigger-count fixture did not produce a runtime fighter");
+  }
+  return p1;
+}
+
+async function loadMugenCnsSpecialPersistentTraceFighter(): Promise<DemoFighterDefinition> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(
+    new File([await createMugenCnsSpecialPersistentFixtureZipBytes()], "mugen-cns-special-persistent.zip"),
+  );
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  if (!p1) {
+    throw new Error("M.U.G.E.N CNS special persistent fixture did not produce a runtime fighter");
+  }
+  return p1;
+}
+
+async function loadMugenCnsStateMinusThreePersistentTraceFighter(): Promise<DemoFighterDefinition> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(
+    new File([
+      await createMugenCnsStateMinusThreePersistentFixtureZipBytes(),
+    ], "mugen-cns-state-minus-three-persistent.zip"),
+  );
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  if (!p1) {
+    throw new Error("M.U.G.E.N CNS State -3 persistent fixture did not produce a runtime fighter");
+  }
+  return p1;
+}
+
+async function loadMugenCnsStateMinusOnePersistentTraceFighter(): Promise<DemoFighterDefinition> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(
+    new File([
+      await createMugenCnsStateMinusOnePersistentFixtureZipBytes(),
+    ], "mugen-cns-state-minus-one-persistent.zip"),
+  );
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  if (!p1) {
+    throw new Error("M.U.G.E.N CNS State -1 persistent fixture did not produce a runtime fighter");
+  }
+  return p1;
+}
+
+async function loadMugenCnsStateMinusOnePersistentZeroTraceFighter(): Promise<DemoFighterDefinition> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(
+    new File([
+      await createMugenCnsStateMinusOnePersistentZeroFixtureZipBytes(),
+    ], "mugen-cns-state-minus-one-persistent-zero.zip"),
+  );
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  if (!p1) {
+    throw new Error("M.U.G.E.N CNS State -1 persistent zero fixture did not produce a runtime fighter");
+  }
+  return p1;
+}
+
+async function loadMugenCnsStateMinusOneChangeStatePersistentZeroTraceFighter(): Promise<DemoFighterDefinition> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(
+    new File([
+      await createMugenCnsStateMinusOneChangeStatePersistentZeroFixtureZipBytes(),
+    ], "mugen-cns-state-minus-one-changestate-persistent-zero.zip"),
+  );
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  if (!p1) {
+    throw new Error("M.U.G.E.N CNS State -1 ChangeState persistent zero fixture did not produce a runtime fighter");
+  }
+  return p1;
+}
+
+async function loadMugenCnsStateMinusOneChangeStatePersistentTraceFighter(): Promise<DemoFighterDefinition> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(
+    new File([
+      await createMugenCnsStateMinusOneChangeStatePersistentFixtureZipBytes(),
+    ], "mugen-cns-state-minus-one-changestate-persistent.zip"),
+  );
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  if (!p1) {
+    throw new Error("M.U.G.E.N CNS State -1 ChangeState persistent fixture did not produce a runtime fighter");
+  }
+  return p1;
+}
+
+async function loadMugenCnsHitPausePersistentZeroTraceFighter(): Promise<DemoFighterDefinition> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(
+    new File([await createMugenCnsHitPausePersistentZeroFixtureZipBytes()], "mugen-cns-hitpause-persistent-zero.zip"),
+  );
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  if (!p1) {
+    throw new Error("M.U.G.E.N CNS HitPause persistent-zero fixture did not produce a runtime fighter");
+  }
+  return p1;
+}
+
+async function loadMugenCnsHitPausePersistentCadenceTraceFighter(): Promise<DemoFighterDefinition> {
+  const loader = new MugenCharacterLoader();
+  const source = new ZipCharacterSource(
+    new File([await createMugenCnsHitPausePersistentCadenceFixtureZipBytes()], "mugen-cns-hitpause-persistent-cadence.zip"),
+  );
+  const character = await loader.load(source.name, await source.load());
+  const p1 = createImportedFighterDefinition(character);
+  if (!p1) {
+    throw new Error("M.U.G.E.N CNS HitPause persistent-cadence fixture did not produce a runtime fighter");
+  }
+  return p1;
+}
+
+const ikemenZssHitPauseStage: MugenStageDefinition = {
+  ...trainingStage,
+  playerStart: {
+    p1: { x: -20, y: 0, facing: 1 },
+    p2: { x: 35, y: 0, facing: -1 },
+  },
+};
 
 const SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT = {
   assetFrameOffsetX: 3,
@@ -3727,6 +5177,95 @@ export function createSyntheticImportedP2DistanceTraceArtifact(options: RuntimeT
       ],
     },
   );
+}
+
+export function createSyntheticImportedIkemenP2ValueTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stateNo = 286;
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-p2-value-p1",
+    displayName: "Synthetic Imported IKEMEN P2 Value P1",
+    withHitDef: false,
+    p2NameValueRoute: { p2Name: "Synthetic Imported IKEMEN P2 Value P4", stateNo },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-p2-value-p2",
+    displayName: "Synthetic Imported IKEMEN P2 Value P2",
+    withHitDef: false,
+  });
+  const p3 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-p2-value-p3",
+    displayName: "Synthetic Imported IKEMEN P2 Value P3",
+    withHitDef: false,
+  });
+  const p4 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-p2-value-p4",
+    displayName: "Synthetic Imported IKEMEN P2 Value P4",
+    withHitDef: false,
+  });
+  const world = new MatchWorld({
+    p1,
+    p2,
+    stage: options.stage ?? closeCombatStage(),
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    reserveFighters: [p3, p4],
+  });
+  world.dispatch({ type: "set-root-standby", changes: [{ id: "p4", standby: false }] });
+  const internals = world as unknown as {
+    runtime: {
+      p1: { runtime: { pos: { x: number; y: number }; facing: 1 | -1 } };
+      p2: { runtime: { pos: { x: number; y: number } } };
+      reserveRoots: Array<{ id: string; runtime: { pos: { x: number; y: number } } }>;
+    };
+  };
+  internals.runtime.p1.runtime.pos.x = 0;
+  internals.runtime.p1.runtime.facing = 1;
+  internals.runtime.p2.runtime.pos.x = 100;
+  const reserveP4 = internals.runtime.reserveRoots.find((root) => root.id === "p4");
+  if (!reserveP4) throw new Error("Expected P4 reserve root for P2 value trace");
+  reserveP4.runtime.pos.x = 99;
+
+  const script = expandRuntimeTraceScript([
+    { label: "P2 value resolves nearest active P4", frames: 1, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(world, script, { label: "synthetic-imported-ikemen-p2-value-golden" });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-p2-value-golden",
+      label: "Synthetic imported IKEMEN live P2Name controller value",
+      source: "mixed",
+      notes: [
+        "Synthetic imported IKEMEN trace proves a State 0 VarSet value expression receives the active P2-family roster and resolves P2Name to the nearer active P4. It does not claim the wiki-only 30-pixel hysteresis, exact CharList frame-cache timing, Helpers type=player, or complete team selection parity.",
+      ],
+    },
+    gates: [{
+      label: "ikemen-p2-value-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [stateNo],
+      requiredExecutedControllers: ["VarSet", "ChangeState"],
+      requiredActorFrames: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo,
+        animNo: stateNo,
+        minFrames: 1,
+      }],
+      requiredFinalActors: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo,
+        animNo: stateNo,
+      }],
+    }],
+  });
 }
 
 export function createSyntheticImportedOwnerMetricsTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
@@ -15461,11 +17000,11 @@ export function createSyntheticImportedIkemenActiveRootCrouchLowGuardTraceArtifa
             allowSameTick: true,
             steps: [
               { tick: 1, stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" },
-              { tick: 2, stateNo: 10, controller: "PosSet", name: "Passive State Pos 2" },
-              { tick: 2, stateNo: 10, operation: "kinematic:posset" },
-              { tick: 3, stateNo: 120, controller: "StateTypeSet", name: "Crouch Guard Start State Type" },
-              { tick: 3, stateNo: 120, operation: "metadata:statetypeset" },
-              { tick: 4, stateNo: 120, controller: "ChangeState", name: "Crouch Guard Start Done" },
+              { tick: 1, stateNo: 10, controller: "PosSet", name: "Passive State Pos 2" },
+              { tick: 1, stateNo: 10, operation: "kinematic:posset" },
+              { tick: 2, stateNo: 120, controller: "StateTypeSet", name: "Crouch Guard Start State Type" },
+              { tick: 2, stateNo: 120, operation: "metadata:statetypeset" },
+              { tick: 3, stateNo: 120, controller: "ChangeState", name: "Crouch Guard Start Done" },
             ],
           },
           {
@@ -15509,17 +17048,6 @@ export function createSyntheticImportedIkemenActiveRootCrouchLowGuardTraceArtifa
             actorKind: "player",
             stateNo: 10,
             stateType: "C",
-            observedPosXAtLeast: -220,
-            observedPosXAtMost: -220,
-            teamStandby: false,
-            minFrames: 1,
-          },
-          {
-            actorId: "p3",
-            source: "imported",
-            actorKind: "player",
-            stateNo: 10,
-            stateType: "C",
             inGuardDistAttackerId: "p4",
             inGuardDistSource: "direct",
             observedPosXAtLeast: -100,
@@ -15555,15 +17083,6 @@ export function createSyntheticImportedIkemenActiveRootCrouchLowGuardTraceArtifa
           {
             label: "P3 crouches, positions, latches low-only P4, and guards delayed contact",
             steps: [
-              {
-                actorId: "p3",
-                source: "imported",
-                actorKind: "player",
-                stateNo: 10,
-                stateType: "C",
-                observedPosXAtLeast: -220,
-                observedPosXAtMost: -220,
-              },
               {
                 actorId: "p3",
                 source: "imported",
@@ -15709,8 +17228,8 @@ export function createSyntheticImportedIkemenActiveRootStandingLowGuardRejectTra
             allowSameTick: true,
             steps: [
               { tick: 1, stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" },
-              { tick: 2, stateNo: 20, controller: "PosSet", name: "Passive State Pos 2" },
-              { tick: 2, stateNo: 20, operation: "kinematic:posset" },
+              { tick: 1, stateNo: 20, controller: "PosSet", name: "Passive State Pos 2" },
+              { tick: 1, stateNo: 20, operation: "kinematic:posset" },
             ],
           },
           {
@@ -15753,17 +17272,6 @@ export function createSyntheticImportedIkemenActiveRootStandingLowGuardRejectTra
             actorKind: "player",
             stateNo: 20,
             stateType: "S",
-            observedPosXAtLeast: -220,
-            observedPosXAtMost: -220,
-            teamStandby: false,
-            minFrames: 1,
-          },
-          {
-            actorId: "p3",
-            source: "imported",
-            actorKind: "player",
-            stateNo: 20,
-            stateType: "S",
             observedPosXAtLeast: -100,
             observedPosXAtMost: -100,
             observedLifeAtMost: 963,
@@ -15776,15 +17284,6 @@ export function createSyntheticImportedIkemenActiveRootStandingLowGuardRejectTra
           {
             label: "P3 stays standing through placement and low-only hit",
             steps: [
-              {
-                actorId: "p3",
-                source: "imported",
-                actorKind: "player",
-                stateNo: 20,
-                stateType: "S",
-                observedPosXAtLeast: -220,
-                observedPosXAtMost: -220,
-              },
               {
                 actorId: "p3",
                 source: "imported",
@@ -15919,9 +17418,9 @@ export function createSyntheticImportedIkemenActiveRootStandingHighGuardTraceArt
             allowSameTick: true,
             steps: [
               { tick: 1, stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" },
-              { tick: 2, stateNo: 20, controller: "PosSet", name: "Passive State Pos 2" },
-              { tick: 2, stateNo: 20, operation: "kinematic:posset" },
-              { tick: 4, stateNo: 120, controller: "ChangeState", name: "Guard Start Done" },
+              { tick: 1, stateNo: 20, controller: "PosSet", name: "Passive State Pos 2" },
+              { tick: 1, stateNo: 20, operation: "kinematic:posset" },
+              { tick: 3, stateNo: 120, controller: "ChangeState", name: "Guard Start Done" },
             ],
           },
           {
@@ -15965,17 +17464,6 @@ export function createSyntheticImportedIkemenActiveRootStandingHighGuardTraceArt
             actorKind: "player",
             stateNo: 20,
             stateType: "S",
-            observedPosXAtLeast: -220,
-            observedPosXAtMost: -220,
-            teamStandby: false,
-            minFrames: 1,
-          },
-          {
-            actorId: "p3",
-            source: "imported",
-            actorKind: "player",
-            stateNo: 20,
-            stateType: "S",
             inGuardDistAttackerId: "p4",
             inGuardDistSource: "direct",
             observedPosXAtLeast: -100,
@@ -16011,15 +17499,6 @@ export function createSyntheticImportedIkemenActiveRootStandingHighGuardTraceArt
           {
             label: "P3 stands, positions, latches high-only P4, and guards delayed contact",
             steps: [
-              {
-                actorId: "p3",
-                source: "imported",
-                actorKind: "player",
-                stateNo: 20,
-                stateType: "S",
-                observedPosXAtLeast: -220,
-                observedPosXAtMost: -220,
-              },
               {
                 actorId: "p3",
                 source: "imported",
@@ -16167,8 +17646,8 @@ export function createSyntheticImportedIkemenActiveRootAirGuardTraceArtifact(
             allowSameTick: true,
             steps: [
               { tick: 1, stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" },
-              { tick: 2, stateNo: 40, controller: "PosSet", name: "Passive State Pos 2" },
-              { tick: 2, stateNo: 40, operation: "kinematic:posset" },
+              { tick: 1, stateNo: 40, controller: "PosSet", name: "Passive State Pos 2" },
+              { tick: 1, stateNo: 40, operation: "kinematic:posset" },
             ],
           },
           {
@@ -16212,17 +17691,6 @@ export function createSyntheticImportedIkemenActiveRootAirGuardTraceArtifact(
             actorKind: "player",
             stateNo: 40,
             stateType: "A",
-            observedPosXAtLeast: -220,
-            observedPosXAtMost: -220,
-            teamStandby: false,
-            minFrames: 1,
-          },
-          {
-            actorId: "p3",
-            source: "imported",
-            actorKind: "player",
-            stateNo: 40,
-            stateType: "A",
             inGuardDistAttackerId: "p4",
             inGuardDistSource: "direct",
             observedPosXAtLeast: -100,
@@ -16258,15 +17726,6 @@ export function createSyntheticImportedIkemenActiveRootAirGuardTraceArtifact(
           {
             label: "P3 enters A, latches A-only P4, starts A guard, and guards delayed contact",
             steps: [
-              {
-                actorId: "p3",
-                source: "imported",
-                actorKind: "player",
-                stateNo: 40,
-                stateType: "A",
-                observedPosXAtLeast: -220,
-                observedPosXAtMost: -220,
-              },
               {
                 actorId: "p3",
                 source: "imported",
@@ -16431,8 +17890,8 @@ export function createSyntheticImportedIkemenActiveRootAirGuardLandingTraceArtif
             allowSameTick: true,
             steps: [
               { tick: 1, stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" },
-              { tick: 2, stateNo: 40, controller: "PosSet", name: "Passive State Pos 2" },
-              { tick: 2, stateNo: 40, operation: "kinematic:posset" },
+              { tick: 1, stateNo: 40, controller: "PosSet", name: "Passive State Pos 2" },
+              { tick: 1, stateNo: 40, operation: "kinematic:posset" },
             ],
           },
           {
@@ -16475,17 +17934,6 @@ export function createSyntheticImportedIkemenActiveRootAirGuardLandingTraceArtif
         ],
         requiredRootHitAdmissionFrames: [{ admittedPairIds: ["p4->p3"], minFrames: 1 }],
         requiredActorFrames: [
-          {
-            actorId: "p3",
-            source: "imported",
-            actorKind: "player",
-            stateNo: 40,
-            stateType: "A",
-            observedPosXAtLeast: -220,
-            observedPosXAtMost: -220,
-            teamStandby: false,
-            minFrames: 1,
-          },
           {
             actorId: "p3",
             source: "imported",
@@ -21107,14 +22555,6 @@ export function officialKfmStandGuardHoldReturnActorFrameSequence(): RuntimeTrac
         moveType: "H",
         minFrames: 1,
       },
-      {
-        actorId: "p2",
-        source: "imported",
-        actorKind: "player",
-        stateNo: 130,
-        stateType: "S",
-        minFrames: 1,
-      },
     ],
   };
 }
@@ -21203,17 +22643,6 @@ export function officialKfmCrouchGuardHoldCrouchReturnActorFrameSequence(): Runt
         actorId: "p2",
         source: "imported",
         actorKind: "player",
-        stateNo: 131,
-        animNo: 151,
-        stateType: "C",
-        moveType: "H",
-        physics: "C",
-        minFrames: 1,
-      },
-      {
-        actorId: "p2",
-        source: "imported",
-        actorKind: "player",
         stateNo: 11,
         animNo: 11,
         stateType: "C",
@@ -21258,12 +22687,10 @@ export function officialKfmAirGuardLandingWalkReturnActorFrameSequence(): Runtim
         source: "imported",
         actorKind: "player",
         stateNo: 154,
-        animNo: 122,
+        animNo: 132,
         stateType: "A",
         moveType: "H",
         physics: "N",
-        inGuardDistAttackerId: "p1",
-        inGuardDistSource: "direct",
         minFrames: 1,
       },
       {
@@ -21467,7 +22894,7 @@ export function officialKfmAirGuardHitPhysicsFrames(): RuntimeTraceActorFrameReq
       source: "imported",
       actorKind: "player",
       stateNo: 154,
-      animNo: 122,
+      animNo: 132,
       stateType: "A",
       moveType: "H",
       physics: "N",
@@ -21476,16 +22903,6 @@ export function officialKfmAirGuardHitPhysicsFrames(): RuntimeTraceActorFrameReq
       bodyWidthFront: 39,
       bodyWidthBack: 39,
       playerPush: true,
-    },
-    {
-      actorId: "p2",
-      source: "imported",
-      actorKind: "player",
-      stateNo: 154,
-      animNo: 122,
-      inGuardDistAttackerId: "p1",
-      inGuardDistSource: "direct",
-      minFrames: 1,
     },
     {
       actorId: "p2",
@@ -29018,7 +30435,7 @@ export function officialKfmDefaultCrouchGetHitProgressionPhysicsFrames(): Runtim
       observedPosYAtLeast: 0,
       observedPosYAtMost: 0,
       observedVelXAtLeast: 1,
-      observedVelXAtMost: 0,
+      observedVelXAtMost: 2,
       observedVelYAtLeast: 0,
       observedVelYAtMost: 0,
       bodyWidthFront: 39,
@@ -29152,6 +30569,13 @@ export function createSyntheticImportedDefaultAirGroundImpactTraceArtifact(
 export function createSyntheticImportedDefaultAirLieDownRecoveryTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-air-liedown-recovery-attacker",
+    displayName: "Synthetic Imported Default Air Lie-Down Recovery Attacker",
+    hitDefAirTime: 9,
+    groundVelocity: [-3, -6],
+    fall: commonGetHitFallData(),
+  });
   return createImportedDefaultFallGetHitTraceArtifact(
     createSyntheticImportedTraceFighter({
       id: "synthetic-imported-default-air-liedown-recovery",
@@ -29171,6 +30595,7 @@ export function createSyntheticImportedDefaultAirLieDownRecoveryTraceArtifact(
     }),
     {
       ...options,
+      attacker,
       script: importedDefaultAirFallGetHitScript(),
       targetId: "synthetic-imported-default-air-liedown-recovery-golden",
       targetLabel: "Synthetic imported air Common1 lie-down/get-up route",
@@ -29597,6 +31022,7 @@ export function createImportedDefaultFallRecoveryInputTraceArtifact(
     createSyntheticImportedTraceFighter({
       id: `${imported.id}-common1-recovery-input-attacker`,
       displayName: `${imported.displayName} Common1 Recovery Input Probe`,
+      hitDefAirTime: 9,
       groundVelocity: [-3, -9],
       fall: {
         ...commonGetHitFallData(),
@@ -29880,6 +31306,7 @@ export function createSyntheticImportedDefaultAirFallRecoveryInputTraceArtifact(
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-default-air-fall-recovery-input-attacker",
     displayName: "Synthetic Imported Default Air Fall Recovery Input Attacker",
+    hitDefAirTime: 9,
     groundVelocity: [-3, -6],
     fall: {
       ...commonGetHitFallData(),
@@ -29926,6 +31353,7 @@ export function createImportedDefaultFallRecoveryTooEarlyTraceArtifact(
     createSyntheticImportedTraceFighter({
       id: `${imported.id}-common1-recovery-too-early-attacker`,
       displayName: `${imported.displayName} Common1 Recovery Too Early Probe`,
+      hitDefAirTime: 9,
       groundVelocity: [-3, -6],
       fall: {
         ...commonGetHitFallData(),
@@ -30013,6 +31441,7 @@ export function createSyntheticImportedDefaultAirFallRecoveryTooEarlyTraceArtifa
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-default-air-fall-recovery-too-early-attacker",
     displayName: "Synthetic Imported Default Air Fall Recovery Too Early Attacker",
+    hitDefAirTime: 9,
     groundVelocity: [-3, -6],
     fall: {
       ...commonGetHitFallData(),
@@ -30686,10 +32115,7 @@ export function officialKfmAirRecoveryActorFrameSequence(): RuntimeTraceActorFra
         stateType: "A",
         moveType: "I",
         physics: "N",
-        observedPosYAtMost: -3,
-        observedVelXAtLeast: 0.6,
-        observedVelYAtMost: -3,
-        minFrames: 8,
+        minFrames: 1,
       },
       {
         actorId: "p2",
@@ -30798,7 +32224,7 @@ export function officialKfmAirEntryRecoveryInputActorFrameSequence(): RuntimeTra
         source: "imported",
         actorKind: "player",
         stateNo: 5035,
-        animNo: 5000,
+        animNo: 5035,
         stateType: "A",
         moveType: "H",
         physics: "N",
@@ -30827,9 +32253,7 @@ export function officialKfmAirEntryRecoveryInputActorFrameSequence(): RuntimeTra
         moveType: "I",
         physics: "N",
         observedHitFallRecoverTimeAtMost: 0,
-        observedVelXAtLeast: 0.6,
-        observedVelYAtMost: -3,
-        minFrames: 8,
+        minFrames: 1,
       },
       {
         actorId: "p2",
@@ -30883,7 +32307,7 @@ export function officialKfmAirEntryRecoveryTooEarlyActorFrameSequence(): Runtime
         source: "imported",
         actorKind: "player",
         stateNo: 5035,
-        animNo: 5000,
+        animNo: 5035,
         stateType: "A",
         moveType: "H",
         physics: "N",
@@ -35903,7 +37327,6 @@ export function createSyntheticImportedProjectileContactPersistTraceArtifact(
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 348, animNo: 1070, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 349, animNo: 1071, moveType: "I", minFrames: 1 },
           { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
         ],
@@ -36020,7 +37443,6 @@ export function createSyntheticImportedProjectileContactSuffixTraceArtifact(
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 350, animNo: 1072, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 351, animNo: 1073, moveType: "I", minFrames: 1 },
           { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
         ],
@@ -36137,7 +37559,6 @@ export function createSyntheticImportedProjectileContactSuffixAnyTraceArtifact(
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 360, animNo: 1082, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 361, animNo: 1083, moveType: "I", minFrames: 1 },
           { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
         ],
@@ -36265,7 +37686,6 @@ export function createSyntheticImportedProjectileContactMultiIdTraceArtifact(
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 362, animNo: 1084, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 363, animNo: 1085, moveType: "I", minFrames: 1 },
           { actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
           { actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
@@ -36407,7 +37827,6 @@ export function createSyntheticImportedProjectileHitMultiIdTraceArtifact(
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 365, animNo: 1086, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 366, animNo: 1087, moveType: "I", minFrames: 1 },
           { actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
           { actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
@@ -36549,7 +37968,6 @@ export function createSyntheticImportedProjectileGuardedMultiIdTraceArtifact(
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 368, animNo: 1088, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 369, animNo: 1089, moveType: "I", minFrames: 1 },
           { actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
           { actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
@@ -36691,7 +38109,6 @@ export function createSyntheticImportedProjectileHitTimeMultiIdTraceArtifact(
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 371, animNo: 1090, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 372, animNo: 1091, moveType: "I", minFrames: 1 },
           { actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
           { actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
@@ -36833,7 +38250,6 @@ export function createSyntheticImportedProjectileContactTimeMultiIdTraceArtifact
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 374, animNo: 1092, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 375, animNo: 1093, moveType: "I", minFrames: 1 },
           { actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
           { actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
@@ -36975,7 +38391,6 @@ export function createSyntheticImportedProjectileGuardedTimeMultiIdTraceArtifact
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 377, animNo: 1094, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 378, animNo: 1095, moveType: "I", minFrames: 1 },
           { actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
           { actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
@@ -37170,7 +38585,6 @@ export function createSyntheticImportedProjectileTimeSameIdLastContactTraceArtif
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 380, animNo: 1096, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 381, animNo: 1097, moveType: "I", minFrames: 1 },
           { actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
           { actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
@@ -37353,7 +38767,6 @@ export function createSyntheticImportedProjectileTimeSameIdHitThenGuardTraceArti
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 383, animNo: 1098, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 384, animNo: 1099, moveType: "I", minFrames: 1 },
           { actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
           { actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
@@ -37473,7 +38886,6 @@ export function createSyntheticImportedProjectileHitSuffixTraceArtifact(
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 352, animNo: 1074, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 353, animNo: 1075, moveType: "I", minFrames: 1 },
           { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
         ],
@@ -37590,7 +39002,6 @@ export function createSyntheticImportedProjectileGuardedSuffixTraceArtifact(
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 354, animNo: 1076, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 355, animNo: 1077, moveType: "I", minFrames: 1 },
           { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
         ],
@@ -37707,7 +39118,6 @@ export function createSyntheticImportedProjectileHitSuffixAnyTraceArtifact(
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 356, animNo: 1078, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 357, animNo: 1079, moveType: "I", minFrames: 1 },
           { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
         ],
@@ -37824,7 +39234,6 @@ export function createSyntheticImportedProjectileGuardedSuffixAnyTraceArtifact(
           },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 358, animNo: 1080, moveType: "A", minFrames: 1 },
           { actorId: "p1", source: "imported", actorKind: "player", stateNo: 359, animNo: 1081, moveType: "I", minFrames: 1 },
           { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
         ],
@@ -45301,7 +46710,6 @@ export function createSyntheticImportedHelperProjContactPersistTraceArtifact(opt
         ],
         requiredActorFrames: [
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1300, animNo: 1058, moveType: "I", minFrames: 1 },
-          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1302, animNo: 1061, moveType: "A", minFrames: 1 },
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1301, animNo: 1059, moveType: "I", minFrames: 1 },
           { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1060, moveType: "A", minFrames: 1 },
         ],
@@ -46233,7 +47641,6 @@ export function createSyntheticImportedHelperHitCountPersistTraceArtifact(option
           },
         ],
         requiredActorFrames: [
-          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1226, animNo: 965, moveType: "A", minFrames: 1 },
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1227, animNo: 966, moveType: "I", minFrames: 1 },
           { actorId: "p2", actorKind: "player", observedLifeAtMost: 965, minFrames: 1 },
         ],
@@ -46533,7 +47940,6 @@ export function createSyntheticImportedHelperMoveGuardedPersistTraceArtifact(opt
           },
         ],
         requiredActorFrames: [
-          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1230, animNo: 969, moveType: "A", minFrames: 1 },
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1231, animNo: 970, moveType: "I", minFrames: 1 },
           { actorId: "p2", actorKind: "player", guarding: true, minFrames: 1 },
         ],
@@ -46612,7 +48018,6 @@ export function createSyntheticImportedHelperMoveReversedPersistTraceArtifact(op
         requiredEventCategories: ["reversal"],
         requiredCombatReasons: ["reversal"],
         requiredActorFrames: [
-          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1232, animNo: 971, moveType: "A", minFrames: 1 },
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1233, animNo: 972, moveType: "I", minFrames: 1 },
           { actorId: "p2", actorKind: "player", stateNo: 779, animNo: 779, moveType: "H", minFrames: 1 },
         ],
@@ -50211,6 +51616,7 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefHitFlag?: string;
   attackStateType?: "S" | "C" | "A" | "L";
   hitDefDamage?: number;
+  hitDefAirTime?: number;
   hitDefAirJuggle?: number;
   hitDefGuardPoints?: number;
   hitDefDizzyPoints?: number;
@@ -50688,6 +52094,7 @@ export type SyntheticImportedTraceFighterOptions = {
   p2DistanceStateEntry?: { stateNo: number };
   ownerMetricsStateEntry?: { stateNo: number };
   identityEntry?: { name: string; p2Name: string; authorName: string; enemyAuthorName: string; stateNo: number };
+  p2NameValueRoute?: { p2Name: string; stateNo: number; variableIndex?: number };
   dataStats?: { attack?: number; defence?: number; life?: number; power?: number; guardpoints?: number; dizzypoints?: number; airjuggle?: number };
   selfStateNoExistEntry?: { existingStateNo: number; missingStateNo: number; stateNo: number };
   selfAnimExistEntry?: { existingAnimNo: number; missingAnimNo: number; stateNo: number };
@@ -51475,6 +52882,7 @@ ${cornerPushLines}
   const guardDistanceLine = options.guardDistance === undefined ? "" : `guard.dist = ${options.guardDistance}`;
   const fallLine = options.fall ? fallHitDefBlock(options.fall) : "";
   const hitDefAirJuggleLine = options.hitDefAirJuggle === undefined ? "" : `air.juggle = ${options.hitDefAirJuggle}`;
+  const hitDefAirTimeLine = options.hitDefAirTime === undefined ? "" : `air.hittime = ${options.hitDefAirTime}`;
   const customStateLine = options.customStateRoute
     ? `
 p2stateno = ${options.customStateRoute.startStateNo}
@@ -51502,6 +52910,7 @@ ${hitDefKillLine}
 ${hitVarLines}
 pausetime = 4,4
 ground.hittime = 9
+${hitDefAirTimeLine}
 ground.velocity = ${groundVelocity.join(",")}
 ${airVelocityLine}
 ${options.hitSound === undefined ? "" : `hitsound = ${options.hitSound}`}
@@ -51624,6 +53033,7 @@ ${options.passiveAssertSpecialFlagGroups?.map((flags, index) => passiveAssertSpe
 ${options.defenseMultiplier !== undefined ? defenseMultiplierController(options.defenseMultiplier) : ""}
 ${options.dynamicDefenseMultiplier !== undefined ? dynamicDefenseMultiplierController(options.dynamicDefenseMultiplier) : ""}
 ${options.passiveRemoveOnGetHitExplod ? passiveRemoveOnGetHitExplodControllerBlock() : ""}
+${options.p2NameValueRoute ? p2NameValueRouteBlock(options.p2NameValueRoute) : ""}
 
 [Statedef 200]
 type = ${options.attackStateType ?? "S"}
@@ -51839,6 +53249,7 @@ ${options.p2StateContextEntry ? simpleStateBlock(options.p2StateContextEntry.sta
 ${options.p2DistanceStateEntry ? simpleStateBlock(options.p2DistanceStateEntry.stateNo, "I") : ""}
 ${options.ownerMetricsStateEntry ? simpleStateBlock(options.ownerMetricsStateEntry.stateNo, "I") : ""}
 ${options.identityEntry ? simpleStateBlock(options.identityEntry.stateNo, "I") : ""}
+${options.p2NameValueRoute ? simpleStateBlock(options.p2NameValueRoute.stateNo, "I") : ""}
 ${options.selfStateNoExistEntry ? simpleStateBlock(options.selfStateNoExistEntry.stateNo, "I") : ""}
 ${options.selfAnimExistEntry ? simpleStateBlock(options.selfAnimExistEntry.stateNo, "I") : ""}
 ${options.selfCommandEntry && options.selfCommandEntry.stateNo !== options.assertSpecialControlState?.stateNo && !passiveControllerStateNos.has(options.selfCommandEntry.stateNo) ? simpleStateBlock(options.selfCommandEntry.stateNo, "I") : ""}
@@ -52193,6 +53604,11 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.identityEntry === undefined
         ? []
         : ([[options.identityEntry.stateNo, traceAction(options.identityEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.p2NameValueRoute === undefined
+        ? []
+        : ([[options.p2NameValueRoute.stateNo, traceAction(options.p2NameValueRoute.stateNo)]] as Array<
+            [number, MugenAnimationAction]
+          >)),
       ...(options.selfStateNoExistEntry === undefined
         ? []
         : ([[options.selfStateNoExistEntry.stateNo, traceAction(options.selfStateNoExistEntry.stateNo)]] as Array<
@@ -54201,6 +55617,7 @@ ${fall.defenceUp === undefined ? "" : `fall.defence_up = ${fall.defenceUp}`}
 ${fall.kill === undefined ? "" : `fall.kill = ${fall.kill ? 1 : 0}`}
 ${fall.velocity?.x === undefined ? "" : `fall.xvelocity = ${fall.velocity.x}`}
 ${fall.velocity?.y === undefined ? "" : `fall.yvelocity = ${fall.velocity.y}`}
+${fall.velocity?.z === undefined ? "" : `fall.zvelocity = ${fall.velocity.z}`}
 ${fall.recover === undefined ? "" : `fall.recover = ${fall.recover ? 1 : 0}`}
 ${fall.recoverTime === undefined ? "" : `fall.recovertime = ${fall.recoverTime}`}
 ${fall.downRecover === undefined ? "" : `down.recover = ${fall.downRecover ? 1 : 0}`}
@@ -57513,6 +58930,22 @@ trigger1 = P1Name = "${route.name}"
 trigger1 = P2Name = "${route.p2Name}"
 trigger1 = AuthorName = "${route.authorName}"
 trigger1 = EnemyNear, AuthorName = "${route.enemyAuthorName}"
+`;
+}
+
+function p2NameValueRouteBlock(route: { p2Name: string; stateNo: number; variableIndex?: number }): string {
+  const variableIndex = route.variableIndex ?? 31;
+  return `
+[State 0, P2 Name Value]
+type = VarSet
+trigger1 = 1
+v = ${variableIndex}
+value = P2Name = "${route.p2Name}"
+
+[State 0, P2 Name Value Route]
+type = ChangeState
+trigger1 = var(${variableIndex}) = 1
+value = ${route.stateNo}
 `;
 }
 

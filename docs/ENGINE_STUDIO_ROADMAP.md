@@ -199,3 +199,11 @@ The project is "usable" for the current horizon when:
 - At least one real imported MUGEN character and the generated local roster can be visually verified through scripted QA.
 - The next developer can add a controller, parser feature, renderer effect, or module without rewriting the shell.
 Current source import transaction checkpoint: source identity is now followed by an admission/commit/rollback boundary. Durable handles, external replacement, invalidation, and recovery remain the next source-workspace slice.
+
+## 2026-07-30 — Fight First interface migration
+
+- Match is the default product surface: the real scene, HUD, contextual asset/source lens, and runtime controls own the viewport.
+- Inspect keeps source navigation and evidence visible through explicit drawers instead of permanent columns.
+- Studio keeps all eight existing routes and their real services, but each route now uses the same scene-first shell, quiet global navigation, contextual inspector, and explicit console.
+- Legacy Studio stylesheet modules remain only as source history; they are no longer imported into the active cascade. `src/styles/redesign.css` owns the migrated interface system.
+- The migration changes presentation seams, not runtime, parser, evidence, package, or project-state contracts.

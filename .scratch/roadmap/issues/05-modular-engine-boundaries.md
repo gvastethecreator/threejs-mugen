@@ -7,7 +7,15 @@ Labels: docs, module-boundary, ready-for-agent
 
 Prepare the project to become a reusable browser game engine without extracting shared core too early from unstable fighting-specific behavior.
 
-## 2026-07-27 post-DA30-120 modular override
+## 2026-07-28 post-DA32-026 modular override
+
+Los límites de imports y modelos reducen riesgo, pero aún falta un segundo
+juego ejecutable. La extracción requiere ese consumer, prueba de borrado,
+imports prohibidos, paquete limpio, instalación en fixture y CI local. Ver
+AUD28-46…48 en la
+[auditoría diaria](../../../docs/research/2026-07-28-daily-roadmap-architecture-audit-post-da32-026.md).
+
+## Historical 2026-07-27 post-DA30-120 modular override
 
 DA31-037 adds a real non-fighting browser route. DA31-038 extracts one port
 used by both products with deletion and forbidden-import proof. DA31-039 then

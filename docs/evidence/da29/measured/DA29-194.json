@@ -2,15 +2,15 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-194",
   "kind": "I",
-  "generatedAt": "2026-07-27T14:28:12.008Z",
+  "generatedAt": "2026-08-01T18:12:01.197Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-194",
   "anchors": [
     {
       "path": "package.json",
-      "bytes": 4237,
-      "sha256": "02b5581499e299e99f7fbf2468e8f92405df73d614acf70e35a34326fc732011"
+      "bytes": 6728,
+      "sha256": "9f4e37b67ea9fac7c3d637de0ac21be74f23f38a24aae16b7daf3ce19fc8ddac"
     },
     {
       "path": "scripts/materialize_authority_selector.cjs",
@@ -47,6 +47,14 @@
       {
         "name": "qa:stage:repository:native",
         "cmd": "node scripts/qa_repository_stage_native_regression.cjs"
+      },
+      {
+        "name": "qa:content:stages",
+        "cmd": "node scripts/qa_content_pack_stages.cjs"
+      },
+      {
+        "name": "qa:content:spritesheets",
+        "cmd": "node scripts/qa_content_pack_spritesheets.cjs"
       },
       {
         "name": "qa:studio:compatibility-snapshot",
@@ -91,14 +99,6 @@
       {
         "name": "materialize:source-authority",
         "cmd": "node scripts/materialize_source_authority_manifest.cjs"
-      },
-      {
-        "name": "materialize:source-authority-epoch",
-        "cmd": "node scripts/materialize_source_authority_epoch.cjs"
-      },
-      {
-        "name": "materialize:roadmap-cursor",
-        "cmd": "node scripts/materialize_roadmap_cursor.cjs"
       }
     ],
     "count": 20

@@ -7,16 +7,409 @@
 - Static inspection confirms existing proof for negative-state order, Ikemen
   negative-state append, helper `keyctrl`, first-pass Common1/FightFX loading,
   and T419-T423 P2 roster/name wiring; none is replanned.
-- New queue: **T424** same-tick root/helper state chaining; **T425** Ikemen P2
-  retention/source reconciliation; **T426** imported `select.def` playable
-  roster/stage authority; **T427** loader-to-live-runtime ZSS state pipeline.
+- Closed queue: **T424** same-tick root/helper state chaining; **T425** Ikemen
+  P2 retention/source reconciliation; **T426** imported `select.def` playable
+  roster/stage authority; **T427** loader-to-live-runtime ZSS state pipeline;
+  **T428** live `ignoreHitPause` wrapper scheduling; **T429** combined ZSS
+  `ignoreHitPause persistent(n)` cadence; **T430** raw-CNS positive normal
+  cadence; **T431** raw-CNS zero once-per-state-entry cadence; and **T432**
+  paired raw-CNS paused-zero one-shot behavior.
+- Closed **T433**: paired raw-CNS `ignorehitpause = 1` plus `persistent = 2`
+  during an active-root HitPause scan, kept separate from T429's ZSS counter.
+- Closed **T434**: raw-CNS `persistent = 2` counts sparse trigger passes in
+  normal active-root scans instead of state-time ticks.
+- Closed **T435**: raw-CNS `StateDef -2` `persistent = 2` keeps a separate
+  trigger counter across current-state changes.
+- Closed **T436**: raw-CNS `StateDef -3` `persistent = 2` keeps a separate
+  trigger counter across current-state changes when no `stateOwner` exists.
+- Closed **T437**: imported CMD `StateDef -1` setup `persistent = 2` keeps a
+  separate trigger counter across current-state changes.
+- Closed **T438**: imported CMD `StateDef -1` setup `persistent = 0` runs once
+  per controller/actor cycle and resets on the next cycle.
+- Closed **T463**: imported CMD `StateDef -1` static `ChangeState` reuses the
+  isolated zero marker before destination resolution and routes only once
+  across `0 -> 200 -> 201 -> 0`.
+- Closed **T464**: the same static route reuses T437's positive map;
+  `persistent = 2` counts eligible trigger passes and routes at ticks 1/4.
+- Closed **T465**: the default runtime keeps authored
+  `guard.slidetime`/`guard.ctrltime` stable for `GetHitVar`, advances separate
+  remaining slide/control windows, and leaves imported Common1 presentation
+  authoritative. Focused 102-test coverage, full 324/3289, typecheck, build,
+  boundaries, and 682/682 traces pass.
+- Closed **T466**: `airguard.ctrltime` parses/compiles through HitDef and
+  projectile paths, defaults to resolved `guard.ctrltime`, and overrides only
+  air-guard combat selection. Focused 149-test coverage, full 324/3289,
+  typecheck, build, boundaries, and 682/682 traces pass.
+- Closed **T467**: `air.hittime` parses/compiles through HitDef/ModifyHitDef and Projectile,
+  propagates through imported/runtime move data, defaults omitted air timing to
+  20, and selects the air value only for airborne normal hits. Ground hits and
+  guard timing remain on their existing fields; focused/compiler/runtime and
+  trace regressions pass.
+- Closed **T468**: `fall=1` takes precedence over airborne `air.hittime` in the
+  effective direct-hit resolver, so falling air hits use the bounded ground
+  `hitStun` fallback while non-falling air hits retain the authored/default air
+  timing. Ground, guard, projectile no-fall, and direct fall metadata paths are
+  unchanged; focused resolver and fall-trace regressions pass.
+- Closed **T469**: `down.hittime` and `down.velocity` now propagate through
+  HitDef/ModifyHitDef/Projectile and imported/runtime payloads. Lying hits with
+  zero vertical down velocity select authored/default 20-tick down timing;
+  non-zero vertical down velocity switches to the air timing route. Focused
+  compiler/HitDef/projectile/combat tests, down-hit traces, and final gates pass.
+- **T472 is closed-bounded**: `down.bounce` now compiles on HitDef,
+  ModifyHitDef and Projectile, persists on direct/projectile fall metadata,
+  and gates the Common1 `HitFallVel` seam (`0` suppresses velocity,
+  `1`/omitted preserve the current compatibility path). Focused coverage is
+  198 tests; final gates pass 324 files / 3294 tests, typecheck, build,
+  boundaries and `qa:trace` 682/682. UI smoke is N/A.
+- **T473 is closed-bounded**: enabled direct/projectile falls now materialize the
+  official omitted `fall.recover = 1` and `fall.recovertime = 4` defaults while
+  preserving explicit false/custom values and disabled falls. Focused coverage
+  is 102 tests; the full suite is 324/3296, typecheck/build/boundaries and
+  `qa:trace` 682/682 pass. UI smoke is N/A because no visible surface changed.
+- **T474 is closed-bounded**: omitted direct/projectile `fall.yvelocity` now
+  resolves from localcoord width (`-4.5` at 320px, `-9` at 640px, `-18` at
+  1280px), while authored fall/hit velocities and invalid metadata preserve
+  precedence/fallback. Focused coverage is 105 tests; the full suite is
+   324/3299, typecheck/build/boundaries and `qa:trace` 682/682 pass. UI smoke
+   is N/A because no visible surface changed.
+- **T475 is closed-bounded**: `air.fall` now remains separate from the base
+  `fall` flag. `fall = 0, air.fall = 1` materializes a falling reaction only
+  for airborne defenders, while base `fall = 1` remains effective in every
+  eligible state. Compiler, HitDef, resolver, direct/projectile and parser
+  regressions pass; full gates and `qa:trace` 682/682 pass. UI smoke is N/A.
+- **T476 is closed-bounded**: `down.velocity.x` now survives HitDef,
+  ModifyHitDef, imported state-move and projectile materialization. The
+  resolver exposes the authored X component for lie-down hits and direct or
+  projectile combat applies its attacker-relative sign; 247 focused tests,
+  full 324/3308 tests, typecheck/build/boundaries, `qa:trace` 682/682 and diff
+  hygiene pass.
+- **T477 is closed-bounded**: authored `fall.xvelocity` now remains signed
+  through direct and projectile fall materialization instead of mirroring by
+  attacker/projectile facing. Omitted X remains a no-change value; focused
+  coverage passes 121 tests and final 324-file / 3310-test, typecheck, build,
+  boundaries and `qa:trace` 682/682 gates are green.
 - Research: [official comparison](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md).
   Task contracts: issues [09](../.scratch/roadmap/issues/09-mugen-current-state-transition-loop.md),
   [10](../.scratch/roadmap/issues/10-ikemen-p2-stable-switch-contract.md),
-  [11](../.scratch/roadmap/issues/11-mugen-select-def-playable-roster.md), and
-  [12](../.scratch/roadmap/issues/12-ikemen-zss-live-state-pipeline.md).
-- This is planning/static-gap evidence only. Latest implementation remains
-  T423; scores stay `65 / 36 / 20 / 10-12 / 6-8 / 25`.
+  [11](../.scratch/roadmap/issues/11-mugen-select-def-playable-roster.md),
+  [12](../.scratch/roadmap/issues/12-ikemen-zss-live-state-pipeline.md), and
+  [13](../.scratch/roadmap/issues/13-ikemen-zss-hitpause-wrapper-semantics.md), and
+  [14](../.scratch/roadmap/issues/14-ikemen-zss-combined-wrapper-persistence.md),
+  [15](../.scratch/roadmap/issues/15-mugen-cns-persistent-cadence.md),
+  [16](../.scratch/roadmap/issues/16-mugen-cns-persistent-zero.md),
+  [17](../.scratch/roadmap/issues/17-mugen-cns-hitpause-persistent-zero.md), and
+  [18](../.scratch/roadmap/issues/18-mugen-cns-hitpause-persistent-cadence.md),
+  and [19](../.scratch/roadmap/issues/19-mugen-cns-persistent-trigger-count.md),
+  [53](../.scratch/roadmap/issues/53-mugen-air-hit-time-fall-interaction.md),
+  and [54](../.scratch/roadmap/issues/54-mugen-down-hit-time.md), and
+  [60](../.scratch/roadmap/issues/60-mugen-air-fall-default-selection.md), and
+  [61](../.scratch/roadmap/issues/61-mugen-down-velocity-x.md).
+- T424 through T438 and T463/T464/T465/T466/T467/T468/T469/T472/T473/T474/T475/T476/T477
+  are closed-bounded; T471 is the active source-selected content cursor.
+  Scores stay
+  `65 / 36 / 20 / 10-12 / 6-8 / 25` pending independent adjudication.
+
+## User-directed content queue — T439-T462 (2026-08-01)
+
+Added six original satirical fighter packages (T439-T444), eight classic
+uniform recolors (T449-T456), shared VFX/FightFX (T445), four parallax stages
+(T446), and bounded roster/runtime registration (T447). Identity anchors are
+accepted for all 14 fighters; the VFX atlas and four regenerated background packs have
+representative QA. The eight classic packs now have regenerated subdued Imagegen 4x4 action grids,
+14-state 192 px atlases, CC0 permission manifests, previews and MUGEN-lite
+DEF/CMD/CNS/AIR templates. Palettes, binary SFF and frame-level collision
+promotion remain open. T461/T462 add the v2 sober/Baki fighter and four-stage
+regeneration lanes. Contracts live in [ROADMAP_CONTENT_PACK.md](ROADMAP_CONTENT_PACK.md)
+and issues 24-47. These tasks do not move compatibility scores. T457-T460 are
+now queued for
+palettes, binary SFF, frame-level collisions and per-character traces.
+T462 is now closed-bounded: `pnpm qa:content:stages` selected all four stage IDs
+in a live browser, confirmed three HTTP-loaded layers per stage and distinct
+`deltaX` values (`0.08/0.42/0.88`) plus distinct vertical `deltaY` values
+(`0.02/0.08/0.16`). The four background-pack reports remain
+`representative=true`; their scroll proofs now have four frames and three
+changed frame pairs after fixing non-repeating-layer translation in the
+`build-game-backgrounds` validator. SFF/DEF stage compatibility and floor
+collision remain outside this bounded content gate.
+
+The spritesheet aggregate pre-package gate is intentionally not claimed green:
+runtime playback now passes with hash-bound manifest evidence for all 14 states
+in each run. Animation/identity remain red and independent visual review is
+recorded as fail with concrete anatomy/scale/phase findings in each run.
+
+Closed **T470** (content lane): `pnpm qa:content:spritesheets` now inventories
+all 17 public character directories (11 atlas-bearing packages and 6
+identity-anchor-only packages) and records per-run source-grid reuse and state
+coverage. The eight v2 runs remain blocked exactly where the expert gate says:
+animation contracts, identity consistency and visual review. **T471** is now in
+progress: Bruno Giro has fresh Imagegen `walk-forward`, `walk-back`, `guard`
+and `special` rows with provenance, alignment and fourteen fresh runtime
+previews; aggregate identity/contract gates remain red, so no atlas is promoted.
+
+## Current implementation target — next official parity task selection (2026-08-01)
+
+- T430/T434 establish raw positive cadence by counting trigger-passing scans in
+  ordinary active roots; T432/T433 establish separate raw paused routes; T435
+  and T436 cover `StateDef -2` and `StateDef -3` with their owner boundaries;
+  T437/T438 cover imported CMD `StateDef -1` setup; T463 covers its bounded
+  static `ChangeState` zero and interval-two routes.
+- T465 is closed-bounded: direct/projectile guard contacts seed separate
+  remaining slide/control windows; default runtime owns stop/restore, while
+  imported Common1 states own presentation. Other interval values,
+  unpaired `ignorehitpause`, State -1 `ChangeState` intervals other than two,
+  failed-value activation order, ZSS grammar/zero wrappers,
+  dynamic/non-integer values, helpers, player-owned custom states, generic
+  controller parity, scores, and full M.U.G.E.N/IKEMEN parity remain blocked.
+- T468 is closed-bounded: `fall=1` suppresses `air.hittime` as the effective
+  airborne normal-hit stun and falls back to the existing ground `hitStun`; the
+  no-fall air default/override, ground/guard timing, projectile no-fall path,
+  and direct fall metadata remain unchanged. T472 is now closed-bounded after
+  T469; its explicit false/true `HitFallVel` gate is evidenced without moving
+  compatibility scores. T473/T474 now own the bounded fall-recovery and
+  localcoord-aware omitted fall-velocity defaults; Common1 landing ownership
+  remains separate.
+
+## Latest implementation checkpoint — T465 closed-bounded (2026-08-01)
+
+- Authored `guardSlideTime` / `guardControlTime` remain stable for
+  `GetHitVar(slidetime/ctrltime)`. Separate remaining counters decrement on
+  active stun ticks, clamp at zero, stop default guard slide, and restore
+  default control; reset paths clear them. Focused runtime tests pass; final
+  gates pass; UI smoke is N/A because no visible surface changed.
+
+## Latest implementation checkpoint — T468 closed-bounded (2026-08-01)
+
+- Official `fall=1` precedence is now enforced in the direct resolver: airborne
+  falling hits use the bounded ground `hitStun` fallback, while non-falling air
+  hits keep authored/default `air.hittime`. Focused resolver coverage is 27
+  tests and the fall trace subset is 2 tests. Final closeout passes 324 files /
+  3291 tests, typecheck, build, boundaries, `qa:trace` 682/682, and diff
+  hygiene. This is not exact Common1 fall/landing or `GetHitVar(hittime)`
+  lifetime parity; UI smoke is N/A.
+
+## Latest implementation checkpoint — T469 closed-bounded (2026-08-01)
+
+- Direct HitDef, ModifyHitDef, Projectile, imported moves, and runtime
+  projectiles now carry `down.hittime` plus effective `down.velocity` Y. Lying
+  zero-Y hits select authored/default 20-tick down timing; non-zero-Y hits use
+  air timing and the launch velocity. Focused compiler/HitDef/projectile/combat
+  and down-hit trace tests pass. Final closeout passes 324 files / 3292 tests,
+  typecheck, build, boundaries, `qa:trace` 682/682, and diff hygiene; UI smoke
+  is N/A. Exact lie-down Common1 tables, bounce/recovery, and full
+  `GetHitVar` lifetime parity remain outside the claim.
+
+## Latest implementation checkpoint — T472 closed-bounded (2026-08-01)
+
+- `down.bounce` now compiles on direct HitDef, ModifyHitDef and Projectile,
+  persists on direct/projectile fall metadata, and gates `HitFallVel`: explicit
+  `0` clears bounce velocity while omitted/`1` retain the existing compatibility
+  path. Focused compiler/HitDef/direct/projectile/HitFall coverage passes 198
+  tests; final closeout passes 324 files / 3294 tests, typecheck, build,
+  boundaries, `qa:trace` 682/682 and diff hygiene. UI smoke is N/A because no
+  visible surface changed; exact Common1 default/landing parity remains
+outside the claim.
+
+## Latest implementation checkpoint — T474 closed-bounded (2026-08-01)
+
+- A shared localcoord-aware `fall.yvelocity` default helper now maps the
+  official 240p/480p/720p values from the 320px baseline. Direct materialization
+  reads defender localcoord; projectile materialization reads projectile
+  localcoord. Focused coverage passes 105 tests; final gates pass 324 files /
+  3299 tests, typecheck, build, boundaries, `qa:trace` 682/682 and diff
+  hygiene. UI smoke is N/A; exact Common1 landing physics remains outside the
+  claim.
+
+## Previous implementation checkpoint — T473 closed-bounded (2026-08-01)
+
+- A shared `resolveRuntimeFallRecoveryDefaults` seam now materializes the
+  official enabled-fall defaults (`recover: true`, `recoverTime: 4`) for direct
+  and projectile HitFall metadata. Explicit false/custom values and disabled
+  falls remain unchanged. Focused coverage passes 102 tests; final gates pass
+  324 files / 3296 tests, typecheck, build, boundaries and `qa:trace` 682/682.
+  UI smoke is N/A; Common1 recovery-state choreography is outside the claim.
+
+## Previous implementation checkpoint — T467 closed-bounded (2026-08-01)
+
+- `air.hittime` now travels from HitDef/ModifyHitDef and Projectile compiler/parser data through
+  imported/runtime move data and combat. Omitted values use the official
+  20-tick air default; explicit values affect airborne normal hits only, while
+  ground and guard timing stay on their existing fields. Focused/compiler
+  regressions, full 324/3290, typecheck, build, boundaries, diff hygiene and
+  682/682 traces pass; UI smoke is N/A.
+
+## Previous implementation checkpoint — T466 closed-bounded (2026-08-01)
+
+- `airguard.ctrltime` now travels from HitDef/ModifyHitDef and Projectile
+  compiler/parser data through timing resolution and combat. Omitted values
+  inherit `guard.ctrltime`; explicit values affect air guard only. Focused
+  149-test coverage, full 324/3289, typecheck, build, boundaries, and
+  682/682 traces pass; UI smoke is N/A.
+
+## Previous implementation checkpoint — T464 closed-bounded (2026-08-01)
+
+- Imported CMD `StateDef -1` static `ChangeState persistent = 2` now counts
+  trigger-passing scans: ticks 1/4 route, tick 3 skips, and both
+  `0 -> 200 -> 201 -> 0` chains retain the same actor/controller counter.
+- Required trace `mugen-cns-state-minus-one-changestate-persistent` checksum
+  `3681fafa` passes in 682/682 artifacts (648 required, 34 optional). Focused
+  positive/zero/route coverage, full 324/3287, typecheck, build and boundaries
+  pass; UI smoke is N/A.
+
+## Previous implementation checkpoint — T463 closed-bounded (2026-08-01)
+
+- Imported CMD `StateDef -1` `ChangeState` now applies raw `persistent = 0`
+  after trigger admission and before value resolution. It routes once at tick
+  1 through `0 -> 200 -> 201`, retains the marker after returning to 0, and
+  skips the later eligible StageTime triggers.
+- Required trace `mugen-cns-state-minus-one-changestate-persistent-zero`
+  checksum `88931500` passes in 681/681 artifacts (647 required, 34 optional).
+  Focused 4/12, full 323/3285, typecheck, build and boundaries pass; UI smoke
+  is N/A.
+
+## Previous implementation checkpoint — T438 closed-bounded (2026-07-30)
+
+- Imported CMD `StateDef -1` setup now honors raw `persistent = 0` as one
+  execution per controller/actor cycle. Repeated scans are skipped, the
+  `0 -> 200` transition keeps the controller seam intact, and the next cycle
+  resets the one-shot marker.
+- Required trace `mugen-cns-state-minus-one-persistent-zero` checksum
+  `27e1ffb7` passes in 680/680 artifacts (646 required, 34 optional). Focused
+  13-test coverage, full 322/3282, typecheck, build, boundaries, hygiene, and
+  docs pass; UI smoke is N/A.
+
+## Previous implementation checkpoint — T437 closed-bounded (2026-07-30)
+
+- Imported CMD `StateDef -1` setup now honors raw `persistent = 2` trigger
+  counts. Sparse triggers execute at ticks 1/4, skip tick 3, and survive
+  `0 -> 200` while retaining the existing input/AI ownership seam.
+- Required trace `mugen-cns-state-minus-one-persistent` checksum `ba3d289d`
+  passes in 679/679 artifacts (645 required, 34 optional). Focused 1/2, full
+  319/3276, typecheck, build, boundaries, hygiene, and docs pass; UI smoke is
+  N/A.
+
+## Previous implementation checkpoint — T432 closed-bounded (2026-07-30)
+
+- The raw-CNS zero marker now reaches the already-filtered pause-only root scan
+  only for a paired `ignorehitpause = 1` controller. The CNS-owned HitPause
+  fixture proves executions at pause ticks 2/6 around `200 -> 201 -> 200`,
+  repeated skips, and an unwrapped `VelSet` frozen.
+- Required `mugen-cns-hitpause-persistent-zero` checksum `94b49516` passes in
+  674/674 artifacts (640 required). Focused 5/333 coverage, typecheck, full
+  314/3266 suite, build, and boundaries pass; no UI changed, so smoke is N/A.
+- Raw positive paused cadence is closed only for the paired T433 route; no
+  generic HitPause/controller scheduler claim is added.
+
+## Previous implementation checkpoint — T436 closed-bounded (2026-07-30)
+
+- Raw CNS `StateDef -3` now has a separate `persistent = 2` trigger counter,
+  executes sparse passes at ticks 1/4, skips tick 3, and survives `0 -> 200`.
+  Runtime admits `-3` only when no `stateOwner` exists.
+- Required `mugen-cns-state-minus-three-persistent` checksum `b2719d71` passes
+  in 678/678 artifacts (644 required). Focused 1/2, full 318/3274,
+  typecheck, build, boundaries, hygiene, and docs pass; UI smoke is N/A.
+
+## Previous implementation checkpoint — T433 closed-bounded (2026-07-30)
+
+- The paired raw-CNS `ignorehitpause = 1` plus `persistent = 2` controller now
+  uses a separate paused-pass counter. The fixture proves pause ticks 2/4/6
+  around `200 -> 201 -> 200`, while unwrapped `VelSet` stays frozen.
+- Required checksum `d6d00fd0` passes in 675/675 artifacts (641 required,
+  34 optional). Focused 6/335, full 315/3268, typecheck, build, and
+  boundaries pass; no UI changed, so smoke is N/A.
+
+## Previous implementation checkpoint — T435 closed-bounded (2026-07-30)
+
+- Raw CNS `StateDef -2` is checked before the current state. Its separate
+  `persistent = 2` counter executes sparse triggers at ticks 1/4, skips tick 3,
+  and survives `0 -> 200`.
+- Required trace `mugen-cns-special-persistent` checksum `6fce3962` passes in
+  677/677 artifacts (643 required). Focused 1/2, full 317/3272, typecheck,
+  build, boundaries, hygiene, and docs pass; UI smoke is N/A.
+
+## Previous implementation checkpoint — T431 closed-bounded (2026-07-30)
+
+- An actor/controller-local raw-CNS zero marker now admits the first
+  trigger-passing ordinary active-root scan and clears at state entry. The
+  fixture verifies `200 -> 201 -> 200`, executions at ticks 1/4, repeated
+  skips, and stable unparameterized controller execution.
+- Required `mugen-cns-persistent-zero` checksum `d13ad12a` passes in 673/673
+  artifacts (639 required). Focused coverage, typecheck, full 313/3264 suite,
+  build, and boundaries pass; no UI changed, so smoke is N/A.
+- Direct same-id `ChangeState` timing remains blocked; it retains the current
+  state clock and is not recast as generic transition parity.
+
+## Previous implementation checkpoint — T430 closed-bounded (2026-07-30)
+
+- Raw CNS `persistent = 2` now has bounded first/skip/interval/state-entry
+  reset behavior in normal active-root scans only.
+- Required `mugen-cns-persistent-cadence` checksum `f7c32a53` passed in
+  672/672 artifacts (638 required), alongside focused coverage, typecheck,
+  full 3262-test suite, build, and boundaries.
+
+## Previous implementation checkpoint — T429 closed-bounded (2026-07-30)
+
+- ZSS-only actor/controller cadence prevents a frozen `stateElapsed` from
+  making `ignoreHitPause persistent(2)` run every eligible hit-pause pass.
+  The mixed fixture proves executions at ticks 2/4, skip at 3, CNS transition
+  at 4, and reset execution in state 201 at tick 5; unwrapped `PosAdd` stays
+  frozen and M.U.G.E.N rejection remains located.
+- Required trace `ikemen-zss-combined-persistent-wrapper` is `4ff43eb7` in
+  671/671 artifacts (637 required). Focused 4/15 and core 3/330 tests,
+  full 311/3260 suite, typecheck, and boundaries pass.
+- A monitored `pnpm build` completed in 3m59s after slow
+  `vite:prepare-out-dir` work; typecheck/build/trace/suite/boundaries and
+  targeted diff hygiene are green. No browser/smoke claim, score, or general
+  ZSS/CNS persistence claim is added.
+
+## Previous implementation checkpoint — T428 closed-bounded (2026-07-30)
+
+- A separate mixed CNS/ZSS fixture starts HitPause in CNS state 200, then runs
+  the parsed ZSS `ignoreHitPause` controller from merged StateDef -2 while the
+  comparable unwrapped ZSS controller stays frozen.
+- Source order/location and the M.U.G.E.N profile rejection remain covered;
+  focused 3/12, suite 310/3257, typecheck, build, boundaries, hygiene, and
+  trace 670/670 (636 required; `b6533370`) passed.
+- No browser/smoke claim is added because T428 changes no UI route. T429 is the
+  next narrow slice: combined-wrapper interval cadence while state time freezes.
+
+## Current implementation checkpoint — T427 closed-bounded (2026-07-30)
+
+- A direct/fallback ZSS character-state subset now flows through the real
+  loader, shared state compiler, compatibility telemetry, and match runtime.
+- A direct fixture preserves mixed CNS/ZSS source order; malformed/ungranted
+  ZSS blocks its whole source and M.U.G.E.N rejects ZSS with a location.
+- Focused 4/21, suite 309/3254, typecheck, build, boundaries, and 669/669
+  traces passed. Global smoke stayed blocked at Vite startup; a focal static
+  desktop/mobile preview had zero console/page errors and does not promote it.
+- T428 closed its wrapper scheduling slice; no broad ZSS claim follows.
+
+## Current implementation checkpoint — T425 closed-bounded (2026-07-30)
+
+- Recorded the wiki/05b discrepancy and retained 05b as normative; the
+  wiki-only 30 px hysteresis was not mixed into this source epoch.
+- Source-visible movement/candidate changes refresh local P2. Dynamic
+  controller values now receive the active expression roster, so `P2Name`
+  switches from P2 to a newly nearer P4.
+- Proof: 5 focused files / 342 tests; required
+  `synthetic-imported-ikemen-p2-value` trace checksum `fa72c6f2`; full
+  trace matrix 668/668 (634 required, 34 optional).
+- Final gates: serial suite 305 files / 3240 tests, typecheck, build,
+  boundaries, and diff hygiene passed. Scores remain held; CharList timing,
+  teams, rollback/netplay, and broad Ikemen parity remain outside this cut.
+- Ledger: [T425 stable P2 contract](research/2026-07-30-ikemen-p2-stable-switch-contract.md).
+
+## Current implementation checkpoint — T424 closed-bounded (2026-07-30)
+
+- Root/helper current-state `ChangeState` now continues destination controllers
+  same tick; source tails skip; special-state schedule unchanged.
+- Shared 32-transition budget prevents authored root/helper cycles from hanging.
+- Imported root cycle telemetry is exposed as
+  `compatibilitySession.stateTransitionCycles`; `RuntimeTrace` preserves it.
+- Proof: 403 tests / 5 focused files passed. Final gates: serial suite 305
+  files / 3234 tests, typecheck, build, boundaries, and diff hygiene passed;
+  `qa:trace` passed 667/667 artifacts (633 required, 34 optional). Scores
+  stay `65 / 36 / 20 / 10-12 / 6-8 / 25`; full parity remains blocked.
+- Ledger: [T424 current-state transition](research/2026-07-30-mugen-current-state-transition.md).
 
 ## Current authority (2026-07-27)
 
@@ -2920,7 +3313,7 @@ Use this table to avoid mixing unrelated "latest" facts:
 | Toolchain/process | TypeScript is now `7.0.2` via `typescript@~7.0.2`, with primary-source research captured in `docs/research/2026-07-08-typescript-7-upgrade.md`. Current TS7 posture is direct CLI `tsc`, explicit `rootDir: "src"`, explicit `types: ["vite/client"]`, and no TypeScript 6 compatibility alias because the repo currently has no local compiler API imports. The 2026-07-09 TS7 re-audit is clean at 0 errors / 0 warnings, and current TS7 gates are green: `pnpm typecheck`, `pnpm build`, `pnpm test` 153 files / 1503 tests, `pnpm qa:trace` 524/524 artifacts, `pnpm check:boundaries`, and `git diff --check` with CRLF warnings only. | `docs/research/2026-07-08-typescript-7-upgrade.md` |
 | G1 project control | Setup-project profile and roadmap docs remain local markdown, canonical labels, single-context docs, now with lane checkpoint taxonomy. | `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md` |
 
-Current global port report: Runtime/port is at `pnpm qa:trace` 537/537 artifacts, 506 required and 31 optional. Explicit `ikemen-go` combines root/helper RunOrder, appended-helper execution, separate buffers, actor-local movement, deferred replacement activation, positive `p2defmul` stacking, and helper-created Pause/SuperPause with helper identity plus root resource ownership. Toolchain remains TypeScript 7.0.2 with trace/typecheck green; full test/build/boundary closeout is recorded per feature. No visual surface changed. IKEMEN remains scanner/report-only outside bounded INI/FightFX handoff and explicitly gated runtime slices. Opposing-team defense breadth, `p2defmul = 0`, nested helper ancestry, exact buffer/audio/hitpause parity, teams/simul/tag, renderer parity, config/ZSS/Lua, rollback/netplay, and full compatibility remain open.
+Current global port report: Runtime/port is at `pnpm qa:trace` 537/537 artifacts, 506 required and 31 optional. Explicit `ikemen-go` combines root/helper RunOrder, appended-helper execution, separate buffers, actor-local movement, deferred replacement activation, positive `p2defmul` stacking, helper-created Pause/SuperPause with helper identity plus root resource ownership, and later T427 direct/fallback character-state ZSS evidence. Toolchain remains TypeScript 7.0.2 with trace/typecheck green; full test/build/boundary closeout is recorded per feature. No visual surface changed. IKEMEN remains scanner/report-only outside bounded INI/FightFX handoff and explicitly gated runtime slices. Opposing-team defense breadth, `p2defmul = 0`, nested helper ancestry, exact buffer/audio/hitpause parity, teams/simul/tag, renderer parity, config/general ZSS/Lua, rollback/netplay, and full compatibility remain open.
 
 Latest focused runtime/port trace addendum: player-owned Projectile normal-hit GetHitVar artifacts `8e5df79b` / `4d078c5d`, `4356b5cb` / `4b270d45`, and `df2619f9` / `5469bc69` require `projectile` plus `audio:playsnd`, attacker-side `S5,45/46/47`, FightFX `F7002`, Common1 `5000 -> 335/337/339`, target links, and Projectile lifecycle evidence. Official Elecbyte docs were checked for Projectile HitDef inheritance, `hitsound`, and GetHitVar fields. This adds no score movement.
 
@@ -3648,7 +4041,7 @@ This table is retained as a historical snapshot. Current declared global evidenc
 | Three.js rendering | `pnpm qa:smoke` screenshots and canvas checks, including active desktop/mobile diagnostics for `HitSparkRenderer` resolving `S`-prefixed player AIR spark frames into sprites when available, plus bounded common/FightFX system lookup-frame, first-pass `fight.def`/FightFX AIR/SFF loading, decoded system-SFF provider registration, package-frame handoff coverage, and 180-frame fallback geometry when AIR/sprite lookup fails. | Pixel-perfect MUGEN render parity, exact FightFX/common layering/timing/scale/palette, full spark animation timing, palette application, screenpack/lifebar parity. |
 | Parsers/loaders | DEF/AIR/CMD/CNS/SFF/SND parsers with reports. | SFF v2 edge formats, full CNS expression language, all controller params, broader corpus. |
 | Studio | Workbench, Assets, Evidence, Debug, Modules, Build surfaces. Latest visual proof: `pnpm qa:smoke` passes with compact Studio navigator/mission/control rows, denser Build/Evidence route copy, tightened stage toolbar placement, wrapped replacement rows, dense Studio Assets ledger, Studio Build / Modules release-desk screenshots, dense Studio Evidence audit screenshot, a shared command-desk viewport/status strip with icon-backed real metrics plus live Pause/HitPause state, fixed visible command labels, and a text `Readiness` band in Workbench Project Health. Desktop command-palette and console readability have keyboard/focus smoke coverage. Build and Evidence prepend the same Trust Chain rows from Build Readiness data for runtime manifest, QA trace evidence, project package, asset validation, source packages, compatibility gates, and architecture boundaries; package/source Trust Chain rows now target concrete package files and required source paths, with smoke bridge/DOM checks for shared ids, next actions, target paths, and focused destination rows after Trust Chain clicks. The current CSS ownership pass keeps the ordered Studio/app cascade behind `src/styles/studio.css` and named category modules, with Build/Evidence trust-ledger styling in `src/styles/workflows/studio-trust-ledgers.css`. `pnpm qa:css` passes as an audit, but `pnpm qa:css:budget` is currently red against older debt ceilings and should be treated as a cleanup task. These remain bound to QA bridge/runtime data for project asset records, replacement flow, source/runtime maps, compiled project, trace artifact, persisted trace history, shared/module contracts, source packages, architecture evidence, Stage imported layer reports, and Debug CNS/command evidence. | True editing workflows, persistent source handles, regenerate/relink automation, multi-artifact trace diff depth, deeper trace/asset/gate/report drilldowns, CSS budget recovery, deeper shared CSS primitives for chrome/ledger/status rows, token/typography cleanup, and remaining cross-file module selector-cascade reduction. |
-| IKEMEN | Scanner profile for ZSS/Lua/config/screenpack/model-stage signals; bounded FightFX handoff; root/helper RunOrder; separate buffers; actor-local movement; deferred activation; positive `p2defmul`; and helper-created Pause/SuperPause with required trace evidence. Scanner findings such as ZSS and text controllers remain report-only. | No opposing-team defense breadth, `p2defmul = 0`, nested helper ancestry, exact buffer/audio/hitpause parity, teams/simul/tag, full `sys.ffx`, ZSS/Lua, text lifecycle, rollback/netplay, model/video stages, or broad IKEMEN runtime extensions. |
+| IKEMEN | Scanner profile for ZSS/Lua/config/screenpack/model-stage signals; bounded FightFX handoff; root/helper RunOrder; separate buffers; actor-local movement; deferred activation; positive `p2defmul`; helper-created Pause/SuperPause; and T427's direct/fallback character-state ZSS subset with required trace evidence. Scanner findings outside that named subset, including text controllers, remain report-only. | No opposing-team defense breadth, `p2defmul = 0`, nested helper ancestry, exact buffer/audio/hitpause parity, teams/simul/tag, full `sys.ffx`, general ZSS/Lua, text lifecycle, rollback/netplay, model/video stages, or broad IKEMEN runtime extensions. |
 | Modular engine | Shared contracts and boundary tests. | Platformer proof slice blocked until fighting contracts stay stable. |
 | Project control | `AGENTS.md`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/NEXT_BUILD_ROADMAP.md`, `docs/agents/*`, `docs/adr/0001-roadmap-control-and-local-issues.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, and `.scratch/roadmap/*` define setup, issue tracking, skill routing, release targets, next concrete gates, score evidence, G1 health checks, and closeout. Latest setup-project refresh confirms local markdown issues, canonical triage labels, and single-context docs. | Must keep docs synchronized after every score/support/queue change. Docs-only control work must return to R1/R2/S1/A1/I1/M1 evidence cuts. |
 
@@ -3978,10 +4371,26 @@ Every compatibility milestone should leave:
 
 - Full MUGEN VM
 - Full Ikemen-GO runtime
-- ZSS/Lua execution
+- General ZSS/Lua execution
 - Full helper VM
 - Full screenpack/lifebar engine
 - Full teams/simul/tag/turns
 - Rollback/netplay
 - Exact palette/render parity
 - Broad public fixture corpus
+
+### 2026-07-30 — Fight First interface rebuild
+
+- Replaced the accumulated Runtime/Inspect/Studio shell with a scene-first system built from the selected Fight First direction.
+- Migrated Match, Inspect, and all eight Studio routes without changing their route ids or real project/runtime/evidence services.
+- Added explicit Workspace/Source, contextual-lens, console, and command-palette states; removed the stage-covering synthetic workbench dashboard and readiness score.
+- Retired the legacy Studio CSS import cascade from active delivery. The active CSS surface is 51,175 bytes and 376 rules with zero duplicate selector keys, exact duplicate rules, or shadowed cross-file rules at the recorded budget check.
+- Visual proof and Design QA live in `.scratch/wayfinder/real-interface-redesign/proof/` and root `design-qa.md`.
+
+### 2026-07-31 — Fight First verification closeout
+
+- Full external-server browser smoke passed against `http://127.0.0.1:4173` with zero console issues and zero page errors across Match, Inspect, all eight Studio routes, responsive states, source recovery, project authoring, build, evidence, debug, stages and assets.
+- The costly source path diagnosed an invalid real KFM CNS draft, focused its source line, committed the corrected write and rebuilt the project package.
+- The downloaded package contained 314 files, 295 bundled binary assets and 59,550,228 binary bytes; no binary was skipped or failed.
+- Final gates passed: 3,278 tests, TypeScript, production build, CSS budget and smoke. Active CSS remains 51,175 bytes / 376 rules with zero duplicate selector keys or exact duplicate rules.
+- Finish verdicts: production integrity `passed`, distinctiveness `passed`, task effectiveness `limited` because no representative non-builder comprehension test ran.

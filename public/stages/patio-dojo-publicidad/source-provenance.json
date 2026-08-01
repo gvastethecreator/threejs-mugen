@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "kind": "background-source-provenance",
+  "pack_id": "patio-dojo-publicidad",
+  "source_type": "imagegen",
+  "art_engine": "imagegen",
+  "verification_status": "verified",
+  "representative": true,
+  "provider_source": {
+    "path": "C:/Users/cristian/.codex/generated_images/019fb294-0017-7222-b5cd-4c080bd5eca8/exec-c9fe7cef-32f8-4d56-ba5f-89460de7d684.png",
+    "sha256": "fe3688003df628d281e5314908391919f3a617106992d6dce57ce86095815c78",
+    "width": 1672,
+    "height": 941
+  },
+  "derived_layers": [
+    {
+      "path": "source/city-far-v2.png",
+      "sha256": "561d16c438836b04fc10a77183842d19a11fd33619083df9ecb65c8e226bab08",
+      "derived_from": "patio-dojo-publicidad-base-imagegen-v2.png",
+      "operation": "provider pixels + deterministic blur radius 1 + brightness 0.78"
+    },
+    {
+      "path": "source/dojo-mid-v2.png",
+      "sha256": "3657291f1d1e3da37b176f1d32c0f0095a263b2d9d809eb95d24c4f0275b4cce",
+      "derived_from": "patio-dojo-publicidad-base-imagegen-v2.png",
+      "operation": "provider pixels + vertical alpha mask y=.10-.80"
+    },
+    {
+      "path": "source/dojo-near-alpha-v2.png",
+      "sha256": "0815bd240382d6144bf85a075225799b3a4a4fac38ef6b403f82775847012037",
+      "derived_from": "patio-dojo-publicidad-base-imagegen-v2.png",
+      "operation": "provider pixels + vertical alpha mask y=.55-1.00"
+    }
+  ],
+  "style": "16-bit combat pixel art; Baki-like severe martial-arts mood; restrained charcoal/earth palette; no neon"
+}

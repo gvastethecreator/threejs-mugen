@@ -1,0 +1,52 @@
+{
+  "id": "generation-provenance",
+  "applicable": true,
+  "checked_items": [
+    "crouch",
+    "guard",
+    "heavy-strike",
+    "hitstun",
+    "idle",
+    "jump",
+    "knockdown",
+    "ko",
+    "light-strike",
+    "special",
+    "throw",
+    "walk-back",
+    "walk-forward",
+    "win"
+  ],
+  "errors": [],
+  "warnings": [],
+  "evidence": {
+    "provenance": "runs/nico-guante-v1/nico-guante-v1\\source-provenance.json",
+    "source_type": "imagegen",
+    "sources": [
+      {
+        "path": "runs/nico-guante-v1/nico-guante-v1\\source/nico-guante-action-grid-imagegen-v2.png",
+        "sha256": "e31a52642e18d9e0f8494c45d75d4a222eca5654fd44fcabc0c74bdb0c21715b",
+        "size_bytes": 1601765,
+        "states": [
+          "idle",
+          "walk-forward",
+          "walk-back",
+          "crouch",
+          "jump",
+          "light-strike",
+          "heavy-strike",
+          "special",
+          "throw",
+          "guard",
+          "hitstun",
+          "knockdown",
+          "ko",
+          "win"
+        ]
+      }
+    ]
+  },
+  "input_fingerprint": "36f2515fa153234a9190fbce255e137138e8629a96624f48fae81aefce1b679c",
+  "complete": true,
+  "status": "pass"
+}

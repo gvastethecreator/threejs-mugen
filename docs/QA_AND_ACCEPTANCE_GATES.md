@@ -1,5 +1,172 @@
 ﻿# QA And Acceptance Gates
 
+## Current M.U.G.E.N CNS persistence gates
+
+T430/T434 require raw CNS `persistent = 2` only in ordinary active-root normal
+scans: trigger-pass counting, immediate skip, interval execution, and
+state-entry reset.
+Required trace `mugen-cns-persistent-cadence` checksum `f7c32a53` passed in
+672/672 artifacts (638 required), with focused coverage, typecheck, 3262-test
+suite, build, and boundaries. T431 requires raw CNS `persistent = 0` only once
+per ordinary state entry; required trace `mugen-cns-persistent-zero` checksum
+`d13ad12a` passed in 673/673 artifacts (639 required), with focused coverage,
+typecheck, 313/3264 suite, build, and boundaries. No UI route changed, so smoke
+is N/A. Direct same-id `ChangeState` timing, ZSS zero, helpers/specials,
+dynamic values, and generic VM parity remain blocked.
+
+T432 closes the paired raw-CNS `ignorehitpause = 1` plus `persistent = 0`
+active-root pause-only route. Required trace
+`mugen-cns-hitpause-persistent-zero` checksum `94b49516` passed in 674/674
+artifacts (640 required); focused 5/333 coverage, typecheck, full 314/3266
+suite, build, and boundaries pass. It proves pause ticks 2/6 around
+`200 -> 201 -> 200` with an unwrapped control frozen. T433 closes the paired
+raw-CNS positive `persistent = 2` route with separate paused ticks 2/4/6 and
+trace `d6d00fd0`. T434 closes the sparse trigger-count gate for ordinary
+active-root scans (`3eb88436` in 676/676); T435 closes `StateDef -2`
+(`6fce3962` in 677/677); T436 closes `StateDef -3` (`b2719d71` in 678/678)
+only when no `stateOwner` exists. These gates cannot reuse a state-time modulo
+or the T429 ZSS-only counter as general semantics. `StateDef -1`, player-owned
+custom states, pause expansion, dynamic values, helpers, and generic VM parity
+remain blocked.
+
+T437 requires imported CMD State -1 setup `persistent = 2` trigger counting,
+with a separate counter surviving `0 -> 200`. Trace
+`mugen-cns-state-minus-one-persistent` checksum `ba3d289d` passed in 679/679
+artifacts (645 required, 34 optional); full 319/3276 suite, typecheck, build,
+boundaries, hygiene and docs passed. State -1 ChangeState/zero, helpers,
+pause, dynamic values and generic VM parity remain blocked.
+
+## M.U.G.E.N air hit time / fall precedence gate
+
+T468 requires the official `fall=1` precedence at the effective direct-hit
+resolver: airborne non-falling hits keep authored/default `air.hittime`, while
+airborne falling hits use the existing bounded ground `hitStun` fallback.
+Ground/guard contacts, projectile no-fall paths, and direct fall metadata must
+remain unchanged. The focused resolver regression and targeted fall trace
+subset pass; 324/3291 full tests, typecheck, build, boundaries, `qa:trace`
+682/682, and diff hygiene pass. Exact Common1 fall/landing and
+`GetHitVar(hittime)` lifetime parity remain outside this acceptance surface.
+
+## M.U.G.E.N down hit time / down velocity gate
+
+T469 requires `down.hittime` and `down.velocity` to reach direct HitDef,
+ModifyHitDef, Projectile, imported move, and resolver paths. A lying target with
+zero vertical down velocity must use authored/default 20-tick down timing; a
+non-zero vertical value must ignore `down.hittime` and use air timing with the
+launch velocity. Focused compiler/HitDef/projectile/combat tests and the
+existing down-hit trace subset pass; full suite, typecheck, build, boundaries,
+`qa:trace` 682/682, and diff hygiene pass. Exact lie-down Common1
+tables, bounce/recovery, and full `GetHitVar` lifetime parity remain outside
+this gate.
+
+## M.U.G.E.N down bounce gate
+
+T472 requires explicit `down.bounce` to compile on direct HitDef, ModifyHitDef
+and Projectile paths, persist on direct/projectile fall metadata, and reach the
+`HitFallVel` seam. `0` must consume the controller without applying bounce
+velocity; omitted/`1` preserve the current compatibility path. Focused
+compiler/HitDef/direct/projectile/HitFall coverage passes 198 tests; final
+gates pass 324 files / 3294 tests, typecheck, build, boundaries and
+`qa:trace` 682/682. UI smoke is N/A. Exact Common1 default and landing parity
+remain outside this gate.
+
+## M.U.G.E.N fall recovery defaults gate
+
+T473 requires enabled direct and projectile falls with omitted `fall.recover`
+and `fall.recovertime` to materialize `recover: true` and `recoverTime: 4`.
+Explicit `recover = 0`, authored times, and disabled falls must remain
+unchanged. Focused coverage passes 102 tests; final gates pass 324 files /
+3296 tests, typecheck, build, boundaries, `qa:trace` 682/682 and diff hygiene.
+UI smoke is N/A. Exact Common1 recovery-state choreography and landing timing
+remain outside this gate.
+
+## M.U.G.E.N fall y-velocity localcoord gate
+
+T474 requires omitted direct/projectile `fall.yvelocity` to use the documented
+localcoord-aware defaults: `-4.5` at 320px, `-9` at 640px, and `-18` at
+1280px. Direct hits read defender localcoord; projectiles read carried
+localcoord. Authored fall Y velocity, authored hit velocity, and invalid/missing
+localcoord fallback must remain unchanged. Focused coverage passes 105 tests;
+final gates pass 324 files / 3299 tests, typecheck, build, boundaries,
+`qa:trace` 682/682 and diff hygiene. UI smoke is N/A. Exact Common1 landing
+physics and non-linear viewport scaling remain outside this gate.
+
+## M.U.G.E.N `air.fall` selection gate
+
+T475 requires `air.fall` to remain separate from the base `fall` flag across
+HitDef, imported move and projectile payloads. `fall = 0, air.fall = 1` must be
+non-falling for a standing defender and falling for an airborne defender, while
+base `fall = 1` remains effective in both states. Focused compiler, resolver,
+HitDef, direct/projectile combat and parser regressions plus the final suite,
+typecheck, build, boundaries, `qa:trace` 682/682 and diff hygiene pass. UI
+smoke is N/A; exact Common1 fall/landing choreography and full parity remain
+outside this gate.
+
+## M.U.G.E.N `down.velocity` X propagation gate
+
+T476 requires the horizontal `down.velocity` component to survive HitDef,
+ModifyHitDef, imported move and projectile compilation, then reach direct and
+projectile lying-target contacts with the official attacker-relative sign.
+Omitted X inherits the authored `air.velocity` X where available; synthetic
+hand-built payloads without the field retain the compatibility push fallback.
+Focused coverage passes 247 tests across seven runtime/parser files; final
+gates pass 324 files / 3308 tests, typecheck, build, boundaries, `qa:trace`
+682/682 and diff hygiene. UI smoke is N/A; exact Common1 lie-down choreography
+and full M.U.G.E.N/Ikemen parity remain outside this gate.
+
+## M.U.G.E.N `fall.xvelocity` signed bounce gate
+
+T477 is closed-bounded: authored `fall.xvelocity` remains signed through direct
+and projectile fall materialization. Opposite attacker/projectile facing does
+not mirror or absolutize the value, and omitted X remains a no-change value.
+Focused direct/projectile/HitFall coverage passes 121 tests; the final suite
+passes 324 files / 3310 tests, typecheck, build, boundaries, `qa:trace` 682/682
+and diff hygiene. UI smoke is N/A; exact Common1 landing/friction choreography
+and full parity remain outside this gate.
+
+## Ikemen CommonFX `fx.scale` propagation gate
+
+T478 requires a positive CommonFX `[Info] fx.scale` to survive DEF loading,
+imported library normalization and AIR frame resolution, then scale resolved
+hit-spark sprite dimensions and authored AIR/SFF axis offsets. The focused
+loader/importer/asset/renderer suite passes 38 tests and typecheck passes. This
+gate records CommonFX `localcoord` only as metadata; exact projection, palette,
+layer, audio, cache and full FightFX parity remain outside the claim.
+
+## Ikemen CommonFX `localcoord` scale gate
+
+T479 requires resolved CommonFX/FightFX AIR frames to retain package
+`localcoord` and derive the effective scale from package width plus the owning
+character's `localCoord`, matching Ikemen's `fx.scale * 320 / fx.localcoord.x`
+factor followed by the character coordinate ratio. Focused coverage passes 39
+tests and typecheck passes. Custom-state transitions, exact timing,
+palette/layer/audio/cache and full FightFX parity remain outside this gate.
+
+## Ikemen `fall.zvelocity` depth gate
+
+T480 requires authored Ikemen `fall.zvelocity` to survive compiler, HitDef,
+imported state, projectile and `HitFallSet` paths, expose both
+`GetHitVar(fall.zvel)` aliases, and update `combatDepth.velocity` when
+`HitFallVel` applies an explicit value. Omitted Z must preserve the existing
+depth velocity. Focused compiler/direct/projectile/HitFall/imported-fighter/
+expression-context coverage passes 230/230; final suite 324/3316, typecheck,
+build, boundaries, `qa:trace` 682/682 and diff hygiene pass. Browser smoke is N/A;
+exact M.U.G.E.N Z support, `down.velocity` Z, Common1 bounce tables and full
+depth-physics parity remain outside this gate.
+
+## Ikemen HitDef vector-Z gate
+
+T481 requires the optional third component of HitDef
+`ground/air/down/guard/airguard.velocity` to survive typed compilation,
+imported state materialization and player-owned Projectile propagation. Direct
+and projectile contact must select the context-specific Z, expose it in hit
+metadata, and update `combatDepth.velocity` only when Z was authored; omitted Z
+must remain absent. Focused compiler/HitDef/resolver/direct/projectile/
+imported-fighter coverage passes 251/251; final suite 324/3317, typecheck, build,
+boundaries, `qa:trace` 682/682 and diff hygiene pass. Browser smoke is N/A;
+ModifyHitDef Z mutation, Common1 Z acceleration/friction, helper/team ownership
+breadth and full depth-physics parity remain outside this gate.
+
 ## Common1 fall defense-up gate
 
 Acceptance requires canonical imported `[Data] fall.defence_up` derivation,
@@ -1126,6 +1293,24 @@ These gates prove:
 - trace evidence records both match-pause freeze and advance rows by exact Explod actor id.
 
 This proves bounded player active-state `HitPauseTime`/`ignorehitpause` routing and bounded Explod `ignorehitpause`/`pausemovetime`/`supermovetime` actor advance only. Exact MUGEN/IKEMEN pause layering and broad controller tick order remain unsupported.
+
+## Current IKEMEN ZSS Combined-Wrapper Gate
+
+`pnpm qa:trace` includes required
+`ikemen-zss-combined-persistent-wrapper` with checksum `4ff43eb7`.
+
+The mixed CNS/ZSS fixture starts HitPause from CNS state 200. Its parsed,
+source-located ZSS `ignoreHitPause persistent(2)` controller executes at
+eligible pause ticks 2 and 4, does not execute at tick 3, then resets after a
+CNS state-200-to-201 transition and executes again at tick 5. The sibling
+unwrapped ZSS `PosAdd` remains frozen, and loader tests retain located M.U.G.E.N
+rejection.
+
+This proves constant positive combined-wrapper cadence for the named direct
+character-state ZSS subset only. Dynamic values, generic CNS persistence,
+general ZSS grammar/controllers, Lua, system ZSS, rollback/netplay, and parity
+remain unsupported. T429 final production build passed; T430 owns the separate
+raw-CNS positive cadence gap.
 
 ## Current Active-root Automatic Guard Gate
 

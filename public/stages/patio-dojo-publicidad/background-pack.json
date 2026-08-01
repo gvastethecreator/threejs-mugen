@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "kind": "game-background-pack",
+  "pack_id": "patio-dojo-publicidad",
+  "style_fingerprint": "sha256:07ab0e9037420400aea66f93823ec39fa4d129450203813e36b85522fe0b3d18",
+  "canvas": {
+    "width": 1672,
+    "height": 941,
+    "color_space": "srgb"
+  },
+  "camera": {
+    "aspect_ratio": "16:9",
+    "horizon_y": 0.58,
+    "focal_safe_zone": {
+      "x": 0.2,
+      "y": 0.18,
+      "width": 0.6,
+      "height": 0.68
+    }
+  },
+  "layers": [
+    {
+      "id": "patio-dojo-publicidad-far",
+      "role": "far",
+      "path": "source/patio-dojo-publicidad-far-imagegen.png",
+      "sha256": "561d16c438836b04fc10a77183842d19a11fd33619083df9ecb65c8e226bab08",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 0,
+      "depth": 0.14,
+      "parallax_x": 0.08,
+      "parallax_y": 0.02,
+      "repeat_x": false,
+      "blend_mode": "normal"
+    },
+    {
+      "id": "patio-dojo-publicidad-mid",
+      "role": "mid",
+      "path": "source/patio-dojo-publicidad-mid-imagegen.png",
+      "sha256": "3657291f1d1e3da37b176f1d32c0f0095a263b2d9d809eb95d24c4f0275b4cce",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 1,
+      "depth": 0.5,
+      "parallax_x": 0.42,
+      "parallax_y": 0.08,
+      "repeat_x": false,
+      "blend_mode": "normal"
+    },
+    {
+      "id": "patio-dojo-publicidad-near",
+      "role": "near",
+      "path": "source/patio-dojo-publicidad-near-alpha.png",
+      "sha256": "0815bd240382d6144bf85a075225799b3a4a4fac38ef6b403f82775847012037",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 2,
+      "depth": 0.92,
+      "parallax_x": 0.88,
+      "parallax_y": 0.16,
+      "repeat_x": false,
+      "blend_mode": "normal"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "id": "generation-provenance",
+  "applicable": true,
+  "checked_items": [
+    "crouch",
+    "guard",
+    "heavy-strike",
+    "hitstun",
+    "idle",
+    "jump",
+    "knockdown",
+    "ko",
+    "light-strike",
+    "special",
+    "throw",
+    "walk-back",
+    "walk-forward",
+    "win"
+  ],
+  "errors": [],
+  "warnings": [],
+  "evidence": {
+    "provenance": "runs/vera-patada-v1/vera-patada-v1\\source-provenance.json",
+    "source_type": "imagegen",
+    "sources": [
+      {
+        "path": "runs/vera-patada-v1/vera-patada-v1\\source/vera-patada-action-grid-imagegen-v2.png",
+        "sha256": "0d5c2ef5b288e640fa8f6095c78a5b29b27bd1cd27df18ca9440691fc84314bb",
+        "size_bytes": 1675574,
+        "states": [
+          "idle",
+          "walk-forward",
+          "walk-back",
+          "crouch",
+          "jump",
+          "light-strike",
+          "heavy-strike",
+          "special",
+          "throw",
+          "guard",
+          "hitstun",
+          "knockdown",
+          "ko",
+          "win"
+        ]
+      }
+    ]
+  },
+  "input_fingerprint": "10fb150fc6625e87e5b43332fe0c7447e58bc0e3a2f7a8af5f8362aebdd4c588",
+  "complete": true,
+  "status": "pass"
+}

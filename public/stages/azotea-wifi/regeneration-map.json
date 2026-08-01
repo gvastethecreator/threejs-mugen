@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "kind": "background-regeneration-map",
+  "pack_id": "azotea-wifi",
+  "provider_master": "azotea-wifi-base-imagegen-v2.png",
+  "layers": {
+    "far": {
+      "source": "rooftop-far-v2.png",
+      "transform": "blur=1.0 brightness=0.78"
+    },
+    "mid": {
+      "source": "rooftop-mid-v2.png",
+      "transform": "alpha-mask y=.10-.80"
+    },
+    "near": {
+      "source": "rooftop-near-alpha-v2.png",
+      "transform": "alpha-mask y=.55-1.00"
+    }
+  },
+  "palette": [
+    "#252a2c",
+    "#51534b",
+    "#747160"
+  ]
+}

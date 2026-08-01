@@ -1,0 +1,52 @@
+{
+  "id": "generation-provenance",
+  "applicable": true,
+  "checked_items": [
+    "crouch",
+    "guard",
+    "heavy-strike",
+    "hitstun",
+    "idle",
+    "jump",
+    "knockdown",
+    "ko",
+    "light-strike",
+    "special",
+    "throw",
+    "walk-back",
+    "walk-forward",
+    "win"
+  ],
+  "errors": [],
+  "warnings": [],
+  "evidence": {
+    "provenance": "runs/sargento-pila-v1/sargento-pila-v1\\source-provenance.json",
+    "source_type": "imagegen",
+    "sources": [
+      {
+        "path": "runs/sargento-pila-v1/sargento-pila-v1\\source/sargento-pila-action-grid-imagegen-v2.png",
+        "sha256": "49600e3018744dab380bda3194bcf4fb0af5aa77e7a64042f9e3e2c0e83ccf04",
+        "size_bytes": 1458135,
+        "states": [
+          "idle",
+          "walk-forward",
+          "walk-back",
+          "crouch",
+          "jump",
+          "light-strike",
+          "heavy-strike",
+          "special",
+          "throw",
+          "guard",
+          "hitstun",
+          "knockdown",
+          "ko",
+          "win"
+        ]
+      }
+    ]
+  },
+  "input_fingerprint": "e773248862094c00e4c40ba975fbdfcf65c7754e527d0325c73e5535feb7468d",
+  "complete": true,
+  "status": "pass"
+}

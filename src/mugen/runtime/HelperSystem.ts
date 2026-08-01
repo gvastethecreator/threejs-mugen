@@ -91,6 +91,10 @@ import type {
 } from "./types";
 import { resolveRuntimeResourceControllerOperation } from "./RuntimeResourceSystem";
 import type { RuntimeResourceConstants } from "./RuntimeResourceSystem";
+import {
+  RUNTIME_CURRENT_STATE_TRANSITION_BUDGET,
+  type RuntimeStateTransition,
+} from "./RuntimeStateTransitionSystem";
 
 export type RuntimeHelperProjectileContactKind = "contact" | "hit" | "guard";
 
@@ -332,6 +336,11 @@ export type RuntimeHelperAdvanceOptions = {
   onController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
   onOperation?: (helper: RuntimeHelper, operation: ControllerOp) => void;
   onUnsupportedController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
+  onStateTransitionCycle?: (
+    helper: RuntimeHelper,
+    transition: RuntimeStateTransition,
+    budget: number,
+  ) => void;
 };
 
 export type RuntimeHelperRemovalFilter = {
@@ -529,29 +538,30 @@ export function advanceRuntimeHelperActor(
       helper.pushAffectTeam = redirectedPlayerPush.pushAffectTeam;
     }
   }
-  if (controllerOptions.runtimeProfile === "ikemen-go" && runRuntimeHelperStateControllers(helper, controllerOptions, -4) === "destroyed") {
+  if (controllerOptions.runtimeProfile === "ikemen-go" && runRuntimeHelperStateControllers(helper, controllerOptions, -4).status === "destroyed") {
     return false;
   }
   if (canAdvance) {
     helper.assertSpecial = undefined;
     if (helper.keyCtrl === true && controllerOptions.runtimeProfile === "ikemen-go") {
-      if (runRuntimeHelperStateControllers(helper, controllerOptions, -3) === "destroyed") {
+      if (runRuntimeHelperStateControllers(helper, controllerOptions, -3).status === "destroyed") {
         return false;
       }
-      if (runRuntimeHelperStateControllers(helper, controllerOptions, -2) === "destroyed") {
+      if (runRuntimeHelperStateControllers(helper, controllerOptions, -2).status === "destroyed") {
         return false;
       }
     }
-    if (helper.keyCtrl === true && runRuntimeHelperStateControllers(helper, controllerOptions, -1) === "destroyed") {
+    if (helper.keyCtrl === true && runRuntimeHelperStateControllers(helper, controllerOptions, -1).status === "destroyed") {
       return false;
     }
-    if (runRuntimeHelperStateControllers(helper, controllerOptions) === "destroyed") {
+    const currentStateResult = runRuntimeHelperCurrentStateControllers(helper, controllerOptions);
+    if (currentStateResult.status === "destroyed") {
       return false;
     }
     advanceRuntimeHelper(helper, controllerOptions);
     consumeRuntimeHelperPauseMoveTime(helper, controllerOptions.pauseKind);
   }
-  if (controllerOptions.runtimeProfile === "ikemen-go" && runRuntimeHelperStateControllers(helper, controllerOptions, 1, "plus-one") === "destroyed") {
+  if (controllerOptions.runtimeProfile === "ikemen-go" && runRuntimeHelperStateControllers(helper, controllerOptions, 1, "plus-one").status === "destroyed") {
     return false;
   }
   const margin = 240;
@@ -597,7 +607,9 @@ function runtimeHelperControllerOptions(
   return options;
 }
 
-export type RuntimeHelperControllerResult = "active" | "destroyed";
+export type RuntimeHelperControllerResult =
+  | { status: "active"; transition?: RuntimeStateTransition }
+  | { status: "destroyed" };
 
 export function runRuntimeHelperStateControllers(
   helper: RuntimeHelper,
@@ -645,6 +657,7 @@ export function runRuntimeHelperStateControllers(
     | "onController"
     | "onOperation"
     | "onUnsupportedController"
+    | "onStateTransitionCycle"
   > = {},
   stateNo: number | undefined = helper.stateNo,
   stateSpecial?: MugenStateSpecial,
@@ -653,7 +666,7 @@ export function runRuntimeHelperStateControllers(
     ? helper.runtimeProgram?.stateEntries
     : helper.runtimeProgram?.states.find((candidate) => matchesMugenStateIdentity(candidate, stateNo ?? helper.stateNo ?? 0, stateSpecial))?.controllers;
   if (!controllers) {
-    return "active";
+    return { status: "active" };
   }
   for (const controller of controllers) {
     if (!helperTriggersPass(helper, controller, options)) {
@@ -674,7 +687,15 @@ export function runRuntimeHelperStateControllers(
       }
       options.onController?.(helper, controller);
       changeHelperState(helper, stateId, resolveHelperNumber(helper, dispatch.animOverride, dispatch.animExpression, options));
-      return "active";
+      return {
+        status: "active",
+        transition: {
+          fromState: stateNo ?? helper.stateNo ?? 0,
+          ...(stateSpecial === undefined ? {} : { fromSpecial: stateSpecial }),
+          toState: stateId,
+          controller: controller.source,
+        },
+      };
     }
     if (dispatch.kind === "change-anim") {
       const actionId = resolveHelperNumber(helper, dispatch.actionId, dispatch.actionExpression, options);
@@ -688,7 +709,7 @@ export function runRuntimeHelperStateControllers(
     if (dispatch.kind === "runtime-controller") {
       if (controller.normalizedType === "destroyself") {
         options.onController?.(helper, controller);
-        return "destroyed";
+        return { status: "destroyed" };
       }
       if (controller.operation?.kind === "team-standby") {
         const operation = resolveRuntimeHelperSelfTeamStandbyOperation(helper, controller.operation, options);
@@ -952,7 +973,7 @@ export function runRuntimeHelperStateControllers(
     }
     options.onUnsupportedController?.(helper, controller);
   }
-  return "active";
+  return { status: "active" };
 }
 
 function resolveRuntimeHelperSelfTeamStandbyOperation(
@@ -1044,6 +1065,28 @@ function findHelperModifyProjectileNumberParam(
       return findControllerParam(controller.source, "projpriority") ?? findControllerParam(controller.source, "priority");
     default:
       return findControllerParam(controller.source, key);
+  }
+}
+
+function runRuntimeHelperCurrentStateControllers(
+  helper: RuntimeHelper,
+  options: RuntimeHelperControllerOptions,
+): RuntimeHelperControllerResult {
+  let transitions = 0;
+  while (true) {
+    const result = runRuntimeHelperStateControllers(helper, options);
+    if (result.status === "destroyed" || result.transition === undefined) {
+      return result;
+    }
+    transitions += 1;
+    if (transitions >= RUNTIME_CURRENT_STATE_TRANSITION_BUDGET) {
+      options.onStateTransitionCycle?.(
+        helper,
+        result.transition,
+        RUNTIME_CURRENT_STATE_TRANSITION_BUDGET,
+      );
+      return { status: "active" };
+    }
   }
 }
 

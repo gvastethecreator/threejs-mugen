@@ -1,5 +1,33 @@
 # Architecture
 
+## 2026-08-01 T479 presentation addendum
+
+`HitSparkAssetSystem` now preserves CommonFX/FightFX `localcoord` on resolved
+AIR frames and derives the effective package scale from the authored `fx.scale`,
+package width, and owning-character localcoord before `HitSparkRenderer` binds a
+sprite. This is a bounded package-backed presentation seam; exact animation
+timing, palette/layer/audio/cache and full FightFX parity remain outside the
+contract.
+
+## 2026-08-01 T480 depth-velocity addendum
+
+Fall metadata remains typed from compiler/importer/projectile boundaries through
+`HitFallControllerSystem`. `HitFallVel` consumes explicit Ikemen
+`fall.zvelocity` as `combatDepth.velocity`, while omitted Z preserves the
+current depth state. The slice deliberately does not infer full M.U.G.E.N Z or
+Common1 depth/bounce behavior.
+
+## 2026-08-01 T481 HitDef velocity-Z addendum
+
+HitDef velocity vectors are now typed as optional three-component values at the
+compiler boundary. Imported state moves and player-owned Projectiles preserve
+the third component through `HitDefSystem`/`ProjectileSystem`; the shared combat
+resolver selects ground, air, down, guard or airguard Z and direct/projectile
+combat writes an explicit result to `combatDepth.velocity`. Omitted Z is kept
+absent rather than synthesized. This is a bounded metadata/contact seam, not a
+general Z integrator: ModifyHitDef mutation, Common1 acceleration/friction and
+full depth physics remain separate work.
+
 ## 2026-07-18 T288 checkpoint
 
 The T287 shutter edge now crosses a timer-owned reset boundary before the

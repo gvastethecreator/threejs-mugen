@@ -306,3 +306,11 @@ owns the source-editor preflight gap.
 - Production export pipeline.
 - Multi-project asset database.
 - Any readiness badge that cannot link to evidence or a next action.
+
+## 2026-07-30 Fight First migration checkpoint
+
+- Evidence and Build remain backed by the existing Trust Chain and package/runtime records; the redesign removes duplicate dashboard summaries rather than replacing their data owners.
+- All eight Studio routes now share one scene-first shell with a contextual inspector, explicit workspace drawer, and closed-by-default console.
+- Missing, partial, blocked, stale, and exportable states remain visible through real record status, impact, evidence, and one primary next action.
+- Active visual ownership moved to `src/styles/redesign.css`; the legacy Studio module cascade is no longer imported.
+- Route/state and responsive proof is stored under `.scratch/wayfinder/real-interface-redesign/proof/`; the final visual comparison is recorded in `design-qa.md`.

@@ -1,0 +1,211 @@
+{
+  "ok": true,
+  "engine": "frame-alignment-onion-skin",
+  "run_dir": "public\\characters\\rook-apprentice",
+  "states_mode": "all",
+  "baseline_y": 112,
+  "visual_review_required": true,
+  "quality_gate_note": "Review each qa/*-onion.png overlay before final approval; automated checks cover baseline/root drift only.",
+  "rows": [
+    {
+      "state": "idle",
+      "kind": "grounded",
+      "ok": true,
+      "onion": "qa\\idle-onion.png",
+      "bottom_y": [
+        112,
+        112,
+        112,
+        112
+      ],
+      "center_x": [
+        62.44,
+        61.71,
+        62.14,
+        61.98
+      ],
+      "center_y": [
+        64.87,
+        64.9,
+        65.03,
+        64.98
+      ],
+      "baseline_y": 112,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "walk-forward",
+      "kind": "grounded-locomotion",
+      "ok": true,
+      "onion": "qa\\walk-forward-onion.png",
+      "bottom_y": [
+        112,
+        112,
+        112,
+        112,
+        112,
+        112,
+        112,
+        112
+      ],
+      "center_x": [
+        64.09,
+        63.45,
+        64.73,
+        63.91,
+        63.48,
+        61.29,
+        65.6,
+        64.01
+      ],
+      "center_y": [
+        65.54,
+        66.48,
+        66.19,
+        67.19,
+        65.28,
+        67.58,
+        67.02,
+        65.82
+      ],
+      "baseline_y": 112,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "crouch",
+      "kind": "crouch",
+      "ok": true,
+      "onion": "qa\\crouch-onion.png",
+      "bottom_y": [
+        112,
+        112,
+        112
+      ],
+      "center_x": [
+        64.64,
+        63.19,
+        63.64
+      ],
+      "center_y": [
+        83.35,
+        83.34,
+        85.91
+      ],
+      "baseline_y": 112,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "jump",
+      "kind": "jump",
+      "ok": true,
+      "onion": "qa\\jump-onion.png",
+      "bottom_y": [
+        112,
+        94,
+        94,
+        112
+      ],
+      "center_x": [
+        67.96,
+        62.68,
+        63.31,
+        64.18
+      ],
+      "center_y": [
+        76.63,
+        58.01,
+        54.59,
+        70.79
+      ],
+      "baseline_y": 112,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "punch",
+      "kind": "action",
+      "ok": true,
+      "onion": "qa\\punch-onion.png",
+      "bottom_y": [
+        111,
+        109,
+        107,
+        111
+      ],
+      "center_x": [
+        65.72,
+        55.34,
+        57.14,
+        63.2
+      ],
+      "center_y": [
+        65.39,
+        62.43,
+        62.86,
+        64.7
+      ],
+      "baseline_y": 112,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "kick",
+      "kind": "action",
+      "ok": true,
+      "onion": "qa\\kick-onion.png",
+      "bottom_y": [
+        111,
+        108,
+        109,
+        102,
+        112
+      ],
+      "center_x": [
+        65.2,
+        54.88,
+        51.59,
+        51.01,
+        63.6
+      ],
+      "center_y": [
+        59.93,
+        57.65,
+        56.78,
+        55.26,
+        64.65
+      ],
+      "baseline_y": 112,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "hitstun",
+      "kind": "action",
+      "ok": true,
+      "onion": "qa\\hitstun-onion.png",
+      "bottom_y": [
+        103,
+        103,
+        104
+      ],
+      "center_x": [
+        62.25,
+        60.97,
+        61.95
+      ],
+      "center_y": [
+        59.9,
+        63.0,
+        62.69
+      ],
+      "baseline_y": 112,
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

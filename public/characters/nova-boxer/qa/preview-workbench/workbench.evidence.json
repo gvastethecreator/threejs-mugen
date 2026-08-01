@@ -1,0 +1,375 @@
+{
+  "version": 1,
+  "kind": "sprite-preview-workbench",
+  "artifact": {
+    "path": "qa/preview-workbench/index.html",
+    "sha256": "d323b1925a7e9340be220433cb3bfa8308d23de545e2f0125341abaa26f4d6a9",
+    "size_bytes": 436243
+  },
+  "states": [
+    "idle",
+    "walk-forward",
+    "crouch",
+    "jump",
+    "punch",
+    "kick",
+    "hitstun"
+  ],
+  "sources": [
+    {
+      "role": "atlas",
+      "path": "sprite-sheet-alpha.png",
+      "sha256": "5533de237f182f1cf5bb063642bd1e9b4dd688eaa55c2c618e2b3455c844847c",
+      "size_bytes": 312330
+    },
+    {
+      "role": "manifest",
+      "path": "manifest.json",
+      "sha256": "0675344fa956cca0b37dcec46256ef574ae3cf7d4003a61d6c19ee6349e9b2dc",
+      "size_bytes": 6010
+    }
+  ],
+  "evidence": [
+    {
+      "role": "evidence",
+      "path": "qa/generation-provenance-report.json",
+      "sha256": "dfffa19a8d058bd2a7a40ed79fb5b6ffaba74e62d1016b00ba9bb9dfa5c9c780",
+      "size_bytes": 1310,
+      "label": "Generation provenance"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/background-matte-review.png",
+      "sha256": "3ba471f44bc3d2d8388c0eefb6d1e2e3181e019f10e5a072137a8f466f0ec43b",
+      "size_bytes": 304214,
+      "label": "Background matte"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/all-contact.png",
+      "sha256": "24829982dde37c20cbce12180785e472c8d32b619b07a3c10e5b34e8de9027d1",
+      "size_bytes": 281059,
+      "label": "All-frame contact sheet"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/frame-alignment-report.json",
+      "sha256": "0098a396abb852f9ca1907620b704d5a8645d8720d20b5410480a8bb3bbb3c65",
+      "size_bytes": 3832,
+      "label": "Alignment report"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/identity-consistency-report.json",
+      "sha256": "47feb187933bce8e46dee7ca3d5332947e5c6dcd14b1bee2a386c23b0febc219",
+      "size_bytes": 8701,
+      "label": "Identity report"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/animation-contract-report.json",
+      "sha256": "5f60f350a977d7a74badc7a5b756bdb502c19085ca01ed90585beb0c24cf54a8",
+      "size_bytes": 10066,
+      "label": "Animation contract"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/run-validation-report.json",
+      "sha256": "100eb19bfcc20fd52d34bd386e8d5b180675852849b81faeeeca29fb5056e215",
+      "size_bytes": 22842,
+      "label": "Run validation"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/idle-contact.png",
+      "sha256": "98b3d0a10a3f16315ce08a5a8fe33e1a48d4ee9e86468b98a999ed4d6550fa5e",
+      "size_bytes": 37993,
+      "label": "idle: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/idle-onion.png",
+      "sha256": "c486db1115bd4b1dcf39365af7ef503557d9019420a55577af6e441a9ed5c45c",
+      "size_bytes": 6886,
+      "label": "idle: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/walk-forward-contact.png",
+      "sha256": "86527ccfb1bf1ca47550d467543eb81ba5677c3668f3a783f9364a567c2e08d3",
+      "size_bytes": 64222,
+      "label": "walk-forward: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/walk-forward-onion.png",
+      "sha256": "314c2ca62a8eb6db1663fd908eb611fb301e7502ca4a2c27c5278a8a5f634794",
+      "size_bytes": 8857,
+      "label": "walk-forward: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/crouch-contact.png",
+      "sha256": "69ffe03559c2e7bf40fa9f757dede90246c02f4fab2569610cf0789bbec635f1",
+      "size_bytes": 24417,
+      "label": "crouch: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/crouch-onion.png",
+      "sha256": "d0d6a85c40c6a707c0d642fbbb5e935dd98abc241a5a1a1bf53ecea7ed8b36a8",
+      "size_bytes": 6028,
+      "label": "crouch: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/jump-contact.png",
+      "sha256": "e50e2deb1d240cb89cf6e935bfccc5bccf56d68a12c7f78bc1b75d7da1303169",
+      "size_bytes": 31624,
+      "label": "jump: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/jump-onion.png",
+      "sha256": "994ba161874b60f3cc58d21ec92a948501a391cc5cf0c33f873c288b7fb9ef77",
+      "size_bytes": 8408,
+      "label": "jump: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/punch-contact.png",
+      "sha256": "0a957854c3023c112de769c46f63d9107fb8c1c302d823bd2153212599fbcca5",
+      "size_bytes": 40776,
+      "label": "punch: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/punch-onion.png",
+      "sha256": "a09c1b2324b2a66c132e209dcbba83182615b8323f88b3db9833270d8e2e2fc5",
+      "size_bytes": 8828,
+      "label": "punch: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/kick-contact.png",
+      "sha256": "394f768c14900246bec4fb1ccb6d2f668d1475941a9ed659ac3ffd4b49c4ea42",
+      "size_bytes": 44743,
+      "label": "kick: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/kick-onion.png",
+      "sha256": "7177d9928761eef94cbc8a93f6256e0cc9e8f55cee245309420b3221cd40a494",
+      "size_bytes": 9610,
+      "label": "kick: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/hitstun-contact.png",
+      "sha256": "553ed2b76362c496d9bbc616f3977e3dc25d8996dd562fc64a419157ac8048f2",
+      "size_bytes": 27996,
+      "label": "hitstun: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/hitstun-onion.png",
+      "sha256": "39a3032908ccfa92572eead663ccf24fe24ab3ba459eab466635f1a724484176",
+      "size_bytes": 7722,
+      "label": "hitstun: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/crouch-playback.evidence.json",
+      "sha256": "4f2de73c37a3cce2141d64ba891a55ef2fc5e349eb0493dda7e42a6585f41917",
+      "size_bytes": 2001,
+      "label": "Runtime: crouch-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/hitstun-playback.evidence.json",
+      "sha256": "218681f9a1c69a058f6ab1347c8dee1a7b635380d32370cb00c499a3070316b4",
+      "size_bytes": 2003,
+      "label": "Runtime: hitstun-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/idle-playback.evidence.json",
+      "sha256": "98c37a728af2af190827a06a0c5c7b20be82648b5ee85c18756065c2b93be3d4",
+      "size_bytes": 2224,
+      "label": "Runtime: idle-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/jump-playback.evidence.json",
+      "sha256": "c0d387c60074e5b335547c33f6b1ca2c1d274789affa5da75135d462370fdd9c",
+      "size_bytes": 2232,
+      "label": "Runtime: jump-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/kick-playback.evidence.json",
+      "sha256": "d5e9ed70e295057f978290d778018ea3edbcb2643847df2c7f488714a01b5214",
+      "size_bytes": 2462,
+      "label": "Runtime: kick-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/punch-playback.evidence.json",
+      "sha256": "91e250d509bc8382bc5f7d2ae005c40b30b57bc874ba25b288897ec8d0d5b340",
+      "size_bytes": 2230,
+      "label": "Runtime: punch-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/walk-forward-playback.evidence.json",
+      "sha256": "c9f2e8e66b127fca9e8a7091253af39447b7c81b1a38308a5f0abf7090e8edbf",
+      "size_bytes": 3188,
+      "label": "Runtime: walk-forward-playback"
+    }
+  ],
+  "evidence_links": [
+    {
+      "label": "Generation provenance",
+      "path": "qa/generation-provenance-report.json",
+      "href": "../generation-provenance-report.json"
+    },
+    {
+      "label": "Background matte",
+      "path": "qa/background-matte-review.png",
+      "href": "../background-matte-review.png"
+    },
+    {
+      "label": "All-frame contact sheet",
+      "path": "qa/all-contact.png",
+      "href": "../all-contact.png"
+    },
+    {
+      "label": "Alignment report",
+      "path": "qa/frame-alignment-report.json",
+      "href": "../frame-alignment-report.json"
+    },
+    {
+      "label": "Identity report",
+      "path": "qa/identity-consistency-report.json",
+      "href": "../identity-consistency-report.json"
+    },
+    {
+      "label": "Animation contract",
+      "path": "qa/animation-contract-report.json",
+      "href": "../animation-contract-report.json"
+    },
+    {
+      "label": "Run validation",
+      "path": "qa/run-validation-report.json",
+      "href": "../run-validation-report.json"
+    },
+    {
+      "label": "idle: contact",
+      "path": "qa/idle-contact.png",
+      "href": "../idle-contact.png"
+    },
+    {
+      "label": "idle: onion",
+      "path": "qa/idle-onion.png",
+      "href": "../idle-onion.png"
+    },
+    {
+      "label": "walk-forward: contact",
+      "path": "qa/walk-forward-contact.png",
+      "href": "../walk-forward-contact.png"
+    },
+    {
+      "label": "walk-forward: onion",
+      "path": "qa/walk-forward-onion.png",
+      "href": "../walk-forward-onion.png"
+    },
+    {
+      "label": "crouch: contact",
+      "path": "qa/crouch-contact.png",
+      "href": "../crouch-contact.png"
+    },
+    {
+      "label": "crouch: onion",
+      "path": "qa/crouch-onion.png",
+      "href": "../crouch-onion.png"
+    },
+    {
+      "label": "jump: contact",
+      "path": "qa/jump-contact.png",
+      "href": "../jump-contact.png"
+    },
+    {
+      "label": "jump: onion",
+      "path": "qa/jump-onion.png",
+      "href": "../jump-onion.png"
+    },
+    {
+      "label": "punch: contact",
+      "path": "qa/punch-contact.png",
+      "href": "../punch-contact.png"
+    },
+    {
+      "label": "punch: onion",
+      "path": "qa/punch-onion.png",
+      "href": "../punch-onion.png"
+    },
+    {
+      "label": "kick: contact",
+      "path": "qa/kick-contact.png",
+      "href": "../kick-contact.png"
+    },
+    {
+      "label": "kick: onion",
+      "path": "qa/kick-onion.png",
+      "href": "../kick-onion.png"
+    },
+    {
+      "label": "hitstun: contact",
+      "path": "qa/hitstun-contact.png",
+      "href": "../hitstun-contact.png"
+    },
+    {
+      "label": "hitstun: onion",
+      "path": "qa/hitstun-onion.png",
+      "href": "../hitstun-onion.png"
+    },
+    {
+      "label": "Runtime: crouch-playback",
+      "path": "qa/runtime-preview/crouch-playback.evidence.json",
+      "href": "../runtime-preview/crouch-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: hitstun-playback",
+      "path": "qa/runtime-preview/hitstun-playback.evidence.json",
+      "href": "../runtime-preview/hitstun-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: idle-playback",
+      "path": "qa/runtime-preview/idle-playback.evidence.json",
+      "href": "../runtime-preview/idle-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: jump-playback",
+      "path": "qa/runtime-preview/jump-playback.evidence.json",
+      "href": "../runtime-preview/jump-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: kick-playback",
+      "path": "qa/runtime-preview/kick-playback.evidence.json",
+      "href": "../runtime-preview/kick-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: punch-playback",
+      "path": "qa/runtime-preview/punch-playback.evidence.json",
+      "href": "../runtime-preview/punch-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: walk-forward-playback",
+      "path": "qa/runtime-preview/walk-forward-playback.evidence.json",
+      "href": "../runtime-preview/walk-forward-playback.evidence.json"
+    }
+  ],
+  "input_fingerprint": "ff015affd54b17328ef1ea49bec49db92a9252694d32b8163869baa78f5ad873",
+  "self_contained": true,
+  "initial_zoom": 2
+}

@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "kind": "background-regeneration-map",
+  "pack_id": "terminal-supermercado-24h",
+  "provider_master": "terminal-supermercado-24h-base-imagegen-v2.png",
+  "layers": {
+    "far": {
+      "source": "terminal-far-v2.png",
+      "transform": "blur=1.0 brightness=0.78"
+    },
+    "mid": {
+      "source": "terminal-mid-v2.png",
+      "transform": "alpha-mask y=.10-.80"
+    },
+    "near": {
+      "source": "terminal-near-alpha-v2.png",
+      "transform": "alpha-mask y=.55-1.00"
+    }
+  },
+  "palette": [
+    "#11161a",
+    "#4d4336",
+    "#856440"
+  ]
+}

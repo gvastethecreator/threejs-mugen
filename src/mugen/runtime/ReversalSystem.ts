@@ -381,6 +381,8 @@ export class RuntimeReversalWorld {
     attacker.runtime.guardStun = 0;
     attacker.runtime.guardSlideTime = 0;
     attacker.runtime.guardControlTime = 0;
+    attacker.runtime.guardSlideTimeRemaining = undefined;
+    attacker.runtime.guardControlTimeRemaining = undefined;
     attacker.runtime.guarding = false;
     markRuntimeEffectActorGotHit(attacker);
     applyRuntimePowerDelta(reverser.runtime, 25, reverser.definition.constants);

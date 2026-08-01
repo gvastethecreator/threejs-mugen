@@ -26,6 +26,7 @@ import type {
   RuntimeHitDefPriorityProfile,
   RuntimeHitDefSpritePrioritySource,
 } from "./HitDefPriorityPolicy";
+import type { RuntimeStateTransitionCycleDiagnostic } from "./RuntimeStateTransitionSystem";
 
 export type RuntimeHitTmp = -1 | 0 | 1 | 2;
 export type RuntimeActTmp = -3 | -2 | -1 | 0 | 1;
@@ -49,7 +50,7 @@ export type CharacterRuntimeState = {
   posFreeze?: { x: boolean; y: boolean; z: boolean };
   screenBound?: { bound: boolean; moveCameraX: boolean; moveCameraY: boolean };
   stageBound?: false;
-  hitVelocity?: { x: number; y: number };
+  hitVelocity?: { x: number; y: number; z?: number };
   receivedHitSequence?: number;
   hitVars?: RuntimeGetHitVars;
   hitFall?: RuntimeHitFall;
@@ -150,6 +151,10 @@ export type CharacterRuntimeState = {
   guardStun?: number;
   guardSlideTime?: number;
   guardControlTime?: number;
+  /** Remaining default-runtime guard slide window; GetHitVar(slidetime) stays authored above. */
+  guardSlideTimeRemaining?: number;
+  /** Remaining default-runtime control lock; GetHitVar(ctrltime) stays authored above. */
+  guardControlTimeRemaining?: number;
   guarding?: boolean;
   inGuardDist?: RuntimeInGuardDistanceLatch;
   stateType: "S" | "C" | "A" | "L";
@@ -268,6 +273,8 @@ export type RuntimeCustomState = {
 export type RuntimeHitFall = {
   falling: boolean;
   damage: number;
+  /** Explicit HitDef down.bounce value; undefined keeps the legacy bounce path. */
+  downBounce?: boolean;
   fallCount?: number;
   fallCountedGroundImpact?: boolean;
   common1FallMechanicsStateNo?: number;
@@ -277,6 +284,8 @@ export type RuntimeHitFall = {
   velocity: {
     x?: number;
     y: number;
+    /** Ikemen-GO fall.zvelocity; omitted preserves the current depth velocity. */
+    z?: number;
   };
   recover?: boolean;
   recoverTime?: number;
@@ -374,6 +383,10 @@ export type RuntimeSoundEvent = {
 export type RuntimeHitEffectAssetFrame = {
   source: "player" | "common" | "fightfx";
   fightFxPrefix?: string;
+  /** CommonFX/FightFX authored visual scale; omitted means 1. */
+  scale?: number;
+  /** CommonFX/FightFX authored coordinate space used to derive `scale`. */
+  localCoord?: [number, number];
   actionId: number;
   frameIndex: number;
   spriteGroup: number;
@@ -559,6 +572,7 @@ export type ActorCompatibilitySession = {
   lastExecutedState?: number;
   executedOperations: Record<string, number>;
   controllerEvents?: RuntimeControllerTraceEvent[];
+  stateTransitionCycles?: RuntimeStateTransitionCycleDiagnostic[];
   redirectedTargetDispatches?: RuntimeRedirectedTargetDispatchObservation[];
 };
 

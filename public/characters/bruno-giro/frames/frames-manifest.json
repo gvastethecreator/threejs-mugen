@@ -1,0 +1,2190 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "run_dir": ".scratch\\content-pack\\regeneration-v2\\runs\\bruno-giro-v2",
+  "cell": {
+    "shape": "square",
+    "width": 192,
+    "height": 192,
+    "safe_margin_x": 24,
+    "safe_margin_y": 24,
+    "size": 192,
+    "safe_margin": 24
+  },
+  "chroma_key": {
+    "name": "legacy-magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "compatibility-only"
+  },
+  "generation_background": {
+    "family": "neutral",
+    "name": "gray",
+    "hex": "#808080",
+    "rgb": [
+      128,
+      128,
+      128
+    ],
+    "selection": "manual"
+  },
+  "background_removal": {
+    "method": "auto",
+    "model": "birefnet-general",
+    "device": "auto",
+    "alpha_matting": false,
+    "post_rembg_chroma_cleanup": false,
+    "source_family": "neutral",
+    "matte_threshold": 28.0,
+    "matte_max_colors": 8,
+    "edge_refine": "conservative",
+    "edge_refine_threshold": 36.0,
+    "edge_refine_feather": 0.0,
+    "edge_refine_passes": 1,
+    "chroma_mask": "border-connected",
+    "chroma_matte": "soft-edge-despill",
+    "matte_mask": "edge-palette-border-connected"
+  },
+  "background_matte_review": "qa/background-matte-review.png",
+  "sprite_registration": {
+    "reference_height": 144,
+    "reference_width": 86,
+    "reference_scale": 0.79802,
+    "reference_head_width": 57,
+    "reference_upper_width": 60,
+    "reference_torso_width": 33,
+    "reference_opaque_area": 6792,
+    "reference_body_mass_width_80": 56,
+    "reference_body_mass_height_80": 94,
+    "baseline_y": 168
+  },
+  "rows": [
+    {
+      "state": "idle",
+      "frames": 4,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\idle\\frame-0.png",
+        "frames\\idle\\frame-1.png",
+        "frames\\idle\\frame-2.png",
+        "frames\\idle\\frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 8618,
+          "bbox": [
+            35,
+            24,
+            156,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.407,
+          "head_width_vs_reference": 1.1053,
+          "upper_width_vs_reference": 1.0833,
+          "torso_width_vs_reference": 1.2424,
+          "opaque_area_vs_reference": 1.2688,
+          "body_mass_width_80_vs_reference": 1.4107,
+          "body_mass_height_80_vs_reference": 0.9894,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 6473,
+          "bbox": [
+            61,
+            24,
+            131,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.814,
+          "head_width_vs_reference": 0.9298,
+          "upper_width_vs_reference": 1.0333,
+          "torso_width_vs_reference": 0.7273,
+          "opaque_area_vs_reference": 0.953,
+          "body_mass_width_80_vs_reference": 0.8393,
+          "body_mass_height_80_vs_reference": 1.0106,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 5616,
+          "bbox": [
+            62,
+            24,
+            130,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.7907,
+          "head_width_vs_reference": 0.8947,
+          "upper_width_vs_reference": 0.7833,
+          "torso_width_vs_reference": 1.1818,
+          "opaque_area_vs_reference": 0.8269,
+          "body_mass_width_80_vs_reference": 0.7321,
+          "body_mass_height_80_vs_reference": 1.0532,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 7111,
+          "bbox": [
+            45,
+            24,
+            147,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.186,
+          "head_width_vs_reference": 1.0702,
+          "upper_width_vs_reference": 0.9667,
+          "torso_width_vs_reference": 0.8182,
+          "opaque_area_vs_reference": 1.047,
+          "body_mass_width_80_vs_reference": 1.1607,
+          "body_mass_height_80_vs_reference": 0.9681,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 2,
+        "rows": 2
+      }
+    },
+    {
+      "state": "walk-forward",
+      "frames": 8,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\walk-forward\\frame-0.png",
+        "frames\\walk-forward\\frame-1.png",
+        "frames\\walk-forward\\frame-2.png",
+        "frames\\walk-forward\\frame-3.png",
+        "frames\\walk-forward\\frame-4.png",
+        "frames\\walk-forward\\frame-5.png",
+        "frames\\walk-forward\\frame-6.png",
+        "frames\\walk-forward\\frame-7.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 6215,
+          "bbox": [
+            53,
+            24,
+            139,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.0,
+          "head_width_vs_reference": 0.8596,
+          "upper_width_vs_reference": 0.8333,
+          "torso_width_vs_reference": 0.7879,
+          "opaque_area_vs_reference": 0.915,
+          "body_mass_width_80_vs_reference": 0.875,
+          "body_mass_height_80_vs_reference": 1.0745,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 6236,
+          "bbox": [
+            56,
+            24,
+            135,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.9186,
+          "head_width_vs_reference": 0.8246,
+          "upper_width_vs_reference": 0.85,
+          "torso_width_vs_reference": 1.3333,
+          "opaque_area_vs_reference": 0.9181,
+          "body_mass_width_80_vs_reference": 0.8214,
+          "body_mass_height_80_vs_reference": 1.0957,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 6036,
+          "bbox": [
+            54,
+            24,
+            138,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.9767,
+          "head_width_vs_reference": 0.7719,
+          "upper_width_vs_reference": 0.8167,
+          "torso_width_vs_reference": 0.7879,
+          "opaque_area_vs_reference": 0.8887,
+          "body_mass_width_80_vs_reference": 0.8571,
+          "body_mass_height_80_vs_reference": 1.0745,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 6346,
+          "bbox": [
+            53,
+            24,
+            139,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.0,
+          "head_width_vs_reference": 0.8596,
+          "upper_width_vs_reference": 0.85,
+          "torso_width_vs_reference": 1.2424,
+          "opaque_area_vs_reference": 0.9343,
+          "body_mass_width_80_vs_reference": 0.875,
+          "body_mass_height_80_vs_reference": 1.0851,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 6067,
+          "bbox": [
+            54,
+            24,
+            138,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.9767,
+          "head_width_vs_reference": 0.807,
+          "upper_width_vs_reference": 0.7833,
+          "torso_width_vs_reference": 1.1212,
+          "opaque_area_vs_reference": 0.8933,
+          "body_mass_width_80_vs_reference": 0.8393,
+          "body_mass_height_80_vs_reference": 1.0957,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 6082,
+          "bbox": [
+            52,
+            24,
+            139,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.0116,
+          "head_width_vs_reference": 0.8246,
+          "upper_width_vs_reference": 0.7833,
+          "torso_width_vs_reference": 0.8182,
+          "opaque_area_vs_reference": 0.8955,
+          "body_mass_width_80_vs_reference": 0.875,
+          "body_mass_height_80_vs_reference": 1.0745,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 6,
+          "nontransparent_pixels": 5819,
+          "bbox": [
+            65,
+            24,
+            126,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.7093,
+          "head_width_vs_reference": 0.8421,
+          "upper_width_vs_reference": 0.8,
+          "torso_width_vs_reference": 1.2121,
+          "opaque_area_vs_reference": 0.8567,
+          "body_mass_width_80_vs_reference": 0.6607,
+          "body_mass_height_80_vs_reference": 1.0957,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 7,
+          "nontransparent_pixels": 6029,
+          "bbox": [
+            58,
+            24,
+            134,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.8837,
+          "head_width_vs_reference": 0.807,
+          "upper_width_vs_reference": 0.8,
+          "torso_width_vs_reference": 1.2121,
+          "opaque_area_vs_reference": 0.8877,
+          "body_mass_width_80_vs_reference": 0.8036,
+          "body_mass_height_80_vs_reference": 1.0957,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 4,
+        "rows": 2
+      },
+      "pose_geometry": {
+        "kind": "grounded-locomotion",
+        "grounded": true,
+        "target_height_vs_reference": 1.0,
+        "max_height_vs_reference": 1.12,
+        "baseline": "feet"
+      }
+    },
+    {
+      "state": "walk-back",
+      "frames": 8,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\walk-back\\frame-0.png",
+        "frames\\walk-back\\frame-1.png",
+        "frames\\walk-back\\frame-2.png",
+        "frames\\walk-back\\frame-3.png",
+        "frames\\walk-back\\frame-4.png",
+        "frames\\walk-back\\frame-5.png",
+        "frames\\walk-back\\frame-6.png",
+        "frames\\walk-back\\frame-7.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 8821,
+          "bbox": [
+            32,
+            24,
+            160,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.4884,
+          "head_width_vs_reference": 1.0351,
+          "upper_width_vs_reference": 1.0333,
+          "torso_width_vs_reference": 1.5152,
+          "opaque_area_vs_reference": 1.2987,
+          "body_mass_width_80_vs_reference": 1.3929,
+          "body_mass_height_80_vs_reference": 1.0426,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 7621,
+          "bbox": [
+            44,
+            24,
+            148,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.2093,
+          "head_width_vs_reference": 1.0175,
+          "upper_width_vs_reference": 0.9667,
+          "torso_width_vs_reference": 1.2121,
+          "opaque_area_vs_reference": 1.1221,
+          "body_mass_width_80_vs_reference": 0.9643,
+          "body_mass_height_80_vs_reference": 1.0319,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 7771,
+          "bbox": [
+            38,
+            24,
+            153,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.3372,
+          "head_width_vs_reference": 0.9649,
+          "upper_width_vs_reference": 0.9167,
+          "torso_width_vs_reference": 1.1515,
+          "opaque_area_vs_reference": 1.1441,
+          "body_mass_width_80_vs_reference": 1.125,
+          "body_mass_height_80_vs_reference": 1.0319,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 8154,
+          "bbox": [
+            38,
+            24,
+            153,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.3372,
+          "head_width_vs_reference": 0.9825,
+          "upper_width_vs_reference": 0.9833,
+          "torso_width_vs_reference": 1.2424,
+          "opaque_area_vs_reference": 1.2005,
+          "body_mass_width_80_vs_reference": 1.25,
+          "body_mass_height_80_vs_reference": 1.0426,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 8215,
+          "bbox": [
+            38,
+            24,
+            153,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.3372,
+          "head_width_vs_reference": 1.0175,
+          "upper_width_vs_reference": 1.0,
+          "torso_width_vs_reference": 1.2727,
+          "opaque_area_vs_reference": 1.2095,
+          "body_mass_width_80_vs_reference": 1.25,
+          "body_mass_height_80_vs_reference": 1.0426,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 6860,
+          "bbox": [
+            46,
+            24,
+            145,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.1512,
+          "head_width_vs_reference": 0.9649,
+          "upper_width_vs_reference": 0.9167,
+          "torso_width_vs_reference": 1.3333,
+          "opaque_area_vs_reference": 1.01,
+          "body_mass_width_80_vs_reference": 0.8571,
+          "body_mass_height_80_vs_reference": 1.0106,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 6,
+          "nontransparent_pixels": 8007,
+          "bbox": [
+            36,
+            24,
+            156,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.3953,
+          "head_width_vs_reference": 1.0,
+          "upper_width_vs_reference": 0.95,
+          "torso_width_vs_reference": 1.2121,
+          "opaque_area_vs_reference": 1.1789,
+          "body_mass_width_80_vs_reference": 1.1786,
+          "body_mass_height_80_vs_reference": 1.0426,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 7,
+          "nontransparent_pixels": 8106,
+          "bbox": [
+            37,
+            24,
+            154,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.3605,
+          "head_width_vs_reference": 1.0175,
+          "upper_width_vs_reference": 0.9833,
+          "torso_width_vs_reference": 1.2424,
+          "opaque_area_vs_reference": 1.1935,
+          "body_mass_width_80_vs_reference": 1.2321,
+          "body_mass_height_80_vs_reference": 1.0426,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 4,
+        "rows": 2
+      },
+      "pose_geometry": {
+        "kind": "grounded-locomotion",
+        "grounded": true,
+        "target_height_vs_reference": 1.0,
+        "max_height_vs_reference": 1.12,
+        "baseline": "feet"
+      }
+    },
+    {
+      "state": "crouch",
+      "frames": 4,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\crouch\\frame-0.png",
+        "frames\\crouch\\frame-1.png",
+        "frames\\crouch\\frame-2.png",
+        "frames\\crouch\\frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 8617,
+          "bbox": [
+            35,
+            24,
+            156,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.407,
+          "head_width_vs_reference": 1.1053,
+          "upper_width_vs_reference": 1.0833,
+          "torso_width_vs_reference": 1.2424,
+          "opaque_area_vs_reference": 1.2687,
+          "body_mass_width_80_vs_reference": 1.4107,
+          "body_mass_height_80_vs_reference": 0.9894,
+          "expected_height_vs_reference": 1.0,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 5356,
+          "bbox": [
+            48,
+            75,
+            144,
+            168
+          ],
+          "height_vs_reference": 0.6458,
+          "width_vs_reference": 1.1163,
+          "head_width_vs_reference": 0.9123,
+          "upper_width_vs_reference": 1.2167,
+          "torso_width_vs_reference": 2.3333,
+          "opaque_area_vs_reference": 0.7886,
+          "body_mass_width_80_vs_reference": 1.1071,
+          "body_mass_height_80_vs_reference": 0.6277,
+          "expected_height_vs_reference": 0.9222,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 5356,
+          "bbox": [
+            48,
+            75,
+            144,
+            168
+          ],
+          "height_vs_reference": 0.6458,
+          "width_vs_reference": 1.1163,
+          "head_width_vs_reference": 0.9123,
+          "upper_width_vs_reference": 1.2167,
+          "torso_width_vs_reference": 2.3333,
+          "opaque_area_vs_reference": 0.7886,
+          "body_mass_width_80_vs_reference": 1.1071,
+          "body_mass_height_80_vs_reference": 0.6277,
+          "expected_height_vs_reference": 0.7778,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 5356,
+          "bbox": [
+            48,
+            75,
+            144,
+            168
+          ],
+          "height_vs_reference": 0.6458,
+          "width_vs_reference": 1.1163,
+          "head_width_vs_reference": 0.9123,
+          "upper_width_vs_reference": 1.2167,
+          "torso_width_vs_reference": 2.3333,
+          "opaque_area_vs_reference": 0.7886,
+          "body_mass_width_80_vs_reference": 1.1071,
+          "body_mass_height_80_vs_reference": 0.6277,
+          "expected_height_vs_reference": 0.7,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 2,
+        "rows": 2
+      },
+      "pose_geometry": {
+        "kind": "crouch",
+        "grounded": true,
+        "height_curve": "compress",
+        "start_height_vs_reference": 1.0,
+        "target_height_vs_reference": 0.7,
+        "min_height_vs_reference": 0.62,
+        "min_width_vs_reference": 0.78,
+        "min_head_width_vs_reference": 0.84,
+        "min_upper_width_vs_reference": 0.84,
+        "max_height_vs_reference": 1.05,
+        "baseline": "feet",
+        "guide_height_ratio": 0.7
+      }
+    },
+    {
+      "state": "jump",
+      "frames": 6,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\jump\\frame-0.png",
+        "frames\\jump\\frame-1.png",
+        "frames\\jump\\frame-2.png",
+        "frames\\jump\\frame-3.png",
+        "frames\\jump\\frame-4.png",
+        "frames\\jump\\frame-5.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 5247,
+          "bbox": [
+            49,
+            76,
+            143,
+            168
+          ],
+          "height_vs_reference": 0.6389,
+          "width_vs_reference": 1.093,
+          "head_width_vs_reference": 0.8947,
+          "upper_width_vs_reference": 1.2,
+          "torso_width_vs_reference": 2.3333,
+          "opaque_area_vs_reference": 0.7725,
+          "body_mass_width_80_vs_reference": 1.0893,
+          "body_mass_height_80_vs_reference": 0.617,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 5171,
+          "bbox": [
+            48,
+            50,
+            143,
+            149
+          ],
+          "height_vs_reference": 0.6875,
+          "width_vs_reference": 1.1047,
+          "head_width_vs_reference": 0.9649,
+          "upper_width_vs_reference": 0.9667,
+          "torso_width_vs_reference": 1.3636,
+          "opaque_area_vs_reference": 0.7613,
+          "body_mass_width_80_vs_reference": 1.1071,
+          "body_mass_height_80_vs_reference": 0.6809,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 149,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 5171,
+          "bbox": [
+            48,
+            39,
+            143,
+            138
+          ],
+          "height_vs_reference": 0.6875,
+          "width_vs_reference": 1.1047,
+          "head_width_vs_reference": 0.9649,
+          "upper_width_vs_reference": 0.9667,
+          "torso_width_vs_reference": 1.3636,
+          "opaque_area_vs_reference": 0.7613,
+          "body_mass_width_80_vs_reference": 1.1071,
+          "body_mass_height_80_vs_reference": 0.6809,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 138,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 5171,
+          "bbox": [
+            48,
+            39,
+            143,
+            138
+          ],
+          "height_vs_reference": 0.6875,
+          "width_vs_reference": 1.1047,
+          "head_width_vs_reference": 0.9649,
+          "upper_width_vs_reference": 0.9667,
+          "torso_width_vs_reference": 1.3636,
+          "opaque_area_vs_reference": 0.7613,
+          "body_mass_width_80_vs_reference": 1.1071,
+          "body_mass_height_80_vs_reference": 0.6809,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 138,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 5171,
+          "bbox": [
+            48,
+            50,
+            143,
+            149
+          ],
+          "height_vs_reference": 0.6875,
+          "width_vs_reference": 1.1047,
+          "head_width_vs_reference": 0.9649,
+          "upper_width_vs_reference": 0.9667,
+          "torso_width_vs_reference": 1.3636,
+          "opaque_area_vs_reference": 0.7613,
+          "body_mass_width_80_vs_reference": 1.1071,
+          "body_mass_height_80_vs_reference": 0.6809,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 149,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 5247,
+          "bbox": [
+            49,
+            76,
+            143,
+            168
+          ],
+          "height_vs_reference": 0.6389,
+          "width_vs_reference": 1.093,
+          "head_width_vs_reference": 0.8947,
+          "upper_width_vs_reference": 1.2,
+          "torso_width_vs_reference": 2.3333,
+          "opaque_area_vs_reference": 0.7725,
+          "body_mass_width_80_vs_reference": 1.0893,
+          "body_mass_height_80_vs_reference": 0.617,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 3,
+        "rows": 2
+      },
+      "pose_geometry": {
+        "kind": "jump",
+        "grounded": false,
+        "target_height_vs_reference": 1.0,
+        "max_height_vs_reference": 1.12,
+        "min_head_width_vs_reference": 0.9,
+        "min_upper_width_vs_reference": 0.72,
+        "arc_peak_ratio": 0.22,
+        "baseline": "jump-arc",
+        "guide_height_ratio": 0.74
+      }
+    },
+    {
+      "state": "light-strike",
+      "frames": 4,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\light-strike\\frame-0.png",
+        "frames\\light-strike\\frame-1.png",
+        "frames\\light-strike\\frame-2.png",
+        "frames\\light-strike\\frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 6680,
+          "bbox": [
+            54,
+            24,
+            137,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.9651,
+          "head_width_vs_reference": 1.0526,
+          "upper_width_vs_reference": 0.8333,
+          "torso_width_vs_reference": 0.8182,
+          "opaque_area_vs_reference": 0.9835,
+          "body_mass_width_80_vs_reference": 0.9464,
+          "body_mass_height_80_vs_reference": 1.0745,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 7960,
+          "bbox": [
+            25,
+            24,
+            167,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.6512,
+          "head_width_vs_reference": 0.9474,
+          "upper_width_vs_reference": 0.9167,
+          "torso_width_vs_reference": 1.2121,
+          "opaque_area_vs_reference": 1.172,
+          "body_mass_width_80_vs_reference": 1.2679,
+          "body_mass_height_80_vs_reference": 1.0745,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 7380,
+          "bbox": [
+            24,
+            27,
+            168,
+            165
+          ],
+          "height_vs_reference": 0.9583,
+          "width_vs_reference": 1.6744,
+          "head_width_vs_reference": 0.8947,
+          "upper_width_vs_reference": 0.85,
+          "torso_width_vs_reference": 1.1212,
+          "opaque_area_vs_reference": 1.0866,
+          "body_mass_width_80_vs_reference": 1.2679,
+          "body_mass_height_80_vs_reference": 1.0213,
+          "expected_height_vs_reference": null,
+          "bottom_y": 165,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 6873,
+          "bbox": [
+            54,
+            24,
+            138,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.9767,
+          "head_width_vs_reference": 1.1228,
+          "upper_width_vs_reference": 0.85,
+          "torso_width_vs_reference": 0.8485,
+          "opaque_area_vs_reference": 1.0119,
+          "body_mass_width_80_vs_reference": 0.9643,
+          "body_mass_height_80_vs_reference": 1.0745,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 2,
+        "rows": 2
+      }
+    },
+    {
+      "state": "heavy-strike",
+      "frames": 6,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\heavy-strike\\frame-0.png",
+        "frames\\heavy-strike\\frame-1.png",
+        "frames\\heavy-strike\\frame-2.png",
+        "frames\\heavy-strike\\frame-3.png",
+        "frames\\heavy-strike\\frame-4.png",
+        "frames\\heavy-strike\\frame-5.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 6585,
+          "bbox": [
+            54,
+            24,
+            137,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.9651,
+          "head_width_vs_reference": 0.8947,
+          "upper_width_vs_reference": 0.8333,
+          "torso_width_vs_reference": 0.8788,
+          "opaque_area_vs_reference": 0.9695,
+          "body_mass_width_80_vs_reference": 0.9464,
+          "body_mass_height_80_vs_reference": 1.0532,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 9405,
+          "bbox": [
+            32,
+            24,
+            160,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.4884,
+          "head_width_vs_reference": 1.2456,
+          "upper_width_vs_reference": 1.2833,
+          "torso_width_vs_reference": 2.1515,
+          "opaque_area_vs_reference": 1.3847,
+          "body_mass_width_80_vs_reference": 1.3929,
+          "body_mass_height_80_vs_reference": 1.0638,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 7266,
+          "bbox": [
+            24,
+            33,
+            168,
+            159
+          ],
+          "height_vs_reference": 0.875,
+          "width_vs_reference": 1.6744,
+          "head_width_vs_reference": 1.1579,
+          "upper_width_vs_reference": 0.9667,
+          "torso_width_vs_reference": 1.303,
+          "opaque_area_vs_reference": 1.0698,
+          "body_mass_width_80_vs_reference": 1.375,
+          "body_mass_height_80_vs_reference": 0.883,
+          "expected_height_vs_reference": null,
+          "bottom_y": 159,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 7241,
+          "bbox": [
+            24,
+            34,
+            168,
+            158
+          ],
+          "height_vs_reference": 0.8611,
+          "width_vs_reference": 1.6744,
+          "head_width_vs_reference": 1.1579,
+          "upper_width_vs_reference": 0.9667,
+          "torso_width_vs_reference": 1.3333,
+          "opaque_area_vs_reference": 1.0661,
+          "body_mass_width_80_vs_reference": 1.3929,
+          "body_mass_height_80_vs_reference": 0.8723,
+          "expected_height_vs_reference": null,
+          "bottom_y": 158,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 7502,
+          "bbox": [
+            24,
+            31,
+            168,
+            160
+          ],
+          "height_vs_reference": 0.8958,
+          "width_vs_reference": 1.6744,
+          "head_width_vs_reference": 1.193,
+          "upper_width_vs_reference": 0.9667,
+          "torso_width_vs_reference": 1.3636,
+          "opaque_area_vs_reference": 1.1045,
+          "body_mass_width_80_vs_reference": 1.3929,
+          "body_mass_height_80_vs_reference": 0.9043,
+          "expected_height_vs_reference": null,
+          "bottom_y": 160,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 6618,
+          "bbox": [
+            54,
+            24,
+            137,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.9651,
+          "head_width_vs_reference": 0.9123,
+          "upper_width_vs_reference": 0.85,
+          "torso_width_vs_reference": 0.8788,
+          "opaque_area_vs_reference": 0.9744,
+          "body_mass_width_80_vs_reference": 0.9464,
+          "body_mass_height_80_vs_reference": 1.0532,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 3,
+        "rows": 2
+      }
+    },
+    {
+      "state": "special",
+      "frames": 8,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\special\\frame-0.png",
+        "frames\\special\\frame-1.png",
+        "frames\\special\\frame-2.png",
+        "frames\\special\\frame-3.png",
+        "frames\\special\\frame-4.png",
+        "frames\\special\\frame-5.png",
+        "frames\\special\\frame-6.png",
+        "frames\\special\\frame-7.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 6827,
+          "bbox": [
+            53,
+            24,
+            138,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.9884,
+          "head_width_vs_reference": 0.8246,
+          "upper_width_vs_reference": 0.8167,
+          "torso_width_vs_reference": 0.9394,
+          "opaque_area_vs_reference": 1.0052,
+          "body_mass_width_80_vs_reference": 0.9643,
+          "body_mass_height_80_vs_reference": 1.0745,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 7286,
+          "bbox": [
+            33,
+            24,
+            158,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.4535,
+          "head_width_vs_reference": 0.8947,
+          "upper_width_vs_reference": 0.9333,
+          "torso_width_vs_reference": 1.2424,
+          "opaque_area_vs_reference": 1.0727,
+          "body_mass_width_80_vs_reference": 1.2143,
+          "body_mass_height_80_vs_reference": 1.0745,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 7579,
+          "bbox": [
+            31,
+            24,
+            160,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.5,
+          "head_width_vs_reference": 0.7719,
+          "upper_width_vs_reference": 0.8667,
+          "torso_width_vs_reference": 1.3333,
+          "opaque_area_vs_reference": 1.1159,
+          "body_mass_width_80_vs_reference": 1.2857,
+          "body_mass_height_80_vs_reference": 1.0745,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 7240,
+          "bbox": [
+            31,
+            24,
+            160,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.5,
+          "head_width_vs_reference": 0.7895,
+          "upper_width_vs_reference": 0.9,
+          "torso_width_vs_reference": 1.0606,
+          "opaque_area_vs_reference": 1.066,
+          "body_mass_width_80_vs_reference": 1.2321,
+          "body_mass_height_80_vs_reference": 1.0851,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 8474,
+          "bbox": [
+            36,
+            24,
+            156,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.3953,
+          "head_width_vs_reference": 1.386,
+          "upper_width_vs_reference": 1.2833,
+          "torso_width_vs_reference": 1.0,
+          "opaque_area_vs_reference": 1.2476,
+          "body_mass_width_80_vs_reference": 1.2679,
+          "body_mass_height_80_vs_reference": 1.0745,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 6833,
+          "bbox": [
+            38,
+            24,
+            154,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.3488,
+          "head_width_vs_reference": 0.7719,
+          "upper_width_vs_reference": 0.8333,
+          "torso_width_vs_reference": 1.0909,
+          "opaque_area_vs_reference": 1.006,
+          "body_mass_width_80_vs_reference": 1.1607,
+          "body_mass_height_80_vs_reference": 1.0957,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 6,
+          "nontransparent_pixels": 7219,
+          "bbox": [
+            38,
+            24,
+            153,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.3372,
+          "head_width_vs_reference": 1.0351,
+          "upper_width_vs_reference": 0.85,
+          "torso_width_vs_reference": 1.1818,
+          "opaque_area_vs_reference": 1.0629,
+          "body_mass_width_80_vs_reference": 1.0179,
+          "body_mass_height_80_vs_reference": 1.117,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 7,
+          "nontransparent_pixels": 6933,
+          "bbox": [
+            52,
+            24,
+            139,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.0116,
+          "head_width_vs_reference": 0.7368,
+          "upper_width_vs_reference": 1.0333,
+          "torso_width_vs_reference": 1.1515,
+          "opaque_area_vs_reference": 1.0208,
+          "body_mass_width_80_vs_reference": 0.9643,
+          "body_mass_height_80_vs_reference": 1.0851,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 4,
+        "rows": 2
+      }
+    },
+    {
+      "state": "throw",
+      "frames": 6,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\throw\\frame-0.png",
+        "frames\\throw\\frame-1.png",
+        "frames\\throw\\frame-2.png",
+        "frames\\throw\\frame-3.png",
+        "frames\\throw\\frame-4.png",
+        "frames\\throw\\frame-5.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 7472,
+          "bbox": [
+            45,
+            24,
+            146,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.1744,
+          "head_width_vs_reference": 0.9649,
+          "upper_width_vs_reference": 0.9167,
+          "torso_width_vs_reference": 1.0606,
+          "opaque_area_vs_reference": 1.1001,
+          "body_mass_width_80_vs_reference": 1.1429,
+          "body_mass_height_80_vs_reference": 1.0426,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 8407,
+          "bbox": [
+            28,
+            24,
+            164,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.5814,
+          "head_width_vs_reference": 1.0702,
+          "upper_width_vs_reference": 1.0167,
+          "torso_width_vs_reference": 1.0909,
+          "opaque_area_vs_reference": 1.2378,
+          "body_mass_width_80_vs_reference": 1.2857,
+          "body_mass_height_80_vs_reference": 1.0426,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 8563,
+          "bbox": [
+            36,
+            24,
+            155,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.3837,
+          "head_width_vs_reference": 1.1053,
+          "upper_width_vs_reference": 1.1333,
+          "torso_width_vs_reference": 1.2424,
+          "opaque_area_vs_reference": 1.2607,
+          "body_mass_width_80_vs_reference": 1.2679,
+          "body_mass_height_80_vs_reference": 1.0532,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 7719,
+          "bbox": [
+            41,
+            25,
+            151,
+            168
+          ],
+          "height_vs_reference": 0.9931,
+          "width_vs_reference": 1.2791,
+          "head_width_vs_reference": 1.1053,
+          "upper_width_vs_reference": 1.0333,
+          "torso_width_vs_reference": 1.3636,
+          "opaque_area_vs_reference": 1.1365,
+          "body_mass_width_80_vs_reference": 1.1607,
+          "body_mass_height_80_vs_reference": 1.0957,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 7230,
+          "bbox": [
+            24,
+            39,
+            168,
+            153
+          ],
+          "height_vs_reference": 0.7917,
+          "width_vs_reference": 1.6744,
+          "head_width_vs_reference": 0.8596,
+          "upper_width_vs_reference": 1.1333,
+          "torso_width_vs_reference": 0.9091,
+          "opaque_area_vs_reference": 1.0645,
+          "body_mass_width_80_vs_reference": 1.4821,
+          "body_mass_height_80_vs_reference": 0.9255,
+          "expected_height_vs_reference": null,
+          "bottom_y": 153,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 7423,
+          "bbox": [
+            47,
+            24,
+            145,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.1395,
+          "head_width_vs_reference": 0.9825,
+          "upper_width_vs_reference": 0.9167,
+          "torso_width_vs_reference": 1.0303,
+          "opaque_area_vs_reference": 1.0929,
+          "body_mass_width_80_vs_reference": 1.1071,
+          "body_mass_height_80_vs_reference": 1.0426,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 3,
+        "rows": 2
+      }
+    },
+    {
+      "state": "guard",
+      "frames": 4,
+      "method": "components",
+      "background_method": "matte",
+      "files": [
+        "frames\\guard\\frame-0.png",
+        "frames\\guard\\frame-1.png",
+        "frames\\guard\\frame-2.png",
+        "frames\\guard\\frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 8315,
+          "bbox": [
+            36,
+            24,
+            155,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.3837,
+          "head_width_vs_reference": 1.1053,
+          "upper_width_vs_reference": 1.0667,
+          "torso_width_vs_reference": 1.1818,
+          "opaque_area_vs_reference": 1.2242,
+          "body_mass_width_80_vs_reference": 1.375,
+          "body_mass_height_80_vs_reference": 0.9787,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 7668,
+          "bbox": [
+            38,
+            24,
+            154,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.3488,
+          "head_width_vs_reference": 1.2632,
+          "upper_width_vs_reference": 1.0333,
+          "torso_width_vs_reference": 1.0909,
+          "opaque_area_vs_reference": 1.129,
+          "body_mass_width_80_vs_reference": 1.2857,
+          "body_mass_height_80_vs_reference": 1.0426,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 6586,
+          "bbox": [
+            42,
+            24,
+            149,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.2442,
+          "head_width_vs_reference": 0.9298,
+          "upper_width_vs_reference": 0.8833,
+          "torso_width_vs_reference": 1.1212,
+          "opaque_area_vs_reference": 0.9697,
+          "body_mass_width_80_vs_reference": 1.1429,
+          "body_mass_height_80_vs_reference": 1.0106,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 7612,
+          "bbox": [
+            38,
+            24,
+            154,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.3488,
+          "head_width_vs_reference": 1.2105,
+          "upper_width_vs_reference": 1.0667,
+          "torso_width_vs_reference": 1.1212,
+          "opaque_area_vs_reference": 1.1207,
+          "body_mass_width_80_vs_reference": 1.2679,
+          "body_mass_height_80_vs_reference": 1.0532,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "strip",
+        "columns": 4,
+        "rows": 1
+      }
+    },
+    {
+      "state": "hitstun",
+      "frames": 4,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\hitstun\\frame-0.png",
+        "frames\\hitstun\\frame-1.png",
+        "frames\\hitstun\\frame-2.png",
+        "frames\\hitstun\\frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 7962,
+          "bbox": [
+            40,
+            24,
+            151,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.2907,
+          "head_width_vs_reference": 1.0877,
+          "upper_width_vs_reference": 1.05,
+          "torso_width_vs_reference": 1.0909,
+          "opaque_area_vs_reference": 1.1723,
+          "body_mass_width_80_vs_reference": 1.3036,
+          "body_mass_height_80_vs_reference": 0.9894,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 7877,
+          "bbox": [
+            37,
+            24,
+            155,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.3721,
+          "head_width_vs_reference": 0.9474,
+          "upper_width_vs_reference": 1.0833,
+          "torso_width_vs_reference": 0.9394,
+          "opaque_area_vs_reference": 1.1597,
+          "body_mass_width_80_vs_reference": 1.3929,
+          "body_mass_height_80_vs_reference": 0.9894,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 8190,
+          "bbox": [
+            38,
+            24,
+            154,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.3488,
+          "head_width_vs_reference": 1.1404,
+          "upper_width_vs_reference": 1.1,
+          "torso_width_vs_reference": 0.9091,
+          "opaque_area_vs_reference": 1.2058,
+          "body_mass_width_80_vs_reference": 1.4107,
+          "body_mass_height_80_vs_reference": 1.0106,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 7879,
+          "bbox": [
+            39,
+            24,
+            152,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.314,
+          "head_width_vs_reference": 1.1053,
+          "upper_width_vs_reference": 1.05,
+          "torso_width_vs_reference": 1.0606,
+          "opaque_area_vs_reference": 1.16,
+          "body_mass_width_80_vs_reference": 1.3214,
+          "body_mass_height_80_vs_reference": 1.0,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 2,
+        "rows": 2
+      }
+    },
+    {
+      "state": "knockdown",
+      "frames": 6,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\knockdown\\frame-0.png",
+        "frames\\knockdown\\frame-1.png",
+        "frames\\knockdown\\frame-2.png",
+        "frames\\knockdown\\frame-3.png",
+        "frames\\knockdown\\frame-4.png",
+        "frames\\knockdown\\frame-5.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 7223,
+          "bbox": [
+            49,
+            24,
+            143,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.093,
+          "head_width_vs_reference": 0.6842,
+          "upper_width_vs_reference": 0.9167,
+          "torso_width_vs_reference": 0.8788,
+          "opaque_area_vs_reference": 1.0635,
+          "body_mass_width_80_vs_reference": 1.1429,
+          "body_mass_height_80_vs_reference": 1.0106,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 10011,
+          "bbox": [
+            33,
+            24,
+            159,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.4651,
+          "head_width_vs_reference": 1.5439,
+          "upper_width_vs_reference": 1.45,
+          "torso_width_vs_reference": 0.9697,
+          "opaque_area_vs_reference": 1.4739,
+          "body_mass_width_80_vs_reference": 1.3393,
+          "body_mass_height_80_vs_reference": 1.0106,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 11091,
+          "bbox": [
+            24,
+            38,
+            168,
+            168
+          ],
+          "height_vs_reference": 0.9028,
+          "width_vs_reference": 1.6744,
+          "head_width_vs_reference": 1.4912,
+          "upper_width_vs_reference": 1.5333,
+          "torso_width_vs_reference": 2.7273,
+          "opaque_area_vs_reference": 1.633,
+          "body_mass_width_80_vs_reference": 1.4643,
+          "body_mass_height_80_vs_reference": 1.0,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 9602,
+          "bbox": [
+            24,
+            55,
+            168,
+            168
+          ],
+          "height_vs_reference": 0.7847,
+          "width_vs_reference": 1.6744,
+          "head_width_vs_reference": 1.3509,
+          "upper_width_vs_reference": 1.6333,
+          "torso_width_vs_reference": 3.303,
+          "opaque_area_vs_reference": 1.4137,
+          "body_mass_width_80_vs_reference": 1.5357,
+          "body_mass_height_80_vs_reference": 0.8085,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 8175,
+          "bbox": [
+            24,
+            89,
+            168,
+            168
+          ],
+          "height_vs_reference": 0.5486,
+          "width_vs_reference": 1.6744,
+          "head_width_vs_reference": 1.5439,
+          "upper_width_vs_reference": 1.6833,
+          "torso_width_vs_reference": 4.0909,
+          "opaque_area_vs_reference": 1.2036,
+          "body_mass_width_80_vs_reference": 1.6429,
+          "body_mass_height_80_vs_reference": 0.5851,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 7590,
+          "bbox": [
+            24,
+            81,
+            168,
+            168
+          ],
+          "height_vs_reference": 0.6042,
+          "width_vs_reference": 1.6744,
+          "head_width_vs_reference": 1.7193,
+          "upper_width_vs_reference": 1.6333,
+          "torso_width_vs_reference": 2.7879,
+          "opaque_area_vs_reference": 1.1175,
+          "body_mass_width_80_vs_reference": 1.625,
+          "body_mass_height_80_vs_reference": 0.6277,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 3,
+        "rows": 2
+      },
+      "pose_geometry": {
+        "kind": "knockdown",
+        "grounded": false,
+        "target_height_vs_reference": 0.7,
+        "max_height_vs_reference": 1.12,
+        "min_height_vs_reference": 0.45,
+        "baseline": "collapse",
+        "guide_height_ratio": 0.62
+      }
+    },
+    {
+      "state": "ko",
+      "frames": 6,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\ko\\frame-0.png",
+        "frames\\ko\\frame-1.png",
+        "frames\\ko\\frame-2.png",
+        "frames\\ko\\frame-3.png",
+        "frames\\ko\\frame-4.png",
+        "frames\\ko\\frame-5.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 8456,
+          "bbox": [
+            28,
+            26,
+            163,
+            168
+          ],
+          "height_vs_reference": 0.9861,
+          "width_vs_reference": 1.5698,
+          "head_width_vs_reference": 1.386,
+          "upper_width_vs_reference": 1.3167,
+          "torso_width_vs_reference": 0.8182,
+          "opaque_area_vs_reference": 1.245,
+          "body_mass_width_80_vs_reference": 1.5179,
+          "body_mass_height_80_vs_reference": 0.9468,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 3995,
+          "bbox": [
+            24,
+            118,
+            168,
+            168
+          ],
+          "height_vs_reference": 0.3472,
+          "width_vs_reference": 1.6744,
+          "head_width_vs_reference": 1.5439,
+          "upper_width_vs_reference": 1.9833,
+          "torso_width_vs_reference": 2.303,
+          "opaque_area_vs_reference": 0.5882,
+          "body_mass_width_80_vs_reference": 1.6607,
+          "body_mass_height_80_vs_reference": 0.2979,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 3995,
+          "bbox": [
+            24,
+            118,
+            168,
+            168
+          ],
+          "height_vs_reference": 0.3472,
+          "width_vs_reference": 1.6744,
+          "head_width_vs_reference": 1.5439,
+          "upper_width_vs_reference": 1.9833,
+          "torso_width_vs_reference": 2.303,
+          "opaque_area_vs_reference": 0.5882,
+          "body_mass_width_80_vs_reference": 1.6607,
+          "body_mass_height_80_vs_reference": 0.2979,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 3995,
+          "bbox": [
+            24,
+            118,
+            168,
+            168
+          ],
+          "height_vs_reference": 0.3472,
+          "width_vs_reference": 1.6744,
+          "head_width_vs_reference": 1.5439,
+          "upper_width_vs_reference": 1.9833,
+          "torso_width_vs_reference": 2.303,
+          "opaque_area_vs_reference": 0.5882,
+          "body_mass_width_80_vs_reference": 1.6607,
+          "body_mass_height_80_vs_reference": 0.2979,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 3995,
+          "bbox": [
+            24,
+            118,
+            168,
+            168
+          ],
+          "height_vs_reference": 0.3472,
+          "width_vs_reference": 1.6744,
+          "head_width_vs_reference": 1.5439,
+          "upper_width_vs_reference": 1.9833,
+          "torso_width_vs_reference": 2.303,
+          "opaque_area_vs_reference": 0.5882,
+          "body_mass_width_80_vs_reference": 1.6607,
+          "body_mass_height_80_vs_reference": 0.2979,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 3995,
+          "bbox": [
+            24,
+            118,
+            168,
+            168
+          ],
+          "height_vs_reference": 0.3472,
+          "width_vs_reference": 1.6744,
+          "head_width_vs_reference": 1.5439,
+          "upper_width_vs_reference": 1.9833,
+          "torso_width_vs_reference": 2.303,
+          "opaque_area_vs_reference": 0.5882,
+          "body_mass_width_80_vs_reference": 1.6607,
+          "body_mass_height_80_vs_reference": 0.2979,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 3,
+        "rows": 2
+      },
+      "pose_geometry": {
+        "kind": "knockdown",
+        "grounded": false,
+        "target_height_vs_reference": 0.7,
+        "max_height_vs_reference": 1.12,
+        "min_height_vs_reference": 0.45,
+        "baseline": "collapse",
+        "guide_height_ratio": 0.62
+      }
+    },
+    {
+      "state": "win",
+      "frames": 6,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\win\\frame-0.png",
+        "frames\\win\\frame-1.png",
+        "frames\\win\\frame-2.png",
+        "frames\\win\\frame-3.png",
+        "frames\\win\\frame-4.png",
+        "frames\\win\\frame-5.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 5708,
+          "bbox": [
+            62,
+            24,
+            130,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.7907,
+          "head_width_vs_reference": 0.8421,
+          "upper_width_vs_reference": 0.7833,
+          "torso_width_vs_reference": 1.1818,
+          "opaque_area_vs_reference": 0.8404,
+          "body_mass_width_80_vs_reference": 0.7321,
+          "body_mass_height_80_vs_reference": 1.0745,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 6057,
+          "bbox": [
+            60,
+            24,
+            131,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.8256,
+          "head_width_vs_reference": 0.7719,
+          "upper_width_vs_reference": 0.7833,
+          "torso_width_vs_reference": 1.1515,
+          "opaque_area_vs_reference": 0.8918,
+          "body_mass_width_80_vs_reference": 0.7857,
+          "body_mass_height_80_vs_reference": 1.0426,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 5914,
+          "bbox": [
+            60,
+            24,
+            132,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.8372,
+          "head_width_vs_reference": 0.8421,
+          "upper_width_vs_reference": 0.8667,
+          "torso_width_vs_reference": 1.1515,
+          "opaque_area_vs_reference": 0.8707,
+          "body_mass_width_80_vs_reference": 0.75,
+          "body_mass_height_80_vs_reference": 1.0532,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 6007,
+          "bbox": [
+            58,
+            24,
+            134,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.8837,
+          "head_width_vs_reference": 0.8421,
+          "upper_width_vs_reference": 0.8667,
+          "torso_width_vs_reference": 1.2121,
+          "opaque_area_vs_reference": 0.8844,
+          "body_mass_width_80_vs_reference": 0.7679,
+          "body_mass_height_80_vs_reference": 1.0532,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 5991,
+          "bbox": [
+            60,
+            24,
+            132,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.8372,
+          "head_width_vs_reference": 0.8421,
+          "upper_width_vs_reference": 0.8833,
+          "torso_width_vs_reference": 1.2424,
+          "opaque_area_vs_reference": 0.8821,
+          "body_mass_width_80_vs_reference": 0.7679,
+          "body_mass_height_80_vs_reference": 1.0532,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 5684,
+          "bbox": [
+            62,
+            24,
+            129,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.7791,
+          "head_width_vs_reference": 0.8772,
+          "upper_width_vs_reference": 0.7833,
+          "torso_width_vs_reference": 1.1818,
+          "opaque_area_vs_reference": 0.8369,
+          "body_mass_width_80_vs_reference": 0.7321,
+          "body_mass_height_80_vs_reference": 1.0745,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 3,
+        "rows": 2
+      }
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

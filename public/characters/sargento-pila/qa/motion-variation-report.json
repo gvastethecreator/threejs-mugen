@@ -1,0 +1,185 @@
+{
+  "ok": true,
+  "engine": "motion-variation-heuristic",
+  "run_dir": "runs/sargento-pila-v2",
+  "states_mode": "locomotion",
+  "checked_states": [
+    "walk-forward",
+    "walk-back",
+    "special"
+  ],
+  "semantic_review_required": true,
+  "quality_gate_note": "Motion variation is a heuristic. Locomotion still needs visual leg-phase review before final approval.",
+  "errors": [
+    "walk-forward: opposite-contact candidate duplicates the first lower-body pose (frame 1 vs frame 5 lower-body diff 0.000; expected >= 0.080; opposite contact lower-body pose is duplicated or too similar)",
+    "walk-back: opposite-contact candidate duplicates the first lower-body pose (frame 1 vs frame 5 lower-body diff 0.000; expected >= 0.080; opposite contact lower-body pose is duplicated or too similar)",
+    "special: one or more adjacent frames are too similar in the lower body (min 0.000; expected >= 0.040)"
+  ],
+  "warnings": [
+    "walk-forward: lower-body screen-space balance barely varies (range 0.013; diagnostic target >= 0.045)",
+    "walk-forward: body center is nearly static; verify body bob/weight shift visually",
+    "walk-back: lower-body screen-space balance barely varies (range 0.013; diagnostic target >= 0.045)",
+    "walk-back: body center is nearly static; verify body bob/weight shift visually",
+    "special: body center is nearly static; verify body bob/weight shift visually"
+  ],
+  "results": [
+    {
+      "state": "walk-forward",
+      "frames": 8,
+      "loop": true,
+      "ok": false,
+      "errors": [
+        "opposite-contact candidate duplicates the first lower-body pose (frame 1 vs frame 5 lower-body diff 0.000; expected >= 0.080; opposite contact lower-body pose is duplicated or too similar)"
+      ],
+      "warnings": [
+        "lower-body screen-space balance barely varies (range 0.013; diagnostic target >= 0.045)",
+        "body center is nearly static; verify body bob/weight shift visually"
+      ],
+      "semantic_review_required": true,
+      "semantic_review": [
+        "inspect playback/contact sheet; metric pass is not final approval",
+        "frame 1 and the opposite contact frame must show opposite anatomical support/contact legs",
+        "pass/down frames must not keep both legs drifting to the same side"
+      ],
+      "metrics": {
+        "average_lower_body_diff": 0.4941,
+        "min_lower_body_diff": 0.4941,
+        "support_balance_range": 0.013,
+        "contact_phase_check": {
+          "ok": false,
+          "opposite_contact_index": 4,
+          "opposite_contact_frame": 5,
+          "frame_1_support_balance": -0.0452,
+          "frame_1_support_side": "left",
+          "opposite_contact_support_balance": -0.0452,
+          "opposite_contact_support_side": "left",
+          "contact_delta": 0.0,
+          "opposite_contact_pose_diff": 0.0,
+          "min_opposite_contact_pose_diff": 0.08,
+          "min_contact_balance_abs": 0.012,
+          "min_contact_opposition": 0.035,
+          "screen_side_is_diagnostic_only": true,
+          "anatomical_leg_alternation_requires_visual_review": true,
+          "reason": "opposite contact lower-body pose is duplicated or too similar"
+        },
+        "body_center_x_range": 0.0026,
+        "body_center_y_range": 0.0,
+        "support_balances": [
+          -0.0452,
+          -0.0581,
+          -0.0452,
+          -0.0581,
+          -0.0452,
+          -0.0581,
+          -0.0452,
+          -0.0581
+        ]
+      }
+    },
+    {
+      "state": "walk-back",
+      "frames": 8,
+      "loop": true,
+      "ok": false,
+      "errors": [
+        "opposite-contact candidate duplicates the first lower-body pose (frame 1 vs frame 5 lower-body diff 0.000; expected >= 0.080; opposite contact lower-body pose is duplicated or too similar)"
+      ],
+      "warnings": [
+        "lower-body screen-space balance barely varies (range 0.013; diagnostic target >= 0.045)",
+        "body center is nearly static; verify body bob/weight shift visually"
+      ],
+      "semantic_review_required": true,
+      "semantic_review": [
+        "inspect playback/contact sheet; metric pass is not final approval",
+        "frame 1 and the opposite contact frame must show opposite anatomical support/contact legs",
+        "pass/down frames must not keep both legs drifting to the same side"
+      ],
+      "metrics": {
+        "average_lower_body_diff": 0.4941,
+        "min_lower_body_diff": 0.4941,
+        "support_balance_range": 0.013,
+        "contact_phase_check": {
+          "ok": false,
+          "opposite_contact_index": 4,
+          "opposite_contact_frame": 5,
+          "frame_1_support_balance": -0.0581,
+          "frame_1_support_side": "left",
+          "opposite_contact_support_balance": -0.0581,
+          "opposite_contact_support_side": "left",
+          "contact_delta": 0.0,
+          "opposite_contact_pose_diff": 0.0,
+          "min_opposite_contact_pose_diff": 0.08,
+          "min_contact_balance_abs": 0.012,
+          "min_contact_opposition": 0.035,
+          "screen_side_is_diagnostic_only": true,
+          "anatomical_leg_alternation_requires_visual_review": true,
+          "reason": "opposite contact lower-body pose is duplicated or too similar"
+        },
+        "body_center_x_range": 0.0026,
+        "body_center_y_range": 0.0,
+        "support_balances": [
+          -0.0581,
+          -0.0452,
+          -0.0581,
+          -0.0452,
+          -0.0581,
+          -0.0452,
+          -0.0581,
+          -0.0452
+        ]
+      }
+    },
+    {
+      "state": "special",
+      "frames": 8,
+      "loop": false,
+      "ok": false,
+      "errors": [
+        "one or more adjacent frames are too similar in the lower body (min 0.000; expected >= 0.040)"
+      ],
+      "warnings": [
+        "body center is nearly static; verify body bob/weight shift visually"
+      ],
+      "semantic_review_required": true,
+      "semantic_review": [
+        "inspect playback/contact sheet; metric pass is not final approval",
+        "frame 1 and the opposite contact frame must show opposite anatomical support/contact legs",
+        "pass/down frames must not keep both legs drifting to the same side"
+      ],
+      "metrics": {
+        "average_lower_body_diff": 0.159,
+        "min_lower_body_diff": 0.0,
+        "support_balance_range": 0.1278,
+        "contact_phase_check": {
+          "ok": true,
+          "opposite_contact_index": 4,
+          "opposite_contact_frame": 5,
+          "frame_1_support_balance": -0.0495,
+          "frame_1_support_side": "left",
+          "opposite_contact_support_balance": -0.1772,
+          "opposite_contact_support_side": "left",
+          "contact_delta": 0.1278,
+          "opposite_contact_pose_diff": 0.5565,
+          "min_opposite_contact_pose_diff": 0.08,
+          "min_contact_balance_abs": 0.012,
+          "min_contact_opposition": 0.035,
+          "screen_side_is_diagnostic_only": true,
+          "anatomical_leg_alternation_requires_visual_review": true,
+          "reason": "distinct opposite-contact lower-body poses"
+        },
+        "body_center_x_range": 0.0,
+        "body_center_y_range": 0.0,
+        "support_balances": [
+          -0.0495,
+          -0.1772,
+          -0.1772,
+          -0.1772,
+          -0.1772,
+          -0.1772,
+          -0.0495,
+          -0.0495
+        ]
+      }
+    }
+  ]
+}

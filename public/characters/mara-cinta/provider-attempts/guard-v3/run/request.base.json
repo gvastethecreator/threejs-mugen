@@ -1,0 +1,73 @@
+{
+  "preset": {
+    "id": "custom-atlas",
+    "camera": "custom",
+    "columns": 8,
+    "formats": [
+      "png",
+      "webp"
+    ],
+    "compatibility": [],
+    "asset_kind": "sprite"
+  },
+  "cell": {
+    "width": 128,
+    "height": 128,
+    "safe_margin": 16
+  },
+  "states": {
+    "guard": {
+      "frames": 4,
+      "fps": 8,
+      "loop": true,
+      "action": "planted fighting guard, absorb impact, restrained forearm flash, settle",
+      "animation_workflows": [
+        "fighting-stance-idle",
+        "vfx-buildup-peak-decay"
+      ],
+      "label": "Guard",
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 2,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      }
+    }
+  },
+  "asset_kind": "sprite",
+  "frame_semantics": "user-defined",
+  "extraction_mode": "components",
+  "style_preset": "pixel-art",
+  "motion_phase_guides": false,
+  "output": {
+    "use": "custom-atlas",
+    "frame_semantics": "user-defined"
+  },
+  "background_removal": {
+    "method": "auto",
+    "model": "birefnet-general",
+    "device": "auto",
+    "alpha_matting": false
+  },
+  "art_direction": {
+    "mode": "pixel-art",
+    "source": "pixel-art-wiki-derived",
+    "reference": "references/pixel-art-direction.md",
+    "workflow_reference": "references/pixel-animation-workflows.md",
+    "profiles": [
+      "auto",
+      "pixel-combat"
+    ]
+  },
+  "version": 2,
+  "kind": "sprite-gen-request",
+  "raw_layout_policy": "compact-body-grids",
+  "sampling_policy": {
+    "filter": "nearest",
+    "wrap": "clamp-to-edge",
+    "mipmaps": false,
+    "pixel_snap": true
+  }
+}

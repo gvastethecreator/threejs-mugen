@@ -9,6 +9,10 @@ export type MugenSystemHitSparkLibrary = {
   source: MugenSystemHitSparkLibrarySource;
   prefix?: string;
   defPath?: string;
+  /** Ikemen CommonFX `fx.scale`; omitted means the engine default of 1. */
+  scale?: number;
+  /** Authored CommonFX local coordinate space; carried for future projection work. */
+  localCoord?: [number, number];
   airPath?: string;
   sffPath?: string;
   sndPath?: string;

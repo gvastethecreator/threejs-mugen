@@ -1,0 +1,2190 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "run_dir": ".scratch\\content-pack\\regeneration-v2\\runs\\luna-codo-v2",
+  "cell": {
+    "shape": "square",
+    "width": 192,
+    "height": 192,
+    "safe_margin_x": 24,
+    "safe_margin_y": 24,
+    "size": 192,
+    "safe_margin": 24
+  },
+  "chroma_key": {
+    "name": "legacy-magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "compatibility-only"
+  },
+  "generation_background": {
+    "family": "neutral",
+    "name": "gray",
+    "hex": "#808080",
+    "rgb": [
+      128,
+      128,
+      128
+    ],
+    "selection": "manual"
+  },
+  "background_removal": {
+    "method": "auto",
+    "model": "birefnet-general",
+    "device": "auto",
+    "alpha_matting": false,
+    "post_rembg_chroma_cleanup": false,
+    "source_family": "neutral",
+    "matte_threshold": 28.0,
+    "matte_max_colors": 8,
+    "edge_refine": "conservative",
+    "edge_refine_threshold": 36.0,
+    "edge_refine_feather": 0.0,
+    "edge_refine_passes": 1,
+    "chroma_mask": "border-connected",
+    "chroma_matte": "soft-edge-despill",
+    "matte_mask": "edge-palette-border-connected"
+  },
+  "background_matte_review": "qa/background-matte-review.png",
+  "sprite_registration": {
+    "reference_height": 144,
+    "reference_width": 74,
+    "reference_scale": 0.887841,
+    "reference_head_width": 41,
+    "reference_upper_width": 45,
+    "reference_torso_width": 26,
+    "reference_opaque_area": 5202,
+    "reference_body_mass_width_80": 45,
+    "reference_body_mass_height_80": 96,
+    "baseline_y": 168
+  },
+  "rows": [
+    {
+      "state": "idle",
+      "frames": 4,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\idle\\frame-0.png",
+        "frames\\idle\\frame-1.png",
+        "frames\\idle\\frame-2.png",
+        "frames\\idle\\frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 5040,
+          "bbox": [
+            58,
+            24,
+            133,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.0135,
+          "head_width_vs_reference": 1.0488,
+          "upper_width_vs_reference": 0.9556,
+          "torso_width_vs_reference": 0.7692,
+          "opaque_area_vs_reference": 0.9689,
+          "body_mass_width_80_vs_reference": 1.0444,
+          "body_mass_height_80_vs_reference": 0.9896,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 4014,
+          "bbox": [
+            72,
+            24,
+            119,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.6351,
+          "head_width_vs_reference": 0.9024,
+          "upper_width_vs_reference": 0.7778,
+          "torso_width_vs_reference": 1.1154,
+          "opaque_area_vs_reference": 0.7716,
+          "body_mass_width_80_vs_reference": 0.5778,
+          "body_mass_height_80_vs_reference": 1.0938,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 5789,
+          "bbox": [
+            49,
+            24,
+            143,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.2703,
+          "head_width_vs_reference": 1.122,
+          "upper_width_vs_reference": 1.0444,
+          "torso_width_vs_reference": 1.1154,
+          "opaque_area_vs_reference": 1.1128,
+          "body_mass_width_80_vs_reference": 1.3333,
+          "body_mass_height_80_vs_reference": 1.0,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 5363,
+          "bbox": [
+            59,
+            24,
+            133,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.0,
+          "head_width_vs_reference": 0.9512,
+          "upper_width_vs_reference": 1.1111,
+          "torso_width_vs_reference": 0.8846,
+          "opaque_area_vs_reference": 1.0309,
+          "body_mass_width_80_vs_reference": 0.9556,
+          "body_mass_height_80_vs_reference": 1.0,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 2,
+        "rows": 2
+      }
+    },
+    {
+      "state": "walk-forward",
+      "frames": 8,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\walk-forward\\frame-0.png",
+        "frames\\walk-forward\\frame-1.png",
+        "frames\\walk-forward\\frame-2.png",
+        "frames\\walk-forward\\frame-3.png",
+        "frames\\walk-forward\\frame-4.png",
+        "frames\\walk-forward\\frame-5.png",
+        "frames\\walk-forward\\frame-6.png",
+        "frames\\walk-forward\\frame-7.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 5874,
+          "bbox": [
+            49,
+            24,
+            142,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.2568,
+          "head_width_vs_reference": 0.7561,
+          "upper_width_vs_reference": 0.7556,
+          "torso_width_vs_reference": 1.2308,
+          "opaque_area_vs_reference": 1.1292,
+          "body_mass_width_80_vs_reference": 1.1556,
+          "body_mass_height_80_vs_reference": 1.0521,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 5439,
+          "bbox": [
+            65,
+            24,
+            126,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.8243,
+          "head_width_vs_reference": 0.7073,
+          "upper_width_vs_reference": 0.9556,
+          "torso_width_vs_reference": 1.5,
+          "opaque_area_vs_reference": 1.0456,
+          "body_mass_width_80_vs_reference": 0.7778,
+          "body_mass_height_80_vs_reference": 1.0833,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 5827,
+          "bbox": [
+            48,
+            24,
+            144,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.2973,
+          "head_width_vs_reference": 0.7561,
+          "upper_width_vs_reference": 0.7111,
+          "torso_width_vs_reference": 1.1923,
+          "opaque_area_vs_reference": 1.1201,
+          "body_mass_width_80_vs_reference": 1.1778,
+          "body_mass_height_80_vs_reference": 1.0521,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 6143,
+          "bbox": [
+            44,
+            24,
+            148,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.4054,
+          "head_width_vs_reference": 0.7805,
+          "upper_width_vs_reference": 0.7556,
+          "torso_width_vs_reference": 1.2692,
+          "opaque_area_vs_reference": 1.1809,
+          "body_mass_width_80_vs_reference": 1.3111,
+          "body_mass_height_80_vs_reference": 1.0417,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 5681,
+          "bbox": [
+            52,
+            24,
+            139,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.1757,
+          "head_width_vs_reference": 0.7317,
+          "upper_width_vs_reference": 0.7333,
+          "torso_width_vs_reference": 1.2308,
+          "opaque_area_vs_reference": 1.0921,
+          "body_mass_width_80_vs_reference": 1.0889,
+          "body_mass_height_80_vs_reference": 1.0729,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 5947,
+          "bbox": [
+            44,
+            24,
+            148,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.4054,
+          "head_width_vs_reference": 0.7073,
+          "upper_width_vs_reference": 0.7333,
+          "torso_width_vs_reference": 1.1923,
+          "opaque_area_vs_reference": 1.1432,
+          "body_mass_width_80_vs_reference": 1.2667,
+          "body_mass_height_80_vs_reference": 1.0208,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 6,
+          "nontransparent_pixels": 5734,
+          "bbox": [
+            51,
+            24,
+            141,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.2162,
+          "head_width_vs_reference": 0.7073,
+          "upper_width_vs_reference": 0.6889,
+          "torso_width_vs_reference": 1.1923,
+          "opaque_area_vs_reference": 1.1023,
+          "body_mass_width_80_vs_reference": 1.1111,
+          "body_mass_height_80_vs_reference": 1.0521,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 7,
+          "nontransparent_pixels": 5562,
+          "bbox": [
+            54,
+            24,
+            137,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.1216,
+          "head_width_vs_reference": 0.7073,
+          "upper_width_vs_reference": 0.6889,
+          "torso_width_vs_reference": 1.1538,
+          "opaque_area_vs_reference": 1.0692,
+          "body_mass_width_80_vs_reference": 1.0222,
+          "body_mass_height_80_vs_reference": 1.0625,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 4,
+        "rows": 2
+      },
+      "pose_geometry": {
+        "kind": "grounded-locomotion",
+        "grounded": true,
+        "target_height_vs_reference": 1.0,
+        "max_height_vs_reference": 1.12,
+        "baseline": "feet"
+      }
+    },
+    {
+      "state": "walk-back",
+      "frames": 8,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\walk-back\\frame-0.png",
+        "frames\\walk-back\\frame-1.png",
+        "frames\\walk-back\\frame-2.png",
+        "frames\\walk-back\\frame-3.png",
+        "frames\\walk-back\\frame-4.png",
+        "frames\\walk-back\\frame-5.png",
+        "frames\\walk-back\\frame-6.png",
+        "frames\\walk-back\\frame-7.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 5969,
+          "bbox": [
+            55,
+            24,
+            136,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.0946,
+          "head_width_vs_reference": 1.0,
+          "upper_width_vs_reference": 0.9333,
+          "torso_width_vs_reference": 1.3462,
+          "opaque_area_vs_reference": 1.1474,
+          "body_mass_width_80_vs_reference": 1.0444,
+          "body_mass_height_80_vs_reference": 1.0833,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 5816,
+          "bbox": [
+            58,
+            24,
+            134,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.027,
+          "head_width_vs_reference": 1.0732,
+          "upper_width_vs_reference": 0.9111,
+          "torso_width_vs_reference": 1.5,
+          "opaque_area_vs_reference": 1.118,
+          "body_mass_width_80_vs_reference": 0.9333,
+          "body_mass_height_80_vs_reference": 1.0938,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 5633,
+          "bbox": [
+            61,
+            24,
+            131,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.9459,
+          "head_width_vs_reference": 1.0488,
+          "upper_width_vs_reference": 0.8889,
+          "torso_width_vs_reference": 1.3077,
+          "opaque_area_vs_reference": 1.0829,
+          "body_mass_width_80_vs_reference": 0.8444,
+          "body_mass_height_80_vs_reference": 1.125,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 6213,
+          "bbox": [
+            52,
+            24,
+            139,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.1757,
+          "head_width_vs_reference": 1.0488,
+          "upper_width_vs_reference": 0.8889,
+          "torso_width_vs_reference": 1.3077,
+          "opaque_area_vs_reference": 1.1943,
+          "body_mass_width_80_vs_reference": 1.1333,
+          "body_mass_height_80_vs_reference": 1.0625,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 6277,
+          "bbox": [
+            49,
+            24,
+            143,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.2703,
+          "head_width_vs_reference": 1.0976,
+          "upper_width_vs_reference": 0.9111,
+          "torso_width_vs_reference": 1.1538,
+          "opaque_area_vs_reference": 1.2067,
+          "body_mass_width_80_vs_reference": 1.2,
+          "body_mass_height_80_vs_reference": 1.0833,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 5680,
+          "bbox": [
+            61,
+            24,
+            130,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 0.9324,
+          "head_width_vs_reference": 1.0732,
+          "upper_width_vs_reference": 0.8444,
+          "torso_width_vs_reference": 1.4231,
+          "opaque_area_vs_reference": 1.0919,
+          "body_mass_width_80_vs_reference": 0.8667,
+          "body_mass_height_80_vs_reference": 1.0938,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 6,
+          "nontransparent_pixels": 6008,
+          "bbox": [
+            57,
+            24,
+            135,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.0541,
+          "head_width_vs_reference": 1.0976,
+          "upper_width_vs_reference": 0.8889,
+          "torso_width_vs_reference": 1.3846,
+          "opaque_area_vs_reference": 1.1549,
+          "body_mass_width_80_vs_reference": 1.0,
+          "body_mass_height_80_vs_reference": 1.1042,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 7,
+          "nontransparent_pixels": 6257,
+          "bbox": [
+            50,
+            24,
+            141,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.2297,
+          "head_width_vs_reference": 1.0732,
+          "upper_width_vs_reference": 0.9333,
+          "torso_width_vs_reference": 1.3462,
+          "opaque_area_vs_reference": 1.2028,
+          "body_mass_width_80_vs_reference": 1.1556,
+          "body_mass_height_80_vs_reference": 1.1042,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 4,
+        "rows": 2
+      },
+      "pose_geometry": {
+        "kind": "grounded-locomotion",
+        "grounded": true,
+        "target_height_vs_reference": 1.0,
+        "max_height_vs_reference": 1.12,
+        "baseline": "feet"
+      }
+    },
+    {
+      "state": "crouch",
+      "frames": 4,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\crouch\\frame-0.png",
+        "frames\\crouch\\frame-1.png",
+        "frames\\crouch\\frame-2.png",
+        "frames\\crouch\\frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 5040,
+          "bbox": [
+            58,
+            24,
+            133,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.0135,
+          "head_width_vs_reference": 1.0488,
+          "upper_width_vs_reference": 0.9556,
+          "torso_width_vs_reference": 0.7692,
+          "opaque_area_vs_reference": 0.9689,
+          "body_mass_width_80_vs_reference": 1.0444,
+          "body_mass_height_80_vs_reference": 0.9896,
+          "expected_height_vs_reference": 1.0,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 3967,
+          "bbox": [
+            47,
+            85,
+            143,
+            168
+          ],
+          "height_vs_reference": 0.5764,
+          "width_vs_reference": 1.2973,
+          "head_width_vs_reference": 0.878,
+          "upper_width_vs_reference": 0.8667,
+          "torso_width_vs_reference": 2.8846,
+          "opaque_area_vs_reference": 0.7626,
+          "body_mass_width_80_vs_reference": 1.2444,
+          "body_mass_height_80_vs_reference": 0.5625,
+          "expected_height_vs_reference": 0.9222,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 3967,
+          "bbox": [
+            47,
+            85,
+            143,
+            168
+          ],
+          "height_vs_reference": 0.5764,
+          "width_vs_reference": 1.2973,
+          "head_width_vs_reference": 0.878,
+          "upper_width_vs_reference": 0.8667,
+          "torso_width_vs_reference": 2.8846,
+          "opaque_area_vs_reference": 0.7626,
+          "body_mass_width_80_vs_reference": 1.2444,
+          "body_mass_height_80_vs_reference": 0.5625,
+          "expected_height_vs_reference": 0.7778,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 3967,
+          "bbox": [
+            47,
+            85,
+            143,
+            168
+          ],
+          "height_vs_reference": 0.5764,
+          "width_vs_reference": 1.2973,
+          "head_width_vs_reference": 0.878,
+          "upper_width_vs_reference": 0.8667,
+          "torso_width_vs_reference": 2.8846,
+          "opaque_area_vs_reference": 0.7626,
+          "body_mass_width_80_vs_reference": 1.2444,
+          "body_mass_height_80_vs_reference": 0.5625,
+          "expected_height_vs_reference": 0.7,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 2,
+        "rows": 2
+      },
+      "pose_geometry": {
+        "kind": "crouch",
+        "grounded": true,
+        "height_curve": "compress",
+        "start_height_vs_reference": 1.0,
+        "target_height_vs_reference": 0.7,
+        "min_height_vs_reference": 0.62,
+        "min_width_vs_reference": 0.78,
+        "min_head_width_vs_reference": 0.84,
+        "min_upper_width_vs_reference": 0.84,
+        "max_height_vs_reference": 1.05,
+        "baseline": "feet",
+        "guide_height_ratio": 0.7
+      }
+    },
+    {
+      "state": "jump",
+      "frames": 6,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\jump\\frame-0.png",
+        "frames\\jump\\frame-1.png",
+        "frames\\jump\\frame-2.png",
+        "frames\\jump\\frame-3.png",
+        "frames\\jump\\frame-4.png",
+        "frames\\jump\\frame-5.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 3967,
+          "bbox": [
+            47,
+            85,
+            143,
+            168
+          ],
+          "height_vs_reference": 0.5764,
+          "width_vs_reference": 1.2973,
+          "head_width_vs_reference": 0.878,
+          "upper_width_vs_reference": 0.8667,
+          "torso_width_vs_reference": 2.8846,
+          "opaque_area_vs_reference": 0.7626,
+          "body_mass_width_80_vs_reference": 1.2444,
+          "body_mass_height_80_vs_reference": 0.5625,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 4030,
+          "bbox": [
+            62,
+            48,
+            129,
+            149
+          ],
+          "height_vs_reference": 0.7014,
+          "width_vs_reference": 0.9054,
+          "head_width_vs_reference": 0.9024,
+          "upper_width_vs_reference": 1.1778,
+          "torso_width_vs_reference": 1.8462,
+          "opaque_area_vs_reference": 0.7747,
+          "body_mass_width_80_vs_reference": 0.9333,
+          "body_mass_height_80_vs_reference": 0.6667,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 149,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 4030,
+          "bbox": [
+            62,
+            37,
+            129,
+            138
+          ],
+          "height_vs_reference": 0.7014,
+          "width_vs_reference": 0.9054,
+          "head_width_vs_reference": 0.9024,
+          "upper_width_vs_reference": 1.1778,
+          "torso_width_vs_reference": 1.8462,
+          "opaque_area_vs_reference": 0.7747,
+          "body_mass_width_80_vs_reference": 0.9333,
+          "body_mass_height_80_vs_reference": 0.6667,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 138,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 4030,
+          "bbox": [
+            62,
+            37,
+            129,
+            138
+          ],
+          "height_vs_reference": 0.7014,
+          "width_vs_reference": 0.9054,
+          "head_width_vs_reference": 0.9024,
+          "upper_width_vs_reference": 1.1778,
+          "torso_width_vs_reference": 1.8462,
+          "opaque_area_vs_reference": 0.7747,
+          "body_mass_width_80_vs_reference": 0.9333,
+          "body_mass_height_80_vs_reference": 0.6667,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 138,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 4030,
+          "bbox": [
+            62,
+            48,
+            129,
+            149
+          ],
+          "height_vs_reference": 0.7014,
+          "width_vs_reference": 0.9054,
+          "head_width_vs_reference": 0.9024,
+          "upper_width_vs_reference": 1.1778,
+          "torso_width_vs_reference": 1.8462,
+          "opaque_area_vs_reference": 0.7747,
+          "body_mass_width_80_vs_reference": 0.9333,
+          "body_mass_height_80_vs_reference": 0.6667,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 149,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 3967,
+          "bbox": [
+            47,
+            85,
+            143,
+            168
+          ],
+          "height_vs_reference": 0.5764,
+          "width_vs_reference": 1.2973,
+          "head_width_vs_reference": 0.878,
+          "upper_width_vs_reference": 0.8667,
+          "torso_width_vs_reference": 2.8846,
+          "opaque_area_vs_reference": 0.7626,
+          "body_mass_width_80_vs_reference": 1.2444,
+          "body_mass_height_80_vs_reference": 0.5625,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 3,
+        "rows": 2
+      },
+      "pose_geometry": {
+        "kind": "jump",
+        "grounded": false,
+        "target_height_vs_reference": 1.0,
+        "max_height_vs_reference": 1.12,
+        "min_head_width_vs_reference": 0.9,
+        "min_upper_width_vs_reference": 0.72,
+        "arc_peak_ratio": 0.22,
+        "baseline": "jump-arc",
+        "guide_height_ratio": 0.74
+      }
+    },
+    {
+      "state": "light-strike",
+      "frames": 4,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\light-strike\\frame-0.png",
+        "frames\\light-strike\\frame-1.png",
+        "frames\\light-strike\\frame-2.png",
+        "frames\\light-strike\\frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 1278,
+          "bbox": [
+            56,
+            29,
+            136,
+            163
+          ],
+          "height_vs_reference": 0.9306,
+          "width_vs_reference": 1.0811,
+          "head_width_vs_reference": 0.0976,
+          "upper_width_vs_reference": 0.1111,
+          "torso_width_vs_reference": 0.1154,
+          "opaque_area_vs_reference": 0.2457,
+          "body_mass_width_80_vs_reference": 1.2444,
+          "body_mass_height_80_vs_reference": 0.8854,
+          "expected_height_vs_reference": null,
+          "bottom_y": 163,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 1583,
+          "bbox": [
+            41,
+            37,
+            151,
+            155
+          ],
+          "height_vs_reference": 0.8194,
+          "width_vs_reference": 1.4865,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.0889,
+          "torso_width_vs_reference": 0.5385,
+          "opaque_area_vs_reference": 0.3043,
+          "body_mass_width_80_vs_reference": 1.4667,
+          "body_mass_height_80_vs_reference": 0.75,
+          "expected_height_vs_reference": null,
+          "bottom_y": 155,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 1583,
+          "bbox": [
+            41,
+            37,
+            151,
+            155
+          ],
+          "height_vs_reference": 0.8194,
+          "width_vs_reference": 1.4865,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.0889,
+          "torso_width_vs_reference": 0.5385,
+          "opaque_area_vs_reference": 0.3043,
+          "body_mass_width_80_vs_reference": 1.4667,
+          "body_mass_height_80_vs_reference": 0.75,
+          "expected_height_vs_reference": null,
+          "bottom_y": 155,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 1278,
+          "bbox": [
+            56,
+            29,
+            136,
+            163
+          ],
+          "height_vs_reference": 0.9306,
+          "width_vs_reference": 1.0811,
+          "head_width_vs_reference": 0.0976,
+          "upper_width_vs_reference": 0.1111,
+          "torso_width_vs_reference": 0.1154,
+          "opaque_area_vs_reference": 0.2457,
+          "body_mass_width_80_vs_reference": 1.2444,
+          "body_mass_height_80_vs_reference": 0.8854,
+          "expected_height_vs_reference": null,
+          "bottom_y": 163,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 2,
+        "rows": 2
+      }
+    },
+    {
+      "state": "heavy-strike",
+      "frames": 6,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\heavy-strike\\frame-0.png",
+        "frames\\heavy-strike\\frame-1.png",
+        "frames\\heavy-strike\\frame-2.png",
+        "frames\\heavy-strike\\frame-3.png",
+        "frames\\heavy-strike\\frame-4.png",
+        "frames\\heavy-strike\\frame-5.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 1278,
+          "bbox": [
+            56,
+            29,
+            136,
+            163
+          ],
+          "height_vs_reference": 0.9306,
+          "width_vs_reference": 1.0811,
+          "head_width_vs_reference": 0.0976,
+          "upper_width_vs_reference": 0.1111,
+          "torso_width_vs_reference": 0.1154,
+          "opaque_area_vs_reference": 0.2457,
+          "body_mass_width_80_vs_reference": 1.2444,
+          "body_mass_height_80_vs_reference": 0.8854,
+          "expected_height_vs_reference": null,
+          "bottom_y": 163,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 1583,
+          "bbox": [
+            41,
+            37,
+            151,
+            155
+          ],
+          "height_vs_reference": 0.8194,
+          "width_vs_reference": 1.4865,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.0889,
+          "torso_width_vs_reference": 0.5385,
+          "opaque_area_vs_reference": 0.3043,
+          "body_mass_width_80_vs_reference": 1.4667,
+          "body_mass_height_80_vs_reference": 0.75,
+          "expected_height_vs_reference": null,
+          "bottom_y": 155,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 1583,
+          "bbox": [
+            41,
+            37,
+            151,
+            155
+          ],
+          "height_vs_reference": 0.8194,
+          "width_vs_reference": 1.4865,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.0889,
+          "torso_width_vs_reference": 0.5385,
+          "opaque_area_vs_reference": 0.3043,
+          "body_mass_width_80_vs_reference": 1.4667,
+          "body_mass_height_80_vs_reference": 0.75,
+          "expected_height_vs_reference": null,
+          "bottom_y": 155,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 1583,
+          "bbox": [
+            41,
+            37,
+            151,
+            155
+          ],
+          "height_vs_reference": 0.8194,
+          "width_vs_reference": 1.4865,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.0889,
+          "torso_width_vs_reference": 0.5385,
+          "opaque_area_vs_reference": 0.3043,
+          "body_mass_width_80_vs_reference": 1.4667,
+          "body_mass_height_80_vs_reference": 0.75,
+          "expected_height_vs_reference": null,
+          "bottom_y": 155,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 1583,
+          "bbox": [
+            41,
+            37,
+            151,
+            155
+          ],
+          "height_vs_reference": 0.8194,
+          "width_vs_reference": 1.4865,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.0889,
+          "torso_width_vs_reference": 0.5385,
+          "opaque_area_vs_reference": 0.3043,
+          "body_mass_width_80_vs_reference": 1.4667,
+          "body_mass_height_80_vs_reference": 0.75,
+          "expected_height_vs_reference": null,
+          "bottom_y": 155,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 1278,
+          "bbox": [
+            56,
+            29,
+            136,
+            163
+          ],
+          "height_vs_reference": 0.9306,
+          "width_vs_reference": 1.0811,
+          "head_width_vs_reference": 0.0976,
+          "upper_width_vs_reference": 0.1111,
+          "torso_width_vs_reference": 0.1154,
+          "opaque_area_vs_reference": 0.2457,
+          "body_mass_width_80_vs_reference": 1.2444,
+          "body_mass_height_80_vs_reference": 0.8854,
+          "expected_height_vs_reference": null,
+          "bottom_y": 163,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 3,
+        "rows": 2
+      }
+    },
+    {
+      "state": "special",
+      "frames": 8,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\special\\frame-0.png",
+        "frames\\special\\frame-1.png",
+        "frames\\special\\frame-2.png",
+        "frames\\special\\frame-3.png",
+        "frames\\special\\frame-4.png",
+        "frames\\special\\frame-5.png",
+        "frames\\special\\frame-6.png",
+        "frames\\special\\frame-7.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 10679,
+          "bbox": [
+            24,
+            26,
+            168,
+            165
+          ],
+          "height_vs_reference": 0.9653,
+          "width_vs_reference": 1.9459,
+          "head_width_vs_reference": 2.0,
+          "upper_width_vs_reference": 2.0444,
+          "torso_width_vs_reference": 2.1923,
+          "opaque_area_vs_reference": 2.0529,
+          "body_mass_width_80_vs_reference": 2.0,
+          "body_mass_height_80_vs_reference": 0.9792,
+          "expected_height_vs_reference": null,
+          "bottom_y": 165,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 8081,
+          "bbox": [
+            25,
+            24,
+            167,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.9189,
+          "head_width_vs_reference": 1.4146,
+          "upper_width_vs_reference": 1.4222,
+          "torso_width_vs_reference": 1.8846,
+          "opaque_area_vs_reference": 1.5534,
+          "body_mass_width_80_vs_reference": 1.9111,
+          "body_mass_height_80_vs_reference": 1.0104,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 4100,
+          "bbox": [
+            24,
+            44,
+            168,
+            147
+          ],
+          "height_vs_reference": 0.7153,
+          "width_vs_reference": 1.9459,
+          "head_width_vs_reference": 0.9024,
+          "upper_width_vs_reference": 0.8667,
+          "torso_width_vs_reference": 1.3077,
+          "opaque_area_vs_reference": 0.7882,
+          "body_mass_width_80_vs_reference": 1.2444,
+          "body_mass_height_80_vs_reference": 0.7917,
+          "expected_height_vs_reference": null,
+          "bottom_y": 147,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 5808,
+          "bbox": [
+            24,
+            37,
+            168,
+            154
+          ],
+          "height_vs_reference": 0.8125,
+          "width_vs_reference": 1.9459,
+          "head_width_vs_reference": 1.122,
+          "upper_width_vs_reference": 1.0444,
+          "torso_width_vs_reference": 1.6538,
+          "opaque_area_vs_reference": 1.1165,
+          "body_mass_width_80_vs_reference": 1.7111,
+          "body_mass_height_80_vs_reference": 0.7708,
+          "expected_height_vs_reference": null,
+          "bottom_y": 154,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 6160,
+          "bbox": [
+            24,
+            35,
+            168,
+            157
+          ],
+          "height_vs_reference": 0.8472,
+          "width_vs_reference": 1.9459,
+          "head_width_vs_reference": 0.9024,
+          "upper_width_vs_reference": 0.9333,
+          "torso_width_vs_reference": 1.5385,
+          "opaque_area_vs_reference": 1.1842,
+          "body_mass_width_80_vs_reference": 1.9778,
+          "body_mass_height_80_vs_reference": 0.8646,
+          "expected_height_vs_reference": null,
+          "bottom_y": 157,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 5898,
+          "bbox": [
+            24,
+            38,
+            168,
+            154
+          ],
+          "height_vs_reference": 0.8056,
+          "width_vs_reference": 1.9459,
+          "head_width_vs_reference": 0.6585,
+          "upper_width_vs_reference": 0.7778,
+          "torso_width_vs_reference": 1.4615,
+          "opaque_area_vs_reference": 1.1338,
+          "body_mass_width_80_vs_reference": 2.2,
+          "body_mass_height_80_vs_reference": 0.7917,
+          "expected_height_vs_reference": null,
+          "bottom_y": 154,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 6,
+          "nontransparent_pixels": 8121,
+          "bbox": [
+            31,
+            24,
+            161,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.7568,
+          "head_width_vs_reference": 1.5122,
+          "upper_width_vs_reference": 1.4,
+          "torso_width_vs_reference": 1.6154,
+          "opaque_area_vs_reference": 1.5611,
+          "body_mass_width_80_vs_reference": 1.6444,
+          "body_mass_height_80_vs_reference": 1.0208,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 7,
+          "nontransparent_pixels": 7453,
+          "bbox": [
+            32,
+            24,
+            160,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.7297,
+          "head_width_vs_reference": 1.2195,
+          "upper_width_vs_reference": 1.1556,
+          "torso_width_vs_reference": 1.6538,
+          "opaque_area_vs_reference": 1.4327,
+          "body_mass_width_80_vs_reference": 1.7778,
+          "body_mass_height_80_vs_reference": 1.0104,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 4,
+        "rows": 2
+      }
+    },
+    {
+      "state": "throw",
+      "frames": 6,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\throw\\frame-0.png",
+        "frames\\throw\\frame-1.png",
+        "frames\\throw\\frame-2.png",
+        "frames\\throw\\frame-3.png",
+        "frames\\throw\\frame-4.png",
+        "frames\\throw\\frame-5.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 675,
+          "bbox": [
+            56,
+            33,
+            135,
+            159
+          ],
+          "height_vs_reference": 0.875,
+          "width_vs_reference": 1.0676,
+          "head_width_vs_reference": 0.1463,
+          "upper_width_vs_reference": 0.1333,
+          "torso_width_vs_reference": 0.2308,
+          "opaque_area_vs_reference": 0.1298,
+          "body_mass_width_80_vs_reference": 1.3111,
+          "body_mass_height_80_vs_reference": 0.8229,
+          "expected_height_vs_reference": null,
+          "bottom_y": 159,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 805,
+          "bbox": [
+            33,
+            24,
+            158,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.6892,
+          "head_width_vs_reference": 0.0488,
+          "upper_width_vs_reference": 0.0444,
+          "torso_width_vs_reference": 0.1923,
+          "opaque_area_vs_reference": 0.1547,
+          "body_mass_width_80_vs_reference": 1.6,
+          "body_mass_height_80_vs_reference": 0.6354,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 805,
+          "bbox": [
+            33,
+            24,
+            158,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.6892,
+          "head_width_vs_reference": 0.0488,
+          "upper_width_vs_reference": 0.0444,
+          "torso_width_vs_reference": 0.1923,
+          "opaque_area_vs_reference": 0.1547,
+          "body_mass_width_80_vs_reference": 1.6,
+          "body_mass_height_80_vs_reference": 0.6354,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 805,
+          "bbox": [
+            33,
+            24,
+            158,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.6892,
+          "head_width_vs_reference": 0.0488,
+          "upper_width_vs_reference": 0.0444,
+          "torso_width_vs_reference": 0.1923,
+          "opaque_area_vs_reference": 0.1547,
+          "body_mass_width_80_vs_reference": 1.6,
+          "body_mass_height_80_vs_reference": 0.6354,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 675,
+          "bbox": [
+            56,
+            33,
+            135,
+            159
+          ],
+          "height_vs_reference": 0.875,
+          "width_vs_reference": 1.0676,
+          "head_width_vs_reference": 0.1463,
+          "upper_width_vs_reference": 0.1333,
+          "torso_width_vs_reference": 0.2308,
+          "opaque_area_vs_reference": 0.1298,
+          "body_mass_width_80_vs_reference": 1.3111,
+          "body_mass_height_80_vs_reference": 0.8229,
+          "expected_height_vs_reference": null,
+          "bottom_y": 159,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 675,
+          "bbox": [
+            56,
+            33,
+            135,
+            159
+          ],
+          "height_vs_reference": 0.875,
+          "width_vs_reference": 1.0676,
+          "head_width_vs_reference": 0.1463,
+          "upper_width_vs_reference": 0.1333,
+          "torso_width_vs_reference": 0.2308,
+          "opaque_area_vs_reference": 0.1298,
+          "body_mass_width_80_vs_reference": 1.3111,
+          "body_mass_height_80_vs_reference": 0.8229,
+          "expected_height_vs_reference": null,
+          "bottom_y": 159,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 3,
+        "rows": 2
+      }
+    },
+    {
+      "state": "guard",
+      "frames": 4,
+      "method": "components",
+      "background_method": "matte",
+      "files": [
+        "frames\\guard\\frame-0.png",
+        "frames\\guard\\frame-1.png",
+        "frames\\guard\\frame-2.png",
+        "frames\\guard\\frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 5963,
+          "bbox": [
+            49,
+            24,
+            142,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.2568,
+          "head_width_vs_reference": 0.8049,
+          "upper_width_vs_reference": 1.0,
+          "torso_width_vs_reference": 1.1923,
+          "opaque_area_vs_reference": 1.1463,
+          "body_mass_width_80_vs_reference": 1.3111,
+          "body_mass_height_80_vs_reference": 1.0104,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 6699,
+          "bbox": [
+            49,
+            24,
+            142,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.2568,
+          "head_width_vs_reference": 1.3415,
+          "upper_width_vs_reference": 1.1556,
+          "torso_width_vs_reference": 1.2308,
+          "opaque_area_vs_reference": 1.2878,
+          "body_mass_width_80_vs_reference": 1.3778,
+          "body_mass_height_80_vs_reference": 0.9792,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 7747,
+          "bbox": [
+            43,
+            24,
+            148,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.4189,
+          "head_width_vs_reference": 1.9024,
+          "upper_width_vs_reference": 1.3556,
+          "torso_width_vs_reference": 1.3077,
+          "opaque_area_vs_reference": 1.4892,
+          "body_mass_width_80_vs_reference": 1.5333,
+          "body_mass_height_80_vs_reference": 0.9792,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 5899,
+          "bbox": [
+            49,
+            24,
+            142,
+            168
+          ],
+          "height_vs_reference": 1.0,
+          "width_vs_reference": 1.2568,
+          "head_width_vs_reference": 0.8049,
+          "upper_width_vs_reference": 1.0,
+          "torso_width_vs_reference": 1.1923,
+          "opaque_area_vs_reference": 1.134,
+          "body_mass_width_80_vs_reference": 1.3111,
+          "body_mass_height_80_vs_reference": 1.0104,
+          "expected_height_vs_reference": null,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "strip",
+        "columns": 4,
+        "rows": 1
+      }
+    },
+    {
+      "state": "hitstun",
+      "frames": 4,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\hitstun\\frame-0.png",
+        "frames\\hitstun\\frame-1.png",
+        "frames\\hitstun\\frame-2.png",
+        "frames\\hitstun\\frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 1056,
+          "bbox": [
+            58,
+            34,
+            133,
+            157
+          ],
+          "height_vs_reference": 0.8542,
+          "width_vs_reference": 1.0135,
+          "head_width_vs_reference": 0.1707,
+          "upper_width_vs_reference": 0.0889,
+          "torso_width_vs_reference": 0.1154,
+          "opaque_area_vs_reference": 0.203,
+          "body_mass_width_80_vs_reference": 1.0222,
+          "body_mass_height_80_vs_reference": 0.7188,
+          "expected_height_vs_reference": null,
+          "bottom_y": 157,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 1352,
+          "bbox": [
+            36,
+            39,
+            156,
+            152
+          ],
+          "height_vs_reference": 0.7847,
+          "width_vs_reference": 1.6216,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.1778,
+          "torso_width_vs_reference": 0.5,
+          "opaque_area_vs_reference": 0.2599,
+          "body_mass_width_80_vs_reference": 1.3111,
+          "body_mass_height_80_vs_reference": 0.6354,
+          "expected_height_vs_reference": null,
+          "bottom_y": 152,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 1352,
+          "bbox": [
+            36,
+            39,
+            156,
+            152
+          ],
+          "height_vs_reference": 0.7847,
+          "width_vs_reference": 1.6216,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.1778,
+          "torso_width_vs_reference": 0.5,
+          "opaque_area_vs_reference": 0.2599,
+          "body_mass_width_80_vs_reference": 1.3111,
+          "body_mass_height_80_vs_reference": 0.6354,
+          "expected_height_vs_reference": null,
+          "bottom_y": 152,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 1056,
+          "bbox": [
+            58,
+            34,
+            133,
+            157
+          ],
+          "height_vs_reference": 0.8542,
+          "width_vs_reference": 1.0135,
+          "head_width_vs_reference": 0.1707,
+          "upper_width_vs_reference": 0.0889,
+          "torso_width_vs_reference": 0.1154,
+          "opaque_area_vs_reference": 0.203,
+          "body_mass_width_80_vs_reference": 1.0222,
+          "body_mass_height_80_vs_reference": 0.7188,
+          "expected_height_vs_reference": null,
+          "bottom_y": 157,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 2,
+        "rows": 2
+      }
+    },
+    {
+      "state": "knockdown",
+      "frames": 6,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\knockdown\\frame-0.png",
+        "frames\\knockdown\\frame-1.png",
+        "frames\\knockdown\\frame-2.png",
+        "frames\\knockdown\\frame-3.png",
+        "frames\\knockdown\\frame-4.png",
+        "frames\\knockdown\\frame-5.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 1352,
+          "bbox": [
+            36,
+            55,
+            156,
+            168
+          ],
+          "height_vs_reference": 0.7847,
+          "width_vs_reference": 1.6216,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.1778,
+          "torso_width_vs_reference": 0.5,
+          "opaque_area_vs_reference": 0.2599,
+          "body_mass_width_80_vs_reference": 1.3111,
+          "body_mass_height_80_vs_reference": 0.6354,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 1197,
+          "bbox": [
+            33,
+            110,
+            158,
+            168
+          ],
+          "height_vs_reference": 0.4028,
+          "width_vs_reference": 1.6892,
+          "head_width_vs_reference": 0.0976,
+          "upper_width_vs_reference": 0.0444,
+          "torso_width_vs_reference": 0.1538,
+          "opaque_area_vs_reference": 0.2301,
+          "body_mass_width_80_vs_reference": 1.9556,
+          "body_mass_height_80_vs_reference": 0.4271,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 1197,
+          "bbox": [
+            33,
+            110,
+            158,
+            168
+          ],
+          "height_vs_reference": 0.4028,
+          "width_vs_reference": 1.6892,
+          "head_width_vs_reference": 0.0976,
+          "upper_width_vs_reference": 0.0444,
+          "torso_width_vs_reference": 0.1538,
+          "opaque_area_vs_reference": 0.2301,
+          "body_mass_width_80_vs_reference": 1.9556,
+          "body_mass_height_80_vs_reference": 0.4271,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 1197,
+          "bbox": [
+            33,
+            110,
+            158,
+            168
+          ],
+          "height_vs_reference": 0.4028,
+          "width_vs_reference": 1.6892,
+          "head_width_vs_reference": 0.0976,
+          "upper_width_vs_reference": 0.0444,
+          "torso_width_vs_reference": 0.1538,
+          "opaque_area_vs_reference": 0.2301,
+          "body_mass_width_80_vs_reference": 1.9556,
+          "body_mass_height_80_vs_reference": 0.4271,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 1197,
+          "bbox": [
+            33,
+            110,
+            158,
+            168
+          ],
+          "height_vs_reference": 0.4028,
+          "width_vs_reference": 1.6892,
+          "head_width_vs_reference": 0.0976,
+          "upper_width_vs_reference": 0.0444,
+          "torso_width_vs_reference": 0.1538,
+          "opaque_area_vs_reference": 0.2301,
+          "body_mass_width_80_vs_reference": 1.9556,
+          "body_mass_height_80_vs_reference": 0.4271,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 1197,
+          "bbox": [
+            33,
+            110,
+            158,
+            168
+          ],
+          "height_vs_reference": 0.4028,
+          "width_vs_reference": 1.6892,
+          "head_width_vs_reference": 0.0976,
+          "upper_width_vs_reference": 0.0444,
+          "torso_width_vs_reference": 0.1538,
+          "opaque_area_vs_reference": 0.2301,
+          "body_mass_width_80_vs_reference": 1.9556,
+          "body_mass_height_80_vs_reference": 0.4271,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 3,
+        "rows": 2
+      },
+      "pose_geometry": {
+        "kind": "knockdown",
+        "grounded": false,
+        "target_height_vs_reference": 0.7,
+        "max_height_vs_reference": 1.12,
+        "min_height_vs_reference": 0.45,
+        "baseline": "collapse",
+        "guide_height_ratio": 0.62
+      }
+    },
+    {
+      "state": "ko",
+      "frames": 6,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\ko\\frame-0.png",
+        "frames\\ko\\frame-1.png",
+        "frames\\ko\\frame-2.png",
+        "frames\\ko\\frame-3.png",
+        "frames\\ko\\frame-4.png",
+        "frames\\ko\\frame-5.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 1352,
+          "bbox": [
+            36,
+            55,
+            156,
+            168
+          ],
+          "height_vs_reference": 0.7847,
+          "width_vs_reference": 1.6216,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.1778,
+          "torso_width_vs_reference": 0.5,
+          "opaque_area_vs_reference": 0.2599,
+          "body_mass_width_80_vs_reference": 1.3111,
+          "body_mass_height_80_vs_reference": 0.6354,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 1197,
+          "bbox": [
+            33,
+            110,
+            158,
+            168
+          ],
+          "height_vs_reference": 0.4028,
+          "width_vs_reference": 1.6892,
+          "head_width_vs_reference": 0.0976,
+          "upper_width_vs_reference": 0.0444,
+          "torso_width_vs_reference": 0.1538,
+          "opaque_area_vs_reference": 0.2301,
+          "body_mass_width_80_vs_reference": 1.9556,
+          "body_mass_height_80_vs_reference": 0.4271,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 1197,
+          "bbox": [
+            33,
+            110,
+            158,
+            168
+          ],
+          "height_vs_reference": 0.4028,
+          "width_vs_reference": 1.6892,
+          "head_width_vs_reference": 0.0976,
+          "upper_width_vs_reference": 0.0444,
+          "torso_width_vs_reference": 0.1538,
+          "opaque_area_vs_reference": 0.2301,
+          "body_mass_width_80_vs_reference": 1.9556,
+          "body_mass_height_80_vs_reference": 0.4271,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 1197,
+          "bbox": [
+            33,
+            110,
+            158,
+            168
+          ],
+          "height_vs_reference": 0.4028,
+          "width_vs_reference": 1.6892,
+          "head_width_vs_reference": 0.0976,
+          "upper_width_vs_reference": 0.0444,
+          "torso_width_vs_reference": 0.1538,
+          "opaque_area_vs_reference": 0.2301,
+          "body_mass_width_80_vs_reference": 1.9556,
+          "body_mass_height_80_vs_reference": 0.4271,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 1197,
+          "bbox": [
+            33,
+            110,
+            158,
+            168
+          ],
+          "height_vs_reference": 0.4028,
+          "width_vs_reference": 1.6892,
+          "head_width_vs_reference": 0.0976,
+          "upper_width_vs_reference": 0.0444,
+          "torso_width_vs_reference": 0.1538,
+          "opaque_area_vs_reference": 0.2301,
+          "body_mass_width_80_vs_reference": 1.9556,
+          "body_mass_height_80_vs_reference": 0.4271,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 1197,
+          "bbox": [
+            33,
+            110,
+            158,
+            168
+          ],
+          "height_vs_reference": 0.4028,
+          "width_vs_reference": 1.6892,
+          "head_width_vs_reference": 0.0976,
+          "upper_width_vs_reference": 0.0444,
+          "torso_width_vs_reference": 0.1538,
+          "opaque_area_vs_reference": 0.2301,
+          "body_mass_width_80_vs_reference": 1.9556,
+          "body_mass_height_80_vs_reference": 0.4271,
+          "expected_height_vs_reference": 1.12,
+          "bottom_y": 168,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 3,
+        "rows": 2
+      },
+      "pose_geometry": {
+        "kind": "knockdown",
+        "grounded": false,
+        "target_height_vs_reference": 0.7,
+        "max_height_vs_reference": 1.12,
+        "min_height_vs_reference": 0.45,
+        "baseline": "collapse",
+        "guide_height_ratio": 0.62
+      }
+    },
+    {
+      "state": "win",
+      "frames": 6,
+      "method": "grid-components",
+      "background_method": "matte",
+      "files": [
+        "frames\\win\\frame-0.png",
+        "frames\\win\\frame-1.png",
+        "frames\\win\\frame-2.png",
+        "frames\\win\\frame-3.png",
+        "frames\\win\\frame-4.png",
+        "frames\\win\\frame-5.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 981,
+          "bbox": [
+            59,
+            31,
+            132,
+            161
+          ],
+          "height_vs_reference": 0.9028,
+          "width_vs_reference": 0.9865,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.0889,
+          "torso_width_vs_reference": 0.1154,
+          "opaque_area_vs_reference": 0.1886,
+          "body_mass_width_80_vs_reference": 1.1778,
+          "body_mass_height_80_vs_reference": 0.9688,
+          "expected_height_vs_reference": null,
+          "bottom_y": 161,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 981,
+          "bbox": [
+            59,
+            31,
+            132,
+            161
+          ],
+          "height_vs_reference": 0.9028,
+          "width_vs_reference": 0.9865,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.0889,
+          "torso_width_vs_reference": 0.1154,
+          "opaque_area_vs_reference": 0.1886,
+          "body_mass_width_80_vs_reference": 1.1778,
+          "body_mass_height_80_vs_reference": 0.9688,
+          "expected_height_vs_reference": null,
+          "bottom_y": 161,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 981,
+          "bbox": [
+            59,
+            31,
+            132,
+            161
+          ],
+          "height_vs_reference": 0.9028,
+          "width_vs_reference": 0.9865,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.0889,
+          "torso_width_vs_reference": 0.1154,
+          "opaque_area_vs_reference": 0.1886,
+          "body_mass_width_80_vs_reference": 1.1778,
+          "body_mass_height_80_vs_reference": 0.9688,
+          "expected_height_vs_reference": null,
+          "bottom_y": 161,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 981,
+          "bbox": [
+            59,
+            31,
+            132,
+            161
+          ],
+          "height_vs_reference": 0.9028,
+          "width_vs_reference": 0.9865,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.0889,
+          "torso_width_vs_reference": 0.1154,
+          "opaque_area_vs_reference": 0.1886,
+          "body_mass_width_80_vs_reference": 1.1778,
+          "body_mass_height_80_vs_reference": 0.9688,
+          "expected_height_vs_reference": null,
+          "bottom_y": 161,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 4,
+          "nontransparent_pixels": 981,
+          "bbox": [
+            59,
+            31,
+            132,
+            161
+          ],
+          "height_vs_reference": 0.9028,
+          "width_vs_reference": 0.9865,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.0889,
+          "torso_width_vs_reference": 0.1154,
+          "opaque_area_vs_reference": 0.1886,
+          "body_mass_width_80_vs_reference": 1.1778,
+          "body_mass_height_80_vs_reference": 0.9688,
+          "expected_height_vs_reference": null,
+          "bottom_y": 161,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 5,
+          "nontransparent_pixels": 981,
+          "bbox": [
+            59,
+            31,
+            132,
+            161
+          ],
+          "height_vs_reference": 0.9028,
+          "width_vs_reference": 0.9865,
+          "head_width_vs_reference": 0.0732,
+          "upper_width_vs_reference": 0.0889,
+          "torso_width_vs_reference": 0.1154,
+          "opaque_area_vs_reference": 0.1886,
+          "body_mass_width_80_vs_reference": 1.1778,
+          "body_mass_height_80_vs_reference": 0.9688,
+          "expected_height_vs_reference": null,
+          "bottom_y": 161,
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "segmentation": {
+        "layout": "grid",
+        "columns": 3,
+        "rows": 2
+      }
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

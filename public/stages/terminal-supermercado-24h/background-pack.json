@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "kind": "game-background-pack",
+  "pack_id": "terminal-supermercado-24h",
+  "style_fingerprint": "sha256:3883141ff5b95993dc5ddbf8e5862a6774e938f387cc6b4c292967ac6340d43c",
+  "canvas": {
+    "width": 1672,
+    "height": 941,
+    "color_space": "srgb"
+  },
+  "camera": {
+    "aspect_ratio": "16:9",
+    "horizon_y": 0.62,
+    "focal_safe_zone": {
+      "x": 0.18,
+      "y": 0.2,
+      "width": 0.64,
+      "height": 0.62
+    }
+  },
+  "layers": [
+    {
+      "id": "terminal-supermercado-24h-far",
+      "role": "far",
+      "path": "source/terminal-supermercado-24h-base-imagegen.png",
+      "sha256": "6d9fca191f3a57de53eb7d1a9e36a9e8311ef1e0164b12e41855104752ec3844",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 0,
+      "depth": 0.14,
+      "parallax_x": 0.08,
+      "parallax_y": 0.02,
+      "repeat_x": false,
+      "blend_mode": "normal"
+    },
+    {
+      "id": "terminal-supermercado-24h-mid",
+      "role": "mid",
+      "path": "source/terminal-supermercado-24h-mid-imagegen-v2.png",
+      "sha256": "e958f423af70d23eca4671bafa256e185f68a10c0e7064218bb117bd4a9410fb",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 1,
+      "depth": 0.5,
+      "parallax_x": 0.42,
+      "parallax_y": 0.08,
+      "repeat_x": false,
+      "blend_mode": "normal"
+    },
+    {
+      "id": "terminal-supermercado-24h-near",
+      "role": "near",
+      "path": "source/terminal-supermercado-24h-near-alpha.png",
+      "sha256": "66f27c7e0e1d446a97d7c6129c173a7eaa1fe8cd302806ff16b0bce84133a5c1",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 2,
+      "depth": 0.92,
+      "parallax_x": 0.88,
+      "parallax_y": 0.16,
+      "repeat_x": false,
+      "blend_mode": "normal"
+    }
+  ]
+}

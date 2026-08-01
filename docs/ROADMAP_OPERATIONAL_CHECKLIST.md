@@ -2,27 +2,54 @@
 
 Last updated: 2026-07-30
 
-## Current T424-T427 start (2026-07-30)
+## Current post-T438 continuation (2026-07-30)
 
 1. Recheck Git and preserve the existing dirty DA32/roadmap work.
 2. Read the official comparison and the one selected issue; do not execute
    multiple runtime tasks at once.
-3. Start T424 with a failing root chain test, then add helper and cycle cases.
-4. Preserve the already-proven special-state schedule and legacy `unknown`
-   profile behavior.
-5. Require a named imported trace before closing T424.
-6. For T425, record the current-wiki versus 05b decision before code.
-7. For T426, require a real selection consumer and browser proof.
-8. For T427, require loader/shared-IR/live-runtime evidence; the DA30 model is
-   not a product consumer.
-9. Keep scores, watermarks, and delivery authority held until independent
+3. T424 remains closed-bounded with its historical 305/3234 gate; T425 is
+   closed-bounded with 305/3240 current tests and 668/668 trace artifacts.
+   Do not regress T424 special-state scheduling, legacy `unknown`, or T425's
+   05b-only P2 contract.
+4. Preserve T426's direct-entry manifest boundary; do not promote scanner-only
+   findings, random/select parameters, or screenpack behavior to execution.
+5. Preserve T425 candidate eligibility, `EnemyNear`, Partner, and
+   M.U.G.E.N profiles outside the T429 cut.
+6. T427-T438 are closed: their loader/shared-IR/live-pause and bounded raw-CNS
+   persistence paths are evidence, but do not authorize generic ZSS or CNS
+   persistence. T434 proves only sparse trigger-count behavior in ordinary
+   active-root scans; T435 covers `StateDef -2`; T436 covers `StateDef -3` only
+   without `stateOwner`; T437 covers imported CMD State -1 setup only. No interval range, pause/owner expansion, ZSS grammar,
+   helper/player-owned custom-state expansion, or generic VM claim follows. The
+   DA30 model is not a product consumer.
+7. Keep scores, watermarks, and delivery authority held until independent
    evidence adjudication.
 
 Task authority:
 [official comparison](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md)
-and issues 09-12.
+and issues 09-22.
 
-## Current post-DA30-120 start
+Content lane: [ROADMAP_CONTENT_PACK.md](ROADMAP_CONTENT_PACK.md) owns T439-T460
+and issues 24-45. Use `spritesheet-expert` + `imagegen`; use `grok-imagine`
+only after dry-run and explicit run approval. Keep content QA separate from
+official parity and score adjudication.
+
+## Current post-DA32-026 start (2026-07-28)
+
+1. Re-run Git status and capture exact HEAD.
+2. Keep formal/global, focal runtime, visual/product, source, recorded and
+   adjudicated cursors separate.
+3. Do not promote the current HEAD until a subject-bound full gate passes.
+4. Fill the missing DA32 task contracts.
+5. Execute Studio recovery windows before multi-file claims.
+6. Review the 05b/4aa source family before more IKEMEN runtime cuts.
+7. Use a second legal imported route before any score review.
+8. Require review independent from the implementer for watermarks and scores.
+
+Detailed order and evidence live in the
+[post-DA32-026 audit](research/2026-07-28-daily-roadmap-architecture-audit-post-da32-026.md).
+
+## Historical post-DA30-120 start
 
 Treat DA30-120 as a machine record and DA30-020 as the proposed consecutive
 human ceiling. Before product or runtime work, execute DA31-002…008: freeze

@@ -67,6 +67,16 @@ describe("RuntimeControllerExpressionContextSystem", () => {
     expect(evaluateExpression("Parent, TeamSide = 1", context)).toBe(1);
     expect(evaluateExpression("Root, TeamSide = 1", context)).toBe(1);
   });
+
+  it("keeps dynamic P2-family names available to controller value expressions", () => {
+    const context = createRuntimeControllerExpressionContext(runtimeState(), {
+      opponentName: "Live P4",
+      p4Name: "Live P2",
+    });
+
+    expect(evaluateExpression('P2Name = "Live P4"', context)).toBe(1);
+    expect(evaluateExpression('P4Name = "Live P2"', context)).toBe(1);
+  });
 });
 
 function runtimeState(overrides: Partial<CharacterRuntimeState> = {}): CharacterRuntimeState {

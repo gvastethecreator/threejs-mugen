@@ -1,5 +1,5 @@
 import { normalizeMugenCollisionBoxType, type CollisionBox, type MugenCollisionBoxType } from "../model/CollisionBox";
-import type { ModifyProjectileControllerOp, ProjectileControllerOp } from "../compiler/ControllerOps";
+import type { HitDefFallOp, ModifyProjectileControllerOp, ProjectileControllerOp } from "../compiler/ControllerOps";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
@@ -81,6 +81,13 @@ export type RuntimeProjectile = {
   teamSide?: RuntimeTeamSide;
   hitPause: number;
   hitStun: number;
+  airHitTime?: number;
+  downHitTime?: number;
+  downVelocityX?: number;
+  downVelocityY?: number;
+  downVelocityZ?: number;
+  downBounce?: boolean;
+  fall?: HitDefFallOp;
   p2StateNo?: number;
   p2GetP1State?: boolean;
   p2ClsnCheck?: MugenCollisionBoxType;
@@ -88,6 +95,8 @@ export type RuntimeProjectile = {
   missOnOverride?: boolean;
   push: number;
   hitVelocityY?: number;
+  hitVelocityZ?: number;
+  airVelocityZ?: number;
   guardDamage: number;
   guardDistance: number;
   guardFlag?: string;
@@ -95,10 +104,13 @@ export type RuntimeProjectile = {
   guardStun: number;
   guardSlideTime?: number;
   guardControlTime?: number;
+  airGuardControlTime?: number;
   guardPush: number;
   guardVelocityY?: number;
+  guardVelocityZ?: number;
   airGuardPush?: number;
   airGuardVelocityY?: number;
+  airGuardVelocityZ?: number;
   cornerPush?: number;
   airCornerPush?: number;
   downCornerPush?: number;
@@ -190,7 +202,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const rawAcceleration = operation?.acceleration ?? numberTriple(findControllerParam(input.controller, "accel")) ?? [0, 0];
   const rawVelocityMultiplier = operation?.velocityMultiplier ?? scalePair(findControllerParam(input.controller, "velmul")) ?? [1, 1];
   const rawScale = operation?.scale ?? scalePair(findControllerParam(input.controller, "projscale") ?? findControllerParam(input.controller, "scale")) ?? [1, 1];
-  const groundVelocity = normalizeOptionalVelocityPair(operation?.groundVelocity) ?? velocityPair(findControllerParam(input.controller, "ground.velocity"));
+  const groundVelocity = normalizeOptionalVelocityVector(operation?.groundVelocity) ?? velocityPair(findControllerParam(input.controller, "ground.velocity"));
   const frame = input.action.frames[0];
   const projectileId = operation?.projectileId ?? firstNumber(findControllerParam(input.controller, "projid") ?? findControllerParam(input.controller, "id")) ?? 0;
   const targetId = operation?.targetId ?? firstNumber(findControllerParam(input.controller, "id")) ?? projectileId;
@@ -203,12 +215,21 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const normalizedAirJuggle = airJuggle === undefined || !Number.isFinite(airJuggle) ? undefined : Math.trunc(airJuggle);
   const hitPause = Math.max(0, Math.round(operation?.hitPause ?? firstNumber(findControllerParam(input.controller, "pausetime")) ?? 6));
   const hitStun = Math.max(1, Math.round(operation?.hitStun ?? firstNumber(findControllerParam(input.controller, "ground.hittime")) ?? 18));
+  const airHitTime = Math.max(0, Math.round(operation?.airHitTime ?? firstNumber(findControllerParam(input.controller, "air.hittime")) ?? 20));
+  const downHitTime = Math.max(0, Math.round(operation?.downHitTime ?? firstNumber(findControllerParam(input.controller, "down.hittime")) ?? 20));
+  const downBounce = operation?.downBounce ?? booleanNumber(findControllerParam(input.controller, "down.bounce"));
+  const authoredFall = operation?.fall ?? projectileFallData(input.controller);
+  const fall = Object.keys(authoredFall).length === 0 ? undefined : authoredFall;
   const push = Math.abs(groundVelocity?.[0] ?? 18);
-  const guardVelocity = normalizeOptionalVelocityPair(operation?.guardVelocity) ?? velocityPair(findControllerParam(input.controller, "guard.velocity"));
+  const guardVelocity = normalizeOptionalVelocityVector(operation?.guardVelocity) ?? velocityPair(findControllerParam(input.controller, "guard.velocity"));
   const guardVelocityX = guardVelocity?.[0] ?? groundVelocity?.[0];
-  const airVelocity = normalizeOptionalVelocityPair(operation?.airVelocity) ?? velocityPair(findControllerParam(input.controller, "air.velocity"));
+  const airVelocity = normalizeOptionalVelocityVector(operation?.airVelocity) ?? velocityPair(findControllerParam(input.controller, "air.velocity"));
+  const downVelocity = normalizeOptionalVelocityVector(operation?.downVelocity) ?? velocityPair(findControllerParam(input.controller, "down.velocity"));
+  const downVelocityX = downVelocity?.[0] ?? airVelocity?.[0] ?? 0;
+  const downVelocityY = downVelocity?.[1] ?? airVelocity?.[1] ?? 0;
+  const downVelocityZ = downVelocity?.[2] ?? airVelocity?.[2];
   const airGuardVelocity =
-    normalizeOptionalVelocityPair(operation?.airGuardVelocity) ??
+    normalizeOptionalVelocityVector(operation?.airGuardVelocity) ??
     velocityPair(findControllerParam(input.controller, "airguard.velocity")) ??
     deriveDefaultAirGuardVelocity(airVelocity);
   const guardDamage = Math.max(0, operation?.guardDamage ?? secondNumber(findControllerParam(input.controller, "damage")) ?? 0);
@@ -228,6 +249,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     guardHitTime: operation?.guardHitTime ?? firstNumber(findControllerParam(input.controller, "guard.hittime")),
     guardSlideTime: operation?.guardSlideTime ?? firstNumber(findControllerParam(input.controller, "guard.slidetime")),
     guardControlTime: operation?.guardControlTime ?? firstNumber(findControllerParam(input.controller, "guard.ctrltime")),
+    airGuardControlTime: operation?.airGuardControlTime ?? firstNumber(findControllerParam(input.controller, "airguard.ctrltime")),
   });
   const guardStun = Math.max(1, Math.round(guardTiming.guardHitTime ?? Math.max(1, Math.round(hitStun * 0.55))));
   const guardSlideTime = guardTiming.guardSlideTime;
@@ -315,6 +337,13 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     teamSide,
     hitPause,
     hitStun,
+    airHitTime,
+    downHitTime,
+    downVelocityX,
+    downVelocityY,
+    ...(downVelocityZ === undefined ? {} : { downVelocityZ }),
+    ...(downBounce === undefined ? {} : { downBounce }),
+    ...(fall === undefined ? {} : { fall }),
     p2StateNo: operation?.p2StateNo ?? firstNumber(findControllerParam(input.controller, "p2stateno")),
     p2GetP1State: resolveProjectileP2GetP1State(input.controller, operation),
     p2ClsnCheck: operation?.p2ClsnCheck ?? normalizeMugenCollisionBoxType(findControllerParam(input.controller, "p2clsncheck")),
@@ -322,6 +351,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     missOnOverride: operation?.missOnOverride ?? booleanNumber(findControllerParam(input.controller, "missonoverride")),
     push,
     hitVelocityY: groundVelocity?.[1],
+    hitVelocityZ: groundVelocity?.[2],
+    airVelocityZ: airVelocity?.[2],
     guardDamage,
     guardDistance: Math.max(0, Math.round(operation?.guardDistance ?? firstNumber(findControllerParam(input.controller, "guard.dist")) ?? 0)),
     guardFlag: operation?.guardFlag ?? stripMugenString(findControllerParam(input.controller, "guardflag")) ?? "MA",
@@ -329,10 +360,13 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     guardStun,
     guardSlideTime,
     guardControlTime,
+    airGuardControlTime: guardTiming.airGuardControlTime,
     guardPush: Math.abs(guardVelocityX ?? Math.max(1, Math.round(push * 0.55))),
     guardVelocityY: guardVelocity?.[1],
+    guardVelocityZ: guardVelocity?.[2],
     airGuardPush: airGuardVelocity ? Math.abs(airGuardVelocity[0]) : undefined,
     airGuardVelocityY: airGuardVelocity?.[1],
+    airGuardVelocityZ: airGuardVelocity?.[2],
     cornerPush: cornerPush.cornerPush,
     airCornerPush: cornerPush.airCornerPush,
     downCornerPush: cornerPush.downCornerPush,
@@ -940,6 +974,57 @@ function booleanNumber(value: string | undefined): boolean | undefined {
   return numberValue === undefined ? undefined : numberValue !== 0;
 }
 
+function projectileFallData(controller: MugenStateController): HitDefFallOp {
+  const enabled = booleanNumber(findControllerParam(controller, "fall"));
+  const airFall = booleanNumber(findControllerParam(controller, "air.fall"));
+  return {
+    ...(enabled === undefined ? {} : { enabled }),
+    ...(airFall === undefined ? {} : { airFall }),
+    ...(firstNumber(findControllerParam(controller, "fall.xvelocity")) === undefined
+      ? {}
+      : { xVelocity: firstNumber(findControllerParam(controller, "fall.xvelocity")) }),
+    ...(firstNumber(findControllerParam(controller, "fall.yvelocity")) === undefined
+      ? {}
+      : { yVelocity: firstNumber(findControllerParam(controller, "fall.yvelocity")) }),
+    ...(firstNumber(findControllerParam(controller, "fall.zvelocity")) === undefined
+      ? {}
+      : { zVelocity: firstNumber(findControllerParam(controller, "fall.zvelocity")) }),
+    ...(firstNumber(findControllerParam(controller, "fall.damage")) === undefined
+      ? {}
+      : { damage: firstNumber(findControllerParam(controller, "fall.damage")) }),
+    ...(firstNumber(findControllerParam(controller, "fall.defence_up")) === undefined
+      ? {}
+      : { defenceUp: firstNumber(findControllerParam(controller, "fall.defence_up")) }),
+    ...(booleanNumber(findControllerParam(controller, "fall.kill")) === undefined
+      ? {}
+      : { kill: booleanNumber(findControllerParam(controller, "fall.kill")) }),
+    ...(booleanNumber(findControllerParam(controller, "fall.recover")) === undefined
+      ? {}
+      : { recover: booleanNumber(findControllerParam(controller, "fall.recover")) }),
+    ...(firstNumber(findControllerParam(controller, "fall.recovertime")) === undefined
+      ? {}
+      : { recoverTime: firstNumber(findControllerParam(controller, "fall.recovertime")) }),
+    ...(booleanNumber(findControllerParam(controller, "down.recover")) === undefined
+      ? {}
+      : { downRecover: booleanNumber(findControllerParam(controller, "down.recover")) }),
+    ...(firstNumber(findControllerParam(controller, "down.recovertime")) === undefined
+      ? {}
+      : { downRecoverTime: firstNumber(findControllerParam(controller, "down.recovertime")) }),
+    ...(firstNumber(findControllerParam(controller, "fall.envshake.time")) === undefined
+      ? {}
+      : { envShakeTime: firstNumber(findControllerParam(controller, "fall.envshake.time")) }),
+    ...(firstNumber(findControllerParam(controller, "fall.envshake.freq")) === undefined
+      ? {}
+      : { envShakeFrequency: firstNumber(findControllerParam(controller, "fall.envshake.freq")) }),
+    ...(firstNumber(findControllerParam(controller, "fall.envshake.ampl")) === undefined
+      ? {}
+      : { envShakeAmplitude: firstNumber(findControllerParam(controller, "fall.envshake.ampl")) }),
+    ...(firstNumber(findControllerParam(controller, "fall.envshake.phase")) === undefined
+      ? {}
+      : { envShakePhase: firstNumber(findControllerParam(controller, "fall.envshake.phase")) }),
+  };
+}
+
 function numberPair(value: string | undefined): [number, number] | undefined {
   if (!value) {
     return undefined;
@@ -984,7 +1069,7 @@ function scalePair(value: string | undefined): [number, number] | undefined {
   return [numbers[0], numbers[1] ?? numbers[0]];
 }
 
-function velocityPair(value: string | undefined): [number, number] | undefined {
+function velocityPair(value: string | undefined): [number, number, number?] | undefined {
   if (!value) {
     return undefined;
   }
@@ -995,7 +1080,9 @@ function velocityPair(value: string | undefined): [number, number] | undefined {
   if (numbers.length === 0 || numbers[0] === undefined) {
     return undefined;
   }
-  return [numbers[0], numbers[1] ?? 0];
+  return numbers.length > 2 && numbers[2] !== undefined
+    ? [numbers[0], numbers[1] ?? 0, numbers[2]]
+    : [numbers[0], numbers[1] ?? 0];
 }
 
 function pairToScale(value: [number, number, number?] | [number, number] | undefined): { x: number; y: number } {
@@ -1024,8 +1111,9 @@ function isDefaultScale(value: { x: number; y: number }): boolean {
   return value.x === 1 && value.y === 1;
 }
 
-function normalizeOptionalVelocityPair(value: [number, number, number?] | [number, number?] | undefined): [number, number] | undefined {
-  return value ? [value[0], value[1] ?? 0] : undefined;
+function normalizeOptionalVelocityVector(value: [number, number, number?] | [number, number?] | undefined): [number, number, number?] | undefined {
+  if (!value) return undefined;
+  return value[2] === undefined ? [value[0], value[1] ?? 0] : [value[0], value[1] ?? 0, value[2]];
 }
 
 function runtimeProjectileHasExplicitDepth(projectile: RuntimeProjectile): boolean {

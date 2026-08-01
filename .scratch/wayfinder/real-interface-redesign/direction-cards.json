@@ -1,0 +1,37 @@
+{
+  "workUnitId": "mugen-interface-redesign",
+  "selectedDirectionId": "fight-first-context-lens",
+  "selectedAt": "2026-07-30",
+  "directions": [
+    {
+      "id": "fight-first-context-lens",
+      "name": "Fight First / Context Lens",
+      "compositionLaw": "The live scene owns the screen; one compact lens follows the selected actor, region, or blocker.",
+      "primaryScreen": "Runtime Match with Studio tools entering as task-specific lenses instead of permanent columns.",
+      "signatureMove": "Changing mode recomposes around the same live scene, and every diagnostic is visually tethered to the exact actor, stage layer, asset, or evidence record it describes.",
+      "navigation": "Three product modes in a quiet top rail; Studio tasks in a commandable lens switcher.",
+      "mobileStrategy": "True scene-first viewport with a bottom task sheet and thumb-reachable runtime controls.",
+      "risk": "Dense technical work may require more transitions because most detail is contextual."
+    },
+    {
+      "id": "evidence-split-cause-repair",
+      "name": "Evidence Split / Cause and Repair",
+      "compositionLaw": "One selected blocker drives a two-part workspace: cause on the left, repair and proof on the right.",
+      "primaryScreen": "Studio Workbench centered on the source → runtime → evidence → build trust chain, with a restrained live preview strip.",
+      "signatureMove": "A single vertical causal thread connects the active source fact, runtime consequence, missing evidence, repair action, and export impact.",
+      "navigation": "The production chain is primary; Character, Stage, Debug, and Modules open as evidence sources within it.",
+      "mobileStrategy": "Cause and repair become ordered chapters with a persistent selected-blocker header.",
+      "risk": "Runtime play feels less central and needs an explicit scene-first handoff."
+    },
+    {
+      "id": "scene-desk-layered-workbench",
+      "name": "Scene Desk / Layered Workbench",
+      "compositionLaw": "A large object workspace is surrounded only by the tree, inspector, or timeline needed by the current selection.",
+      "primaryScreen": "Creator Studio with a large live scene/object canvas, a source/object tree, a contextual inspector, and an optional trace timeline.",
+      "signatureMove": "Selecting a fighter, frame, stage layer, asset, evidence record, or module transforms the same inspector and tethers related trace/build facts without changing the mental model.",
+      "navigation": "Objects and production stages replace eight equal-looking dashboards; stable routes remain addressable beneath the new shell.",
+      "mobileStrategy": "Canvas or data artifact first; tree and inspector become mutually exclusive sheets, timeline becomes a scrub strip.",
+      "risk": "Requires the most disciplined component and state-selection seam during migration."
+    }
+  ]
+}

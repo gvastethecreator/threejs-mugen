@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "kind": "background-pack-validation",
+  "ok": true,
+  "pack_id": "terminal-supermercado-24h",
+  "representative": true,
+  "source_types": [
+    "imagegen"
+  ],
+  "evidence": {
+    "production_media": {
+      "representative": true,
+      "provenance_verified": true,
+      "source_types": [
+        "imagegen"
+      ]
+    }
+  },
+  "checked_layers": [
+    "terminal-supermercado-24h-far",
+    "terminal-supermercado-24h-mid",
+    "terminal-supermercado-24h-near"
+  ],
+  "camera": {
+    "aspect_ratio": "16:9",
+    "horizon_y": 0.62,
+    "focal_safe_zone": {
+      "x": 0.18,
+      "y": 0.2,
+      "width": 0.64,
+      "height": 0.62
+    }
+  },
+  "layers": [
+    {
+      "id": "terminal-supermercado-24h-far",
+      "role": "far",
+      "path": "source/terminal-supermercado-24h-base-imagegen.png",
+      "sha256": "6d9fca191f3a57de53eb7d1a9e36a9e8311ef1e0164b12e41855104752ec3844",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 0,
+      "depth": 0.14,
+      "parallax_x": 0.08,
+      "parallax_y": 0.02,
+      "repeat_x": false,
+      "blend_mode": "normal",
+      "seam_delta": null
+    },
+    {
+      "id": "terminal-supermercado-24h-mid",
+      "role": "mid",
+      "path": "source/terminal-supermercado-24h-mid-imagegen-v2.png",
+      "sha256": "e958f423af70d23eca4671bafa256e185f68a10c0e7064218bb117bd4a9410fb",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 1,
+      "depth": 0.5,
+      "parallax_x": 0.42,
+      "parallax_y": 0.08,
+      "repeat_x": false,
+      "blend_mode": "normal",
+      "seam_delta": null
+    },
+    {
+      "id": "terminal-supermercado-24h-near",
+      "role": "near",
+      "path": "source/terminal-supermercado-24h-near-alpha.png",
+      "sha256": "66f27c7e0e1d446a97d7c6129c173a7eaa1fe8cd302806ff16b0bce84133a5c1",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 2,
+      "depth": 0.92,
+      "parallax_x": 0.88,
+      "parallax_y": 0.16,
+      "repeat_x": false,
+      "blend_mode": "normal",
+      "seam_delta": null
+    }
+  ],
+  "composite": {
+    "path": "qa/background-composite.png",
+    "sha256": "17b0bf17d72f5a75aa36bc5f14a56dfec43cb5a6a5b99fe7899ed6375f75d6bd"
+  },
+  "scroll_preview": {
+    "path": "qa/background-scroll.gif",
+    "sha256": "ec8baadf2350427268887aed676dfd67889ca9d986168d30d7929794962cd178"
+  },
+  "errors": [],
+  "warnings": []
+}

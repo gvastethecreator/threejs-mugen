@@ -1,27 +1,164 @@
 ﻿# Roadmap Package Milestones
 
-## Current package override — official parity queue (2026-07-30)
+## Current package override — official parity queue (2026-08-01)
 
-R1 resumes with T424's same-tick current-state transition chain and then
-T426's imported `select.def` roster/stage consumer. I2 keeps one bounded
-continuation in T425, but only after the current P2 wiki and normative 05b
-source epoch are reconciled; T427 begins real ZSS execution after T424.
+R1 has closed T424's same-tick current-state transition chain and T426's
+imported `select.def` roster/stage consumer. I2 has closed T425's P2
+source-epoch reconciliation: 05b remains normative, source-visible refresh is
+preserved, and live controller values share the P2 roster. T427 is closed as
+the first real ZSS execution cut; T428/T429 close bounded paused-ZSS routes;
+T430/T434 close raw-CNS positive normal cadence and trigger-count behavior;
+T431 closes raw-CNS zero normal one-shot behavior. T432 closes paired raw-CNS
+paused-zero one-shot behavior and T433 closes paired raw-CNS positive pause
+cadence. T435 closes raw-CNS `StateDef -2` and T436 closes raw-CNS
+`StateDef -3`, each with a separate sparse trigger-count counter and bounded
+owner rule. T437/T438 close positive and zero setup-controller persistence in
+imported CMD `StateDef -1`; T463/T464 close only the static State -1
+`ChangeState` zero and interval-two routes before destination resolution. T465
+is closed-bounded in R1: default guard slide/control countdowns are separate
+from the authored Common1 `GetHitVar` values. T466 closes the adjacent
+`airguard.ctrltime` parser/resolver/combat seam with the official fallback to
+`guard.ctrltime`. T467 closes the adjacent `air.hittime` parser/resolver/combat
+seam with the official omitted 20-tick air default. T468 closes the
+`fall=1` precedence seam so airborne falling direct hits use the bounded ground
+`hitStun` fallback instead of `air.hittime`. T469 closes the bounded lie-down
+timing/velocity seam for `down.hittime` and `down.velocity`. T472 is the
+closed-bounded follow-up for explicit `down.bounce` propagation and the
+`HitFallVel` velocity gate.
+T473 is the closed-bounded follow-up for the official enabled-fall defaults
+`fall.recover = 1` and `fall.recovertime = 4` at direct/projectile runtime
+materialization. T474 is now the closed-bounded follow-up for the official
+omitted `fall.yvelocity` values, scaled from the fighter/projectile localcoord
+width while preserving authored velocities.
+T475 is now the closed-bounded follow-up for official airborne-only `air.fall`
+selection: the typed flag stays separate from base `fall` and is selected only
+when the defender is airborne.
+T476 is now closed-bounded for official lying-target horizontal velocity:
+`down.velocity.x` is carried through direct/projectile HitDef seams and applied
+with attacker-relative sign; 247 focused tests and the final 324/3308,
+typecheck/build/boundaries and 682/682 trace gates pass. T477 is now
+closed-bounded for signed `fall.xvelocity` bounce semantics: 121 focused tests,
+full 324/3310, typecheck/build/boundaries and 682/682 trace gates pass.
 
-Milestone effects remain prospective:
+T424 final proof exists, but milestone effects remain prospective until
+independent adjudication:
 
-- T424 may strengthen the runtime compatibility evidence ledger, but cannot
+- T424 strengthens the runtime compatibility evidence ledger, but cannot
   move MUGEN-lite/MVP/full scores without trace and independent adjudication.
-- T425 may strengthen one explicit Ikemen P2 contract only.
-- T426 is the next package/product discriminator because it replaces
-  scanner-only `select.def` recognition with a live roster/stage consumer.
-- T427 can move ZSS from recognized/unsupported to one named executed subset,
-  never to generic ZSS or Ikemen parity.
+- T425 strengthens one explicit Ikemen P2 controller-value contract only; it
+  does not promote the wiki-only 30 px rule or broad Ikemen parity.
+- T426 closed the package/product discriminator: scanner-only `select.def`
+  recognition is now a bounded live roster/stage consumer.
+- T427 moved one named ZSS state subset from recognized/unsupported to
+  executed-partial, never to generic ZSS or Ikemen parity.
+- T428 proves only one `ignoreHitPause` wrapper reaches existing live pause
+  scheduling; generic ZSS wrapper parity remains blocked.
+- T429 proves constant combined-wrapper cadence only in required trace
+  `4ff43eb7` with final build complete. T430 proves positive raw-CNS normal
+  cadence (`f7c32a53`) and T431 proves raw-CNS zero normal one-shot behavior
+  (`d13ad12a`); T434 corrects normal positive cadence to count sparse trigger
+  passes; T435/T436 close `StateDef -2`/`-3` sparse trigger routes. Dynamic,
+  player-owned custom-state, general persistence, and generic ZSS remain
+  blocked.
+- T432 proves only paired raw-CNS `ignorehitpause = 1` plus `persistent = 0`
+  during an active-root pause scan (`94b49516`). T433 closes paired raw
+  positive cadence (`d6d00fd0`); T434 is closed by the sparse trigger-count
+  cut, with T435/T436 adding `-2`/`-3` special-state routes. Interval ranges,
+  ZSS zero, helpers, and general controller scheduling remain blocked.
+- T463 proves only imported CMD State -1 static `ChangeState` with
+  `persistent = 0` (`88931500` in 681/681). Positive intervals, failed-value
+  activation order, pause, helpers, custom owners, dynamic values and parity
+  remain blocked.
+- T464 proves only the matching constant `persistent = 2` trigger-count route
+  (`3681fafa` in 682/682). Other intervals, failed-value order, pause, helpers,
+  custom owners, dynamic values and parity remain blocked.
+- T465 is closed-bounded: direct/projectile guard contacts seed remaining
+  slide/control windows; default runtime stop/restore and reset paths are
+  covered by focused tests, while imported Common1 states retain presentation
+  ownership. No score or milestone promotion is claimed.
+- T466 is closed-bounded: HitDef/ModifyHitDef and projectile paths carry
+  `airguard.ctrltime`; omitted values inherit `guard.ctrltime`, explicit values
+  apply only to air guard, and ground guard remains unchanged. Focused
+  149-test coverage, full suite, typecheck, build, boundaries and 682/682
+  traces pass. No score or milestone promotion is claimed.
+- T467 is closed-bounded: HitDef/ModifyHitDef and Projectile paths carry `air.hittime`
+  through compiler and runtime; airborne normal hits select the authored value
+  or omitted 20-tick default, ground hits keep `ground.hittime`, and guard
+  contacts are unchanged. Focused/compiler regressions and 682/682 traces pass;
+  no score or milestone promotion is claimed.
+- T468 is closed-bounded: airborne direct hits with `fall=1` select the existing
+  ground `hitStun` fallback instead of `air.hittime`; non-falling air hits keep
+  the authored/default air timing and ground/guard/projectile no-fall paths are
+  unchanged. Focused resolver and fall-trace regressions pass; no score or
+  milestone promotion is claimed.
+- T469 is closed-bounded: zero-Y lie-down direct/projectile hits select authored or
+  default 20-tick `down.hittime`, while non-zero-Y `down.velocity` launches use
+  air timing. Focused compiler/HitDef/projectile/combat tests and the down-hit
+  trace subset pass; 324/3292 full tests, typecheck, build, boundaries,
+  682/682 traces, and diff hygiene pass. No score or milestone promotion is
+  claimed.
+- T472 is closed-bounded: HitDef, ModifyHitDef and Projectile carry explicit
+  `down.bounce` through direct/projectile fall metadata; `HitFallVel` clears
+  velocity only for explicit `0` and preserves the omitted/`1` compatibility
+  path. Focused coverage passes 198 tests; final gates pass 324 files / 3294
+  tests, typecheck, build, boundaries, `qa:trace` 682/682 and diff hygiene.
+  UI smoke is N/A; no score or milestone promotion is claimed.
+- T473 is closed-bounded: the shared runtime resolver applies omitted recovery
+  defaults only when fall is enabled, preserving explicit false/custom values
+  and disabled paths. Focused coverage is 102 tests; 324/3296 full tests,
+  typecheck, build, boundaries and 682/682 traces pass. No score or milestone
+  promotion is claimed.
+- T474 is closed-bounded: the shared runtime helper applies omitted
+  `fall.yvelocity` from localcoord width (`-4.5/-9/-18` at 320/640/1280px) at
+  direct/projectile materialization; authored fall/hit velocities and invalid
+  metadata fallback remain unchanged. Focused coverage is 105 tests; 324/3299
+  full tests, typecheck, build, boundaries and 682/682 traces pass. No score or
+  milestone promotion is claimed.
+- T475 is closed-bounded: compiler, HitDef, resolver, direct/projectile combat
+  and parser paths preserve `air.fall` separately from base `fall`; `fall = 0,
+  air.fall = 1` falls only for airborne defenders. Full gates pass and no score
+  or milestone promotion is claimed.
+- T476 is closed-bounded: HitDef/ModifyHitDef, imported move and Projectile paths
+  now retain `down.velocity.x`; lie-down contacts use it instead of the generic
+  push, while synthetic moves without the field preserve the compatibility
+  fallback. Focused 247 tests, full 324/3308 tests, typecheck/build/boundaries,
+  682/682 trace and diff hygiene pass; no score or milestone promotion is
+  claimed.
+- T477 is closed-bounded: direct/projectile fall materialization now preserves
+  authored signed `fall.xvelocity` across opposite facing, with omitted X left
+  as no-change. Focused 121 tests and final gates pass; no score or milestone
+  promotion is claimed.
 
 Authority and dependencies:
 [official comparison](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md).
 Current scores and milestone bands stay held.
 
-## Current package override — post-DA30-120 audit
+User-directed content milestone: T439-T444 define six original satirical
+fighters, T449-T456 define eight classic-uniform recolors, T445 shared
+VFX/FightFX, T446 parallax stages, T447 roster/runtime integration, and
+T461 regenerates the eight fighters with a sober martial-arts direction. T462
+is closed-bounded for the four stages after parallax/browser proof. T457-T460 close palettes, SFF, collision QA and
+traces. Anchors, VFX atlas QA, stage-pack QA, classic atlases, permissions and
+MUGEN-lite core templates are in progress. This lane uses provider provenance and spritesheet/background QA
+but does not promote M.U.G.E.N/Ikemen compatibility scores. T470 closes the
+coverage audit for all 17 public character directories; T471 is the active
+provider-row regeneration needed before T461 can be promoted. Bruno Giro has
+four fresh rows with provenance, alignment and fourteen hash-bound runtime
+previews, while aggregate identity/contract gates remain open.
+
+## Current package override — post-DA32-026 audit (2026-07-28)
+
+DA31-001…040 have recorded outcomes, but 017…040 keep `accepted-model`
+ceilings. DA32 adds focal browser and Studio evidence through DA32-026. The
+package still lacks a second live consumer, deletion proof, an install from a
+clean tarball, a real CLI/CI pair and local release review. Formal/global stays
+`f5f2315e`; watermarks and scores stay held.
+
+Package work resumes after the control, Studio recovery, real-shell, replay
+and second-import phases in the
+[post-DA32-026 audit](research/2026-07-28-daily-roadmap-architecture-audit-post-da32-026.md).
+
+## Historical package override — post-DA30-120 audit
 
 DA30-001…120 are recorded machine rows. Package milestones consume only
 adjudicated clauses; the safe consecutive human ceiling is DA30-020 pending

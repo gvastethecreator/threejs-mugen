@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "kind": "sprite-source-intake-report",
+  "ok": true,
+  "status": "pass",
+  "job_id": "vera-patada-imagegen-idle-identity",
+  "state": "idle",
+  "mutated": true,
+  "source_type": "imagegen",
+  "engine": "imagegen",
+  "source_stage": "provider-output",
+  "provider": {
+    "name": "imagegen",
+    "status": "succeeded"
+  },
+  "license_ref": "imagegen-original-vera-patada",
+  "license_status": "generated",
+  "request_fingerprint": "1e49df29e9d4fbc1aaed22b4cec6767da5e56f66a834d3f2d264087a3b6fb520",
+  "candidate": {
+    "path": "base-source.png",
+    "sha256": "3cb04c78ab6b5a01af430fdd37cc4c51b00cae49bdf270379ce34740b5284e88",
+    "mime": "image/png",
+    "width": 1024,
+    "height": 1536
+  },
+  "processing_policy": {
+    "selection": "selected-candidate",
+    "normalization": "rgba-png",
+    "background_removal": "none",
+    "resize": "none"
+  },
+  "output": {
+    "path": "raw/idle.png",
+    "sha256": "b341d78a5eaa971341060cf119a7640f4e28b04b2ca9e0117d3ab8d556b867be",
+    "size_bytes": 1301039,
+    "mime": "image/png",
+    "width": 1024,
+    "height": 1536
+  },
+  "provenance": {
+    "path": "source-provenance.json",
+    "state_coverage": [
+      "idle"
+    ]
+  },
+  "errors": [],
+  "warnings": [],
+  "identity_anchor": {
+    "path": "references/identity-anchor.png",
+    "sha256": "8bdd5ad864b4af58c362fc63f44a0e35dd181942a406c4a100a95c9ddeabb7f6"
+  }
+}

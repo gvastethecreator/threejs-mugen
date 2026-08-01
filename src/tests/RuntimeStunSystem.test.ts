@@ -126,9 +126,69 @@ describe("RuntimeStunSystem", () => {
     expect(actions).toEqual([]);
     expect(fighter.runtime.moveType).toBe("I");
   });
+
+  it("counts down default guard slide/control windows without mutating authored GetHitVar values", () => {
+    const world = new RuntimeStunWorld();
+    const fighter = actor({
+      hitStun: 0,
+      guardStun: 3,
+      velX: 4,
+      moveType: "I",
+      ctrl: false,
+      guardSlideTimeRemaining: 2,
+      guardControlTimeRemaining: 3,
+    });
+
+    world.advance(fighter);
+    expect(fighter.runtime.guardStun).toBe(2);
+    expect(fighter.runtime.guardSlideTimeRemaining).toBe(1);
+    expect(fighter.runtime.guardControlTimeRemaining).toBe(2);
+    expect(fighter.runtime.ctrl).toBe(false);
+
+    world.advance(fighter);
+    expect(fighter.runtime.guardSlideTimeRemaining).toBe(0);
+    expect(fighter.runtime.guardControlTimeRemaining).toBe(1);
+    expect(fighter.runtime.vel.x).toBe(0);
+    expect(fighter.runtime.ctrl).toBe(false);
+
+    world.advance(fighter);
+    expect(fighter.runtime.guardStun).toBe(0);
+    expect(fighter.runtime.guardControlTimeRemaining).toBe(0);
+    expect(fighter.runtime.ctrl).toBe(true);
+    expect(fighter.runtime.moveType).toBe("I");
+  });
+
+  it("keeps authored imported guard states in charge of slide and control presentation", () => {
+    const world = new RuntimeStunWorld();
+    const fighter = actor({
+      hitStun: 0,
+      guardStun: 1,
+      velX: 4,
+      moveType: "H",
+      ctrl: false,
+      guardSlideTimeRemaining: 1,
+      guardControlTimeRemaining: 1,
+    });
+
+    world.advance(fighter, { preserveImportedStateMoveType: true });
+
+    expect(fighter.runtime.guardSlideTimeRemaining).toBe(0);
+    expect(fighter.runtime.guardControlTimeRemaining).toBe(0);
+    expect(fighter.runtime.vel.x).toBeCloseTo(3.28);
+    expect(fighter.runtime.ctrl).toBe(false);
+    expect(fighter.runtime.moveType).toBe("H");
+  });
 });
 
-function actor(options: { hitStun: number; guardStun: number; velX?: number; moveType?: "I" | "A" | "H" }): RuntimeStunActor {
+function actor(options: {
+  hitStun: number;
+  guardStun: number;
+  velX?: number;
+  moveType?: "I" | "A" | "H";
+  ctrl?: boolean;
+  guardSlideTimeRemaining?: number;
+  guardControlTimeRemaining?: number;
+}): RuntimeStunActor {
   return {
     hitStun: options.hitStun,
     runtime: {
@@ -136,6 +196,9 @@ function actor(options: { hitStun: number; guardStun: number; velX?: number; mov
       guarding: false,
       moveType: options.moveType ?? "I",
       vel: { x: options.velX ?? 0, y: 0 },
+      ...(options.ctrl === undefined ? {} : { ctrl: options.ctrl }),
+      ...(options.guardSlideTimeRemaining === undefined ? {} : { guardSlideTimeRemaining: options.guardSlideTimeRemaining }),
+      ...(options.guardControlTimeRemaining === undefined ? {} : { guardControlTimeRemaining: options.guardControlTimeRemaining }),
     },
   };
 }

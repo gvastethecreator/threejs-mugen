@@ -1,0 +1,133 @@
+{
+  "version": 2,
+  "kind": "sprite-source-provenance",
+  "source_type": "imagegen",
+  "art_engine": "imagegen",
+  "fixture": false,
+  "verification_status": "verified",
+  "accepted_sources": [
+    {
+      "path": "source/bruno-giro-idle-imagegen-v2.png",
+      "sha256": "4bc9b1aa38d98d3807fcb905c2ced9bbfa452aad568fcea9bcb40e27fc36db06",
+      "size_bytes": 1752538,
+      "states": [
+        "idle"
+      ]
+    },
+    {
+      "path": "source/bruno-giro-walk-forward-imagegen-v2.png",
+      "sha256": "10bfe3f4e998f5d7b1c866f6b76b2523fd9931b90418915e6c46b6fc6acc3fb6",
+      "size_bytes": 1415166,
+      "states": [
+        "walk-forward"
+      ]
+    },
+    {
+      "path": "source/bruno-giro-walk-back-imagegen-v2.png",
+      "sha256": "f0e4b031aec3cf0733eaf09a05d9dff4138e529729a8f287920e71f341f92acc",
+      "size_bytes": 1684267,
+      "states": [
+        "walk-back"
+      ]
+    },
+    {
+      "path": "source/bruno-giro-action-grid-imagegen-v2.png",
+      "sha256": "ca9016a7c68d00964e33dd277d22d56c5083d0267fc9421e270b51289663dc85",
+      "size_bytes": 1669281,
+      "states": [
+        "crouch",
+        "jump"
+      ]
+    },
+    {
+      "path": "source/bruno-giro-light-strike-imagegen-v2.png",
+      "sha256": "9dee38c1df9096904f75cca76325cf83bff66819b180467416361840d4c7352d",
+      "size_bytes": 1286750,
+      "states": [
+        "light-strike"
+      ]
+    },
+    {
+      "path": "source/bruno-giro-heavy-strike-imagegen-v2.png",
+      "sha256": "439ff9587efb5b4f8de8f7ebaba78e9b54957f6b8682a21cff67b08afaec401c",
+      "size_bytes": 1518300,
+      "states": [
+        "heavy-strike"
+      ]
+    },
+    {
+      "path": "source/bruno-giro-special-imagegen-v2.png",
+      "sha256": "2e9ff998d0152c7dfccd78be7ff509861c5476cac14475ee19763ac6f44cb514",
+      "size_bytes": 1428646,
+      "states": [
+        "special"
+      ]
+    },
+    {
+      "path": "source/bruno-giro-throw-imagegen-v2.png",
+      "sha256": "d10d4dcacafb73dd57c0513d060e2233e9a9c9b5cb5f2b1836de31d84bfa57f6",
+      "size_bytes": 1572020,
+      "states": [
+        "throw"
+      ]
+    },
+    {
+      "path": "source/bruno-giro-guard-imagegen-v2.png",
+      "sha256": "ef0dd84a7d48a0861b6aff3c4680dc64cb8fa3591bb2e66b101e719debac75c4",
+      "size_bytes": 1545276,
+      "states": [
+        "guard"
+      ]
+    },
+    {
+      "path": "source/bruno-giro-hitstun-imagegen-v2.png",
+      "sha256": "8621be836533aeaecb3fef64181519df177d9bfaab466245039604692f8b7b80",
+      "size_bytes": 1465164,
+      "states": [
+        "hitstun"
+      ]
+    },
+    {
+      "path": "source/bruno-giro-knockdown-imagegen-v2.png",
+      "sha256": "f74370811b8cf8dcaaa49ee8c9da4953fffd1796c06c49baa7e426534b936723",
+      "size_bytes": 1919269,
+      "states": [
+        "knockdown"
+      ]
+    },
+    {
+      "path": "source/bruno-giro-ko-imagegen-v2.png",
+      "sha256": "1f3f9bb9e598ec7890ce07abbfa575663c587485962aa67b6f4ec0e4ba727b60",
+      "size_bytes": 1662453,
+      "states": [
+        "ko"
+      ]
+    },
+    {
+      "path": "source/bruno-giro-win-imagegen-v2.png",
+      "sha256": "b9d7f9ef596704379bfe66b7912d4ed47bd4c5d91c1afe5e79adfb172a073af7",
+      "size_bytes": 1535509,
+      "states": [
+        "win"
+      ]
+    }
+  ],
+  "state_coverage": [
+    "idle",
+    "walk-forward",
+    "walk-back",
+    "crouch",
+    "jump",
+    "light-strike",
+    "heavy-strike",
+    "special",
+    "throw",
+    "guard",
+    "hitstun",
+    "knockdown",
+    "ko",
+    "win"
+  ],
+  "notes": "accepted through source-intake-v1",
+  "license": "imagegen-original-bruno-giro-v2"
+}

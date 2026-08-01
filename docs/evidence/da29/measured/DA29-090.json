@@ -2,15 +2,15 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-090",
   "kind": "G",
-  "generatedAt": "2026-07-27T14:28:12.360Z",
+  "generatedAt": "2026-08-01T18:12:02.713Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-090",
   "anchors": [
     {
       "path": "src/mugen/compatibility/IkemenFeatureScanner.ts",
-      "bytes": 20474,
-      "sha256": "5006ab50ea871ecaa03ac5db78f2caec132bcc864cf31aae791eee2a147eadb9"
+      "bytes": 20908,
+      "sha256": "61035aa5f0ec4d78e740405d17b565b9e17e35170fd31667ba99677b33cfc095"
     },
     {
       "path": "src/mugen/compatibility/ScannerCapabilityVector.ts",
@@ -22,14 +22,14 @@
     "digests": [
       {
         "path": "src/mugen/compatibility/IkemenFeatureScanner.ts",
-        "sha256": "5006ab50ea871ecaa03ac5db78f2caec132bcc864cf31aae791eee2a147eadb9"
+        "sha256": "61035aa5f0ec4d78e740405d17b565b9e17e35170fd31667ba99677b33cfc095"
       },
       {
         "path": "src/mugen/compatibility/ScannerCapabilityVector.ts",
         "sha256": "8f418bc2df7e374dae093b0814b1909eff75de331c9ac4fe57de753a795bced4"
       }
     ],
-    "combined": "6b57b7a0c99180051dbcb3e091018137aa933da492e4b21e2c58abdac6ec3780"
+    "combined": "61c50738dcae660eb8549394609605082206e4ce9d6f1019eb0a5ef53c3ce78d"
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-090; broader product claims remain blocked"
 }

@@ -133,6 +133,8 @@ export class HitSparkRenderer {
         offsetX: number;
         offsetY: number;
         duration: number;
+        scale?: number;
+        localCoord?: [number, number];
       };
       sprite?: HitSparkResolvedSpriteDiagnostic;
       spriteLocalPosition?: { x: number; y: number };
@@ -173,6 +175,8 @@ export class HitSparkRenderer {
               offsetX: presentation.assetFrame.offsetX,
               offsetY: presentation.assetFrame.offsetY,
               duration: presentation.assetFrame.duration,
+              scale: presentation.assetFrame.scale,
+              localCoord: presentation.assetFrame.localCoord,
             }
           : undefined,
         sprite: presentation.resolvedSprite,
@@ -212,8 +216,19 @@ export class HitSparkRenderer {
       spriteMesh.material.map = this.textures?.getTexture(sprite, hitSparkTextureNamespace(actor, presentation)) ?? null;
       spriteMesh.material.opacity = presentation.opacity;
       spriteMesh.material.needsUpdate = true;
-      spriteMesh.scale.set(sprite.width / Math.max(1, presentation.size), sprite.height / Math.max(1, presentation.size), 1);
-      const localPosition = projectHitSparkSpriteLocalPosition(sprite, presentation.assetFrame, actor.runtime.facing, presentation.size);
+      const assetScale = normalizedHitSparkScale(presentation.assetFrame?.scale);
+      spriteMesh.scale.set(
+        (sprite.width * assetScale) / Math.max(1, presentation.size),
+        (sprite.height * assetScale) / Math.max(1, presentation.size),
+        1,
+      );
+      const localPosition = projectHitSparkSpriteLocalPosition(
+        sprite,
+        presentation.assetFrame,
+        actor.runtime.facing,
+        presentation.size,
+        assetScale,
+      );
       spriteMesh.position.set(localPosition.x, localPosition.y, 0.01);
       presentation.resolvedSprite = hitSparkSpriteDiagnostic(sprite);
       presentation.spriteLocalPosition = localPosition;
@@ -493,14 +508,23 @@ export function projectHitSparkSpriteLocalPosition(
   frame: Pick<RuntimeHitEffectAssetFrame, "offsetX" | "offsetY"> | undefined,
   facing: 1 | -1,
   presentationSize: number,
+  assetScale = 1,
 ): { x: number; y: number } {
   const size = Math.max(1, presentationSize);
-  const localX = (frame?.offsetX ?? 0) + sprite.width / 2 - sprite.axisX;
-  const localY = sprite.axisY - sprite.height / 2 - (frame?.offsetY ?? 0);
+  const scale = normalizedHitSparkScale(assetScale);
+  const localX = ((frame?.offsetX ?? 0) + sprite.width / 2 - sprite.axisX) * scale;
+  const localY = (sprite.axisY - sprite.height / 2 - (frame?.offsetY ?? 0)) * scale;
   return {
     x: (facing * localX) / size,
     y: localY / size,
   };
+}
+
+function normalizedHitSparkScale(value: number | undefined): number {
+  if (value === undefined || !Number.isFinite(value) || value <= 0) {
+    return 1;
+  }
+  return Math.max(0.01, Math.min(16, value));
 }
 
 export function hitSparkKey(actor: ActorSnapshot, event: RuntimeHitEffectEvent, eventIndex = 0): string {

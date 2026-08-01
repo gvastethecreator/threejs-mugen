@@ -1,0 +1,364 @@
+{
+  "version": 1,
+  "kind": "sprite-run-validation-report",
+  "run_dir": "runs/toro-pixel-v2",
+  "stage": "post-extract",
+  "workflow": "production",
+  "ok": false,
+  "status": "fail",
+  "complete": true,
+  "exit_code": 1,
+  "input_fingerprint": "37a86c29f2dc19f10ead20409db8bb688be33a8cffc4bea913cde38c34013397",
+  "evidence": {
+    "production_media": {
+      "representative": true,
+      "provenance_verified": true,
+      "source_types": [
+        "imagegen"
+      ]
+    }
+  },
+  "policy": {
+    "workflow": "production",
+    "categories": [
+      "animated",
+      "generated"
+    ],
+    "selectors": null,
+    "required_gate_ids": [
+      "generation-provenance",
+      "animation-contracts",
+      "frame-alignment",
+      "identity-consistency",
+      "runtime-preview"
+    ],
+    "decisions": [
+      {
+        "id": "generation-provenance",
+        "applied": true,
+        "reason": "production source_type=imagegen requires provenance"
+      },
+      {
+        "id": "animation-contracts",
+        "applied": true,
+        "reason": "frame_semantics=animation is animated"
+      },
+      {
+        "id": "frame-alignment",
+        "applied": true,
+        "reason": "animated asset_kind=sprite requires frame alignment"
+      },
+      {
+        "id": "identity-consistency",
+        "applied": true,
+        "reason": "animated asset_kind=sprite requires identity consistency"
+      },
+      {
+        "id": "motion-variation",
+        "applied": false,
+        "reason": "no explicit locomotion animation_workflows fact"
+      },
+      {
+        "id": "asset-slots",
+        "applied": false,
+        "reason": "extraction_mode=components does not use slots"
+      },
+      {
+        "id": "isometric-tiles",
+        "applied": false,
+        "reason": "asset_kind is not tileset"
+      },
+      {
+        "id": "segmentation-diagnostic",
+        "applied": false,
+        "reason": "production workflow does not use diagnostic segmentation as a gate"
+      },
+      {
+        "id": "frame-registration",
+        "applied": false,
+        "reason": "requires import-diagnostic asset_kind=sprite"
+      },
+      {
+        "id": "runtime-preview",
+        "applied": true,
+        "reason": "frame_semantics=animation requires manifest-driven runtime evidence"
+      }
+    ]
+  },
+  "checked_items": [
+    "crouch",
+    "guard",
+    "heavy-strike",
+    "hitstun",
+    "idle",
+    "jump",
+    "knockdown",
+    "ko",
+    "light-strike",
+    "special",
+    "throw",
+    "walk-back",
+    "walk-forward",
+    "win"
+  ],
+  "results": [
+    {
+      "id": "generation-provenance",
+      "applicable": true,
+      "checked_items": [
+        "crouch",
+        "guard",
+        "heavy-strike",
+        "hitstun",
+        "idle",
+        "jump",
+        "knockdown",
+        "ko",
+        "light-strike",
+        "special",
+        "throw",
+        "walk-back",
+        "walk-forward",
+        "win"
+      ],
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "provenance": "source-provenance.json",
+        "source_type": "imagegen",
+        "sources": [
+          {
+            "path": "source/toro-pixel-action-grid-imagegen-v2.png",
+            "sha256": "159b80932a543081f419d69f23ec63c8f889257a6bf74ca282a018ae2f0ac761",
+            "size_bytes": 1888546,
+            "states": [
+              "idle",
+              "walk-forward",
+              "walk-back",
+              "crouch",
+              "jump",
+              "light-strike",
+              "heavy-strike",
+              "special",
+              "throw",
+              "guard",
+              "hitstun",
+              "knockdown",
+              "ko",
+              "win"
+            ]
+          }
+        ]
+      },
+      "input_fingerprint": "711d9f376ae910cce49c9c3dccab927365a278751e76c8f45f3007aa3b5d6868",
+      "complete": true,
+      "status": "pass"
+    },
+    {
+      "id": "animation-contracts",
+      "applicable": true,
+      "checked_items": [
+        "idle",
+        "walk-forward",
+        "walk-back",
+        "jump",
+        "heavy-strike",
+        "special",
+        "guard",
+        "hitstun",
+        "knockdown",
+        "ko"
+      ],
+      "errors": [
+        "walk-forward: opposite-contact candidate duplicates the first lower-body pose (frame 1 vs frame 5 lower-body diff 0.000; expected >= 0.080; opposite contact lower-body pose is duplicated or too similar)",
+        "walk-back: opposite-contact candidate duplicates the first lower-body pose (frame 1 vs frame 5 lower-body diff 0.000; expected >= 0.080; opposite contact lower-body pose is duplicated or too similar)",
+        "special: one or more lower-body transitions are too similar (min 0.000; expected >= 0.040)",
+        "guard: vfx-buildup-peak-decay needs at least 4 frames to prove required phases; found 3",
+        "guard: VFX area/signal barely changes; buildup/peak/decay is not readable (alpha range 0.000, signal range 0.000, max pair diff 0.000)",
+        "report declared ok:false",
+        "report did not check expected items: crouch, light-strike, throw, win"
+      ],
+      "warnings": [
+        "walk-back: lower-body screen-space balance barely varies (range 0.043; diagnostic target >= 0.045)",
+        "heavy-strike: VFX peak is at the first or last frame; verify buildup/decay staging",
+        "special: lower-body screen-space balance barely varies (range 0.009; diagnostic target >= 0.045)",
+        "special: strongest extent is on the first or last frame; verify active/contact is not missing",
+        "hitstun: force direction may be unreadable; verify recoil/drag visually",
+        "knockdown: jump/fall bbox changes a lot; verify this is pose compression, not whole-character rescale"
+      ],
+      "evidence": {
+        "process_exit_code": 1,
+        "report_path": "qa/animation-contract-report.json",
+        "report_sha256": "fd45f6130ef0efa4f6f2fe2960364055753263522ee940d85fb305afcee5557b",
+        "stdout_tail": "{\n  \"ok\": false,\n  \"engine\": \"animation-contract-heuristic\",\n  \"run_dir\": \"runs/toro-pixel-v2\",\n  \"states_mode\": \"animated\",\n  \"checked_states\": [\n    \"idle\",\n    \"walk-forward\",\n    \"walk-back\",\n    \"jump\",\n    \"heavy-strike\",\n    \"special\",\n    \"guard\",\n    \"hitstun\",\n    \"knockdown\",\n    \"ko\"\n  ],\n  \"visual_review_required\": true,\n  \"quality_gate_note\": \"Automated checks catch obvious phase failures. Visual playback/contact review remains required for row semantics before final approval.\",\n  \"errors\": [\n    \"walk-forward: opposite-contact candidate duplicates the first lower-body pose (frame 1 vs frame 5 lower-body diff 0.000; expected >= 0.080; opposite contact lower-body pose is duplicated or too similar)\",\n    \"walk-back: opposite-contact candidate duplicates the first lower-body pose (frame 1 vs frame 5 lower-body diff 0.000; expected >= 0.080; opposite contact lower-body pose is duplicated or too similar)\",\n    \"special: one or more lower-body transitions are too similar (min 0.000; expected >= 0.040)\",\n    \"guard: vfx-buildup-peak-decay needs at least 4 frames to prove required phases; found 3\",\n    \"guard: VFX area/signal barely changes; buildup/peak/decay is not readable (alpha range 0.000, signal range 0.000, max pair diff 0.000)\"\n  ],\n  \"warnings\": [\n    \"walk-back: lower-body screen-space balance barely varies (range 0.043; diagnostic target >= 0.045)\",\n    \"heavy-strike: VFX peak is at the first or last frame; verify buildup/decay staging\",\n    \"special: lower-body screen-space balance barely varies (range 0.009; diagnostic target >= 0.045)\",\n    \"special: strongest extent is on the first or last frame; verify active/contact is not missing\",\n    \"hitstun: force direction may be unreadable; verify recoil/drag visually\",\n    \"knockdown: jump/fall bbox changes a lot; verify this is pose compression, not whole-character rescale\"\n  ]\n}\n"
+      },
+      "input_fingerprint": "fd45f6130ef0efa4f6f2fe2960364055753263522ee940d85fb305afcee5557b",
+      "complete": true,
+      "status": "fail"
+    },
+    {
+      "id": "frame-alignment",
+      "applicable": true,
+      "checked_items": [
+        "idle",
+        "walk-forward",
+        "walk-back",
+        "crouch",
+        "jump",
+        "light-strike",
+        "heavy-strike",
+        "special",
+        "throw",
+        "guard",
+        "hitstun",
+        "knockdown",
+        "ko",
+        "win"
+      ],
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "process_exit_code": 0,
+        "report_path": "qa/frame-alignment-report.json",
+        "report_sha256": "1eb4e4c58d9340c309f295cdac1b76bca11c7ec61da3c2a48bbb3a2b03a34b5e",
+        "stdout_tail": "      168,\n        159,\n        159,\n        159,\n        159,\n        168\n      ],\n      \"center_x\": [\n        91.93,\n        90.36,\n        90.36,\n        90.36,\n        90.36,\n        91.93\n      ],\n      \"center_y\": [\n        95.09,\n        94.28,\n        94.28,\n        94.28,\n        94.28,\n        95.09\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"special\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\special-onion.png\",\n      \"bottom_y\": [\n        168,\n        148,\n        148,\n        148,\n        148,\n        148,\n        168,\n        168\n      ],\n      \"center_x\": [\n        91.93,\n        106.05,\n        106.05,\n        106.05,\n        106.05,\n        106.05,\n        91.93,\n        91.93\n      ],\n      \"center_y\": [\n        95.09,\n        94.24,\n        94.24,\n        94.24,\n        94.24,\n        94.24,\n        95.09,\n        95.09\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"throw\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\throw-onion.png\",\n      \"bottom_y\": [\n        168,\n        168,\n        168,\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        91.95,\n        85.12,\n        85.12,\n        85.12,\n        91.95,\n        91.95\n      ],\n      \"center_y\": [\n        95.1,\n        95.26,\n        95.26,\n        95.26,\n        95.1,\n        95.1\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"guard\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\guard-onion.png\",\n      \"bottom_y\": [\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        98.01,\n        98.01,\n        98.01\n      ],\n      \"center_y\": [\n        94.45,\n        94.45,\n        94.45\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"hitstun\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\hitstun-onion.png\",\n      \"bottom_y\": [\n        168,\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        91.95,\n        92.08,\n        92.08,\n        91.95\n      ],\n      \"center_y\": [\n        95.09,\n        87.87,\n        87.87,\n        95.09\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"knockdown\",\n      \"kind\": \"knockdown\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\knockdown-onion.png\",\n      \"bottom_y\": [\n        168,\n        168,\n        168,\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        91.1,\n        88.12,\n        88.12,\n        88.12,\n        88.12,\n        88.12\n      ],\n      \"center_y\": [\n        87.93,\n        139.51,\n        139.51,\n        139.51,\n        139.51,\n        139.51\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"ko\",\n      \"kind\": \"knockdown\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\ko-onion.png\",\n      \"bottom_y\": [\n        168,\n        168,\n        168,\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        91.1,\n        88.12,\n        88.12,\n        88.12,\n        88.12,\n        88.12\n      ],\n      \"center_y\": [\n        87.93,\n        139.51,\n        139.51,\n        139.51,\n        139.51,\n        139.51\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"win\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\win-onion.png\",\n      \"bottom_y\": [\n        168,\n        168,\n        168,\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        92.72,\n        92.72,\n        92.72,\n        92.72,\n        92.72,\n        92.72\n      ],\n      \"center_y\": [\n        97.19,\n        97.19,\n        97.19,\n        97.19,\n        97.19,\n        97.19\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    }\n  ],\n  \"errors\": [],\n  \"warnings\": []\n}\n"
+      },
+      "input_fingerprint": "1eb4e4c58d9340c309f295cdac1b76bca11c7ec61da3c2a48bbb3a2b03a34b5e",
+      "complete": true,
+      "status": "pass"
+    },
+    {
+      "id": "identity-consistency",
+      "applicable": true,
+      "checked_items": [
+        "idle",
+        "walk-forward",
+        "walk-back",
+        "crouch",
+        "jump",
+        "light-strike",
+        "heavy-strike",
+        "special",
+        "throw",
+        "guard",
+        "hitstun",
+        "knockdown",
+        "ko",
+        "win"
+      ],
+      "errors": [
+        "special: head_width_vs_reference grows to 1.39x reference; expected <= 1.28x",
+        "knockdown: head_width_vs_reference shrinks to 0.54x reference; expected >= 0.55x",
+        "knockdown: head_width_vs_reference varies by 0.56x across row; expected <= 0.42x",
+        "ko: head_width_vs_reference shrinks to 0.54x reference; expected >= 0.55x",
+        "ko: head_width_vs_reference varies by 0.56x across row; expected <= 0.42x",
+        "win: head_width_vs_reference shrinks to 0.79x reference; expected >= 0.82x",
+        "report declared ok:false"
+      ],
+      "warnings": [],
+      "evidence": {
+        "process_exit_code": 1,
+        "report_path": "qa/identity-consistency-report.json",
+        "report_sha256": "2d8cf9c3d571d55fd5df9bc818c661a05256c51d8f47d3598cd30d6222f6c98d",
+        "stdout_tail": "{\n  \"ok\": false,\n  \"engine\": \"identity-consistency-proxy\",\n  \"run_dir\": \"runs/toro-pixel-v2\",\n  \"states_mode\": \"all\",\n  \"quality_gate_note\": \"Head/upper/body proxy metrics are guardrails. Visual contact/onion/runtime review still wins when metrics miss a visible drift.\",\n  \"errors\": [\n    \"special: head_width_vs_reference grows to 1.39x reference; expected <= 1.28x\",\n    \"knockdown: head_width_vs_reference shrinks to 0.54x reference; expected >= 0.55x\",\n    \"knockdown: head_width_vs_reference varies by 0.56x across row; expected <= 0.42x\",\n    \"ko: head_width_vs_reference shrinks to 0.54x reference; expected >= 0.55x\",\n    \"ko: head_width_vs_reference varies by 0.56x across row; expected <= 0.42x\",\n    \"win: head_width_vs_reference shrinks to 0.79x reference; expected >= 0.82x\"\n  ],\n  \"warnings\": []\n}\n"
+      },
+      "input_fingerprint": "2d8cf9c3d571d55fd5df9bc818c661a05256c51d8f47d3598cd30d6222f6c98d",
+      "complete": true,
+      "status": "fail"
+    },
+    {
+      "id": "motion-variation",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "no explicit locomotion animation_workflows fact"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "asset-slots",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "extraction_mode=components does not use slots"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "isometric-tiles",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "asset_kind is not tileset"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "segmentation-diagnostic",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "production workflow does not use diagnostic segmentation as a gate"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "frame-registration",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "requires import-diagnostic asset_kind=sprite"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "runtime-preview",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "deferred until pre-package; policy reason: frame_semantics=animation requires manifest-driven runtime evidence"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    }
+  ],
+  "blockers": [
+    "animation-contracts: walk-forward: opposite-contact candidate duplicates the first lower-body pose (frame 1 vs frame 5 lower-body diff 0.000; expected >= 0.080; opposite contact lower-body pose is duplicated or too similar)",
+    "animation-contracts: walk-back: opposite-contact candidate duplicates the first lower-body pose (frame 1 vs frame 5 lower-body diff 0.000; expected >= 0.080; opposite contact lower-body pose is duplicated or too similar)",
+    "animation-contracts: special: one or more lower-body transitions are too similar (min 0.000; expected >= 0.040)",
+    "animation-contracts: guard: vfx-buildup-peak-decay needs at least 4 frames to prove required phases; found 3",
+    "animation-contracts: guard: VFX area/signal barely changes; buildup/peak/decay is not readable (alpha range 0.000, signal range 0.000, max pair diff 0.000)",
+    "animation-contracts: report declared ok:false",
+    "animation-contracts: report did not check expected items: crouch, light-strike, throw, win",
+    "identity-consistency: special: head_width_vs_reference grows to 1.39x reference; expected <= 1.28x",
+    "identity-consistency: knockdown: head_width_vs_reference shrinks to 0.54x reference; expected >= 0.55x",
+    "identity-consistency: knockdown: head_width_vs_reference varies by 0.56x across row; expected <= 0.42x",
+    "identity-consistency: ko: head_width_vs_reference shrinks to 0.54x reference; expected >= 0.55x",
+    "identity-consistency: ko: head_width_vs_reference varies by 0.56x across row; expected <= 0.42x",
+    "identity-consistency: win: head_width_vs_reference shrinks to 0.79x reference; expected >= 0.82x",
+    "identity-consistency: report declared ok:false"
+  ]
+}

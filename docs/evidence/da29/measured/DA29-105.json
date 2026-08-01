@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-105",
   "kind": "G",
-  "generatedAt": "2026-07-27T14:28:11.510Z",
+  "generatedAt": "2026-08-01T18:12:00.966Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-105",
@@ -19,8 +19,8 @@
     },
     {
       "path": "public/characters/nova-boxer/sprite-sheet-alpha.png",
-      "bytes": 341273,
-      "sha256": "8530964cdac11690694a0114aef71e35e21b832994167412609dff3c88b49664"
+      "bytes": 312330,
+      "sha256": "5533de237f182f1cf5bb063642bd1e9b4dd688eaa55c2c618e2b3455c844847c"
     }
   ],
   "functionResults": {

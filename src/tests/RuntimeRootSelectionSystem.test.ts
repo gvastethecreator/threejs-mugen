@@ -25,4 +25,19 @@ describe("RuntimeRootSelectionWorld", () => {
     expect(diagnostic.entries.find((entry) => entry.actorId === "p3")?.partnerIds).toEqual(["p1", "p5"]);
     expect(diagnostic.entries.some((entry) => entry.actorId === "neutral")).toBe(false);
   });
+
+  it("removes KO and inactive roots from the caller-owned P2 candidate domain", () => {
+    const p1 = { id: "p1" };
+    const p2: { id: string; overKo?: boolean } = { id: "p2" };
+    const p4: { id: string; standby?: boolean } = { id: "p4" };
+    const world = new RuntimeRootSelectionWorld();
+
+    expect(world.diagnostic([p1, p2, p4]).entries.find((entry) => entry.actorId === "p1")?.p2CandidateIds).toEqual(["p2", "p4"]);
+
+    p2.overKo = true;
+    expect(world.diagnostic([p1, p2, p4]).entries.find((entry) => entry.actorId === "p1")?.p2CandidateIds).toEqual(["p4"]);
+
+    p4.standby = true;
+    expect(world.diagnostic([p1, p2, p4]).entries.find((entry) => entry.actorId === "p1")?.p2CandidateIds).toEqual([]);
+  });
 });

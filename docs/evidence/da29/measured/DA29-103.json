@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-103",
   "kind": "G",
-  "generatedAt": "2026-07-27T14:28:11.456Z",
+  "generatedAt": "2026-08-01T18:12:00.942Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-103",
@@ -14,8 +14,8 @@
     },
     {
       "path": "public/characters/nova-boxer/sprite-sheet-alpha.png",
-      "bytes": 341273,
-      "sha256": "8530964cdac11690694a0114aef71e35e21b832994167412609dff3c88b49664"
+      "bytes": 312330,
+      "sha256": "5533de237f182f1cf5bb063642bd1e9b4dd688eaa55c2c618e2b3455c844847c"
     },
     {
       "path": "public/characters/mira-volt/sprite-sheet-alpha.png",
@@ -24,16 +24,16 @@
     },
     {
       "path": "public/characters/rook-apprentice/sprite-sheet-alpha.png",
-      "bytes": 350458,
-      "sha256": "d31a36ad22673e3a361c29269b9102203978e35ff59d93c390a488f1ffa66172"
+      "bytes": 319913,
+      "sha256": "364ab22331f0e456f019984b39e3c30d2de565bd2a566b068a910430517cc0b9"
     }
   ],
   "functionResults": {
     "records": [
       {
         "path": "public/characters/nova-boxer/sprite-sheet-alpha.png",
-        "sha256": "8530964cdac11690694a0114aef71e35e21b832994167412609dff3c88b49664",
-        "bytes": 341273
+        "sha256": "5533de237f182f1cf5bb063642bd1e9b4dd688eaa55c2c618e2b3455c844847c",
+        "bytes": 312330
       },
       {
         "path": "public/characters/mira-volt/sprite-sheet-alpha.png",
@@ -42,8 +42,8 @@
       },
       {
         "path": "public/characters/rook-apprentice/sprite-sheet-alpha.png",
-        "sha256": "d31a36ad22673e3a361c29269b9102203978e35ff59d93c390a488f1ffa66172",
-        "bytes": 350458
+        "sha256": "364ab22331f0e456f019984b39e3c30d2de565bd2a566b068a910430517cc0b9",
+        "bytes": 319913
       }
     ],
     "independentCount": 3

@@ -107,7 +107,13 @@ function scanPath(
   const lower = normalize(path).toLowerCase();
   if (lower.endsWith(".zss")) {
     addUnique(files.zss, path);
-    findings.add("file", "ZSS script file", path, undefined, "ZSS is scanner-only and is not executed by the browser runtime.");
+    findings.add(
+      "file",
+      "ZSS script file",
+      path,
+      undefined,
+      "ZSS is scanner-recognized; only the named direct character-state subset can execute under the ikemen-go profile.",
+    );
   }
   if (lower.endsWith(".lua")) {
     addUnique(files.lua, path);
@@ -310,10 +316,22 @@ function scanZssSyntaxLine(line: string, location: string, raw: string, findings
     findings.add("controller", "ZSS function definition", location, raw, "ZSS functions are recognized as scanner-only code structure.");
   }
   if (/^\[statedef\b/i.test(line)) {
-    findings.add("controller", "ZSS statedef block", location, raw, "ZSS state definitions are recognized as scanner-only code structure.");
+    findings.add(
+      "controller",
+      "ZSS statedef block",
+      location,
+      raw,
+      "ZSS StateDef structure is scanner-recognized; the executable character-state subset remains profile and grammar gated.",
+    );
   }
   if (/^\[state\b/i.test(line)) {
-    findings.add("controller", "ZSS state controller block", location, raw, "ZSS state controller blocks are recognized as scanner-only code structure.");
+    findings.add(
+      "controller",
+      "ZSS state controller block",
+      location,
+      raw,
+      "ZSS controller structure is scanner-recognized; execution requires the named profile, grammar, and controller allowlist.",
+    );
   }
   if (/\blet\s+[a-z_][a-z0-9_]*\s*=/i.test(line)) {
     findings.add("controller", "ZSS local variable", location, raw, "ZSS local variables are not compiled by the browser runtime.");
@@ -322,10 +340,22 @@ function scanZssSyntaxLine(line: string, location: string, raw: string, findings
     findings.add("controller", "ZSS loop statement", location, raw, "ZSS loops are scanner-only and are not executed.");
   }
   if (/\bignorehitpause\b/i.test(line)) {
-    findings.add("controller", "ZSS ignoreHitPause block", location, raw, "ZSS ignoreHitPause blocks are not executed by the partial runtime.");
+    findings.add(
+      "controller",
+      "ZSS ignoreHitPause block",
+      location,
+      raw,
+      "ZSS ignoreHitPause is admitted only inside the named executable character-state subset under ikemen-go.",
+    );
   }
   if (/\bpersistent\s*\(/i.test(line)) {
-    findings.add("controller", "ZSS persistent block", location, raw, "ZSS persistent blocks are not executed by the partial runtime.");
+    findings.add(
+      "controller",
+      "ZSS persistent block",
+      location,
+      raw,
+      "ZSS persistent is admitted only as a positive-integer wrapper inside the named executable character-state subset under ikemen-go.",
+    );
   }
   if (/^\s*(if|else\s+if|while|switch)\b/i.test(line)) {
     for (const trigger of findIkemenTriggers(line)) {

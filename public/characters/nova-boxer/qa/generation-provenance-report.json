@@ -1,0 +1,45 @@
+{
+  "id": "generation-provenance",
+  "applicable": true,
+  "checked_items": [
+    "crouch",
+    "hitstun",
+    "idle",
+    "jump",
+    "kick",
+    "punch",
+    "walk-forward"
+  ],
+  "errors": [],
+  "warnings": [],
+  "evidence": {
+    "provenance": "public\\characters\\nova-boxer\\source-provenance.json",
+    "source_type": "imagegen",
+    "sources": [
+      {
+        "path": "public\\characters\\nova-boxer\\source\\nova-boxer-imagegen-sheet.png",
+        "sha256": "e683c66998675d03684e927973dc3b15e8b2641c5af6c8aa6e4627206d4334a5",
+        "size_bytes": 1721169,
+        "states": [
+          "idle",
+          "crouch",
+          "jump",
+          "punch",
+          "kick",
+          "hitstun"
+        ]
+      },
+      {
+        "path": "public\\characters\\nova-boxer\\source\\nova-boxer-walk-forward-imagegen-row.png",
+        "sha256": "1b4da4d7d2c2e65e5c18d03cf6b79049985288105f1935ea367e4c987c5cb929",
+        "size_bytes": 1348642,
+        "states": [
+          "walk-forward"
+        ]
+      }
+    ]
+  },
+  "input_fingerprint": "706e5ac2b995b7af1c3fe590eaf9365cf6f48c46e91410baf3a263cf824bc1dc",
+  "complete": true,
+  "status": "pass"
+}

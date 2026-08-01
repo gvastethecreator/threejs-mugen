@@ -1,0 +1,12 @@
+{
+  "guard": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true,
+    "action": "planted taekwondo guard, absorb impact, restrained forearm wind arc, settle",
+    "animation_workflows": [
+      "fighting-stance-idle",
+      "vfx-buildup-peak-decay"
+    ]
+  }
+}

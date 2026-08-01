@@ -2,6 +2,7 @@ import type { HitFallControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import { applyRuntimeDamage, canRuntimeDamageKill, scaleRuntimeIncomingDamage } from "./CombatResolver";
 import { evaluateRuntimeControllerNumber } from "./RuntimeControllerExpressionContextSystem";
+import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
 import type { RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import type { CharacterRuntimeState } from "./types";
 
@@ -41,8 +42,22 @@ function applyHitFallVelocity(state: CharacterRuntimeState): RuntimeHitFallContr
   if (state.moveType !== "H" || !state.hitFall) {
     return { applied: false, controllerType: "hitfallvel" };
   }
+  if (state.hitFall.downBounce === false) {
+    // An explicit down.bounce = 0 suppresses the one-shot Common1 bounce.
+    // Keep the controller consumed while clearing all bounce components.
+    state.vel.x = 0;
+    state.vel.y = 0;
+    if (state.combatDepth) {
+      state.combatDepth.velocity = 0;
+    }
+    return { applied: true, controllerType: "hitfallvel" };
+  }
   if (state.hitFall.velocity.x !== undefined) {
     state.vel.x = state.hitFall.velocity.x;
+  }
+  if (state.hitFall.velocity.z !== undefined) {
+    state.combatDepth ??= runtimeCombatDepthFromConstants();
+    state.combatDepth.velocity = state.hitFall.velocity.z;
   }
   state.vel.y = state.hitFall.velocity.y;
   return { applied: true, controllerType: "hitfallvel" };
@@ -120,12 +135,17 @@ function applyHitFallSet(
     operation?.controllerType === "hitfallset"
       ? operation.yVelocity ?? numberParam(controller, state, context, "yvel", "y")
       : numberParam(controller, state, context, "yvel", "y");
+  const z =
+    operation?.controllerType === "hitfallset"
+      ? operation.zVelocity ?? numberParam(controller, state, context, "zvel", "z")
+      : numberParam(controller, state, context, "zvel", "z");
   state.hitFall = {
     ...current,
     falling: value !== undefined ? value !== 0 : current.falling,
     velocity: {
       x: x ?? current.velocity.x,
       y: y ?? current.velocity.y,
+      ...(z === undefined ? (current.velocity.z === undefined ? {} : { z: current.velocity.z }) : { z }),
     },
   };
   return { applied: true, controllerType: "hitfallset" };

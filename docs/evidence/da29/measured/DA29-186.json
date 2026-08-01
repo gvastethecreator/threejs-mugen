@@ -2,24 +2,24 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-186",
   "kind": "G",
-  "generatedAt": "2026-07-27T14:28:11.980Z",
+  "generatedAt": "2026-08-01T18:12:01.183Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-186",
   "anchors": [
     {
       "path": "src/app/ProjectStorage.ts",
-      "bytes": 5238,
-      "sha256": "3a6c5749c453224683149a840d7816a19c88f07a196b6a78ce6aa17dc02a7bb3"
+      "bytes": 5632,
+      "sha256": "225bf6459b394e222458d059b412738767164fef2c2d6ffcdf115d69066b03c4"
     },
     {
       "path": "package.json",
-      "bytes": 4237,
-      "sha256": "02b5581499e299e99f7fbf2468e8f92405df73d614acf70e35a34326fc732011"
+      "bytes": 6728,
+      "sha256": "9f4e37b67ea9fac7c3d637de0ac21be74f23f38a24aae16b7daf3ce19fc8ddac"
     }
   ],
   "functionResults": {
-    "projectStorageBytes": 5238,
+    "projectStorageBytes": 5632,
     "hasTemplate": true
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-186; broader product claims remain blocked"

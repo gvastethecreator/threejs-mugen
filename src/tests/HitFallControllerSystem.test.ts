@@ -11,8 +11,8 @@ describe("RuntimeHitFallControllerWorld", () => {
     const world = new RuntimeHitFallControllerWorld();
     const state = runtime({
       hitFall: {
-        falling: false,
-        damage: 24,
+      falling: false,
+      damage: 24,
         defenceUp: 150,
         kill: false,
         velocity: { x: 1, y: -2 },
@@ -24,6 +24,7 @@ describe("RuntimeHitFallControllerWorld", () => {
       falling: true,
       xVelocity: -3,
       yVelocity: -8,
+      zVelocity: 2.5,
     };
 
     expect(world.applyController(state, controller("HitFallSet"), operation)).toEqual({
@@ -36,7 +37,7 @@ describe("RuntimeHitFallControllerWorld", () => {
       damage: 24,
       defenceUp: 150,
       kill: false,
-      velocity: { x: -3, y: -8 },
+      velocity: { x: -3, y: -8, z: 2.5 },
     });
   });
 
@@ -104,6 +105,60 @@ describe("RuntimeHitFallControllerWorld", () => {
       controllerType: "hitfallvel",
     });
     expect(idleState.vel).toEqual({ x: 9, y: 9 });
+  });
+
+  it("applies authored Ikemen fall.zvelocity to the combat-depth velocity", () => {
+    const world = new RuntimeHitFallControllerWorld();
+    const state = runtime({
+      moveType: "H",
+      combatDepth: { position: 3, velocity: -1, size: [3, 3], attack: [4, 4] },
+      hitFall: {
+        falling: true,
+        damage: 0,
+        velocity: { x: -4, y: -6, z: 2.25 },
+      },
+    });
+
+    world.applyController(state, controller("HitFallVel"));
+
+    expect(state.vel).toEqual({ x: -4, y: -6 });
+    expect(state.combatDepth?.velocity).toBe(2.25);
+  });
+
+  it("honors explicit down.bounce while preserving the omitted/true bounce path", () => {
+    const world = new RuntimeHitFallControllerWorld();
+    const suppressed = runtime({
+      moveType: "H",
+      vel: { x: 9, y: 9 },
+      hitFall: {
+        falling: true,
+        damage: 0,
+        downBounce: false,
+        velocity: { x: -4, y: -6 },
+      },
+    });
+    expect(world.applyController(suppressed, controller("HitFallVel"))).toEqual({
+      applied: true,
+      controllerType: "hitfallvel",
+    });
+    expect(suppressed.vel).toEqual({ x: 0, y: 0 });
+    expect(suppressed.combatDepth).toBeUndefined();
+
+    const enabled = runtime({
+      moveType: "H",
+      vel: { x: 9, y: 9 },
+      hitFall: {
+        falling: true,
+        damage: 0,
+        downBounce: true,
+        velocity: { x: -4, y: -6 },
+      },
+    });
+    expect(world.applyController(enabled, controller("HitFallVel"))).toEqual({
+      applied: true,
+      controllerType: "hitfallvel",
+    });
+    expect(enabled.vel).toEqual({ x: -4, y: -6 });
   });
 
   it("applies scaled HitFallDamage and respects nonlethal fall damage", () => {

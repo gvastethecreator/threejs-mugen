@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "kind": "screenshot-evidence",
+  "evidence_kind": "runtime-playback",
+  "applicable": true,
+  "artifact": {
+    "path": "qa/runtime-preview/guard-playback.gif",
+    "sha256": "d919ce95f21dbf8ca283cc091d1b3f17ce04fc31f54aae4dac73085e310969ce",
+    "size_bytes": 4735,
+    "media_type": "image/gif",
+    "width": 256,
+    "height": 256
+  },
+  "sources": [
+    {
+      "role": "manifest",
+      "path": "manifest.json",
+      "sha256": "5a17667eda84ff02f6e690762ca6146e6d6a5ce9a9b8a39e87bf1c3cd6ac4bed",
+      "size_bytes": 12650
+    },
+    {
+      "role": "atlas",
+      "path": "sprite-sheet-alpha.png",
+      "sha256": "90da4b745f0dc7b4a25dac2afb72f25eb351c780242a01f0e6744c40eb344aa4",
+      "size_bytes": 513351
+    }
+  ],
+  "input_fingerprint": "sha256:91dc243b2085ac6a127ba180ee5d6fcebf1341be1211d7ee55a466dc97962683",
+  "state": "guard",
+  "frames": [
+    0,
+    1,
+    2
+  ],
+  "durations_ms": [
+    100,
+    100,
+    100
+  ],
+  "viewport": {
+    "width": 256,
+    "height": 256,
+    "dpr": 1.0
+  },
+  "renderer": {
+    "name": "spritesheet-expert-pillow-runtime-preview",
+    "version": "12.3.0"
+  },
+  "color_space": "sRGB",
+  "background": "#101018",
+  "sampling": "nearest",
+  "overlays": [],
+  "placements": [
+    {
+      "frame": 0,
+      "x": 32,
+      "y": 32,
+      "width": 192,
+      "height": 192,
+      "source_rect": {
+        "x": 0,
+        "y": 1728,
+        "w": 192,
+        "h": 192
+      }
+    },
+    {
+      "frame": 1,
+      "x": 32,
+      "y": 32,
+      "width": 192,
+      "height": 192,
+      "source_rect": {
+        "x": 192,
+        "y": 1728,
+        "w": 192,
+        "h": 192
+      }
+    },
+    {
+      "frame": 2,
+      "x": 32,
+      "y": 32,
+      "width": 192,
+      "height": 192,
+      "source_rect": {
+        "x": 384,
+        "y": 1728,
+        "w": 192,
+        "h": 192
+      }
+    }
+  ],
+  "captured_at": "2026-08-01T04:59:40.360668Z"
+}

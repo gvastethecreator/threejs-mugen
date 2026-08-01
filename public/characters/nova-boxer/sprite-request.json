@@ -1,4 +1,9 @@
 {
+    "character":  {
+                      "id":  "nova-boxer",
+                      "description":  "Side-view boxer in a restrained blue, charcoal and amber training uniform.",
+                      "base_image":  "references/identity-anchor.png"
+                  },
     "preset":  {
                    "id":  "custom-atlas",
                    "camera":  "custom",
@@ -61,6 +66,25 @@
                                    "action":  "recoiling hit stun"
                                }
                },
+    "source_type":  "imagegen",
+    "chroma_key":  {
+                       "name":  "legacy-green",
+                       "hex":  "#00FF00",
+                       "rgb":  [
+                                   0,
+                                   255,
+                                   0
+                               ],
+                       "selection":  "compatibility-only"
+                   },
+    "background_removal":  {
+                                "method":  "auto",
+                                "model":  "birefnet-general",
+                                "device":  "auto",
+                                "alpha_matting":  false,
+                                "post_rembg_chroma_cleanup":  false,
+                                "source_family":  "legacy-chroma"
+                            },
     "asset_kind":  "sprite",
     "extraction_mode":  "components",
     "style_preset":  "illustration",

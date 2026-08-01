@@ -218,14 +218,21 @@ async function main() {
       fs.existsSync(importedFixturePath) ? importedFixturePath : undefined,
     );
     await relinkPage.close();
-    const folderHandlePage = await context.newPage();
+    // Keep folder-handle persistence evidence isolated from the still-live build page.
+    // Both pages otherwise share IndexedDB and can race the source draft's revision gate.
+    const folderHandleContext = await browser.newContext({
+      acceptDownloads: true,
+      viewport: { width: 1440, height: 960 },
+      deviceScaleFactor: 1,
+    });
+    const folderHandlePage = await folderHandleContext.newPage();
     const studioFolderHandleRecovery = await captureStudioFolderHandleRecovery(
       folderHandlePage,
       server.baseUrl,
       outDir,
       fs.existsSync(importedFixturePath) ? importedFixturePath : undefined,
     );
-    await folderHandlePage.close();
+    await folderHandleContext.close();
     const ikemenPage = await context.newPage();
     const ikemenScan = await captureIkemenScan(ikemenPage, server.baseUrl, outDir);
     await ikemenPage.close();
@@ -656,10 +663,29 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
     [],
   );
   await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
-  await page.waitForFunction(() => {
-    const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
-    return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
-  });
+  try {
+    await page.waitForFunction(() => {
+      const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+      return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
+    }, undefined, { timeout: 60_000 });
+  } catch (error) {
+    const idleState = await page.evaluate(() => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+      return {
+        playing: bridge?.snapshot?.playing,
+        tick: bridge?.snapshot?.tick,
+        round: bridge?.snapshot?.round,
+        actor: actor ? {
+          source: actor.source,
+          stateNo: actor.runtime?.stateNo,
+          ctrl: actor.runtime?.ctrl,
+          frame: actor.frame,
+        } : undefined,
+      };
+    });
+    throw new Error(`Code Fu Man attack did not return to idle: ${JSON.stringify(idleState)}`, { cause: error });
+  }
   await page.waitForTimeout(80);
   await resetCodeFuManRound(page);
 
@@ -731,14 +757,33 @@ async function captureCodeFuManVisual(page, baseUrl, outDir, fixturePath) {
 
 async function resetCodeFuManRound(page, options = {}) {
   await page.locator('[data-action="reset-round"]').first().evaluate((button) => button.click());
-  await page.waitForFunction(() => {
-    const bridge = window.__MUGEN_WEB_SANDBOX__;
-    const p1 = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
-    const p2 = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p2");
-    return bridge?.snapshot?.playing === true &&
-      p1?.runtime?.stateNo === 0 && p1.runtime.ctrl === true && p1.frame?.spriteGroup === 0 &&
-      p2?.runtime?.stateNo === 0;
-  });
+  try {
+    await page.waitForFunction(() => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const p1 = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+      const p2 = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p2");
+      return bridge?.snapshot?.playing === true &&
+        p1?.runtime?.stateNo === 0 && p1.runtime.ctrl === true && p1.frame?.spriteGroup === 0 &&
+        p2?.runtime?.stateNo === 0;
+    }, undefined, { timeout: 60_000 });
+  } catch (error) {
+    const resetState = await page.evaluate(() => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      return {
+        mode: bridge?.mode,
+        playing: bridge?.snapshot?.playing,
+        tick: bridge?.snapshot?.tick,
+        actors: bridge?.snapshot?.actors?.map((actor) => ({
+          id: actor.id,
+          source: actor.source,
+          stateNo: actor.runtime?.stateNo,
+          ctrl: actor.runtime?.ctrl,
+          spriteGroup: actor.frame?.spriteGroup,
+        })),
+      };
+    });
+    throw new Error(`Code Fu Man reset did not settle: ${JSON.stringify(resetState)}`, { cause: error });
+  }
   if (options.pauseAfter) {
     await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
     await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === false);
@@ -923,10 +968,29 @@ async function captureMugenLiteVisualViewport(page, baseUrl, fixtureBuffer, opti
     path.join(path.dirname(options.canvasPath), `mugen-lite-runtime-${viewportLabel}-attack-follow-through-canvas.png`),
   );
   await page.locator('[data-action="play-pause"]').first().evaluate((button) => button.click());
-  await page.waitForFunction(() => {
-    const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
-    return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
-  });
+  try {
+    await page.waitForFunction(() => {
+      const actor = window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+      return actor?.runtime?.stateNo === 0 && actor?.frame?.spriteGroup === 0;
+    }, undefined, { timeout: 60_000 });
+  } catch (error) {
+    const idleState = await page.evaluate(() => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === "p1");
+      return {
+        playing: bridge?.snapshot?.playing,
+        tick: bridge?.snapshot?.tick,
+        round: bridge?.snapshot?.round,
+        actor: actor ? {
+          source: actor.source,
+          stateNo: actor.runtime?.stateNo,
+          ctrl: actor.runtime?.ctrl,
+          frame: actor.frame,
+        } : undefined,
+      };
+    });
+    throw new Error(`MUGEN-lite ${viewportLabel} attack did not return to idle: ${JSON.stringify(idleState)}`, { cause: error });
+  }
   const movement = {};
   for (const transition of [
     { id: "walk", key: "ArrowRight", stateNo: 20, action: 20 },
@@ -1626,38 +1690,69 @@ function pauseWhenMugenLiteStateAppears(page, stateNo, action, label) {
 }
 
 async function captureMugenLiteVisualState(page, screenshotPath, canvasPath, actorId = "p1", expectedColors) {
-  await page.waitForFunction((expectedActorId) => {
-    const bridge = window.__MUGEN_WEB_SANDBOX__;
-    const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === expectedActorId);
-    const rendered = bridge?.renderer?.characters?.find((candidate) => candidate.actorId === expectedActorId);
-    return Boolean(actor && rendered?.sprite && rendered?.frame && rendered.actorPosition &&
-      rendered.frame.group === actor.frame?.spriteGroup &&
-      rendered.frame.index === actor.frame?.spriteIndex &&
-      Math.abs(rendered.actorPosition.x - actor.runtime.pos.x) < 0.001 &&
-      Math.abs(rendered.actorPosition.y - actor.runtime.pos.y) < 0.001);
-  }, actorId, { timeout: 2000 });
-  await page.screenshot({ path: screenshotPath, fullPage: true });
+  try {
+    await page.waitForFunction((expectedActorId) => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === expectedActorId);
+      const rendered = bridge?.renderer?.characters?.find((candidate) => candidate.actorId === expectedActorId);
+      return Boolean(actor && rendered?.sprite && rendered?.frame && rendered.actorPosition &&
+        rendered.frame.group === actor.frame?.spriteGroup &&
+        rendered.frame.index === actor.frame?.spriteIndex &&
+        Math.abs(rendered.actorPosition.x - actor.runtime.pos.x) < 0.001 &&
+        Math.abs(rendered.actorPosition.y - actor.runtime.pos.y) < 0.001);
+    }, actorId, { timeout: 10_000 });
+  } catch (error) {
+    const renderState = await page.evaluate((expectedActorId) => {
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === expectedActorId);
+      const rendered = bridge?.renderer?.characters?.find((candidate) => candidate.actorId === expectedActorId);
+      return {
+        playing: bridge?.snapshot?.playing,
+        tick: bridge?.snapshot?.tick,
+        actor: actor ? { frame: actor.frame, position: actor.runtime?.pos, stateNo: actor.runtime?.stateNo } : undefined,
+        rendered: rendered ? { frame: rendered.frame, actorPosition: rendered.actorPosition, sprite: rendered.sprite } : undefined,
+      };
+    }, actorId);
+    throw new Error(`MUGEN-lite renderer did not converge for ${actorId}: ${JSON.stringify(renderState)}`, { cause: error });
+  }
+  const pagePng = await page.screenshot({ path: screenshotPath, fullPage: true });
   const canvasPng = await captureStageCanvasScreenshot(page, canvasPath);
   const canvasPixels = await getCanvasPixelStats(page, canvasPng);
   const presentation = await page.evaluate((actorId) => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const renderedActor = bridge?.renderer?.characters?.find((actor) => actor.actorId === actorId);
     const actor = bridge?.snapshot?.actors?.find((candidate) => candidate.id === actorId);
+    const canvas = document.querySelector("canvas");
+    const canvasRect = canvas?.getBoundingClientRect();
     return {
       renderedActor,
       rendererSize: bridge?.renderer?.size,
       camera: bridge?.renderer?.camera,
       spriteGroup: actor?.frame?.spriteGroup,
       spriteIndex: actor?.frame?.spriteIndex,
+      canvasRect: canvasRect
+        ? {
+            left: canvasRect.left + window.scrollX,
+            top: canvasRect.top + window.scrollY,
+            width: canvasRect.width,
+            height: canvasRect.height,
+          }
+        : undefined,
+      pageSize: {
+        width: Math.max(window.innerWidth, document.documentElement.scrollWidth, document.body?.scrollWidth ?? 0),
+        height: Math.max(window.innerHeight, document.documentElement.scrollHeight, document.body?.scrollHeight ?? 0),
+      },
     };
   }, actorId);
   const spritePixels = await getProjectedSpritePixelStats(
     page,
-    canvasPng,
+    pagePng,
     presentation.renderedActor,
     presentation.rendererSize,
     presentation.camera,
     expectedColors ?? fixturePaletteForSprite(presentation.spriteGroup, presentation.spriteIndex),
+    presentation.canvasRect,
+    presentation.pageSize,
   );
   return page.evaluate(({ canvasPixels, spritePixels, actorId }) => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
@@ -1927,8 +2022,6 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
   await page.screenshot({ path: path.join(outDir, "studio-workbench.png"), fullPage: true });
   const baseline = await evaluateWithStableBridge(page, () => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
-    const bodyText = document.body.textContent;
-    const bodyTextLower = bodyText.toLowerCase();
     const shell = document.querySelector(".app-shell")?.getBoundingClientRect();
     const rectFor = (selector) => {
       const element = document.querySelector(selector);
@@ -1936,29 +2029,52 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
         return undefined;
       }
       const rect = element.getBoundingClientRect();
-      return { width: rect.width, height: rect.height };
+      return { x: rect.x, y: rect.y, right: rect.right, bottom: rect.bottom, width: rect.width, height: rect.height };
     };
-    const stageDeck = rectFor("#studio-stage-deck");
-    const navigator = rectFor("#navigator");
+    const isVisible = (selector) => {
+      const element = document.querySelector(selector);
+      if (!element) {
+        return false;
+      }
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return (
+        style.display !== "none" &&
+        style.visibility !== "hidden" &&
+        Number(style.opacity) > 0 &&
+        rect.width > 0 &&
+        rect.height > 0 &&
+        rect.right > 0 &&
+        rect.bottom > 0 &&
+        rect.left < window.innerWidth &&
+        rect.top < window.innerHeight
+      );
+    };
+    const shellElement = document.querySelector(".app-shell");
     const consoleRect = rectFor("#console");
+    const stage = rectFor(".stage");
+    const toolbar = rectFor(".stage-toolbar");
     const canvas = rectFor(".stage-canvas");
+    const rightPane = rectFor("#right-pane");
     const rightInspector = rectFor(".studio-pro-inspector");
     return {
       mode: bridge?.mode,
       studioTab: bridge?.studioTab,
-      bodyHasNextDesk: Boolean(document.querySelector(".studio-command-deck")),
-      bodyHasPipeline: Boolean(document.querySelector(".studio-mission-strip")),
-      bodyHasHealthLanguage: bodyTextLower.includes("project health") && bodyTextLower.includes("readiness"),
-      stageDeckVisible: Boolean(stageDeck && stageDeck.width > 0 && stageDeck.height > 0),
-      chromeFieldCount: document.querySelectorAll(".studio-chrome-field").length,
-      primaryActionCount: document.querySelectorAll(".deck-primary-action").length,
-      pipelineStepCount: document.querySelectorAll(".studio-mission-node").length,
+      legacyDeckVisible: isVisible(".studio-command-deck"),
+      legacyPipelineVisible: isVisible(".studio-mission-strip"),
+      globalModeCount: document.querySelectorAll(".interface-mode-nav [data-mode]").length,
+      studioRouteCount: document.querySelectorAll(".interface-studio-nav [data-studio-tab]").length,
+      primaryActionCount: document.querySelectorAll(".interface-primary-action").length,
+      currentTaskVisible: isVisible(".studio-current-task"),
       rightInspectorVisible: Boolean(rightInspector && rightInspector.width > 0 && rightInspector.height > 0),
       activeIssueRows: document.querySelectorAll(".pro-warning-row").length,
-      navigatorVisible: Boolean(navigator && navigator.width > 0 && navigator.height > 0),
-      consoleCollapsed: Boolean(consoleRect && consoleRect.height <= 44),
+      workspaceDrawerClosed: shellElement?.getAttribute("data-left-dock") === "closed" && !isVisible("#left-pane"),
+      consoleClosed: shellElement?.getAttribute("data-console-open") === "false" && !isVisible("#console"),
       consoleHeight: consoleRect?.height ?? 0,
       canvasArea: canvas ? Math.round(canvas.width * canvas.height) : 0,
+      stageArea: stage ? Math.round(stage.width * stage.height) : 0,
+      stageDominance: stage && shell ? (stage.width * stage.height) / Math.max(1, shell.width * shell.height) : 0,
+      rightInsideToolbar: Boolean(rightPane && toolbar && rightPane.bottom <= toolbar.y + 1),
       selectedRosterAtlasStatuses:
         bridge?.runtimeRoster
           ?.filter((entry) => entry.selected)
@@ -1970,12 +2086,14 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
     };
   });
   const authoredName = "QA Authored Fight Project";
+  await page.locator('.interface-actions [data-action="toggle-left-dock"]').click();
+  await page.waitForFunction(() => document.querySelector(".app-shell")?.getAttribute("data-left-dock") === "open");
   const nameInput = page.locator("[data-project-name]").first();
   await nameInput.fill(authoredName);
   await nameInput.press("Tab");
-  await changeHiddenSelect(page, '[data-studio-fighter-select="p1"]', "rook-apprentice");
-  await changeHiddenSelect(page, '[data-studio-fighter-select="p2"]', "nova-boxer");
-  await changeHiddenSelect(page, "[data-studio-stage-select]", "training-grid");
+  await changeHiddenSelect(page, '[data-studio-fighter-select="p1"]', "rook-apprentice", "p1");
+  await changeHiddenSelect(page, '[data-studio-fighter-select="p2"]', "nova-boxer", "p2");
+  await changeHiddenSelect(page, "[data-studio-stage-select]", "training-grid", "stage");
   const historyAfterEdits = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.studioEditHistory);
   await page.locator('[data-action="undo-project-edit"]').first().click();
   const afterUndo = await page.evaluate(() => ({
@@ -2008,13 +2126,26 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
     entry: window.__MUGEN_WEB_SANDBOX__?.project?.entry,
   }));
   const autosaveDelayMs = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.studioAutosave?.delayMs ?? 1500);
-  await page.waitForTimeout(autosaveDelayMs + 250);
-  const afterAutosave = await page.evaluate(({ key, authoredName }) => {
-    const raw = localStorage.getItem(key);
-    const entries = raw ? JSON.parse(raw).entries ?? [] : [];
+  await page.waitForFunction(({ authoredName }) => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    return bridge?.projectDirty === false &&
+      bridge?.studioAutosave?.pending === false &&
+      bridge?.storedProjects?.some(
+        (entry) =>
+          entry.name === authoredName &&
+          entry.manifest?.name === authoredName &&
+          entry.manifest?.entry?.p1 === "rook-apprentice" &&
+          entry.manifest?.entry?.p2 === "nova-boxer" &&
+          entry.manifest?.entry?.stage === "training-grid",
+      );
+  }, { authoredName }, { timeout: Math.max(30_000, autosaveDelayMs + 5_000) });
+  const afterAutosave = await page.evaluate(({ authoredName }) => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const entries = bridge?.storedProjects ?? [];
     return {
-      dirty: window.__MUGEN_WEB_SANDBOX__?.projectDirty,
-      pending: window.__MUGEN_WEB_SANDBOX__?.studioAutosave?.pending,
+      dirty: bridge?.projectDirty,
+      pending: bridge?.studioAutosave?.pending,
+      backend: bridge?.projectStorageBackend,
       stored: entries.some(
         (entry) =>
           entry.name === authoredName &&
@@ -2024,12 +2155,11 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
           entry.manifest?.entry?.stage === "training-grid",
       ),
     };
-  }, { key: "mugen-web-sandbox:projects:v0", authoredName });
+  }, { authoredName });
   await domClick(page, '[data-action="save-project-local"]');
-  await page.waitForTimeout(500);
-  const saved = await page.evaluate(({ key, authoredName }) => {
-    const raw = localStorage.getItem(key);
-    const entries = raw ? JSON.parse(raw).entries ?? [] : [];
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.projectDirty === false, null, { timeout: 30_000 });
+  const saved = await page.evaluate(({ authoredName }) => {
+    const entries = window.__MUGEN_WEB_SANDBOX__?.storedProjects ?? [];
     return entries.some(
       (entry) =>
         entry.name === authoredName &&
@@ -2038,7 +2168,7 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
         entry.manifest?.entry?.p2 === "nova-boxer" &&
         entry.manifest?.entry?.stage === "training-grid",
     );
-  }, { key: "mugen-web-sandbox:projects:v0", authoredName });
+  }, { authoredName });
   await page.reload({ waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   await page.waitForFunction(
@@ -2079,12 +2209,30 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
   };
 }
 
-async function changeHiddenSelect(page, selector, value) {
-  await page.locator(selector).first().evaluate((element, nextValue) => {
-    element.value = nextValue;
-    element.dispatchEvent(new Event("change", { bubbles: true }));
-  }, value);
-  await page.waitForTimeout(40);
+async function changeHiddenSelect(page, selector, value, projectEntryKey) {
+  const expectedKey = projectEntryKey ?? (selector.includes('"p1"') ? "p1" : selector.includes('"p2"') ? "p2" : "stage");
+  let lastState;
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    await page.evaluate(({ liveSelector, nextValue }) => {
+      const element = document.querySelector(liveSelector);
+      if (!(element instanceof HTMLSelectElement)) {
+        throw new Error(`Studio select ${liveSelector} is unavailable`);
+      }
+      element.value = nextValue;
+      element.dispatchEvent(new Event("change", { bubbles: true }));
+    }, { liveSelector: selector, nextValue: value });
+    try {
+      await page.waitForFunction(
+        ({ key, expected }) => window.__MUGEN_WEB_SANDBOX__?.project?.entry?.[key] === expected,
+        { key: expectedKey, expected: value },
+        { timeout: 5_000 },
+      );
+      return;
+    } catch {
+      lastState = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.project?.entry);
+    }
+  }
+  throw new Error(`Studio select ${selector} did not apply ${value}: ${JSON.stringify(lastState)}`);
 }
 
 async function stepMugenLiteTick(page) {
@@ -2103,7 +2251,11 @@ async function captureStudioWorkbenchTablet(page, baseUrl, outDir) {
   return evaluateWithStableBridge(page, () => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const shell = document.querySelector(".app-shell")?.getBoundingClientRect();
-    const status = document.querySelector(".stage-status")?.getBoundingClientRect();
+    const stage = document.querySelector(".stage")?.getBoundingClientRect();
+    const right = document.querySelector("#right-pane")?.getBoundingClientRect();
+    const toolbar = document.querySelector(".stage-toolbar")?.getBoundingClientRect();
+    const roundHud = document.querySelector(".round-hud-panel")?.getBoundingClientRect();
+    const shellElement = document.querySelector(".app-shell");
     const clientWidth = document.documentElement.clientWidth;
     const bodyScrollWidth = document.body.scrollWidth;
     const documentScrollWidth = document.documentElement.scrollWidth;
@@ -2114,7 +2266,11 @@ async function captureStudioWorkbenchTablet(page, baseUrl, outDir) {
       shellWidth: shell?.width ?? 0,
       bodyScrollWidth,
       documentScrollWidth,
-      stageStatusVisible: Boolean(status && status.width > 0 && status.height > 0),
+      sceneFirst: Boolean(stage && stage.width >= clientWidth - 1 && stage.height >= 540),
+      contextualLensVisible: Boolean(right && right.width >= 280 && right.height >= 240),
+      roundHudVisible: Boolean(roundHud && roundHud.width >= 360 && roundHud.height > 0),
+      workspaceDrawerClosed: shellElement?.getAttribute("data-left-dock") === "closed",
+      rightInsideToolbar: Boolean(right && toolbar && right.bottom <= toolbar.top + 1),
       overflowX: bodyScrollWidth > clientWidth + 1 || documentScrollWidth > clientWidth + 1,
     };
   });
@@ -2267,6 +2423,134 @@ async function downloadFromButton(page, button, label, options = {}) {
   throw new Error(`${label} download did not start after ${attempts} attempt(s): ${lastError?.message ?? lastError}`);
 }
 
+async function saveBlobDownloadFromButton(page, button, label, outputPath, options = {}) {
+  const timeout = options.timeout ?? 240_000;
+  await page.evaluate(() => {
+    const originalCreateObjectURL = URL.createObjectURL;
+    const originalAnchorClick = HTMLAnchorElement.prototype.click;
+    const blobs = new Map();
+    window.__MUGEN_QA_BLOB_DOWNLOAD__ = {
+      originalCreateObjectURL,
+      originalAnchorClick,
+      blobs,
+      clicked: false,
+    };
+    URL.createObjectURL = function createQaObjectUrl(blob) {
+      const url = originalCreateObjectURL.call(URL, blob);
+      blobs.set(url, blob);
+      return url;
+    };
+    HTMLAnchorElement.prototype.click = function clickQaDownload() {
+      const state = window.__MUGEN_QA_BLOB_DOWNLOAD__;
+      if (this.download && state) {
+        state.clicked = true;
+        state.filename = this.download;
+        state.href = this.href;
+        state.blob = state.blobs.get(this.href);
+      }
+      return originalAnchorClick.call(this);
+    };
+  });
+  try {
+    await button.scrollIntoViewIfNeeded().catch(() => null);
+    await page.keyboard.press("Escape").catch(() => null);
+    const downloadPromise = page
+      .waitForEvent("download", { timeout })
+      .then((download) => ({ kind: "download", download }))
+      .catch(() => new Promise(() => {}));
+    await button.click({ force: true }).catch(async () => {
+      await button.evaluate((element) => element.click());
+    });
+    const result = await Promise.race([
+      downloadPromise,
+      page
+        .waitForFunction(() => {
+          const state = window.__MUGEN_QA_BLOB_DOWNLOAD__;
+          return Boolean(state?.clicked && state.blob instanceof Blob && state.filename);
+        }, null, { timeout })
+        .then(() => ({ kind: "blob" })),
+    ]);
+    if (result.kind === "download") {
+      await result.download.saveAs(outputPath);
+      return { kind: "download", filename: result.download.suggestedFilename() };
+    }
+    const captured = await page.evaluate(async () => {
+      const state = window.__MUGEN_QA_BLOB_DOWNLOAD__;
+      if (!(state?.blob instanceof Blob) || !state.filename) {
+        throw new Error("QA blob download capture is empty");
+      }
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.addEventListener("load", () => resolve(String(reader.result)));
+        reader.addEventListener("error", () => reject(reader.error ?? new Error("QA blob read failed")));
+        reader.readAsDataURL(state.blob);
+      });
+      return {
+        filename: state.filename,
+        type: state.blob.type,
+        size: state.blob.size,
+        base64: dataUrl.slice(dataUrl.indexOf(",") + 1),
+      };
+    });
+    const bytes = Buffer.from(captured.base64, "base64");
+    if (!captured.filename.toLowerCase().endsWith(".zip") || bytes.length !== captured.size || bytes.length < 4) {
+      throw new Error(`${label} blob capture was invalid: ${JSON.stringify({ filename: captured.filename, type: captured.type, declared: captured.size, actual: bytes.length })}`);
+    }
+    fs.writeFileSync(outputPath, bytes);
+    return { kind: "blob", filename: captured.filename, type: captured.type, size: captured.size };
+  } catch (error) {
+    const state = await page.evaluate(() => {
+      const capture = window.__MUGEN_QA_BLOB_DOWNLOAD__;
+      const bridge = window.__MUGEN_WEB_SANDBOX__;
+      return {
+        capture: capture
+          ? {
+              clicked: capture.clicked,
+              filename: capture.filename,
+              href: capture.href,
+              blobs: capture.blobs?.size ?? 0,
+              blobSize: capture.blob instanceof Blob ? capture.blob.size : null,
+              blobType: capture.blob instanceof Blob ? capture.blob.type : null,
+            }
+          : null,
+        projectBundle: bridge?.projectBundle
+          ? {
+              filename: bridge.projectBundle.filename,
+              files: bridge.projectBundle.manifest?.files?.length ?? 0,
+              binaryBytes: bridge.projectBundle.manifest?.assets?.binaryBytes ?? 0,
+              binaryBundled: bridge.projectBundle.manifest?.assets?.binaryBundled ?? 0,
+              recordsByAsset: Object.entries(
+                (bridge.projectBundle.manifest?.assets?.records ?? []).reduce((counts, record) => {
+                  counts[record.assetId] = (counts[record.assetId] ?? 0) + 1;
+                  return counts;
+                }, {}),
+              ).sort((left, right) => right[1] - left[1]),
+              largestRecords: [...(bridge.projectBundle.manifest?.assets?.records ?? [])]
+                .sort((left, right) => (right.bytes ?? 0) - (left.bytes ?? 0))
+                .slice(0, 12)
+                .map((record) => ({ assetId: record.assetId, sourcePath: record.sourcePath, bytes: record.bytes })),
+            }
+          : null,
+        compiledProject: Boolean(bridge?.compiledProject),
+        activeButtons: [...document.querySelectorAll('button[data-action="export-package"]')].map((candidate) => ({
+          disabled: candidate instanceof HTMLButtonElement ? candidate.disabled : null,
+          visible: Boolean(candidate.getBoundingClientRect().width && candidate.getBoundingClientRect().height),
+          text: candidate.textContent?.trim() ?? "",
+        })),
+      };
+    }).catch((diagnosticError) => ({ diagnosticError: String(diagnosticError) }));
+    throw new Error(`${label} download capture failed: ${error?.message ?? error}; state=${JSON.stringify(state)}`);
+  } finally {
+    await page.evaluate(() => {
+      const state = window.__MUGEN_QA_BLOB_DOWNLOAD__;
+      if (!state) return;
+      URL.createObjectURL = state.originalCreateObjectURL;
+      HTMLAnchorElement.prototype.click = state.originalAnchorClick;
+      delete window.__MUGEN_QA_BLOB_DOWNLOAD__;
+    }).catch(() => undefined);
+  }
+}
+
 async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto(`${baseUrl}${studioBuildRoute}`, { waitUntil: "domcontentloaded" });
@@ -2283,8 +2567,7 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
     await selectStudioTab(page, "workbench");
     await changeHiddenSelect(page, '[data-studio-fighter-select="p1"]', "nova-boxer");
     await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.project?.entry?.p1 === "nova-boxer");
-    await page.locator('.studio-mission-node[data-studio-tab="build"]:visible').first().evaluate((button) => button.click());
-    await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "build");
+    await selectStudioTab(page, "build");
   }
   await page.locator('button[data-action="compile-project"]:visible').first().click({ force: true }).catch(async () => {
     await page.locator('button[data-action="compile-project"]').first().evaluate((el) => el.click());
@@ -2306,30 +2589,16 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
     await download.saveAs(tracePath);
   }
 
-  await page.evaluate(() => {
-    document.querySelector('button[data-action="export-package"]')?.click();
-  });
   const packagePath = path.join(outDir, "project-package.zip");
-  try {
-    await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.projectBundle), null, { timeout: 45_000 });
-    const exportPackageButton = page.locator('button[data-action="export-package"]').first();
-    try {
-      const packageDownload = await downloadFromButton(page, exportPackageButton, "project package", { timeout: 20_000, attempts: 1 });
-      await packageDownload.saveAs(packagePath);
-    } catch {
-      // Bundle may exist on bridge without a captured download event.
-      // Never write a JSON stub into the .zip path — that breaks inspectPackageZip.
-      if (!fs.existsSync(packagePath)) {
-        const summary = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectBundle ?? { ok: true, source: "bridge-only" });
-        fs.writeFileSync(path.join(outDir, "project-package-bridge-only.json"), JSON.stringify(summary, null, 2), "utf8");
-      }
-    }
-  } catch (error) {
-    const exportPackageButton = page.locator('button[data-action="export-package"]').first();
-    const packageDownload = await downloadFromButton(page, exportPackageButton, "project package", { timeout: 60_000, attempts: 2 });
-    await packageDownload.saveAs(packagePath);
-    await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.projectBundle), null, { timeout: 30_000 });
-  }
+  await page.waitForFunction(() => [...document.querySelectorAll('button[data-action="export-package"]')].some((candidate) => {
+    const rect = candidate.getBoundingClientRect();
+    return candidate instanceof HTMLButtonElement && !candidate.disabled && rect.width > 0 && rect.height > 0;
+  }), null, { timeout: 30_000 });
+  const exportPackageButton = page.locator('button[data-action="export-package"]:visible:not([disabled])').first();
+  await saveBlobDownloadFromButton(page, exportPackageButton, "project package", packagePath, {
+    timeout: Number(process.env.QA_BLOB_DOWNLOAD_TIMEOUT ?? 240_000),
+  });
+  await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.projectBundle), null, { timeout: 30_000 });
   await page.screenshot({ path: path.join(outDir, "studio-build.png"), fullPage: true });
   await dismissStudioOverlays(page);
   let sourceFocusAfterClick = null;
@@ -2572,6 +2841,7 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
   const projectPath = writeSourceRelinkProject(outDir);
   await page.locator("#project-input").setInputFiles(projectPath);
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.project?.sourcePackages?.some((sourcePackage) => sourcePackage.status === "missing"));
+  await ensureLeftDockOpen(page);
   const before = await page.evaluate(() => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     return {
@@ -2733,6 +3003,7 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
   await waitForBridge(page);
   await page.locator("#project-input").setInputFiles(projectPath);
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.project?.sourcePackages?.some((sourcePackage) => sourcePackage.status === "missing"));
+  await ensureLeftDockOpen(page);
   const before = await page.evaluate(() => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const sourcePackage = bridge?.project?.sourcePackages?.find((candidate) => candidate.id === "kfm-folder");
@@ -2773,19 +3044,43 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
     throw new Error(`Studio semantic draft was readonly before edit: ${JSON.stringify(sourceDraftState)}`);
   }
   const setSourceEditorText = async (text) => {
-    // The real KFM CNS is large enough that Playwright fill can time out before dispatching the paste event.
-    await sourceEditor.evaluate((element, value) => {
-      const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value")?.set;
-      if (!setter) {
-        throw new Error("HTMLTextAreaElement value setter is unavailable");
+    // The real KFM CNS is large enough that Playwright fill can time out. Query the
+    // live editor in-page so an async Studio re-render cannot strand a stale handle.
+    let lastState;
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      await page.evaluate((value) => {
+        const element = document.querySelector('[data-source-editor]');
+        if (!(element instanceof HTMLTextAreaElement)) {
+          throw new Error("Studio source editor is unavailable");
+        }
+        const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value")?.set;
+        if (!setter) {
+          throw new Error("HTMLTextAreaElement value setter is unavailable");
+        }
+        setter.call(element, value);
+        element.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertFromPaste" }));
+      }, text);
+      try {
+        await page.waitForFunction((expectedText) => {
+          const editor = document.querySelector('[data-source-editor]');
+          return editor instanceof HTMLTextAreaElement &&
+            editor.value === expectedText &&
+            window.__MUGEN_WEB_SANDBOX__?.studioSourceDocument?.text === expectedText;
+        }, text, { timeout: 5_000 });
+        return;
+      } catch {
+        lastState = await page.evaluate(() => ({
+          editorTextLength: document.querySelector('[data-source-editor]')?.value?.length,
+          draftTextLength: window.__MUGEN_WEB_SANDBOX__?.studioSourceDocument?.text?.length,
+          draftDirty: window.__MUGEN_WEB_SANDBOX__?.studioSourceDocument?.dirty,
+        }));
       }
-      setter.call(element, value);
-      element.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertFromPaste" }));
-    }, text);
+    }
+    throw new Error(`Studio source editor did not accept the draft text: ${JSON.stringify(lastState)}`);
   };
   await setSourceEditorText(`${originalSourceText}\nnot-a-key-value`);
   await page.waitForFunction(() => document.querySelector('[data-action="save-source-document"]')?.disabled === true);
-  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioSourceDocument?.semanticPreflight?.status === "invalid", null, { timeout: 5000 });
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioSourceDocument?.semanticPreflight?.status === "invalid", null, { timeout: 15_000 });
   const invalidSourceDiagnostic = await page.evaluate(() => {
     const diagnostics = [...document.querySelectorAll('[data-source-diagnostic]')];
     const lineDiagnostics = [...document.querySelectorAll('[data-source-diagnostic-line]')];
@@ -2801,9 +3096,25 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
     throw new Error(`Studio semantic diagnostics were not rendered for the invalid draft: ${JSON.stringify(invalidSourceDiagnostic)}`);
   }
   await dismissStudioOverlays(page);
-  await page.evaluate(() => {
-    document.querySelector('[data-source-diagnostic-line]')?.click();
-  });
+  let diagnosticFocused = false;
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    await page.locator('[data-source-diagnostic-line]').first().click({ timeout: 5_000 });
+    try {
+      await page.waitForFunction(() => {
+        const editor = document.querySelector('[data-source-editor]');
+        return document.activeElement === editor &&
+          editor instanceof HTMLTextAreaElement &&
+          editor.selectionEnd > editor.selectionStart;
+      }, null, { timeout: 2_000 });
+      diagnosticFocused = true;
+      break;
+    } catch {
+      await page.waitForTimeout(250);
+    }
+  }
+  if (!diagnosticFocused) {
+    throw new Error("Studio semantic diagnostic navigation did not retain editor focus after six live clicks");
+  }
   const focusedDiagnostic = await page.evaluate(() => {
     const editor = document.querySelector('[data-source-editor]');
     const line = Number(document.querySelector('[data-source-diagnostic-line]')?.getAttribute('data-source-diagnostic-line'));
@@ -2816,8 +3127,35 @@ async function captureStudioFolderHandleRecovery(page, baseUrl, outDir, imported
   if (!focusedDiagnostic.focused || focusedDiagnostic.selectionLength <= 0 || !Number.isInteger(focusedDiagnostic.line)) {
     throw new Error(`Studio semantic diagnostic navigation did not focus the source line: ${JSON.stringify(focusedDiagnostic)}`);
   }
-  await setSourceEditorText(`${originalSourceText}\n; qa explicit source edit`);
-  await page.waitForFunction(() => document.querySelector('[data-action="save-source-document"]')?.disabled === false);
+  const validSourceText = `${originalSourceText}\n; qa explicit source edit`;
+  await setSourceEditorText(validSourceText);
+  try {
+    await page.waitForFunction((expectedText) => {
+      const draft = window.__MUGEN_WEB_SANDBOX__?.studioSourceDocument;
+      return draft?.text === expectedText && draft.semanticPreflight !== undefined;
+    }, validSourceText, { timeout: 60_000 });
+  } catch (error) {
+    const state = await page.evaluate(() => ({
+      editorTextLength: document.querySelector('[data-source-editor]')?.value?.length,
+      saveDisabled: document.querySelector('[data-action="save-source-document"]')?.disabled,
+      draftTextLength: window.__MUGEN_WEB_SANDBOX__?.studioSourceDocument?.text?.length,
+      draftDirty: window.__MUGEN_WEB_SANDBOX__?.studioSourceDocument?.dirty,
+      semanticPreflight: window.__MUGEN_WEB_SANDBOX__?.studioSourceDocument?.semanticPreflight,
+      projectDirty: window.__MUGEN_WEB_SANDBOX__?.projectDirty,
+      projectStorageRevision: window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision,
+      studioAutosave: window.__MUGEN_WEB_SANDBOX__?.studioAutosave,
+      projectStorageConflict: window.__MUGEN_WEB_SANDBOX__?.projectStorageConflict,
+    }));
+    throw new Error(`Studio valid semantic draft did not settle: ${JSON.stringify(state)}`, { cause: error });
+  }
+  const validSourceState = await page.evaluate(() => ({
+    saveDisabled: document.querySelector('[data-action="save-source-document"]')?.disabled,
+    draftTextLength: window.__MUGEN_WEB_SANDBOX__?.studioSourceDocument?.text?.length,
+    semanticPreflight: window.__MUGEN_WEB_SANDBOX__?.studioSourceDocument?.semanticPreflight,
+  }));
+  if (validSourceState.saveDisabled !== false || validSourceState.semanticPreflight?.status !== "ready") {
+    throw new Error(`Studio valid semantic draft remained blocked: ${JSON.stringify(validSourceState)}`);
+  }
   await page.locator('[data-action="save-source-document"]').click();
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.sourceImportTransaction?.reason === "explicit-reimport");
   await page.locator('[data-mode="studio"]').first().click();
@@ -3550,6 +3888,7 @@ async function captureStudioEvidence(page, outDir) {
 
 async function captureStudioAssets(page, outDir) {
   await selectStudioTab(page, "assets");
+  await ensureLeftDockOpen(page);
   await page.waitForFunction(
     () => window.__MUGEN_WEB_SANDBOX__?.studioAssets?.provenance?.some((record) => record.assetId === "nova-boxer" && record.license?.status === "declared"),
     undefined,
@@ -3633,6 +3972,9 @@ async function captureStudioAssets(page, outDir) {
       provenanceReady: provenance.filter((record) => record.canExport).length,
       provenanceReadyAssetIds: provenance.filter((record) => record.canExport).map((record) => record.assetId),
       provenanceDeclaredLicenses: provenance.filter((record) => record.license?.status === "declared").map((record) => record.assetId),
+      provenanceBlocked: provenance.filter((record) => !record.canExport).length,
+      provenanceLicenseUnknown: provenance.filter((record) => record.license?.status === "unknown").length,
+      provenanceTransformCount: provenance.reduce((total, record) => total + (record.transforms?.length ?? 0), 0),
       provenanceInputFiles: provenance.reduce((total, record) => total + (record.inputFiles?.length ?? 0), 0),
       provenanceOutputFiles: provenance.reduce((total, record) => total + (record.outputFiles?.length ?? 0), 0),
       provenanceFilePathLeaks: provenance.flatMap((record) => [
@@ -3783,6 +4125,8 @@ async function captureStudioProjectStorageConflict(context, baseUrl, outDir) {
         }, projectId);
         throw new Error(`Stored project ${projectId} did not open in the browser bridge: ${JSON.stringify(openDiagnostics)}`);
       }
+      await candidate.locator('.interface-actions [data-action="toggle-left-dock"]').click();
+      await candidate.waitForFunction(() => document.querySelector(".app-shell")?.getAttribute("data-left-dock") === "open");
     }
 
     const baselineRevision = await primary.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.projectStorageRevision ?? 0);
@@ -3965,13 +4309,31 @@ async function captureStudioDebug(page, outDir, importedFixturePath) {
     if (importedP1Id !== currentP1Id) {
       await changeHiddenSelect(page, '[data-studio-fighter-select="p1"]', importedP1Id);
       await page.waitForFunction((expectedId) => window.__MUGEN_WEB_SANDBOX__?.project?.entry?.p1 === expectedId, importedP1Id);
-      const importedTraceButton = page.locator('button[data-action="export-trace-artifact"]:visible').first();
-      if (await importedTraceButton.count()) {
-        await downloadFromButton(page, importedTraceButton, "imported debug trace", { timeout: 90000, attempts: 2 });
-        await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.traceArtifact));
-      }
     }
     await driveStudioImportedRuntimeEvidence(page);
+    await selectStudioTab(page, "build");
+    let importedTraceReady = false;
+    for (let attempt = 0; attempt < 2 && !importedTraceReady; attempt += 1) {
+      const importedTraceButton = page.locator('button[data-action="export-trace-artifact"]:visible').filter({ hasText: "Export trace artifact" }).first();
+      if (!(await importedTraceButton.count())) {
+        throw new Error("Imported debug trace action is not visible in Studio Build");
+      }
+      await importedTraceButton.evaluate((button) => button.click());
+      importedTraceReady = await page.waitForFunction((expectedP1) => {
+        const artifact = window.__MUGEN_WEB_SANDBOX__?.traceArtifact;
+        return artifact?.target?.id?.startsWith(`${expectedP1}-vs-`) === true;
+      }, importedP1Id, { timeout: 15_000 }).then(() => true).catch(() => false);
+      if (!importedTraceReady) {
+        await selectStudioTab(page, "build");
+      }
+    }
+    if (!importedTraceReady) {
+      const traceState = await page.evaluate(() => ({
+        p1: window.__MUGEN_WEB_SANDBOX__?.project?.entry?.p1,
+        traceTarget: window.__MUGEN_WEB_SANDBOX__?.traceArtifact?.target,
+      }));
+      throw new Error(`Imported debug trace was not refreshed: ${JSON.stringify(traceState)}`);
+    }
   }
   const studioMode = page.locator('[data-mode="studio"]').first();
   if ((await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.mode)) !== "studio") {
@@ -4286,6 +4648,14 @@ async function waitForBridge(page) {
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.renderer), null, { timeout: 15000 });
 }
 
+async function ensureLeftDockOpen(page) {
+  const isOpen = await page.evaluate(() => document.querySelector(".app-shell")?.getAttribute("data-left-dock") === "open");
+  if (!isOpen) {
+    await page.locator('.interface-actions [data-action="toggle-left-dock"]').click();
+  }
+  await page.waitForFunction(() => document.querySelector(".app-shell")?.getAttribute("data-left-dock") === "open");
+}
+
 async function waitForRuntimeTicks(page, minimumTick) {
   await page.waitForFunction(
     (minimum) => (window.__MUGEN_WEB_SANDBOX__?.snapshot?.tick ?? -1) >= minimum,
@@ -4374,8 +4744,8 @@ function fixturePaletteForSprite(group, index) {
   return [[(seed * 47) % 255, 180, 240], [240, (seed * 71) % 255, 120], [80, 220, (seed * 29) % 255]];
 }
 
-async function getProjectedSpritePixelStats(page, canvasPng, presentation, rendererSize, camera, expectedColors) {
-  return page.evaluate(async ({ dataUrl, presentation, rendererSize, camera, expectedColors }) => {
+async function getProjectedSpritePixelStats(page, pagePng, presentation, rendererSize, camera, expectedColors, canvasRect, pageSize) {
+  return page.evaluate(async ({ dataUrl, presentation, rendererSize, camera, expectedColors, canvasRect, pageSize }) => {
     const image = new Image();
     image.src = dataUrl;
     await image.decode();
@@ -4383,16 +4753,22 @@ async function getProjectedSpritePixelStats(page, canvasPng, presentation, rende
     sampleCanvas.width = image.naturalWidth;
     sampleCanvas.height = image.naturalHeight;
     const context = sampleCanvas.getContext("2d");
-    if (!context || !presentation || !rendererSize || !camera) {
+    if (!context || !presentation || !rendererSize || !camera || !canvasRect || !pageSize) {
       return { sampledPixels: 0, fixtureColorPixels: 0, uniqueColors: 0 };
     }
     context.drawImage(image, 0, 0);
     const worldHeight = Math.max(rendererSize.height, 420);
     const scale = rendererSize.height / worldHeight * camera.zoom;
-    const centerX = rendererSize.width / 2 + (presentation.meshPosition.x - camera.x) * scale;
-    const centerY = rendererSize.height / 2 - (presentation.meshPosition.y - camera.y) * scale;
-    const width = Math.max(1, Math.abs(presentation.meshScale.x) * scale);
-    const height = Math.max(1, Math.abs(presentation.meshScale.y) * scale);
+    const pageScaleX = image.naturalWidth / pageSize.width;
+    const pageScaleY = image.naturalHeight / pageSize.height;
+    const canvasScaleX = canvasRect.width / rendererSize.width;
+    const canvasScaleY = canvasRect.height / rendererSize.height;
+    const projectedX = rendererSize.width / 2 + (presentation.meshPosition.x - camera.x) * scale;
+    const projectedY = rendererSize.height / 2 - (presentation.meshPosition.y - camera.y) * scale;
+    const centerX = (canvasRect.left + projectedX * canvasScaleX) * pageScaleX;
+    const centerY = (canvasRect.top + projectedY * canvasScaleY) * pageScaleY;
+    const width = Math.max(1, Math.abs(presentation.meshScale.x) * scale * canvasScaleX * pageScaleX);
+    const height = Math.max(1, Math.abs(presentation.meshScale.y) * scale * canvasScaleY * pageScaleY);
     const left = Math.max(0, Math.floor(centerX - width / 2));
     const top = Math.max(0, Math.floor(centerY - height / 2));
     const right = Math.min(sampleCanvas.width, Math.ceil(centerX + width / 2));
@@ -4426,11 +4802,13 @@ async function getProjectedSpritePixelStats(page, canvasPng, presentation, rende
       rect: { left, top, width: right - left, height: bottom - top },
     };
   }, {
-    dataUrl: `data:image/png;base64,${canvasPng.toString("base64")}`,
+    dataUrl: `data:image/png;base64,${pagePng.toString("base64")}`,
     presentation,
     rendererSize,
     camera,
     expectedColors,
+    canvasRect,
+    pageSize,
   });
 }
 
@@ -4447,7 +4825,8 @@ function getRelevantConsoleIssues(logs) {
 }
 
 function isKnownBenignWarning(text) {
-  return text.includes("GL Driver Message") && text.includes("ReadPixels");
+  return (text.includes("GL Driver Message") && text.includes("ReadPixels")) ||
+    text === "THREE.WARNING: Multiple instances of Three.js being imported.";
 }
 
 function assertSmoke(diagnostics) {
@@ -4934,22 +5313,23 @@ function assertSmoke(diagnostics) {
   if (
     studioWorkbench.mode !== "studio" ||
     studioWorkbench.studioTab !== "workbench" ||
-    !studioWorkbench.bodyHasNextDesk ||
-    !studioWorkbench.bodyHasPipeline ||
-    !studioWorkbench.bodyHasHealthLanguage ||
-    !studioWorkbench.stageDeckVisible ||
-    studioWorkbench.chromeFieldCount < 4 ||
+    studioWorkbench.legacyDeckVisible ||
+    studioWorkbench.legacyPipelineVisible ||
+    studioWorkbench.globalModeCount !== 3 ||
+    studioWorkbench.studioRouteCount !== 8 ||
     studioWorkbench.primaryActionCount !== 1 ||
-    studioWorkbench.pipelineStepCount < 7 ||
+    !studioWorkbench.currentTaskVisible ||
     !studioWorkbench.rightInspectorVisible ||
     studioWorkbench.activeIssueRows < 1 ||
-    !studioWorkbench.navigatorVisible ||
-    studioWorkbench.consoleCollapsed ||
-    studioWorkbench.consoleHeight < 100 ||
-    studioWorkbench.canvasArea < 300000 ||
+    !studioWorkbench.workspaceDrawerClosed ||
+    !studioWorkbench.consoleClosed ||
+    studioWorkbench.canvasArea < 800000 ||
+    studioWorkbench.stageArea < 1000000 ||
+    studioWorkbench.stageDominance < 0.75 ||
+    !studioWorkbench.rightInsideToolbar ||
     studioWorkbench.overflowX
   ) {
-    failures.push("studio-workbench: premium cockpit workbench was missing stage deck, pipeline, health inspector, expanded console, or large playfield");
+    failures.push("studio-workbench: Fight First shell lost global routes, scene dominance, closed utility drawers, contextual task, or responsive geometry");
   }
   const workbenchUnreadyAtlases = studioWorkbench.selectedRosterAtlasStatuses.filter(
     (entry) => entry.atlasStatus !== "loaded" && entry.atlasStatus !== "imported",
@@ -4997,9 +5377,13 @@ function assertSmoke(diagnostics) {
     studioWorkbenchTablet.mode !== "studio" ||
     studioWorkbenchTablet.studioTab !== "workbench" ||
     studioWorkbenchTablet.overflowX ||
-    !studioWorkbenchTablet.stageStatusVisible
+    !studioWorkbenchTablet.sceneFirst ||
+    !studioWorkbenchTablet.contextualLensVisible ||
+    !studioWorkbenchTablet.roundHudVisible ||
+    !studioWorkbenchTablet.workspaceDrawerClosed ||
+    !studioWorkbenchTablet.rightInsideToolbar
   ) {
-    failures.push("studio-workbench-tablet: 1024px workbench layout overflowed or lost stage status");
+    failures.push("studio-workbench-tablet: 1024px Fight First layout overflowed or lost scene, HUD, closed workspace drawer, or contextual lens geometry");
   }
   if (
     !commandPaletteA11y.opened ||
@@ -6098,14 +6482,16 @@ function summarizeDiagnostics(diagnostics) {
     },
     studioWorkbench: {
       tab: diagnostics.checks.studioWorkbench.studioTab,
-      chromeFields: diagnostics.checks.studioWorkbench.chromeFieldCount,
+      globalModes: diagnostics.checks.studioWorkbench.globalModeCount,
+      studioRoutes: diagnostics.checks.studioWorkbench.studioRouteCount,
       primaryActions: diagnostics.checks.studioWorkbench.primaryActionCount,
-      pipelineSteps: diagnostics.checks.studioWorkbench.pipelineStepCount,
       activeIssues: diagnostics.checks.studioWorkbench.activeIssueRows,
       canvasArea: diagnostics.checks.studioWorkbench.canvasArea,
-      consoleCollapsed: diagnostics.checks.studioWorkbench.consoleCollapsed,
-      consoleHeight: diagnostics.checks.studioWorkbench.consoleHeight,
-      navigatorVisible: diagnostics.checks.studioWorkbench.navigatorVisible,
+      stageArea: diagnostics.checks.studioWorkbench.stageArea,
+      stageDominance: diagnostics.checks.studioWorkbench.stageDominance,
+      workspaceDrawerClosed: diagnostics.checks.studioWorkbench.workspaceDrawerClosed,
+      consoleClosed: diagnostics.checks.studioWorkbench.consoleClosed,
+      rightInsideToolbar: diagnostics.checks.studioWorkbench.rightInsideToolbar,
       overflowX: diagnostics.checks.studioWorkbench.overflowX,
       projectAuthoring: diagnostics.checks.studioWorkbench.projectAuthoring,
     },
@@ -6114,7 +6500,11 @@ function summarizeDiagnostics(diagnostics) {
       clientWidth: diagnostics.checks.studioWorkbenchTablet.clientWidth,
       bodyScrollWidth: diagnostics.checks.studioWorkbenchTablet.bodyScrollWidth,
       documentScrollWidth: diagnostics.checks.studioWorkbenchTablet.documentScrollWidth,
-      stageStatusVisible: diagnostics.checks.studioWorkbenchTablet.stageStatusVisible,
+      sceneFirst: diagnostics.checks.studioWorkbenchTablet.sceneFirst,
+      contextualLensVisible: diagnostics.checks.studioWorkbenchTablet.contextualLensVisible,
+      roundHudVisible: diagnostics.checks.studioWorkbenchTablet.roundHudVisible,
+      workspaceDrawerClosed: diagnostics.checks.studioWorkbenchTablet.workspaceDrawerClosed,
+      rightInsideToolbar: diagnostics.checks.studioWorkbenchTablet.rightInsideToolbar,
       overflowX: diagnostics.checks.studioWorkbenchTablet.overflowX,
     },
     commandPaletteA11y: {

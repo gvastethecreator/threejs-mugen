@@ -2,27 +2,27 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-114",
   "kind": "G",
-  "generatedAt": "2026-07-27T14:28:11.569Z",
+  "generatedAt": "2026-08-01T18:12:00.991Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-114",
   "anchors": [
     {
       "path": "src/app/App.ts",
-      "bytes": 670758,
-      "sha256": "1b1e9304825e8adfba8f8a67a7e541d36102a8a5611464b77b5c1c1929b17587"
+      "bytes": 729937,
+      "sha256": "d9b78345a9bcdb54d4e4e130db147c248a5c3b3e8b5904931752f9209b83dab0"
     },
     {
       "path": "src/styles/redesign.css",
-      "bytes": 46329,
-      "sha256": "414026da98bbb70b7e06cecb03e871a6ee2ac98530c6fb6788af4ceeeca14ec5"
+      "bytes": 44787,
+      "sha256": "674a6b4f6071041d745b4dfefb631b0b3c1d0cf87745fa4d776339669de23bbf"
     }
   ],
   "functionResults": {
     "hasAria": true,
     "hasSkip": true,
     "hasKeyshortcuts": true,
-    "focusMentions": 94
+    "focusMentions": 87
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-114; broader product claims remain blocked"
 }

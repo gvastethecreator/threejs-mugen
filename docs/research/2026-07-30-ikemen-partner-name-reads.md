@@ -28,6 +28,14 @@ pnpm exec vitest run src/tests/RuntimeExpressionContextSystem.test.ts src/tests/
 La prueba de contexto valida P3/P5/P7 y `Partner(1)` simultáneamente con
 P2-family y EnemyNear.
 
+Gates del corte: suite serial `pnpm exec vitest run --no-file-parallelism`
+verde en 305 archivos / 3230 tests; `pnpm typecheck`, `pnpm build`,
+`pnpm check:boundaries` y `git diff --check` verdes. `pnpm qa:trace` no llegó
+a materializar: el proceso quedó sin salida durante el mismo bloqueo SSR de
+Vite en `StateSourceResolver.ts` y se detuvo sólo después de verificar que era
+el runner de este corte. No produjo churn de evidencia; la referencia limpia
+T419 sigue en 667/667.
+
 ## Allowed / blocked
 
 Permitido: nombres P5/P7 source-shaped en el contexto explícito ya filtrado

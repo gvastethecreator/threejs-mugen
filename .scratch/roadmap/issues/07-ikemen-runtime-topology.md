@@ -39,6 +39,11 @@ Partner(index), P2-family, EnemyNear y legacy siguen separados.
 Prueba focal: 3 archivos / 118 tests. Ledger:
 [`2026-07-30-ikemen-partner-name-reads.md`](../../../docs/research/2026-07-30-ikemen-partner-name-reads.md).
 
+Suite serial: 305 archivos / 3230 tests, typecheck, build, boundaries y diff
+hygiene verdes. `qa:trace` quedó sin materializar por timeout SSR recurrente
+en `StateSourceResolver.ts`; no hubo churn y el baseline T419 sigue en
+667/667.
+
 Claim allowed: nombres P5/P7 source-shaped dentro del roster 046b/T419.
 Claim blocked: Partner state/life, Helpers `type=player`, cache exacto,
 Tag/Simul/Turns, rollback/netplay, score movement y full MUGEN/IKEMEN parity.
@@ -124,7 +129,17 @@ Claim allowed al cerrar los gates: selección P2 nearest-body acotada después
 del filtro de elegibilidad existente. Claim blocked: cache/refresh exacto,
 distancia Z, penalización behind-facing, Helper `type=player`, Tag/Simul/Turns
 completos, rollback/netplay y paridad completa.
-## 2026-07-27 post-DA30-120 IKEMEN runtime override
+
+## 2026-07-28 post-DA32-026 IKEMEN runtime override
+
+T407…T417 prueban subsets focales de juggle, projectile, `hittmp`, `acttmp` y
+`stchtmp`. Sólo juggle figura revisado en la autoridad 05b/4aa. Mantener cada
+perfil separado y frenar nuevos claims de familia hasta completar los
+manifiestos de fuente. Team/plural, helper action y ZSS requieren consumers
+live; los modelos DA31 no los cierran. Ver AUD28-35…40 en la
+[auditoría diaria](../../../docs/research/2026-07-28-daily-roadmap-architecture-audit-post-da32-026.md).
+
+## Historical 2026-07-27 post-DA30-120 IKEMEN runtime override
 
 DA31-033…036 own family-scoped source review, one real ZSS slice, live team
 topology/consumers, and independent IKEMEN adjudication. Preserve T390/T406 and

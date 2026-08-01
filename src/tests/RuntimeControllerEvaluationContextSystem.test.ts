@@ -67,6 +67,32 @@ describe("RuntimeControllerEvaluationContextWorld", () => {
     expect(context.playerIdTarget?.(58)?.self.life).toBe(963);
     expect(context.playerIdTarget?.(999)).toBeUndefined();
   });
+
+  it("forwards dynamic roster identity bindings for controller value expressions", () => {
+    const world = new RuntimeControllerEvaluationContextWorld();
+    const actor = { id: "p1", hitPause: 0 };
+    const owner = { id: "owner", consts: {} };
+    const enemy = runtimeState({ life: 875 });
+
+    const context = world.create({
+      actor,
+      owner,
+      tick: 7,
+      getConst: () => undefined,
+      nextRandom: () => 0,
+      expressionBindings: {
+        name: "Live P1",
+        opponentName: "Live P4",
+        p4Name: "Live P2",
+        enemyNear: (index) => index === 0 ? { self: enemy } : undefined,
+      },
+    });
+
+    expect(context.name).toBe("Live P1");
+    expect(context.opponentName).toBe("Live P4");
+    expect(context.p4Name).toBe("Live P2");
+    expect(context.enemyNear?.(0)?.self.life).toBe(875);
+  });
 });
 
 function runtimeState(overrides: Partial<CharacterRuntimeState> = {}): CharacterRuntimeState {

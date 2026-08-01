@@ -74,6 +74,9 @@ export function runtimeHitVar(
   if (key === "fall.yvel" || key === "fall.yvelocity") {
     return state.hitFall?.velocity.y ?? 0;
   }
+  if (key === "fall.zvel" || key === "fall.zvelocity") {
+    return state.hitFall?.velocity.z ?? 0;
+  }
   if (key === "fall.recover") {
     return state.hitFall?.recover ? 1 : 0;
   }

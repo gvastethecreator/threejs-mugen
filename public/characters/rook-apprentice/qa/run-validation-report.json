@@ -1,0 +1,368 @@
+{
+  "version": 1,
+  "kind": "sprite-run-validation-report",
+  "run_dir": "public\\characters\\rook-apprentice",
+  "stage": "pre-package",
+  "workflow": "production",
+  "ok": false,
+  "status": "fail",
+  "complete": true,
+  "exit_code": 1,
+  "input_fingerprint": "44af3b0ad60e55da01b66334cc5be22b2ea931c8326013dd7ed0283807d3c4f0",
+  "evidence": {
+    "production_media": {
+      "representative": true,
+      "provenance_verified": true,
+      "source_types": [
+        "imagegen"
+      ]
+    }
+  },
+  "policy": {
+    "workflow": "production",
+    "categories": [
+      "animated",
+      "generated"
+    ],
+    "selectors": null,
+    "required_gate_ids": [
+      "generation-provenance",
+      "animation-contracts",
+      "frame-alignment",
+      "identity-consistency",
+      "runtime-preview"
+    ],
+    "decisions": [
+      {
+        "id": "generation-provenance",
+        "applied": true,
+        "reason": "production source_type=imagegen requires provenance"
+      },
+      {
+        "id": "animation-contracts",
+        "applied": true,
+        "reason": "frame_semantics=animation is animated"
+      },
+      {
+        "id": "frame-alignment",
+        "applied": true,
+        "reason": "animated asset_kind=sprite requires frame alignment"
+      },
+      {
+        "id": "identity-consistency",
+        "applied": true,
+        "reason": "animated asset_kind=sprite requires identity consistency"
+      },
+      {
+        "id": "motion-variation",
+        "applied": false,
+        "reason": "no explicit locomotion animation_workflows fact"
+      },
+      {
+        "id": "asset-slots",
+        "applied": false,
+        "reason": "extraction_mode=components does not use slots"
+      },
+      {
+        "id": "isometric-tiles",
+        "applied": false,
+        "reason": "asset_kind is not tileset"
+      },
+      {
+        "id": "segmentation-diagnostic",
+        "applied": false,
+        "reason": "production workflow does not use diagnostic segmentation as a gate"
+      },
+      {
+        "id": "frame-registration",
+        "applied": false,
+        "reason": "requires import-diagnostic asset_kind=sprite"
+      },
+      {
+        "id": "runtime-preview",
+        "applied": true,
+        "reason": "frame_semantics=animation requires manifest-driven runtime evidence"
+      }
+    ]
+  },
+  "checked_items": [
+    "crouch",
+    "hitstun",
+    "idle",
+    "jump",
+    "kick",
+    "punch",
+    "qa/all-contact.png",
+    "qa/pose-scale-review.png",
+    "qa/runtime-preview/hitstun-playback.gif",
+    "qa/runtime-preview/idle-playback.gif",
+    "walk-forward"
+  ],
+  "results": [
+    {
+      "id": "generation-provenance",
+      "applicable": true,
+      "checked_items": [
+        "crouch",
+        "hitstun",
+        "idle",
+        "jump",
+        "kick",
+        "punch",
+        "walk-forward"
+      ],
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "provenance": "public\\characters\\rook-apprentice\\source-provenance.json",
+        "source_type": "imagegen",
+        "sources": [
+          {
+            "path": "public\\characters\\rook-apprentice\\source\\rook-apprentice-imagegen-sheet.png",
+            "sha256": "a77d3094d34a0490646ac6916b76cb7af1bcb624948d85565da7ff9228e440e2",
+            "size_bytes": 1663466,
+            "states": [
+              "idle",
+              "crouch",
+              "jump",
+              "punch",
+              "kick",
+              "hitstun"
+            ]
+          },
+          {
+            "path": "public\\characters\\rook-apprentice\\source\\rook-apprentice-walk-forward-imagegen-row.png",
+            "sha256": "adf77d2e8bc29004eadd7af56e38e0ff301fd4a8f5e9175b167abf4e1448b49b",
+            "size_bytes": 1295470,
+            "states": [
+              "walk-forward"
+            ]
+          }
+        ]
+      },
+      "input_fingerprint": "72341be087d020d8f0c8934ad018d9ac0dce30a3822776ba7007b5e3c9371dce",
+      "complete": true,
+      "status": "pass"
+    },
+    {
+      "id": "animation-contracts",
+      "applicable": true,
+      "checked_items": [
+        "idle",
+        "walk-forward",
+        "jump",
+        "punch",
+        "kick",
+        "hitstun"
+      ],
+      "errors": [
+        "hitstun: hit-reaction-knockdown needs at least 4 frames to prove required phases; found 3",
+        "report declared ok:false",
+        "report did not check expected items: crouch"
+      ],
+      "warnings": [
+        "hitstun: force direction may be unreadable; verify recoil/drag visually"
+      ],
+      "evidence": {
+        "process_exit_code": 1,
+        "report_path": "qa/animation-contract-report.json",
+        "report_sha256": "29e92e420c2b7b779ebb9d51f81d38607e4be93d798d5f5249bcee65f8c18d81",
+        "stdout_tail": "{\n  \"ok\": false,\n  \"engine\": \"animation-contract-heuristic\",\n  \"run_dir\": \"public\\\\characters\\\\rook-apprentice\",\n  \"states_mode\": \"animated\",\n  \"checked_states\": [\n    \"idle\",\n    \"walk-forward\",\n    \"jump\",\n    \"punch\",\n    \"kick\",\n    \"hitstun\"\n  ],\n  \"visual_review_required\": true,\n  \"quality_gate_note\": \"Automated checks catch obvious phase failures. Visual playback/contact review remains required for row semantics before final approval.\",\n  \"errors\": [\n    \"hitstun: hit-reaction-knockdown needs at least 4 frames to prove required phases; found 3\"\n  ],\n  \"warnings\": [\n    \"hitstun: force direction may be unreadable; verify recoil/drag visually\"\n  ]\n}\n"
+      },
+      "input_fingerprint": "29e92e420c2b7b779ebb9d51f81d38607e4be93d798d5f5249bcee65f8c18d81",
+      "complete": true,
+      "status": "fail"
+    },
+    {
+      "id": "frame-alignment",
+      "applicable": true,
+      "checked_items": [
+        "idle",
+        "walk-forward",
+        "crouch",
+        "jump",
+        "punch",
+        "kick",
+        "hitstun"
+      ],
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "process_exit_code": 0,
+        "report_path": "qa/frame-alignment-report.json",
+        "report_sha256": "7bef853b56a3ed9ccacb716317daee8bf56bac053bbd7d475d7fc9f7ffa8fb19",
+        "stdout_tail": "{\n  \"ok\": true,\n  \"engine\": \"frame-alignment-onion-skin\",\n  \"run_dir\": \"public\\\\characters\\\\rook-apprentice\",\n  \"states_mode\": \"all\",\n  \"baseline_y\": 112,\n  \"visual_review_required\": true,\n  \"quality_gate_note\": \"Review each qa/*-onion.png overlay before final approval; automated checks cover baseline/root drift only.\",\n  \"rows\": [\n    {\n      \"state\": \"idle\",\n      \"kind\": \"grounded\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\idle-onion.png\",\n      \"bottom_y\": [\n        112,\n        112,\n        112,\n        112\n      ],\n      \"center_x\": [\n        62.44,\n        61.71,\n        62.14,\n        61.98\n      ],\n      \"center_y\": [\n        64.87,\n        64.9,\n        65.03,\n        64.98\n      ],\n      \"baseline_y\": 112,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"walk-forward\",\n      \"kind\": \"grounded-locomotion\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\walk-forward-onion.png\",\n      \"bottom_y\": [\n        112,\n        112,\n        112,\n        112,\n        112,\n        112,\n        112,\n        112\n      ],\n      \"center_x\": [\n        64.09,\n        63.45,\n        64.73,\n        63.91,\n        63.48,\n        61.29,\n        65.6,\n        64.01\n      ],\n      \"center_y\": [\n        65.54,\n        66.48,\n        66.19,\n        67.19,\n        65.28,\n        67.58,\n        67.02,\n        65.82\n      ],\n      \"baseline_y\": 112,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"crouch\",\n      \"kind\": \"crouch\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\crouch-onion.png\",\n      \"bottom_y\": [\n        112,\n        112,\n        112\n      ],\n      \"center_x\": [\n        64.64,\n        63.19,\n        63.64\n      ],\n      \"center_y\": [\n        83.35,\n        83.34,\n        85.91\n      ],\n      \"baseline_y\": 112,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"jump\",\n      \"kind\": \"jump\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\jump-onion.png\",\n      \"bottom_y\": [\n        112,\n        94,\n        94,\n        112\n      ],\n      \"center_x\": [\n        67.96,\n        62.68,\n        63.31,\n        64.18\n      ],\n      \"center_y\": [\n        76.63,\n        58.01,\n        54.59,\n        70.79\n      ],\n      \"baseline_y\": 112,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"punch\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\punch-onion.png\",\n      \"bottom_y\": [\n        111,\n        109,\n        107,\n        111\n      ],\n      \"center_x\": [\n        65.72,\n        55.34,\n        57.14,\n        63.2\n      ],\n      \"center_y\": [\n        65.39,\n        62.43,\n        62.86,\n        64.7\n      ],\n      \"baseline_y\": 112,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"kick\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\kick-onion.png\",\n      \"bottom_y\": [\n        111,\n        108,\n        109,\n        102,\n        112\n      ],\n      \"center_x\": [\n        65.2,\n        54.88,\n        51.59,\n        51.01,\n        63.6\n      ],\n      \"center_y\": [\n        59.93,\n        57.65,\n        56.78,\n        55.26,\n        64.65\n      ],\n      \"baseline_y\": 112,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"hitstun\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\hitstun-onion.png\",\n      \"bottom_y\": [\n        103,\n        103,\n        104\n      ],\n      \"center_x\": [\n        62.25,\n        60.97,\n        61.95\n      ],\n      \"center_y\": [\n        59.9,\n        63.0,\n        62.69\n      ],\n      \"baseline_y\": 112,\n      \"errors\": [],\n      \"warnings\": []\n    }\n  ],\n  \"errors\": [],\n  \"warnings\": []\n}\n"
+      },
+      "input_fingerprint": "7bef853b56a3ed9ccacb716317daee8bf56bac053bbd7d475d7fc9f7ffa8fb19",
+      "complete": true,
+      "status": "pass"
+    },
+    {
+      "id": "identity-consistency",
+      "applicable": true,
+      "checked_items": [
+        "idle",
+        "walk-forward",
+        "crouch",
+        "jump",
+        "punch",
+        "kick",
+        "hitstun"
+      ],
+      "errors": [
+        "walk-forward: head_width_vs_reference shrinks to 0.77x reference; expected >= 0.82x",
+        "jump: upper_width_vs_reference varies by 0.44x across row; expected <= 0.42x",
+        "punch: head_width_vs_reference grows to 1.35x reference; expected <= 1.28x",
+        "kick: upper_width_vs_reference grows to 1.97x reference; expected <= 1.55x",
+        "kick: upper_width_vs_reference varies by 1.00x across row; expected <= 0.42x",
+        "hitstun: head_width_vs_reference grows to 1.73x reference; expected <= 1.28x",
+        "hitstun: head_width_vs_reference varies by 0.65x across row; expected <= 0.42x",
+        "hitstun: upper_width_vs_reference grows to 1.56x reference; expected <= 1.55x",
+        "hitstun: body_mass_width_80_vs_reference grows to 1.73x reference; expected <= 1.65x",
+        "report declared ok:false"
+      ],
+      "warnings": [],
+      "evidence": {
+        "process_exit_code": 1,
+        "report_path": "qa/identity-consistency-report.json",
+        "report_sha256": "5177e599ebdc1264f653a2674127f3737b8a4353cda6eb21087c0211542c7b05",
+        "stdout_tail": "{\n  \"ok\": false,\n  \"engine\": \"identity-consistency-proxy\",\n  \"run_dir\": \"public\\\\characters\\\\rook-apprentice\",\n  \"states_mode\": \"all\",\n  \"quality_gate_note\": \"Head/upper/body proxy metrics are guardrails. Visual contact/onion/runtime review still wins when metrics miss a visible drift.\",\n  \"errors\": [\n    \"walk-forward: head_width_vs_reference shrinks to 0.77x reference; expected >= 0.82x\",\n    \"jump: upper_width_vs_reference varies by 0.44x across row; expected <= 0.42x\",\n    \"punch: head_width_vs_reference grows to 1.35x reference; expected <= 1.28x\",\n    \"kick: upper_width_vs_reference grows to 1.97x reference; expected <= 1.55x\",\n    \"kick: upper_width_vs_reference varies by 1.00x across row; expected <= 0.42x\",\n    \"hitstun: head_width_vs_reference grows to 1.73x reference; expected <= 1.28x\",\n    \"hitstun: head_width_vs_reference varies by 0.65x across row; expected <= 0.42x\",\n    \"hitstun: upper_width_vs_reference grows to 1.56x reference; expected <= 1.55x\",\n    \"hitstun: body_mass_width_80_vs_reference grows to 1.73x reference; expected <= 1.65x\"\n  ],\n  \"warnings\": []\n}\n"
+      },
+      "input_fingerprint": "5177e599ebdc1264f653a2674127f3737b8a4353cda6eb21087c0211542c7b05",
+      "complete": true,
+      "status": "fail"
+    },
+    {
+      "id": "motion-variation",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "no explicit locomotion animation_workflows fact"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "asset-slots",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "extraction_mode=components does not use slots"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "isometric-tiles",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "asset_kind is not tileset"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "segmentation-diagnostic",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "production workflow does not use diagnostic segmentation as a gate"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "frame-registration",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "requires import-diagnostic asset_kind=sprite"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "runtime-preview",
+      "applicable": true,
+      "checked_items": [
+        "crouch",
+        "hitstun",
+        "idle",
+        "jump",
+        "kick",
+        "punch",
+        "walk-forward"
+      ],
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "fingerprints": {
+          "crouch": "sha256:cbc5cc85f90ecb22fe4684626df3a42b8b5f2be2a18a734abafb1b62b9cac1e3",
+          "hitstun": "sha256:1d179639e9d6ad5e10cef033dbae203f2b0d200d63190608c4fe6dd192a05dcb",
+          "idle": "sha256:27b8ecd850ede9a04cf25f976c00527fe55c9e474b9d883fdb8a659ce3754575",
+          "jump": "sha256:dd7abcd9c315f09cdcb3b128d666e6e62533941b50be37f83fadc28a916642af",
+          "kick": "sha256:afa9c7ce6da29dd8a31ac327e8caaa84afb54dc299b28b16dda3ce7cc482663b",
+          "punch": "sha256:865f7ba9338a083b88ef8f5aa1e06396e03b6892c3a5181c48a00526aa42103e",
+          "walk-forward": "sha256:db2c57003716c3d76151dc151656ba6c1684774b3cc785aed2b7a0ff1aa91fe0"
+        }
+      },
+      "input_fingerprint": "sha256:e6ccc20f35378582c1f8d72b3ab3582f22a7a5b89454ef87761592121d4c0635",
+      "complete": true,
+      "status": "pass"
+    },
+    {
+      "id": "visual-review",
+      "applicable": true,
+      "checked_items": [
+        "qa/all-contact.png",
+        "qa/pose-scale-review.png",
+        "qa/runtime-preview/idle-playback.gif",
+        "qa/runtime-preview/hitstun-playback.gif"
+      ],
+      "errors": [
+        "visual review status is not pass"
+      ],
+      "warnings": [],
+      "evidence": {
+        "input_fingerprint": "sha256:438ac4ea39259efeb2b7d49db86e0ec7d3d7a6161b737e4fee34f8753075f16b",
+        "review_path": "qa/visual-review.json",
+        "reviewer_kind": "vision-model"
+      },
+      "input_fingerprint": "sha256:438ac4ea39259efeb2b7d49db86e0ec7d3d7a6161b737e4fee34f8753075f16b",
+      "complete": true,
+      "status": "fail"
+    }
+  ],
+  "blockers": [
+    "animation-contracts: hitstun: hit-reaction-knockdown needs at least 4 frames to prove required phases; found 3",
+    "animation-contracts: report declared ok:false",
+    "animation-contracts: report did not check expected items: crouch",
+    "identity-consistency: walk-forward: head_width_vs_reference shrinks to 0.77x reference; expected >= 0.82x",
+    "identity-consistency: jump: upper_width_vs_reference varies by 0.44x across row; expected <= 0.42x",
+    "identity-consistency: punch: head_width_vs_reference grows to 1.35x reference; expected <= 1.28x",
+    "identity-consistency: kick: upper_width_vs_reference grows to 1.97x reference; expected <= 1.55x",
+    "identity-consistency: kick: upper_width_vs_reference varies by 1.00x across row; expected <= 0.42x",
+    "identity-consistency: hitstun: head_width_vs_reference grows to 1.73x reference; expected <= 1.28x",
+    "identity-consistency: hitstun: head_width_vs_reference varies by 0.65x across row; expected <= 0.42x",
+    "identity-consistency: hitstun: upper_width_vs_reference grows to 1.56x reference; expected <= 1.55x",
+    "identity-consistency: hitstun: body_mass_width_80_vs_reference grows to 1.73x reference; expected <= 1.65x",
+    "identity-consistency: report declared ok:false",
+    "visual-review: visual review status is not pass"
+  ]
+}

@@ -7,6 +7,31 @@ Reviewed against local shallow clone:
 - Local snapshot: `044da72 Merge pull request #3732 from rakieldev/fixes`
 - Review date: 2026-06-24
 - Web refresh: 2026-06-25 against the official GitHub repository and website. The official project describes Ikemen GO as an open-source fighting game engine that supports M.U.G.E.N resources, targets MUGEN 1.1 Beta-level backwards compatibility, and expands beyond MUGEN with features such as Lua scripting and ZSS. Those extensions remain scanner/reporting scope here until the browser runtime has stronger MUGEN evidence.
+- Runtime refresh: 2026-07-30 closes T427's narrow exception to that older
+  scanner-only wording: direct/fallback character-state ZSS under `ikemen-go`
+  lowers a named `StateDef`/controller subset into the shared runtime and has a
+  required live trace. General ZSS, Lua, system/screenpack ZSS, and parity stay
+  blocked.
+- Runtime refresh: 2026-07-30 closes T428's next narrow exception: one mixed
+  CNS/ZSS `ignoreHitPause` wrapper is source-located and executes during real
+  global hit pause while its unwrapped sibling remains frozen.
+- Runtime refresh: 2026-07-30 implements T429's bounded ZSS exception:
+  source-located `ignoreHitPause persistent(2)` keeps ZSS-only controller
+  cadence across frozen state time, skips the intervening eligible pass, and
+  resets at state entry. Required trace checksum is `4ff43eb7`; final Vite
+  build passed. T430/T431 separately close raw-CNS positive normal cadence
+  (`f7c32a53`) and raw-CNS zero normal one-shot behavior (`d13ad12a`); T434
+  aligns the raw-CNS normal positive route with trigger-count persistency.
+  T432 closes the paired raw-CNS paused-zero route (`94b49516`); T433 closes
+  the separate raw positive paused-cadence route (`d6d00fd0`); T435/T436 close
+  the bounded raw-CNS `StateDef -2`/`-3` trigger-count routes (`6fce3962`,
+  `b2719d71`), with `-3` admitted only when no `stateOwner` exists. Dynamic/
+  general persistence, player-owned custom states, all other ZSS
+  grammar/controllers, Lua, and parity remain blocked.
+- Runtime refresh: 2026-07-30 closes T437's imported CMD State -1 setup
+  exception: raw `persistent = 2` `VarSet` counts trigger passes across a
+  current-state transition (`ba3d289d`). State -1 ChangeState/zero, helpers,
+  dynamic values and generic command-state parity remain blocked.
 - Source-map refresh: 2026-06-26 against the official repository compiler/stage/Lua sources for report-only controller, trigger, screenpack, and model-stage detection. This refresh still does not authorize IKEMEN execution.
 - Scanner refresh: 2026-06-29 against the local Ikemen-GO source snapshot for text-system lifecycle signals: `RemoveText` controller registration/execution and the `NumText` trigger are recognized as report-only findings.
 - Scanner refresh: 2026-07-02 adds report-only ZSS `[Statedef ...]` / `[State ...]` code-block recognition and the `ModifyText` text lifecycle controller fixture. This still does not authorize ZSS execution.
@@ -44,7 +69,7 @@ IKEMEN-GO is a compatibility reference, not a dependency target. This sandbox st
 ## What Not To Copy Yet
 
 - Full bytecode VM parity.
-- Lua/ZSS as MVP scope.
+- Lua and general ZSS beyond the named character-state subset.
 - Rollback/netplay.
 - IKEMEN-specific 3D model stages, except as a future Three.js-compatible stage layer.
 - Full BGCtrl, custom states, and advanced hit systems until the imported KFM path is stable. `Helper` is implemented only as a bounded visual effect actor, and `Projectile` is implemented only as a bounded colliding effect actor; neither path is full IKEMEN/MUGEN parity.
@@ -56,6 +81,17 @@ The current implementation uses IKEMEN-GO as a guide in these places:
 - Stage `.def` now maps into `MugenStageDefinition` for Runtime Mode setup.
 - Stage SFF archives can now provide static/tiled normal BG sprites for parsed `[BG ...] spriteno` refs and action-backed BG sprites for embedded `[Begin Action]` refs, with basic horizontal parallax.
 - `PackageAnalysis/v0` applies the scanner through one VirtualFileSystem package report shared by character, stage, system, and screenpack inputs. It preserves source-located dependencies and MUGEN profile/version metadata while retaining the `ikemen-go-scan` scanner-only ceiling.
+- T427 admits only direct `.zss`/fallback `.cns.zss` character state sources
+  under `ikemen-go`: `StateDef`, `Null`, `PosAdd`, `ChangeState`, `VelSet`,
+  `if`/`else`, comments, and bounded wrappers lower into the existing state IR.
+  The direct/fallback/mixed fixtures and required `ikemen-zss-live` trace
+  (`47c627a2`) are runtime evidence; all other ZSS remains scanner-only or
+  blocked.
+- T428 adds only the real global-hit-pause proof for that exact source-backed
+  subset: `ignoreHitPause` lowers to the shared controller parameter and is
+  filtered through the existing scheduler; source-located `VelSet` runs while
+  sibling unwrapped `PosAdd` remains frozen (`ikemen-zss-hitpause-wrapper`,
+  `b6533370`). This is not generic wrapper or persistence parity.
 - Compatibility reports now include a report-only `ikemen-go-scan` profile. `IkemenFeatureScanner` recognizes ZSS files/references, ZSS `[Statedef ...]` / `[State ...]` code blocks, and ZSS controller syntax, Lua files/hooks including the `hook.*` API, IKEMEN config JSON, `IkemenVersion`, selected IKEMEN-only controllers and `AssertSpecial` flags, source-mapped extended trigger identifiers that are not in the bounded supported subset, select/system screenpack signals such as `unlock` and `commandlist`, character `fightfx.prefix` metadata, model-stage assets, video background layers, and named 3D/Z stage params such as `topz`, `botz`, `ztopscale`, `depthtoscreen`, `zoffsetlink`, `startz`, `scenenumber`, `model`, `modeloffset`, `modelrotate`, `modelscale`, and `fov`; the scanner also recognizes IKEMEN-GO data ZSS presentation/system controllers such as `LifeBarAction`, `GameMakeAnim`, `Text`, `ModifyText`, `RemoveText`, and `RedLifeSet`, plus the text-count trigger `NumText`, as report-only findings. `fightfx.prefix` additionally has bounded runtime metadata handoff into F-prefixed FightFX hit-spark and hit-sound trace events, and character `[Files] fx` packages can be loaded/selected by matching FightFX prefix for runtime spark frames plus prefixed sound lookup. Full `sys.ffx` lifetime/refcount/cache semantics, exact channel fallback, exact visual/audio parity, model-stage/video-background rendering, and broader IKEMEN execution remain unsupported. Scanner findings are exported as `Recognized + Unsupported` unless a separate runtime gate proves a bounded subset. `PrevMoveType`, `PrevAnim`, and `PrevStateType` are currently excluded from unsupported scanner findings because the runtime now has bounded evidence for them.
 - Command buffers keep a frame history, support duplicate command definitions plus same-step `|` alternatives, apply `[Remap]` button aliases before command matching, partially honor `buffer.hitpause`, apply a bounded `steptime` gap check between matched steps, distinguish plain press/change inputs from `/` hold and `~` release matching, and enforce partial numeric charge windows such as `~30$D`.
 - Imported `HitDef` runtime data now includes a narrow IKEMEN/MUGEN-inspired guard path: held-back/down-back defender input, `guardflag` filtered by statetype, guard damage from the second `damage` value, plus `guard.pausetime`, `guard.hittime`, `guard.velocity`, explicit `airguard.velocity`, official default `airguard.velocity` derivation from `air.velocity`, and bounded entry into known defender-owned Common1-style stand/crouch/air guard-hit states such as `150 -> 151`, `152 -> 153`, and `154 -> 155`. Player-owned and helper-parented `Projectile` routes inherit this bounded air-guard velocity subset from HitDef parameters. This is not full guard-state parity.

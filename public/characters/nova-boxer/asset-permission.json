@@ -29,8 +29,8 @@
     },
     {
       "path": "manifest.json",
-      "bytes": 17024,
-      "sha256": "c3f7cb9deac56f74547bab44bc4e88a662c3607abf202e3ee5ce0bd90ffa4bd1"
+      "bytes": 6010,
+      "sha256": "0675344fa956cca0b37dcec46256ef574ae3cf7d4003a61d6c19ee6349e9b2dc"
     },
     {
       "path": "mugen/nova.air",
@@ -64,13 +64,13 @@
     },
     {
       "path": "sprite-sheet-alpha.png",
-      "bytes": 341273,
-      "sha256": "8530964cdac11690694a0114aef71e35e21b832994167412609dff3c88b49664"
+      "bytes": 312330,
+      "sha256": "5533de237f182f1cf5bb063642bd1e9b4dd688eaa55c2c618e2b3455c844847c"
     },
     {
       "path": "sprite-sheet-alpha.report.json",
-      "bytes": 18148,
-      "sha256": "9ed147ed5bd1f8a3425f550468d353d17fa8f358c6a9eeedc99aabef13ca0505"
+      "bytes": 12828,
+      "sha256": "6cc08af17189e82fb9917e493104610f6d3d8da72c685a41d0eeaf84960243d1"
     },
     {
       "path": "states.contract.json",

@@ -1,7 +1,8 @@
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeStunActor = {
-  runtime: Pick<CharacterRuntimeState, "guardStun" | "guarding" | "moveType" | "vel">;
+  runtime: Pick<CharacterRuntimeState, "guardStun" | "guarding" | "moveType" | "vel">
+    & Partial<Pick<CharacterRuntimeState, "ctrl" | "guardSlideTimeRemaining" | "guardControlTimeRemaining">>;
   hitStun: number;
 };
 
@@ -15,6 +16,7 @@ export type RuntimeGuardStunActor = Pick<RuntimeStunActor, "runtime">;
 export type RuntimeStunAdvanceOptions<TActor extends RuntimeStunActor> = {
   hasCurrentMove?: boolean;
   preserveImportedStateMoveType?: boolean;
+  preserveImportedGuardTiming?: boolean;
   suppressHitStunAction?: boolean;
   showHitStunAction?: (actor: TActor) => void;
 };
@@ -30,15 +32,15 @@ export function hasRuntimeStun(actor: RuntimeStunActor): boolean {
 
 export function tickRuntimeGuardStun(actor: RuntimeGuardStunActor): boolean {
   actor.runtime.guarding = false;
-  if ((actor.runtime.guardStun ?? 0) <= 0) {
-    return false;
+  const guardActive = (actor.runtime.guardStun ?? 0) > 0;
+  if (guardActive) {
+    actor.runtime.guardStun = Math.max(0, (actor.runtime.guardStun ?? 0) - 1);
+    actor.runtime.guarding = actor.runtime.guardStun > 0;
+    actor.runtime.moveType = actor.runtime.guarding ? "H" : actor.runtime.moveType;
+    actor.runtime.vel.x *= 0.82;
   }
-
-  actor.runtime.guardStun = Math.max(0, (actor.runtime.guardStun ?? 0) - 1);
-  actor.runtime.guarding = actor.runtime.guardStun > 0;
-  actor.runtime.moveType = actor.runtime.guarding ? "H" : actor.runtime.moveType;
-  actor.runtime.vel.x *= 0.82;
-  return true;
+  tickRuntimeGuardTiming(actor.runtime);
+  return guardActive;
 }
 
 export function tickRuntimeStun(actor: RuntimeStunActor): RuntimeStunTickResult {
@@ -67,6 +69,7 @@ export class RuntimeStunWorld {
     actor: TActor,
     options: RuntimeStunAdvanceOptions<TActor> = {},
   ): RuntimeStunAdvanceResult {
+    const slideTimeBefore = actor.runtime.guardSlideTimeRemaining;
     const tick = tickRuntimeStun(actor);
     const result: RuntimeStunAdvanceResult = {
       ...tick,
@@ -74,8 +77,28 @@ export class RuntimeStunWorld {
       restoredIdleMoveType: false,
     };
     const preserveImportedStateMoveType = options.preserveImportedStateMoveType ?? false;
+    const preserveImportedGuardTiming = options.preserveImportedGuardTiming ?? preserveImportedStateMoveType;
     const canShowHitStunAction =
       !preserveImportedStateMoveType && !options.suppressHitStunAction && options.showHitStunAction;
+
+    if (
+      !preserveImportedGuardTiming &&
+      !options.hasCurrentMove &&
+      slideTimeBefore !== undefined &&
+      slideTimeBefore > 0 &&
+      actor.runtime.guardSlideTimeRemaining === 0
+    ) {
+      actor.runtime.vel.x = 0;
+    }
+    if (
+      !preserveImportedGuardTiming &&
+      !options.hasCurrentMove &&
+      actor.runtime.guardControlTimeRemaining !== undefined &&
+      actor.runtime.guardControlTimeRemaining <= 0 &&
+      actor.runtime.ctrl === false
+    ) {
+      actor.runtime.ctrl = true;
+    }
 
     if (tick.guardActive && canShowHitStunAction) {
       options.showHitStunAction?.(actor);
@@ -93,4 +116,17 @@ export class RuntimeStunWorld {
 
     return result;
   }
+}
+
+function tickRuntimeGuardTiming(runtime: RuntimeStunActor["runtime"]): void {
+  if (runtime.guardSlideTimeRemaining !== undefined) {
+    runtime.guardSlideTimeRemaining = decrementRuntimeTimer(runtime.guardSlideTimeRemaining);
+  }
+  if (runtime.guardControlTimeRemaining !== undefined) {
+    runtime.guardControlTimeRemaining = decrementRuntimeTimer(runtime.guardControlTimeRemaining);
+  }
+}
+
+function decrementRuntimeTimer(value: number): number {
+  return Math.max(0, Math.trunc(value) - 1);
 }

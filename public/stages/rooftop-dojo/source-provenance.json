@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "kind": "background-source-provenance",
+  "pack_id": "rooftop-dojo",
+  "source_type": "imagegen",
+  "art_engine": "imagegen",
+  "verification_status": "verified",
+  "representative": true,
+  "provider_source": {
+    "path": "C:/Users/cristian/.codex/generated_images/019fb294-0017-7222-b5cd-4c080bd5eca8/exec-587feaf7-8802-40a3-9d9a-28a9fb47b85b.png",
+    "sha256": "7a82d59f5640de8851536f8ae6aa7fdf875729b392ef94df38f5569c52febb1a",
+    "width": 1672,
+    "height": 941
+  },
+  "derived_layers": [
+    {
+      "path": "source/rooftop-dojo-far-v2.png",
+      "sha256": "df6c141edea2b10f4eddbf607b29f3b1b37871f6322ee9ef1c1704a96cb96a4e",
+      "derived_from": "rooftop-dojo-base-imagegen-v2.png",
+      "operation": "provider pixels + deterministic blur radius 1 + brightness 0.78"
+    },
+    {
+      "path": "source/rooftop-dojo-mid-v2.png",
+      "sha256": "0e94490b241f0aae67402dc10cb3808fb2458245b4d66a603ebf0755c5740753",
+      "derived_from": "rooftop-dojo-base-imagegen-v2.png",
+      "operation": "provider pixels + vertical alpha mask y=.10-.80"
+    },
+    {
+      "path": "source/rooftop-dojo-near-alpha-v2.png",
+      "sha256": "cb7d95862d6be88fbeddc8cbabd1da455f5b0659a5397087127ce2387f2b0310",
+      "derived_from": "rooftop-dojo-base-imagegen-v2.png",
+      "operation": "provider pixels + vertical alpha mask y=.55-1.00"
+    }
+  ],
+  "style": "16-bit combat pixel art; Baki-like severe martial-arts mood; restrained charcoal/earth palette; no neon"
+}

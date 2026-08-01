@@ -5,6 +5,9 @@ import { markRuntimeEffectActorGotHit } from "./EffectLifecycleSystem";
 import {
   applyRuntimeDamage,
   canRuntimeDamageKill,
+  resolveRuntimeFallEnabled,
+  resolveRuntimeFallYVelocityDefaults,
+  resolveRuntimeFallRecoveryDefaults,
   type RuntimeCombatHitResult,
 } from "./CombatResolver";
 import { applyRuntimeCornerPush, type RuntimeStageBounds } from "./HitDefCornerPush";
@@ -21,6 +24,7 @@ import {
   recordRuntimeRoundWinType,
   runtimeRoundHitSourceMetadata,
 } from "./RuntimeRoundWinTypeSystem";
+import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
 import {
   bufferRuntimeHitDefTarget,
   type RuntimeHitDefContactMemoryActor,
@@ -33,7 +37,7 @@ export type RuntimeDirectCombatActor = {
   rootOwned?: boolean;
   effectOwnerId?: string;
   label: string;
-  definition: Pick<DemoFighterDefinition, "constants" | "hitDefPriorityProfile">;
+  definition: Pick<DemoFighterDefinition, "constants" | "hitDefPriorityProfile" | "localCoord">;
   runtime: CharacterRuntimeState;
   currentMove?: DemoMove;
   currentMoveLabel?: string;
@@ -187,6 +191,10 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.guardStun = result.stun;
     defender.runtime.guardSlideTime = result.slideTime ?? 0;
     defender.runtime.guardControlTime = result.controlTime ?? 0;
+    const guardSlideTime = result.slideTime ?? result.stun;
+    const guardControlTime = result.controlTime ?? guardSlideTime;
+    defender.runtime.guardSlideTimeRemaining = normalizeGuardTimer(guardSlideTime);
+    defender.runtime.guardControlTimeRemaining = normalizeGuardTimer(guardControlTime);
     defender.runtime.guarding = true;
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
     recordRuntimeRoundWinType(attacker, defender, move.attr, result.kind, lifeBefore);
@@ -197,7 +205,17 @@ export class RuntimeDirectCombatWorld {
       applyRuntimeRedLifeAdd(defender.runtime, result.redLife, true);
     }
     defender.runtime.vel.x = attacker.runtime.facing * result.push;
-    defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
+    defender.runtime.hitVelocity = {
+      x: attacker.runtime.facing * result.push,
+      y: result.hitVelocityY ?? 0,
+      ...(result.hitVelocityZ === undefined ? {} : { z: result.hitVelocityZ }),
+    };
+    if (result.hitVelocityZ !== undefined) {
+      defender.runtime.combatDepth = {
+        ...(defender.runtime.combatDepth ?? runtimeCombatDepthFromConstants(defender.definition.constants)),
+        velocity: result.hitVelocityZ,
+      };
+    }
     applyRuntimeCornerPush(attacker.runtime, defender.runtime, options.stageBounds, result.cornerPush, result.push);
     defender.runtime.hitVars = runtimeGetHitVarsFromMove(move, {
       guarded: true,
@@ -237,6 +255,8 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.guardStun = 0;
     defender.runtime.guardSlideTime = 0;
     defender.runtime.guardControlTime = 0;
+    defender.runtime.guardSlideTimeRemaining = undefined;
+    defender.runtime.guardControlTimeRemaining = undefined;
     defender.runtime.guarding = false;
     defender.runtime.receivedHitSequence = (defender.runtime.receivedHitSequence ?? 0) + 1;
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
@@ -248,8 +268,21 @@ export class RuntimeDirectCombatWorld {
     if (result.redLife !== undefined) {
       applyRuntimeRedLifeAdd(defender.runtime, result.redLife, true);
     }
-    defender.runtime.vel.x = attacker.runtime.facing * result.push;
-    defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
+    const hitVelocityX = result.hitVelocityX === undefined
+      ? attacker.runtime.facing * result.push
+      : -attacker.runtime.facing * result.hitVelocityX;
+    defender.runtime.vel.x = hitVelocityX;
+    defender.runtime.hitVelocity = {
+      x: hitVelocityX,
+      y: result.hitVelocityY ?? 0,
+      ...(result.hitVelocityZ === undefined ? {} : { z: result.hitVelocityZ }),
+    };
+    if (result.hitVelocityZ !== undefined) {
+      defender.runtime.combatDepth = {
+        ...(defender.runtime.combatDepth ?? runtimeCombatDepthFromConstants(defender.definition.constants)),
+        velocity: result.hitVelocityZ,
+      };
+    }
     applyRuntimeCornerPush(attacker.runtime, defender.runtime, options.stageBounds, result.cornerPush, result.push);
     defender.runtime.hitVars = runtimeGetHitVarsFromMove(move, {
       damage: result.damage,
@@ -257,7 +290,7 @@ export class RuntimeDirectCombatWorld {
       hitTime: result.stun,
       sourceGuardKo: false,
     }, attacker);
-    defender.runtime.hitFall = runtimeHitFallFromMove(move, attacker.runtime.facing);
+    defender.runtime.hitFall = runtimeHitFallFromMove(move, defender.runtime.stateType, defender.definition.localCoord);
     applyHitSnap(attacker, defender, move);
     if (result.hitVelocityY !== undefined) {
       defender.runtime.vel.y = result.hitVelocityY;
@@ -280,6 +313,10 @@ export class RuntimeDirectCombatWorld {
       message: `${attacker.label} hit ${defender.label} for ${result.damage}`,
     };
   }
+}
+
+function normalizeGuardTimer(value: number | undefined): number {
+  return Math.max(0, Math.trunc(value ?? 0));
 }
 
 function priorityTypeLabel(type: NonNullable<DemoMove["priorityType"]>): "Hit" | "Miss" | "Dodge" {
@@ -355,24 +392,36 @@ function applyHitSnap<TActor extends RuntimeDirectCombatActor>(attacker: TActor,
   }
 }
 
-function runtimeHitFallFromMove(move: DemoMove, attackerFacing: 1 | -1): CharacterRuntimeState["hitFall"] | undefined {
+function runtimeHitFallFromMove(
+  move: DemoMove,
+  defenderStateType: CharacterRuntimeState["stateType"],
+  defenderLocalCoord?: readonly [number, number],
+): CharacterRuntimeState["hitFall"] | undefined {
   const fall = move.fall;
   if (!fall) {
     return undefined;
   }
   const xVelocity = fall.velocity?.x;
+  const zVelocity = fall.velocity?.z;
+  const falling = resolveRuntimeFallEnabled(fall, defenderStateType);
+  const recovery = resolveRuntimeFallRecoveryDefaults({ ...fall, enabled: falling });
   return {
-    falling: fall.enabled,
+    falling,
     damage: Math.max(0, fall.damage ?? 0),
+    ...(move.downBounce === undefined ? {} : { downBounce: move.downBounce }),
     defenceUp: fall.defenceUp,
     kill: fall.kill,
-    recover: fall.recover,
-    recoverTime: fall.recoverTime,
+    recover: recovery.recover,
+    recoverTime: recovery.recoverTime,
     downRecover: fall.downRecover ?? true,
     downRecoverTime: fall.downRecoverTime,
     velocity: {
-      x: xVelocity !== undefined ? attackerFacing * Math.abs(xVelocity) : undefined,
-      y: fall.velocity?.y ?? move.hitVelocityY ?? -4.5,
+      // `fall.xvelocity` is an authored bounce velocity, not an
+      // attacker-relative HitDef velocity. M.U.G.E.N/Ikemen preserve its
+      // signed value when HitFallVel applies it.
+      x: xVelocity,
+      y: fall.velocity?.y ?? move.hitVelocityY ?? resolveRuntimeFallYVelocityDefaults(defenderLocalCoord),
+      ...(zVelocity === undefined ? {} : { z: zVelocity }),
     },
     envShake: fall.envShake,
   };

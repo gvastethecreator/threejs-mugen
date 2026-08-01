@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "kind": "background-source-provenance",
+  "pack_id": "azotea-wifi",
+  "source_type": "imagegen",
+  "art_engine": "imagegen",
+  "verification_status": "verified",
+  "representative": true,
+  "provider_source": {
+    "path": "C:/Users/cristian/.codex/generated_images/019fb294-0017-7222-b5cd-4c080bd5eca8/exec-9825214c-1d6e-4df3-a3bc-05a2375decea.png",
+    "sha256": "93da2b6d892c8c60ebc0cf9e9356955661cab55c1c5efa28aba3b2b5b8965086",
+    "width": 1672,
+    "height": 941
+  },
+  "derived_layers": [
+    {
+      "path": "source/rooftop-far-v2.png",
+      "sha256": "521753274f96fced7ff19ecf8e53c0d2596a29a5dd2e7877a3762fde1400ca90",
+      "derived_from": "azotea-wifi-base-imagegen-v2.png",
+      "operation": "provider pixels + deterministic blur radius 1 + brightness 0.78"
+    },
+    {
+      "path": "source/rooftop-mid-v2.png",
+      "sha256": "924d4d2c4c5906366c7136a836eb8e601ae48edf8d2c9fe9b9d7e9e679bf0d7c",
+      "derived_from": "azotea-wifi-base-imagegen-v2.png",
+      "operation": "provider pixels + vertical alpha mask y=.10-.80"
+    },
+    {
+      "path": "source/rooftop-near-alpha-v2.png",
+      "sha256": "25b964ce8d82fd35f476bcb8bdc90ddb33d03fe0d9adc85bf4044d718e661b2f",
+      "derived_from": "azotea-wifi-base-imagegen-v2.png",
+      "operation": "provider pixels + vertical alpha mask y=.55-1.00"
+    }
+  ],
+  "style": "16-bit combat pixel art; Baki-like severe martial-arts mood; restrained charcoal/earth palette; no neon"
+}

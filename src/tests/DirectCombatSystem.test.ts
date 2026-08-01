@@ -207,6 +207,8 @@ describe("DirectCombatSystem", () => {
     expect(defender.runtime.guardStun).toBe(7);
     expect(defender.runtime.guardSlideTime).toBe(5);
     expect(defender.runtime.guardControlTime).toBe(6);
+    expect(defender.runtime.guardSlideTimeRemaining).toBe(5);
+    expect(defender.runtime.guardControlTimeRemaining).toBe(6);
     expect(defender.runtime.guarding).toBe(true);
     expect(defender.runtime.receivedHitSequence).toBe(4);
     expect(defender.runtime.ctrl).toBe(false);
@@ -310,6 +312,119 @@ describe("DirectCombatSystem", () => {
     expect(attacker.runtime.roundWinType).toBe("cheese");
   });
 
+  it("defaults direct fall recovery to the official enabled-fall values", () => {
+    const world = new RuntimeDirectCombatWorld();
+    const attacker = actor("p1", "Attacker");
+    const defender = actor("p2", "Defender", { currentMove: move() });
+
+    world.applyResolvedHit(attacker, defender, move({ fall: { enabled: true } }), {
+      kind: "hit",
+      damage: 1,
+      kill: true,
+      pause: 0,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+    }, hooks());
+
+    expect(defender.runtime.hitFall).toMatchObject({
+      falling: true,
+      recover: true,
+      recoverTime: 4,
+    });
+  });
+
+  it("applies air.fall only when the direct defender is airborne", () => {
+    const world = new RuntimeDirectCombatWorld();
+    const attacker = actor("p1", "Attacker");
+    const groundDefender = actor("p2", "Ground Defender", { currentMove: move() });
+    world.applyResolvedHit(attacker, groundDefender, move({ fall: { enabled: false, airFall: true } }), {
+      kind: "hit",
+      damage: 1,
+      kill: true,
+      pause: 0,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+    }, hooks());
+
+    const airborneDefender = actor("p3", "Airborne Defender", { currentMove: move(), stateType: "A" });
+    world.applyResolvedHit(attacker, airborneDefender, move({ fall: { enabled: false, airFall: true } }), {
+      kind: "hit",
+      damage: 1,
+      kill: true,
+      pause: 0,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+    }, hooks());
+
+    expect(groundDefender.runtime.hitFall).toMatchObject({ falling: false });
+    expect(airborneDefender.runtime.hitFall).toMatchObject({ falling: true, recover: true, recoverTime: 4 });
+  });
+
+  it("defaults direct fall y velocity from the defender localcoord", () => {
+    const world = new RuntimeDirectCombatWorld();
+    const attacker = actor("p1", "Attacker");
+    const defender = actor("p2", "Defender", {
+      definition: { constants: {}, localCoord: [640, 480] },
+    });
+
+    world.applyResolvedHit(attacker, defender, move({ fall: { enabled: true } }), {
+      kind: "hit",
+      damage: 1,
+      kill: true,
+      pause: 0,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+    }, hooks());
+
+    expect(defender.runtime.hitFall?.velocity.y).toBe(-9);
+  });
+
+  it("preserves signed authored fall.xvelocity across attacker facing", () => {
+    const world = new RuntimeDirectCombatWorld();
+    const attacker = actor("p1", "Attacker", { facing: -1 });
+    const defender = actor("p2", "Defender");
+
+    world.applyResolvedHit(attacker, defender, move({
+      fall: { enabled: true, velocity: { x: -3, y: -9 } },
+    }), {
+      kind: "hit",
+      damage: 1,
+      kill: true,
+      pause: 0,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+    }, hooks());
+
+    expect(defender.runtime.hitFall?.velocity).toEqual({ x: -3, y: -9 });
+  });
+
+  it("carries authored Ikemen fall.zvelocity into the defender fall metadata", () => {
+    const world = new RuntimeDirectCombatWorld();
+    const attacker = actor("p1", "Attacker");
+    const defender = actor("p2", "Defender", {
+      combatDepth: { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] },
+    });
+
+    world.applyResolvedHit(attacker, defender, move({
+      fall: { enabled: true, velocity: { x: 1, y: -6, z: -2.5 } },
+    }), {
+      kind: "hit",
+      damage: 1,
+      kill: true,
+      pause: 0,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+    }, hooks());
+
+    expect(defender.runtime.hitFall?.velocity).toEqual({ x: 1, y: -6, z: -2.5 });
+  });
+
   it("applies bounded hit results, hitFall metadata, and received damage", () => {
     const contactWorld = new RecordingContactWorld();
     const world = new RuntimeDirectCombatWorld(contactWorld);
@@ -347,6 +462,7 @@ describe("DirectCombatSystem", () => {
         recoverTime: 20,
         velocity: { x: 5, y: -7 },
       },
+      downBounce: false,
     });
 
     const outcome = world.applyResolvedHit(attacker, defender, combatMove, {
@@ -385,6 +501,8 @@ describe("DirectCombatSystem", () => {
     expect(defender.runtime.guardStun).toBe(0);
     expect(defender.runtime.guardSlideTime).toBe(0);
     expect(defender.runtime.guardControlTime).toBe(0);
+    expect(defender.runtime.guardSlideTimeRemaining).toBeUndefined();
+    expect(defender.runtime.guardControlTimeRemaining).toBeUndefined();
     expect(defender.runtime.guarding).toBe(false);
     expect(defender.runtime.receivedHitSequence).toBe(5);
     expect(defender.runtime.spritePriority).toBe(0);
@@ -418,12 +536,13 @@ describe("DirectCombatSystem", () => {
     expect(defender.runtime.hitFall).toMatchObject({
       falling: true,
       damage: 7,
+      downBounce: false,
       defenceUp: 50,
       kill: false,
       recover: true,
       recoverTime: 20,
       downRecover: true,
-      velocity: { x: -5, y: -7 },
+      velocity: { x: 5, y: -7 },
     });
     expect(transitions).toEqual(["state-transition", "default-gethit"]);
     expect(defender.removedExplodsOnGetHit).toBe(1);
@@ -495,10 +614,36 @@ describe("DirectCombatSystem", () => {
     expect(defender.runtime.vel.x).toBe(8);
     expect(attacker.runtime.vel.x).toBe(-6);
   });
+
+  it("applies authored down.velocity X in attacker-relative coordinates", () => {
+    const world = new RuntimeDirectCombatWorld(new RuntimeContactMemoryWorld());
+    const attacker = actor("p1", "Attacker", { facing: 1 });
+    const defender = actor("p2", "Defender", {
+      stateType: "L",
+      combatDepth: { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] },
+    });
+
+    world.applyResolvedHit(attacker, defender, move({ downVelocityX: 3 }), {
+      kind: "hit",
+      damage: 0,
+      kill: true,
+      pause: 1,
+      stun: 20,
+      push: 8,
+      hitVelocityX: 3,
+      hitVelocityZ: 2.25,
+      powerGain: 0,
+    }, hooks());
+
+    expect(defender.runtime.vel.x).toBe(-3);
+    expect(defender.runtime.hitVelocity?.x).toBe(-3);
+    expect(defender.runtime.hitVelocity?.z).toBe(2.25);
+    expect(defender.runtime.combatDepth?.velocity).toBe(2.25);
+  });
 });
 
 type ActorOverrides = Partial<CharacterRuntimeState> &
-  Partial<Pick<RuntimeDirectCombatActor, "currentMove" | "moveTick" | "hasHit" | "hitPause" | "hitStun" | "hitDefTargets" | "pendingHitDefTargets" | "playerNo" | "rootId">>;
+  Partial<Pick<RuntimeDirectCombatActor, "currentMove" | "moveTick" | "hasHit" | "hitPause" | "hitStun" | "hitDefTargets" | "pendingHitDefTargets" | "playerNo" | "rootId" | "definition">>;
 
 function actor(id: string, label: string, overrides: ActorOverrides = {}): RuntimeDirectCombatActor & { removedExplodsOnGetHit: number } {
   const state = runtimeState(overrides);
@@ -508,7 +653,7 @@ function actor(id: string, label: string, overrides: ActorOverrides = {}): Runti
     playerNo: overrides.playerNo,
     rootId: overrides.rootId,
     label,
-    definition: { constants: {} },
+    definition: overrides.definition ?? { constants: {} },
     runtime: state,
     currentMove: overrides.currentMove,
     moveTick: overrides.moveTick ?? 0,

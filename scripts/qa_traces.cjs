@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { pathToFileURL } = require("node:url");
 
 function mergeScheduleCatalog(entries) {
   const byId = new Map();
@@ -29,12 +30,11 @@ async function main() {
   const outDir = path.resolve(process.cwd(), process.env.QA_TRACE_OUT_DIR ?? DEFAULT_OUT_DIR);
   fs.mkdirSync(outDir, { recursive: true });
 
-  const vite = await createViteLoader();
+  const runtime = await createTraceRuntime(outDir);
   const artifacts = [];
   const skipped = [];
 
-  try {
-    const presets = await vite.ssrLoadModule("/src/mugen/runtime/RuntimeTraceGatePresets.ts");
+  const presets = runtime;
     artifacts.push({
       name: "native-hit",
       required: true,
@@ -69,6 +69,76 @@ async function main() {
       name: "mugen-lite-journey-palette",
       required: true,
       artifact: await presets.createMugenLiteJourneyPaletteTraceArtifact(),
+    });
+    artifacts.push({
+      name: "ikemen-zss-live",
+      required: true,
+      artifact: await presets.createIkemenZssLiveTraceArtifact(),
+    });
+    artifacts.push({
+      name: "ikemen-zss-hitpause-wrapper",
+      required: true,
+      artifact: await presets.createIkemenZssHitPauseTraceArtifact(),
+    });
+    artifacts.push({
+      name: "ikemen-zss-combined-persistent-wrapper",
+      required: true,
+      artifact: await presets.createIkemenZssCombinedPersistentTraceArtifact(),
+    });
+    artifacts.push({
+      name: "mugen-cns-persistent-cadence",
+      required: true,
+      artifact: await presets.createMugenCnsPersistentTraceArtifact(),
+    });
+    artifacts.push({
+      name: "mugen-cns-persistent-trigger-count",
+      required: true,
+      artifact: await presets.createMugenCnsPersistentTriggerCountTraceArtifact(),
+    });
+    artifacts.push({
+      name: "mugen-cns-special-persistent",
+      required: true,
+      artifact: await presets.createMugenCnsSpecialPersistentTraceArtifact(),
+    });
+    artifacts.push({
+      name: "mugen-cns-state-minus-three-persistent",
+      required: true,
+      artifact: await presets.createMugenCnsStateMinusThreePersistentTraceArtifact(),
+    });
+    artifacts.push({
+      name: "mugen-cns-state-minus-one-persistent",
+      required: true,
+      artifact: await presets.createMugenCnsStateMinusOnePersistentTraceArtifact(),
+    });
+    artifacts.push({
+      name: "mugen-cns-state-minus-one-persistent-zero",
+      required: true,
+      artifact: await presets.createMugenCnsStateMinusOnePersistentZeroTraceArtifact(),
+    });
+    artifacts.push({
+      name: "mugen-cns-state-minus-one-changestate-persistent-zero",
+      required: true,
+      artifact: await presets.createMugenCnsStateMinusOneChangeStatePersistentZeroTraceArtifact(),
+    });
+    artifacts.push({
+      name: "mugen-cns-state-minus-one-changestate-persistent",
+      required: true,
+      artifact: await presets.createMugenCnsStateMinusOneChangeStatePersistentTraceArtifact(),
+    });
+    artifacts.push({
+      name: "mugen-cns-persistent-zero",
+      required: true,
+      artifact: await presets.createMugenCnsPersistentZeroTraceArtifact(),
+    });
+    artifacts.push({
+      name: "mugen-cns-hitpause-persistent-zero",
+      required: true,
+      artifact: await presets.createMugenCnsHitPausePersistentZeroTraceArtifact(),
+    });
+    artifacts.push({
+      name: "mugen-cns-hitpause-persistent-cadence",
+      required: true,
+      artifact: await presets.createMugenCnsHitPausePersistentCadenceTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-movecontact",
@@ -429,6 +499,11 @@ async function main() {
       name: "synthetic-imported-p2-distance",
       required: true,
       artifact: presets.createSyntheticImportedP2DistanceTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-ikemen-p2-value",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenP2ValueTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-owner-metrics",
@@ -3304,7 +3379,7 @@ async function main() {
 
     const kfmFixturePath = path.resolve(process.cwd(), process.env.KFM_FIXTURE_PATH ?? DEFAULT_KFM_FIXTURE);
     if (fs.existsSync(kfmFixturePath)) {
-      const imported = await loadImportedFighter(vite, kfmFixturePath);
+      const imported = await loadImportedFighter(runtime, kfmFixturePath);
       artifacts.push({
         name: "kfm-official-x",
         required: false,
@@ -3990,7 +4065,7 @@ async function main() {
 
     const codeFuManFixturePath = path.resolve(process.cwd(), process.env.CODEFUMAN_FIXTURE_PATH ?? DEFAULT_CODE_FUMAN_FIXTURE);
     if (fs.existsSync(codeFuManFixturePath)) {
-      const imported = await loadImportedFighter(vite, codeFuManFixturePath);
+      const imported = await loadImportedFighter(runtime, codeFuManFixturePath);
       artifacts.push({
         name: "codefuman-independent-x",
         required: false,
@@ -4122,25 +4197,30 @@ async function main() {
         2,
       ),
     );
-  } finally {
-    await vite.close();
-  }
 }
 
-async function createViteLoader() {
-  const { createServer } = await import("vite");
-  return createServer({
+async function createTraceRuntime(outDir) {
+  const { build } = await import("vite");
+  const bundleDir = path.join(outDir, ".runtime-bundle");
+  await build({
+    configFile: false,
     root: process.cwd(),
     logLevel: "error",
-    server: { middlewareMode: true },
-    appType: "custom",
+    publicDir: false,
+    build: {
+      ssr: path.resolve(process.cwd(), "scripts/qa_trace_runtime_entry.ts"),
+      outDir: bundleDir,
+      emptyOutDir: true,
+      rollupOptions: {
+        output: { entryFileNames: "runtime-trace-entry.mjs" },
+      },
+    },
   });
+  return import(`${pathToFileURL(path.join(bundleDir, "runtime-trace-entry.mjs")).href}?run=${Date.now()}`);
 }
 
-async function loadImportedFighter(vite, fixturePath) {
-  const { MugenCharacterLoader } = await vite.ssrLoadModule("/src/mugen/loader/MugenCharacterLoader.ts");
-  const { ZipCharacterSource } = await vite.ssrLoadModule("/src/mugen/loader/ZipCharacterSource.ts");
-  const { createImportedFighterDefinition } = await vite.ssrLoadModule("/src/mugen/runtime/importedFighter.ts");
+async function loadImportedFighter(runtime, fixturePath) {
+  const { MugenCharacterLoader, ZipCharacterSource, createImportedFighterDefinition } = runtime;
 
   const bytes = fs.readFileSync(fixturePath);
   const file = new File([bytes], path.basename(fixturePath));
@@ -4393,6 +4473,20 @@ function validateTraceCoverage(coverage) {
     "mugen-lite-journey",
     "mugen-lite-journey-nokoslow",
     "mugen-lite-journey-palette",
+    "ikemen-zss-live",
+    "ikemen-zss-hitpause-wrapper",
+    "ikemen-zss-combined-persistent-wrapper",
+    "mugen-cns-persistent-cadence",
+    "mugen-cns-persistent-trigger-count",
+    "mugen-cns-special-persistent",
+    "mugen-cns-state-minus-three-persistent",
+    "mugen-cns-state-minus-one-persistent",
+    "mugen-cns-state-minus-one-persistent-zero",
+    "mugen-cns-state-minus-one-changestate-persistent-zero",
+    "mugen-cns-state-minus-one-changestate-persistent",
+    "mugen-cns-persistent-zero",
+    "mugen-cns-hitpause-persistent-zero",
+    "mugen-cns-hitpause-persistent-cadence",
     "synthetic-imported-custom-state",
     "synthetic-imported-custom-state-gethitvar",
     "synthetic-imported-custom-state-gethitvar-animtype",
@@ -4753,6 +4847,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-playerid-root-roster",
     "synthetic-imported-p2-state-context",
     "synthetic-imported-p2-distance",
+    "synthetic-imported-ikemen-p2-value",
     "synthetic-imported-owner-metrics",
     "synthetic-imported-selfanimexist",
     "synthetic-imported-alive",

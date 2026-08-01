@@ -31,6 +31,14 @@ const defaultActionMapping: AtlasActionMapping = {
   500: "hitstun",
 };
 
+const actionRowAliases: Record<string, string[]> = {
+  // The content-pack manifests use explicit move names while the baseline
+  // demo manifests retain the shorter punch/kick names. Resolve both without
+  // forcing every imported pack to rewrite its action groups.
+  punch: ["light-strike"],
+  kick: ["heavy-strike"],
+};
+
 export class AtlasSpriteProvider implements SpriteProvider {
   private readonly cache = new Map<string, MugenSprite>();
 
@@ -103,7 +111,18 @@ export class AtlasSpriteProvider implements SpriteProvider {
 
   private resolveRowName(group: number): string {
     const actionId = group % 1000;
-    return this.actionMapping[actionId] ?? String(actionId);
+    const preferred = this.actionMapping[actionId] ?? String(actionId);
+    if (this.manifest.frame_layout.rows[preferred]) {
+      return preferred;
+    }
+
+    for (const alias of actionRowAliases[preferred] ?? []) {
+      if (this.manifest.frame_layout.rows[alias]) {
+        return alias;
+      }
+    }
+
+    return preferred;
   }
 }
 

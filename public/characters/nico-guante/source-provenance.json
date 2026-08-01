@@ -1,0 +1,49 @@
+{
+  "version": 2,
+  "kind": "sprite-source-provenance",
+  "source_type": "imagegen",
+  "art_engine": "imagegen",
+  "fixture": false,
+  "verification_status": "verified",
+  "accepted_sources": [
+    {
+      "path": "source/nico-guante-action-grid-imagegen-v2.png",
+      "sha256": "f6bc9368f090f26805532fd87e79fc6df534e50cbf478e8ac51b03e78e43d1b6",
+      "size_bytes": 1541303,
+      "states": [
+        "idle",
+        "walk-forward",
+        "walk-back",
+        "crouch",
+        "jump",
+        "light-strike",
+        "heavy-strike",
+        "special",
+        "throw",
+        "guard",
+        "hitstun",
+        "knockdown",
+        "ko",
+        "win"
+      ]
+    }
+  ],
+  "state_coverage": [
+    "idle",
+    "walk-forward",
+    "walk-back",
+    "crouch",
+    "jump",
+    "light-strike",
+    "heavy-strike",
+    "special",
+    "throw",
+    "guard",
+    "hitstun",
+    "knockdown",
+    "ko",
+    "win"
+  ],
+  "notes": "accepted provider action grid v2; raw state rows are deterministic crops using regeneration-map.json",
+  "license": "imagegen-original-nico-guante-v2"
+}

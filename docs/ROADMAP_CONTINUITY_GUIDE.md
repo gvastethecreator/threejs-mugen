@@ -1,23 +1,82 @@
 # Roadmap Continuity Guide
 
-Last updated: 2026-07-30
+Last updated: 2026-08-01
 
-## 2026-07-30 official parity continuation checkpoint
+## 2026-08-01 official parity continuation checkpoint
 
-Resume from commit `9d79e3f5` as the latest closed runtime checkpoint and
-recheck Git before editing. Open the
+Resume from the next source-selected task after rechecking Git. Open the
 [official comparison](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md)
-and issue 09, then implement **T424**. Keep the existing dirty roadmap/DA32
-work untouched unless the selected task explicitly owns a small top-level
-update.
+and issue 12. T424's typed root/helper same-tick chaining, source-tail
+skipping, and 32-hop cycle protection are closed with 305/3234 tests,
+typecheck, build, boundaries, diff hygiene, and 667/667 trace artifacts.
+T425 is also closed: 05b prevailed over the wiki-only 30 px wording, a live
+`P2Name` controller value refresh is covered, and its required trace passed
+inside the 668/668 matrix. Keep existing dirty roadmap/DA32 work untouched
+unless the selected task explicitly owns a small top-level update.
 
-After T424 closes with focused and required-trace evidence, execute T425's
-source decision, then T426 and T427 in order. Do not recreate negative-state
-order/append/keyctrl, T419-T423 selection/name work, or first-pass
+T426 through T428 are closed-bounded. T427 proves direct/fallback/mixed ZSS
+through the loader, shared IR, and runtime with required trace `47c627a2`.
+T428 proves one mixed CNS/ZSS global-hit-pause wrapper route with required trace
+`b6533370`. T429 closes constant combined-wrapper cadence with required trace
+`4ff43eb7` and final production build. T430/T434 close raw-CNS positive normal
+cadence and trigger-count behavior; T431 closes raw-CNS zero normal one-shot
+behavior (`d13ad12a`). T432 closes paired raw-CNS paused zero (`94b49516`) and
+T433 closes paired raw-CNS positive pause cadence (`d6d00fd0`). T434 closes
+sparse trigger-count semantics (`3eb88436`), T435 closes `StateDef -2`
+(`6fce3962`), and T436 closes `StateDef -3` with the no-`stateOwner` boundary
+(`b2719d71`). Continue from the official comparison, not interval-range
+support or a general VM claim.
+T465-T469 then closed the guard and direct-hit timing seams. T472 is now
+closed-bounded: `down.bounce` reaches direct/projectile fall metadata and
+explicit `0` suppresses the `HitFallVel` bounce velocity; omitted/`1` preserve
+the current compatibility fallback. Its 198 focused tests, 324/3294 full
+suite, typecheck/build/boundaries and 682/682 trace gates pass. Do not recreate
+negative-state order/append/keyctrl,
+T419-T425 selection/name work, or first-pass
 Common1/FightFX loading. No score or watermark moved when this queue was
 selected.
+T473 is now closed-bounded: a shared runtime resolver applies official
+`fall.recover=1` and `fall.recovertime=4` defaults only to enabled falls, with
+focused 102 tests and the same full type/build/boundary/trace gates green.
+T474 is now closed-bounded: omitted `fall.yvelocity` resolves from localcoord
+width (`-4.5/-9/-18` at 320/640/1280px) for direct/projectile materialization,
+with focused 105 tests and the same full gates green. Exact Common1 recovery /
+landing choreography remains outside the claim.
+T475 is now closed-bounded: `air.fall` remains a typed airborne-only override,
+so `fall = 0, air.fall = 1` falls only against airborne defenders while base
+`fall = 1` remains effective in every eligible state. Compiler, HitDef,
+resolver, direct/projectile and parser regressions plus the final gates pass.
 
-## 2026-07-27 post-DA30-120 continuation checkpoint
+T476 is now closed-bounded: `down.velocity.x` survives HitDef,
+ModifyHitDef, imported move and Projectile materialization. Lie-down contacts
+apply the authored X component with attacker-relative sign; 247 focused tests,
+full 324/3308 tests, typecheck/build/boundaries and `qa:trace` 682/682 pass.
+T477 is now closed-bounded: authored `fall.xvelocity` remains signed through
+direct/projectile fall materialization without facing mirroring; focused 121
+tests and final 324/3310, typecheck/build/boundaries and `qa:trace` 682/682
+gates pass.
+
+The user-directed content queue is separate: follow
+[ROADMAP_CONTENT_PACK.md](ROADMAP_CONTENT_PACK.md), then issues 24-32. Keep
+provider provenance, spritesheet QA and runtime integration evidence distinct
+from official parity gates. T470 now inventories all public character packages
+and T471 is the active provider regeneration lane for rows blocked by source-cell
+reuse or identity drift. Bruno Giro has four fresh rows and hash-bound runtime
+previews; its aggregate identity/contract gate remains red. Keep
+T472/T473/T474/T475/T476/T477 combat evidence on the official lane.
+
+## 2026-07-28 post-DA32-026 continuation checkpoint
+
+Resume by checking Git again. This audit closed at `1b1ba28f`, with machine
+record DA30-120, human cursor DA30-020, formal/global `f5f2315e`, runtime focal
+T416/T417, Studio focal DA32-026 and source 05b/4aa. Bind smoke to a SHA and
+produce one clean current-head gate before any global promotion.
+
+Use the [daily audit](research/2026-07-28-daily-roadmap-architecture-audit-post-da32-026.md)
+and [ADR 0073](adr/0073-studio-source-write-recovery-journal.md). Keep scores
+held.
+
+## Historical 2026-07-27 post-DA30-120 continuation checkpoint
 
 Resume from HEAD `67481fbc`, Entry 615, machine record DA30-120, proposed human
 cursor DA30-020, formal/global `ee23122f`, focal T406, visual/product T342, and

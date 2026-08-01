@@ -3,7 +3,26 @@ import { evaluateExpression, type ExpressionContext, type ExpressionGameSpace, t
 import { runtimeHitVar } from "./RuntimeHitVarSystem";
 import type { CharacterRuntimeState } from "./types";
 
-export type RuntimeControllerEvaluationContext = {
+/** Dynamic identity and roster reads shared with controller value expressions. */
+export type RuntimeControllerExpressionBindings = Pick<
+  ExpressionContext,
+  | "enemyNear"
+  | "enemyNearFallbackToOpponent"
+  | "partner"
+  | "enemy"
+  | "name"
+  | "authorName"
+  | "opponentName"
+  | "opponentAuthorName"
+  | "p3Name"
+  | "p4Name"
+  | "p5Name"
+  | "p6Name"
+  | "p7Name"
+  | "p8Name"
+>;
+
+export type RuntimeControllerEvaluationContext = RuntimeControllerExpressionBindings & {
   /** The bounded post-round window where resource writes must not alter combat state. */
   roundNoDamage?: boolean;
   self?: CharacterRuntimeState;
@@ -65,6 +84,20 @@ export function createRuntimeControllerExpressionContext(
     rootPlayerNo: context.rootPlayerNo,
     target: context.target,
     playerIdTarget: context.playerIdTarget,
+    enemyNear: context.enemyNear,
+    enemyNearFallbackToOpponent: context.enemyNearFallbackToOpponent,
+    partner: context.partner,
+    enemy: context.enemy,
+    name: context.name,
+    authorName: context.authorName,
+    opponentName: context.opponentName,
+    opponentAuthorName: context.opponentAuthorName,
+    p3Name: context.p3Name,
+    p4Name: context.p4Name,
+    p5Name: context.p5Name,
+    p6Name: context.p6Name,
+    p7Name: context.p7Name,
+    p8Name: context.p8Name,
     getConst: context.getConst,
     getHitVar: (name) => runtimeHitVar(state, name),
     hitPauseTime: context.hitPauseTime,

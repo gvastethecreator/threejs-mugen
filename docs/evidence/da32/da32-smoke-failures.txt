@@ -1,1 +1,7 @@
-none
+mugen-lite visual desktop fallen: imported combat state/frame/crop proof failed
+mugen-lite visual desktop recovery fallen: imported state/frame/crop proof failed
+mugen-lite visual desktop: ACT-backed source/destination RemapPal pixel proof failed
+mugen-lite visual mobile fallen: imported combat state/frame/crop proof failed
+mugen-lite visual mobile recovery fallen: imported state/frame/crop proof failed
+mugen-lite visual mobile: ACT-backed source/destination RemapPal pixel proof failed
+studio-build: downloaded project package did not include required contracts/evidence

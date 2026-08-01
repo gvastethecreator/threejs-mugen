@@ -213,9 +213,10 @@ export class ThreeMugenRenderer implements MugenRenderer {
     if (!this.target) {
       return;
     }
-    const canvasRect = this.renderer.domElement.getBoundingClientRect();
     const targetRect = this.target.getBoundingClientRect();
-    const rect = canvasRect.width > 0 && canvasRect.height > 0 ? canvasRect : targetRect;
+    // The mount owns render resolution. Visual presentation transforms on the
+    // canvas must not feed back into the orthographic world size.
+    const rect = targetRect;
     this.size = {
       width: Math.max(1, rect.width),
       height: Math.max(1, rect.height),

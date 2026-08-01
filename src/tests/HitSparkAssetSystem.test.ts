@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
+import { SATIRICAL_FIGHTFX_ACTIONS, contentPackFighters } from "../mugen/runtime/demoFighters";
 import {
   hitSparkLibrarySource,
   resolveRuntimeHitSparkAssetFrames,
@@ -64,6 +65,68 @@ describe("HitSparkAssetSystem", () => {
     ]);
   });
 
+  it("propagates an authored CommonFX scale to every AIR frame", () => {
+    const activeActor = actor({
+      hitSparkLibraries: {
+        common: { scale: 0.75, animations: new Map([[7000, action(7000, 7200, [4, 5])]]) },
+      },
+    });
+
+    expect(resolveRuntimeHitSparkAssetFrames(activeActor, "7000")).toMatchObject([
+      { source: "common", actionId: 7000, frameIndex: 0, scale: 0.75 },
+      { source: "common", actionId: 7000, frameIndex: 1, scale: 0.75 },
+    ]);
+  });
+
+  it("derives CommonFX scale from package and character localcoord", () => {
+    const activeActor = actor({
+      localCoord: [320, 240],
+      hitSparkLibraries: {
+        common: {
+          scale: 0.75,
+          localCoord: [640, 480],
+          animations: new Map([[7000, action(7000, 7200, [4])]]),
+        },
+      },
+    });
+
+    expect(resolveRuntimeHitSparkAssetFrames(activeActor, "7000")).toMatchObject([
+      {
+        source: "common",
+        actionId: 7000,
+        scale: 0.375,
+        localCoord: [640, 480],
+      },
+    ]);
+  });
+
+  it("wires the authored satirical FightFX rows into content-pack moves", () => {
+    const fighter = contentPackFighters.find((entry) => entry.id === "mara-cinta");
+    expect(fighter).toBeDefined();
+    const actorDefinition = {
+      animations: fighter!.animations,
+      fightFxPrefix: fighter!.fightFxPrefix,
+      hitSparkLibraries: fighter!.hitSparkLibraries,
+    } satisfies RuntimeHitSparkAssetActor["definition"];
+
+    expect(fighter!.moves.punch.hitSpark).toBe(`F${SATIRICAL_FIGHTFX_ACTIONS.hit}`);
+    expect(resolveRuntimeHitSparkAssetFrames({ definition: actorDefinition }, fighter!.moves.punch.hitSpark)[0]).toMatchObject(
+      {
+        source: "fightfx",
+        actionId: SATIRICAL_FIGHTFX_ACTIONS.hit,
+        spriteGroup: SATIRICAL_FIGHTFX_ACTIONS.hit,
+        frameIndex: 0,
+      },
+    );
+    expect(resolveRuntimeHitSparkAssetFrames({ definition: actorDefinition }, fighter!.moves.punch.guardSpark)[0]).toMatchObject(
+      {
+        source: "fightfx",
+        actionId: SATIRICAL_FIGHTFX_ACTIONS.guard,
+        spriteGroup: SATIRICAL_FIGHTFX_ACTIONS.guard,
+      },
+    );
+  });
+
   it("returns an empty frame list for unsupported prefixes or missing actions", () => {
     const activeActor = actor();
 
@@ -77,6 +140,7 @@ function actor(options: Partial<RuntimeHitSparkAssetActor["definition"]> & { sta
   return {
     definition: {
       animations: options.animations ?? new Map(),
+      localCoord: options.localCoord,
       fightFxPrefix: options.fightFxPrefix,
       hitSparkLibraries: options.hitSparkLibraries,
     },

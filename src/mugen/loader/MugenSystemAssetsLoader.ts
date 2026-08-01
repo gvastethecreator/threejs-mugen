@@ -330,6 +330,8 @@ async function loadFightFxLibrary(
     return undefined;
   }
 
+  const fxScale = positiveNumberValue(info, "fx.scale");
+  const localCoord = positivePairValue(info, "localcoord");
   const files = getSection(definition.rawSections, "Files");
   const airPath = resolveExisting(resolver, fxDefPath, getValue(files, ["air", "anim"]));
   const sffPath = resolveExisting(resolver, fxDefPath, getValue(files, ["sff", "sprite"]));
@@ -355,6 +357,8 @@ async function loadFightFxLibrary(
   return createLibrary("fightfx", airPath, sffPath, sndPath, loaded.animations, loaded.spriteArchive, loaded.soundArchive, diagnostics, {
     prefix,
     defPath: fxDefPath,
+    ...(fxScale === undefined ? {} : { scale: fxScale }),
+    ...(localCoord === undefined ? {} : { localCoord }),
   });
 }
 
@@ -367,7 +371,7 @@ function createLibrary(
   spriteArchive: MugenSystemHitSparkLibrary["spriteArchive"],
   soundArchive: MugenSystemHitSparkLibrary["soundArchive"],
   diagnostics: MugenDiagnostic[],
-  metadata: Pick<MugenSystemHitSparkLibrary, "prefix" | "defPath"> = {},
+  metadata: Pick<MugenSystemHitSparkLibrary, "prefix" | "defPath" | "scale" | "localCoord"> = {},
 ): MugenSystemHitSparkLibrary {
   return {
     source,
@@ -1082,6 +1086,16 @@ function numberValue(section: Record<string, string>, key: string): number | und
   if (raw === undefined) return undefined;
   const value = Number(raw.trim());
   return Number.isFinite(value) ? value : undefined;
+}
+
+function positiveNumberValue(section: Record<string, string>, key: string): number | undefined {
+  const value = numberValue(section, key);
+  return value !== undefined && value > 0 ? value : undefined;
+}
+
+function positivePairValue(section: Record<string, string>, key: string): [number, number] | undefined {
+  const value = pairValue(section, key);
+  return value && value.every((part) => part > 0) ? value : undefined;
 }
 
 function nonNegativeIntegerValue(section: Record<string, string>, key: string): number | undefined {

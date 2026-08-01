@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "engine": "animation-contract-heuristic",
+  "run_dir": "X:\\threejs-mugen\\mugen-web-sandbox\\.scratch\\content-pack\\runs\\satirical-fightfx-v1-prepared",
+  "states_mode": "vfx",
+  "checked_states": [
+    "vfx"
+  ],
+  "visual_review_required": false,
+  "quality_gate_note": "Automated checks catch obvious phase failures. Visual playback/contact review remains required for row semantics before final approval.",
+  "errors": [],
+  "warnings": [],
+  "results": [
+    {
+      "state": "vfx",
+      "frames": 8,
+      "loop": false,
+      "workflows": [],
+      "workflow_source": "inferred",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "phase_contract": [],
+      "visual_review_required": false,
+      "visual_review_checklist": [],
+      "metrics": {
+        "frame_count": 8,
+        "pair_diffs": [
+          0.6908,
+          0.6812,
+          0.3657,
+          0.5833,
+          0.5845,
+          0.5253,
+          0.4387
+        ],
+        "bbox_width_range": 0.1172,
+        "bbox_height_range": 0.1172,
+        "center_x_range": 0.0039,
+        "center_y_range": 0.0039,
+        "alpha_area_range_ratio": 0.4856
+      }
+    }
+  ]
+}

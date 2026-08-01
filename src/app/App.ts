@@ -45,18 +45,20 @@ import { MugenAudioSystem } from "../game/audio/MugenAudioSystem";
 import { KeyboardInputAdapter } from "../game/input/KeyboardInputAdapter";
 import { GamepadInputAdapter } from "../game/input/GamepadInputAdapter";
 import { ThreeMugenRenderer } from "../game/render/ThreeMugenRenderer";
-import { AtlasSpriteProvider } from "../game/textures/AtlasSpriteProvider";
+import { AtlasSpriteProvider, type AtlasActionMapping } from "../game/textures/AtlasSpriteProvider";
 import { CompositeSpriteProvider } from "../game/textures/CompositeSpriteProvider";
 import { MockSpriteProvider } from "../game/textures/MockSpriteProvider";
 import { NativeHitSparkSpriteProvider } from "../game/textures/NativeHitSparkSpriteProvider";
 import { SffSpriteProvider } from "../game/textures/SffSpriteProvider";
 import { FolderCharacterSource, type FolderCharacterSourceFile } from "../mugen/loader/FolderCharacterSource";
 import { MugenCharacterLoader } from "../mugen/loader/MugenCharacterLoader";
+import { loadMugenSelectionImport, type MugenSelectionImportResult } from "../mugen/loader/MugenSelectionImport";
+import type { MugenSelectionManifest, MugenSelectionManifestEntry } from "../mugen/loader/MugenSelectionManifest";
 import { MugenStageLoader } from "../mugen/loader/MugenStageLoader";
 import type { VirtualFileSystem } from "../mugen/loader/VirtualFileSystem";
 import { ZipCharacterSource } from "../mugen/loader/ZipCharacterSource";
 import type { CompatibilityReport } from "../mugen/compatibility/CompatibilityReport";
-import { analyzeControllerTriggers, createCompatibilityProfiles, createEmptyCompileReport, isRuntimeSupportedController } from "../mugen/compatibility/CompatibilityReport";
+import { analyzeControllerTriggers, createCompatibilityProfiles, createEmptyCompileReport, isRuntimeSupportedController, withZssExecutionTelemetry } from "../mugen/compatibility/CompatibilityReport";
 import { createStageCompatibilityReport, summarizeStageBackgroundControllers } from "../mugen/compatibility/StageCompatibilityReport";
 import type { StageCompatibilityReport } from "../mugen/compatibility/StageCompatibilityReport";
 import {
@@ -71,8 +73,15 @@ import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenSt
 import type { MugenStageDefinition } from "../mugen/model/MugenStage";
 import type { MugenStagePackage } from "../mugen/model/MugenStagePackage";
 import { CommandBuffer } from "../mugen/runtime/CommandBuffer";
-import { demoFighters, type DemoFighterDefinition } from "../mugen/runtime/demoFighters";
-import { bgCtrlLabStage, rooftopDojoStage, trainingStage } from "../mugen/runtime/demoStage";
+import { contentPackFighters, demoFighters, type DemoFighterDefinition } from "../mugen/runtime/demoFighters";
+import {
+  azoteaWifiStage,
+  bgCtrlLabStage,
+  patioDojoPublicidadStage,
+  rooftopDojoStage,
+  terminalSupermercado24hStage,
+  trainingStage,
+} from "../mugen/runtime/demoStage";
 import { projectTurnsBrowserHud, withTurnsHandoffSupport } from "../mugen/runtime/TurnsBrowserHudJourney";
 import type { RuntimeTeamRoundMode } from "../mugen/runtime/RuntimeTeamRoundDecisionSystem";
 import { createFixtureAnimations } from "../mugen/runtime/fixture";
@@ -823,10 +832,17 @@ type ImportedSourceBundle = {
   fileCount: number;
   fingerprint: SourceFingerprint;
 };
+type ImportedRosterFighter = {
+  fighter: DemoFighterDefinition;
+  character: MugenCharacter;
+  manifestEntry?: MugenSelectionManifestEntry;
+};
 type SourceImportRollbackState = {
   character?: MugenCharacter;
   importedFighter?: DemoFighterDefinition;
-  importedSffProvider?: SffSpriteProvider;
+  importedRosterFighters: ImportedRosterFighter[];
+  importedSelectionManifest?: MugenSelectionManifest;
+  importedSelectionActive: boolean;
   importedStages: MugenStagePackage[];
   importedSourceBundle?: ImportedSourceBundle;
   importedProjectManifest?: GameProjectManifest;
@@ -874,6 +890,32 @@ type SourceImportOptions = {
 };
 
 const TRACE_ARTIFACT_HISTORY_LIMIT = 8;
+const CONTENT_PACK_FIGHTER_IDS = new Set([
+  "don-rayo",
+  "la-jefa-del-combo",
+  "turbo-abuela",
+  "tanque-de-carton",
+  "monje-wifi",
+  "sombra-del-super",
+  "mara-cinta",
+  "toro-pixel",
+  "nico-guante",
+  "luna-codo",
+  "sargento-pila",
+  "bruno-giro",
+  "vera-patada",
+  "rulo-viento",
+]);
+const CONTENT_PACK_ATLAS_FIGHTER_IDS = new Set([
+  "mara-cinta",
+  "toro-pixel",
+  "nico-guante",
+  "luna-codo",
+  "sargento-pila",
+  "bruno-giro",
+  "vera-patada",
+  "rulo-viento",
+]);
 
 export class App {
   private readonly spriteProvider = new CompositeSpriteProvider(new MockSpriteProvider());
@@ -890,9 +932,12 @@ export class App {
   private matchRuntime = new MatchWorld({ p1: demoFighters[0]!, p2: demoFighters[1]! });
   private character?: MugenCharacter;
   private importedFighter?: DemoFighterDefinition;
-  private importedSffProvider?: SffSpriteProvider;
+  private importedRosterFighters: ImportedRosterFighter[] = [];
+  private readonly importedSffProviders = new Map<string, SffSpriteProvider>();
   private importedStages: MugenStagePackage[] = [];
   private importedSourceBundle?: ImportedSourceBundle;
+  private importedSelectionManifest?: MugenSelectionManifest;
+  private importedSelectionActive = false;
   private mode: AppMode = "match";
   private runtimeQaScenario?: RuntimeQaScenario;
   private selectedP1 = demoFighters[0]!.id;
@@ -928,10 +973,21 @@ export class App {
   private snapshot: MugenSnapshot = this.matchRuntime.getSnapshot();
   private readonly appLogs: string[] = [];
   private readonly atlasStatusByFighter = new Map<string, "loading" | "loaded" | "fallback">(
-    demoFighters.map((fighter) => [fighter.id, "loading"]),
+    [...demoFighters, ...contentPackFighters].map((fighter) => [
+      fighter.id,
+      CONTENT_PACK_FIGHTER_IDS.has(fighter.id) && !CONTENT_PACK_ATLAS_FIGHTER_IDS.has(fighter.id) ? "fallback" : "loading",
+    ]),
   );
   private readonly atlasMotionQaByFighter = new Map<string, AtlasMotionQa>(
-    demoFighters.map((fighter) => [fighter.id, { status: "loading", checkedStates: [], warnings: [], errors: [] }]),
+    [...demoFighters, ...contentPackFighters].map((fighter) => [
+      fighter.id,
+      {
+        status: CONTENT_PACK_FIGHTER_IDS.has(fighter.id) && !CONTENT_PACK_ATLAS_FIGHTER_IDS.has(fighter.id) ? "missing" : "loading",
+        checkedStates: [],
+        warnings: [],
+        errors: [],
+      },
+    ]),
   );
   private importedProjectManifest?: GameProjectManifest;
   private projectNameOverride?: string;
@@ -970,10 +1026,11 @@ export class App {
   private commandPaletteQuery = "";
   private commandPaletteActiveIndex = 0;
   private commandPaletteReturnFocus?: HTMLElement;
-  private studioLeftDockOpen = true;
+  private studioLeftDockOpen = false;
   private studioRightDockOpen = true;
   private studioMobilePane: "workflow" | "details" = "workflow";
   private studioFocusMode = false;
+  private interfaceConsoleOpen = false;
   private studioViewportDefaultsApplied = false;
   private pendingMs = 0;
   private renderBusy = false;
@@ -987,6 +1044,7 @@ export class App {
 
   start(): void {
     this.readUrlState();
+    this.studioLeftDockOpen = this.mode === "inspect";
     this.refreshStoredProjects();
     this.refreshStoredTraceEvidence();
     void this.refreshStoredSourceHandles();
@@ -1042,9 +1100,9 @@ export class App {
 
   private template(): string {
     return `
-      <a class="skip-link" href="#stage">Skip to runtime viewport</a>
-      <main class="app-shell mode-match" data-mode="match" data-studio-tab="" aria-label="MUGEN Web Sandbox workspace">
-        <section class="studio-chrome" id="studio-chrome" aria-label="Studio command bar"></section>
+      <a class="skip-link" href="#stage">Skip to the active artifact</a>
+      <main class="app-shell mode-match" data-mode="match" data-studio-tab="" data-left-dock="closed" data-right-dock="open" data-console-open="false" aria-label="MUGEN Web Sandbox workspace">
+        <section class="studio-chrome" id="studio-chrome" aria-label="Product navigation and current context"></section>
         <aside class="pane" id="left-pane" aria-label="Project navigation">
           <div class="section workspace-header">
             <div class="workspace-brand" id="workspace-brand"></div>
@@ -1230,7 +1288,12 @@ export class App {
         this.updateUi();
         return;
       }
-      if (action === "play-pause") {
+      if (action === "toggle-console") {
+        this.interfaceConsoleOpen = !this.interfaceConsoleOpen;
+        this.syncShellState();
+        return;
+      }
+      if (action === "play-pause" || action === "interface-play-pause") {
         const playing = !this.snapshot.playing;
         this.snapshot =
           this.isInspectorRuntimeSurface()
@@ -1354,6 +1417,9 @@ export class App {
       const mode = target.closest<HTMLElement>("[data-mode]")?.dataset.mode as AppMode | undefined;
       if (mode) {
         this.mode = mode;
+        this.studioLeftDockOpen = mode === "inspect";
+        this.studioRightDockOpen = true;
+        this.studioFocusMode = false;
         this.snapshot = this.getActiveSnapshot();
         this.writeUrlState();
         this.updateUi();
@@ -1370,6 +1436,8 @@ export class App {
       if (studioTab) {
         this.studioTab = studioTab;
         this.studioMobilePane = "workflow";
+        this.studioLeftDockOpen = false;
+        this.studioRightDockOpen = true;
         this.mode = "studio";
         this.snapshot = this.getActiveSnapshot();
         this.writeUrlState();
@@ -1709,11 +1777,20 @@ export class App {
   }
 
   private async installRuntimeAtlases(): Promise<void> {
-    const atlasVersion = "walk-generated-2026-06-24";
+    const atlasVersion = "content-atlas-2026-07-30";
+    await this.installSatiricalFightFxAtlas(atlasVersion);
     const atlasRoutes = [
       { fighterId: "nova-boxer", label: "Nova Boxer", path: "nova-boxer", minGroup: 10000, maxGroup: 10999 },
       { fighterId: "mira-volt", label: "Mira Volt", path: "mira-volt", minGroup: 11000, maxGroup: 11999 },
       { fighterId: "rook-apprentice", label: "Rook Apprentice", path: "rook-apprentice", minGroup: 14000, maxGroup: 14999 },
+      { fighterId: "mara-cinta", label: "Mara Cinta", path: "mara-cinta", minGroup: 21000, maxGroup: 21999 },
+      { fighterId: "toro-pixel", label: "Toro Pixel", path: "toro-pixel", minGroup: 22000, maxGroup: 22999 },
+      { fighterId: "nico-guante", label: "Nico Guante", path: "nico-guante", minGroup: 23000, maxGroup: 23999 },
+      { fighterId: "luna-codo", label: "Luna Codo", path: "luna-codo", minGroup: 24000, maxGroup: 24999 },
+      { fighterId: "sargento-pila", label: "Sargento Pila", path: "sargento-pila", minGroup: 25000, maxGroup: 25999 },
+      { fighterId: "bruno-giro", label: "Bruno Giro", path: "bruno-giro", minGroup: 26000, maxGroup: 26999 },
+      { fighterId: "vera-patada", label: "Vera Patada", path: "vera-patada", minGroup: 27000, maxGroup: 27999 },
+      { fighterId: "rulo-viento", label: "Rulo Viento", path: "rulo-viento", minGroup: 28000, maxGroup: 28999 },
     ];
     const visibleFighterIds = new Set([this.selectedP1, this.selectedP2]);
     atlasRoutes.sort((left, right) => Number(!visibleFighterIds.has(left.fighterId)) - Number(!visibleFighterIds.has(right.fighterId)));
@@ -1746,6 +1823,24 @@ export class App {
         this.log(`${route.label} atlas failed; using mock fallback: ${message}`);
       }
       this.updateUi();
+    }
+  }
+
+  private async installSatiricalFightFxAtlas(atlasVersion: string): Promise<void> {
+    const actionMapping: AtlasActionMapping = Object.fromEntries(
+      Array.from({ length: 8 }, (_, index) => [300 + index, "vfx"]),
+    );
+    try {
+      const provider = await AtlasSpriteProvider.fromUrls(
+        `/effects/satirical-fightfx/runtime/sprite-sheet-alpha.png?v=${atlasVersion}`,
+        `/effects/satirical-fightfx/runtime/manifest.json?v=${atlasVersion}`,
+        actionMapping,
+      );
+      this.spriteProvider.registerGroupRange(7300, 7307, provider, "satirical-fightfx");
+      this.log("Satirical FightFX atlas loaded: 8 provider-backed hit/guard/VFX rows");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.log(`Satirical FightFX atlas unavailable; fallback geometry remains active: ${message}`);
     }
   }
 
@@ -1891,16 +1986,15 @@ export class App {
     try {
       const source = new ZipCharacterSource(file);
       const vfs = await source.load();
-      const character = await this.loader.load(source.name, vfs);
-      const stages = await this.stageLoader.loadAll(source.name, vfs);
       const fingerprint = await fingerprintVirtualFileSystem(vfs);
       const sourceBundle = { sourceName: source.name, sourceKind: "zip" as const, vfs, fileCount: vfs.listFiles().length, fingerprint };
+      const imported = await this.loadImportedSelection(sourceBundle);
       const transaction = this.prepareSourceImportTransaction(sourceBundle, options);
       if (transaction.status === "rejected") {
         this.rejectSourceImportTransaction(transaction);
         return false;
       }
-      this.useCharacter(character, stages, sourceBundle, transaction);
+      this.useImportedSelection(imported, sourceBundle, transaction);
       return true;
     } catch (error) {
       this.log(`ZIP rejected: ${error instanceof Error ? error.message : String(error)}`);
@@ -1916,26 +2010,35 @@ export class App {
     if (!options.skipNavigationGuard && !this.confirmStudioProjectNavigation("load a new source package")) {
       return false;
     }
-    this.log(`Loading folder (${files.length} files)`);
+      this.log(`Loading folder (${files.length} files)`);
     try {
       const source = new FolderCharacterSource(files);
       const vfs = await source.load();
-      const character = await this.loader.load(source.name, vfs);
-      const stages = await this.stageLoader.loadAll(source.name, vfs);
       const fingerprint = await fingerprintVirtualFileSystem(vfs);
       const sourceBundle = { sourceName: source.name, sourceKind: "folder" as const, vfs, fileCount: vfs.listFiles().length, fingerprint };
+      const imported = await this.loadImportedSelection(sourceBundle);
       const transaction = this.prepareSourceImportTransaction(sourceBundle, options);
       if (transaction.status === "rejected") {
         this.rejectSourceImportTransaction(transaction);
         return false;
       }
-      this.useCharacter(character, stages, sourceBundle, transaction);
+      this.useImportedSelection(imported, sourceBundle, transaction);
       return true;
     } catch (error) {
       this.log(`Folder rejected: ${error instanceof Error ? error.message : String(error)}`);
       this.updateUi();
       return false;
     }
+  }
+
+  private loadImportedSelection(sourceBundle: ImportedSourceBundle): Promise<MugenSelectionImportResult> {
+    return loadMugenSelectionImport({
+      sourceName: sourceBundle.sourceName,
+      vfs: sourceBundle.vfs,
+      sourceFingerprint: sourceBundle.fingerprint,
+      characterLoader: this.loader,
+      stageLoader: this.stageLoader,
+    });
   }
 
   private prepareSourceImportTransaction(
@@ -3717,12 +3820,20 @@ export class App {
     this.updateUi();
   }
 
-  private useCharacter(
-    character: MugenCharacter,
-    stages: MugenStagePackage[] = [],
+  private useImportedSelection(
+    imported: MugenSelectionImportResult,
     sourceBundle: ImportedSourceBundle,
     transaction: SourceImportTransaction,
   ): void {
+    const character = imported.characters[0];
+    if (!character) {
+      this.log("Source import rejected: no character loader result was produced.");
+      this.updateUi();
+      return;
+    }
+    const roster = this.createImportedRoster(imported);
+    const stages = imported.stages;
+    const selectionActive = imported.usesSelectionManifest && roster.length >= 2 && stages.length >= 1;
     const rollback = this.captureSourceImportRollbackState();
     const commitStatus = runSourceImportTransaction(
       transaction,
@@ -3735,6 +3846,8 @@ export class App {
         this.character = character;
         this.importedStages = stages;
         this.importedSourceBundle = sourceBundle;
+        this.importedSelectionManifest = imported.manifest;
+        this.importedSelectionActive = selectionActive;
         this.applySourceImportTransaction(acceptedTransaction);
         this.invalidateBuildOutputs();
         this.renderer.setStageSpriteArchives(
@@ -3748,15 +3861,25 @@ export class App {
         } else if (!this.getAvailableStages().some((stage) => stage.id === this.selectedStageId)) {
           this.selectedStageId = trainingStage.id;
         }
-        const imported = createImportedFighterDefinition(character);
-        this.installCharacterSffProvider(character);
-        this.installCharacterSoundArchive(character);
-        this.installImportedFighter(imported);
+        this.installImportedRoster(roster);
         const animations = character.animations.size > 0 ? character.animations : createFixtureAnimations();
         this.inspectorRuntime = new MugenRuntime(animations);
-        this.mode = "inspect";
-        this.snapshot = this.inspectorRuntime.getSnapshot();
-        this.log(`Loaded ${character.definition.info.displayName ?? character.definition.info.name ?? character.sourceName}`);
+        this.mode = selectionActive ? "match" : "inspect";
+        this.snapshot = selectionActive ? this.matchRuntime.getSnapshot() : this.inspectorRuntime.getSnapshot();
+        this.log("Loaded " + (character.definition.info.displayName ?? character.definition.info.name ?? character.sourceName));
+        if (selectionActive && imported.manifest) {
+          this.log(
+            "select.def launch ready: " +
+              roster.length +
+              " fighter(s), " +
+              stages.length +
+              " stage(s), source " +
+              imported.manifest.source.path,
+          );
+        }
+        for (const diagnostic of imported.diagnostics) {
+          this.log("select.def: " + diagnostic);
+        }
         this.writeUrlState();
       },
       (previousState) => this.restoreSourceImportRollbackState(previousState),
@@ -3767,6 +3890,24 @@ export class App {
     }
     this.studioEditHistory.reset();
     this.updateUi();
+  }
+
+  private createImportedRoster(imported: MugenSelectionImportResult): ImportedRosterFighter[] {
+    return imported.characters.flatMap((character, index) => {
+      const fighter = createImportedFighterDefinition(character);
+      if (!fighter) {
+        return [];
+      }
+      const manifestEntry = imported.characterEntries[index];
+      return [{
+        fighter: {
+          ...fighter,
+          ...(manifestEntry ? { id: "imported-select-" + manifestEntry.id } : {}),
+        },
+        character,
+        ...(manifestEntry ? { manifestEntry } : {}),
+      }];
+    });
   }
 
   private analyzeImportedSourceBundle(sourceBundle: ImportedSourceBundle): PackageAnalysisV1Result | undefined {
@@ -3813,7 +3954,9 @@ export class App {
     return {
       character: this.character,
       importedFighter: this.importedFighter,
-      importedSffProvider: this.importedSffProvider,
+      importedRosterFighters: [...this.importedRosterFighters],
+      importedSelectionManifest: this.importedSelectionManifest,
+      importedSelectionActive: this.importedSelectionActive,
       importedStages: [...this.importedStages],
       importedSourceBundle: this.importedSourceBundle,
       importedProjectManifest: this.importedProjectManifest,
@@ -3845,6 +3988,9 @@ export class App {
   private restoreSourceImportRollbackState(previousState: SourceImportRollbackState): void {
     this.character = previousState.character;
     this.importedFighter = previousState.importedFighter;
+    this.importedRosterFighters = [...previousState.importedRosterFighters];
+    this.importedSelectionManifest = previousState.importedSelectionManifest;
+    this.importedSelectionActive = previousState.importedSelectionActive;
     this.importedStages = previousState.importedStages;
     this.importedSourceBundle = previousState.importedSourceBundle;
     this.importedProjectManifest = previousState.importedProjectManifest;
@@ -3870,15 +4016,7 @@ export class App {
     this.lastProjectBundle = previousState.lastProjectBundle;
     this.lastTraceArtifact = previousState.lastTraceArtifact;
 
-    if (this.character) {
-      this.installCharacterSffProvider(this.character);
-      this.installCharacterSoundArchive(this.character);
-    } else {
-      this.spriteProvider.clearRoutesByTag("character-sff");
-      this.spriteProvider.clearRoutesByTag("system-hit-sparks");
-      this.importedSffProvider = undefined;
-      this.audio.setArchive(undefined);
-    }
+    this.refreshImportedRosterAssets();
     this.renderer.setStageSpriteArchives(
       this.importedStages.map((stage) => ({ stageId: stage.stage.id, archive: stage.spriteArchive })),
     );
@@ -3930,7 +4068,6 @@ export class App {
   private installCharacterSffProvider(character: MugenCharacter): void {
     this.spriteProvider.clearRoutesByTag("character-sff");
     this.spriteProvider.clearRoutesByTag("system-hit-sparks");
-    this.importedSffProvider = undefined;
     this.installSystemHitSparkProviders(character);
     const archive = character.spriteArchive;
     if (!archive || archive.sprites.length === 0) {
@@ -3942,7 +4079,6 @@ export class App {
       this.log("Character SFF provider has no sprites; using mock sprite fallback");
       return;
     }
-    this.importedSffProvider = provider;
     this.spriteProvider.registerGroupRange(provider.minGroup, provider.maxGroup, provider, "character-sff");
     const total = archive.metadata?.spriteTotal ?? archive.sprites.length;
     this.log(`Character SFF ${archive.version} decoded ${archive.sprites.length}/${total} sprites (${provider.minGroup}-${provider.maxGroup})`);
@@ -3981,9 +4117,11 @@ export class App {
     }
   }
 
-  private installImportedFighter(imported: DemoFighterDefinition | undefined): void {
-    this.importedFighter = imported;
-    if (!imported) {
+  private installImportedRoster(entries: ImportedRosterFighter[]): void {
+    this.importedRosterFighters = entries;
+    this.importedFighter = entries[0]?.fighter;
+    this.refreshImportedRosterAssets();
+    if (!this.importedFighter) {
       if (this.selectedP1.startsWith("imported-")) {
         this.selectedP1 = demoFighters[0]!.id;
       }
@@ -3994,14 +4132,43 @@ export class App {
       this.log("Imported Runtime route unavailable: needs decoded SFF sprites and parsed AIR actions");
       return;
     }
-    this.selectedP1 = imported.id;
-    if (this.selectedP2 === imported.id) {
+    this.selectedP1 = this.importedFighter.id;
+    const second = entries[1]?.fighter;
+    if (second) {
+      this.selectedP2 = second.id;
+    } else if (this.selectedP2 === this.importedFighter.id) {
       this.selectedP2 = demoFighters[1]?.id ?? demoFighters[0]!.id;
     }
     this.rebuildMatchRuntime();
     this.log(
-      `Runtime route ready for ${imported.displayName}: CMD State -1 + CNS statedef/HitDef subset (${imported.stateEntryControllers?.length ?? 0} entries)`,
+      "Runtime route ready for " +
+        this.importedFighter.displayName +
+        ": CMD State -1 + CNS statedef/HitDef subset (" +
+        String(this.importedFighter.stateEntryControllers?.length ?? 0) +
+        " entries)",
     );
+  }
+
+  private refreshImportedRosterAssets(): void {
+    this.importedSffProviders.clear();
+    if (!this.character) {
+      this.spriteProvider.clearRoutesByTag("character-sff");
+      this.spriteProvider.clearRoutesByTag("system-hit-sparks");
+      this.audio.setArchive(undefined);
+      return;
+    }
+    this.installCharacterSffProvider(this.character);
+    this.installCharacterSoundArchive(this.character);
+    for (const entry of this.importedRosterFighters) {
+      const archive = entry.character.spriteArchive;
+      if (!archive || archive.sprites.length === 0) {
+        continue;
+      }
+      const provider = new SffSpriteProvider(archive, entry.character.palettes ?? []);
+      if (provider.hasSprites) {
+        this.importedSffProviders.set(entry.fighter.id, provider);
+      }
+    }
   }
 
   private resetInspectorRuntime(): void {
@@ -4086,8 +4253,9 @@ export class App {
     shell?.setAttribute("data-mode", this.mode);
     shell?.setAttribute("data-surface", this.mode);
     shell?.setAttribute("data-studio-tab", this.mode === "studio" ? this.studioTab : "");
-    shell?.setAttribute("data-left-dock", this.mode === "studio" && !this.studioFocusMode && this.studioLeftDockOpen ? "open" : "closed");
-    shell?.setAttribute("data-right-dock", this.mode === "studio" && !this.studioFocusMode && this.studioRightDockOpen ? "open" : "closed");
+    shell?.setAttribute("data-left-dock", !this.studioFocusMode && this.studioLeftDockOpen ? "open" : "closed");
+    shell?.setAttribute("data-right-dock", !this.studioFocusMode && this.studioRightDockOpen ? "open" : "closed");
+    shell?.setAttribute("data-console-open", this.interfaceConsoleOpen ? "true" : "false");
     shell?.setAttribute("data-studio-mobile-pane-state", this.studioMobilePane);
     shell?.setAttribute("data-focus-mode", this.mode === "studio" && this.studioFocusMode ? "true" : "false");
     for (const button of this.root.querySelectorAll<HTMLElement>("[data-studio-mobile-pane]")) {
@@ -4174,8 +4342,7 @@ export class App {
   }
 
   private syncRuntimeControls(): void {
-    const playPause = this.root.querySelector<HTMLButtonElement>('[data-action="play-pause"]');
-    if (playPause) {
+    for (const playPause of this.root.querySelectorAll<HTMLButtonElement>('[data-action="play-pause"], [data-action="interface-play-pause"]')) {
       const runtimeState = this.snapshot.playing ? "pause" : "play";
       if (playPause.dataset.runtimeState !== runtimeState) {
         playPause.dataset.runtimeState = runtimeState;
@@ -4207,71 +4374,53 @@ export class App {
   }
 
   private renderStudioChrome(): string {
-    if (this.mode !== "studio") {
-      return "";
-    }
     const summary = this.getStudioProjectSummary();
-    const p1 = this.findFighter(this.selectedP1);
-    const p2 = this.findFighter(this.selectedP2);
     const stage = this.findStage(this.selectedStageId);
-    const runtimeLabel = this.snapshot.playing ? "Live" : "Paused";
-    const buildLabel = this.lastCompiledProject ? "Manifest ready" : "Manifest pending";
+    const characterName = this.character?.definition.info.displayName ?? this.character?.definition.info.name;
+    const contextTitle =
+      this.mode === "studio"
+        ? summary.name
+        : this.mode === "inspect"
+          ? characterName ?? "Character intake"
+          : stage?.displayName ?? "Runtime Match";
+    const contextDetail =
+      this.mode === "studio"
+        ? labelForStudioTab(this.studioTab)
+        : this.mode === "inspect"
+          ? this.character
+            ? "Local package loaded"
+            : "No package loaded"
+          : `${this.snapshot.playing ? "Live" : "Paused"} / frame ${Math.max(0, Math.trunc(this.snapshot.tick ?? 0))}`;
+    const primaryAction =
+      this.mode === "match"
+        ? `<button type="button" class="interface-primary-action" data-action="interface-play-pause" data-runtime-state="${this.snapshot.playing ? "pause" : "play"}" aria-label="${this.snapshot.playing ? "Pause simulation" : "Resume simulation"}">${runtimeControlContent(this.snapshot.playing ? "pause" : "play", this.snapshot.playing ? "Pause" : "Play")}</button>`
+        : this.mode === "inspect"
+          ? `<button type="button" class="interface-primary-action" data-action="load-zip">${tablerIcon("folder", "ui-icon")}<span>Load source</span></button>`
+          : `<button type="button" class="interface-primary-action" data-mode="match">${tablerIcon("play", "ui-icon")}<span>Playtest</span></button>`;
     return `
-      <div class="studio-chrome-brand">
-        <span class="studio-chrome-brand-mark">${tablerIcon("studio", "ui-icon studio-chrome-icon")}</span>
-        <span class="studio-chrome-title">
-          <strong>Fight Lab</strong>
-          <small>MUGEN runtime + evidence</small>
-        </span>
-      </div>
-      <div class="studio-chrome-context" aria-label="Active studio context">
-        <div class="studio-chrome-field studio-chrome-matchup">
-          <small class="studio-chrome-kicker">Matchup</small>
-          <span class="studio-chrome-value">
-            <i class="studio-chrome-dot is-p1" aria-hidden="true"></i>
-            <b>${escapeHtml(p1?.displayName ?? "P1")}</b>
-            <em>vs</em>
-            <i class="studio-chrome-dot is-p2" aria-hidden="true"></i>
-            <b>${escapeHtml(p2?.displayName ?? "CPU")}</b>
-          </span>
+      <div class="interface-topbar">
+        <div class="interface-brand" aria-label="MUGEN Sandbox">
+          <span class="interface-brand-mark">${tablerIcon("studio", "ui-icon")}</span>
+          <strong>MUGEN Sandbox</strong>
         </div>
-        <div class="studio-chrome-field">
-          <small class="studio-chrome-kicker">Stage</small>
-          <span class="studio-chrome-value">
-            ${tablerIcon("stage", "ui-icon")}
-            <b>${escapeHtml(stage?.displayName ?? "Stage")}</b>
-          </span>
+        <nav class="interface-mode-nav mode-switch" aria-label="Product mode">
+          ${this.renderModeButton("match", "Match", "play")}
+          ${this.renderModeButton("inspect", "Inspect", "source")}
+          ${this.renderModeButton("studio", "Studio", "build")}
+        </nav>
+        <div class="interface-context" aria-live="polite">
+          <strong>${escapeHtml(contextTitle)}</strong>
+          <span>${escapeHtml(contextDetail)}</span>
         </div>
-        <div class="studio-chrome-field ${this.snapshot.playing ? "is-ok" : "is-warn"}">
-          <small class="studio-chrome-kicker">Runtime</small>
-          <span class="studio-chrome-value">
-            <i class="studio-chrome-dot ${this.snapshot.playing ? "is-live" : "is-paused"}" aria-hidden="true"></i>
-            <b>${escapeHtml(runtimeLabel)}</b>
-          </span>
-        </div>
-        <div class="studio-chrome-field ${this.lastCompiledProject ? "is-ok" : "is-warn"}">
-          <small class="studio-chrome-kicker">Build</small>
-          <span class="studio-chrome-value">
-            ${tablerIcon("build", "ui-icon")}
-            <b>${escapeHtml(buildLabel)}</b>
-            <em>${summary.stats.generatedAtlases} atlas${summary.stats.generatedAtlases === 1 ? "" : "es"}</em>
-          </span>
+        <div class="interface-actions" aria-label="Workspace controls">
+          <button type="button" class="interface-secondary-action ${this.studioLeftDockOpen ? "is-active" : ""}" data-action="toggle-left-dock" aria-expanded="${this.studioLeftDockOpen}" aria-controls="left-pane">${tablerIcon(this.mode === "studio" ? "workbench" : this.mode === "inspect" ? "folder" : "tools", "ui-icon")}<span>${this.mode === "studio" ? "Workspace" : this.mode === "inspect" ? "Source" : "Setup"}</span></button>
+          ${primaryAction}
+          <button type="button" class="interface-icon-action ${this.studioRightDockOpen ? "is-active" : ""}" data-action="toggle-right-dock" aria-expanded="${this.studioRightDockOpen}" aria-controls="right-pane" aria-label="${this.studioRightDockOpen ? "Hide contextual lens" : "Show contextual lens"}" title="Contextual lens">${tablerIcon("character", "ui-icon")}</button>
+          <button type="button" class="interface-icon-action ${this.interfaceConsoleOpen ? "is-active" : ""}" data-action="toggle-console" aria-expanded="${this.interfaceConsoleOpen}" aria-controls="console" aria-label="${this.interfaceConsoleOpen ? "Hide runtime log" : "Show runtime log"}" title="Runtime log">${tablerIcon("data", "ui-icon")}</button>
+          <button type="button" class="interface-icon-action" data-action="open-command-palette" aria-expanded="${this.commandPaletteOpen}" aria-label="Open command palette" title="Commands">${tablerIcon("tools", "ui-icon")}</button>
         </div>
       </div>
-      <div class="studio-chrome-actions" aria-label="Studio command shortcuts">
-        <button type="button" class="studio-chrome-command" data-action="open-command-palette" aria-label="Open command palette">
-          <span class="studio-chrome-command-prefix" aria-hidden="true">&gt;_</span>
-          <span>Commands</span>
-        </button>
-        <button type="button" class="studio-chrome-playtest" data-mode="match" aria-label="Open playable runtime">
-          ${tablerIcon("play", "ui-icon")}
-          <span>Playtest</span>
-        </button>
-        <button type="button" class="studio-chrome-utility ${this.studioFocusMode ? "is-active" : ""}" data-action="toggle-focus-mode" aria-pressed="${this.studioFocusMode}" aria-label="${this.studioFocusMode ? "Exit viewport focus" : "Focus viewport"}" title="${this.studioFocusMode ? "Exit viewport focus" : "Focus viewport"}">
-          ${tablerIcon("tools", "ui-icon")}
-          <span>Focus</span>
-        </button>
-      </div>
+      ${this.mode === "studio" ? `<div class="interface-studio-nav">${this.renderStudioTabs({ compact: true })}</div>` : ""}
     `;
   }
 
@@ -4353,7 +4502,7 @@ export class App {
         <div class="command-palette-panel">
           <div class="command-palette-header">
             <div class="command-palette-title-block">
-              <span class="panel-kicker">Frame Ledger</span>
+              <span class="panel-kicker">MUGEN Sandbox</span>
               <h2 id="command-palette-title">Commands</h2>
             </div>
             <span class="command-palette-count">${actions.length}/${actionTotal}</span>
@@ -4771,12 +4920,16 @@ export class App {
     const assetAttention = studioSummary.assets.filter((asset) => isAttentionStatus(asset.status)).length;
     const modeAction = (mode: AppMode): (() => void) => () => {
       this.mode = mode;
+      this.studioLeftDockOpen = mode === "inspect";
+      this.studioRightDockOpen = true;
       this.snapshot = this.getActiveSnapshot();
       this.writeUrlState();
     };
     const studioAction = (tab: StudioTab): (() => void) => () => {
       this.mode = "studio";
       this.studioTab = tab;
+      this.studioLeftDockOpen = false;
+      this.studioRightDockOpen = true;
       this.snapshot = this.getActiveSnapshot();
       this.writeUrlState();
     };
@@ -5216,7 +5369,7 @@ export class App {
       workbench: {
         eyebrow: "Engine Studio",
         title: "Studio Workbench",
-        description: "Assemble roster, stage, evidence, and export contract from one local control room.",
+        description: "Assemble roster, stage, evidence, and export contract around the playable scene.",
       },
       assets: {
         eyebrow: "Asset workbench",
@@ -5259,14 +5412,14 @@ export class App {
         ? studioSurfaces[this.studioTab]
         : this.mode === "inspect"
           ? {
-              eyebrow: "Frame Ledger",
+              eyebrow: "Local intake",
               title: "Character intake",
               description: "Resolve DEF paths, inspect AIR/CNS/CMD data, and surface unsupported features.",
             }
           : {
-              eyebrow: "Frame Ledger",
-              title: "Match lab",
-              description: "Playtest the fight frame, read meters and gates, then fix packages in Studio.",
+              eyebrow: "Playable runtime",
+              title: "Match",
+              description: "Play the current roster. Open context only when the fight needs explanation.",
             };
     return `
       <span class="workspace-eyebrow">${escapeHtml(surface.eyebrow)}</span>
@@ -5674,7 +5827,7 @@ export class App {
   }
 
   private renderRuntimeRightPane(): string {
-    return renderDebugPanel(
+    const debugPanel = renderDebugPanel(
       this.character,
       this.snapshot,
       this.mode === "inspect" ? "inspect" : "match",
@@ -5682,14 +5835,65 @@ export class App {
       this.buildRuntimeRosterReport(),
       this.getActiveActorRegistry(),
     );
+    if (this.mode === "inspect") {
+      const characterName = this.character?.definition.info.displayName ?? this.character?.definition.info.name ?? "Character intake";
+      return `
+        <section class="context-lens inspect-context-lens" aria-label="Inspector context">
+          <header class="context-lens-head">
+            <div><span class="panel-kicker">Inspect</span><h2>${escapeHtml(characterName)}</h2></div>
+            <button type="button" class="context-lens-close" data-action="toggle-right-dock" aria-label="Close contextual lens">${tablerIcon("close", "ui-icon")}</button>
+          </header>
+          <p class="context-lens-lede">${this.character ? "Source facts and runtime compatibility from the loaded local package." : "Load a local ZIP or folder to inspect source facts. Nothing is uploaded."}</p>
+          <details class="context-lens-details" ${this.character ? "open" : ""}>
+            <summary>${this.character ? "Package details" : "Inspector details"}</summary>
+            ${debugPanel}
+          </details>
+        </section>
+      `;
+    }
+
+    const summary = this.getStudioProjectSummary();
+    const fighter = this.findFighter(this.selectedP2);
+    const asset = summary.assets.find((candidate) => candidate.id === this.selectedP2);
+    const sourceNeedsReview = !asset || asset.source === "generated" || isAttentionStatus(asset.status);
+    const title = fighter?.displayName ?? asset?.label ?? "Player two";
+    const sourceLabel = asset
+      ? sourceNeedsReview
+        ? `${asset.source} source needs review`
+        : `${asset.source} source linked`
+      : "No source record linked";
+    const actionAttribute = asset ? this.studioNextActionAttribute(asset.nextAction) : 'data-studio-tab="assets"';
+    const actionLabel = asset?.nextAction.label ?? "Open assets";
+    return `
+      <section class="context-lens runtime-context-lens" aria-label="Runtime context for ${escapeHtml(title)}">
+        <header class="context-lens-head">
+          <div><span class="panel-kicker">Player 2 context</span><h2>${escapeHtml(title)}</h2></div>
+          <button type="button" class="context-lens-close" data-action="toggle-right-dock" aria-label="Close contextual lens">${tablerIcon("close", "ui-icon")}</button>
+        </header>
+        <div class="context-lens-state is-${sourceNeedsReview ? "warn" : "ok"}">
+          <span>${sourceNeedsReview ? "Source incomplete" : "Source linked"}</span>
+          <strong>${escapeHtml(sourceLabel)}</strong>
+          <p>${escapeHtml(asset?.impact ?? asset?.detail ?? "Open Studio to connect a source package and its evidence.")}</p>
+        </div>
+        <dl class="context-lens-facts">
+          <div><dt>Runtime</dt><dd>${escapeHtml(this.snapshot.playing ? "Live" : "Paused")}</dd></div>
+          <div><dt>Frame</dt><dd>${Math.max(0, Math.trunc(this.snapshot.tick ?? 0))}</dd></div>
+          <div><dt>Asset</dt><dd>${escapeHtml(asset?.kind ?? "unlinked")}</dd></div>
+        </dl>
+        <div class="context-lens-actions">
+          <button type="button" class="pro-primary-action" ${actionAttribute}>${tablerIcon(asset ? iconForAction(actionLabel, actionAttribute) : "assets", "ui-icon action-icon")}<span>${escapeHtml(actionLabel)}</span></button>
+          <button type="button" data-action="load-zip">${tablerIcon("folder", "ui-icon action-icon")}<span>Load source</span></button>
+        </div>
+        <details class="context-lens-details">
+          <summary>Runtime details</summary>
+          ${debugPanel}
+        </details>
+      </section>
+    `;
   }
 
   private renderStudioNavigator(): string {
-    const activeNavigator = this.renderActiveStudioNavigator();
-    return `
-      ${this.renderStudioTabs({ compact: true })}
-      ${activeNavigator}
-    `;
+    return this.renderActiveStudioNavigator();
   }
 
   private renderActiveStudioNavigator(): string {
@@ -6617,40 +6821,38 @@ export class App {
     const primaryGate = this.getPrimaryStudioGate(summary);
     const warnings = this.getWorkbenchWarningRows(summary);
     const nextActionAttribute = primaryGate ? this.studioNextActionAttribute(primaryGate.nextAction) : 'data-studio-tab="workbench"';
-    const score = this.getWorkbenchHealthScore(summary);
-    const healthBand = this.getWorkbenchHealthBand(score);
     const selectedAsset = this.getWorkbenchSelectedAsset(summary);
-    const healthCopy =
-      primaryGate?.nextAction.kind === "relink-source"
-        ? "Import real source files before compatibility claims are trusted."
-        : primaryGate?.impact ?? "Review the next issue before packaging this session.";
+    const attentionGates = summary.gates.filter((gate) => isAttentionStatus(gate.status)).length;
+    const attentionAssets = summary.assets.filter((asset) => isAttentionStatus(asset.status)).length;
+    const traceCount = this.traceArtifacts.length + this.storedTraceEvidence.length;
     const selectedAssetAttribute = selectedAsset
       ? `data-studio-tab="assets" data-studio-asset-id="${escapeHtml(selectedAsset.id)}" data-asset-filter="selected"`
       : 'data-studio-tab="assets"';
     return `
-      <section class="studio-pro-inspector" aria-label="Studio project health">
+      <section class="studio-pro-inspector context-lens" aria-label="Current Studio task">
         <header class="studio-pro-inspector-head">
-          <span class="panel-kicker">Project Health</span>
-          <h2>Readiness</h2>
-          <span class="pro-health-badge is-${healthBand.tone}">${score} / 100</span>
+          <div><span class="panel-kicker">Current task</span><h2>${escapeHtml(primaryGate?.label ?? "Playtest project")}</h2></div>
+          <button type="button" class="context-lens-close" data-action="toggle-right-dock" aria-label="Close contextual lens">${tablerIcon("close", "ui-icon")}</button>
         </header>
 
-        <div class="pro-health-card is-${healthBand.tone}" style="--health-score: ${score}%">
-          <small>Readiness</small>
-          <strong>${escapeHtml(healthBand.label)}</strong>
-          <span class="pro-health-track" aria-hidden="true"><i></i></span>
-          <p>${escapeHtml(healthCopy)}</p>
+        <div class="studio-current-task is-${this.statusClassName(primaryGate?.status ?? "unknown")}">
+          ${primaryGate ? this.statusBadge(primaryGate.status) : ""}
+          <p>${escapeHtml(primaryGate?.impact ?? "Use the current roster and stage, then capture the next local proof.")}</p>
+          ${primaryGate?.detail ? `<small>${escapeHtml(primaryGate.detail)}</small>` : ""}
           <button type="button" class="pro-primary-action" ${nextActionAttribute}>
             ${tablerIcon(primaryGate ? iconForAction(primaryGate.nextAction.label, nextActionAttribute) : "workbench", "ui-icon action-icon")}
-            <span>Review Issues</span>
+            <span>${escapeHtml(primaryGate?.nextAction.label ?? "Open workbench")}</span>
           </button>
         </div>
 
-        <div class="pro-inspector-section" aria-label="Active issues">
-          <div class="pro-section-head">
-            <span>Active Issues</span>
-            <b>${Math.min(warnings.length, 3)}</b>
-          </div>
+        <dl class="context-lens-facts studio-task-facts">
+          <div><dt>Gates clear</dt><dd>${summary.gates.length - attentionGates}/${summary.gates.length}</dd></div>
+          <div><dt>Asset issues</dt><dd>${attentionAssets}</dd></div>
+          <div><dt>Trace proof</dt><dd>${traceCount}</dd></div>
+        </dl>
+
+        <details class="context-lens-details" ${warnings.length ? "open" : ""}>
+          <summary>Other issues <span>${warnings.length}</span></summary>
           ${
             warnings.length
               ? `<div class="pro-warning-list">${warnings.slice(0, 3)
@@ -6667,15 +6869,12 @@ export class App {
                     `,
                   )
                   .join("")}</div>`
-              : `<div class="pro-empty-note">No active Studio issue is blocking this workbench state.</div>`
+              : `<div class="pro-empty-note">No other active Studio issue.</div>`
           }
-        </div>
+        </details>
 
-        <div class="pro-inspector-section" aria-label="Selected asset">
-          <div class="pro-section-head">
-            <span>Selected Asset</span>
-            ${selectedAsset ? this.statusBadge(selectedAsset.status) : "<b>none</b>"}
-          </div>
+        <details class="context-lens-details">
+          <summary>Selected asset ${selectedAsset ? this.statusBadge(selectedAsset.status) : ""}</summary>
           <button type="button" class="pro-selected-asset is-${this.statusClassName(selectedAsset?.status ?? "unknown")}" ${selectedAssetAttribute}>
             <span class="pro-asset-thumb">${tablerIcon(selectedAsset ? iconForAssetRecord(selectedAsset) : "assets", "ui-icon")}</span>
             <span>
@@ -6684,13 +6883,10 @@ export class App {
               <em>${escapeHtml(selectedAsset?.detail ?? "Select an asset to inspect source, runtime, and QA state.")}</em>
             </span>
           </button>
-        </div>
+        </details>
 
-        <div class="pro-inspector-section" aria-label="Recent local projects">
-          <div class="pro-section-head">
-            <span>Recent Projects</span>
-            <b>${this.storedProjects.length}</b>
-          </div>
+        <details class="context-lens-details">
+          <summary>Recent projects <span>${this.storedProjects.length}</span></summary>
           ${
             this.storedProjects.length
               ? `<div class="pro-warning-list">${this.storedProjects
@@ -6710,22 +6906,7 @@ export class App {
                   .join("")}</div>`
               : `<div class="pro-empty-note">No local projects saved yet.</div>`
           }
-        </div>
-
-        <div class="pro-inspector-section" aria-label="Runtime debug">
-          <div class="pro-section-head">
-            <span>Runtime Debug</span>
-            <b>${this.matchRuntime.getActorRegistry().actors.length} actors</b>
-          </div>
-          <button type="button" class="pro-selected-asset is-ok" data-studio-tab="debug">
-            <span class="pro-asset-thumb">${tablerIcon("tools", "ui-icon")}</span>
-            <span>
-              <strong>Open Debug</strong>
-              <small>Actor registry and execution lenses</small>
-              <em>Inspect current runtime ownership, targets, effects, pause, and audio.</em>
-            </span>
-          </button>
-        </div>
+        </details>
       </section>
     `;
   }
@@ -6738,43 +6919,6 @@ export class App {
       summary.assets.find((asset) => isAttentionStatus(asset.status)) ??
       summary.assets[0]
     );
-  }
-
-  private getWorkbenchHealthBand(score: number): { label: string; tone: "ok" | "warn" | "error" } {
-    if (score >= 82) {
-      return { label: "Ready", tone: "ok" };
-    }
-    if (score >= 58) {
-      return { label: "Review", tone: "warn" };
-    }
-    return { label: "Critical", tone: "error" };
-  }
-
-  private getWorkbenchHealthScore(summary: StudioProjectSummary): number {
-    const gatePenalty = summary.gates.reduce((total, gate) => total + this.healthPenaltyForStatus(gate.status, 14), 0);
-    const assetPenalty = Math.min(
-      24,
-      summary.assets.reduce((total, asset) => total + this.healthPenaltyForStatus(asset.status, 4), 0),
-    );
-    const compiled = this.lastCompiledProject;
-    const buildPenalty = compiled
-      ? compiled.diagnostics.errors.length * 18 + compiled.modules.missing.length * 12 + compiled.diagnostics.warnings.length * 4
-      : 8;
-    const tracePenalty = this.lastTraceArtifact ? 0 : 4;
-    return Math.max(0, Math.min(100, Math.round(100 - gatePenalty - assetPenalty - buildPenalty - tracePenalty)));
-  }
-
-  private healthPenaltyForStatus(status: StudioStatus, maxPenalty: number): number {
-    if (status === "ok" || status === "active") {
-      return 0;
-    }
-    if (status === "fail" || status === "blocked" || status === "unsupported") {
-      return maxPenalty;
-    }
-    if (status === "pending" || status === "planned" || status === "unknown") {
-      return Math.ceil(maxPenalty * 0.58);
-    }
-    return Math.ceil(maxPenalty * 0.42);
   }
 
   private getWorkbenchWarningRows(summary: StudioProjectSummary): Array<{
@@ -9312,6 +9456,7 @@ export class App {
       return "";
     }
     const reportV1 = this.importedPackageAnalysisV1;
+    const selectionManifestSummary = this.renderStudioSelectionManifestSummary(this.importedSelectionManifest);
     const ikemen = report.profiles.ikemen;
     const findingCoverage = Object.entries(report.summary.byCategory)
       .filter(([, count]) => count > 0)
@@ -9322,7 +9467,7 @@ export class App {
       <div class="section studio-package-analysis" data-package-analysis="${escapeHtml(reportV1?.checksum ?? report.checksum)}">
         <div class="section-heading-row">
           <div>
-            <span class="panel-kicker">Scanner-only contract</span>
+            <span class="panel-kicker">Package source</span>
             <h2>Package Analysis</h2>
           </div>
           ${this.statusBadge(status)}
@@ -9358,7 +9503,57 @@ export class App {
           ${studioActionButton("Analysis evidence", 'data-evidence-filter="analysis"')}
         </div>
       </div>
-    `;
+    ` + selectionManifestSummary;
+  }
+
+  private renderStudioSelectionManifestSummary(manifest: MugenSelectionManifest | undefined): string {
+    if (!manifest) {
+      return "";
+    }
+    const entries = [...manifest.characters, ...manifest.stages];
+    const status: StudioStatus = this.importedSelectionActive
+      ? "ok"
+      : manifest.playable.ready
+        ? "warn"
+        : "pending";
+    const fingerprint = manifest.source.fingerprint?.digest ?? "missing";
+    const launchDetail = manifest.playable.characters.length +
+      " fighters / " +
+      manifest.playable.stages.length +
+      " stages";
+    const entryRows = entries.slice(0, 8).map((entry) =>
+      '<div class="list-item"><span><span class="list-title">' +
+      escapeHtml(entry.reference) +
+      '</span><span class="list-meta">' +
+      escapeHtml(entry.kind) +
+      " / " +
+      escapeHtml(entry.status) +
+      " / " +
+      escapeHtml(entry.location.path + ":" + entry.location.line) +
+      (entry.resolvedPath ? " / " + escapeHtml(entry.resolvedPath) : "") +
+      '</span></span>' +
+      this.statusBadge(entry.status === "resolved" ? "ok" : entry.status === "missing" || entry.status === "unsafe" ? "warn" : "pending") +
+      "</div>",
+    ).join("");
+    return [
+      '<div class="section studio-package-analysis" data-selection-manifest="' + escapeHtml(manifest.source.path) + '">',
+      '<div class="section-heading-row"><div><span class="panel-kicker">Playable selection</span><h2>select.def Manifest</h2></div>',
+      this.statusBadge(status),
+      "</div>",
+      '<dl class="kv studio-kv">',
+      "<dt>Schema</dt><dd class=\"mono\">" + escapeHtml(manifest.schemaVersion) + "</dd>",
+      "<dt>Source</dt><dd class=\"mono\">" + escapeHtml(manifest.source.path) + "</dd>",
+      "<dt>Source SHA-256</dt><dd class=\"mono\">" + escapeHtml(fingerprint) + "</dd>",
+      "<dt>Launch tuple</dt><dd>" + escapeHtml(launchDetail) + (this.importedSelectionActive ? " / active in Play" : " / fallback retained") + "</dd>",
+      "</dl>",
+      '<div class="list compact-list">' + (entryRows || '<div class="empty-state">No direct selection rows were found.</div>') + "</div>",
+      manifest.diagnostics.length
+        ? '<div class="badge-row">' + manifest.diagnostics.slice(0, 4).map((diagnostic) =>
+          '<span class="badge warn">' + escapeHtml(diagnostic.code + " at line " + diagnostic.location.line) + "</span>",
+        ).join("") + "</div>"
+        : "",
+      "</div>",
+    ].join("");
   }
 
   private renderStudioEvidenceEnvelopePanel(document = this.getStudioEvidenceEnvelopeDocument()): string {
@@ -11499,7 +11694,9 @@ export class App {
     }
     if (asset.kind === "sprite-atlas" || asset.kind === "character") {
       const fighter = this.findFighter(asset.id);
-      const providerStatus = asset.source === "generated" ? (this.atlasStatusByFighter.get(asset.id) ?? "loading") : this.importedSffProvider ? "loaded" : "fallback";
+      const providerStatus = asset.source === "generated"
+        ? (this.atlasStatusByFighter.get(asset.id) ?? "loading")
+        : this.importedSffProviders.has(asset.id) ? "loaded" : "fallback";
       const runtimeStatus: StudioStatus = fighter ? (role === "p1" || role === "p2" ? "active" : "ok") : "fail";
       return [
         this.assetMappingRecord("runtime", `${asset.id}:runtime:fighter`, role === "p1" || role === "p2" ? `MatchWorld actor ${this.formatReplacementRole(role)}` : "Roster fighter definition", runtimeStatus, `${fighter?.animations.size ?? 0} runtime actions / source ${fighter?.source ?? "demo"}`, "MatchWorld"),
@@ -14240,8 +14437,13 @@ export class App {
     this.addJsonToZip(zip, "studio/semantic-export.json", semanticExport);
     this.addJsonToZip(zip, "assets/package-assets.json", assetRecords);
     zip.file("README.txt", this.createProjectBundleReadme(manifest));
-    const blob = await zip.generateAsync({ type: "blob" });
-    await this.downloadBlobAsDataUrl(blob, filename);
+    this.loop.stop();
+    try {
+      const blob = await zip.generateAsync({ type: "blob", streamFiles: true });
+      this.downloadBlob(blob, filename);
+    } finally {
+      this.loop.start();
+    }
     this.log(`Exported project package ${filename}: ${manifest.files.length} files, ${bundledAssets.length} bundled assets, ${formatBytes(manifest.assets.binaryBytes)}`);
     this.updateUi();
   }
@@ -14531,22 +14733,6 @@ export class App {
     window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
   }
 
-  private async downloadBlobAsDataUrl(blob: Blob, filename: string): Promise<void> {
-    const url = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.addEventListener("load", () => resolve(String(reader.result)));
-      reader.addEventListener("error", () => reject(reader.error ?? new Error("Failed to prepare download")));
-      reader.readAsDataURL(blob);
-    });
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    link.style.display = "none";
-    document.body.append(link);
-    link.click();
-    link.remove();
-  }
-
   private withSessionCompatibility(report: CompatibilityReport): CompatibilityReport {
     const session = this.snapshot.compatibilitySession?.actors[0];
     if (!session) {
@@ -14569,7 +14755,7 @@ export class App {
       executedOperations: { ...session.executedOperations },
       ...(session.lastExecutedState !== undefined ? { lastExecutedState: session.lastExecutedState } : {}),
     };
-    return next;
+    return withZssExecutionTelemetry(next, session.controllerEvents ?? []);
   }
 
   private installDiagnosticsBridge(): void {
@@ -14795,66 +14981,7 @@ export class App {
   }
 
   private renderStudioStageDeck(): string {
-    if (this.mode !== "studio" || this.studioTab !== "workbench") {
-      return "";
-    }
-    const summary = this.getStudioProjectSummary();
-    const primaryGate = this.getPrimaryStudioGate(summary);
-    const warnings = this.getWorkbenchWarningRows(summary);
-    const score = this.getWorkbenchHealthScore(summary);
-    const healthBand = this.getWorkbenchHealthBand(score);
-    const attentionGates = summary.gates.filter((gate) => isAttentionStatus(gate.status)).length;
-    const attentionAssets = summary.assets.filter((asset) => isAttentionStatus(asset.status)).length;
-    const traceCount = this.traceArtifacts.length + this.storedTraceEvidence.length;
-    const nextActionAttribute = primaryGate ? this.studioNextActionAttribute(primaryGate.nextAction) : 'data-mode="match"';
-    const nextActionKind = primaryGate?.nextAction.kind;
-    const nextTitle = nextActionKind === "relink-source" ? "Import Source" : primaryGate?.nextAction.label ?? "Playtest Roster";
-    const nextButtonLabel = nextActionKind === "relink-source" ? "Import" : primaryGate?.nextAction.label ?? "Playtest";
-    const nextCopy =
-      primaryGate?.impact ??
-      "Use the current roster, inspect a source package, or build the next local proof when you need it.";
-    return `
-      <div class="studio-command-deck" aria-label="Studio production controls">
-        <section class="studio-command-deck-main">
-          <span class="deck-kicker">Next Production Move</span>
-          <h2>${escapeHtml(nextTitle)}</h2>
-          <p>${escapeHtml(nextCopy)}</p>
-          <div class="deck-action-row">
-            <button type="button" class="deck-primary-action" ${nextActionAttribute}>
-              ${tablerIcon(primaryGate ? iconForAction(primaryGate.nextAction.label, nextActionAttribute) : "folder", "ui-icon action-icon")}
-              <span>${escapeHtml(nextButtonLabel)}</span>
-            </button>
-            <button type="button" data-mode="match">${tablerIcon("play", "ui-icon action-icon")}<span>Play</span></button>
-            <button type="button" data-action="compile-project">${tablerIcon("build", "ui-icon action-icon")}<span>Build</span></button>
-            <button type="button" data-action="export-trace-artifact">${tablerIcon("evidence", "ui-icon action-icon")}<span>Trace</span></button>
-          </div>
-        </section>
-
-        <section class="studio-command-deck-status is-${healthBand.tone}">
-          <span class="deck-kicker">Readiness</span>
-          <div class="studio-readiness-panel" style="--health-score: ${score}%">
-            <span class="studio-health-orb" aria-hidden="true">
-              <b>${score}</b>
-              <small>/100</small>
-            </span>
-            <div class="studio-health-stats">
-              <span><b>${summary.gates.length - attentionGates} / ${summary.gates.length}</b><small>Gates Clear</small></span>
-              <span class="${attentionAssets ? "is-warn" : "is-ok"}"><b>${attentionAssets}</b><small>Asset Issues</small></span>
-              <span><b>${traceCount}</b><small>Trace Artifacts</small></span>
-              <span class="is-${healthBand.tone}"><b>${escapeHtml(healthBand.label)}</b><small>Runtime Build</small></span>
-            </div>
-          </div>
-          ${
-            warnings.length
-              ? `<button type="button" class="deck-review-link" ${warnings[0]!.attribute}>
-                  ${tablerIcon(warnings[0]!.icon, "ui-icon")}
-                  <span>${escapeHtml(warnings[0]!.label)}</span>
-                </button>`
-              : ""
-          }
-        </section>
-      </div>
-    `;
+    return "";
   }
 
   private renderStageStatus(): string {
@@ -15081,16 +15208,13 @@ export class App {
 
   private syncMatchSpriteOwnerRoutes(p1: DemoFighterDefinition, p2: DemoFighterDefinition): void {
     this.spriteProvider.clearRoutesByTag("match-owner");
-    const imported = this.importedFighter;
-    const provider = this.importedSffProvider;
-    if (!imported || !provider) {
-      return;
+    const p1Provider = this.importedSffProviders.get(p1.id);
+    const p2Provider = this.importedSffProviders.get(p2.id);
+    if (p1Provider) {
+      this.spriteProvider.registerOwner("p1", p1Provider, "match-owner");
     }
-    if (p1.id === imported.id) {
-      this.spriteProvider.registerOwner("p1", provider, "match-owner");
-    }
-    if (p2.id === imported.id) {
-      this.spriteProvider.registerOwner("p2", provider, "match-owner");
+    if (p2Provider) {
+      this.spriteProvider.registerOwner("p2", p2Provider, "match-owner");
     }
   }
 
@@ -15107,7 +15231,9 @@ export class App {
   }
 
   private getAvailableFighters(): DemoFighterDefinition[] {
-    return this.importedFighter ? [this.importedFighter, ...demoFighters] : demoFighters;
+    return this.importedRosterFighters.length > 0
+      ? [...this.importedRosterFighters.map((entry) => entry.fighter), ...demoFighters, ...contentPackFighters]
+      : [...demoFighters, ...contentPackFighters];
   }
 
   private findFighter(id: string): DemoFighterDefinition | undefined {
@@ -15115,7 +15241,15 @@ export class App {
   }
 
   private getAvailableStages(): MugenStageDefinition[] {
-    return [rooftopDojoStage, trainingStage, bgCtrlLabStage, ...this.importedStages.map((stage) => stage.stage)];
+    return [
+      rooftopDojoStage,
+      trainingStage,
+      bgCtrlLabStage,
+      patioDojoPublicidadStage,
+      terminalSupermercado24hStage,
+      azoteaWifiStage,
+      ...this.importedStages.map((stage) => stage.stage),
+    ];
   }
 
   private findStage(id: string): MugenStageDefinition | undefined {

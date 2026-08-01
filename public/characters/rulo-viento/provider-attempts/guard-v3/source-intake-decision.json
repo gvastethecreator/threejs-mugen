@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "kind": "sprite-source-intake-decision",
+  "job_id": "rulo-viento-imagegen-guard-v3",
+  "state": "guard",
+  "status": "rejected",
+  "candidate": "run/provider/imagegen/guard/guard.png",
+  "raw_output": null,
+  "promotion": "not-promoted",
+  "reason_kind": "cell-boundary-clipping",
+  "notes": "Retained unchanged for audit. Regenerate with larger per-cell padding and all feet fully inside each quadrant."
+}

@@ -1118,6 +1118,121 @@ value = 100
     expect(unknown.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.vars[0]).toBe(100);
   });
 
+  it("continues imported root ChangeState destinations in the same tick and skips source tails", () => {
+    const fighter = createImportedFixture({ id: "root-current-state-chain", withStateMove: false });
+    fighter.stateEntryControllers = [];
+    fighter.states = parseCns(`
+[Statedef 0]
+type = S
+movetype = I
+physics = N
+anim = 0
+ctrl = 1
+
+[State 0, Enter intermediate]
+type = ChangeState
+trigger1 = 1
+value = 100
+
+[State 0, Source tail]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 100
+
+[Statedef 100]
+type = S
+movetype = I
+physics = N
+anim = 0
+ctrl = 1
+
+[State 100, Enter destination]
+type = ChangeState
+trigger1 = 1
+value = 200
+
+[State 100, Source tail]
+type = VarAdd
+trigger1 = 1
+v = 0
+value = 1000
+
+[Statedef 200]
+type = S
+movetype = I
+physics = N
+anim = 0
+ctrl = 1
+
+[State 200, Destination proof]
+type = VarSet
+trigger1 = 1
+v = 0
+value = 7
+`).states;
+
+    const snapshot = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "mugen-1.1",
+    }).step({ p1: new Set(), p2: new Set() });
+    const trace = snapshot.compatibilitySession?.actors.find(({ actorId }) => actorId === "p1");
+
+    expect(snapshot.actors[0]?.runtime).toMatchObject({ stateNo: 200, vars: [7] });
+    expect(trace?.controllerEvents?.slice(0, 3).map(({ controller }) => controller)).toEqual([
+      "ChangeState",
+      "ChangeState",
+      "VarSet",
+    ]);
+    expect(trace?.controllerEvents?.slice(0, 3).map(({ stateNo }) => stateNo)).toEqual([0, 100, 200]);
+  });
+
+  it("bounds imported root state-transition cycles with a stable diagnostic", () => {
+    const fighter = createImportedFixture({ id: "root-current-state-cycle", withStateMove: false });
+    fighter.stateEntryControllers = [];
+    fighter.states = parseCns(`
+[Statedef 0]
+type = S
+movetype = I
+physics = N
+anim = 0
+ctrl = 1
+
+[State 0, Cycle to 100]
+type = ChangeState
+trigger1 = 1
+value = 100
+
+[Statedef 100]
+type = S
+movetype = I
+physics = N
+anim = 0
+ctrl = 1
+
+[State 100, Cycle to 0]
+type = ChangeState
+trigger1 = 1
+value = 0
+`).states;
+
+    const snapshot = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "mugen-1.1",
+    }).step({ p1: new Set(), p2: new Set() });
+    const trace = snapshot.compatibilitySession?.actors.find(({ actorId }) => actorId === "p1");
+    const transitions = trace?.controllerEvents?.filter(({ controller }) => controller === "ChangeState") ?? [];
+
+    expect(transitions).toHaveLength(32);
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(0);
+    expect(trace?.stateTransitionCycles).toEqual([
+      {
+        fromState: 100,
+        toState: 0,
+        controller: "ChangeState",
+        budget: 32,
+      },
+    ]);
+  });
+
   it.each(["mugen-1.1", "ikemen-go"] as const)(
     "runs root State -1 after -3/-2 and before the current state under %s",
     (runtimeProfile) => {
@@ -3397,6 +3512,44 @@ RedirectID = 999
     expect(legacyInternals.opponentForRoot(legacyInternals.p1).id).toBe(legacyInternals.p2.id);
   });
 
+  it("refreshes a live IKEMEN P2Name read on a one-pixel source-visible P2 overtake", () => {
+    const p1 = createImportedFixture({
+      id: "live-p2-refresh-p1",
+      withStateMove: false,
+      passiveVarSet: { trigger: "1", index: 0, value: 'P2Name = "Live P4"' },
+    });
+    const p2 = createImportedFixture({ id: "live-p2-refresh-p2", displayName: "Live P2", withStateMove: false });
+    const reserve = createImportedFixture({ id: "live-p2-refresh-p4", displayName: "Live P4", withStateMove: false });
+    const runtime = new PlayableMatchRuntime(p1, p2, { ...trainingStage }, {
+      runtimeProfile: "ikemen-go",
+      reserveFighters: [demoFighters[0]!, reserve],
+    });
+    const internals = runtime as unknown as {
+      p1: { id: string; runtime: { pos: { x: number; y: number }; facing: 1 | -1; vars: number[] } };
+      p2: { id: string; runtime: { pos: { x: number; y: number } } };
+      reserveRoots: Array<{ id: string; runtime: { pos: { x: number; y: number }; teamState?: { standby?: boolean } } }>;
+      opponentForRoot: (fighter: unknown) => { id: string };
+    };
+    const p4 = internals.reserveRoots[1]!;
+    p4.runtime.teamState!.standby = false;
+    internals.p1.runtime.pos.x = 0;
+    internals.p1.runtime.facing = 1;
+    internals.p2.runtime.pos.x = 100;
+    p4.runtime.pos.x = 129;
+
+    expect(internals.opponentForRoot(internals.p1).id).toBe(internals.p2.id);
+    expect(runtime.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.vars[0]).toBe(0);
+
+    p4.runtime.pos.x = 99;
+    expect(internals.opponentForRoot(internals.p1).id).toBe(p4.id);
+    const refreshed = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(refreshed.reserveActors?.find((actor) => actor.id === p4.id)?.runtime.pos.x).toBe(99);
+    expect(internals.opponentForRoot(internals.p1).id).toBe(p4.id);
+    expect(refreshed.compatibilitySession?.actors.find((actor) => actor.actorId === internals.p1.id)?.executedControllers.VarSet)
+      .toBeGreaterThan(1);
+    expect(refreshed.actors[0]?.runtime.vars[0]).toBe(1);
+  });
+
   it("blocks typed TagOut execution outside the explicit IKEMEN profile", () => {
     const tagOutP1 = createImportedFixture({
       id: "legacy-tag-out",
@@ -5499,8 +5652,8 @@ ctrl = 0
     const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!);
 
     let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
-    expect(snapshot.actors[0]?.runtime.stateNo).toBe(267);
-    expect(snapshot.actors[0]?.runtime.prevStateNo).toBe(200);
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(268);
+    expect(snapshot.actors[0]?.runtime.prevStateNo).toBe(267);
 
     snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     expect(snapshot.actors[0]?.runtime.stateNo).toBe(268);
@@ -5516,8 +5669,8 @@ ctrl = 0
     const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!);
 
     let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
-    expect(snapshot.actors[0]?.runtime.stateNo).toBe(269);
-    expect(snapshot.actors[0]?.runtime.prevMoveType).toBe("A");
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(270);
+    expect(snapshot.actors[0]?.runtime.prevMoveType).toBe("I");
 
     snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     expect(snapshot.actors[0]?.runtime.stateNo).toBe(270);
@@ -5533,8 +5686,8 @@ ctrl = 0
     const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!);
 
     let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
-    expect(snapshot.actors[0]?.runtime.stateNo).toBe(275);
-    expect(snapshot.actors[0]?.runtime.prevAnimNo).toBe(205);
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(276);
+    expect(snapshot.actors[0]?.runtime.prevAnimNo).toBe(275);
 
     snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     expect(snapshot.actors[0]?.runtime.stateNo).toBe(276);
@@ -5551,8 +5704,8 @@ ctrl = 0
     const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!);
 
     let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
-    expect(snapshot.actors[0]?.runtime.stateNo).toBe(271);
-    expect(snapshot.actors[0]?.runtime.prevStateType).toBe("A");
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(272);
+    expect(snapshot.actors[0]?.runtime.prevStateType).toBe("S");
 
     snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     expect(snapshot.actors[0]?.runtime.stateNo).toBe(272);
@@ -5638,7 +5791,7 @@ ctrl = 0
       falling: true,
       damage: 70,
       defenceUp: 150,
-      velocity: { x: 3, y: -6 },
+      velocity: { x: -3, y: -6 },
       recover: false,
       recoverTime: 30,
       envShake: { time: 15, freq: 178, ampl: 6, phase: 0 },
@@ -6390,7 +6543,7 @@ RedirectID = 57
       snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     }
 
-    expect(snapshot.actors[0]?.runtime.life).toBe(960);
+    expect(snapshot.actors[0]?.runtime.life).toBe(920);
     expect(snapshot.actors[1]?.runtime.life).toBe(1000);
     expect(snapshot.actors[1]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
     expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetLifeAdd).toBeGreaterThanOrEqual(1);

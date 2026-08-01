@@ -10,6 +10,7 @@ import {
   runtimeDefinitionConst,
   runtimeHitVar,
 } from "../mugen/runtime/RuntimeExpressionContextSystem";
+import { RuntimeStunWorld } from "../mugen/runtime/RuntimeStunSystem";
 import { RuntimeTargetWorld } from "../mugen/runtime/TargetSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
@@ -579,7 +580,7 @@ describe("RuntimeExpressionContextWorld", () => {
         damage: 31,
         fallCount: 1,
         defenceUp: 80,
-        velocity: { x: -2, y: -8 },
+        velocity: { x: -2, y: -8, z: 2.5 },
         envShake: { time: 15, freq: 178, ampl: 6, phase: 0 },
       },
     });
@@ -609,11 +610,22 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(runtimeHitVar(actor.runtime, "fall.damage")).toBe(31);
     expect(runtimeHitVar(actor.runtime, "fall.defence_up")).toBe(80);
     expect(runtimeHitVar(actor.runtime, "fall.xvel")).toBe(-2);
+    expect(runtimeHitVar(actor.runtime, "fall.zvel")).toBe(2.5);
+    expect(runtimeHitVar(actor.runtime, "fall.zvelocity")).toBe(2.5);
     expect(runtimeHitVar(actor.runtime, "fall.envshake.time")).toBe(15);
     expect(runtimeHitVar(actor.runtime, "fall.envshake.freq")).toBe(178);
     expect(runtimeHitVar(actor.runtime, "fall.envshake.ampl")).toBe(6);
     expect(runtimeHitVar(actor.runtime, "fall.envshake.phase")).toBe(0);
     expect(runtimeHitVar(actor.runtime, "hittime")).toBe(9);
+    expect(runtimeHitVar(actor.runtime, "slidetime")).toBe(5);
+    expect(runtimeHitVar(actor.runtime, "ctrltime")).toBe(7);
+
+    actor.runtime.ctrl = false;
+    actor.runtime.guardSlideTimeRemaining = 2;
+    actor.runtime.guardControlTimeRemaining = 3;
+    new RuntimeStunWorld().advance(actor);
+    expect(actor.runtime.guardSlideTimeRemaining).toBe(1);
+    expect(actor.runtime.guardControlTimeRemaining).toBe(2);
     expect(runtimeHitVar(actor.runtime, "slidetime")).toBe(5);
     expect(runtimeHitVar(actor.runtime, "ctrltime")).toBe(7);
 

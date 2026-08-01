@@ -1,0 +1,460 @@
+{
+  "ok": true,
+  "engine": "frame-alignment-onion-skin",
+  "run_dir": "runs/rulo-viento-v2",
+  "states_mode": "all",
+  "baseline_y": 168,
+  "visual_review_required": true,
+  "quality_gate_note": "Review each qa/*-onion.png overlay before final approval; automated checks cover baseline/root drift only.",
+  "rows": [
+    {
+      "state": "idle",
+      "kind": "grounded",
+      "ok": true,
+      "onion": "qa\\idle-onion.png",
+      "bottom_y": [
+        168,
+        168,
+        168,
+        168
+      ],
+      "center_x": [
+        93.04,
+        88.6,
+        91.66,
+        87.71
+      ],
+      "center_y": [
+        94.49,
+        95.88,
+        94.03,
+        95.58
+      ],
+      "baseline_y": 168,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "walk-forward",
+      "kind": "grounded-locomotion",
+      "ok": true,
+      "onion": "qa\\walk-forward-onion.png",
+      "bottom_y": [
+        168,
+        168,
+        168,
+        168,
+        168,
+        168,
+        168,
+        168
+      ],
+      "center_x": [
+        91.92,
+        90.69,
+        91.92,
+        90.69,
+        91.92,
+        90.69,
+        91.92,
+        90.69
+      ],
+      "center_y": [
+        98.88,
+        93.56,
+        98.88,
+        93.56,
+        98.88,
+        93.56,
+        98.88,
+        93.56
+      ],
+      "baseline_y": 168,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "walk-back",
+      "kind": "grounded-locomotion",
+      "ok": true,
+      "onion": "qa\\walk-back-onion.png",
+      "bottom_y": [
+        168,
+        168,
+        168,
+        168,
+        168,
+        168,
+        168,
+        168
+      ],
+      "center_x": [
+        90.68,
+        91.92,
+        90.68,
+        91.92,
+        90.68,
+        91.92,
+        90.68,
+        91.92
+      ],
+      "center_y": [
+        93.53,
+        98.84,
+        93.53,
+        98.84,
+        93.53,
+        98.84,
+        93.53,
+        98.84
+      ],
+      "baseline_y": 168,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "crouch",
+      "kind": "crouch",
+      "ok": true,
+      "onion": "qa\\crouch-onion.png",
+      "bottom_y": [
+        168,
+        168,
+        168,
+        168
+      ],
+      "center_x": [
+        93.03,
+        91.91,
+        91.91,
+        91.91
+      ],
+      "center_y": [
+        94.52,
+        125.74,
+        125.74,
+        125.74
+      ],
+      "baseline_y": 168,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "jump",
+      "kind": "jump",
+      "ok": true,
+      "onion": "qa\\jump-onion.png",
+      "bottom_y": [
+        168,
+        149,
+        138,
+        138,
+        149,
+        168
+      ],
+      "center_x": [
+        91.91,
+        91.82,
+        91.82,
+        91.82,
+        91.82,
+        91.91
+      ],
+      "center_y": [
+        125.74,
+        78.76,
+        67.76,
+        67.76,
+        78.76,
+        125.74
+      ],
+      "baseline_y": 168,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "light-strike",
+      "kind": "action",
+      "ok": true,
+      "onion": "qa\\light-strike-onion.png",
+      "bottom_y": [
+        168,
+        168,
+        168,
+        168
+      ],
+      "center_x": [
+        93.04,
+        86.88,
+        86.88,
+        93.04
+      ],
+      "center_y": [
+        94.49,
+        90.49,
+        90.49,
+        94.49
+      ],
+      "baseline_y": 168,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "heavy-strike",
+      "kind": "action",
+      "ok": true,
+      "onion": "qa\\heavy-strike-onion.png",
+      "bottom_y": [
+        168,
+        168,
+        168,
+        168,
+        168,
+        168
+      ],
+      "center_x": [
+        93.1,
+        93.55,
+        93.55,
+        93.55,
+        93.55,
+        93.1
+      ],
+      "center_y": [
+        94.39,
+        93.76,
+        93.76,
+        93.76,
+        93.76,
+        94.39
+      ],
+      "baseline_y": 168,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "special",
+      "kind": "action",
+      "ok": true,
+      "onion": "qa\\special-onion.png",
+      "bottom_y": [
+        168,
+        168,
+        168,
+        168,
+        168,
+        168,
+        168,
+        168
+      ],
+      "center_x": [
+        93.1,
+        84.67,
+        84.67,
+        84.67,
+        84.67,
+        84.67,
+        93.1,
+        93.1
+      ],
+      "center_y": [
+        94.39,
+        78.86,
+        78.86,
+        78.86,
+        78.86,
+        78.86,
+        94.39,
+        94.39
+      ],
+      "baseline_y": 168,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "throw",
+      "kind": "action",
+      "ok": true,
+      "onion": "qa\\throw-onion.png",
+      "bottom_y": [
+        168,
+        167,
+        167,
+        167,
+        168,
+        168
+      ],
+      "center_x": [
+        93.1,
+        98.95,
+        98.95,
+        98.95,
+        93.1,
+        93.1
+      ],
+      "center_y": [
+        94.39,
+        92.83,
+        92.83,
+        92.83,
+        94.39,
+        94.39
+      ],
+      "baseline_y": 168,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "guard",
+      "kind": "action",
+      "ok": true,
+      "onion": "qa\\guard-onion.png",
+      "bottom_y": [
+        168,
+        168,
+        168
+      ],
+      "center_x": [
+        96.24,
+        96.24,
+        96.24
+      ],
+      "center_y": [
+        95.79,
+        95.79,
+        95.79
+      ],
+      "baseline_y": 168,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "hitstun",
+      "kind": "action",
+      "ok": true,
+      "onion": "qa\\hitstun-onion.png",
+      "bottom_y": [
+        168,
+        168,
+        168,
+        168
+      ],
+      "center_x": [
+        93.04,
+        91.01,
+        91.01,
+        93.04
+      ],
+      "center_y": [
+        94.49,
+        89.21,
+        89.21,
+        94.49
+      ],
+      "baseline_y": 168,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "knockdown",
+      "kind": "knockdown",
+      "ok": true,
+      "onion": "qa\\knockdown-onion.png",
+      "bottom_y": [
+        168,
+        168,
+        168,
+        168,
+        168,
+        168
+      ],
+      "center_x": [
+        90.98,
+        88.41,
+        88.41,
+        88.41,
+        88.41,
+        88.41
+      ],
+      "center_y": [
+        89.2,
+        138.18,
+        138.18,
+        138.18,
+        138.18,
+        138.18
+      ],
+      "baseline_y": 168,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "ko",
+      "kind": "knockdown",
+      "ok": true,
+      "onion": "qa\\ko-onion.png",
+      "bottom_y": [
+        168,
+        168,
+        168,
+        168,
+        168,
+        168
+      ],
+      "center_x": [
+        90.98,
+        88.41,
+        88.41,
+        88.41,
+        88.41,
+        88.41
+      ],
+      "center_y": [
+        89.2,
+        138.18,
+        138.18,
+        138.18,
+        138.18,
+        138.18
+      ],
+      "baseline_y": 168,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "win",
+      "kind": "action",
+      "ok": true,
+      "onion": "qa\\win-onion.png",
+      "bottom_y": [
+        168,
+        168,
+        168,
+        168,
+        168,
+        168
+      ],
+      "center_x": [
+        93.27,
+        93.27,
+        93.27,
+        93.27,
+        93.27,
+        93.27
+      ],
+      "center_y": [
+        100.07,
+        100.07,
+        100.07,
+        100.07,
+        100.07,
+        100.07
+      ],
+      "baseline_y": 168,
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

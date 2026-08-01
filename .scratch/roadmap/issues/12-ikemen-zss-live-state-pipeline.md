@@ -1,7 +1,7 @@
 # 12 - T427 Ikemen Live ZSS State Pipeline
 
-Status: ready-for-agent
-Labels: ikemen-runtime, zss, compiler, runtime-trace, ready-for-agent
+Status: closed-bounded
+Labels: ikemen-runtime, zss, compiler, runtime-trace, closed-bounded
 Lane: I2 bounded runtime
 Priority: P2
 Depends on: T424 and the current source-authority/scanner contracts
@@ -20,10 +20,11 @@ one character, and supports a `.cns.zss` fallback for a missing CNS reference.
 
 ## Current evidence
 
-`IkemenFeatureScanner` recognizes ZSS files and syntax, but
-`MugenCharacterLoader` reports ZSS state sources as unsupported.
-`src/mugen/da30/ZssSubsetRuntime.ts` is an isolated model and does not load or
-execute character states.
+`parseZss` now lowers a declared grammar/controller subset through the existing
+state source resolver and compiler. Direct `.zss`, missing-CNS `.cns.zss`
+fallback, and mixed CNS/ZSS sources reach `PlayableMatchRuntime` under
+`ikemen-go`; M.U.G.E.N receives a located rejection. The historical
+`src/mugen/da30/ZssSubsetRuntime.ts` remains non-product evidence.
 
 ## Scope
 
@@ -42,25 +43,39 @@ execute character states.
 
 ## Acceptance
 
-- Direct and fallback ZSS fixtures compile to shared IR and execute live.
-- One mixed CNS/ZSS character proves deterministic source order.
-- The M.U.G.E.N profile rejects ZSS with a located unsupported result.
-- Malformed and unsupported constructs do not partially execute or crash.
-- Compatibility output distinguishes recognized, compiled, executed, and
+- [x] Direct and fallback ZSS fixtures compile to shared IR and execute live.
+- [x] One mixed CNS/ZSS character proves deterministic source order.
+- [x] The M.U.G.E.N profile rejects ZSS with a located unsupported result.
+- [x] Malformed and unsupported constructs do not partially execute or crash.
+- [x] Compatibility output distinguishes recognized, compiled, executed, and
   blocked ZSS capabilities.
-- The isolated DA30 model is not used as evidence of product execution.
+- [x] The isolated DA30 model is not used as evidence of product execution.
 
 ## Verification
 
-- Parser/compiler/source-resolution/loader/runtime tests.
-- One required live ZSS trace with controller and state-order evidence.
-- `pnpm typecheck`, `pnpm build`, `pnpm check:boundaries`, and diff hygiene.
-- Browser proof only if the product surface changes.
+- Focused parser/loader/runtime/scanner: 4 files / 21 tests.
+- Required live trace: `ikemen-zss-live`, checksum `47c627a2`; `pnpm qa:trace`
+  passed 669/669 artifacts (635 required, 34 optional).
+- `pnpm test` 309/3254, `pnpm typecheck`, `pnpm build`, and
+  `pnpm check:boundaries` passed. The build retained its existing large-chunk
+  warning.
+- Full `qa:smoke` stopped at Vite startup before Chrome. A static production
+  preview instead captured desktop/mobile Match UI with one visible canvas and
+  zero console/page errors; it is focal visual evidence only, not global smoke
+  promotion.
+
+## Completion
+
+Closed on 2026-07-30. The executable set is `StateDef`, ordered `Null`,
+`PosAdd`, `ChangeState`, and `VelSet`; `if`/`else`, `#` comments,
+`ignoreHitPause`, and positive-integer `persistent(n)` are admitted only as
+the named parser forms. An ungranted controller or malformed construct blocks
+its complete ZSS source.
 
 ## Claim ceiling
 
 Allowed: the explicitly named ZSS grammar/controller subset through the real
-loader, shared IR, and live runtime.
+loader, shared IR, compatibility telemetry, and live runtime.
 
 Blocked: general ZSS compatibility, functions/loops/local scopes beyond the
 declared subset, Lua, screenpack/system ZSS, rollback/netplay, score movement,

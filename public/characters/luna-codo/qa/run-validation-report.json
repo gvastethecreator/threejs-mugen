@@ -1,0 +1,501 @@
+{
+  "version": 1,
+  "kind": "sprite-run-validation-report",
+  "run_dir": ".scratch\\content-pack\\regeneration-v2\\runs\\luna-codo-v2",
+  "stage": "pre-package",
+  "workflow": "production",
+  "ok": false,
+  "status": "fail",
+  "complete": true,
+  "exit_code": 1,
+  "input_fingerprint": "69bdbef8f1f3842163c69ebdfc3bb8460cb2e9f43640f880c1a9ad8d85e62ab5",
+  "evidence": {
+    "production_media": {
+      "representative": true,
+      "provenance_verified": true,
+      "source_types": [
+        "imagegen"
+      ]
+    }
+  },
+  "policy": {
+    "workflow": "production",
+    "categories": [
+      "animated",
+      "generated"
+    ],
+    "selectors": null,
+    "required_gate_ids": [
+      "generation-provenance",
+      "animation-contracts",
+      "frame-alignment",
+      "identity-consistency",
+      "runtime-preview"
+    ],
+    "decisions": [
+      {
+        "id": "generation-provenance",
+        "applied": true,
+        "reason": "production source_type=imagegen requires provenance"
+      },
+      {
+        "id": "animation-contracts",
+        "applied": true,
+        "reason": "frame_semantics=animation is animated"
+      },
+      {
+        "id": "frame-alignment",
+        "applied": true,
+        "reason": "animated asset_kind=sprite requires frame alignment"
+      },
+      {
+        "id": "identity-consistency",
+        "applied": true,
+        "reason": "animated asset_kind=sprite requires identity consistency"
+      },
+      {
+        "id": "motion-variation",
+        "applied": false,
+        "reason": "no explicit locomotion animation_workflows fact"
+      },
+      {
+        "id": "asset-slots",
+        "applied": false,
+        "reason": "extraction_mode=components does not use slots"
+      },
+      {
+        "id": "isometric-tiles",
+        "applied": false,
+        "reason": "asset_kind is not tileset"
+      },
+      {
+        "id": "segmentation-diagnostic",
+        "applied": false,
+        "reason": "production workflow does not use diagnostic segmentation as a gate"
+      },
+      {
+        "id": "frame-registration",
+        "applied": false,
+        "reason": "requires import-diagnostic asset_kind=sprite"
+      },
+      {
+        "id": "runtime-preview",
+        "applied": true,
+        "reason": "frame_semantics=animation requires manifest-driven runtime evidence"
+      }
+    ]
+  },
+  "checked_items": [
+    "crouch",
+    "guard",
+    "heavy-strike",
+    "hitstun",
+    "idle",
+    "jump",
+    "knockdown",
+    "ko",
+    "light-strike",
+    "qa/all-contact.png",
+    "qa/pose-scale-review.png",
+    "qa/runtime-preview/idle-playback.gif",
+    "qa/runtime-preview/special-playback.gif",
+    "special",
+    "throw",
+    "walk-back",
+    "walk-forward",
+    "win"
+  ],
+  "results": [
+    {
+      "id": "generation-provenance",
+      "applicable": true,
+      "checked_items": [
+        "crouch",
+        "guard",
+        "heavy-strike",
+        "hitstun",
+        "idle",
+        "jump",
+        "knockdown",
+        "ko",
+        "light-strike",
+        "special",
+        "throw",
+        "walk-back",
+        "walk-forward",
+        "win"
+      ],
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "provenance": ".scratch\\content-pack\\regeneration-v2\\runs\\luna-codo-v2\\source-provenance.json",
+        "source_type": "imagegen",
+        "sources": [
+          {
+            "path": ".scratch\\content-pack\\regeneration-v2\\runs\\luna-codo-v2\\provider\\imagegen\\action-grid\\action-grid.png",
+            "sha256": "84a582b7bd92203e6622a2d61c19ad60f69bf719ad011775ca148023d5c73316",
+            "size_bytes": 1524571,
+            "states": [
+              "idle",
+              "crouch",
+              "jump",
+              "light-strike",
+              "heavy-strike",
+              "throw",
+              "hitstun",
+              "knockdown",
+              "ko",
+              "win"
+            ]
+          },
+          {
+            "path": ".scratch\\content-pack\\regeneration-v2\\runs\\luna-codo-v2\\provider\\imagegen\\walk-forward\\walk-forward.png",
+            "sha256": "7f7a57721ae4741a22f5ee3b513ce28b546342f880b4e5bc302733ac8660dda0",
+            "size_bytes": 1419009,
+            "states": [
+              "walk-forward"
+            ]
+          },
+          {
+            "path": ".scratch\\content-pack\\regeneration-v2\\runs\\luna-codo-v2\\provider\\imagegen\\walk-back\\walk-back.png",
+            "sha256": "9deae47e146fc5391aa520e09a7413d6d930fc777cfca65d80482f9c80576e0b",
+            "size_bytes": 1415289,
+            "states": [
+              "walk-back"
+            ]
+          },
+          {
+            "path": ".scratch\\content-pack\\regeneration-v2\\runs\\luna-codo-v2\\provider\\imagegen\\special\\special.png",
+            "sha256": "b633017978f7dc3bd4a4a15ab2efe6d99fb185589302f4957a124cf44e00be1e",
+            "size_bytes": 1442343,
+            "states": [
+              "special"
+            ]
+          },
+          {
+            "path": ".scratch\\content-pack\\regeneration-v2\\runs\\luna-codo-v2\\provider\\imagegen\\guard\\guard.png",
+            "sha256": "ffae04fe07e82b85bd504f69243aa159a3144eb7a284307427054706013f5719",
+            "size_bytes": 1441557,
+            "states": [
+              "guard"
+            ]
+          }
+        ]
+      },
+      "input_fingerprint": "60f47c937d479cc1cdc81c637b564b0cce5613ad1a67c79729ac98ae9a9e2ebf",
+      "complete": true,
+      "status": "pass"
+    },
+    {
+      "id": "animation-contracts",
+      "applicable": true,
+      "checked_items": [
+        "idle",
+        "walk-forward",
+        "walk-back",
+        "jump",
+        "heavy-strike",
+        "special",
+        "guard",
+        "hitstun",
+        "knockdown",
+        "ko"
+      ],
+      "errors": [
+        "report did not check expected items: crouch, light-strike, throw, win"
+      ],
+      "warnings": [
+        "walk-forward: lower-body screen-space balance barely varies (range 0.026; diagnostic target >= 0.045)",
+        "special: strongest extent is on the first or last frame; verify active/contact is not missing",
+        "hitstun: force direction may be unreadable; verify recoil/drag visually",
+        "knockdown: jump/fall bbox changes a lot; verify this is pose compression, not whole-character rescale"
+      ],
+      "evidence": {
+        "process_exit_code": 0,
+        "report_path": "qa/animation-contract-report.json",
+        "report_sha256": "7205e6d1afadad75291c7f65117002170c5b459b635c3a7082a28edd9953c9f8",
+        "stdout_tail": "{\n  \"ok\": true,\n  \"engine\": \"animation-contract-heuristic\",\n  \"run_dir\": \".scratch\\\\content-pack\\\\regeneration-v2\\\\runs\\\\luna-codo-v2\",\n  \"states_mode\": \"animated\",\n  \"checked_states\": [\n    \"idle\",\n    \"walk-forward\",\n    \"walk-back\",\n    \"jump\",\n    \"heavy-strike\",\n    \"special\",\n    \"guard\",\n    \"hitstun\",\n    \"knockdown\",\n    \"ko\"\n  ],\n  \"visual_review_required\": true,\n  \"quality_gate_note\": \"Automated checks catch obvious phase failures. Visual playback/contact review remains required for row semantics before final approval.\",\n  \"errors\": [],\n  \"warnings\": [\n    \"walk-forward: lower-body screen-space balance barely varies (range 0.026; diagnostic target >= 0.045)\",\n    \"special: strongest extent is on the first or last frame; verify active/contact is not missing\",\n    \"hitstun: force direction may be unreadable; verify recoil/drag visually\",\n    \"knockdown: jump/fall bbox changes a lot; verify this is pose compression, not whole-character rescale\"\n  ]\n}\n"
+      },
+      "input_fingerprint": "7205e6d1afadad75291c7f65117002170c5b459b635c3a7082a28edd9953c9f8",
+      "complete": true,
+      "status": "fail"
+    },
+    {
+      "id": "frame-alignment",
+      "applicable": true,
+      "checked_items": [
+        "idle",
+        "walk-forward",
+        "walk-back",
+        "crouch",
+        "jump",
+        "light-strike",
+        "heavy-strike",
+        "special",
+        "throw",
+        "guard",
+        "hitstun",
+        "knockdown",
+        "ko",
+        "win"
+      ],
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "process_exit_code": 0,
+        "report_path": "qa/frame-alignment-report.json",
+        "report_sha256": "92640d5209a0f275b959727dcb4038c7baf411e4a700ef9cddd1ce41517864d7",
+        "stdout_tail": ",\n        163\n      ],\n      \"center_x\": [\n        90.48,\n        101.99,\n        101.99,\n        101.99,\n        101.99,\n        90.48\n      ],\n      \"center_y\": [\n        95.54,\n        102.08,\n        102.08,\n        102.08,\n        102.08,\n        95.54\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"special\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\special-onion.png\",\n      \"bottom_y\": [\n        165,\n        168,\n        147,\n        154,\n        157,\n        154,\n        168,\n        168\n      ],\n      \"center_x\": [\n        107.65,\n        99.14,\n        81.48,\n        97.69,\n        107.57,\n        90.38,\n        111.4,\n        97.02\n      ],\n      \"center_y\": [\n        96.78,\n        95.83,\n        97.6,\n        94.75,\n        97.19,\n        96.59,\n        95.88,\n        95.53\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"throw\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\throw-onion.png\",\n      \"bottom_y\": [\n        159,\n        168,\n        168,\n        168,\n        159,\n        159\n      ],\n      \"center_x\": [\n        92.65,\n        87.29,\n        87.29,\n        87.29,\n        92.65,\n        92.65\n      ],\n      \"center_y\": [\n        83.97,\n        68.64,\n        68.64,\n        68.64,\n        83.97,\n        83.97\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"guard\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\guard-onion.png\",\n      \"bottom_y\": [\n        168,\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        93.51,\n        93.88,\n        91.0,\n        93.54\n      ],\n      \"center_y\": [\n        95.88,\n        92.65,\n        91.28,\n        95.78\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"hitstun\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\hitstun-onion.png\",\n      \"bottom_y\": [\n        157,\n        152,\n        152,\n        157\n      ],\n      \"center_x\": [\n        90.48,\n        108.81,\n        108.81,\n        90.48\n      ],\n      \"center_y\": [\n        79.18,\n        82.49,\n        82.49,\n        79.18\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"knockdown\",\n      \"kind\": \"knockdown\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\knockdown-onion.png\",\n      \"bottom_y\": [\n        168,\n        168,\n        168,\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        108.81,\n        88.87,\n        88.87,\n        88.87,\n        88.87,\n        88.87\n      ],\n      \"center_y\": [\n        98.49,\n        137.76,\n        137.76,\n        137.76,\n        137.76,\n        137.76\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"ko\",\n      \"kind\": \"knockdown\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\ko-onion.png\",\n      \"bottom_y\": [\n        168,\n        168,\n        168,\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        108.81,\n        88.87,\n        88.87,\n        88.87,\n        88.87,\n        88.87\n      ],\n      \"center_y\": [\n        98.49,\n        137.76,\n        137.76,\n        137.76,\n        137.76,\n        137.76\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"win\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\win-onion.png\",\n      \"bottom_y\": [\n        161,\n        161,\n        161,\n        161,\n        161,\n        161\n      ],\n      \"center_x\": [\n        100.71,\n        100.71,\n        100.71,\n        100.71,\n        100.71,\n        100.71\n      ],\n      \"center_y\": [\n        99.45,\n        99.45,\n        99.45,\n        99.45,\n        99.45,\n        99.45\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    }\n  ],\n  \"errors\": [],\n  \"warnings\": []\n}\n"
+      },
+      "input_fingerprint": "92640d5209a0f275b959727dcb4038c7baf411e4a700ef9cddd1ce41517864d7",
+      "complete": true,
+      "status": "pass"
+    },
+    {
+      "id": "identity-consistency",
+      "applicable": true,
+      "checked_items": [
+        "idle",
+        "walk-forward",
+        "walk-back",
+        "crouch",
+        "jump",
+        "light-strike",
+        "heavy-strike",
+        "special",
+        "throw",
+        "guard",
+        "hitstun",
+        "knockdown",
+        "ko",
+        "win"
+      ],
+      "errors": [
+        "idle: body_mass_width_80_vs_reference shrinks to 0.58x reference; expected >= 0.68x",
+        "idle: body_mass_width_80_vs_reference varies by 0.76x across row; expected <= 0.60x",
+        "walk-forward: head_width_vs_reference shrinks to 0.71x reference; expected >= 0.82x",
+        "light-strike: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.82x",
+        "light-strike: upper_width_vs_reference shrinks to 0.09x reference; expected >= 0.62x",
+        "light-strike: opaque_area_vs_reference shrinks to 0.25x reference; expected >= 0.58x",
+        "heavy-strike: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.82x",
+        "heavy-strike: upper_width_vs_reference shrinks to 0.09x reference; expected >= 0.62x",
+        "heavy-strike: opaque_area_vs_reference shrinks to 0.25x reference; expected >= 0.58x",
+        "special: head_width_vs_reference shrinks to 0.66x reference; expected >= 0.82x",
+        "special: head_width_vs_reference grows to 2.00x reference; expected <= 1.28x",
+        "special: head_width_vs_reference varies by 1.34x across row; expected <= 0.42x",
+        "special: upper_width_vs_reference grows to 2.04x reference; expected <= 1.55x",
+        "special: upper_width_vs_reference varies by 1.27x across row; expected <= 0.42x",
+        "special: body_mass_width_80_vs_reference grows to 2.20x reference; expected <= 1.65x",
+        "special: body_mass_width_80_vs_reference varies by 0.96x across row; expected <= 0.60x",
+        "special: opaque_area_vs_reference grows to 2.05x reference; expected <= 1.55x",
+        "throw: head_width_vs_reference shrinks to 0.05x reference; expected >= 0.82x",
+        "throw: upper_width_vs_reference shrinks to 0.04x reference; expected >= 0.62x",
+        "throw: opaque_area_vs_reference shrinks to 0.13x reference; expected >= 0.58x",
+        "guard: head_width_vs_reference shrinks to 0.80x reference; expected >= 0.82x",
+        "guard: head_width_vs_reference grows to 1.90x reference; expected <= 1.28x",
+        "guard: head_width_vs_reference varies by 1.10x across row; expected <= 0.42x",
+        "hitstun: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.82x",
+        "hitstun: upper_width_vs_reference shrinks to 0.09x reference; expected >= 0.62x",
+        "hitstun: opaque_area_vs_reference shrinks to 0.20x reference; expected >= 0.58x",
+        "knockdown: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.55x",
+        "knockdown: upper_width_vs_reference shrinks to 0.04x reference; expected >= 0.58x",
+        "knockdown: body_mass_width_80_vs_reference grows to 1.96x reference; expected <= 1.65x",
+        "knockdown: body_mass_width_80_vs_reference varies by 0.64x across row; expected <= 0.60x",
+        "knockdown: opaque_area_vs_reference shrinks to 0.23x reference; expected >= 0.45x",
+        "ko: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.55x",
+        "ko: upper_width_vs_reference shrinks to 0.04x reference; expected >= 0.58x",
+        "ko: body_mass_width_80_vs_reference grows to 1.96x reference; expected <= 1.65x",
+        "ko: body_mass_width_80_vs_reference varies by 0.64x across row; expected <= 0.60x",
+        "ko: opaque_area_vs_reference shrinks to 0.23x reference; expected >= 0.45x",
+        "win: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.82x",
+        "win: upper_width_vs_reference shrinks to 0.09x reference; expected >= 0.62x",
+        "win: opaque_area_vs_reference shrinks to 0.19x reference; expected >= 0.58x",
+        "report declared ok:false"
+      ],
+      "warnings": [],
+      "evidence": {
+        "process_exit_code": 1,
+        "report_path": "qa/identity-consistency-report.json",
+        "report_sha256": "20ef64816ee8ce5e5dd1e4a4c5e8cf1dbd5b33ec1765589dad0b465aaa9e1b6d",
+        "stdout_tail": "{\n  \"ok\": false,\n  \"engine\": \"identity-consistency-proxy\",\n  \"run_dir\": \".scratch\\\\content-pack\\\\regeneration-v2\\\\runs\\\\luna-codo-v2\",\n  \"states_mode\": \"all\",\n  \"quality_gate_note\": \"Head/upper/body proxy metrics are guardrails. Visual contact/onion/runtime review still wins when metrics miss a visible drift.\",\n  \"errors\": [\n    \"idle: body_mass_width_80_vs_reference shrinks to 0.58x reference; expected >= 0.68x\",\n    \"idle: body_mass_width_80_vs_reference varies by 0.76x across row; expected <= 0.60x\",\n    \"walk-forward: head_width_vs_reference shrinks to 0.71x reference; expected >= 0.82x\",\n    \"light-strike: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.82x\",\n    \"light-strike: upper_width_vs_reference shrinks to 0.09x reference; expected >= 0.62x\",\n    \"light-strike: opaque_area_vs_reference shrinks to 0.25x reference; expected >= 0.58x\",\n    \"heavy-strike: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.82x\",\n    \"heavy-strike: upper_width_vs_reference shrinks to 0.09x reference; expected >= 0.62x\",\n    \"heavy-strike: opaque_area_vs_reference shrinks to 0.25x reference; expected >= 0.58x\",\n    \"special: head_width_vs_reference shrinks to 0.66x reference; expected >= 0.82x\",\n    \"special: head_width_vs_reference grows to 2.00x reference; expected <= 1.28x\",\n    \"special: head_width_vs_reference varies by 1.34x across row; expected <= 0.42x\",\n    \"special: upper_width_vs_reference grows to 2.04x reference; expected <= 1.55x\",\n    \"special: upper_width_vs_reference varies by 1.27x across row; expected <= 0.42x\",\n    \"special: body_mass_width_80_vs_reference grows to 2.20x reference; expected <= 1.65x\",\n    \"special: body_mass_width_80_vs_reference varies by 0.96x across row; expected <= 0.60x\",\n    \"special: opaque_area_vs_reference grows to 2.05x reference; expected <= 1.55x\",\n    \"throw: head_width_vs_reference shrinks to 0.05x reference; expected >= 0.82x\",\n    \"throw: upper_width_vs_reference shrinks to 0.04x reference; expected >= 0.62x\",\n    \"throw: opaque_area_vs_reference shrinks to 0.13x reference; expected >= 0.58x\",\n    \"guard: head_width_vs_reference shrinks to 0.80x reference; expected >= 0.82x\",\n    \"guard: head_width_vs_reference grows to 1.90x reference; expected <= 1.28x\",\n    \"guard: head_width_vs_reference varies by 1.10x across row; expected <= 0.42x\",\n    \"hitstun: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.82x\",\n    \"hitstun: upper_width_vs_reference shrinks to 0.09x reference; expected >= 0.62x\",\n    \"hitstun: opaque_area_vs_reference shrinks to 0.20x reference; expected >= 0.58x\",\n    \"knockdown: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.55x\",\n    \"knockdown: upper_width_vs_reference shrinks to 0.04x reference; expected >= 0.58x\",\n    \"knockdown: body_mass_width_80_vs_reference grows to 1.96x reference; expected <= 1.65x\",\n    \"knockdown: body_mass_width_80_vs_reference varies by 0.64x across row; expected <= 0.60x\",\n    \"knockdown: opaque_area_vs_reference shrinks to 0.23x reference; expected >= 0.45x\",\n    \"ko: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.55x\",\n    \"ko: upper_width_vs_reference shrinks to 0.04x reference; expected >= 0.58x\",\n    \"ko: body_mass_width_80_vs_reference grows to 1.96x reference; expected <= 1.65x\",\n    \"ko: body_mass_width_80_vs_reference varies by 0.64x across row; expected <= 0.60x\",\n    \"ko: opaque_area_vs_reference shrinks to 0.23x reference; expected >= 0.45x\",\n    \"win: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.82x\",\n    \"win: upper_width_vs_reference shrinks to 0.09x reference; expected >= 0.62x\",\n    \"win: opaque_area_vs_reference shrinks to 0.19x reference; expected >= 0.58x\"\n  ],\n  \"warnings\": []\n}\n"
+      },
+      "input_fingerprint": "20ef64816ee8ce5e5dd1e4a4c5e8cf1dbd5b33ec1765589dad0b465aaa9e1b6d",
+      "complete": true,
+      "status": "fail"
+    },
+    {
+      "id": "motion-variation",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "no explicit locomotion animation_workflows fact"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "asset-slots",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "extraction_mode=components does not use slots"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "isometric-tiles",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "asset_kind is not tileset"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "segmentation-diagnostic",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "production workflow does not use diagnostic segmentation as a gate"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "frame-registration",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "requires import-diagnostic asset_kind=sprite"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "runtime-preview",
+      "applicable": true,
+      "checked_items": [
+        "crouch",
+        "guard",
+        "heavy-strike",
+        "hitstun",
+        "idle",
+        "jump",
+        "knockdown",
+        "ko",
+        "light-strike",
+        "special",
+        "throw",
+        "walk-back",
+        "walk-forward",
+        "win"
+      ],
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "fingerprints": {
+          "crouch": "sha256:d7f24d7699a5148abfeae629af01f16a7c7eb722c922a249227c3f40c2bb4c0d",
+          "guard": "sha256:c26dad96660ec887ce02a4e0f1f2a84ab3869f38958edb87d737119f2c17a4a7",
+          "heavy-strike": "sha256:9409d820c2063a0b0b3bc10ccdb51bacea64dcd079c7ee12ac50e758771b4b16",
+          "hitstun": "sha256:0dd4136353ba3238db54357ce8df211109d5b986720c3a1707a6ca59b1aa8b43",
+          "idle": "sha256:4b97619d206e6c750e58665386148967d152ee989788c0e065562e5dcd21829a",
+          "jump": "sha256:15bfa683b8ea4f398ebd78b361ba6263aa3fe390159e64b474383cf8c2996c9b",
+          "knockdown": "sha256:1f562a8a326f3e71979fbeb5d42ad57faf07e22e04a63ffd5d88106cc26e7d21",
+          "ko": "sha256:a72f24c121cdbf613fdbd9970a349bba72d2986047a070a01b43b20e15dd6f29",
+          "light-strike": "sha256:d1f5e59ad01dfa0a9f18865e90dd1f4a887e70129f13b8be8244776f81a3991c",
+          "special": "sha256:a5ba732a7479c8c57a7172667a94f960fd364e9e11827dbde4ba39c0f3d6919d",
+          "throw": "sha256:f3e3ab94d91de769e6d01e785a90f44e1af4135e63960d4487a67db2ae0ce2af",
+          "walk-back": "sha256:664e127dc3f045bb4aead06f125c630b6dc8268a958446aee6bc76379115e597",
+          "walk-forward": "sha256:2a0fb78c5124443ed479011b701eb3c0a9adeb4e593e025d99df9c5505ba0b79",
+          "win": "sha256:695b94ac5ce0407155c196b982e4b60fb8b11640b38012d509bccb44460763d3"
+        }
+      },
+      "input_fingerprint": "sha256:47f5f113a6ba058e337d00da4347807c8dedcec67112c183070819cb3e3ceb04",
+      "complete": true,
+      "status": "pass"
+    },
+    {
+      "id": "visual-review",
+      "applicable": true,
+      "checked_items": [
+        "qa/all-contact.png",
+        "qa/pose-scale-review.png",
+        "qa/runtime-preview/idle-playback.gif",
+        "qa/runtime-preview/special-playback.gif"
+      ],
+      "errors": [
+        "visual review status is not pass"
+      ],
+      "warnings": [],
+      "evidence": {
+        "input_fingerprint": "sha256:1117c8c33ba2a943a8afff6cdecc59f7b66bfcd6ca6d689cbca7755d2d8367df",
+        "review_path": "qa/visual-review.json",
+        "reviewer_kind": "vision-model"
+      },
+      "input_fingerprint": "sha256:1117c8c33ba2a943a8afff6cdecc59f7b66bfcd6ca6d689cbca7755d2d8367df",
+      "complete": true,
+      "status": "fail"
+    }
+  ],
+  "blockers": [
+    "animation-contracts: report did not check expected items: crouch, light-strike, throw, win",
+    "identity-consistency: idle: body_mass_width_80_vs_reference shrinks to 0.58x reference; expected >= 0.68x",
+    "identity-consistency: idle: body_mass_width_80_vs_reference varies by 0.76x across row; expected <= 0.60x",
+    "identity-consistency: walk-forward: head_width_vs_reference shrinks to 0.71x reference; expected >= 0.82x",
+    "identity-consistency: light-strike: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.82x",
+    "identity-consistency: light-strike: upper_width_vs_reference shrinks to 0.09x reference; expected >= 0.62x",
+    "identity-consistency: light-strike: opaque_area_vs_reference shrinks to 0.25x reference; expected >= 0.58x",
+    "identity-consistency: heavy-strike: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.82x",
+    "identity-consistency: heavy-strike: upper_width_vs_reference shrinks to 0.09x reference; expected >= 0.62x",
+    "identity-consistency: heavy-strike: opaque_area_vs_reference shrinks to 0.25x reference; expected >= 0.58x",
+    "identity-consistency: special: head_width_vs_reference shrinks to 0.66x reference; expected >= 0.82x",
+    "identity-consistency: special: head_width_vs_reference grows to 2.00x reference; expected <= 1.28x",
+    "identity-consistency: special: head_width_vs_reference varies by 1.34x across row; expected <= 0.42x",
+    "identity-consistency: special: upper_width_vs_reference grows to 2.04x reference; expected <= 1.55x",
+    "identity-consistency: special: upper_width_vs_reference varies by 1.27x across row; expected <= 0.42x",
+    "identity-consistency: special: body_mass_width_80_vs_reference grows to 2.20x reference; expected <= 1.65x",
+    "identity-consistency: special: body_mass_width_80_vs_reference varies by 0.96x across row; expected <= 0.60x",
+    "identity-consistency: special: opaque_area_vs_reference grows to 2.05x reference; expected <= 1.55x",
+    "identity-consistency: throw: head_width_vs_reference shrinks to 0.05x reference; expected >= 0.82x",
+    "identity-consistency: throw: upper_width_vs_reference shrinks to 0.04x reference; expected >= 0.62x",
+    "identity-consistency: throw: opaque_area_vs_reference shrinks to 0.13x reference; expected >= 0.58x",
+    "identity-consistency: guard: head_width_vs_reference shrinks to 0.80x reference; expected >= 0.82x",
+    "identity-consistency: guard: head_width_vs_reference grows to 1.90x reference; expected <= 1.28x",
+    "identity-consistency: guard: head_width_vs_reference varies by 1.10x across row; expected <= 0.42x",
+    "identity-consistency: hitstun: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.82x",
+    "identity-consistency: hitstun: upper_width_vs_reference shrinks to 0.09x reference; expected >= 0.62x",
+    "identity-consistency: hitstun: opaque_area_vs_reference shrinks to 0.20x reference; expected >= 0.58x",
+    "identity-consistency: knockdown: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.55x",
+    "identity-consistency: knockdown: upper_width_vs_reference shrinks to 0.04x reference; expected >= 0.58x",
+    "identity-consistency: knockdown: body_mass_width_80_vs_reference grows to 1.96x reference; expected <= 1.65x",
+    "identity-consistency: knockdown: body_mass_width_80_vs_reference varies by 0.64x across row; expected <= 0.60x",
+    "identity-consistency: knockdown: opaque_area_vs_reference shrinks to 0.23x reference; expected >= 0.45x",
+    "identity-consistency: ko: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.55x",
+    "identity-consistency: ko: upper_width_vs_reference shrinks to 0.04x reference; expected >= 0.58x",
+    "identity-consistency: ko: body_mass_width_80_vs_reference grows to 1.96x reference; expected <= 1.65x",
+    "identity-consistency: ko: body_mass_width_80_vs_reference varies by 0.64x across row; expected <= 0.60x",
+    "identity-consistency: ko: opaque_area_vs_reference shrinks to 0.23x reference; expected >= 0.45x",
+    "identity-consistency: win: head_width_vs_reference shrinks to 0.07x reference; expected >= 0.82x",
+    "identity-consistency: win: upper_width_vs_reference shrinks to 0.09x reference; expected >= 0.62x",
+    "identity-consistency: win: opaque_area_vs_reference shrinks to 0.19x reference; expected >= 0.58x",
+    "identity-consistency: report declared ok:false",
+    "visual-review: visual review status is not pass"
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "kind": "classic-character-regeneration-map",
+  "character_id": "vera-patada",
+  "provider": "imagegen",
+  "source_action_grid": "source/vera-patada-action-grid-imagegen-v2.png",
+  "source_identity": "source/vera-patada-identity-imagegen-v2.png",
+  "cell_grid": {
+    "columns": 4,
+    "rows": 4,
+    "source_width": 1254,
+    "source_height": 1254,
+    "crop": "inner 1px border, nearest to 192px"
+  },
+  "cells": {
+    "0": "idle-a",
+    "1": "idle-b",
+    "2": "idle-c",
+    "3": "idle-d",
+    "4": "walk-forward-contact",
+    "5": "walk-back-contact",
+    "6": "crouch",
+    "7": "jump",
+    "8": "light-strike",
+    "9": "heavy-strike",
+    "10": "special",
+    "11": "throw",
+    "12": "guard",
+    "13": "hitstun",
+    "14": "knockdown",
+    "15": "win"
+  },
+  "state_frames": {
+    "idle": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "walk-forward": [
+      4,
+      5,
+      4,
+      5,
+      4,
+      5,
+      4,
+      5
+    ],
+    "walk-back": [
+      5,
+      4,
+      5,
+      4,
+      5,
+      4,
+      5,
+      4
+    ],
+    "crouch": [
+      0,
+      6,
+      6,
+      6
+    ],
+    "jump": [
+      6,
+      7,
+      7,
+      7,
+      7,
+      6
+    ],
+    "light-strike": [
+      0,
+      8,
+      8,
+      0
+    ],
+    "heavy-strike": [
+      0,
+      9,
+      9,
+      9,
+      9,
+      0
+    ],
+    "special": [
+      0,
+      10,
+      10,
+      10,
+      10,
+      10,
+      0,
+      0
+    ],
+    "throw": [
+      0,
+      11,
+      11,
+      11,
+      0,
+      0
+    ],
+    "guard": [
+      12,
+      12,
+      12
+    ],
+    "hitstun": [
+      0,
+      13,
+      13,
+      0
+    ],
+    "knockdown": [
+      13,
+      14,
+      14,
+      14,
+      14,
+      14
+    ],
+    "ko": [
+      13,
+      14,
+      14,
+      14,
+      14,
+      14
+    ],
+    "win": [
+      15,
+      15,
+      15,
+      15,
+      15,
+      15
+    ]
+  },
+  "notes": "Provider-generated action grid is the only representative art source; raw rows are deterministic crops/recomposition for the component-row contract."
+}

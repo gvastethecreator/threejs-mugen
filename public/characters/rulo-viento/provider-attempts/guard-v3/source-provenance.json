@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "kind": "sprite-provider-attempt-provenance",
+  "source_type": "imagegen",
+  "art_engine": "imagegen",
+  "fixture": false,
+  "verification_status": "hash-verified-rejected-candidate",
+  "identity_anchor": {
+    "path": "characters/rulo-viento/base-source.png",
+    "sha256": "21e6b537cc7870ef0d05090a2679c86dfc0a66be5f348fb198c076501616c343"
+  },
+  "candidate": {
+    "path": "run/provider/imagegen/guard/guard.png",
+    "sha256": "fad99ae2832ef244e76b65f8820b25f0ece4b0d93f6bb81cc64bd90594bd25d3",
+    "size_bytes": 1574824,
+    "mime": "image/png",
+    "width": 1254,
+    "height": 1254,
+    "states": ["guard"]
+  },
+  "request": {
+    "path": "run/request.base.json",
+    "sha256": "49330091f0b2889c61a469c69ab113e559fa3ae2d426f8f3819bd0020abef549"
+  }
+}

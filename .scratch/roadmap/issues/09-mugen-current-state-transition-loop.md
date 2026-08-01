@@ -1,6 +1,6 @@
 # 09 - T424 M.U.G.E.N Same-Tick State Transition Chain
 
-Status: ready-for-agent
+Status: closed-bounded
 Labels: runtime-trace, mugen-compat, cns-vm, ready-for-agent
 Lane: R1 runtime compatibility
 Priority: P0
@@ -24,9 +24,18 @@ triggers.
 - Root/helper `-3 -> -2 -> -1 -> current` scheduling is already covered.
 - Ikemen `-4`/`+1`, negative-state append, and bounded helper `keyctrl` are
   already covered and must not be rebuilt.
-- `runActiveStateControllers` invokes the current state once and discards the
-  scan result, while `runRuntimeHelperStateControllers` changes state without
-  continuing the destination program.
+- Before T424, `runActiveStateControllers` invoked the current state once and
+  discarded the scan result, while `runRuntimeHelperStateControllers` changed
+  state without continuing the destination program.
+- T424 now returns an optional typed transition from root scan/run and a
+  discriminated helper result. Current-state callers continue same tick;
+  special-state calls remain single-pass.
+- Focused imported root proof covers `0 -> 100 -> 200`, source-tail skip,
+  destination controller order, and trace state numbers `[0, 100, 200]`.
+- Focused helper proof covers `1200 -> 1300 -> 1400`, source-tail skip,
+  destination `ChangeAnim`, and a two-state cycle.
+- Root cycle proof records `32` `ChangeState` events and one stable
+  `compatibilitySession.stateTransitionCycles` diagnostic.
 
 ## Scope
 
@@ -48,7 +57,9 @@ triggers.
 - A self-loop or multi-state cycle stops at the declared budget and produces a
   stable diagnostic without corrupting state.
 - Existing negative/global-state order tests remain green.
-- One required imported trace proves the named chain and blocked cycle path.
+- One required imported runtime trace/test proves the named chain and blocked
+  cycle path (`PlayableMatchRuntime.test.ts`; trace summary preserves cycle
+  diagnostics).
 
 ## Verification
 
@@ -57,10 +68,19 @@ triggers.
 - `pnpm typecheck`, `pnpm build`, `pnpm check:boundaries`, and `pnpm qa:trace`.
 - `git diff --check` on the owned delta.
 
+### Evidence collected
+
+- `pnpm exec vitest run src/tests/RuntimeActiveControllerRunSystem.test.ts src/tests/HelperSystem.test.ts src/tests/PlayableMatchRuntime.test.ts src/tests/RuntimeTrace.test.ts src/tests/RuntimeTraceArtifact.test.ts`: **403 tests passed / 5 files**.
+- `pnpm typecheck`: passed.
+- `pnpm test -- --pool=threads --maxWorkers=1`: **305 files / 3234 tests
+  passed**.
+- `pnpm build`, `pnpm check:boundaries`, and `git diff --check`: passed.
+- `pnpm qa:trace`: **667/667 artifacts passed** (633 required, 34 optional).
+
 ## Claim ceiling
 
-Allowed: same-tick imported current-state chaining for the tested root/helper
-profiles plus deterministic cycle protection.
+Allowed: same-tick imported current-state chaining for tested root/helper
+profiles, trace-visible transition metadata, and deterministic cycle protection.
 
 Blocked: full CNS VM order, all controller parameter semantics, exact engine
 failure behavior for infinite loops, ZSS execution, score movement, or full

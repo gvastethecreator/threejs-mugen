@@ -97,6 +97,31 @@ describe("RuntimeStateEntryRouteWorld", () => {
     expect(states).toEqual([407]);
   });
 
+  it("checks persistent admission after triggers and before resolving State -1 ChangeState", () => {
+    const world = new RuntimeStateEntryRouteWorld();
+    const actor = routeActor([compiled("ChangeState", { value: "200", persistent: "0" })]);
+    const calls: string[] = [];
+
+    const result = world.apply(actor, routeActor(), 6, {
+      triggersPass: () => {
+        calls.push("trigger");
+        return true;
+      },
+      persistentPass: (controller, dispatch, current, _opponent, owner, tick) => {
+        calls.push(`persistent:${controller.params.persistent}:${dispatch.stateId}:${current.id}:${owner.id}:${tick}`);
+        return false;
+      },
+      resolveStateId: () => {
+        calls.push("resolve");
+        return 200;
+      },
+      enterState: () => calls.push("state"),
+    });
+
+    expect(result).toEqual({ applied: false, scanned: 1, skipped: false });
+    expect(calls).toEqual(["trigger", "persistent:0:200:p1:p1:6"]);
+  });
+
   it("reports an empty State -1 list as skipped", () => {
     const result = new RuntimeStateEntryRouteWorld().apply(routeActor(), routeActor(), 1, {
       triggersPass: () => true,

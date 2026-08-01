@@ -119,6 +119,24 @@ describe("RuntimeOpponentSelectionWorld", () => {
     expect(world.selectP2Nearest(actor, [far, near])?.id).toBe("far");
   });
 
+  it("follows the 05b P2 cache invalidation contract without wiki-only 30-pixel hysteresis", () => {
+    const world = new RuntimeOpponentSelectionWorld();
+    const actor = opponent("p1", 0, { facing: 1 });
+    const incumbent = opponent("p2", 100);
+    const challenger = opponent("p4", 129);
+
+    expect(world.selectP2Nearest(actor, [incumbent, challenger])?.id).toBe("p2");
+
+    // A source-observable one-pixel overtake rebuilds the P2 cache. The
+    // current wiki's 30-pixel retention sentence is not present in 05b.
+    challenger.runtime.pos.x = 99;
+    expect(world.selectP2Nearest(actor, [incumbent, challenger])?.id).toBe("p4");
+
+    // Candidate eligibility remains caller-owned; removal cannot return a
+    // stale cached P2.
+    expect(world.selectP2Nearest(actor, [challenger])?.id).toBe("p4");
+  });
+
   it("keeps legacy EnemyNear ordering horizontal and stable even when P2 policy sees orientation and depth", () => {
     const world = new RuntimeOpponentSelectionWorld();
     const actor = opponent("p1", 0, { facing: -1, combatDepth: { position: 0 } });

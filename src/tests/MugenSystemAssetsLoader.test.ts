@@ -524,6 +524,8 @@ sff = character-fx.sff
       "data/common-first.def",
       text(`[Info]
 prefix = shared_fx
+fx.scale = 0.75
+localcoord = 320,240
 
 [Files]
 air = common-first.air
@@ -570,6 +572,8 @@ GameHeight = 720
 
     expect(character.systemAssets?.commonFightFxPaths).toEqual(["data/common-first.def", "data/common-second.def"]);
     expect(libraries?.shared_fx?.defPath).toBe("data/common-first.def");
+    expect(libraries?.shared_fx?.scale).toBe(0.75);
+    expect(libraries?.shared_fx?.localCoord).toEqual([320, 240]);
     expect(libraries?.shared_fx?.animations.get(7001)?.frames[0]).toMatchObject({
       spriteGroup: 9100,
       spriteIndex: 0,

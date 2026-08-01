@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "engine": "frame-alignment-onion-skin",
+  "run_dir": "X:\\threejs-mugen\\mugen-web-sandbox\\.scratch\\content-pack\\runs\\satirical-fightfx-v1-prepared",
+  "states_mode": "vfx",
+  "baseline_y": null,
+  "visual_review_required": true,
+  "quality_gate_note": "Review each qa/*-onion.png overlay before final approval; automated checks cover baseline/root drift only.",
+  "rows": [
+    {
+      "state": "vfx",
+      "kind": "action",
+      "ok": true,
+      "onion": "qa\\vfx-onion.png",
+      "bottom_y": [
+        120,
+        120,
+        117,
+        113,
+        115,
+        118,
+        112,
+        120
+      ],
+      "center_x": [
+        64.4,
+        51.42,
+        62.47,
+        62.34,
+        57.83,
+        62.98,
+        62.33,
+        61.4
+      ],
+      "center_y": [
+        65.83,
+        62.24,
+        67.46,
+        68.12,
+        54.3,
+        65.7,
+        63.09,
+        68.15
+      ],
+      "baseline_y": null,
+      "errors": [],
+      "warnings": [
+        "missing shared baseline_y; baseline checks skipped"
+      ]
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "vfx: missing shared baseline_y; baseline checks skipped"
+  ]
+}

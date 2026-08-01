@@ -2,15 +2,15 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-088",
   "kind": "I",
-  "generatedAt": "2026-07-27T14:28:12.355Z",
+  "generatedAt": "2026-08-01T18:12:02.710Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-088",
   "anchors": [
     {
       "path": "src/mugen/compatibility/IkemenFeatureScanner.ts",
-      "bytes": 20474,
-      "sha256": "5006ab50ea871ecaa03ac5db78f2caec132bcc864cf31aae791eee2a147eadb9"
+      "bytes": 20908,
+      "sha256": "61035aa5f0ec4d78e740405d17b565b9e17e35170fd31667ba99677b33cfc095"
     },
     {
       "path": "src/mugen/compatibility/ScannerCapabilityVector.ts",
@@ -30,7 +30,7 @@
         "src/mugen/compatibility/ScannerCapabilityVector.ts"
       ],
       "executable": true,
-      "totalBytes": 23693
+      "totalBytes": 24127
     },
     "corpusSnapshot": true
   },

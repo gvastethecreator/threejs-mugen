@@ -1,0 +1,653 @@
+{
+  "ok": false,
+  "engine": "animation-contract-heuristic",
+  "run_dir": "runs/mara-cinta-v2",
+  "states_mode": "animated",
+  "checked_states": [
+    "idle",
+    "walk-forward",
+    "walk-back",
+    "jump",
+    "heavy-strike",
+    "special",
+    "guard",
+    "hitstun",
+    "knockdown",
+    "ko"
+  ],
+  "visual_review_required": true,
+  "quality_gate_note": "Automated checks catch obvious phase failures. Visual playback/contact review remains required for row semantics before final approval.",
+  "errors": [
+    "walk-forward: opposite-contact candidate duplicates the first lower-body pose (frame 1 vs frame 5 lower-body diff 0.000; expected >= 0.080; opposite contact lower-body pose is duplicated or too similar)",
+    "walk-back: opposite-contact candidate duplicates the first lower-body pose (frame 1 vs frame 5 lower-body diff 0.000; expected >= 0.080; opposite contact lower-body pose is duplicated or too similar)",
+    "special: one or more lower-body transitions are too similar (min 0.000; expected >= 0.040)",
+    "guard: vfx-buildup-peak-decay needs at least 4 frames to prove required phases; found 3",
+    "guard: VFX area/signal barely changes; buildup/peak/decay is not readable (alpha range 0.000, signal range 0.000, max pair diff 0.000)"
+  ],
+  "warnings": [
+    "walk-forward: lower-body screen-space balance barely varies (range 0.041; diagnostic target >= 0.045)",
+    "walk-back: lower-body screen-space balance barely varies (range 0.041; diagnostic target >= 0.045)",
+    "special: strongest extent is on the first or last frame; verify active/contact is not missing",
+    "hitstun: force direction may be unreadable; verify recoil/drag visually",
+    "knockdown: jump/fall bbox changes a lot; verify this is pose compression, not whole-character rescale"
+  ],
+  "results": [
+    {
+      "state": "idle",
+      "frames": 4,
+      "loop": true,
+      "workflows": [
+        "fighting-stance-idle"
+      ],
+      "workflow_source": "inferred",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "phase_contract": [
+        "combat stance",
+        "breath or weight rhythm",
+        "extremity offset",
+        "return"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "guard, support side, and weapon or fist logic read clearly",
+        "extremities amplify the torso without becoming random bobbing",
+        "stance communicates role, not a generic idle with raised hands"
+      ],
+      "metrics": {
+        "frame_count": 4,
+        "pair_diffs": [
+          0.3055,
+          0.3228,
+          0.3242,
+          0.1953
+        ],
+        "bbox_width_range": 0.0833,
+        "bbox_height_range": 0.0,
+        "center_x_range": 0.0026,
+        "center_y_range": 0.0,
+        "alpha_area_range_ratio": 0.1294,
+        "loop": {
+          "loop_closure_diff": 0.1953,
+          "alpha_area_range_ratio": 0.1294,
+          "average_pair_diff": 0.2869,
+          "average_in_loop_transition_diff": 0.3175
+        }
+      }
+    },
+    {
+      "state": "walk-forward",
+      "frames": 8,
+      "loop": true,
+      "workflows": [
+        "sideview-locomotion"
+      ],
+      "workflow_source": "inferred",
+      "ok": false,
+      "errors": [
+        "opposite-contact candidate duplicates the first lower-body pose (frame 1 vs frame 5 lower-body diff 0.000; expected >= 0.080; opposite contact lower-body pose is duplicated or too similar)"
+      ],
+      "warnings": [
+        "lower-body screen-space balance barely varies (range 0.041; diagnostic target >= 0.045)"
+      ],
+      "phase_contract": [
+        "contact A",
+        "down/pass",
+        "contact B",
+        "up/pass"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "frame 1 and the opposite contact frame show opposite anatomical support legs",
+        "pass/down frames do not keep both legs drifting to the same side",
+        "foot sliding, frozen knees, and loop seam are reviewed at playback speed"
+      ],
+      "metrics": {
+        "frame_count": 8,
+        "pair_diffs": [
+          0.5109,
+          0.5109,
+          0.5109,
+          0.5109,
+          0.5109,
+          0.5109,
+          0.5109,
+          0.5109
+        ],
+        "bbox_width_range": 0.0937,
+        "bbox_height_range": 0.0052,
+        "center_x_range": 0.0,
+        "center_y_range": 0.0026,
+        "alpha_area_range_ratio": 0.0636,
+        "locomotion": {
+          "average_lower_body_diff": 0.5325,
+          "min_lower_body_diff": 0.5325,
+          "support_balance_range": 0.0407,
+          "support_balances": [
+            -0.0237,
+            -0.0644,
+            -0.0237,
+            -0.0644,
+            -0.0237,
+            -0.0644,
+            -0.0237,
+            -0.0644
+          ],
+          "contact_phase_check": {
+            "ok": false,
+            "frame_1_index": 0,
+            "frame_1_support_balance": -0.0237,
+            "frame_1_support_side": "left",
+            "opposite_contact_index": 4,
+            "opposite_contact_frame": 5,
+            "opposite_contact_support_balance": -0.0237,
+            "opposite_contact_support_side": "left",
+            "contact_delta": 0.0,
+            "opposite_contact_pose_diff": 0.0,
+            "min_opposite_contact_pose_diff": 0.08,
+            "min_contact_balance_abs": 0.012,
+            "min_contact_opposition": 0.035,
+            "screen_side_is_diagnostic_only": true,
+            "anatomical_leg_alternation_requires_visual_review": true,
+            "reason": "opposite contact lower-body pose is duplicated or too similar"
+          }
+        }
+      }
+    },
+    {
+      "state": "walk-back",
+      "frames": 8,
+      "loop": true,
+      "workflows": [
+        "sideview-locomotion"
+      ],
+      "workflow_source": "inferred",
+      "ok": false,
+      "errors": [
+        "opposite-contact candidate duplicates the first lower-body pose (frame 1 vs frame 5 lower-body diff 0.000; expected >= 0.080; opposite contact lower-body pose is duplicated or too similar)"
+      ],
+      "warnings": [
+        "lower-body screen-space balance barely varies (range 0.041; diagnostic target >= 0.045)"
+      ],
+      "phase_contract": [
+        "contact A",
+        "down/pass",
+        "contact B",
+        "up/pass"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "frame 1 and the opposite contact frame show opposite anatomical support legs",
+        "pass/down frames do not keep both legs drifting to the same side",
+        "foot sliding, frozen knees, and loop seam are reviewed at playback speed"
+      ],
+      "metrics": {
+        "frame_count": 8,
+        "pair_diffs": [
+          0.5115,
+          0.5115,
+          0.5115,
+          0.5115,
+          0.5115,
+          0.5115,
+          0.5115,
+          0.5115
+        ],
+        "bbox_width_range": 0.0937,
+        "bbox_height_range": 0.0052,
+        "center_x_range": 0.0,
+        "center_y_range": 0.0026,
+        "alpha_area_range_ratio": 0.0648,
+        "locomotion": {
+          "average_lower_body_diff": 0.5326,
+          "min_lower_body_diff": 0.5326,
+          "support_balance_range": 0.041,
+          "support_balances": [
+            -0.0643,
+            -0.0233,
+            -0.0643,
+            -0.0233,
+            -0.0643,
+            -0.0233,
+            -0.0643,
+            -0.0233
+          ],
+          "contact_phase_check": {
+            "ok": false,
+            "frame_1_index": 0,
+            "frame_1_support_balance": -0.0643,
+            "frame_1_support_side": "left",
+            "opposite_contact_index": 4,
+            "opposite_contact_frame": 5,
+            "opposite_contact_support_balance": -0.0643,
+            "opposite_contact_support_side": "left",
+            "contact_delta": 0.0,
+            "opposite_contact_pose_diff": 0.0,
+            "min_opposite_contact_pose_diff": 0.08,
+            "min_contact_balance_abs": 0.012,
+            "min_contact_opposition": 0.035,
+            "screen_side_is_diagnostic_only": true,
+            "anatomical_leg_alternation_requires_visual_review": true,
+            "reason": "opposite contact lower-body pose is duplicated or too similar"
+          }
+        }
+      }
+    },
+    {
+      "state": "jump",
+      "frames": 6,
+      "loop": false,
+      "workflows": [
+        "responsive-jump"
+      ],
+      "workflow_source": "inferred",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "phase_contract": [
+        "launch/up",
+        "airborne",
+        "down",
+        "landing/compression"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "body scale remains locked to idle while the character moves through the slot",
+        "up and down poses are distinct enough for input response",
+        "dust or motion marks do not compensate for weak body placement"
+      ],
+      "metrics": {
+        "frame_count": 6,
+        "pair_diffs": [
+          0.8069,
+          0.4477,
+          0.0,
+          0.4477,
+          0.8069
+        ],
+        "bbox_width_range": 0.0312,
+        "bbox_height_range": 0.1615,
+        "center_x_range": 0.0,
+        "center_y_range": 0.237,
+        "alpha_area_range_ratio": 0.1651,
+        "jump": {
+          "center_y_range": 0.237,
+          "bottom_range": 0.1562,
+          "bbox_width_range": 0.0312,
+          "bbox_height_range": 0.1615
+        }
+      }
+    },
+    {
+      "state": "heavy-strike",
+      "frames": 6,
+      "loop": false,
+      "workflows": [
+        "vfx-buildup-peak-decay"
+      ],
+      "workflow_source": "inferred",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "phase_contract": [
+        "buildup/source",
+        "peak",
+        "decay",
+        "fade or loop return"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "emitter or contact anchor remains stable",
+        "peak frame is visually dominant and not a linear same-energy ramp",
+        "alpha fade is safe and does not preserve chroma-colored cores"
+      ],
+      "metrics": {
+        "frame_count": 6,
+        "pair_diffs": [
+          0.5857,
+          0.0,
+          0.0,
+          0.0,
+          0.5857
+        ],
+        "bbox_width_range": 0.276,
+        "bbox_height_range": 0.0885,
+        "center_x_range": 0.0026,
+        "center_y_range": 0.0026,
+        "alpha_area_range_ratio": 0.093,
+        "vfx": {
+          "alpha_area_range_ratio": 0.093,
+          "signal_area_range_ratio": 0.0662,
+          "signal_areas": [
+            1466,
+            1570,
+            1570,
+            1570,
+            1570,
+            1466
+          ],
+          "max_pair_diff": 0.5857,
+          "peak_area_frame": 2
+        }
+      }
+    },
+    {
+      "state": "special",
+      "frames": 8,
+      "loop": false,
+      "workflows": [
+        "sideview-locomotion",
+        "combat-power-strike"
+      ],
+      "workflow_source": "inferred",
+      "ok": false,
+      "errors": [
+        "one or more lower-body transitions are too similar (min 0.000; expected >= 0.040)"
+      ],
+      "warnings": [
+        "strongest extent is on the first or last frame; verify active/contact is not missing"
+      ],
+      "phase_contract": [
+        "contact A",
+        "down/pass",
+        "contact B",
+        "up/pass",
+        "load",
+        "fast smear",
+        "hit/contact",
+        "held follow-through",
+        "recovery",
+        "settle"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "frame 1 and the opposite contact frame show opposite anatomical support legs",
+        "pass/down frames do not keep both legs drifting to the same side",
+        "foot sliding, frozen knees, and loop seam are reviewed at playback speed",
+        "anticipation communicates weight instead of input lag",
+        "active/contact frame reads as committed impact",
+        "overshoot and recovery preserve the same body scale"
+      ],
+      "metrics": {
+        "frame_count": 8,
+        "pair_diffs": [
+          0.6022,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.6022,
+          0.0
+        ],
+        "bbox_width_range": 0.2083,
+        "bbox_height_range": 0.0,
+        "center_x_range": 0.0,
+        "center_y_range": 0.0,
+        "alpha_area_range_ratio": 0.0421,
+        "locomotion": {
+          "average_lower_body_diff": 0.1794,
+          "min_lower_body_diff": 0.0,
+          "support_balance_range": 0.0827,
+          "support_balances": [
+            -0.0268,
+            -0.1095,
+            -0.1095,
+            -0.1095,
+            -0.1095,
+            -0.1095,
+            -0.0268,
+            -0.0268
+          ],
+          "contact_phase_check": {
+            "ok": true,
+            "frame_1_index": 0,
+            "frame_1_support_balance": -0.0268,
+            "frame_1_support_side": "left",
+            "opposite_contact_index": 4,
+            "opposite_contact_frame": 5,
+            "opposite_contact_support_balance": -0.1095,
+            "opposite_contact_support_side": "left",
+            "contact_delta": 0.0827,
+            "opposite_contact_pose_diff": 0.7175,
+            "min_opposite_contact_pose_diff": 0.08,
+            "min_contact_balance_abs": 0.012,
+            "min_contact_opposition": 0.035,
+            "screen_side_is_diagnostic_only": true,
+            "anatomical_leg_alternation_requires_visual_review": true,
+            "reason": "distinct opposite-contact lower-body poses"
+          }
+        },
+        "action": {
+          "bbox_width_range": 0.2083,
+          "bbox_height_range": 0.0,
+          "center_x_range": 0.0,
+          "center_y_range": 0.0,
+          "alpha_area_range_ratio": 0.0421,
+          "average_pair_diff": 0.1721,
+          "peak_area_frame": 2,
+          "peak_extent_frame": 1
+        }
+      }
+    },
+    {
+      "state": "guard",
+      "frames": 3,
+      "loop": true,
+      "workflows": [
+        "fighting-stance-idle",
+        "vfx-buildup-peak-decay"
+      ],
+      "workflow_source": "inferred",
+      "ok": false,
+      "errors": [
+        "vfx-buildup-peak-decay needs at least 4 frames to prove required phases; found 3",
+        "VFX area/signal barely changes; buildup/peak/decay is not readable (alpha range 0.000, signal range 0.000, max pair diff 0.000)"
+      ],
+      "warnings": [],
+      "phase_contract": [
+        "combat stance",
+        "breath or weight rhythm",
+        "extremity offset",
+        "return",
+        "buildup/source",
+        "peak",
+        "decay",
+        "fade or loop return"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "guard, support side, and weapon or fist logic read clearly",
+        "extremities amplify the torso without becoming random bobbing",
+        "stance communicates role, not a generic idle with raised hands",
+        "emitter or contact anchor remains stable",
+        "peak frame is visually dominant and not a linear same-energy ramp",
+        "alpha fade is safe and does not preserve chroma-colored cores"
+      ],
+      "metrics": {
+        "frame_count": 3,
+        "pair_diffs": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bbox_width_range": 0.0,
+        "bbox_height_range": 0.0,
+        "center_x_range": 0.0,
+        "center_y_range": 0.0,
+        "alpha_area_range_ratio": 0.0,
+        "vfx": {
+          "alpha_area_range_ratio": 0.0,
+          "signal_area_range_ratio": 0.0,
+          "signal_areas": [
+            1849,
+            1849,
+            1849
+          ],
+          "max_pair_diff": 0.0,
+          "peak_area_frame": 1
+        },
+        "loop": {
+          "loop_closure_diff": 0.0,
+          "alpha_area_range_ratio": 0.0,
+          "average_pair_diff": 0.0,
+          "average_in_loop_transition_diff": 0.0
+        }
+      }
+    },
+    {
+      "state": "hitstun",
+      "frames": 4,
+      "loop": false,
+      "workflows": [
+        "hit-reaction-knockdown"
+      ],
+      "workflow_source": "inferred",
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "force direction may be unreadable; verify recoil/drag visually"
+      ],
+      "phase_contract": [
+        "impact direction",
+        "recoil/drag",
+        "loss of balance",
+        "ground/contact",
+        "settle"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "force direction is readable",
+        "pose loses support or braces instead of becoming a surprised idle",
+        "final/contact pose is not cropped and keeps character scale"
+      ],
+      "metrics": {
+        "frame_count": 4,
+        "pair_diffs": [
+          0.7139,
+          0.0,
+          0.7139
+        ],
+        "bbox_width_range": 0.2031,
+        "bbox_height_range": 0.0,
+        "center_x_range": 0.0026,
+        "center_y_range": 0.0,
+        "alpha_area_range_ratio": 0.0491,
+        "reaction": {
+          "center_x_range": 0.0026,
+          "center_y_range": 0.0,
+          "bbox_height_range": 0.0,
+          "average_pair_diff": 0.476
+        }
+      }
+    },
+    {
+      "state": "knockdown",
+      "frames": 6,
+      "loop": false,
+      "workflows": [
+        "responsive-jump",
+        "hit-reaction-knockdown"
+      ],
+      "workflow_source": "inferred",
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "jump/fall bbox changes a lot; verify this is pose compression, not whole-character rescale"
+      ],
+      "phase_contract": [
+        "launch/up",
+        "airborne",
+        "down",
+        "landing/compression",
+        "impact direction",
+        "recoil/drag",
+        "loss of balance",
+        "ground/contact",
+        "settle"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "body scale remains locked to idle while the character moves through the slot",
+        "up and down poses are distinct enough for input response",
+        "dust or motion marks do not compensate for weak body placement",
+        "force direction is readable",
+        "pose loses support or braces instead of becoming a surprised idle",
+        "final/contact pose is not cropped and keeps character scale"
+      ],
+      "metrics": {
+        "frame_count": 6,
+        "pair_diffs": [
+          0.8872,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bbox_width_range": 0.0677,
+        "bbox_height_range": 0.4479,
+        "center_x_range": 0.0026,
+        "center_y_range": 0.224,
+        "alpha_area_range_ratio": 0.363,
+        "jump": {
+          "center_y_range": 0.224,
+          "bottom_range": 0.0,
+          "bbox_width_range": 0.0677,
+          "bbox_height_range": 0.4479
+        },
+        "reaction": {
+          "center_x_range": 0.0026,
+          "center_y_range": 0.224,
+          "bbox_height_range": 0.4479,
+          "average_pair_diff": 0.1774
+        }
+      }
+    },
+    {
+      "state": "ko",
+      "frames": 6,
+      "loop": false,
+      "workflows": [
+        "hit-reaction-knockdown"
+      ],
+      "workflow_source": "inferred",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "phase_contract": [
+        "impact direction",
+        "recoil/drag",
+        "loss of balance",
+        "ground/contact",
+        "settle"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "force direction is readable",
+        "pose loses support or braces instead of becoming a surprised idle",
+        "final/contact pose is not cropped and keeps character scale"
+      ],
+      "metrics": {
+        "frame_count": 6,
+        "pair_diffs": [
+          0.8872,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bbox_width_range": 0.0677,
+        "bbox_height_range": 0.4479,
+        "center_x_range": 0.0026,
+        "center_y_range": 0.224,
+        "alpha_area_range_ratio": 0.363,
+        "reaction": {
+          "center_x_range": 0.0026,
+          "center_y_range": 0.224,
+          "bbox_height_range": 0.4479,
+          "average_pair_diff": 0.1774
+        }
+      }
+    }
+  ]
+}

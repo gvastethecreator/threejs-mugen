@@ -1,9 +1,8 @@
 # Rooftop Dojo
 
-Original generated stage art for the private runtime sandbox.
+Pack parallax v2 regenerado para el runtime del port.
 
-- Source mode: built-in imagegen.
-- Runtime path: `/stages/rooftop-dojo/rooftop-dojo.png`.
-- Use: native demo stage layer, not a MUGEN asset import.
-- Constraints: no characters, no text, no logos, no external game references.
-
+- Fuente maestra: `source/rooftop-dojo-base-imagegen-v2.png` y alias runtime `/stages/rooftop-dojo/rooftop-dojo.png`.
+- Capas: `background-pack.json` declara far/mid/near con profundidad y scroll; las capas v2 conservan píxeles del proveedor y sólo aplican máscaras/atenuación deterministas.
+- Dirección: dojo nocturno de combate, carbón/umber/pizarra, anatomía tipo Baki y cero neón/texto/logos.
+- Validación: `validate_background_pack.py` genera `qa/background-composite.png` y `qa/background-scroll.gif` con provenance `imagegen` representativa.

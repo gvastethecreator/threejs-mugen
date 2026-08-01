@@ -24,16 +24,89 @@ export const rooftopDojoStage: MugenStageDefinition = {
   },
   layers: [
     {
-      id: "rooftop-dojo-art",
-      color: "#0d1721",
-      assetUrl: "/stages/rooftop-dojo/rooftop-dojo.png",
+      id: "rooftop-dojo-far",
+      color: "#171b1d",
+      assetUrl: "/stages/rooftop-dojo/source/rooftop-dojo-far-v2.png",
       y: 88,
-      width: 980,
-      height: 552,
-      deltaX: 0.62,
+      width: 1020,
+      height: 574,
+      deltaX: 0.08,
+      deltaY: 0.02,
       opacity: 1,
     },
-    { id: "floor-tone", color: "#2c2119", y: -31, width: 980, height: 62, deltaX: 1, opacity: 0.22, layerNo: 1 },
+    {
+      id: "rooftop-dojo-mid",
+      color: "#4b4035",
+      assetUrl: "/stages/rooftop-dojo/source/rooftop-dojo-mid-v2.png",
+      y: 88,
+      width: 1020,
+      height: 574,
+      deltaX: 0.42,
+      deltaY: 0.08,
+      opacity: 1,
+      layerNo: 0,
+    },
+    {
+      id: "rooftop-dojo-near",
+      color: "#76604a",
+      assetUrl: "/stages/rooftop-dojo/source/rooftop-dojo-near-alpha-v2.png",
+      y: 88,
+      width: 1020,
+      height: 574,
+      deltaX: 0.88,
+      deltaY: 0.16,
+      opacity: 1,
+      layerNo: 1,
+    },
+  ],
+};
+
+/** Imagegen-backed layered stage packs accepted by build-game-backgrounds. */
+export const patioDojoPublicidadStage: MugenStageDefinition = {
+  id: "patio-dojo-publicidad",
+  displayName: "Patio Dojo Publicidad",
+  floorY: 0,
+  zOffset: 0,
+  localCoord: { width: 640, height: 480 },
+  bounds: { left: -420, right: 420 },
+  camera: { startX: 0, startY: 78, zoom: 1 },
+  playerStart: { p1: { x: -125, y: 0, facing: 1 }, p2: { x: 125, y: 0, facing: -1 } },
+  layers: [
+    { id: "city-far", color: "#25282a", assetUrl: "/stages/patio-dojo-publicidad/source/patio-dojo-publicidad-far-imagegen.png", y: 88, width: 1020, height: 574, deltaX: 0.08, deltaY: 0.02, opacity: 1, layerNo: 0 },
+    { id: "dojo-mid", color: "#4e4138", assetUrl: "/stages/patio-dojo-publicidad/source/patio-dojo-publicidad-mid-imagegen.png", y: 88, width: 1020, height: 574, deltaX: 0.42, deltaY: 0.08, opacity: 1, layerNo: 0 },
+    { id: "dojo-near", color: "#8b4e3c", assetUrl: "/stages/patio-dojo-publicidad/source/patio-dojo-publicidad-near-alpha.png", y: 88, width: 1020, height: 574, deltaX: 0.88, deltaY: 0.16, opacity: 1, layerNo: 1 },
+  ],
+};
+
+export const terminalSupermercado24hStage: MugenStageDefinition = {
+  id: "terminal-supermercado-24h",
+  displayName: "Terminal Supermercado 24h",
+  floorY: 0,
+  zOffset: 0,
+  localCoord: { width: 640, height: 480 },
+  bounds: { left: -420, right: 420 },
+  camera: { startX: 0, startY: 78, zoom: 1 },
+  playerStart: { p1: { x: -125, y: 0, facing: 1 }, p2: { x: 125, y: 0, facing: -1 } },
+  layers: [
+    { id: "terminal-far", color: "#11161a", assetUrl: "/stages/terminal-supermercado-24h/source/terminal-supermercado-24h-base-imagegen.png", y: 88, width: 1020, height: 574, deltaX: 0.08, deltaY: 0.02, opacity: 1, layerNo: 0 },
+    { id: "terminal-mid", color: "#4d4336", assetUrl: "/stages/terminal-supermercado-24h/source/terminal-supermercado-24h-mid-imagegen-v2.png", y: 88, width: 1020, height: 574, deltaX: 0.42, deltaY: 0.08, opacity: 1, layerNo: 0 },
+    { id: "terminal-near", color: "#856440", assetUrl: "/stages/terminal-supermercado-24h/source/terminal-supermercado-24h-near-alpha.png", y: 88, width: 1020, height: 574, deltaX: 0.88, deltaY: 0.16, opacity: 1, layerNo: 1 },
+  ],
+};
+
+export const azoteaWifiStage: MugenStageDefinition = {
+  id: "azotea-wifi",
+  displayName: "Azotea Wi-Fi",
+  floorY: 0,
+  zOffset: 0,
+  localCoord: { width: 640, height: 480 },
+  bounds: { left: -420, right: 420 },
+  camera: { startX: 0, startY: 78, zoom: 1 },
+  playerStart: { p1: { x: -125, y: 0, facing: 1 }, p2: { x: 125, y: 0, facing: -1 } },
+  layers: [
+    { id: "rooftop-far", color: "#252a2c", assetUrl: "/stages/azotea-wifi/source/azotea-wifi-base-imagegen.png", y: 88, width: 1020, height: 574, deltaX: 0.08, deltaY: 0.02, opacity: 1, layerNo: 0 },
+    { id: "rooftop-mid", color: "#51534b", assetUrl: "/stages/azotea-wifi/source/azotea-wifi-mid-imagegen-v2.png", y: 88, width: 1020, height: 574, deltaX: 0.42, deltaY: 0.08, opacity: 1, layerNo: 0 },
+    { id: "rooftop-near", color: "#747160", assetUrl: "/stages/azotea-wifi/source/azotea-wifi-near-alpha.png", y: 88, width: 1020, height: 574, deltaX: 0.88, deltaY: 0.16, opacity: 1, layerNo: 1 },
   ],
 };
 

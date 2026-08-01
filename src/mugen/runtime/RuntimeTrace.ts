@@ -140,6 +140,7 @@ export type RuntimeTraceCompatibilityActor = Pick<
   | "commandHistory"
   | "lastRoutedState"
   | "lastExecutedState"
+  | "stateTransitionCycles"
 > & {
   executedControllers: Record<string, number>;
   executedOperations: Record<string, number>;
@@ -174,6 +175,7 @@ export type RuntimeTraceHitFallSummary = {
   velocity: {
     x?: number;
     y: number;
+    z?: number;
   };
   recover?: boolean;
   recoverTime?: number;
@@ -193,6 +195,7 @@ export type RuntimeTraceHitFallRequirement = {
   kill?: boolean;
   velocityX?: number;
   velocityY?: number;
+  velocityZ?: number;
   recover?: boolean;
   recoverTime?: number;
   downRecover?: boolean;
@@ -3744,6 +3747,7 @@ function compareHitFallRequirement(
     ["hitFall.kill", requirement.kill, hitFall.kill],
     ["hitFall.velocity.x", requirement.velocityX, hitFall.velocity.x],
     ["hitFall.velocity.y", requirement.velocityY, hitFall.velocity.y],
+    ["hitFall.velocity.z", requirement.velocityZ, hitFall.velocity.z],
     ["hitFall.recover", requirement.recover, hitFall.recover],
     ["hitFall.recoverTime", requirement.recoverTime, hitFall.recoverTime],
     ["hitFall.downRecover", requirement.downRecover, hitFall.downRecover],
@@ -4267,6 +4271,7 @@ function cloneTraceHitFall(hitFall: RuntimeTraceHitFallSummary): RuntimeTraceHit
     velocity: {
       ...(hitFall.velocity.x === undefined ? {} : { x: roundTraceNumber(hitFall.velocity.x) }),
       y: roundTraceNumber(hitFall.velocity.y),
+      ...(hitFall.velocity.z === undefined ? {} : { z: roundTraceNumber(hitFall.velocity.z) }),
     },
     recover: hitFall.recover,
     recoverTime: hitFall.recoverTime === undefined ? undefined : roundTraceNumber(hitFall.recoverTime),
@@ -4305,6 +4310,7 @@ function summarizeCompatibility(session: CompatibilitySessionSnapshot | undefine
       label: actor.label,
       ...event,
     })),
+    stateTransitionCycles: actor.stateTransitionCycles?.map((cycle) => ({ ...cycle })),
     lastRoutedState: actor.lastRoutedState ? { ...actor.lastRoutedState } : undefined,
     lastExecutedState: actor.lastExecutedState,
   }));

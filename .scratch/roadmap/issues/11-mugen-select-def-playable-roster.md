@@ -1,7 +1,7 @@
 # 11 - T426 M.U.G.E.N select.def Playable Roster And Stage Authority
 
-Status: ready-for-agent
-Labels: mugen-compat, loader, product-route, browser-proof, ready-for-agent
+Status: closed-bounded
+Labels: mugen-compat, loader, product-route, browser-proof, closed-bounded
 Lane: R1 package/runtime compatibility
 Priority: P1
 Depends on: existing VFS, character loader, and stage loader
@@ -19,9 +19,11 @@ as assembled from characters, stages, and motif resources.
 
 ## Current evidence
 
-The package scanner recognizes `select.def`, and local project state owns P1,
-P2, and stage IDs. No imported `select.def` currently owns the live roster or
-stage selector; scanner recognition therefore earns no execution credit.
+`MugenSelectionManifest/v0` now owns direct VFS-resolved rows and feeds the
+existing P1/P2/stage selector plus MatchWorld. A CC0 fixture launches Select
+Alpha versus Select Beta on Skyline Relay; its reimport swaps the selected
+pair and changes the selected stage identity. Scanner recognition remains a
+separate non-execution contract.
 
 ## Scope
 
@@ -49,10 +51,19 @@ stage selector; scanner recognition therefore earns no execution credit.
 
 ## Verification
 
-- Parser/VFS/manifest tests plus one product integration test.
-- Focused browser gate for the real selection surface.
-- `pnpm typecheck`, `pnpm build`, `pnpm check:boundaries`, relevant runtime
-  traces, and diff hygiene.
+- Parser/VFS/manifest and MatchWorld integration: 2 files / 5 tests passed.
+- Focused Playwright browser gate: desktop + 390x844 mobile, ZIP import,
+  selection controls, keyboard focus traversal, Studio manifest, reimport,
+  no overflow, and zero unexpected console errors.
+- `pnpm qa:trace` 668/668, `pnpm qa:smoke`, 307 files / 3245 tests,
+  `pnpm typecheck`, `pnpm build`, `pnpm check:boundaries`, and
+  `git diff --check` passed.
+
+## Completion
+
+Closed on 2026-07-30. The final browser report is
+`.scratch/qa/t426-select-def/report.json`; its fixture and browser gate are
+repository-owned and deterministic.
 
 ## Claim ceiling
 

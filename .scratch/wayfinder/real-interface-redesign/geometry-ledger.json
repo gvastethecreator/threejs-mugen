@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "GeometryLedger/v1",
+  "workUnitId": "mugen-interface-redesign",
+  "directionId": "fight-first-context-lens",
+  "frameAndSafeArea": {
+    "desktop": {
+      "viewport": "1440x1024",
+      "headerPx": 72,
+      "toolbarPx": 88,
+      "lensWidthPx": 370,
+      "workspaceRule": "The scene owns the space between header and toolbar; drawers overlay it without changing the scene grid."
+    },
+    "narrow": {
+      "viewport": "390x844",
+      "headerPx": 58,
+      "toolbarPx": 76,
+      "workspaceRule": "Scene first, contextual lens next in document order, workspace navigation off canvas."
+    }
+  },
+  "primaryAlignmentAnchors": [
+    "global mode rail",
+    "centered fight HUD",
+    "live scene bounds",
+    "right contextual lens edge",
+    "bottom runtime command rail"
+  ],
+  "secondaryAnchors": [
+    "workspace/source drawer edge",
+    "lens fact value column",
+    "Studio route baseline",
+    "toolbar run and view groups"
+  ],
+  "rhythm": {
+    "withinPx": "5-9",
+    "betweenPx": "12-16",
+    "sectionPx": "18-24",
+    "desktopEdgePx": "20-28",
+    "narrowEdgePx": "8-18"
+  },
+  "repeatedSeries": [
+    "three global mode controls",
+    "eight Studio route controls",
+    "HUD fighter lanes",
+    "context fact rows",
+    "runtime toolbar controls",
+    "Trust Chain and system ledger rows"
+  ],
+  "parallelRegions": [
+    "P1 and P2 HUD blocks",
+    "Workspace drawer and contextual lens",
+    "Build and Evidence trust rows",
+    "desktop and narrow route navigation"
+  ],
+  "scrollOwners": {
+    "desktopDocument": "fixed application frame",
+    "workspaceDrawer": "independent vertical scroll",
+    "contextLens": "independent vertical scroll when content exceeds the toolbar-safe height",
+    "console": "explicit drawer with internal output scroll",
+    "narrowDocument": "vertical document flow; the contextual lens does not create horizontal document overflow"
+  },
+  "variableContentReservations": [
+    "ellipsis-safe project and asset ids",
+    "wrapping impact and next-action copy",
+    "stable action lane in Trust Chain rows",
+    "toolbar-safe maximum contextual-lens height",
+    "off-canvas drawer width capped by viewport edge clearance"
+  ],
+  "intentionalBreaks": [
+    "copper primary action interrupts neutral chrome",
+    "cyan tether connects the current contextual lens to the scene",
+    "warning state adds an inset copper edge without changing box geometry",
+    "Studio route rail appears only in Studio mode"
+  ],
+  "proof": [
+    {
+      "route": "Match",
+      "viewport": "1440x1024",
+      "state": "live fight with incomplete-source contextual lens",
+      "artifact": "proof/after.png",
+      "result": "passed"
+    },
+    {
+      "route": "Inspect",
+      "viewport": "1440x1024",
+      "state": "source drawer and contextual lens open",
+      "artifact": "proof/inspect-desktop.png",
+      "result": "passed"
+    },
+    {
+      "route": "Studio Workbench",
+      "viewport": "1440x1024",
+      "state": "workspace drawer closed, contextual task lens open",
+      "artifact": "proof/studio-workbench.png",
+      "result": "passed"
+    },
+    {
+      "route": "Match",
+      "viewport": "390x844",
+      "state": "scene-first mobile with touch controls and contextual sheet",
+      "artifact": "proof/mobile-first-pass.png",
+      "result": "passed"
+    },
+    {
+      "route": "Studio Build",
+      "viewport": "390x844",
+      "state": "long blocked/readiness content",
+      "artifact": "proof/mobile-studio-build.png",
+      "result": "passed"
+    }
+  ],
+  "status": "passed"
+}

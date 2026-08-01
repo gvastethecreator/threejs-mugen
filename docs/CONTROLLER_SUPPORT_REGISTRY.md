@@ -13,6 +13,119 @@ Every controller family should have:
 - fixture or synthetic trace evidence
 - UI/report wording
 
+T437/T438 record imported CMD State -1 `VarSet` positive and zero persistence
+as named executed-partial routes. T463 records only static State -1
+`ChangeState persistent = 0`: `RuntimeStateEntryRouteWorld` checks its isolated
+actor/controller marker after triggers and before value resolution. T464 adds
+only the matching static `persistent = 2` trigger-count route. Required traces
+`mugen-cns-state-minus-one-changestate-persistent-zero` (`88931500`) and
+`mugen-cns-state-minus-one-changestate-persistent` (`3681fafa`) prove the
+bounded one-shot and first/third eligible-pass routes. Other intervals,
+failed-value order, pause, helpers, custom owners, dynamic values and generic
+parity remain unsupported.
+
+T465 closes a named runtime timing boundary rather than adding a new controller family:
+direct/projectile `HitDef` guard timing seeds separate remaining slide/control
+windows, while authored `guardSlideTime` / `guardControlTime` remain the values
+returned by `GetHitVar`. Default runtime stop/restore is executed-partial;
+imported Common1 guard-state controllers remain the presentation owner. Air
+guard selection, hitpause, exact friction, and broad parity are unsupported.
+
+T466 adds the named `airguard.ctrltime` parameter to the same HitDef/projectile
+seam. It is compiled and resolved with an official fallback to
+`guard.ctrltime`; an explicit value is selected only for air guard, while
+ground guard retains `guard.ctrltime`. This remains executed-partial: air-state
+selection, hitpause, exact physics and broad parity are unsupported.
+
+T467 adds the named `air.hittime` parameter to HitDef, ModifyHitDef, and
+Projectile payloads. It is compiled, materialized on imported/runtime moves,
+and selected by
+`CombatResolver` only for airborne normal hits; omitted values use the official
+20-tick default and ground hits retain `ground.hittime`. This remains
+executed-partial: airborne Common1 state/landing selection, hitpause, dynamic
+expressions, exact physics and broad parity are unsupported.
+
+T468 records the adjacent `fall=1` precedence boundary. `CombatResolver` keeps
+the authored/default air timing for non-falling airborne hits but selects the
+existing ground `hitStun` fallback when a direct airborne hit starts a fall;
+ground, guard, projectile no-fall, and direct fall metadata routes are unchanged.
+This remains executed-partial: exact Common1 fall/landing and
+`GetHitVar(hittime)` lifetime parity are unsupported.
+
+T469 closes the `down.hittime` and `down.velocity` seam through HitDef, ModifyHitDef,
+Projectile, imported moves, and runtime projectiles. A lying target with zero
+vertical down velocity uses the authored/default 20-tick down timing; a
+non-zero vertical value uses the airborne timing route. This remains
+executed-partial: exact Common1 lie-down tables, bounce/recovery, and full
+`GetHitVar` lifetime parity are unsupported.
+
+T472 is closed-bounded: HitDef, ModifyHitDef and Projectile compile explicit
+`down.bounce`; direct/projectile fall metadata retains the flag and
+`HitFallVel` suppresses velocity only for explicit `0`. Omitted/`1` preserve
+the current compatibility path. Exact default adjudication, Common1 landing
+tables, bounce lifetime and full parity remain unsupported.
+
+T473 is closed-bounded: a shared runtime seam applies official omitted
+`fall.recover = 1` and `fall.recovertime = 4` defaults only when fall is
+enabled, for both direct and projectile materialization. Explicit false/custom
+values and disabled falls are preserved. Recovery-state choreography remains
+unsupported.
+
+T474 is closed-bounded: a shared runtime seam applies official omitted
+`fall.yvelocity` defaults from localcoord width (`-4.5/-9/-18` at
+320/640/1280px) for direct and projectile materialization. Authored fall/hit
+velocities and invalid/missing metadata fallback remain intact. Exact Common1
+landing physics and non-linear viewport scaling remain unsupported.
+
+T475 is closed-bounded: HitDef and Projectile compiler/parser paths preserve
+`air.fall` as a typed airborne-only override instead of merging it into base
+`fall`. `CombatResolver` selects the override only for defender `stateType = A`,
+and direct/projectile fall materialization reuses the existing recovery and
+localcoord-aware velocity defaults. Exact Common1 fall/landing choreography,
+dynamic expressions and full parity remain unsupported.
+
+T476 is closed-bounded: HitDef, ModifyHitDef, imported moves and runtime Projectile
+payloads preserve horizontal `down.velocity`; direct and projectile lying-target
+resolution applies the authored/default X component with the official
+attacker-relative sign, while synthetic payloads without that field retain the
+legacy push fallback. Focused coverage passes; final suite, trace 682/682,
+build and boundary evidence pass. Exact Common1 lie-down tables,
+dynamic-expression breadth and full parity remain unsupported.
+
+T477 is closed-bounded: direct and Projectile fall materialization preserves
+signed `fall.xvelocity` without mirroring by attacker/projectile facing, while
+omitted X remains a no-change value. Focused direct/projectile/HitFall coverage
+passes; the final 324-file / 3310-test suite, typecheck, build, boundaries and
+trace 682/682 also pass. Exact Common1 landing/friction choreography and full
+parity remain unsupported.
+
+T478 closes the bounded CommonFX visual-scale controller seam: positive
+`fx.scale` metadata is parsed and propagated into package-backed hit-spark frame
+resolution and renderer dimensions/offsets. The controller registry does not
+claim CommonFX `localcoord` projection or full FightFX scale/palette/layer/audio
+parity.
+
+T479 closes the adjacent CommonFX coordinate-space seam: package `localcoord`
+is retained on resolved FightFX/CommonFX AIR frames and combined with the
+owning character's `localCoord` to derive the effective renderer scale. This
+does not claim custom-state scale transitions or exact timing, palette, layer,
+audio, cache or full FightFX parity.
+
+T480 closes the bounded Ikemen `fall.zvelocity` controller/runtime seam:
+authored Z velocity is carried through HitDef, imported/projectile fall data and
+`HitFallSet`, exposed as `GetHitVar(fall.zvel)` / `fall.zvelocity`, and applied
+to `combatDepth.velocity` by `HitFallVel`. Omitted Z remains no-change. This
+does not claim M.U.G.E.N Z support, `down.velocity` Z, Common1 bounce tables or
+full depth-physics parity.
+
+T481 closes the adjacent bounded HitDef vector-Z seam: the third component of
+`ground/air/down/guard/airguard.velocity` is typed, preserved through imported
+state and player-owned Projectile paths, selected by direct/projectile contact
+context, and exposed as hit metadata plus explicit `combatDepth.velocity`.
+Omitted Z remains absent. This is executed-partial vector metadata only; it does
+not claim ModifyHitDef Z mutation, Common1 Z acceleration/friction, helper/team
+ownership breadth or full M.U.G.E.N/Ikemen depth parity.
+
 ## Support States
 
 ## End-to-end legal fixture
@@ -184,7 +297,7 @@ Entry 458 extends that same gate through deterministic ZIP generation and produc
 - `P2Dist` and `P2BodyDist` are supported in a bounded current-opponent form through the compiler/evaluator and runtime expression context. `P2BodyDist X` uses current S/C/A/L X edges, facing-aware opponent front/back selection, cross-localcoord scaling, IKEMEN-only Width, and OverrideClsn Size. IKEMEN `P2BodyDist Y` uses signed vertical edge gaps with overlap zero, cross-localcoord scaling, Height, then OverrideClsn Size; MUGEN output contexts retain center-axis `P2Dist Y` behavior. EnemyNear/Target redirects preserve original output policy/localcoord. Required `synthetic-imported-p2-distance.json` remains the State -1 routing gate. This proves root/current-opponent spacing reads only; helpers, full teams/simul selection, MUGEN bind quirks/old rounding, exact push/corner and late-controller interaction, persistent-controller parity, and full spacing parity remain blocked.
 - `StageTime` and `GameTime` are supported in a bounded match-tick form through the compiler/evaluator and runtime expression context. Required `synthetic-imported-gametime.json` checksum `bab573f3` gates State -1 routing through `GameTime >= 4` into state/action `294`, while `synthetic-imported-stagetime.json` remains the StageTime proof. This proves current global tick trigger plumbing only; exact pause accounting, replay/rollback timing, multi-round timer ownership, IKEMEN round-system behavior, and full timing parity remain blocked.
 - `EnemyNear` player redirects support omitted index / `0` against the current one-on-one opponent and still fail closed for positive indexes unless the caller supplies an explicit enemy-near redirect list. Required `synthetic-imported-enemynear-index.json` checksum `b97e2eda` gates default-context `EnemyNear(0), StateNo` routing to state `284` and forbids the `EnemyNear(1), StateNo` trap state `285`; focused evaluator/helper coverage proves caller-provided `EnemyNear(1)` / `EnemyNear(var(n))` can read explicit opponent states when `opponentStates` exists. This is a bounded trigger subset only; negative or dynamic-invalid indexes are still reported unsupported, and team/simul nth-nearest selection, helper-owned opponent lists, mutation through redirects, and exact IKEMEN/MUGEN opponent selection parity remain blocked.
-- `HitPauseTime` is now a supported expression identifier in the compiler/evaluator and can read the current actor hitpause counter through runtime expression contexts. Imported active-state controllers with `ignorehitpause = 1` can run in a bounded controller-only pass during global hitpause, and required `synthetic-imported-hitpausetime-ignorehitpause.json` checksum `a3a78bb8` gates P1 player advance into state `220` while P2 player freeze evidence remains present. This is trigger/controller-loop subset support, not a new controller family, not persistent parity, and not exact hitpause-loop parity.
+- `HitPauseTime` is now a supported expression identifier in the compiler/evaluator and can read the current actor hitpause counter through runtime expression contexts. Imported active-state controllers with `ignorehitpause = 1` can run in a bounded controller-only pass during global hitpause, and required `synthetic-imported-hitpausetime-ignorehitpause.json` checksum `a3a78bb8` gates P1 player advance into state `220` while P2 player freeze evidence remains present. Separately, the named IKEMEN ZSS subset uses an actor/controller-local counter for constant `ignoreHitPause persistent(n)` while state time freezes; required `ikemen-zss-combined-persistent-wrapper` checksum `4ff43eb7` proves `persistent(2)` execute/skip/reset cadence. T430/T434 close raw-CNS positive normal cadence and trigger-count behavior (`f7c32a53` plus `3eb88436`), T431 closes raw-CNS zero normal one-shot behavior (`d13ad12a`), T432 closes paired raw-CNS `ignorehitpause = 1` plus `persistent = 0` paused one-shot behavior (`94b49516`), T433 closes paired raw positive paused cadence (`d6d00fd0`), T435 closes `StateDef -2` trigger-count persistence (`6fce3962`), and T436 closes `StateDef -3` trigger-count persistence when no `stateOwner` exists (`b2719d71`). This is not general CNS persistent parity, dynamic persistent support, player-owned custom-state execution, or exact hitpause-loop parity.
 - `Target, ...`, static `Target(id), ...`, and bounded dynamic executable target-id expressions such as `Target(var(0)), ...` are supported for the current two-player target memory. Required `synthetic-imported-bare-target-redirect.json` checksum `f9c90aa8` gates a direct player `HitDef` route where bare `Target, Life < 1000` branches P1 from state `200` to `270`; required `synthetic-imported-projectile-target-redirect.json` checksum `cd099094` gates a player-owned Projectile-only route where `NumTarget(77)` plus `Target(77), Life <= 969` branches P1 from state `200` to `277`; required `synthetic-imported-hitdef-projectile-target-mix.json` checksum `e98d4857` gates mixed owner-local target-memory reads where direct `HitDef` id `77` and player-owned `Projectile` id `78` both hit P2 before P1 branches into `278`; required `synthetic-imported-projectile-target-controllers.json` checksum `8c7bd6c2` gates delayed owner-local `TargetLifeAdd`, `TargetPowerAdd`, `TargetVelSet`, `TargetVelAdd`, `TargetFacing`, `TargetBind`, and `TargetDrop` after player-owned Projectile target memory for target id `77`; required `synthetic-imported-projectile-default-target-controllers.json` checksum `1c1a3e77` gates the same player-owned Projectile Target side-effect subset after omitted `projid` / `id` defaults target memory to id `0`; required `synthetic-imported-projectile-targetstate.json` checksum `dd1c7962` gates delayed owner-local `TargetState value = 888` after player-owned Projectile target memory for target id `77`, routing P2 through attacker-owned state data `888 -> 889` before `SelfState` returns P2 to state `0`/control; required `synthetic-imported-projectile-default-targetstate.json` checksum `8f35f1fa` gates the same player-owned Projectile TargetState route after omitted `projid` / `id` defaults target memory to id `0`; required `synthetic-imported-helper-bare-target.json` checksum `15f3c1db` gates a helper-owned direct `HitDef` route where bare `Target, Life <= 965` branches the Helper from state `1200` to `1230/962`; required `synthetic-imported-helper-projectile-bare-target.json` checksum `8c9129c1` gates a helper-parented Projectile route where bare `Target, Life <= 982` branches the Helper from state `1241/977` to `1242/978`; required `synthetic-imported-helper-target-controllers.json` checksum `61f4c61e` gates the bounded helper-owned direct-HitDef Target side-effect route for `TargetLifeAdd`, `TargetPowerAdd`, `TargetVelSet`, `TargetVelAdd`, `TargetFacing`, `TargetBind`, and `TargetDrop`; required `synthetic-imported-helper-projectile-target-controllers.json` checksum `58688be8` gates the matching bounded helper-owned Target side-effect route after helper-parented Projectile target memory for target id `8861`; required `synthetic-imported-helper-projectile-default-target-controllers.json` checksum `0c4c69ae` gates the same route after omitted `projid` / `id` defaults to target id `0`; required `synthetic-imported-helper-projectile-targetstate.json` checksum `b12e1cb3` gates helper-owned `TargetState value = 888` from helper-parented Projectile target memory for target id `8862` into owner-backed custom state data; required `synthetic-imported-helper-projectile-default-targetstate.json` checksum `918c42a1` gates the same TargetState route after omitted `projid` / `id` defaults to target id `0`; required `synthetic-imported-helper-targetstate.json` checksum `011633b8` gates helper-local `TargetState value = 888` from helper-owned direct-HitDef target memory into owner-backed custom state data; required `synthetic-imported-default-numtarget.json` checksum `5869ebbd` gates a direct `HitDef` without `id` route where `NumTarget(0)` branches P1 from state `200` to `268`; required `synthetic-imported-default-target-redirect.json` checksum `d43caabf` gates the matching default target redirect route where `Target(0), Life < 1000` branches P1 from state `200` to `269`; required `synthetic-imported-target-redirect.json` checksum `89580963` gates a direct `HitDef` route where `Target(77), Life < 1000` branches P1 from state `200` to `286`; required `synthetic-imported-target-dynamic-redirect.json` checksum `9985b62a` gates owner-local `var(0) = 77` feeding `Target(var(0)), Life < 1000` and routing P1 to state `287`. The default-id gates keep target-link evidence for P2 target id `0`; the player bare/static/dynamic explicit-id gates keep target-link evidence for P2 target id `77`; the mixed target-memory gate keeps target-link evidence for both ids `77` and `78`; the player Projectile explicit Target-controller gate keeps target-link/binding evidence for P2 target id `77` plus final P1 `targetCount = 0`, the player Projectile default Target-controller gate keeps the same binding/final evidence for target id `0`, the explicit TargetState gate keeps custom-owner P2 actor-frame evidence plus final P2 state `0`/control, and the default TargetState gate keeps the same custom-owner evidence for target id `0`; the helper bare gate keeps target-link evidence for P2 target id `8878` owned by `p1-helper-0`; the helper Projectile bare gate keeps owner/helper target-link evidence for P2 target id `8863`; the helper direct-HitDef Target-controller gate keeps target-link/binding evidence for P2 target id `8879`; the helper Projectile Target-controller gates keep owner/helper target-link and binding evidence for P2 target ids `8861` and `0`; the helper direct-HitDef TargetState gate keeps target-link evidence for P2 target id `8880`, and the helper Projectile TargetState gates keep owner/helper target-link evidence for P2 target ids `8862` and `0`. This is trigger subset plus bounded player Projectile target redirect, mixed direct/projectile target-memory reads, explicit/default Target side effects, and explicit/default TargetState into owner-backed state data, helper direct-HitDef, explicit/default helper-parented Projectile Target side-effect, and explicit/default TargetState-into-owner-data subsets; Target* mutation mixing, unsupported or negative target-id expressions, helper-owned custom state tables, teams, multi-target selection, exact target lifetime/tick order, exact final-animation parity, and full target redirect/target-controller/TargetState parity remain blocked.
 - Helper-local `EnemyNear, ...` is supported as a read-only redirect against the current two-player opponent runtime state when `RuntimeEffectLifecycleWorld` supplies `opponentState` to `HelperSystem`; caller-provided `EnemyNear(index)` / `EnemyNear(var(n))` and `NumEnemy` are supported when `opponentStates` supplies an explicit opponent-state list. Required `synthetic-imported-helper-enemynear.json` checksum `35498955` gates a visual Helper route from state `1200` to `1202` / anim `922` through `EnemyNear, StateNo` plus `EnemyNear, Life`, and focused `RuntimeCnsSubset` / `EffectActorSystem` coverage proves indexed list reads and explicit opponent-count reads. This is helper-local trigger subset support only; caller-independent indexed enemy selection, teams/simul/turns, helper-owned opponents, helper combat, and exact opponent selection parity remain blocked.
 - Helper-local `NumExplod(id)` is supported for current first-generation visual Helpers against helper-parented owner-side Explods. Required `synthetic-imported-helper-numexplod.json` checksum `4328278a` gates a visual Helper route from state `1200` to `1210` / anim `930` after spawning Explod anim `942` with `parentId = p1-helper-0`. This is helper-local count-trigger support only; helper-owned effect namespaces, exact parent/root/team scopes, dynamic effect params, and full helper trigger parity remain blocked.

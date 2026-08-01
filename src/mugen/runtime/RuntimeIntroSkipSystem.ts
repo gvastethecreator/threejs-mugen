@@ -70,6 +70,8 @@ export function resetRuntimeIntroSkipActor(
   runtime.guardStun = 0;
   runtime.guardSlideTime = 0;
   runtime.guardControlTime = 0;
+  runtime.guardSlideTimeRemaining = undefined;
+  runtime.guardControlTimeRemaining = undefined;
   runtime.guarding = false;
   runtime.stateType = "S";
   runtime.moveType = "I";

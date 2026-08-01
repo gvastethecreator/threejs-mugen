@@ -1,5 +1,8 @@
 import type { ExpressionGameSpace, ExpressionRedirectTarget } from "./ExpressionEvaluator";
-import type { RuntimeControllerEvaluationContext } from "./RuntimeControllerExpressionContextSystem";
+import type {
+  RuntimeControllerEvaluationContext,
+  RuntimeControllerExpressionBindings,
+} from "./RuntimeControllerExpressionContextSystem";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeControllerEvaluationActor = {
@@ -28,6 +31,7 @@ export type RuntimeControllerEvaluationContextInput<TActor extends RuntimeContro
   opponentLocalCoord?: [number, number];
   parentLocalCoord?: [number, number];
   rootLocalCoord?: [number, number];
+  expressionBindings?: RuntimeControllerExpressionBindings;
   tick: number;
   getConst: (owner: TOwner, name: string) => number | undefined;
   nextRandom: (actor: TActor) => number;
@@ -61,6 +65,7 @@ export class RuntimeControllerEvaluationContextWorld {
       rootPlayerNo: input.root?.playerNo,
       target: input.target,
       playerIdTarget: input.playerIdTarget,
+      ...input.expressionBindings,
     };
   }
 }

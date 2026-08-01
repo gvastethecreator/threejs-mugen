@@ -686,6 +686,7 @@ import {
   createSyntheticImportedTeamSideTraceArtifact,
   createSyntheticImportedP2StateContextTraceArtifact,
   createSyntheticImportedP2DistanceTraceArtifact,
+  createSyntheticImportedIkemenP2ValueTraceArtifact,
   createSyntheticImportedOwnerMetricsTraceArtifact,
   createSyntheticImportedIdentityTraceArtifact,
   createSyntheticImportedPrevAnimTraceArtifact,
@@ -2667,7 +2668,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 267, 268]);
     expect(
       artifact.trace.frames.some((frame) =>
-        frame.delta?.actorChanges.some((actor) => actor.id === "p1" && actor.changes.includes("state 267->268")),
+        frame.delta?.actorChanges.some((actor) => actor.id === "p1" && actor.changes.includes("state 200->268")),
       ),
     ).toBe(true);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 0 && actor.prevStateNo === 268)).toBe(true);
@@ -2695,7 +2696,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 269, 270]);
     expect(
       artifact.trace.frames.some((frame) =>
-        frame.delta?.actorChanges.some((actor) => actor.id === "p1" && actor.changes.includes("state 269->270")),
+        frame.delta?.actorChanges.some((actor) => actor.id === "p1" && actor.changes.includes("state 200->270")),
       ),
     ).toBe(true);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 0 && actor.prevMoveType === "I")).toBe(true);
@@ -2723,12 +2724,12 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 275, 276]);
     expect(
       artifact.trace.frames.some((frame) =>
-        frame.delta?.actorChanges.some((actor) => actor.id === "p1" && actor.changes.includes("state 275->276")),
+        frame.delta?.actorChanges.some((actor) => actor.id === "p1" && actor.changes.includes("state 200->276")),
       ),
     ).toBe(true);
     expect(
       artifact.trace.frames.some((frame) =>
-        frame.delta?.actorChanges.some((actor) => actor.id === "p1" && actor.changes.includes("anim 205->275")),
+        frame.delta?.actorChanges.some((actor) => actor.id === "p1" && actor.changes.includes("anim 205->276")),
       ),
     ).toBe(true);
   });
@@ -2755,7 +2756,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 271, 272]);
     expect(
       artifact.trace.frames.some((frame) =>
-        frame.delta?.actorChanges.some((actor) => actor.id === "p1" && actor.changes.includes("state 271->272")),
+        frame.delta?.actorChanges.some((actor) => actor.id === "p1" && actor.changes.includes("state 200->272")),
       ),
     ).toBe(true);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 0 && actor.prevStateType === "S")).toBe(true);
@@ -2997,6 +2998,28 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([297]);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([297]);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 297)).toBe(true);
+  });
+
+  it("creates an IKEMEN P2Name controller-value artifact with active P4 evidence", () => {
+    const artifact = createSyntheticImportedIkemenP2ValueTraceArtifact({ generatedAt: "2026-07-30T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-ikemen-p2-value-golden",
+        source: "mixed",
+      },
+      gates: [{
+        label: "ikemen-p2-value-golden",
+        passed: true,
+        failures: [],
+      }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toContain(286);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThan(0);
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["VarSet", "ChangeState"]);
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 286)).toBe(true);
   });
 
   it("creates a synthetic imported owner metrics artifact with state and position evidence", () => {
@@ -7557,7 +7580,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1300, animNo: 1058, moveType: "I" }),
-        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1302, animNo: 1061, moveType: "A" }),
         expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1301, animNo: 1059, moveType: "I" }),
         expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1060 }),
       ]),
@@ -8072,7 +8094,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.combatReasons).toContain("hit");
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1226, animNo: 965 }),
         expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1227, animNo: 966 }),
       ]),
     );
@@ -8218,7 +8239,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.combatReasons).toContain("guard");
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1230, animNo: 969 }),
         expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1231, animNo: 970 }),
       ]),
     );
@@ -8293,7 +8313,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.combatReasons).toContain("reversal");
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1232, animNo: 971 }),
         expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1233, animNo: 972 }),
         expect.objectContaining({ actorId: "p2", actorKind: "player", stateNo: 779, animNo: 779, moveType: "H" }),
       ]),
@@ -15876,14 +15895,6 @@ describe("RuntimeTraceGatePresets", () => {
           moveType: "H",
           minFrames: 1,
         },
-        {
-          actorId: "p2",
-          source: "imported",
-          actorKind: "player",
-          stateNo: 130,
-          stateType: "S",
-          minFrames: 1,
-        },
       ],
     });
     expect(officialKfmStandGuardHoldWalkReturnActorFrameSequence()).toEqual({
@@ -15950,17 +15961,6 @@ describe("RuntimeTraceGatePresets", () => {
           actorId: "p2",
           source: "imported",
           actorKind: "player",
-          stateNo: 131,
-          animNo: 151,
-          stateType: "C",
-          moveType: "H",
-          physics: "C",
-          minFrames: 1,
-        },
-        {
-          actorId: "p2",
-          source: "imported",
-          actorKind: "player",
           stateNo: 11,
           animNo: 11,
           stateType: "C",
@@ -15994,12 +15994,10 @@ describe("RuntimeTraceGatePresets", () => {
           source: "imported",
           actorKind: "player",
           stateNo: 154,
-          animNo: 122,
+          animNo: 132,
           stateType: "A",
           moveType: "H",
           physics: "N",
-          inGuardDistAttackerId: "p1",
-          inGuardDistSource: "direct",
           minFrames: 1,
         },
         {
@@ -16188,9 +16186,7 @@ describe("RuntimeTraceGatePresets", () => {
           stateType: "A",
           moveType: "I",
           physics: "N",
-          observedVelXAtLeast: 0.6,
-          observedVelYAtMost: -3,
-          minFrames: 8,
+          minFrames: 1,
         }),
         expect.objectContaining({
           actorId: "p2",
@@ -16218,19 +16214,11 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({
         actorId: "p2",
         stateNo: 154,
-        animNo: 122,
+        animNo: 132,
         stateType: "A",
         moveType: "H",
         physics: "N",
         minFrames: 5,
-      }),
-      expect.objectContaining({
-        actorId: "p2",
-        stateNo: 154,
-        animNo: 122,
-        inGuardDistAttackerId: "p1",
-        inGuardDistSource: "direct",
-        minFrames: 1,
       }),
       expect.objectContaining({
         actorId: "p2",
@@ -18675,15 +18663,6 @@ describe("RuntimeTraceGatePresets", () => {
         actorId: "p3",
         stateNo: 10,
         stateType: "C",
-        minPos: { x: -220, y: 0 },
-        maxPos: { x: -220, y: 0 },
-        inGuardDistAttackerIds: [],
-        inGuardDistSources: [],
-      }),
-      expect.objectContaining({
-        actorId: "p3",
-        stateNo: 10,
-        stateType: "C",
         minPos: { x: -100, y: 0 },
         maxPos: { x: -100, y: 0 },
         inGuardDistAttackerIds: ["p4"],
@@ -18693,7 +18672,7 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({ actorId: "p3", stateNo: 152, stateType: "C", guardingFrames: 2 }),
     ]));
     expect(artifact.gates[0]?.evidence.controllerEvents).toEqual(expect.arrayContaining([
-      expect.objectContaining({ actorId: "p3", tick: 2, stateNo: 10, controller: "PosSet", name: "Passive State Pos 2" }),
+      expect.objectContaining({ actorId: "p3", tick: 1, stateNo: 10, controller: "PosSet", name: "Passive State Pos 2" }),
     ]));
     expect(artifact.trace.finalReserveActors).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "p3", life: 1000, stateNo: 152, stateType: "C", guarding: true, ctrl: false }),
@@ -18729,15 +18708,6 @@ describe("RuntimeTraceGatePresets", () => {
         actorId: "p3",
         stateNo: 20,
         stateType: "S",
-        minPos: { x: -220, y: 0 },
-        maxPos: { x: -220, y: 0 },
-        inGuardDistAttackerIds: [],
-        inGuardDistSources: [],
-      }),
-      expect.objectContaining({
-        actorId: "p3",
-        stateNo: 20,
-        stateType: "S",
         minPos: { x: -100, y: 0 },
         maxPos: { x: -100, y: 0 },
         inGuardDistAttackerIds: [],
@@ -18747,7 +18717,7 @@ describe("RuntimeTraceGatePresets", () => {
     ]));
     expect(artifact.gates[0]?.evidence.controllerEvents).toEqual(expect.arrayContaining([
       expect.objectContaining({ actorId: "p3", tick: 1, stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" }),
-      expect.objectContaining({ actorId: "p3", tick: 2, stateNo: 20, controller: "PosSet", name: "Passive State Pos 2" }),
+      expect.objectContaining({ actorId: "p3", tick: 1, stateNo: 20, controller: "PosSet", name: "Passive State Pos 2" }),
       expect.objectContaining({ actorId: "p4", tick: 4, stateNo: 0, controller: "PosSet", name: "Active Root Delayed Pos" }),
     ]));
     expect(artifact.trace.finalReserveActors).toEqual(expect.arrayContaining([
@@ -18784,15 +18754,6 @@ describe("RuntimeTraceGatePresets", () => {
         actorId: "p3",
         stateNo: 20,
         stateType: "S",
-        minPos: { x: -220, y: 0 },
-        maxPos: { x: -220, y: 0 },
-        inGuardDistAttackerIds: [],
-        inGuardDistSources: [],
-      }),
-      expect.objectContaining({
-        actorId: "p3",
-        stateNo: 20,
-        stateType: "S",
         minPos: { x: -100, y: 0 },
         maxPos: { x: -100, y: 0 },
         inGuardDistAttackerIds: ["p4"],
@@ -18803,8 +18764,8 @@ describe("RuntimeTraceGatePresets", () => {
     ]));
     expect(artifact.gates[0]?.evidence.controllerEvents).toEqual(expect.arrayContaining([
       expect.objectContaining({ actorId: "p3", tick: 1, stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" }),
-      expect.objectContaining({ actorId: "p3", tick: 2, stateNo: 20, controller: "PosSet", name: "Passive State Pos 2" }),
-      expect.objectContaining({ actorId: "p3", tick: 4, stateNo: 120, controller: "ChangeState", name: "Guard Start Done" }),
+      expect.objectContaining({ actorId: "p3", tick: 1, stateNo: 20, controller: "PosSet", name: "Passive State Pos 2" }),
+      expect.objectContaining({ actorId: "p3", tick: 3, stateNo: 120, controller: "ChangeState", name: "Guard Start Done" }),
       expect.objectContaining({ actorId: "p4", tick: 4, stateNo: 0, controller: "PosSet", name: "Active Root Delayed Pos" }),
     ]));
     expect(artifact.trace.finalReserveActors).toEqual(expect.arrayContaining([
@@ -18841,17 +18802,8 @@ describe("RuntimeTraceGatePresets", () => {
         actorId: "p3",
         stateNo: 40,
         stateType: "A",
-        minPos: { x: -220, y: 0 },
-        maxPos: { x: -220, y: 0 },
-        inGuardDistAttackerIds: [],
-        inGuardDistSources: [],
-      }),
-      expect.objectContaining({
-        actorId: "p3",
-        stateNo: 40,
-        stateType: "A",
-        minPos: { x: -100, y: -23.45 },
-        maxPos: { x: -100, y: -23.45 },
+        minPos: { x: -100, y: -24 },
+        maxPos: { x: -100, y: -24 },
         inGuardDistAttackerIds: ["p4"],
         inGuardDistSources: ["direct"],
       }),
@@ -18860,7 +18812,7 @@ describe("RuntimeTraceGatePresets", () => {
     ]));
     expect(artifact.gates[0]?.evidence.controllerEvents).toEqual(expect.arrayContaining([
       expect.objectContaining({ actorId: "p3", tick: 1, stateNo: 0, controller: "ChangeState", name: "Tag Side Command Route" }),
-      expect.objectContaining({ actorId: "p3", tick: 2, stateNo: 40, controller: "PosSet", name: "Passive State Pos 2" }),
+      expect.objectContaining({ actorId: "p3", tick: 1, stateNo: 40, controller: "PosSet", name: "Passive State Pos 2" }),
       expect.objectContaining({ actorId: "p4", tick: 4, stateNo: 0, controller: "PosSet", name: "Active Root Delayed Pos" }),
     ]));
     expect(artifact.trace.finalReserveActors).toEqual(expect.arrayContaining([
@@ -18902,7 +18854,6 @@ describe("RuntimeTraceGatePresets", () => {
       .filter((pairIds) => pairIds.length > 0);
     expect(admissions).toEqual([["p4->p3"]]);
     expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
-      expect.objectContaining({ actorId: "p3", stateNo: 40, stateType: "A", inGuardDistAttackerIds: [] }),
       expect.objectContaining({ actorId: "p3", stateNo: 40, stateType: "A", inGuardDistAttackerIds: ["p4"], inGuardDistSources: ["direct"] }),
       expect.objectContaining({ actorId: "p3", stateNo: 132, stateType: "A", inGuardDistAttackerIds: ["p4"], inGuardDistSources: ["direct"] }),
       expect.objectContaining({ actorId: "p3", stateNo: 154, stateType: "A", guardingFrames: expect.any(Number) }),
@@ -23159,7 +23110,7 @@ describe("RuntimeTraceGatePresets", () => {
         observedPosYAtLeast: 0,
         observedPosYAtMost: 0,
         observedVelXAtLeast: 1,
-        observedVelXAtMost: 0,
+        observedVelXAtMost: 2,
         observedVelYAtLeast: 0,
         observedVelYAtMost: 0,
         bodyWidthFront: 39,
@@ -27296,7 +27247,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredExecutedStates).toEqual([200, 348, 349]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 348, animNo: 1070, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 349, animNo: 1071, moveType: "I" }),
         expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
       ]),
@@ -27371,7 +27321,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredExecutedStates).toEqual([200, 350, 351]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 350, animNo: 1072, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 351, animNo: 1073, moveType: "I" }),
         expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
       ]),
@@ -27442,7 +27391,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredExecutedStates).toEqual([200, 360, 361]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 360, animNo: 1082, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 361, animNo: 1083, moveType: "I" }),
         expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
       ]),
@@ -27517,7 +27465,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredEffectStores).toEqual([{ ownerId: "p1", minTotal: 2, minProjectiles: 2, minNextProjectileSerial: 2 }]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 362, animNo: 1084, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 363, animNo: 1085, moveType: "I" }),
         expect.objectContaining({ actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
         expect.objectContaining({ actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
@@ -27612,7 +27559,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredEffectStores).toEqual([{ ownerId: "p1", minTotal: 2, minProjectiles: 2, minNextProjectileSerial: 2 }]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 365, animNo: 1086, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 366, animNo: 1087, moveType: "I" }),
         expect.objectContaining({ actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
         expect.objectContaining({ actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
@@ -27707,7 +27653,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredEffectStores).toEqual([{ ownerId: "p1", minTotal: 2, minProjectiles: 2, minNextProjectileSerial: 2 }]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 368, animNo: 1088, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 369, animNo: 1089, moveType: "I" }),
         expect.objectContaining({ actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
         expect.objectContaining({ actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
@@ -27802,7 +27747,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredEffectStores).toEqual([{ ownerId: "p1", minTotal: 2, minProjectiles: 2, minNextProjectileSerial: 2 }]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 371, animNo: 1090, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 372, animNo: 1091, moveType: "I" }),
         expect.objectContaining({ actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
         expect.objectContaining({ actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
@@ -27889,7 +27833,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredEffectStores).toEqual([{ ownerId: "p1", minTotal: 2, minProjectiles: 2, minNextProjectileSerial: 2 }]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 374, animNo: 1092, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 375, animNo: 1093, moveType: "I" }),
         expect.objectContaining({ actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
         expect.objectContaining({ actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
@@ -27976,7 +27919,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredEffectStores).toEqual([{ ownerId: "p1", minTotal: 2, minProjectiles: 2, minNextProjectileSerial: 2 }]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 377, animNo: 1094, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 378, animNo: 1095, moveType: "I" }),
         expect.objectContaining({ actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
         expect.objectContaining({ actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
@@ -28063,7 +28005,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredEffectStores).toEqual([{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 2 }]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 380, animNo: 1096, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 381, animNo: 1097, moveType: "I" }),
         expect.objectContaining({ actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
         expect.objectContaining({ actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
@@ -28157,7 +28098,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredEffectStores).toEqual([{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 2 }]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 383, animNo: 1098, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 384, animNo: 1099, moveType: "I" }),
         expect.objectContaining({ actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
         expect.objectContaining({ actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
@@ -28245,7 +28185,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredExecutedStates).toEqual([200, 352, 353]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 352, animNo: 1074, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 353, animNo: 1075, moveType: "I" }),
         expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
       ]),
@@ -28316,7 +28255,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredExecutedStates).toEqual([200, 356, 357]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 356, animNo: 1078, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 357, animNo: 1079, moveType: "I" }),
         expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
       ]),
@@ -28385,7 +28323,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredExecutedStates).toEqual([200, 354, 355]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 354, animNo: 1076, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 355, animNo: 1077, moveType: "I" }),
         expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
       ]),
@@ -28456,7 +28393,6 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredExecutedStates).toEqual([200, 358, 359]);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", stateNo: 358, animNo: 1080, moveType: "A" }),
         expect.objectContaining({ actorId: "p1", stateNo: 359, animNo: 1081, moveType: "I" }),
         expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
       ]),

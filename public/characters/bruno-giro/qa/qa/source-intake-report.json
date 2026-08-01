@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "kind": "sprite-source-intake-report",
+  "ok": true,
+  "status": "pass",
+  "job_id": "bruno-giro-imagegen-idle-v3",
+  "state": "idle",
+  "mutated": true,
+  "source_type": "imagegen",
+  "engine": "imagegen",
+  "source_stage": "provider-output",
+  "provider": {
+    "name": "imagegen",
+    "status": "succeeded",
+    "model": "imagegen"
+  },
+  "license_ref": "imagegen-original-bruno-giro-v2",
+  "license_status": "generated",
+  "request_fingerprint": "e3222e97954dda1ed48771126034afba31337541b3aeae03aed691cb2023b3f2",
+  "candidate": {
+    "path": "provider/imagegen/idle/idle.png",
+    "sha256": "4bc9b1aa38d98d3807fcb905c2ced9bbfa452aad568fcea9bcb40e27fc36db06",
+    "mime": "image/png",
+    "width": 1254,
+    "height": 1254
+  },
+  "processing_policy": {
+    "selection": "selected-candidate",
+    "normalization": "rgba-png",
+    "background_removal": "none",
+    "resize": "none"
+  },
+  "output": {
+    "path": "raw/idle.png",
+    "sha256": "f6d0d94fa5f7e321ed6627313af7192cd859405896824a7d484fb1701020908a",
+    "size_bytes": 1980998,
+    "mime": "image/png",
+    "width": 1254,
+    "height": 1254
+  },
+  "provenance": {
+    "path": "source-provenance.json",
+    "state_coverage": [
+      "idle",
+      "walk-forward",
+      "walk-back",
+      "crouch",
+      "jump",
+      "light-strike",
+      "heavy-strike",
+      "special",
+      "throw",
+      "guard",
+      "hitstun",
+      "knockdown",
+      "ko",
+      "win"
+    ]
+  },
+  "errors": [],
+  "warnings": [],
+  "identity_anchor": {
+    "path": "references/identity-anchor.png",
+    "sha256": "2316b4eafd51f0b9e56f690123ca3b6e63cfc82e26ca04ba646a97d194d63d58"
+  }
+}

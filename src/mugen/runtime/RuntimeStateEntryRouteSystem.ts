@@ -18,6 +18,14 @@ type RuntimeStateEntryRouteMove<TActor extends RuntimeStateEntryRouteActor<unkno
 
 export type RuntimeStateEntryRouteHooks<TActor extends RuntimeStateEntryRouteActor<unknown>> = {
   triggersPass: (controller: ControllerIr, actor: TActor, opponent: TActor, owner: TActor, tick: number) => boolean;
+  persistentPass?: (
+    controller: ControllerIr,
+    dispatch: RuntimeStateEntryChangeStateDispatch,
+    actor: TActor,
+    opponent: TActor,
+    owner: TActor,
+    tick: number,
+  ) => boolean;
   resolveStateId: (
     dispatch: RuntimeStateEntryChangeStateDispatch,
     controller: ControllerIr,
@@ -58,6 +66,9 @@ export class RuntimeStateEntryRouteWorld {
         continue;
       }
       if (!hooks.triggersPass(controller, actor, opponent, actor, tick)) {
+        continue;
+      }
+      if (hooks.persistentPass && !hooks.persistentPass(controller, dispatch, actor, opponent, actor, tick)) {
         continue;
       }
       const stateId = hooks.resolveStateId(dispatch, controller, actor, opponent, tick);

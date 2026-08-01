@@ -1,0 +1,45 @@
+{
+  "id": "generation-provenance",
+  "applicable": true,
+  "checked_items": [
+    "crouch",
+    "hitstun",
+    "idle",
+    "jump",
+    "kick",
+    "punch",
+    "walk-forward"
+  ],
+  "errors": [],
+  "warnings": [],
+  "evidence": {
+    "provenance": "public\\characters\\rook-apprentice\\source-provenance.json",
+    "source_type": "imagegen",
+    "sources": [
+      {
+        "path": "public\\characters\\rook-apprentice\\source\\rook-apprentice-imagegen-sheet.png",
+        "sha256": "a77d3094d34a0490646ac6916b76cb7af1bcb624948d85565da7ff9228e440e2",
+        "size_bytes": 1663466,
+        "states": [
+          "idle",
+          "crouch",
+          "jump",
+          "punch",
+          "kick",
+          "hitstun"
+        ]
+      },
+      {
+        "path": "public\\characters\\rook-apprentice\\source\\rook-apprentice-walk-forward-imagegen-row.png",
+        "sha256": "adf77d2e8bc29004eadd7af56e38e0ff301fd4a8f5e9175b167abf4e1448b49b",
+        "size_bytes": 1295470,
+        "states": [
+          "walk-forward"
+        ]
+      }
+    ]
+  },
+  "input_fingerprint": "9f081df5114ccfb0d31a8db3685349c5f39b094ba2786c53fcee375155302690",
+  "complete": true,
+  "status": "pass"
+}

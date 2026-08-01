@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-095",
   "kind": "I",
-  "generatedAt": "2026-07-27T14:28:12.381Z",
+  "generatedAt": "2026-08-01T18:12:02.736Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-095",
@@ -19,8 +19,8 @@
     },
     {
       "path": "src/app/StudioSourceWriteReceipt.ts",
-      "bytes": 11955,
-      "sha256": "98677821f783b88b0e2ccdc9d87f712202dad61eac2dcf22758e671974c65ccb"
+      "bytes": 12091,
+      "sha256": "c7e2efea54528cec07e4ffc42234e8c5b25e949eff7c9421ec20897dd03a1ade"
     }
   ],
   "functionResults": {

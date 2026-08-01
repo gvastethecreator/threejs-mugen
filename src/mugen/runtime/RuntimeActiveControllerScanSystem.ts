@@ -1,5 +1,6 @@
 import type { ControllerIr, StateProgramIr } from "../compiler/RuntimeIr";
 import type { MugenStateSpecial } from "../model/MugenState";
+import type { RuntimeStateTransition } from "./RuntimeStateTransitionSystem";
 
 export type RuntimeActiveControllerScanActor<TSelf> = {
   definition: { source?: string };
@@ -21,6 +22,7 @@ export type RuntimeActiveControllerScanOptions<
   onlyIgnoreHitPause?: boolean;
   controllerIgnoresHitPause: (controller: ControllerIr) => boolean;
   triggersPass: (controller: ControllerIr, actor: TActor, opponent: TOpponent, owner: TActor, tick: number) => boolean;
+  persistentPass?: (controller: ControllerIr, actor: TActor, opponent: TOpponent, owner: TActor, tick: number) => boolean;
   executeController: (input: RuntimeActiveControllerExecution<TActor, TOpponent>) => "continue" | "blocked" | "stop" | void;
 };
 
@@ -45,6 +47,7 @@ export type RuntimeActiveControllerScanResult<TActor> =
       executedControllers: number;
       blockedControllers: number;
       stopped: boolean;
+      transition?: RuntimeStateTransition<ControllerIr>;
     }
   | {
       scanned: false;
@@ -54,6 +57,7 @@ export type RuntimeActiveControllerScanResult<TActor> =
       executedControllers: 0;
       blockedControllers: 0;
       stopped: false;
+      transition?: RuntimeStateTransition<ControllerIr>;
     };
 
 export class RuntimeActiveControllerScanWorld {
@@ -99,6 +103,9 @@ export class RuntimeActiveControllerScanWorld {
         continue;
       }
       if (!options.triggersPass(controller, options.actor, options.opponent, owner, options.tick)) {
+        continue;
+      }
+      if (options.persistentPass && !options.persistentPass(controller, options.actor, options.opponent, owner, options.tick)) {
         continue;
       }
       visitedControllers += 1;

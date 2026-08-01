@@ -7,6 +7,9 @@ import {
   findRuntimeHitOverride,
   parseHitAttribute,
   resolveRuntimeCombatHit,
+  resolveRuntimeFallEnabled,
+  resolveRuntimeFallYVelocityDefaults,
+  resolveRuntimeFallRecoveryDefaults,
   runtimeHitFlagRejectionReason,
   runtimeWorldBox,
   type RuntimeHitFlagRejectionReason,
@@ -30,7 +33,7 @@ import type { CharacterRuntimeState, RuntimeHitOverrideSlot } from "./types";
 import type { DemoFighterDefinition } from "./demoFighters";
 import type { MugenAffectTeam } from "../model/MugenTeam";
 import { runtimeAffectTeamAllows, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
-import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
+import { hasRuntimeCombatDepthContact, runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
 import {
   applyRuntimeProjectileAirJuggleHit,
   canRuntimeProjectileAirJuggle,
@@ -256,8 +259,19 @@ export class RuntimeProjectileCombatWorld {
           attr: projectile.attr,
           hitPause: projectile.hitPause,
           hitStun: projectile.hitStun,
+          airHitTime: projectile.airHitTime,
+          downHitTime: projectile.downHitTime,
+          downVelocityX: projectile.downVelocityX,
+          downVelocityY: projectile.downVelocityY,
+          downVelocityZ: projectile.downVelocityZ,
+          downBounce: projectile.downBounce,
+          ...(projectile.fall === undefined
+            ? {}
+            : { fall: { enabled: projectile.fall.enabled ?? false, airFall: projectile.fall.airFall } }),
           push: projectile.push,
           hitVelocityY: projectile.hitVelocityY,
+          hitVelocityZ: projectile.hitVelocityZ,
+          airVelocityZ: projectile.airVelocityZ,
           guardDistance: projectile.guardDistance,
           guardFlag: projectile.guardFlag,
           guardDamage: projectile.guardDamage,
@@ -266,10 +280,13 @@ export class RuntimeProjectileCombatWorld {
           guardStun: projectile.guardStun,
           guardSlideTime: projectile.guardSlideTime,
           guardControlTime: projectile.guardControlTime,
+          airGuardControlTime: projectile.airGuardControlTime,
           guardPush: projectile.guardPush,
           guardVelocityY: projectile.guardVelocityY,
+          guardVelocityZ: projectile.guardVelocityZ,
           airGuardPush: projectile.airGuardPush,
           airGuardVelocityY: projectile.airGuardVelocityY,
+          airGuardVelocityZ: projectile.airGuardVelocityZ,
           cornerPush: projectile.cornerPush,
           airCornerPush: projectile.airCornerPush,
           downCornerPush: projectile.downCornerPush,
@@ -289,8 +306,21 @@ export class RuntimeProjectileCombatWorld {
       recordRuntimeRoundWinType(attacker, defender, projectile.attr ?? "S,SP", result.kind, lifeBefore, {
         sourceEligible: source?.rootOwned === true,
       });
-      defender.runtime.vel.x = projectile.facing * result.push;
-      defender.runtime.hitVelocity = { x: projectile.facing * result.push, y: result.hitVelocityY ?? 0 };
+      const hitVelocityX = result.kind === "hit" && result.hitVelocityX !== undefined
+        ? -projectile.facing * result.hitVelocityX
+        : projectile.facing * result.push;
+      defender.runtime.vel.x = hitVelocityX;
+      defender.runtime.hitVelocity = {
+        x: hitVelocityX,
+        y: result.hitVelocityY ?? 0,
+        ...(result.hitVelocityZ === undefined ? {} : { z: result.hitVelocityZ }),
+      };
+      if (result.hitVelocityZ !== undefined) {
+        defender.runtime.combatDepth = {
+          ...(defender.runtime.combatDepth ?? runtimeCombatDepthFromConstants(defender.definition?.constants)),
+          velocity: result.hitVelocityZ,
+        };
+      }
       applyRuntimeCornerPush(attacker.runtime, defender.runtime, input.stageBounds, result.cornerPush, result.push);
       if (result.hitVelocityY !== undefined) {
         defender.runtime.vel.y = result.hitVelocityY;
@@ -307,6 +337,10 @@ export class RuntimeProjectileCombatWorld {
         defender.runtime.guardStun = result.stun;
         defender.runtime.guardSlideTime = result.slideTime ?? 0;
         defender.runtime.guardControlTime = result.controlTime ?? 0;
+        const guardSlideTime = result.slideTime ?? result.stun;
+        const guardControlTime = result.controlTime ?? guardSlideTime;
+        defender.runtime.guardSlideTimeRemaining = normalizeGuardTimer(guardSlideTime);
+        defender.runtime.guardControlTimeRemaining = normalizeGuardTimer(guardControlTime);
         defender.runtime.guarding = true;
         defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(projectile, true, result.damage, result.stun, result.pause, result.kill, source, defender.runtime.life <= 0);
         applyRuntimeControl(defender.runtime, false);
@@ -322,9 +356,15 @@ export class RuntimeProjectileCombatWorld {
       defender.runtime.guardStun = 0;
       defender.runtime.guardSlideTime = 0;
       defender.runtime.guardControlTime = 0;
+      defender.runtime.guardSlideTimeRemaining = undefined;
+      defender.runtime.guardControlTimeRemaining = undefined;
       defender.runtime.guarding = false;
       defender.runtime.receivedHitSequence = (defender.runtime.receivedHitSequence ?? 0) + 1;
       defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(projectile, false, result.damage, result.stun, result.pause, result.kill, source, false);
+      const projectileHitFall = runtimeHitFallFromProjectile(projectile, defender.runtime.stateType);
+      if (projectileHitFall) {
+        defender.runtime.hitFall = projectileHitFall;
+      }
       input.applyHitState?.(attacker, defender, projectile);
       if (projectileJuggleOwner) {
         applyRuntimeProjectileAirJuggleHit({
@@ -425,6 +465,47 @@ export class RuntimeProjectileCombatWorld {
       );
     }
   }
+}
+
+function runtimeHitFallFromProjectile(
+  projectile: RuntimeProjectile,
+  defenderStateType: CharacterRuntimeState["stateType"],
+): CharacterRuntimeState["hitFall"] | undefined {
+  const fall = projectile.fall;
+  if (!fall) {
+    return undefined;
+  }
+  const xVelocity = fall.xVelocity;
+  const zVelocity = fall.zVelocity;
+  const falling = resolveRuntimeFallEnabled(fall, defenderStateType);
+  const recovery = resolveRuntimeFallRecoveryDefaults({ ...fall, enabled: falling });
+  return {
+    falling,
+    damage: Math.max(0, fall.damage ?? 0),
+    ...(projectile.downBounce === undefined ? {} : { downBounce: projectile.downBounce }),
+    defenceUp: fall.defenceUp,
+    kill: fall.kill,
+    recover: recovery.recover,
+    recoverTime: recovery.recoverTime,
+    downRecover: fall.downRecover ?? true,
+    downRecoverTime: fall.downRecoverTime,
+    velocity: {
+      // Fall bounce X is authored in world coordinates; unlike hit velocity,
+      // it is not mirrored by the projectile's facing.
+      x: xVelocity,
+      y: fall.yVelocity ?? projectile.hitVelocityY ?? resolveRuntimeFallYVelocityDefaults(projectile.localCoord),
+      ...(zVelocity === undefined ? {} : { z: zVelocity }),
+    },
+    envShake:
+      fall.envShakeTime === undefined
+        ? undefined
+        : {
+            time: fall.envShakeTime,
+            freq: fall.envShakeFrequency ?? 60,
+            ampl: fall.envShakeAmplitude ?? -4,
+            phase: fall.envShakePhase ?? 0,
+          },
+  };
 }
 
 function projectileJuggleActor(actor: RuntimeProjectileCombatActor) {
@@ -559,6 +640,10 @@ function projectileTargetRequirementSatisfied<TActor extends RuntimeProjectileCo
   const requiredBoxes = input.getTargetCollisionBoxes?.(defender, requiredType) ??
     (requiredType === "clsn2" ? defaultHurtBoxes : undefined);
   return Boolean(requiredBoxes?.length);
+}
+
+function normalizeGuardTimer(value: number | undefined): number {
+  return Math.max(0, Math.trunc(value ?? 0));
 }
 
 function projectilesIntersect(left: RuntimeProjectile, right: RuntimeProjectile): boolean {

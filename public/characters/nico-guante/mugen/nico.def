@@ -1,0 +1,17 @@
+; Generated classic-uniform atlas character template for MUGEN Web Sandbox
+[Info]
+name = "Nico Guante"
+displayname = "Nico Guante"
+versiondate = 06,24,2026
+mugenversion = 1.0
+author = "Codex + imagegen"
+localcoord = 320,240
+
+[Files]
+cmd = nico.cmd
+cns = nico.cns
+st = nico.cns
+sprite = nico.sff ; not shipped yet; browser runtime uses ../sprite-sheet-alpha.png
+anim = nico.air
+sound =
+

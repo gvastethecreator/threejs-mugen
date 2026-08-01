@@ -7,7 +7,15 @@ Labels: generated-assets, visual-qa, ready-for-agent
 
 Make imagegen and sprite-atlas-builder output repeatable, inspectable, and playable without pretending generated/native assets prove imported MUGEN compatibility.
 
-## 2026-07-27 post-DA30-120 asset override
+## 2026-07-28 post-DA32-026 asset override
+
+La cadena Nova conserva su cierre acotado. El siguiente avance requiere una
+segunda obra repo-owned o CC0, con origen, receta, transforms, digests, atlas,
+alpha visual, colisión, audio, browser journey y export ligados a una revisión.
+Un segundo ejemplo no mueve compatibilidad por sí solo. Ver AUD28-26, 27 y 43
+en la [auditoría diaria](../../../docs/research/2026-07-28-daily-roadmap-architecture-audit-post-da32-026.md).
+
+## Historical 2026-07-27 post-DA30-120 asset override
 
 DA31-030 owns the next asset cut after transactional Studio and revision-bound
 export. Require one independent complete provenance, transform, digest, QA,

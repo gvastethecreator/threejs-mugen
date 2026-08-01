@@ -1,8 +1,20 @@
 # Delivery Roadmap
 
-Last updated: 2026-07-27
+Last updated: 2026-07-28
 
-## Latest delivery authority checkpoint
+## Latest delivery authority checkpoint — post-DA32-026 (2026-07-28)
+
+The audit closed at `1b1ba28f` with focal progress through T417 and DA32-026.
+The last formal/global subject remains `f5f2315e`; smoke is green as an
+observation but its JSON lacks `subjectSha`. Delivery authority stays local and
+bounded. Replay, broad MUGEN/IKEMEN compatibility, multi-file recovery,
+package, CLI/CI and release remain blocked.
+
+Follow P0…P7 in the
+[post-DA32-026 audit](research/2026-07-28-daily-roadmap-architecture-audit-post-da32-026.md).
+No score or watermark moves in this docs-only audit.
+
+## Historical delivery authority checkpoint
 
 ### Post-DA30-120 audit override
 

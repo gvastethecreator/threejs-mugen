@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "kind": "background-pack-validation",
+  "ok": true,
+  "pack_id": "rooftop-dojo",
+  "representative": true,
+  "source_types": [
+    "imagegen"
+  ],
+  "evidence": {
+    "production_media": {
+      "representative": true,
+      "provenance_verified": true,
+      "source_types": [
+        "imagegen"
+      ]
+    }
+  },
+  "checked_layers": [
+    "rooftop-dojo-far",
+    "rooftop-dojo-mid",
+    "rooftop-dojo-near"
+  ],
+  "camera": {
+    "aspect_ratio": "16:9",
+    "horizon_y": 0.6,
+    "focal_safe_zone": {
+      "x": 0.18,
+      "y": 0.18,
+      "width": 0.64,
+      "height": 0.64
+    }
+  },
+  "layers": [
+    {
+      "id": "rooftop-dojo-far",
+      "role": "far",
+      "path": "source/rooftop-dojo-far-v2.png",
+      "sha256": "df6c141edea2b10f4eddbf607b29f3b1b37871f6322ee9ef1c1704a96cb96a4e",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 0,
+      "depth": 0.14,
+      "parallax_x": 0.08,
+      "parallax_y": 0.02,
+      "repeat_x": false,
+      "blend_mode": "normal",
+      "seam_delta": null
+    },
+    {
+      "id": "rooftop-dojo-mid",
+      "role": "mid",
+      "path": "source/rooftop-dojo-mid-v2.png",
+      "sha256": "0e94490b241f0aae67402dc10cb3808fb2458245b4d66a603ebf0755c5740753",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 1,
+      "depth": 0.5,
+      "parallax_x": 0.42,
+      "parallax_y": 0.08,
+      "repeat_x": false,
+      "blend_mode": "normal",
+      "seam_delta": null
+    },
+    {
+      "id": "rooftop-dojo-near",
+      "role": "near",
+      "path": "source/rooftop-dojo-near-alpha-v2.png",
+      "sha256": "cb7d95862d6be88fbeddc8cbabd1da455f5b0659a5397087127ce2387f2b0310",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 2,
+      "depth": 0.92,
+      "parallax_x": 0.88,
+      "parallax_y": 0.16,
+      "repeat_x": false,
+      "blend_mode": "normal",
+      "seam_delta": null
+    }
+  ],
+  "composite": {
+    "path": "qa/background-composite.png",
+    "sha256": "87ca084b8ea94135f8bce6145490352ef8c66c7fc4bc5e4feb9d751e36516639"
+  },
+  "scroll_preview": {
+    "path": "qa/background-scroll.gif",
+    "sha256": "c489204540f36186c1757c4f467a14c56762e8214e3b3badfca85ebffe454fb8"
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -32,12 +32,18 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         p2sprpriority: "-2",
         "attack.depth": "5,8",
         "ground.hittime": "15",
-        "ground.velocity": "-4,-3",
+        "air.hittime": "17",
+        "down.hittime": "19",
+        "down.bounce": "1",
+        "ground.velocity": "-4,-3,0.75",
+        "air.velocity": "-6,-8,1.25",
+        "down.velocity": "-2,0,1.5",
         guardflag: "MA",
         "guard.pausetime": "6,6",
         "guard.hittime": "9",
-        "guard.velocity": "-2,0",
-        "airguard.velocity": "-6,-2",
+        "airguard.ctrltime": "11",
+        "guard.velocity": "-2,0,1.75",
+        "airguard.velocity": "-6,-2,2.25",
         "ground.cornerpush.veloff": "3",
         "air.cornerpush.veloff": "4",
         "down.cornerpush.veloff": "5",
@@ -105,18 +111,29 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       dizzyPoints: 18,
       hitPause: 12,
       hitStun: 15,
+      airHitTime: 17,
+      downHitTime: 19,
+      downVelocityX: -2,
+      downVelocityY: 0,
+      downVelocityZ: 1.5,
+      downBounce: true,
       p1SpritePriority: 3,
       p2SpritePriority: -2,
       attackDepth: [5, 8],
       push: 4,
       hitVelocityY: -3,
+      hitVelocityZ: 0.75,
+      airVelocityZ: 1.25,
       guardFlag: "MA",
       guardPause: 6,
       guardStun: 9,
+      airGuardControlTime: 11,
       guardPush: 2,
       guardVelocityY: 0,
+      guardVelocityZ: 1.75,
       airGuardPush: 6,
       airGuardVelocityY: -2,
+      airGuardVelocityZ: 2.25,
       cornerPush: 3,
       airCornerPush: 4,
       downCornerPush: 5,
@@ -156,6 +173,19 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
 
     expect(result.activated).toBe(true);
     expect(actor.currentMove?.targetId).toBe(0);
+  });
+
+  it("keeps air.fall separate from the ground fall flag", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const result = world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { damage: "30", "air.fall": "1" })),
+      frame: activeFrame(),
+    });
+
+    expect(result.activated).toBe(true);
+    expect(actor.currentMove?.fall).toEqual({ enabled: false, airFall: true, kill: true });
   });
 
   it("resets ignorereversaldef when the next HitDef omits it", () => {
@@ -427,6 +457,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       guardStun: 15,
       guardSlideTime: 15,
       guardControlTime: 15,
+      airGuardControlTime: 15,
     });
   });
 
@@ -453,6 +484,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       guardStun: 9,
       guardSlideTime: 9,
       guardControlTime: 9,
+      airGuardControlTime: 9,
     });
   });
 
@@ -479,6 +511,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       guardStun: 15,
       guardSlideTime: 6,
       guardControlTime: 6,
+      airGuardControlTime: 6,
     });
   });
 
@@ -585,6 +618,11 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       actor,
       controller: compileControllerIr(controller("ModifyHitDef", {
         damage: "61",
+        "air.hittime": "18",
+        "down.hittime": "22",
+        "down.velocity": "-2,0",
+        "down.bounce": "0",
+        "airguard.ctrltime": "17",
         id: "91",
         chainid: "13",
         numhits: "3",
@@ -612,6 +650,11 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       operation: {
         kind: "modifyhitdef",
         damage: 61,
+        airHitTime: 18,
+        downHitTime: 22,
+        downVelocity: [-2, 0],
+        downBounce: false,
+        airGuardControlTime: 17,
         id: 91,
         chainId: 13,
         hitCount: 3,
@@ -634,6 +677,12 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove).toBe(activeMove);
     expect(actor.currentMove).toMatchObject({
       damage: 61,
+      airHitTime: 18,
+      downHitTime: 22,
+      downVelocityX: -2,
+      downVelocityY: 0,
+      downBounce: false,
+      airGuardControlTime: 17,
       guardDamage: 6,
       attr: "C,HP",
       guardFlag: "H",

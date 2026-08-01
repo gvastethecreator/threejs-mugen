@@ -1328,6 +1328,8 @@ function defaultHitVar(name: string): number {
     "fall.xvelocity": 0,
     "fall.yvel": 0,
     "fall.yvelocity": 0,
+    "fall.zvel": 0,
+    "fall.zvelocity": 0,
     airtype: 0,
     groundtype: 0,
     hittime: 0,

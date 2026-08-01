@@ -1,0 +1,17 @@
+; Generated classic-uniform atlas character template for MUGEN Web Sandbox
+[Info]
+name = "Bruno Giro"
+displayname = "Bruno Giro"
+versiondate = 06,24,2026
+mugenversion = 1.0
+author = "Codex + imagegen"
+localcoord = 320,240
+
+[Files]
+cmd = bruno.cmd
+cns = bruno.cns
+st = bruno.cns
+sprite = bruno.sff ; not shipped yet; browser runtime uses ../sprite-sheet-alpha.png
+anim = bruno.air
+sound =
+

@@ -1,5 +1,46 @@
 # Architecture Decisions
 
+## T479: CommonFX coordinate scale belongs to asset resolution
+
+Status: accepted, closed-bounded.
+
+Decision: `HitSparkAssetSystem` owns the CommonFX/FightFX package coordinate
+conversion. It carries authored `localcoord` into the runtime AIR frame and
+derives `fx.scale * 320 / fx.localcoord.x * character.localcoord.x / 320`
+before the renderer sees the frame. `HitSparkRenderer` remains responsible only
+for sprite binding, axis/offset projection and mesh sizing. Exact timing,
+palette/layer/audio/cache and custom-state transition parity remain separate.
+
+## T480: authored fall Z belongs to fall metadata and HitFallVel
+
+Status: accepted, closed-bounded.
+
+Decision: preserve Ikemen `fall.zvelocity` as an optional typed component of
+fall metadata across compiler, imported-fighter, projectile and `HitFallSet`
+boundaries. `HitFallControllerSystem` owns the final write into
+`combatDepth.velocity`; omitted Z remains no-change, matching the source
+contract. Do not synthesize a broader Z physics model or Common1 bounce table
+from this seam.
+
+## T481: HitDef vector Z belongs to contact resolution
+
+Status: accepted, closed-bounded.
+
+Decision: preserve the optional third component of Ikemen HitDef
+`ground/air/down/guard/airguard.velocity` through typed compiler, imported
+state and player-owned Projectile data. Let the shared combat resolver select
+the context-specific value and let direct/projectile combat write only explicit
+Z into `combatDepth.velocity`; omitted Z remains absent.
+
+Why: Ikemen documents the third vector component as contact velocity, while the
+sandbox already has a single depth-velocity seam. Keeping selection in the
+shared resolver avoids divergent direct/projectile semantics without inventing
+Common1 physics.
+
+Gate: focused 251/251, final 324/3317, typecheck, build, boundaries and 682/682
+trace gates pass. ModifyHitDef Z mutation, Common1 Z acceleration/friction and
+full depth parity remain outside this decision.
+
 ## ADR-014: Active-root constraints are actor-local
 
 Status: accepted, initial cut implemented.

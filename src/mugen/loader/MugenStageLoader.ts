@@ -11,12 +11,37 @@ export class MugenStageLoader {
   async loadAll(sourceName: string, vfs: VirtualFileSystem): Promise<MugenStagePackage[]> {
     const resolver = new PathResolver(vfs.listFiles());
     const gameConfig = loadMugenGameConfig(vfs, resolver);
-    const ids = new Map<string, number>();
-    const stages = resolver
+    const defPaths = resolver
       .findByExtension(".def")
-      .filter((path) => isStageDefPath(path))
-      .map((defPath) => withUniqueStageId(this.loadStage(sourceName, defPath, vfs, resolver, gameConfig), ids));
+      .filter((path) => isStageDefPath(path));
+    return this.loadResolved(sourceName, vfs, resolver, gameConfig, defPaths);
+  }
 
+  async loadSelected(
+    sourceName: string,
+    vfs: VirtualFileSystem,
+    defPaths: readonly string[],
+  ): Promise<MugenStagePackage[]> {
+    const resolver = new PathResolver(vfs.listFiles());
+    const gameConfig = loadMugenGameConfig(vfs, resolver);
+    const resolvedPaths = uniquePaths(
+      defPaths
+        .map((path) => resolver.resolve("", path))
+        .filter((path): path is string => Boolean(path && resolver.exists(path) && isStageDefPath(path))),
+    );
+    return this.loadResolved(sourceName, vfs, resolver, gameConfig, resolvedPaths);
+  }
+
+  private async loadResolved(
+    sourceName: string,
+    vfs: VirtualFileSystem,
+    resolver: PathResolver,
+    gameConfig: ReturnType<typeof loadMugenGameConfig>,
+    defPaths: readonly string[],
+  ): Promise<MugenStagePackage[]> {
+    const ids = new Map<string, number>();
+    const stages = defPaths
+      .map((defPath) => withUniqueStageId(this.loadStage(sourceName, defPath, vfs, resolver, gameConfig), ids));
     return Promise.all(stages.map((stage) => this.loadStageSprites(stage, vfs)));
   }
 
@@ -158,4 +183,16 @@ function slugify(value: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
   return slug || "imported";
+}
+
+function uniquePaths(paths: readonly string[]): string[] {
+  const seen = new Set<string>();
+  return paths.filter((path) => {
+    const key = path.toLowerCase();
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
 }

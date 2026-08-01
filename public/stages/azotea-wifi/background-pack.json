@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "kind": "game-background-pack",
+  "pack_id": "azotea-wifi",
+  "style_fingerprint": "sha256:7cf10b684e0bd2c9dbe75c6eb5d82df146d99eb61624494a2c7efd71e710b0dd",
+  "canvas": {
+    "width": 1672,
+    "height": 941,
+    "color_space": "srgb"
+  },
+  "camera": {
+    "aspect_ratio": "16:9",
+    "horizon_y": 0.55,
+    "focal_safe_zone": {
+      "x": 0.18,
+      "y": 0.17,
+      "width": 0.64,
+      "height": 0.64
+    }
+  },
+  "layers": [
+    {
+      "id": "azotea-wifi-far",
+      "role": "far",
+      "path": "source/azotea-wifi-base-imagegen.png",
+      "sha256": "521753274f96fced7ff19ecf8e53c0d2596a29a5dd2e7877a3762fde1400ca90",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 0,
+      "depth": 0.14,
+      "parallax_x": 0.08,
+      "parallax_y": 0.02,
+      "repeat_x": false,
+      "blend_mode": "normal"
+    },
+    {
+      "id": "azotea-wifi-mid",
+      "role": "mid",
+      "path": "source/azotea-wifi-mid-imagegen-v2.png",
+      "sha256": "924d4d2c4c5906366c7136a836eb8e601ae48edf8d2c9fe9b9d7e9e679bf0d7c",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 1,
+      "depth": 0.5,
+      "parallax_x": 0.42,
+      "parallax_y": 0.08,
+      "repeat_x": false,
+      "blend_mode": "normal"
+    },
+    {
+      "id": "azotea-wifi-near",
+      "role": "near",
+      "path": "source/azotea-wifi-near-alpha.png",
+      "sha256": "25b964ce8d82fd35f476bcb8bdc90ddb33d03fe0d9adc85bf4044d718e661b2f",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 2,
+      "depth": 0.92,
+      "parallax_x": 0.88,
+      "parallax_y": 0.16,
+      "repeat_x": false,
+      "blend_mode": "normal"
+    }
+  ]
+}

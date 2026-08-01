@@ -15,8 +15,29 @@ export type RuntimeHitDefPriorityType = "hit" | "miss" | "dodge";
 
 export type HitSparkLibrary = {
   source: HitSparkLibrarySource;
+  /** Ikemen CommonFX `fx.scale`, when authored and different from the default. */
+  scale?: number;
+  /** Ikemen CommonFX authored coordinate space used to derive the draw scale. */
+  localCoord?: [number, number];
   animations: Map<number, MugenAnimationAction>;
 };
+
+/**
+ * The authored satirical FightFX atlas uses a dedicated group range so it can
+ * coexist with the native 7000-series sparks and with imported character SFFs.
+ * Keeping the IDs in one place makes the runtime animation rows and the
+ * browser atlas route independently verifiable.
+ */
+export const SATIRICAL_FIGHTFX_ACTIONS = {
+  hit: 7300,
+  kick: 7301,
+  electric: 7302,
+  receipt: 7303,
+  dust: 7304,
+  cardboard: 7305,
+  guard: 7306,
+  ko: 7307,
+} as const;
 
 export type DemoMove = {
   actionId: number;
@@ -58,8 +79,23 @@ export type DemoMove = {
   defaultTargetStateNo?: number;
   hitPause: number;
   hitStun: number;
+  airHitTime?: number;
+  /** M.U.G.E.N down.hittime for a lying defender. */
+  downHitTime?: number;
+  /** Effective down.velocity Y; omitted values inherit air.velocity Y. */
+  downVelocityY?: number;
+  /** Effective down.velocity X; omitted authored values inherit air.velocity X. */
+  downVelocityX?: number;
+  /** Effective down.velocity Z; omitted authored values inherit air.velocity Z. */
+  downVelocityZ?: number;
+  /** M.U.G.E.N down.bounce; omitted preserves the existing Common1 fallback. */
+  downBounce?: boolean;
   push: number;
   hitVelocityY?: number;
+  /** Ground HitDef velocity Z. */
+  hitVelocityZ?: number;
+  /** Air HitDef velocity Z, selected for airborne defenders. */
+  airVelocityZ?: number;
   hitVars?: RuntimeGetHitVars;
   guardDistance?: number;
   guardFlag?: string;
@@ -69,10 +105,13 @@ export type DemoMove = {
   guardStun?: number;
   guardSlideTime?: number;
   guardControlTime?: number;
+  airGuardControlTime?: number;
   guardPush?: number;
   guardVelocityY?: number;
+  guardVelocityZ?: number;
   airGuardPush?: number;
   airGuardVelocityY?: number;
+  airGuardVelocityZ?: number;
   cornerPush?: number;
   airCornerPush?: number;
   downCornerPush?: number;
@@ -87,12 +126,16 @@ export type DemoMove = {
   sparkXy?: [number, number];
   fall?: {
     enabled: boolean;
+    /** M.U.G.E.N air.fall; applies only when the defender is already airborne. */
+    airFall?: boolean;
     damage?: number;
     defenceUp?: number;
     kill?: boolean;
     velocity?: {
       x?: number;
       y?: number;
+      /** Ikemen-GO fall.zvelocity depth component. */
+      z?: number;
     };
     recover?: boolean;
     recoverTime?: number;
@@ -177,6 +220,28 @@ export const demoFighters: DemoFighterDefinition[] = [
   }),
 ];
 
+/** User-directed content entries stay outside the three-fighter baseline; eight classic entries now bind generated runtime atlases. */
+export const contentPackFighters: DemoFighterDefinition[] = [
+  createContentFighter({ id: "don-rayo", displayName: "Don Rayo", palette: "#ff6b24", spriteGroupBase: 15000, speed: 1.12, jumpVelocity: -9.8, punchDamage: 51, kickDamage: 68 }),
+  createContentFighter({ id: "la-jefa-del-combo", displayName: "La Jefa del Combo", palette: "#d83d62", spriteGroupBase: 16000, speed: 1.08, jumpVelocity: -10, punchDamage: 54, kickDamage: 75 }),
+  createContentFighter({ id: "turbo-abuela", displayName: "Turbo Abuela", palette: "#d88b2f", spriteGroupBase: 17000, speed: 1.22, jumpVelocity: -9.2, punchDamage: 46, kickDamage: 62 }),
+  createContentFighter({ id: "tanque-de-carton", displayName: "Tanque de Cartón", palette: "#a77c52", spriteGroupBase: 18000, speed: 0.92, jumpVelocity: -8.7, punchDamage: 66, kickDamage: 86 }),
+  createContentFighter({ id: "monje-wifi", displayName: "Monje Wi-Fi", palette: "#3b82f6", spriteGroupBase: 19000, speed: 1.15, jumpVelocity: -10.4, punchDamage: 49, kickDamage: 70 }),
+  createContentFighter({ id: "sombra-del-super", displayName: "Sombra del Súper", palette: "#5b3b8d", spriteGroupBase: 20000, speed: 1.18, jumpVelocity: -10.1, punchDamage: 50, kickDamage: 73 }),
+  createContentFighter({ id: "mara-cinta", displayName: "Mara Cinta", palette: "#de3a63", spriteGroupBase: 21000, speed: 1.1, jumpVelocity: -9.9, punchDamage: 52, kickDamage: 71 }),
+  createContentFighter({ id: "toro-pixel", displayName: "Toro Pixel", palette: "#b74435", spriteGroupBase: 22000, speed: 0.98, jumpVelocity: -8.9, punchDamage: 61, kickDamage: 82 }),
+  createContentFighter({ id: "nico-guante", displayName: "Nico Guante", palette: "#2f9d9f", spriteGroupBase: 23000, speed: 1.16, jumpVelocity: -10.2, punchDamage: 56, kickDamage: 67 }),
+  createContentFighter({ id: "luna-codo", displayName: "Luna Codo", palette: "#6f4dd8", spriteGroupBase: 24000, speed: 1.12, jumpVelocity: -10.3, punchDamage: 53, kickDamage: 76 }),
+  createContentFighter({ id: "sargento-pila", displayName: "Sargento Pila", palette: "#879436", spriteGroupBase: 25000, speed: 1.03, jumpVelocity: -9.4, punchDamage: 58, kickDamage: 74 }),
+  createContentFighter({ id: "bruno-giro", displayName: "Bruno Giro", palette: "#d27a32", spriteGroupBase: 26000, speed: 1.2, jumpVelocity: -10.1, punchDamage: 47, kickDamage: 69 }),
+  createContentFighter({ id: "vera-patada", displayName: "Vera Patada", palette: "#bc4b8c", spriteGroupBase: 27000, speed: 1.14, jumpVelocity: -10.5, punchDamage: 49, kickDamage: 79 }),
+  createContentFighter({ id: "rulo-viento", displayName: "Rulo Viento", palette: "#2796be", spriteGroupBase: 28000, speed: 1.19, jumpVelocity: -10, punchDamage: 50, kickDamage: 72 }),
+];
+
+function createContentFighter(options: FighterOptions): DemoFighterDefinition {
+  return createFighter({ ...options, satiricalFightFx: true });
+}
+
 type FighterOptions = {
   id: string;
   displayName: string;
@@ -186,6 +251,7 @@ type FighterOptions = {
   jumpVelocity: number;
   punchDamage: number;
   kickDamage: number;
+  satiricalFightFx?: boolean;
 };
 
 function createFighter(options: FighterOptions): DemoFighterDefinition {
@@ -220,6 +286,7 @@ function createFighter(options: FighterOptions): DemoFighterDefinition {
     ],
     [hitstunAction, action(options.spriteGroupBase, hitstunAction, [6, 6, 6], { height: 92 })],
   ]);
+  const fightFxAnimations = options.satiricalFightFx ? createSatiricalFightFxAnimations() : undefined;
 
   return {
     id: options.id,
@@ -246,8 +313,8 @@ function createFighter(options: FighterOptions): DemoFighterDefinition {
         hitPause: 7,
         hitStun: 22,
         push: 20,
-        hitSpark: "S7001",
-        guardSpark: "S7000",
+        hitSpark: options.satiricalFightFx ? `F${SATIRICAL_FIGHTFX_ACTIONS.hit}` : "S7001",
+        guardSpark: options.satiricalFightFx ? `F${SATIRICAL_FIGHTFX_ACTIONS.guard}` : "S7000",
         sparkXy: [42, -58],
         hitbox: { x1: 18, y1: -72, x2: 86, y2: -42 },
       },
@@ -261,14 +328,31 @@ function createFighter(options: FighterOptions): DemoFighterDefinition {
         hitPause: 9,
         hitStun: 28,
         push: 30,
-        hitSpark: "S7002",
-        guardSpark: "S7000",
+        hitSpark: options.satiricalFightFx ? `F${SATIRICAL_FIGHTFX_ACTIONS.kick}` : "S7002",
+        guardSpark: options.satiricalFightFx ? `F${SATIRICAL_FIGHTFX_ACTIONS.guard}` : "S7000",
         sparkXy: [48, -44],
         hitbox: { x1: 12, y1: -54, x2: 96, y2: -18 },
       },
     },
     animations,
+    ...(fightFxAnimations
+      ? {
+          hitSparkLibraries: {
+            fightfx: {
+              source: "fightfx" as const,
+              animations: fightFxAnimations,
+            },
+          },
+        }
+      : {}),
   };
+}
+
+function createSatiricalFightFxAnimations(): Map<number, MugenAnimationAction> {
+  const durations = [2, 2, 3, 3, 4, 3, 2, 2];
+  return new Map(
+    Object.values(SATIRICAL_FIGHTFX_ACTIONS).map((actionId) => [actionId, sparkAction(actionId, durations)]),
+  );
 }
 
 function sparkAction(id: number, durations: number[]): MugenAnimationAction {

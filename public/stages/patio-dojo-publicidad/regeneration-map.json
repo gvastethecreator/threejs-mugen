@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "kind": "background-regeneration-map",
+  "pack_id": "patio-dojo-publicidad",
+  "provider_master": "patio-dojo-publicidad-base-imagegen-v2.png",
+  "layers": {
+    "far": {
+      "source": "city-far-v2.png",
+      "transform": "blur=1.0 brightness=0.78"
+    },
+    "mid": {
+      "source": "dojo-mid-v2.png",
+      "transform": "alpha-mask y=.10-.80"
+    },
+    "near": {
+      "source": "dojo-near-alpha-v2.png",
+      "transform": "alpha-mask y=.55-1.00"
+    }
+  },
+  "palette": [
+    "#25282a",
+    "#4e4138",
+    "#8b4e3c"
+  ]
+}

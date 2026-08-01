@@ -1,0 +1,42 @@
+{
+  "version": 2,
+  "kind": "sprite-source-provenance",
+  "source_type": "imagegen",
+  "art_engine": "imagegen",
+  "fixture": false,
+  "verification_status": "verified",
+  "accepted_sources": [
+    {
+      "path": "source/nova-boxer-imagegen-sheet.png",
+      "sha256": "e683c66998675d03684e927973dc3b15e8b2641c5af6c8aa6e4627206d4334a5",
+      "size_bytes": 1721169,
+      "states": [
+        "idle",
+        "crouch",
+        "jump",
+        "punch",
+        "kick",
+        "hitstun"
+      ]
+    },
+    {
+      "path": "source/nova-boxer-walk-forward-imagegen-row.png",
+      "sha256": "1b4da4d7d2c2e65e5c18d03cf6b79049985288105f1935ea367e4c987c5cb929",
+      "size_bytes": 1348642,
+      "states": [
+        "walk-forward"
+      ]
+    }
+  ],
+  "state_coverage": [
+    "idle",
+    "walk-forward",
+    "crouch",
+    "jump",
+    "punch",
+    "kick",
+    "hitstun"
+  ],
+  "notes": "Repository README declares the accepted source bitmaps as built-in Imagegen outputs. Exact source bytes are hash-bound here; the historical green source is explicitly classified as legacy-chroma and is not a neutral-background regeneration claim.",
+  "license": "repository-owned-imagegen-original-nova-boxer"
+}

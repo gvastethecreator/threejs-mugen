@@ -67,6 +67,28 @@ export type CompatibilityReport = {
     active: CompatibilityProfileId[];
     ikemen: IkemenScanReport;
   };
+  /**
+   * Runtime-facing ZSS status. The scanner remains a broad package inventory;
+   * this field distinguishes the small loader/compiler/runtime slice actually
+   * admitted for the current character.
+   */
+  zss?: {
+    recognized: string[];
+    compiled: {
+      sourcePaths: string[];
+      stateIds: number[];
+      controllers: number;
+    };
+    executed: {
+      stateIds: number[];
+      controllers: number;
+    };
+    blocked: {
+      count: number;
+      features: string[];
+      locations: string[];
+    };
+  };
   session?: {
     executedStates: number[];
     routedStateEntries: number;
@@ -78,6 +100,35 @@ export type CompatibilityReport = {
   warnings: string[];
   errors: string[];
 };
+
+export type ZssExecutionTelemetryEvent = {
+  stateNo: number;
+  stateSource?: { path?: string };
+};
+
+/**
+ * Keeps session-only ZSS execution separate from loader/compiler admission.
+ * Callers receive a new report so static compatibility snapshots stay intact.
+ */
+export function withZssExecutionTelemetry(
+  report: CompatibilityReport,
+  controllerEvents: readonly ZssExecutionTelemetryEvent[],
+): CompatibilityReport {
+  if (!report.zss) {
+    return report;
+  }
+  const zssEvents = controllerEvents.filter((event) => /\.zss$/i.test(event.stateSource?.path ?? ""));
+  return {
+    ...report,
+    zss: {
+      ...report.zss,
+      executed: {
+        stateIds: [...new Set(zssEvents.map((event) => event.stateNo))].sort((left, right) => left - right),
+        controllers: zssEvents.length,
+      },
+    },
+  };
+}
 
 export function isRuntimeSupportedController(type: string): boolean {
   return isRuntimeExecutableController(type);
@@ -96,6 +147,7 @@ export function createCompatibilityReport(input: {
   soundArchive?: SndArchive;
   palettes?: MugenPalette[];
   ikemen?: IkemenScanReport;
+  zss?: CompatibilityReport["zss"];
   diagnostics: MugenDiagnostic[];
   unsupported: UnsupportedFeature[];
 }): CompatibilityReport {
@@ -168,6 +220,27 @@ export function createCompatibilityReport(input: {
       mugenVersion: input.mugenVersion,
       ikemen: input.ikemen,
     }),
+    ...(input.zss
+      ? {
+          zss: {
+            recognized: [...input.zss.recognized],
+            compiled: {
+              sourcePaths: [...input.zss.compiled.sourcePaths],
+              stateIds: [...input.zss.compiled.stateIds],
+              controllers: input.zss.compiled.controllers,
+            },
+            executed: {
+              stateIds: [...input.zss.executed.stateIds],
+              controllers: input.zss.executed.controllers,
+            },
+            blocked: {
+              count: input.zss.blocked.count,
+              features: [...input.zss.blocked.features],
+              locations: [...input.zss.blocked.locations],
+            },
+          },
+        }
+      : {}),
     unsupported: input.unsupported,
     warnings,
     errors,

@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "kind": "background-source-provenance",
+  "pack_id": "terminal-supermercado-24h",
+  "source_type": "imagegen",
+  "art_engine": "imagegen",
+  "verification_status": "verified",
+  "representative": true,
+  "provider_source": {
+    "path": "C:/Users/cristian/.codex/generated_images/019fb294-0017-7222-b5cd-4c080bd5eca8/exec-60746fd3-e6aa-44d5-aa91-af656421efa5.png",
+    "sha256": "fac39056d56c05adb61812d14268c9b79f711c754eca17a862924b4382ec12ff",
+    "width": 1672,
+    "height": 941
+  },
+  "derived_layers": [
+    {
+      "path": "source/terminal-far-v2.png",
+      "sha256": "6d9fca191f3a57de53eb7d1a9e36a9e8311ef1e0164b12e41855104752ec3844",
+      "derived_from": "terminal-supermercado-24h-base-imagegen-v2.png",
+      "operation": "provider pixels + deterministic blur radius 1 + brightness 0.78"
+    },
+    {
+      "path": "source/terminal-mid-v2.png",
+      "sha256": "e958f423af70d23eca4671bafa256e185f68a10c0e7064218bb117bd4a9410fb",
+      "derived_from": "terminal-supermercado-24h-base-imagegen-v2.png",
+      "operation": "provider pixels + vertical alpha mask y=.10-.80"
+    },
+    {
+      "path": "source/terminal-near-alpha-v2.png",
+      "sha256": "66f27c7e0e1d446a97d7c6129c173a7eaa1fe8cd302806ff16b0bce84133a5c1",
+      "derived_from": "terminal-supermercado-24h-base-imagegen-v2.png",
+      "operation": "provider pixels + vertical alpha mask y=.55-1.00"
+    }
+  ],
+  "style": "16-bit combat pixel art; Baki-like severe martial-arts mood; restrained charcoal/earth palette; no neon"
+}

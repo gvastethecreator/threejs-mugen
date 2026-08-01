@@ -46,6 +46,8 @@ export class RuntimeHitOverrideWorld {
     defender.runtime.guardStun = 0;
     defender.runtime.guardSlideTime = 0;
     defender.runtime.guardControlTime = 0;
+    defender.runtime.guardSlideTimeRemaining = undefined;
+    defender.runtime.guardControlTimeRemaining = undefined;
     defender.runtime.guarding = override.forceGuard ?? false;
     if (override.forceGuard) {
       markRuntimeEffectActorGotHit(defender);

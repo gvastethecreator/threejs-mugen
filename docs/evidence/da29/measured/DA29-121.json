@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-121",
   "kind": "G",
-  "generatedAt": "2026-07-27T14:28:11.649Z",
+  "generatedAt": "2026-08-01T18:12:01.028Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-121",
@@ -14,8 +14,8 @@
     },
     {
       "path": "src/game/render/ThreeMugenRenderer.ts",
-      "bytes": 15318,
-      "sha256": "a4c3df576258d628517273d79fa9ba24598990256e33adde7903fb18476a3ef7"
+      "bytes": 15599,
+      "sha256": "9cbad0f14c97a7e18019970e63902180c5644c8554133ace46fc4b9b47de4657"
     }
   ],
   "functionResults": {

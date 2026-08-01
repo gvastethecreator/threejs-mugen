@@ -10,6 +10,9 @@ import {
   isRuntimeGuarding,
   parseHitAttribute,
   resolveRuntimeCombatHit,
+  resolveRuntimeFallEnabled,
+  resolveRuntimeFallYVelocityDefaults,
+  resolveRuntimeFallRecoveryDefaults,
   runtimeHitFlagRejectionReason,
   runtimeWorldBox,
   scaleRuntimeIncomingDamage,
@@ -19,6 +22,29 @@ import type { RuntimeCollisionBox } from "../mugen/runtime/RuntimeCollisionTrans
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
 describe("CombatResolver", () => {
+  it("applies official fall recovery defaults only to enabled fall paths", () => {
+    expect(resolveRuntimeFallRecoveryDefaults({ enabled: true })).toEqual({ recover: true, recoverTime: 4 });
+    expect(resolveRuntimeFallRecoveryDefaults({ enabled: true, recover: false })).toEqual({ recover: false, recoverTime: undefined });
+    expect(resolveRuntimeFallRecoveryDefaults({ enabled: true, recover: true, recoverTime: 9 })).toEqual({ recover: true, recoverTime: 9 });
+    expect(resolveRuntimeFallRecoveryDefaults({ enabled: false })).toEqual({ recover: undefined, recoverTime: undefined });
+    expect(resolveRuntimeFallRecoveryDefaults({ enabled: false, recover: true })).toEqual({ recover: true, recoverTime: undefined });
+  });
+
+  it("keeps air.fall airborne-only while preserving the base fall flag", () => {
+    expect(resolveRuntimeFallEnabled({ enabled: false, airFall: true }, "S")).toBe(false);
+    expect(resolveRuntimeFallEnabled({ enabled: false, airFall: true }, "A")).toBe(true);
+    expect(resolveRuntimeFallEnabled({ enabled: true, airFall: false }, "S")).toBe(true);
+  });
+
+  it("scales omitted fall y velocity from the official localcoord baseline", () => {
+    expect(resolveRuntimeFallYVelocityDefaults()).toBe(-4.5);
+    expect(resolveRuntimeFallYVelocityDefaults([320, 240])).toBe(-4.5);
+    expect(resolveRuntimeFallYVelocityDefaults([640, 480])).toBe(-9);
+    expect(resolveRuntimeFallYVelocityDefaults([1280, 720])).toBe(-18);
+    expect(resolveRuntimeFallYVelocityDefaults([0, 240])).toBe(-4.5);
+    expect(resolveRuntimeFallYVelocityDefaults([Number.NaN, 240])).toBe(-4.5);
+  });
+
   it("projects runtime boxes with facing-aware mirroring", () => {
     expect(runtimeWorldBox(actor({ pos: { x: 100, y: -20 }, facing: 1 }), { x1: -8, y1: -40, x2: 24, y2: -10 })).toEqual({
       x1: 92,
@@ -238,6 +264,8 @@ describe("CombatResolver", () => {
       hitStun: 20,
       push: 12,
       hitVelocityY: -2,
+      hitVelocityZ: 1.5,
+      airVelocityZ: 2.5,
       guardFlag: "MA",
       guardDamage: 10,
       guardPoints: -20,
@@ -247,8 +275,10 @@ describe("CombatResolver", () => {
       guardControlTime: 6,
       guardPush: 5,
       guardVelocityY: -1,
+      guardVelocityZ: 3,
       airGuardPush: 9,
       airGuardVelocityY: -3,
+      airGuardVelocityZ: 4,
       cornerPush: 13,
       guardCornerPush: 6,
       airGuardCornerPush: 10,
@@ -261,6 +291,7 @@ describe("CombatResolver", () => {
       stun: 20,
       push: 12,
       hitVelocityY: -2,
+      hitVelocityZ: 1.5,
       cornerPush: 13,
       powerGain: 35,
       dizzyPoints: 15,
@@ -277,10 +308,135 @@ describe("CombatResolver", () => {
       push: 5,
       guardPoints: -15,
       hitVelocityY: -1,
+      hitVelocityZ: 3,
       cornerPush: 6,
       powerGain: 12,
       kill: true,
     });
+  });
+
+  it("uses air.hittime for airborne normal hits and keeps ground/default fallbacks", () => {
+    const attacker = actor();
+    const attack = {
+      damage: 20,
+      hitPause: 4,
+      hitStun: 9,
+      airHitTime: 17,
+      push: 0,
+    };
+
+    expect(
+      resolveRuntimeCombatHit({
+        attacker,
+        defender: actor({ stateType: "A" }),
+        attack,
+        holdingBack: false,
+      }),
+    ).toMatchObject({ kind: "hit", stun: 17 });
+
+    expect(
+      resolveRuntimeCombatHit({
+        attacker,
+        defender: actor({ stateType: "S" }),
+        attack,
+        holdingBack: false,
+      }),
+    ).toMatchObject({ kind: "hit", stun: 9 });
+
+    expect(
+      resolveRuntimeCombatHit({
+        attacker,
+        defender: actor({ stateType: "A" }),
+        attack: { ...attack, airHitTime: undefined },
+        holdingBack: false,
+      }),
+    ).toMatchObject({ kind: "hit", stun: 20 });
+  });
+
+  it("does not use air.hittime when the hit starts a fall reaction", () => {
+    const attacker = actor();
+    const attack = {
+      damage: 20,
+      hitPause: 4,
+      hitStun: 9,
+      airHitTime: 17,
+      fall: { enabled: true },
+      push: 0,
+    };
+
+    expect(
+      resolveRuntimeCombatHit({
+        attacker,
+        defender: actor({ stateType: "A" }),
+        attack,
+        holdingBack: false,
+      }),
+    ).toMatchObject({ kind: "hit", stun: 9 });
+
+    expect(
+      resolveRuntimeCombatHit({
+        attacker,
+        defender: actor({ stateType: "S" }),
+        attack,
+        holdingBack: false,
+      }),
+    ).toMatchObject({ kind: "hit", stun: 9 });
+  });
+
+  it("uses the base hit timing for an airborne-only air.fall reaction", () => {
+    const attack = {
+      damage: 20,
+      hitPause: 4,
+      hitStun: 9,
+      airHitTime: 17,
+      fall: { enabled: false, airFall: true },
+      push: 0,
+    };
+
+    expect(resolveRuntimeCombatHit({ attacker: actor(), defender: actor({ stateType: "A" }), attack, holdingBack: false })).toMatchObject({
+      kind: "hit",
+      stun: 9,
+    });
+    expect(resolveRuntimeCombatHit({ attacker: actor(), defender: actor({ stateType: "S" }), attack, holdingBack: false })).toMatchObject({
+      kind: "hit",
+      stun: 9,
+    });
+  });
+
+  it("uses down.hittime for lying hits and air timing when down.velocity launches", () => {
+    const attacker = actor();
+    const attack = {
+      damage: 20,
+      hitPause: 4,
+      hitStun: 9,
+      airHitTime: 17,
+      downHitTime: 13,
+      downVelocityX: 3,
+      downVelocityY: 0,
+      downVelocityZ: 1.25,
+      hitVelocityY: -3,
+      hitVelocityZ: 2.5,
+      airVelocityZ: 3.5,
+      push: 0,
+    };
+
+    expect(
+      resolveRuntimeCombatHit({
+        attacker,
+        defender: actor({ stateType: "L" }),
+        attack,
+        holdingBack: false,
+      }),
+    ).toMatchObject({ kind: "hit", stun: 13, hitVelocityX: 3, hitVelocityY: 0, hitVelocityZ: 1.25 });
+
+    expect(
+      resolveRuntimeCombatHit({
+        attacker,
+        defender: actor({ stateType: "L" }),
+        attack: { ...attack, downVelocityY: -2, downVelocityZ: undefined },
+        holdingBack: false,
+      }),
+    ).toMatchObject({ kind: "hit", stun: 17, hitVelocityX: 3, hitVelocityY: -2, hitVelocityZ: 3.5 });
   });
 
   it("carries explicit HitDef red life through hit and guard scaling", () => {
@@ -362,8 +518,10 @@ describe("CombatResolver", () => {
       guardFlag: "MA",
       guardDamage: 10,
       guardPush: 5,
+      guardControlTime: 4,
       guardVelocityY: -1,
       airGuardPush: 9,
+      airGuardControlTime: 9,
       airGuardVelocityY: -3,
       guardCornerPush: 6,
       airGuardCornerPush: 10,
@@ -376,7 +534,7 @@ describe("CombatResolver", () => {
         attack,
         holdingBack: true,
       }),
-    ).toMatchObject({ kind: "guard", push: 9, hitVelocityY: -3, cornerPush: 10 });
+    ).toMatchObject({ kind: "guard", push: 9, controlTime: 9, hitVelocityY: -3, cornerPush: 10 });
 
     expect(
       resolveRuntimeCombatHit({
@@ -385,7 +543,7 @@ describe("CombatResolver", () => {
         attack,
         holdingBack: true,
       }),
-    ).toMatchObject({ kind: "guard", push: 5, hitVelocityY: -1, cornerPush: 6 });
+    ).toMatchObject({ kind: "guard", push: 5, controlTime: 4, hitVelocityY: -1, cornerPush: 6 });
   });
 
   it("uses aerial cornerpush only for airborne hits", () => {

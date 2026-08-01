@@ -2,26 +2,33 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-092",
   "kind": "I",
-  "generatedAt": "2026-07-27T14:28:12.362Z",
+  "generatedAt": "2026-08-01T18:12:02.720Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-092",
   "anchors": [
     {
       "path": "src/app/StudioIndexedDbSnapshot.ts",
-      "bytes": 5096,
-      "sha256": "2f6ede737cb58c76642352dfd75d05630639b8d88d14fe4ee07b51004a2edac8"
+      "bytes": 18310,
+      "sha256": "8ef756cafea0e3e94d824c43c39d40e53a7d7eae125ef340d56c8de80da58609"
     }
   ],
   "functionResults": {
-    "bytes": 5096,
+    "bytes": 18310,
     "hasSchema": true,
     "exports": [
       "export const STUDIO_INDEXEDDB_SNAPSHOT_SCHEMA",
       "export const STUDIO_SOURCE_WRITE_INTENT_SCHEMA",
+      "export const STUDIO_INDEXEDDB_SNAPSHOT_DB_NAME",
+      "export const STUDIO_INDEXEDDB_SNAPSHOT_DB_VERSION",
+      "export type StudioIndexedDbSnapshotBackend",
+      "export type StudioSourceWriteIntentPhase",
+      "export type StudioSourceWriteObservationStatus",
+      "export type StudioSourceWriteRecoveryDecision",
+      "export type StudioSourceWriteObservation",
+      "export type StudioIndexedDbSnapshotDiagnostics",
       "export type StudioProjectSnapshotRecord",
-      "export type StudioSourceWriteIntent",
-      "export function clearStudioIndexedDbMemory"
+      "export type StudioSourceWriteIntent"
     ]
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-092; broader product claims remain blocked"

@@ -1,0 +1,211 @@
+{
+  "ok": true,
+  "engine": "frame-alignment-onion-skin",
+  "run_dir": "public\\characters\\nova-boxer",
+  "states_mode": "all",
+  "baseline_y": 112,
+  "visual_review_required": true,
+  "quality_gate_note": "Review each qa/*-onion.png overlay before final approval; automated checks cover baseline/root drift only.",
+  "rows": [
+    {
+      "state": "idle",
+      "kind": "grounded",
+      "ok": true,
+      "onion": "qa\\idle-onion.png",
+      "bottom_y": [
+        112,
+        112,
+        112,
+        112
+      ],
+      "center_x": [
+        61.55,
+        62.36,
+        62.35,
+        61.32
+      ],
+      "center_y": [
+        61.74,
+        61.95,
+        62.33,
+        62.42
+      ],
+      "baseline_y": 112,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "walk-forward",
+      "kind": "grounded-locomotion",
+      "ok": true,
+      "onion": "qa\\walk-forward-onion.png",
+      "bottom_y": [
+        112,
+        112,
+        112,
+        112,
+        112,
+        112,
+        112,
+        112
+      ],
+      "center_x": [
+        61.19,
+        65.47,
+        60.57,
+        65.66,
+        65.5,
+        65.45,
+        63.7,
+        63.73
+      ],
+      "center_y": [
+        64.21,
+        64.0,
+        64.3,
+        63.47,
+        63.27,
+        64.31,
+        64.3,
+        63.92
+      ],
+      "baseline_y": 112,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "crouch",
+      "kind": "crouch",
+      "ok": true,
+      "onion": "qa\\crouch-onion.png",
+      "bottom_y": [
+        112,
+        112,
+        112
+      ],
+      "center_x": [
+        63.86,
+        64.41,
+        65.4
+      ],
+      "center_y": [
+        83.25,
+        84.82,
+        78.79
+      ],
+      "baseline_y": 112,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "jump",
+      "kind": "jump",
+      "ok": true,
+      "onion": "qa\\jump-onion.png",
+      "bottom_y": [
+        112,
+        94,
+        94,
+        112
+      ],
+      "center_x": [
+        67.87,
+        67.3,
+        63.32,
+        64.0
+      ],
+      "center_y": [
+        77.79,
+        59.95,
+        57.33,
+        72.58
+      ],
+      "baseline_y": 112,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "punch",
+      "kind": "action",
+      "ok": true,
+      "onion": "qa\\punch-onion.png",
+      "bottom_y": [
+        108,
+        106,
+        107,
+        108
+      ],
+      "center_x": [
+        54.23,
+        54.28,
+        56.2,
+        63.93
+      ],
+      "center_y": [
+        59.83,
+        60.1,
+        59.57,
+        61.34
+      ],
+      "baseline_y": 112,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "kick",
+      "kind": "action",
+      "ok": true,
+      "onion": "qa\\kick-onion.png",
+      "bottom_y": [
+        109,
+        109,
+        108,
+        110,
+        109
+      ],
+      "center_x": [
+        56.58,
+        59.11,
+        45.81,
+        52.27,
+        61.45
+      ],
+      "center_y": [
+        62.11,
+        57.08,
+        55.33,
+        53.59,
+        62.15
+      ],
+      "baseline_y": 112,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "hitstun",
+      "kind": "action",
+      "ok": true,
+      "onion": "qa\\hitstun-onion.png",
+      "bottom_y": [
+        99,
+        100,
+        99
+      ],
+      "center_x": [
+        58.67,
+        53.87,
+        58.15
+      ],
+      "center_y": [
+        62.07,
+        62.06,
+        61.11
+      ],
+      "baseline_y": 112,
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

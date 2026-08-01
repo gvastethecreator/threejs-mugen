@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "kind": "background-regeneration-map",
+  "pack_id": "rooftop-dojo",
+  "provider_master": "rooftop-dojo-base-imagegen-v2.png",
+  "layers": {
+    "far": {
+      "source": "rooftop-dojo-far-v2.png",
+      "transform": "blur=1.0 brightness=0.78"
+    },
+    "mid": {
+      "source": "rooftop-dojo-mid-v2.png",
+      "transform": "alpha-mask y=.10-.80"
+    },
+    "near": {
+      "source": "rooftop-dojo-near-alpha-v2.png",
+      "transform": "alpha-mask y=.55-1.00"
+    }
+  },
+  "palette": [
+    "#171b1d",
+    "#4b4035",
+    "#76604a"
+  ]
+}

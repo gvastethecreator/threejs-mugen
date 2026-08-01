@@ -1,26 +1,178 @@
 ﻿# Next Build Roadmap
 
-## Current next-build — official M.U.G.E.N / Ikemen queue (2026-07-30)
+## Current next-build — official M.U.G.E.N / Ikemen queue (2026-08-01)
 
-Start with **T424**, the shared M.U.G.E.N current-state transition loop for
-roots and helpers. It closes the Elecbyte rule that a `ChangeState` continues
-at the destination state in the same tick, with deterministic cycle
-protection. Then execute **T425** only after recording whether the current
-Ikemen P2 wiki contract belongs to the normative 05b source epoch.
+**T424 is closed-bounded.** The shared M.U.G.E.N current-state transition loop
+for roots and helpers has typed transitions, same-tick destination execution,
+source-tail skipping, deterministic cycle protection, and final gates: 305/
+3234 tests, typecheck, build, boundaries, diff hygiene, and 667/667 trace
+artifacts. **T425 is closed-bounded:** 05b remains normative, so the
+wiki-only 30 px retention rule is not ported; source-visible invalidation and
+live controller `P2Name` are covered by the required 668/668 trace matrix.
 
-After those runtime cuts, **T426** makes imported `select.def` own one real
-roster/stage selection path, and **T427** connects a declared ZSS subset from
-the package loader to shared IR and `PlayableMatchRuntime`. Exact contracts:
+**T426 is closed-bounded:** imported `select.def` now owns one real
+roster/stage selection path, with hostile VFS cases, browser reimport, smoke,
+and final gates. **T427 is closed-bounded:** direct/fallback/mixed ZSS sources
+now connect the named subset to shared IR and `PlayableMatchRuntime`, with
+required trace `47c627a2` inside the 669/669 corpus. **T428 is
+closed-bounded:** its mixed fixture proves `ignoreHitPause` wrapper scheduling
+during a real global hit pause; `b6533370` passed inside the 670/670 corpus.
+**T429 is closed-bounded:** the official combined
+`ignoreHitPause persistent(n)` interval has source-located cadence/reset
+evidence (`4ff43eb7` in 671/671 traces), and `pnpm build` passed. **T430 is
+closed-bounded:** raw CNS positive `persistent = 2` normal cadence/reset is
+trace-gated by `f7c32a53` in 672/672 artifacts. **T431 is closed-bounded:**
+raw CNS `persistent = 0` runs once per ordinary state entry, trace-gated by
+`d13ad12a` in 673/673 artifacts. **T432 is closed-bounded:** paired raw CNS
+`ignorehitpause = 1` plus `persistent = 0` runs once per paused state entry,
+trace-gated by `94b49516` in 674/674 artifacts. **T433 is closed-bounded:**
+paired raw CNS `ignorehitpause = 1` and `persistent = 2` uses pause-pass ticks
+2/4/6, trace-gated by `d6d00fd0` in 675/675 artifacts. **T434 is
+closed-bounded:** raw CNS `persistent = 2` counts sparse trigger passes in
+ordinary active-root normal scans (`3eb88436` in 676/676). **T435 and T436 are
+closed-bounded:** `StateDef -2` and `StateDef -3` preserve separate sparse
+trigger-count counters across current-state changes; T436 admits `-3` only
+without `stateOwner`, with `6fce3962` in 677/677 and `b2719d71` in 678/678.
+**T437 is closed-bounded:** imported CMD `StateDef -1` setup `persistent = 2`
+counts sparse trigger passes across `0 -> 200`, with `ba3d289d` in 679/679.
+**T438 is closed-bounded:** imported CMD `StateDef -1` setup `persistent = 0`
+fires once per controller/actor cycle and resets on the next cycle, with
+`27e1ffb7` in 680/680.
+**T463 is closed-bounded:** imported CMD `StateDef -1` static `ChangeState`
+reuses that isolated zero marker before destination resolution, routes only at
+tick 1 across `0 -> 200 -> 201 -> 0`, and is trace-gated by `88931500` in
+681/681 artifacts.
+**T464 is closed-bounded:** static `persistent = 2` counts trigger-passing
+scans on the same route, executes at ticks 1/4 across repeated state chains,
+and is trace-gated by `3681fafa` in 682/682 artifacts.
+**T465 is closed-bounded:** the default runtime now separates remaining guard
+slide/control windows from authored `GetHitVar(slidetime/ctrltime)` values;
+direct/projectile contacts seed them, reset paths clear them, and imported
+Common1 guard states retain presentation ownership. The 102-test focused suite,
+324/3289 full suite, typecheck, build, boundaries, and 682/682 traces pass.
+**T466 is closed-bounded:** `airguard.ctrltime` parses and compiles for HitDef
+and ModifyHitDef, omitted values inherit resolved `guard.ctrltime`, and direct
+or projectile air guard selects an explicit override while ground guard stays
+on the ground value. The focused 149-test suite, 324/3289 full suite,
+typecheck, build, boundaries, and 682/682 traces pass.
+**T467 is closed-bounded:** `air.hittime` now parses and compiles for HitDef,
+ModifyHitDef, and Projectile, propagates through imported/runtime move data, selects the
+authored/default 20-tick value only for airborne normal hits, and leaves ground
+hits on `ground.hittime`. Focused compiler/runtime regressions, the full
+324/3290 suite, and the 682/682 trace corpus pass; exact airborne physics and
+Common1 landing parity remain outside the slice.
+**T468 is closed-bounded:** `fall=1` now takes precedence over airborne
+`air.hittime` in the effective direct-hit resolver, so falling air hits use the
+existing ground `hitStun` fallback while non-falling air hits retain the
+authored/default air timing. Ground, guard, projectile no-fall, and direct fall
+metadata paths remain unchanged; 27 focused resolver tests and the targeted
+fall traces pass. Final closeout passes 324/3291 tests, typecheck, build,
+boundaries, `qa:trace` 682/682, and diff hygiene. Exact Common1 fall/landing
+and `GetHitVar(hittime)` lifetime parity remain outside the slice.
+**T469 is closed-bounded:** direct HitDef, ModifyHitDef, Projectile, imported
+moves, and runtime projectiles now carry `down.hittime` plus effective
+`down.velocity` Y. Zero-Y lie-down hits select authored/default 20-tick down
+timing; non-zero-Y launches select air timing and launch velocity. Focused
+compiler/HitDef/projectile/combat and down-hit trace tests pass; final gates are
+324/3292 tests, typecheck, build, boundaries, `qa:trace` 682/682, and diff
+hygiene. Exact lie-down Common1 tables, bounce/recovery, and full
+`GetHitVar` lifetime parity remain outside the slice.
+**T472 is closed-bounded:** `down.bounce` now compiles on direct HitDef,
+ModifyHitDef and Projectile, survives direct/projectile fall materialization,
+and gates `HitFallVel` for an explicit `0` while retaining the existing
+omitted/`1` velocity path. Focused coverage passes 198 tests; final gates pass
+324 files / 3294 tests, typecheck, build, boundaries, `qa:trace` 682/682 and
+diff hygiene. UI smoke is N/A because no visible surface changed. Exact
+Common1 default and landing parity remain outside this slice.
+**T473 is closed-bounded:** enabled direct and projectile falls now materialize
+the official omitted `fall.recover = 1` and `fall.recovertime = 4` defaults;
+explicit false/custom values and disabled falls remain unchanged. Focused
+coverage passes 102 tests; the final suite is 324/3296 with typecheck, build,
+boundaries and `qa:trace` 682/682 green. Exact Common1 recovery-state
+choreography remains outside the bounded claim.
+**T474 is closed-bounded:** omitted direct/projectile `fall.yvelocity` now
+resolves from localcoord width (`-4.5` at 320px, `-9` at 640px, `-18` at
+1280px); authored fall/hit velocities and invalid/missing localcoord fallback
+remain unchanged. Focused coverage passes 105 tests; the final suite is
+324/3299 with typecheck, build, boundaries and `qa:trace` 682/682 green. Exact
+Common1 landing physics and non-linear viewport scaling remain outside the
+bounded claim.
+**T475 is closed-bounded:** `air.fall` remains separate from base `fall` and is
+selected only for airborne defenders across direct and projectile contacts;
+compiler, HitDef, resolver and parser/runtime regressions pass with the final
+gates. Exact Common1 fall/landing choreography remains outside the bounded
+claim.
+**T476 is closed-bounded:** `down.velocity.x` now propagates through HitDef,
+ModifyHitDef, imported state moves and Projectiles. Lie-down direct/projectile
+contacts expose the authored X component and apply its attacker-relative sign;
+247 focused tests, full 324/3308 tests, typecheck/build/boundaries and
+`qa:trace` 682/682 pass. Exact Z velocity, Common1 tick order and full parity
+remain outside the bounded claim.
+**T477 is closed-bounded:** authored `fall.xvelocity` remains signed through
+direct and projectile fall materialization instead of mirroring by
+attacker/projectile facing; omitted X remains no-change. Focused coverage is
+121 tests and final gates pass at 324 files / 3310 tests, typecheck, build,
+boundaries and `qa:trace` 682/682. Exact Common1 landing/friction choreography
+and full parity remain outside the bounded claim.
+Exact contracts:
 [research decision](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md)
 and issues [09](../.scratch/roadmap/issues/09-mugen-current-state-transition-loop.md),
 [10](../.scratch/roadmap/issues/10-ikemen-p2-stable-switch-contract.md),
-[11](../.scratch/roadmap/issues/11-mugen-select-def-playable-roster.md), and
-[12](../.scratch/roadmap/issues/12-ikemen-zss-live-state-pipeline.md).
+[11](../.scratch/roadmap/issues/11-mugen-select-def-playable-roster.md),
+[12](../.scratch/roadmap/issues/12-ikemen-zss-live-state-pipeline.md), and
+[13](../.scratch/roadmap/issues/13-ikemen-zss-hitpause-wrapper-semantics.md), and
+  [14](../.scratch/roadmap/issues/14-ikemen-zss-combined-wrapper-persistence.md),
+  [15](../.scratch/roadmap/issues/15-mugen-cns-persistent-cadence.md),
+  [16](../.scratch/roadmap/issues/16-mugen-cns-persistent-zero.md),
+  [17](../.scratch/roadmap/issues/17-mugen-cns-hitpause-persistent-zero.md), and
+[18](../.scratch/roadmap/issues/18-mugen-cns-hitpause-persistent-cadence.md),
+  [19](../.scratch/roadmap/issues/19-mugen-cns-persistent-trigger-count.md),
+  [22](../.scratch/roadmap/issues/22-mugen-cns-state-minus-one-persistent.md),
+  [23](../.scratch/roadmap/issues/23-mugen-cns-state-minus-one-persistent-zero.md),
+  [48](../.scratch/roadmap/issues/48-mugen-cmd-state-minus-one-changestate-persistent-zero.md),
+  [49](../.scratch/roadmap/issues/49-mugen-cmd-state-minus-one-changestate-persistent.md),
+  [50](../.scratch/roadmap/issues/50-mugen-guard-timing-cadence.md), and
+  [51](../.scratch/roadmap/issues/51-mugen-airguard-ctrl-time.md),
+  [52](../.scratch/roadmap/issues/52-mugen-air-hit-time.md),
+  [53](../.scratch/roadmap/issues/53-mugen-air-hit-time-fall-interaction.md), and
+  [54](../.scratch/roadmap/issues/54-mugen-down-hit-time.md), and
+[57](../.scratch/roadmap/issues/57-mugen-down-bounce.md), and
+[58](../.scratch/roadmap/issues/58-mugen-fall-recovery-defaults.md), and
+  [59](../.scratch/roadmap/issues/59-mugen-fall-yvelocity-localcoord.md), and
+  [60](../.scratch/roadmap/issues/60-mugen-air-fall-default-selection.md), and
+  [61](../.scratch/roadmap/issues/61-mugen-down-velocity-x.md), and
+  [62](../.scratch/roadmap/issues/62-mugen-fall-xvelocity-sign.md).
 
-T423 remains the latest implemented checkpoint. Scores, human watermarks,
-formal/global authority, and delivery authority remain unchanged.
+T477 is the latest closed bounded runtime cursor;
+scores, human watermarks, formal/global authority, and delivery authority
+remain unchanged.
 
-## Current next-build — post-DA30-120
+User-directed content queue T439-T462 is tracked separately: six original
+satirical fighters, eight classic-uniform recolors, shared VFX/FightFX, four
+parallax stages, roster/runtime integration, and the T461 sober/Baki-style
+fighter regeneration lane, followed by palettes, SFF bridge, collision QA and
+per-character traces. T462 is closed-bounded after four-stage browser/scroll
+proof. The eight classic atlases and MUGEN-lite core templates are now
+present; package promotion remains open. T470 closes the spritesheet coverage
+audit across all public character packages, and T471 is the active content
+provider-row regeneration before T461 promotion. Bruno Giro now has four fresh
+rows with hash-bound previews; aggregate identity/contract gates remain open.
+See
+[ROADMAP_CONTENT_PACK.md](ROADMAP_CONTENT_PACK.md).
+
+## Current next-build — post-DA32-026 (2026-07-28)
+
+Authority: [post-DA32-026 audit](research/2026-07-28-daily-roadmap-architecture-audit-post-da32-026.md),
+[ADR 0073](adr/0073-studio-source-write-recovery-journal.md) and
+[DA32 roadmap](DA32_NEXT_PROGRAM_ROADMAP.md).
+
+Próximos cortes: ligar smoke a su sujeto; gatear un HEAD limpio; completar los
+contratos DA32 faltantes; luego probar caídas, cuota, eviction, multi-tab y
+multi-file en Studio. Preparar input físico, ciclo del renderer, snapshot
+completo de partida y la segunda importación legal. Más trabajo I2 espera una
+revisión de familia 05b/4aa. Scores y watermarks humanos siguen retenidos.
+
+## Historical next-build — post-DA30-120
 
 Authority: [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)
 and [DA31 roadmap](DA31_EVIDENCE_ADOPTION_ROADMAP.md).

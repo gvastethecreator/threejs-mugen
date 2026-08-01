@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-075",
   "kind": "I",
-  "generatedAt": "2026-07-27T14:28:12.291Z",
+  "generatedAt": "2026-08-01T18:12:02.674Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-075",
@@ -14,8 +14,8 @@
     },
     {
       "path": "public/stages/rooftop-dojo/rooftop-dojo.png",
-      "bytes": 2058915,
-      "sha256": "2be314f44afecb14ebbf17ae772eabf27ebdfb5e5ca1384062ac12e865d5d13f"
+      "bytes": 2297717,
+      "sha256": "518f9459fbc063f7cd8b8e5daead3d03a14d71bf69e496e3210b609f25bd4664"
     }
   ],
   "functionResults": {

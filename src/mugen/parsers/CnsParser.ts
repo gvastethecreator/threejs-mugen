@@ -98,7 +98,7 @@ export function parseCns(text: string, file?: string): MugenStateFile {
     }
 
     if (currentState) {
-      applyStateParam(currentState, pair.key, pair.value);
+      applyMugenStateDefParam(currentState, pair.key, pair.value);
     } else if (currentSection === "movement") {
       applySectionConstant(constants, "movement", pair.key, pair.value);
     } else if (currentSection === "data") {
@@ -140,7 +140,11 @@ function parseStateIdentity(token: string | undefined): { id: number; special?: 
   return { id: Number(normalized) };
 }
 
-function applyStateParam(state: MugenStateDef, key: string, value: string): void {
+/**
+ * Shared state-definition lowering for CNS and the bounded ZSS parser.
+ * Both syntaxes describe the same runtime state metadata after parsing.
+ */
+export function applyMugenStateDefParam(state: MugenStateDef, key: string, value: string): void {
   const lower = key.toLowerCase();
   state.rawParams[key] = value;
   if (lower === "type") {

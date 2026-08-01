@@ -1,22 +1,85 @@
 # Roadmap Navigation
 
-Last updated: 2026-07-30
+Last updated: 2026-08-01
 
-## Current implementation route — official parity queue (2026-07-30)
+## Current implementation route — official parity queue (2026-08-01)
 
 Start with the
 [official M.U.G.E.N / Ikemen-GO comparison](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md),
-then the [execution board](ROADMAP_EXECUTION_BOARD.md). The executable cursor
-is **T424 / issue 09**. T425-T427 are ordered follow-ups with explicit source,
-product, and VM dependencies; T423 is the latest implemented checkpoint.
+then the [execution board](ROADMAP_EXECUTION_BOARD.md). T424-T438 and T463/T469 are
+closed-bounded; T472 is the preceding closed-bounded hit-fall cursor after T469,
+T473 is the closed recovery-default slice, T474 is the closed localcoord
+fall-velocity slice, T475 is the closed airborne-only `air.fall` slice, T476 is
+the closed horizontal `down.velocity` X slice, and T477 is the closed signed
+`fall.xvelocity` bounce slice. T471 is the active content cursor.
+T426 is closed-bounded after
+its direct roster/stage consumer, browser reimport, and final gates; T427 is
+closed-bounded after real ZSS source-to-runtime proof; T428 is closed-bounded
+after its live wrapper proof. T429/T430/T431/T432 are closed after trace/type/
+suite/build proof; T433 is closed with raw-CNS positive paused cadence, T434
+with normal trigger-count semantics, T435 with `StateDef -2`, T436 with
+`StateDef -3` plus its no-`stateOwner` boundary, T437 with imported CMD
+`StateDef -1` setup persistence, T438 with imported CMD `persistent = 0`, and
+T463/T464 add the bounded static State -1 `ChangeState` zero and interval-two
+routes (`88931500` / `3681fafa`); T465 advances default guard timing while
+preserving authored `GetHitVar` values (issue 50); T466 carries
+`airguard.ctrltime` through the same HitDef/projectile seam (issue 51); T467
+adds `air.hittime` with its official 20-tick omitted default across HitDef/
+ModifyHitDef/Projectile (issue 52); T468 closes fall precedence and T469
+closes down timing/velocity (issues 53-54). T472 carries explicit
+`down.bounce` through direct/projectile fall metadata and gates `HitFallVel`
+(issue 57). Its 198 focused tests, 324/3294 full suite, typecheck/build/
+boundaries and 682/682 trace gates pass; exact Common1 default and landing
+parity remain open. T473 (issue 58) is now closed-bounded: enabled direct/projectile
+falls default omitted recovery to `recover=1`, `recovertime=4`, while explicit
+values and disabled falls stay intact. T474 (issue 59) now scales omitted
+`fall.yvelocity` from fighter/projectile localcoord width while preserving
+authored fall and hit velocities. T475 (issue 60) keeps `air.fall` separate from
+base `fall` and selects it only for airborne defenders. T476 (issue 61) carries
+authored/default `down.velocity` X into lying-target direct and projectile
+contacts with the official attacker-relative sign. T477 (issue 62) keeps
+authored `fall.xvelocity` signed at bounce time instead of mirroring it by
+attacker/projectile facing.
 
-Use issue 09 for the current state-chain contract, issue 10 for P2 source-epoch
-reconciliation, issue 11 for imported `select.def`, and issue 12 for the live
-ZSS path. The DA32 and older selectors below remain evidence/control context;
+Use issue 09 for the closed current state-chain contract, issue 10 for the
+closed P2 source-epoch decision, issue 11 for closed imported `select.def`,
+and issue 12 for the closed live ZSS path, issue 13 for the closed HitPause
+wrapper proof, then issues 14-23 and 48-54 for the closed persistence and guard/hit
+timing slices; issues 57-62 are now closed-bounded. The DA32 and
+older selectors below remain evidence/control context;
 they do not override this new implementation queue. Scores and delivery
 authority remain held.
 
-## Current audit route — post-DA30-120
+For the new content lane use [ROADMAP_CONTENT_PACK.md](ROADMAP_CONTENT_PACK.md):
+T439-T444 are six original satirical fighters, T445 is VFX/FightFX, T446 is
+parallax stages, T447 is roster/runtime integration, T448 is original homage
+costumes, and T449-T456 are eight classic-uniform recolors. T461 is the active
+sober/Baki-style fighter regeneration lane; T462 is closed-bounded for the
+four parallax stages after browser and scroll proof. T457-T460 cover palettes,
+SFF, collision QA and traces. T470 closes the all-character spritesheet
+coverage audit and T471 is the active provider-row regeneration. Bruno Giro has
+four fresh rows with provenance, alignment and hash-bound runtime previews;
+aggregate identity/contract gates remain open. Issues 24-47
+and 55-56 are the task contracts; issues 57-62 remain on the official runtime
+lane and must not be mixed with spritesheet/provider evidence.
+do not mix their art evidence into compatibility scores.
+
+## Current audit route — post-DA32-026 (2026-07-28)
+
+Start with the
+[post-DA32-026 audit](research/2026-07-28-daily-roadmap-architecture-audit-post-da32-026.md),
+[ADR 0073](adr/0073-studio-source-write-recovery-journal.md) and the active
+[DA32 roadmap](DA32_NEXT_PROGRAM_ROADMAP.md). The audit closed at `1b1ba28f`;
+formal/global is `f5f2315e`; focal runtime is T416/T417; focal Studio is
+DA32-026; source is 05b/4aa. The machine record stays DA30-120, human
+adjudication stays DA30-020, and scores stay
+`65 / 36 / 20 / 10-12 / 6-8 / 25`.
+
+Route the next work through P0 control, P1 Studio recovery, P2 real shell and
+P3 replay plus a second legal import. Review source families before more I2
+runtime work.
+
+## Historical audit route — post-DA30-120
 
 Start with the
 [post-DA30-120 audit](research/2026-07-27-daily-roadmap-architecture-audit-post-da30-120.md)

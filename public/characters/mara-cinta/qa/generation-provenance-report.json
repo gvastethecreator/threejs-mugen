@@ -1,0 +1,52 @@
+{
+  "id": "generation-provenance",
+  "applicable": true,
+  "checked_items": [
+    "crouch",
+    "guard",
+    "heavy-strike",
+    "hitstun",
+    "idle",
+    "jump",
+    "knockdown",
+    "ko",
+    "light-strike",
+    "special",
+    "throw",
+    "walk-back",
+    "walk-forward",
+    "win"
+  ],
+  "errors": [],
+  "warnings": [],
+  "evidence": {
+    "provenance": "source-provenance.json",
+    "source_type": "imagegen",
+    "sources": [
+      {
+        "path": "source/mara-cinta-action-grid-imagegen-v2.png",
+        "sha256": "6d6270052ef5dfbab3c971d4e6360e0a08bf34023959ebc260f57deef67ba5b6",
+        "size_bytes": 1699132,
+        "states": [
+          "idle",
+          "walk-forward",
+          "walk-back",
+          "crouch",
+          "jump",
+          "light-strike",
+          "heavy-strike",
+          "special",
+          "throw",
+          "guard",
+          "hitstun",
+          "knockdown",
+          "ko",
+          "win"
+        ]
+      }
+    ]
+  },
+  "input_fingerprint": "4ddf0a22c61375d2aed3c76576417a32caa7b9c14ec6af4c980fe6e8fc7e6f46",
+  "complete": true,
+  "status": "pass"
+}

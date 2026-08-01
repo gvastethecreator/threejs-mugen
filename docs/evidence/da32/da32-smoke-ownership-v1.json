@@ -1,21 +1,52 @@
 {
   "schema": "Da32SmokeOwnership/v1",
   "id": "DA32-001",
-  "generatedAt": "2026-07-30T11:37:52.892Z",
-  "ok": true,
-  "failureCount": 0,
-  "lanes": [],
-  "laneSummary": {},
+  "generatedAt": "2026-08-01T09:34:50.903Z",
+  "ok": false,
+  "failureCount": 7,
+  "lanes": [
+    {
+      "id": "mugen-lite-visual",
+      "status": "open",
+      "failureCount": 6,
+      "failures": [
+        "mugen-lite visual desktop fallen: imported combat state/frame/crop proof failed",
+        "mugen-lite visual desktop recovery fallen: imported state/frame/crop proof failed",
+        "mugen-lite visual desktop: ACT-backed source/destination RemapPal pixel proof failed",
+        "mugen-lite visual mobile fallen: imported combat state/frame/crop proof failed",
+        "mugen-lite visual mobile recovery fallen: imported state/frame/crop proof failed",
+        "mugen-lite visual mobile: ACT-backed source/destination RemapPal pixel proof failed"
+      ],
+      "owner": "DA32-smoke",
+      "claimCeiling": "lane open until green at named subject SHA"
+    },
+    {
+      "id": "studio-build",
+      "status": "open",
+      "failureCount": 1,
+      "failures": [
+        "studio-build: downloaded project package did not include required contracts/evidence"
+      ],
+      "owner": "DA32-smoke",
+      "claimCeiling": "lane open until green at named subject SHA"
+    }
+  ],
+  "laneSummary": {
+    "mugen-lite-visual": 6,
+    "studio-build": 1
+  },
   "runtimeSample": {
     "desktopHitSparks": 1,
     "mobileHitSparks": 1,
     "desktopActors": 2,
     "mobileActors": 2
   },
-  "claimCeiling": "full qa:smoke green at this subject only",
+  "claimCeiling": "structured smoke ownership only; full visual matrix not green",
   "claims": {
     "allowed": [
-      "qa:smoke green"
+      "named open lanes",
+      "failure inventory",
+      "runtime sample counters"
     ],
     "blocked": [
       "score movement",
@@ -25,6 +56,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "b9a45920d8a7064a30113a32366efcbe9b6ea32613005a91e7789312f7a2724d"
+    "value": "045910a0ee52fbac287f5930549afaebf530588b377df291311c88a4c1dcef52"
   }
 }

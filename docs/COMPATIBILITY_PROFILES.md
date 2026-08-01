@@ -5,8 +5,28 @@ This document defines the compatibility profiles used by the sandbox. It is a cl
 The current operating sentence is:
 
 ```txt
-Partial MUGEN 1.1 fixture-backed runtime, native generated roster, IKEMEN scanner/reporting plus explicitly gated runtime slices.
+Partial MUGEN 1.1 fixture-backed runtime, native generated roster, IKEMEN
+scanner/reporting plus explicitly gated runtime slices.
 ```
+
+T478/T479 are now explicit IKEMEN runtime presentation slices: package-backed
+CommonFX/FightFX hit sparks preserve `fx.scale` and apply the authored
+package/character `localcoord` ratio before sprite binding. This remains a
+bounded visual claim; exact FightFX timing, palette, layer, audio, cache and
+general IKEMEN execution remain unsupported.
+
+T480 adds one explicit IKEMEN combat slice: authored `fall.zvelocity` is
+preserved through imported HitDef/projectile/fall-controller paths and applied
+to the sandbox's `combatDepth` velocity, with both `GetHitVar` aliases exposed.
+This is bounded metadata/depth propagation, not general Z physics or full
+IKEMEN execution.
+
+T481 closes the neighboring explicit IKEMEN combat slice: authored third
+components on HitDef `ground/air/down/guard/airguard.velocity` survive imported
+state and player-owned Projectile paths, select by contact context, and write
+explicit `combatDepth.velocity` values. The profile remains executed-partial;
+omitted Z, ModifyHitDef mutation, Common1 Z physics, helper/team breadth and full
+IKEMEN execution remain outside the claim.
 
 ## Profiles
 
@@ -16,8 +36,8 @@ Partial MUGEN 1.1 fixture-backed runtime, native generated roster, IKEMEN scanne
 | `mugen-1.0` | Legacy MUGEN 1.0 character/stage content. | Loader/parser/scanner plus partial SFF v1 and CMD/CNS runtime routes. | Partial only when a trace proves execution. |
 | `mugen-1.1` | Elecbyte MUGEN 1.1 content such as official KFM/KFM720. | Primary imported fixture target. | Partial KFM/Common1 fixture-backed runtime. |
 | `ikemen-go-scan` | IKEMEN-GO content classification. | Scanner/reporting only. | No execution claim. |
-| `ikemen-go` | Explicit IKEMEN-GO runtime policy selection. | Executed Partial for named, source-backed slices only. | Root/helper RunOrder, same-tick appended helpers, and bounded simultaneous Pause buffers; no general IKEMEN content execution claim. |
-| `ikemen-go-exec-later` | Future IKEMEN-specific execution target. | Blocked. | No ZSS, Lua, rollback, netplay, model-stage, or IKEMEN-only runtime claim yet. |
+| `ikemen-go` | Explicit IKEMEN-GO runtime policy selection. | Executed Partial for named, source-backed slices only. | Root/helper RunOrder, same-tick appended helpers, bounded simultaneous Pause buffers, T427's direct/fallback character-state ZSS subset, T428's live `ignoreHitPause` route, and T429's constant combined-wrapper cadence evidence; no general IKEMEN content execution claim. |
+| `ikemen-go-exec-later` | Future IKEMEN-specific execution target. | Blocked. | No general ZSS, Lua, rollback, netplay, model-stage, or broader IKEMEN-only runtime claim yet. |
 | `shared-module-later` | Future non-fighting modules such as platformer. | Blocked by fighting contracts. | No generic engine claim until one non-fighting slice runs. |
 
 ## Support Levels
@@ -42,7 +62,8 @@ Examples:
 - `SFF v2 LZ5 decoded for KFM sprites` is a decoded asset claim.
 - `HitDef compiled into typed operation evidence` is a compiler/runtime-plumbing claim.
 - `KFM state 200 routes and hits in kfm-official-x.json` is an executed-partial fixture claim.
-- `ZSS recognized as IKEMEN-only unsupported` is a scanner claim.
+- `ZSS recognized as IKEMEN-only unsupported` is a scanner claim outside the
+  named T427 character-state subset.
 
 ## Profile Rules
 
@@ -152,7 +173,9 @@ Every public label in docs, UI, QA summaries, and exported reports should map to
 | MUGEN 1.0 loader/parser path works. | `mugen-1.0` | Parsed, Decoded, Recognized, or Executed Partial per artifact. | DEF/AIR/CMD/CNS/SFF v1/ACT/SND parser tests or trace for runtime route. | CodeFuMan-style SFF v1/PCX fixture. | `MUGEN 1.0 feature parsed/decoded/executed partial`. | `MUGEN 1.0 supported` without level. | Unsupported triggers/controllers, missing sprites, palette/audio gaps. |
 | MUGEN 1.1 official fixture route executes. | `mugen-1.1` | Executed Partial unless oracle parity exists. | Required synthetic gate plus optional official fixture artifact present and passed. | KFM/KFM720 trace artifacts, imported stage fixture. | `official KFM route executed partial in artifact <name>`. | `KFM works`, `full MUGEN compatible`, `Executed Parity` without oracle comparison. | Exact tick order, exact recovery velocities/selection beyond bounded threshold and `5200/5201` / `5210` routes, guard timing/effects, unsupported controllers. |
 | Typed controller family is wired. | `mugen-1.0` / `mugen-1.1` | Compiled or Executed Partial. | Controller compiler test and trace requiring `executedOperations` for runtime claim. | Official fixture route using the same controller. | `<Controller> compiled to typed op` or `<Controller> executed partial in trace`. | `<Controller> supported` because it parsed. | Params ignored, partial semantics, owner/target limitations. |
-| IKEMEN-only feature is detected. | `ikemen-go-scan` | Recognized plus Unsupported or Unknown. | Scanner/report fixture naming file/section/feature. | Ikemen GO source/wiki research note. | `IKEMEN feature recognized by scanner and not executed`. | `IKEMEN compatible`, `IKEMEN supported`, `ZSS/Lua works`. | No ZSS/Lua execution, no rollback/netplay, no IKEMEN runtime gate. |
+| IKEMEN-only feature is detected. | `ikemen-go-scan` | Recognized plus Unsupported or Unknown. | Scanner/report fixture naming file/section/feature. | Ikemen GO source/wiki research note. | `IKEMEN feature recognized by scanner and not executed`. | `IKEMEN compatible`, `IKEMEN supported`, `ZSS/Lua works`. | No general ZSS/Lua execution, no rollback/netplay, no IKEMEN runtime gate. |
+| T427-T429 ZSS character-state subset executes. | `ikemen-go` | Executed Partial. | Direct/fallback/mixed loader tests; `ikemen-zss-live` `47c627a2`; mixed hit-pause `ikemen-zss-hitpause-wrapper` `b6533370`; combined-wrapper `ikemen-zss-combined-persistent-wrapper` `4ff43eb7`. | Focal static desktop/mobile preview for T427; T428/T429 change no UI route. | `named ZSS character-state subset, one ignoreHitPause route, and constant combined-wrapper cadence execute partial under ikemen-go`. | `ZSS works`, `IKEMEN compatible`, or parity wording. | Only `Null`/`PosAdd`/`ChangeState`/`VelSet`, `ignoreHitPause`, and constant positive combined cadence; raw-CNS persistence belongs to separate T430/T431 gates, while dynamic values, general grammar/controllers, Lua, system ZSS, or parity remain blocked. |
+| T430-T438/T463-T464 raw CNS persistence executes. | `mugen-1.1` | Executed Partial. | `mugen-cns-persistent-cadence` `f7c32a53`, `mugen-cns-persistent-zero` `d13ad12a`, paired pause traces `94b49516` / `d6d00fd0`, T434 `3eb88436`, T435/T436 `6fce3962` / `b2719d71`, T437/T438 CMD State -1 `ba3d289d` / `27e1ffb7`, and T463/T464 State -1 ChangeState `88931500` / `3681fafa`, plus focused/runtime/suite/type/build/boundary gates. | No UI route changed. | `bounded raw-CNS normal, paused, special-state, imported CMD State -1 setup, and static State -1 ChangeState zero/interval-two persistence routes execute partial`. | `raw CNS persistence works`, generic State -1 ChangeState cadence, or M.U.G.E.N parity. | Bounded constants and owner routes only; other intervals, failed-value activation order, player-owned custom states, wrappers, helpers, dynamic values, generic VM, and parity remain blocked. |
 | IKEMEN actor RunOrder is selected explicitly. | `ikemen-go` | Executed Partial. | Required `synthetic-imported-ikemen-runfirst.json`, `synthetic-imported-ikemen-runorder.json`, and `synthetic-imported-ikemen-helper-runorder.json` plus focused expression/scheduler/runtime/public-facade tests. | Aggregate trace stability under default `unknown`. | `explicit IKEMEN profile applies bounded root/helper ordering, exposes one-based actor RunOrder, and advances appended helpers in the same tick`. | `IKEMEN scheduling supported`, `IKEMEN compatible`, or any team/nested-helper claim. | No teams/simul/tag, nested helper creation, exact Pause/hitpause order, or full source-oracle trace. |
 | IKEMEN root/helper Pause ownership, team topology/state/registry, and inert P3-P8 root construction are selected explicitly. | `ikemen-go` | Executed Partial. | Required pause/team-defense traces plus focused topology/roster/MatchWorld/runtime/reset/snapshot tests and `RuntimeTeamRoster/v0`. | Existing fixture corpus under default `unknown`. | `source-backed P1-P8 standby roots can enter runtime ownership and diagnostics while all playable phases stay P1/P2`. | `full IKEMEN team parity`, reserve activation, active multi-root scheduling/input/combat/round/presentation/effects, transitions, or global config. | Helper player-type compile, tag/turns, partner redirects, and source-oracle replay remain open. |
 | Generated asset can export MUGEN-lite templates. | `generated-native` | Authored export format, not imported compatibility. | Generated manifest, DEF/AIR/CMD/CNS template output, atlas QA, runtime trace if playable. | Source prompts, imagegen metadata, contact sheets. | `MUGEN-lite authored export generated`. | `generated fighter proves MUGEN import compatibility`. | Real MUGEN engine validation not performed unless separately tested. |

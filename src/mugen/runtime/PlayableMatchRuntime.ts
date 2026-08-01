@@ -163,6 +163,9 @@ import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
 import { resetRuntimeIntroSkipActor } from "./RuntimeIntroSkipSystem";
 import { RuntimeActiveControllerRunWorld } from "./RuntimeActiveControllerRunSystem";
 import {
+  RUNTIME_CURRENT_STATE_TRANSITION_BUDGET,
+} from "./RuntimeStateTransitionSystem";
+import {
   RuntimeRootCnsExecutionWorld,
   type RuntimeRootCnsParticipation,
 } from "./RuntimeRootCnsExecutionSystem";
@@ -359,6 +362,14 @@ const defaultGuardDistanceWorld = new RuntimeGuardDistanceWorld();
 const stateClockWorld = new RuntimeStateClockWorld();
 const stateChangeTmpWorld = new RuntimeStateChangeTmpWorld();
 const stateEntryWorld = new RuntimeStateEntryWorld({ stateClockWorld, stateChangeTmpWorld });
+const zssPersistentHitPauseCounters = new WeakMap<FighterMatchState, Map<ControllerIr, number>>();
+const rawCnsPersistentZeroControllers = new WeakMap<FighterMatchState, Set<ControllerIr>>();
+const rawCnsPersistentHitPauseCounters = new WeakMap<FighterMatchState, Map<ControllerIr, number>>();
+const rawCnsPersistentTriggerCounters = new WeakMap<FighterMatchState, Map<ControllerIr, number>>();
+const rawCnsPersistentSpecialCounters = new WeakMap<FighterMatchState, Map<ControllerIr, number>>();
+const rawCnsPersistentStateMinusThreeCounters = new WeakMap<FighterMatchState, Map<ControllerIr, number>>();
+const rawCnsPersistentStateMinusOneCounters = new WeakMap<FighterMatchState, Map<ControllerIr, number>>();
+const rawCnsPersistentStateMinusOneZeroControllers = new WeakMap<FighterMatchState, Set<ControllerIr>>();
 const stateEntryRouteWorld = new RuntimeStateEntryRouteWorld();
 const controllerDispatchWorld = new RuntimeControllerDispatchWorld();
 const stateEntrySetupWorld = new RuntimeStateEntrySetupWorld();
@@ -2071,6 +2082,10 @@ export class PlayableMatchRuntime {
                     writeback,
                     destinationRevision,
                   ),
+                onStateTransitionCycle: (helper, transition, budget) =>
+                  this.logs.unshift(
+                    `Blocked helper state-transition-cycle ${helper.serialId} ${transition.fromState}->${transition.toState} (${budget})`,
+                  ),
                 enterRedirectedTargetState: (helper, stateOwner, target, stateId) =>
                   this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
               });
@@ -2624,6 +2639,10 @@ export class PlayableMatchRuntime {
                 redirectExpression,
                 writeback,
                 destinationRevision,
+              ),
+            onStateTransitionCycle: (helper, transition, budget) =>
+              this.logs.unshift(
+                `Blocked helper state-transition-cycle ${helper.serialId} ${transition.fromState}->${transition.toState} (${budget})`,
               ),
             enterRedirectedTargetState: (helper, stateOwner, target, stateId) =>
               this.enterHelperRedirectedTargetState(helper, stateOwner, target, stateId),
@@ -4241,7 +4260,11 @@ function createHelperCharacterIdentity(helper: RuntimeHelper): RuntimeMatchChara
 }
 
 function setRuntimeStateNo(fighter: FighterMatchState, stateNo: number, options: { resetElapsed?: boolean } = {}): void {
+  const previousStateNo = fighter.runtime.stateNo;
   stateEntryWorld.setStateNo(fighter, stateNo, options);
+  if (fighter.runtime.stateNo !== previousStateNo) {
+    resetControllerPersistentCadence(fighter);
+  }
 }
 
 function redirectableResourceControllerType(controller: ControllerIr): RedirectableResourceControllerType | undefined {
@@ -4656,6 +4679,7 @@ function advanceFighter(
       stunWorld.advance(actor, {
         hasCurrentMove: Boolean(actor.currentMove),
         preserveImportedStateMoveType,
+        preserveImportedGuardTiming: actor.definition.source === "imported" || actor.stateOwner?.definition.source === "imported",
         suppressHitStunAction: Boolean(actor.stateOwner),
         showHitStunAction: () => changeAction(actor, actor.definition.hitstunAction),
       });
@@ -4788,6 +4812,7 @@ function enterState(fighter: FighterMatchState, stateId: number, move?: DemoMove
         changeAction(actor, actionId, source, actionOwner.definition, elementOptions),
     },
   );
+  resetControllerPersistentCadence(fighter);
 }
 
 function runHitPauseIgnoredControllers(
@@ -4937,6 +4962,7 @@ function runActiveStateControllers(
         targetOpponent,
         gameSpace,
         createPlayerIdTarget(actor),
+        options.characters,
       );
       const redirectExpression = hitDefControllerRedirectExpression(controller);
       const target = redirectExpression
@@ -4970,6 +4996,7 @@ function runActiveStateControllers(
         targetOpponent,
         gameSpace,
         createPlayerIdTarget(actor),
+        options.characters,
       );
       const redirectExpression = hitDefControllerRedirectExpression(controller);
       if (!redirectExpression) {
@@ -5003,6 +5030,7 @@ function runActiveStateControllers(
         targetOpponent,
         gameSpace,
         createPlayerIdTarget(actor),
+        options.characters,
       );
       const redirectExpression = reversalDefControllerRedirectExpression(controller);
       if (!redirectExpression) {
@@ -5032,6 +5060,7 @@ function runActiveStateControllers(
         targetOpponent,
         gameSpace,
         createPlayerIdTarget(actor),
+        options.characters,
       );
       const redirectExpression = reversalDefControllerRedirectExpression(controller);
       const operation = controller.operation?.kind === "reversaldef" ? controller.operation : undefined;
@@ -5063,6 +5092,7 @@ function runActiveStateControllers(
         targetOpponent,
         gameSpace,
         createPlayerIdTarget(actor),
+        options.characters,
       );
       const redirectExpression =
         (controller.operation?.kind === "collision" && controller.operation.controllerType === "width"
@@ -5109,6 +5139,7 @@ function runActiveStateControllers(
         targetOpponent,
         gameSpace,
         createPlayerIdTarget(actor),
+        options.characters,
       );
       const redirectExpression =
         (controller.operation?.kind === "collision" && controller.operation.controllerType === "height"
@@ -5158,6 +5189,7 @@ function runActiveStateControllers(
         targetOpponent,
         gameSpace,
         createPlayerIdTarget(actor),
+        options.characters,
       );
       const redirectExpression = operation?.redirectPlayerIdExpression ?? findControllerParam(controller, "redirectid")?.trim();
       const target = redirectExpression
@@ -5208,6 +5240,7 @@ function runActiveStateControllers(
         targetOpponent,
         gameSpace,
         createPlayerIdTarget(actor),
+        options.characters,
       );
       const redirectExpression =
         (controller.operation?.kind === "collision" && controller.operation.controllerType === "depth"
@@ -5317,6 +5350,7 @@ function runActiveStateControllers(
         targetOpponent,
         gameSpace,
         createPlayerIdTarget(actor),
+        options.characters,
       );
       const redirectControllerType = redirectableEffectControllerType(controller);
       const redirectExpression = effectControllerRedirectExpression(controller);
@@ -5510,6 +5544,7 @@ function runActiveStateControllers(
         targetOpponent,
         gameSpace,
         createPlayerIdTarget(actor),
+        options.characters,
       );
       const redirectControllerType = redirectableTargetControllerType(controller);
       const redirectExpression = targetControllerRedirectExpression(controller);
@@ -5701,6 +5736,7 @@ function runActiveStateControllers(
           targetOpponent,
           gameSpace,
           createPlayerIdTarget(actor),
+          options.characters,
         );
         const operation = options.onTeamStandby?.(
           fighter,
@@ -5723,6 +5759,7 @@ function runActiveStateControllers(
         targetOpponent,
         gameSpace,
         createPlayerIdTarget(actor),
+        options.characters,
       );
       const redirectableBoundsController =
         dispatch.controller.normalizedType === "posfreeze" ||
@@ -5873,8 +5910,13 @@ function runActiveStateControllers(
     stateSpecial?: MugenStateSpecial,
     stateOwner?: FighterMatchState,
     onlyIgnoreHitPause = options.onlyIgnoreHitPause,
-  ): void => {
-    rootCnsExecutionWorld.execute({
+  ) => {
+    const isOrdinaryActiveRootCurrentState =
+      participation !== "standby" &&
+      stateNo === undefined &&
+      stateSpecial === undefined;
+    const isOrdinaryActiveRootScan = isOrdinaryActiveRootCurrentState && !onlyIgnoreHitPause;
+    return rootCnsExecutionWorld.execute({
       actor: fighter,
       opponent,
       tick,
@@ -5883,6 +5925,46 @@ function runActiveStateControllers(
       ...(stateOwner === undefined ? {} : { stateOwner }),
       onlyIgnoreHitPause,
       controllerIgnoresHitPause,
+      persistentPass: (controller, actor, _targetOpponent, owner) => {
+        const allowRawCnsPersistentCadence = owner === actor && (
+          isOrdinaryActiveRootScan ||
+          (
+            onlyIgnoreHitPause === true &&
+            isOrdinaryActiveRootCurrentState &&
+            (
+              isRawCnsHitPausePersistentZeroController(controller) ||
+              isRawCnsHitPausePersistentTwoController(controller)
+            )
+          )
+        );
+        const allowRawCnsPersistentHitPauseCadence = owner === actor &&
+          onlyIgnoreHitPause === true &&
+          isOrdinaryActiveRootCurrentState &&
+          isRawCnsHitPausePersistentTwoController(controller);
+        const allowRawCnsPersistentSpecialCadence = owner === actor &&
+          onlyIgnoreHitPause !== true &&
+          participation !== "standby" &&
+          stateNo === -2 &&
+          stateSpecial === undefined &&
+          isRawCnsPersistentTwoController(controller);
+        const allowRawCnsPersistentStateMinusThreeCadence = owner === actor &&
+          onlyIgnoreHitPause !== true &&
+          participation !== "standby" &&
+          stateNo === -3 &&
+          stateSpecial === undefined &&
+          fighter.stateOwner === undefined &&
+          isRawCnsPersistentTwoController(controller);
+        return controllerPersistentPasses(
+          controller,
+          actor,
+          allowRawCnsPersistentCadence,
+          allowRawCnsPersistentHitPauseCadence,
+          allowRawCnsPersistentSpecialCadence,
+          allowRawCnsPersistentStateMinusThreeCadence,
+          false,
+          false,
+        );
+      },
       triggersPass: (controller, actor, targetOpponent, owner, activeTick) =>
         triggersPass(
           controller,
@@ -5901,6 +5983,26 @@ function runActiveStateControllers(
       hooks: hookSet.hooks,
       onBlocked: options.onBlocked,
     }, participation);
+  };
+
+  const executeCurrentRootState = (): void => {
+    let transitions = 0;
+    while (true) {
+      const result = executeRootState(options.stateNo, options.stateSpecial, options.stateOwner);
+      if (result.transition === undefined) {
+        return;
+      }
+      transitions += 1;
+      if (transitions >= RUNTIME_CURRENT_STATE_TRANSITION_BUDGET) {
+        compatibilityTelemetryWorld.recordStateTransitionCycle(
+          fighter,
+          result.transition,
+          RUNTIME_CURRENT_STATE_TRANSITION_BUDGET,
+        );
+        options.onBlocked?.(result.transition.controller, "state-transition-cycle");
+        return;
+      }
+    }
   };
 
   const includeRootGlobalStates = options.includeRootGlobalStates !== false;
@@ -5942,7 +6044,11 @@ function runActiveStateControllers(
     );
   }
   if (includeCurrentState) {
-    executeRootState(options.stateNo, options.stateSpecial, options.stateOwner);
+    if (options.stateNo === undefined && options.stateSpecial === undefined) {
+      executeCurrentRootState();
+    } else {
+      executeRootState(options.stateNo, options.stateSpecial, options.stateOwner);
+    }
   }
   if (includeRootGlobalStates && options.runtimeProfile === "ikemen-go") {
     executeRootState(1, "plus-one", fighter, false);
@@ -6024,6 +6130,179 @@ function controllerIgnoresHitPause(controller: ControllerIr): boolean {
   return (firstNumber(findParam(controller, "ignorehitpause")) ?? 0) !== 0;
 }
 
+/**
+ * T432 extends T431's raw-CNS zero marker only through the already-filtered
+ * pause-only root scan. T433 gives paired raw-CNS positive intervals their own
+ * pause-pass counter; ZSS remains on its separate wrapper path.
+ */
+function isRawCnsHitPausePersistentZeroController(controller: ControllerIr): boolean {
+  const sourcePath = controller.source.source?.path ?? "";
+  if (/\.zss$/i.test(sourcePath) || !controllerIgnoresHitPause(controller)) {
+    return false;
+  }
+  const raw = findParam(controller, "persistent");
+  if (raw === undefined) {
+    return false;
+  }
+  const interval = Number(raw.trim());
+  return Number.isInteger(interval) && interval === 0;
+}
+
+function isRawCnsHitPausePersistentTwoController(controller: ControllerIr): boolean {
+  const sourcePath = controller.source.source?.path ?? "";
+  if (/\.zss$/i.test(sourcePath) || !controllerIgnoresHitPause(controller)) {
+    return false;
+  }
+  const raw = findParam(controller, "persistent");
+  if (raw === undefined) {
+    return false;
+  }
+  const interval = Number(raw.trim());
+  return Number.isInteger(interval) && interval === 2;
+}
+
+function isRawCnsPersistentTwoController(controller: ControllerIr): boolean {
+  const sourcePath = controller.source.source?.path ?? "";
+  if (/\.zss$/i.test(sourcePath)) {
+    return false;
+  }
+  const raw = findParam(controller, "persistent");
+  if (raw === undefined) {
+    return false;
+  }
+  const interval = Number(raw.trim());
+  return Number.isInteger(interval) && interval === 2;
+}
+
+function isRawCnsPersistentZeroController(controller: ControllerIr): boolean {
+  const sourcePath = controller.source.source?.path ?? "";
+  if (/\.zss$/i.test(sourcePath)) {
+    return false;
+  }
+  const raw = findParam(controller, "persistent");
+  if (raw === undefined) {
+    return false;
+  }
+  const interval = Number(raw.trim());
+  return Number.isInteger(interval) && interval === 0;
+}
+
+/**
+ * ZSS wrappers lower into shared CNS-shaped parameters. T430 adds the positive
+ * state-clock interval for raw CNS in ordinary active-root scans; T431/T432
+ * add a controller-local zero marker there and only for paired raw CNS during
+ * the already-filtered pause-only route. T433 adds a separate controller-local
+ * positive counter for that same paired route. T437/T438/T463/T464 add
+ * separate State -1 maps shared by setup and bounded static ChangeState routes. Globals,
+ * helpers/custom owners, and malformed raw values stay untouched.
+ */
+function controllerPersistentPasses(
+  controller: ControllerIr,
+  fighter: FighterMatchState,
+  allowRawCnsPersistentCadence: boolean,
+  allowRawCnsPersistentHitPauseCadence: boolean,
+  allowRawCnsPersistentSpecialCadence: boolean,
+  allowRawCnsPersistentStateMinusThreeCadence: boolean,
+  allowRawCnsPersistentStateMinusOneCadence: boolean,
+  allowRawCnsPersistentStateMinusOneZero: boolean,
+): boolean {
+  const sourcePath = controller.source.source?.path ?? "";
+  const isZss = /\.zss$/i.test(sourcePath);
+  const raw = findParam(controller, "persistent");
+  if (raw === undefined) {
+    return true;
+  }
+  const interval = Number(raw.trim());
+  if (!Number.isInteger(interval)) {
+    return isZss ? false : true;
+  }
+  if (isZss) {
+    if (interval < 1) {
+      return false;
+    }
+    if (fighter.hitPause > 0) {
+      const counters = zssPersistentHitPauseCounters.get(fighter) ?? new Map<ControllerIr, number>();
+      zssPersistentHitPauseCounters.set(fighter, counters);
+      const eligiblePasses = counters.get(controller) ?? 0;
+      counters.set(controller, eligiblePasses + 1);
+      return eligiblePasses % interval === 0;
+    }
+    return fighter.stateElapsed >= 0 && fighter.stateElapsed % interval === 0;
+  }
+  if (!allowRawCnsPersistentCadence &&
+    !allowRawCnsPersistentSpecialCadence &&
+    !allowRawCnsPersistentStateMinusThreeCadence &&
+    !allowRawCnsPersistentStateMinusOneCadence &&
+    !allowRawCnsPersistentStateMinusOneZero) {
+    return true;
+  }
+  if (interval === 0) {
+    if (allowRawCnsPersistentStateMinusOneZero) {
+      const activated = rawCnsPersistentStateMinusOneZeroControllers.get(fighter) ?? new Set<ControllerIr>();
+      rawCnsPersistentStateMinusOneZeroControllers.set(fighter, activated);
+      if (activated.has(controller)) {
+        return false;
+      }
+      activated.add(controller);
+      return true;
+    }
+    if (!allowRawCnsPersistentCadence) {
+      return true;
+    }
+    const activated = rawCnsPersistentZeroControllers.get(fighter) ?? new Set<ControllerIr>();
+    rawCnsPersistentZeroControllers.set(fighter, activated);
+    if (activated.has(controller)) {
+      return false;
+    }
+    activated.add(controller);
+    return true;
+  }
+  if (interval < 0) return true;
+  if (allowRawCnsPersistentSpecialCadence) {
+    const counters = rawCnsPersistentSpecialCounters.get(fighter) ?? new Map<ControllerIr, number>();
+    rawCnsPersistentSpecialCounters.set(fighter, counters);
+    const eligibleTriggers = counters.get(controller) ?? 0;
+    counters.set(controller, eligibleTriggers + 1);
+    return eligibleTriggers % interval === 0;
+  }
+  if (allowRawCnsPersistentStateMinusThreeCadence) {
+    const counters = rawCnsPersistentStateMinusThreeCounters.get(fighter) ?? new Map<ControllerIr, number>();
+    rawCnsPersistentStateMinusThreeCounters.set(fighter, counters);
+    const eligibleTriggers = counters.get(controller) ?? 0;
+    counters.set(controller, eligibleTriggers + 1);
+    return eligibleTriggers % interval === 0;
+  }
+  if (allowRawCnsPersistentStateMinusOneCadence) {
+    const counters = rawCnsPersistentStateMinusOneCounters.get(fighter) ?? new Map<ControllerIr, number>();
+    rawCnsPersistentStateMinusOneCounters.set(fighter, counters);
+    const eligibleTriggers = counters.get(controller) ?? 0;
+    counters.set(controller, eligibleTriggers + 1);
+    return eligibleTriggers % interval === 0;
+  }
+  if (allowRawCnsPersistentHitPauseCadence && fighter.hitPause > 0) {
+    const counters = rawCnsPersistentHitPauseCounters.get(fighter) ?? new Map<ControllerIr, number>();
+    rawCnsPersistentHitPauseCounters.set(fighter, counters);
+    const eligiblePasses = counters.get(controller) ?? 0;
+    counters.set(controller, eligiblePasses + 1);
+    return eligiblePasses % interval === 0;
+  }
+  if (allowRawCnsPersistentCadence) {
+    const counters = rawCnsPersistentTriggerCounters.get(fighter) ?? new Map<ControllerIr, number>();
+    rawCnsPersistentTriggerCounters.set(fighter, counters);
+    const eligibleTriggers = counters.get(controller) ?? 0;
+    counters.set(controller, eligibleTriggers + 1);
+    return eligibleTriggers % interval === 0;
+  }
+  return fighter.stateElapsed >= 0 && fighter.stateElapsed % interval === 0;
+}
+
+function resetControllerPersistentCadence(fighter: FighterMatchState): void {
+  zssPersistentHitPauseCounters.delete(fighter);
+  rawCnsPersistentZeroControllers.delete(fighter);
+  rawCnsPersistentHitPauseCounters.delete(fighter);
+  rawCnsPersistentTriggerCounters.delete(fighter);
+}
+
 function runtimeControllerContext(
   fighter: FighterMatchState,
   owner: FighterMatchState,
@@ -6032,7 +6311,16 @@ function runtimeControllerContext(
   opponent?: FighterMatchState,
   gameSpace?: ExpressionGameSpace,
   playerIdTarget?: (playerId: number) => ExpressionRedirectTarget | undefined,
+  characters?: readonly FighterMatchState[],
 ) {
+  const expressionBindings = opponent
+    ? activeExpressionContextFactory(stageBounds, gameSpace, characters, playerIdTarget)({
+        actor: fighter,
+        opponent,
+        owner,
+        tick,
+      })
+    : undefined;
   return controllerEvaluationContextWorld.create({
     actor: fighter,
     owner,
@@ -6042,6 +6330,7 @@ function runtimeControllerContext(
     playerIdTarget,
     stageBounds,
     gameSpace,
+    expressionBindings,
     localCoord: fighter.definition.localCoord,
     opponentLocalCoord: opponent?.definition.localCoord,
     rootLocalCoord: fighter.definition.localCoord,
@@ -6265,6 +6554,18 @@ function tryApplyStateEntry(
         characters,
         playerIdTarget,
       ),
+    persistentPass: (controller, dispatch, actor, _targetOpponent, owner) => {
+      if (owner !== actor || actor.stateOwner !== undefined || dispatch.stateId === undefined) {
+        return true;
+      }
+      if (isRawCnsPersistentTwoController(controller)) {
+        return controllerPersistentPasses(controller, actor, false, false, false, false, true, false);
+      }
+      if (isRawCnsPersistentZeroController(controller)) {
+        return controllerPersistentPasses(controller, actor, false, false, false, false, false, true);
+      }
+      return true;
+    },
     resolveStateId: (dispatch, _controller, actor, targetOpponent, stageTime) =>
       resolveDispatchNumber(
         dispatch.stateId,
@@ -6313,6 +6614,18 @@ function runStateEntrySetupControllers(
         characters,
         playerIdTarget,
     ),
+    persistentPass: (controller, actor, _targetOpponent, owner) => {
+      if (owner !== actor || actor.stateOwner !== undefined) {
+        return true;
+      }
+      if (isRawCnsPersistentTwoController(controller)) {
+        return controllerPersistentPasses(controller, actor, false, false, false, false, true, false);
+      }
+      if (isRawCnsPersistentZeroController(controller)) {
+        return controllerPersistentPasses(controller, actor, false, false, false, false, false, true);
+      }
+      return true;
+    },
     executeController: (controller, actor, stageTime) => {
       const context = runtimeControllerContext(
         actor,
@@ -6322,6 +6635,7 @@ function runStateEntrySetupControllers(
         opponent,
         gameSpace,
         playerIdTarget ? (playerId) => playerIdTarget(actor, playerId) : undefined,
+        characters,
       );
       const targetRedirectControllerType = redirectableTargetControllerType(controller);
       if (targetRedirectControllerType !== undefined) {

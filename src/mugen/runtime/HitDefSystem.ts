@@ -133,6 +133,8 @@ export class RuntimeHitDefControllerDispatchWorld {
     const p2ClsnRequire = operation?.p2ClsnRequire ?? normalizeMugenCollisionBoxType(findParam(source, "p2clsnrequire")) ?? existing?.p2ClsnRequire;
     const hitPause = operation?.pauseTime ?? firstNumber(findParam(source, "pausetime")) ?? existing?.hitPause ?? (damage >= 60 ? 9 : 7);
     const hitStun = operation?.groundHitTime ?? firstNumber(findParam(source, "ground.hittime")) ?? existing?.hitStun ?? (damage >= 60 ? 28 : 22);
+    const airHitTime = operation?.airHitTime ?? firstNumber(findParam(source, "air.hittime")) ?? existing?.airHitTime ?? 20;
+    const downHitTime = operation?.downHitTime ?? firstNumber(findParam(source, "down.hittime")) ?? existing?.downHitTime ?? 20;
     const priority = normalizeRuntimeHitDefPriority(operation?.priority ?? firstNumber(findParam(source, "priority")));
     const priorityType = operation?.priorityType ?? hitDefPriorityType(findParam(source, "priority")) ?? "hit";
     const groundVelocity = operation?.groundVelocity ?? velocityPair(findParam(source, "ground.velocity"));
@@ -144,12 +146,18 @@ export class RuntimeHitDefControllerDispatchWorld {
       guardHitTime: operation?.guardHitTime ?? firstNumber(findParam(source, "guard.hittime")),
       guardSlideTime: operation?.guardSlideTime ?? firstNumber(findParam(source, "guard.slidetime")),
       guardControlTime: operation?.guardControlTime ?? firstNumber(findParam(source, "guard.ctrltime")),
+      airGuardControlTime: operation?.airGuardControlTime ?? firstNumber(findParam(source, "airguard.ctrltime")),
     });
     const guardStun = guardTiming.guardHitTime ?? existing?.guardStun ?? Math.max(1, Math.round(hitStun * 0.55));
     const guardSlideTime = guardTiming.guardSlideTime ?? existing?.guardSlideTime;
     const guardControlTime = guardTiming.guardControlTime ?? existing?.guardControlTime;
     const guardVelocity = operation?.guardVelocity ?? velocityPair(findParam(source, "guard.velocity"));
     const airVelocity = operation?.airVelocity ?? velocityPair(findParam(source, "air.velocity"));
+    const downVelocity = operation?.downVelocity ?? velocityPair(findParam(source, "down.velocity"));
+    const downVelocityX = downVelocity?.[0] ?? airVelocity?.[0] ?? existing?.downVelocityX;
+    const downVelocityY = downVelocity?.[1] ?? airVelocity?.[1] ?? existing?.downVelocityY ?? 0;
+    const downVelocityZ = downVelocity?.[2] ?? airVelocity?.[2] ?? existing?.downVelocityZ;
+    const downBounce = operation?.downBounce ?? booleanHitDefParam(source, "down.bounce") ?? existing?.downBounce;
     const airGuardVelocity =
       operation?.airGuardVelocity ?? velocityPair(findParam(source, "airguard.velocity")) ?? deriveDefaultAirGuardVelocity(airVelocity);
     const guardVelocityX = guardVelocity?.[0] ?? groundVelocity?.[0];
@@ -229,8 +237,16 @@ export class RuntimeHitDefControllerDispatchWorld {
       targetId,
       hitPause,
       hitStun,
+      airHitTime,
+      downHitTime,
+      ...(downVelocityX === undefined ? {} : { downVelocityX }),
+      ...(downVelocityZ === undefined ? {} : { downVelocityZ }),
+      downVelocityY,
+      ...(downBounce === undefined ? {} : { downBounce }),
       push,
       hitVelocityY: groundVelocity?.[1] ?? existing?.hitVelocityY,
+      hitVelocityZ: groundVelocity?.[2] ?? existing?.hitVelocityZ,
+      airVelocityZ: airVelocity?.[2] ?? existing?.airVelocityZ,
       hitVars: {
         hitId: targetId,
         ...(chainId !== undefined ? { chainId } : {}),
@@ -249,10 +265,13 @@ export class RuntimeHitDefControllerDispatchWorld {
       guardStun,
       guardSlideTime,
       guardControlTime,
+      airGuardControlTime: guardTiming.airGuardControlTime ?? existing?.airGuardControlTime,
       guardPush,
       guardVelocityY: guardVelocity?.[1] ?? existing?.guardVelocityY,
+      guardVelocityZ: guardVelocity?.[2] ?? existing?.guardVelocityZ,
       airGuardPush,
       airGuardVelocityY: airGuardVelocity?.[1] ?? existing?.airGuardVelocityY,
+      airGuardVelocityZ: airGuardVelocity?.[2] ?? existing?.airGuardVelocityZ,
       cornerPush: cornerPush.cornerPush,
       airCornerPush: cornerPush.airCornerPush,
       downCornerPush: cornerPush.downCornerPush,
@@ -332,6 +351,22 @@ export class RuntimeHitDefControllerDispatchWorld {
     }
     if (operation.guardDamage !== undefined) {
       existing.guardDamage = operation.guardDamage;
+    }
+    if (operation.airHitTime !== undefined) {
+      existing.airHitTime = operation.airHitTime;
+    }
+    if (operation.downHitTime !== undefined) {
+      existing.downHitTime = operation.downHitTime;
+    }
+    if (operation.downVelocity !== undefined) {
+      existing.downVelocityX = operation.downVelocity[0] ?? 0;
+      existing.downVelocityY = operation.downVelocity[1] ?? 0;
+    }
+    if (operation.downBounce !== undefined) {
+      existing.downBounce = operation.downBounce;
+    }
+    if (operation.airGuardControlTime !== undefined) {
+      existing.airGuardControlTime = operation.airGuardControlTime;
     }
     if (operation.id !== undefined) {
       existing.targetId = operation.id;
@@ -413,13 +448,14 @@ function buildMoveFallData(controller: MugenStateController, existing?: DemoMove
   const enabled =
     (operation?.fall.enabled === undefined ? undefined : operation.fall.enabled ? 1 : 0) ??
     firstNumber(findParam(controller, "fall")) ??
-    firstNumber(findParam(controller, "air.fall")) ??
     firstNumber(findParam(controller, "ground.fall"));
+  const airFall = operation?.fall.airFall === undefined ? firstNumber(findParam(controller, "air.fall")) : operation.fall.airFall ? 1 : 0;
   const damage = operation?.fall.damage ?? firstNumber(findParam(controller, "fall.damage")) ?? existing?.fall?.damage;
   const defenceUp = operation?.fall.defenceUp ?? firstNumber(findParam(controller, "fall.defence_up")) ?? existing?.fall?.defenceUp;
   const kill = operation?.fall.kill ?? booleanHitDefParam(controller, "fall.kill") ?? existing?.fall?.kill ?? true;
   const xVelocity = operation?.fall.xVelocity ?? firstNumber(findParam(controller, "fall.xvelocity")) ?? existing?.fall?.velocity?.x;
   const yVelocity = operation?.fall.yVelocity ?? firstNumber(findParam(controller, "fall.yvelocity")) ?? existing?.fall?.velocity?.y;
+  const zVelocity = operation?.fall.zVelocity ?? firstNumber(findParam(controller, "fall.zvelocity")) ?? existing?.fall?.velocity?.z;
   const envShakeTime = operation?.fall.envShakeTime ?? firstNumber(findParam(controller, "fall.envshake.time")) ?? existing?.fall?.envShake?.time;
   const envShakeFreq = operation?.fall.envShakeFrequency ?? firstNumber(findParam(controller, "fall.envshake.freq")) ?? existing?.fall?.envShake?.freq;
   const envShakeAmpl = operation?.fall.envShakeAmplitude ?? firstNumber(findParam(controller, "fall.envshake.ampl")) ?? existing?.fall?.envShake?.ampl;
@@ -432,12 +468,14 @@ function buildMoveFallData(controller: MugenStateController, existing?: DemoMove
     operation?.fall.downRecoverTime ?? firstNumber(findParam(controller, "down.recovertime")) ?? existing?.fall?.downRecoverTime;
   const hasAny =
     enabled !== undefined ||
+    airFall !== undefined ||
     damage !== undefined ||
     defenceUp !== undefined ||
     operation?.fall.kill !== undefined ||
     findParam(controller, "fall.kill") !== undefined ||
     xVelocity !== undefined ||
     yVelocity !== undefined ||
+    zVelocity !== undefined ||
     envShakeTime !== undefined ||
     recover !== undefined ||
     recoverTime !== undefined ||
@@ -448,10 +486,16 @@ function buildMoveFallData(controller: MugenStateController, existing?: DemoMove
   }
   return {
     enabled: enabled !== undefined ? enabled !== 0 : existing?.fall?.enabled ?? false,
+    ...(airFall !== undefined || existing?.fall?.airFall !== undefined
+      ? { airFall: airFall !== undefined ? airFall !== 0 : existing?.fall?.airFall }
+      : {}),
     damage,
     defenceUp,
     kill,
-    velocity: xVelocity !== undefined || yVelocity !== undefined ? { x: xVelocity, y: yVelocity } : existing?.fall?.velocity,
+    velocity:
+      xVelocity !== undefined || yVelocity !== undefined || zVelocity !== undefined
+        ? { x: xVelocity, y: yVelocity, ...(zVelocity === undefined ? {} : { z: zVelocity }) }
+        : existing?.fall?.velocity,
     recover: recover !== undefined ? recover !== 0 : existing?.fall?.recover,
     recoverTime,
     downRecover: downRecover !== undefined ? downRecover !== 0 : existing?.fall?.downRecover,
@@ -513,7 +557,7 @@ function normalizeSparkOffset(value: [number, number?]): [number, number] {
   return [value[0], value[1] ?? value[0]];
 }
 
-function velocityPair(value: string | undefined): [number, number] | undefined {
+function velocityPair(value: string | undefined): [number, number, number?] | undefined {
   if (!value) {
     return undefined;
   }
@@ -524,7 +568,9 @@ function velocityPair(value: string | undefined): [number, number] | undefined {
   if (numbers.length === 0 || numbers[0] === undefined) {
     return undefined;
   }
-  return [numbers[0], numbers[1] ?? 0];
+  return numbers.length > 2 && numbers[2] !== undefined
+    ? [numbers[0], numbers[1] ?? 0, numbers[2]]
+    : [numbers[0], numbers[1] ?? 0];
 }
 
 function stripMugenString(value: string | undefined): string | undefined {

@@ -135,6 +135,8 @@ function normalizeHitSparkLibraries(character: MugenCharacter): DemoFighterDefin
   if (common && common.animations.size > 0) {
     result.common = {
       source: "common",
+      ...(common.scale === undefined ? {} : { scale: common.scale }),
+      ...(common.localCoord === undefined ? {} : { localCoord: [...common.localCoord] as [number, number] }),
       animations: normalizeAnimations(common.animations),
     };
   }
@@ -142,6 +144,8 @@ function normalizeHitSparkLibraries(character: MugenCharacter): DemoFighterDefin
   if (fightfx && fightfx.animations.size > 0) {
     result.fightfx = {
       source: "fightfx",
+      ...(fightfx.scale === undefined ? {} : { scale: fightfx.scale }),
+      ...(fightfx.localCoord === undefined ? {} : { localCoord: [...fightfx.localCoord] as [number, number] }),
       animations: normalizeAnimations(fightfx.animations),
     };
   }
@@ -169,16 +173,19 @@ function buildStateMoves(
     }
     const actionId = state.anim ?? state.id;
     const fallbackHitbox = { x1: 14, y1: -72, x2: 78, y2: -38 };
-    const groundVelocity = numberPair(hitDef.params["ground.velocity"]);
-    const guardVelocity = numberPair(hitDef.params["guard.velocity"]);
+    const groundVelocity = numberTriple(hitDef.params["ground.velocity"]);
+    const guardVelocity = numberTriple(hitDef.params["guard.velocity"]);
     const guardVelocityX = guardVelocity?.[0] ?? groundVelocity?.[0];
-    const airGuardVelocity = numberPair(hitDef.params["airguard.velocity"]) ?? deriveDefaultAirGuardVelocity(numberPair(hitDef.params["air.velocity"]));
+    const airGuardVelocity = numberTriple(hitDef.params["airguard.velocity"]) ?? deriveDefaultAirGuardVelocity(numberTriple(hitDef.params["air.velocity"]));
+    const airVelocity = numberTriple(hitDef.params["air.velocity"]);
+    const downVelocity = numberTriple(hitDef.params["down.velocity"]);
     const groundHitTime = firstNumber(hitDef.params["ground.hittime"]);
     const guardTiming = resolveHitDefGuardTiming({
       groundHitTime,
       guardHitTime: firstNumber(hitDef.params["guard.hittime"]),
       guardSlideTime: firstNumber(hitDef.params["guard.slidetime"]),
       guardControlTime: firstNumber(hitDef.params["guard.ctrltime"]),
+      airGuardControlTime: firstNumber(hitDef.params["airguard.ctrltime"]),
     });
     const cornerPush = resolveHitDefCornerPush({
       attr: hitDef.params.attr,
@@ -206,9 +213,16 @@ function buildStateMoves(
         guardRedLife: secondNumber(hitDef.params.redlife) ?? undefined,
         targetId: firstNumber(hitDef.params.id) ?? undefined,
         hitPause: firstNumber(hitDef.params.pausetime) ?? undefined,
-        hitStun: groundHitTime ?? undefined,
-        push: Math.abs(groundVelocity?.[0] ?? 20),
+         hitStun: groundHitTime ?? undefined,
+         airHitTime: firstNumber(hitDef.params["air.hittime"]) ?? undefined,
+         downHitTime: firstNumber(hitDef.params["down.hittime"]) ?? undefined,
+         downVelocityX: downVelocity?.[0] ?? airVelocity?.[0] ?? 0,
+         downVelocityY: downVelocity?.[1] ?? airVelocity?.[1] ?? 0,
+         downVelocityZ: downVelocity?.[2] ?? airVelocity?.[2] ?? undefined,
+         push: Math.abs(groundVelocity?.[0] ?? 20),
         hitVelocityY: groundVelocity?.[1] ?? undefined,
+        hitVelocityZ: groundVelocity?.[2] ?? undefined,
+        airVelocityZ: airVelocity?.[2] ?? undefined,
         guardDistance: firstNumber(hitDef.params["guard.dist"]) ?? undefined,
         guardFlag: hitDef.params.guardflag,
         guardDamage: secondNumber(hitDef.params.damage) ?? undefined,
@@ -217,10 +231,13 @@ function buildStateMoves(
         guardStun: guardTiming.guardHitTime,
         guardSlideTime: guardTiming.guardSlideTime,
         guardControlTime: guardTiming.guardControlTime,
+        airGuardControlTime: guardTiming.airGuardControlTime,
         guardPush: Math.abs(guardVelocityX ?? 0) || undefined,
         guardVelocityY: guardVelocity?.[1] ?? undefined,
+        guardVelocityZ: guardVelocity?.[2] ?? undefined,
         airGuardPush: Math.abs(airGuardVelocity?.[0] ?? 0) || undefined,
         airGuardVelocityY: airGuardVelocity?.[1] ?? undefined,
+        airGuardVelocityZ: airGuardVelocity?.[2] ?? undefined,
         cornerPush: cornerPush.cornerPush,
         airCornerPush: cornerPush.airCornerPush,
         downCornerPush: cornerPush.downCornerPush,
@@ -231,9 +248,9 @@ function buildStateMoves(
         hitSpark: hitDefSparkParam(hitDef.params, constants, "sparkno"),
         guardSpark: hitDefSparkParam(hitDef.params, constants, "guard.sparkno"),
         sparkXy: numberPair(hitDef.params.sparkxy),
-        attackDepth: normalizedNumberPair(hitDef.params["attack.depth"]) ?? runtimeCombatDepthFromConstants(constants).attack,
-        hitVars: buildHitVars(hitDef.params),
-        fall: buildFallData(hitDef.params),
+         attackDepth: normalizedNumberPair(hitDef.params["attack.depth"]) ?? runtimeCombatDepthFromConstants(constants).attack,
+         hitVars: buildHitVars(hitDef.params),
+         fall: buildFallData(hitDef.params),
         requiresHitDef: true,
       }),
     );
@@ -321,9 +338,16 @@ function buildMove(
       | "targetId"
       | "requiresHitDef"
       | "hitPause"
-      | "hitStun"
+       | "hitStun"
+      | "airHitTime"
+      | "downHitTime"
+      | "downVelocityX"
+      | "downVelocityY"
+      | "downVelocityZ"
       | "push"
       | "hitVelocityY"
+      | "hitVelocityZ"
+      | "airVelocityZ"
       | "guardDistance"
       | "guardFlag"
       | "guardDamage"
@@ -332,10 +356,13 @@ function buildMove(
       | "guardStun"
       | "guardSlideTime"
       | "guardControlTime"
+      | "airGuardControlTime"
       | "guardPush"
       | "guardVelocityY"
+      | "guardVelocityZ"
       | "airGuardPush"
       | "airGuardVelocityY"
+      | "airGuardVelocityZ"
       | "cornerPush"
       | "airCornerPush"
       | "downCornerPush"
@@ -384,8 +411,15 @@ function buildMove(
     requiresHitDef: overrides.requiresHitDef,
     hitPause: overrides.hitPause ?? (damage >= 60 ? 9 : 7),
     hitStun: overrides.hitStun ?? (damage >= 60 ? 28 : 22),
+    airHitTime: overrides.airHitTime ?? 20,
+    downHitTime: overrides.downHitTime ?? 20,
+    downVelocityX: overrides.downVelocityX,
+    downVelocityY: overrides.downVelocityY ?? 0,
+    downVelocityZ: overrides.downVelocityZ,
     push: overrides.push ?? (damage >= 60 ? 30 : 20),
     hitVelocityY: overrides.hitVelocityY,
+    hitVelocityZ: overrides.hitVelocityZ,
+    airVelocityZ: overrides.airVelocityZ,
     guardDistance: overrides.guardDistance,
     guardFlag: overrides.guardFlag,
     guardDamage: overrides.guardDamage,
@@ -394,10 +428,13 @@ function buildMove(
     guardStun: overrides.guardStun,
     guardSlideTime: overrides.guardSlideTime,
     guardControlTime: overrides.guardControlTime,
+    airGuardControlTime: overrides.airGuardControlTime,
     guardPush: overrides.guardPush,
     guardVelocityY: overrides.guardVelocityY,
+    guardVelocityZ: overrides.guardVelocityZ,
     airGuardPush: overrides.airGuardPush,
     airGuardVelocityY: overrides.airGuardVelocityY,
+    airGuardVelocityZ: overrides.airGuardVelocityZ,
     hitSound: overrides.hitSound,
     guardSound: overrides.guardSound,
     hitSpark: overrides.hitSpark,
@@ -463,12 +500,14 @@ function buildHitVars(params: Record<string, string>): DemoMove["hitVars"] | und
 }
 
 function buildFallData(params: Record<string, string>): DemoMove["fall"] | undefined {
-  const enabled = firstNumber(params.fall) ?? firstNumber(params["air.fall"]) ?? firstNumber(params["ground.fall"]);
+  const enabled = firstNumber(params.fall) ?? firstNumber(params["ground.fall"]);
+  const airFall = firstNumber(params["air.fall"]);
   const damage = firstNumber(params["fall.damage"]);
   const defenceUp = firstNumber(params["fall.defence_up"]);
   const kill = boolParam(params["fall.kill"]);
   const xVelocity = firstNumber(params["fall.xvelocity"]);
   const yVelocity = firstNumber(params["fall.yvelocity"]);
+  const zVelocity = firstNumber(params["fall.zvelocity"]);
   const recover = firstNumber(params["fall.recover"]);
   const recoverTime = firstNumber(params["fall.recovertime"]);
   const downRecover = firstNumber(params["down.recover"]);
@@ -479,11 +518,13 @@ function buildFallData(params: Record<string, string>): DemoMove["fall"] | undef
   const envShakePhase = firstNumber(params["fall.envshake.phase"]);
   const hasAny =
     enabled !== undefined ||
+    airFall !== undefined ||
     damage !== undefined ||
     defenceUp !== undefined ||
     kill !== undefined ||
     xVelocity !== undefined ||
     yVelocity !== undefined ||
+    zVelocity !== undefined ||
     recover !== undefined ||
     recoverTime !== undefined ||
     downRecover !== undefined ||
@@ -494,10 +535,14 @@ function buildFallData(params: Record<string, string>): DemoMove["fall"] | undef
   }
   return {
     enabled: enabled !== undefined ? enabled !== 0 : false,
+    ...(airFall === undefined ? {} : { airFall: airFall !== 0 }),
     damage,
     defenceUp,
     kill,
-    velocity: xVelocity !== undefined || yVelocity !== undefined ? { x: xVelocity, y: yVelocity } : undefined,
+    velocity:
+      xVelocity !== undefined || yVelocity !== undefined || zVelocity !== undefined
+        ? { x: xVelocity, y: yVelocity, ...(zVelocity === undefined ? {} : { z: zVelocity }) }
+        : undefined,
     recover: recover !== undefined ? recover !== 0 : undefined,
     recoverTime,
     downRecover: downRecover !== undefined ? downRecover !== 0 : undefined,
@@ -601,6 +646,18 @@ function numberPair(value: string | undefined): [number, number] | undefined {
     return undefined;
   }
   return [numbers[0], numbers[1] ?? 0];
+}
+
+function numberTriple(value: string | undefined): [number, number?, number?] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const numbers = value.split(",").map((part) => Number(part.trim()));
+  if (!Number.isFinite(numbers[0])) {
+    return undefined;
+  }
+  if (Number.isFinite(numbers[2]) && Number.isFinite(numbers[1])) return [numbers[0]!, numbers[1]!, numbers[2]!];
+  return Number.isFinite(numbers[1]) ? [numbers[0]!, numbers[1]!] : [numbers[0]!];
 }
 
 function normalizedNumberPair(value: string | undefined): [number, number] | undefined {

@@ -18,6 +18,7 @@ import {
   syncRuntimeHelperTargetActor,
   type RuntimeHelper,
 } from "../mugen/runtime/HelperSystem";
+import { RUNTIME_CURRENT_STATE_TRANSITION_BUDGET } from "../mugen/runtime/RuntimeStateTransitionSystem";
 import {
   createRuntimeContactMemory,
   markRuntimeMoveContact,
@@ -235,6 +236,51 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
 }
 
 describe("HelperSystem", () => {
+  it("continues helper ChangeState destinations in the same tick and bounds cycles", () => {
+    const calls: string[] = [];
+    const active = helper({
+      stateNo: 1200,
+      animations: new Map([[920, action]]),
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(1200), [controllerIr(1200, "ChangeState", { value: "1300" }), controllerIr(1200, "VarAdd")]),
+          stateProgram(stateDef(1300), [controllerIr(1300, "ChangeState", { value: "1400" }), controllerIr(1300, "VarAdd")]),
+          stateProgram(stateDef(1400), [controllerIr(1400, "ChangeAnim", { value: "920" })]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage, {
+      onController: (_helper, controllerInput) => calls.push(controllerInput.normalizedType),
+    });
+
+    expect(active.stateNo).toBe(1400);
+    expect(active.animNo).toBe(920);
+    expect(calls).toEqual(["changestate", "changestate", "changeanim"]);
+
+    const cycle = helper({
+      stateNo: 1200,
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(1200), [controllerIr(1200, "ChangeState", { value: "1300" })]),
+          stateProgram(stateDef(1300), [controllerIr(1300, "ChangeState", { value: "1200" })]),
+        ],
+      },
+    });
+    const cycleCalls: string[] = [];
+    const diagnostics: Array<{ fromState: number; toState: number; budget: number }> = [];
+
+    advanceRuntimeHelpers([cycle], stage, {
+      onController: (_helper, controllerInput) => cycleCalls.push(controllerInput.normalizedType),
+      onStateTransitionCycle: (_helper, transition, budget) =>
+        diagnostics.push({ fromState: transition.fromState, toState: transition.toState, budget }),
+    });
+
+    expect(cycle.stateNo).toBe(1200);
+    expect(cycleCalls).toHaveLength(RUNTIME_CURRENT_STATE_TRANSITION_BUDGET);
+    expect(diagnostics).toEqual([{ fromState: 1300, toState: 1200, budget: RUNTIME_CURRENT_STATE_TRANSITION_BUDGET }]);
+  });
+
   it("resets explicit IKEMEN player Helper PlayerPush state before controllers", () => {
     const player = helper({
       helperType: 2,

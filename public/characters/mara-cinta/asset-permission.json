@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "mugen-web-sandbox/asset-permission/v0",
+  "assetId": "mara-cinta",
+  "ownership": "repository-owned",
+  "permission": "repository-owned",
+  "license": {
+    "expression": "CC0-1.0",
+    "profile": "mugen-web-sandbox/spdx-expression-subset/v0",
+    "sourceRef": "LICENSE.txt",
+    "verified": true
+  },
+  "sourceFiles": [
+    {
+      "path": "source/mara-cinta-action-grid-imagegen.png",
+      "bytes": 1699132,
+      "sha256": "6d6270052ef5dfbab3c971d4e6360e0a08bf34023959ebc260f57deef67ba5b6"
+    },
+    {
+      "path": "source/mara-cinta-identity-imagegen.png",
+      "bytes": 1422881,
+      "sha256": "84c7b7987916015d992c17029df6169fbb6267919212e9979cc74aa46eb7c1f6"
+    }
+  ],
+  "outputFiles": [
+    {
+      "path": "README.md",
+      "bytes": 824,
+      "sha256": "b164719070e42c6eb0283e4d3ddbb748e64db8072b613fc3a6cdcf38211c38c9"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 12649,
+      "sha256": "e6d638f20d9ff51945bc7c15c5f74a05a2382a2bbfd864f63013d62fc140523d"
+    },
+    {
+      "path": "mugen/mara.air",
+      "bytes": 2484,
+      "sha256": "73a4dbb4343730706d0f9bcf31ef0654ac7ebfae8d18999d4362ee07a18ebd61"
+    },
+    {
+      "path": "mugen/mara.cns",
+      "bytes": 1347,
+      "sha256": "9e6824741820c2824ccd1e8f883c8c1d5d7734a437f633f2d7eeca9d3d693020"
+    },
+    {
+      "path": "mugen/mara.cmd",
+      "bytes": 428,
+      "sha256": "c4a8c294a58c61e536a85e9ed40ccd5a53d2be34a2696b9512f8d2583c78c51d"
+    },
+    {
+      "path": "mugen/mara.def",
+      "bytes": 401,
+      "sha256": "0f1c7bf168b4a63e127c8c835093c3aba48cfd5c3800d9e98b6fb4066fc6f3b6"
+    },
+    {
+      "path": "qa/motion-variation-report.json",
+      "bytes": 7497,
+      "sha256": "b4d98e128bd2bf48d8647005b2f479db646e21ecd435fb3c29c4beebfbb69ee5"
+    },
+    {
+      "path": "runtime-states.json",
+      "bytes": 1377,
+      "sha256": "90574980e540d7b6803c5481b70d80e8d2a4973546df4ef49375315835653ba4"
+    },
+    {
+      "path": "sprite-sheet-alpha.png",
+      "bytes": 602316,
+      "sha256": "9aac2a2e40ea293b32ea6fa1cadef7c9e2bc9a0d8d94238805fbdbe98837df73"
+    },
+    {
+      "path": "sprite-sheet-alpha.report.json",
+      "bytes": 31490,
+      "sha256": "b4c3d9e87fd53a48b084fc7b9d4d94ab98986ed5c5c479f1ad7f27a06ba4d856"
+    },
+    {
+      "path": "states.contract.json",
+      "bytes": 2114,
+      "sha256": "8b14caddac6b26759aaea28788554d7a848a382d54b20499a85e31cea0758856"
+    },
+    {
+      "path": "base-source.png",
+      "bytes": 1422881,
+      "sha256": "84c7b7987916015d992c17029df6169fbb6267919212e9979cc74aa46eb7c1f6"
+    },
+    {
+      "path": "regeneration-map.json",
+      "bytes": 2177,
+      "sha256": "0996dadbc4bed54427a33f033caa5ab77c147fc098ec50444a1dfc05907eaadb"
+    },
+    {
+      "path": "source-provenance.json",
+      "bytes": 1125,
+      "sha256": "0a29d458c628f6cf34cd3a68f8ac33d917ddd698189c05c9e43526d09fc24fee"
+    },
+    {
+      "path": "sprite-request.json",
+      "bytes": 10612,
+      "sha256": "71238b8016e308987f0496b6f2fdb6878446af1f2dfbd9bf94e3991ee5869c53"
+    }
+  ]
+}

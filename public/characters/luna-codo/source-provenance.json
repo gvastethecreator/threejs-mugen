@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "kind": "sprite-source-provenance",
+  "source_type": "imagegen",
+  "art_engine": "imagegen",
+  "fixture": false,
+  "verification_status": "verified",
+  "accepted_sources": [
+    {
+      "path": "source/luna-codo-action-grid-imagegen-v2.png",
+      "sha256": "84a582b7bd92203e6622a2d61c19ad60f69bf719ad011775ca148023d5c73316",
+      "size_bytes": 1524571,
+      "states": ["idle", "crouch", "jump", "light-strike", "heavy-strike", "throw", "hitstun", "knockdown", "ko", "win"]
+    },
+    {
+      "path": "source/luna-codo-walk-forward-imagegen-v2.png",
+      "sha256": "7f7a57721ae4741a22f5ee3b513ce28b546342f880b4e5bc302733ac8660dda0",
+      "size_bytes": 1419009,
+      "states": ["walk-forward"]
+    },
+    {
+      "path": "source/luna-codo-walk-back-imagegen-v2.png",
+      "sha256": "9deae47e146fc5391aa520e09a7413d6d930fc777cfca65d80482f9c80576e0b",
+      "size_bytes": 1415289,
+      "states": ["walk-back"]
+    },
+    {
+      "path": "source/luna-codo-special-imagegen-v2.png",
+      "sha256": "b633017978f7dc3bd4a4a15ab2efe6d99fb185589302f4957a124cf44e00be1e",
+      "size_bytes": 1442343,
+      "states": ["special"]
+    },
+    {
+      "path": "source/luna-codo-guard-imagegen-v2.png",
+      "sha256": "ffae04fe07e82b85bd504f69243aa159a3144eb7a284307427054706013f5719",
+      "size_bytes": 1441557,
+      "states": ["guard"]
+    }
+  ],
+  "state_coverage": [
+    "idle", "walk-forward", "walk-back", "crouch", "jump", "light-strike", "heavy-strike",
+    "special", "throw", "guard", "hitstun", "knockdown", "ko", "win"
+  ],
+  "notes": "accepted provider action grid plus four independently verified Imagegen rows; regeneration-map.json binds each provider frame to the runtime atlas",
+  "license": "imagegen-original-luna-codo-v2"
+}

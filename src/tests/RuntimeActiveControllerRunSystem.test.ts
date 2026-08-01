@@ -42,6 +42,11 @@ describe("RuntimeActiveControllerRunWorld", () => {
       visitedControllers: 2,
       executedControllers: 2,
       stopped: true,
+      transition: {
+        fromState: 200,
+        toState: 310,
+        controller: owner.runtimeProgram?.states[0]?.controllers[1],
+      },
     });
     expect(fighter.runtime.stateNo).toBe(310);
     expect(calls).toEqual([

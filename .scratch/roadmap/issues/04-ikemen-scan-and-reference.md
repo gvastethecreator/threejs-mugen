@@ -7,7 +7,16 @@ Labels: ikemen-scan, docs, ready-for-agent
 
 Use Ikemen-GO as a reference source for compatibility planning while keeping near-term support to scanner/reporting unless a bounded runtime feature is explicitly gated.
 
-## 2026-07-27 post-DA30-120 scanner override
+## 2026-07-28 post-DA32-026 scanner override
+
+PackageAnalysis sigue como modelo acotado. El corte útil es un núcleo puro
+único consumido por el worker real de Studio y una CLI real, con revisión,
+corpus hostil, JSON idéntico y diff de reanálisis. Scanner no concede claims de
+runtime. Las familias IKEMEN nuevas requieren manifiesto 05b/4aa. Ver AUD28-35,
+36, 44 y 45 en la
+[auditoría diaria](../../../docs/research/2026-07-28-daily-roadmap-architecture-audit-post-da32-026.md).
+
+## Historical 2026-07-27 post-DA30-120 scanner override
 
 DA31-031/032 own one real scanner core across Studio worker and executable CLI,
 hostile corpus limits, stable receipts, and revision-bound incremental

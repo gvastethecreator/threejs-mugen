@@ -2,15 +2,15 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-062",
   "kind": "I",
-  "generatedAt": "2026-07-27T14:28:12.228Z",
+  "generatedAt": "2026-08-01T18:12:02.646Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-062",
   "anchors": [
     {
       "path": "src/mugen/runtime/RuntimeOpponentSelectionSystem.ts",
-      "bytes": 3313,
-      "sha256": "930826af80d4e772dd95f850607661ff20f11b21eb5137b209e208abb6e240c3"
+      "bytes": 10080,
+      "sha256": "00fba50d3e2327d7896211743fb65f90ed6fe7e3a6eaccba97c8fbd03157d581"
     },
     {
       "path": "src/mugen/runtime/RuntimeMatchInputControlSystem.ts",

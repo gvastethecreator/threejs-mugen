@@ -13,6 +13,7 @@ export type RuntimeStateEntrySetupApplyInput<TActor extends RuntimeStateEntrySet
   opponent: TActor;
   tick: number;
   triggersPass: (controller: ControllerIr, actor: TActor, opponent: TActor, owner: TActor, tick: number) => boolean;
+  persistentPass?: (controller: ControllerIr, actor: TActor, opponent: TActor, owner: TActor, tick: number) => boolean;
   executeController: (controller: ControllerIr, actor: TActor, tick: number) => CharacterRuntimeState;
 };
 
@@ -43,6 +44,9 @@ export class RuntimeStateEntrySetupWorld {
         continue;
       }
       if (!isStateEntrySetupDispatch(dispatch)) {
+        continue;
+      }
+      if (input.persistentPass && !input.persistentPass(controller, input.actor, input.opponent, input.actor, input.tick)) {
         continue;
       }
       input.actor.runtime = input.executeController(controller, input.actor, input.tick);

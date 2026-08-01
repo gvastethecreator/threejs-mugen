@@ -7,7 +7,39 @@ Labels: runtime-trace, mugen-compat, ready-for-agent
 
 Keep converting partial CNS/CMD/runtime behavior into typed operations, named runtime systems, deterministic trace artifacts, and honest compatibility docs.
 
-## 2026-07-27 post-DA30-120 runtime override
+## 2026-08-01 T464 runtime checkpoint
+
+T464 is closed-bounded. Imported CMD State -1 static
+`ChangeState persistent = 2` now reuses the isolated positive trigger-count
+map: sparse eligible scans at ticks 1/3/4 execute at 1/4 across both state
+chains. Required trace `mugen-cns-state-minus-one-changestate-persistent`
+checksum `3681fafa` passes in 682/682 artifacts (648 required, 34 optional);
+focused coverage, full 324/3287, typecheck, build and boundaries pass. Other
+intervals and the T463 exclusions remain open. Next work must select a new
+bounded official source/owner gap; scores remain held.
+
+## 2026-08-01 T463 runtime checkpoint
+
+T463 is closed-bounded. Imported CMD State -1 static `ChangeState` now applies
+raw `persistent = 0` after triggers and before destination resolution through
+the named `RuntimeStateEntryRouteWorld` hook. Required trace
+`mugen-cns-state-minus-one-changestate-persistent-zero` checksum `88931500`
+passes in 681/681 artifacts (647 required, 34 optional); focused 4/12, full
+323/3285, typecheck, build and boundaries pass. Positive State -1 intervals,
+failed-value activation order, pause, helpers, custom owners, dynamic values,
+ZSS, exact scheduling and parity remain open. Next work must select a new
+bounded official source/owner gap; scores remain held.
+
+## 2026-07-28 post-DA32-026 runtime override
+
+T407…T417 están cerrados como cortes focales. T416/T417 son el foco actual;
+formal/global sigue en `f5f2315e`. Antes de otro corte I2, revisar 05b/4aa para
+las familias `hittmp`, `acttmp`, `stchtmp`, projectile y ReversalDef. Luego
+elegir un solo consumer live con positivos, negativos y profile gate. Snapshot,
+replay y una segunda ruta legal siguen abiertos. Ver la
+[auditoría diaria](../../../docs/research/2026-07-28-daily-roadmap-architecture-audit-post-da32-026.md).
+
+## Historical 2026-07-27 post-DA30-120 runtime override
 
 Preserve DA30 runtime models as inputs. Current work starts with DA31-017…024:
 live input logs, full state restore, real round replay, Helper/Projectile/throw

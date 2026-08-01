@@ -1,0 +1,297 @@
+{
+  "characterId": "satirical-fightfx",
+  "engine": "component-row",
+  "game_input": "sprite-sheet-alpha.png",
+  "degraded_static_fallback": false,
+  "curation_applied": false,
+  "sprite_sheet_alpha": "sprite-sheet-alpha.png",
+  "sprite_sheet_alpha_report": "sprite-sheet-alpha.report.json",
+  "atlas_outputs": {
+    "png": {
+      "path": "sprite-sheet-alpha.png",
+      "sha256": "fb14a38fb0ca43fe0fc96d228a39c75433e270580eb5c41586258caf301091e6",
+      "size_bytes": 122724,
+      "lossless": true
+    },
+    "webp": {
+      "path": "sprite-sheet-alpha.webp",
+      "sha256": "b293a7884e7ededf1e01e6b5dbf770334ad542196f46e72d796b1a4df0ec462b",
+      "size_bytes": 88460,
+      "lossless": true
+    }
+  },
+  "base_image": "",
+  "cell": {
+    "shape": "square",
+    "width": 128,
+    "height": 128,
+    "safe_margin_x": 8,
+    "safe_margin_y": 8,
+    "size": 128,
+    "safe_margin": 8
+  },
+  "chroma_key": {
+    "name": "legacy-magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "compatibility-only"
+  },
+  "animation": {
+    "cellWidth": 128,
+    "cellHeight": 128,
+    "columns": 8,
+    "rows": {
+      "vfx": {
+        "row": 0,
+        "frames": 8,
+        "fps": 1,
+        "loop": false,
+        "vfx": {
+          "pivot": {
+            "role": "contact",
+            "x": 0.5,
+            "y": 0.88
+          },
+          "blend_mode": "screen",
+          "phase_sequence": [
+            "buildup",
+            "peak",
+            "decay",
+            "peak",
+            "buildup",
+            "peak",
+            "hold",
+            "decay"
+          ],
+          "loop_behavior": "once",
+          "compositing_backgrounds": [
+            "#000000",
+            "#808080",
+            "#FFFFFF"
+          ]
+        }
+      }
+    }
+  },
+  "frame_layout": {
+    "sheetWidth": 1024,
+    "sheetHeight": 128,
+    "cellWidth": 128,
+    "cellHeight": 128,
+    "rows": {
+      "vfx": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 128,
+          "h": 128
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "w": 128,
+          "h": 128
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "w": 128,
+          "h": 128
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "w": 128,
+          "h": 128
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "w": 128,
+          "h": 128
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "w": 128,
+          "h": 128
+        },
+        {
+          "x": 768,
+          "y": 0,
+          "w": 128,
+          "h": 128
+        },
+        {
+          "x": 896,
+          "y": 0,
+          "w": 128,
+          "h": 128
+        }
+      ]
+    }
+  },
+  "preset": {
+    "id": "custom-asset-atlas",
+    "camera": "custom-asset",
+    "columns": 8,
+    "formats": [
+      "png",
+      "webp"
+    ],
+    "compatibility": [],
+    "asset_kind": "asset"
+  },
+  "output": {
+    "use": "custom-assets",
+    "frame_semantics": "user-defined"
+  },
+  "asset_kind": "vfx",
+  "extraction_mode": "slots",
+  "sampling_policy": {
+    "filter": "nearest",
+    "wrap": "clamp-to-edge",
+    "mipmaps": false,
+    "pixel_snap": true
+  },
+  "generation_background": {
+    "family": "neutral",
+    "name": "black",
+    "hex": "#000000",
+    "rgb": [
+      0,
+      0,
+      0
+    ],
+    "selection": "auto",
+    "score": 91.27
+  },
+  "background_removal": {
+    "method": "auto",
+    "model": "birefnet-general",
+    "device": "auto",
+    "alpha_matting": false,
+    "post_rembg_chroma_cleanup": false,
+    "source_family": "neutral"
+  },
+  "asset_catalog": {
+    "items": {
+      "electric-comment": {
+        "category": "satirical-fightfx",
+        "pivot": [
+          64,
+          120
+        ],
+        "strategy_class": "compact_prop",
+        "blend_mode": "screen",
+        "compositing_backgrounds": [
+          "#000000",
+          "#808080",
+          "#FFFFFF"
+        ]
+      },
+      "receipt-snap": {
+        "category": "satirical-fightfx",
+        "pivot": [
+          64,
+          120
+        ],
+        "strategy_class": "compact_prop",
+        "blend_mode": "screen",
+        "compositing_backgrounds": [
+          "#000000",
+          "#808080",
+          "#FFFFFF"
+        ]
+      },
+      "scooter-dust": {
+        "category": "satirical-fightfx",
+        "pivot": [
+          64,
+          120
+        ],
+        "strategy_class": "compact_prop",
+        "blend_mode": "screen",
+        "compositing_backgrounds": [
+          "#000000",
+          "#808080",
+          "#FFFFFF"
+        ]
+      },
+      "cardboard-impact": {
+        "category": "satirical-fightfx",
+        "pivot": [
+          64,
+          120
+        ],
+        "strategy_class": "compact_prop",
+        "blend_mode": "screen",
+        "compositing_backgrounds": [
+          "#000000",
+          "#808080",
+          "#FFFFFF"
+        ]
+      },
+      "wifi-fold": {
+        "category": "satirical-fightfx",
+        "pivot": [
+          64,
+          120
+        ],
+        "strategy_class": "compact_prop",
+        "blend_mode": "screen",
+        "compositing_backgrounds": [
+          "#000000",
+          "#808080",
+          "#FFFFFF"
+        ]
+      },
+      "coupon-slash": {
+        "category": "satirical-fightfx",
+        "pivot": [
+          64,
+          120
+        ],
+        "strategy_class": "compact_prop",
+        "blend_mode": "screen",
+        "compositing_backgrounds": [
+          "#000000",
+          "#808080",
+          "#FFFFFF"
+        ]
+      },
+      "guard-spark": {
+        "category": "satirical-fightfx",
+        "pivot": [
+          64,
+          120
+        ],
+        "strategy_class": "compact_prop",
+        "blend_mode": "screen",
+        "compositing_backgrounds": [
+          "#000000",
+          "#808080",
+          "#FFFFFF"
+        ]
+      },
+      "comic-ko": {
+        "category": "satirical-fightfx",
+        "pivot": [
+          64,
+          120
+        ],
+        "strategy_class": "compact_prop",
+        "blend_mode": "screen",
+        "compositing_backgrounds": [
+          "#000000",
+          "#808080",
+          "#FFFFFF"
+        ]
+      }
+    }
+  }
+}

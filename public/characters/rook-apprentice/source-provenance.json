@@ -1,0 +1,42 @@
+{
+  "version": 2,
+  "kind": "sprite-source-provenance",
+  "source_type": "imagegen",
+  "art_engine": "imagegen",
+  "fixture": false,
+  "verification_status": "verified",
+  "accepted_sources": [
+    {
+      "path": "source/rook-apprentice-imagegen-sheet.png",
+      "sha256": "a77d3094d34a0490646ac6916b76cb7af1bcb624948d85565da7ff9228e440e2",
+      "size_bytes": 1663466,
+      "states": [
+        "idle",
+        "crouch",
+        "jump",
+        "punch",
+        "kick",
+        "hitstun"
+      ]
+    },
+    {
+      "path": "source/rook-apprentice-walk-forward-imagegen-row.png",
+      "sha256": "adf77d2e8bc29004eadd7af56e38e0ff301fd4a8f5e9175b167abf4e1448b49b",
+      "size_bytes": 1295470,
+      "states": [
+        "walk-forward"
+      ]
+    }
+  ],
+  "state_coverage": [
+    "idle",
+    "walk-forward",
+    "crouch",
+    "jump",
+    "punch",
+    "kick",
+    "hitstun"
+  ],
+  "notes": "Repository README declares the accepted source bitmaps as built-in Imagegen outputs. Exact source bytes are hash-bound here; the historical green source is explicitly classified as legacy-chroma and is not a neutral-background regeneration claim.",
+  "license": "repository-owned-imagegen-original-rook-apprentice"
+}

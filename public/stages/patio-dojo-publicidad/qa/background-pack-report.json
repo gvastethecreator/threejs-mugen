@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "kind": "background-pack-validation",
+  "ok": true,
+  "pack_id": "patio-dojo-publicidad",
+  "representative": true,
+  "source_types": [
+    "imagegen"
+  ],
+  "evidence": {
+    "production_media": {
+      "representative": true,
+      "provenance_verified": true,
+      "source_types": [
+        "imagegen"
+      ]
+    }
+  },
+  "checked_layers": [
+    "patio-dojo-publicidad-far",
+    "patio-dojo-publicidad-mid",
+    "patio-dojo-publicidad-near"
+  ],
+  "camera": {
+    "aspect_ratio": "16:9",
+    "horizon_y": 0.58,
+    "focal_safe_zone": {
+      "x": 0.2,
+      "y": 0.18,
+      "width": 0.6,
+      "height": 0.68
+    }
+  },
+  "layers": [
+    {
+      "id": "patio-dojo-publicidad-far",
+      "role": "far",
+      "path": "source/patio-dojo-publicidad-far-imagegen.png",
+      "sha256": "561d16c438836b04fc10a77183842d19a11fd33619083df9ecb65c8e226bab08",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 0,
+      "depth": 0.14,
+      "parallax_x": 0.08,
+      "parallax_y": 0.02,
+      "repeat_x": false,
+      "blend_mode": "normal",
+      "seam_delta": null
+    },
+    {
+      "id": "patio-dojo-publicidad-mid",
+      "role": "mid",
+      "path": "source/patio-dojo-publicidad-mid-imagegen.png",
+      "sha256": "3657291f1d1e3da37b176f1d32c0f0095a263b2d9d809eb95d24c4f0275b4cce",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 1,
+      "depth": 0.5,
+      "parallax_x": 0.42,
+      "parallax_y": 0.08,
+      "repeat_x": false,
+      "blend_mode": "normal",
+      "seam_delta": null
+    },
+    {
+      "id": "patio-dojo-publicidad-near",
+      "role": "near",
+      "path": "source/patio-dojo-publicidad-near-alpha.png",
+      "sha256": "0815bd240382d6144bf85a075225799b3a4a4fac38ef6b403f82775847012037",
+      "provenance": {
+        "source_type": "imagegen",
+        "art_engine": "imagegen",
+        "fixture": false,
+        "verification_status": "verified"
+      },
+      "order": 2,
+      "depth": 0.92,
+      "parallax_x": 0.88,
+      "parallax_y": 0.16,
+      "repeat_x": false,
+      "blend_mode": "normal",
+      "seam_delta": null
+    }
+  ],
+  "composite": {
+    "path": "qa/background-composite.png",
+    "sha256": "c9f6cc33d9d09b59cd90488ef6d65c66f171854c7d79b7774617e42f02b36713"
+  },
+  "scroll_preview": {
+    "path": "qa/background-scroll.gif",
+    "sha256": "79851a0edcac9de97e1562b15fdd027e3ed8b0c924f228df70988d2c5e0a9319"
+  },
+  "errors": [],
+  "warnings": []
+}

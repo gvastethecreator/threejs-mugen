@@ -1,0 +1,1541 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "curation_applied": false,
+  "errors": [],
+  "atlas": "sprite-sheet-alpha.png",
+  "manifest": "manifest.json",
+  "cell": {
+    "shape": "square",
+    "width": 192,
+    "height": 192,
+    "safe_margin_x": 24,
+    "safe_margin_y": 24,
+    "size": 192,
+    "safe_margin": 24
+  },
+  "states": [
+    "idle",
+    "walk-forward",
+    "walk-back",
+    "crouch",
+    "jump",
+    "light-strike",
+    "heavy-strike",
+    "special",
+    "throw",
+    "guard",
+    "hitstun",
+    "knockdown",
+    "ko",
+    "win"
+  ],
+  "cells": [
+    {
+      "state": "idle",
+      "frame": 0,
+      "nontransparent_pixels": 5214,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 0,
+      "y": 0,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "idle",
+      "frame": 1,
+      "nontransparent_pixels": 4705,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 192,
+      "y": 0,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "idle",
+      "frame": 2,
+      "nontransparent_pixels": 6168,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 384,
+      "y": 0,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "idle",
+      "frame": 3,
+      "nontransparent_pixels": 7193,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 576,
+      "y": 0,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-forward",
+      "frame": 0,
+      "nontransparent_pixels": 5913,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 0,
+      "y": 192,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-forward",
+      "frame": 1,
+      "nontransparent_pixels": 5204,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 192,
+      "y": 192,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-forward",
+      "frame": 2,
+      "nontransparent_pixels": 5913,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 384,
+      "y": 192,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-forward",
+      "frame": 3,
+      "nontransparent_pixels": 5204,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 576,
+      "y": 192,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-forward",
+      "frame": 4,
+      "nontransparent_pixels": 5913,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 768,
+      "y": 192,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-forward",
+      "frame": 5,
+      "nontransparent_pixels": 5204,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 960,
+      "y": 192,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-forward",
+      "frame": 6,
+      "nontransparent_pixels": 5913,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 1152,
+      "y": 192,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-forward",
+      "frame": 7,
+      "nontransparent_pixels": 5204,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 1344,
+      "y": 192,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-back",
+      "frame": 0,
+      "nontransparent_pixels": 5215,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 0,
+      "y": 384,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-back",
+      "frame": 1,
+      "nontransparent_pixels": 5925,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 192,
+      "y": 384,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-back",
+      "frame": 2,
+      "nontransparent_pixels": 5215,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 384,
+      "y": 384,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-back",
+      "frame": 3,
+      "nontransparent_pixels": 5925,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 576,
+      "y": 384,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-back",
+      "frame": 4,
+      "nontransparent_pixels": 5215,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 768,
+      "y": 384,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-back",
+      "frame": 5,
+      "nontransparent_pixels": 5925,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 960,
+      "y": 384,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-back",
+      "frame": 6,
+      "nontransparent_pixels": 5215,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 1152,
+      "y": 384,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "walk-back",
+      "frame": 7,
+      "nontransparent_pixels": 5925,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 1344,
+      "y": 384,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "crouch",
+      "frame": 0,
+      "nontransparent_pixels": 5214,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 0,
+      "y": 576,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "crouch",
+      "frame": 1,
+      "nontransparent_pixels": 4567,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 192,
+      "y": 576,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "crouch",
+      "frame": 2,
+      "nontransparent_pixels": 4567,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 384,
+      "y": 576,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "crouch",
+      "frame": 3,
+      "nontransparent_pixels": 4567,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 576,
+      "y": 576,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "jump",
+      "frame": 0,
+      "nontransparent_pixels": 4574,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 0,
+      "y": 768,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "jump",
+      "frame": 1,
+      "nontransparent_pixels": 4907,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 192,
+      "y": 768,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "jump",
+      "frame": 2,
+      "nontransparent_pixels": 4907,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 384,
+      "y": 768,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "jump",
+      "frame": 3,
+      "nontransparent_pixels": 4907,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 576,
+      "y": 768,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "jump",
+      "frame": 4,
+      "nontransparent_pixels": 4907,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 768,
+      "y": 768,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "jump",
+      "frame": 5,
+      "nontransparent_pixels": 4574,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 960,
+      "y": 768,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "light-strike",
+      "frame": 0,
+      "nontransparent_pixels": 5205,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 0,
+      "y": 960,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "light-strike",
+      "frame": 1,
+      "nontransparent_pixels": 7539,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 192,
+      "y": 960,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "light-strike",
+      "frame": 2,
+      "nontransparent_pixels": 7539,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 384,
+      "y": 960,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "light-strike",
+      "frame": 3,
+      "nontransparent_pixels": 5205,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 576,
+      "y": 960,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "heavy-strike",
+      "frame": 0,
+      "nontransparent_pixels": 5207,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 0,
+      "y": 1152,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "heavy-strike",
+      "frame": 1,
+      "nontransparent_pixels": 7630,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 192,
+      "y": 1152,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "heavy-strike",
+      "frame": 2,
+      "nontransparent_pixels": 7630,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 384,
+      "y": 1152,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "heavy-strike",
+      "frame": 3,
+      "nontransparent_pixels": 7630,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 576,
+      "y": 1152,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "heavy-strike",
+      "frame": 4,
+      "nontransparent_pixels": 7630,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 768,
+      "y": 1152,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "heavy-strike",
+      "frame": 5,
+      "nontransparent_pixels": 5207,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 960,
+      "y": 1152,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "special",
+      "frame": 0,
+      "nontransparent_pixels": 5220,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 0,
+      "y": 1344,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "special",
+      "frame": 1,
+      "nontransparent_pixels": 6335,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.6054 of opaque pixels"
+      ],
+      "x": 192,
+      "y": 1344,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "special",
+      "frame": 2,
+      "nontransparent_pixels": 6335,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.6054 of opaque pixels"
+      ],
+      "x": 384,
+      "y": 1344,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "special",
+      "frame": 3,
+      "nontransparent_pixels": 6335,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.6054 of opaque pixels"
+      ],
+      "x": 576,
+      "y": 1344,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "special",
+      "frame": 4,
+      "nontransparent_pixels": 6335,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.6054 of opaque pixels"
+      ],
+      "x": 768,
+      "y": 1344,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "special",
+      "frame": 5,
+      "nontransparent_pixels": 6335,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.6054 of opaque pixels"
+      ],
+      "x": 960,
+      "y": 1344,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "special",
+      "frame": 6,
+      "nontransparent_pixels": 5220,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 1152,
+      "y": 1344,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "special",
+      "frame": 7,
+      "nontransparent_pixels": 5220,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 1344,
+      "y": 1344,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "throw",
+      "frame": 0,
+      "nontransparent_pixels": 892,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.3543 of opaque pixels"
+      ],
+      "x": 0,
+      "y": 1536,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "throw",
+      "frame": 1,
+      "nontransparent_pixels": 832,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.2825 of opaque pixels"
+      ],
+      "x": 192,
+      "y": 1536,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "throw",
+      "frame": 2,
+      "nontransparent_pixels": 832,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.2825 of opaque pixels"
+      ],
+      "x": 384,
+      "y": 1536,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "throw",
+      "frame": 3,
+      "nontransparent_pixels": 832,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.2825 of opaque pixels"
+      ],
+      "x": 576,
+      "y": 1536,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "throw",
+      "frame": 4,
+      "nontransparent_pixels": 892,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.3543 of opaque pixels"
+      ],
+      "x": 768,
+      "y": 1536,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "throw",
+      "frame": 5,
+      "nontransparent_pixels": 892,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.3543 of opaque pixels"
+      ],
+      "x": 960,
+      "y": 1536,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "guard",
+      "frame": 0,
+      "nontransparent_pixels": 5872,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 0,
+      "y": 1728,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "guard",
+      "frame": 1,
+      "nontransparent_pixels": 5872,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 192,
+      "y": 1728,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "guard",
+      "frame": 2,
+      "nontransparent_pixels": 5872,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 384,
+      "y": 1728,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "hitstun",
+      "frame": 0,
+      "nontransparent_pixels": 5207,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 0,
+      "y": 1920,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "hitstun",
+      "frame": 1,
+      "nontransparent_pixels": 6564,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 192,
+      "y": 1920,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "hitstun",
+      "frame": 2,
+      "nontransparent_pixels": 6564,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 384,
+      "y": 1920,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "hitstun",
+      "frame": 3,
+      "nontransparent_pixels": 5207,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 576,
+      "y": 1920,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "knockdown",
+      "frame": 0,
+      "nontransparent_pixels": 6737,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 0,
+      "y": 2112,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "knockdown",
+      "frame": 1,
+      "nontransparent_pixels": 3453,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 192,
+      "y": 2112,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "knockdown",
+      "frame": 2,
+      "nontransparent_pixels": 3453,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 384,
+      "y": 2112,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "knockdown",
+      "frame": 3,
+      "nontransparent_pixels": 3453,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 576,
+      "y": 2112,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "knockdown",
+      "frame": 4,
+      "nontransparent_pixels": 3453,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 768,
+      "y": 2112,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "knockdown",
+      "frame": 5,
+      "nontransparent_pixels": 3453,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 960,
+      "y": 2112,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "ko",
+      "frame": 0,
+      "nontransparent_pixels": 6737,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 0,
+      "y": 2304,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "ko",
+      "frame": 1,
+      "nontransparent_pixels": 3453,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 192,
+      "y": 2304,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "ko",
+      "frame": 2,
+      "nontransparent_pixels": 3453,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 384,
+      "y": 2304,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "ko",
+      "frame": 3,
+      "nontransparent_pixels": 3453,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 576,
+      "y": 2304,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "ko",
+      "frame": 4,
+      "nontransparent_pixels": 3453,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 768,
+      "y": 2304,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "ko",
+      "frame": 5,
+      "nontransparent_pixels": 3453,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [],
+      "x": 960,
+      "y": 2304,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "win",
+      "frame": 0,
+      "nontransparent_pixels": 1134,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.2469 of opaque pixels"
+      ],
+      "x": 0,
+      "y": 2496,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "win",
+      "frame": 1,
+      "nontransparent_pixels": 1134,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.2469 of opaque pixels"
+      ],
+      "x": 192,
+      "y": 2496,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "win",
+      "frame": 2,
+      "nontransparent_pixels": 1134,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.2469 of opaque pixels"
+      ],
+      "x": 384,
+      "y": 2496,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "win",
+      "frame": 3,
+      "nontransparent_pixels": 1134,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.2469 of opaque pixels"
+      ],
+      "x": 576,
+      "y": 2496,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "win",
+      "frame": 4,
+      "nontransparent_pixels": 1134,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.2469 of opaque pixels"
+      ],
+      "x": 768,
+      "y": 2496,
+      "w": 192,
+      "h": 192
+    },
+    {
+      "state": "win",
+      "frame": 5,
+      "nontransparent_pixels": 1134,
+      "validation_profile": "normal",
+      "allow_full_cell": false,
+      "validation_warnings": [
+        "largest connected component covers only 0.2469 of opaque pixels"
+      ],
+      "x": 960,
+      "y": 2496,
+      "w": 192,
+      "h": 192
+    }
+  ],
+  "frame_layout": {
+    "sheetWidth": 1536,
+    "sheetHeight": 2688,
+    "cellWidth": 192,
+    "cellHeight": 192,
+    "rows": {
+      "idle": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 192,
+          "y": 0,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 576,
+          "y": 0,
+          "w": 192,
+          "h": 192
+        }
+      ],
+      "walk-forward": [
+        {
+          "x": 0,
+          "y": 192,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 192,
+          "y": 192,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 384,
+          "y": 192,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 576,
+          "y": 192,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 768,
+          "y": 192,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 960,
+          "y": 192,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 1152,
+          "y": 192,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 1344,
+          "y": 192,
+          "w": 192,
+          "h": 192
+        }
+      ],
+      "walk-back": [
+        {
+          "x": 0,
+          "y": 384,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 192,
+          "y": 384,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 384,
+          "y": 384,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 576,
+          "y": 384,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 768,
+          "y": 384,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 960,
+          "y": 384,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 1152,
+          "y": 384,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 1344,
+          "y": 384,
+          "w": 192,
+          "h": 192
+        }
+      ],
+      "crouch": [
+        {
+          "x": 0,
+          "y": 576,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 192,
+          "y": 576,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 384,
+          "y": 576,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 576,
+          "y": 576,
+          "w": 192,
+          "h": 192
+        }
+      ],
+      "jump": [
+        {
+          "x": 0,
+          "y": 768,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 192,
+          "y": 768,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 384,
+          "y": 768,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 576,
+          "y": 768,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 768,
+          "y": 768,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 960,
+          "y": 768,
+          "w": 192,
+          "h": 192
+        }
+      ],
+      "light-strike": [
+        {
+          "x": 0,
+          "y": 960,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 192,
+          "y": 960,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 384,
+          "y": 960,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 576,
+          "y": 960,
+          "w": 192,
+          "h": 192
+        }
+      ],
+      "heavy-strike": [
+        {
+          "x": 0,
+          "y": 1152,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 192,
+          "y": 1152,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 384,
+          "y": 1152,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 576,
+          "y": 1152,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 768,
+          "y": 1152,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 960,
+          "y": 1152,
+          "w": 192,
+          "h": 192
+        }
+      ],
+      "special": [
+        {
+          "x": 0,
+          "y": 1344,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 192,
+          "y": 1344,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 384,
+          "y": 1344,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 576,
+          "y": 1344,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 768,
+          "y": 1344,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 960,
+          "y": 1344,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 1152,
+          "y": 1344,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 1344,
+          "y": 1344,
+          "w": 192,
+          "h": 192
+        }
+      ],
+      "throw": [
+        {
+          "x": 0,
+          "y": 1536,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 192,
+          "y": 1536,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 384,
+          "y": 1536,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 576,
+          "y": 1536,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 768,
+          "y": 1536,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 960,
+          "y": 1536,
+          "w": 192,
+          "h": 192
+        }
+      ],
+      "guard": [
+        {
+          "x": 0,
+          "y": 1728,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 192,
+          "y": 1728,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 384,
+          "y": 1728,
+          "w": 192,
+          "h": 192
+        }
+      ],
+      "hitstun": [
+        {
+          "x": 0,
+          "y": 1920,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 192,
+          "y": 1920,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 384,
+          "y": 1920,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 576,
+          "y": 1920,
+          "w": 192,
+          "h": 192
+        }
+      ],
+      "knockdown": [
+        {
+          "x": 0,
+          "y": 2112,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 192,
+          "y": 2112,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 384,
+          "y": 2112,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 576,
+          "y": 2112,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 768,
+          "y": 2112,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 960,
+          "y": 2112,
+          "w": 192,
+          "h": 192
+        }
+      ],
+      "ko": [
+        {
+          "x": 0,
+          "y": 2304,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 192,
+          "y": 2304,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 384,
+          "y": 2304,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 576,
+          "y": 2304,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 768,
+          "y": 2304,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 960,
+          "y": 2304,
+          "w": 192,
+          "h": 192
+        }
+      ],
+      "win": [
+        {
+          "x": 0,
+          "y": 2496,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 192,
+          "y": 2496,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 384,
+          "y": 2496,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 576,
+          "y": 2496,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 768,
+          "y": 2496,
+          "w": 192,
+          "h": 192
+        },
+        {
+          "x": 960,
+          "y": 2496,
+          "w": 192,
+          "h": 192
+        }
+      ]
+    }
+  },
+  "atlas_outputs": {
+    "png": {
+      "path": "sprite-sheet-alpha.png",
+      "sha256": "90da4b745f0dc7b4a25dac2afb72f25eb351c780242a01f0e6744c40eb344aa4",
+      "size_bytes": 513351,
+      "lossless": true
+    },
+    "webp": {
+      "path": "sprite-sheet-alpha.webp",
+      "sha256": "2d35ad377607e2e71c98e6c04c3e5fe85e09840f49812fc0b08ec48ce3614ebd",
+      "size_bytes": 244860,
+      "lossless": true
+    }
+  }
+}

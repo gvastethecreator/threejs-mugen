@@ -13,8 +13,28 @@ export type RuntimeCombatAttack = {
   attr?: string;
   hitPause: number;
   hitStun: number;
+  airHitTime?: number;
+  /** M.U.G.E.N down.hittime for a lying defender. */
+  downHitTime?: number;
+  /** Effective down.velocity Y; non-zero values transition the hit into air. */
+  downVelocityY?: number;
+  /** Authored down.velocity X for a lying defender; applied in attacker-relative coordinates. */
+  downVelocityX?: number;
+  /** Authored down.velocity Z for a lying defender. */
+  downVelocityZ?: number;
+  /** M.U.G.E.N down.bounce metadata carried to the hit-fall path. */
+  downBounce?: boolean;
+  /** M.U.G.E.N fall flag. Air hit time does not drive a falling reaction. */
+  fall?: {
+    enabled: boolean;
+    airFall?: boolean;
+  };
   push: number;
   hitVelocityY?: number;
+  /** Ground HitDef velocity Z. */
+  hitVelocityZ?: number;
+  /** Air HitDef velocity Z, selected for airborne defenders. */
+  airVelocityZ?: number;
   guardDistance?: number;
   guardFlag?: string;
   guardDamage?: number;
@@ -23,10 +43,13 @@ export type RuntimeCombatAttack = {
   guardStun?: number;
   guardSlideTime?: number;
   guardControlTime?: number;
+  airGuardControlTime?: number;
   guardPush?: number;
   guardVelocityY?: number;
+  guardVelocityZ?: number;
   airGuardPush?: number;
   airGuardVelocityY?: number;
+  airGuardVelocityZ?: number;
   cornerPush?: number;
   airCornerPush?: number;
   downCornerPush?: number;
@@ -47,6 +70,7 @@ export type RuntimeCombatHitResult =
       controlTime?: number;
       push: number;
       hitVelocityY?: number;
+      hitVelocityZ?: number;
       cornerPush?: number;
       powerGain: number;
     }
@@ -59,12 +83,65 @@ export type RuntimeCombatHitResult =
       pause: number;
       stun: number;
       push: number;
+      hitVelocityX?: number;
       hitVelocityY?: number;
+      hitVelocityZ?: number;
       cornerPush?: number;
       powerGain: number;
     };
 
 export const DEFAULT_RUNTIME_GUARD_DISTANCE = 96;
+
+/**
+ * M.U.G.E.N's fall.recover defaults are applied only when the HitDef actually
+ * enables the fall path. Explicit values, including recover=0, remain intact.
+ */
+export const DEFAULT_RUNTIME_FALL_RECOVER_TIME = 4;
+
+/** M.U.G.E.N's omitted 240p fall.yvelocity baseline. */
+export const DEFAULT_RUNTIME_FALL_Y_VELOCITY = -4.5;
+
+/**
+ * Resolve the documented omitted fall.yvelocity for a player's localcoord.
+ * M.U.G.E.N documents a width-scaled 240p/480p/720p sequence (-4.5/-9/-18).
+ */
+export function resolveRuntimeFallYVelocityDefaults(
+  localCoord?: readonly [number, number],
+): number {
+  const width = localCoord?.[0];
+  if (width === undefined || !Number.isFinite(width) || width <= 0) {
+    return DEFAULT_RUNTIME_FALL_Y_VELOCITY;
+  }
+  return DEFAULT_RUNTIME_FALL_Y_VELOCITY * (width / 320);
+}
+
+export function resolveRuntimeFallRecoveryDefaults(input: {
+  enabled?: boolean;
+  recover?: boolean;
+  recoverTime?: number;
+}): { recover?: boolean; recoverTime?: number } {
+  const recover = input.enabled === true && input.recover === undefined
+    ? true
+    : input.recover;
+  return {
+    recover,
+    recoverTime:
+      input.enabled === true && recover === true && input.recoverTime === undefined
+        ? DEFAULT_RUNTIME_FALL_RECOVER_TIME
+        : input.recoverTime,
+  };
+}
+
+/**
+ * Resolves the effective M.U.G.E.N fall flag for the defender's current state.
+ * `air.fall` is an airborne-only override; omitted air.fall follows the base fall flag.
+ */
+export function resolveRuntimeFallEnabled(
+  fall: { enabled?: boolean; airFall?: boolean } | undefined,
+  defenderStateType: CharacterRuntimeState["stateType"],
+): boolean {
+  return fall?.enabled === true || (defenderStateType === "A" && fall?.airFall === true);
+}
 
 export function runtimeWorldBox(
   actor: Pick<CharacterRuntimeState, "pos" | "facing"> & Partial<Pick<CharacterRuntimeState, "clsnAngle">>,
@@ -329,6 +406,7 @@ export function resolveRuntimeCombatHit(input: {
       input.attack.guardPush ??
       Math.max(1, Math.round(input.attack.push * 0.55));
     const hitVelocityY = (isAirGuard ? input.attack.airGuardVelocityY : undefined) ?? input.attack.guardVelocityY;
+    const hitVelocityZ = (isAirGuard ? input.attack.airGuardVelocityZ : undefined) ?? input.attack.guardVelocityZ;
     const cornerPush = (isAirGuard ? input.attack.airGuardCornerPush : undefined) ?? input.attack.guardCornerPush;
     return {
       kind: "guard",
@@ -346,9 +424,10 @@ export function resolveRuntimeCombatHit(input: {
       pause,
       stun,
       slideTime: input.attack.guardSlideTime,
-      controlTime: input.attack.guardControlTime,
+      controlTime: (isAirGuard ? input.attack.airGuardControlTime : undefined) ?? input.attack.guardControlTime,
       push,
       hitVelocityY,
+      hitVelocityZ,
       cornerPush,
       powerGain: 12,
     };
@@ -356,6 +435,10 @@ export function resolveRuntimeCombatHit(input: {
 
   const isAirHit = input.defender.stateType === "A";
   const isDownHit = input.defender.stateType === "L";
+  const usesDownHitTime = isDownHit && (input.attack.downVelocityY ?? 0) === 0;
+  const usesAirHitTime =
+    (isAirHit || (isDownHit && !usesDownHitTime)) &&
+    !resolveRuntimeFallEnabled(input.attack.fall, input.defender.stateType);
   return {
     kind: "hit",
     damage: scaleRuntimeIncomingDamage(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.damage)),
@@ -372,9 +455,19 @@ export function resolveRuntimeCombatHit(input: {
       : { redLife: scaleRuntimeIncomingAmount(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.redLife)) }),
     kill: input.attack.kill ?? true,
     pause: input.attack.hitPause,
-    stun: input.attack.hitStun,
+    stun: usesDownHitTime
+      ? input.attack.downHitTime ?? 20
+      : usesAirHitTime
+        ? input.attack.airHitTime ?? 20
+        : input.attack.hitStun,
     push: input.attack.push,
-    hitVelocityY: input.attack.hitVelocityY,
+    ...(isDownHit && input.attack.downVelocityX !== undefined ? { hitVelocityX: input.attack.downVelocityX } : {}),
+    hitVelocityY: isDownHit ? input.attack.downVelocityY ?? input.attack.hitVelocityY : input.attack.hitVelocityY,
+    hitVelocityZ: isDownHit
+      ? input.attack.downVelocityZ ?? input.attack.airVelocityZ ?? input.attack.hitVelocityZ
+      : isAirHit
+        ? input.attack.airVelocityZ ?? input.attack.hitVelocityZ
+        : input.attack.hitVelocityZ,
     cornerPush:
       (isDownHit ? input.attack.downCornerPush : undefined) ??
       (isAirHit ? input.attack.airCornerPush : undefined) ??

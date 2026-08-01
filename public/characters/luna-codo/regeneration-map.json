@@ -1,0 +1,178 @@
+{
+  "version": 2,
+  "kind": "classic-character-regeneration-map",
+  "character_id": "luna-codo",
+  "provider": "imagegen",
+  "source_action_grid": "source/luna-codo-action-grid-imagegen-v2.png",
+  "source_identity": "source/luna-codo-identity-imagegen-v2.png",
+  "cell_grid": {
+    "columns": 4,
+    "rows": 4,
+    "source_width": 1254,
+    "source_height": 1254,
+    "crop": "inner 1px border, nearest to 192px"
+  },
+  "cells": {
+    "0": "idle-a",
+    "1": "idle-b",
+    "2": "idle-c",
+    "3": "idle-d",
+    "4": "walk-forward-contact",
+    "5": "walk-back-contact",
+    "6": "crouch",
+    "7": "jump",
+    "8": "light-strike",
+    "9": "heavy-strike",
+    "10": "special",
+    "11": "throw",
+    "12": "guard",
+    "13": "hitstun",
+    "14": "knockdown",
+    "15": "win",
+    "16": "walk-forward-contact-right",
+    "17": "walk-forward-pass-left",
+    "18": "walk-forward-contact-left",
+    "19": "walk-forward-pass-right",
+    "20": "walk-forward-contact-right-return",
+    "21": "walk-forward-pass-left-return",
+    "22": "walk-forward-contact-left-return",
+    "23": "walk-forward-pass-right-return",
+    "24": "walk-back-contact-right",
+    "25": "walk-back-pass-left",
+    "26": "walk-back-contact-left",
+    "27": "walk-back-pass-right",
+    "28": "walk-back-contact-right-return",
+    "29": "walk-back-pass-left-return",
+    "30": "walk-back-contact-left-return",
+    "31": "walk-back-pass-right-return",
+    "32": "guard-buildup",
+    "33": "guard-peak-flash",
+    "34": "guard-impact-hold",
+    "35": "guard-decay-recovery",
+    "36": "special-anticipation",
+    "37": "special-chamber",
+    "38": "special-extension",
+    "39": "special-impact",
+    "40": "special-follow-through",
+    "41": "special-recoil",
+    "42": "special-recovery",
+    "43": "special-guard-return"
+  },
+  "state_frames": {
+    "idle": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "walk-forward": [
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "walk-back": [
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "crouch": [
+      0,
+      6,
+      6,
+      6
+    ],
+    "jump": [
+      6,
+      7,
+      7,
+      7,
+      7,
+      6
+    ],
+    "light-strike": [
+      0,
+      9,
+      9,
+      0
+    ],
+    "heavy-strike": [
+      0,
+      9,
+      9,
+      9,
+      9,
+      0
+    ],
+    "special": [
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43
+    ],
+    "throw": [
+      0,
+      11,
+      11,
+      11,
+      0,
+      0
+    ],
+    "guard": [
+      32,
+      33,
+      34,
+      35
+    ],
+    "hitstun": [
+      0,
+      13,
+      13,
+      0
+    ],
+    "knockdown": [
+      13,
+      14,
+      14,
+      14,
+      14,
+      14
+    ],
+    "ko": [
+      13,
+      14,
+      14,
+      14,
+      14,
+      14
+    ],
+    "win": [
+      15,
+      15,
+      15,
+      15,
+      15,
+      15
+    ]
+  },
+  "row_sources": {
+    "walk-forward": "source/luna-codo-walk-forward-imagegen-v2.png",
+    "walk-back": "source/luna-codo-walk-back-imagegen-v2.png",
+    "guard": "source/luna-codo-guard-imagegen-v2.png",
+    "special": "source/luna-codo-special-imagegen-v2.png"
+  },
+  "notes": "Provider-generated action grid v2b plus an independently generated 4x2 walk-forward row; no generated row recycles another state's cells."
+}

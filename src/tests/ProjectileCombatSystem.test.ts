@@ -96,6 +96,164 @@ describe("ProjectileCombatSystem", () => {
     expect(touching).toEqual([]);
   });
 
+  it("carries projectile down.bounce and fall metadata into the hit-fall runtime", () => {
+    let projectiles = [projectile({
+      downBounce: false,
+      fall: { enabled: true, yVelocity: -6 },
+    })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, life: 1000 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.hitFall).toMatchObject({
+      falling: true,
+      downBounce: false,
+      recover: true,
+      recoverTime: 4,
+      velocity: { y: -6 },
+    });
+  });
+
+  it("applies projectile down.velocity X to a lying defender", () => {
+    let projectiles = [projectile({ downVelocityX: 4 })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, stateType: "L", life: 1000 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.vel.x).toBe(-4);
+    expect(defender.runtime.hitVelocity?.x).toBe(-4);
+  });
+
+  it("applies projectile air.fall only to an airborne defender", () => {
+    const resolve = (stateType: "S" | "A") => {
+      let projectiles = [projectile({ fall: { enabled: false, airFall: true } })];
+      const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+      const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, stateType, life: 1000 }));
+
+      new RuntimeProjectileCombatWorld().resolveCombat({
+        attacker,
+        defender,
+        projectiles,
+        hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+        holdingBack: false,
+        log: () => undefined,
+        rememberTarget: () => undefined,
+        applyHitOverride: () => undefined,
+        removeProjectilesMarkedForRemoval: () => {
+          projectiles = projectiles.filter((entry) => !entry.removalReason);
+        },
+      });
+      return defender;
+    };
+
+    expect(resolve("S").runtime.hitFall).toMatchObject({ falling: false });
+    expect(resolve("A").runtime.hitFall).toMatchObject({ falling: true, recover: true, recoverTime: 4 });
+  });
+
+  it("defaults projectile fall y velocity from the projectile localcoord", () => {
+    let projectiles = [projectile({
+      localCoord: [640, 480],
+      fall: { enabled: true },
+    })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, life: 1000 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.hitFall?.velocity.y).toBe(-9);
+  });
+
+  it("preserves signed authored fall.xvelocity across projectile facing", () => {
+    let projectiles = [projectile({
+      facing: -1,
+      fall: { enabled: true, xVelocity: -3, yVelocity: -9, zVelocity: 2.5 },
+    })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, life: 1000 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.hitFall?.velocity).toEqual({ x: -3, y: -9, z: 2.5 });
+  });
+
+  it("applies projectile HitDef velocity Z for airborne contacts", () => {
+    let projectiles = [projectile({ hitVelocityZ: 3, airVelocityZ: 4 })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+    const defender = actor("p2", "P2", runtimeState({
+      pos: { x: 12, y: 0 },
+      stateType: "A",
+      life: 1000,
+      combatDepth: { position: 0, velocity: 0, size: [3, 3], attack: [4, 4] },
+    }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.hitVelocity?.z).toBe(4);
+    expect(defender.runtime.combatDepth?.velocity).toBe(4);
+  });
+
   it.each([
     ["S,NA", "normal"],
     ["S,SA", "special"],
@@ -914,6 +1072,8 @@ describe("ProjectileCombatSystem", () => {
     expect(defender.runtime.life).toBe(996);
     expect(defender.runtime.ctrl).toBe(false);
     expect(defender.runtime.guarding).toBe(true);
+    expect(defender.runtime.guardSlideTimeRemaining).toBe(8);
+    expect(defender.runtime.guardControlTimeRemaining).toBe(8);
     expect(defender.runtime.hitVars).toEqual({
       damage: 4,
       kill: true,

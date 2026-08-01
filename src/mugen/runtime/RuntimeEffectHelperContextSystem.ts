@@ -46,6 +46,7 @@ export type RuntimeEffectHelperContextOptions = Pick<
   | "onTargetLifeAdd"
   | "onRedirectedTargetDispatch"
   | "enterRedirectedTargetState"
+  | "onStateTransitionCycle"
 > & {
   opponents?: readonly RuntimeEffectHelperContextOpponent[];
 };
@@ -84,6 +85,7 @@ export type RuntimeEffectHelperContext = {
   onPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
   onTeamStandby?: RuntimeHelperAdvanceOptions["onTeamStandby"];
   scaleTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
+  onStateTransitionCycle?: RuntimeHelperAdvanceOptions["onStateTransitionCycle"];
 };
 
 export type RuntimeEffectHelperContextInput = {

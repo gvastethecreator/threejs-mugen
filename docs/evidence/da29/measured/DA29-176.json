@@ -2,19 +2,19 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-176",
   "kind": "I",
-  "generatedAt": "2026-07-27T14:28:11.939Z",
+  "generatedAt": "2026-08-01T18:12:01.158Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-176",
   "anchors": [
     {
       "path": "docs/IKEMEN_GO_REFERENCE.md",
-      "bytes": 16447,
-      "sha256": "b820fbef0920eb7e7487e6a36d1894363695b3a739ecfa4bc931e5b46c10a4f2"
+      "bytes": 19035,
+      "sha256": "5852be72bdb903b736972a8c8478e4c518375a0b9fa00e45258e4a50b122fcb6"
     }
   ],
   "functionResults": {
-    "bytes": 16447,
+    "bytes": 19035,
     "hasZss": true,
     "offlineOnly": true,
     "zssSubset": "source-reviewed-offline"

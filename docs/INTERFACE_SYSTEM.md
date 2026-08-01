@@ -91,3 +91,16 @@ pnpm qa:smoke
 - Studio Build now exposes a focused source-document editor for matched folder handles. Save is an explicit `Save & Reimport` action; ZIP packages and stale/unknown source identities stay read-only in the UI.
 - Add first-class Character Studio and Stage Studio editors after the current diagnostic previews are stable.
 - Add a visual diff view for trace artifacts instead of only metric/gate rows.
+
+## Fight First system — 2026-07-30
+
+The active interface no longer composes a dashboard from always-visible columns. It uses four stable layers:
+
+1. Quiet global header for Match, Inspect, Studio, current scene/source context, and one primary action.
+2. Scene-first workspace for the real Three.js runtime and centered fight HUD.
+3. Off-canvas Workspace/Source drawer plus one contextual right lens; both are explicit and independently dismissible.
+4. Bottom runtime toolbar and an explicit console drawer that stays closed until requested.
+
+Studio retains Workbench, Assets, Inspector, Stage, Debug, Evidence, Modules, and Build as route-stable tools. Route changes swap task content and contextual evidence without replacing the shell or introducing synthetic readiness language. Responsive behavior is scene-first on mobile, followed by the contextual lens; workspace navigation remains off-canvas and document-level horizontal overflow is not allowed.
+
+Active visual ownership is `src/styles/base.css`, base tokens/elements/accessibility, and `src/styles/redesign.css`. `src/styles/studio.css` intentionally imports no legacy Studio modules.

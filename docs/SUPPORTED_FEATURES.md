@@ -1,4 +1,180 @@
 ﻿# Supported Features
+## T427-T438 / T463-T464 bounded controller-persistence slices
+
+Under the explicit `ikemen-go` profile, direct `.zss` state references and a
+missing-CNS `.cns.zss` fallback now lower into the shared state IR and execute
+through the normal character loader/runtime. The executable grammar is limited
+to `StateDef`, ordered `Null`/`PosAdd`/`ChangeState`/`VelSet`, `if`/`else`,
+`#` comments, `ignoreHitPause`, and positive-integer `persistent(n)` wrappers.
+Mixed CNS/ZSS order, located M.U.G.E.N rejection, whole-source fail-closed
+behavior, and runtime compatibility telemetry are covered by required trace
+`ikemen-zss-live` (`47c627a2`). T428 additionally proves one direct mixed
+CNS/ZSS global-hit-pause route: source-located `ignoreHitPause` runs while its
+unwrapped ZSS sibling stays frozen (`ikemen-zss-hitpause-wrapper`, `b6533370`).
+T429 adds one source-located combined form:
+`ignoreHitPause persistent(2)` maintains actor/controller-local cadence while
+state time is frozen, executes at pause ticks 2/4, skips tick 3, and resets on
+the CNS transition into state 201 (`ikemen-zss-combined-persistent-wrapper`,
+`4ff43eb7`, inside 671/671 traces). Typecheck, 311/3260 suite, production
+build, boundaries, and targeted diff hygiene pass; this does not raise the
+support level or score.
+
+T430/T434 prove raw CNS positive `persistent = 2` normal active-root
+cadence/reset and sparse trigger-count semantics (`mugen-cns-persistent-cadence`,
+`f7c32a53`, plus the T434 required trace `3eb88436` in the 676/676 final corpus).
+T431 proves raw CNS `persistent = 0` runs once per ordinary active-root state
+entry, then again after `200 -> 201 -> 200`
+(`mugen-cns-persistent-zero`, `d13ad12a`, 673/673 traces). Both passed
+typecheck, full suite, build, and boundaries; direct same-id transition timing
+remains blocked. T432 closes the narrower raw-CNS paired paused one-shot route:
+`ignorehitpause = 1` plus `persistent = 0` executes at pause ticks 2/6 around
+`200 -> 201 -> 200` (`mugen-cns-hitpause-persistent-zero`, `94b49516`,
+674/674 traces). T433 closes the paired raw positive pause cadence at
+`d6d00fd0` in 675/675 traces. T435 adds raw-CNS `StateDef -2` sparse
+trigger-count persistence (`mugen-cns-special-persistent`, `6fce3962`, 677/677)
+and T436 adds raw-CNS `StateDef -3` sparse trigger-count persistence only when
+the actor has no `stateOwner` (`mugen-cns-state-minus-three-persistent`,
+`b2719d71`, 678/678). General ZSS, dynamic/general persistent semantics,
+interval ranges, State -1 positive ChangeState cadence, failed-value activation
+order, player-owned custom states, new controller
+families, Lua, system/screenpack ZSS, rollback/netplay, and parity remain
+unsupported.
+
+T437 adds a bounded imported CMD State -1 setup route: raw `persistent = 2`
+`VarSet` counts sparse trigger passes across `0 -> 200` in required trace
+`mugen-cns-state-minus-one-persistent` (`ba3d289d`, 679/679). T437 alone does
+not add State -1 ChangeState/zero, pause/helpers, dynamic values, or generic parity.
+
+T438 adds the matching imported CMD State -1 setup `persistent = 0` one-shot
+route (`27e1ffb7`, 680/680). T463 extends only that isolated marker to static
+State -1 `ChangeState`: the controller passes triggers, claims the marker
+before destination resolution, routes once through `0 -> 200 -> 201 -> 0`,
+and remains blocked at later eligible ticks (`88931500`, 681/681). Positive
+ChangeState intervals, failed destination activation order, pause, helpers,
+custom owners, dynamic values, ZSS, generic scheduling and parity remain
+unsupported.
+
+T464 adds only the matching static State -1 `ChangeState persistent = 2`
+trigger-count route. Sparse eligible scans at ticks 1/3/4 execute on ticks
+1/4, and the counter survives both `0 -> 200 -> 201 -> 0` chains
+(`mugen-cns-state-minus-one-changestate-persistent`, `3681fafa`, 682/682).
+Other intervals and the same T463 exclusions remain unsupported.
+
+## T465-T467 bounded hit/guard timing
+
+Direct and projectile guard contacts now keep authored
+`guard.slidetime`/`guard.ctrltime` values stable for `GetHitVar` while the
+default runtime advances separate remaining windows. The default route stops
+horizontal guard slide and restores control at those boundaries; normal hits,
+overrides, reversals, and intro reset clear the windows. Imported Common1 guard
+states remain the presentation owner. This is executed-partial only: air guard
+selection, hitpause cadence, exact friction, new Common1 authoring, and broad
+M.U.G.E.N/Ikemen parity remain unsupported.
+
+T466 adds `airguard.ctrltime` to HitDef/ModifyHitDef and projectile parsing,
+compilation and runtime resolution. Omitted values inherit resolved
+`guard.ctrltime`; explicit values affect only air guard contacts, while ground
+guard keeps the ground value. Parser/resolver/combat coverage and final gates
+pass. Air-guard state selection, hitpause timing, exact physics, and broad
+parity remain unsupported.
+
+T467 adds `air.hittime` to HitDef/ModifyHitDef and Projectile parsing,
+compilation, imported move/projectile data, and normal-hit resolution. Omitted air timing defaults to
+20 ticks, airborne normal hits select the explicit/default air value, and ground
+normal hits keep `ground.hittime`; guard timing is unchanged. Focused/compiler
+regressions and the 682/682 trace gate pass. Airborne Common1 state selection,
+landing/physics, hitpause cadence, dynamic expressions, and broad parity remain
+unsupported.
+
+T468 applies the official `fall=1` precedence in the effective direct-hit
+resolver: airborne falling hits use the existing ground `hitStun` fallback
+instead of `air.hittime`, while non-falling air hits retain the authored/default
+air value. Ground, guard, projectile no-fall, and direct fall metadata paths are
+unchanged. This does not claim exact Common1 fall/landing behavior or
+`GetHitVar(hittime)` lifetime parity.
+
+T469 is closed-bounded: direct HitDef, ModifyHitDef, and Projectile paths now carry
+`down.hittime` plus effective `down.velocity` Y into lying-target resolution.
+Zero-Y lie-down hits use authored/default 20-tick down timing; non-zero-Y
+launches use air timing and the launch velocity. Exact lie-down Common1 tables,
+bounce/recovery, and full `GetHitVar` lifetime parity remain unsupported.
+
+T472 is closed-bounded: direct HitDef, ModifyHitDef, and Projectile paths carry
+explicit `down.bounce` into direct/projectile fall metadata. `HitFallVel`
+consumes explicit `0` without applying bounce velocity while omitted/`1` keep
+the current compatibility path. Exact default adjudication, Common1 landing
+tables, bounce lifetime and full parity remain unsupported.
+
+T473 is closed-bounded: enabled direct/projectile fall metadata now applies the
+official omitted defaults `fall.recover = 1` and `fall.recovertime = 4`.
+Explicit false/custom values and disabled falls remain intact. This is an
+executed-partial metadata seam only; Common1 recovery-state choreography,
+landing timing and full M.U.G.E.N/Ikemen parity remain unsupported.
+
+T474 is closed-bounded: omitted direct/projectile fall metadata now applies the
+official `fall.yvelocity` defaults from localcoord width (`-4.5` at 320px,
+`-9` at 640px, `-18` at 1280px). Authored fall/hit velocities and invalid or
+missing localcoord fallback remain intact. This is an executed-partial
+metadata seam only; exact Common1 landing physics, non-linear viewport scaling
+and full M.U.G.E.N/Ikemen parity remain unsupported.
+
+T475 is closed-bounded: `air.fall` remains separate from base `fall` through
+HitDef, imported moves and projectiles. `fall = 0, air.fall = 1` materializes a
+falling reaction only for an airborne defender; base `fall = 1` remains effective
+in every eligible state. Compiler/resolver/direct/projectile/parser regressions
+and final gates pass. Exact Common1 fall/landing choreography, dynamic breadth
+and full M.U.G.E.N/Ikemen parity remain unsupported.
+
+T476 is closed-bounded: the horizontal `down.velocity` component now travels
+through HitDef, ModifyHitDef, imported moves and runtime projectiles, and direct
+or projectile lie-down contacts apply it with the official attacker-relative
+sign. Omitted X inherits authored `air.velocity` X; synthetic payloads that do
+not carry the new field keep the compatibility push fallback. Focused tests pass;
+full 324/3308 suite, build, trace 682/682 and boundary evidence pass. Exact
+Common1 lie-down choreography, dynamic-expression breadth and full
+M.U.G.E.N/Ikemen parity remain unsupported.
+
+T477 is closed-bounded: authored `fall.xvelocity` now remains signed through
+direct and projectile fall materialization instead of being mirrored by
+attacker or projectile facing. Omitted X remains a no-change value. Focused
+direct/projectile and HitFall coverage passes 121 tests; final 324/3310 suite,
+typecheck/build/boundaries and `qa:trace` 682/682 pass. Exact Common1
+landing/friction choreography, dynamic-expression breadth and full parity
+remain unsupported.
+
+T478 is closed-bounded: positive Ikemen CommonFX `[Info] fx.scale` now survives
+DEF loading, imported FightFX/CommonFX libraries and AIR frame resolution, then
+scales resolved hit-spark sprite dimensions and authored AIR/SFF axis offsets.
+Focused loader/importer/asset/renderer coverage passes 38 tests and typecheck is
+green. CommonFX `localcoord` is retained as metadata only; exact palette, layer,
+audio, cache and full projection parity remain unsupported.
+
+T479 is closed-bounded: CommonFX/FightFX resolved AIR frames now retain their
+authored `localcoord` and derive the effective visual factor from package width
+and the owning character's `localCoord`, matching the official Ikemen formula.
+Focused asset-resolution/importer coverage passes 39 tests and typecheck is
+green. Custom-state transitions, exact timing, palette/layer/audio/cache and
+full FightFX projection parity remain unsupported.
+
+T480 is closed-bounded: authored Ikemen `fall.zvelocity` now survives HitDef,
+imported state, projectile and `HitFallSet` materialization, is exposed through
+both `GetHitVar(fall.zvel)` aliases, and reaches `combatDepth.velocity` in
+`HitFallVel`. Focused compiler/direct/projectile/HitFall/imported-fighter/
+expression-context coverage passes 230/230; final 324/3316 suite,
+typecheck/build, boundaries and 682/682 traces are green. Exact M.U.G.E.N Z support,
+`down.velocity` Z, Common1 bounce tables and full depth physics remain
+unsupported.
+
+T481 is closed-bounded: the optional third component of Ikemen HitDef
+`ground.velocity`, `air.velocity`, `down.velocity`, `guard.velocity` and
+`airguard.velocity` now survives typed compiler, imported state and player-owned
+Projectile paths. Direct and projectile contact select the authored Z for the
+actual ground/air/down/guard context and write only explicit values to
+`combatDepth.velocity`; omitted Z remains absent. Focused coverage passes
+251/251; final 324/3317 suite, typecheck, build, boundaries and 682/682 traces
+are green. ModifyHitDef Z mutation, Common1 Z acceleration/friction, helper/team
+ownership breadth and full M.U.G.E.N/Ikemen depth parity remain unsupported.
+
 ## T288 bounded FightScreen intro-skip character reset
 
 At the source-shaped shutter signal, imported runtime roots reset to their
@@ -340,7 +516,9 @@ preserves the legacy immediate-fight route when both fields are absent.
 - The first `ikemen-go-scan` implementation scans package paths and text files before runtime execution.
 - Scanner-recognized IKEMEN-only features include `.zss` files, `.zss` state references, matching `.cns.zss` fallback files for CNS/ST references, ZSS `[Statedef ...]` / `[State ...]` code blocks, ZSS controller syntax, ZSS function/local-variable/loop/`ignoreHitPause`/`persistent` blocks, `.lua` files, `lua` / `luafile` / `luacode` hooks, Lua `hook.add` / `hook.run` / `hook.runFirst` calls, `config.json`, path-only screenpack `select/system/fight/storyboard/logo/intro/ending.def` files, screenpack `menu.itemname.*` entries, selected IKEMEN-only menu modes, select/story `unlock` expressions, `commandlist` and `movelist*` references, `IkemenVersion`, selected IKEMEN-only controller names such as `AssertCommand`, `AssertInput`, `AssertAnalogVector`, `Camera`, `CameraCtrl`, `ChangeMovelist`, `Depth`, `GetHitVarSet`, `LifeBarAction`, `GameMakeAnim`, `Text`, `ModifyText`, `RemoveText`, `RedLifeSet`, `ModifyPlayer`, `ModifyStageVar`, `ModifyBGCtrl`, `CameraCtrl`, `Dialogue`, `TagIn`, `TagOut`, `MapSet`, and `MapAdd`, selected IKEMEN-only controller params such as `RedirectID`, `F` fightfx animation prefixes, character-specific `fightfx.prefix` metadata, selected `AssertSpecial` flags, selected source-mapped extended trigger identifiers that are not in the current bounded runtime subset, model-stage assets, video background layers, and named 3D/Z stage params such as `topz`, `botz`, `ztopscale`, `depthtoscreen`, `zoffsetlink`, `startz`, `stagecamera.z`, `scenenumber`, `model`, `modeloffset`, `modelrotate`, `modelscale`, `attachedchar`, and `fov`.
 - IKEMEN scanner findings are added to `CompatibilityReport.profiles.ikemen`, the exported compatibility JSON, the DebugPanel compatibility section, Studio Evidence, and the unsupported feature list as scanner-only facts.
-- Scanner findings are labeled `Recognized + Unsupported`; no ZSS, Lua, rollback, netplay, model-stage runtime, or IKEMEN-only behavior is executed.
+- Scanner findings outside the named `ikemen-go` character-state subset are
+  labeled `Recognized + Unsupported`; Lua, rollback, netplay, model-stage
+  runtime, and other IKEMEN-only behavior are not executed.
 - `PackageAnalysis/v0` adds a deterministic package-level VFS report for character, stage, system, and screenpack inputs. It source-locates resolved/missing dependencies and parser diagnostics, records MUGEN profile/version metadata, and keeps `recognized`, `unsupported`, and `unknown` distinct. This is analysis evidence only and does not grant runtime compatibility.
 
 ## CMD
