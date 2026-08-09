@@ -346,6 +346,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveRemoveTime?: () => number | undefined;
   /** Resolves fresh Projectile projmisstime authored expressions in the original caller context. */
   resolveMissTime?: () => number | undefined;
+  /** Resolves fresh Projectile projpriority authored expressions in the original caller context. */
+  resolvePriority?: () => number | undefined;
   /** Resolves fresh Projectile guard.hittime authored expressions in the original caller context. */
   resolveGuardHitTime?: () => number | undefined;
   /** Resolves Projectile airguard.velocity authored expressions in the original caller context. */
@@ -838,6 +840,12 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const finiteDynamicMissTime = dynamicMissTime !== undefined && Number.isFinite(dynamicMissTime)
     ? Math.trunc(dynamicMissTime)
     : undefined;
+  const dynamicPriority = operation?.priorityExpression === undefined
+    ? undefined
+    : input.resolvePriority?.();
+  const finiteDynamicPriority = dynamicPriority !== undefined && Number.isFinite(dynamicPriority)
+    ? Math.trunc(dynamicPriority)
+    : undefined;
   const identity = resolveActorIdentity(input);
   return {
     serialId: input.serialId,
@@ -916,7 +924,12 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     ...((operation?.p2SpritePriority ?? firstNumber(findControllerParam(input.controller, "p2sprpriority"))) === undefined
       ? {}
       : { p2SpritePriority: Math.trunc((operation?.p2SpritePriority ?? firstNumber(findControllerParam(input.controller, "p2sprpriority"))) as number) }),
-    priority: clampProjectilePriority(operation?.priority ?? firstNumber(findControllerParam(input.controller, "projpriority")) ?? 1),
+    priority: clampProjectilePriority(
+      finiteDynamicPriority ??
+      operation?.priority ??
+      firstNumber(findControllerParam(input.controller, "projpriority")) ??
+      1,
+    ),
     hitsRemaining: clampProjectileHits(operation?.hitCount ?? firstNumber(findControllerParam(input.controller, "projhits")) ?? 1),
     hitsMax: clampProjectileHits(operation?.hitCount ?? firstNumber(findControllerParam(input.controller, "projhits")) ?? 1),
     missTime: clampProjectileMissTime(
