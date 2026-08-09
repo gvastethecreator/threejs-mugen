@@ -27497,6 +27497,143 @@ export function createSyntheticImportedModifyProjectileDynamicGuardVelocityTrace
   });
 }
 
+export function createSyntheticImportedModifyProjectileDynamicGroundVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5086;
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-dynamic-ground-velocity-attacker",
+    displayName: "ModifyProjectile Dynamic Ground Velocity Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileHitDefHitCount: 1,
+    projectileGroundVelocity: [-1, -1],
+    projectileAirVelocity: [-1, -1, 9],
+    projectileDamage: [37, 2],
+    projectileRemoveOnHit: false,
+    projectileOffset: [62, -45],
+    withModifyProjectile: true,
+    modifyProjectileTriggerTime: 3,
+    modifyProjectileId: 77,
+    modifyProjectileVarSeeds: [
+      { index: 0, value: -7 },
+      { index: 1, value: -5 },
+      { index: 2, value: 2 },
+    ],
+    modifyProjectileGroundVelocity: ["var(0)", "var(1)", "var(2)"],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-dynamic-ground-velocity-defender",
+    displayName: "ModifyProjectile Dynamic Ground Velocity Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      shakeStateType: "S",
+      slideStateType: "S",
+      shakePhysics: "N",
+      slidePhysics: "S",
+      slideHitVelSet: { x: true, y: true, z: true },
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchStateType: "S",
+      hitTimeBranchPhysics: "S",
+      hitTimeBranchExpression:
+        "GetHitVar(xvel) = 7 && GetHitVar(yvel) = -5 && GetHitVar(zvel) = 2 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "ModifyProjectile Dynamic Ground Velocity GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-modifyprojectile-dynamic-ground-velocity-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyprojectile-dynamic-ground-velocity-golden",
+      label: "Synthetic imported ModifyProjectile dynamic ground.velocity route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO compatibility trace proves a root-owned ModifyProjectile evaluates ground.velocity X/Y/Z expressions once in the original caller context and replaces the selected live Projectile ground vector component-wise. VarSet values -7,-5,2 replace adversarial -1,-1,9 before an accepted grounded hit, which exposes GetHitVar(xvel/yvel/zvel)=7/-5/2 and applies the same vector through Common1-style HitVelSet. Helper-owned ModifyProjectile is explicitly excluded by the upstream helper guard; fresh defaults, dynamic n, guard/air/down vectors, cornerpush, teams, rollback, and full Projectile parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyprojectile-dynamic-ground-velocity-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5001, branchStateNo],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155, 5010, 5011, 5020, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Projectile", "ModifyProjectile", "HitVelSet"],
+      requiredExecutedOperations: ["variable:varset", "projectile", "modifyprojectile", "kinematic:hitvelset"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredControllerEventSequences: [{
+        label: "ModifyProjectile dynamic ground.velocity caller evaluation order",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "Projectile", name: "Fast Projectile" },
+          { stateNo: 200, controller: "VarSet", name: "ModifyProjectile Dynamic Var 0" },
+          { stateNo: 200, controller: "ModifyProjectile", name: "Modify Fast Projectile" },
+          { stateNo: 200, operation: "modifyprojectile" },
+        ],
+      }, {
+        label: "grounded hit consumes live ModifyProjectile ground.velocity",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 5000, controller: "ChangeState", name: "Hit Shake Over" },
+          { stateNo: 5001, controller: "HitVelSet", name: "Apply Hit Velocity" },
+          { stateNo: 5001, operation: "kinematic:hitvelset" },
+          { stateNo: 5001, controller: "ChangeState", name: "ModifyProjectile Dynamic Ground Velocity GetHitVar Branch" },
+        ],
+      }],
+      requiredActorFrameSequences: [{
+        label: "ModifyProjectile dynamic ground.velocity physical order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, stateType: "S", moveType: "H", physics: "N", minFrames: 1 },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5001,
+            stateType: "S",
+            moveType: "H",
+            physics: "S",
+            observedVelXAtLeast: 7,
+            observedVelXAtMost: 7,
+            observedVelYAtLeast: -5,
+            observedVelYAtMost: -5,
+            observedVelZAtLeast: 2,
+            observedVelZAtMost: 2,
+            minFrames: 1,
+          },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, stateType: "S", moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [{ actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1", effectId: 77, minAge: 1 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedModifyProjectileDynamicAirVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -59313,6 +59450,8 @@ export type SyntheticImportedTraceFighterOptions = {
   modifyProjectileGetPower?: SyntheticPairExpression;
   /** Synthetic fixture-only dynamic/mixed ModifyProjectile down.velocity vector. */
   modifyProjectileDownVelocity?: SyntheticPartialTripleExpression;
+  /** Synthetic fixture-only dynamic/mixed ModifyProjectile ground.velocity vector. */
+  modifyProjectileGroundVelocity?: SyntheticPartialTripleExpression;
   /** Synthetic fixture-only dynamic/mixed ModifyProjectile airguard.velocity vector. */
   modifyProjectileAirGuardVelocity?: SyntheticPartialTripleExpression;
   /** Synthetic fixture-only dynamic/mixed ModifyProjectile guard.velocity vector. */
@@ -60782,6 +60921,7 @@ ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   heightBound: options.modifyProjectileHeightBound,
   getPower: options.modifyProjectileGetPower,
   downVelocity: options.modifyProjectileDownVelocity,
+  groundVelocity: options.modifyProjectileGroundVelocity,
   airGuardVelocity: options.modifyProjectileAirGuardVelocity,
   airVelocity: options.modifyProjectileAirVelocity,
   guardVelocity: options.modifyProjectileGuardVelocity,
@@ -64879,6 +65019,7 @@ function modifyProjectileControllerBlock(input: {
   heightBound?: SyntheticPairExpression;
   getPower?: SyntheticPairExpression;
   downVelocity?: SyntheticPartialTripleExpression;
+  groundVelocity?: SyntheticPartialTripleExpression;
   airGuardVelocity?: SyntheticPartialTripleExpression;
   airVelocity?: SyntheticPartialTripleExpression;
   guardVelocity?: SyntheticPartialTripleExpression;
@@ -64912,6 +65053,7 @@ value = ${seed.value}
   const heightBoundLine = input.heightBound === undefined ? "" : `projheightbound = ${input.heightBound[0]},${input.heightBound[1]}`;
   const getPowerLine = input.getPower === undefined ? "" : `getpower = ${input.getPower[0]},${input.getPower[1]}`;
   const downVelocityLine = input.downVelocity === undefined ? "" : `down.velocity = ${input.downVelocity.join(",")}`;
+  const groundVelocityLine = input.groundVelocity === undefined ? "" : `ground.velocity = ${input.groundVelocity.join(",")}`;
   const airGuardVelocityLine = input.airGuardVelocity === undefined ? "" : `airguard.velocity = ${input.airGuardVelocity.join(",")}`;
   const airVelocityLine = input.airVelocity === undefined ? "" : `air.velocity = ${input.airVelocity.join(",")}`;
   const guardVelocityLine = input.guardVelocity === undefined ? "" : `guard.velocity = ${input.guardVelocity.join(",")}`;
@@ -64935,6 +65077,7 @@ ${stageBoundLine}
 ${heightBoundLine}
 ${getPowerLine}
 ${downVelocityLine}
+${groundVelocityLine}
 ${airGuardVelocityLine}
 ${airVelocityLine}
 ${guardVelocityLine}
