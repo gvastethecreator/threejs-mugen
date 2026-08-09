@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-149",
   "kind": "I",
-  "generatedAt": "2026-08-09T14:41:33.390Z",
+  "generatedAt": "2026-08-09T15:12:14.891Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-149",
@@ -24,8 +24,8 @@
     },
     {
       "path": "docs/CONTROLLER_SUPPORT_REGISTRY.md",
-      "bytes": 377684,
-      "sha256": "c4aac0c63d085c4dc2a0958bf02388b18e4e10a8676b17fb7b0614e4c6ae1883"
+      "bytes": 377746,
+      "sha256": "eb7df8723bcfdc2d985795ceb6e5d7631a247eb3883df126953b09a3a9448451"
     }
   ],
   "functionResults": {
@@ -50,8 +50,8 @@
       },
       {
         "path": "docs/CONTROLLER_SUPPORT_REGISTRY.md",
-        "bytes": 377684,
-        "sha256": "c4aac0c63d085c4dc2a0958bf02388b18e4e10a8676b17fb7b0614e4c6ae1883",
+        "bytes": 377746,
+        "sha256": "eb7df8723bcfdc2d985795ceb6e5d7631a247eb3883df126953b09a3a9448451",
         "role": "roadmap"
       }
     ],
