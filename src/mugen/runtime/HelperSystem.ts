@@ -2000,6 +2000,13 @@ export function resolveRuntimeHelperIntegerScalarParam(
       : undefined;
     if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
   }
+  if (key === "guard.hittime") {
+    const operation = controller.operation;
+    const value = operation?.kind === "projectile"
+      ? operation.guardHitTimeExpression
+      : undefined;
+    if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
+  }
   const raw = findControllerParam(controller.source, key) ??
     (key === "p1sprpriority" ? findControllerParam(controller.source, "sprpriority") : undefined);
   return raw === undefined ? undefined : resolveHelperNumber(helper, undefined, raw, options);

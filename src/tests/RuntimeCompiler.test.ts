@@ -3873,6 +3873,27 @@ value = 1
     });
   });
 
+  it("compiles dynamic Projectile guard.hittime and preserves the fresh fallback", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "guard.hittime": "var(0) + 3",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      guardHitTimeExpression: "var(0) + 3",
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "guard.hittime": "16",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      guardHitTime: 16,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "guard.hittime": "var(",
+    })).operation).toBeUndefined();
+    const omitted = compileControllerIr(controller(1000, "Projectile", [], {})).operation;
+    expect(omitted).toMatchObject({ kind: "projectile" });
+    expect(omitted).not.toHaveProperty("guardHitTimeExpression");
+  });
+
   it("compiles dynamic Projectile guard.velocity components", () => {
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       "guard.velocity": "var(0),fvar(1),var(2)",

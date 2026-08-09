@@ -592,6 +592,8 @@ export type ProjectileControllerOp = {
   downHitTime?: number;
   /** Fresh Projectile down.hittime expression evaluated in the original caller context. */
   downHitTimeExpression?: number | string;
+  /** Fresh Projectile guard.hittime expression evaluated in the original caller context. */
+  guardHitTimeExpression?: number | string;
   groundVelocity?: MugenProjectileVector;
   /** One-, two-, or three-component dynamic/mixed ground.velocity evaluated in projectile caller context. */
   groundVelocityExpressions?: MugenHitDefExpressionPair;
@@ -3466,6 +3468,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (groundHitTime === false) return undefined;
   const downHitTime = optionalIntegerExpressionParam(controller, "down.hittime");
   if (downHitTime === false) return undefined;
+  const guardHitTime = optionalIntegerExpressionParam(controller, "guard.hittime");
+  if (guardHitTime === false) return undefined;
   const standFriction = optionalScalarNumberOrExpression(controller, "stand.friction");
   const crouchFriction = optionalScalarNumberOrExpression(controller, "crouch.friction");
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
@@ -3681,7 +3685,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     guardFlag: stripMugenString(findParam(controller, "guardflag")),
     guardPauseTime: firstNumber(guardPauseTimeRaw),
     guardShakeTime: guardPauseTimeRaw === undefined ? undefined : secondNumber(guardPauseTimeRaw) ?? 0,
-    guardHitTime: firstNumber(findParam(controller, "guard.hittime")),
+    guardHitTime: guardHitTime === true || typeof guardHitTime === "string" ? undefined : guardHitTime,
+    ...(typeof guardHitTime === "string" ? { guardHitTimeExpression: guardHitTime } : {}),
     guardSlideTime: firstNumber(findParam(controller, "guard.slidetime")),
     guardControlTime: firstNumber(findParam(controller, "guard.ctrltime")),
     airGuardControlTime: firstNumber(findParam(controller, "airguard.ctrltime")),

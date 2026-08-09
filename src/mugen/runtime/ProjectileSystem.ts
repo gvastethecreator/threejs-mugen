@@ -334,6 +334,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveDownHitTime?: () => number | undefined;
   /** Resolves fresh Projectile ground.hittime authored expressions in the original caller context. */
   resolveGroundHitTime?: () => number | undefined;
+  /** Resolves fresh Projectile guard.hittime authored expressions in the original caller context. */
+  resolveGuardHitTime?: () => number | undefined;
   /** Resolves Projectile airguard.velocity authored expressions in the original caller context. */
   resolveAirGuardVelocity?: () => [number?, number?, number?] | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
@@ -642,6 +644,12 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
       ? Math.round(operation?.downHitTime ?? firstNumber(findControllerParam(input.controller, "down.hittime")) ?? 20)
       : Math.trunc(finiteDynamicDownHitTime),
   );
+  const dynamicGuardHitTime = operation?.guardHitTimeExpression === undefined
+    ? undefined
+    : input.resolveGuardHitTime?.();
+  const finiteDynamicGuardHitTime = dynamicGuardHitTime !== undefined && Number.isFinite(dynamicGuardHitTime)
+    ? dynamicGuardHitTime
+    : undefined;
   const downBounce = operation?.downBounce ?? booleanNumber(findControllerParam(input.controller, "down.bounce"));
   const forceNoFall = operation?.forceNoFall ?? booleanNumber(findControllerParam(input.controller, "forcenofall"));
   const forceStand = operation?.forceStand ?? booleanNumber(findControllerParam(input.controller, "forcestand"));
@@ -734,7 +742,10 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const maxDistance = operation?.maxDistance ?? partialNumberTriple(findControllerParam(input.controller, "maxdist"));
   const guardTiming = resolveHitDefGuardTiming({
     groundHitTime: hitStun,
-    guardHitTime: operation?.guardHitTime ?? firstNumber(findControllerParam(input.controller, "guard.hittime")),
+    guardHitTime:
+      finiteDynamicGuardHitTime === undefined
+        ? operation?.guardHitTime ?? firstNumber(findControllerParam(input.controller, "guard.hittime"))
+        : Math.trunc(finiteDynamicGuardHitTime),
     guardSlideTime: operation?.guardSlideTime ?? firstNumber(findControllerParam(input.controller, "guard.slidetime")),
     guardControlTime: operation?.guardControlTime ?? firstNumber(findControllerParam(input.controller, "guard.ctrltime")),
     airGuardControlTime: operation?.airGuardControlTime ?? firstNumber(findControllerParam(input.controller, "airguard.ctrltime")),
