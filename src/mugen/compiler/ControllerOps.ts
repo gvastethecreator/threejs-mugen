@@ -783,6 +783,10 @@ export type ModifyProjectileControllerOp = {
   /** Ikemen ModifyProjectile replacement for ground and air guard velocity. */
   guardVelocity?: MugenHitDefVector;
   airGuardVelocity?: MugenHitDefVector;
+  /** Dynamic/mixed ModifyProjectile airguard.velocity expressions evaluated in the root caller context. */
+  airGuardVelocityExpressions?: MugenHitDefExpressionPair;
+  /** Dynamic/mixed ModifyProjectile airguard.velocity Z component. */
+  airGuardVelocityZExpression?: number | string;
   /** Ikemen ModifyProjectile replacement for contact GetHitVar acceleration metadata. */
   xAccel?: number;
   yAccel?: number;
@@ -3681,6 +3685,20 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
   const downVelocityZExpression = downVelocity === undefined && typeof downVelocityValue === "object"
     ? downVelocityValue.z
     : undefined;
+  const airGuardVelocityRaw = findParam(controller, "airguard.velocity");
+  const airGuardVelocity = modifyProjectileVelocityVector(airGuardVelocityRaw);
+  const airGuardVelocityValue = optionalModifyHitDefAirGuardVelocityParam(controller);
+  if (
+    airGuardVelocityRaw !== undefined &&
+    airGuardVelocity === undefined &&
+    airGuardVelocityValue === false
+  ) return undefined;
+  const airGuardVelocityExpressions = airGuardVelocity === undefined && typeof airGuardVelocityValue === "object"
+    ? airGuardVelocityValue.xy
+    : undefined;
+  const airGuardVelocityZExpression = airGuardVelocity === undefined && typeof airGuardVelocityValue === "object"
+    ? airGuardVelocityValue.z
+    : undefined;
   return definedObject({
     kind: "modifyprojectile" as const,
     ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
@@ -3768,7 +3786,9 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     ...(downVelocityZExpression === undefined ? {} : { downVelocityZExpression }),
     airVelocity: modifyProjectileVelocityVector(findParam(controller, "air.velocity")),
     guardVelocity: modifyProjectileVelocityVector(findParam(controller, "guard.velocity")),
-    airGuardVelocity: modifyProjectileVelocityVector(findParam(controller, "airguard.velocity")),
+    airGuardVelocity,
+    ...(airGuardVelocityExpressions === undefined ? {} : { airGuardVelocityExpressions }),
+    ...(airGuardVelocityZExpression === undefined ? {} : { airGuardVelocityZExpression }),
     xAccel: firstNumber(findParam(controller, "xaccel")),
     yAccel: firstNumber(findParam(controller, "yaccel")),
     zAccel: firstNumber(findParam(controller, "zaccel")),
