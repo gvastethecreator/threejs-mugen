@@ -1,11 +1,18 @@
 ﻿# Next Build Roadmap
 
-## Authoritative runtime cursor — T687 closed-bounded
+## Authoritative runtime cursor — T688 closed-bounded
 
-Final T687 verification: `762/762` trace artifacts (`728` required, `34`
-optional), with required root-owned `ModifyProjectile guard.velocity` trace
-checksum `f1a7b429` and final checksum `df93f663`. The full `3772/3772`
+Final T688 verification: `763/763` trace artifacts (`729` required, `34`
+optional), with required root-owned `ModifyProjectile ground.velocity` trace
+checksum `0cda3247`. The full `3776/3776`
 Vitest suite across `328` files, typecheck, and the `363`-module build pass.
+
+T688 / issue 262 is closed-bounded for root-owned live `ModifyProjectile
+ground.velocity` dynamic/mixed X/Y/Z replacement. The pinned caller-context
+resolver replaces authored components while preserving omitted siblings, and
+the required grounded-hit trace proves GetHitVar/physics, target, and
+Projectile lifecycle evidence. Helper-owned mutation, dynamic `n`, fresh
+defaults, and full Projectile parity remain excluded.
 
 T687 / issue 261 is closed-bounded for root-owned live `ModifyProjectile
 guard.velocity` dynamic/mixed X/Y/Z replacement. The pinned caller-context

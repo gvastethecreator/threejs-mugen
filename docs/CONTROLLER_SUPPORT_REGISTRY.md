@@ -1,6 +1,9 @@
 # Controller Support Registry
 
-Authoritative cursor: T687 is closed-bounded for root-owned live
+Authoritative cursor: T688 is closed-bounded for root-owned live
+`ModifyProjectile ground.velocity` dynamic X/Y/Z with component-preserving
+replacement and accepted grounded-hit evidence. T687 remains closed-bounded
+for root-owned live
 `ModifyProjectile guard.velocity` dynamic X/Y/Z with Ikemen's zero-filled
 one/two/three-component broadcast semantics and accepted ground-guard
 evidence. T686 remains closed-bounded for root-owned live
@@ -29,6 +32,10 @@ typed dynamic/mixed replacement and airborne-hit trace. Helper-owned
 T687 adds the corresponding root-owned live `ModifyProjectile guard.velocity`
 typed dynamic/mixed replacement and ground-guard trace. Helper-owned
 `ModifyProjectile` remains excluded for the same pinned upstream rejection.
+T688 adds the corresponding root-owned live `ModifyProjectile ground.velocity`
+typed dynamic/mixed component-preserving replacement and grounded-hit trace.
+Helper-owned `ModifyProjectile` remains excluded for the same pinned upstream
+rejection.
 
 This is the registry contract for CNS controller work. It prevents the runtime from growing controller behavior through invisible ad hoc paths.
 
