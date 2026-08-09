@@ -584,6 +584,8 @@ export type ProjectileControllerOp = {
   /** Second `pausetime` value: defender hit-shake time. */
   hitShakeTime?: number;
   hitStun: number;
+  /** Fresh Projectile ground.hittime expression evaluated in the original caller context. */
+  groundHitTimeExpression?: number | string;
   /** M.U.G.E.N grounded hit slide duration. */
   groundSlideTime?: number;
   airHitTime?: number;
@@ -3460,6 +3462,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (getPower === false) return undefined;
   const givePower = optionalIntegerExpressionPairParam(controller, "givepower");
   if (givePower === false) return undefined;
+  const groundHitTime = optionalIntegerExpressionParam(controller, "ground.hittime");
+  if (groundHitTime === false) return undefined;
   const downHitTime = optionalIntegerExpressionParam(controller, "down.hittime");
   if (downHitTime === false) return undefined;
   const standFriction = optionalScalarNumberOrExpression(controller, "stand.friction");
@@ -3640,7 +3644,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     hitFlag: staticHitFlagParam(findParam(controller, "hitflag")),
     hitPause: firstNumber(pauseTimeRaw) ?? 0,
     hitShakeTime: pauseTimeRaw === undefined ? undefined : secondNumber(pauseTimeRaw) ?? 0,
-    hitStun: firstNumber(findParam(controller, "ground.hittime")) ?? 18,
+    hitStun: groundHitTime === true || typeof groundHitTime === "string" ? 18 : groundHitTime ?? 18,
+    ...(typeof groundHitTime === "string" ? { groundHitTimeExpression: groundHitTime } : {}),
     groundSlideTime: firstNumber(findParam(controller, "ground.slidetime")),
     airHitTime: firstNumber(findParam(controller, "air.hittime")) ?? 20,
     groundVelocity,

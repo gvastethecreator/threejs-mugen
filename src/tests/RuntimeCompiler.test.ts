@@ -3850,6 +3850,29 @@ value = 1
     });
   });
 
+  it("compiles dynamic Projectile ground.hittime and preserves the fresh default", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "ground.hittime": "var(0) + 3",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      hitStun: 18,
+      groundHitTimeExpression: "var(0) + 3",
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "ground.hittime": "16",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      hitStun: 16,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "ground.hittime": "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(1000, "Projectile", [], {})).operation).toMatchObject({
+      kind: "projectile",
+      hitStun: 18,
+    });
+  });
+
   it("compiles dynamic Projectile guard.velocity components", () => {
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       "guard.velocity": "var(0),fvar(1),var(2)",
