@@ -1,6 +1,6 @@
 # Issue 237 — Direct HitDef airguard.velocity X/Y expressions
 
-- Status: `active-research`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -38,3 +38,14 @@ Do not claim Helper or ModifyHitDef ownership, partial one-component forms,
 Ikemen Z, Projectile/ModifyProjectile, exact localcoord/facing transforms,
 gravity/landing/tick order, corner push, teams, rollback, or full air-guard
 physics.
+
+## Evidence
+
+- Compiler and runtime coverage passes for literal, dynamic, mixed, malformed,
+  and omitted fresh direct HitDef forms.
+- Root caller expressions resolve X/Y without inheriting adversarial metadata.
+- Accepted airborne guard consumes the effective vector and exposes X/Y through
+  GetHitVar; the matching ground guard keeps its ground-guard vector.
+- Required trace passes with checksum `ab3a928c` and final checksum `7614e5e8`.
+- Aggregate traces pass 736/736 with 702 required; the full suite passes
+  3702/3702; typecheck and the 363-module production build pass.

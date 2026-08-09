@@ -24877,6 +24877,87 @@ export function createSyntheticImportedAirGuardVelocityTraceArtifact(options: Ru
   });
 }
 
+export function createSyntheticImportedHitDefDynamicAirGuardVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5082;
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-airguard-velocity-defender",
+    displayName: "Dynamic HitDef Air Guard Velocity Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+      airGuardedBranchStateNo: branchStateNo,
+      airGuardedBranchAnimNo: branchStateNo,
+      airGuardedBranchTrigger: "Time >= 1",
+      airGuardedBranchExpression: "GetHitVar(xvel) = 8 && GetHitVar(yvel) = -4 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-airguard-velocity-attacker",
+    displayName: "Dynamic HitDef Air Guard Velocity Attacker",
+    guardDamage: 5,
+    guardFlag: "A",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+    airGuardVelocity: [-1, -1],
+    hitDefAirGuardVelocity: ["var(0)", "var(1)"],
+    hitDefVarSeeds: [
+      { index: 0, value: -8 },
+      { index: 1, value: -4 },
+    ],
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    targetId: "synthetic-imported-hitdef-dynamic-airguard-velocity-golden",
+    targetLabel: "Synthetic imported dynamic direct HitDef airguard velocity route",
+    requiredExecutedStates: [200, 154, 155, branchStateNo],
+    forbiddenExecutedStates: [150, 151, 152, 153, 5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+    requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "HitVelSet", "VelAdd"],
+    requiredExecutedOperations: ["variable:varset", "hitdef", "kinematic:hitvelset", "kinematic:veladd"],
+    requiredControllerEventSequences: [{
+      label: "dynamic airguard velocity accepted-contact GetHitVar order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 154, controller: "ChangeState", name: "Air Guard Shake Over" },
+        { stateNo: 155, controller: "HitVelSet", name: "Apply Air Guard Velocity" },
+        { stateNo: 155, operation: "kinematic:hitvelset" },
+        { stateNo: 155, controller: "ChangeState", name: "Air Guarded HitVar Branch" },
+      ],
+    }],
+    requiredActorFrames: [
+      ...syntheticAirGuardVelocityPhysicsFrames(8, -3.5),
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: branchStateNo,
+        animNo: branchStateNo,
+        stateType: "A",
+        minFrames: 1,
+      },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    forbiddenCombatReasons: ["hit", "override", "reversal"],
+    requiredFinalActors: [
+      { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+      { actorId: "p2", source: "imported", actorKind: "player", life: 995 },
+    ],
+    notes: [
+      "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=-8 and var(1)=-4 resolve direct HitDef airguard.velocity X/Y independently of adversarial fixture metadata -1,-1. A real airborne guard creates target 77, exposes GetHitVar(xvel)=8 and GetHitVar(yvel)=-4, and applies physical air-guard velocity before a dedicated imported state-155 branch. Omitted defaults, partial components, ModifyHitDef, Helpers, Ikemen Z, localcoord/facing breadth, exact gravity/landing timing, Projectile, ModifyProjectile, teams, rollback, and full guard parity remain excluded.",
+    ],
+  });
+}
+
 export function createSyntheticImportedAirGuardVelocityDefaultTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const defender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-air-guard-velocity-default",
@@ -55571,6 +55652,8 @@ export type SyntheticImportedTraceFighterOptions = {
   groundVelocity?: [number, number?];
   airVelocity?: [number, number?];
   airGuardVelocity?: [number, number?];
+  /** Synthetic fixture-only dynamic airborne-guard velocity pair emitted into HitDef. */
+  hitDefAirGuardVelocity?: SyntheticPairExpression;
   groundCornerPush?: number;
   airCornerPush?: number;
   downCornerPush?: number;
@@ -56826,6 +56909,7 @@ ${options.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = 
     options.hitDefGuardVelocity === undefined &&
     !options.omitGuardVelocity &&
     options.airGuardVelocity === undefined &&
+    options.hitDefAirGuardVelocity === undefined &&
     !hasCornerPushLine
       ? ""
       : `
@@ -56837,7 +56921,9 @@ ${guardSlideTimeLine}
 ${guardControlTimeLine}
 ${airGuardControlTimeLine}
 ${guardVelocityLine}
-${options.airGuardVelocity === undefined ? "" : `airguard.velocity = ${options.airGuardVelocity.join(",")}`}
+${options.hitDefAirGuardVelocity === undefined && options.airGuardVelocity === undefined
+  ? ""
+  : `airguard.velocity = ${(options.hitDefAirGuardVelocity ?? options.airGuardVelocity!).join(",")}`}
 ${cornerPushLines}
 `;
   const guardDistanceLine = options.hitDefGuardDistance === undefined

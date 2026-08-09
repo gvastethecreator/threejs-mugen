@@ -1,8 +1,8 @@
 ﻿# Roadmap Execution Board
 
-## Current official-parity queue — T424-T492 and T506-T662 closed-bounded; T663 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-08)
+## Current official-parity queue — T424-T492 and T506-T663 closed-bounded; T664 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-08)
 
-### Active runtime checkpoint — direct HitDef air-guard velocity
+### Active runtime checkpoint — live ModifyHitDef air-guard velocity
 
 T589 / issue 163 is closed-bounded: static and bounded dynamic root/helper
 `attack.depth` pairs replace the selected live Projectile HitDef depth bounds.
@@ -679,8 +679,16 @@ ground guard exposes X through GetHitVar. The full suite passes 3698/3698;
 required trace checksums are `fa6f8aa1` and `1621b9be`; aggregate traces pass
 735/735 with 701 required; typecheck and the 363-module build pass.
 
-T663 / issue 237 is active-research: resolve root-owned direct HitDef
-`airguard.velocity` X/Y expressions and accepted airborne-guard consumption.
+T663 / issue 237 is closed-bounded: root-owned direct HitDef
+`airguard.velocity` X/Y expressions resolve in caller context, preserve the
+official omission default, and feed accepted airborne guard plus GetHitVar.
+The full suite passes 3702/3702; required trace checksum is `ab3a928c`;
+aggregate traces pass 736/736 with 702 required; typecheck and the 363-module
+build pass.
+
+T664 / issue 238 is active-research: resolve exact X/Y `airguard.velocity`
+pairs for root-owned live ModifyHitDef, preserve Z/omission, and feed accepted
+airborne guard.
 
 ### Latest visual checkpoint — Character Compare
 

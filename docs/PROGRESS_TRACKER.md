@@ -1,6 +1,6 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T608-T662 (2026-08-08)
+## Latest implementation checkpoint — T608-T663 (2026-08-08)
 
 - T608-T637 are closed-bounded. T616-T621 add typed HitDef/Projectile
   `unhittabletime`, actor-role contact/admission/default/HitOverride slices,
@@ -61,9 +61,11 @@
   accepted GetHitVar consumption, and live ModifyHitDef omission preservation.
   T662 closes direct and root-owned live `guard.velocity` X expressions,
   fresh inheritance, accepted ground guard, and omission preservation. T663
-  is active for root-owned direct `airguard.velocity` X/Y expressions.
-- Latest full suite passes 3698/3698. Typecheck, 363-module build,
-  735/735 traces (701 required, 34 optional),
+  T663 closes root-owned direct `airguard.velocity` X/Y expressions, official
+  omission defaults, and accepted airborne guard. T664 is active for exact
+  X/Y live ModifyHitDef replacement.
+- Latest full suite passes 3702/3702. Typecheck, 363-module build,
+  736/736 traces (702 required, 34 optional),
   boundaries, redirect boundaries, and differential checks pass.
 
 ## Historical implementation checkpoint — T522-T552 and Fighter Lab (2026-08-08)

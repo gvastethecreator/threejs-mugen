@@ -2230,6 +2230,36 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles exact direct HitDef airguard.velocity X/Y expressions", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "airguard.velocity": "-5.5,-2.25",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      airGuardVelocity: [-5.5, -2.25],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "airguard.velocity": "var(1),fvar(2)",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      airGuardVelocityExpressions: ["var(1)", "fvar(2)"],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "airguard.velocity": "-6.5,var(3) + .5",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      airGuardVelocityExpressions: [-6.5, "var(3) + .5"],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "airguard.velocity": "var(1)",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "airguard.velocity": "var(1),var(2),var(3)",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "airguard.velocity": "var(1),var(",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles typed HitDef givepower expressions and rejects malformed pairs", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], { givepower: "9.8" })).operation).toMatchObject({
       kind: "hitdef",

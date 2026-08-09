@@ -177,6 +177,8 @@ export type HitDefControllerOp = {
   /** Direct guard.velocity X expression evaluated in the HitDef caller context. */
   guardVelocityExpression?: number | string;
   airGuardVelocity?: MugenHitDefVector;
+  /** Exact dynamic or mixed airguard.velocity X/Y pair evaluated in caller context. */
+  airGuardVelocityExpressions?: MugenHitDefExpressionPair;
   groundCornerPush?: number;
   airCornerPush?: number;
   downCornerPush?: number;
@@ -2315,7 +2317,14 @@ function compileHitDefControllerOp(
   const guardVelocityExpression = guardVelocityRaw === undefined || guardVelocity !== undefined
     ? true
     : optionalScalarNumberOrExpression(controller, "guard.velocity");
-  const airGuardVelocity = hitDefVelocity(findParam(controller, "airguard.velocity"));
+  const airGuardVelocityRaw = findParam(controller, "airguard.velocity");
+  const airGuardVelocity = airGuardVelocityRaw === undefined ? undefined : strictStaticNumberVector(airGuardVelocityRaw);
+  const airGuardVelocityExpressionValue = airGuardVelocityRaw === undefined || airGuardVelocity !== undefined
+    ? true
+    : optionalFloatExpressionPairParam(controller, "airguard.velocity");
+  const airGuardVelocityExpressions = Array.isArray(airGuardVelocityExpressionValue) && airGuardVelocityExpressionValue.length === 2
+    ? airGuardVelocityExpressionValue
+    : undefined;
   const p1StateNo = optionalIntegerExpressionParam(controller, "p1stateno");
   const p2StateNo = optionalIntegerExpressionParam(controller, "p2stateno");
   const p2GetP1State = optionalIntegerExpressionParam(controller, "p2getp1state");
@@ -2378,6 +2387,8 @@ function compileHitDefControllerOp(
     damageValue === false ||
     groundVelocityExpressionValue === false ||
     guardVelocityExpression === false ||
+    airGuardVelocityExpressionValue === false ||
+    (Array.isArray(airGuardVelocityExpressionValue) && airGuardVelocityExpressions === undefined) ||
     hitSparkScale === false ||
     guardSparkScale === false ||
     paletteFx === false ||
@@ -2489,6 +2500,7 @@ function compileHitDefControllerOp(
     guardVelocity,
     ...(guardVelocityExpression === true ? {} : { guardVelocityExpression }),
     airGuardVelocity,
+    ...(airGuardVelocityExpressions === undefined ? {} : { airGuardVelocityExpressions }),
     groundCornerPush: firstNumber(findParam(controller, "ground.cornerpush.veloff")),
     airCornerPush: firstNumber(findParam(controller, "air.cornerpush.veloff")),
     downCornerPush: firstNumber(findParam(controller, "down.cornerpush.veloff")),

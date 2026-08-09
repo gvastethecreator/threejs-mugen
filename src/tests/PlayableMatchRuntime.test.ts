@@ -6916,6 +6916,59 @@ value = -7
     expect(runtimeHitVar(snapshot.actors[1]!.runtime, "xvel")).toBe(7);
   });
 
+  it("uses root-caller airguard.velocity X/Y only for accepted airborne guards", () => {
+    const resolve = (airborne: boolean) => {
+      const attacker = createImportedFixture({
+        withStateMove: false,
+        guardFlag: "MA",
+        airGuardVelocityExpression: "var(10),var(11)",
+        passiveResourceController: `
+[State 0, Dynamic air guard X]
+type = VarSet
+trigger1 = 1
+v = 10
+value = -9
+
+[State 0, Dynamic air guard Y]
+type = VarSet
+trigger1 = 1
+v = 11
+value = -4
+`,
+      });
+      const runtime = new PlayableMatchRuntime(attacker, demoFighters[1]!, {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      });
+
+      runtime.step({ p1: new Set(), p2: airborne ? new Set(["U"]) : new Set() });
+      return runtime.step({ p1: new Set(["x"]), p2: new Set(["B"]) });
+    };
+
+    const airGuard = resolve(true);
+    expect(airGuard.actors[1]?.runtime).toMatchObject({
+      guarding: true,
+      stateType: "A",
+      vel: { x: 9, y: -4 },
+      hitVelocity: { x: 9, y: -4 },
+    });
+    expect(runtimeHitVar(airGuard.actors[1]!.runtime, "xvel")).toBe(9);
+    expect(runtimeHitVar(airGuard.actors[1]!.runtime, "yvel")).toBe(-4);
+
+    const groundGuard = resolve(false);
+    expect(groundGuard.actors[1]?.runtime).toMatchObject({
+      guarding: true,
+      stateType: "S",
+      vel: { x: 2, y: 0 },
+      hitVelocity: { x: 2, y: 0 },
+    });
+    expect(runtimeHitVar(groundGuard.actors[1]!.runtime, "xvel")).toBe(2);
+    expect(runtimeHitVar(groundGuard.actors[1]!.runtime, "yvel")).toBe(0);
+  });
+
   it("uses the defender's own dynamic HitDef state when p2getp1state resolves to 0", () => {
     const attacker = createImportedFixture({
       withStateMove: false,
@@ -12697,6 +12750,7 @@ function createImportedFixture(
     guardSlideTime?: number;
     guardControlTime?: number;
     guardVelocityExpression?: string;
+    airGuardVelocityExpression?: string;
     passiveNotHitBy?: string;
     passiveHitBy?: string;
     passiveHitOverride?: { attr: string; stateNo: number; forceAir?: boolean };
@@ -12846,6 +12900,7 @@ guard.hittime = 9
 ${options.guardSlideTime === undefined ? "" : `guard.slidetime = ${options.guardSlideTime}`}
 ${options.guardControlTime === undefined ? "" : `guard.ctrltime = ${options.guardControlTime}`}
 guard.velocity = ${options.guardVelocityExpression ?? "-2"}
+${options.airGuardVelocityExpression === undefined ? "" : `airguard.velocity = ${options.airGuardVelocityExpression}`}
 `
       : "";
   const hitDefP2ChangeStateLines =

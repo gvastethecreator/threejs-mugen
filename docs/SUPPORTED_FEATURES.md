@@ -63,12 +63,14 @@
   accepted GetHitVar consumption, and live ModifyHitDef omission preservation.
   T662 closes direct and root-owned live `guard.velocity` X expressions,
   fresh inheritance, accepted ground guard, and omission preservation. T663
-  is active for root-owned direct `airguard.velocity` X/Y expressions.
+  T663 closes root-owned direct `airguard.velocity` X/Y expressions, official
+  omission defaults, and accepted airborne guard. T664 is active for exact
+  X/Y live ModifyHitDef replacement.
   Projectile facing, exact deferred
   facing/power order, broader `data/mugen.cfg`, rollback, and full HitDef
   behavior are not supported claims.
-- Latest evidence: 3698/3698 tests, the 363-module build, and 735/735 traces
-  pass (701 required, 34 optional).
+- Latest evidence: 3702/3702 tests, the 363-module build, and 736/736 traces
+  pass (702 required, 34 optional).
 
 ## 2026-08-08 ModifyProjectile selection and live HitDef mutation
 

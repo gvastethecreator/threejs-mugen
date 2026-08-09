@@ -436,8 +436,18 @@ export class RuntimeHitDefControllerDispatchWorld {
     const downBounce = resolvedDownBounce !== undefined
       ? resolvedDownBounce !== 0
       : operation?.downBounce ?? booleanHitDefParam(source, "down.bounce") ?? existing?.downBounce;
-    const airGuardVelocity =
-      operation?.airGuardVelocity ?? velocityPair(findParam(source, "airguard.velocity")) ?? deriveDefaultAirGuardVelocity(airVelocity);
+    const staticAirGuardVelocity =
+      operation?.airGuardVelocity ?? velocityPair(findParam(source, "airguard.velocity"));
+    const resolvedAirGuardVelocity = resolveRuntimeHitDefFloatExpressionPair(
+      operation?.airGuardVelocityExpressions,
+      findParam(source, "airguard.velocity"),
+      actor.runtime,
+      context ?? {},
+      undefined,
+    );
+    const airGuardVelocity: [number, number?, number?] | undefined = resolvedAirGuardVelocity === undefined
+      ? staticAirGuardVelocity ?? deriveDefaultAirGuardVelocity(airVelocity)
+      : [resolvedAirGuardVelocity.first ?? 0, resolvedAirGuardVelocity.second ?? 0];
     const hitVelocities: RuntimeHitVelocityMetadata = {
       ground: runtimeHitVelocityVector(groundVelocity),
       ...(airVelocity === undefined ? {} : { air: runtimeHitVelocityVector(airVelocity) }),
