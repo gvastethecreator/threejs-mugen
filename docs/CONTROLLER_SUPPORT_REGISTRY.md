@@ -1,9 +1,9 @@
 # Controller Support Registry
 
-Authoritative cursor: T675 is closed-bounded for live root-owned
-`ModifyHitDef down.velocity` dynamic Z with active X/Y preservation. T676 is
-queued for the pinned-Ikemen-only Helper-owned mutation; M.U.G.E.N live Z
-support and Projectile/ModifyProjectile remain excluded.
+Authoritative cursor: T676 is closed-bounded for Helper-owned live
+`ModifyHitDef down.velocity` dynamic X/Y/Z with active-component preservation.
+T677 is queued for Helper-owned live `ModifyHitDef air.velocity` X/Y. M.U.G.E.N
+live ModifyHitDef claims and Projectile/ModifyProjectile remain excluded.
 
 This is the registry contract for CNS controller work. It prevents the runtime from growing controller behavior through invisible ad hoc paths.
 
@@ -90,7 +90,9 @@ closes the imported static-HitDef mirror. T670 closes direct airborne-hit
 consumption of the existing static air vector. T671 closes X/Y caller
 expressions. T672 closes live root-owned ModifyHitDef mutation. T673 is active
 T673 closes fresh down-velocity expressions and air-vector inheritance. T674
-is active for live root-owned ModifyHitDef down-velocity mutation.
+and T675 close live root-owned ModifyHitDef down-velocity X/Y/Z mutation; T676
+closes the Helper-owned dispatch and required lying-hit evidence. T677 is
+queued for Helper-owned live air-velocity mutation.
 Projectile facing, exact deferred facing/power order,
 broader `data/mugen.cfg`, rollback, and full HitDef parity remain unsupported.
 

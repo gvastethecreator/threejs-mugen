@@ -1,16 +1,19 @@
 ﻿# Next Build Roadmap
 
-## Authoritative runtime cursor — T675 closed, T676 queued
+## Authoritative runtime cursor — T676 closed, T677 queued
 
-Final T675 verification: `748/748` trace artifacts (`714` required, `34`
-optional), with T675 required trace checksum `1e84d540` and final checksum
-`2b8a4fd0`. Focused compiler/runtime coverage passes `184/184`; the full
-`3733/3733` Vitest suite, typecheck, and `363`-module build remain green.
+Final T676 verification: `749/749` trace artifacts (`715` required, `34`
+optional), with T676 required trace checksum `d2a053cf` and final checksum
+`1e67b5c3`. Helper/telemetry coverage passes `62/62`; the full `3735/3735`
+Vitest suite, typecheck, and `363`-module build remain green.
 
 T675 / issue 249 is closed-bounded: live root-owned `ModifyHitDef
 down.velocity` dynamic Z resolves in caller context, preserves active X/Y,
-and is consumed by the required lying-hit trace. T676 / issue 250 is queued
-for Helper-owned `ModifyHitDef down.velocity` under the pinned Ikemen path.
+and is consumed by the required lying-hit trace. T676 / issue 250 is also
+closed-bounded: Helper-owned `ModifyHitDef down.velocity` resolves caller
+context X/Y/Z, preserves omitted live components, and reaches accepted lying
+physics/GetHitVar. T677 / issue 251 is queued for Helper-owned live
+`ModifyHitDef air.velocity` X/Y preservation under the same pinned path.
 The older active wording in this historical summary is superseded by this
 cursor.
 
@@ -86,9 +89,11 @@ expressions. T672 closes live root-owned ModifyHitDef X/Y mutation. T673 is
 active for fresh `down.velocity` X/Y expressions and air-vector inheritance.
 T673 closes that fresh path. T674 closes live root-owned ModifyHitDef
 down-velocity X/Y mutation. T675 closes its pinned-Ikemen dynamic Z component
-and required lying-hit evidence; T676 is queued for Helper-owned dispatch.
-Latest evidence: 3733/3733 tests, the 363-module build, and 748/748 traces
-pass (714 required, 34 optional).
+and required lying-hit evidence. T676 closes Helper-owned dispatch with
+caller-context X/Y/Z and a required lying-hit trace. Latest evidence:
+3735/3735 tests, the 363-module build, and 749/749 traces pass (715 required,
+34 optional). T677 is queued for Helper-owned `ModifyHitDef air.velocity`
+X/Y mutation.
 Projectile facing, exact deferred facing/power order, broader
 `data/mugen.cfg`, rollback, and full HitDef parity remain outside these slices.
 

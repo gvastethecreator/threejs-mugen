@@ -1,10 +1,11 @@
 ﻿# Supported Features
 ## 2026-08-09 HitDef friction, spark-scale, facing, power, PalFX, EnvShake, and velocity checkpoint
 
-Authoritative cursor: T675 is closed-bounded for live root-owned
-`ModifyHitDef down.velocity` dynamic Z mutation with active X/Y preservation
-and a required lying-hit trace. T676 is queued for the pinned-Ikemen-only
-Helper-owned follow-up; M.U.G.E.N live Z support is not claimed.
+Authoritative cursor: T676 is closed-bounded for pinned-Ikemen-only
+Helper-owned live `ModifyHitDef down.velocity` dynamic X/Y/Z mutation with
+active-component preservation and a required lying-hit trace. T677 is queued
+for Helper-owned live `ModifyHitDef air.velocity` X/Y. M.U.G.E.N live
+ModifyHitDef support is not claimed.
 
 - T608-T638 are closed-bounded. Root/Helper direct HitDef, ReversalDef, and
   Projectile paths support the verified `unhittabletime` slices through
@@ -79,7 +80,9 @@ Helper-owned follow-up; M.U.G.E.N live Z support is not claimed.
   consumption of the existing static air vector. T671 closes X/Y caller
   expressions. T672 closes live root-owned ModifyHitDef mutation. T673 is
   T673 closes fresh down-velocity expressions and air-vector inheritance. T674
-  is active for live root-owned ModifyHitDef down-velocity mutation.
+  and T675 close live root-owned ModifyHitDef down-velocity X/Y/Z mutation;
+  T676 closes Helper-owned live dispatch and lying-hit evidence. T677 is queued
+  for Helper-owned live air-velocity mutation.
   Projectile facing, exact deferred
   facing/power order, broader `data/mugen.cfg`, rollback, and full HitDef
   behavior are not supported claims.

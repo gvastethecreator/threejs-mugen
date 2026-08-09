@@ -1,6 +1,6 @@
 # Issue 250 — Helper-owned ModifyHitDef down.velocity
 
-- Status: `queued`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -42,3 +42,22 @@ Do not claim M.U.G.E.N live `ModifyHitDef`, root RedirectID parity beyond the
 already closed T675 path, fresh inheritance, partial `n` syntax, Projectile or
 ModifyProjectile, exact landing/Common1 timing, localcoord/facing equivalence,
 teams, rollback, or full Helper parity.
+
+## Closure evidence
+
+- Helper-owned runtime coverage passes `62/62` in the Helper and telemetry
+  suites; the focused T676 trace test passes `1/1`.
+- Helper caller variables resolve a one-, two-, or three-component mutation;
+  omitted live X/Y/Z components remain intact and the accepted lying hit
+  exposes `3/-8/3` through physical velocity and `GetHitVar`.
+- Required trace:
+  `synthetic-imported-helper-modifyhitdef-dynamic-down-velocity-golden`.
+- Trace checksum: `d2a053cf`; final checksum: `1e67b5c3`.
+- Aggregate trace gate passes `749/749` artifacts (`715` required,
+  `34` optional); the full suite passes `3735/3735` tests across `328` files,
+  typecheck passes, and the `363`-module build passes.
+
+## Next bounded slice
+
+T677 is queued for Helper-owned live `ModifyHitDef air.velocity` X/Y
+component-preserving mutation; see [issue 251](251-helper-modifyhitdef-air-velocity.md).
