@@ -1,6 +1,6 @@
 ﻿# Next Build Roadmap
 
-## Current next-build — official M.U.G.E.N / Ikemen queue (2026-08-08)
+## Current next-build — official M.U.G.E.N / Ikemen queue (2026-08-09)
 
 T608-T638 are closed-bounded. T622-T623 close independent HitDef/Projectile
 ground friction plus root and redirected `ModifyHitDef` mutation. T624 closes
@@ -61,9 +61,11 @@ closes direct and live root-owned `guard.velocity` X expressions, fresh
 inheritance, accepted ground guard, and omission preservation. T663 closes
 root-owned direct `airguard.velocity` X/Y expressions and official omission
 defaults. T664 closes exact X/Y live ModifyHitDef replacement with Z/omission
-preservation and accepted airborne-guard consumption. T665 is active for the
-pinned-Ikemen one-component form. Latest evidence: 3706/3706 tests, the
-363-module build, and 737/737 traces pass (703 required, 34 optional).
+preservation and accepted airborne-guard consumption. T665 closes the
+pinned-Ikemen one-component form with fresh Y derivation and live Y/Z
+preservation. T666 is active for the pinned-Ikemen missing-Z fresh default.
+Latest evidence: 3709/3709 tests, the 363-module build, and 738/738 traces pass
+(704 required, 34 optional).
 Projectile facing, exact deferred facing/power order, broader
 `data/mugen.cfg`, rollback, and full HitDef parity remain outside these slices.
 

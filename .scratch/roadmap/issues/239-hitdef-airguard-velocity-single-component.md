@@ -1,6 +1,6 @@
 # Issue 239 — HitDef airguard.velocity single-component compatibility
 
-- Status: `active-research`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -42,3 +42,16 @@ Describe the one-component form as pinned-Ikemen compatibility, not an
 explicit M.U.G.E.N 1.1 syntax guarantee. Do not claim Helpers, dynamic Z,
 `guard.velocity` Y/Z, Projectile/ModifyProjectile, exact localcoord/facing or
 gravity/landing timing, teams, rollback, or full air-guard physics.
+
+## Closure evidence
+
+- Direct HitDef and root-owned ModifyHitDef compile static and dynamic
+  one-component forms while malformed forms remain rejected.
+- Fresh HitDef replaces X and derives Y from effective `air.velocity` without
+  inheriting adversarial metadata; live ModifyHitDef replaces only X and
+  preserves Y/Z plus later omission.
+- Accepted airborne guard exposes the effective vector through physical
+  velocity and GetHitVar; the ground-guard route remains separate.
+- Required trace checksum: `bbe20e82`; final-state checksum: `1da5cba1`.
+- Full suite: 3709/3709. Aggregate traces: 738/738, with 704 required and 34
+  optional. Typecheck and the 363-module production build pass.

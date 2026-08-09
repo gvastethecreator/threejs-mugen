@@ -177,7 +177,7 @@ export type HitDefControllerOp = {
   /** Direct guard.velocity X expression evaluated in the HitDef caller context. */
   guardVelocityExpression?: number | string;
   airGuardVelocity?: MugenHitDefVector;
-  /** Exact dynamic or mixed airguard.velocity X/Y pair evaluated in caller context. */
+  /** One- or two-component dynamic/mixed airguard.velocity evaluated in caller context. */
   airGuardVelocityExpressions?: MugenHitDefExpressionPair;
   groundCornerPush?: number;
   airCornerPush?: number;
@@ -272,7 +272,7 @@ export type ModifyHitDefControllerOp = {
   /** Root-owned live guard.velocity X replacement evaluated in caller context. */
   guardVelocityExpression?: number | string;
   guardVelocityZ?: number;
-  /** Exact root-owned live airguard.velocity X/Y replacement evaluated in caller context. */
+  /** Root-owned live airguard.velocity X or X/Y replacement evaluated in caller context. */
   airGuardVelocityExpressions?: MugenHitDefExpressionPair;
   airGuardVelocityZ?: number;
   /** HitDef acceleration metadata mutation; dynamic scalar expressions are retained for runtime evaluation. */
@@ -2324,7 +2324,7 @@ function compileHitDefControllerOp(
   const airGuardVelocityExpressionValue = airGuardVelocityRaw === undefined || airGuardVelocity !== undefined
     ? true
     : optionalFloatExpressionPairParam(controller, "airguard.velocity");
-  const airGuardVelocityExpressions = Array.isArray(airGuardVelocityExpressionValue) && airGuardVelocityExpressionValue.length === 2
+  const airGuardVelocityExpressions = Array.isArray(airGuardVelocityExpressionValue)
     ? airGuardVelocityExpressionValue
     : undefined;
   const p1StateNo = optionalIntegerExpressionParam(controller, "p1stateno");
@@ -4358,14 +4358,13 @@ function optionalModifyHitDefAirGuardVelocityParam(
   if (raw === undefined) return true;
   const staticVector = strictStaticNumberVector(raw);
   if (staticVector !== undefined) {
-    if (staticVector[1] === undefined) return false;
     return {
-      xy: [staticVector[0], staticVector[1]],
+      xy: staticVector[1] === undefined ? [staticVector[0]] : [staticVector[0], staticVector[1]],
       ...(staticVector[2] === undefined ? {} : { z: staticVector[2] }),
     };
   }
   const dynamicPair = compileFloatExpressionPair(raw);
-  return dynamicPair?.length === 2 ? { xy: dynamicPair } : false;
+  return dynamicPair === undefined ? false : { xy: dynamicPair };
 }
 
 function staticOptionalGuardFlagParam(controller: MugenStateController, key: string): string | true | false {

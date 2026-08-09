@@ -13,7 +13,7 @@ Every controller family should have:
 - fixture or synthetic trace evidence
 - UI/report wording
 
-## 2026-08-08 HitDef friction, spark-scale, facing, power, PalFX, and EnvShake checkpoint
+## 2026-08-09 HitDef friction, spark-scale, facing, power, PalFX, and EnvShake checkpoint
 
 T612-T638 close ChainID/NoChainID admission, typed HitDef/Projectile
 `unhittabletime`, and independent root/Helper HitDef/Projectile
@@ -76,8 +76,9 @@ closes direct and root-owned live `guard.velocity` X expressions, fresh
 inheritance, accepted ground guard, and omission preservation. T663 closes
 root-owned direct `airguard.velocity` X/Y expressions and official omission
 defaults. T664 closes exact X/Y live ModifyHitDef replacement, Z/omission
-preservation, and accepted airborne-guard consumption. T665 is active for the
-pinned-Ikemen one-component form.
+preservation, and accepted airborne-guard consumption. T665 closes the
+pinned-Ikemen one-component form with fresh Y derivation and live Y/Z
+preservation. T666 is active for the missing-Z fresh default.
 Projectile facing, exact deferred facing/power order,
 broader `data/mugen.cfg`, rollback, and full HitDef parity remain unsupported.
 

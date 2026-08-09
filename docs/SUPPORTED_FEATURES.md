@@ -1,5 +1,5 @@
 ﻿# Supported Features
-## 2026-08-08 HitDef friction, spark-scale, facing, power, PalFX, and EnvShake checkpoint
+## 2026-08-09 HitDef friction, spark-scale, facing, power, PalFX, and EnvShake checkpoint
 
 - T608-T638 are closed-bounded. Root/Helper direct HitDef, ReversalDef, and
   Projectile paths support the verified `unhittabletime` slices through
@@ -65,13 +65,14 @@
   fresh inheritance, accepted ground guard, and omission preservation. T663
   closes root-owned direct `airguard.velocity` X/Y expressions and official
   omission defaults. T664 closes exact X/Y live ModifyHitDef replacement,
-  preserves Z/omission, and feeds accepted airborne guard. T665 is active for
-  the pinned-Ikemen one-component form.
+  preserves Z/omission, and feeds accepted airborne guard. T665 closes the
+  pinned-Ikemen one-component form with fresh Y derivation and live Y/Z
+  preservation. T666 is active for the missing-Z fresh default.
   Projectile facing, exact deferred
   facing/power order, broader `data/mugen.cfg`, rollback, and full HitDef
   behavior are not supported claims.
-- Latest evidence: 3706/3706 tests, the 363-module build, and 737/737 traces
-  pass (703 required, 34 optional).
+- Latest evidence: 3709/3709 tests, the 363-module build, and 738/738 traces
+  pass (704 required, 34 optional).
 
 ## 2026-08-08 ModifyProjectile selection and live HitDef mutation
 

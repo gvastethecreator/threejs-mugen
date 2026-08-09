@@ -2230,7 +2230,13 @@ value = 1
     })).operation).toBeUndefined();
   });
 
-  it("compiles exact direct HitDef airguard.velocity X/Y expressions", () => {
+  it("compiles one- and two-component direct HitDef airguard.velocity expressions", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "airguard.velocity": "-4.25",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      airGuardVelocity: [-4.25],
+    });
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "airguard.velocity": "-5.5,-2.25",
     })).operation).toMatchObject({
@@ -2251,7 +2257,10 @@ value = 1
     });
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "airguard.velocity": "var(1)",
-    })).operation).toBeUndefined();
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      airGuardVelocityExpressions: ["var(1)"],
+    });
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "airguard.velocity": "var(1),var(2),var(3)",
     })).operation).toBeUndefined();
@@ -2260,7 +2269,15 @@ value = 1
     })).operation).toBeUndefined();
   });
 
-  it("compiles exact root ModifyHitDef airguard.velocity X/Y expressions", () => {
+  it("compiles one- and two-component root ModifyHitDef airguard.velocity expressions", () => {
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "airguard.velocity": "-4.25",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      airGuardVelocityExpressions: [-4.25],
+      redirectPlayerIdExpression: "57",
+    });
     expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
       "airguard.velocity": "-5.5,-2.25",
       redirectid: "57",
@@ -2294,7 +2311,10 @@ value = 1
     expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
       "airguard.velocity": "var(1)",
       redirectid: "57",
-    })).operation).toBeUndefined();
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      airGuardVelocityExpressions: ["var(1)"],
+    });
     expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
       "airguard.velocity": "var(1),var(2),var(3)",
       redirectid: "57",

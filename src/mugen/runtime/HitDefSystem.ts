@@ -438,16 +438,25 @@ export class RuntimeHitDefControllerDispatchWorld {
       : operation?.downBounce ?? booleanHitDefParam(source, "down.bounce") ?? existing?.downBounce;
     const staticAirGuardVelocity =
       operation?.airGuardVelocity ?? velocityPair(findParam(source, "airguard.velocity"));
-    const resolvedAirGuardVelocity = resolveRuntimeHitDefFloatExpressionPair(
-      operation?.airGuardVelocityExpressions,
-      findParam(source, "airguard.velocity"),
-      actor.runtime,
-      context ?? {},
-      undefined,
-    );
+    const resolvedAirGuardVelocity = operation?.airGuardVelocityExpressions === undefined && staticAirGuardVelocity !== undefined
+      ? undefined
+      : resolveRuntimeHitDefFloatExpressionPair(
+          operation?.airGuardVelocityExpressions,
+          findParam(source, "airguard.velocity"),
+          actor.runtime,
+          context ?? {},
+          undefined,
+        );
+    const defaultAirGuardVelocity = deriveDefaultAirGuardVelocity(airVelocity);
     const airGuardVelocity: [number, number?, number?] | undefined = resolvedAirGuardVelocity === undefined
-      ? staticAirGuardVelocity ?? deriveDefaultAirGuardVelocity(airVelocity)
-      : [resolvedAirGuardVelocity.first ?? 0, resolvedAirGuardVelocity.second ?? 0];
+      ? staticAirGuardVelocity === undefined
+        ? defaultAirGuardVelocity
+        : staticAirGuardVelocity[1] === undefined
+          ? [staticAirGuardVelocity[0], defaultAirGuardVelocity?.[1] ?? 0]
+          : staticAirGuardVelocity
+      : resolvedAirGuardVelocity.componentCount === 1
+        ? [resolvedAirGuardVelocity.first ?? 0, defaultAirGuardVelocity?.[1] ?? 0]
+        : [resolvedAirGuardVelocity.first ?? 0, resolvedAirGuardVelocity.second ?? 0];
     const hitVelocities: RuntimeHitVelocityMetadata = {
       ground: runtimeHitVelocityVector(groundVelocity),
       ...(airVelocity === undefined ? {} : { air: runtimeHitVelocityVector(airVelocity) }),
@@ -1092,7 +1101,18 @@ export class RuntimeHitDefControllerDispatchWorld {
         context ?? {},
         undefined,
       );
-      if (
+      if (airGuardVelocity?.componentCount === 1 && airGuardVelocity.first !== undefined) {
+        const currentAirGuardVelocity = existing.hitVelocities?.airGuard ?? {
+          x: existing.airGuardPush ?? 0,
+          y: existing.airGuardVelocityY ?? 0,
+          z: existing.airGuardVelocityZ ?? 0,
+        };
+        existing.airGuardPush = Math.abs(airGuardVelocity.first);
+        existing.hitVelocities = {
+          ...existing.hitVelocities,
+          airGuard: { ...currentAirGuardVelocity, x: airGuardVelocity.first },
+        };
+      } else if (
         airGuardVelocity?.componentCount === 2 &&
         airGuardVelocity.first !== undefined &&
         airGuardVelocity.second !== undefined

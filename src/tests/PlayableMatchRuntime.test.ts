@@ -6917,11 +6917,16 @@ value = -7
   });
 
   it("uses root-caller airguard.velocity X/Y only for accepted airborne guards", () => {
-    const resolve = (airborne: boolean) => {
+    const resolve = (
+      airborne: boolean,
+      airGuardVelocityExpression = "var(10),var(11)",
+      airVelocityExpression?: string,
+    ) => {
       const attacker = createImportedFixture({
         withStateMove: false,
         guardFlag: "MA",
-        airGuardVelocityExpression: "var(10),var(11)",
+        airGuardVelocityExpression,
+        airVelocityExpression,
         passiveResourceController: `
 [State 0, Dynamic air guard X]
 type = VarSet
@@ -6967,6 +6972,26 @@ value = -4
     });
     expect(runtimeHitVar(groundGuard.actors[1]!.runtime, "xvel")).toBe(2);
     expect(runtimeHitVar(groundGuard.actors[1]!.runtime, "yvel")).toBe(0);
+
+    const singleAirGuard = resolve(true, "var(10)", "-6,-10");
+    expect(singleAirGuard.actors[1]?.runtime).toMatchObject({
+      guarding: true,
+      stateType: "A",
+      vel: { x: 9, y: -5 },
+      hitVelocity: { x: 9, y: -5 },
+    });
+    expect(runtimeHitVar(singleAirGuard.actors[1]!.runtime, "xvel")).toBe(9);
+    expect(runtimeHitVar(singleAirGuard.actors[1]!.runtime, "yvel")).toBe(-5);
+
+    const singleGroundGuard = resolve(false, "var(10)", "-6,-10");
+    expect(singleGroundGuard.actors[1]?.runtime).toMatchObject({
+      guarding: true,
+      stateType: "S",
+      vel: { x: 2, y: 0 },
+      hitVelocity: { x: 2, y: 0 },
+    });
+    expect(runtimeHitVar(singleGroundGuard.actors[1]!.runtime, "xvel")).toBe(2);
+    expect(runtimeHitVar(singleGroundGuard.actors[1]!.runtime, "yvel")).toBe(0);
   });
 
   it("preserves seeded airguard.velocity Z through RedirectID dynamic X/Y and later omissions", () => {
@@ -6992,16 +7017,34 @@ trigger1 = Time = 0
 v = 11
 value = -4
 
+[State 0, Dynamic single air guard X]
+type = VarSet
+trigger1 = Time = 0
+v = 12
+value = -11
+
 [State 0, Redirected dynamic air guard velocity]
 type = ModifyHitDef
-trigger1 = 1
+trigger1 = Time = 1
 airguard.velocity = var(10),var(11)
 RedirectID = var(0)
 
 [State 0, Later omission preserves air guard velocity]
 type = ModifyHitDef
-trigger1 = 1
+trigger1 = Time = 1
 damage = 5
+RedirectID = var(0)
+
+[State 0, Redirected single air guard velocity]
+type = ModifyHitDef
+trigger1 = Time = 2
+airguard.velocity = var(12)
+RedirectID = var(0)
+
+[State 0, Later omission preserves single air guard velocity]
+type = ModifyHitDef
+trigger1 = Time = 2
+numhits = 3
 RedirectID = var(0)
 `,
     });
@@ -7045,6 +7088,19 @@ airguard.velocity = -3,-2,5
       hitVelocities: { airGuard: { x: -3, y: -2, z: 5 } },
     });
 
+    const exactPair = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(internals.p2.currentMove).toBe(receiverMove);
+    expect(internals.p2.currentMove).toMatchObject({
+      damage: 5,
+      airGuardPush: 9,
+      airGuardVelocityY: -4,
+      airGuardVelocityZ: 5,
+      hitVelocities: { airGuard: { x: -9, y: -4, z: 5 } },
+    });
+    expect(
+      exactPair.compatibilitySession?.actors.find(({ actorId }) => actorId === "p2")?.executedOperations.modifyhitdef,
+    ).toBe(2);
+
     internals.p1.runtime.pos = { x: -20, y: 0 };
     internals.p1.runtime.stateType = "A";
     internals.p1.runtime.physics = "N";
@@ -7055,23 +7111,24 @@ airguard.velocity = -3,-2,5
     expect(internals.p2.currentMove).toBe(receiverMove);
     expect(internals.p2.currentMove).toMatchObject({
       damage: 5,
-      airGuardPush: 9,
+      airGuardPush: 11,
       airGuardVelocityY: -4,
       airGuardVelocityZ: 5,
-      hitVelocities: { airGuard: { x: -9, y: -4, z: 5 } },
+      hitVelocities: { airGuard: { x: -11, y: -4, z: 5 } },
+      hitVars: { hitCount: 3 },
     });
     expect(guarded.actors[0]?.runtime).toMatchObject({
       guarding: true,
       stateType: "A",
-      vel: { x: -9, y: -4 },
-      hitVelocity: { x: -9, y: -4, z: 5 },
+      vel: { x: -11, y: -4 },
+      hitVelocity: { x: -11, y: -4, z: 5 },
       combatDepth: { velocity: 5 },
     });
-    expect(runtimeHitVar(guarded.actors[0]!.runtime, "xvel")).toBe(-9);
+    expect(runtimeHitVar(guarded.actors[0]!.runtime, "xvel")).toBe(-11);
     expect(runtimeHitVar(guarded.actors[0]!.runtime, "yvel")).toBe(-4);
     expect(
       guarded.compatibilitySession?.actors.find(({ actorId }) => actorId === "p2")?.executedOperations.modifyhitdef,
-    ).toBe(2);
+    ).toBe(4);
   });
 
   it("uses the defender's own dynamic HitDef state when p2getp1state resolves to 0", () => {
@@ -12855,6 +12912,7 @@ function createImportedFixture(
     guardSlideTime?: number;
     guardControlTime?: number;
     guardVelocityExpression?: string;
+    airVelocityExpression?: string;
     airGuardVelocityExpression?: string;
     passiveNotHitBy?: string;
     passiveHitBy?: string;
@@ -13957,6 +14015,7 @@ ${options.hitDefP2Facing === undefined ? "" : `p2facing = ${options.hitDefP2Faci
 pausetime = ${options.hitDefPauseExpression ?? "8,8"}
 ground.hittime = 11
 ${options.omitHitDefGroundVelocity ? "" : "ground.velocity = -4"}
+${options.airVelocityExpression === undefined ? "" : `air.velocity = ${options.airVelocityExpression}`}
 ${fallHitDef}
 
 ${attackMultiplier}
