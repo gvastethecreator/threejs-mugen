@@ -1,10 +1,10 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T678 closed, T679 source-mapped
+## Authoritative runtime cursor — T679 closed, T680 source-mapped
 
-Final T678 verification: `751/751` trace artifacts (`717` required, `34`
-optional), with the T678 required trace checksum `3eeaa993` and final checksum
-`438713d1`. The full `3739/3739` Vitest suite across `328` files, typecheck,
+Final T679 verification: `752/752` trace artifacts (`718` required, `34`
+optional), with the T679 required trace checksum `c0164925` and final checksum
+`47a2c7d7`. The full `3741/3741` Vitest suite across `328` files, typecheck,
 and the `363`-module build pass.
 
 T675 / issue 249 is closed-bounded: live root-owned `ModifyHitDef
@@ -18,13 +18,16 @@ live Y/Z, and reaches accepted airborne-hit physics/GetHitVar with Helper/root
 ownership evidence. T678 / issue 252 is closed-bounded: Helper-owned live
 `ModifyHitDef airguard.velocity` resolves caller-context X/Y, preserves live
 Z and omitted components, and reaches accepted airborne-guard physics/
-GetHitVar with Helper/root/parent target ownership evidence. T679 is
-source-mapped but not yet claimed; the next slice must be selected against
-the pinned official references before implementation.
+GetHitVar with Helper/root/parent target ownership evidence. T679 / issue 253
+is closed-bounded: direct and Helper fresh HitDefs plus root/Helper live
+`ModifyHitDef airguard.velocity` resolve a finite caller-context Z component,
+apply pinned fresh defaults, preserve live omissions, and expose the final Z
+through accepted airborne guard physics/GetHitVar. T680 / issue 254 is
+source-mapped for Projectile fresh dynamic Z and remains unclaimed.
 M.U.G.E.N Z/live-ModifyHitDef claims, Projectile/ModifyProjectile, and full
 down-hit/Helper parity remain outside the closed claims.
 
-## Current official-parity queue — T424-T492 and T506-T678 closed-bounded; T679 source-mapped; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
+## Current official-parity queue — T424-T492 and T506-T679 closed-bounded; T680 source-mapped; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
 
 ### Active runtime checkpoint — live ModifyHitDef air-guard velocity
 
@@ -782,8 +785,8 @@ live components, and feed accepted lying-hit physics/GetHitVar. T675 / issue
 249 closes the pinned-Ikemen-only dynamic Z follow-up. T676 / issue 250 closes
 the Helper-owned down-velocity dispatch. T677 / issue 251 closes the
 Helper-owned air-velocity dispatch. T678 / issue 252 closes the
-Helper-owned air-guard velocity follow-up. T679 remains source-mapped and
-unclaimed.
+Helper-owned air-guard velocity follow-up. T679 / issue 253 closes the
+dynamic Z component and T680 / issue 254 is the next Projectile source gate.
 
 ### Latest visual checkpoint — Character Compare
 
