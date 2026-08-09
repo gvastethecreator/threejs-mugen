@@ -27168,6 +27168,117 @@ export function createSyntheticImportedStaticHitDefAirGuardVelocityDerivedZTrace
   });
 }
 
+export function createSyntheticImportedDirectAirVelocityPhysicalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5075;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "static-air-velocity-jump", frames: 2, p1: [], p2: ["U"] },
+    { label: "static-air-velocity-contact", frames: 12, p1: ["x"], p2: [] },
+    { label: "static-air-velocity-settle", frames: 18, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-direct-air-velocity-physical-attacker",
+    displayName: "Direct Air Velocity Physical Attacker",
+    groundVelocity: [-1, 1],
+    airVelocity: [-7, -5, 3],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-direct-air-velocity-physical-defender",
+    displayName: "Direct Air Velocity Physical Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5020,
+      slideStateNo: 5021,
+      shakeStateType: "A",
+      slideStateType: "A",
+      shakePhysics: "N",
+      slidePhysics: "N",
+      slideHitVelSet: { x: true, y: true, z: true },
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchStateType: "A",
+      hitTimeBranchPhysics: "N",
+      hitTimeBranchExpression:
+        "GetHitVar(xvel) = 7 && GetHitVar(yvel) = -5 && GetHitVar(zvel) = 3 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "Static Air Velocity GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-direct-air-velocity-physical-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-direct-air-velocity-physical-golden",
+      label: "Synthetic imported direct air.velocity physical route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves a direct HitDef with static air.velocity=-7,-5,3 selects the airborne vector instead of adversarial ground.velocity=-1,1 on accepted unguarded contact. Target 77 exposes GetHitVar(xvel/yvel/zvel)=7/-5/3, and Common1-style HitVelSet applies the same physical X/Y/Z velocity before a dedicated airborne branch. Dynamic expressions, one-component forms, live ModifyHitDef, Helper caller ownership, grounded launch into air, lying targets, Projectile, ModifyProjectile, exact localcoord/facing and landing timing, teams, rollback, and full velocity parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-direct-air-velocity-physical-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5020, 5021, branchStateNo],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155, 5000, 5001, 5010, 5011, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet"],
+      requiredExecutedOperations: ["hitdef", "kinematic:hitvelset"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: ["Direct Air Velocity Physical Attacker hit Direct Air Velocity Physical Defender for 37"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredControllerEventSequences: [{
+        label: "static direct air velocity accepted-contact GetHitVar and physical order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 5020, controller: "ChangeState", name: "Hit Shake Over" },
+          { stateNo: 5021, controller: "HitVelSet", name: "Apply Hit Velocity" },
+          { stateNo: 5021, operation: "kinematic:hitvelset" },
+          { stateNo: 5021, controller: "ChangeState", name: "Static Air Velocity GetHitVar Branch" },
+        ],
+      }],
+      requiredActorFrameSequences: [{
+        label: "static direct air velocity airborne physical order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 40, stateType: "A", moveType: "I", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5020, stateType: "A", moveType: "H", minFrames: 1 },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5021,
+            stateType: "A",
+            moveType: "H",
+            physics: "N",
+            observedVelXAtLeast: 7,
+            observedVelXAtMost: 7,
+            observedVelYAtLeast: -5,
+            observedVelYAtMost: -5,
+            observedVelZAtLeast: 3,
+            observedVelZAtMost: 3,
+            minFrames: 1,
+          },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, stateType: "A", moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileAirGuardCornerPushTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -56500,6 +56611,11 @@ export type SyntheticImportedTraceFighterOptions = {
     hitTimeBranchExpression?: string;
     hitTimeBranchName?: string;
     hitTimeBranchReturnAfter?: number;
+    hitTimeBranchInSlide?: boolean;
+    hitTimeBranchTriggerTime?: number;
+    hitTimeBranchStateType?: "S" | "C" | "A" | "L";
+    hitTimeBranchPhysics?: "S" | "C" | "A" | "N";
+    slideHitVelSet?: { x?: boolean; y?: boolean; z?: boolean };
   };
   defaultGuardHit?: {
     shakeStateNo?: number;
@@ -60748,6 +60864,11 @@ function defaultGetHitProgressionBlock(state: {
   hitTimeBranchExpression?: string;
   hitTimeBranchName?: string;
   hitTimeBranchReturnAfter?: number;
+  hitTimeBranchInSlide?: boolean;
+  hitTimeBranchTriggerTime?: number;
+  hitTimeBranchStateType?: "S" | "C" | "A" | "L";
+  hitTimeBranchPhysics?: "S" | "C" | "A" | "N";
+  slideHitVelSet?: { x?: boolean; y?: boolean; z?: boolean };
 }): string {
   const shakeStateNo = state.shakeStateNo ?? 5000;
   const slideStateNo = state.slideStateNo ?? 5001;
@@ -60762,24 +60883,38 @@ function defaultGetHitProgressionBlock(state: {
   const hitTimeBranchExpression = state.hitTimeBranchExpression ?? "GetHitVar(hittime) > 0";
   const hitTimeBranchName = state.hitTimeBranchName ?? "Normal HitTime Branch";
   const hitTimeBranchReturnAfter = state.hitTimeBranchReturnAfter;
+  const hitTimeBranchStateType = state.hitTimeBranchStateType ?? "S";
+  const hitTimeBranchPhysics = state.hitTimeBranchPhysics ?? "S";
+  const hitTimeBranchTriggerTime = state.hitTimeBranchTriggerTime ?? 0;
+  const hitTimeBranchHostStateNo = state.hitTimeBranchInSlide ? slideStateNo : shakeStateNo;
   const hitTimeBranchController =
     hitTimeBranchStateNo === undefined
       ? ""
       : `
-[State ${shakeStateNo}, ${hitTimeBranchName}]
+[State ${hitTimeBranchHostStateNo}, ${hitTimeBranchName}]
 type = ChangeState
-trigger1 = Time >= 0
+trigger1 = Time >= ${hitTimeBranchTriggerTime}
 trigger1 = ${hitTimeBranchExpression}
 value = ${hitTimeBranchStateNo}
+`;
+  const slideHitVelSetController = state.slideHitVelSet === undefined
+    ? ""
+    : `
+[State ${slideStateNo}, Apply Hit Velocity]
+type = HitVelSet
+trigger1 = Time = 0
+x = ${state.slideHitVelSet.x ? 1 : 0}
+y = ${state.slideHitVelSet.y ? 1 : 0}
+z = ${state.slideHitVelSet.z ? 1 : 0}
 `;
   const hitTimeBranchStateBlock =
     hitTimeBranchStateNo === undefined
       ? ""
       : `
 [Statedef ${hitTimeBranchStateNo}]
-type = S
+type = ${hitTimeBranchStateType}
 movetype = H
-physics = S
+physics = ${hitTimeBranchPhysics}
 anim = ${hitTimeBranchAnimNo}
 ctrl = 0
 ${hitTimeBranchReturnAfter === undefined ? "" : `
@@ -60797,7 +60932,7 @@ movetype = H
 physics = ${shakePhysics}
 anim = ${shakeAnimNo}
 ctrl = 0
-${hitTimeBranchController}
+${state.hitTimeBranchInSlide ? "" : hitTimeBranchController}
 
 [State ${shakeStateNo}, Hit Shake Over]
 type = ChangeState
@@ -60810,6 +60945,8 @@ movetype = H
 physics = ${slidePhysics}
 anim = ${slideAnimNo}
 ctrl = 0
+${slideHitVelSetController}
+${state.hitTimeBranchInSlide ? hitTimeBranchController : ""}
 
 [State ${slideStateNo}, Hit Over]
 type = ChangeState

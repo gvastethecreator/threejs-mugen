@@ -1,5 +1,11 @@
 import type { CollisionBox } from "../model/CollisionBox";
-import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, RuntimeHitOverrideSlot } from "./types";
+import type {
+  CharacterRuntimeState,
+  RuntimeAssertSpecial,
+  RuntimeHitBySlot,
+  RuntimeHitOverrideSlot,
+  RuntimeHitVelocityMetadata,
+} from "./types";
 import type { RuntimeCollisionBox } from "./RuntimeCollisionTransformSystem";
 import { runtimeHitTmpValue } from "./RuntimeHitTmpSystem";
 
@@ -40,6 +46,8 @@ export type RuntimeCombatAttack = {
   airVelocityY?: number;
   /** Air HitDef velocity Z, selected for airborne defenders. */
   airVelocityZ?: number;
+  /** Effective direct-HitDef vectors; Projectile adapters intentionally omit this metadata seam. */
+  hitVelocities?: RuntimeHitVelocityMetadata;
   guardDistance?: number;
   guardFlag?: string;
   guardDamage?: number;
@@ -452,6 +460,10 @@ export function resolveRuntimeCombatHit(input: {
   const usesAirHitTime =
     (isAirHit || (isDownHit && !usesDownHitTime)) &&
     !resolveRuntimeFallEnabled(input.attack.fall, input.defender.stateType);
+  const directAirVelocity = input.attack.hitVelocities?.air;
+  const airVelocityX = directAirVelocity?.x ?? input.attack.airVelocityX;
+  const airVelocityY = directAirVelocity?.y ?? input.attack.airVelocityY;
+  const airVelocityZ = directAirVelocity?.z ?? input.attack.airVelocityZ;
   const pause = input.attack.hitShakeTime ?? input.attack.hitPause;
   return {
     kind: "hit",
@@ -475,19 +487,19 @@ export function resolveRuntimeCombatHit(input: {
       : usesAirHitTime
         ? input.attack.airHitTime ?? 20
         : input.attack.hitStun,
-    push: isAirHit ? Math.abs(input.attack.airVelocityX ?? input.attack.push) : input.attack.push,
-    ...((isDownHit ? input.attack.downVelocityX : isAirHit ? input.attack.airVelocityX : undefined) === undefined
+    push: isAirHit ? Math.abs(airVelocityX ?? input.attack.push) : input.attack.push,
+    ...((isDownHit ? input.attack.downVelocityX : isAirHit ? airVelocityX : undefined) === undefined
       ? {}
-      : { hitVelocityX: isDownHit ? input.attack.downVelocityX : input.attack.airVelocityX }),
+      : { hitVelocityX: isDownHit ? input.attack.downVelocityX : airVelocityX }),
     hitVelocityY: isDownHit
       ? input.attack.downVelocityY ?? input.attack.hitVelocityY
       : isAirHit
-        ? input.attack.airVelocityY ?? input.attack.hitVelocityY
+        ? airVelocityY ?? input.attack.hitVelocityY
         : input.attack.hitVelocityY,
     hitVelocityZ: isDownHit
       ? input.attack.downVelocityZ ?? input.attack.airVelocityZ ?? input.attack.hitVelocityZ
       : isAirHit
-        ? input.attack.airVelocityZ ?? input.attack.hitVelocityZ
+        ? airVelocityZ ?? input.attack.hitVelocityZ
         : input.attack.hitVelocityZ,
     cornerPush:
       (isDownHit ? input.attack.downCornerPush : undefined) ??

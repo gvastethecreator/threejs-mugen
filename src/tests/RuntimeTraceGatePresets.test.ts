@@ -407,6 +407,7 @@ import {
   createSyntheticImportedHelperProjectileAirGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardVelocityDerivedZTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardVelocityTraceArtifact,
+  createSyntheticImportedDirectAirVelocityPhysicalTraceArtifact,
   createSyntheticImportedStaticHitDefAirGuardVelocityDerivedZTraceArtifact,
   createSyntheticImportedHelperProjContactTraceArtifact,
   createSyntheticImportedHelperProjContactTimeAnyTraceArtifact,
@@ -21688,6 +21689,41 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.combatReasons).not.toContain("hit");
     expect(gate?.requirements.requiredExecutedControllers).not.toContain("HitDef");
     expect(gate?.requirements.requiredExecutedOperations).not.toContain("hitdef");
+  });
+
+  it("creates a required imported direct air.velocity physical artifact", () => {
+    const artifact = createSyntheticImportedDirectAirVelocityPhysicalTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-direct-air-velocity-physical-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-direct-air-velocity-physical-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    const physicalFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 5021);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(physicalFrame?.minVel.x).toBe(7);
+    expect(physicalFrame?.maxVel.x).toBe(7);
+    expect(physicalFrame?.minVel.y).toBe(-5);
+    expect(physicalFrame?.maxVel.y).toBe(-5);
+    expect(physicalFrame?.minVelZ).toBe(3);
+    expect(physicalFrame?.maxVelZ).toBe(3);
+    expect(evidence?.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5075, stateType: "A" }),
+    ]));
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.combatReasons).not.toContain("guard");
+    expect(evidence?.executedStates).not.toEqual(
+      expect.arrayContaining([150, 151, 152, 153, 154, 155, 5000, 5010, 5030, 5050, 5100]),
+    );
   });
 
   it("creates a synthetic imported Helper Projectile airguard.cornerpush.veloff artifact", () => {

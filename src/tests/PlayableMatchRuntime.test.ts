@@ -6879,6 +6879,78 @@ value = 7
     expect(runtimeHitVar(snapshot.actors[1]!.runtime, "yvel")).toBe(0);
   });
 
+  it("selects distinct air velocity for accepted root and Helper direct hits", () => {
+    const resolve = (source: "root" | "helper", airborne: boolean) => {
+      const helperSource = source === "helper";
+      const attacker = createImportedFixture({
+        id: `${source}-direct-hit-air-velocity`,
+        withStateMove: false,
+        groundVelocityExpression: "-30,-20,13",
+        airVelocityExpression: "-6,-10,4",
+        ...(helperSource
+          ? {
+              withHelper: true,
+              helperStateControllers: `
+[State 1200, Contact position]
+type = PosSet
+trigger1 = Time = 0
+x = 0
+y = 0
+
+[State 1200, Distinct air velocity]
+type = HitDef
+trigger1 = Time = 0
+attr = S,NA
+damage = 5
+pausetime = 0,0
+ground.hittime = 9
+ground.velocity = -30,-20,13
+air.velocity = -6,-10,4
+`,
+            }
+          : {}),
+      });
+      const effectActorWorld = new RuntimeEffectActorWorld();
+      const runtime = new PlayableMatchRuntime(attacker, demoFighters[1]!, {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: helperSource ? -200 : -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      }, { effectActorWorld });
+
+      if (airborne) {
+        runtime.step({ p1: new Set(), p2: new Set(["U"]) });
+      }
+      const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+      if (helperSource) {
+        expect(effectActorWorld.helpers("p1")[0]?.hasHit).toBe(true);
+      }
+      return snapshot;
+    };
+    const expectHitVelocity = (
+      snapshot: ReturnType<typeof resolve>,
+      expected: readonly [x: number, y: number, z: number],
+      stateType: "S" | "A",
+    ) => {
+      expect(snapshot.actors[1]?.runtime).toMatchObject({
+        moveType: "H",
+        stateType,
+        vel: { x: expected[0], y: expected[1] },
+        hitVelocity: { x: expected[0], y: expected[1], z: expected[2] },
+        combatDepth: { velocity: expected[2] },
+      });
+      expect(runtimeHitVar(snapshot.actors[1]!.runtime, "xvel")).toBe(expected[0]);
+      expect(runtimeHitVar(snapshot.actors[1]!.runtime, "yvel")).toBe(expected[1]);
+      expect(runtimeHitVar(snapshot.actors[1]!.runtime, "zvel")).toBe(expected[2]);
+    };
+
+    for (const source of ["root", "helper"] as const) {
+      expectHitVelocity(resolve(source, true), [6, -10, 4], "A");
+      expectHitVelocity(resolve(source, false), [30, -20, 13], "S");
+    }
+  });
+
   it("uses dynamic root HitDef pause pairs asymmetrically for hit and guard", () => {
     const resolve = (guarding: boolean) => {
       const attacker = createImportedFixture({
@@ -13003,6 +13075,7 @@ function createImportedFixture(
     hitDefDamageExpression?: string;
     omitHitDefDamage?: boolean;
     omitHitDefGroundVelocity?: boolean;
+    groundVelocityExpression?: string;
     hitDefPauseExpression?: string;
     hitDefKill?: boolean;
     hitDefAttr?: string;
@@ -14141,7 +14214,7 @@ ${hitDefCustomStateLines}
 ${options.hitDefP2Facing === undefined ? "" : `p2facing = ${options.hitDefP2Facing}`}
 pausetime = ${options.hitDefPauseExpression ?? "8,8"}
 ground.hittime = 11
-${options.omitHitDefGroundVelocity ? "" : "ground.velocity = -4"}
+${options.omitHitDefGroundVelocity ? "" : `ground.velocity = ${options.groundVelocityExpression ?? "-4"}`}
 ${options.airVelocityExpression === undefined ? "" : `air.velocity = ${options.airVelocityExpression}`}
 ${fallHitDef}
 

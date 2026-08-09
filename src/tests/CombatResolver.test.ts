@@ -357,6 +357,76 @@ describe("CombatResolver", () => {
     ).toMatchObject({ kind: "hit", stun: 20 });
   });
 
+  it("selects direct HitDef air velocity metadata only for airborne hits", () => {
+    const attacker = actor();
+    const attack = {
+      damage: 20,
+      hitPause: 4,
+      hitStun: 9,
+      push: 2,
+      hitVelocityY: -1,
+      hitVelocityZ: 1,
+      airVelocityX: -20,
+      airVelocityY: -30,
+      airVelocityZ: 40,
+      downVelocityX: 3,
+      downVelocityY: -2,
+      guardPush: 3,
+      guardVelocityY: -2,
+      guardVelocityZ: 5,
+      hitVelocities: {
+        ground: { x: 9, y: -8, z: 7 },
+        air: { x: -6, y: -10, z: 4 },
+      },
+    };
+
+    expect(resolveRuntimeCombatHit({
+      attacker,
+      defender: actor({ stateType: "A" }),
+      attack,
+      holdingBack: false,
+    })).toMatchObject({
+      kind: "hit",
+      push: 6,
+      hitVelocityX: -6,
+      hitVelocityY: -10,
+      hitVelocityZ: 4,
+    });
+    expect(resolveRuntimeCombatHit({
+      attacker,
+      defender: actor({ stateType: "S" }),
+      attack,
+      holdingBack: false,
+    })).toMatchObject({
+      kind: "hit",
+      push: 2,
+      hitVelocityY: -1,
+      hitVelocityZ: 1,
+    });
+    expect(resolveRuntimeCombatHit({
+      attacker,
+      defender: actor({ stateType: "L" }),
+      attack,
+      holdingBack: false,
+    })).toMatchObject({
+      kind: "hit",
+      hitVelocityX: 3,
+      hitVelocityY: -2,
+      hitVelocityZ: 40,
+    });
+    expect(resolveRuntimeCombatHit({
+      attacker,
+      defender: actor({ stateType: "S" }),
+      attack,
+      holdingBack: true,
+    })).toMatchObject({
+      kind: "guard",
+      push: 3,
+      hitVelocityY: -2,
+      hitVelocityZ: 5,
+    });
+  });
+
   it("does not use air.hittime when the hit starts a fall reaction", () => {
     const attacker = actor();
     const attack = {

@@ -1,6 +1,6 @@
 # Issue 244 — Direct air-hit velocity consumption
 
-- Status: `active-research`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -38,3 +38,15 @@ Claim official M.U.G.E.N X/Y consumption and pinned-Ikemen Z only. Do not
 claim dynamic `air.velocity` expressions, `n` syntax, live ModifyHitDef X/Y,
 Projectile breadth, lying-state fallback, exact localcoord/facing or landing
 timing, teams, rollback, or full air-hit physics.
+
+## Closure evidence
+
+- Direct root/Helper hits select `hitVelocities.air` X/Y/Z only for airborne
+  defenders; grounded, down, and guard routes keep their existing vectors.
+- Runtime integration contrasts an adversarial ground vector against the air
+  vector and proves physical velocity plus GetHitVar readback.
+- Required imported trace reaches target 77, applies `7/-5/3` through
+  HitVelSet, and excludes guard, fall, and grounded routes.
+- Required trace checksum: `1fe99cdb`; final-state checksum: `28fa04d0`.
+- Full suite: 3719/3719. Aggregate traces: 743/743, with 709 required and 34
+  optional. Typecheck and the 363-module production build pass.

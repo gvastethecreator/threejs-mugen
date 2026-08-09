@@ -70,13 +70,14 @@
   preservation. T666 closes the missing-Z fresh direct-HitDef default. T667
   closes the same default for fresh root-owned Projectiles. T668 closes
   Helper-created Projectile root/parent ownership and contact evidence. T669
-  closes the imported static-HitDef mirror. T670 is active for direct
-  airborne-hit consumption of the existing static air vector.
+  closes the imported static-HitDef mirror. T670 closes direct airborne-hit
+  consumption of the existing static air vector. T671 is active for X/Y
+  caller expressions.
   Projectile facing, exact deferred
   facing/power order, broader `data/mugen.cfg`, rollback, and full HitDef
   behavior are not supported claims.
-- Latest evidence: 3716/3716 tests, the 363-module build, and 742/742 traces
-  pass (708 required, 34 optional).
+- Latest evidence: 3719/3719 tests, the 363-module build, and 743/743 traces
+  pass (709 required, 34 optional).
 
 ## 2026-08-08 ModifyProjectile selection and live HitDef mutation
 

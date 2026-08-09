@@ -2,7 +2,8 @@
 
 ## Current parity queue
 
-- **T670 active-research** — consume static direct-HitDef `air.velocity` X/Y/Z on accepted airborne hits and expose the selected vector through physics/GetHitVar. See [issue 244](../.scratch/roadmap/issues/244-direct-air-hit-velocity-consumption.md).
+- **T671 active-research** — resolve direct-HitDef `air.velocity` X/Y expressions in root/Helper caller context and feed accepted airborne-hit physics/GetHitVar. See [issue 245](../.scratch/roadmap/issues/245-hitdef-air-velocity-dynamic.md).
+- **T670 closed-bounded** — accepted direct airborne hits select the existing static `air.velocity` X/Y/Z vector in root/Helper paths while ground/down/guard selection remains unchanged. See [issue 244](../.scratch/roadmap/issues/244-direct-air-hit-velocity-consumption.md).
 - **T669 closed-bounded** — imported static-HitDef omission/partial `airguard.velocity` completes missing components from effective air velocity, including pinned-Ikemen Z derivation. See [issue 243](../.scratch/roadmap/issues/243-imported-hitdef-airguard-velocity-z-default.md).
 - **T668 closed-bounded** — Helper-created Projectile missing-Z `airguard.velocity` derivation retains root/parent ownership and reaches airborne guard through durable lifecycle/contact evidence. See [issue 242](../.scratch/roadmap/issues/242-helper-projectile-airguard-velocity-z-default.md).
 - **T667 closed-bounded** — fresh root Projectile omission/partial `airguard.velocity` derives missing Z from effective air Z while explicit Z wins and airborne guard exposes the value. See [issue 241](../.scratch/roadmap/issues/241-projectile-airguard-velocity-z-default.md).
