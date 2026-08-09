@@ -1195,6 +1195,57 @@ describe("ProjectileSystem", () => {
     expect(dynamicSingle).toMatchObject({ hitVelocities: { air: { x: -5, y: 0, z: 0 } } });
   });
 
+  it("resolves fresh Projectile down.velocity expressions with air inheritance", () => {
+    const create = (serialId: string, downVelocity: string, resolved: [number?, number?, number?]): RuntimeProjectile => {
+      const compiled = compileControllerIr(controller({
+        projanim: "1005",
+        "air.velocity": "-6,-8,2",
+        "down.velocity": downVelocity,
+      }));
+      const operation = compiled.operation as ProjectileControllerOp;
+      return createRuntimeProjectile({
+        serialId,
+        controller: controller({
+          projanim: "1005",
+          "air.velocity": "-6,-8,2",
+          "down.velocity": downVelocity,
+        }),
+        operation,
+        spriteOwnerId: "p1",
+        spriteOwnerDefinitionId: "kfm",
+        spriteOwnerLabel: "Kung Fu Man",
+        action,
+        animNo: 1005,
+        pos: { x: 0, y: 0 },
+        fallbackFacing: 1,
+        resolveDownVelocity: () => resolved,
+      });
+    };
+
+    const dynamicTriplet = create("p1-projectile-down-velocity-dynamic-triplet", "var(0),fvar(1),var(2)", [-3, -5, 7]);
+    const dynamicPair = create("p1-projectile-down-velocity-dynamic-pair", "var(0),fvar(1)", [-3, -5]);
+    const dynamicSingle = create("p1-projectile-down-velocity-dynamic-single", "var(0)", [-3]);
+
+    expect(dynamicTriplet).toMatchObject({
+      downVelocityX: -3,
+      downVelocityY: -5,
+      downVelocityZ: 7,
+      hitVelocities: { down: { x: -3, y: -5, z: 7 } },
+    });
+    expect(dynamicPair).toMatchObject({
+      downVelocityX: -3,
+      downVelocityY: -5,
+      downVelocityZ: 2,
+      hitVelocities: { down: { x: -3, y: -5, z: 2 } },
+    });
+    expect(dynamicSingle).toMatchObject({
+      downVelocityX: -3,
+      downVelocityY: -8,
+      downVelocityZ: 2,
+      hitVelocities: { down: { x: -3, y: -8, z: 2 } },
+    });
+  });
+
   it("derives missing Projectile guard.velocity from ground.velocity x", () => {
     const projectile = createRuntimeProjectile({
       serialId: "p1-projectile-guard-default",

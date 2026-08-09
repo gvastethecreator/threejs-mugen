@@ -324,6 +324,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveSparkScale?: () => { hit?: [number?, number?]; guard?: [number?, number?] } | undefined;
   /** Resolves Projectile air.velocity authored expressions in the original caller context. */
   resolveAirVelocity?: () => [number?, number?, number?] | undefined;
+  /** Resolves Projectile down.velocity authored expressions in the original caller context. */
+  resolveDownVelocity?: () => [number?, number?, number?] | undefined;
   /** Resolves Projectile airguard.velocity authored expressions in the original caller context. */
   resolveAirGuardVelocity?: () => [number?, number?, number?] | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
@@ -623,7 +625,13 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const airVelocity = hasDynamicAirVelocity
     ? completeFreshProjectileAirVelocity(authoredAirVelocity)
     : authoredAirVelocity as [number, number?, number?] | undefined;
-  const downVelocity = normalizeOptionalVelocityVector(operation?.downVelocity) ?? velocityPair(findControllerParam(input.controller, "down.velocity"));
+  const hasDynamicDownVelocity = operation?.downVelocityExpressions !== undefined || operation?.downVelocityZExpression !== undefined;
+  const authoredDownVelocity = hasDynamicDownVelocity
+    ? input.resolveDownVelocity?.()
+    : normalizeOptionalVelocityVector(operation?.downVelocity) ?? velocityPair(findControllerParam(input.controller, "down.velocity"));
+  const downVelocity: [number, number?, number?] | undefined = hasDynamicDownVelocity
+    ? completeFreshProjectileDownVelocity(authoredDownVelocity, completeFreshProjectileAirVelocity(airVelocity))
+    : authoredDownVelocity as [number, number?, number?] | undefined;
   const downVelocityX = downVelocity?.[0] ?? airVelocity?.[0] ?? 0;
   const downVelocityY = downVelocity?.[1] ?? airVelocity?.[1] ?? 0;
   const downVelocityZ = downVelocity?.[2] ?? airVelocity?.[2];
@@ -2888,6 +2896,17 @@ function completeFreshProjectileAirVelocity(
   authored: [number?, number?, number?] | undefined,
 ): [number, number, number] {
   return [authored?.[0] ?? 0, authored?.[1] ?? 0, authored?.[2] ?? 0];
+}
+
+function completeFreshProjectileDownVelocity(
+  authored: [number?, number?, number?] | undefined,
+  defaults: [number, number, number],
+): [number, number, number] {
+  return [
+    authored?.[0] ?? defaults[0],
+    authored?.[1] ?? defaults[1],
+    authored?.[2] ?? defaults[2],
+  ];
 }
 
 function runtimeProjectileHasExplicitDepth(projectile: RuntimeProjectile): boolean {

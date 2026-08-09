@@ -6034,6 +6034,39 @@ function runActiveStateControllers(
                   ];
                 }
               : undefined,
+          resolveProjectileDownVelocity:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  const pair = operation?.downVelocityExpressions;
+                  const zExpression = operation?.downVelocityZExpression;
+                  if (pair === undefined && zExpression === undefined) return undefined;
+                  const resolveComponent = (value: number | string | undefined): number | undefined => {
+                    if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+                    if (value === undefined) return undefined;
+                    const resolved = resolveDispatchFloat(
+                      undefined,
+                      value,
+                      actor,
+                      targetOpponent,
+                      stateOwner,
+                      stageBounds,
+                      activeTick,
+                      gameSpace,
+                      options.characters,
+                      createPlayerIdTarget(actor),
+                    );
+                    return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
+                  };
+                  return [
+                    resolveComponent(pair?.[0]),
+                    resolveComponent(pair?.[1]),
+                    resolveComponent(zExpression),
+                  ];
+                }
+              : undefined,
           resolveProjectileSparkScale:
             effect === "projectile"
               ? () => {
