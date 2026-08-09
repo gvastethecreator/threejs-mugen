@@ -1,6 +1,12 @@
 # Controller Support Registry
 
-Authoritative cursor: T692 is closed-bounded for direct HitDef `down.hittime`
+Authoritative cursor: T693 is closed-bounded for fresh root Projectile
+`down.hittime` caller-context resolution, pinned fresh omission default,
+accepted lying-hit GetHitVar evidence, Projectile lifecycle, and target links.
+Helper caller resolution is covered by focused spawn tests. Live
+`ModifyProjectile`, non-zero down launch, exact countdown/landing timing, and
+full Projectile timing parity remain excluded. T692 remains closed-bounded for
+direct HitDef `down.hittime`
 plus Helper-owned live `ModifyHitDef down.hittime` caller-context resolution,
 active-move mutation, accepted lying-hit GetHitVar, lifecycle, and target-link
 evidence. T691 remains closed-bounded for direct HitDef `down.hittime`

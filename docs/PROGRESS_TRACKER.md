@@ -1,6 +1,16 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T608-T692 (2026-08-09)
+## Latest implementation checkpoint — T608-T693 (2026-08-09)
+
+Authoritative cursor: T693 is closed-bounded for fresh root Projectile
+`down.hittime`. Caller expressions resolve once, omission resets to the pinned
+`20`, and accepted lying contact exposes `GetHitVar(hittime)` with Projectile
+payload, target link, and lifecycle evidence. Helper caller resolution is
+covered by focused tests. Aggregate QA is `768/768` (`734` required,
+`34` optional), full Vitest is `3793/3793` across `328` files, and the
+`363`-module build/typecheck pass. Live `ModifyProjectile`, non-zero down
+launch, exact countdown/landing timing, and full Projectile timing parity remain
+explicitly unclaimed. See [issue 267](../.scratch/roadmap/issues/267-projectile-down-hittime-dynamic.md).
 
 Authoritative cursor: T692 is closed-bounded for Helper-owned live
 `ModifyHitDef down.hittime`. Helper caller expressions resolve once, mutate

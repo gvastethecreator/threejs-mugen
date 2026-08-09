@@ -1,5 +1,16 @@
 ﻿# Roadmap Package Milestones
 
+## Latest runtime cursor — T693
+
+T693 closes the fresh root Projectile `down.hittime` caller-context seam:
+dynamic values resolve once, omitted fresh values use the pinned `20` default,
+and accepted lying contact exposes `GetHitVar(hittime)` with Projectile
+payload, target, and lifecycle evidence. Helper caller resolution is focused;
+live `ModifyProjectile`, non-zero down launch, exact countdown/landing timing,
+and full Projectile timing parity remain excluded. Verification is `768/768`
+traces (`734` required, `34` optional), `3793/3793` Vitest tests, typecheck,
+and the `363`-module build. See [issue 267](../.scratch/roadmap/issues/267-projectile-down-hittime-dynamic.md).
+
 ## Current package override — official parity queue (2026-08-08)
 
 T608-T637 are closed-bounded. T616-T621 close typed HitDef/Projectile

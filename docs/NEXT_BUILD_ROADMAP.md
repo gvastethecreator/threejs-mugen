@@ -1,6 +1,27 @@
 ﻿# Next Build Roadmap
 
-## Authoritative runtime cursor — T692 closed-bounded
+## Authoritative runtime cursor — T693 closed-bounded
+
+Final T693 verification: `768/768` trace artifacts (`734` required, `34`
+optional), with required fresh root Projectile `down.hittime` checksum
+`800059f` and final checksum `ac8eff48`. The full `3793/3793` Vitest suite
+across `328` files, typecheck, and the `363`-module build pass.
+
+T693 / issue 267 is closed-bounded for fresh root Projectiles: dynamic
+`down.hittime` resolves in caller context, omission resets to the pinned `20`,
+and accepted lying contact exposes `GetHitVar(hittime)` with Projectile
+payload, target, and lifecycle evidence. Helper caller resolution is focused;
+live `ModifyProjectile`, non-zero down launch, exact countdown/landing timing,
+and full Projectile timing parity remain excluded. See [issue 267](../.scratch/roadmap/issues/267-projectile-down-hittime-dynamic.md).
+
+## Next parity cut — T694 proposed
+
+Close Helper-owned fresh Projectile `down.hittime` with a durable ownership
+and contact trace, reusing the T693 caller-context seam. Keep live
+`ModifyProjectile`, non-zero down launch, and exact countdown/landing timing
+out of the claim until their pinned upstream behavior is mapped separately.
+
+## Previous runtime cursor — T692 closed-bounded
 
 Final T692 verification: `767/767` trace artifacts (`733` required, `34`
 optional), with required Helper-owned `ModifyHitDef down.hittime` checksum

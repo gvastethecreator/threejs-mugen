@@ -1,5 +1,21 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-09 T693 Projectile down.hittime addendum - no score movement
+
+Final T693 verification: `768/768` trace artifacts (`734` required, `34`
+optional), `3793/3793` Vitest tests across `328` files, typecheck, the
+`363`-module build, and diff hygiene pass. Required trace
+`synthetic-imported-projectile-dynamic-down-hittime` has checksum `800059f`
+and final checksum `ac8eff48`.
+
+Fresh root Projectiles now resolve dynamic `down.hittime` in caller context,
+reset omission to the pinned `20`, and expose accepted lying-hit
+`GetHitVar(hittime)` with Projectile payload, target, and lifecycle evidence.
+This remains a bounded compatibility seam with no score movement: Helper
+caller resolution is focused, while live `ModifyProjectile`, non-zero down
+launch, exact countdown/landing timing, negative/overflow values, and full
+Projectile timing parity remain blocked.
+
 ## 2026-08-09 T692 Helper ModifyHitDef down.hittime addendum - no score movement
 
 Final T692 verification: `767/767` trace artifacts (`733` required, `34`

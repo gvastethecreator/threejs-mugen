@@ -1,4 +1,14 @@
 ﻿# Supported Features
+## 2026-08-09 T693 Projectile timing checkpoint
+
+T693 is closed-bounded: fresh root Projectiles resolve dynamic
+`down.hittime` in caller context, reset omission to the pinned `20`, and feed
+accepted lying-hit `GetHitVar(hittime)` plus Projectile payload, target, and
+lifecycle evidence. Helper caller resolution is covered by focused tests.
+Live `ModifyProjectile`, non-zero down launch, exact countdown/landing timing,
+negative/overflow values, and full Projectile timing parity remain outside the
+supported claim. See [issue 267](../.scratch/roadmap/issues/267-projectile-down-hittime-dynamic.md).
+
 ## 2026-08-09 HitDef friction, spark-scale, facing, power, PalFX, EnvShake, and velocity checkpoint
 
 Authoritative cursor: T678 is closed-bounded for pinned-Ikemen-only

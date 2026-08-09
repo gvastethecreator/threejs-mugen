@@ -1,6 +1,21 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T692 closed-bounded
+## Authoritative runtime cursor — T693 closed-bounded
+
+Final T693 verification: `768/768` trace artifacts (`734` required, `34`
+optional), with required fresh root Projectile `down.hittime` trace checksum
+`800059f` and final checksum `ac8eff48`. The full `3793/3793` Vitest suite
+across `328` files, typecheck, the `363`-module build, and the diff gate pass.
+
+T693 / issue 267 is closed-bounded: fresh root Projectiles resolve dynamic
+`down.hittime` once in caller context, retain the pinned fresh `20` default
+when omitted, and expose the authored value through accepted lying-hit
+`GetHitVar(hittime)`. Projectile target/lifecycle and imported Common1-style
+progression are required. Helper caller resolution is covered by focused
+tests; live `ModifyProjectile`, non-zero down launch, exact countdown/landing
+timing, and full Projectile timing parity remain excluded. See [issue 267](../.scratch/roadmap/issues/267-projectile-down-hittime-dynamic.md).
+
+## Previous runtime cursor — T692 closed-bounded
 
 Final T692 verification: `767/767` trace artifacts (`733` required, `34`
 optional), with required Helper-owned `ModifyHitDef down.hittime` trace
