@@ -1,22 +1,23 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T695 closed-bounded
+## Authoritative runtime cursor — T696 closed-bounded
 
-Final T695 verification: `771/771` trace artifacts (`737` required, `34`
-optional), with required root Projectile `ground.hittime` trace checksum
-`0445dd30` / final `b6489c11` and Helper Projectile checksum `bf4326b5` /
-final `219a4ec4`. The full `3798/3798` Vitest suite across `328` files,
-typecheck, the `363`-module build, and the diff gate pass.
+Final T696 verification: `773/773` trace artifacts (`739` required, `34`
+optional), with required root Projectile `guard.hittime` trace checksum
+`8fcfa764` / final `1217ab52` and Helper Projectile checksum `aa2462b7` /
+final `a94faad0`. The full `3802/3802` Vitest suite across `328` files,
+typecheck, the `363`-module production build, and the diff gate pass.
 
-T695 / issue 269 is closed-bounded: fresh Projectiles resolve dynamic
-`ground.hittime` once in the original root or Helper caller context. Accepted
-grounded contact exposes `GetHitVar(hittime)=17` with Projectile payload,
+T696 / issue 270 is closed-bounded: fresh Projectiles resolve dynamic
+`guard.hittime` once in the original root or Helper caller context. Accepted
+guard contact exposes `GetHitVar(hittime)=17` with Projectile payload,
 lifecycle, target links, and Helper/root/parent ownership evidence. Fresh
-default changes, live `ModifyProjectile`, air/guard/down timing, exact
-countdown/tick phase, negative/overflow values, teams, rollback, and full
-Projectile timing parity remain excluded. See [issue 269](../.scratch/roadmap/issues/269-projectile-ground-hittime-dynamic.md).
+default policy changes, live `ModifyProjectile`, guard slide/control and
+air/down timing, exact countdown/tick phase, negative/overflow values, teams,
+rollback, and full Projectile timing parity remain excluded. See [issue
+270](../.scratch/roadmap/issues/270-projectile-guard-hittime-dynamic.md).
 
-## Next parity cut — T696 proposed
+## Next parity cut — T697 proposed
 
 Map the next unclaimed Projectile timing parameter against the pinned Ikemen
 source before implementation. Live mutation remains unsupported until its

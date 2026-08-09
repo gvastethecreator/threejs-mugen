@@ -1,19 +1,20 @@
 ﻿# Roadmap Package Milestones
 
-## Latest runtime cursor — T695
+## Latest runtime cursor — T696
 
-T695 closes the fresh root and Helper-authored Projectile `ground.hittime`
-caller-context seam: dynamic values resolve once, accepted grounded contact
+T696 closes the fresh root and Helper-authored Projectile `guard.hittime`
+caller-context seam: dynamic values resolve once, accepted guard contact
 exposes `GetHitVar(hittime)=17`, and Projectile payload, lifecycle, target
 links, and Helper/root/parent ownership are required. Verification is
-`771/771` traces (`737` required, `34` optional), `3798/3798` Vitest tests,
-typecheck, and the `363`-module build. Root checksums are `0445dd30/b6489c11`;
-Helper checksums are `bf4326b5/219a4ec4`. Fresh default changes, live
-`ModifyProjectile`, air/guard/down timing, exact countdown/tick phase,
-negative/overflow values, teams, rollback, and full Projectile timing parity
-remain excluded. See [issue 269](../.scratch/roadmap/issues/269-projectile-ground-hittime-dynamic.md).
+`773/773` traces (`739` required, `34` optional), the full `3802/3802`
+Vitest suite across `328` files, typecheck, the `363`-module build, and diff
+hygiene. Root checksums are
+`8fcfa764/1217ab52`; Helper checksums are `aa2462b7/a94faad0`. Fresh default
+policy changes, live `ModifyProjectile`, guard slide/control and air/down
+timing, exact countdown/tick phase, negative/overflow values, teams, rollback,
+and full Projectile timing parity remain excluded. See [issue 270](../.scratch/roadmap/issues/270-projectile-guard-hittime-dynamic.md).
 
-Next queue: T696 maps the next unclaimed Projectile timing parameter against
+Next queue: T697 maps the next unclaimed Projectile timing parameter against
 pinned Ikemen source before implementation; live mutation is not assumed
 supported without source and seam evidence.
 

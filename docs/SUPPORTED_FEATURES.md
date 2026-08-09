@@ -1,15 +1,18 @@
 ﻿# Supported Features
-## 2026-08-09 T695 Projectile ground timing checkpoint
+## 2026-08-09 T696 Projectile guard timing checkpoint
 
-T695 is closed-bounded: fresh root and Helper-authored Projectiles resolve
-dynamic `ground.hittime` once in the original caller context and feed accepted
-grounded `GetHitVar(hittime)=17` with Projectile payload, lifecycle, target
-links, and Helper/root/parent ownership. Required root checksums are
-`0445dd30` / `b6489c11`; Helper checksums are `bf4326b5` / `219a4ec4`; aggregate
-QA passes `771/771` artifacts (`737` required, `34` optional). Fresh default
-changes, live `ModifyProjectile`, air/guard/down timing, exact countdown/tick
-phase, negative/overflow values, teams, rollback, and full Projectile timing
-parity remain outside the supported claim. See [issue 269](../.scratch/roadmap/issues/269-projectile-ground-hittime-dynamic.md).
+T696 is closed-bounded: fresh root and Helper-authored Projectiles resolve
+dynamic `guard.hittime` once in the original caller context and feed accepted
+guard `GetHitVar(hittime)=17` with Projectile payload, lifecycle, target links,
+and Helper/root/parent ownership. Required root checksums are `8fcfa764` /
+`1217ab52`; Helper checksums are `aa2462b7` / `a94faad0`; aggregate QA passes
+`773/773` artifacts (`739` required, `34` optional); the full `3802/3802`
+Vitest suite across `328` files, typecheck, and the `363`-module build pass.
+Fresh default policy
+changes, live `ModifyProjectile`, guard slide/control and air/down timing,
+exact countdown/tick phase, negative/overflow values, teams, rollback, and
+full Projectile timing parity remain outside the supported claim. See [issue
+270](../.scratch/roadmap/issues/270-projectile-guard-hittime-dynamic.md).
 
 ## 2026-08-09 T694 Helper Projectile timing checkpoint
 

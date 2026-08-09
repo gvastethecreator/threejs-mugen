@@ -1,14 +1,17 @@
 # Controller Support Registry
 
-Authoritative cursor: T695 is closed-bounded for fresh root and Helper
-Projectile `ground.hittime` caller-context resolution, accepted grounded
+Authoritative cursor: T696 is closed-bounded for fresh root and Helper
+Projectile `guard.hittime` caller-context resolution, accepted guard
 GetHitVar evidence, Projectile payload/lifecycle, target links, and
-Helper/root/parent ownership. Root trace checksum is `0445dd30`, final
-`b6489c11`; Helper checksum is `bf4326b5`, final `219a4ec4`; `pnpm qa:trace`
-passes `771/771` artifacts (`737` required, `34` optional). Fresh default
-changes, live `ModifyProjectile`, air/guard/down timing, exact countdown/tick
-phase, negative/overflow values, teams, rollback, and full Projectile timing
-parity remain excluded. T696 is the next source-mapping queue item.
+Helper/root/parent ownership. Root trace checksum is `8fcfa764`, final
+`1217ab52`; Helper checksum is `aa2462b7`, final `a94faad0`; `pnpm qa:trace`
+passes `773/773` artifacts (`739` required, `34` optional). Fresh default
+policy changes, live `ModifyProjectile`, guard slide/control and air/down
+timing, exact countdown/tick phase, negative/overflow values, teams, rollback,
+and full Projectile timing parity remain excluded. The full `3802/3802`
+Vitest suite across `328` files, typecheck, the `363`-module build, and diff
+hygiene also pass. T697 is the next
+source-mapping queue item.
 
 T693 remains closed-bounded for fresh root Projectile
 `down.hittime` caller-context resolution, pinned fresh omission default,
