@@ -428,6 +428,8 @@ import {
   createSyntheticImportedHelperProjectileDynamicPauseTimeTraceArtifact,
   createSyntheticImportedProjectileDynamicRemoveTimeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicRemoveTimeTraceArtifact,
+  createSyntheticImportedProjectileDynamicMissTimeTraceArtifact,
+  createSyntheticImportedHelperProjectileDynamicMissTimeTraceArtifact,
   createSyntheticImportedProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact,
@@ -22765,6 +22767,43 @@ describe("RuntimeTraceGatePresets", () => {
         actorId: "p1-projectile-0",
         effect: expect.objectContaining({ removalReason: "timeout", terminalReason: "timeout" }),
       }),
+    ]));
+  });
+
+  it("creates required imported Projectile projmisstime cooldown artifacts", () => {
+    const rootArtifact = createSyntheticImportedProjectileDynamicMissTimeTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(rootArtifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-misstime-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-projectile-dynamic-misstime-golden", passed: true, failures: [] }],
+    });
+    const rootEvidence = rootArtifact.gates[0]?.evidence;
+    expect(rootEvidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(rootEvidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(rootEvidence?.eventLines.join("\n")).toEqual(expect.stringContaining("hits remaining 1"));
+    expect(rootEvidence?.eventLines.join("\n")).toEqual(expect.stringContaining("miss 7"));
+    expect(rootEvidence?.eventLines.join("\n")).toEqual(expect.stringContaining("hits remaining 0"));
+    expect(rootEvidence?.targetLinks).toContainEqual(expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }));
+
+    const helperArtifact = createSyntheticImportedHelperProjectileDynamicMissTimeTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(helperArtifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-projectile-dynamic-misstime-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-helper-projectile-dynamic-misstime-golden", passed: true, failures: [] }],
+    });
+    const helperEvidence = helperArtifact.gates[0]?.evidence;
+    expect(helperEvidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(helperEvidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(helperEvidence?.eventLines.join("\n")).toEqual(expect.stringContaining("hits remaining 1"));
+    expect(helperEvidence?.eventLines.join("\n")).toEqual(expect.stringContaining("miss 7"));
+    expect(helperEvidence?.eventLines.join("\n")).toEqual(expect.stringContaining("hits remaining 0"));
+    expect(helperEvidence?.targetLinks).toEqual(expect.arrayContaining([
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8903 }),
+      expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8903 }),
     ]));
   });
 
