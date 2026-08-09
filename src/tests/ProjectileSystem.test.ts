@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { ProjectileControllerOp } from "../mugen/compiler/ControllerOps";
+import type { ModifyProjectileControllerOp, ProjectileControllerOp } from "../mugen/compiler/ControllerOps";
 import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenStateController } from "../mugen/model/MugenState";
@@ -2360,6 +2360,32 @@ describe("ProjectileSystem", () => {
     expect([triple.downVelocityX, triple.downVelocityY, triple.downVelocityZ]).toEqual([-3.5, -8.25, 2.5]);
     expect([pair.downVelocityX, pair.downVelocityY, pair.downVelocityZ]).toEqual([-4.5, -7.25, 0]);
     expect([single.downVelocityX, single.downVelocityY, single.downVelocityZ]).toEqual([-6.5, 0, 0]);
+  });
+
+  it("resolves dynamic ModifyProjectile down.velocity for selected live projectiles", () => {
+    const matching = projectile({ projectileId: 77, downVelocityX: 1, downVelocityY: 2, downVelocityZ: 3 });
+    const other = projectile({ serialId: "dynamic-down-other", projectileId: 88, downVelocityX: 4, downVelocityY: 5, downVelocityZ: 6 });
+    const controllerValue = controller({ id: "77", "down.velocity": "var(0),fvar(1)" });
+    const operation = compileControllerIr(controller({
+      id: "77",
+      "down.velocity": "var(0),fvar(1)",
+    }, "ModifyProjectile")).operation as ModifyProjectileControllerOp;
+    const resolvedKeys: string[] = [];
+
+    expect(modifyRuntimeProjectiles([matching, other], {
+      controller: controllerValue,
+      operation,
+      resolveModifyProjectile: {
+        resolveFloatTriple: (key) => {
+          resolvedKeys.push(key);
+          return key === "down.velocity" ? [-3.5, -8.25, 0] : undefined;
+        },
+      },
+    })).toBe(1);
+
+    expect(resolvedKeys).toEqual(["down.velocity"]);
+    expect([matching.downVelocityX, matching.downVelocityY, matching.downVelocityZ]).toEqual([-3.5, -8.25, 0]);
+    expect([other.downVelocityX, other.downVelocityY, other.downVelocityZ]).toEqual([4, 5, 6]);
   });
 
   it("replaces static ModifyProjectile target-distance bounds and zeros omitted components", () => {
