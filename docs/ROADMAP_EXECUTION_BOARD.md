@@ -1,6 +1,6 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T685 closed-bounded
+## Authoritative runtime cursor — T686 closed-bounded
 
 Final T682 verification: `756/756` trace artifacts (`722` required, `34`
 optional), with required root Projectile `air.velocity` checksums
@@ -24,6 +24,12 @@ optional), with required root-owned `ModifyProjectile airguard.velocity`
 trace checksum `c4d55bd9` and final checksum `f0982ef8`. The full
 `3764/3764` Vitest suite across `328` files, typecheck, the `363`-module
 build, and the diff gate pass.
+
+Final T686 verification: `761/761` trace artifacts (`727` required, `34`
+optional), with required root-owned `ModifyProjectile air.velocity` trace
+checksum `c335ca9d` and final checksum `2ecb639a`. The full `3768/3768`
+Vitest suite across `328` files, typecheck, the `363`-module build, and the
+diff gate pass.
 
 T675 / issue 249 is closed-bounded: live root-owned `ModifyHitDef
 down.velocity` dynamic Z resolves in caller context, preserves active X/Y,
@@ -66,13 +72,26 @@ values broadcast to selected Projectiles with Ikemen's zero-filled one-,
 two-, and three-component semantics, and the accepted airborne-guard trace
 exposes the resulting vector through physics/GetHitVar and lifecycle/target
 evidence.
+T686 / issue 260 is closed-bounded for live root-owned `ModifyProjectile
+air.velocity` mutation: caller-context dynamic/mixed values broadcast to
+selected Projectiles with Ikemen's zero-filled one-, two-, and three-component
+semantics, and the accepted airborne-hit trace exposes the resulting vector
+through physics/GetHitVar and target/lifecycle evidence. Helper-owned mutation
+remains blocked by the pinned upstream guard.
 M.U.G.E.N dynamic-Z/live-ModifyHitDef claims beyond these bounded vectors,
 remaining Helper-authored Projectile breadth, fresh/default recalculation, and
 full down-hit/Helper parity remain outside the closed claims.
 
-## Current official-parity queue — T424-T492 and T506-T685 closed-bounded; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
+## Current official-parity queue — T424-T492 and T506-T686 closed-bounded; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
 
-### Latest runtime checkpoint — live ModifyProjectile airguard.velocity dynamic replacement
+### Latest runtime checkpoint — live ModifyProjectile air.velocity dynamic replacement
+
+T686 / issue 260 is closed-bounded: root-owned live Projectiles accept
+caller-context dynamic `ModifyProjectile air.velocity` replacement with
+Ikemen's zero-filled one/two/three-component broadcast semantics. The
+required airborne-hit trace checksum is `c335ca9d` and final checksum is
+`2ecb639a`; Helper-owned mutation remains blocked by the pinned upstream
+helper guard. See [issue 260](../.scratch/roadmap/issues/260-modifyprojectile-air-velocity-dynamic.md).
 
 T685 / issue 259 is closed-bounded: root-owned live Projectiles accept
 caller-context dynamic `ModifyProjectile airguard.velocity` replacement with

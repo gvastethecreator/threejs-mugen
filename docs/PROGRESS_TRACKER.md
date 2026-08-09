@@ -1,8 +1,25 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T608-T685 (2026-08-09)
+## Latest implementation checkpoint — T608-T686 (2026-08-09)
 
-Authoritative cursor: T685 is closed-bounded for pinned-Ikemen root-owned live
+Authoritative cursor: T686 is closed-bounded for pinned-Ikemen root-owned live
+`ModifyProjectile air.velocity`: dynamic/mixed components resolve once in the
+original caller context, broadcast with zero-filled one-, two-, or
+three-component semantics, and reach accepted airborne-hit physics/GetHitVar.
+T685 remains closed-bounded for live `ModifyProjectile airguard.velocity`.
+T684 remains closed-bounded for live
+`ModifyProjectile down.velocity`. T680-T683 close the preceding fresh
+Projectile airguard/air/down vector seams, including Helper ownership.
+Helper-owned `ModifyProjectile`, dynamic `n`, fresh default recalculation
+during mutation, and full Projectile parity remain explicitly unclaimed.
+
+- T686 closes root-owned live `ModifyProjectile air.velocity` with typed
+  compiler fields, zero-filled broadcast semantics, and the required airborne
+  hit trace (`c335ca9d` / `2ecb639a`). Aggregate QA is `761/761`
+  (`727` required, `34` optional); full Vitest is `3768/3768` across `328`
+  files.
+
+T685 is closed-bounded for pinned-Ikemen root-owned live
 `ModifyProjectile airguard.velocity`: dynamic/mixed components resolve once in
 the original caller context, broadcast with zero-filled one-, two-, or
 three-component semantics, and reach accepted airborne-guard
