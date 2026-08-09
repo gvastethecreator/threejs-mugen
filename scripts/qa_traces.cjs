@@ -1486,6 +1486,16 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjectileDynamicDownHitTimeTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-dynamic-ground-hittime",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileDynamicGroundHitTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-dynamic-ground-hittime",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileDynamicGroundHitTimeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-modifyhitdef-dynamic-down-velocity",
       required: true,
       artifact: presets.createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact(),

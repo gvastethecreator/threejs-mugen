@@ -418,6 +418,8 @@ import {
   createSyntheticImportedDynamicDirectDownHitTimeTraceArtifact,
   createSyntheticImportedProjectileDynamicDownHitTimeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicDownHitTimeTraceArtifact,
+  createSyntheticImportedProjectileDynamicGroundHitTimeTraceArtifact,
+  createSyntheticImportedHelperProjectileDynamicGroundHitTimeTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicDownVelocityZTraceArtifact,
   createSyntheticImportedStaticHitDefAirGuardVelocityDerivedZTraceArtifact,
@@ -22496,6 +22498,44 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.targetLinks).toContainEqual(
       expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8894 }),
     );
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.combatReasons).not.toContain("guard");
+  });
+
+  it("creates a required imported Projectile dynamic ground.hittime artifact", () => {
+    const artifact = createSyntheticImportedProjectileDynamicGroundHitTimeTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-ground-hittime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-projectile-dynamic-ground-hittime-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5096]));
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toContainEqual(expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }));
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.combatReasons).not.toContain("guard");
+  });
+
+  it("creates a required imported Helper Projectile dynamic ground.hittime artifact", () => {
+    const artifact = createSyntheticImportedHelperProjectileDynamicGroundHitTimeTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-projectile-dynamic-ground-hittime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-helper-projectile-dynamic-ground-hittime-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5097]));
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toContainEqual(expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8896 }));
     expect(evidence?.combatReasons).toContain("hit");
     expect(evidence?.combatReasons).not.toContain("guard");
   });
