@@ -1,6 +1,6 @@
 # Issue 257 — fresh Projectile down.velocity dynamic XYZ
 
-- Status: `source-mapped`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -46,9 +46,38 @@ Live `ModifyProjectile` mutation, dynamic `n` syntax, air/airguard derivation,
 ground/air selection, exact landing/tick order, localcoord/facing edge cases,
 nested/team topology, rollback, and full M.U.G.E.N/Ikemen Projectile parity.
 
+## Verification
+
+- Focused compiler/runtime coverage passes `257/257` across
+  `RuntimeCompiler.test.ts`, `ProjectileSystem.test.ts`, and
+  `EffectActorSystem.test.ts`.
+- Root and Helper caller-context resolver coverage passes through the
+  Projectile spawn seam; `pnpm typecheck` and `git diff --check` pass.
+- Required root trace
+  `synthetic-imported-projectile-dynamic-down-velocity` passes with checksum
+  `869ee367` and final checksum `95984159`.
+- Required Helper trace
+  `synthetic-imported-helper-projectile-dynamic-down-velocity` passes with
+  checksum `3d0f88d0` and final checksum `9aaf44ce`.
+- Aggregate `pnpm qa:trace` passes `758/758` artifacts (`724` required,
+  `34` optional), including root/Helper lifecycle, target-link, lying-hit
+  physics, and `GetHitVar(xvel/yvel/zvel)` evidence.
+
+## Bounded result
+
+- Root-authored and Helper-authored fresh Projectiles now preserve static
+  `down.velocity` behavior and resolve finite dynamic/mixed X/Y/Z in caller
+  context.
+- A single dynamic component replaces X and inherits Y/Z from effective
+  `air.velocity`; a two-component form replaces X/Y and inherits Z; a full
+  triple wins component-wise.
+- Accepted lying hits expose the resolved vector through Projectile physics,
+  contact metadata, and `GetHitVar` evidence while retaining root/Helper
+  parent ownership and lifecycle telemetry.
+
 ## Next implementation step
 
-Add typed Projectile `down.velocity` expression fields and caller-context
-resolvers for root and Helper fresh spawn, reuse the pinned air-vector
-inheritance helper, then add focused compiler/runtime tests and one required
-root/Helper lying-hit trace.
+Map T684 for live `ModifyProjectile down.velocity` component replacement and
+caller-context dynamic expressions. Keep live mutation, dynamic `n`, and exact
+ModifyProjectile timing outside this closed claim until its own source gate and
+trace are complete.

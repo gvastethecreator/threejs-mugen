@@ -1,12 +1,18 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T682 closed, T683 source-mapped
+## Authoritative runtime cursor — T683 closed, T684 source-mapped
 
 Final T682 verification: `756/756` trace artifacts (`722` required, `34`
 optional), with required root Projectile `air.velocity` checksums
 `02d2aec0/fb8dd4a0` and Helper Projectile checksums `306e3c87/0de9b71b`.
 The full `3751/3751` Vitest suite across `328` files, typecheck, and the
 `363`-module build pass.
+
+Final T683 verification: `758/758` trace artifacts (`724` required, `34`
+optional), with root Projectile `down.velocity` checksums
+`869ee367/95984159` and Helper Projectile checksums `3d0f88d0/9aaf44ce`.
+The full `3756/3756` Vitest suite across `328` files, typecheck, the
+`363`-module build, and the diff gate pass.
 
 T675 / issue 249 is closed-bounded: live root-owned `ModifyHitDef
 down.velocity` dynamic Z resolves in caller context, preserves active X/Y,
@@ -35,20 +41,23 @@ physics/GetHitVar. T682 / issue 256 is closed-bounded: root and Helper fresh
 Projectiles resolve one-, two-, and three-component dynamic/mixed
 `air.velocity` in caller context, default omitted dynamic siblings to zero,
 and reach accepted airborne-hit physics/GetHitVar with root/Helper ownership
-evidence. T683 / issue 257 is source-mapped for fresh Projectile
-`down.velocity` dynamic XYZ with pinned air-vector inheritance.
+evidence. T683 / issue 257 is closed-bounded: fresh root/Helper Projectiles
+resolve dynamic/mixed `down.velocity` X/Y/Z in caller context, inherit omitted
+components from effective `air.velocity`, and reach accepted lying-hit
+physics/GetHitVar with lifecycle and ownership evidence. T684 / issue 258 is
+source-mapped for live root-owned `ModifyProjectile down.velocity` mutation.
 M.U.G.E.N dynamic-Z/live-ModifyHitDef claims beyond these bounded vectors,
 remaining Helper-authored Projectile breadth, ModifyProjectile, and full
 down-hit/Helper parity remain outside the closed claims.
 
-## Current official-parity queue — T424-T492 and T506-T682 closed-bounded; T683 source-mapped; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
+## Current official-parity queue — T424-T492 and T506-T683 closed-bounded; T684 source-mapped; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
 
-### Active runtime checkpoint — fresh Projectile down.velocity dynamic XYZ
+### Active runtime checkpoint — live ModifyProjectile down.velocity dynamic replacement
 
-T683 / issue 257 is source-mapped: fresh root/Helper Projectiles still need
-caller-context dynamic/mixed `down.velocity` XYZ with missing components
-inherited from the effective `air.velocity`, then accepted lying-hit
-physics/GetHitVar and lifecycle evidence. See [issue 257](../.scratch/roadmap/issues/257-projectile-down-velocity-dynamic.md).
+T684 / issue 258 is source-mapped: live root-owned Projectiles still need
+caller-context dynamic `ModifyProjectile down.velocity` replacement with
+component-wise live preservation and accepted lying-hit physics/GetHitVar.
+See [issue 258](../.scratch/roadmap/issues/258-modifyprojectile-down-velocity-dynamic.md).
 
 T682 / issue 256 is closed-bounded: fresh root/Helper Projectiles resolve
 caller-context dynamic/mixed `air.velocity` X/Y/Z, use zero defaults for
@@ -58,10 +67,11 @@ typecheck/build pass, and aggregate traces pass `756/756` (`722` required,
 `34` optional). Root required trace checksums are `02d2aec0/fb8dd4a0`; Helper
 checksums are `306e3c87/0de9b71b`. See [issue 256](../.scratch/roadmap/issues/256-projectile-air-velocity-dynamic.md).
 
-T683 / issue 257 is source-mapped: fresh root/Helper Projectiles still need
-caller-context dynamic/mixed `down.velocity` XYZ with omitted-component
-inheritance from effective `air.velocity`, plus accepted lying-hit physics and
-GetHitVar evidence. See [issue 257](../.scratch/roadmap/issues/257-projectile-down-velocity-dynamic.md).
+T683 / issue 257 is closed-bounded: fresh root/Helper Projectiles resolve
+caller-context dynamic/mixed `down.velocity` X/Y/Z, inherit omitted components
+from effective `air.velocity`, and prove accepted lying-hit physics/GetHitVar
+plus lifecycle/ownership evidence. Root checksums are `869ee367/95984159`;
+Helper checksums are `3d0f88d0/9aaf44ce`. See [issue 257](../.scratch/roadmap/issues/257-projectile-down-velocity-dynamic.md).
 
 ### Historical runtime checkpoint — live ModifyHitDef air-guard velocity
 
@@ -823,7 +833,9 @@ Helper-owned air-guard velocity follow-up. T679 / issue 253 closes the
 dynamic Z component, T680 / issue 254 closes the root-owned Projectile source
 gate, and T681 / issue 255 closes the Helper-authored Projectile source gate.
 T682 / issue 256 closes the fresh Projectile `air.velocity` source gate, and
-T683 / issue 257 is the active fresh Projectile `down.velocity` source gate.
+T683 / issue 257 closes the fresh Projectile `down.velocity` source gate with
+root/Helper caller-context inheritance and lying-hit evidence. T684 / issue
+258 is now the active live `ModifyProjectile down.velocity` source gate.
 
 ### Latest visual checkpoint — Character Compare
 

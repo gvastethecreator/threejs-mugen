@@ -75,5 +75,6 @@ Live ModifyProjectile, dynamic `n`, down/airguard derivation, lying/ground
 selection, exact landing/tick parity, nested/team topology, rollback, and full
 M.U.G.E.N/Ikemen Projectile parity remain excluded.
 
-Next source-mapped cut: T683 / issue 257, fresh Projectile `down.velocity`
-dynamic XYZ and air-velocity inheritance.
+Next source-mapped cut: T684 / issue 258, live `ModifyProjectile`
+`down.velocity` component replacement with caller-context evaluation and live
+omission preservation.
