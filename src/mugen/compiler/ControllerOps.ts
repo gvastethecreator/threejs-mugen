@@ -542,6 +542,8 @@ export type ProjectileControllerOp = {
   priority: number;
   hitCount: number;
   missTime: number;
+  /** Fresh Projectile `projmisstime` expression evaluated in the original caller context. */
+  missTimeExpression?: number | string;
   pauseMoveTime?: number;
   superMoveTime?: number;
   trans?: string;
@@ -3486,6 +3488,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (guardHitTime === false) return undefined;
   const removeTimeValue = optionalIntegerExpressionParamFromKeys(controller, "projremovetime", "removetime");
   if (removeTimeValue === false) return undefined;
+  const missTimeValue = optionalIntegerExpressionParam(controller, "projmisstime");
+  if (missTimeValue === false) return undefined;
   const standFriction = optionalScalarNumberOrExpression(controller, "stand.friction");
   const crouchFriction = optionalScalarNumberOrExpression(controller, "crouch.friction");
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
@@ -3654,7 +3658,10 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     p2SpritePriority: firstNumber(findParam(controller, "p2sprpriority")),
     priority: firstNumber(findParam(controller, "projpriority")) ?? 1,
     hitCount: firstNumber(findParam(controller, "projhits")) ?? 1,
-    missTime: firstNumber(findParam(controller, "projmisstime")) ?? 0,
+    missTime: typeof missTimeValue === "number"
+      ? missTimeValue
+      : firstNumber(findParam(controller, "projmisstime")) ?? 0,
+    ...(typeof missTimeValue === "string" ? { missTimeExpression: missTimeValue } : {}),
     pauseMoveTime: firstNumber(findParam(controller, "pausemovetime")),
     superMoveTime: firstNumber(findParam(controller, "supermovetime")),
     trans: stripMugenString(findParam(controller, "trans")),

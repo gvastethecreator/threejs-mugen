@@ -344,6 +344,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveGuardPauseTime?: () => [number?, number?] | undefined;
   /** Resolves fresh Projectile projremovetime authored expressions in the original caller context. */
   resolveRemoveTime?: () => number | undefined;
+  /** Resolves fresh Projectile projmisstime authored expressions in the original caller context. */
+  resolveMissTime?: () => number | undefined;
   /** Resolves fresh Projectile guard.hittime authored expressions in the original caller context. */
   resolveGuardHitTime?: () => number | undefined;
   /** Resolves Projectile airguard.velocity authored expressions in the original caller context. */
@@ -830,6 +832,12 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const finiteDynamicRemoveTime = dynamicRemoveTime !== undefined && Number.isFinite(dynamicRemoveTime)
     ? Math.trunc(dynamicRemoveTime)
     : undefined;
+  const dynamicMissTime = operation?.missTimeExpression === undefined
+    ? undefined
+    : input.resolveMissTime?.();
+  const finiteDynamicMissTime = dynamicMissTime !== undefined && Number.isFinite(dynamicMissTime)
+    ? Math.trunc(dynamicMissTime)
+    : undefined;
   const identity = resolveActorIdentity(input);
   return {
     serialId: input.serialId,
@@ -911,7 +919,12 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     priority: clampProjectilePriority(operation?.priority ?? firstNumber(findControllerParam(input.controller, "projpriority")) ?? 1),
     hitsRemaining: clampProjectileHits(operation?.hitCount ?? firstNumber(findControllerParam(input.controller, "projhits")) ?? 1),
     hitsMax: clampProjectileHits(operation?.hitCount ?? firstNumber(findControllerParam(input.controller, "projhits")) ?? 1),
-    missTime: clampProjectileMissTime(operation?.missTime ?? firstNumber(findControllerParam(input.controller, "projmisstime")) ?? 0),
+    missTime: clampProjectileMissTime(
+      finiteDynamicMissTime ??
+      operation?.missTime ??
+      firstNumber(findControllerParam(input.controller, "projmisstime")) ??
+      0,
+    ),
     missTimeRemaining: 0,
     pauseMoveTime,
     superMoveTime,

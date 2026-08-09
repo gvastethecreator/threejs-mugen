@@ -3734,6 +3734,25 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles fresh Projectile projmisstime expressions and rejects malformed values", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      projmisstime: "var(0) + 2",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      missTime: 0,
+      missTimeExpression: "var(0) + 2",
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      projmisstime: "5",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      missTime: 5,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      projmisstime: "var(",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles dynamic Projectile airguard.velocity components", () => {
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       "airguard.velocity": "var(0),fvar(1),var(2)",
