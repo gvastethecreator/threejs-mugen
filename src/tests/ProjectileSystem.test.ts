@@ -2442,6 +2442,33 @@ describe("ProjectileSystem", () => {
     expect(matching.hitVelocities?.air).toEqual({ x: -7.5, y: -5.25, z: 0 });
   });
 
+  it("resolves dynamic ModifyProjectile guard.velocity for selected live projectiles", () => {
+    const matching = projectile({ projectileId: 77, guardPush: 1, guardVelocityY: 2, guardVelocityZ: 3 });
+    const other = projectile({ serialId: "dynamic-guard-other", projectileId: 88, guardPush: 4, guardVelocityY: 5, guardVelocityZ: 6 });
+    const controllerValue = controller({ id: "77", "guard.velocity": "var(0),fvar(1)" });
+    const operation = compileControllerIr(controller({
+      id: "77",
+      "guard.velocity": "var(0),fvar(1)",
+    }, "ModifyProjectile")).operation as ModifyProjectileControllerOp;
+    const resolvedKeys: string[] = [];
+
+    expect(modifyRuntimeProjectiles([matching, other], {
+      controller: controllerValue,
+      operation,
+      resolveModifyProjectile: {
+        resolveFloatTriple: (key) => {
+          resolvedKeys.push(key);
+          return key === "guard.velocity" ? [-6.5, -4.25, 1.75] : undefined;
+        },
+      },
+    })).toBe(1);
+
+    expect(resolvedKeys).toEqual(["guard.velocity"]);
+    expect([matching.guardPush, matching.guardVelocityY, matching.guardVelocityZ]).toEqual([6.5, -4.25, 1.75]);
+    expect([other.guardPush, other.guardVelocityY, other.guardVelocityZ]).toEqual([4, 5, 6]);
+    expect(matching.hitVelocities?.guard).toEqual({ x: -6.5, y: -4.25, z: 1.75 });
+  });
+
   it("replaces static ModifyProjectile target-distance bounds and zeros omitted components", () => {
     const matching = projectile({
       projectileId: 77,

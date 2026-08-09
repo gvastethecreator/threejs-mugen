@@ -786,6 +786,10 @@ export type ModifyProjectileControllerOp = {
   airVelocityZExpression?: number | string;
   /** Ikemen ModifyProjectile replacement for ground and air guard velocity. */
   guardVelocity?: MugenHitDefVector;
+  /** Dynamic/mixed ModifyProjectile guard.velocity expressions evaluated in the root caller context. */
+  guardVelocityExpressions?: MugenHitDefExpressionPair;
+  /** Dynamic/mixed ModifyProjectile guard.velocity Z component. */
+  guardVelocityZExpression?: number | string;
   airGuardVelocity?: MugenHitDefVector;
   /** Dynamic/mixed ModifyProjectile airguard.velocity expressions evaluated in the root caller context. */
   airGuardVelocityExpressions?: MugenHitDefExpressionPair;
@@ -3717,6 +3721,20 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
   const airGuardVelocityZExpression = airGuardVelocity === undefined && typeof airGuardVelocityValue === "object"
     ? airGuardVelocityValue.z
     : undefined;
+  const guardVelocityRaw = findParam(controller, "guard.velocity");
+  const guardVelocity = modifyProjectileVelocityVector(guardVelocityRaw);
+  const guardVelocityValue = optionalModifyHitDefVelocityParam(controller, "guard.velocity", true);
+  if (
+    guardVelocityRaw !== undefined &&
+    guardVelocity === undefined &&
+    guardVelocityValue === false
+  ) return undefined;
+  const guardVelocityExpressions = guardVelocity === undefined && typeof guardVelocityValue === "object"
+    ? guardVelocityValue.xy
+    : undefined;
+  const guardVelocityZExpression = guardVelocity === undefined && typeof guardVelocityValue === "object"
+    ? guardVelocityValue.z
+    : undefined;
   return definedObject({
     kind: "modifyprojectile" as const,
     ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
@@ -3805,7 +3823,9 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     airVelocity,
     ...(airVelocityExpressions === undefined ? {} : { airVelocityExpressions }),
     ...(airVelocityZExpression === undefined ? {} : { airVelocityZExpression }),
-    guardVelocity: modifyProjectileVelocityVector(findParam(controller, "guard.velocity")),
+    guardVelocity,
+    ...(guardVelocityExpressions === undefined ? {} : { guardVelocityExpressions }),
+    ...(guardVelocityZExpression === undefined ? {} : { guardVelocityZExpression }),
     airGuardVelocity,
     ...(airGuardVelocityExpressions === undefined ? {} : { airGuardVelocityExpressions }),
     ...(airGuardVelocityZExpression === undefined ? {} : { airGuardVelocityZExpression }),
@@ -4527,7 +4547,7 @@ function optionalIntegerExpressionPairParam(
 
 function optionalModifyHitDefVelocityParam(
   controller: MugenStateController,
-  key: "ground.velocity" | "air.velocity" | "down.velocity",
+  key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity",
   allowDynamicZ = false,
 ): { xy: MugenHitDefExpressionPair; z?: number | string } | true | false {
   const raw = findParam(controller, key);
