@@ -2,15 +2,15 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-012",
   "kind": "I",
-  "generatedAt": "2026-08-09T12:45:02.171Z",
+  "generatedAt": "2026-08-09T12:56:43.090Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-012",
   "anchors": [
     {
       "path": "src/mugen/runtime/RuntimeTraceGatePresets.ts",
-      "bytes": 2934793,
-      "sha256": "93269fa4ac1a1d3c74b646b69de9e0c91fa656eccab4074b71c01422b35617d0"
+      "bytes": 2941940,
+      "sha256": "0a9c9b6391bdd3a29373218ef701ce91f8ba95623962e40789bb269789a4c4bf"
     },
     {
       "path": "src/mugen/da29/TraceArtifactManifest.ts",
@@ -19,8 +19,8 @@
     }
   ],
   "functionResults": {
-    "entryCount": 734,
-    "digest": "f1d2ca5126b5648f",
+    "entryCount": 735,
+    "digest": "7e9b788092d39770",
     "sampleIds": [
       "code-fu-man-independent-qcf-x",
       "code-fu-man-independent-upper-x",
