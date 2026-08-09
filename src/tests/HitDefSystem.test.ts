@@ -2865,6 +2865,33 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("resolves a dynamic fresh airguard.velocity Z component in caller context", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+    caller.vars[1] = -7;
+    caller.vars[2] = -4;
+    caller.vars[3] = 6;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "air.velocity": "-6,-8,2",
+        "airguard.velocity": "var(1),var(2),var(3)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+
+    expect(actor.currentMove).toMatchObject({
+      airGuardPush: 7,
+      airGuardVelocityY: -4,
+      airGuardVelocityZ: 6,
+      hitVelocities: { airGuard: { x: -7, y: -4, z: 6 } },
+    });
+  });
+
   it("derives fresh single-component airguard.velocity Y from effective air.velocity", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
@@ -2959,6 +2986,22 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       airGuardVelocityY: -6.5,
       airGuardVelocityZ: 9,
       hitVelocities: { airGuard: { x: -9.25, y: -6.5, z: 9 } },
+    });
+
+    caller.vars[4] = 7.25;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "airguard.velocity": "var(1),fvar(2),var(4)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({
+      airGuardPush: 9.25,
+      airGuardVelocityY: -6.5,
+      airGuardVelocityZ: 7.25,
+      hitVelocities: { airGuard: { x: -9.25, y: -6.5, z: 7.25 } },
     });
 
     world.modify({

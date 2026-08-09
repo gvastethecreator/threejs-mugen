@@ -51,6 +51,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale") => [number?, number?] | undefined;
+  resolveFloatScalar?: (key: "down.velocity" | "airguard.velocity") => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
   resolveFallEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -84,7 +85,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "airguard.velocity") => [number?, number?] | undefined;
   /** Resolves live dynamic float scalars in the caller context. */
-  resolveFloatScalar?: (key: "down.velocity") => number | undefined;
+  resolveFloatScalar?: (key: "down.velocity" | "airguard.velocity") => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
   resolveFallEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -138,6 +139,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     resolveIntegerScalar,
     resolveScalar,
     resolveFloatPair,
+    resolveFloatScalar,
     resolvePaletteFx,
     resolveEnvShake,
     resolveFallEnvShake,
@@ -492,12 +494,21 @@ export class RuntimeHitDefControllerDispatchWorld {
           context ?? {},
           resolveFloatPair?.("airguard.velocity"),
         );
+    const resolvedAirGuardVelocityZ = operation?.airGuardVelocityZExpression === undefined
+      ? undefined
+      : resolveRuntimeHitDefFloatExpressionScalar(
+          operation.airGuardVelocityZExpression,
+          undefined,
+          actor.runtime,
+          context ?? {},
+          resolveFloatScalar?.("airguard.velocity"),
+        );
     const defaultAirGuardVelocity = derivePinnedIkemenFreshAirGuardVelocity(airVelocity);
-    const resolvedAirGuardVelocityVector: [number, number?] | undefined = resolvedAirGuardVelocity === undefined
+    const resolvedAirGuardVelocityVector: [number, number?, number?] | undefined = resolvedAirGuardVelocity === undefined
       ? undefined
       : resolvedAirGuardVelocity.componentCount === 1
-        ? [resolvedAirGuardVelocity.first ?? 0]
-        : [resolvedAirGuardVelocity.first ?? 0, resolvedAirGuardVelocity.second ?? 0];
+        ? [resolvedAirGuardVelocity.first ?? 0, undefined, resolvedAirGuardVelocityZ]
+        : [resolvedAirGuardVelocity.first ?? 0, resolvedAirGuardVelocity.second ?? 0, resolvedAirGuardVelocityZ];
     const airGuardVelocity = completeFreshAirGuardVelocity(
       resolvedAirGuardVelocityVector ?? staticAirGuardVelocity,
       defaultAirGuardVelocity,
@@ -1239,46 +1250,44 @@ export class RuntimeHitDefControllerDispatchWorld {
         context ?? {},
         resolveFloatPair?.("airguard.velocity"),
       );
-      if (airGuardVelocity?.componentCount === 1 && airGuardVelocity.first !== undefined) {
+      if (airGuardVelocity !== undefined && (airGuardVelocity.first !== undefined || airGuardVelocity.second !== undefined)) {
         const currentAirGuardVelocity = existing.hitVelocities?.airGuard ?? {
           x: existing.airGuardPush ?? 0,
           y: existing.airGuardVelocityY ?? 0,
           z: existing.airGuardVelocityZ ?? 0,
         };
-        existing.airGuardPush = Math.abs(airGuardVelocity.first);
-        existing.hitVelocities = {
-          ...existing.hitVelocities,
-          airGuard: { ...currentAirGuardVelocity, x: airGuardVelocity.first },
-        };
-      } else if (
-        airGuardVelocity?.componentCount === 2 &&
-        airGuardVelocity.first !== undefined &&
-        airGuardVelocity.second !== undefined
-      ) {
-        const currentAirGuardVelocity = existing.hitVelocities?.airGuard ?? {
-          x: existing.airGuardPush ?? 0,
-          y: existing.airGuardVelocityY ?? 0,
-          z: existing.airGuardVelocityZ ?? 0,
-        };
-        existing.airGuardPush = Math.abs(airGuardVelocity.first);
-        existing.airGuardVelocityY = airGuardVelocity.second;
+        const x = airGuardVelocity.first ?? currentAirGuardVelocity.x;
+        const y = airGuardVelocity.componentCount === 1
+          ? currentAirGuardVelocity.y
+          : airGuardVelocity.second ?? currentAirGuardVelocity.y;
+        existing.airGuardPush = Math.abs(x);
+        existing.airGuardVelocityY = y;
         existing.hitVelocities = {
           ...existing.hitVelocities,
           airGuard: {
             ...currentAirGuardVelocity,
-            x: airGuardVelocity.first,
-            y: airGuardVelocity.second,
+            x,
+            y,
           },
         };
       }
     }
-    if (operation.airGuardVelocityZ !== undefined) {
-      existing.airGuardVelocityZ = operation.airGuardVelocityZ;
+    const airGuardVelocityZ = operation.airGuardVelocityZExpression === undefined
+      ? operation.airGuardVelocityZ
+      : resolveRuntimeHitDefFloatExpressionScalar(
+          operation.airGuardVelocityZExpression,
+          undefined,
+          actor.runtime,
+          context ?? {},
+          resolveFloatScalar?.("airguard.velocity"),
+        );
+    if (airGuardVelocityZ !== undefined) {
+      existing.airGuardVelocityZ = airGuardVelocityZ;
       existing.hitVelocities = {
         ...existing.hitVelocities,
         airGuard: {
           ...(existing.hitVelocities?.airGuard ?? { x: existing.airGuardPush ?? 0, y: existing.airGuardVelocityY ?? 0, z: 0 }),
-          z: operation.airGuardVelocityZ,
+          z: airGuardVelocityZ,
         },
       };
     }

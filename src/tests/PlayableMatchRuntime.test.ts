@@ -7220,6 +7220,12 @@ type = VarSet
 trigger1 = 1
 v = 11
 value = -4
+
+[State 0, Dynamic air guard Z]
+type = VarSet
+trigger1 = 1
+v = 12
+value = 6
 `,
       });
       const runtime = new PlayableMatchRuntime(attacker, demoFighters[1]!, {
@@ -7273,6 +7279,7 @@ value = -4
     expectAirGuardVelocity(resolve(true, null, airVelocity), [9, -5, 6]);
     expectAirGuardVelocity(resolve(true, "var(10)", airVelocity), [9, -5, 6]);
     expectAirGuardVelocity(resolve(true, "var(10),var(11)", airVelocity), [9, -4, 6]);
+    expectAirGuardVelocity(resolve(true, "var(10),var(11),var(12)", airVelocity), [9, -4, 6]);
     expectAirGuardVelocity(resolve(true, "-9,-4", airVelocity), [9, -4, 6]);
     expectAirGuardVelocity(resolve(true, "-12,-6,7", airVelocity), [12, -6, 7]);
 
@@ -7317,10 +7324,16 @@ trigger1 = Time = 0
 v = 12
 value = -11
 
+[State 0, Dynamic air guard Z]
+type = VarSet
+trigger1 = Time = 0
+v = 13
+value = 7
+
 [State 0, Redirected dynamic air guard velocity]
 type = ModifyHitDef
 trigger1 = Time = 1
-airguard.velocity = var(10),var(11)
+airguard.velocity = var(10),var(11),var(13)
 RedirectID = var(0)
 
 [State 0, Later omission preserves air guard velocity]
@@ -7388,8 +7401,8 @@ airguard.velocity = -3,-2,5
       damage: 5,
       airGuardPush: 9,
       airGuardVelocityY: -4,
-      airGuardVelocityZ: 5,
-      hitVelocities: { airGuard: { x: -9, y: -4, z: 5 } },
+      airGuardVelocityZ: 7,
+      hitVelocities: { airGuard: { x: -9, y: -4, z: 7 } },
     });
     expect(
       exactPair.compatibilitySession?.actors.find(({ actorId }) => actorId === "p2")?.executedOperations.modifyhitdef,
@@ -7407,20 +7420,20 @@ airguard.velocity = -3,-2,5
       damage: 5,
       airGuardPush: 11,
       airGuardVelocityY: -4,
-      airGuardVelocityZ: 5,
-      hitVelocities: { airGuard: { x: -11, y: -4, z: 5 } },
+      airGuardVelocityZ: 7,
+      hitVelocities: { airGuard: { x: -11, y: -4, z: 7 } },
       hitVars: { hitCount: 3 },
     });
     expect(guarded.actors[0]?.runtime).toMatchObject({
       guarding: true,
       stateType: "A",
       vel: { x: -11, y: -4 },
-      hitVelocity: { x: -11, y: -4, z: 5 },
-      combatDepth: { velocity: 5 },
+      hitVelocity: { x: -11, y: -4, z: 7 },
+      combatDepth: { velocity: 7 },
     });
     expect(runtimeHitVar(guarded.actors[0]!.runtime, "xvel")).toBe(-11);
     expect(runtimeHitVar(guarded.actors[0]!.runtime, "yvel")).toBe(-4);
-    expect(runtimeHitVar(guarded.actors[0]!.runtime, "zvel")).toBe(5);
+    expect(runtimeHitVar(guarded.actors[0]!.runtime, "zvel")).toBe(7);
     expect(
       guarded.compatibilitySession?.actors.find(({ actorId }) => actorId === "p2")?.executedOperations.modifyhitdef,
     ).toBe(4);

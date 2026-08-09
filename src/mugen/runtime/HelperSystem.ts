@@ -1617,6 +1617,9 @@ export function activateRuntimeHelperHitDef(
     resolveFloatPair: options
       ? (key) => resolveRuntimeHelperFloatPairParam(helper, controller, key, options)
       : undefined,
+    resolveFloatScalar: options
+      ? (key) => resolveRuntimeHelperFloatScalarParam(helper, controller, key, options)
+      : undefined,
     resolvePaletteFx: options
       ? resolveRuntimeHelperHitDefPaletteFx(helper, controller, options)
       : undefined,
@@ -1825,14 +1828,17 @@ export function resolveRuntimeHelperFloatParam(
 export function resolveRuntimeHelperFloatScalarParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "down.velocity",
+  key: "down.velocity" | "airguard.velocity",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
-  void key;
   const operation = controller.operation;
-  const value = operation?.kind === "modifyhitdef"
-    ? operation.downVelocityZExpression ?? operation.downVelocityZ
-    : undefined;
+  const value = key === "down.velocity"
+    ? operation?.kind === "modifyhitdef"
+      ? operation.downVelocityZExpression ?? operation.downVelocityZ
+      : undefined
+    : operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
+      ? operation.airGuardVelocityZExpression
+      : undefined;
   if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
   if (typeof value === "string") return resolveHelperFloat(helper, value, options);
   return undefined;

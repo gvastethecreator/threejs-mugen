@@ -181,8 +181,10 @@ export type HitDefControllerOp = {
   /** Direct guard.velocity X expression evaluated in the HitDef caller context. */
   guardVelocityExpression?: number | string;
   airGuardVelocity?: MugenHitDefVector;
-  /** One- or two-component dynamic/mixed airguard.velocity evaluated in caller context. */
+  /** One-, two-, or three-component dynamic/mixed airguard.velocity evaluated in caller context. */
   airGuardVelocityExpressions?: MugenHitDefExpressionPair;
+  /** Dynamic/mixed airguard.velocity Z component when the expression vector has three components. */
+  airGuardVelocityZExpression?: number | string;
   groundCornerPush?: number;
   airCornerPush?: number;
   downCornerPush?: number;
@@ -283,9 +285,11 @@ export type ModifyHitDefControllerOp = {
   /** Root-owned live guard.velocity X replacement evaluated in caller context. */
   guardVelocityExpression?: number | string;
   guardVelocityZ?: number;
-  /** Root-owned live airguard.velocity X or X/Y replacement evaluated in caller context. */
+  /** Root-owned live airguard.velocity X, X/Y, or X/Y/Z replacement evaluated in caller context. */
   airGuardVelocityExpressions?: MugenHitDefExpressionPair;
   airGuardVelocityZ?: number;
+  /** Root-owned live airguard.velocity Z replacement evaluated in caller context. */
+  airGuardVelocityZExpression?: number | string;
   /** HitDef acceleration metadata mutation; dynamic scalar expressions are retained for runtime evaluation. */
   xAccel?: number | string;
   yAccel?: number | string;
@@ -2348,9 +2352,14 @@ function compileHitDefControllerOp(
   const airGuardVelocity = airGuardVelocityRaw === undefined ? undefined : strictStaticNumberVector(airGuardVelocityRaw);
   const airGuardVelocityExpressionValue = airGuardVelocityRaw === undefined || airGuardVelocity !== undefined
     ? true
-    : optionalFloatExpressionPairParam(controller, "airguard.velocity");
-  const airGuardVelocityExpressions = Array.isArray(airGuardVelocityExpressionValue)
-    ? airGuardVelocityExpressionValue
+    : optionalFloatExpressionVectorParam(controller, "airguard.velocity");
+  const airGuardVelocityExpressions: MugenHitDefExpressionPair | undefined = Array.isArray(airGuardVelocityExpressionValue)
+    ? airGuardVelocityExpressionValue.length === 1
+      ? [airGuardVelocityExpressionValue[0]]
+      : [airGuardVelocityExpressionValue[0], airGuardVelocityExpressionValue[1]]
+    : undefined;
+  const airGuardVelocityZExpression = Array.isArray(airGuardVelocityExpressionValue) && airGuardVelocityExpressionValue.length === 3
+    ? airGuardVelocityExpressionValue[2]
     : undefined;
   const p1StateNo = optionalIntegerExpressionParam(controller, "p1stateno");
   const p2StateNo = optionalIntegerExpressionParam(controller, "p2stateno");
@@ -2532,6 +2541,7 @@ function compileHitDefControllerOp(
     ...(guardVelocityExpression === true ? {} : { guardVelocityExpression }),
     airGuardVelocity,
     ...(airGuardVelocityExpressions === undefined ? {} : { airGuardVelocityExpressions }),
+    ...(airGuardVelocityZExpression === undefined ? {} : { airGuardVelocityZExpression }),
     groundCornerPush: firstNumber(findParam(controller, "ground.cornerpush.veloff")),
     airCornerPush: firstNumber(findParam(controller, "air.cornerpush.veloff")),
     downCornerPush: firstNumber(findParam(controller, "down.cornerpush.veloff")),
@@ -2721,6 +2731,9 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const airGuardVelocityZ = typeof airGuardVelocityValue === "object" && typeof airGuardVelocityValue.z === "number"
     ? airGuardVelocityValue.z
     : true;
+  const airGuardVelocityZExpression = typeof airGuardVelocityValue === "object" && typeof airGuardVelocityValue.z === "string"
+    ? airGuardVelocityValue.z
+    : undefined;
   const xAccel = optionalScalarNumberOrExpression(controller, "xaccel");
   const yAccel = optionalScalarNumberOrExpression(controller, "yaccel");
   const zAccel = optionalScalarNumberOrExpression(controller, "zaccel");
@@ -2924,6 +2937,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(guardVelocityZ === true ? {} : { guardVelocityZ }),
     ...(airGuardVelocityExpressions === undefined ? {} : { airGuardVelocityExpressions }),
     ...(airGuardVelocityZ === true ? {} : { airGuardVelocityZ }),
+    ...(airGuardVelocityZExpression === undefined ? {} : { airGuardVelocityZExpression }),
     ...(xAccel === true ? {} : { xAccel }),
     ...(yAccel === true ? {} : { yAccel }),
     ...(zAccel === true ? {} : { zAccel }),
@@ -4249,6 +4263,16 @@ function optionalFloatExpressionPairParam(
   return compileFloatExpressionPair(raw) ?? false;
 }
 
+/** Compile one, two, or three float expressions while preserving authored arity. */
+function optionalFloatExpressionVectorParam(
+  controller: MugenStateController,
+  key: string,
+): MugenHitDefExpressionPair | MugenHitDefExpressionTriplet | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) return true;
+  return compileFloatExpressionVector(raw) ?? false;
+}
+
 function compileFloatExpressionPair(raw: string): MugenHitDefExpressionPair | undefined {
   const scalar = compileFloatExpressionComponent(raw);
   if (scalar !== undefined) return [scalar];
@@ -4260,6 +4284,10 @@ function compileFloatExpressionPair(raw: string): MugenHitDefExpressionPair | un
     if (first !== undefined && second !== undefined) return [first, second];
   }
   return undefined;
+}
+
+function compileFloatExpressionVector(raw: string): MugenHitDefExpressionPair | MugenHitDefExpressionTriplet | undefined {
+  return compileFloatExpressionPair(raw) ?? compileFloatExpressionTriplet(raw);
 }
 
 function compileFloatExpressionTriplet(raw: string): MugenHitDefExpressionTriplet | undefined {
@@ -4397,7 +4425,7 @@ function optionalModifyHitDefVelocityParam(
 
 function optionalModifyHitDefAirGuardVelocityParam(
   controller: MugenStateController,
-): { xy: MugenHitDefExpressionPair; z?: number } | true | false {
+): { xy: MugenHitDefExpressionPair; z?: number | string } | true | false {
   const raw = findParam(controller, "airguard.velocity");
   if (raw === undefined) return true;
   const staticVector = strictStaticNumberVector(raw);
@@ -4408,7 +4436,11 @@ function optionalModifyHitDefAirGuardVelocityParam(
     };
   }
   const dynamicPair = compileFloatExpressionPair(raw);
-  return dynamicPair === undefined ? false : { xy: dynamicPair };
+  if (dynamicPair !== undefined) return { xy: dynamicPair };
+  const dynamicTriplet = compileFloatExpressionTriplet(raw);
+  return dynamicTriplet === undefined
+    ? false
+    : { xy: [dynamicTriplet[0], dynamicTriplet[1]], z: dynamicTriplet[2] };
 }
 
 function staticOptionalGuardFlagParam(controller: MugenStateController, key: string): string | true | false {

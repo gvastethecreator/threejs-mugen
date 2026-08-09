@@ -5317,6 +5317,24 @@ function runActiveStateControllers(
           };
           return [resolveComponent(pair[0]), resolveComponent(pair[1])];
         },
+        resolveFloatScalar: (key) => {
+          const operation = controller.operation?.kind === "hitdef" ? controller.operation : undefined;
+          const value = key === "airguard.velocity" ? operation?.airGuardVelocityZExpression : undefined;
+          if (value === undefined) return undefined;
+          const resolved = resolveDispatchFloat(
+            typeof value === "number" ? value : undefined,
+            typeof value === "string" ? value : undefined,
+            actor,
+            targetOpponent,
+            stateOwner,
+            stageBounds,
+            activeTick,
+            gameSpace,
+            options.characters,
+            createPlayerIdTarget(actor),
+          );
+          return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
+        },
         resolveSoundValue: (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
         ...runtimeActiveControllerTelemetryHooks,
       });
@@ -5378,7 +5396,7 @@ function runActiveStateControllers(
           const operation = controller.operation?.kind === "modifyhitdef" ? controller.operation : undefined;
           const value = key === "down.velocity"
             ? operation?.downVelocityZExpression ?? operation?.downVelocityZ
-            : undefined;
+            : operation?.airGuardVelocityZExpression;
           if (value === undefined) return undefined;
           const resolved = resolveDispatchFloat(
             typeof value === "number" ? value : undefined,

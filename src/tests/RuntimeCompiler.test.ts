@@ -2355,7 +2355,7 @@ value = 1
     })).operation).toBeUndefined();
   });
 
-  it("compiles one- and two-component direct HitDef airguard.velocity expressions", () => {
+  it("compiles one-, two-, and three-component direct HitDef airguard.velocity expressions", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "airguard.velocity": "-4.25",
     })).operation).toMatchObject({
@@ -2388,13 +2388,17 @@ value = 1
     });
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "airguard.velocity": "var(1),var(2),var(3)",
-    })).operation).toBeUndefined();
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      airGuardVelocityExpressions: ["var(1)", "var(2)"],
+      airGuardVelocityZExpression: "var(3)",
+    });
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "airguard.velocity": "var(1),var(",
     })).operation).toBeUndefined();
   });
 
-  it("compiles one- and two-component root ModifyHitDef airguard.velocity expressions", () => {
+  it("compiles one-, two-, and three-component root ModifyHitDef airguard.velocity expressions", () => {
     expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
       "airguard.velocity": "-4.25",
       redirectid: "57",
@@ -2443,7 +2447,11 @@ value = 1
     expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
       "airguard.velocity": "var(1),var(2),var(3)",
       redirectid: "57",
-    })).operation).toBeUndefined();
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      airGuardVelocityExpressions: ["var(1)", "var(2)"],
+      airGuardVelocityZExpression: "var(3)",
+    });
     expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
       "airguard.velocity": "var(1),var(",
       redirectid: "57",
