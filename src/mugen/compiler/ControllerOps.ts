@@ -588,6 +588,10 @@ export type ProjectileControllerOp = {
   downHitTime?: number;
   groundVelocity?: MugenProjectileVector;
   airVelocity?: MugenProjectileVector;
+  /** One-, two-, or three-component dynamic/mixed air.velocity evaluated in projectile caller context. */
+  airVelocityExpressions?: MugenHitDefExpressionPair;
+  /** Dynamic/mixed air.velocity Z component when the expression vector has three components. */
+  airVelocityZExpression?: number | string;
   downVelocity?: MugenProjectileVector;
   /** M.U.G.E.N down.bounce toggle carried by projectile HitDef data. */
   downBounce?: boolean;
@@ -3437,6 +3441,19 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   const score = scoreRaw === undefined ? undefined : strictStaticNumberPair(scoreRaw);
   const pauseTimeRaw = findParam(controller, "pausetime");
   const guardPauseTimeRaw = findParam(controller, "guard.pausetime");
+  const airVelocityRaw = findParam(controller, "air.velocity");
+  const airVelocity = numberTriple(airVelocityRaw);
+  const airVelocityExpressionValue = airVelocityRaw === undefined || airVelocity !== undefined
+    ? true
+    : optionalFloatExpressionVectorParam(controller, "air.velocity");
+  const airVelocityExpressions: MugenHitDefExpressionPair | undefined = Array.isArray(airVelocityExpressionValue)
+    ? airVelocityExpressionValue.length === 1
+      ? [airVelocityExpressionValue[0]]
+      : [airVelocityExpressionValue[0], airVelocityExpressionValue[1]]
+    : undefined;
+  const airVelocityZExpression = Array.isArray(airVelocityExpressionValue) && airVelocityExpressionValue.length === 3
+    ? airVelocityExpressionValue[2]
+    : undefined;
   const airGuardVelocityRaw = findParam(controller, "airguard.velocity");
   const airGuardVelocity = numberTriple(airGuardVelocityRaw);
   const airGuardVelocityExpressionValue = airGuardVelocityRaw === undefined || airGuardVelocity !== undefined
@@ -3452,7 +3469,9 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     : undefined;
   if (
     airGuardVelocityExpressionValue === false ||
-    (Array.isArray(airGuardVelocityExpressionValue) && airGuardVelocityExpressions === undefined)
+    (Array.isArray(airGuardVelocityExpressionValue) && airGuardVelocityExpressions === undefined) ||
+    airVelocityExpressionValue === false ||
+    (Array.isArray(airVelocityExpressionValue) && airVelocityExpressions === undefined)
   ) return undefined;
   const guardDistanceBounds = staticProjectileGuardDistanceBounds(controller);
   return definedObject({
@@ -3540,7 +3559,9 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     groundSlideTime: firstNumber(findParam(controller, "ground.slidetime")),
     airHitTime: firstNumber(findParam(controller, "air.hittime")) ?? 20,
     groundVelocity: numberTriple(findParam(controller, "ground.velocity")),
-    airVelocity: numberTriple(findParam(controller, "air.velocity")),
+    airVelocity,
+    ...(airVelocityExpressions === undefined ? {} : { airVelocityExpressions }),
+    ...(airVelocityZExpression === undefined ? {} : { airVelocityZExpression }),
     downHitTime: firstNumber(findParam(controller, "down.hittime")) ?? 20,
     downVelocity: numberTriple(findParam(controller, "down.velocity")),
     downBounce: booleanNumber(findParam(controller, "down.bounce")),

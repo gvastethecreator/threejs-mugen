@@ -1164,6 +1164,37 @@ describe("ProjectileSystem", () => {
     });
   });
 
+  it("resolves fresh Projectile air.velocity expressions in caller context", () => {
+    const create = (serialId: string, airVelocity: string, resolved: [number?, number?, number?]): RuntimeProjectile => {
+      const compiled = compileControllerIr(controller({
+        projanim: "1005",
+        "air.velocity": airVelocity,
+      }));
+      const operation = compiled.operation as ProjectileControllerOp;
+      return createRuntimeProjectile({
+        serialId,
+        controller: controller({ projanim: "1005", "air.velocity": airVelocity }),
+        operation,
+        spriteOwnerId: "p1",
+        spriteOwnerDefinitionId: "kfm",
+        spriteOwnerLabel: "Kung Fu Man",
+        action,
+        animNo: 1005,
+        pos: { x: 0, y: 0 },
+        fallbackFacing: 1,
+        resolveAirVelocity: () => resolved,
+      });
+    };
+
+    const dynamicTriplet = create("p1-projectile-air-velocity-dynamic-triplet", "var(0),fvar(1),var(2)", [-5, -4, 6]);
+    const dynamicPair = create("p1-projectile-air-velocity-dynamic-pair", "var(0),fvar(1)", [-5, -4]);
+    const dynamicSingle = create("p1-projectile-air-velocity-dynamic-single", "var(0)", [-5]);
+
+    expect(dynamicTriplet).toMatchObject({ hitVelocities: { air: { x: -5, y: -4, z: 6 } } });
+    expect(dynamicPair).toMatchObject({ hitVelocities: { air: { x: -5, y: -4, z: 0 } } });
+    expect(dynamicSingle).toMatchObject({ hitVelocities: { air: { x: -5, y: 0, z: 0 } } });
+  });
+
   it("derives missing Projectile guard.velocity from ground.velocity x", () => {
     const projectile = createRuntimeProjectile({
       serialId: "p1-projectile-guard-default",
