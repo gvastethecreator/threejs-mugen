@@ -1,8 +1,12 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T608-T688 (2026-08-09)
+## Latest implementation checkpoint — T608-T689 (2026-08-09)
 
-Authoritative cursor: T688 is closed-bounded for pinned-Ikemen root-owned live
+Authoritative cursor: T689 is closed-bounded for pinned-Ikemen fresh root/Helper
+Projectiles and dynamic/mixed `ground.velocity` X/Y/Z. Caller-context values
+resolve once, missing fresh siblings default to zero, and accepted grounded
+hits expose GetHitVar/physics plus target/lifecycle evidence. T688 remains
+closed-bounded for pinned-Ikemen root-owned live
 `ModifyProjectile ground.velocity`: dynamic/mixed X/Y/Z components resolve once
 in the original caller context, replace selected live Projectile components,
 and reach accepted grounded-hit GetHitVar/physics. T687 is closed-bounded for
@@ -20,6 +24,12 @@ T684 remains closed-bounded for live
 Projectile airguard/air/down vector seams, including Helper ownership.
 Helper-owned `ModifyProjectile`, dynamic `n`, fresh default recalculation
 during mutation, and full Projectile parity remain explicitly unclaimed.
+
+- T689 closes fresh root/Helper Projectile `ground.velocity` with typed
+  compiler/runtime fields, caller-context component resolution, zero-filled
+  fresh omissions, and the required grounded-hit trace (`7782fd2a` /
+  `494ad91d`). Aggregate QA is `764/764` (`730` required, `34` optional);
+  full Vitest is `3780/3780` across `328` files.
 
 - T686 closes root-owned live `ModifyProjectile air.velocity` with typed
   compiler fields, zero-filled broadcast semantics, and the required airborne

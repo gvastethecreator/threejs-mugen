@@ -1,5 +1,21 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-09 T689 fresh Projectile ground.velocity addendum — no score movement
+
+Final T689 verification: `764/764` trace artifacts (`730` required, `34`
+optional), `3780/3780` Vitest tests across `328` files, typecheck, the
+`363`-module build, and diff hygiene pass. Required trace
+`synthetic-imported-projectile-dynamic-ground-velocity` has checksum
+`7782fd2a` and final checksum `494ad91d`.
+
+Fresh root/Helper Projectiles now retain typed static/mixed/dynamic
+`ground.velocity` X/Y/Z, resolve caller-context values once, default missing
+fresh siblings to zero, and expose the accepted grounded-hit vector through
+GetHitVar/physics, target, and Projectile lifecycle evidence. This is a
+bounded pinned-Ikemen seam, not a score movement: dynamic `n`, live mutation,
+other vector families, exact timing/topology, and full M.U.G.E.N/Ikemen
+Projectile parity remain excluded.
+
 ## 2026-08-09 T688 live ModifyProjectile ground.velocity addendum — no score movement
 
 Final T688 verification: `763/763` trace artifacts (`729` required, `34`

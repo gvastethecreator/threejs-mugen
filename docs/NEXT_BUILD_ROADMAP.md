@@ -1,6 +1,17 @@
 ﻿# Next Build Roadmap
 
-## Authoritative runtime cursor — T688 closed-bounded
+## Authoritative runtime cursor — T689 closed-bounded
+
+Final T689 verification: `764/764` trace artifacts (`730` required, `34`
+optional), with required fresh root Projectile `ground.velocity` trace
+checksum `7782fd2a` and final checksum `494ad91d`. The full `3780/3780`
+Vitest suite across `328` files, typecheck, and the `363`-module build pass.
+
+T689 / issue 263 is closed-bounded for fresh root/Helper Projectiles with
+caller-context dynamic/mixed `ground.velocity` X/Y/Z, zero-filled fresh
+omissions, and accepted grounded-hit GetHitVar/physics plus target/lifecycle
+evidence. Dynamic `n`, live mutation, and full Projectile parity remain
+excluded. See [issue 263](../.scratch/roadmap/issues/263-projectile-ground-velocity-dynamic.md).
 
 Final T688 verification: `763/763` trace artifacts (`729` required, `34`
 optional), with required root-owned `ModifyProjectile ground.velocity` trace

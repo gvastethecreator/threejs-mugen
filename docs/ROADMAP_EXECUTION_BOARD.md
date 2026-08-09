@@ -1,6 +1,6 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T688 closed-bounded
+## Authoritative runtime cursor — T689 closed-bounded
 
 Final T682 verification: `756/756` trace artifacts (`722` required, `34`
 optional), with required root Projectile `air.velocity` checksums
@@ -41,6 +41,19 @@ Final T688 verification: `763/763` trace artifacts (`729` required, `34`
 optional), with required root-owned `ModifyProjectile ground.velocity` trace
 checksum `0cda3247`. The full `3776/3776` Vitest suite across `328` files,
 typecheck, the `363`-module build, and the diff gate pass.
+
+Final T689 verification: `764/764` trace artifacts (`730` required, `34`
+optional), with required fresh root Projectile `ground.velocity` trace
+checksum `7782fd2a` and final checksum `494ad91d`. The full `3780/3780`
+Vitest suite across `328` files, typecheck, the `363`-module build, and the
+diff gate pass.
+
+T689 / issue 263 is closed-bounded: fresh root and Helper-authored Projectiles
+retain one-, two-, and three-component dynamic/mixed `ground.velocity`, resolve
+it once in caller context, default missing fresh siblings to zero, and expose
+the accepted grounded-hit vector through GetHitVar/physics plus target and
+lifecycle evidence. Fresh default recalculation beyond this vector, dynamic
+`n`, live mutation, and full Projectile parity remain excluded.
 
 T675 / issue 249 is closed-bounded: live root-owned `ModifyHitDef
 down.velocity` dynamic Z resolves in caller context, preserves active X/Y,
@@ -105,9 +118,17 @@ M.U.G.E.N dynamic-Z/live-ModifyHitDef claims beyond these bounded vectors,
 remaining Helper-authored Projectile breadth, fresh/default recalculation, and
 full down-hit/Helper parity remain outside the closed claims.
 
-## Current official-parity queue — T424-T492 and T506-T688 closed-bounded; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
+## Current official-parity queue — T424-T492 and T506-T689 closed-bounded; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
 
-### Latest runtime checkpoint — live ModifyProjectile ground.velocity dynamic replacement
+### Latest runtime checkpoint — fresh Projectile ground.velocity dynamic vector
+
+T689 / issue 263 is closed-bounded: fresh root and Helper-authored Projectiles
+accept caller-context dynamic/mixed `ground.velocity` X/Y/Z, zero-fill missing
+fresh siblings, and prove accepted grounded-hit GetHitVar/physics, target, and
+Projectile lifecycle evidence. The required trace checksum is `7782fd2a` and
+the final checksum is `494ad91d`. See [issue 263](../.scratch/roadmap/issues/263-projectile-ground-velocity-dynamic.md).
+
+### Previous runtime checkpoint — live ModifyProjectile ground.velocity dynamic replacement
 
 T688 / issue 262 is closed-bounded: root-owned live Projectiles accept
 caller-context dynamic `ModifyProjectile ground.velocity` X/Y/Z replacement

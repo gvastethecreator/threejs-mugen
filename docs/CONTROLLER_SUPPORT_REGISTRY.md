@@ -1,6 +1,9 @@
 # Controller Support Registry
 
-Authoritative cursor: T688 is closed-bounded for root-owned live
+Authoritative cursor: T689 is closed-bounded for fresh root/Helper Projectiles
+with dynamic/mixed `ground.velocity` X/Y/Z caller resolution, zero-filled fresh
+omissions, and accepted grounded-hit evidence. T688 remains closed-bounded for
+root-owned live
 `ModifyProjectile ground.velocity` dynamic X/Y/Z with component-preserving
 replacement and accepted grounded-hit evidence. T687 remains closed-bounded
 for root-owned live
@@ -36,6 +39,10 @@ T688 adds the corresponding root-owned live `ModifyProjectile ground.velocity`
 typed dynamic/mixed component-preserving replacement and grounded-hit trace.
 Helper-owned `ModifyProjectile` remains excluded for the same pinned upstream
 rejection.
+T689 adds fresh root/Helper Projectile `ground.velocity` typed dynamic/mixed
+caller-context resolution and accepted grounded-hit GetHitVar/physics,
+target, and lifecycle evidence. Fresh default recalculation beyond this
+vector, dynamic `n`, live mutation, and full Projectile parity remain excluded.
 
 This is the registry contract for CNS controller work. It prevents the runtime from growing controller behavior through invisible ad hoc paths.
 
