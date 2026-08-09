@@ -13,6 +13,16 @@ nested helper/team topology, rollback, and full Projectile timing parity remain
 outside the supported claim. See [issue
 275](../.scratch/roadmap/issues/275-projectile-misstime-dynamic.md).
 
+## Active next cut — T702 Projectile `projpriority`
+
+T702 is in implementation: fresh root/Helper Projectiles will resolve dynamic
+`projpriority` in caller context and feed the existing bounded clash/cancel /
+decrement path. This is not yet a supported claim until compiler/runtime,
+required traces, typecheck, build, and full QA close. Exact Ikemen priority
+classes/overflow, live `ModifyProjectile`, fine timing, nested ownership,
+rollback, and full Projectile parity remain outside scope. See [issue
+276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
+
 ## 2026-08-09 T700 Projectile removetime checkpoint
 
 T700 is closed-bounded: fresh root- and Helper-authored Projectiles resolve

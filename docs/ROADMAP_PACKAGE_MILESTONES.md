@@ -37,9 +37,12 @@ rollback, and full Projectile timing parity remain excluded. See [issue
 Previous cursor: T696 closed-bounded fresh root and Helper Projectile
 `guard.hittime` caller-context resolution. See [issue 270](../.scratch/roadmap/issues/270-projectile-guard-hittime-dynamic.md).
 
-Next queue: T702 maps the next unclaimed Projectile/effect lifecycle seam
-against pinned Ikemen source before implementation; live mutation is not
-assumed supported without source and seam evidence.
+Active next cursor: T702 closes fresh root/Helper Projectile `projpriority`
+caller-context resolution plus existing clash/cancel/decrement evidence. The
+local priority clamp is an explicit adaptation; live `ModifyProjectile`, exact
+VM priority classes/overflow, fine timing, nested teams, rollback, and full
+Projectile parity remain blocked. See [issue
+276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
 
 ## Previous runtime cursor — T693
 

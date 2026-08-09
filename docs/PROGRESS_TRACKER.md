@@ -14,8 +14,10 @@ nested helper/team topology, rollback, and full Projectile timing parity remain
 explicitly unclaimed. See [issue
 275](../.scratch/roadmap/issues/275-projectile-misstime-dynamic.md).
 
-Next proposed cut: T702 maps the next unclaimed Projectile/effect lifecycle
-seam against pinned Ikemen source before implementation.
+Active next cut: T702 implements fresh root/Helper Projectile `projpriority`
+caller-context resolution and priority clash evidence. See [issue
+276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md). T703 is
+not selected until this cut closes.
 
 ## Previous implementation checkpoint — T700 (2026-08-09)
 

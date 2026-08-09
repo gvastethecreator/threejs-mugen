@@ -32,11 +32,14 @@ Projectile `air.hittime` caller-context resolution and accepted airborne
 non-falling `GetHitVar(hittime)` evidence. See [issue
 272](../.scratch/roadmap/issues/272-projectile-air-hittime-dynamic.md).
 
-## Next parity cut — T702 proposed
+## Active parity cut — T702 `projpriority` dynamic
 
-Map the next unclaimed Projectile/effect lifecycle seam against the pinned
-Ikemen source; live mutation remains unsupported until its upstream
-controller switch and local seam are proven independently.
+T702 is selected and mapped in [issue 276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
+Implement fresh root/Helper Projectile `projpriority` caller-context
+resolution, then prove priority clash/cancel/decrement. `ModifyProjectile`,
+exact VM priority classes/overflow, fine tick ordering, nested teams, rollback,
+and full Projectile parity remain excluded. T703 stays unselected until T702
+closes with compiler, runtime, trace, typecheck, build, and diff evidence.
 
 ## Previous runtime cursor — T693 closed-bounded
 

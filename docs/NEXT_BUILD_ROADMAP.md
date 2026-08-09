@@ -18,6 +18,15 @@ semantics, nested helper/team topology, rollback, and full Projectile timing
 parity remain excluded. See [issue
 275](../.scratch/roadmap/issues/275-projectile-misstime-dynamic.md).
 
+## Active next runtime cut — T702 `projpriority` dynamic
+
+T702 / issue 276 is selected: fresh root- and Helper-authored Projectiles
+resolve dynamic `projpriority` once in caller context and prove existing
+priority clash/cancel/decrement behavior. The local `0..10` normalization is
+an adaptation; exact Ikemen integer sentinel/overflow and priority classes,
+live `ModifyProjectile`, fine tick order, nested teams, rollback, and full
+Projectile parity remain outside the claim. T703 remains unselected.
+
 ## Previous runtime cursor — T700 closed-bounded
 
 T700 / issue 274 remains closed-bounded for fresh root- and Helper-authored
