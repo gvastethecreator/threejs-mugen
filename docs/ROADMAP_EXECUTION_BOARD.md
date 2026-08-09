@@ -1,11 +1,11 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T680 closed, T681 source-mapped
+## Authoritative runtime cursor — T681 closed, T682 source-mapped
 
-Final T680 verification: `753/753` trace artifacts (`719` required, `34`
-optional), with the T680 required trace checksum `8cae22a1` and final checksum
-`32fb962c`. The full `3744/3744` Vitest suite across `328` files, typecheck,
-and the `363`-module build pass.
+Final T681 verification: `754/754` trace artifacts (`720` required, `34`
+optional), with the T681 required trace checksum `741d884e` and final
+checksum `652a67f0`. The full `3746/3746` Vitest suite across `328` files,
+typecheck, and the `363`-module build pass.
 
 T675 / issue 249 is closed-bounded: live root-owned `ModifyHitDef
 down.velocity` dynamic Z resolves in caller context, preserves active X/Y,
@@ -26,15 +26,34 @@ through accepted airborne guard physics/GetHitVar. T680 / issue 254 is
 closed-bounded: root-owned fresh Projectile `airguard.velocity` resolves
 dynamic caller-context X/Y/Z, completes missing components with pinned fresh
 defaults, and reaches accepted airborne-guard lifecycle/physics/GetHitVar
-evidence. T681 / issue 255 is source-mapped for the Helper-authored Projectile
-caller/parent breadth.
-M.U.G.E.N dynamic-Z/live-ModifyHitDef claims, Helper-authored Projectile
-breadth, ModifyProjectile, and full down-hit/Helper parity remain outside the
-closed claims.
+evidence. T681 / issue 255 is closed-bounded:
+Helper-authored/root-owned fresh Projectile `airguard.velocity` resolves
+dynamic caller-context X/Y/Z from Helper VarSet values, retains root/parent
+ownership and lifecycle evidence, and reaches accepted airborne-guard
+physics/GetHitVar. T682 / issue 256 is source-mapped for fresh Projectile
+`air.velocity` dynamic XYZ.
+M.U.G.E.N dynamic-Z/live-ModifyHitDef claims beyond these bounded vectors,
+remaining Helper-authored Projectile breadth, ModifyProjectile, and full
+down-hit/Helper parity remain outside the closed claims.
 
-## Current official-parity queue — T424-T492 and T506-T680 closed-bounded; T681 source-mapped; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
+## Current official-parity queue — T424-T492 and T506-T681 closed-bounded; T682 source-mapped; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
 
-### Active runtime checkpoint — live ModifyHitDef air-guard velocity
+### Active runtime checkpoint — fresh Projectile air.velocity dynamic XYZ
+
+T681 / issue 255 is closed-bounded: Helper-authored/root-owned fresh
+Projectile `airguard.velocity` resolves dynamic XYZ in Helper caller context,
+proves VarSet evaluation, preserves root/Helper parent lifecycle and target
+links, and reaches accepted airborne-guard physics/GetHitVar. Focused runtime
+and trace gates pass; the full suite is `3746/3746` across `328` files,
+typecheck/build pass, and aggregate traces are `754/754` (`720` required,
+`34` optional). Required trace checksum is `741d884e`; final checksum is
+`652a67f0`. See [issue 255](../.scratch/roadmap/issues/255-helper-projectile-airguard-velocity-z-dynamic.md).
+
+T682 / issue 256 is source-mapped: fresh root/Helper Projectiles still need
+caller-context dynamic `air.velocity` X/Y/Z resolution and accepted airborne
+hit/GetHitVar evidence. See [issue 256](../.scratch/roadmap/issues/256-projectile-air-velocity-dynamic.md).
+
+### Historical runtime checkpoint — live ModifyHitDef air-guard velocity
 
 T589 / issue 163 is closed-bounded: static and bounded dynamic root/helper
 `attack.depth` pairs replace the selected live Projectile HitDef depth bounds.
@@ -792,7 +811,8 @@ the Helper-owned down-velocity dispatch. T677 / issue 251 closes the
 Helper-owned air-velocity dispatch. T678 / issue 252 closes the
 Helper-owned air-guard velocity follow-up. T679 / issue 253 closes the
 dynamic Z component, T680 / issue 254 closes the root-owned Projectile source
-gate, and T681 / issue 255 is the next Helper-authored Projectile source gate.
+gate, and T681 / issue 255 closes the Helper-authored Projectile source gate.
+T682 / issue 256 is the next fresh Projectile `air.velocity` source gate.
 
 ### Latest visual checkpoint — Character Compare
 

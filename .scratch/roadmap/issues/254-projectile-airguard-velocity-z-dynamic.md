@@ -48,5 +48,6 @@ parity.
 
 ## Next bounded slice
 
-T681 is source-mapped for Helper-authored/root-owned fresh Projectile
-`airguard.velocity` dynamic XYZ and parent/lifecycle evidence.
+T681 closes the Helper-authored/root-owned fresh Projectile `airguard.velocity`
+dynamic XYZ and parent/lifecycle evidence. T682 is source-mapped for fresh
+Projectile `air.velocity` dynamic XYZ.

@@ -1,6 +1,6 @@
 # Issue 255 — Helper-authored Projectile airguard.velocity dynamic XYZ
 
-- Status: `source-mapped`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -45,5 +45,31 @@ Sources:
 
 ## Next bounded slice
 
-Implement the Helper effect-spawn resolver and one required trace after the
-root-owned T680 gate is integrated.
+Implemented the Helper effect-spawn resolver and a required runtime trace.
+
+Closure evidence:
+
+- `src/tests/EffectActorSystem.test.ts` Helper caller-context test passes.
+- `src/tests/RuntimeTraceGatePresets.test.ts` dynamic Helper Projectile gate
+  passes (`1/1`; global file suite `725/725`).
+- `pnpm test`: `3746/3746` tests across `328` files.
+- `pnpm typecheck`: pass.
+- `pnpm build`: pass (`363` modules; Vite chunk-size warning only).
+- `pnpm qa:trace`: `754/754` artifacts (`720` required, `34` optional),
+  `0` failures. Required trace
+  `synthetic-imported-helper-projectile-dynamic-airguard-velocity.json` has
+  trace checksum `741d884e` and final checksum `652a67f0`.
+- Commits: `f0e5eeb2` (runtime/tests), `e65b559a` (trace/evidence).
+
+The bounded claim is Helper-authored/root-owned fresh Projectile dynamic
+airguard.velocity XYZ in Helper caller context, with VarSet evidence, pinned
+fresh defaults, Helper parent/lifecycle/effect-store/target-link evidence, and
+accepted airborne guard physics/GetHitVar. Live ModifyProjectile, `n`, nested
+or team ownership, exact landing timing, rollback, and full M.U.G.E.N/Ikemen
+parity remain excluded.
+
+## Next bounded slice
+
+Source-map T682 for fresh Projectile `air.velocity` dynamic X/Y/Z in root and
+Helper caller contexts. Keep live ModifyProjectile, dynamic `n`, and full
+Projectile/Helper parity outside that cut.
