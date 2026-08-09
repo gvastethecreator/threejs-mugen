@@ -26945,6 +26945,131 @@ export function createSyntheticImportedProjectileDynamicAirVelocityTraceArtifact
   });
 }
 
+export function createSyntheticImportedProjectileDynamicGroundVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5086;
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "projectile-dynamic-ground-velocity-setup", frames: 2, p1: [], p2: [] },
+    { label: "projectile-dynamic-ground-velocity-contact", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-dynamic-ground-velocity-settle", frames: 4, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-dynamic-ground-velocity-attacker",
+    displayName: "Projectile Dynamic Ground Velocity Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileHitDefHitCount: 1,
+    projectileVarSeeds: [
+      { index: 0, value: -7 },
+      { index: 1, value: -5 },
+      { index: 2, value: 2 },
+    ],
+    projectileGroundVelocity: [-1, 1],
+    projectileGroundVelocityExpression: ["var(0)", "var(1)", "var(2)"],
+    projectileDamage: [37, 2],
+    projectileRemoveOnHit: false,
+    projectileOffset: [62, -45],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-dynamic-ground-velocity-defender",
+    displayName: "Projectile Dynamic Ground Velocity Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      shakeStateType: "S",
+      slideStateType: "S",
+      shakePhysics: "N",
+      slidePhysics: "S",
+      slideHitVelSet: { x: true, y: true, z: true },
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchExpression:
+        "GetHitVar(xvel) = 7 && GetHitVar(yvel) = -5 && GetHitVar(zvel) = 2 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "Projectile Dynamic Ground Velocity GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-projectile-dynamic-ground-velocity-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-dynamic-ground-velocity-golden",
+      label: "Synthetic imported Projectile dynamic ground.velocity route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root-owned fresh Projectile evaluates ground.velocity X/Y/Z expressions in its caller context. VarSet values -7,-5,2 replace adversarial static ground metadata -1,1; accepted grounded contact creates target 77, exposes GetHitVar(xvel/yvel/zvel)=7/-5/2, and applies the vector through Common1-style HitVelSet. Helper ownership, live ModifyProjectile, dynamic n, air/down/guard vectors, cornerpush, exact timing, teams, rollback, and full Projectile parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-projectile-dynamic-ground-velocity-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5001, branchStateNo],
+      forbiddenExecutedStates: [40, 130, 150, 151, 152, 153, 154, 155, 5020, 5021, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Projectile", "HitVelSet"],
+      requiredExecutedOperations: ["variable:varset", "projectile", "kinematic:hitvelset"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredControllerEventSequences: [{
+        label: "Projectile dynamic ground.velocity accepted-contact order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 5000, controller: "ChangeState", name: "Hit Shake Over" },
+          { stateNo: 5001, controller: "HitVelSet", name: "Apply Hit Velocity" },
+          { stateNo: 5001, operation: "kinematic:hitvelset" },
+          { stateNo: 5001, controller: "ChangeState", name: "Projectile Dynamic Ground Velocity GetHitVar Branch" },
+        ],
+      }],
+      requiredActorFrameSequences: [{
+        label: "Projectile dynamic ground.velocity physical order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, stateType: "S", moveType: "H", physics: "N", minFrames: 1 },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5001,
+            stateType: "S",
+            moveType: "H",
+            physics: "S",
+            observedVelXAtLeast: 7,
+            observedVelXAtMost: 7,
+            observedVelYAtLeast: -5,
+            observedVelYAtMost: -5,
+            observedVelZAtLeast: 2,
+            observedVelZAtMost: 2,
+            minFrames: 1,
+          },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, stateType: "S", moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [{ actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1", effectId: 77, minAge: 1 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedProjectileDynamicDownVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -59466,6 +59591,8 @@ export type SyntheticImportedTraceFighterOptions = {
   modifyProjectileMissTime?: SyntheticNumberExpression;
   modifyProjectileRemoveOnHit?: SyntheticNumberExpression;
   projectileGroundVelocity?: [number, number?];
+  /** Synthetic fixture-only dynamic/mixed Projectile ground.velocity expression vector. */
+  projectileGroundVelocityExpression?: SyntheticPartialTripleExpression;
   projectileGuardVelocity?: [number, number?];
   omitProjectileGuardVelocity?: boolean;
   projectileAirVelocity?: [number, number?, number?];
@@ -60907,7 +61034,7 @@ ${options.extraSuperPauseP2DefMul === undefined ? "" : extraSuperPauseP2DefMulBl
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${projectileVarSeedBlock}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale, options.projectileGroundVelocityExpression) : ""}
 ${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secondaryProjectile) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
@@ -64834,6 +64961,7 @@ function projectileControllerBlock(
   unhittableTime?: SyntheticPairExpression,
   groundFriction?: { stand?: SyntheticNumberExpression; crouch?: SyntheticNumberExpression },
   sparkScale?: { hit?: SyntheticPairExpression; guard?: SyntheticPairExpression },
+  groundVelocityExpression?: SyntheticPartialTripleExpression,
   label = "Fast Projectile",
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
@@ -64879,6 +65007,9 @@ function projectileControllerBlock(
   const pauseMoveTimeLine = pauseMoveTime === undefined ? "" : `pausemovetime = ${pauseMoveTime}`;
   const superMoveTimeLine = superMoveTime === undefined ? "" : `supermovetime = ${superMoveTime}`;
   const unhittableTimeLine = unhittableTime === undefined ? "" : `unhittabletime = ${unhittableTime.join(",")}`;
+  const groundVelocityLine = groundVelocityExpression === undefined
+    ? `ground.velocity = ${groundVelocity.join(",")}`
+    : `ground.velocity = ${groundVelocityExpression.join(",")}`;
   const groundFrictionLines = `
 ${groundFriction?.stand === undefined ? "" : `stand.friction = ${groundFriction.stand}`}
 ${groundFriction?.crouch === undefined ? "" : `crouch.friction = ${groundFriction.crouch}`}
@@ -64929,7 +65060,7 @@ ${killLine}
 ${guardKillLine}
 pausetime = 4,4
 ground.hittime = 13
-ground.velocity = ${groundVelocity.join(",")}
+${groundVelocityLine}
 ${airVelocityLine}
 ${downVelocityLine}
 ${unhittableTimeLine}
