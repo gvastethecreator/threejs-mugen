@@ -60,6 +60,6 @@ teams, rollback, or full Helper parity.
 ## Next bounded slice
 
 T677 closes Helper-owned live `ModifyHitDef air.velocity` X/Y
-component-preserving mutation; T678 is queued for Helper-owned live
-`ModifyHitDef airguard.velocity` X/Y; see
-[issue 252](252-helper-modifyhitdef-airguard-velocity.md).
+component-preserving mutation; T678 closes Helper-owned live
+`ModifyHitDef airguard.velocity` X/Y and issue 252 records its evidence.
+T679 is source-mapped but unclaimed.

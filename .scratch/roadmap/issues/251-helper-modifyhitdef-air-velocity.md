@@ -57,6 +57,6 @@ timing, localcoord/facing equivalence, teams, rollback, or full Helper parity.
 
 ## Next bounded slice
 
-T678 is queued for Helper-owned live `ModifyHitDef airguard.velocity` X/Y
-component-preserving mutation; see
-[issue 252](252-helper-modifyhitdef-airguard-velocity.md).
+T678 closes Helper-owned live `ModifyHitDef airguard.velocity` X/Y
+component-preserving mutation; issue 252 records its evidence. T679 is
+source-mapped but unclaimed.

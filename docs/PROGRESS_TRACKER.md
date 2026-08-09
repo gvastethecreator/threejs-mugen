@@ -1,13 +1,15 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T608-T677 (2026-08-09)
+## Latest implementation checkpoint — T608-T678 (2026-08-09)
 
-Authoritative cursor: T677 is closed-bounded for pinned-Ikemen Helper-owned
+Authoritative cursor: T678 is closed-bounded for pinned-Ikemen Helper-owned
 live `ModifyHitDef down.velocity` dynamic X/Y/Z with active-component
 preservation and a required lying-hit trace, followed by Helper-owned live
 `ModifyHitDef air.velocity` X/Y with airborne physics/GetHitVar evidence.
-T678 is queued for Helper-owned live `ModifyHitDef airguard.velocity` X/Y; the
-older active wording below is historical and superseded.
+T678 also closes Helper-owned live `ModifyHitDef airguard.velocity` X/Y with
+accepted airborne-guard physics/GetHitVar and ownership evidence. T679 is
+source-mapped pending the next official-reference selection; the older active
+wording below is historical and superseded.
 
 - T608-T637 are closed-bounded. T616-T621 add typed HitDef/Projectile
   `unhittabletime`, actor-role contact/admission/default/HitOverride slices,
@@ -83,8 +85,10 @@ older active wording below is historical and superseded.
   the pinned-Ikemen dynamic Z component and required lying-hit evidence. T676
   closes Helper-owned ModifyHitDef down-velocity dispatch with caller-context
   X/Y/Z and component preservation. T677 closes Helper-owned live air-velocity
-  mutation with caller-context X/Y and airborne-hit evidence. T678 is queued
-  for Helper-owned live air-guard velocity mutation.
+  mutation with caller-context X/Y and airborne-hit evidence. T678 closes
+  Helper-owned live air-guard velocity mutation with caller-context X/Y,
+  component preservation, and airborne-guard evidence. T679 remains
+  source-mapped and unclaimed.
 - Latest full suite passes 3737/3737. Typecheck, 363-module build,
   750/750 traces (716 required, 34 optional),
   boundaries, redirect boundaries, and differential checks pass.

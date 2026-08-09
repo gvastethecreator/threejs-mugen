@@ -2,7 +2,8 @@
 
 ## Current parity queue
 
-- **T678 queued** — extend Helper-owned live `ModifyHitDef airguard.velocity` to caller-context X/Y replacement with omitted-component preservation and accepted airborne-guard evidence. See [issue 252](../.scratch/roadmap/issues/252-helper-modifyhitdef-airguard-velocity.md).
+- **T678 closed-bounded** — Helper-owned live `ModifyHitDef airguard.velocity` now resolves caller-context X/Y, preserves omitted live components and Z, and reaches accepted airborne-guard physics/GetHitVar with Helper/root/parent ownership evidence. See [issue 252](../.scratch/roadmap/issues/252-helper-modifyhitdef-airguard-velocity.md).
+- **T679 source-mapped** — choose the next bounded official-reference slice only after its source gate, ownership boundary, and required trace are written.
 - **T677 closed-bounded** — Helper-owned live `ModifyHitDef air.velocity` now resolves caller-context X/Y, preserves omitted live Y/Z, and reaches accepted airborne-hit physics/GetHitVar. See [issue 251](../.scratch/roadmap/issues/251-helper-modifyhitdef-air-velocity.md).
 - **T676 closed-bounded** — Helper-owned `ModifyHitDef down.velocity` now resolves caller-context X/Y/Z, preserves omitted live components, and reaches accepted lying-hit physics/GetHitVar. See [issue 250](../.scratch/roadmap/issues/250-helper-modifyhitdef-down-velocity.md).
 - **T675 closed-bounded** — live root-owned `ModifyHitDef down.velocity` now resolves a pinned-Ikemen dynamic Z component in caller context, preserves active X/Y, and reaches accepted lying-hit physics/GetHitVar. See [issue 249](../.scratch/roadmap/issues/249-modifyhitdef-down-velocity-z-dynamic.md).

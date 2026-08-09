@@ -1,6 +1,6 @@
 # Issue 252 — Helper-owned ModifyHitDef airguard.velocity
 
-- Status: `queued`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -35,8 +35,28 @@ Sources to pin before implementation:
 - An accepted airborne guard exposes the final vector through physics and
   `GetHitVar`, with Helper/root/target ownership recorded in one required trace.
 
+## Closure evidence
+
+- Helper runtime coverage proves caller-local dynamic X/Y resolution for the
+  live `airguard.velocity` pair, while the neighboring unit path covers
+  one-component replacement and omission preservation.
+- Accepted airborne guard exposes `GetHitVar(xvel/yvel/zvel)=7/-5/4` and
+  applies the same vector through the physical HitVelSet path while retaining
+  Helper/root/parent target ownership.
+- Required trace:
+  `synthetic-imported-helper-modifyhitdef-dynamic-airguard-velocity`.
+- Required trace checksum: `3eeaa993`; final checksum: `438713d1`.
+- Aggregate trace gate passes `751/751` artifacts (`717` required,
+  `34` optional); the full suite passes `3739/3739` tests across `328` files,
+  typecheck passes, and the `363`-module build passes.
+
 ## Claim ceiling
 
 Do not claim M.U.G.E.N live `ModifyHitDef`, fresh inheritance, dynamic Z,
 partial `n` syntax, Projectile or ModifyProjectile, exact landing/Common1
 timing, localcoord/facing equivalence, teams, rollback, or full Helper parity.
+
+## Next bounded slice
+
+T679 is source-mapped but unclaimed. Select it only after pinning the next
+official reference seam, ownership boundary, and required trace.

@@ -1,13 +1,14 @@
 ﻿# Supported Features
 ## 2026-08-09 HitDef friction, spark-scale, facing, power, PalFX, EnvShake, and velocity checkpoint
 
-Authoritative cursor: T677 is closed-bounded for pinned-Ikemen-only
+Authoritative cursor: T678 is closed-bounded for pinned-Ikemen-only
 Helper-owned live `ModifyHitDef down.velocity` dynamic X/Y/Z mutation with
 active-component preservation and a required lying-hit trace, plus live
 Helper-owned `ModifyHitDef air.velocity` X/Y mutation with airborne
-physics/GetHitVar evidence. T678 is queued for Helper-owned live
-`ModifyHitDef airguard.velocity` X/Y. M.U.G.E.N live ModifyHitDef support is
-not claimed.
+physics/GetHitVar evidence. T678 also closes Helper-owned live
+`ModifyHitDef airguard.velocity` X/Y with omitted-component/Z preservation and
+accepted airborne-guard physics/GetHitVar ownership evidence. T679 is
+source-mapped; M.U.G.E.N live ModifyHitDef support is not claimed.
 
 - T608-T638 are closed-bounded. Root/Helper direct HitDef, ReversalDef, and
   Projectile paths support the verified `unhittabletime` slices through
@@ -84,13 +85,15 @@ not claimed.
   T673 closes fresh down-velocity expressions and air-vector inheritance. T674
   and T675 close live root-owned ModifyHitDef down-velocity X/Y/Z mutation;
   T676 closes Helper-owned live dispatch and lying-hit evidence. T677 closes
-  Helper-owned live air-velocity mutation. T678 is queued for the
-  Helper-owned live air-guard velocity follow-up.
+  Helper-owned live air-velocity mutation. T678 closes the Helper-owned live
+  air-guard velocity follow-up with caller-context X/Y, component preservation,
+  and accepted airborne-guard evidence. T679 remains source-mapped.
   Projectile facing, exact deferred
   facing/power order, broader `data/mugen.cfg`, rollback, and full HitDef
   behavior are not supported claims.
-- Latest evidence: 3737/3737 tests, the 363-module build, and 750/750 traces
-  pass (716 required, 34 optional).
+- Latest evidence: 3739/3739 tests, the 363-module build, and 751/751 traces
+  pass (717 required, 34 optional); T678 checksum `3eeaa993`, final
+  checksum `438713d1`.
 
 ## 2026-08-08 ModifyProjectile selection and live HitDef mutation
 
