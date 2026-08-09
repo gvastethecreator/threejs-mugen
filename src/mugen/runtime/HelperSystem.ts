@@ -2048,6 +2048,32 @@ export function resolveRuntimeHelperFloatPairParam(
   return values.length === 2 ? [values[0], values[1]!] : [values[0]];
 }
 
+/**
+ * Resolves a Helper-authored Projectile's dynamic fresh airguard vector.
+ * Missing components stay undefined so ProjectileSystem can apply its pinned
+ * fresh defaults after caller-context evaluation.
+ */
+export function resolveRuntimeHelperProjectileAirGuardVelocity(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): [number?, number?, number?] | undefined {
+  const operation = controller.operation;
+  if (operation?.kind !== "projectile") return undefined;
+  const pair = operation.airGuardVelocityExpressions;
+  const zExpression = operation.airGuardVelocityZExpression;
+  if (pair === undefined && zExpression === undefined) return undefined;
+  const resolveComponent = (component: number | string | undefined): number | undefined => {
+    if (typeof component === "number") return Number.isFinite(component) ? component : undefined;
+    return resolveHelperFloat(helper, component, options);
+  };
+  return [
+    resolveComponent(pair?.[0]),
+    resolveComponent(pair?.[1]),
+    resolveComponent(zExpression),
+  ];
+}
+
 export function resolveRuntimeHelperHitDefPaletteFx(
   helper: RuntimeHelper,
   controller: ControllerIr,

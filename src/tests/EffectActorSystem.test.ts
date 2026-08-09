@@ -366,6 +366,48 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("resolves Helper-authored Projectile airguard.velocity XYZ in Helper caller context", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Projectile", {
+                projid: "8862",
+                projanim: "930",
+                velocity: "0,0",
+                "air.velocity": "-6,-8,6",
+                "airguard.velocity": "Parent,Var(0),Root,Var(1),Root,Var(2)",
+              }, ["Time = 0"]),
+            ]),
+          ),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+    const parentState = actor("p1", "Parent", { vars: [5] }).runtime;
+    const rootState = actor("p1", "Root", { vars: [0, -4, 6] }).runtime;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, { parentState, rootState });
+
+    const projectile = store.projectiles.find((candidate) => candidate.parentId === helper.serialId);
+    expect(projectile).toMatchObject({
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+      projectileId: 8862,
+      airGuardPush: 5,
+      airGuardVelocityY: -4,
+      airGuardVelocityZ: 6,
+      hitVelocities: { airGuard: { x: 5, y: -4, z: 6 } },
+    });
+  });
+
   it("passes stage bounds into helper-local triggers and controller expressions", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {
