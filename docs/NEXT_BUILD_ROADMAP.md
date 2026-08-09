@@ -1,21 +1,22 @@
 ﻿# Next Build Roadmap
 
-## Authoritative runtime cursor — T699 closed-bounded
+## Authoritative runtime cursor — T700 closed-bounded
 
-Final T699 verification: `779/779` trace artifacts (`745` required, `34`
-optional), root Projectile pause pair checksum `1380caf8` / final `54d26b60`,
-Helper checksum `f342d3ad` / final `a7e23112`, full `3812/3812` Vitest across
-`328` files, typecheck, the `363`-module production build, and diff hygiene
-pass.
+Final T700 verification: `781/781` trace artifacts (`747` required, `34`
+optional), root Projectile removetime checksum `63ef5373` / final
+`2824a6bb`, Helper checksum `c35241e4` / final `23b1bac3`, full `3815/3815`
+Vitest across `328` files, typecheck, the `363`-module production build, and
+diff hygiene pass.
 
-T699 / issue 273 is closed-bounded for fresh root and Helper-authored
-Projectiles: dynamic/mixed `pausetime` and `guard.pausetime` pairs resolve once
-in caller context. Accepted hit/guard contacts expose Projectile-local pause
-payload and defender `GetHitVar(hitshaketime)`, with lifecycle, target, and
-Helper/root/parent ownership evidence. Live `ModifyProjectile`, exact pause
-stacking/tick order, negative/overflow values, nested helper/team topology,
-rollback, and full Projectile timing parity remain excluded. See [issue
-273](../.scratch/roadmap/issues/273-projectile-pause-pairs-dynamic.md).
+T700 / issue 274 is closed-bounded for fresh root- and Helper-authored
+Projectiles: dynamic `projremovetime` resolves once in caller context,
+truncates/clamps through the bounded Projectile-time domain, persists in the
+fresh payload, and completes timeout removal with root/Helper/parent
+ownership evidence. Live `ModifyProjectile`, exact terminal animation/tick
+preemption, bounds-removal ordering, negative/overflow values, nested
+helper/team topology, rollback, and full Projectile lifecycle parity remain
+excluded. See [issue
+274](../.scratch/roadmap/issues/274-projectile-removetime-dynamic.md).
 
 ## Previous runtime cursor — T698 closed-bounded
 
@@ -24,11 +25,11 @@ Projectile `air.hittime` caller-context resolution and accepted airborne
 non-falling contact. See [issue
 272](../.scratch/roadmap/issues/272-projectile-air-hittime-dynamic.md).
 
-## Next parity cut — T700 proposed
+## Next parity cut — T701 proposed
 
-Map the next unclaimed Projectile timing or mutation parameter against the
-pinned Ikemen source. Treat live mutation as unsupported until its controller
-switch and local seam are explicitly proven.
+Map the next unclaimed Projectile/effect lifecycle seam against the pinned
+Ikemen source. Treat live mutation as unsupported until its controller switch
+and local seam are explicitly proven.
 
 ## Previous runtime cursor — T692 closed-bounded
 

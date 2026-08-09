@@ -1,4 +1,19 @@
 ﻿# Supported Features
+## 2026-08-09 T700 Projectile removetime checkpoint
+
+T700 is closed-bounded: fresh root- and Helper-authored Projectiles resolve
+dynamic `projremovetime` once in the original caller context, truncate/clamp
+through the bounded Projectile-time domain, persist the timeout payload, and
+complete timeout removal with root/Helper/parent ownership. Required root
+checksums are `63ef5373` / `2824a6bb`; Helper checksums are `c35241e4` /
+`23b1bac3`; aggregate QA passes `781/781` artifacts (`747` required, `34`
+optional); the full `3815/3815` Vitest suite across `328` files, typecheck,
+and the `363`-module build pass. Live `ModifyProjectile`, exact terminal
+animation/tick preemption, bounds-removal ordering, negative/overflow values,
+nested helper/team topology, rollback, and full Projectile lifecycle parity
+remain outside the supported claim. See [issue
+274](../.scratch/roadmap/issues/274-projectile-removetime-dynamic.md).
+
 ## 2026-08-09 T699 Projectile pause-pair checkpoint
 
 T699 is closed-bounded: fresh root and Helper-authored Projectiles resolve

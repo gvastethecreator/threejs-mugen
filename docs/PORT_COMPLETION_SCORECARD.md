@@ -1,5 +1,23 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-09 T700 Projectile removetime addendum - no score movement
+
+Final T700 verification: `781/781` trace artifacts (`747` required, `34`
+optional), full `3815/3815` Vitest across `328` files, typecheck, the
+`363`-module production build, and diff hygiene pass. Required root Projectile
+removetime trace is `63ef5373` / final `2824a6bb`; the Helper trace is
+`c35241e4` / final `23b1bac3`.
+
+Fresh root- and Helper-authored Projectiles now resolve dynamic
+`projremovetime` once in the original caller context, truncate/clamp it
+through the bounded Projectile-time domain, persist the timeout payload, and
+complete timeout removal with root/Helper/parent ownership. This is a bounded
+compatibility seam with no score movement: live `ModifyProjectile`, exact
+terminal animation/tick preemption, bounds-removal ordering, negative/overflow
+values, nested helper/team topology, rollback, and full Projectile lifecycle
+parity remain blocked. See [issue
+274](../.scratch/roadmap/issues/274-projectile-removetime-dynamic.md).
+
 ## 2026-08-09 T699 Projectile pause-pair addendum - no score movement
 
 Final T699 verification: `779/779` trace artifacts (`745` required, `34`

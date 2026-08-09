@@ -1,20 +1,19 @@
 ﻿# Roadmap Package Milestones
 
-## Latest runtime cursor — T699
+## Latest runtime cursor — T700
 
-T699 closes the fresh root and Helper-authored Projectile `pausetime` /
-`guard.pausetime` caller-context seam: dynamic/mixed pairs resolve once,
-accepted hit/guard contact preserves Projectile-local pause payload and
-defender `GetHitVar(hitshaketime)`, and lifecycle, target links, and
-Helper/root/parent ownership are required. Verification is `779/779` traces
-(`745` required, `34` optional), full `3812/3812` Vitest across `328` files,
-typecheck, the `363`-module build, and diff hygiene. Root checksums are
-`1380caf8/54d26b60`; Helper checksums are `f342d3ad/a7e23112`. The first
-component is Projectile-local `hitPauseRemaining`, not owner-player HitPause.
-Live `ModifyProjectile`, exact stacking/preemption/tick order, negative/overflow
-values, nested helper/team topology, rollback, and full Projectile timing
-parity remain excluded. See [issue
-273](../.scratch/roadmap/issues/273-projectile-pause-pairs-dynamic.md).
+T700 closes the fresh root- and Helper-authored Projectile
+`projremovetime` caller-context seam: dynamic values resolve once,
+truncate/clamp through the bounded Projectile-time domain, persist in the
+fresh payload, and complete timeout removal with root/Helper/parent ownership.
+Verification is `781/781` traces (`747` required, `34` optional), full
+`3815/3815` Vitest across `328` files, typecheck, the `363`-module build, and
+diff hygiene. Root checksums are `63ef5373/2824a6bb`; Helper checksums are
+`c35241e4/23b1bac3`. Live `ModifyProjectile`, exact terminal animation/tick
+preemption, bounds-removal ordering, negative/overflow values, nested
+helper/team topology, rollback, and full Projectile lifecycle parity remain
+excluded. See [issue
+274](../.scratch/roadmap/issues/274-projectile-removetime-dynamic.md).
 
 ## Previous runtime cursor — T698
 
@@ -34,9 +33,9 @@ rollback, and full Projectile timing parity remain excluded. See [issue
 Previous cursor: T696 closed-bounded fresh root and Helper Projectile
 `guard.hittime` caller-context resolution. See [issue 270](../.scratch/roadmap/issues/270-projectile-guard-hittime-dynamic.md).
 
-Next queue: T700 maps the next unclaimed Projectile timing or mutation
-parameter against pinned Ikemen source before implementation; live mutation is
-not assumed supported without source and seam evidence.
+Next queue: T701 maps the next unclaimed Projectile/effect lifecycle seam
+against pinned Ikemen source before implementation; live mutation is not
+assumed supported without source and seam evidence.
 
 ## Previous runtime cursor — T693
 

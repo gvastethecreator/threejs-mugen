@@ -1,17 +1,18 @@
 # Controller Support Registry
 
-Authoritative cursor: T699 is closed-bounded for fresh root and Helper
-Projectile `pausetime` / `guard.pausetime` dynamic/mixed pair resolution,
-accepted hit/guard `GetHitVar(hitshaketime)` evidence, Projectile-local pause
-payload, lifecycle, target links, and Helper/root/parent ownership. Root trace
-checksum is `1380caf8`, final `54d26b60`; Helper checksum is `f342d3ad`, final
-`a7e23112`; `pnpm qa:trace` passes `779/779` artifacts (`745` required,
-`34` optional). The first component is Projectile-local `hitPauseRemaining`,
-not owner-player HitPause. Live `ModifyProjectile`, exact pause stacking/tick
-order, negative/overflow values, nested helper/team topology, rollback, and
-full Projectile timing parity remain excluded. The full `3812/3812` Vitest
-suite across `328` files, typecheck, the `363`-module build, and diff hygiene
-also pass. T700 is the next source-mapping queue item.
+Authoritative cursor: T700 is closed-bounded for fresh root- and
+Helper-authored Projectiles with dynamic `projremovetime` resolution once in
+the original caller context. Values are truncated/clamped through the
+existing bounded Projectile-time domain, persisted in the fresh payload, and
+proven through timeout removal with root/Helper/parent ownership. Root trace
+checksum is `63ef5373`, final `2824a6bb`; Helper checksum is `c35241e4`, final
+`23b1bac3`; `pnpm qa:trace` passes `781/781` artifacts (`747` required,
+`34` optional). Live `ModifyProjectile`, exact terminal animation/tick
+preemption, bounds-removal ordering, negative/overflow values, nested
+helper/team topology, rollback, and full Projectile lifecycle parity remain
+excluded. The full `3815/3815` Vitest suite across `328` files, typecheck, the
+`363`-module build, and diff hygiene also pass. T701 is the next
+source-mapping queue item. See [issue 274](../.scratch/roadmap/issues/274-projectile-removetime-dynamic.md).
 
 T696 remains closed-bounded for fresh root and Helper Projectile
 `guard.hittime` caller-context resolution and accepted guard GetHitVar

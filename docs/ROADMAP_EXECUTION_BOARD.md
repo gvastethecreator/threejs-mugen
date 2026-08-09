@@ -1,23 +1,22 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T699 closed-bounded
+## Authoritative runtime cursor — T700 closed-bounded
 
-Final T699 verification: `779/779` trace artifacts (`745` required, `34`
-optional), full `3812/3812` Vitest across `328` files, typecheck, the
-`363`-module production build, and the diff gate pass. Root Projectile pause
-pair trace checksum is `1380caf8` / final `54d26b60`; Helper checksum is
-`f342d3ad` / final `a7e23112`.
+Final T700 verification: `781/781` trace artifacts (`747` required, `34`
+optional), full `3815/3815` Vitest across `328` files, typecheck, the
+`363`-module production build, and the diff gate pass. Root Projectile
+removetime trace checksum is `63ef5373` / final `2824a6bb`; Helper checksum is
+`c35241e4` / final `23b1bac3`.
 
-T699 / issue 273 is closed-bounded: fresh root and Helper-authored Projectiles
-resolve dynamic/mixed `pausetime` and `guard.pausetime` pairs once in caller
-context. Accepted hit/guard contacts preserve Projectile-local pause payload,
-defender shake `GetHitVar(hitshaketime)`, lifecycle, target links, and
-Helper/root/parent ownership. The first component is Projectile-local
-`hitPauseRemaining`; the second is defender shake, not owner-player HitPause.
-Live `ModifyProjectile`, exact stacking/preemption/tick order, negative/overflow
-values, nested helper/team topology, rollback, and full Projectile timing
-parity remain excluded. See [issue
-273](../.scratch/roadmap/issues/273-projectile-pause-pairs-dynamic.md).
+T700 / issue 274 is closed-bounded: fresh root- and Helper-authored
+Projectiles resolve dynamic `projremovetime` once in caller context,
+truncate/clamp it through the bounded Projectile-time domain, persist the
+timeout payload, and complete timeout removal with root/Helper/parent
+ownership evidence. Live `ModifyProjectile`, exact terminal animation/tick
+preemption, bounds-removal ordering, negative/overflow values, nested
+helper/team topology, rollback, and full Projectile lifecycle parity remain
+excluded. See [issue
+274](../.scratch/roadmap/issues/274-projectile-removetime-dynamic.md).
 
 ## Previous runtime cursor — T698 closed-bounded
 
@@ -26,10 +25,10 @@ Projectile `air.hittime` caller-context resolution and accepted airborne
 non-falling `GetHitVar(hittime)` evidence. See [issue
 272](../.scratch/roadmap/issues/272-projectile-air-hittime-dynamic.md).
 
-## Next parity cut — T700 proposed
+## Next parity cut — T701 proposed
 
-Map the next unclaimed Projectile timing or mutation parameter against the
-pinned Ikemen source; live mutation remains unsupported until its upstream
+Map the next unclaimed Projectile/effect lifecycle seam against the pinned
+Ikemen source; live mutation remains unsupported until its upstream
 controller switch and local seam are proven independently.
 
 ## Previous runtime cursor — T693 closed-bounded
