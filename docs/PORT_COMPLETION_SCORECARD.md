@@ -1,5 +1,23 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-09 T685 live ModifyProjectile airguard.velocity addendum — no score movement
+
+Final T685 verification: `760/760` trace artifacts (`726` required, `34`
+optional), `3764/3764` Vitest tests across `328` files, typecheck, the
+`363`-module build, and diff hygiene pass. Required trace
+`synthetic-imported-modifyprojectile-dynamic-airguard-velocity` has checksum
+`c4d55bd9` and final checksum `f0982ef8`.
+
+Root-owned live `ModifyProjectile airguard.velocity` now retains typed
+static/mixed/dynamic components, evaluates them once in root caller context,
+and broadcasts Ikemen's zero-filled one/two/three-component replacement to
+selected Projectiles. The required airborne-guard trace proves the resulting
+physics/GetHitVar vector, target link, and Projectile lifecycle. This is a
+bounded Ikemen owner-side seam, not a score movement: Helper-owned
+`ModifyProjectile` remains blocked by the upstream helper guard, as do dynamic
+`n`, fresh default recalculation during mutation, exact timing/topology, and
+full M.U.G.E.N/Ikemen Projectile parity.
+
 ## 2026-08-09 T684 live ModifyProjectile down.velocity addendum — no score movement
 
 Final T684 verification: `759/759` trace artifacts (`725` required, `34`
