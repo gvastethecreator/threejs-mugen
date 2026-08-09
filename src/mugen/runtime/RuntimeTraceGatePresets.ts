@@ -27373,6 +27373,130 @@ export function createSyntheticImportedModifyProjectileDynamicAirGuardVelocityTr
   });
 }
 
+export function createSyntheticImportedModifyProjectileDynamicGuardVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5080;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...projectileCombatStage(),
+    id: "trace-modifyprojectile-dynamic-guard-velocity-grid",
+    displayName: "Trace ModifyProjectile Dynamic Guard Velocity Grid",
+    playerStart: {
+      p1: { x: -160, y: 0, facing: 1 },
+      p2: { x: 120, y: 0, facing: -1 },
+    },
+  };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-dynamic-guard-velocity-defender",
+    displayName: "ModifyProjectile Dynamic Guard Velocity Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      guardStateNo: 130,
+      guardedBranchStateNo: branchStateNo,
+      guardedBranchAnimNo: branchStateNo,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression:
+        "GetHitVar(xvel) = 6 && GetHitVar(yvel) = -4 && GetHitVar(zvel) = 2 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-dynamic-guard-velocity-attacker",
+    displayName: "ModifyProjectile Dynamic Guard Velocity Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileVarSeeds: [],
+    projectileAirVelocity: [-6, -8, 2],
+    projectileGuardVelocity: [-1, -1],
+    projectileGuardHitTime: 18,
+    projectileOffset: [62, -45],
+    projectileRemoveOnHit: true,
+    guardFlag: "MA",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+    withModifyProjectile: true,
+    modifyProjectileTriggerTime: 3,
+    modifyProjectileId: 77,
+    modifyProjectileVarSeeds: [
+      { index: 0, value: -6 },
+      { index: 1, value: -4 },
+      { index: 2, value: 2 },
+    ],
+    modifyProjectileGuardVelocity: ["var(0)", "var(1)", "var(2)"],
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultGuardStateScript(),
+    targetId: "synthetic-imported-modifyprojectile-dynamic-guard-velocity-golden",
+    targetLabel: "Synthetic imported ModifyProjectile dynamic guard.velocity route",
+    requiredExecutedStates: [130, 150, 151, 200, branchStateNo],
+    forbiddenExecutedStates: [152, 153, 154, 155, 5000, 5001, 5010, 5011, 5020, 5030, 5050, 5100, 5101, 5110],
+    requiredExecutedControllers: ["ChangeState", "VarSet", "Projectile", "ModifyProjectile", "HitVelSet"],
+    requiredExecutedOperations: ["variable:varset", "projectile", "modifyprojectile", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [
+      {
+        label: "ModifyProjectile dynamic guard velocity caller evaluation order",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "Projectile", name: "Fast Projectile" },
+          { stateNo: 200, controller: "VarSet", name: "ModifyProjectile Dynamic Var 0" },
+          { stateNo: 200, controller: "ModifyProjectile", name: "Modify Fast Projectile" },
+          { stateNo: 200, operation: "modifyprojectile" },
+        ],
+      },
+      {
+        label: "ground guard consumes live ModifyProjectile guard.velocity",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+          { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+          { stateNo: 151, operation: "kinematic:hitvelset" },
+        ],
+      },
+    ],
+    requiredActorFrames: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 151,
+        animNo: 150,
+        stateType: "S",
+        moveType: "H",
+        physics: "S",
+        observedVelXAtLeast: 6,
+        observedVelXAtMost: 6,
+        minFrames: 1,
+      },
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, animNo: branchStateNo, stateType: "S", minFrames: 1 },
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+    requiredEffectPayloads: [{ actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1", effectId: 77, minAge: 1 }],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    forbiddenCombatReasons: ["hit", "override", "reversal"],
+    requiredFinalActors: [
+      { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+      { actorId: "p2", source: "imported", actorKind: "player", life: 996 },
+    ],
+    notes: [
+      "Pinned Ikemen GO compatibility trace proves a root-owned ModifyProjectile evaluates guard.velocity X/Y/Z expressions once in the original caller context and replaces the selected live Projectile guard vector with the official zero-default triplet semantics. VarSet values -6,-4,2 replace adversarial -1,-1,0 before a real ground guard, which exposes GetHitVar(xvel/yvel/zvel)=6/-4/2 and applies the X component through Common1-style HitVelSet. Helper-owned ModifyProjectile is explicitly excluded by the upstream helper guard; fresh defaults, dynamic n, exact timing, cornerpush, teams, rollback, and full Projectile parity remain excluded.",
+    ],
+  });
+}
+
 export function createSyntheticImportedModifyProjectileDynamicAirVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -59191,6 +59315,8 @@ export type SyntheticImportedTraceFighterOptions = {
   modifyProjectileDownVelocity?: SyntheticPartialTripleExpression;
   /** Synthetic fixture-only dynamic/mixed ModifyProjectile airguard.velocity vector. */
   modifyProjectileAirGuardVelocity?: SyntheticPartialTripleExpression;
+  /** Synthetic fixture-only dynamic/mixed ModifyProjectile guard.velocity vector. */
+  modifyProjectileGuardVelocity?: SyntheticPartialTripleExpression;
   /** Synthetic fixture-only dynamic/mixed ModifyProjectile air.velocity vector. */
   modifyProjectileAirVelocity?: SyntheticPartialTripleExpression;
   modifyProjectileVarSeeds?: Array<{ index: number; value: number; trigger?: string }>;
@@ -60658,6 +60784,7 @@ ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   downVelocity: options.modifyProjectileDownVelocity,
   airGuardVelocity: options.modifyProjectileAirGuardVelocity,
   airVelocity: options.modifyProjectileAirVelocity,
+  guardVelocity: options.modifyProjectileGuardVelocity,
   varSeeds: options.modifyProjectileVarSeeds,
   removeTime: options.modifyProjectileRemoveTime,
   spritePriority: options.modifyProjectileSpritePriority,
@@ -64754,6 +64881,7 @@ function modifyProjectileControllerBlock(input: {
   downVelocity?: SyntheticPartialTripleExpression;
   airGuardVelocity?: SyntheticPartialTripleExpression;
   airVelocity?: SyntheticPartialTripleExpression;
+  guardVelocity?: SyntheticPartialTripleExpression;
   varSeeds?: Array<{ index: number; value: number; trigger?: string }>;
   removeTime?: SyntheticNumberExpression;
   spritePriority?: SyntheticNumberExpression;
@@ -64786,6 +64914,7 @@ value = ${seed.value}
   const downVelocityLine = input.downVelocity === undefined ? "" : `down.velocity = ${input.downVelocity.join(",")}`;
   const airGuardVelocityLine = input.airGuardVelocity === undefined ? "" : `airguard.velocity = ${input.airGuardVelocity.join(",")}`;
   const airVelocityLine = input.airVelocity === undefined ? "" : `air.velocity = ${input.airVelocity.join(",")}`;
+  const guardVelocityLine = input.guardVelocity === undefined ? "" : `guard.velocity = ${input.guardVelocity.join(",")}`;
   const removeTimeLine = input.removeTime === undefined ? "" : `projremovetime = ${input.removeTime}`;
   const spritePriorityLine = input.spritePriority === undefined ? "" : `projsprpriority = ${input.spritePriority}`;
   const priorityLine = input.priority === undefined ? "" : `projpriority = ${input.priority}`;
@@ -64808,6 +64937,7 @@ ${getPowerLine}
 ${downVelocityLine}
 ${airGuardVelocityLine}
 ${airVelocityLine}
+${guardVelocityLine}
 ${removeTimeLine}
 ${spritePriorityLine}
 ${priorityLine}
