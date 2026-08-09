@@ -1,6 +1,19 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T608-T693 (2026-08-09)
+## Latest implementation checkpoint — T608-T694 (2026-08-09)
+
+Authoritative cursor: T694 is closed-bounded for Helper-authored fresh
+Projectiles with dynamic `down.hittime`. Helper caller expressions resolve once,
+and accepted lying contact exposes `GetHitVar(hittime)=17` with Helper/root/
+parent ownership, Projectile payload, lifecycle, target links, and imported
+Common1 progression. Aggregate QA is `769/769` (`735` required, `34` optional),
+full Vitest is `3794/3794` across `328` files, and the `363`-module
+build/typecheck pass. Live `ModifyProjectile`, non-zero down launch, exact
+countdown/landing timing, negative/overflow values, teams, rollback, and full
+Projectile timing parity remain explicitly unclaimed. See [issue 268](../.scratch/roadmap/issues/268-helper-projectile-down-hittime-dynamic.md).
+
+Next proposed cut: T695 maps the next unclaimed Projectile/Helper timing
+parameter against pinned Ikemen source before implementation.
 
 Authoritative cursor: T693 is closed-bounded for fresh root Projectile
 `down.hittime`. Caller expressions resolve once, omission resets to the pinned

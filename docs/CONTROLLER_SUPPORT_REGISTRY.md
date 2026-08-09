@@ -1,6 +1,16 @@
 # Controller Support Registry
 
-Authoritative cursor: T693 is closed-bounded for fresh root Projectile
+Authoritative cursor: T694 is closed-bounded for Helper-authored fresh
+Projectile `down.hittime` caller-context resolution, accepted lying-hit
+GetHitVar evidence, Helper/root/parent ownership, Projectile lifecycle, and
+target links. Required trace checksum is `258bc45a`, final checksum
+`bd70be12`; `pnpm qa:trace` passes `769/769` artifacts (`735` required,
+`34` optional). Live `ModifyProjectile`, non-zero down launch, exact
+countdown/landing timing, negative/overflow values, teams, rollback, and full
+Projectile timing parity remain excluded. T695 is a source-mapping queue item
+for the next unclaimed Projectile/Helper timing parameter.
+
+T693 remains closed-bounded for fresh root Projectile
 `down.hittime` caller-context resolution, pinned fresh omission default,
 accepted lying-hit GetHitVar evidence, Projectile lifecycle, and target links.
 Helper caller resolution is covered by focused spawn tests. Live

@@ -1,6 +1,21 @@
 ﻿# Next Build Roadmap
 
-## Authoritative runtime cursor — T693 closed-bounded
+## Authoritative runtime cursor — T694 closed-bounded
+
+Final T694 verification: `769/769` trace artifacts (`735` required, `34`
+optional), with required Helper-owned fresh Projectile `down.hittime`
+checksum `258bc45a` and final checksum `bd70be12`. The full `3794/3794`
+Vitest suite across `328` files, typecheck, and the `363`-module build pass.
+
+T694 / issue 268 is closed-bounded for Helper-authored fresh Projectiles:
+dynamic `down.hittime` resolves once in Helper caller context and accepted
+lying contact exposes `GetHitVar(hittime)=17` with Helper/root/parent ownership,
+Projectile payload, lifecycle, target-link, and imported Common1-style
+progression evidence. Live `ModifyProjectile`, non-zero down launch, exact
+countdown/landing timing, negative/overflow values, teams, rollback, and full
+Projectile timing parity remain excluded. See [issue 268](../.scratch/roadmap/issues/268-helper-projectile-down-hittime-dynamic.md).
+
+## Previous runtime cursor — T693 closed-bounded
 
 Final T693 verification: `768/768` trace artifacts (`734` required, `34`
 optional), with required fresh root Projectile `down.hittime` checksum
@@ -14,12 +29,11 @@ payload, target, and lifecycle evidence. Helper caller resolution is focused;
 live `ModifyProjectile`, non-zero down launch, exact countdown/landing timing,
 and full Projectile timing parity remain excluded. See [issue 267](../.scratch/roadmap/issues/267-projectile-down-hittime-dynamic.md).
 
-## Next parity cut — T694 proposed
+## Next parity cut — T695 proposed
 
-Close Helper-owned fresh Projectile `down.hittime` with a durable ownership
-and contact trace, reusing the T693 caller-context seam. Keep live
-`ModifyProjectile`, non-zero down launch, and exact countdown/landing timing
-out of the claim until their pinned upstream behavior is mapped separately.
+Map the next unclaimed Projectile/Helper timing parameter against the pinned
+Ikemen source before implementation. Treat live `ModifyProjectile` timing as
+unsupported until its controller switch and local seam are explicitly proven.
 
 ## Previous runtime cursor — T692 closed-bounded
 

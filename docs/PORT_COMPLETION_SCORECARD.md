@@ -1,5 +1,21 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-09 T694 Helper Projectile down.hittime addendum - no score movement
+
+Final T694 verification: `769/769` trace artifacts (`735` required, `34`
+optional), `3794/3794` Vitest tests across `328` files, typecheck, the
+`363`-module build, and diff hygiene pass. Required trace
+`synthetic-imported-helper-projectile-dynamic-down-hittime` has checksum
+`258bc45a` and final checksum `bd70be12`.
+
+Helper-authored fresh Projectiles now resolve dynamic `down.hittime` once in
+Helper caller context. Accepted lying contact exposes `GetHitVar(hittime)=17`
+with Helper/root/parent ownership, Projectile payload, lifecycle, target links,
+and imported Common1-style progression. This remains a bounded compatibility
+seam with no score movement: live `ModifyProjectile`, non-zero down launch,
+exact countdown/landing timing, negative/overflow values, teams, rollback, and
+full Projectile timing parity remain blocked.
+
 ## 2026-08-09 T693 Projectile down.hittime addendum - no score movement
 
 Final T693 verification: `768/768` trace artifacts (`734` required, `34`

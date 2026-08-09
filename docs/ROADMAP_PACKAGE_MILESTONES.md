@@ -1,6 +1,22 @@
 ﻿# Roadmap Package Milestones
 
-## Latest runtime cursor — T693
+## Latest runtime cursor — T694
+
+T694 closes the Helper-authored fresh Projectile `down.hittime` caller-context
+seam: dynamic values resolve once, accepted lying contact exposes
+`GetHitVar(hittime)=17`, and Helper/root/parent ownership, Projectile payload,
+lifecycle, target links, and imported Common1-style progression are required.
+Verification is `769/769` traces (`735` required, `34` optional), `3794/3794`
+Vitest tests, typecheck, and the `363`-module build. Live `ModifyProjectile`,
+non-zero down launch, exact countdown/landing timing, negative/overflow values,
+teams, rollback, and full Projectile timing parity remain excluded. See [issue
+268](../.scratch/roadmap/issues/268-helper-projectile-down-hittime-dynamic.md).
+
+Next queue: T695 maps the next unclaimed Projectile/Helper timing parameter
+against pinned Ikemen source before implementation; live `ModifyProjectile`
+timing is not assumed supported without source and seam evidence.
+
+## Previous runtime cursor — T693
 
 T693 closes the fresh root Projectile `down.hittime` caller-context seam:
 dynamic values resolve once, omitted fresh values use the pinned `20` default,

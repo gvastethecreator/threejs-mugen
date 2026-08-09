@@ -1,4 +1,16 @@
 ﻿# Supported Features
+## 2026-08-09 T694 Helper Projectile timing checkpoint
+
+T694 is closed-bounded: Helper-authored fresh Projectiles resolve dynamic
+`down.hittime` once in Helper caller context and feed accepted lying-hit
+`GetHitVar(hittime)=17` with Helper/root/parent ownership, Projectile payload,
+lifecycle, target links, and imported Common1-style progression. Required trace
+checksum is `258bc45a`, final checksum `bd70be12`; aggregate QA passes `769/769`
+artifacts (`735` required, `34` optional). Live `ModifyProjectile`, non-zero
+down launch, exact countdown/landing timing, negative/overflow values, teams,
+rollback, and full Projectile timing parity remain outside the supported claim.
+See [issue 268](../.scratch/roadmap/issues/268-helper-projectile-down-hittime-dynamic.md).
+
 ## 2026-08-09 T693 Projectile timing checkpoint
 
 T693 is closed-bounded: fresh root Projectiles resolve dynamic

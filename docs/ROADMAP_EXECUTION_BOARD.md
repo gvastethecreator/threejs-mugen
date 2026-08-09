@@ -1,6 +1,28 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T693 closed-bounded
+## Authoritative runtime cursor — T694 closed-bounded
+
+Final T694 verification: `769/769` trace artifacts (`735` required, `34`
+optional), with required Helper-authored fresh Projectile `down.hittime` trace
+checksum `258bc45a` and final checksum `bd70be12`. The full `3794/3794`
+Vitest suite across `328` files, typecheck, the `363`-module build, and the
+diff gate pass.
+
+T694 / issue 268 is closed-bounded: Helper-authored fresh Projectiles resolve
+dynamic `down.hittime` once in Helper caller context, and accepted lying
+contact exposes `GetHitVar(hittime)=17` with Helper/root/parent ownership,
+Projectile payload, lifecycle, target links, and imported Common1-style
+progression. Live `ModifyProjectile`, non-zero down launch, exact
+countdown/landing timing, negative/overflow values, teams, rollback, and full
+Projectile timing parity remain excluded. See [issue 268](../.scratch/roadmap/issues/268-helper-projectile-down-hittime-dynamic.md).
+
+## Next parity cut — T695 proposed
+
+Map the next unclaimed Projectile/Helper timing parameter against pinned
+Ikemen source before implementation. Live `ModifyProjectile` timing remains
+unsupported until its upstream controller switch and local seam are proven.
+
+## Previous runtime cursor — T693 closed-bounded
 
 Final T693 verification: `768/768` trace artifacts (`734` required, `34`
 optional), with required fresh root Projectile `down.hittime` trace checksum
