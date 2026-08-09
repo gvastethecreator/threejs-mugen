@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-179",
   "kind": "G",
-  "generatedAt": "2026-08-01T18:12:01.165Z",
+  "generatedAt": "2026-08-09T01:23:34.882Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-179",
@@ -14,8 +14,8 @@
     },
     {
       "path": "src/mugen/runtime/RuntimeSnapshotSystem.ts",
-      "bytes": 10658,
-      "sha256": "3f377184a2a7a067f7eaee7bd822d851a82b757b5060ee150ed043bf872164ef"
+      "bytes": 10812,
+      "sha256": "b403f0c3a3c37d433f700aae1d333f7fd19d1fe30dc3978262a003176b5ba815"
     }
   ],
   "functionResults": {

@@ -1,7 +1,7 @@
 {
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-084",
-  "generatedAt": "2026-08-01T18:12:07.072Z",
+  "generatedAt": "2026-08-09T01:23:43.560Z",
   "kind": "G",
   "ok": true,
   "acceptanceExecuted": true,
@@ -13,22 +13,22 @@
       "sha256": "93ecb4e1f9e0b0ab6c037d529c253461187992e79ec52865b2298ce23e7196cf"
     },
     {
-      "path": "public/characters/nova-boxer/mugen/nova.air",
-      "bytes": 2484,
-      "sha256": "73a4dbb4343730706d0f9bcf31ef0654ac7ebfae8d18999d4362ee07a18ebd61"
+      "path": "public/characters/rocco-vidal/mugen/rocco.air",
+      "bytes": 2373,
+      "sha256": "62c700b5a6f6ee488dd7772168812e962829cd86a2a0e6b8d09f60b64300f73b"
     }
   ],
   "functionResults": {
-    "actionCount": 12,
+    "actionCount": 14,
     "diagnosticCount": 0,
     "malformedDiagnostics": 2,
     "sampleActionIds": [
       0,
-      20,
       10,
-      40,
-      200
+      20,
+      21,
+      40
     ]
   },
-  "claimCeiling": "AIR parse executed on repository nova.air + malformed path; not full AIR corpus matrix"
+  "claimCeiling": "AIR parse executed on shipped Rocco AIR + malformed path; not full AIR corpus matrix"
 }

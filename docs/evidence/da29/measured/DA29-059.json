@@ -2,15 +2,15 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-059",
   "kind": "I",
-  "generatedAt": "2026-08-01T18:12:02.642Z",
+  "generatedAt": "2026-08-09T01:23:39.583Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-059",
   "anchors": [
     {
       "path": "src/mugen/runtime/HelperSystem.ts",
-      "bytes": 107618,
-      "sha256": "4aca51ec8452c5291f6263924c063dd6df5360c1c72a00d204b574a715afa551"
+      "bytes": 135492,
+      "sha256": "8715c222badda88b8c25df6c4aad6d90a1330f404ae5792d140fd89bf9680b69"
     },
     {
       "path": "src/mugen/compiler/StateControllerCompiler.ts",
@@ -18,9 +18,9 @@
       "sha256": "9a904308af9c6ba44f938c0b98dd339a142ea8df2dc14b03fe643c978141c8f4"
     },
     {
-      "path": "public/characters/nova-boxer/mugen/nova.cns",
-      "bytes": 1345,
-      "sha256": "2d7db96883b763a90a2767223bd5f11e95521ac9f64a601e6ce4e9942095ee1a"
+      "path": "public/characters/rocco-vidal/mugen/rocco.cns",
+      "bytes": 1466,
+      "sha256": "e8a637faa34a73b69b396fd23d3a8c83f580df811f4f959703c4c6b209ed30c7"
     },
     {
       "path": "src/mugen/runtime/GlobalProjectileSchedule.ts",

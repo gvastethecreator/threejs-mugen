@@ -9,6 +9,81 @@ Partial MUGEN 1.1 fixture-backed runtime, native generated roster, IKEMEN
 scanner/reporting plus explicitly gated runtime slices.
 ```
 
+## 2026-08-08 bounded compatibility checkpoint
+
+T522/T523/T524 are explicit executed-partial metadata slices: authored score,
+effective hit/guard `givepower`, and authored `p2facing` are readable from
+direct and player-owned Projectile contacts. They do not move score, mutate
+the power resource, change live facing, or implement ReversalDef choreography.
+T505's Gallery, T530's Showcase, T537's Animation Testbench, T545's Character
+Matrix, and T562's Character Compare are product tooling at
+`?mode=lab&labView=gallery|showcase|testbench|matrix|compare`. They are not new
+compatibility claims. These views read current runtime definitions and do not
+edit assets.
+T536 is an executed-partial read slice: `RoundState` projects the typed
+phase values `0/1/2/3/4`, with phase `1` reserved for the control-locked
+Fight screen, in both `mugen-1.1` and `ikemen-go`. T538 is an executed-partial
+read slice for `IntroState`, four `FightScreenState` booleans, and numeric
+`FightScreenVar` timing/localcoord values. T539 is now an executed-partial
+read slice: the round-owned `FightTime` clock and bounded timing `GameVar`
+values are available through the same context in both profiles; pause
+stacking, persistence flags, rollback, and netplay timing remain open. T540 is
+now an executed-partial read slice: `AnimElemVar` exposes the active AIR
+frame's Group/Image/effective Time, offsets, H/V flips, and Clsn counts through
+CNS/controller expressions and the read-only Testbench. T541 is now an
+executed-partial read slice: `AnimLength` sums effective imported AIR frame
+durations with `max(1, duration)` through the same context and is visible in
+  the Testbench. T542 is an executed-partial read slice: `AnimPlayerNo` reads
+  the active animation owner's `playerNo` after `ChangeAnim` or `ChangeAnim2`
+  through the shared animation, CNS, and controller contexts. Alpha, angle/scale,
+  raw negative/infinite duration, loop/alternate-action, Helper/Projectile/team
+  ownership, rollback/netplay, and full animation parity remain open. T543 is
+  an executed-partial `ClsnVar` read slice: current-frame `clsn1`, `clsn2`, and
+  `size` coordinates flow through shared CNS/controller contexts, redirects,
+  `localcoord`, and the read-only Testbench. Missing indexes return `NaN` and
+  `TransformClsn` is not applied. T544 is an executed-partial
+  `ClsnOverlap` slice: dynamic player IDs and `clsn1`/`clsn2`/`size` pairs flow
+  through shared CNS/controller contexts and the transformed collision
+  boundary. Non-size boxes apply local coordinates, facing, scale, and angle;
+  size boxes remain unscaled and unrotated. T546 is an executed-partial
+  `ProjClsnOverlap` slice: active caller-owned projectiles use deterministic
+  oldest-first indexing, both projectile Clsn groups, dynamic player-ID
+  lookup, and their own collision scale/angle fields. Collision-proxy breadth,
+  perspective/depth scaling, combat arbitration, rollback/netplay, and full
+  collision parity remain open. T547 is an executed-partial numeric `ProjVar`
+  slice over the same active owner-relative index. Identity, animation,
+  position, motion, bounds, hit capacity, priority, removal, scale, time, and
+  team-side values flow through redirects and caller output `localcoord`.
+  T548 adds executed-partial static `attr`, `guardflag`, and `hitflag`
+  comparisons with Ikemen's complemented-mask `!=` behavior. Dynamic strings
+  and presentation fields remain open. T549 adds executed-partial Projectile
+  Pause/SuperPause movement counters with typed spawn/modify operations,
+  per-projectile paused advancement, and current numeric reads. T550 closes
+  removal velocity and terminal motion. T551 closes the third `velmul` axis,
+  acceleration-aware Z motion, terminal reset, and numeric reads. T552 closes
+  normalized `projlayerno` state, numeric reads, and coarse live presentation
+  bands. T553 closes `projangle` state and Z-axis renderer rotation. T554 is
+  closes `projxangle`/`projyangle` state and bounded X/Y renderer rotation.
+  T555 closes `projxshear` state and bounded live deformation. T556 closes
+  `projshadow` RGB state, readback, and bounded live shadow tint. T557 closes
+  `projreflection` auto/off/on state and bounded live mirrored presentation.
+  T558 closes `projprojection`/`projfocallength` state and bounded live
+  perspective projection. T559 closes four-value `projwindow` state and bounded
+  live clipping. T560 is active for spawn-only `ownpal`/`remappal` and draw
+  palette readback.
+T525 `GetHitVar(guardcount)` is now a bounded
+direct/Projectile cumulative counter with idle reset. T526 `GetHitVar(hitcount)`
+is closed-bounded for `comboHitCount` across direct/player-owned Projectile
+first, consecutive, guarded, and reset contacts. The `ikemen-go` profile also
+tracks contacts carrying authored `numhits`; M.U.G.E.N/static imported traces
+retain the authored fallback. T527 closes the `ikemen-go` authored-`numhits`
+extension for one player-owned Projectile with two eligible contacts and a
+guarded break. T528 is closed-bounded for `xveladd`/`yveladd`: Ikemen's KO
+velocity delta is tracked separately from `xvel`/`yvel` on direct and
+player-owned Projectile contacts, while non-KO and non-`ikemen-go` routes keep
+the existing zero fallback. Helper/redirect/team ownership and full KO
+velocity physics remain out of scope.
+
 T478/T479 are now explicit IKEMEN runtime presentation slices: package-backed
 CommonFX/FightFX hit sparks preserve `fx.scale` and apply the authored
 package/character `localcoord` ratio before sprite binding. This remains a
@@ -27,6 +102,105 @@ state and player-owned Projectile paths, select by contact context, and write
 explicit `combatDepth.velocity` values. The profile remains executed-partial;
 omitted Z, ModifyHitDef mutation, Common1 Z physics, helper/team breadth and full
 IKEMEN execution remain outside the claim.
+
+T482 closes the static `ModifyHitDef` continuation: authored vector-Z values
+can mutate an active normal HitDef and then use the T481 direct/projectile
+contact seam. This remains executed-partial; dynamic expressions, helper/team
+ownership and Common1/full depth physics are not included. Focused mutation
+coverage passes 2 files/89 tests; final 324/3317 suite and 682/682 traces pass.
+
+T483 adds the bounded acceleration metadata continuation: static HitDef and
+Projectile `xaccel`/`yaccel`/`zaccel` survive imported/direct/projectile contact
+handoff and are readable through `GetHitVar`. Omitted horizontal/depth fields
+use zero defaults. This remains executed-partial metadata only; physics,
+localcoord/facing scaling, dynamic expressions and ModifyHitDef acceleration
+mutation are outside the profile claim. Focused coverage passes 7 files/249
+tests; typecheck and boundaries pass.
+
+T484 extends that executed-partial seam to static `ModifyHitDef` acceleration:
+active normal HitDefs can update `xaccel`/`yaccel`/`zaccel` metadata before the
+same direct/projectile contact handoff. Focused mutation coverage passes 2
+files/89 tests; typecheck passes. Dynamic expressions, scaling and physics are
+outside the profile claim.
+
+T485 closes the adjacent dynamic metadata seam: supported scalar expressions
+for those three acceleration fields remain typed and evaluate in the active
+controller context for HitDef and ModifyHitDef. Focused coverage passes 7
+files/250 tests; final suite, typecheck/build/boundaries, trace and hygiene
+gates pass. Acceleration physics, scaling, helper/team breadth and other
+dynamic ModifyHitDef fields remain outside the profile claim.
+
+T486 closes the adjacent Ikemen readback seam: `GetHitVar(zvel)` now returns
+the active HitDef/Projectile depth velocity with an omitted-depth zero fallback
+through the shared expression context. Focused coverage passes 27/27; legacy
+M.U.G.E.N `GetHitVar` compatibility and depth physics remain outside the
+profile claim.
+
+T487 closes the adjacent Ikemen controller seam: static `HitVelSet z` compiles
+and copies active hit depth velocity into `combatDepth.velocity` when its flag
+is nonzero. The two-file focused slice passes 71 tests; generic Z physics,
+dynamic parameters and legacy M.U.G.E.N behavior remain outside the profile
+claim.
+
+T488 closes the adjacent Ikemen readback seam: direct HitDef and player-owned
+Projectile contacts preserve ground/air/down/guard/airguard velocity vectors for
+the dotted `GetHitVar` aliases, with zero fallback for omitted families or
+components. Four focused files pass 133 tests; dynamic vector evaluation,
+exact default adjudication, Z physics and helper/team breadth remain outside
+the profile claim.
+
+T489 closes the adjacent Ikemen damage readback seam: direct HitDef and
+player-owned Projectile contacts retain the first and second damage components
+as `GetHitVar(hitdamage|guarddamage)`. Three focused files pass 114 tests;
+resource gains, scaling, KO policy, string attributes and helper/team breadth
+remain outside the profile claim.
+
+T490 closes the adjacent Ikemen reaction readback seam: direct HitDef,
+player-owned Projectile, and imported moves retain ground, air, and fall
+animation types for the three dotted `GetHitVar` aliases. Seven test files
+pass 256 tests; exact Common1 choreography, dynamic values, string semantics
+and helper/team breadth remain outside the profile claim.
+
+T491 closes the adjacent Ikemen EnvShake readback seam: direct HitDef,
+player-owned Projectile, and imported moves retain `fall.envshake.mul` for
+`GetHitVar(fall.envshake.mul)`, with omitted values returning `1`. Seven test
+files pass 258 tests; exact EnvShake playback, dynamic values and helper/team
+breadth remain outside the profile claim.
+
+T492 closes the adjacent Ikemen source-identity readback seam: direct HitDef
+and player-owned Projectile contacts retain the source attacker's `playerno`
+for `GetHitVar(playerno)`, defaulting to `0` without aliasing the defender's
+own slot. Three test files pass 119 tests; string attributes and helper/team
+breadth remain outside the profile claim.
+
+T506 closes the separate Ikemen numeric identity readback seam: root and
+verified Helper direct/Projectile contacts retain the last source character's
+`playerid` independently from `playerno`. Missing numeric source metadata reads
+as `0`; Helpers keep their registered runtime ID while inheriting the root slot.
+Five focused files pass 178 tests plus five deterministic IKEMEN trace checks.
+Deprecated `ID`, string attributes and unverified custom-state/team ownership
+remain outside the profile claim.
+
+T507 keeps deprecated-but-valid `GetHitVar(ID)` as a case-insensitive alias of
+`playerid`, with the same zero fallback. One focused expression file passes 27
+tests; the alias does not widen the profile into string-valued GetHitVar data.
+
+T509 exposes bounded numeric `GetHitVar(guardko)` from existing direct and
+root-Projectile guard-KO metadata. Three focused files / 121 tests plus
+682/682 traces pass; exact guard-point/damage accumulation, teams/simul breadth,
+and full parity remain outside the profile claim.
+
+T510 executes static `GetHitVar(attr) =/!= state, attack` filters against the
+existing last-hit `sourceAttr`, including redirected actor context. Three
+focused files / 118 tests and 682/682 traces pass. Dynamic filters, general
+string results, `guardflag`, `hitflag`, and full parity remain outside the
+profile claim.
+
+T535 executes static `GetHitVar(hitflag) =/!= flags` filters against retained
+effective direct/Projectile HitDef metadata, including redirected actors and
+the official omitted `MAF` default. Comparison uses typed M/H/L/A/F/D/+/-
+overlap. Dynamic flags, general string GetHitVar values, reset/lifetime parity,
+and full parity remain unsupported.
 
 ## Profiles
 
@@ -203,3 +377,80 @@ These are explicitly blocked:
 - `Generated fighter proves MUGEN compatibility`
 - `Stage supported` when layers silently fallback or disappear
 - `Modular engine ready` before a non-fighting module runs from project/build data
+
+## T511 bounded trigger profile
+
+Static `GetHitVar(guardflag) =/!= flags` executes against retained effective
+HitDef metadata for active and redirected actors. Comparison uses Ikemen mask
+overlap (`M = H|L`) and omitted local HitDefs default to `MA`. Dynamic filters,
+general string GetHitVar values, `hitflag`, `GetHitVarSet`, broader ownership,
+and parity remain unsupported.
+
+## T512 bounded trigger profile
+
+`GetHitVar(projid)` executes-partial as a numeric last-hit Projectile ID for
+Projectile contacts and returns `-1` for direct or missing hit metadata. Active
+and redirected contexts use the same typed read. Projectile lifecycle parity,
+dynamic filters, `hitflag`, `GetHitVarSet`, broader ownership, and full parity
+remain unsupported.
+
+## T513 bounded trigger profile
+
+`GetHitVar(teamside)` executes-partial as a numeric 1-based source side for
+direct and Projectile contacts, including verified Helper-parented sources;
+missing metadata returns `-1`. Team topology parity, dynamic filters,
+`hitflag`, `GetHitVarSet`, and full parity remain unsupported.
+
+## T514 bounded trigger profile
+
+`GetHitVar(keepstate)` executes-partial as numeric direct-HitDef metadata:
+authored `keepstate = 1` reads `1`, while false or missing metadata reads `0`.
+Projectile/Reversal keepstate authoring, HitOverride timing, `GetHitVar(frame)`,
+dynamic filters, and full parity remain unsupported.
+
+## T515 bounded trigger profile
+
+`GetHitVar(frame)` executes-partial as numeric `1` during direct HitDef and
+Projectile hit/guard contact, remains set through hitpause, and clears at the
+next non-paused frame. ReversalDef/HitOverride-only timing, broader pause
+parity, dynamic filters, and full parity remain unsupported.
+
+## T516 bounded trigger profile
+
+`GetHitVar(priority)` executes-partial for direct HitDef and Projectile
+hit/guard contacts. Direct contacts expose normalized authored priority;
+Projectile contacts expose the HitDef default, while `projpriority` remains a
+separate clash value. `GetHitVar(facing)`, priority type, ReversalDef/
+HitOverride timing, and full parity remain unsupported.
+
+## T517 bounded trigger profile
+
+`GetHitVar(dizzypoints)` executes-partial for direct HitDef and Projectile
+hit/guard contacts. Authored dizzypoints are retained in typed last-hit
+metadata, missing values read `0`, and the field stays separate from the
+defender's current dizzy resource. Cumulative multi-hit/reset behavior,
+`GetHitVar(guardpoints)`, dynamic filters, and full parity remain unsupported.
+
+## T518 bounded trigger profile
+
+`GetHitVar(guardpoints)` executes-partial for direct HitDef and Projectile
+hit/guard contacts. Authored guardpoints are retained in typed last-hit
+metadata, missing values read `0`, and the field stays separate from the
+defender's current guard resource. Cumulative multi-hit/reset behavior,
+`GetHitVar(guardpower)`, dynamic filters, and full parity remain unsupported.
+
+## T519 bounded trigger profile
+
+`GetHitVar(redlife)` executes-partial for direct HitDef and Projectile hit/guard
+contacts. Authored redlife is retained in typed last-hit metadata, missing
+values read `0`, and the field stays separate from the defender's current
+red-life resource. `guardredlife`, cumulative reset behavior, dynamic filters,
+and full parity remain unsupported.
+
+## T520 bounded trigger profile
+
+`GetHitVar(guardpower)` executes-partial for direct HitDef and Projectile
+hit/guard contacts. The second authored `givepower` value is retained in typed
+last-hit metadata, missing values read `0`, and the field stays separate from
+the defender's current power resource. `GetHitVar(hitpower)`, current-resource
+readback, dynamic filters, and full parity remain unsupported.

@@ -2,15 +2,15 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-194",
   "kind": "I",
-  "generatedAt": "2026-08-01T18:12:01.197Z",
+  "generatedAt": "2026-08-09T01:23:34.898Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-194",
   "anchors": [
     {
       "path": "package.json",
-      "bytes": 6728,
-      "sha256": "9f4e37b67ea9fac7c3d637de0ac21be74f23f38a24aae16b7daf3ce19fc8ddac"
+      "bytes": 6806,
+      "sha256": "8ae921406a3d1585c6eff2db4e03341c7cc70b1edc0f71537d0dee6aada0e52d"
     },
     {
       "path": "scripts/materialize_authority_selector.cjs",
@@ -89,16 +89,16 @@
         "cmd": "node scripts/qa_smoke.cjs"
       },
       {
+        "name": "qa:browser:fighter-lab",
+        "cmd": "node scripts/qa_browser_gate_fighter_lab.cjs"
+      },
+      {
         "name": "qa:trace",
         "cmd": "node scripts/qa_traces.cjs"
       },
       {
         "name": "materialize:compatibility-snapshot",
         "cmd": "node scripts/materialize_compatibility_corpus_snapshot.cjs"
-      },
-      {
-        "name": "materialize:source-authority",
-        "cmd": "node scripts/materialize_source_authority_manifest.cjs"
       }
     ],
     "count": 20

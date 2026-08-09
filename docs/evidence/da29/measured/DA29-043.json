@@ -2,35 +2,80 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-043",
   "kind": "I",
-  "generatedAt": "2026-08-01T18:12:01.616Z",
+  "generatedAt": "2026-08-09T01:23:44.504Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-043",
   "anchors": [
     {
-      "path": "public/characters/rook-apprentice/mugen/rook.cns",
-      "bytes": 852,
-      "sha256": "ba369f5815fb4cf62ceed8528c6a807fc40f9491e44f3a2c98199c81781f560c"
+      "path": "public/characters/rocco-vidal/mugen/rocco.cns",
+      "bytes": 1466,
+      "sha256": "e8a637faa34a73b69b396fd23d3a8c83f580df811f4f959703c4c6b209ed30c7"
     },
     {
-      "path": "public/characters/rook-apprentice/mugen/rook.air",
-      "bytes": 2047,
-      "sha256": "a0d12d60a43d8098f1b3bb814eb8a59dffba60e4cf854dbd4441a722e03a62d1"
+      "path": "public/characters/rocco-vidal/mugen/rocco.air",
+      "bytes": 2373,
+      "sha256": "62c700b5a6f6ee488dd7772168812e962829cd86a2a0e6b8d09f60b64300f73b"
     },
     {
-      "path": "public/characters/rook-apprentice/mugen/rook.cmd",
-      "bytes": 428,
-      "sha256": "c4a8c294a58c61e536a85e9ed40ccd5a53d2be34a2696b9512f8d2583c78c51d"
+      "path": "public/characters/rocco-vidal/mugen/rocco.cmd",
+      "bytes": 611,
+      "sha256": "dc04ce7b93d793966a302e949db1b9827c221bd7041337585c87064bf6445ce1"
     },
     {
       "path": "src/mugen/runtime/CombatResolver.ts",
-      "bytes": 23140,
-      "sha256": "3fa8e648224cfacaaf3a72f47b7c18807d30b011101bfaec913238fb3a2cdfa6"
+      "bytes": 26352,
+      "sha256": "ec77bdb723c5bbe21b77d147fd7f3d5e98dbaa98defb4c1c72bef51e87545bbf"
     },
     {
       "path": "src/mugen/runtime/ContactMemorySystem.ts",
       "bytes": 19060,
       "sha256": "18b4f5791c16bea55c66a433decde3e4a7ffdc9279c6d801ae8fb75ec0e72b22"
+    },
+    {
+      "path": "public/characters/nadia-arce/mugen/nadia.cns",
+      "bytes": 1465,
+      "sha256": "aab2b95fce8da277e10434338b9d00b043c2d44c8b0d5fba58d4b2095d705530"
+    },
+    {
+      "path": "public/characters/nadia-arce/mugen/nadia.air",
+      "bytes": 2372,
+      "sha256": "8fd0cf01ca178b3b5c1bb6667d3970ffe22cbf596a1519fa2efecea0c065eca7"
+    },
+    {
+      "path": "public/characters/nadia-arce/mugen/nadia.cmd",
+      "bytes": 611,
+      "sha256": "dc04ce7b93d793966a302e949db1b9827c221bd7041337585c87064bf6445ce1"
+    },
+    {
+      "path": "public/characters/rocco-vidal/sprite-sheet-alpha.png",
+      "bytes": 1879194,
+      "sha256": "45e0ca3d3ac939cf4250ef327779465478fe67d8c59d357f2d4a0974e8ff4f73"
+    },
+    {
+      "path": "public/characters/nadia-arce/sprite-sheet-alpha.png",
+      "bytes": 1663936,
+      "sha256": "bbcfff566119e977ea25549004cf59b6b35f02a9d0680bf9d4a4416de1fcebb7"
+    },
+    {
+      "path": "public/characters/rocco-vidal/source-provenance.json",
+      "bytes": 3511,
+      "sha256": "6bd565d04be5f9a8ea58ffda57f502fb7db9c0bdf32adbf15c1ec9380021e89d"
+    },
+    {
+      "path": "public/characters/nadia-arce/source-provenance.json",
+      "bytes": 3510,
+      "sha256": "38352b61fd8ecfaedb02a993bca1b405f01ba728366c599d4e36de20c2d7393c"
+    },
+    {
+      "path": "public/characters/rocco-vidal/asset-permission.json",
+      "bytes": 5332,
+      "sha256": "3ac78c58d195b47f8c0e06c58b4b8f7bddce4bf5ad6b3bd9eb0460965d2ad6aa"
+    },
+    {
+      "path": "public/characters/nadia-arce/asset-permission.json",
+      "bytes": 5331,
+      "sha256": "f07bbbd77e4a1e1e4124eb85e1aaaad11ae63fb62c13f87442978b2a763c9675"
     }
   ],
   "functionResults": {
@@ -39,27 +84,46 @@
     "collision": true,
     "hitDefAdmission": true,
     "hitDef": {
-      "line": 16,
+      "line": 37,
       "type": "HitDef",
-      "count": 2
+      "count": 3
     },
     "contact": true,
-    "damage": 42,
+    "damage": 56,
     "hitpause": 7,
     "targetState": 5000,
-    "checksum": "dfe90bd016ae6006",
+    "checksum": "c138697924c8242a",
     "telemetry": {
-      "package": "rook-apprentice",
+      "package": "rocco-vidal",
       "command": "x",
       "stateEntry": 200,
-      "hitDefLine": 16,
+      "hitDefLine": 37,
       "hitKind": "hit",
-      "damage": 42,
+      "damage": 56,
       "hitpause": 7,
       "contact": true,
-      "damageRecorded": 42
+      "damageRecorded": 56
     },
-    "package": "rook-apprentice"
+    "package": "rocco-vidal",
+    "packages": [
+      "rocco-vidal",
+      "nadia-arce"
+    ],
+    "contacts": [
+      true,
+      true
+    ],
+    "checksums": [
+      "c138697924c8242a",
+      "22374cc5afcaf4f1"
+    ],
+    "spriteDigests": [
+      "45e0ca3d3ac939cf4250ef327779465478fe67d8c59d357f2d4a0974e8ff4f73",
+      "bbcfff566119e977ea25549004cf59b6b35f02a9d0680bf9d4a4416de1fcebb7"
+    ],
+    "independentAssetDigests": true,
+    "permissionRecords": 2,
+    "provenanceRecords": 2
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-043; broader product claims remain blocked"
 }

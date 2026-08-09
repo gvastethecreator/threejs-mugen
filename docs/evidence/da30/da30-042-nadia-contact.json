@@ -1,0 +1,16 @@
+{
+  "attacker": "nadia-arce",
+  "defender": "rocco-vidal",
+  "contact": true,
+  "hit": {
+    "kind": "hit",
+    "damage": 35,
+    "pause": 7
+  },
+  "guard": {
+    "kind": "guard",
+    "damage": 4,
+    "pause": 3
+  },
+  "ok": true
+}

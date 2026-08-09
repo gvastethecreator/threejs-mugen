@@ -2,15 +2,15 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-110",
   "kind": "G",
-  "generatedAt": "2026-08-01T18:12:00.974Z",
+  "generatedAt": "2026-08-09T01:23:34.718Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-110",
   "anchors": [
     {
       "path": "scripts/qa_asset_path_hygiene.cjs",
-      "bytes": 5869,
-      "sha256": "4bc1c6f948389520ec2c82183b1249a2760e322f5bce487ae41361b83bd3fd01"
+      "bytes": 6132,
+      "sha256": "fff086c52b8d60f27b40185f76b65fde7e34f074b79bf4c6b94da84e6f94ddbe"
     },
     {
       "path": "src/app/ProjectAssetClosure.ts",

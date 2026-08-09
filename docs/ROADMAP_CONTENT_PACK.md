@@ -1,7 +1,76 @@
-# Roadmap de contenido original — seis luchadores satíricos + ocho clásicos
+# Roadmap de contenido original — roster karate reset
 
-Estado: plan activo, separado de la paridad M.U.G.E.N/Ikemen.
+Estado: T499-T505 activo, separado de la paridad M.U.G.E.N/Ikemen.
 Fecha: 2026-08-01.
+
+## Estado vigente
+
+El roster público anterior fue retirado. Sólo se publican `rocco-vidal` y
+`nadia-arce`; Kung Fu Man continúa únicamente como fixture local opcional.
+Los 17 paquetes anteriores están preservados de forma recuperable en
+`.scratch/removed-roster-2026-08-01/`. T499-T505 reemplazan T439-T445,
+T447-T461 y T470-T471. T446/T462 conservan el trabajo de stages.
+
+Rocco usa gi gris carbón y Nadia gi marfil gastado. Ambos son diseños
+originales, sobrios y de anatomía extrema de manga marcial. Cada paquete tiene
+14 estados, 79 cuadros, fuentes Imagegen por estado, atlas, provenance,
+permisos, previews runtime, workbench y archivos MUGEN-lite. No se entrega SFF
+binario en este corte.
+
+Verificación actual: build, typecheck, pruebas enfocadas e higiene de assets
+pasan. Provenance, animación, alineación, variación, playback y revisión visual
+de `spritesheet-expert` pasan. El proxy de identidad conserva 13 alertas para
+Rocco y 21 para Nadia por escorzo/oclusión/poses horizontales, así que el gate
+pre-package permanece rojo sin relajar umbrales. El smoke completo confirma
+Rocco/Nadia y ambos atlas en desktop/mobile; daño, autoría/undo, stage art,
+bundle y dos policies de release pasan. Sólo quedan seis fallos visuales
+MUGEN-lite/RemapPal previos. T505 agrega Fighter Lab con frame seek, atlas,
+Clsn y VFX; su gate browser focalizado pasa.
+
+Extensión vigente de T505: Gallery (`?mode=lab&labView=gallery`) lista todos
+los luchadores cargados, resume acciones/cuadros/cajas y abre la línea temporal
+existente. La evidencia dedicada pasa; no se agregan personajes ni se modifica
+el contrato de spritesheets del roster.
+
+T537 agrega el Testbench (`?mode=lab&labView=testbench`) sobre el mismo roster.
+Lista todas las acciones, permite probar frames y muestra salud de sprites, AIR,
+colisiones, VFX, enlaces runtime y motion QA. Es una vista de diagnóstico de
+solo lectura y no altera el contrato de spritesheets.
+
+T545 agrega Character Matrix (`?mode=lab&labView=matrix`) sobre el mismo
+roster. Expone los 2 luchadores, sus 34 acciones y 12 comprobaciones de
+componentes; cualquier acción usa el runtime aislado y el panel del Testbench.
+No agrega contenido ni altera los atlas.
+
+T562 agrega Character Compare (`?mode=lab&labView=compare`). La vista compara
+una acción entre todos los luchadores cargados y muestra disponibilidad,
+cuadros, duración, colisiones y estado de componentes. Cada tarjeta disponible
+carga el luchador y la acción en el runtime aislado. No agrega contenido ni
+altera los atlas.
+
+T536 queda registrado en la cola de paridad, separado de este paquete de
+contenido: `RoundState` ya proyecta de forma tipada los valores `0/1/2/3/4`
+durante el ciclo de ronda. T538 agrega la lectura numérica de
+`IntroState`/`FightScreenState`/`FightScreenVar`; T539 agrega el reloj
+`FightTime` y las lecturas temporales acotadas de `GameVar`. T543 (`ClsnVar`)
+ya cerró la lectura de coordenadas `clsn1`/`clsn2`/`size`; T544 ya cerró la
+consulta transformada `ClsnOverlap`; T546 ya cerró `ProjClsnOverlap` sobre
+proyectiles del actor; T547 ya cerró las lecturas numéricas `ProjVar` y la
+T548 cerró las comparaciones tipadas de flags `ProjVar`; T549 cerró los
+contadores `pausemovetime`/`supermovetime` de Projectile; T550 cerró
+`remvelocity` y el movimiento terminal. T551 cerró `velmul` Z; T552 cerró
+`projlayerno` y su orden de presentación; T553 cerró `projangle`; T554
+cerró `projxangle`/`projyangle`; T555 cerró `projxshear`; T556 cerró
+`projshadow`; T557 cerró `projreflection`; T558 cerró
+`projprojection`/`projfocallength`; T559 cerró `projwindow`; T560 implementa
+`ownpal`/`remappal` de Projectile. T542
+(`AnimPlayerNo`) ya cerró el slice de
+propiedad de la animación activa; T541 (`AnimLength`) ya cerró el slice de
+duración total efectiva del AIR y T540 (`AnimElemVar`) cerró el slice de
+metadata del frame activo. Ninguna agrega personajes ni modifica los
+contratos de spritesheets.
+
+## Historial superseded
 
 Objetivo: incorporar seis personajes originales, satíricos y ocho luchadores
 de uniforme clásico recoloreado, todos originales y no derivados de personajes
@@ -105,52 +174,67 @@ filas legacy y revisión visual; el contrato semántico de esas cuatro filas ya
 no reporta fallos de fase. El mapa de Luna registra 44 celdas source
 auditables, sin filas incompletas. No se promueve todavía ningún atlas v2.
 
-Checkpoint T471 perfiles delegados (2026-08-01): Mara dejó una candidata
-`guard-v3` con provenance/hash válidos, pero animation/identity/visual siguen
-rojos (35 blockers); Rulo conserva el rechazo por clipping de pies en dos
-celdas y 27 blockers. Nova y Rook recompusieron atlas/manifests desde sus
-anchors idle, con provenance, alineación y playback 7/7 verdes por personaje;
-hitstun de tres frames, identity drift y revisión visual mantienen ambos runs
-rojos. Los tres anchors `don-rayo`, `la-jefa-del-combo` y `monje-wifi` sólo
-avanzaron a motion references Imagegen hash-bound y preflight 3/3: todavía no
-hay filas de personaje ni atlas. Ningún paquete fue promovido.
+Checkpoint T471 perfiles delegados (2026-08-01): Mara dejó `guard-v3` aislada
+aceptada con provenance, animation, identity y visual en verde (0 blockers),
+pero el paquete completo conserva 35 blockers y no se sobreescribió el atlas
+público. Rulo conserva el rechazo histórico de `guard-v3`, pero su intento
+hermano animado `guard-v4` pasa pre-package con 0 blockers: provenance,
+animación, alineación, identity, runtime y visual quedan aplicados y verdes;
+`head_width` permanece entre 0.95x y 1.10x. El paquete completo conserva 27
+blockers y no se promovió ningún atlas. Nova y Rook aceptaron en aislamiento
+filas `hitstun` provider de cuatro fases: intake, provenance, contrato de
+animación, alineación, identity, playback y revisión visual de la fila pasan.
+Los agregados siguen rojos sólo por filas retenidas y la revisión integral:
+Nova conserva 4 blockers y Rook 7. Los tres anchors
+`don-rayo`, `la-jefa-del-combo` y `monje-wifi` ya tienen una fila `idle`
+Imagegen aislada: Don llegó a v4 tras rechazar dos iteraciones por `head_width`
+1.55x/1.53x, La Jefa cambió fucsia por borgoña sin relajar thresholds y Monje
+reemplazó el frame con cabeza 0.46x. Las tres filas pasan extracción,
+animation, alignment, identity y visual; los preflights completos siguen rojos
+porque faltan 13 filas por perfil. Ningún atlas público fue promovido.
 
 La higiene de artefactos quedó cerrada en este corte: se eliminaron rutas
-absolutas de los seis reportes `run-validation-report.json` afectados, se
-recalcularon los digests de Bruno/Luna y `pnpm qa:assets:hygiene` pasa sin
+absolutas de los reportes JSON afectados y `pnpm qa:assets:hygiene` pasa sin
 violaciones. Esto no altera los gates de promoción.
 
 ## Cola de tareas
 
 | Tarea | Personaje/paquete | Estado | Salida principal |
 | --- | --- | --- | --- |
+| T499 | Retiro del roster anterior | cerrada-bounded | 17 paquetes archivados de forma recuperable; KFM privado preservado |
+| T500 | Rocco Vidal | cerrada-bounded | Anchor, 14 estados, 79 cuadros, atlas y provenance |
+| T501 | Nadia Arce | cerrada-bounded | Anchor, 14 estados, 79 cuadros, atlas y provenance |
+| T502 | Producción completa de sprites | cerrada-bounded | 28 fuentes Imagegen, 158 cuadros, contactos, previews y workbenches |
+| T503 | Integración roster/MUGEN-lite | cerrada-bounded | Dos paquetes públicos, acciones runtime, permisos y DEF/CMD/CNS/AIR |
+| T504 | Cierre pre-package y browser | en progreso | Roster/Studio/ZIP verdes; proxy de identidad con 34 alertas; smoke rojo sólo por 6 visuales MUGEN-lite previos |
+| T505 | Fighter Lab | cerrada-bounded | Dos luchadores, 14 acciones/79 cuadros por paquete, 3 VFX, atlas, Clsn y gate browser verde |
 | T438 | CNS State -1 `persistent = 0` | cerrada-bounded | Una activación por controlador CMD y ciclo de actor; traza `27e1ffb7` |
-| T439 | Don Rayo | en progreso | Anchor Imagegen y entrada de roster; faltan filas de acción, VFX propio y paquete MUGEN |
-| T440 | La Jefa del Combo | en progreso | Anchor Imagegen y entrada de roster; faltan filas de acción, VFX propio y paquete MUGEN |
-| T441 | Turbo Abuela | en progreso | Anchor Imagegen y entrada de roster; faltan filas de acción, VFX propio y paquete MUGEN |
-| T442 | Tanque de Cartón | en progreso | Anchor Imagegen y entrada de roster; faltan filas de acción, VFX propio y paquete MUGEN |
-| T443 | Monje Wi‑Fi | en progreso | Anchor Imagegen y entrada de roster; faltan filas de acción, VFX propio y paquete MUGEN |
-| T444 | Sombra del Súper | en progreso | Anchor Imagegen y entrada de roster; faltan filas de acción, VFX propio y paquete MUGEN |
-| T445 | Paquete VFX/FightFX satírico | en progreso | Atlas 8 slots aceptado; hit/guard ya resuelven `F7300`/`F7301`/`F7306`; falta special y prueba visual final |
+| T439 | Don Rayo | superseded | Evidencia histórica preservada fuera del roster público |
+| T440 | La Jefa del Combo | superseded | Evidencia histórica preservada fuera del roster público |
+| T441 | Turbo Abuela | superseded | Evidencia histórica preservada fuera del roster público |
+| T442 | Tanque de Cartón | superseded | Evidencia histórica preservada fuera del roster público |
+| T443 | Monje Wi‑Fi | superseded | Evidencia histórica preservada fuera del roster público |
+| T444 | Sombra del Súper | superseded | Evidencia histórica preservada fuera del roster público |
+| T445 | Paquete VFX/FightFX satírico | superseded | Evidencia histórica preservada; runtime FightFX compartido no se elimina |
 | T446 | Escenarios parallax originales | en progreso | Cuatro packs Imagegen validados e integrados al selector; falta colisión y paridad SFF/DEF |
-| T447 | Integración de roster y runtime | en progreso | 14 entradas seleccionables y 3 stages registrados; faltan DEF/CMD/CNS/AIR y trazas por paquete |
-| T448 | Variantes de vestuario homenaje | planificada | Seis disfraces/parodias de tropos de torneos clásicos, ninjas y manga de fuerza |
-| T449 | Roster clásico — Mara Cinta | en progreso | Atlas Imagegen 4x4, 14 estados, QA, selector, permisos y MUGEN-lite; faltan paletas/SFF nativo y colisiones por frame |
-| T450 | Roster clásico — Toro Pixel | en progreso | Atlas Imagegen 4x4, 14 estados, QA, selector, permisos y MUGEN-lite; faltan paletas/SFF nativo y colisiones por frame |
-| T451 | Roster clásico — Nico Guante | en progreso | Atlas Imagegen 4x4, 14 estados, QA, selector, permisos y MUGEN-lite; faltan paletas/SFF nativo y colisiones por frame |
-| T452 | Roster clásico — Luna Codo | en progreso | Atlas Imagegen 4x4, 14 estados, QA, selector, permisos y MUGEN-lite; faltan paletas/SFF nativo y colisiones por frame |
-| T453 | Roster clásico — Sargento Pila | en progreso | Atlas Imagegen 4x4, 14 estados, QA, selector, permisos y MUGEN-lite; faltan paletas/SFF nativo y colisiones por frame |
-| T454 | Roster clásico — Bruno Giro | en progreso | Atlas Imagegen 4x4, 14 estados, QA, selector, permisos y MUGEN-lite; faltan paletas/SFF nativo y colisiones por frame |
-| T455 | Roster clásico — Vera Patada | en progreso | Atlas Imagegen 4x4, 14 estados, QA, selector, permisos y MUGEN-lite; faltan paletas/SFF nativo y colisiones por frame |
-| T456 | Roster clásico — Rulo Viento | en progreso | Atlas Imagegen 4x4, 14 estados, QA, selector, permisos y MUGEN-lite; faltan paletas/SFF nativo y colisiones por frame |
-| T461 | Regeneración v2 — ocho clásicos sobrios tipo Baki | en progreso | Fuentes Imagegen, atlas, previews y provenance bajo `.scratch/content-pack/regeneration-v2`; 8/8 provenance/alineación/playback pasan, Bruno ya pasa animación, 7/8 siguen rojos en animación e identidad y la revisión visual continúa roja |
+| T447 | Integración de roster y runtime | superseded | Reemplazada por T503 |
+| T448 | Variantes de vestuario homenaje | superseded | Fuera del roster reducido |
+| T449 | Roster clásico — Mara Cinta | superseded | Paquete retirado y archivado |
+| T450 | Roster clásico — Toro Pixel | superseded | Paquete retirado y archivado |
+| T451 | Roster clásico — Nico Guante | superseded | Paquete retirado y archivado |
+| T452 | Roster clásico — Luna Codo | superseded | Paquete retirado y archivado |
+| T453 | Roster clásico — Sargento Pila | superseded | Paquete retirado y archivado |
+| T454 | Roster clásico — Bruno Giro | superseded | Paquete retirado y archivado |
+| T455 | Roster clásico — Vera Patada | superseded | Paquete retirado y archivado |
+| T456 | Roster clásico — Rulo Viento | superseded | Paquete retirado y archivado |
+| T461 | Regeneración v2 — ocho clásicos sobrios | superseded | Runs históricos archivados; no hay promoción pública |
 | T462 | Regeneración v2 — cuatro escenarios parallax sobrios | cerrada-bounded | Cuatro packs far/mid/near, composites y scroll GIF de 4 frames; `pnpm qa:content:stages` pasa los cuatro IDs |
-| T470 | Auditoría de cobertura de spritesheets | cerrada-bounded | Inventario de 17 paquetes públicos, 11 atlas y 6 anchors; cobertura source-grid y estados de cada run v2 en `.scratch/qa/content-pack-spritesheets.json` |
-| T471 | Regeneración provider de filas bloqueadas | en progreso | Bruno tiene doce filas provider y 86 celdas; Luna conserva cuatro filas aceptadas y rechazó `knockdown`; Mara/Rulo dejaron `guard-v3` auditado sin promoción; Nova/Rook recompusieron atlas con provenance/alineación/playback, pero gates de contrato/identity/visual siguen rojos; tres anchors sólo tienen motion references; intake/contratos/identity/visual siguen bloqueando promoción |
-| T457 | Paletas clásicas recoloreadas | planificada | Seis paletas por personaje, previews y persistencia; depende de T449-T456 |
-| T458 | Puente SFF binario clásico | planificada | Export SFF reproducible desde atlas, alpha/ejes/grupos; depende de T457 |
-| T459 | Colisiones e hitboxes clásicas | planificada | Clsn1/Clsn2 por frame, preview de contacto y hit/guard/whiff; depende de T458 |
-| T460 | Trazas y smoke del roster clásico | planificada | Ocho trazas requeridas y selector sin fallback; depende de T457-T459 |
+| T470 | Auditoría de cobertura de spritesheets | superseded | Reemplazada por la auditoría exacta de dos paquetes de T504 |
+| T471 | Regeneración provider de filas bloqueadas | superseded | Evidencia histórica archivada; no se promociona |
+| T457 | Paletas clásicas recoloreadas | superseded | Fuera del roster reducido |
+| T458 | Puente SFF binario clásico | superseded | Fuera del roster reducido |
+| T459 | Colisiones e hitboxes clásicas | superseded | Fuera del roster reducido |
+| T460 | Trazas y smoke del roster clásico | superseded | Reemplazada por T504 |
 
 ## Contrato de arte
 
@@ -182,9 +266,9 @@ contacto opuesto, pero identity-consistency sigue señalando `walk-forward` y
 las filas heredadas, por lo que la revisión visual/validación pre-package
 continúan en rojo.
 
-Checkpoint de delegación luna-max (2026-08-01): se ejecutaron tres perfiles
-aislados con `gpt-5.6-luna` y razonamiento `max`, sin commits ni cambios
-cruzados. Luna probó una fila `knockdown`; provenance, extracción neutral,
+Checkpoint de delegación de perfiles aislados (2026-08-01): se ejecutaron tres
+perfiles sin commits ni cambios cruzados. Luna probó una fila `knockdown`;
+provenance, extracción neutral,
 atlas, alineación, contrato y playback pasaron, pero identity-consistency la
 rechazó por `head_width` 0.39x–2.12x y `upper_width` hasta 2.27x. El rechazo
 quedó registrado y no se sincronizó a `public/characters/luna-codo`.
@@ -223,12 +307,12 @@ perfil se promociona automáticamente mientras el gate agregado siga rojo.
 
 ## Comandos de verificación reproducibles
 
-- `pnpm qa:content:spritesheets` audita los ocho runs v2 con
-  `spritesheet-expert/scripts/validate_run.py --stage pre-package`, registra
-  cobertura source-grid e inventaría todos los paquetes públicos, y escribe
-  `.scratch/qa/content-pack-spritesheets.json`; su salida roja es intencional
-  mientras fallen animation/identity/visual-review. `runtime-preview` debe
-  permanecer verde y hash-bound por estado.
+- `pnpm qa:content:spritesheets` audita `rocco-vidal-v1` y `nadia-arce-v1`
+  con `spritesheet-expert/scripts/validate_run.py --stage pre-package`, prueba
+  cobertura directa de 14/14 estados e inventaría exactamente dos paquetes
+  públicos. Escribe `.scratch/qa/content-pack-spritesheets.json`; la salida
+  permanece roja mientras `identity-consistency` conserve alertas, aunque
+  `runtime-preview` y `visual-review` estén verdes.
 - `pnpm qa:content:stages` prueba en navegador los cuatro IDs y escribe
   `.scratch/qa/content-pack-stages.json`.
 - `python X:/skills/spritesheet-expert-skill/SKILLS/build-game-backgrounds/scripts/validate_background_pack.py`
@@ -236,8 +320,8 @@ perfil se promociona automáticamente mientras el gate agregado siga rojo.
 
 ## Contrato de runtime
 
-- Paquetes viven bajo `assets/content-pack/characters/<id>/` y
-  `assets/content-pack/stages/<id>/`.
+- Los luchadores nativos viven bajo `public/characters/<id>/`; los stages
+  conservan su ubicación existente bajo `public/stages/<id>/`.
 - El loader consume DEF/CMD/CNS/AIR/SFF/SND mediante VFS existente; no se
   crea un segundo formato paralelo.
 - El roster mantiene fallback demo si el paquete falla; errores quedan
@@ -247,7 +331,15 @@ perfil se promociona automáticamente mientras el gate agregado siga rojo.
 - La integración de stages debe probar capas parallax, scroll, repeat, límites
   y selección desde `select.def`; browser smoke solo aplica al selector/UI.
 
-## Orden de ejecución
+## Orden vigente
+
+1. T499-T503 y T505 están cerradas-bounded.
+2. Cerrar T504 sólo cuando el pre-package cuantitativo y `pnpm qa:smoke`
+   terminen en verde; no convertir alertas en aprobación manual silenciosa.
+3. Mantener Kung Fu Man privado y el roster público limitado a los dos IDs.
+4. No iniciar más personajes hasta adjudicar este gate.
+
+## Orden histórico superseded
 
 1. Cerrar T438 runtime.
 2. Crear y revisar seis identity anchors; no generar filas de acción antes de

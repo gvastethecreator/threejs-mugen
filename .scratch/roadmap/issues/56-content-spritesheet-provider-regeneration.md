@@ -1,10 +1,14 @@
 # 56 - T471 provider regeneration of failing spritesheet rows
 
-Status: in_progress
+Status: superseded
 Labels: generated-assets, spritesheet-expert, imagegen, visual-qa
 Lane: content / generated assets
 Priority: P1
 Depends on: T470 coverage audit, accepted identity anchors for T461
+
+Superseded on 2026-08-01 by issue 78 / T499-T504. The former runs remain as
+historical evidence, but none of their fighter packages remains in the public
+roster.
 
 ## Objective
 
@@ -128,10 +132,10 @@ y la escala de VFX, así que no se promociona el atlas todavía.
 El `regeneration-map.json` de Luna registra ahora 44 celdas source auditables,
 sin filas incompletas y con overrides explícitos en `row_sources`.
 
-## Delegación luna-max — cierre (2026-08-01)
+## Delegación de perfiles aislados — cierre (2026-08-01)
 
-Tres perfiles aislados se ejecutaron con `gpt-5.6-luna` y razonamiento `max`;
-no hubo commits ni cambios cruzados. Luna probó `knockdown`, pero el gate de
+Tres perfiles aislados se ejecutaron sin commits ni cambios cruzados. Luna probó
+`knockdown`, pero el gate de
 identity rechazó la candidata (`head_width` 0.39x–2.12x, `upper_width` hasta
 2.27x); el rechazo quedó auditado y la proyección pública no se tocó. Mara
 probó `guard`: el contrato de animación pasó, pero identity falló (cabeza
@@ -145,27 +149,116 @@ bloqueado y no se relajan thresholds.
 ## Delegación de perfiles — checkpoint adicional (2026-08-01)
 
 Se reabrieron tres paquetes aislados para ampliar cobertura sin falsear
-promoción. `mara-cinta` dejó una candidata `guard-v3` con provenance y hashes
-válidos, pero animation/identity/visual siguen rojos (35 blockers);
-`rulo-viento` conserva el rechazo por clipping de pies en dos celdas y los
-mismos gates rojos (27 blockers). Ninguna fila se integró al atlas.
+promoción. `mara-cinta` dejó una candidata `guard-v3` aislada aceptada:
+provenance, animation, identity y visual pasan con 0 blockers en el run
+independiente, pero el paquete completo conserva 35 blockers y la fila no se
+integró al atlas público. `rulo-viento` corrigió clipping, alineación, matte,
+movimiento y runtime, pero el run aislado sigue rechazado por un único frame de
+identidad (`head_width` 1.40x frente al máximo 1.28x); el paquete completo
+conserva 27 blockers. Ninguna fila se integró al atlas público.
 
-`nova-boxer` y `rook-apprentice` recompusieron atlas/manifests desde sus anchors
-idle y dejaron provenance, alineación y playback verdes (7/7 estados por
-personaje). Sus contratos pre-package siguen rojos por hitstun de tres frames,
-identity drift y revisión visual; no se promocionan. Nova tiene sus 13/13
-digests de `asset-permission.json` actualizados; Rook no declara ese contrato.
+### Remediación aislada de Rulo `special-v5` (2026-08-01)
+
+Se reconstruyó un run animado reproducible bajo
+`.scratch/content-pack/t471-profile-remediation/rulo-viento-special-v4-run`
+con el anchor aceptado de Rulo y una fila `special-v5` nueva de Imagegen. El
+primer intento `special-v4` quedó conservado como rechazo: animación y
+alineación pasaban, pero identity todavía medía cabeza entre 0.80x y 1.43x.
+El segundo intento bloqueó cámara/escala y cerró el blocker: cabeza
+0.8864x–1.25x dentro de 0.82x–1.28x, sin errores de upper/body mass, clipping
+o matte.
+
+El `validate_run.py --stage pre-package` final usa contrato
+`frame_semantics=animation` y termina `pass`, exit 0, 0 blockers, fingerprint
+`8bdae9aecce045c9e81a7c43303fbea451c388185d8ad17560f6580562d6252b`.
+Provenance, animation-contracts, frame-alignment, identity-consistency,
+runtime-preview y visual-review pasan; el aviso heurístico sobre el extent de
+`special` quedó revisado contra contacto/onion/playback, donde sí se leen
+startup, chamber, dos frames de contacto, retracción y recovery. La fuente
+seleccionada está fijada por SHA-256
+`2148f79fe0ec3af143854daecff069816a5c49d7f41ea6f75d9665cbb3f93e90`.
+La decisión reproducible vive en `qa/special-v5-acceptance.json`.
+
+Este PASS sólo acepta la fila aislada: no modifica ni promueve
+`public/characters/rulo-viento`, y el paquete completo de Rulo conserva sus 27
+blockers previos hasta integrar y revalidar todas las filas. Mara `guard-v3`
+queda sin cambios en este carril; no se tocó su candidata ni su proyección
+pública. No se añadió ni inventó ninguna licencia.
+
+### Remediación aislada de Rulo `guard-v4` (2026-08-01)
+
+La corrección de identidad de `guard-v3` continuó como intento hermano, sin
+sobrescribir el rechazo anterior, bajo
+`public/characters/rulo-viento/provider-attempts/guard-v4/run`. La nueva fuente
+Imagegen queda fijada por SHA-256
+`b05dbc50a0de54da5f0a24ec3567a824f42ea0cb453de87ee21496c2319c4ba2`;
+el intake produjo `raw/guard.png` con SHA-256
+`ba577d9c1ddec5aa2899649f83094d6bc589e7226d7f09535c8ea1c0049b2a26`.
+
+`validate_run.py --stage pre-package` termina PASS, exit 0 y 0 blockers con
+fingerprint
+`06a7bc3eb1d087b31d8036c4aef2f720882c2ecd475fa48967b808853f1541b1`.
+El contrato se declara animado: generation-provenance, animation-contracts,
+frame-alignment, identity-consistency, runtime-preview y visual-review se
+aplican y pasan. Los cuatro frames mantienen baseline Y=112, cero edge pixels y
+`head_width_vs_reference` entre 0.95x y 1.10x. El warning heurístico del pico
+VFX fue revisado contra contacto, onion, matte, playback y workbench ligados por
+hash: el arco de antebrazo aparece en el tercer frame y desaparece al recuperar.
+
+La fila queda aceptada sólo como intento aislado. No se sustituyeron atlas ni
+manifests públicos; el baseline completo
+`.scratch/content-pack/regeneration-v2/runs/rulo-viento-v2` continúa FAIL con 27
+blockers y promoción `not-promoted`. Mara no fue modificada en este corte.
+
+`nova-boxer/hitstun-v3` y `rook-apprentice/hitstun-v3` aceptaron en
+aislamiento filas provider de cuatro fases. Intake hash-bound, provenance,
+contrato de animación, alineación, identity, revisión visual de la fila y
+playback runtime pasan en ambos intentos. El agregado de Nova queda rojo con
+4 blockers exactos: `walk-forward` encoge cabeza a 0.81x, `punch` la amplía
+a 1.33x, el reporte identity declara `false` y la revisión visual integral
+sigue roja. Rook conserva 7 blockers: `walk-forward` 0.77x, spread superior
+de `jump` 0.44x, `punch` 1.35x, `kick` 1.97x/spread 1.00x, reporte
+identity `false` y visual integral roja. No se promocionan atlas públicos.
+Nova tiene sus 13/13 digests de `asset-permission.json` actualizados; Rook no
+declara ese contrato.
 
 Los tres identity-anchor-only (`don-rayo`, `la-jefa-del-combo`, `monje-wifi`)
-ya tienen motion references Imagegen hash-bound y preflight 3/3 por run, pero
-aún no tienen filas de personaje ni atlas. La promoción agregada permanece
-bloqueada y los thresholds no se relajan.
+ya tienen motion references Imagegen hash-bound y preflight 3/3 por run. Don
+Rayo rechazó su candidata `idle` porque cambió paleta, vincha y vocabulario de
+props del anchor. La Jefa aceptó el intake de `idle`, pero la extracción quedó
+roja por 206/200/164/151 píxeles magenta-adjacent en el vestuario rosa. Monje
+Wi-Fi aceptó intake y extracción de `idle`; alineación y contrato de animación
+pasan, pero identity falla porque `head_width_vs_reference` cae a 0.46x y varía
+0.58x. La composición rechaza el atlas porque faltan las otras 13 filas. Los
+tres `validate_run.py --stage preflight` terminan en exit 1: Don no tiene
+provenance de filas aceptadas y los otros dos sólo cubren `idle`. La promoción
+agregada permanece bloqueada y los thresholds no se relajan; blockers exactos
+en `qa/profile-readiness.json` y `qa/run-validation-report.json` de cada run.
 
 ## Higiene de artefactos — cierre técnico (2026-08-01)
 
-Se sanearon las seis copias de `run-validation-report.json` que conservaban
-rutas absolutas en los `stdout_tail` serializados y se recalcularon los hashes
-de los reportes modificados de Bruno y Luna. `pnpm qa:assets:hygiene` ahora
+Se sanearon los reportes JSON que conservaban rutas absolutas en los
+`stdout_tail` serializados. `pnpm qa:assets:hygiene` ahora
 queda en `passed`, sin violaciones de rutas ni traversal. Este cierre sólo
 repara metadata de QA; no cambia los gates de animación, identity o revisión
 visual ni habilita promoción.
+
+## Remediación de perfiles anchor — checkpoint idle (2026-08-01)
+
+Los tres perfiles anchor tienen ahora una fila `idle` Imagegen aceptada dentro
+de sus runs aislados. Don Rayo llegó a `idle-clearhead-v4.png`: la primera
+reposición corrigió uniforme azul/naranja, vincha y teléfono, pero identity
+marcó `head_width` 1.55x; la siguiente quedó en 1.53x porque la mano seguía
+detrás de la cabeza. La v4 retiró esa oclusión y pasa intake, extracción,
+animation-contract, frame-alignment, identity-consistency y revisión visual.
+La Jefa sustituyó los acentos fucsia por borgoña oscuro; la extracción queda
+verde sin cambiar thresholds y también pasan animation, alignment, identity y
+visual. Monje Wi-Fi reemplazó el frame inclinado que reducía la cabeza a 0.46x;
+su nueva fila mantiene el ancho de cabeza y pasa los mismos seis gates.
+
+Los tres `validate_run.py --stage preflight` siguen en exit 1 por un único
+blocker de paquete: provenance cubre `idle`, pero faltan las otras 13 filas
+declaradas. `compose_sprite_atlas.py` continúa rechazando composición completa
+por esas ausencias. `qa/profile-readiness.json`, `qa/run-validation-report.json`
+y `qa/visual-review.json` dejan hashes y decisiones reproducibles por perfil.
+Ningún atlas público fue creado, sobrescrito ni promovido.

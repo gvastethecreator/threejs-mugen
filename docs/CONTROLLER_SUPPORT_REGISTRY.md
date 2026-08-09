@@ -13,6 +13,128 @@ Every controller family should have:
 - fixture or synthetic trace evidence
 - UI/report wording
 
+## 2026-08-08 HitDef friction, spark-scale, facing, power, PalFX, and EnvShake checkpoint
+
+T612-T638 close ChainID/NoChainID admission, typed HitDef/Projectile
+`unhittabletime`, and independent root/Helper HitDef/Projectile
+`stand.friction` / `crouch.friction` through normal contact, `GetHitVar`, and
+grounded get-hit physics. The same root/Helper creation paths plus root or
+redirected `ModifyHitDef` now retain one/two-component hit/guard spark scales
+through accepted presentation and non-uniform rendering. Direct-HitDef
+`p1facing` and `p1getp2facing` now resolve through root/Helper HitDef and root
+or redirected `ModifyHitDef`, then apply official precedence on accepted
+unguarded direct contact. Explicit HitDef `getpower` now flows through
+root/Helper HitDef and Projectile creation, root or redirected `ModifyHitDef`,
+accepted contact, and attacker power gain. Official omitted normal/super
+rewards now derive from authored damage and the current constants projection.
+Static explicit and omitted `givepower` now mutates defender power on accepted
+contact while retaining the effective delta for `GetHitVar(power)`. Dynamic
+`givepower` now resolves in caller context with controller-specific one-value
+semantics. Pinned-Ikemen `ModifyProjectile getpower` now replaces selected
+root/Helper Projectile attacker rewards. M.U.G.E.N `[Rules]` attack/get-hit
+life-to-power multipliers now seed constants with common/character precedence.
+Positive-time `palfx.time/add/mul/color/invertall` now resolves for root/Helper
+HitDef, root or redirected `ModifyHitDef`, and root/Helper Projectile creation;
+accepted unguarded hits apply it through the defender's existing PalFX/render
+state. Direct contact `envshake.time/freq/ampl/phase/mul/dir` now resolves for
+root/Helper HitDef and root or redirected `ModifyHitDef`, then emits only on
+accepted unguarded hits. T634 closes dynamic fall EnvShake creation, live
+mutation, and ground-impact emission. T635 closes dynamic fall impact damage
+and velocity. T636 closes dynamic fall/down recovery policy and timers. T637
+closes dynamic fall, air-fall, and fall-kill policy. T638 closes dynamic
+down-bounce policy. T639 closes dynamic lethal and hit-once flags; T640 closes
+fresh direct HitDef `air.juggle` expressions. T641 closes dynamic direct
+HitDef `numhits` and its accepted-contact HitCount consumer while preserving
+separate `GetHitVar(hitcount)` contact counting. T642 closes dynamic direct
+HitDef sprite priorities and the legacy alias through accepted hit/guard
+contact. T643 closes dynamic direct HitDef priority through caller contexts,
+live mutation, and direct clash arbitration. T644 closes direct force-posture
+flags through root/Helper caller contexts, live mutation, and default get-hit
+posture selection. T645 closes root-owned dynamic direct custom-state numbers
+and ownership. T646 closes dynamic direct `forcenofall`, live mutation, and
+accepted-hit fall suppression. T647 is active for dynamic direct `p2facing`
+and deferred defender facing. T648 is active for dynamic direct `id` /
+`chainid`, target memory, GetHitVar metadata, and ChainID admission. T649 is
+active for explicit dynamic direct `damage` pairs and their hit/guard
+consumers. T650 closes official fresh omitted/one-component zero defaults.
+T651 closes direct pause pairs and asymmetric attacker/defender timing. T652
+closes dynamic direct `ground.hittime`, the fresh zero default, live mutation,
+grounded stun, and `GetHitVar(hittime)`. T653 closes dynamic direct
+`ground.slidetime`, the fresh zero default, live mutation, and grounded
+`GetHitVar(slidetime)` readback. T654-T657 close dynamic direct ground/air
+guard timing through `guard.hittime`, `guard.slidetime`, `guard.ctrltime`, and
+`airguard.ctrltime`, including official fresh-default chains, live mutation,
+timer metadata, and GetHitVar consumption. T658 closes dynamic direct
+`air.hittime`, the official fresh default 20, live mutation, and airborne
+non-fall GetHitVar consumption. T659 closes dynamic legacy scalar `guard.dist`
+and the horizontal precontact `InGuardDist` latch. T660 closes dynamic and
+mixed direct `ground.velocity` X/Y through caller resolution, live partial
+mutation, grounded hit velocity, and GetHitVar readback. T661 is active for
+the official fresh omitted `0,0` default.
+Projectile facing, exact deferred facing/power order,
+broader `data/mugen.cfg`, rollback, and full HitDef parity remain unsupported.
+
+## 2026-08-08 ModifyProjectile source-parity checkpoint
+
+T561-T602 close a bounded pinned-Ikemen continuation. ModifyProjectile now
+keeps `id`/`index` selection separate from `projid` mutation, selects active
+owner Projectiles oldest-first, and excludes removed or terminal actors.
+Numeric `projanim`, `projhitanim`, `projremanim`, and `projcancelanim` refresh
+the selected active/terminal owner AIR references. Static `attr`, `guardflag`,
+`affectteam`, `hitflag`, reaction types, target/chain IDs, lethal flags, and
+`air.juggle`, damage, givepower metadata, `numhits`, HitDef priority,
+custom P1/P2 states, `missonoverride`, P2 sprite priority, `forcenofall`, and
+forced stand/crouch posture, core fall damage/velocity/recovery, and supported
+fall envshake fields, `dizzypoints`, `guardpoints`, and hit/guard `redlife`
+and floating-point `score` pairs mutate the live Projectile HitDef metadata.
+Static `p2clsncheck` and `p2clsnrequire` policies also replace later target
+collision admission. `down.recover` and `down.recovertime` replace later target
+fall/get-up metadata.
+`attack.depth`, accepted-hit `p2facing`, air/ground/guard/down hit durations,
+and ground/air guard control timers also replace selected live Projectile
+HitDef state and feed existing contact consumers. One-to-three component
+`down.velocity` uses Ikemen zero defaults, while `fall`, `air.fall`, and
+`down.bounce` replace later fall-contact policy. `guard.velocity` and
+`airguard.velocity` also replace ground/air guard-contact X/Y/Z vectors.
+`air.velocity` replaces airborne hit-contact X/Y/Z. `ground.velocity`
+replaces only supplied grounded X/Y/Z components and preserves each component
+  authored as `n`. `ground.slidetime` replaces later unguarded slide readback.
+  Full `pausetime` and `guard.pausetime` pairs now split Projectile-local pause
+  from defender hit shake, without pausing the Projectile owner. Typed
+  width/height/depth guard-distance pairs now feed the same origin-based
+  `InGuardDist` consumer.
+Accepted hits consume
+`forcenofall` by clearing the target fall flag; guards leave it unchanged.
+Projectile HitDef `sprpriority` remains separate
+from visual `projsprpriority`; `numhits`/`projhits` and HitDef
+`priority`/`projpriority` also remain separate.
+Root and helper-parented paths share the typed resolver/action boundary.
+
+This remains executed-partial. FightFX/common animation namespaces, dynamic
+flag masks, exact invalid-action destruction, remaining shared HitDef fields,
+team/simul namespace breadth, exact controller evaluation/tick order, rollback,
+  and full ModifyProjectile parity remain unsupported. T604 closes hit/guard
+  spark refs, angles, and offsets; T605 closes `mindist`/`maxdist` target
+  correction; T606 closes hit acceleration metadata and readback; T607 closes
+  contact EnvShake metadata and camera emission; T608 continues with fall
+  EnvShake direction. Ikemen's
+  commented-out ModifyProjectile corner-push cases remain no-op.
+
+## 2026-08-02 metadata and inspection checkpoint
+
+T522/T523/T524 are readback seams rather than new controller families. The
+compiler/importer retains score, effective givepower, and `p2facing` metadata;
+direct and Projectile combat own contact selection and
+`RuntimeHitVarSystem` owns typed reads. T505 Gallery is a UI inspection route
+and does not bypass controller ownership. T525 `guardcount` is registered only
+as a typed contact field with explicit idle reset. T526 `hitcount` is registered
+as a bounded `comboHitCount` contact read for direct/player-owned Projectile
+hits; authored `numhits` remains a compatibility fallback. T527 closes one
+required `ikemen-go` authored multi-hit Projectile route with two eligible
+contacts and a guarded break. T528 closes the typed readback slice for
+Ikemen's separate KO velocity deltas (`xveladd`/`yveladd`); no controller
+family or live-velocity authority changes are introduced.
+
 T437/T438 record imported CMD State -1 `VarSet` positive and zero persistence
 as named executed-partial routes. T463 records only static State -1
 `ChangeState persistent = 0`: `RuntimeStateEntryRouteWorld` checks its isolated
@@ -125,6 +247,110 @@ context, and exposed as hit metadata plus explicit `combatDepth.velocity`.
 Omitted Z remains absent. This is executed-partial vector metadata only; it does
 not claim ModifyHitDef Z mutation, Common1 Z acceleration/friction, helper/team
 ownership breadth or full M.U.G.E.N/Ikemen depth parity.
+
+T482 closes the bounded `ModifyHitDef` vector-Z mutation seam: static
+`ground/air/down/guard/airguard.velocity` parameters retain authored Z on the
+active normal HitDef, with `down.velocity` preserving its existing X/Y update.
+The mutation is routed through the T481 direct/projectile contact resolver;
+dynamic expressions, helper/team breadth and Common1 depth physics remain
+unsupported. Focused mutation coverage passes 2 files/89 tests; final
+324/3317 suite and 682/682 trace gates are green.
+
+T483 closes the bounded HitDef acceleration metadata seam: static
+`xaccel`/`yaccel`/`zaccel` values compile and survive imported state,
+direct-contact and player-owned Projectile handoff, then are exposed through
+`GetHitVar(xaccel|yaccel|zaccel)`. Omitted horizontal/depth values use the
+official zero default; this is metadata only and does not claim physics,
+localcoord/facing scaling or dynamic ModifyHitDef mutation. Focused coverage
+passes 7 files/249 tests; typecheck and boundaries pass.
+
+T484 closes the bounded static `ModifyHitDef` acceleration mutation seam:
+`xaccel`/`yaccel`/`zaccel` update the active normal HitDef `hitVars` in place
+and continue through the existing direct/projectile `GetHitVar` handoff.
+Focused compiler/HitDef mutation coverage passes 2 files/89 tests; typecheck
+passes. Dynamic expressions, scaling and physics remain unsupported.
+
+T485 closes the bounded dynamic acceleration metadata seam: supported scalar
+expressions for HitDef/ModifyHitDef `xaccel`/`yaccel`/`zaccel` remain typed and
+evaluate in the active controller context before mutation/handoff. Focused
+coverage passes 7 files/250 tests; final 324/3321 suite, typecheck/build/
+boundaries, 682/682 traces and asset hygiene pass. Physics, scaling, helper/
+team breadth and other dynamic fields remain unsupported.
+
+T486 closes the bounded Ikemen `GetHitVar(zvel)` readback seam: the shared
+runtime read model returns the selected `hitVelocity.z` with a zero fallback
+when the active HitDef/Projectile omits depth. Runtime expression-context
+coverage passes 27/27. Legacy M.U.G.E.N `GetHitVar` compatibility, fall-Z
+semantics and full depth physics remain unsupported.
+
+T487 closes the bounded Ikemen `HitVelSet z` controller seam: static Z flags
+are retained in typed kinematic IR and copy active `hitVelocity.z` into
+`combatDepth.velocity` when nonzero. Missing hit velocity remains a no-op.
+Focused compiler/runtime coverage passes 71 tests; generic Z physics, dynamic
+parameters and M.U.G.E.N compatibility remain unsupported.
+
+T488 closes the bounded Ikemen `GetHitVar` vector readback seam: direct HitDef
+and player-owned Projectile metadata now preserve ground/air/down/guard/
+airguard x/y/z vectors and resolve their dotted aliases with zero fallback.
+Focused compiler/runtime/import coverage passes 133 tests; dynamic vector
+expressions, Z physics, string attributes and helper/team breadth remain
+unsupported.
+
+T489 closes the bounded Ikemen damage readback seam: direct HitDef and
+player-owned Projectile contacts preserve first/second damage as
+`GetHitVar(hitdamage|guarddamage)` while retaining effective contact damage.
+Focused runtime coverage passes 114 tests; resource/scaling semantics, string
+attributes and helper/team breadth remain unsupported.
+
+T490 closes the bounded Ikemen reaction readback seam: direct HitDef,
+player-owned Projectile, and imported moves preserve ground/air/fall reaction
+animation types for `GetHitVar(ground.animtype|air.animtype|fall.animtype)`.
+Focused compiler/runtime/import coverage passes 7 test files/256 tests. Common1
+reaction choreography, dynamic values and helper/team breadth remain
+unsupported.
+
+T491 closes the bounded Ikemen EnvShake readback seam: direct HitDef,
+player-owned Projectile, and imported moves preserve `fall.envshake.mul` for
+`GetHitVar(fall.envshake.mul)`, with the default `1` when omitted. Focused
+compiler/runtime/import coverage passes 7 test files/258 tests. Exact EnvShake
+playback, dynamic values and helper/team breadth remain unsupported.
+
+T492 closes the bounded Ikemen source-slot readback seam: direct HitDef and
+player-owned Projectile contacts expose the source attacker's `playerno` via
+`GetHitVar(playerno)`, defaulting to `0` when no source metadata exists. Focused
+coverage passes 3 test files/119 tests; string attributes and helper/team
+breadth remain unsupported.
+
+T506 closes the adjacent numeric source-identity seam: root and verified Helper
+direct/Projectile contacts retain `sourcePlayerId` separately from the inherited
+player slot, and `GetHitVar(playerid)` defaults to `0` without source metadata.
+Focused coverage passes 5 files/178 tests plus five deterministic IKEMEN trace
+checks. Deprecated `ID`, string attributes and unverified custom-state/team
+ownership remain unsupported.
+
+T507 preserves Ikemen's documented deprecated `GetHitVar(ID)` spelling by
+routing it through T506 `sourcePlayerId`. Direct, omitted, and parsed expression
+reads pass in one focused file / 27 tests; broader string semantics remain
+unsupported.
+
+T509 exposes the already-retained `sourceGuardKo` flag through numeric
+`GetHitVar(guardko)`. Focused expression/direct/root-Projectile coverage passes
+3 files / 121 tests and `pnpm qa:trace` remains green at 682/682. Exact
+guard-damage accumulation, broader Helper/team ownership, and full parity remain
+unsupported.
+
+T510 executes static `GetHitVar(attr)` equality and inequality filters through
+the shared hit-attribute matcher and existing `sourceAttr` metadata. Active and
+redirected actor cases pass 3 focused files / 118 tests; `pnpm qa:trace` remains
+green at 682/682. Dynamic filters, general string results, `guardflag`,
+`hitflag`, and full parity remain unsupported.
+
+T535 executes static `GetHitVar(hitflag)` equality/inequality filters through
+the retained effective direct/Projectile HitDef hitflag, defaulting omitted
+values to `MAF`. Active and redirected contexts use the typed overlap matcher
+with M→H/L expansion; dynamic flags, reset/lifetime parity, and full parity
+remain unsupported. Focused compiler/context/CNS/direct/projectile coverage is
+5 files / 238 tests.
 
 ## Support States
 
@@ -514,7 +740,7 @@ ModifyReversalDef RedirectID addendum: required `synthetic-imported-ikemen-root-
 | `Target*`, `BindToTarget` | compiled, executed-partial | `synthetic-imported-target.json` checksum `f5a16dc9`, `synthetic-imported-projectile-target-controllers.json` checksum `8c7bd6c2`, `synthetic-imported-projectile-targetstate.json` checksum `dd1c7962`, `synthetic-imported-projectile-default-targetstate.json` checksum `8f35f1fa`, `synthetic-imported-helper-target-controllers.json` checksum `61f4c61e`, `synthetic-imported-helper-projectile-bare-target.json` checksum `8c9129c1`, `synthetic-imported-helper-projectile-target-controllers.json` checksum `58688be8`, `synthetic-imported-helper-projectile-default-target-controllers.json` checksum `0c4c69ae`, `synthetic-imported-helper-projectile-targetstate.json` checksum `b12e1cb3`, `synthetic-imported-helper-projectile-default-targetstate.json` checksum `918c42a1`, `synthetic-imported-helper-targetstate.json` checksum `011633b8`, `synthetic-imported-default-numtarget.json` checksum `5869ebbd`, `synthetic-imported-default-target-redirect.json` checksum `d43caabf`, `synthetic-imported-bare-target-redirect.json` checksum `f9c90aa8`, `synthetic-imported-projectile-target-redirect.json` checksum `cd099094`, `synthetic-imported-hitdef-projectile-target-mix.json` checksum `e98d4857`, `synthetic-imported-target-redirect.json` checksum `89580963`, `synthetic-imported-target-dynamic-redirect.json` checksum `9985b62a`, `synthetic-imported-target-noko.json` checksum `321a1eba`, `synthetic-imported-targetstate-custom.json`, `synthetic-imported-bindtotarget-head.json`, `synthetic-imported-bindtotarget-mid.json`, `synthetic-imported-targetbind-pause.json` | Target memory exists; TargetDrop keeps the official omitted-`keepone` default of `1` in typed IR and raw fallback; `synthetic-imported-target.json` now gates typed TargetLifeAdd/TargetPowerAdd/TargetVel*/TargetFacing/TargetBind/BindToTarget/TargetDrop operation evidence, world-visible target-link/binding evidence, final P1 `targetCount = 0`, final P2 `life = 943` / `power = 40`, and actor-frame P2 facing/velocity evidence after Target* side effects. `synthetic-imported-projectile-target-controllers.json` gates the matching bounded player-owned Projectile Target side-effect subset without direct HitDef controller evidence: projectile target memory id `77`, TargetBind offset `36,-12`, final P1 `targetCount = 0`, and final P2 `life = 949` / `power = 40`. `synthetic-imported-projectile-targetstate.json` gates the bounded player-owned Projectile TargetState subset without direct HitDef controller evidence: projectile target memory id `77`, custom-owner P2 frames for states `888` and `889`, `SelfState` return, final P2 state `0`/control, and final P2 `life = 969`. `synthetic-imported-projectile-default-targetstate.json` gates the same player-owned Projectile TargetState subset when omitted `projid` / `id` defaults target memory to id `0`. `synthetic-imported-helper-target-controllers.json` gates the matching bounded helper-owned direct-HitDef subset for `TargetLifeAdd`, `TargetPowerAdd`, `TargetVelSet`, `TargetVelAdd`, `TargetFacing`, `TargetBind`, and `TargetDrop` with helper target-link/binding evidence, helper payload `targetCount = 0`, and final P2 `life = 944` / `power = 40`; `synthetic-imported-helper-projectile-bare-target.json` gates helper-local bare `Target, Life` after helper-parented Projectile target memory with owner/helper target links for id `8863` and helper payload `targetCount = 1`; `synthetic-imported-helper-projectile-target-controllers.json` gates the same bounded helper-owned Target side-effect subset after helper-parented Projectile target memory with owner/helper target links for id `8861`, binding evidence, helper payload `targetCount = 0`, and final P2 `life = 958` / `power = 40`; `synthetic-imported-helper-projectile-default-target-controllers.json` gates the same helper-parented Projectile side-effect subset when omitted `projid` / `id` defaults to target id `0`; `synthetic-imported-helper-projectile-targetstate.json` gates bounded helper-owned `TargetState value = 888` after helper-parented Projectile target memory with owner/helper target links for id `8862`, custom-owner actor-frame evidence, and `SelfState` return; `synthetic-imported-helper-projectile-default-targetstate.json` gates the same TargetState route after omitted `projid` / `id` defaults to target id `0`; `synthetic-imported-helper-targetstate.json` gates bounded helper-local `TargetState value = 888` into helper-owner state data with custom-owner actor-frame evidence and `SelfState` return. `synthetic-imported-default-numtarget.json` gates omitted-id direct `HitDef` target memory through target id `0` and an owner-local `NumTarget(0)` branch, `synthetic-imported-default-target-redirect.json` gates the same default-id memory through `Target(0), Life` trigger reads, `synthetic-imported-bare-target-redirect.json` gates bare `Target, Life` trigger reads from current two-player target memory after direct `HitDef` contact, `synthetic-imported-projectile-target-redirect.json` gates bounded static `Target(77), Life` trigger reads from current two-player target memory after player Projectile contact, `synthetic-imported-hitdef-projectile-target-mix.json` gates bounded owner-local mixed target reads for direct `HitDef` id `77` and player-owned `Projectile` id `78`, `synthetic-imported-target-redirect.json` gates bounded static `Target(77), Life` trigger reads from current two-player target memory after direct `HitDef` contact, and `synthetic-imported-target-dynamic-redirect.json` gates bounded dynamic `Target(var(0)), Life` reads after owner-local `VarSet` seeds the target id. `synthetic-imported-target-noko.json` gates bounded `TargetLifeAdd` lethal damage clamping to final P2 life `1` when defender-side `AssertSpecial NoKO` has executed before the target damage route. TargetState can enter a bounded controller-owner custom-state chain from target memory and return through `SelfState`; helper TargetState can enter only owner-backed state data, not helper-owned custom state tables. TargetBind can keep a bound target offset while the source actor advances during bounded `SuperPause` movetime. BindToTarget can bind the controller owner to a recent target with static `pos = x,y,Foot|Mid|Head` and bounded `time`; `Head` and `Mid` have required trace evidence through parsed target `[Size]` anchors. Target-memory advance now prunes TargetBind records whose bound actor id/target id no longer survives expiry, and active TargetBind / BindToTarget position application requires matching live target memory before it moves either actor, so stale binding records fail closed. Complex target binding, complete custom-state parity beyond the current `p2stateno` and TargetState owner-backed chains, teams, helper/root/parent targets beyond the direct helper-HitDef and helper-parented Projectile gated subsets, Target* mutation mixing, unsupported or negative target-id expressions, multi-target behavior, exact target lifetime, exact final-animation parity, exact NoKO lifetime/round flow, and exact tick-order remain partial. |
 | `Pause`, `SuperPause` | compiled, executed-partial | runtime tests, `synthetic-imported-superpause.json`, `synthetic-imported-superpause-pausebg.json` checksum `49bcfe16`, `synthetic-imported-superpause-anim-disabled.json` checksum `fc7a2ca4`, `synthetic-imported-superpause-default-anim.json` checksum `318c5e9f`, `synthetic-imported-superpause-dynamic-anim-pos.json` checksum `e6bfbf75`, `synthetic-imported-superpause-anim-pos.json` checksum `f7dcdc9d`, `synthetic-imported-superpause-dynamic-params.json` checksum `052bb481`, `synthetic-imported-targetbind-pause.json`, `synthetic-imported-superpause-projectile-freeze.json`, `synthetic-imported-superpause-effect-freeze.json`, `synthetic-imported-explod-pausemovetime.json`, `synthetic-imported-explod-supermovetime.json` | Runtime tests cover source `movetime` with opponent freeze; typed pause operations now require match-freeze snapshot plus actor/effect advance and freeze trace evidence for actor/state/darken/remaining/movetime, including bounded `pausebg = 0` metadata, omitted default, disabled, explicit, and dynamic `SuperPause anim/pos` metadata, bounded dynamic time/movetime/darken/poweradd fallback, bounded TargetBind, projectile, visual Helper/Explod source-movetime routes, bounded Explod-owned `pausemovetime`, and bounded Explod-owned `supermovetime`. Full pause layering/superpause effects, actual renderer/background update parity, exact stage/BGCtrl pause timing, renderer visual suppression/playback parity, FightFX/common asset lookup/rendering, dynamic `S` prefix breadth, and unhittable parity are partial. |
 | `Projectile` | compiled, executed-partial | `synthetic-imported-projectile.json`, `synthetic-imported-projectile-motion.json`, `synthetic-imported-projectile-velmul.json`, `synthetic-imported-projectile-contact.json` trace checksum `57b3b556` / final checksum `e0f3e41c`, `synthetic-imported-projectile-guard.json` trace checksum `eb9c2e58` / final checksum `b1c74e5e`, `synthetic-imported-projectile-localcoord-default-bounds-terminal.json` checksum `af7ee80e`, `synthetic-imported-helper-projectile-localcoord-default-bounds-terminal.json` checksum `46b0164c`, `synthetic-imported-helper-projectile-default-bounds-terminal.json` checksum `e85d7bbf`, `synthetic-imported-projectile-default-bounds-terminal.json` checksum `52879717`, `synthetic-imported-helper-projectile-stagebound-terminal.json` checksum `488ce550`, `synthetic-imported-helper-projectile-edgebound-terminal.json` checksum `8482f4f3`, `synthetic-imported-helper-projectile-heightbound-terminal.json` checksum `debb08b1`, `synthetic-imported-projectile-heightbound-terminal.json` checksum `1164a584`, `synthetic-imported-projectile-edgebound-terminal.json` checksum `e4361063`, `synthetic-imported-projectile-stagebound-terminal.json` checksum `fe3df8e7`, `synthetic-imported-projectile-bounds-remove-terminal.json` checksum `1d7479d3`, terminal fallback/cancel/timing traces, `EffectSpawnSystem` tests, `EffectLifecycleSystem` tests, `ProjectileCombatSystem` tests | Bounded projectile actor, spawn/remove lifecycle evidence, producer-store evidence, target-memory path, bounded motion/scale/combat/contact timing, official 240p omitted bound defaults (`projedgebound = 40`, `projstagebound = 40`, `projheightbound = -240,1`) plus bounded 640x480 character localcoord-derived omitted defaults (`80`, `80`, `-480,2`) for player-owned and helper-parented/root-owned Projectiles, explicit player/helper height/edge/stage bound removal, terminal playback for resolved `projhitanim`/`projremanim`/`projcancelanim`, no-contact timeout/fallback/cancel routes, multi-hit cooldown, priority clash/cancel, and guarded/hit target-memory routes through the shared effect actor world. Exact priority classes, exact trigger timing/lifetime, exact cancel tick-order/lifetime, exact terminal timing, full localcoord scaling beyond bounded 640x480 default-bound gates, exact camera/screen/stage/height semantics, exact stage-vs-screen/edge split, exact `velmul` tick-order parity, scaled hitbox parity, SND playback, exact spark lookup/binding/layering/timing/scale/palette, helper-owned custom states, multi-projectile selection beyond gated routes, custom-state guarded metadata, multi-target behavior, and IKEMEN parity remain blocked. |
-| `ModifyProjectile` | compiled, executed-partial | `synthetic-imported-modifyprojectile-omitted-bounds.json` checksum `24cbb1dc` / final checksum `e94d1480`, `synthetic-imported-helper-modifyprojectile-omitted-bounds.json` checksum `9db04bbc` / final checksum `555d744b`, `synthetic-imported-helper-modifyprojectile-dynamic-params.json` checksum `2d88a550` / final checksum `edb6d2d2`, `synthetic-imported-modifyprojectile-dynamic-params.json` checksum `6ffbef92` / final checksum `5665a98e`, `synthetic-imported-helper-modifyprojectile-dynamic-bounds.json` checksum `f582153e` / final checksum `adc63407`, `synthetic-imported-modifyprojectile-dynamic-bounds.json` checksum `e2f7a077` / final checksum `aa78704a`, `synthetic-imported-modifyprojectile.json` checksum `63a87da1`, `synthetic-imported-helper-modifyprojectile.json` checksum `09d3f7e4`, `EffectSpawnSystem` tests, `ProjectileSystem` tests, focused `EffectActorSystem` helper-local tests | Bounded owner-side/helper-local mutation of live Projectile actors by static or dynamic `projid`, covering dynamic owner-side and helper-local `velocity`/`vel`, `accel`, `velmul`, `projscale`/`scale`, `projremovetime`/`removetime`, `sprpriority`, `projpriority`/`priority`, `projhits`, `projmisstime`, `projremove`, and owner-side/helper-local `projedgebound`, `projstagebound`, and `projheightbound` expressions through `RuntimeEffectSpawnWorld` and `RuntimeEffectActorWorld`; omitted bound params preserve existing explicit Projectile bounds in the current required owner/helper routes. The helper-local micro-VM can mutate only helper-parented owner-side Projectiles after helper-local spawn, required traces prove helper-local dynamic bounds/non-bound params through `Parent` / `Root`, and focused tests prove same-id player-owned exclusion. Redirects, helper-owned projectile combat/contact presentation, exact selection/tick order, remove triggers, helper/team namespace breadth, team/simul helper selection, and full MUGEN/IKEMEN projectile parity remain blocked. |
+| `ModifyProjectile` | compiled, executed-partial | `synthetic-imported-modifyprojectile-omitted-bounds.json` checksum `24cbb1dc` / final checksum `e94d1480`, `synthetic-imported-helper-modifyprojectile-omitted-bounds.json` checksum `9db04bbc` / final checksum `555d744b`, `synthetic-imported-helper-modifyprojectile-dynamic-params.json` checksum `2d88a550` / final checksum `edb6d2d2`, `synthetic-imported-modifyprojectile-dynamic-params.json` checksum `6ffbef92` / final checksum `5665a98e`, `synthetic-imported-helper-modifyprojectile-dynamic-bounds.json` checksum `f582153e` / final checksum `adc63407`, `synthetic-imported-modifyprojectile-dynamic-bounds.json` checksum `e2f7a077` / final checksum `aa78704a`, `synthetic-imported-modifyprojectile.json` checksum `63a87da1`, `synthetic-imported-helper-modifyprojectile.json` checksum `09d3f7e4`, `EffectSpawnSystem` tests, `ProjectileSystem` tests, focused `EffectActorSystem` helper-local tests | Bounded owner-side/helper-local mutation of live Projectile actors by static or dynamic `projid`, covering dynamic owner-side and helper-local `velocity`/`vel`, `accel`, `velmul`, `projscale`/`scale`, `projremovetime`/`removetime`, `projsprpriority`, HitDef `p2sprpriority`, `projpriority`, `projhits`, `projmisstime`, `projremove`, and owner-side/helper-local bounds through `RuntimeEffectSpawnWorld` and `RuntimeEffectActorWorld`; HitDef `sprpriority` remains separate and its ModifyProjectile P1 mutation stays ignored like pinned Ikemen. Omitted bound params preserve existing explicit Projectile bounds. The helper-local micro-VM mutates only helper-parented owner-side Projectiles after helper-local spawn, required traces prove helper-local dynamic bounds/non-bound params through `Parent` / `Root`, and focused tests prove same-id player-owned exclusion. Redirects, helper-owned projectile combat/contact presentation, exact selection/tick order, remove triggers, helper/team namespace breadth, team/simul helper selection, and full MUGEN/IKEMEN projectile parity remain blocked. |
 | `Helper`, helper-local `HitDef` / `NumTarget(id)` / `Target(id)` / bare `Target` / bounded direct-HitDef and Projectile `Target*` / `TargetState` / `BindToParent` / `BindToRoot` / static `Explod` / static `RemoveExplod` / static `ModifyExplod` / static `Projectile` / static `ModifyProjectile` / `NumExplod(id)` / `NumHelper(id)` / `NumProjID(id)` / `ProjHit(id)` / `ProjGuarded(id)` / `ProjContactTime(id)` / helper-local `HitCount` | compiled, executed-partial | `synthetic-imported-helper.json`, `synthetic-imported-helper-hitdef.json` checksum `89f9e876`, `synthetic-imported-helper-target.json` checksum `68f95b67`, `synthetic-imported-helper-default-target.json` checksum `e1bcced0`, `synthetic-imported-helper-bare-target.json` checksum `15f3c1db`, `synthetic-imported-helper-target-controllers.json` checksum `61f4c61e`, `synthetic-imported-helper-projectile-target-controllers.json` checksum `58688be8`, `synthetic-imported-helper-projectile-default-target-controllers.json` checksum `0c4c69ae`, `synthetic-imported-helper-projectile-targetstate.json` checksum `b12e1cb3`, `synthetic-imported-helper-projectile-default-targetstate.json` checksum `918c42a1`, `synthetic-imported-helper-targetstate.json` checksum `011633b8`, `synthetic-imported-helper-projectile-target.json` checksum `49261b53`, `synthetic-imported-helper-projectile-default-target.json` checksum `b0daddf6`, `synthetic-imported-helper-ishelper.json` checksum `37877602`, `synthetic-imported-helper-enemynear.json` checksum `35498955`, `synthetic-imported-helper-bindtoparent.json` checksum `f9922c0e`, `synthetic-imported-helper-bindtoroot.json` checksum `bf72306c`, `synthetic-imported-helper-explod.json` checksum `87ae363f`, `synthetic-imported-helper-projectile.json` checksum `b6269136`, `synthetic-imported-helper-modifyprojectile.json` checksum `09d3f7e4`, `synthetic-imported-helper-projhit.json` checksum `2d9a281e`, `synthetic-imported-helper-projectile-hitcount.json` trace checksum `c8f5dc55` / final checksum `e1569fab`, `synthetic-imported-helper-projguard.json` checksum `d2e2f20d`, `synthetic-imported-helper-projcontact.json` checksum `4dcbdd25`, `synthetic-imported-helper-numproj.json` checksum `3312a554`, `synthetic-imported-helper-removeexplod.json` checksum `ff8658a2`, `synthetic-imported-helper-modifyexplod.json` checksum `0749041c`, `synthetic-imported-helper-numexplod.json` checksum `4328278a`, `synthetic-imported-helper-numhelper.json` checksum `4e32e951`, `synthetic-imported-superpause-effect-freeze.json`, `EffectSpawnSystem` tests, `EffectLifecycleSystem` tests, focused `EffectActorSystem` helper-local VM tests | Visual/helper actor plumbing with spawn/active lifecycle, producer-store evidence, bounded state-owner action resolution through `RuntimeEffectSpawnWorld`, owner runtime-program/animation handoff, lifecycle orchestration through `RuntimeEffectLifecycleWorld`, bounded source-movetime advance/freeze evidence during `SuperPause`, and a bounded helper-local micro-VM for `Time` triggers, `ChangeState`, `ChangeAnim`, helper-local `HitDef` activation into direct helper combat, helper-owned explicit/default/bare HitDef target memory with `NumTarget(id)` / `Target(id), Life` / bare `Target, Life` reads, bounded helper-owned direct-HitDef `TargetLifeAdd`, `TargetPowerAdd`, `TargetVelSet`, `TargetVelAdd`, `TargetFacing`, `TargetBind`, and `TargetDrop` side effects, bounded helper-owned Target side effects after explicit/default helper-parented Projectile target memory, bounded helper-local direct-HitDef and explicit/default helper-parented Projectile `TargetState` into owner-backed state data with `SelfState` return evidence, helper-owned explicit/default helper-parented Projectile target memory with owner and helper target-link evidence, helper-local kinematic controllers, `CtrlSet`, `StateTypeSet`, `LifeAdd`, `LifeSet`, `PowerAdd`, `PowerSet`, `VarSet`, `VarAdd`, `VarRandom`, `VarRangeSet`, helper-local `PlaySnd`/`StopSnd` sound-event telemetry, helper identity triggers (`IsHelper`, `IsHelper(id)`), helper-local `NumExplod(id)` counts for helper-parented owner-side Explods, helper-local `NumHelper(id)` counts for owner-side visual Helpers in the same effect store, helper-local `NumProjID(id)` counts for helper-parented owner-side Projectiles with removed-projectile exclusion, helper-local `ProjHit(id)`, `ProjGuarded(id)` / `ProjGuardedTime(id)`, bounded `ProjContact(id)` / `ProjContactTime(id)` reads, and bounded helper-local `HitCount` / `UniqHitCount` after mirrored helper-parented Projectile contact memory, read-only `Parent, ...` / `Root, ...` trigger/value redirects against owner runtime state as leading expressions and composite operands, read-only helper-local `EnemyNear, ...` redirects against the current two-player opponent runtime state plus caller-provided `EnemyNear(index)` / `EnemyNear(var(n))` lists when explicit opponent states are supplied, static helper-local `BindToParent` / `BindToRoot` owner binding against supplied owner/root runtime state, static helper-local `Explod` visual spawn into the owner-side Explod store with helper `parentId`, static helper-local `RemoveExplod` cleanup by id from the owner-side Explod store, static helper-local `ModifyExplod` mutation by id of helper-parented owner-side Explods, static helper-local `Projectile` spawn into the owner-side Projectile store with helper `parentId`, static helper-local `ModifyProjectile` mutation by id of helper-parented owner-side Projectiles, required ownerBind target/offset payload evidence for both binding trace gates, and `DestroySelf`. Broader indexed/team/helper-owned redirects beyond caller-provided `EnemyNear(index)` lists, teams/simul/turns, keyctrl ownership, player-state binding parity, nested helper ancestry, helper-owned custom state tables, helper Target/multi-target parity beyond the direct-HitDef and helper-parented Projectile gated subsets, throws, exact helper hitpause/tick order, exact helper HitDef/Projectile lifetime parity, helper-owned projectile combat/contact presentation, exact helper-local `ProjContact` / `ProjHit` / `ProjGuarded` timing and lifetime, exact helper-local `HitCount` lifetime/persist semantics, helper-owned effect namespaces, dynamic helper-local effect params/projectile ids, helper-bound Explod/Projectile timing/mutation beyond bounded static spawn/remove/modify/count-id/count-projectile/contact-trigger routes, exact helper effect-count parity, exact helper ownership scopes, helper fvar/sysvar `VarRandom`, exact helper resource scopes, exact helper-local sound timing/channel/redirect ownership, exact random stream parity, exact pause/tick order, exact opponent/parent/root selection, and full helper parity remain blocked. |
 | `Helper` helper-local `ProjHitTime(0)` / `ProjGuardedTime(0)` / `ProjContactTime(0)` / `ProjCancelTime(...)` | compiled, executed-partial | `synthetic-imported-helper-projhittime-any.json` checksum `bca9f47b`, `synthetic-imported-helper-projguardedtime-any.json` checksum `1f1a38e4`, `synthetic-imported-helper-projcontacttime-any.json` checksum `0d9f7829`, `synthetic-imported-helper-projcanceltime-any.json` checksum `f7e7fa01`, `synthetic-imported-helper-projcanceltime-id.json` checksum `fc412176`, `synthetic-imported-helper-projcanceltime-dynamic.json` checksum `cc78dde2`, focused `EffectActorSystem` helper-local VM tests | Bounded helper-local any-projectile hit/guard/contact/cancel-time reads plus fixed/expression-derived cancel-time ids from helper-parented owner-side Projectiles only; same-owner player Projectile contact/cancel is ignored, helper-parented markers become visible after marker age advances, and the required traces route `1200 -> 1260 -> 1261`, `1200 -> 1262 -> 1263`, `1200 -> 1264 -> 1265`, `1200 -> 1266 -> 1267`, `1200 -> 1268 -> 1269`, and `1200 -> 1270 -> 1271`. Exact hit/contact/guard/cancel tick-order/lifetime, multi-projectile id selection, broad dynamic expression parity, teams, exact namespaces, and full helper Projectile parity remain blocked. |
 | `Helper` helper-local `ProjGuarded(id)` / `ProjGuardedTime(id)` | compiled, executed-partial | `synthetic-imported-helper-projguard.json` checksum `d2e2f20d`, focused `EffectActorSystem` helper-local VM tests | Bounded helper-local guard/contact reads from helper-parented owner-side Projectiles only; same-id player-owned Projectile guard contact is ignored, helper-parented guard contact becomes visible after contact age advances, and the required trace routes `1200 -> 1218 -> 1219` / anims `938` and `947` after Projectile anim `948`. Helper-owned Projectile combat/contact presentation, exact `ProjContact` / `ProjHit` / `ProjGuarded` timing and lifetime, dynamic ids/params, teams, exact namespaces, and full helper Projectile parity remain blocked. |
@@ -773,3 +999,60 @@ meaning. A later root receives the override after collision reset. Required
 trace evidence records target `clsn2Count` and `collision:overrideclsn`.
 Exact collision geometry, source scheduling, Helper/nested ownership,
 hitpause/reset parity, renderer proof, and full parity remain unsupported.
+
+T511 GetHitVar guard-flag addendum: static equality/inequality filters are
+executed-partial for retained direct and Projectile HitDef metadata, including
+Helper-authored sources. The active redirected actor owns the read; comparison
+uses flag overlap and expands `M` to `H|L`. Dynamic filters, `hitflag`,
+`GetHitVarSet`, nested/custom-state breadth, and full parity remain unsupported.
+
+T512 GetHitVar Projectile-ID addendum: `GetHitVar(projid)` is executed-partial
+for Projectile contacts, including verified Helper-parented sources. The
+authored Projectile ID is retained in the defender hit record; direct HitDef
+and missing metadata return `-1`. Lifecycle, dynamic filter, and full parity
+claims remain unsupported.
+
+T513 GetHitVar team-side addendum: direct, Projectile, and verified
+Helper-parented contacts retain the effective 1-based source side and expose it
+through numeric `GetHitVar(teamside)`, with `-1` for missing metadata. Full team
+topology and parity remain unsupported.
+
+T514 GetHitVar keepstate addendum: imported and dynamic direct HitDef contacts
+retain authored `keepstate` and expose numeric `GetHitVar(keepstate)` as `1` for
+true and `0` for false/missing metadata. Projectile/Reversal authoring,
+HitOverride timing, and full parity remain unsupported.
+
+T515 GetHitVar frame addendum: direct HitDef and Projectile hit/guard contacts
+set an ephemeral same-frame marker, preserved through hitpause and cleared by
+the next non-paused frame-start reset. ReversalDef/HitOverride-only timing,
+broader pause parity, and full parity remain unsupported.
+
+T516 GetHitVar priority addendum: direct HitDef contacts retain normalized
+numeric priority and Projectile contacts retain the HitDef default. The
+Projectile `priority`/`projpriority` clash field remains separate. Facing,
+priority-type, ReversalDef/HitOverride timing, and full parity remain
+unsupported.
+
+T517 GetHitVar dizzypoints addendum: direct and Projectile HitDef contacts
+retain authored dizzypoints in typed last-hit metadata and expose numeric
+`GetHitVar(dizzypoints)`, with missing metadata reading `0`. The value remains
+separate from the defender's current dizzy resource; cumulative reset,
+guardpoints, and full parity remain unsupported.
+
+T518 GetHitVar guardpoints addendum: direct and Projectile HitDef contacts
+retain authored guardpoints in typed last-hit metadata and expose numeric
+`GetHitVar(guardpoints)`, with missing metadata reading `0`. The value remains
+separate from the defender's current guard resource; cumulative reset,
+guardpower, and full parity remain unsupported.
+
+T519 GetHitVar redlife addendum: direct and Projectile HitDef contacts retain
+authored redlife in typed last-hit metadata and expose numeric
+`GetHitVar(redlife)`, with missing metadata reading `0`. The value remains
+separate from the defender's current red-life resource; guardredlife,
+cumulative reset, and full parity remain unsupported.
+
+T520 GetHitVar guardpower addendum: direct and Projectile HitDef contacts
+retain the second authored `givepower` value in typed last-hit metadata and
+expose numeric `GetHitVar(guardpower)`, with missing metadata reading `0`. The
+value remains separate from the defender's current power resource; hitpower,
+current-resource readback, cumulative reset, and full parity remain unsupported.

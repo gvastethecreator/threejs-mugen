@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-085",
   "kind": "G",
-  "generatedAt": "2026-08-01T18:12:02.698Z",
+  "generatedAt": "2026-08-09T01:23:39.642Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-085",
@@ -18,21 +18,21 @@
       "sha256": "3bb3d26ac0cf39713f04446df2d2e35cdc686b54d768d4873b29549045f998ea"
     },
     {
-      "path": "public/characters/nova-boxer/mugen/nova.cns",
-      "bytes": 1345,
-      "sha256": "2d7db96883b763a90a2767223bd5f11e95521ac9f64a601e6ce4e9942095ee1a"
+      "path": "public/characters/rocco-vidal/mugen/rocco.cns",
+      "bytes": 1466,
+      "sha256": "e8a637faa34a73b69b396fd23d3a8c83f580df811f4f959703c4c6b209ed30c7"
     },
     {
-      "path": "public/characters/nova-boxer/mugen/nova.cmd",
-      "bytes": 428,
-      "sha256": "c4a8c294a58c61e536a85e9ed40ccd5a53d2be34a2696b9512f8d2583c78c51d"
+      "path": "public/characters/rocco-vidal/mugen/rocco.cmd",
+      "bytes": 611,
+      "sha256": "dc04ce7b93d793966a302e949db1b9827c221bd7041337585c87064bf6445ce1"
     }
   ],
   "functionResults": {
-    "cnsStates": 10,
-    "cnsControllers": 4,
+    "cnsStates": 11,
+    "cnsControllers": 6,
     "cnsDiagnostics": 0,
-    "cmdCommands": 2,
+    "cmdCommands": 3,
     "malformedDiagnostics": 1
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-085; broader product claims remain blocked"

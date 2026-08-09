@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-013",
   "kind": "I",
-  "generatedAt": "2026-08-01T18:12:01.502Z",
+  "generatedAt": "2026-08-09T01:23:44.271Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-013",
@@ -18,41 +18,41 @@
       "sha256": "209752a723717da56d7e9c076336481c1db2f7dfbf3f802dc8922460e638c2ca"
     },
     {
-      "path": "public/characters/nova-boxer/mugen/nova.cns",
-      "bytes": 1345,
-      "sha256": "2d7db96883b763a90a2767223bd5f11e95521ac9f64a601e6ce4e9942095ee1a"
+      "path": "public/characters/rocco-vidal/mugen/rocco.cns",
+      "bytes": 1466,
+      "sha256": "e8a637faa34a73b69b396fd23d3a8c83f580df811f4f959703c4c6b209ed30c7"
     },
     {
-      "path": "public/characters/mira-volt/mugen/mira.cns",
-      "bytes": 1345,
-      "sha256": "2d7db96883b763a90a2767223bd5f11e95521ac9f64a601e6ce4e9942095ee1a"
+      "path": "public/characters/nadia-arce/mugen/nadia.cns",
+      "bytes": 1465,
+      "sha256": "aab2b95fce8da277e10434338b9d00b043c2d44c8b0d5fba58d4b2095d705530"
     }
   ],
   "functionResults": {
     "packages": [
       {
-        "source": "public/characters/nova-boxer/mugen/nova.cns",
+        "source": "public/characters/rocco-vidal/mugen/rocco.cns",
         "controllerCount": 2,
-        "totalOccurrences": 4,
-        "stateDefCount": 10,
-        "rejectedStateDefTypeAsController": 10,
+        "totalOccurrences": 6,
+        "stateDefCount": 11,
+        "rejectedStateDefTypeAsController": 11,
         "topControllers": [
-          "ChangeState:2",
-          "HitDef:2"
+          "ChangeState:3",
+          "HitDef:3"
         ],
-        "digest": "db48db509d684d5d"
+        "digest": "92aa2a2cc7bc6167"
       },
       {
-        "source": "public/characters/mira-volt/mugen/mira.cns",
+        "source": "public/characters/nadia-arce/mugen/nadia.cns",
         "controllerCount": 2,
-        "totalOccurrences": 4,
-        "stateDefCount": 10,
-        "rejectedStateDefTypeAsController": 10,
+        "totalOccurrences": 6,
+        "stateDefCount": 11,
+        "rejectedStateDefTypeAsController": 11,
         "topControllers": [
-          "ChangeState:2",
-          "HitDef:2"
+          "ChangeState:3",
+          "HitDef:3"
         ],
-        "digest": "77b55b747b449e54"
+        "digest": "d4a28e97f49fff07"
       }
     ]
   },

@@ -1,9 +1,9 @@
 {
   "schema": "Da32SmokeOwnership/v1",
   "id": "DA32-001",
-  "generatedAt": "2026-08-01T09:34:50.903Z",
+  "generatedAt": "2026-08-08T12:14:24.863Z",
   "ok": false,
-  "failureCount": 7,
+  "failureCount": 10,
   "lanes": [
     {
       "id": "mugen-lite-visual",
@@ -23,9 +23,21 @@
     {
       "id": "studio-build",
       "status": "open",
+      "failureCount": 3,
+      "failures": [
+        "studio-build: imported package EvidenceEnvelope was not current and revision-bound",
+        "studio-build: architecture boundary gate was not visible or linked to Studio evidence",
+        "studio-build: downloaded package did not preserve current package EvidenceEnvelope facts"
+      ],
+      "owner": "DA32-smoke",
+      "claimCeiling": "lane open until green at named subject SHA"
+    },
+    {
+      "id": "studio-evidence",
+      "status": "open",
       "failureCount": 1,
       "failures": [
-        "studio-build: downloaded project package did not include required contracts/evidence"
+        "studio-evidence: architecture boundary gate/evidence records were not exposed through the Evidence Browser bridge"
       ],
       "owner": "DA32-smoke",
       "claimCeiling": "lane open until green at named subject SHA"
@@ -33,7 +45,8 @@
   ],
   "laneSummary": {
     "mugen-lite-visual": 6,
-    "studio-build": 1
+    "studio-build": 3,
+    "studio-evidence": 1
   },
   "runtimeSample": {
     "desktopHitSparks": 1,
@@ -56,6 +69,6 @@
   },
   "digest": {
     "algorithm": "sha-256",
-    "value": "045910a0ee52fbac287f5930549afaebf530588b377df291311c88a4c1dcef52"
+    "value": "1336b6712c25daa79916467dc1a15e01d5e862b3edc65e4e7bfea84f0d2fb930"
   }
 }

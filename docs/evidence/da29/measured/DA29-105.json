@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-105",
   "kind": "G",
-  "generatedAt": "2026-08-01T18:12:00.966Z",
+  "generatedAt": "2026-08-09T01:23:34.708Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-105",
@@ -13,21 +13,25 @@
       "sha256": "8aba6c7246f80b2ff3560833c313910abf4574ddc592883e7323667a93d7d55f"
     },
     {
-      "path": "public/characters/nova-boxer/mugen/nova.air",
-      "bytes": 2484,
-      "sha256": "73a4dbb4343730706d0f9bcf31ef0654ac7ebfae8d18999d4362ee07a18ebd61"
+      "path": "public/characters/rocco-vidal/mugen/rocco.air",
+      "bytes": 2373,
+      "sha256": "62c700b5a6f6ee488dd7772168812e962829cd86a2a0e6b8d09f60b64300f73b"
     },
     {
-      "path": "public/characters/nova-boxer/sprite-sheet-alpha.png",
-      "bytes": 312330,
-      "sha256": "5533de237f182f1cf5bb063642bd1e9b4dd688eaa55c2c618e2b3455c844847c"
+      "path": "public/characters/rocco-vidal/sprite-sheet-alpha.png",
+      "bytes": 1879194,
+      "sha256": "45e0ca3d3ac939cf4250ef327779465478fe67d8c59d357f2d4a0974e8ff4f73"
     }
   ],
   "functionResults": {
-    "actionsWithClsn": 12,
+    "actionsWithClsn": 14,
     "sample": [
       {
         "id": 0,
+        "frames": 4
+      },
+      {
+        "id": 10,
         "frames": 4
       },
       {
@@ -35,19 +39,15 @@
         "frames": 8
       },
       {
-        "id": 10,
-        "frames": 3
+        "id": 21,
+        "frames": 8
       },
       {
         "id": 40,
-        "frames": 4
-      },
-      {
-        "id": 200,
-        "frames": 4
+        "frames": 6
       }
     ],
-    "controllers": 4
+    "controllers": 6
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-105; broader product claims remain blocked"
 }

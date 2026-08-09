@@ -1,4 +1,199 @@
-# Official M.U.G.E.N / Ikemen-GO roadmap comparison — 2026-07-30
+# Official M.U.G.E.N / Ikemen-GO roadmap comparison — 2026-08-08
+
+## 2026-08-08 continuation — T561-T608 ModifyProjectile
+
+Pinned Ikemen GO `develop` commit `149402f` resolves ModifyProjectile `id` and
+`index` before applying Projectile and shared HitDef fields to selected live
+objects. T561-T602 now mirror that structure through the port's typed seams:
+oldest-first active owner selection, separate `projid` mutation, active and
+terminal owner AIR replacement, and static `attr`, `guardflag`, and
+`affectteam`, `hitflag`, reaction types, target/chain IDs, lethal flags, and
+`air.juggle`, damage, givepower metadata, `numhits`, separate HitDef priority,
+custom P1/P2 states, `missonoverride`, P2 sprite-priority mutation, and
+`forcenofall`, `forcestand`, `forcecrouch`, and core fall
+damage/velocity/recovery, supported fall envshake fields, `dizzypoints`,
+`guardpoints`, hit/guard `redlife` and floating-point `score` pairs, and static
+`p2clsncheck`/`p2clsnrequire` target-collision policies, plus `down.recover`
+and `down.recovertime` fall/get-up metadata. Current
+T589-T600 additionally port the final `attack.depth` switch case plus
+`p2facing`, air/ground/guard/down hit durations, and ground/air guard control
+timers, one-to-three component `down.velocity` with zero defaults, and
+`fall`/`air.fall`/`down.bounce`, guard/air-guard velocity, and airborne hit
+velocity through static or bounded dynamic root/helper values. Grounded hit
+velocity is component-wise: each supplied X/Y/Z value replaces only that live
+component, while the MUGEN `n` token preserves it. T601 adds
+`ground.slidetime`; T602 ports both normal and guard pause values. Pinned source
+uses the first value for `Projectile.hitpause`, the second for defender hit
+shake, zero defaults for a missing normal pair, and normal-pair inheritance for
+a missing guard pair. Current
+combat, GetHitVar, fall, juggle, custom-state, HitOverride, and renderer seams
+consume the changed normalized metadata. Accepted Projectile hits clear the
+target fall flag when `forcenofall` is enabled; guards do not. Projectile
+contacts skip P1 priority
+replacement; ModifyProjectile also ignores P1 priority, matching pinned
+Ikemen. Visual `projsprpriority` remains separate.
+
+This is an adaptation, not a full engine claim. The port uses string flags and
+`F/B/E` team-affinity normalization instead of Ikemen's internal integer masks,
+and omits dynamic flag/enum expressions, full team-mode topology, exact tick
+order, rollback serialization, and remaining shared HitDef fields. T603 closes
+old/new width plus height/depth guard-distance pairs. T604 closes live
+Projectile spark refs, angles, and offsets. T605 closes one-to-three component
+`mindist`/`maxdist` replacement and later Projectile-origin target correction.
+T606 closes selected `xaccel`/`yaccel`/`zaccel` metadata and accepted-contact
+GetHitVar readback. T607 selects `envshake.time/freq/ampl/phase/mul/dir` plus
+accepted hit/guard camera emission. Pinned contact resets `diradd = 0` and
+`decay = 1`, so those compiled ModifyProjectile fields remain outside the
+slice. T608 selects `fall.envshake.dir`, which pinned accepted contact copies
+to the getter and `FallEnvShake` later applies. Pinned contact does not copy
+`fall.envshake.diradd` or `fall.envshake.decay`, so both remain outside this
+slice. The five
+compiled corner-push fields are not selected because Ikemen's ModifyProjectile
+bytecode cases are commented out.
+
+## 2026-08-08 continuation — T543-T560
+
+The current Ikemen trigger reference defines
+`ClsnVar(value_type,index,elem)` as a current-box coordinate read for
+`clsn1`, `clsn2`, or `size`, with `back`, `front`, `top`, and `bottom`
+selectors in AIR coordinate space. Current `develop` source returns `NaN` for
+missing boxes and converts redirected reads across `localcoord` widths.
+
+T543 is closed-bounded. The port reads current-frame AIR boxes, runtime
+`OverrideClsn`, and the composed size box through shared CNS/controller
+contexts and the read-only Testbench. It does not apply `TransformClsn` to the
+raw coordinate read. Focused coverage is 5 files / 80 tests; runtime and
+browser gates pass.
+
+T544 is closed-bounded. The same official reference defines
+`ClsnOverlap(box_type_1, playerID, box_type_2)` as a transformed player-box
+overlap query that accounts for angle and scale. The port now resolves dynamic
+player IDs and applies the existing world-box collision system; focused
+coverage is 5 files / 83 tests and runtime gates pass.
+
+T545 is a user-selected product slice, not a compatibility claim. Character
+Matrix shows every loaded fighter, action, and package-health group and drives
+the existing Fighter Lab runtime and Testbench lens.
+
+T546 is closed-bounded. The current official reference and
+`develop` compiler/runtime source define
+`ProjClsnOverlap(index, playerID, box_type)`: an owner-relative projectile
+index, a target player ID, and target `clsn1`, `clsn2`, or `size`. Current
+source checks projectile Clsn1 or Clsn2, applies angle/scale/local coordinates,
+and leaves target size boxes unscaled and unrotated. The port now exposes that
+read through shared CNS/controller contexts, uses deterministic oldest-first
+active-projectile indexing, and keeps collision scale/angle separate from draw
+scale. Focused coverage is 8 files / 258 tests and runtime gates pass.
+
+T547 is closed-bounded. The same official reference defines
+`ProjVar(id, index, param)`, where `id = -1` accepts all projectiles owned by
+the caller and `index` selects from that filtered list. The local scanner
+recognizes the token. The expression runtime now reads bounded numeric state
+already owned by `RuntimeProjectile`, preserves redirects and oldest-first
+indexing, and converts coordinate-like values to caller output `localcoord`.
+Focused coverage is 5 files / 172 tests and runtime gates pass.
+
+T548 is closed-bounded. Pinned `develop` commit `149402f` treats `attr`,
+`guardflag`, and `hitflag` as comparison-only `ProjVar` parameters and
+complements the compiled mask for `!=`. The port reuses typed HitDef metadata,
+the T547 selector, and redirects without exposing a general string channel.
+Focused coverage is 5 files / 173 tests and runtime gates pass.
+
+T549 is closed-bounded. The same pinned source stores
+`pausemovetime` and `supermovetime` on Projectile, uses them to decide whether
+the Projectile advances during Pause/SuperPause, decrements positive counters
+on active ticks, and exposes the current values through `ProjVar`. The port
+connects those fields to its existing pause lifecycle without claiming
+hitpause, stacking, or rollback parity.
+
+T550 is closed-bounded. Pinned source compiles and stores three-axis
+`remvelocity`, lets ModifyProjectile replace it, copies it into current
+velocity when removal begins, clears acceleration, resets velocity
+multiplication, and exposes all axes through `ProjVar`. The port applies the
+same bounded terminal transition and caller-local numeric reads. T551 is also
+closed-bounded against the adjacent official three-axis `velmul` contract:
+Ikemen multiplies every velocity axis after acceleration and exposes `velmul
+z` through `ProjVar`; the port now carries the same static spawn/modify and
+active-motion slice.
+
+T552 follows the official `projlayerno` contract. Pinned Ikemen initializes a
+Projectile from the owner's layer, normalizes explicit spawn and modify values
+by sign to `-1`, `0`, or `1`, carries the result into sprite draw data, and
+returns it through `ProjVar`. The port targets the equivalent bounded typed
+state, readback, and existing presentation-order bands without claiming exact
+interleaving with every stage, FightScreen, motif, or auxiliary effect layer.
+
+T553 closes the adjacent official `projangle` contract. Pinned Ikemen stores
+the authored float in the first Projectile rotation component, lets
+ModifyProjectile replace it, copies that rotation into draw data, and returns
+it through `ProjVar`. The port targets the same static typed value and its
+existing live `renderAngle` mesh path; shear and rotation-aware collision remain
+separate cuts.
+
+T554 closes the two adjacent official rotation components. Pinned Ikemen
+compiles `projxangle` and `projyangle` as floats, stores them in Projectile
+rotation components 1 and 2, replaces them through ModifyProjectile, returns
+them through `ProjVar(angle x|y)`, and applies negative X / positive Y matrix
+rotations before Z. The port targets the same static state/readback with a
+bounded orthographic Three.js projection; focal-length and facing-reflection
+equivalence remain outside this cut.
+
+T555 closes the adjacent official `projxshear` field. Pinned Ikemen compiles
+one float, stores or replaces it on Projectile, returns it through `ProjVar`,
+and applies its shear matrix before sprite rotation. The port targets the same
+static state/readback with a bounded centered-quad deformation; exact anchor,
+aspect, tiling, projection, and focal-length behavior remain outside this cut.
+
+T556 follows the official `projshadow` vector. Pinned Ikemen starts the three
+integer channels at zero, overwrites only supplied ModifyProjectile channels,
+returns each through `ProjVar(shadow r|g|b)`, packs RGB, and creates a shadow
+only for a non-zero color. The port targets the same static state/readback and
+a bounded live tint; exact stage shadow transforms remain separate.
+
+T557 follows the adjacent official `projreflection` integer. Pinned Ikemen
+starts Projectile reflection at `-1`, replaces it through ModifyProjectile,
+forces reflection on for positive values, disables it at zero, and in negative
+auto mode follows the Projectile's non-zero shadow color. The port targets the
+same static selection state with a bounded mirrored sprite; exact stage
+reflection transforms remain separate.
+
+T558 follows the official `projprojection` and `projfocallength` pair. Pinned
+Ikemen accepts orthographic, perspective, and perspective2 names, defaults new
+Projectiles to orthographic, uses `2048` when focal length is non-positive, and
+replaces both values through ModifyProjectile. The port targets static state
+and bounded live orthographic/perspective projection; exact perspective2 and
+camera/localcoord compensation remain separate.
+
+T559 follows the official four-float `projwindow` field. Pinned Ikemen starts
+the window at zero, replaces all four values through ModifyProjectile, scales
+them into the redirected owner's coordinate space, sorts both axes, and applies
+the result as a sprite-local scissor rectangle. The port carries static state,
+local-coordinate renderer snapshots, and bounded live quad/UV clipping; exact
+GPU scissor, camera/aspect, redirected localcoord, and transformed-window parity
+remain separate.
+
+T560 follows the official Projectile `ownpal`/`remappal` spawn pair and
+`ProjVar(DrawPal.Group/Index)` reads. Pinned Ikemen inherits owner PalFX by
+default, creates independent PalFX only when `ownpal` is true, preserves the
+current remap, and then forces the requested palette. ModifyProjectile leaves
+both cases commented out. The port therefore targets spawn-only typed palette
+state and existing renderer lookup without inventing modify support.
+
+## 2026-08-06 continuation — T542 and T543
+
+The official [Ikemen new triggers reference](https://github-wiki-see.page/m/ikemen-engine/Ikemen-GO/wiki/Triggers-%28new%29)
+defines `AnimPlayerNo` as the player number of the current animation owner.
+The Elecbyte [M.U.G.E.N 1.1 state-controller reference](https://elecbyte.com/mugendocs-11b1/sctrls.html)
+does not define this Ikemen-only trigger. The port therefore keeps the read
+inside the Ikemen profile and does not change the M.U.G.E.N animation contract.
+
+T542 is closed-bounded. `ChangeAnim2` passes the state-owner actor to the typed
+animation boundary, which stores `animationOwnerPlayerNo` outside
+`CharacterRuntimeState`. CNS and controller contexts read the value through
+`AnimPlayerNo`. The slice does not cover Helper, Projectile, team, rollback, or
+netplay ownership.
+
+T543 was selected here and is now closed by the 2026-08-08 checkpoint above.
 
 ## Question
 
@@ -11,10 +206,15 @@ the repository's current implementation rather than on old task volume?
 The selected queue is **T424 -> T425 -> T426 -> T427 -> T428 -> T429 ->
 T430 -> T431 -> T432 -> T433 -> T434 -> T435 -> T436 -> T437 -> T438 ->
 T463 -> T464 -> T465 -> T466 -> T467 -> T468 -> T469 -> T472 -> T473 ->
-T474 -> T475 -> T476 -> T477 -> T478 -> T479 -> T480 -> T481**.
-T424-T469, T472, T473, T474, T475, T476, T477, T478, T479, T480 and T481 are
-closed-bounded. T471 remains the active content cursor; T480's bounded Ikemen
-depth-velocity slice is complete:
+T474 -> T475 -> T476 -> T477 -> T478 -> T479 -> T480 -> T481 -> T482 ->
+T483 -> T484 -> T485 -> T486 -> T487 -> T488 -> T489 -> T490 -> T491 ->
+T492 -> T506 -> T507 -> T508 -> T509 -> T510 -> T511 -> T512 -> T513 -> T514 -> T515 -> T516 -> T517 -> T518 -> T519 -> T520 -> T521 -> T522 -> T523 -> T524 -> T525 -> T526 -> T527 -> T528**.
+T424-T469, T472, T473, T474, T475, T476, T477, T478, T479, T480, T481,
+T482, T483, T484, T485, T486, T487, T488, T489, T490, T491, T492, T506, T507, T508, T509, T510, T511, T512, T513, T514, T515, T516, T517, T518, T519, T520, T521, T522, T523, T524, T525, T526, T527 and T528 are closed-bounded. T504 remains the active content cursor and T505's Gallery extension is closed-bounded;
+T480's bounded Ikemen depth-velocity slice is complete, T482 closes its static
+ModifyHitDef mutation continuation, and T483 closes the acceleration metadata
+handoff; T484 closes static ModifyHitDef acceleration mutation; T485 closes
+dynamic HitDef/ModifyHitDef acceleration evaluation:
 
 1. make imported `select.def` own one real roster/stage selection path;
 2. replace the disconnected ZSS model with a loader-to-live-runtime vertical
@@ -71,8 +271,41 @@ depth-velocity slice is complete:
 26. carry Ikemen `fall.zvelocity` through HitDef/projectile/HitFallSet metadata
     and apply authored depth velocity without inventing omitted-Z motion.
 27. carry the official Ikemen three-component HitDef velocity vectors through
-    direct and projectile contact, selecting authored Z by ground/air/down/
-    guard context without inventing omitted depth motion.
+     direct and projectile contact, selecting authored Z by ground/air/down/
+     guard context without inventing omitted depth motion.
+28. carry the authored third component through static `ModifyHitDef` mutation
+     of an active normal HitDef, preserving omitted-Z and no-active-hitdef
+     behavior.
+29. carry static HitDef/Projectile `xaccel`, `yaccel` and `zaccel` through
+    imported/direct/projectile hit metadata and expose them via
+    `GetHitVar(xaccel|yaccel|zaccel)` with official zero defaults.
+30. allow static `ModifyHitDef` to mutate those three acceleration metadata
+    fields on an active normal HitDef without widening dynamic evaluation; and
+31. retain supported scalar expressions for those three HitDef and
+    `ModifyHitDef` fields, evaluating them in the active controller context
+    without claiming acceleration physics; and
+32. expose the selected optional HitDef/Projectile depth velocity through the
+    Ikemen-only `GetHitVar(zvel)` read-model key with a zero fallback.
+33. carry the Ikemen `HitVelSet` `z` flag through typed kinematic IR and, when
+    enabled, hand the selected HitDef/Projectile depth velocity to the runtime
+    combat-depth channel.
+34. preserve the last direct HitDef/Projectile ground, air, down, guard and
+    airguard velocity triples for Ikemen dotted `GetHitVar` x/y/z readback,
+    returning zero for omitted families/components.
+35. preserve the first and second HitDef damage components through direct and
+    player-owned Projectile contacts as Ikemen `GetHitVar(hitdamage)` and
+    `GetHitVar(guarddamage)` readback.
+36. preserve the authored fall EnvShake multiplier through direct/projectile
+    and imported fall metadata as `GetHitVar(fall.envshake.mul)`, defaulting
+    omitted values to the official `1`.
+37. expose the source attacker's zero-based `playerno` through the same
+    direct HitDef and player-owned Projectile hit metadata read model, with a
+    zero fallback when no source metadata exists.
+38. retain Ikemen's separate numeric `playerid` for the last source character
+    across root and verified Helper direct/Projectile contacts, without
+    deriving it from `playerno` or string actor IDs.
+39. preserve the current official deprecated `GetHitVar(ID)` spelling as a
+    read alias of `playerid`, with the same missing-source fallback.
 
 This order keeps one bounded continuation from T419-T423, but gives priority
 to shared M.U.G.E.N VM and package foundations. No score moves from this
@@ -639,6 +872,133 @@ timing, palette/layer/audio/cache parity, and full FightFX compatibility remain
 open. Sources: [Ikemen-GO Common files / CommonFX](https://github-wiki-see.page/m/ikemen-engine/Ikemen-GO/wiki/Miscellaneous-info#common-files-air-cmd-const-fx-states)
 and [Ikemen-GO `char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go).
 
+### T491 — Ikemen-GO `GetHitVar(fall.envshake.mul)`
+
+Priority: P1. Dependency: T490.
+
+The changed-trigger reference exposes `fall.envshake.mul` as the multiplier
+from the last HitDef. Ikemen's `HitDef` and `GetHitVar` structures default this
+field to `1` and copy the authored value into get-hit variables. T491 retains
+that value through HitDef/Projectile compilation, imported moves, and direct or
+projectile fall materialization without changing EnvShake playback ownership.
+
+**Closed-bounded:** focused compiler/runtime/import coverage passes 7 test
+files / 258 tests; the final suite is 324/3329 with typecheck/build/boundaries,
+682/682 trace artifacts, asset-path hygiene and diff hygiene green. Exact
+EnvShake waveform/timing, dynamic values, and helper/team breadth remain outside
+the claim. Source authority:
+[Ikemen-GO changed triggers — GetHitVar](https://github-wiki-see.page/m/ikemen-engine/Ikemen-GO/wiki/Triggers-%28changed%29#GetHitVar)
+and [Ikemen-GO `char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go).
+
+### T492 — Ikemen-GO `GetHitVar(playerno)`
+
+Priority: P1. Dependency: T491.
+
+The official changed-trigger reference exposes `GetHitVar(playerno)` as the
+`PlayerNo` of the last character that hit the player. T492 reuses the existing
+source metadata populated by direct HitDef and player-owned Projectile
+contacts, exposing the attacker slot through the shared numeric read model
+and returning `0` when no source metadata exists. The defender's own runtime
+identity remains separate.
+
+**Closed-bounded:** focused RuntimeExpressionContext/DirectCombat/
+ProjectileCombat coverage passes 3 test files / 119 tests; the final suite is
+324/3330 with typecheck/build/boundaries, 682/682 trace artifacts,
+asset-path hygiene and diff hygiene green. String-valued attributes,
+helper/team ownership and full parity remain outside the claim. Browser smoke
+is N/A because no visible surface changed. Source authority:
+[Ikemen-GO changed triggers — GetHitVar](https://github-wiki-see.page/m/ikemen-engine/Ikemen-GO/wiki/Triggers-%28changed%29#GetHitVar)
+and [Ikemen-GO `char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go).
+
+### T506 — Ikemen-GO `GetHitVar(playerid)`
+
+Priority: P1. Dependency: T492.
+
+The current changed-trigger reference defines `GetHitVar(playerid)` as the
+numeric ID of the last character that hit the player. Current Ikemen-GO source
+copies `hd.playerid` and `hd.playerno` into separate get-hit fields. T506 keeps
+that distinction in the local typed hit-source metadata: roots use their
+registered runtime ID, while a verified Helper uses its own ID and still
+inherits the root player slot. Direct HitDef and root/Helper-parented Projectile
+contacts feed the same read model; missing numeric source identity returns `0`.
+
+**Closed-bounded:** five focused expression/direct/projectile/helper/runtime
+files pass 178 tests, and five affected deterministic IKEMEN trace checks pass
+with intentional checksum updates. TypeScript, the 356-module production build,
+boundaries, and asset-path hygiene pass. T508 later clears the two inherited
+retired-roster aggregate-trace labels; browser smoke is N/A. String-valued
+attributes, unverified custom-state/team ownership, score movement and full
+parity remain outside the claim. Source authority:
+[Ikemen-GO changed triggers — GetHitVar](https://github.com/ikemen-engine/Ikemen-GO/wiki/Triggers-%28changed%29#gethitvar)
+and [Ikemen-GO `char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go).
+
+### T507 — Ikemen-GO deprecated `GetHitVar(ID)` alias
+
+Priority: P1. Dependency: T506.
+
+The current changed-trigger reference marks the old `ID` parameter deprecated
+but still valid. T507 normalizes case-insensitive `ID` to the same numeric
+`sourcePlayerId` read used by `playerid`, including the `0` fallback. It does
+not add parallel storage or widen the expression value model.
+
+**Closed-bounded:** the focused shared-expression file passes 27 tests covering
+direct read, omitted fallback, and parsed `GetHitVar(ID)` evaluation. Existing
+T506 propagation remains unchanged. String-
+valued parameters, score movement and full parity remain outside the claim.
+Source authority: [Ikemen-GO changed triggers — GetHitVar](https://github.com/ikemen-engine/Ikemen-GO/wiki/Triggers-%28changed%29#gethitvar).
+
+### T508 — required trace binding to the active roster
+
+Priority: P0. Dependency: T499.
+
+Two required synthetic presets still duplicated the retired `Mira Volt` label
+after the public roster reset. T508 binds their setup and expected hit event to
+the active second demo fighter while preserving every routed state, damage,
+life, and actor-source requirement.
+
+**Closed-bounded:** focused `RuntimeTraceGatePresets` coverage passes 2/2 and
+the full aggregate passes 682/682 artifacts (648 required, 34 optional). This
+is evidence ownership repair only; it restores no retired character, changes no
+combat semantic, moves no score, and makes no broader parity claim.
+
+### T509 — Ikemen-GO `GetHitVar(guardko)`
+
+Priority: P1. Dependency: T508.
+
+The current changed-trigger reference defines `guardko` as true when guard
+damage knocked out the player. Current Ikemen-GO source retains this flag in
+get-hit variables. The local combat path already had equivalent typed
+`sourceGuardKo` metadata for round-win cause; T509 exposes it through the shared
+numeric expression reader without adding state.
+
+**Closed-bounded:** shared-expression, direct guard-KO, and root Projectile
+guard-KO coverage passes 3 files / 121 tests. TypeScript, the 356-module build,
+boundaries, and 682/682 trace artifacts pass; browser smoke is N/A. Exact guard
+damage/point accumulation, string-valued fields, teams/simul breadth, score
+movement, and full parity remain outside the claim. Source authority:
+[Ikemen-GO changed triggers — GetHitVar](https://github.com/ikemen-engine/Ikemen-GO/wiki/Triggers-%28changed%29#gethitvar)
+and [Ikemen-GO `char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go).
+
+### T510 — Ikemen-GO `GetHitVar(attr)`
+
+Priority: P1. Dependency: T509.
+
+The current changed-trigger reference defines `attr` as the last HitDef
+attribute assignment and requires comparison with known flags, for example
+`GetHitVar(attr) = SCA, HA`. Current Ikemen-GO source copies the HitDef `attr`
+value into get-hit variables. The local contact path already retains that
+value as `sourceAttr`.
+
+**Closed-bounded:** the compiler accepts static state/attack literals and the
+evaluator handles equality and inequality through the shared attribute matcher.
+Missing metadata, compound expressions, and actor redirects are covered. Three
+focused files / 118 tests, TypeScript, the 356-module build, boundaries, and
+682/682 trace artifacts pass; browser smoke is N/A. Dynamic filters, general
+string-valued `GetHitVar`, `guardflag`, `hitflag`, score movement, and full
+parity remain outside the claim. Source authority:
+[Ikemen-GO changed triggers — GetHitVar](https://github.com/ikemen-engine/Ikemen-GO/wiki/Triggers-%28changed%29#gethitvar)
+and [Ikemen-GO `char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go).
+
 ### T480 — Ikemen-GO `fall.zvelocity` depth propagation
 
 Priority: P1. Dependency: T477.
@@ -674,6 +1034,164 @@ typecheck/build/boundaries and 682/682 trace gates green. This bounded vector
 slice excludes ModifyHitDef Z mutation, Common1 acceleration/friction, helper
 ownership and full depth physics. Source authority: [Ikemen-GO changed state-controller reference](https://github-wiki-see.page/m/ikemen-engine/Ikemen-GO/wiki/State-controllers-%28changed%29#hitdef-parameters).
 
+### T482 — Ikemen-GO ModifyHitDef velocity Z mutation
+
+Priority: P1. Dependency: T481.
+
+Ikemen documents `ModifyHitDef` as updating the active HitDef with the same
+optional parameter family. T482 compiles static `ground/air/down/guard/airguard
+velocity` vectors, retains their authored third component, and mutates the
+active normal HitDef move used by the T481 direct/projectile resolver. Omitted Z
+remains unchanged and a missing active normal HitDef is rejected.
+
+**Closed-bounded:** focused compiler/active-HitDef mutation coverage passes
+2 files / 89 tests; final suite is 324/3317 with typecheck/build/boundaries and
+682/682 trace gates green. This bounded mutation slice excludes dynamic
+expressions, helper/team ownership and Common1/full depth physics. Source
+authority: [Ikemen-GO changed state-controller reference](https://github-wiki-see.page/m/ikemen-engine/Ikemen-GO/wiki/State-controllers-%28changed%29#hitdef-parameters).
+
+### T483 — Ikemen-GO HitDef acceleration metadata
+
+Priority: P1. Dependency: T482.
+
+The official Ikemen changed-controller reference adds optional `xaccel` and
+`zaccel` to HitDef alongside the existing `yaccel`; the official runtime stores
+all three on get-hit variables when a hit lands. T483 compiles static values,
+preserves them through imported state and player-owned Projectile paths, copies
+them into direct/projectile defender hit metadata, and exposes
+`GetHitVar(xaccel|yaccel|zaccel)`. Omitted horizontal/depth values return zero.
+
+**Closed-bounded:** focused compiler/HitDef/direct/projectile/imported-fighter/
+expression coverage passes 7 files / 249 tests; `pnpm typecheck` and
+`pnpm check:boundaries` pass. This is authored metadata only: Ikemen
+localcoord/facing scaling, Common1 acceleration/friction, Z physics, dynamic
+expressions, ModifyHitDef acceleration mutation and helper/team breadth remain
+outside the claim. Source authority: [Ikemen-GO changed state-controller reference](https://github-wiki-see.page/m/ikemen-engine/Ikemen-GO/wiki/State-controllers-%28changed%29#hitdef-parameters) and [Ikemen-GO `src/char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go).
+
+### T484 — Ikemen-GO ModifyHitDef acceleration metadata
+
+Priority: P1. Dependency: T483.
+
+Because Ikemen treats `ModifyHitDef` as an update to the active HitDef, T484
+admits static `xaccel`, `yaccel` and `zaccel`, mutates the active normal
+`DemoMove.hitVars`, and leaves the existing direct/projectile `GetHitVar`
+handoff authoritative. Omitted fields remain unchanged and dynamic expressions
+are rejected from the typed operation.
+
+**Closed-bounded:** focused compiler/active-HitDef mutation coverage passes
+2 files / 89 tests and `pnpm typecheck` passes. This slice excludes dynamic
+expressions, localcoord/facing scaling, Common1 acceleration/friction, Z
+physics, helper/team breadth and full parity. Source authority: [Ikemen-GO
+changed state-controller reference](https://github-wiki-see.page/m/ikemen-engine/Ikemen-GO/wiki/State-controllers-%28changed%29#hitdef-parameters).
+
+### T485 — Ikemen-GO dynamic HitDef acceleration metadata
+
+Priority: P1. Dependency: T484.
+
+The same official numeric controller parameters may be authored as supported
+scalar expressions. T485 retains executable expressions for `HitDef` and
+`ModifyHitDef` `xaccel`, `yaccel` and `zaccel`, then evaluates them through the
+active controller context before writing typed hit metadata. Static numbers
+keep the existing operation shape; an omitted or failed evaluation leaves the
+existing value unchanged.
+
+**Closed-bounded:** focused compiler/active-HitDef coverage passes 7 files /
+250 tests; final 324/3321 suite, typecheck/build/boundaries, 682/682 trace
+artifacts, asset-path hygiene and diff hygiene pass. This slice excludes
+acceleration physics/friction, localcoord/facing scaling, dynamic vectors and
+all other dynamic `ModifyHitDef` fields. Source authority: [Ikemen-GO changed
+state-controller reference](https://github-wiki-see.page/m/ikemen-engine/Ikemen-GO/wiki/State-controllers-%28changed%29#hitdef-parameters) and [Ikemen-GO
+`src/char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go).
+
+### T486 — Ikemen-GO `GetHitVar(zvel)` readback
+
+Priority: P1. Dependency: T481.
+
+Ikemen's `GetHitVar` model carries a third active-hit velocity component even
+though the legacy M.U.G.E.N trigger reference stops at `xvel`/`yvel`. T486
+exposes the already materialized `hitVelocity.z` as `GetHitVar(zvel)` through
+the shared runtime expression context and returns `0` when the selected
+HitDef/Projectile omitted depth. The alias is isolated from `fall.zvel` and
+does not synthesize physics.
+
+**Closed-bounded:** `RuntimeExpressionContextSystem` coverage passes 27/27
+focused tests, including direct readback, omitted fallback and expression
+context routing. The M.U.G.E.N legacy key list remains unchanged; depth
+integration, scaling and broader Ikemen GetHitVar parity remain outside this
+slice. Source authority: [Elecbyte trigger reference](https://www.elecbyte.com/mugendocs-11b1/trigger.html) and [Ikemen-GO `char.go` GetHitVar source](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go).
+
+### T487 — Ikemen-GO `HitVelSet z` handoff
+
+Priority: P1. Dependency: T486/T481.
+
+Ikemen's changed state-controller reference documents a `z` flag on
+`HitVelSet`: when nonzero, the active get-hit velocity's depth component is
+applied to the player. T487 preserves that flag through typed kinematic IR,
+reads the selected `hitVelocity.z`, and writes it to the existing combat-depth
+velocity channel without inventing Z physics.
+
+**Closed-bounded:** focused `KinematicControllerSystem`/`RuntimeCompiler`
+coverage passes 2 files / 71 tests; the final suite is 324/3321 with
+typecheck/build/boundaries, 682/682 trace artifacts, asset-path hygiene and
+diff hygiene green. Browser smoke is N/A because this is a runtime-only seam.
+Full depth physics, dynamic vector parity and legacy M.U.G.E.N expansion remain
+outside the claim. Source authority: [Ikemen-GO changed state-controller
+reference](https://github-wiki-see.page/m/ikemen-engine/Ikemen-GO/wiki/State-controllers-%28changed%29#hitvelset-parameters).
+
+### T488 — Ikemen-GO `GetHitVar` HitDef velocity vectors
+
+Priority: P1. Dependency: T481/T487.
+
+The official changed-trigger reference lists dotted `GetHitVar` aliases for
+the last `ground.velocity`, `air.velocity`, `down.velocity`, `guard.velocity`
+and `airguard.velocity` parameters, each with x/y/z components. T488 carries
+those parsed/effective triples through direct HitDef and player-owned Projectile
+contacts and resolves them through the shared runtime read model with zero
+fallback for missing data.
+
+**Closed-bounded:** focused compiler/runtime/import coverage passes 4 files /
+133 tests; the final suite is 324/3324 with typecheck/build/boundaries,
+682/682 trace artifacts, asset-path hygiene and diff hygiene green. Dynamic
+vector expressions, exact omitted-value defaults, Z physics, string attributes
+and helper/team breadth remain outside the claim. Source authority: [Ikemen-GO
+changed triggers — GetHitVar](https://github-wiki-see.page/m/ikemen-engine/Ikemen-GO/wiki/Triggers-%28changed%29#GetHitVar).
+
+### T489 — Ikemen-GO `GetHitVar(hitdamage|guarddamage)`
+
+Priority: P1. Dependency: T488.
+
+Ikemen's changed-trigger reference distinguishes the first `damage` component
+(`hitdamage`) from the second guard component (`guarddamage`). T489 preserves
+those authored components on direct HitDef and player-owned Projectile contacts
+while leaving the existing effective contact `damage` field authoritative for
+combat resolution.
+
+**Closed-bounded:** focused RuntimeExpressionContext/DirectCombat/
+ProjectileCombat coverage passes 3 files / 114 tests; the final suite remains
+324/3324 with typecheck/build/boundaries, 682/682 trace artifacts, asset-path
+hygiene and diff hygiene green. Resource gains, scaling, string attributes, KO
+policy and helper/team breadth remain outside the claim. Source authority:
+[Ikemen-GO changed triggers — GetHitVar](https://github-wiki-see.page/m/ikemen-engine/Ikemen-GO/wiki/Triggers-%28changed%29#GetHitVar).
+
+### T490 — Ikemen-GO `GetHitVar` animtype fields
+
+Priority: P1. Dependency: T489.
+
+Ikemen's changed-trigger reference exposes separate `ground.animtype`,
+`air.animtype`, and `fall.animtype` values from the last HitDef. T490 retains
+these fields through HitDef compilation, imported state moves, direct contacts,
+and player-owned Projectiles. Omitted air values use ground; omitted fall values
+use the resolved air reaction for `up`/`diagup`, otherwise `back`. Existing
+effective `GetHitVar(animtype)` remains unchanged.
+
+**Closed-bounded:** focused compiler/runtime/import coverage passes 7 test
+files / 256 tests; the final suite is 324/3327 with typecheck/build/boundaries,
+682/682 trace artifacts, asset-path hygiene and diff hygiene green. Common1
+reaction-state choreography, dynamic values, string-valued semantics and
+helper/team breadth remain outside the claim. Source authority:
+[Ikemen-GO changed triggers — GetHitVar](https://github-wiki-see.page/m/ikemen-engine/Ikemen-GO/wiki/Triggers-%28changed%29#GetHitVar)
+and [Ikemen-GO `char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go).
+
 ## Work deliberately not recreated
 
 - M.U.G.E.N/Ikemen negative-state source precedence and Ikemen append behavior.
@@ -703,10 +1221,228 @@ localcoord-aware omitted fall velocity seam, T475 owns airborne-only
 seam, T477 owns the closed-bounded signed `fall.xvelocity` seam, T478/T479 own
 the bounded CommonFX scale/localcoord seams, and T480 owns the bounded Ikemen
 `fall.zvelocity` depth seam. T481 closes the three-component HitDef velocity
-Z continuation; all claim ceilings are
-deliberately separate from
-Common1 authored-state parity. The user-directed content queue remains
-separate in `docs/ROADMAP_CONTENT_PACK.md`. Scores remain unchanged until independent
-adjudication. T471 is now in progress: Bruno Giro has four provider-generated
-rows with fresh provenance, alignment and fourteen runtime previews; aggregate
-spritesheet identity/contract gates remain open.
+Z continuation, T482 closes the static ModifyHitDef mutation cursor, and T483
+closes the HitDef acceleration metadata/GetHitVar cursor, T484 closes its
+static ModifyHitDef acceleration mutation continuation, and T485 closes the
+supported dynamic acceleration evaluation handoff. T486 closes the
+Ikemen-only active depth `GetHitVar(zvel)` readback seam. T487 closes the
+bounded `HitVelSet z` combat-depth handoff. T488 closes the five-family
+`GetHitVar` velocity-vector readback seam. T489 closes the paired damage
+component readback seam. T490 closes the ground/air/fall reaction animation
+readback seam. T491 closes the `fall.envshake.mul` readback seam. T492 closes
+the source `playerno` readback seam, T506 closes its separate numeric
+`playerid` continuation, and T507 preserves the deprecated `ID` alias; all
+claim ceilings are deliberately separate from Common1 authored-state parity.
+The user-directed content queue remains separate in
+`docs/ROADMAP_CONTENT_PACK.md`. Scores remain unchanged until independent
+adjudication. T499 superseded the former fighter expansion; T504 remains active
+for Rocco/Nadia identity pre-package closure, while T505 Fighter Lab is
+closed-bounded. Aggregate spritesheet promotion remains blocked on the current
+identity-consistency gate rather than on the retired provider-row queue.
+
+### T511 — Ikemen-GO `GetHitVar(guardflag)`
+
+The current changed-trigger reference defines the field as the guard flag of
+the last HitDef and requires comparison with known flags. Current
+[`char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go)
+copies `hd.guardflag` to `ghv.guardflag`;
+[`compiler.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/compiler.go)
+expands `M` to `H|L`, and
+[`bytecode.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/bytecode.go)
+tests mask overlap. The bounded implementation retains the effective
+direct/Projectile/Helper flag (default `MA`) and evaluates static
+equality/inequality for active or redirected actors. Six focused files / 224
+tests plus typecheck, build, boundaries, and 682/682 traces pass. The nightly
+wiki also lists `GetHitVar(hitflag)`, but current `develop` compiler source has
+no matching GetHitVar opcode, so that field remains explicitly unclaimed.
+
+### T512 — Ikemen-GO `GetHitVar(projid)`
+
+### T535 — Ikemen-GO `GetHitVar(hitflag)`
+
+The changed-trigger reference defines this read as the hitflag of the last
+HitDef that hit the player and requires comparison with known flags. Elecbyte's
+HitDef reference documents the same H/L/A/M/F/D/+/- vocabulary and the omitted
+`MAF` default. The bounded local seam now preserves effective direct/Projectile
+`sourceHitFlag` metadata and evaluates static equality/inequality filters with
+typed overlap (`M` expands to `H|L`), including redirected contexts. Five
+focused compiler/context/CNS/direct/projectile files / 238 tests pass; the
+existing `686/686` trace corpus is unchanged. Dynamic expressions, reset/
+lifetime parity, and full M.U.G.E.N/IKEMEN parity remain unclaimed.
+
+The changed-trigger reference defines `GetHitVar(projid)` as the `projID` of
+the last Projectile that hit the player and returns `-1` when the last hit was
+not authored by a Projectile. Current
+[`compiler.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/compiler.go)
+maps the field to `OC_ex_gethitvar_projid`, while
+[`bytecode.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/bytecode.go)
+returns the stored integer. The local active slice retains Projectile IDs in
+last-hit metadata and exposes the numeric readback; four focused files / 186
+tests pass, with final aggregate gates recorded in the T512 closeout.
+
+### T513 — Ikemen-GO `GetHitVar(teamside)`
+
+The changed-trigger reference defines `GetHitVar(teamside)` as the effective
+team side of the last HitDef that hit the player. Current `develop`
+[`char.go`](https://raw.githubusercontent.com/Ikemen-GO/Ikemen-GO/develop/src/char.go)
+stores `hd.teamside` in get-hit state, while
+[`bytecode.go`](https://raw.githubusercontent.com/Ikemen-GO/Ikemen-GO/develop/src/bytecode.go)
+returns the internal zero-based value plus one; reset state reads `-1`.
+The bounded local seam retains explicit HitDef/Projectile side values and
+derives omitted local values from the attacker/root identity. Direct and
+Projectile contacts, including verified Helper-parented sources, expose the
+numeric read through `GetHitVar(teamside)`, while missing metadata returns
+`-1`. Four focused files / 186 tests pass; `qa:trace` passes 682/682
+artifacts, typecheck/build/boundaries and diff hygiene pass. Team topology,
+dynamic filters, `GetHitVar(hitflag)`, `GetHitVarSet`, and full parity remain
+outside the claim.
+
+### T514 — Ikemen-GO `GetHitVar(keepstate)`
+
+Current `develop` [`compiler.go`](https://raw.githubusercontent.com/Ikemen-GO/Ikemen-GO/develop/src/compiler.go)
+maps `GetHitVar(keepstate)` to `OC_ex_gethitvar_keepstate`; [`bytecode.go`](https://raw.githubusercontent.com/Ikemen-GO/Ikemen-GO/develop/src/bytecode.go)
+reads the boolean stored in the last-hit record, and [`char.go`](https://raw.githubusercontent.com/Ikemen-GO/Ikemen-GO/develop/src/char.go)
+copies the authored HitDef `keepstate` flag into that record while reset state
+is false. The bounded local seam retains the authored flag for imported and
+dynamic direct HitDef contacts and exposes numeric `1`/`0` through
+`GetHitVar(keepstate)`; Projectile and Reversal paths keep the false fallback.
+Five focused files / 212 tests pass; `qa:trace` passes 682/682 artifacts,
+typecheck/build/boundaries and diff hygiene pass. Projectile/Reversal authoring,
+HitOverride timing, `GetHitVar(frame)`, and full parity remain outside the claim.
+
+### T515 — Ikemen-GO `GetHitVar(frame)`
+
+The changed-trigger reference defines `GetHitVar(frame)` as true only during
+the same frame in which the player was hit. Current `develop`
+[`compiler.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/compiler.go)
+maps the field to `OC_ex_gethitvar_frame`, while
+[`bytecode.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/bytecode.go)
+pushes the stored boolean. [`char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go)
+sets the marker on hit/guard contact, preserves it through hitpause, and clears
+it in the non-paused action finish path. The bounded local seam mirrors this
+for direct HitDef and Projectile hit/guard contacts through an ephemeral typed
+bit, with frame-start reset and no ReversalDef/HitOverride-only timing claim.
+Six focused files / 191 tests pass; `qa:trace` passes 682/682 artifacts,
+typecheck/build/boundaries and diff hygiene pass. Paused-action parity beyond
+the local marker and full parity remain outside the claim.
+
+### T516 — Ikemen-GO `GetHitVar(priority)`
+
+The changed-trigger reference defines `GetHitVar(priority)` as the numerical
+attack priority of the last HitDef. Current `develop` [`compiler.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/compiler.go)
+maps the field to `OC_ex_gethitvar_priority`; [`bytecode.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/bytecode.go)
+pushes `ghv.priority`; and [`char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go)
+copies `hd.priority` into the defender's last-hit record. The bounded local
+seam now carries normalized direct HitDef priority and the Projectile HitDef
+default through typed metadata. It deliberately keeps the local
+`RuntimeProjectile.priority` field as Projectile `projpriority` clash data,
+matching the separate engine concepts. Four focused files / 188 tests pass;
+`qa:trace` 682/682, typecheck, build, boundaries, full-suite baseline capture,
+and diff hygiene pass. `GetHitVar(facing)`, priority type, ReversalDef/
+HitOverride timing, and full parity remain outside the claim.
+
+### T517 — Ikemen-GO `GetHitVar(dizzypoints)`
+
+The changed-trigger reference defines `GetHitVar(dizzypoints)` as the last
+HitDef `dizzypoints` value. Current `develop`
+[`compiler.go`](https://raw.githubusercontent.com/Ikemen-GO/Ikemen-GO/develop/src/compiler.go)
+maps it to `OC_ex_gethitvar_dizzypoints`; [`bytecode.go`](https://raw.githubusercontent.com/Ikemen-GO/Ikemen-GO/develop/src/bytecode.go)
+pushes `ghv.dizzypoints`; and [`char.go`](https://raw.githubusercontent.com/Ikemen-GO/Ikemen-GO/develop/src/char.go)
+carries the value in get-hit metadata while applying dizzy-point damage. The
+bounded local seam retains authored direct and Projectile HitDef values in
+`sourceDizzyPoints`, keeps them separate from the defender's mutable
+`dizzyPoints` pool, and returns `0` when metadata is absent. Five focused files /
+220 tests pass; `qa:trace` 682/682, typecheck, build, boundaries, full-suite
+baseline capture, and diff hygiene pass. Cumulative multi-hit/reset semantics,
+`GetHitVar(guardpoints)`, and full parity remain outside the claim.
+
+### T518 — Ikemen-GO `GetHitVar(guardpoints)`
+
+The changed-trigger reference defines `GetHitVar(guardpoints)` as the last
+HitDef `guardpoints` value. Current `develop`
+[`compiler.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/compiler.go)
+maps it to `OC_ex_gethitvar_guardpoints`; [`bytecode.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/bytecode.go)
+pushes `ghv.guardpoints`; and [`char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go)
+carries the value in get-hit metadata while applying guard-point damage. The
+bounded local seam retains authored direct and Projectile HitDef values in
+`sourceGuardPoints`, keeps them separate from the defender's mutable
+`guardPoints` pool, and returns `0` when metadata is absent. Five focused files /
+222 tests pass; `qa:trace` 682/682, typecheck, build, boundaries, full-suite
+baseline capture, and diff hygiene pass. Cumulative multi-hit/reset semantics,
+`GetHitVar(guardpower)`, and full parity remain outside the claim.
+
+### T519 — Ikemen-GO `GetHitVar(redlife)`
+
+The changed-trigger reference defines `GetHitVar(redlife)` as the last HitDef
+`redlife` value. Current `develop`
+[`compiler.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/compiler.go)
+maps it to `OC_ex_gethitvar_redlife`; [`bytecode.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/bytecode.go)
+pushes `ghv.redlife`; and [`char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go)
+keeps HitDef red-life metadata distinct from the defender's mutable red-life
+resource. Issue 93 is closed-bounded. The bounded implementation retains
+authored direct and Projectile HitDef values, default missing metadata to `0`,
+and avoids claiming `guardredlife`, cumulative reset semantics, or full parity.
+
+### T520 — Ikemen-GO `GetHitVar(guardpower)`
+
+The changed-trigger reference defines `GetHitVar(guardpower)` as the second
+value of the last HitDef `givepower` parameter. Current `develop`
+[`compiler.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/compiler.go)
+maps it to `OC_ex_gethitvar_guardpower`; [`bytecode.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/bytecode.go)
+pushes `ghv.guardpower`; and [`char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go)
+retains the authored value in last-hit metadata. Issue 94 is in progress. The
+bounded implementation carries the second `givepower` value through direct and
+Projectile contacts, defaults missing metadata to `0`, and keeps current
+power-resource, hitpower, cumulative reset, and full-parity claims out. Five
+focused files / 226 tests pass; `qa:trace` 682/682, typecheck, build,
+boundaries, full-suite baseline capture, and diff hygiene pass. Issue 94 is
+closed-bounded.
+
+### T521 — Ikemen-GO `GetHitVar(hitpower)` (selected next)
+
+The changed-trigger reference defines `GetHitVar(hitpower)` as the first value
+of the last HitDef `givepower` parameter. Current `develop`
+[`compiler.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/compiler.go)
+maps it to `OC_ex_gethitvar_hitpower`; [`bytecode.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/bytecode.go)
+pushes `ghv.hitpower`; and [`char.go`](https://raw.githubusercontent.com/ikemen-engine/Ikemen-GO/develop/src/char.go)
+retains the authored value in last-hit metadata. Issue 95 is in progress. The
+bounded implementation will carry the first `givepower` value through direct
+and Projectile contacts, default missing metadata to `0`, and keep current
+power-resource, hitflag, cumulative reset, and full-parity claims out.
+
+### T522-T524 — last-hit score, power and facing metadata
+
+The changed-trigger reference exposes authored HitDef `score`, effective
+`givepower`, and `p2facing` through the last-hit record. The local bounded
+seams retain those values independently from score adjudication, the mutable
+power resource, and live facing. Direct and player-owned Projectile contacts
+are covered; guard-facing and ReversalDef choreography remain outside the
+claim. Issues 96-98 are closed-bounded.
+
+### T525-T526 — mutable guard and combo counters
+
+Ikemen's `char.go` increments `guardcount` for consecutive guarded contacts and
+resets it on idle, while `hitcount` increments only for an already-get-hit,
+non-guarded combo-eligible contact. The local runtime stores `guardCount` and
+`comboHitCount` separately from authored `numhits`, with direct/player-owned
+Projectile first, consecutive, guarded and reset coverage. Issues 99-100 are
+closed-bounded.
+
+### T527 — authored multi-hit `GetHitVar(hitcount)`
+
+The explicit `ikemen-go` profile now applies the mutable counter even when a
+player-owned Projectile carries authored `numhits`. Required trace
+`synthetic-imported-ikemen-projectile-gethitvar-hitcount-multihit` proves two
+eligible contacts followed by one guarded break, with trace/final checksums
+`c6582760` / `78e24146` in the `683/683` aggregate. Static/imported M.U.G.E.N
+routes retain the authored fallback. Helper/team/multi-target arbitration and
+`GetHitVarSet` remain unclaimed.
+
+### T528 — selected next `GetHitVar(xveladd|yveladd)`
+
+The current Ikemen source maps both keys to dedicated opcodes and reads
+`ghv.xveladd`/`ghv.yveladd`. During KO velocity application it records the
+difference between the starting get-hit velocity and the post-addition value;
+M.U.G.E.N leaves these documented fields dummied out. Issue 102 will add a
+bounded `ikemen-go` readback that preserves authored `xvel`/`yvel` and live
+velocity as separate fields, with zero fallback for non-KO/non-profile routes.

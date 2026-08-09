@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-038",
   "kind": "G",
-  "generatedAt": "2026-08-01T18:12:01.588Z",
+  "generatedAt": "2026-08-09T01:23:44.360Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-038",
@@ -13,15 +13,15 @@
       "sha256": "a9afd1f2b166c6e3cdf7b7cd296f56a652dcf21eea6858161170f7b16c05025b"
     },
     {
-      "path": "public/characters/nova-boxer/mugen/nova.cns",
-      "bytes": 1345,
-      "sha256": "2d7db96883b763a90a2767223bd5f11e95521ac9f64a601e6ce4e9942095ee1a"
+      "path": "public/characters/rocco-vidal/mugen/rocco.cns",
+      "bytes": 1466,
+      "sha256": "e8a637faa34a73b69b396fd23d3a8c83f580df811f4f959703c4c6b209ed30c7"
     }
   ],
   "functionResults": {
     "staticOnly": 18,
-    "expressionLike": 6,
-    "controllers": 4
+    "expressionLike": 9,
+    "controllers": 6
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-038; broader product claims remain blocked"
 }

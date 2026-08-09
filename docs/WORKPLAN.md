@@ -1,6 +1,251 @@
 # Workplan
 
-## Current execution override — T424-T481 official parity queue (2026-08-01)
+## Current parity queue
+
+- **T661 active-research** — reset fresh direct HitDef omission of `ground.velocity` to official `0,0` in root/Helper paths while preserving live ModifyHitDef omission. See [issue 235](../.scratch/roadmap/issues/235-hitdef-ground-velocity-defaults.md).
+- **T660 closed-bounded** — dynamic and mixed direct HitDef/ModifyHitDef `ground.velocity` X/Y resolves through root/Helper callers, preserves live partial siblings/Z, and feeds grounded velocity plus GetHitVar readback. See [issue 234](../.scratch/roadmap/issues/234-hitdef-ground-velocity-dynamic.md).
+- **T659 closed-bounded** — dynamic direct HitDef/ModifyHitDef legacy scalar `guard.dist` resolves through root/Helper callers and feeds the horizontal `InGuardDist` latch before contact. See [issue 233](../.scratch/roadmap/issues/233-hitdef-guard-dist-dynamic.md).
+- **T658 closed-bounded** — dynamic direct HitDef/ModifyHitDef `air.hittime` resolves through root/Helper callers, uses the official fresh default 20, and reaches airborne non-fall stun plus `GetHitVar(hittime)`. See [issue 232](../.scratch/roadmap/issues/232-hitdef-air-hittime-dynamic.md).
+- **T657 closed-bounded** — dynamic direct HitDef/ModifyHitDef `airguard.ctrltime` resolves through root/Helper callers, derives fresh omission from effective `guard.ctrltime`, and reaches air-guard control metadata plus `GetHitVar(ctrltime)`. See [issue 231](../.scratch/roadmap/issues/231-hitdef-airguard-ctrltime-dynamic.md).
+- **T656 closed-bounded** — dynamic direct HitDef/ModifyHitDef `guard.ctrltime` resolves through root/Helper callers, derives fresh omission from effective `guard.slidetime`, and reaches ground-guard control metadata plus `GetHitVar(ctrltime)`. See [issue 230](../.scratch/roadmap/issues/230-hitdef-guard-ctrltime-dynamic.md).
+- **T655 closed-bounded** — dynamic direct HitDef/ModifyHitDef `guard.slidetime` resolves through root/Helper callers, derives fresh omission from effective `guard.hittime`, and reaches guard timers plus `GetHitVar(slidetime)`. See [issue 229](../.scratch/roadmap/issues/229-hitdef-guard-slidetime-dynamic.md).
+- **T654 closed-bounded** — dynamic direct HitDef/ModifyHitDef `guard.hittime` resolves through root/Helper callers with pinned profile-specific defaults and accepted guard/GetHitVar consumption. See [issue 228](../.scratch/roadmap/issues/228-hitdef-guard-hittime-dynamic.md).
+- **T653 closed-bounded** — dynamic direct HitDef/ModifyHitDef `ground.slidetime` resolves through root/Helper callers, resets fresh omission to zero, and reaches grounded `GetHitVar(slidetime)`. See [issue 227](../.scratch/roadmap/issues/227-hitdef-ground-slidetime-dynamic.md).
+- **T652 closed-bounded** — dynamic direct HitDef/ModifyHitDef `ground.hittime` resolves through root/Helper callers, resets fresh omission to zero, and feeds grounded receiver/GetHitVar timing. See [issue 226](../.scratch/roadmap/issues/226-hitdef-ground-hittime-dynamic.md).
+- **T651 closed-bounded** — dynamic direct HitDef `pausetime` / `guard.pausetime` pairs separate attacker pause from defender hit-shake time in root and Helper contacts. See [issue 225](../.scratch/roadmap/issues/225-hitdef-pause-pairs-dynamic.md).
+- **T650 closed-bounded** — fresh direct HitDef omitted/one-component `damage` uses official zero defaults without inheriting the prior move; live ModifyHitDef semantics remain component-wise. See [issue 224](../.scratch/roadmap/issues/224-hitdef-damage-defaults.md).
+- **T649 closed-bounded** — explicit dynamic direct HitDef/ModifyHitDef `damage` pairs flow through root/Helper callers, hit/guard life, GetHitVar, and fresh power defaults. See [issue 223](../.scratch/roadmap/issues/223-hitdef-damage-dynamic.md).
+- **T648 closed-bounded** — dynamic direct HitDef/ModifyHitDef `id` and `chainid` flow through root/Helper callers, target memory, GetHitVar metadata, and ChainID admission. See [issue 222](../.scratch/roadmap/issues/222-hitdef-id-chainid-dynamic.md).
+- **T647 closed-bounded** — dynamic direct HitDef/ModifyHitDef `p2facing` resolves through root/Helper callers and applies a one-shot deferred defender-facing override after accepted hits. See [issue 221](../.scratch/roadmap/issues/221-hitdef-p2facing-dynamic.md).
+- **T646 closed-bounded** — dynamic direct HitDef/ModifyHitDef `forcenofall` resolves through root/Helper caller contexts and accepted hits clear only the receiver fall flag unless effective `fall = 1`. See [issue 220](../.scratch/roadmap/issues/220-hitdef-forcenofall-dynamic.md).
+- **T645 closed-bounded** — root-owned dynamic direct HitDef `p1stateno` / `p2stateno` / `p2getp1state` resolve in caller context and feed accepted-hit state/animation ownership. See [issue 219](../.scratch/roadmap/issues/219-hitdef-custom-state-dynamic.md).
+- **T644 closed-bounded** — direct HitDef `forcestand` / Ikemen `forcecrouch` resolve through root/Helper callers, official defaulting, live mutation, and default get-hit posture selection. See [issue 218](../.scratch/roadmap/issues/218-hitdef-force-posture-dynamic.md).
+- **T643 closed-bounded** — dynamic direct HitDef `priority` resolves through root/Helper caller contexts and live root or redirected `ModifyHitDef`, then decides existing direct priority clashes. See [issue 217](../.scratch/roadmap/issues/217-hitdef-priority-dynamic.md).
+- **T642 closed-bounded** — dynamic direct HitDef `p1sprpriority` / `p2sprpriority` plus the `sprpriority` alias resolve through caller contexts, live mutation, and accepted hit/guard contact. See [issue 216](../.scratch/roadmap/issues/216-hitdef-sprite-priority-dynamic.md).
+- **T641 closed-bounded** — dynamic direct HitDef `numhits` resolves through root/Helper caller contexts and live root or redirected `ModifyHitDef`; accepted hits add it to `HitCount` without conflating `GetHitVar(hitcount)`. See [issue 215](../.scratch/roadmap/issues/215-hitdef-numhits-dynamic.md).
+- **T640 closed-bounded** — fresh direct HitDef `air.juggle` expressions resolve through root/Helper caller contexts and arm the existing Ikemen direct-juggle cost path. See [issue 214](../.scratch/roadmap/issues/214-hitdef-air-juggle-dynamic.md).
+- **T639 closed-bounded** — dynamic direct HitDef `kill`, `guard.kill`, and `hitonce` resolve through root/Helper caller contexts and live root or redirected `ModifyHitDef`. See [issue 213](../.scratch/roadmap/issues/213-hitdef-lethal-flags-dynamic.md).
+- **T638 closed-bounded** — dynamic direct HitDef `down.bounce` resolves through root/Helper caller contexts, live root or redirected `ModifyHitDef`, and accepted HitFall metadata. See [issue 212](../.scratch/roadmap/issues/212-hitdef-down-bounce-dynamic.md).
+- **T637 closed-bounded** — dynamic direct HitDef `fall`, `air.fall`, and `fall.kill` resolve through root/Helper caller contexts and live root or redirected `ModifyHitDef`. See [issue 211](../.scratch/roadmap/issues/211-hitdef-fall-flags-dynamic.md).
+- **T636 closed-bounded** — dynamic direct HitDef fall/down recovery policy and timers resolve through root/Helper caller contexts and live root or redirected `ModifyHitDef`. See [issue 210](../.scratch/roadmap/issues/210-hitdef-fall-recovery-dynamic.md).
+- **T635 closed-bounded** — dynamic direct HitDef fall impact damage and X/Y/Z velocity now resolve through root/Helper caller contexts and live root or redirected `ModifyHitDef`. See [issue 209](../.scratch/roadmap/issues/209-hitdef-fall-impact-dynamic.md).
+- **T634 closed-bounded** — dynamic direct HitDef `fall.envshake.*` now resolves for root/Helper callers, mutates live root or redirected `ModifyHitDef`, and reaches the existing ground-impact camera path. See [issue 208](../.scratch/roadmap/issues/208-hitdef-fall-envshake-dynamic.md).
+- **T633 closed-bounded** — direct HitDef and live `ModifyHitDef` contact `envshake.time/freq/ampl/phase/mul/dir` now emit through the existing camera-shake world only on accepted unguarded direct hits. See [issue 207](../.scratch/roadmap/issues/207-direct-hitdef-contact-envshake.md).
+- **T632 closed-bounded** — positive-time `palfx.time/add/mul/color/invertall` now flows through root/Helper HitDef, root or redirected `ModifyHitDef`, and root/Helper Projectile creation into the defender's existing PalFX state on accepted unguarded hits. See [issue 206](../.scratch/roadmap/issues/206-hitdef-contact-palfx.md).
+- **T631 closed-bounded** — M.U.G.E.N `[Rules]` attack/get-hit life-to-power multipliers seed runtime constants before Common.Const and character overlays and feed omitted power defaults. See [issue 205](../.scratch/roadmap/issues/205-mugen-rules-power-multipliers.md).
+- **T630 closed-bounded** — pinned-Ikemen `ModifyProjectile getpower` replaces selected root/Helper Projectile attacker rewards and later contact consumes them. See [issue 204](../.scratch/roadmap/issues/204-modifyprojectile-getpower.md).
+- **T629 closed-bounded** — dynamic one/two-component `givepower` resolves in caller context for fresh HitDef/Projectile and supported Ikemen mutations, preserving half/preserve/zero one-value behavior. See [issue 203](../.scratch/roadmap/issues/203-hitdef-givepower-dynamic.md).
+- **T628 closed-bounded** — static explicit or omitted direct HitDef and Projectile `givepower` now mutates defender power on accepted hit/guard and retains effective `GetHitVar(power)` delta metadata. See [issue 202](../.scratch/roadmap/issues/202-hitdef-givepower-resource.md).
+- **T627 closed-bounded** — omitted direct HitDef and Projectile `getpower` derives from authored damage plus pinned normal/super `attack.lifetopowermul`, with guard reward from the effective hit value. See [issue 201](../.scratch/roadmap/issues/201-hitdef-getpower-defaults.md).
+- **T626 closed-bounded** — explicit one/two-component HitDef `getpower` flows through root/Helper HitDef and Projectile creation, root or redirected `ModifyHitDef`, accepted contact, and attacker power gain. See [issue 200](../.scratch/roadmap/issues/200-hitdef-getpower.md).
+- **T625 closed-bounded** — direct-HitDef `p1facing` and `p1getp2facing` now flow through root/Helper HitDef and root or redirected `ModifyHitDef`, with official precedence and hit-only attacker-facing application. See [issue 199](../.scratch/roadmap/issues/199-hitdef-attacker-facing.md).
+- **T624 closed-bounded** — root/Helper HitDef and Projectile plus root or redirected `ModifyHitDef` now carry independent hit/guard spark scales through accepted presentation and non-uniform rendering. See [issue 198](../.scratch/roadmap/issues/198-hitdef-spark-scale.md).
+- **T623 closed-bounded** — mutate independent `stand.friction` and `crouch.friction` values on an active normal HitDef through root and redirected `ModifyHitDef` contexts. See [issue 197](../.scratch/roadmap/issues/197-modifyhitdef-ground-friction.md).
+- **T622 closed-bounded** — root/Helper HitDef and Projectile ground friction now reaches accepted contact, `GetHitVar`, and grounded get-hit physics with receiver-constant fallback.
+- **T616-T621 closed-bounded** — typed HitDef/Projectile `unhittabletime`, actor-role contact writes, countdown/admission, official defaults, HitOverride writes, and dynamic Projectile spawn expressions are implemented and verified.
+- **T612-T615 closed-bounded** — direct NoChainID, direct ChainID/NoChainID ordering before ReversalDef, profile equality semantics, and Projectile admission before reversal are implemented and verified.
+- **T608-T611 closed-bounded** — selected fall EnvShake direction and the initial Projectile/direct chain-admission slices are implemented and verified.
+- **T607 closed-bounded** — replace selected live Projectile `envshake.time/freq/ampl/phase/mul/dir` metadata and emit it on later accepted hit/guard contact. See [issue 181](../.scratch/roadmap/issues/181-ikemen-modifyprojectile-envshake.md).
+- **T606 closed-bounded** — replace selected live Projectile `xaccel`, `yaccel`, and `zaccel` metadata and consume it through later GetHitVar reads. See [issue 180](../.scratch/roadmap/issues/180-ikemen-modifyprojectile-hit-acceleration.md).
+- **T605 closed-bounded** — replace selected Projectile `mindist`/`maxdist` X/Y/Z bounds and clamp later hit/guard contacts from the Projectile origin. See [issue 179](../.scratch/roadmap/issues/179-ikemen-modifyprojectile-target-distance-bounds.md).
+- **T604 closed-bounded** — replace selected live Projectile hit/guard spark refs, angles, and offsets, then consume them in later presentation. See [issue 178](../.scratch/roadmap/issues/178-ikemen-modifyprojectile-spark-payload.md).
+- **T603 closed-bounded** — replace the scalar Projectile guard-distance shortcut with live two-value width/height/depth bounds consumed by `InGuardDist`. See [issue 177](../.scratch/roadmap/issues/177-ikemen-modifyprojectile-guard-distance-bounds.md).
+- **T602 closed-bounded** — replace `pausetime` and `guard.pausetime` pairs; the first value freezes only the Projectile and the second pauses the defender. See [issue 176](../.scratch/roadmap/issues/176-ikemen-modifyprojectile-pause-pairs.md).
+- **T601 closed-bounded** — replace `ground.slidetime` through selected root/helper Projectiles and expose it on later unguarded `GetHitVar(slidetime)` contact readback. See [issue 175](../.scratch/roadmap/issues/175-ikemen-modifyprojectile-ground-slidetime.md).
+- **T600 closed-bounded** — replace supplied `ground.velocity` X/Y/Z components while preserving each `n` component through grounded hit contact. See [issue 174](../.scratch/roadmap/issues/174-ikemen-modifyprojectile-ground-velocity.md).
+- **T599 closed-bounded** — replace one-to-three component `air.velocity` through airborne hit-contact X/Y/Z consumers. See [issue 173](../.scratch/roadmap/issues/173-ikemen-modifyprojectile-air-velocity.md).
+- **T598 closed-bounded** — replace one-to-three component `guard.velocity` and `airguard.velocity` through ground/air guard-contact consumers. See [issue 172](../.scratch/roadmap/issues/172-ikemen-modifyprojectile-guard-velocity.md).
+- **T589-T606 closed-bounded** — replace Projectile HitDef attack depth, accepted-hit facing, hit/guard timers, velocities, fall flags, ground slide time, pause pairs, guard-distance bounds, spark payload, target-distance bounds, and hit acceleration through selected root/helper Projectiles. See [issues 163-180](../.scratch/roadmap/issues/163-ikemen-modifyprojectile-attack-depth.md).
+- **T588 closed-bounded** — replace static or bounded dynamic `down.recover` and `down.recovertime` values and carry them into later target fall/get-up metadata. See [issue 162](../.scratch/roadmap/issues/162-ikemen-modifyprojectile-down-recovery.md).
+- **T587 closed-bounded** — replace static official `p2clsncheck` and `p2clsnrequire` policies on selected root/helper Projectiles and consume them during later contact admission. See [issue 161](../.scratch/roadmap/issues/161-ikemen-modifyprojectile-p2-collision-policy.md).
+- **T586 closed-bounded** — retain `redlife` and floating-point `score` hit/guard pairs through static and bounded dynamic root/helper paths, with effective contact readback and no resource mutation. See [issue 160](../.scratch/roadmap/issues/160-ikemen-modifyprojectile-redlife-score.md).
+- **T585 closed-bounded** — replace `dizzypoints` and `guardpoints` through static or bounded dynamic values and expose them on later hit/guard contacts without mutating current pools. See [issue 159](../.scratch/roadmap/issues/159-ikemen-modifyprojectile-points.md).
+- **T584 closed-bounded** — replace supported fall envshake time, frequency, amplitude, phase, and multiplier through static or bounded dynamic ModifyProjectile values. See [issue 158](../.scratch/roadmap/issues/158-ikemen-modifyprojectile-fall-envshake.md).
+- **T583 closed-bounded** — replace core fall damage, X/Y/Z velocity, recovery, and recovery time through static or bounded dynamic ModifyProjectile values. See [issue 157](../.scratch/roadmap/issues/157-ikemen-modifyprojectile-fall-payload.md).
+- **T582 closed-bounded** — retain static and bounded dynamic `forcestand`/`forcecrouch` and apply them only to accepted default get-hit posture selection. See [issue 156](../.scratch/roadmap/issues/156-ikemen-projectile-force-posture.md).
+- **T581 closed-bounded** — retain static and bounded dynamic Projectile HitDef `forcenofall`; accepted hits clear the target fall flag while guard contact remains unchanged. See [issue 155](../.scratch/roadmap/issues/155-ikemen-projectile-forcenofall.md).
+- **T580 closed-bounded** — retain Projectile HitDef P1/P2 sprite priorities separately from `projsprpriority`, apply only P2 on contact, and mutate only P2 through ModifyProjectile like pinned Ikemen. See [issue 154](../.scratch/roadmap/issues/154-ikemen-projectile-sprite-priority.md).
+- **T573-T579 closed-bounded** — mutate damage, givepower metadata, `numhits`, HitDef priority, custom P1/P2 states, and `missonoverride` through current combat consumers without conflating `projhits` or `projpriority`. See [issues 147-153](../.scratch/roadmap/issues/147-ikemen-modifyprojectile-damage.md).
+- **T567-T572 closed-bounded** — close static `hitflag`, reaction types, dual `id` target metadata, `chainid`, lethal flags, and `air.juggle` mutation through current combat/GetHitVar consumers. See [issues 141-146](../.scratch/roadmap/issues/141-ikemen-modifyprojectile-hitflag.md).
+- **T566 closed-bounded** — mutate selected Projectile HitDef `affectteam` through the normalized team-affinity policy consumed by combat eligibility and snapshots. See [issue 140](../.scratch/roadmap/issues/140-ikemen-modifyprojectile-affectteam.md).
+- **T565 closed-bounded** — mutate selected Projectile HitDef `attr` and `guardflag` through bounded static values consumed by current attribute and guard predicates. See [issue 139](../.scratch/roadmap/issues/139-ikemen-modifyprojectile-hitdef-flags.md).
+- **T564 closed-bounded** — refresh selected Projectile terminal animation numbers and owner AIR references through numeric `projhitanim`, `projremanim`, and `projcancelanim`. Focused/runtime/trace gates pass; the full suite keeps its inherited 58 failures. See [issue 138](../.scratch/roadmap/issues/138-ikemen-modifyprojectile-terminal-animation.md).
+- **T563 closed-bounded** — replace selected active Projectile AIR actions through numeric `projanim` and reset the cursor only when the animation changes. Focused/runtime/trace gates pass; the full suite keeps its inherited 58 failures. See [issue 137](../.scratch/roadmap/issues/137-ikemen-modifyprojectile-animation.md).
+- **T561 closed-bounded** — separate ModifyProjectile `id`/`index` selection from `projid` mutation, with active oldest-first owner selection and terminal exclusion. Focused/runtime/trace gates pass; the full suite keeps its inherited 58 failures. See [issue 135](../.scratch/roadmap/issues/135-ikemen-modifyprojectile-selection.md).
+- **T562 closed-bounded** — add `?mode=lab&labView=compare` for action-by-action roster comparison, isolated runtime loading, component facts, route persistence, and diagnostic details. Browser, typecheck, build, boundaries, CSS budget, and visual gates pass; broad smoke timed out after 124 seconds. See [issue 136](../.scratch/roadmap/issues/136-fighter-lab-character-compare.md).
+- **T560 closed-bounded** — carry spawn-only Projectile `ownpal`/`remappal` into typed palette state, renderer lookup, snapshots, and `ProjVar(DrawPal.Group/Index)`. See [issue 134](../.scratch/roadmap/issues/134-ikemen-projectile-palette.md).
+- **T559 closed-bounded** — static four-value Projectile `projwindow` now drives spawn/modify state, local-coordinate-scaled snapshots, and bounded live quad/UV clipping. Focused coverage is 3 files / 112 tests; runtime gates and 686/686 traces pass. See [issue 133](../.scratch/roadmap/issues/133-ikemen-projectile-window.md).
+- **T558 closed-bounded** — static Projectile `projprojection`/`projfocallength` now drive spawn/modify state, snapshots, and bounded orthographic/perspective rendering. Focused coverage is 9 files / 282 tests; runtime gates and 686/686 traces pass. See [issue 132](../.scratch/roadmap/issues/132-ikemen-projectile-projection.md).
+- **T557 closed-bounded** — static Projectile `projreflection` now drives official auto/off/on state, snapshots, and a bounded live mirrored sprite. Focused coverage is 9 files / 281 tests; runtime gates and 686/686 traces pass. See [issue 131](../.scratch/roadmap/issues/131-ikemen-projectile-reflection.md).
+- **T556 closed-bounded** — static Projectile `projshadow` RGB now drives spawn/partial modify state, snapshots, redirects, bounded live tinted shadows, and numeric `ProjVar` reads. Focused coverage is 9 files / 280 tests; runtime gates and 686/686 traces pass. See [issue 130](../.scratch/roadmap/issues/130-ikemen-projectile-shadow.md).
+- **T555 closed-bounded** — static Projectile `projxshear` now drives spawn/modify state, snapshots, redirects, bounded live deformation, and numeric `ProjVar` reads. Focused coverage is 9 files / 279 tests; runtime gates and 686/686 traces pass. See [issue 129](../.scratch/roadmap/issues/129-ikemen-projectile-xshear.md).
+- **T554 closed-bounded** — static Projectile `projxangle`/`projyangle` now drive spawn/modify state, snapshots, redirects, bounded live X/Y mesh rotation, and numeric `ProjVar` reads. Focused coverage is 9 files / 278 tests; runtime gates and 686/686 traces pass. See [issue 128](../.scratch/roadmap/issues/128-ikemen-projectile-xy-angle.md).
+- **T553 closed-bounded** — static Projectile `projangle` now drives spawn/modify state, snapshots, redirects, live Z-axis mesh rotation, and numeric `ProjVar` reads. Focused coverage is 9 files / 278 tests; runtime gates and 686/686 traces pass. See [issue 127](../.scratch/roadmap/issues/127-ikemen-projectile-angle.md).
+- **T552 closed-bounded** — normalized Projectile `projlayerno` now drives spawn/modify state, snapshots, redirects, numeric `ProjVar` reads, and live presentation bands. Focused coverage is 9 files / 290 tests; runtime gates and 686/686 traces pass. See [issue 126](../.scratch/roadmap/issues/126-ikemen-projectile-layerno.md).
+- **T551 closed-bounded** — typed three-axis Projectile `velmul` now drives acceleration-aware X/Y/Z motion, terminal reset, snapshots, redirects, and numeric `ProjVar` reads. Focused coverage is 8 files / 292 tests; runtime gates and 686/686 traces pass. See [issue 125](../.scratch/roadmap/issues/125-ikemen-projectile-velmul-z.md).
+- **T550 closed-bounded** — typed three-axis Projectile `remvelocity` now drives terminal AIR movement and numeric `ProjVar` reads. Focused coverage is 8 files / 292 tests; runtime gates and 686/686 traces pass. See [issue 124](../.scratch/roadmap/issues/124-ikemen-projectile-remvelocity.md).
+- **T549 closed-bounded** — typed Projectile `pausemovetime` and `supermovetime` now govern paused lifecycle advancement and numeric `ProjVar` reads. Focused coverage is 8 files / 278 tests; runtime gates and 686/686 traces pass. See [issue 123](../.scratch/roadmap/issues/123-ikemen-projectile-pause-movetime.md).
+- **T548 closed-bounded** — static `ProjVar` `attr`, `guardflag`, and `hitflag` comparisons reuse T547 selection and redirects, preserve Ikemen's complemented-mask `!=` behavior, and fail closed for missing projectiles. Focused coverage is 5 files / 173 tests; runtime gates pass. See [issue 122](../.scratch/roadmap/issues/122-ikemen-projvar-flags.md).
+- **T547 closed-bounded** — numeric `ProjVar(id, index, param)` reads filter active caller-owned projectiles, preserve oldest-first indexing and redirects, and convert coordinate-like values to the caller output `localcoord`. Focused coverage is 5 files / 172 tests; runtime gates pass. See [issue 121](../.scratch/roadmap/issues/121-ikemen-projvar.md).
+- **T546 closed-bounded** — `ProjClsnOverlap` selects active caller-owned projectiles in oldest-first order and checks transformed Clsn1/Clsn2 geometry against a target player's `clsn1`, `clsn2`, or `size`. Focused coverage is 8 files / 258 tests; runtime gates pass. See [issue 120](../.scratch/roadmap/issues/120-ikemen-projclsnoverlap.md).
+- **T545 closed-bounded** — add `?mode=lab&labView=matrix` with the full loaded roster, all 34 actions, 12 component checks, direct runtime selection, and the shared Testbench lens. Browser, typecheck, build, boundaries, CSS-budget, and visual gates pass; broad smoke timed out. See [issue 119](../.scratch/roadmap/issues/119-fighter-lab-character-matrix.md).
+- **T544 closed-bounded** — `ClsnOverlap` resolves dynamic player IDs and transformed `clsn1`/`clsn2`/`size` overlap through shared CNS/controller contexts. Focused coverage is 5 files / 83 tests; runtime gates pass. See [issue 118](../.scratch/roadmap/issues/118-ikemen-clsnoverlap.md).
+- **T543 closed-bounded** — `ClsnVar` reads current-frame `clsn1`, `clsn2`, and `size` coordinates through CNS/controller contexts, redirects, `localcoord`, and the Testbench. Focused coverage is 5 files / 80 tests; runtime and browser gates pass. See [issue 117](../.scratch/roadmap/issues/117-ikemen-clsnvar.md).
+- **T542 closed-bounded** — `AnimPlayerNo` reads the active animation owner's `playerNo` through the shared animation, CNS, and controller seams. Focused coverage is 5 files / 81 tests; typecheck passes. See [issue 116](../.scratch/roadmap/issues/116-ikemen-animplayerno.md).
+- **T541 closed-bounded** — `AnimLength` sums effective imported AIR frame durations (`max(1, duration)`) through CNS/controller context and the read-only Testbench. Focused coverage is 5 files / 78 tests; the browser gate exposes the value with zero page/console errors. See [issue 115](../.scratch/roadmap/issues/115-ikemen-animlength.md).
+- **T540 closed-bounded** — `AnimElemVar` now reads the active AIR frame's Group, Image, effective Time, offsets, flip flags, and Clsn counts through the shared CNS/controller context and read-only Testbench. Focused coverage is 4 files / 72 tests; browser evidence passes with zero page/console errors. See [issue 114](../.scratch/roadmap/issues/114-ikemen-animelemvar.md).
+- **T539 closed-bounded** — `FightTime` now comes from a resettable round-owned clock and bounded `GameVar(introtime|outrotime|pausetime|slowtime|superpausetime)` reads share the typed FightScreen context. Focused coverage is 4 files / 71 tests; pause stacking and rollback/network authority remain outside the claim. See [issue 113](../.scratch/roadmap/issues/113-ikemen-fighttime-gamevar.md).
+- **T538 closed-bounded** — the runtime now projects `IntroState`, the four `FightScreenState` display booleans, and numeric `FightScreenVar` timing/localcoord reads from the imported FightScreen clock. Focused coverage is 4 files / 69 tests. See [issue 112](../.scratch/roadmap/issues/112-ikemen-introstate-fightscreenstate.md).
+- **T536 closed-bounded** — the typed `RoundState` projection now exposes the control-locked Fight screen as `1`, the main fight as `2`, and preserves `0/3/4` through both `mugen-1.1` and `ikemen-go` round transitions. See [issue 110](../.scratch/roadmap/issues/110-ikemen-roundstate-semantics.md).
+- **T537 closed-bounded** — add `?mode=lab&labView=testbench` with complete loaded-action inventory, frame selection, collision totals, VFX/runtime component health, and evidence links. The browser gate covers 17 action cards, 6 component cards, action selection, WebGL rendering, and zero page errors. See [issue 111](../.scratch/roadmap/issues/111-fighter-lab-animation-testbench.md).
+- **T532 closed-bounded** — route Helper-owned LifeAdd/PowerAdd through the opt-in team resource contract; team-shared Helpers are fail-closed when the contract is disabled, the opt-in sink applies bounded writes to the root bank and reconciles it, and both dispatcher and PlayableMatchRuntime coverage prove denied-admission short-circuiting. The required trace coverage is tracked separately by T533/issue 107.
+- **T533 closed-bounded** — an imported Tag runtime fixture now spawns a Helper with LifeSet/PowerSet under Ikemen team sharing and asserts active/reserve root mutation plus Helper-local immutability. The shared sink exposes an ephemeral Life/Power shadow to subsequent Helper triggers, so chained LifeAdd/LifeSet/PowerAdd/PowerSet controllers evaluate without mutating Helper-local resources. The required shared Helper trace is registered and green; coverage is now `685/685` (651 required). Broader auxiliary-resource parity remains separate scope. See [issue 107](../.scratch/roadmap/issues/107-ikemen-helper-shared-resource-trace.md).
+- **T534 closed-bounded** — the same opt-in imported Helper contract now routes `RedLifeAdd`/`RedLifeSet` through the root/team LifeShare bank, reconciles active and reserve roots, exposes an ephemeral `RedLife` trigger shadow, and preserves the Helper-local pool. The required trace is green at `686/686` (652 required, 34 optional). See [issue 108](../.scratch/roadmap/issues/108-ikemen-helper-redlife-lifeshare.md).
+- **T535 closed-bounded** — preserve effective direct/Projectile HitDef `hitflag` metadata (official omitted default `MAF`) and evaluate static `GetHitVar(hitflag) =/!= <flags>` comparisons with M→H/L expansion, including redirected contexts. Focused compiler/context/CNS/direct/projectile coverage is 5 files / 238 tests; the existing trace corpus remains `686/686`. See [issue 109](../.scratch/roadmap/issues/109-ikemen-gethitvar-hitflag.md).
+
+## Latest execution cursor — T522-T552 and Fighter Lab (2026-08-08)
+
+0. **T541 closed-bounded** — expose `AnimLength` as the effective total duration
+   of the actor's current imported AIR action. Focused coverage is 5 files / 78
+   tests; the Testbench browser gate passes with the metadata visible.
+1. **T542 closed-bounded** — carry the active animation owner through
+   `ChangeAnim`/`ChangeAnim2` and expose `AnimPlayerNo` through shared expression
+   contexts. Focused coverage is 5 files / 81 tests; typecheck passes.
+2. **T543 closed-bounded** — expose typed current-frame `ClsnVar` reads for
+   `clsn1`, `clsn2`, and `size`, including redirects and `localcoord`.
+3. **T544 closed-bounded** — expose `ClsnOverlap` through dynamic player-ID
+   lookup and transformed world collision; focused coverage is 5 files / 83
+   tests and runtime gates pass.
+4. **T545 closed-bounded** — expose the Character Matrix with every loaded
+   fighter/action/component and direct selection into the existing preview
+   runtime and diagnostic lens.
+5. **T546 closed-bounded** — expose `ProjClsnOverlap` through owner-relative
+   projectile indexing, player-ID lookup, and transformed collision. Focused
+   coverage is 8 files / 258 tests and runtime gates pass.
+6. **T547 closed-bounded** — expose bounded numeric `ProjVar` fields through
+   the same owner-relative projectile index. Focused coverage is 5 files / 172
+   tests and runtime gates pass.
+7. **T548 closed-bounded** — expose typed static `ProjVar` flag comparisons
+   with official complemented-mask inequality semantics.
+8. **T549 closed-bounded** — add Projectile Pause/SuperPause movement
+   counters and numeric `ProjVar` reads. Focused coverage is 8 files / 278
+   tests; runtime gates and 686/686 traces pass.
+9. **T550 closed-bounded** — add Projectile removal velocity, terminal
+   movement, and numeric `ProjVar` reads. Focused coverage is 8 files / 292
+   tests; runtime and trace gates pass.
+10. **T551 closed-bounded** — add Projectile Z velocity multiplier, motion,
+    snapshots, and numeric `ProjVar` reads. Focused coverage is 8 files / 292
+    tests; runtime and trace gates pass.
+11. **T552 closed-bounded** — add normalized Projectile layer state,
+    presentation ordering, snapshots, and numeric `ProjVar` reads. Focused
+    coverage is 9 files / 290 tests; runtime and trace gates pass.
+12. **T553 closed-bounded** — add Projectile Z-axis sprite angle, renderer
+    rotation, snapshots, and numeric `ProjVar` reads. Focused coverage is 9
+    files / 278 tests; runtime and trace gates pass.
+13. **T554 closed-bounded** — add Projectile X/Y sprite angles, bounded
+    renderer rotation, snapshots, and numeric `ProjVar` reads. Focused coverage
+    is 9 files / 278 tests; runtime and trace gates pass.
+14. **T555 closed-bounded** — add Projectile X shear, bounded renderer
+    deformation, snapshots, and numeric `ProjVar` reads. Focused coverage is 9
+    files / 279 tests; runtime and trace gates pass.
+15. **T556 closed-bounded** — add Projectile RGB shadow state, partial modify
+    semantics, snapshots, live tint, and numeric `ProjVar` reads. Focused
+    coverage is 9 files / 280 tests; runtime and trace gates pass.
+16. **T557 closed-bounded** — add Projectile reflection state, official
+    auto/off/on selection, snapshots, and a bounded live mirrored sprite.
+    Focused coverage is 9 files / 281 tests; runtime and trace gates pass.
+17. **T558 closed-bounded** — add Projectile named projection and focal length
+    state, snapshots, and bounded live perspective projection. Focused coverage
+    is 9 files / 282 tests; runtime and trace gates pass.
+18. **T559 closed-bounded** — add four-value Projectile window state,
+    local-coordinate snapshots, and bounded live quad/UV clipping. Focused
+    coverage is 3 files / 112 tests; runtime and trace gates pass.
+19. **T560 active-implementation** — add spawn-only Projectile palette
+    ownership/remap state, renderer routing, and draw-palette `ProjVar` reads.
+1. **T539 closed-bounded** — project `FightTime` and bounded timing `GameVar`
+   reads from the round-owned clock and pause/post-round snapshots. Focused
+   coverage is 4 files / 71 tests; no rollback/netplay timing claim.
+2. **T538 closed-bounded** — project `IntroState`, `FightScreenState`, and
+   numeric `FightScreenVar` values from the real imported round clock. Focused
+   coverage is 4 files / 69 tests; string info and Helper redirection remain
+   outside the claim.
+3. **T536 closed-bounded** — name and test the `RoundState` projection across
+   both compatibility profiles, including the control-locked Fight screen and
+   KO/over/next-round boundaries. Focused coverage is 3 files / 65 tests.
+4. **T537 closed-bounded** — expose an Animation Testbench view with every
+   loaded action, frame scrubber, collision totals, package component health,
+   and evidence links at `?mode=lab&labView=testbench`.
+4. **T530 closed-bounded** — expose a Character Showcase view with roster cards,
+   quick animation/VFX actions, and URL state at `?mode=lab&labView=showcase`.
+
+2. **T522 closed-bounded** — expose authored HitDef score for direct/Projectile
+   last-hit reads without score adjudication.
+3. **T523 closed-bounded** — expose effective hit/guard `givepower` without
+   mutating the defender's power resource.
+4. **T524 closed-bounded** — expose authored `p2facing` on non-guard direct and
+   Projectile contacts; live-facing/ReversalDef choreography remains open.
+5. **T505 Gallery closed-bounded** — add `?mode=lab&labView=gallery` with all
+   loaded fighters, action/frame/box inventory, complete action index, and
+   card-to-timeline navigation; dedicated browser evidence passes.
+6. **T525 closed-bounded** — pin and implement official `GetHitVar(guardcount)`
+   increment, selective persistence, and idle reset for direct/Projectile guard
+   contacts.
+7. **T526 closed-bounded** — add `comboHitCount` for first/consecutive direct and
+   player-owned Projectile contacts, preserve through guards, and reset after a
+   guarded contact; `ikemen-go` applies the counter with authored `numhits`,
+   while M.U.G.E.N/static traces retain the fallback.
+8. **T527 closed-bounded** — reconcile authored `numhits` multi-hit contacts
+   with the mutable `GetHitVar(hitcount)` counter; required trace proves two
+   eligible Projectile hits and one guarded break while static fallback stays.
+9. **T105 closed-bounded** — Helper resource writes pass the dispatcher gate;
+   ownership conflicts are keyed per resource kind, and the team bank exposes
+   root `resolveBinding` plus Helper `resolveHelperBinding`. The explicit
+   `contractEnabled` opt-in now admits bounded shared Life/Power writes, keeps
+   Helper-local resources immutable, exposes an ephemeral trigger shadow for
+   chained controllers, and fails closed when disabled. Broader auxiliary
+   resource parity remains separate scope.
+10. **T531 closed-bounded** — Helper-owned `TagOut` accepts authored caller
+   control and validated leader rotation, applying both through the owning team
+   topology in the Ikemen profile. Successful self TagOut refreshes active
+   roots before the next frame and preflights a valid replacement before
+   mutation. The bounded Helper/TagOut suite passes; broader replacement,
+   round, HUD, and netplay semantics remain separate scope.
+11. **T528 closed-bounded** — implement Ikemen `GetHitVar(xveladd|yveladd)` as
+   separate KO velocity-delta metadata for bounded direct/Projectile contacts;
+   zero fallback and authored/live velocity separation remain explicit.
+
+Evidence: T522/T523/T524 focused 230/232/234 tests, T527 required trace
+`c6582760` / `78e24146`, T528 focused 801/801 tests, T535 focused 238-test
+run, 686/686 corpus,
+typecheck/build/boundaries/diff pass; Gallery browser gate pass. Broad smoke
+timed out; full-suite baseline remains the inherited retired-roster/projectile
+failure set.
+
+## Current content execution override — T499-T505 (2026-08-01)
+
+1. **T499 closed-bounded** — move every former public fighter package to the
+   recoverable scratch archive; preserve Kung Fu Man only as a private fixture.
+2. **T500 closed-bounded** — accept Rocco Vidal's sober karate identity anchor.
+3. **T501 closed-bounded** — accept Nadia Arce's sober karate identity anchor.
+4. **T502 closed-bounded** — produce 28 direct Imagegen rows, 158 frames, two
+   atlases, provenance, contact/onion/matte evidence and runtime workbenches.
+5. **T503 closed-bounded** — register only the two new fighters in roster,
+   atlas routes, Studio permissions and MUGEN-lite packages.
+6. **T504 active** — close identity/pre-package and the full browser smoke.
+   Current build, typecheck, focused tests and asset hygiene pass. Visual QA
+   passes, but the unchanged identity proxy retains 34 pose/occlusion alerts.
+   Rocco/Nadia pass browser desktop/mobile; damage, authoring, stage art, ZIP
+   completeness and both release policies pass. Six prior fixture visual
+   failures keep the global smoke red.
+7. **T505 closed-bounded** — provide Fighter Lab with fighter/action/frame
+   selection, playback, atlas/evidence, collision overlays and 3 VFX previews.
+   Its focused browser, Vitest, typecheck, build and CSS budget gates pass.
+
+Issues: [78](../.scratch/roadmap/issues/78-roster-reset-two-karate-fighters.md),
+[79](../.scratch/roadmap/issues/79-fighter-lab.md).
+No compatibility score movement is allowed from native content work.
+
+## Current execution override — T424-T492 and T506-T520 official parity queue (2026-08-02)
 
 T424 is closed-bounded: imported roots/helpers now have a shared typed
 current-state transition result, same-tick destination continuation,
@@ -79,6 +324,73 @@ Projectile paths, select it by contact context, and write only explicit Z into
 imported-fighter coverage passes 251/251; final 324/3317 suite,
 typecheck/build/boundaries and 682/682 trace gates are green. ModifyHitDef Z
 mutation, Common1 Z physics and full depth parity remain open.
+
+T482 is closed-bounded: compile static `ModifyHitDef` vector
+parameters, retain authored ground/air/down/guard/airguard Z and mutate the
+active normal HitDef move consumed by direct/projectile contact. Focused
+compiler/HitDef mutation coverage passes 2 files/89 tests; final 324/3317
+suite, typecheck/build/boundaries and 682/682 trace gates are green. Dynamic
+expressions, helper/team ownership and Common1 depth physics remain open.
+
+T483 is closed-bounded: compile static `xaccel`, `yaccel` and `zaccel`, carry
+ authored metadata through imported/direct/projectile HitDef contacts, and
+ expose `GetHitVar(xaccel|yaccel|zaccel)` with zero defaults for omitted
+ horizontal/depth components. Focused coverage passes 7 files/249 tests;
+ `pnpm typecheck` and boundaries pass. Full physics, localcoord/facing scaling,
+ dynamic expressions, ModifyHitDef acceleration mutation and score movement
+remain open.
+
+T484 is closed-bounded: compile static `ModifyHitDef` `xaccel`, `yaccel` and
+`zaccel` values and mutate the active normal HitDef metadata in place, so the
+existing direct/projectile `GetHitVar` route observes the update. Focused
+compiler/HitDef mutation coverage passes 2 files/89 tests; typecheck passes.
+T485 is closed-bounded: retain supported scalar expressions for those three
+fields and evaluate them in the active HitDef/ModifyHitDef context before
+writing typed hit metadata. Focused coverage passes 7 files/250 tests; final
+324/3321 suite, typecheck/build/boundaries, 682/682 traces and asset hygiene
+pass. Physics/scaling and score movement remain open. T486 is now
+closed-bounded: expose the selected optional depth component through
+Ikemen-only `GetHitVar(zvel)` with a zero fallback; the shared expression
+context gate passes 27/27. T487 is now closed-bounded: Ikemen `HitVelSet z`
+is retained in typed kinematic IR and copies active hit depth velocity into
+`combatDepth.velocity`; the two-file focused slice passes 71 tests.
+T488 is now closed-bounded: direct HitDef and player-owned Projectile contacts
+carry ground/air/down/guard/airguard velocity vectors into the Ikemen
+`GetHitVar` dotted aliases with zero fallback; the focused four-file slice
+passes 133 tests.
+T489 is now closed-bounded: direct HitDef and player-owned Projectile contacts
+preserve the first and second damage components as `GetHitVar(hitdamage)` and
+`GetHitVar(guarddamage)`; the focused three-file slice passes 114 tests.
+T490 is now closed-bounded: direct HitDef, player-owned Projectile, and imported
+moves preserve ground/air/fall reaction animation types for the three dotted
+`GetHitVar` aliases; the focused seven-test-file slice passes 256 tests.
+T491 is now closed-bounded: direct HitDef, player-owned Projectile, and imported
+moves preserve authored `fall.envshake.mul`, with omitted values reading the
+official default `1`; the focused seven-test-file slice passes 258 tests.
+T492 is now closed-bounded: direct HitDef and player-owned Projectile contacts
+expose the source attacker's `playerno` through the shared read model; the
+focused three-file slice passes 119 tests and the final suite passes 324/3330.
+T506 is now closed-bounded: root and verified Helper direct/Projectile contacts
+retain the source character's numeric `playerid` separately from inherited
+`playerno`; the focused five-file slice passes 178 tests and five deterministic
+IKEMEN trace checks pass. Typecheck, build, boundaries and asset hygiene pass.
+T507 is now closed-bounded: the current official deprecated `ID` spelling maps
+to T506 numeric source identity with the same `0` fallback; the focused shared
+expression file passes 27 tests.
+T508 is now closed-bounded: required identity and nonlethal HitDef opponent
+labels use the active demo roster. Focused 2/2 and aggregate 682/682 traces pass;
+the broader retired-roster Vitest debt remains separate.
+T509 is now closed-bounded: the existing guard-KO contact flag is exposed as
+numeric `GetHitVar(guardko)`. Three focused files / 121 tests and final
+typecheck/build/boundaries plus 682/682 traces pass.
+T510 is now closed-bounded: static `GetHitVar(attr)` equality and inequality
+filters compare the active actor's existing last-hit `sourceAttr`. Three
+focused files / 118 tests and final typecheck/build/boundaries plus 682/682
+traces pass.
+T511 is now closed-bounded: static `GetHitVar(guardflag)` equality and
+inequality compare retained effective direct/Projectile/Helper HitDef flags by
+Ikemen overlap (`M = H|L`) in active and redirected contexts. Six focused files
+/ 224 tests and the same final gates pass; browser smoke is N/A.
 
 Continue in this order:
 
@@ -202,21 +514,155 @@ Continue in this order:
      guard/airguard direct and Projectile contacts (`I2`, closed-bounded:
      251 focused, 324/3317 full, typecheck/build/boundaries, 682/682 traces,
      issue [66](../.scratch/roadmap/issues/66-ikemen-hitdef-velocity-z.md)).
-32. **T471** — regenerate blocked spritesheet rows from Imagegen with accepted
-     identity anchors (`C1`, active: Bruno Giro `walk-forward`, `walk-back`,
-     `guard` and `special` have fresh provenance/alignment/14-state runtime
-     previews; aggregate identity/contract gates remain open, issue
-     [56](../.scratch/roadmap/issues/56-content-spritesheet-provider-regeneration.md);
-     asset-path hygiene now passes after generated-report sanitation).
+32. **T482** — carry authored HitDef vector Z through static `ModifyHitDef` on
+     an active normal HitDef (`I2`, closed-bounded: 2 files/89 focused,
+     324/3317 full, typecheck/build/boundaries, 682/682 traces, issue
+     [67](../.scratch/roadmap/issues/67-ikemen-modifyhitdef-velocity-z.md)).
+33. **T483** — carry static HitDef/Projectile `xaccel`, `yaccel` and `zaccel`
+     through imported/direct/projectile hit metadata and `GetHitVar` (`I2`,
+     closed-bounded: 7 files/249 focused, typecheck/boundaries, issue
+     [68](../.scratch/roadmap/issues/68-ikemen-hitdef-acceleration-metadata.md)).
+34. **T484** — mutate active normal HitDef `xaccel`, `yaccel` and `zaccel` via
+     static `ModifyHitDef` (`I2`, closed-bounded: 2 files/89 focused,
+     typecheck, issue
+     [69](../.scratch/roadmap/issues/69-ikemen-modifyhitdef-acceleration-metadata.md)).
+35. **T485** — evaluate supported dynamic HitDef/ModifyHitDef `xaccel`,
+     `yaccel` and `zaccel` expressions in the active controller context (`I2`,
+     closed-bounded: 7 files/250 focused, 324/3321 full, typecheck/build/
+     boundaries, 682/682 traces, asset hygiene, issue
+     [70](../.scratch/roadmap/issues/70-ikemen-hitdef-acceleration-dynamic.md)).
+36. **T486** — expose active HitDef/Projectile depth velocity through
+     Ikemen-only `GetHitVar(zvel)` with an omitted-depth zero fallback (`I2`,
+     closed-bounded: RuntimeExpressionContextSystem 27/27 focused, 324/3321
+     full, typecheck/build/boundaries and 682/682 trace, issue
+     [71](../.scratch/roadmap/issues/71-ikemen-gethitvar-zvel.md)).
+37. **T487** — carry the official Ikemen `HitVelSet z` flag through static
+     compiler IR and runtime depth velocity application (`I2`, closed-bounded:
+     71 focused, 324/3321 full, typecheck/build/boundaries and 682/682 trace,
+     issue [72](../.scratch/roadmap/issues/72-ikemen-hitvelset-z.md)).
+38. **T488** — preserve direct HitDef/Projectile ground/air/down/guard/airguard
+     velocity vectors for Ikemen `GetHitVar` dotted readback (`I2`,
+     closed-bounded: 4 focused files/133 tests, 324/3324 full,
+     typecheck/build/boundaries and 682/682 trace, issue
+     [73](../.scratch/roadmap/issues/73-ikemen-gethitvar-velocity-vectors.md)).
+39. **T489** — expose direct HitDef/Projectile first and second damage
+     components through Ikemen `GetHitVar(hitdamage|guarddamage)` (`I2`,
+     closed-bounded: 3 focused files/114 tests, 324/3324 full,
+     typecheck/build/boundaries and 682/682 trace, issue
+     [74](../.scratch/roadmap/issues/74-ikemen-gethitvar-damage.md)).
+40. **T490** — expose direct HitDef/Projectile/imported ground, air, and fall
+     reaction animation types through Ikemen `GetHitVar` aliases (`I2`,
+     closed-bounded: 7 test files/256 tests, 324/3327 full,
+     typecheck/build/boundaries and 682/682 trace, issue
+     [75](../.scratch/roadmap/issues/75-ikemen-gethitvar-animtype.md)).
+41. **T491** — expose direct HitDef/Projectile/imported `fall.envshake.mul`
+     through Ikemen `GetHitVar` (`I2`, closed-bounded: 7 test files/258 tests,
+     324/3329 full, typecheck/build/boundaries and 682/682 trace, issue
+     [76](../.scratch/roadmap/issues/76-ikemen-gethitvar-fall-envshake-mul.md)).
+42. **T492** — expose direct HitDef/Projectile `GetHitVar(playerno)` from the
+     propagated source attacker slot (`I2`, closed-bounded: 3 test files/119
+     tests, 324/3330 full, typecheck/build/boundaries, 682/682 trace, issue
+     [77](../.scratch/roadmap/issues/77-ikemen-gethitvar-playerno.md)).
+43. **T506** — expose root and verified Helper direct/Projectile
+     `GetHitVar(playerid)` from the numeric source character identity, keeping
+     inherited `playerno` separate (`I2`, closed-bounded: 5 files/178 focused,
+     5 deterministic trace checks, typecheck/build/boundaries/asset hygiene;
+     global gates held only by retired-roster fixtures, issue
+     [80](../.scratch/roadmap/issues/80-ikemen-gethitvar-playerid.md)).
+44. **T507** — preserve deprecated-but-valid Ikemen `GetHitVar(ID)` as an alias
+     of T506 `playerid` (`I2`, closed-bounded: 1 focused file/27 tests, issue
+     [81](../.scratch/roadmap/issues/81-ikemen-gethitvar-id-alias.md)).
+45. **T508** — bind required opponent-name traces to the active roster and
+     restore the aggregate trace baseline (`R1`, closed-bounded: focused 2/2,
+     aggregate 682/682, issue
+     [82](../.scratch/roadmap/issues/82-required-trace-active-roster-decoupling.md)).
+46. **T509** — expose existing direct/root-Projectile guard-KO metadata as
+     numeric `GetHitVar(guardko)` (`I2`, closed-bounded: 3 files/121 tests,
+     typecheck/build/boundaries, 682/682 trace, issue
+     [83](../.scratch/roadmap/issues/83-ikemen-gethitvar-guardko.md)).
+47. **T510** — compare static Ikemen `GetHitVar(attr)` filters against the
+     active actor's retained `sourceAttr` (`I2`, closed-bounded: 3 files/118
+     tests, typecheck/build/boundaries, 682/682 trace, issue
+     [84](../.scratch/roadmap/issues/84-ikemen-gethitvar-attr.md)).
+48. **T511** — compare retained effective HitDef `guardflag` metadata by
+     Ikemen overlap masks for active/redirected actors (`I2`, closed-bounded:
+     6 files/224 tests, typecheck/build/boundaries, 682/682 trace, issue
+     [85](../.scratch/roadmap/issues/85-ikemen-gethitvar-guardflag.md)).
+49. **T512** — retain Projectile `projectileId` in last-hit metadata and expose
+     numeric `GetHitVar(projid)` with `-1` for direct/missing hits (`I2`,
+     closed-bounded: 4 focused files/186 tests, 682/682 trace, typecheck/build/
+     boundaries; issue
+     [86](../.scratch/roadmap/issues/86-ikemen-gethitvar-projid.md)).
+50. **T513** — retain effective 1-based HitDef/Projectile team side and expose
+     numeric `GetHitVar(teamside)` with `-1` for missing metadata (`I2`,
+     closed-bounded: 4 focused files/186 tests, 682/682 trace, typecheck/build/
+     boundaries; issue
+     [87](../.scratch/roadmap/issues/87-ikemen-gethitvar-teamside.md)).
+51. **T514** — retain authored direct HitDef `keepstate` and expose numeric
+     `GetHitVar(keepstate)` as 1/0 with the false/missing fallback (`I2`,
+     closed-bounded: 5 focused files/212 tests, 682/682 trace,
+     typecheck/build/boundaries and diff hygiene; issue
+     [88](../.scratch/roadmap/issues/88-ikemen-gethitvar-keepstate.md)).
+52. **T515** — expose an ephemeral numeric `GetHitVar(frame)` marker for direct
+     HitDef and Projectile hit/guard contacts, preserving it through hitpause
+     and clearing it on the next non-paused frame (`I2`, closed-bounded: 6
+     focused files/191 tests, 682/682 trace, typecheck/build/boundaries and
+     diff hygiene; issue
+     [89](../.scratch/roadmap/issues/89-ikemen-gethitvar-frame.md)).
+53. **T516 closed-bounded** — expose numeric `GetHitVar(priority)` from the last HitDef for
+     direct and Projectile hit/guard contacts, keeping Projectile `projpriority`
+     clash data separate (`I2`, 4 focused files/188 tests, 682/682 trace,
+     typecheck/build/boundaries and diff hygiene pass; issue
+     [90](../.scratch/roadmap/issues/90-ikemen-gethitvar-priority.md)).
+54. **T517 closed-bounded** — expose numeric `GetHitVar(dizzypoints)` from
+     authored direct/Projectile HitDef metadata, keeping it separate from the
+     defender's current dizzy resource and defaulting missing metadata to `0`
+     (`I2`, 5 focused files/220 tests, 682/682 trace,
+     typecheck/build/boundaries and diff hygiene pass; issue
+     [91](../.scratch/roadmap/issues/91-ikemen-gethitvar-dizzypoints.md)).
+55. **T518 closed-bounded** — expose numeric `GetHitVar(guardpoints)` from
+     authored direct/Projectile HitDef metadata, keeping it separate from the
+     defender's current guard resource and defaulting missing metadata to `0`
+     (`I2`, 5 focused files/222 tests, 682/682 trace,
+     typecheck/build/boundaries and diff hygiene pass; issue
+     [92](../.scratch/roadmap/issues/92-ikemen-gethitvar-guardpoints.md)).
+56. **T519 closed-bounded** — expose numeric `GetHitVar(redlife)` from authored
+     direct/Projectile HitDef metadata, keeping it separate from the defender's
+     current red-life resource and defaulting missing metadata to `0` (`I2`,
+     closed-bounded: 5 focused files/224 tests, 682/682 trace,
+     typecheck/build/boundaries and diff hygiene pass; issue
+     [93](../.scratch/roadmap/issues/93-ikemen-gethitvar-redlife.md)).
+57. **T520 closed-bounded** — expose numeric `GetHitVar(guardpower)` from the second
+     authored `givepower` value, keeping it separate from the defender's current
+     power resource (`I2`, 5 focused files/226 tests, 682/682 trace,
+     typecheck/build/boundaries and diff hygiene pass; issue
+     [94](../.scratch/roadmap/issues/94-ikemen-gethitvar-guardpower.md)).
+58. **T521 closed-bounded** — expose numeric `GetHitVar(hitpower)` from the first
+     authored `givepower` value, keeping it separate from the defender's current
+     power resource (`I2`, issue
+     [95](../.scratch/roadmap/issues/95-ikemen-gethitvar-hitpower.md)).
+59. **T522-T524 closed-bounded** — expose authored score, effective power, and
+     authored `p2facing` through the direct/Projectile last-hit seam without
+     moving score, mutating power, or changing live facing (issues 96-98).
+60. **T525 active research** — verify official `GetHitVar(guardcount)` lifetime
+     before adding mutable runtime metadata (issue
+     [99](../.scratch/roadmap/issues/99-ikemen-gethitvar-guardcount.md)).
+51. **T499-T505** — replace the superseded broad fighter roster with Rocco
+     Vidal and Nadia Arce (`C1/C4/C5`; T499-T503 and T505 closed-bounded,
+     T504 active; issues [78](../.scratch/roadmap/issues/78-roster-reset-two-karate-fighters.md)
+     and [79](../.scratch/roadmap/issues/79-fighter-lab.md)).
 
 The detailed comparison and task contracts live in
 [`2026-07-30-official-mugen-ikemen-roadmap-comparison.md`](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md)
-and issues 09-23 plus 48-54, 57-66. Each task updates its relevant support, QA, research, board,
+and issues 09-23 plus 48-54, 57-77 and 80-94. Each task updates its relevant support, QA, research, board,
 tracker, backlog, and issue entries as evidence lands. Do not change the
 scorecard until a later independent adjudication accepts new runtime/product
 evidence.
 
-## User-directed content expansion — T439-T462
+## Superseded fighter expansion — T439-T471
+
+T499 supersedes T439-T445, T447-T461 and T470-T471. T446/T462 stage work
+remains valid. The following paragraph is historical evidence only.
 
 Six original satirical fighters, eight classic-uniform recolors, shared
 VFX/FightFX, four parallax stages and roster integration are tracked in
@@ -2947,7 +3393,34 @@ Wayfinder 098 is now closed as source-backed research. Pinned IKEMEN keeps stand
 
 Wayfinder 099 is now closed. `RuntimeRootPresentation/v0` publishes independent draw/camera reasons and exact ids while `snapshot.actors` remains P1/P2; Three.js changes only character bodies/shadows and camera roots. Required checksum `97255586` passes inside 542/542 artifacts. Desktop/mobile smoke proves `[p1,p2] -> [p3,p2] -> [p1,p2]`, stable HUD/pair/reserve ownership, 994/1173-color nonblank canvases, matching phase capabilities, and stale-mesh cleanup. Full gates pass 176 files / 1794 tests, TypeScript 7, build, boundaries, and diff. Wayfinder 100 now maps stage constraints, body push, collision, and combat admission before implementation; scores remain unchanged.
 
+Wayfinder 127 is closed-bounded. The explicit IKEMEN active-root fixture now
+proves the authored `40/A -> 132/A -> 154/A -> 155/A -> 52/S -> 20/S`
+air-guard landing route, ordered `HitVelSet`/`VelAdd`/`CtrlSet`/`VelSet`/
+`PosSet`/`ChangeState`, exactly one zero-chip `p4 -> p3` guard, and final
+control. `pnpm qa:trace` passes 684/684 artifacts (650 required, 34 optional).
+This remains fixture-owned authored routing; generic aerial physics, exact
+Common1 timing, and full guard parity remain blocked. Next: global
+`AssertSpecial` ownership before team KO or wider team/resource execution.
+
 Browser smoke closeout 2026-07-14: the fresh external-server run passed with `status=passed`, `0` console issues, `0` page errors, and `64` capture paths. Desktop/mobile MUGEN Lite covered direct combat, recovery, guard, NoKOSlow, palette remap, movement, and canvas nonblank checks. Imported Code Fu Man covered `200`, `1000`, and `1100` with idle return. Studio workbench/build/debug, source relink, stage, assets, and IKEMEN scan journeys completed. Evidence: `docs/reports/2026-07-14-mugen-smoke-gate-closeout.md` and `.scratch/qa/qa-smoke/diagnostics.json`. The batched gate is also closed: TypeScript `7.0.2`, build, `213/213` files and `2149/2149` tests with the documented slow-test timeout, `600/600` traces, boundaries, CSS budget, and diff-check all pass. Full parity remains explicitly out of scope.
+
+T529 is now closed-bounded and extended to live Helpers: team round-finish,
+match snapshots, lifebar, and resource projections consume roots, reserves, and
+non-destroyed Helpers through `globalActors`. Focused coverage is 30/30 and
+typecheck passes. Pause layering, shared-resource policy, and full
+M.U.G.E.N/IKEMEN parity remain open.
+
+Issue 104 is the active cursor: `RuntimePauseGlobalAssertSpecial/v0` now defines
+the versioned pause-layer sample and `PlayableMatchRuntime` records it on every
+active pause tick. `pauseGlobalAssertSpecialPolicy(...)` now keeps `TimerFreeze`
+on the fight timer while Pause/SuperPause countdown remains independent. Team
+lifebar visibility now consumes the policy, and stale pause samples clear on the
+next normal tick. Issue 105 now owns the separate Helper resource-ownership
+contract. Issue 105 now provides a read-only Helper resource ownership oracle:
+local Helper ownership remains the fail-closed default, while team-share and
+RedirectID mutation stay blocked until source contracts are added. Keep
+pause sampling, shared Power/Life banks, team replacement, and score adjudication
+as separate gates.
 
 ## Current Non-Goals
 

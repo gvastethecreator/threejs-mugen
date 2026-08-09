@@ -1,5 +1,63 @@
 # Architecture Decisions
 
+## T529: global AssertSpecial is a live-actor MatchWorld reducer
+
+Status: accepted, closed-bounded.
+
+Decision: reduce global `AssertSpecial` flags from all non-destroyed IKEMEN
+roots, reserves, and Helpers at the current tick. Round finish, match
+snapshots, lifebar, and resource projections consume the same versioned
+snapshot; no consumer derives ownership from the active P1/P2 pair. Legacy and
+single-mode profiles retain their existing pair-compatible path. Pause-layer
+sampling, shared-resource mutation, and full team-round parity remain separate
+decisions.
+
+Evidence: Issue 103; focused round/snapshot/runtime coverage 30/30; typecheck
+pass; existing trace corpus 684/684.
+
+Issue 104 pause boundary: `RuntimePauseGlobalAssertSpecial/v0` samples live
+roots/reserves/Helpers per pause tick for diagnostics. It does not freeze the
+post-KO clock or invent a pause-specific `TimerFreeze` mutation: the pinned
+M.U.G.E.N/Ikemen research keeps `TimerFreeze` on the fight timer and
+post-round timing independent. Pause timer/display policy remains a separate
+source-backed cut.
+
+## T522-T526: last-hit metadata stays typed and contact-owned
+
+Status: accepted, closed-bounded.
+
+Decision: preserve authored score, effective hit/guard `givepower`, and
+`p2facing` as separate optional fields in the last-hit read model. Direct and
+player-owned Projectile combat populate them at contact time; the evaluator
+does not infer them from mutable score, power, or live facing. Guard contacts
+only populate fields whose official contract covers guard interaction. T525
+`guardcount` is a cumulative contact counter with explicit idle reset. T526
+adds `comboHitCount` as a separate mutable readback for bounded direct and
+player-owned Projectile contacts; the `ikemen-go` profile enables it for
+authored `hitCount`/`numhits` contacts, while static M.U.G.E.N traces retain
+that field as a compatibility fallback. T527 closes one required authored
+multi-hit Projectile route. T528 closes Ikemen `xveladd`/`yveladd` as
+separate KO-delta fields instead of deriving them from live velocity.
+
+## T528: KO velocity-add readback stays profile-scoped
+
+Status: accepted, closed-bounded.
+
+Decision: retain optional `hitVelocityAdd` metadata in the last-hit model and
+populate it only for lethal direct or root-owned Projectile contacts under
+`ikemen-go`. The expression reader returns the two deltas and defaults to
+zero elsewhere; authored HitDef velocity and live velocity remain separate.
+
+## T505 Gallery: inventory is a view over the existing Lab authority
+
+Status: accepted, closed-bounded.
+
+Decision: derive Gallery cards and action indexes from `getAvailableFighters()`
+and the same `fighter.animations` map used by the timeline. URL state selects a
+fighter/action/frame, while the isolated preview runtime remains the only
+playback authority. This permits imported roster inspection without duplicating
+animation data or changing Match selection.
+
 ## T479: CommonFX coordinate scale belongs to asset resolution
 
 Status: accepted, closed-bounded.
@@ -40,6 +98,212 @@ Common1 physics.
 Gate: focused 251/251, final 324/3317, typecheck, build, boundaries and 682/682
 trace gates pass. ModifyHitDef Z mutation, Common1 Z acceleration/friction and
 full depth parity remain outside this decision.
+
+## T482: static ModifyHitDef Z is an active-move mutation
+
+Status: accepted, closed-bounded.
+
+Decision: let static `ModifyHitDef` retain authored third components from the
+five HitDef velocity vectors and mutate the active normal `DemoMove` in place;
+keep omitted Z unchanged and preserve the existing `down.velocity` X/Y path.
+
+Why: Ikemen defines `ModifyHitDef` as an update of the currently active HitDef.
+Routing its Z metadata through the existing T481 move/resolver seam keeps direct
+and projectile contacts consistent without adding dynamic expression or Common1
+physics claims.
+
+Gate: focused compiler/HitDef mutation coverage passes 2 files/89 tests; final
+324/3317 suite, typecheck/build/boundaries and 682/682 trace gates pass.
+
+## T483: HitDef acceleration is authored hit metadata
+
+Status: accepted, closed-bounded.
+
+Decision: preserve static `xaccel`, `yaccel` and `zaccel` on typed HitDef and
+Projectile metadata, copy them into defender `RuntimeGetHitVars` on direct or
+projectile contact, and expose the same keys through `GetHitVar`. Omitted
+horizontal/depth fields return the official zero default.
+
+Why: Ikemen's hit resolution stores these values in get-hit variables, while
+the current runtime has no matching acceleration/depth integrator. Keeping the
+values as explicit metadata gives imported and player-owned projectile paths a
+shared observable contract without claiming physics or dynamic mutation.
+
+Gate: focused compiler/HitDef/direct/projectile/imported-fighter/expression
+coverage passes 7 files/249 tests; typecheck and boundaries pass. Physics,
+localcoord/facing scaling, dynamic expressions and score movement remain out
+of scope.
+
+## T484: static ModifyHitDef acceleration mutates active hit metadata
+
+Status: accepted, closed-bounded.
+
+Decision: allow static `ModifyHitDef` `xaccel`, `yaccel` and `zaccel` to update
+the active normal `DemoMove.hitVars` in place, preserving the same direct and
+projectile `GetHitVar` contract as T483. Omitted fields remain unchanged.
+
+Gate: focused compiler/HitDef mutation coverage passes 2 files/89 tests;
+typecheck passes. Scaling, physics, helper/team ownership and score movement
+remain outside this decision.
+
+## T485: dynamic acceleration metadata uses the active controller context
+
+Status: accepted, closed-bounded.
+
+Decision: retain supported scalar expressions for HitDef and ModifyHitDef
+`xaccel`, `yaccel` and `zaccel`, evaluate them with the existing active
+controller context, and write only finite results into typed hit metadata.
+Static numbers remain the fast path; this does not add acceleration physics or
+dynamic support for other ModifyHitDef fields.
+
+## T486: expose active depth velocity as an Ikemen-only GetHitVar
+
+Status: accepted, closed-bounded.
+
+Decision: map `GetHitVar(zvel)` to the already materialized
+`CharacterRuntimeState.hitVelocity.z`, returning zero when no optional depth
+component exists. Keep the alias in the shared runtime read model without
+claiming legacy M.U.G.E.N support, depth physics or fall-Z behavior.
+
+Gate: focused compiler/HitDef coverage passes 7 files/250 tests; final
+324/3321 suite, typecheck/build/boundaries, 682/682 traces and asset hygiene
+pass. Scaling, physics, helper/team ownership and score movement remain out of
+scope.
+
+## T487: keep Ikemen HitVelSet Z on the existing kinematic seam
+
+Status: accepted, closed-bounded.
+
+Decision: preserve static `HitVelSet z` in the same typed operation as X/Y and,
+when its flag is nonzero, copy the active hit's optional depth velocity into
+`combatDepth.velocity`. Do not infer Z when no hit exists and do not widen this
+decision into generic depth physics or legacy M.U.G.E.N behavior.
+
+## T488: preserve HitDef velocity families in the Ikemen read model
+
+Status: accepted, closed-bounded.
+
+Decision: store the last direct HitDef/Projectile ground, air, down, guard and
+airguard vectors as typed metadata on `RuntimeGetHitVars`; resolve each x/y/z
+dotted alias through the shared `GetHitVar` path with zero fallback. Keep this
+readback seam independent from dynamic vector evaluation, Z physics and string
+attribute triggers.
+
+Gate: four focused files/133 tests, final 324/3324 suite, typecheck/build/
+boundaries, 682/682 traces, asset hygiene and diff hygiene pass.
+
+## T489: retain authored HitDef damage components in GetHitVar
+
+Status: accepted, closed-bounded.
+
+Decision: store the first and second damage components on the shared hit-variable
+record as `hitDamage` and `guardDamage`, while preserving the effective contact
+`damage` value used by the existing combat path. Resolve them through
+`GetHitVar(hitdamage|guarddamage)` for direct HitDef and player-owned Projectile
+contacts without widening the slice into resource or scaling semantics.
+
+Gate: three focused files/114 tests, final 324/3324 suite, typecheck/build/
+boundaries, 682/682 traces, asset hygiene and diff hygiene pass.
+
+## T490: preserve separate HitDef reaction animation types
+
+Status: accepted, closed-bounded.
+
+Decision: retain ground, air, and fall reaction animation types in the shared
+hit-variable record. Keep `GetHitVar(animtype)` as the existing effective value,
+and expose the three Ikemen dotted aliases through the same read model. Apply
+the documented ground-to-air and air-to-fall defaults at materialization.
+
+Gate: seven test files/256 tests, final 324/3327 suite, typecheck/build/
+boundaries, 682/682 traces, asset hygiene and diff hygiene pass. Common1
+reaction-state choreography and full parity remain blocked.
+
+## T491: retain fall EnvShake multiplier metadata
+
+Status: accepted, closed-bounded.
+
+Decision: add the optional `fall.envshake.mul` value to the existing typed
+fall EnvShake metadata instead of widening the renderer or camera contract.
+Direct HitDef, player-owned Projectile, and imported moves preserve authored
+values; the shared `GetHitVar` read model returns the official default `1` when
+the field is absent.
+
+Gate: seven test files/258 tests, final 324/3329 suite, typecheck/build/
+boundaries, 682/682 traces, asset hygiene and diff hygiene pass. Exact
+EnvShake playback and full parity remain blocked.
+
+## T492: expose source `playerno` through GetHitVar
+
+Status: accepted, closed-bounded.
+
+Decision: reuse the existing `sourcePlayerNo` hit metadata populated by direct
+HitDef and player-owned Projectile contacts. `GetHitVar(playerno)` reads that
+attacker slot and defaults to `0`; it never aliases the defender's own
+runtime `PlayerNo` and does not widen the slice into string attributes or
+helper/team ownership.
+
+Gate: three test files/119 tests, final 324/3330 suite, typecheck/build/
+boundaries, 682/682 traces, asset hygiene and diff hygiene pass.
+
+## T506: keep source `playerid` separate from `playerno`
+
+Status: accepted, closed-bounded.
+
+Decision: extend the existing typed hit-source metadata boundary with numeric
+`sourcePlayerId`. Root and verified Helper direct/Projectile contacts pass the
+registered runtime ID; Helpers retain their own ID while inheriting their
+root's player slot. `GetHitVar(playerid)` reads only this numeric field and
+defaults to `0`; string actor IDs are not parsed as identity.
+
+Gate: five focused files/178 tests and five deterministic IKEMEN trace checks
+pass. Typecheck, 356-module build, boundaries and asset hygiene pass. T508 later
+restores the aggregate trace baseline; browser smoke is N/A and scores remain
+unchanged.
+
+## T507: keep deprecated `ID` as a read alias
+
+Status: accepted, closed-bounded.
+
+Decision: normalize case-insensitive `GetHitVar(ID)` to the existing T506
+numeric source identity. Do not create `sourceId`, parse string actor IDs, or
+widen the expression value model.
+
+Gate: one focused shared-expression file / 27 tests passes. T506 propagation
+remains unchanged.
+
+## T508: bind required trace labels to roster authority
+
+Status: accepted, closed-bounded.
+
+Decision: derive the required identity trigger and nonlethal HitDef event label
+from the active second demo fighter. Do not duplicate public-roster literals in
+trace presets and do not restore retired characters to satisfy evidence.
+
+Gate: focused 2/2 `RuntimeTraceGatePresets` tests and full `pnpm qa:trace`
+682/682 pass (648 required, 34 optional). Typecheck, build, boundaries and diff
+hygiene pass; browser smoke is N/A and scores remain unchanged.
+
+## T509: expose guard KO without duplicating hit state
+
+Status: accepted, closed-bounded.
+
+Decision: map `GetHitVar(guardko)` directly to existing `sourceGuardKo` and
+return numeric `1`/`0`. Keep contact materialization and round-win cause on the
+same typed field.
+
+Gate: three focused files / 121 tests, typecheck, 356-module build, boundaries,
+and 682/682 traces pass. Browser smoke is N/A and scores remain unchanged.
+
+## T510: keep `GetHitVar(attr)` as a typed predicate
+
+Status: accepted, closed-bounded.
+
+Decision: compile static Ikemen attribute filters, then compare them with the
+active actor's existing `sourceAttr` through the shared hit-attribute matcher.
+Do not widen the numeric `GetHitVar` API into a general string channel.
+
+Gate: three focused files / 118 tests, typecheck, 356-module build, boundaries,
+and 682/682 traces pass. Browser smoke is N/A and scores remain unchanged.
 
 ## ADR-014: Active-root constraints are actor-local
 
@@ -294,3 +558,132 @@ Why: appending a live P3-P8 root to `actors` would silently widen several pair-o
 Gate: the first implementation requires a versioned diagnostic, stable pair regression tests, required trace linkage, desktop/mobile screenshots, canvas-pixel and renderer-id checks, reset/stale-mesh proof, and explicit temporary-debt language for the immediate standby draw proxy. Exact outgoing/incoming overlap remains blocked until Tag ZSS choreography executes.
 
 Implementation: `RuntimeRootPresentation/v1` owns independent draw/camera/collision-debug policy. Three.js strictly resolves selected draw and collision roots across pair/reserve storage; collision ids feed diagnostics only and cannot grant push or hit admission. Required checksum `97255586`, 543/543 traces, and desktop/mobile `[p1,p2] -> [p3,p2] -> [p1,p2]` proof close this gate without widening pair-owned gameplay consumers.
+
+## T511: keep `GetHitVar(guardflag)` as a typed overlap predicate
+
+Decision: retain the effective authored/defaulted guard flag at contact and
+rewrite only static `=` / `!=` comparisons. Match flag masks by overlap,
+including `M = H|L`, against the active expression actor.
+
+Why: this mirrors current Ikemen compiler/bytecode behavior without widening
+the numeric GetHitVar path into a general string channel.
+
+Gate: direct, Projectile, Helper, redirected, missing-metadata, compiler, and
+runtime-context coverage must pass. `hitflag` stays separate while the nightly
+wiki and current `develop` compiler source disagree.
+
+## T535: keep `GetHitVar(hitflag)` as a typed overlap predicate
+
+Status: accepted, closed-bounded.
+
+Decision: retain the effective direct/Projectile HitDef `hitflag` in
+`sourceHitFlag`, default omitted values to `MAF`, and rewrite only static
+`=`/`!=` comparisons. Reuse the normalized H/L/A/F/D/+/- mask matcher with
+`M` expansion, while keeping the numeric `GetHitVar` path unchanged.
+
+Evidence: issue 109; focused compiler/context/CNS/direct/projectile coverage
+passes 5 files / 238 tests; existing trace corpus remains `686/686`.
+
+Gate ceiling: dynamic flag expressions, reset/lifetime parity, RedirectID
+ownership, rollback/netplay, and full M.U.G.E.N/IKEMEN parity remain separate.
+
+## T512: keep `GetHitVar(projid)` as numeric last-hit metadata
+
+Decision: copy the authored Projectile ID into defender hit metadata during
+Projectile contact and expose it through the existing numeric GetHitVar path.
+Direct HitDef and missing metadata return `-1`.
+
+Why: current Ikemen bytecode reads a dedicated integer and uses the negative
+sentinel to distinguish non-Projectile hits; no string channel or predicate
+rewrite is needed.
+
+Gate: compiler, RuntimeHitVar, direct, Projectile, Helper-source, and context
+tests plus trace/build/type/boundary evidence.
+
+## T513: keep `GetHitVar(teamside)` as numeric last-hit metadata
+
+Decision: retain the effective 1-based source team side during direct and
+Projectile contact. Prefer explicit HitDef/Projectile data and derive omitted
+local values from the attacker/root identity; return `-1` without metadata.
+
+Why: current Ikemen stores the internal team side with each GetHitVar record
+and returns it plus one from bytecode. A typed numeric field preserves that
+contract without mixing team topology into expression parsing.
+
+## T514: keep `GetHitVar(keepstate)` as numeric direct-HitDef metadata
+
+Decision: retain authored HitDef `keepstate` on imported and dynamic direct
+HitDef metadata and project it as numeric `1`/`0` at the expression boundary.
+Projectile and Reversal paths keep the false fallback until their authored
+contracts are verified.
+
+Why: current Ikemen copies `hd.KeepState` into the last-hit record and the
+bytecode exposes the boolean directly. A typed optional field preserves the
+contract without widening Projectile/Reversal semantics.
+
+## T515: keep `GetHitVar(frame)` as an ephemeral contact marker
+
+Decision: store a typed `frame` bit with direct HitDef and Projectile hit/guard
+metadata, expose it numerically, preserve it while hitpause is active, and
+clear it at the next non-paused frame-start boundary. ReversalDef and
+HitOverride-only redirects remain outside this cut.
+
+Why: current Ikemen sets `ghv.frame` when the defender is hit and clears it in
+the non-paused action finish path. A transient bit avoids corrupting persistent
+last-hit metadata while matching the existing local frame-start seam.
+
+## T516: keep `GetHitVar(priority)` separate from Projectile clash priority
+
+Decision: store a typed normalized last-HitDef priority in hit metadata. Direct
+contacts use the authored/default HitDef priority; Projectile contacts use the
+HitDef default while the existing Projectile `priority` field remains
+`projpriority` for projectile clashes.
+
+Why: current Ikemen copies `hd.priority` into `ghv.priority`, while Projectile
+`priority` is a separate lifecycle/clash field. Keeping the values distinct
+prevents a superficially similar local field from producing the wrong trigger
+readback.
+
+## T517: keep `GetHitVar(dizzypoints)` separate from the dizzy resource
+
+Decision: store authored direct/Projectile HitDef dizzypoints in a typed
+last-hit metadata field and expose it numerically, returning `0` when absent.
+Do not read the defender's current `dizzyPoints` pool from this trigger.
+
+Why: current Ikemen maps the trigger to `ghv.dizzypoints` while the character
+hit path applies the same HitDef value to dizzy damage. A dedicated metadata
+field preserves the authored readback without conflating it with mutable
+resource state or claiming cumulative reset parity.
+
+## T519: keep `GetHitVar(redlife)` separate from the red-life resource
+
+Decision: store authored direct/Projectile HitDef redlife in a typed last-hit
+metadata field and expose it numerically, returning `0` when absent. Do not
+read the defender's current `redLife` pool from this trigger.
+
+Why: current Ikemen maps the trigger to `ghv.redlife` while the character hit
+path applies red-life damage to a mutable resource. A dedicated metadata field
+preserves authored readback without conflating it with resource state or
+claiming `guardredlife` and cumulative reset parity.
+
+## T520: keep `GetHitVar(guardpower)` separate from the power resource
+
+Decision: store the second authored `givepower` value in a typed last-hit
+metadata field and expose it numerically, returning `0` when absent. Do not
+read the defender's current `power` pool from this trigger.
+
+Why: current Ikemen maps the trigger to `ghv.guardpower` while the character
+hit path applies power changes through a mutable resource. A dedicated field
+preserves the authored readback without conflating it with resource state or
+claiming `hitpower` and cumulative reset parity.
+
+## T518: keep `GetHitVar(guardpoints)` separate from the guard resource
+
+Decision: store authored direct/Projectile HitDef guardpoints in a typed
+last-hit metadata field and expose it numerically, returning `0` when absent.
+Do not read the defender's current `guardPoints` pool from this trigger.
+
+Why: current Ikemen maps the trigger to `ghv.guardpoints` while the character
+hit path applies the same HitDef value to guard-point damage. A dedicated
+metadata field preserves authored readback without conflating it with mutable
+resource state or claiming cumulative reset parity.

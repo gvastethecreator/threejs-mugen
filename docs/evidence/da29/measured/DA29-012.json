@@ -2,25 +2,25 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-012",
   "kind": "I",
-  "generatedAt": "2026-08-01T18:12:01.467Z",
+  "generatedAt": "2026-08-09T01:23:44.230Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-012",
   "anchors": [
     {
       "path": "src/mugen/runtime/RuntimeTraceGatePresets.ts",
-      "bytes": 2528628,
-      "sha256": "c57240b6fb7840ee9e5d358767726ac01019dd7c1f148d8137421b8dda1e2181"
+      "bytes": 2706127,
+      "sha256": "b3001948830cea1c33cb3d48974cea6085968b0c8461322593f1d10825133ac7"
     },
     {
       "path": "src/mugen/da29/TraceArtifactManifest.ts",
-      "bytes": 4669,
-      "sha256": "3c4840b1d0a3faafc14ff1156582c4f3b1dd6cdb3c0706ef46e8ae00f777d8e2"
+      "bytes": 4670,
+      "sha256": "68fb80a0e8b132f3119bbaccbb347ec4e289d19644bc5f80efe8792b9cefda6b"
     }
   ],
   "functionResults": {
-    "entryCount": 648,
-    "digest": "0f7d362dee89ccbc",
+    "entryCount": 698,
+    "digest": "93505eca44c756c0",
     "sampleIds": [
       "code-fu-man-independent-qcf-x",
       "code-fu-man-independent-upper-x",

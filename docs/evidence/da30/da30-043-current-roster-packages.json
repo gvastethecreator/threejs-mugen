@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "packages": [
+    {
+      "id": "rocco-vidal",
+      "files": [
+        "rocco.air",
+        "rocco.cmd",
+        "rocco.cns",
+        "rocco.def"
+      ],
+      "digest": "9c854c10f0a33230ad74246574cfd4d9b028ace9874ed22f58fe24e1980f0e79"
+    },
+    {
+      "id": "nadia-arce",
+      "files": [
+        "nadia.air",
+        "nadia.cmd",
+        "nadia.cns",
+        "nadia.def"
+      ],
+      "digest": "9f14de32abe583212f26f2b16c2c99846207cad212c1435b8d461860dfb1aa87"
+    }
+  ],
+  "independentDigests": true
+}

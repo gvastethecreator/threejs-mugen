@@ -1,6 +1,121 @@
 ﻿# Roadmap Package Milestones
 
-## Current package override — official parity queue (2026-08-01)
+## Current package override — official parity queue (2026-08-08)
+
+T608-T637 are closed-bounded. T616-T621 close typed HitDef/Projectile
+`unhittabletime`, contact/admission/default/HitOverride slices, and dynamic
+Projectile spawn expressions. T622 closes independent root/Helper HitDef and
+Projectile ground friction through normal contact, `GetHitVar`, and grounded
+get-hit physics; T623 closes root and redirected `ModifyHitDef` mutation. T624
+closes Ikemen hit/guard spark scale through root/Helper creation, redirected
+mutation, accepted presentation, snapshots, trace gates, and rendering. T625
+closes official direct-HitDef attacker facing through root/Helper creation,
+redirected mutation, accepted contact, and a required trace. T626 closes
+explicit HitDef `getpower` through creation, redirected mutation, contact, and
+attacker power gain. T627 closes official omitted damage/constants-derived
+normal and super rewards. T628 closes static explicit and omitted `givepower`,
+accepted defender power mutation, and effective delta readback. T629 closes
+dynamic `givepower`; T630 closes pinned-Ikemen `ModifyProjectile getpower`.
+T631 closes M.U.G.E.N `[Rules]` attack/get-hit life-to-power multipliers. T632
+closes positive-time direct HitDef/Projectile successful-hit `palfx.*` through
+the defender's existing PalFX state. T633 closes direct HitDef and live
+`ModifyHitDef` contact EnvShake through accepted unguarded hits. T634 closes
+dynamic direct HitDef fall EnvShake creation, live mutation, and ground-impact
+emission. T635 closes dynamic fall impact damage and velocity; T636 closes
+dynamic fall/down recovery policy and timers. T637 closes dynamic fall,
+air-fall, and fall-kill policy. T638 is active for dynamic down-bounce policy.
+Latest evidence: 3542/3600 tests with the same 58 inherited failures, a
+363-module build, and 709/709 traces (675 required,
+34 optional).
+
+Current handoff: T522/T523/T524/T525/T526/T527/T528/T534/T535/T536/T537/T538/T539 close the bounded last-hit score,
+effective power, authored facing, cumulative guardcount, combo-hitcount, and
+authored multi-hit slices. T505's Gallery/Showcase extensions are
+closed-bounded and verified through `pnpm qa:browser:fighter-lab`; issue 102/T528
+is closed-bounded for `xveladd|yveladd` KO-delta readback. T534/issue 108 closes
+the opt-in Helper red-life LifeShare route with the required `686/686` trace.
+T535/issue 109 closes static `GetHitVar(hitflag)` comparisons across direct and
+Projectile last-hit metadata with the official `MAF` default; focused coverage
+is 5 files / 238 tests and the existing trace corpus remains `686/686`.
+T536/issue 110 closes the typed `RoundState` projection across the
+control-locked Fight screen and `0/1/2/3/4` lifecycle for both compatibility
+profiles; T538/issue 112 closes the numeric `IntroState`/
+`FightScreenState`/`FightScreenVar` timing/localcoord read. T539/issue 113
+closes the resettable round-owned `FightTime` clock and bounded timing
+`GameVar` reads through the same context. T540/issue 114 closes the supported
+active-frame `AnimElemVar` metadata read through CNS/controller expressions and
+the read-only Testbench (4 files / 72 tests; browser gate pass). T541/issue 115
+closes the bounded `AnimLength` effective action-total read through the same
+context and Testbench (5 files / 78 tests; browser gate pass). T542/issue 116
+closes the bounded `AnimPlayerNo` active animation-owner read through the same
+context (5 files / 81 tests; typecheck pass). T543/issue 117 closes the bounded
+`ClsnVar` current-frame AIR/size coordinate read through redirects,
+`localcoord`, CNS/controller contexts, and Testbench (5 files / 80 tests;
+runtime/browser gates pass). T544/issue 118 closes transformed `ClsnOverlap`
+player collision queries (5 files / 83 tests; runtime gates pass). T545/issue
+119 closes the Character Matrix product view with 2 fighters, 34 actions, 12
+component checks, and dedicated browser/visual evidence. T546/issue 120 closes
+the owner-relative transformed `ProjClsnOverlap` query (8 files / 258 tests;
+runtime gates pass). T547/issue 121 closes bounded numeric `ProjVar` reads over
+the same active owner-relative index (5 files / 172 tests; runtime gates pass).
+T548/issue 122 closes typed static `ProjVar` flag comparisons with official
+complemented-mask inequality semantics (5 files / 173 tests; runtime gates
+pass). T549/issue 123 closes Projectile Pause/SuperPause movement counters and
+numeric reads (8 files / 278 tests; runtime and trace gates pass). T550/issue
+124 closes Projectile removal velocity and terminal motion (8 files / 292
+tests; runtime and trace gates pass). T551/issue 125 closes Projectile `velmul`
+Z (8 files / 292 tests; runtime and trace gates pass). T552/issue 126 closes
+normalized Projectile layer state and presentation ordering (9 files / 290
+tests; runtime and trace gates pass). T553/issue 127 closes Projectile Z-angle
+state and live renderer rotation (9 files / 278 tests; runtime and trace gates
+pass). T554/issue 128 closes Projectile X/Y angle state and bounded live
+renderer rotation (9 files / 278 tests; runtime and trace gates pass).
+T555/issue 129 closes Projectile X shear state and bounded live sprite
+deformation (9 files / 279 tests; runtime and trace gates pass). T556/issue 130
+closes Projectile RGB shadow state, partial modification, readback, and live tint
+(9 files / 280 tests; runtime and trace gates pass). T557/issue 131 closes
+Projectile reflection auto/off/on state and bounded live mirrored presentation
+(9 files / 281 tests; runtime and trace gates pass). T558/issue 132 closes
+Projectile projection/focal-length state and bounded live perspective (9 files /
+282 tests). T559/issue 133 closes four-value Projectile window state and bounded
+live clipping (3 files / 112 tests). T560/issue 134 is closed-bounded for
+spawn-only Projectile palette ownership/remap and draw-palette readback.
+T561/issue 135 is closed-bounded for separate ModifyProjectile `id`/`index`
+selection and `projid` mutation. T563/issue 137 closes numeric `projanim`
+action replacement, and T564/issue 138 closes numeric terminal AIR mutation.
+T565/issue 139 closes static HitDef `attr` and `guardflag` mutation, and
+T566/issue 140 closes normalized `affectteam` mutation. T567-T572 close
+`hitflag`, reaction types, dual `id` target metadata, `chainid`, lethal flags,
+and `air.juggle` through current combat/GetHitVar consumers. T573-T579 close
+damage, givepower metadata, `numhits`, separate HitDef priority, P1/P2 custom
+states, and `missonoverride`. T580/issue 154 closes Projectile HitDef sprite
+priority while keeping `projsprpriority` separate. T581/issue 155 closes
+`forcenofall` mutation and hit-only fall-flag suppression. T582/issue 156
+closes forced stand/crouch default get-hit posture. T583/issue 157 closes the
+core ModifyProjectile fall damage, velocity, and recovery payload. T584/issue
+158 closes supported fall envshake fields. T585/issue 159 closes
+`dizzypoints` and `guardpoints` contact metadata. T586/issue 160 closes
+hit/guard `redlife` and floating-point `score` pair mutation/readback without
+resource changes. T587/issue 161 closes static `p2clsncheck` and
+`p2clsnrequire` contact policy mutation. T588/issue 162 closes
+`down.recover` and `down.recovertime` mutation through later fall/get-up
+metadata.
+T589-T605 are now closed-bounded for attack depth, accepted-hit facing,
+air/ground/guard/down hit durations, ground/air guard control timers, down
+velocity, fall flags, guard/air-guard velocity, airborne hit velocity, and
+component-wise grounded hit velocity with `n` preservation, unguarded ground
+slide time, separate Projectile/defender pause pairs, and two-value
+width/height/depth guard-distance bounds, selected hit/guard spark presentation,
+and Projectile-origin target-distance correction. T606/issue 180 closes
+selected hit acceleration metadata and later GetHitVar readback. T607/issue
+181 closes selected Projectile contact EnvShake metadata. T608/issue 182 is
+active for selected fall EnvShake direction and later GetHitVar/event use.
+T526/T527 keep `comboHitCount` separate from authored
+`numhits`; no compatibility score or score movement changes follow these
+slices. T537 adds a read-only Animation Testbench, T545 adds a roster-wide
+Character Matrix, and T562 adds action-by-action Character Compare over current
+Fighter Lab runtime definitions. These views do not add a second animation
+authority.
 
 R1 has closed T424's same-tick current-state transition chain and T426's
 imported `select.def` roster/stage consumer. I2 has closed T425's P2
@@ -39,6 +154,44 @@ with attacker-relative sign; 247 focused tests and the final 324/3308,
 typecheck/build/boundaries and 682/682 trace gates pass. T477 is now
 closed-bounded for signed `fall.xvelocity` bounce semantics: 121 focused tests,
 full 324/3310, typecheck/build/boundaries and 682/682 trace gates pass.
+
+T478-T492 and T506-T520 close the CommonFX scale/localcoord, Ikemen hit-metadata,
+and required-trace baseline continuations. T515 is the latest closed bounded runtime
+feature cursor: T506's five focused test
+files / 178 tests plus five deterministic IKEMEN trace checks pass; typecheck,
+build, boundaries and asset hygiene pass. T508 restores the aggregate trace to
+682/682; the broader retired-roster Vitest debt remains, so milestone scores do
+not move. T514 closes the bounded numeric `GetHitVar(keepstate)` continuation
+for direct authored HitDef metadata: five focused files / 212 tests and the
+same typecheck/build/boundaries, diff-hygiene, and 682/682 trace gates pass;
+Projectile/Reversal keepstate and milestone promotion remain out of scope.
+T515 closes the bounded numeric `GetHitVar(frame)` continuation for direct
+HitDef and Projectile hit/guard contacts: six focused files / 191 tests and
+the same typecheck/build/boundaries, diff-hygiene, and 682/682 trace gates pass;
+ReversalDef timing and milestone promotion remain out of scope.
+T516 closes the bounded numeric `GetHitVar(priority)` continuation: direct
+HitDef priority is normalized, Projectile contacts use the HitDef default, and
+Projectile `projpriority` remains clash-only. Four focused files / 188 tests
+pass; `qa:trace` 682/682, typecheck, build, boundaries, full-suite baseline,
+and diff hygiene pass. Milestone promotion remains out of scope.
+T517 closes the bounded numeric `GetHitVar(dizzypoints)` continuation: direct
+and Projectile contacts retain authored HitDef dizzy-point metadata separately
+from the current dizzy resource, with missing metadata reading `0`. Five
+focused files / 220 tests pass; `qa:trace` 682/682, typecheck, build,
+boundaries, full-suite baseline, and diff hygiene pass. Milestone promotion
+remains out of scope.
+T518 closes the bounded numeric `GetHitVar(guardpoints)` continuation: direct
+and Projectile contacts retain authored HitDef guard-point metadata separately
+from the current guard resource, with missing metadata reading `0`. Five
+focused files / 222 tests pass; `qa:trace` 682/682, typecheck, build,
+boundaries, full-suite baseline, and diff hygiene pass. Milestone promotion
+remains out of scope.
+T519 is the closed-bounded numeric `GetHitVar(redlife)` continuation; issue 93
+has five focused files / 224 tests and the same
+non-browser gates. T520 under issue 94 is now closed-bounded with five focused
+files / 226 tests and the same gates. T521-T524 are now closed-bounded across
+hitpower, score, effective power, and facing; T525 under issue 99 is the next
+selected guardcount research cursor. Milestone promotion remains out of scope.
 
 T424 final proof exists, but milestone effects remain prospective until
 independent adjudication:
@@ -128,23 +281,72 @@ independent adjudication:
   authored signed `fall.xvelocity` across opposite facing, with omitted X left
   as no-change. Focused 121 tests and final gates pass; no score or milestone
   promotion is claimed.
+- T478-T492 and T506-T511 are closed-bounded CommonFX, Ikemen metadata, and trace-baseline continuations.
+  T491 retains `fall.envshake.mul` for direct HitDef, player-owned Projectile,
+  and imported moves, with seven focused test files / 258 tests and final
+  324/3329, typecheck/build, boundaries, `qa:trace` 682/682, asset-hygiene
+  and diff-hygiene gates. No score or milestone promotion is claimed.
+- T492 retains the source attacker's `playerno` for direct HitDef and
+  player-owned Projectile contacts as `GetHitVar(playerno)`, defaulting to `0`.
+  Three focused test files / 119 tests and final 324/3330,
+  typecheck/build, boundaries, `qa:trace` 682/682, asset-hygiene and
+  diff-hygiene gates pass. No score or milestone promotion is claimed.
+- T506 retains the source attacker's numeric `playerid` separately from
+  `playerno` across root and verified Helper direct/Projectile contacts.
+  Focused coverage passes 5 files / 178 tests and five deterministic trace
+  checks; typecheck, 356-module production build, boundaries and asset hygiene
+  pass. T508 later clears the two retired-label aggregate trace failures.
+  Browser smoke is N/A and no score promotion is claimed.
+- T507 preserves the documented deprecated `GetHitVar(ID)` spelling as an
+  alias of `playerid`, including the same `0` fallback. One focused expression
+  file / 27 tests passes; no score or milestone promotion is claimed.
+- T508 binds required identity and nonlethal HitDef opponent labels to the
+  active second demo fighter. Focused 2/2 and aggregate 682/682 traces pass;
+  no retired public character, runtime semantic, score, or milestone is added.
+- T509 exposes the existing guard-KO metadata as `GetHitVar(guardko)` for the
+  bounded direct/root-Projectile paths. Three files / 121 tests and final
+  typecheck/build/boundaries plus 682/682 traces pass; no score moves.
+- T510 compares static `GetHitVar(attr)` filters against existing `sourceAttr`
+  in active and redirected actor contexts. Three files / 118 tests and final
+  typecheck/build/boundaries plus 682/682 traces pass; no score moves.
+- T511 compares static `GetHitVar(guardflag)` filters against retained effective
+  guard flags with Ikemen overlap masks. Six files / 224 tests and final
+  typecheck/build/boundaries plus 682/682 traces pass; no score moves.
+- T512 closes the numeric Projectile ID continuation: four focused files / 186
+  tests plus typecheck/build/boundaries and 682/682 traces pass; no score moves.
+- T513 closes the numeric team-side continuation: four focused files / 186
+  tests, 682/682 traces, typecheck/build/boundaries, and diff hygiene pass; no
+  score movement is claimed.
+- T514 closes the numeric keepstate continuation: five focused files / 212
+  tests, 682/682 traces, typecheck/build/boundaries, and diff hygiene pass; no
+  score movement is claimed.
+- T515 closes the numeric same-frame continuation: six focused files / 191
+  tests, 682/682 traces, typecheck/build/boundaries, and diff hygiene pass; no
+  score movement is claimed.
+- T516 closes the numeric priority continuation: four focused files / 188
+  tests, 682/682 traces, typecheck/build/boundaries, and diff hygiene pass; no
+  score movement is claimed.
+- T517 closes the numeric dizzypoints continuation: five focused files / 220
+  tests, 682/682 traces, typecheck/build/boundaries, and diff hygiene pass; no
+  score movement is claimed.
+- T518 closes the numeric guardpoints continuation: five focused files / 222
+  tests, 682/682 traces, typecheck/build/boundaries, and diff hygiene pass; no
+  score movement is claimed.
 
 Authority and dependencies:
 [official comparison](research/2026-07-30-official-mugen-ikemen-roadmap-comparison.md).
 Current scores and milestone bands stay held.
 
-User-directed content milestone: T439-T444 define six original satirical
-fighters, T449-T456 define eight classic-uniform recolors, T445 shared
-VFX/FightFX, T446 parallax stages, T447 roster/runtime integration, and
-T461 regenerates the eight fighters with a sober martial-arts direction. T462
-is closed-bounded for the four stages after parallax/browser proof. T457-T460 close palettes, SFF, collision QA and
-traces. Anchors, VFX atlas QA, stage-pack QA, classic atlases, permissions and
-MUGEN-lite core templates are in progress. This lane uses provider provenance and spritesheet/background QA
-but does not promote M.U.G.E.N/Ikemen compatibility scores. T470 closes the
-coverage audit for all 17 public character directories; T471 is the active
-provider-row regeneration needed before T461 can be promoted. Bruno Giro has
-four fresh rows with provenance, alignment and fourteen hash-bound runtime
-previews, while aggregate identity/contract gates remain open.
+User-directed content milestone: T499-T503 replace the former broad roster with
+Rocco Vidal and Nadia Arce. Each has 14 states, 79 frames, direct Imagegen
+sources, atlas, permissions, runtime previews and MUGEN-lite templates. T504
+owns the remaining identity/pre-package and global browser-smoke gate. T505
+closes the direct Fighter Lab surface for actions, frames, atlas, collision
+boxes and VFX with a focused browser gate. T562 adds roster comparison over
+the same runtime definitions. T446/T462 stage
+work remains valid; T439-T445, T447-T461 and T470-T471 are superseded. This
+lane uses provider provenance and spritesheet/background QA but does not
+promote M.U.G.E.N/Ikemen compatibility scores.
 
 ## Current package override — post-DA32-026 audit (2026-07-28)
 
@@ -389,7 +591,10 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 
 ## Historical Next Recommended Slice
 
-Current override: entry 476 is the latest numbered committed gate. Wayfinder 127 is already in progress and owns the immediate dirty runtime/test diff. After its independent closeout, select `CompatibilityJourney/v1` and MUGEN-lite adjudication before another I2 behavior slice. The entry-411/body-push and older inert-root ladders below are historical.
+Current override: Wayfinder 127 is now closed-bounded by its fixture-owned
+active-root air-guard landing trace. Select `CompatibilityJourney/v1` and
+MUGEN-lite adjudication before another I2 behavior slice. The entry-411/body-
+push and older inert-root ladders below are historical.
 
 Current override: entry 411 closes Wayfinder 105 body push. Return now to R1 post-KO / `NoKOSlow`; Wayfinder 106 maps the later getter-order/combat-candidate boundary without damage mutation. The older inert-root ladder below is historical.
 

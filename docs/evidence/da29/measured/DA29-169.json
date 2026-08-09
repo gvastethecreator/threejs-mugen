@@ -2,43 +2,77 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-169",
   "kind": "G",
-  "generatedAt": "2026-08-01T18:12:01.149Z",
+  "generatedAt": "2026-08-09T01:23:34.860Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-169",
   "anchors": [
     {
-      "path": "public/characters/nova-boxer",
-      "bytes": 0,
-      "sha256": "directory"
+      "path": "public/characters/rocco-vidal/mugen/rocco.def",
+      "bytes": 382,
+      "sha256": "f26bf9faaa33730206ce4d3a9fcf0e71ecf196a2c21cd5bb04b62d60b7ed71f0"
     },
     {
-      "path": "public/characters/mira-volt",
-      "bytes": 0,
-      "sha256": "directory"
+      "path": "public/characters/rocco-vidal/source-provenance.json",
+      "bytes": 3511,
+      "sha256": "6bd565d04be5f9a8ea58ffda57f502fb7db9c0bdf32adbf15c1ec9380021e89d"
     },
     {
-      "path": "public/characters/rook-apprentice",
-      "bytes": 0,
-      "sha256": "directory"
+      "path": "public/characters/nadia-arce/mugen/nadia.def",
+      "bytes": 380,
+      "sha256": "4c4ef6ef3484bd95621f55c963d10389cdbe96bc6fe1428b5fce2715a305761c"
+    },
+    {
+      "path": "public/characters/nadia-arce/source-provenance.json",
+      "bytes": 3510,
+      "sha256": "38352b61fd8ecfaedb02a993bca1b405f01ba728366c599d4e36de20c2d7393c"
+    },
+    {
+      "path": "public/stages/rooftop-dojo/rooftop-dojo.png",
+      "bytes": 2297717,
+      "sha256": "518f9459fbc063f7cd8b8e5daead3d03a14d71bf69e496e3210b609f25bd4664"
+    },
+    {
+      "path": "public/system/sandbox-fightscreen.zip",
+      "bytes": 3073,
+      "sha256": "b09e988145844d24b870a2a009a22165b283c9a11598863f7ff3bf1131a5f07f"
     }
   ],
   "functionResults": {
     "packages": [
       {
-        "id": "nova-boxer",
-        "hasDef": true
+        "id": "rocco-vidal",
+        "kind": "character",
+        "entry": "public/characters/rocco-vidal/mugen/rocco.def",
+        "digest": "f26bf9faaa33730206ce4d3a9fcf0e71ecf196a2c21cd5bb04b62d60b7ed71f0",
+        "hasProvenance": true
       },
       {
-        "id": "mira-volt",
-        "hasDef": true
+        "id": "nadia-arce",
+        "kind": "character",
+        "entry": "public/characters/nadia-arce/mugen/nadia.def",
+        "digest": "4c4ef6ef3484bd95621f55c963d10389cdbe96bc6fe1428b5fce2715a305761c",
+        "hasProvenance": true
       },
       {
-        "id": "rook-apprentice",
-        "hasDef": true
+        "id": "rooftop-dojo",
+        "kind": "stage",
+        "entry": "public/stages/rooftop-dojo/rooftop-dojo.png",
+        "digest": "518f9459fbc063f7cd8b8e5daead3d03a14d71bf69e496e3210b609f25bd4664",
+        "hasProvenance": false
+      },
+      {
+        "id": "sandbox-fightscreen",
+        "kind": "screenpack",
+        "entry": "public/system/sandbox-fightscreen.zip",
+        "digest": "b09e988145844d24b870a2a009a22165b283c9a11598863f7ff3bf1131a5f07f",
+        "hasProvenance": false
       }
     ],
-    "count": 3
+    "characterCount": 2,
+    "companionPackageCount": 2,
+    "independentDigestCount": 4,
+    "count": 4
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-169; broader product claims remain blocked"
 }

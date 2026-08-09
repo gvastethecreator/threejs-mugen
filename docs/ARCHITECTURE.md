@@ -1,5 +1,101 @@
 # Architecture
 
+## 2026-08-08 T522-T547 and Fighter Lab addendum
+
+Last-hit metadata remains typed and contact-owned: compiler/importer HitDef
+operations carry authored `score`, `givepower`, and `p2facing`; direct and
+Projectile combat materialize only the relevant contact metadata; and
+`RuntimeHitVarSystem` reads it with explicit defaults. These slices do not
+write score resources, mutable power, or the actor's live facing. T525
+`guardCount` is a separate mutable last-hit counter owned by direct/Projectile
+guard contact and reset on idle. T526 `comboHitCount` is a separate mutable
+last-hit counter for bounded direct/player-owned Projectile contacts; the
+`ikemen-go` profile enables it even when authored `hitCount`/`numhits` is
+present, while static M.U.G.E.N traces retain that field as a fallback. T527
+closes one `ikemen-go` authored-`numhits` Projectile route with two eligible
+contacts and a guarded break. T528 closes separate `xveladd`/`yveladd` KO-
+delta metadata for bounded direct and player-owned Projectile contacts; it
+does not overwrite authored HitDef velocity or the defender's live velocity.
+
+`App` owns the Fighter Lab Gallery, Showcase, Character Matrix, and Animation
+Testbench routes (`mode=lab`,
+`labView=gallery|showcase|matrix|testbench`) and derives inventory from
+`getAvailableFighters()`. These views are presentation-only selectors into the
+existing timeline and isolated preview runtime; they do not create a second
+animation authority. The Character Matrix projects every fighter/action and
+six package-health checks per fighter, while reusing the Testbench detail lens.
+
+`RuntimeRoundPhaseWorld` remains the lifecycle authority for `RoundState`.
+T536 adds the named `runtimeRoundStateFromPhase` projection at the expression
+boundary: phase `1` is the control-locked Fight screen, phase `2` is the main
+fight, and phases `0/3/4` retain their authored lifecycle values. The
+projection is read-only and does not couple announcement choreography to
+round-state evaluation. T538 adds `RuntimeFightScreenTriggerSystem`, a
+read-only projection from the imported round/announcement clocks into
+`IntroState`, the four `FightScreenState` booleans, and numeric
+`FightScreenVar` timing/localcoord values. The runtime refreshes that context
+with the same `RuntimeRoundPhaseWorld` application used by `RoundState`; it
+does not create a second FightScreen clock. T539 adds the resettable
+`RuntimeRoundSystem.fightTimeFramesElapsed` source clock and projects bounded
+`GameVar` timing reads from the round pre/post snapshots and active pause
+snapshot. `ExpressionEvaluator` only reads those typed values; it does not own
+or advance either clock. T540 adds `AnimElemVar` as a read-only projection from
+the actor's active imported AIR frame. `RuntimeAnimationSystem` owns the
+metadata mapping; CNS, controller expressions, and Fighter Lab Testbench share
+that boundary. T541 adds `AnimLength` as a separate action-total projection
+using the same effective frame-duration rule; it does not advance or replace
+  the live cursor. T542 adds `animationOwnerPlayerNo` outside
+  `CharacterRuntimeState`. The animation world writes it from the action-owner
+  actor, and shared expression contexts expose it as `AnimPlayerNo`. Redirected
+  target contexts carry the owner number when the target provides it. T543 adds
+  `runtimeCurrentClsnVarBoxes` as a raw current-frame collision projection.
+  It composes AIR `clsn1`/`clsn2` with `OverrideClsn`, composes `size` through
+  the existing size-box system, and leaves `TransformClsn` out of the read.
+  `ExpressionContext` owns redirect callbacks and converts values from the
+  selected actor's `localcoord` to the caller's output space. The Testbench
+  uses the same coordinate selector helper. Unsupported
+  alpha/angle/scale fields, raw duration semantics, Helper/Projectile/team
+  ownership, rollback/netplay, and full animation parity remain outside the
+  model.
+
+  T544 adds `runtimeClsnOverlap` on the same frame-system boundary. It resolves
+  a target by player ID, derives current AIR/`OverrideClsn`/size boxes, converts
+  both actors into the canonical world space, and delegates intersection to the
+  shared collision transform. Scale and angle apply only to non-size boxes.
+  `ExpressionContext` supplies direct and redirected callbacks; it does not
+  mutate combat or create a parallel collision world. Projectile overlap,
+  collision-proxy breadth, rollback/netplay, and full collision parity remain
+  outside this slice.
+
+T546 keeps projectile collision reads on existing owners. `ProjectileSystem`
+owns the current raw projectile AIR Clsn groups plus collision scale and angle;
+draw scale remains separate. `EffectActorWorld` owns active caller-relative
+selection and preserves oldest-first insertion order. Expression contexts only
+resolve the projectile owner and target player, then delegate both projectile
+Clsn groups to the shared transformed world-box boundary. No query path writes
+combat state. Collision proxies, perspective/depth scaling, combat
+arbitration, rollback/netplay, and full Projectile parity remain outside the
+model.
+
+T547 reuses that same selection owner for `ProjVar`. `EffectActorWorld`
+optionally filters active projectiles by numeric ID before applying the
+oldest-first index. `ProjectileSystem.runtimeProjectileVar` is the only field
+projection boundary and converts coordinate-like values from projectile
+`localcoord` to the original caller output space. Expression and controller
+contexts only select and read. Missing projectiles and unsupported parameters
+become the expression undefined value; no projectile or combat state is
+mutated.
+
+## 2026-08-02 T535 Ikemen `GetHitVar(hitflag)` addendum
+
+Last-hit metadata now keeps the effective HitDef `hitflag` in a separate
+`sourceHitFlag` field. Direct and Projectile contacts use authored values or
+the official omitted `MAF` default. The expression compiler rewrites only
+static equality/inequality comparisons into a typed overlap predicate, so
+redirected actors retain ownership without widening `GetHitVar` into a general
+string channel. Dynamic flags, reset/lifetime parity, and full combat parity
+remain outside this boundary.
+
 ## 2026-08-01 T479 presentation addendum
 
 `HitSparkAssetSystem` now preserves CommonFX/FightFX `localcoord` on resolved
@@ -27,6 +123,135 @@ combat writes an explicit result to `combatDepth.velocity`. Omitted Z is kept
 absent rather than synthesized. This is a bounded metadata/contact seam, not a
 general Z integrator: ModifyHitDef mutation, Common1 acceleration/friction and
 full depth physics remain separate work.
+
+## 2026-08-01 T482 ModifyHitDef vector-Z addendum
+
+Static `ModifyHitDef` now compiles the same five velocity-vector parameter
+shapes, extracts authored Z, and mutates the active normal `DemoMove` in place.
+`down.velocity` keeps its existing X/Y mutation and now also updates its Z
+metadata; ground/air/guard/airguard Z fields feed the shared T481 resolver on
+the next contact. Dynamic parameter evaluation and Common1 depth integration
+remain separate.
+
+## 2026-08-01 T483 HitDef acceleration metadata addendum
+
+The compiler and imported/direct/projectile combat seams now retain static
+HitDef `xaccel`, `yaccel` and `zaccel` metadata in `RuntimeGetHitVars`.
+`RuntimeHitVarSystem` exposes the three keys with zero defaults for omitted
+horizontal/depth values. This is deliberately a metadata boundary: no new
+facing/localcoord transforms, Common1 acceleration or depth physics are
+introduced here, and dynamic ModifyHitDef expressions remain separate.
+
+## 2026-08-01 T484 ModifyHitDef acceleration mutation addendum
+
+Static `ModifyHitDef` acceleration fields now update the active normal
+`DemoMove.hitVars` in place. The existing direct/projectile handoff therefore
+observes the mutation without introducing a second contact model; dynamic
+expression evaluation and physics remain separate.
+
+## 2026-08-01 T485 dynamic acceleration metadata addendum
+
+Supported scalar expressions for HitDef and ModifyHitDef `xaccel`, `yaccel` and
+`zaccel` now remain in the typed operation and are evaluated through the active
+controller context. Static values keep the existing path; omitted or failed
+dynamic evaluation does not overwrite an existing field. This closes only the
+metadata evaluation seam; Common1 acceleration/friction, scaling and depth
+physics remain separate.
+
+## 2026-08-01 T486 Ikemen `GetHitVar(zvel)` addendum
+
+The shared `RuntimeHitVarSystem` now exposes the optional active-hit depth
+velocity as `GetHitVar(zvel)`, reading `CharacterRuntimeState.hitVelocity.z`
+with a zero fallback when the selected HitDef/Projectile has no Z component.
+The alias is intentionally Ikemen-only; legacy M.U.G.E.N `GetHitVar` keys,
+depth integration and fall-Z semantics remain separate contracts.
+
+## 2026-08-01 T487 Ikemen `HitVelSet z` addendum
+
+`HitVelSet` now carries an optional static `z` flag in the typed kinematic
+operation. When the flag is nonzero and active hit velocity exists,
+`RuntimeKinematicControllerWorld` materializes the existing combat-depth
+channel and copies `hitVelocity.z` into `combatDepth.velocity`; X/Y behavior
+is unchanged and a missing hit remains a no-op. This is a controller handoff,
+not a generic Z integrator or M.U.G.E.N extension.
+
+## 2026-08-01 T488 Ikemen `GetHitVar` velocity-vector addendum
+
+`RuntimeGetHitVars` now carries optional ground, air, down, guard and air-guard
+velocity vectors. Direct HitDef and Projectile construction preserve the parsed
+or effective triples, and `RuntimeHitVarSystem` resolves the dotted x/y/z keys
+with zero fallback. This is readback metadata only; dynamic vectors, omitted
+default adjudication and depth physics remain separate contracts.
+
+## 2026-08-01 T489 Ikemen `GetHitVar` damage addendum
+
+The shared hit-variable record now retains the first and second HitDef damage
+components as `hitDamage` and `guardDamage`. Direct HitDef and player-owned
+Projectile contact paths populate them before the existing effective `damage`
+field; readback remains independent from resource/scaling and KO policy.
+
+## 2026-08-01 T490 Ikemen `GetHitVar` animtype addendum
+
+The shared hit-variable record now retains separate ground, air, and fall
+reaction animation types. HitDef activation, imported moves, and player-owned
+Projectiles feed these fields through direct combat and the Projectile combat
+bridge. The expression read model exposes `ground.animtype`, `air.animtype`,
+and `fall.animtype` with zero fallback while preserving existing effective
+`animtype` behavior. Common1 reaction-state choreography, dynamic values, and
+full upstream parity remain separate contracts.
+
+## 2026-08-01 T491 Ikemen `GetHitVar(fall.envshake.mul)` addendum
+
+The typed fall EnvShake metadata now optionally retains the authored multiplier
+from HitDef, Projectile, or imported move data. Direct and Projectile combat
+carry it into `RuntimeHitFall.envShake`; the expression read model returns the
+authored value or the official default `1`. EnvShake playback and waveform
+ownership remain separate contracts.
+
+## 2026-08-01 T492 Ikemen `GetHitVar(playerno)` addendum
+
+The shared hit-variable read model now resolves `GetHitVar(playerno)` from
+the propagated `sourcePlayerNo` metadata written by direct HitDef and
+player-owned Projectile contacts. The value is the source attacker's slot,
+defaults to `0` when no source metadata exists, and remains separate from the
+defender's own runtime identity and from string-valued GetHitVar contracts.
+
+## 2026-08-02 T506 Ikemen `GetHitVar(playerid)` addendum
+
+The typed hit-source boundary now carries `sourcePlayerId` beside
+`sourcePlayerNo`. Roots and registered Helpers pass their numeric runtime
+identity into direct HitDef and Projectile contact materialization; a Helper
+therefore keeps its own ID while inheriting the root player slot. The shared
+read model exposes `GetHitVar(playerid)` with a `0` fallback and never derives
+numeric identity from string actor/root IDs. Unverified ownership and broader
+custom-state/team semantics remain separate contracts.
+
+## 2026-08-02 T507 Ikemen deprecated `GetHitVar(ID)` addendum
+
+The deprecated `ID` parameter is a read alias, not a stored field. The shared
+hit-variable boundary normalizes it to T506 `sourcePlayerId`, preserving the
+same zero fallback and avoiding parallel identity state.
+
+## 2026-08-02 T508 required-trace roster-binding addendum
+
+Required identity and nonlethal HitDef presets resolve the opponent label from
+`demoFighters[1]` instead of duplicating a retired character literal. Trace
+semantics remain fixed while roster ownership stays with the demo manifest.
+
+## 2026-08-02 T509 Ikemen `GetHitVar(guardko)` addendum
+
+The shared hit-variable reader projects the existing boolean `sourceGuardKo`
+field as numeric `1`/`0`. Direct, Projectile, and verified Helper source
+ownership remains in `runtimeRoundHitSourceMetadata`; no parallel KO state is
+introduced.
+
+## 2026-08-02 T510 Ikemen `GetHitVar(attr)` addendum
+
+The evaluator rewrites static `GetHitVar(attr) =/!= state, attack` comparisons
+to an internal attribute predicate. That predicate reads `sourceAttr` from the
+active expression actor, so root and redirected contexts use the same typed
+hit metadata and MUGEN attribute matcher. No general string value enters the
+numeric `GetHitVar` reader.
 
 ## 2026-07-18 T288 checkpoint
 
@@ -263,3 +488,82 @@ Complete SFF/CNS/ZSS/stage compatibility is intentionally layered. The first sta
 - Ikemen GO repository: https://github.com/ikemen-engine/Ikemen-GO
 - IKEMEN-GO reference notes: `docs/IKEMEN_GO_REFERENCE.md`
 - Elecbyte Sprmake2/SFF notes: https://www.elecbyte.com/mugendocs/sprmake2.html
+
+## 2026-08-02 T511 Ikemen `GetHitVar(guardflag)` addendum
+
+Direct, root-Projectile, Helper-direct, and verified Helper-Projectile contact
+paths retain the effective HitDef guard flag in last-hit metadata, using the
+runtime `MA` default when omitted. Static equality and inequality filters use
+a typed overlap predicate over the active expression actor, preserving
+redirect ownership and Ikemen's `M = H|L` expansion. Dynamic filters,
+`hitflag`, `GetHitVarSet`, and broader custom-state ownership remain outside
+this boundary.
+
+## 2026-08-02 T512 Ikemen `GetHitVar(projid)` addendum
+
+Projectile contact resolution now copies the authored Projectile ID into
+defender last-hit metadata. `GetHitVar(projid)` is numeric, returns that ID for
+Projectile contacts, and returns `-1` for direct HitDef contacts or missing hit
+metadata. The field follows the active expression actor and existing redirects;
+Projectile lifecycle and full ownership parity remain outside this boundary.
+
+## 2026-08-02 T513 Ikemen `GetHitVar(teamside)` addendum
+
+Last-hit metadata now retains the effective 1-based team side from the direct
+HitDef or Projectile. Explicit `teamside` values win; omitted local parameters
+fall back to the attacker/root identity. `GetHitVar(teamside)` returns `-1`
+without hit metadata and follows the active redirected expression actor.
+
+## 2026-08-02 T514 Ikemen `GetHitVar(keepstate)` addendum
+
+Direct HitDef metadata now retains the authored boolean `keepstate` flag from
+imported and dynamic HitDef operations. The shared read model projects it as a
+numeric `GetHitVar(keepstate)` value (`1` for true, `0` for false or missing),
+while Projectile and Reversal paths intentionally retain the false fallback.
+
+## 2026-08-02 T515 Ikemen `GetHitVar(frame)` addendum
+
+Direct HitDef and Projectile hit/guard resolution now writes an ephemeral
+same-frame marker into last-hit metadata. The frame-start boundary clears that
+marker once the actor is no longer in hitpause, so controller expressions read
+numeric `1` only for the local contact frame while existing hit metadata stays
+available for later reads.
+
+## 2026-08-02 T516 Ikemen `GetHitVar(priority)` addendum
+
+Last-hit metadata now carries the normalized direct HitDef attack priority and
+the Projectile HitDef default. The existing Projectile `priority` field remains
+the controller's `projpriority` clash value, so the two numeric concepts do not
+share storage or readback semantics.
+
+## 2026-08-02 T517 Ikemen `GetHitVar(dizzypoints)` addendum
+
+Last-hit metadata now carries authored direct and Projectile HitDef
+`dizzypoints` in `sourceDizzyPoints`. The field is read numerically through the
+shared `GetHitVar` boundary and remains separate from the defender's mutable
+`dizzyPoints` resource; missing metadata reads `0`. Cumulative multi-hit reset
+semantics and `GetHitVar(guardpoints)` remain outside this bounded seam.
+
+## 2026-08-02 T518 Ikemen `GetHitVar(guardpoints)` addendum
+
+Last-hit metadata now carries authored direct and Projectile HitDef
+`guardpoints` in `sourceGuardPoints`. The field is read numerically through the
+shared `GetHitVar` boundary and remains separate from the defender's mutable
+`guardPoints` resource; missing metadata reads `0`. Cumulative multi-hit reset
+semantics and `GetHitVar(guardpower)` remain outside this bounded seam.
+
+## 2026-08-02 T519 Ikemen `GetHitVar(redlife)` addendum
+
+Last-hit metadata now carries authored direct and Projectile HitDef `redlife`
+in `sourceRedLife`. The field is read numerically through the shared
+`GetHitVar` boundary and remains separate from the defender's mutable `redLife`
+resource; missing metadata reads `0`. `guardredlife`, cumulative reset
+semantics, and full parity remain outside this bounded seam.
+
+## 2026-08-02 T520 Ikemen `GetHitVar(guardpower)` addendum
+
+Last-hit metadata now carries the second authored `givepower` value in
+`sourceGuardPower`. The field is read numerically through the shared
+`GetHitVar` boundary and remains separate from the defender's mutable `power`
+resource; missing metadata reads `0`. `GetHitVar(hitpower)`, current power
+resource readback, and cumulative reset semantics remain outside this seam.

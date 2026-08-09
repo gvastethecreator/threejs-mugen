@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-078",
   "kind": "I",
-  "generatedAt": "2026-08-01T18:12:02.685Z",
+  "generatedAt": "2026-08-09T01:23:39.623Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave5ConsecutiveEvidence.test.ts -t DA29-078",
@@ -13,27 +13,17 @@
       "sha256": "93ecb4e1f9e0b0ab6c037d529c253461187992e79ec52865b2298ce23e7196cf"
     },
     {
-      "path": "public/characters/nova-boxer/mugen/nova.air",
-      "bytes": 2484,
-      "sha256": "73a4dbb4343730706d0f9bcf31ef0654ac7ebfae8d18999d4362ee07a18ebd61"
+      "path": "public/characters/rocco-vidal/mugen/rocco.air",
+      "bytes": 2373,
+      "sha256": "62c700b5a6f6ee488dd7772168812e962829cd86a2a0e6b8d09f60b64300f73b"
     }
   ],
   "functionResults": {
-    "actionCount": 12,
+    "actionCount": 14,
     "sample": [
       {
         "id": 0,
         "frames": 4,
-        "durations": [
-          7,
-          7,
-          7,
-          7
-        ]
-      },
-      {
-        "id": 20,
-        "frames": 8,
         "durations": [
           10,
           10,
@@ -43,31 +33,42 @@
       },
       {
         "id": 10,
-        "frames": 3,
-        "durations": [
-          5,
-          7,
-          7
-        ]
-      },
-      {
-        "id": 40,
         "frames": 4,
         "durations": [
-          6,
-          7,
+          8,
+          8,
           8,
           8
         ]
       },
       {
-        "id": 200,
-        "frames": 4,
+        "id": 20,
+        "frames": 8,
         "durations": [
-          4,
-          4,
-          5,
-          7
+          6,
+          6,
+          6,
+          6
+        ]
+      },
+      {
+        "id": 21,
+        "frames": 8,
+        "durations": [
+          6,
+          6,
+          6,
+          6
+        ]
+      },
+      {
+        "id": 40,
+        "frames": 6,
+        "durations": [
+          6,
+          6,
+          6,
+          6
         ]
       }
     ],

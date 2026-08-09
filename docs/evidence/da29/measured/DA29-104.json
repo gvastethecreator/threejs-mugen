@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-104",
   "kind": "G",
-  "generatedAt": "2026-08-01T18:12:00.956Z",
+  "generatedAt": "2026-08-09T01:23:34.698Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-104",
@@ -13,36 +13,26 @@
       "sha256": "54ea0ee5bf3729aaffd91dc8175f7dc74b1d51c0f52cdc7189a71793f4f36c4e"
     },
     {
-      "path": "public/characters/nova-boxer/sprite-sheet-alpha.png",
-      "bytes": 312330,
-      "sha256": "5533de237f182f1cf5bb063642bd1e9b4dd688eaa55c2c618e2b3455c844847c"
+      "path": "public/characters/rocco-vidal/sprite-sheet-alpha.png",
+      "bytes": 1879194,
+      "sha256": "45e0ca3d3ac939cf4250ef327779465478fe67d8c59d357f2d4a0974e8ff4f73"
     },
     {
-      "path": "public/characters/mira-volt/sprite-sheet-alpha.png",
-      "bytes": 327827,
-      "sha256": "90a1399ccc0835aae8fc15b32f277bc1003405c52974cea3f56e20b33eca77f9"
-    },
-    {
-      "path": "public/characters/rook-apprentice/sprite-sheet-alpha.png",
-      "bytes": 319913,
-      "sha256": "364ab22331f0e456f019984b39e3c30d2de565bd2a566b068a910430517cc0b9"
+      "path": "public/characters/nadia-arce/sprite-sheet-alpha.png",
+      "bytes": 1663936,
+      "sha256": "bbcfff566119e977ea25549004cf59b6b35f02a9d0680bf9d4a4416de1fcebb7"
     }
   ],
   "functionResults": {
     "reproducibility": [
       {
-        "path": "public/characters/nova-boxer/sprite-sheet-alpha.png",
-        "sha256": "5533de237f182f1cf5bb063642bd1e9b4dd688eaa55c2c618e2b3455c844847c",
+        "path": "public/characters/rocco-vidal/sprite-sheet-alpha.png",
+        "sha256": "45e0ca3d3ac939cf4250ef327779465478fe67d8c59d357f2d4a0974e8ff4f73",
         "rehash": true
       },
       {
-        "path": "public/characters/mira-volt/sprite-sheet-alpha.png",
-        "sha256": "90a1399ccc0835aae8fc15b32f277bc1003405c52974cea3f56e20b33eca77f9",
-        "rehash": true
-      },
-      {
-        "path": "public/characters/rook-apprentice/sprite-sheet-alpha.png",
-        "sha256": "364ab22331f0e456f019984b39e3c30d2de565bd2a566b068a910430517cc0b9",
+        "path": "public/characters/nadia-arce/sprite-sheet-alpha.png",
+        "sha256": "bbcfff566119e977ea25549004cf59b6b35f02a9d0680bf9d4a4416de1fcebb7",
         "rehash": true
       }
     ],

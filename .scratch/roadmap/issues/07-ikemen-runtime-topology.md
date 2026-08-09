@@ -1,6 +1,14 @@
 # 07 - IKEMEN Bounded Runtime Topology
 
 Status: in-progress
+
+Latest checkpoint (2026-08-02): Wayfinder 127, T529, T533, and T534 are
+closed-bounded. The active-root air-guard landing fixture proves the authored
+`40/A -> 132/A -> 154/A -> 155/A -> 52/S -> 20/S` route; the current trace
+corpus is `686/686`, including imported Helper Life/Power/red-life resource
+ownership. This does not close the broader topology issue; the next
+architecture cut remains global `AssertSpecial` ownership before team
+KO/resources.
 Labels: runtime-trace, boundary, ready-for-agent
 Lane: I2 bounded runtime
 Compatibility profile: explicit `ikemen-go`

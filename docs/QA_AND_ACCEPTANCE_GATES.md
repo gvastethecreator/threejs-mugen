@@ -1,5 +1,132 @@
 ﻿# QA And Acceptance Gates
 
+## 2026-08-08 HitDef power gates
+
+T626 requires typed one/two-component `getpower` coverage for root/Helper
+HitDef, Projectile creation, and root or redirected `ModifyHitDef`; accepted
+hit/guard contact must select the authored attacker reward without reusing
+`givepower`. Focused coverage passes 451/451 plus isolated real Helper,
+redirected mutation, and required trace cases. The full suite passes 3502/3560
+with the same 58 inherited retired-character failures. Typecheck, the
+361-module build, boundaries, redirect boundaries, and diff hygiene pass.
+`pnpm qa:trace` passes 699/699 (665 required, 34 optional); required artifact
+`synthetic-imported-hitdef-getpower` has checksum `2f881236` and final-frame
+checksum `90ee3934`. T627 adds a required omitted-default artifact with checksum
+`fa12664b` and final-frame checksum `f18ad68f`: damage 10 yields attacker power
+7. The aggregate gate passes 700/700 (666 required, 34 optional); the full
+suite passes 3505/3563 with the same 58 inherited failures, and the 362-module
+build passes. T628 adds static explicit and omitted `givepower`, accepted
+defender mutation, and delta readback. Focused coverage passes 326/326; the
+full suite passes 3508/3566 with the same 58 inherited failures. Required
+artifact `synthetic-imported-hitdef-getpower-default` now has checksum
+`d4ec2081` and final checksum `4b9e7e61`, with attacker power 7 and defender
+power 6. The 362-module build, typecheck, boundaries, redirect boundaries,
+diff hygiene, and 700/700 traces pass. T629 separately owns dynamic
+`givepower`. Compiler/HitDef and Projectile/Helper focused suites pass 322/322
+plus root integrations; the full suite passes 3513/3571 with the same 58
+inherited failures. Required artifact
+`synthetic-imported-hitdef-dynamic-givepower` has checksum `37f80f37` and final
+checksum `9da06f48`; defender power and `GetHitVar(power)` both equal 22.
+Typecheck, the 362-module build, boundaries, redirect boundaries, diff hygiene,
+and 701/701 traces pass. T630 adds pinned-Ikemen `ModifyProjectile getpower`
+through root/Helper and later contact. Core coverage passes 147/147 plus 3
+integrations; the full suite passes 3516/3574 with the same 58 inherited
+failures. Required artifact
+`synthetic-imported-modifyprojectile-dynamic-getpower` has checksum `8d08be3e`
+and final checksum `7b9b7719`; attacker power is 44. Typecheck, the 362-module
+build, boundaries, redirect boundaries, diff hygiene, and 702/702 traces pass.
+T631 adds M.U.G.E.N `[Rules]` multiplier loading and precedence. Parser/loader
+coverage passes 18/18; HitDef/Projectile default coverage passes 98/98; the
+full suite passes 3522/3580 with the same 58 inherited failures. Required
+artifact `synthetic-imported-hitdef-rules-power-defaults` has checksum
+`6de46366` and final checksum `e18a32ed`; attacker power is 10, defender power
+and `GetHitVar(power)` are 16. Typecheck, the 362-module build, boundaries,
+redirect boundaries, diff hygiene, and 703/703 traces pass. T632 adds
+positive-time `palfx.time/add/mul/color/invertall` through root/Helper HitDef,
+root or redirected `ModifyHitDef`, root/Helper Projectile creation, and
+accepted unguarded-hit application to the defender. Focused compiler/runtime,
+Helper, contact, and redirected-mutation coverage passes. The full suite passes
+3528/3586 with the same 58 inherited failures. Required artifact
+`synthetic-imported-hitdef-contact-palfx` has checksum `2227beb9` and records
+the expected defender PalFX state. Typecheck, the 363-module build, boundaries,
+redirect boundaries, diff hygiene, and 704/704 traces (670 required, 34
+optional) pass. No browser gate is needed because this cut changes no renderer
+or UI code and the required trace proves the existing render-state handoff.
+T633 adds direct HitDef contact `envshake.time/freq/ampl/phase` plus pinned
+Ikemen `mul/dir` through root/Helper HitDef and root or redirected
+`ModifyHitDef`. The accepted unguarded-hit path emits the existing camera event;
+guard remains excluded. Focused compiler/runtime, Helper, direct-contact, and
+redirected-mutation coverage passes 290/290. The full suite passes 3531/3589
+with the same 58 inherited removed-roster failures. Required artifact
+`synthetic-imported-hitdef-contact-envshake` has checksum `46bdbe87` and records
+time 14, frequency 72, amplitude -11, and phase 30. Typecheck, the 363-module
+build, boundaries, redirect boundaries, diff hygiene, and 705/705 traces (671
+required, 34 optional) pass. T634 adds dynamic HitDef
+`fall.envshake.time/freq/ampl/phase` plus pinned Ikemen `mul/dir` through
+root/Helper caller contexts and root or redirected `ModifyHitDef`, then carries
+the live payload into the existing `FallEnvShake` event. Focused coverage passes
+189/189 plus the real RedirectID route. The full suite passes 3533/3591 with the
+same 58 inherited failures. Required artifact
+`synthetic-imported-hitdef-dynamic-fall-envshake` has checksum `dcdb8f61`;
+typecheck, the 363-module build, boundaries, redirect boundary, diff hygiene,
+and 706/706 traces (672 required, 34 optional) pass. T635 adds dynamic HitDef
+`fall.damage` and `fall.x/y/zvelocity` through root/Helper caller contexts and
+root or redirected `ModifyHitDef`, then transfers the live values into accepted
+get-hit metadata. Focused coverage passes 179/179 plus the real RedirectID
+route. The full suite passes 3536/3594 with the same 58 inherited failures.
+Required artifact `synthetic-imported-hitdef-dynamic-fall-impact` has checksum
+`c4a23ee8`; typecheck, the 363-module build, boundaries, redirect boundary, and
+707/707 traces (673 required, 34 optional) pass. T636 adds dynamic HitDef
+`fall.recover`, `fall.recovertime`, `down.recover`, and `down.recovertime`
+through root/Helper caller contexts and root or redirected `ModifyHitDef`, then
+transfers them into accepted GetHitVar aliases. Focused coverage passes 181/181
+plus the real RedirectID route. The full suite passes 3539/3597 with the same
+58 inherited failures. Required artifact
+`synthetic-imported-hitdef-dynamic-fall-recovery` has checksum `b90e7fe3`;
+typecheck, the 363-module build, boundaries, redirect boundary, and 708/708
+traces (674 required, 34 optional) pass. T637 adds dynamic HitDef `fall`,
+`air.fall`, and `fall.kill` through root/Helper caller contexts and root or
+redirected `ModifyHitDef`, then transfers them into accepted HitFall/GetHitVar
+consumers. Focused coverage passes 183/183 plus the real RedirectID route. The
+full suite passes 3542/3600 with the same 58 inherited failures. Required
+artifact `synthetic-imported-hitdef-dynamic-fall-flags` has checksum
+`571e29ee`; typecheck, the 363-module build, boundaries, redirect boundary,
+and 709/709 traces (675 required, 34 optional) pass. T638 owns dynamic
+HitDef down-bounce policy.
+
+## 2026-08-02 last-hit metadata, Fighter Lab, Helper red-life, and hitflag gates
+
+T522/T523/T524 require focused direct/Projectile compiler, context, and combat
+coverage (230/232/234 tests), `pnpm qa:trace` 682/682, typecheck, production
+build, boundaries, and `git diff --check`. Their claim ceiling is metadata
+readback only: no score movement, mutable power mutation, live-facing
+choreography, or ReversalDef. T505 Gallery requires
+`pnpm qa:browser:fighter-lab`, which passes Gallery entry, two cards, the full
+action index, and return to Timeline; visual evidence is
+`.scratch/qa/fighter-lab-gate/character-gallery.png`. The 180-second broad
+`pnpm qa:smoke` attempt timed out and must remain unknown. T530 Showcase is
+covered by the same browser gate with quick action/VFX playback and a
+`character-showcase.png` capture. T534/issue 108 requires the imported Helper
+red-life LifeShare artifact and `pnpm qa:trace` `686/686` (`652` required,
+`34` optional); Helper-local red life remains unchanged in the trace.
+T535/issue 109 requires focused compiler/context/CNS/direct/projectile coverage
+for static `GetHitVar(hitflag)` comparisons, effective `MAF` default propagation,
+and redirected targets. The five-file/238-test run passes; no new trace artifact
+is promoted because this is read-only metadata, so the existing `686/686`
+corpus remains the evidence baseline.
+
+T525's guardcount gate now requires source notes plus focused direct/Projectile
+increment, carry-forward, default, and idle-reset coverage; no browser gate or
+compatibility score is attached. T526's hitcount gate requires source notes,
+focused compiler/context/direct/Projectile first-hit, combo, guarded-reset, and
+authored-fallback coverage, plus 682/682 trace artifacts, typecheck, build,
+boundaries, and diff hygiene. T527 closes with the required authored
+multi-hit trace `synthetic-imported-ikemen-projectile-gethitvar-hitcount-
+multihit`, proving two eligible Projectile hits and one guarded break;
+aggregate `pnpm qa:trace` is 684/684 (650 required, 34 optional). T528 closes
+the bounded `xveladd`/`yveladd` KO-delta readback with direct and player-owned
+Projectile coverage; it does not claim full KO velocity physics.
+
 ## Current M.U.G.E.N CNS persistence gates
 
 T430/T434 require raw CNS `persistent = 2` only in ordinary active-root normal
@@ -166,6 +293,162 @@ imported-fighter coverage passes 251/251; final suite 324/3317, typecheck, build
 boundaries, `qa:trace` 682/682 and diff hygiene pass. Browser smoke is N/A;
 ModifyHitDef Z mutation, Common1 Z acceleration/friction, helper/team ownership
 breadth and full depth-physics parity remain outside this gate.
+
+## Ikemen ModifyHitDef vector-Z mutation gate
+
+T482 requires static `ModifyHitDef` to accept the five HitDef velocity vectors,
+retain an authored third component, and mutate an active normal HitDef consumed
+by direct/projectile contact. `down.velocity` must keep its existing X/Y
+mutation while adding Z; omitted Z and no-active-HitDef rejection remain
+unchanged. Focused compiler/HitDef mutation coverage passes 2 files/89 tests;
+final suite 324/3317, typecheck, build, boundaries, `qa:trace` 682/682 and diff
+hygiene pass. Dynamic expressions, helper/team ownership and Common1 depth
+physics remain outside this gate.
+
+## Ikemen HitDef acceleration metadata gate
+
+T483 requires static HitDef and Projectile `xaccel`, `yaccel` and `zaccel` to
+compile, survive imported/direct/projectile contact handoff, and be observable
+through `GetHitVar(xaccel|yaccel|zaccel)`. Omitted horizontal/depth components
+must return zero. Focused compiler/HitDef/direct/projectile/imported-fighter/
+expression coverage passes 7 files/249 tests; `pnpm typecheck` and
+`pnpm check:boundaries` pass. Browser smoke is N/A; physics,
+localcoord/facing scaling, dynamic expressions and ModifyHitDef acceleration
+mutation remain outside this gate.
+
+## Ikemen ModifyHitDef acceleration metadata gate
+
+T484 requires static `ModifyHitDef` `xaccel`, `yaccel` and `zaccel` to mutate an
+active normal HitDef's `hitVars` in place while preserving the existing direct/
+projectile `GetHitVar` handoff. Focused compiler/HitDef mutation coverage passes
+2 files/89 tests and `pnpm typecheck` passes. Browser smoke is N/A; dynamic
+expressions, scaling, physics and full parity remain outside this gate.
+
+## Ikemen dynamic HitDef acceleration metadata gate
+
+T485 requires supported scalar expressions for HitDef and ModifyHitDef
+`xaccel`, `yaccel` and `zaccel` to remain typed, evaluate through the active
+controller context, and update the existing hit metadata handoff. Focused
+coverage passes 7 files/250 tests; final 324/3321 suite, typecheck/build/
+boundaries, 682/682 traces and asset hygiene pass. Browser smoke is N/A;
+acceleration physics, scaling, dynamic vectors and other dynamic ModifyHitDef
+fields remain outside this gate.
+
+## Ikemen `GetHitVar(zvel)` gate
+
+T486 requires the shared runtime expression context to expose the active
+HitDef/Projectile depth velocity as Ikemen-only `GetHitVar(zvel)`, with `0`
+when the optional Z component is omitted. `RuntimeExpressionContextSystem`
+passes 27/27 focused tests. Legacy M.U.G.E.N trigger compatibility and depth
+physics remain outside this gate.
+
+## Ikemen `HitVelSet z` gate
+
+T487 requires typed `HitVelSet` parsing to preserve the Ikemen `z` flag and,
+when nonzero, copy the active HitDef/Projectile `hitVelocity.z` into the
+combat-depth velocity channel. The focused kinematic/compiler slice passes
+2 files/71 tests; the final 324/3321 suite, typecheck/build/boundaries,
+682/682 trace artifacts, asset hygiene and diff hygiene also pass. Full Z
+physics, dynamic vector parity and legacy M.U.G.E.N behavior remain outside
+this gate; browser smoke is N/A because no visible surface changed.
+
+## Ikemen `GetHitVar` velocity-vector gate
+
+T488 requires direct HitDef and player-owned Projectile contacts to preserve
+the last ground/air/down/guard/airguard velocity triples and resolve their
+dotted x/y/z aliases through the shared read model. Missing families or
+components return zero. Focused compiler/runtime/import coverage passes 4
+files/133 tests; the final 324/3324 suite, typecheck/build/boundaries,
+682/682 trace artifacts, asset hygiene and diff hygiene also pass. Dynamic
+vector expressions, exact omitted-value adjudication, Z physics, string
+attributes and helper/team breadth remain outside this gate; browser smoke is
+N/A because no visible surface changed.
+
+## Ikemen `GetHitVar` damage-component gate
+
+T489 requires direct HitDef and player-owned Projectile contacts to retain the
+first and second `damage` components as `GetHitVar(hitdamage)` and
+`GetHitVar(guarddamage)`, without replacing the effective contact `damage`.
+Focused RuntimeExpressionContext/DirectCombat/ProjectileCombat coverage passes
+3 files/114 tests; the final 324/3324 suite, typecheck/build/boundaries,
+682/682 trace artifacts, asset hygiene and diff hygiene also pass. Resource
+gains, scaling, string attributes, KO policy and helper/team breadth remain
+outside this gate; browser smoke is N/A.
+
+## Ikemen `GetHitVar` animtype gate
+
+T490 requires direct HitDef, player-owned Projectile, and imported move paths
+to retain ground, air, and fall reaction animation types. The runtime must
+resolve `GetHitVar(ground.animtype)`, `GetHitVar(air.animtype)`, and
+`GetHitVar(fall.animtype)` with the documented fallback chain while preserving
+effective `GetHitVar(animtype)`. Focused compiler/runtime/import coverage passes
+7 test files/256 tests; final 324/3327 suite, typecheck/build/boundaries, 682/682
+trace artifacts, asset hygiene and diff hygiene pass. Common1 choreography,
+dynamic values and full parity remain outside this gate; browser smoke is N/A.
+
+## Ikemen `GetHitVar(fall.envshake.mul)` gate
+
+T491 requires direct HitDef, player-owned Projectile, and imported move paths
+to retain `fall.envshake.mul` and expose it through the shared read model, with
+the documented default `1` when omitted. Focused compiler/runtime/import
+coverage passes 7 test files/258 tests; final 324/3329 suite,
+typecheck/build/boundaries, 682/682 trace artifacts, asset hygiene and diff
+hygiene pass. Exact EnvShake playback and dynamic values remain outside this
+gate; browser smoke is N/A.
+
+## Ikemen `GetHitVar(playerno)` gate
+
+T492 requires direct HitDef and player-owned Projectile contacts to preserve
+the source attacker's zero-based player slot in hit metadata and expose it as
+`GetHitVar(playerno)`, defaulting to `0` when no source exists. Focused
+coverage passes 3 test files/119 tests; final 324/3330 suite,
+typecheck/build/boundaries, 682/682 trace artifacts, asset hygiene and diff
+hygiene pass. String-valued attributes and helper/team ownership remain
+outside this gate; browser smoke is N/A.
+
+## Ikemen `GetHitVar(playerid)` gate
+
+T506 requires root and verified Helper direct/Projectile contacts to retain the
+numeric source character ID separately from the inherited player slot.
+`GetHitVar(playerid)` must return that ID and default to `0` when the numeric
+source is absent. Focused acceptance is 5 files / 178 tests plus the five
+affected deterministic IKEMEN trace goldens. Typecheck, production build,
+boundaries and asset hygiene must pass. Any aggregate failure must be recorded
+separately from the focused T506 contract. Deprecated `ID`, string values,
+unverified custom-state/team ownership and browser smoke remain outside this
+runtime-only gate.
+
+## Ikemen deprecated `GetHitVar(ID)` gate
+
+T507 requires case-insensitive `ID` to resolve through the T506 numeric source
+identity and to preserve its `0` fallback. Acceptance is the focused shared
+expression file with direct, missing-source, and parsed `GetHitVar(ID)` reads;
+no new metadata or string-valued behavior is allowed.
+
+## Required trace active-roster binding gate
+
+T508 requires the synthetic identity setup and nonlethal HitDef event
+expectation to derive the opponent display name from the active second demo
+fighter. Acceptance is the focused two-artifact slice plus a zero-failure full
+`pnpm qa:trace` run. Routed states, damage, actor source, and life requirements
+must remain unchanged; restoring retired public characters is forbidden.
+
+## Ikemen `GetHitVar(guardko)` gate
+
+T509 requires `GetHitVar(guardko)` to read the existing typed guard-KO flag as
+`1`, with `0` for ordinary hits, non-KO guards, and missing metadata. Acceptance
+is focused expression, direct-combat, and root-Projectile coverage plus the
+full trace/type/build/boundary gates. This does not claim exact guard-damage
+accumulation or broader teams/simul behavior.
+
+## Ikemen `GetHitVar(attr)` gate
+
+T510 requires static `GetHitVar(attr) =/!= state, attack` filters to compare
+the active actor's last-hit `sourceAttr` through the shared attribute matcher.
+Acceptance covers compiler classification, equality, inequality, missing
+metadata, compound expressions, actor redirects, runtime context, and the full
+trace/type/build/boundary gates. Dynamic filters and general string-valued
+GetHitVar behavior remain outside this gate.
 
 ## Common1 fall defense-up gate
 
@@ -1484,3 +1767,85 @@ Before closing a broad compatibility task, confirm:
 - Debug panels do not overflow or hide critical values.
 - Compatibility JSON still includes unsupported feature counts.
 - External fixture assets remain under `.scratch/` or another ignored path.
+
+## Ikemen `GetHitVar(guardflag)` gate
+
+T511 requires effective direct, root-Projectile, Helper-direct, and verified
+Helper-Projectile guard flags to reach last-hit metadata. Static `=` / `!=`
+uses mask overlap, expands `M` to `H|L`, reads the active redirected actor, and
+fails closed without metadata. Evidence: 6 focused files / 224 tests,
+typecheck, 356-module build, boundaries, and 682/682 traces. Browser smoke is
+N/A. Dynamic filters, `hitflag`, and general string GetHitVar remain blocked.
+
+## Ikemen `GetHitVar(projid)` gate
+
+T512 requires Projectile contacts to retain the authored `projectileId` in
+last-hit metadata and expose it numerically. Direct HitDef and missing metadata
+must return `-1`; active and redirected expression contexts must preserve the
+same read. Evidence target: compiler, RuntimeHitVar, context, direct, and
+Projectile tests; then `qa:trace`, typecheck, build, boundaries, and diff
+hygiene. Browser smoke is N/A.
+
+## Ikemen `GetHitVar(teamside)` gate
+
+T513 requires direct and Projectile contacts to retain the effective 1-based
+source team side, prefer explicit parameters, derive omitted local values from
+the attacker/root, and return `-1` without metadata. Evidence target: compiler,
+RuntimeHitVar, context, direct, Projectile, trace, typecheck, build, boundaries,
+and diff hygiene. Browser smoke is N/A.
+
+## Ikemen `GetHitVar(frame)` gate
+
+T515 requires direct HitDef and Projectile hit/guard contacts to set an
+ephemeral same-frame marker, preserve it through hitpause, and clear it at the
+next non-paused frame-start boundary. Evidence target: compiler,
+RuntimeHitVar, context, direct, Projectile, frame-reset, trace, typecheck,
+build, boundaries, and diff hygiene. Browser smoke is N/A.
+
+## Ikemen `GetHitVar(redlife)` gate
+
+T519 requires direct HitDef and Projectile hit/guard contacts to expose numeric
+authored redlife, defaulting missing metadata to `0` and never reading the
+defender's current red-life resource. Evidence target: compiler, RuntimeHitVar,
+context, direct-combat, Projectile-system, Projectile-combat, trace, typecheck,
+build, boundaries, and diff hygiene. Browser smoke is N/A.
+
+## Ikemen `GetHitVar(priority)` gate
+
+T516 requires direct HitDef and Projectile hit/guard contacts to expose numeric
+last-HitDef priority. Direct priority must use the normalized authored/default
+value, Projectile contacts must use the HitDef default, and Projectile
+`projpriority` clash data must remain separate. Evidence target: compiler,
+RuntimeHitVar, context, direct, Projectile, trace, typecheck, build, boundaries,
+and diff hygiene. Browser smoke is N/A.
+
+## Ikemen `GetHitVar(dizzypoints)` gate
+
+T517 requires direct HitDef and Projectile hit/guard contacts to expose numeric
+authored dizzypoints, defaulting missing metadata to `0` and never reading the
+defender's current dizzy resource. Evidence target: compiler, RuntimeHitVar,
+context, direct-combat, Projectile-system, Projectile-combat, trace, typecheck,
+build, boundaries, and diff hygiene. Browser smoke is N/A.
+
+## Ikemen `GetHitVar(guardpoints)` gate
+
+T518 requires direct HitDef and Projectile hit/guard contacts to expose numeric
+authored guardpoints, defaulting missing metadata to `0` and never reading the
+defender's current guard resource. Evidence target: compiler, RuntimeHitVar,
+context, direct-combat, Projectile-system, Projectile-combat, trace, typecheck,
+build, boundaries, and diff hygiene. Browser smoke is N/A.
+
+T520 requires direct HitDef and Projectile hit/guard contacts to expose the
+numeric second `givepower` value, defaulting missing metadata to `0` and never
+reading the defender's current power resource. Evidence target: compiler,
+RuntimeHitVar, context, direct-combat, Projectile-system, Projectile-combat,
+trace, typecheck, build, boundaries, and diff hygiene. Browser smoke is N/A.
+
+## Ikemen `GetHitVar(keepstate)` gate
+
+T514 requires imported and dynamic direct HitDef contacts to retain authored
+`keepstate` and return numeric `1` only for `keepstate = 1`, with `0` for false
+or missing metadata. Projectile and Reversal paths remain false fallbacks.
+Evidence target: compiler, RuntimeHitVar, runtime context, HitDef import,
+direct-combat, Projectile, trace, typecheck, build, boundaries, and diff
+hygiene. Browser smoke is N/A.

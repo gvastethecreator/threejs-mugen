@@ -1,5 +1,51 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-08 T651-T660 direct contact timing, admission, and velocity addendum — no score movement
+
+Direct HitDef pause pairs now preserve independent attacker pause and receiver
+hit-shake time for root and Helper contacts. Dynamic direct `ground.hittime`
+now resolves in root/Helper caller context, uses the official fresh zero
+default, supports bounded live ModifyHitDef replacement, and feeds grounded
+stun plus `GetHitVar(hittime)`. Dynamic direct `ground.slidetime` also reaches
+accepted grounded-hit `GetHitVar(slidetime)`. Dynamic direct `guard.hittime`
+uses the pinned profile-specific fresh default and reaches accepted guard stun
+plus `GetHitVar(hittime)`. Dynamic `guard.slidetime`, `guard.ctrltime`, and
+`airguard.ctrltime` complete the bounded fresh-default chain and ground/air
+guard GetHitVar metadata. Dynamic `air.hittime` uses fresh default 20 and feeds
+airborne non-fall stun. T659 adds dynamic legacy scalar `guard.dist` and a
+precontact horizontal latch. T660 adds dynamic and mixed direct
+`ground.velocity` X/Y with live component-wise mutation, accepted grounded
+velocity, and GetHitVar readback. The 363-module build and 732/732 traces pass.
+After migrating the retired roster expectations to Rocco and Nadia, the full
+suite passes 3690/3690. These are bounded timing, admission, and
+velocity seams, not full HitDef or tick-order parity. Compatibility scores
+remain unchanged.
+
+## 2026-08-02 T535 `GetHitVar(hitflag)` addendum — no score movement
+
+The explicit Ikemen last-hit read model now preserves effective direct and
+Projectile HitDef `hitflag` values, defaults omission to `MAF`, and evaluates
+static equality/inequality filters with M→H/L overlap. Five focused files / 238
+tests pass and the existing trace corpus remains `686/686`. This is a bounded
+read-only metadata seam; compatibility scores remain unchanged.
+
+## 2026-08-02 T528 KO velocity-add addendum — no score movement
+
+The explicit `ikemen-go` profile now reads separate `xveladd`/`yveladd`
+metadata on lethal direct and player-owned Projectile contacts. Focused
+coverage passes 801/801 tests and the aggregate trace corpus passes 684/684
+(650 required, 34 optional). Non-KO/non-profile reads retain zero; helper and
+full KO-physics parity remain bounded. Compatibility scores remain unchanged.
+
+## 2026-08-02 T527 authored multi-hit addendum — no score movement
+
+The explicit `ikemen-go` profile now gates one player-owned Projectile with
+authored `numhits` through two eligible contacts and a guarded break. Trace
+`c6582760` / `78e24146` and aggregate 683/683 pass, while static/imported
+fallback, helper/team arbitration and full combo parity remain bounded. T528
+is closed-bounded by the T528 slice above. Compatibility scores remain
+unchanged.
+
 ## 2026-08-01 T478/T479 presentation addendum — no score movement
 
 CommonFX/FightFX hit-spark packages now preserve authored `fx.scale` and apply
@@ -24,6 +70,68 @@ explicit results reaching `combatDepth.velocity`. The 251/251 focused and
 324/3317 full gates are green, but this remains one bounded runtime seam: no
 second legal imported route, Common1 Z physics, ModifyHitDef mutation or release
 adjudication was added. Scores remain unchanged.
+
+## 2026-08-01 T482 combat addendum — no score movement
+
+Static `ModifyHitDef` now retains authored vector-Z fields on an active normal
+HitDef and leaves them on the shared T481 direct/projectile contact path. This
+is a narrow metadata mutation seam; dynamic expressions, Common1 depth physics,
+and final adjudication remain open. Scores remain unchanged.
+
+## 2026-08-01 T483 combat addendum — no score movement
+
+Static HitDef/Projectile `xaccel`, `yaccel` and `zaccel` now reach direct and
+projectile defender `GetHitVars`, including imported state moves and official
+zero defaults for omitted horizontal/depth values. This is metadata coverage,
+not acceleration/depth physics or a new legal imported route; scores remain
+unchanged.
+
+## 2026-08-01 T484 combat addendum — no score movement
+
+Static `ModifyHitDef` can now mutate active HitDef `xaccel`, `yaccel` and
+`zaccel` metadata before direct/projectile contact. This closes a narrow
+metadata continuation only; dynamic mutation, physics and adjudication remain
+open, so scores remain unchanged.
+
+## 2026-08-01 T485 combat addendum — no score movement
+
+Supported scalar HitDef/ModifyHitDef acceleration expressions now evaluate in
+the active controller context before writing typed hit metadata. This closes
+only dynamic metadata evaluation; acceleration physics, scaling, and score
+adjudication remain unchanged.
+
+## 2026-08-01 T486 combat addendum — no score movement
+
+Ikemen-only `GetHitVar(zvel)` now reads the selected HitDef/Projectile depth
+velocity with a zero omitted-depth fallback. This is a read-model seam only;
+depth physics and score adjudication remain unchanged.
+
+## 2026-08-01 T487 combat addendum — no score movement
+
+Ikemen `HitVelSet z` now carries the typed nonzero flag into the runtime
+combat-depth velocity channel. This closes one controller handoff only; full Z
+physics, dynamic vectors and score adjudication remain unchanged.
+
+## 2026-08-01 T488 combat addendum — no score movement
+
+Direct HitDef and player-owned Projectile contacts now preserve the five
+Ikemen HitDef velocity families for dotted `GetHitVar` readback. This closes a
+metadata seam only; dynamic vectors, depth physics and score adjudication remain
+unchanged.
+
+## 2026-08-01 T489 combat addendum — no score movement
+
+Direct HitDef and player-owned Projectile contacts now retain the first and
+second HitDef damage components for `GetHitVar(hitdamage|guarddamage)`. This is
+readback metadata only; resource/scaling semantics and score adjudication remain
+unchanged.
+
+## 2026-08-01 T490 combat addendum — no score movement
+
+Direct HitDef, player-owned Projectile, and imported moves now retain separate
+ground, air, and fall reaction animation types for the Ikemen dotted
+`GetHitVar` aliases. This closes a readback metadata seam only; Common1
+reaction choreography, dynamic values and score adjudication remain unchanged.
 
 ## 2026-07-28 post-DA32-026 audit — no score movement
 
