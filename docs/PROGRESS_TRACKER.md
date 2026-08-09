@@ -1,22 +1,27 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T700 (2026-08-09)
+## Latest implementation checkpoint — T701 (2026-08-09)
 
-Authoritative cursor: T700 is closed-bounded for fresh root- and Helper
-Projectiles with dynamic `projremovetime`. Caller expressions resolve once,
-truncate/clamp through the bounded Projectile-time domain, persist in the
-fresh payload, and complete timeout removal with root/Helper/parent ownership.
-Root trace checksums are `63ef5373` / `2824a6bb`; Helper checksums are
-`c35241e4` / `23b1bac3`. Aggregate QA is `781/781` (`747` required, `34`
-optional), the full `3815/3815` Vitest suite across `328` files, typecheck,
-and the `363`-module production build pass. Live `ModifyProjectile`, exact
-terminal animation/tick preemption, bounds-removal ordering, negative/overflow
-values, nested helper/team topology, rollback, and full Projectile lifecycle
-parity remain explicitly unclaimed. See [issue
-274](../.scratch/roadmap/issues/274-projectile-removetime-dynamic.md).
+Authoritative cursor: T701 is closed-bounded for fresh root- and Helper
+Projectiles with dynamic `projmisstime`. Caller expressions resolve once,
+truncate/clamp through the bounded Projectile-time domain, and gate the next
+accepted multi-hit contact. Root trace checksums are `90c039b1` / `6868ca24`;
+Helper checksums are `24a8156a` / `ce715b91`. Aggregate QA is `783/783`
+(`749` required, `34` optional), the full `3819/3819` Vitest suite across
+`328` files, typecheck, and the `363`-module production build pass. Live
+`ModifyProjectile`, exact hitpause/tick ordering, negative/overflow semantics,
+nested helper/team topology, rollback, and full Projectile timing parity remain
+explicitly unclaimed. See [issue
+275](../.scratch/roadmap/issues/275-projectile-misstime-dynamic.md).
 
-Next proposed cut: T701 maps the next unclaimed Projectile/effect lifecycle
+Next proposed cut: T702 maps the next unclaimed Projectile/effect lifecycle
 seam against pinned Ikemen source before implementation.
+
+## Previous implementation checkpoint — T700 (2026-08-09)
+
+T700 remains closed-bounded for fresh root- and Helper-authored Projectiles
+with dynamic `projremovetime` caller-context resolution and timeout removal.
+See [issue 274](../.scratch/roadmap/issues/274-projectile-removetime-dynamic.md).
 
 ## Previous implementation checkpoint — T608-T694 (2026-08-09)
 

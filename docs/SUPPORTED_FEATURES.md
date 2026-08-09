@@ -1,4 +1,18 @@
 ﻿# Supported Features
+## 2026-08-09 T701 Projectile misstime checkpoint
+
+T701 is closed-bounded: fresh root- and Helper-authored Projectiles resolve
+dynamic `projmisstime` once in the original caller context, truncate/clamp
+through the bounded Projectile-time domain, and gate the next accepted
+multi-hit contact. Required root checksums are `90c039b1` / `6868ca24`;
+Helper checksums are `24a8156a` / `ce715b91`; aggregate QA passes `783/783`
+artifacts (`749` required, `34` optional); the full `3819/3819` Vitest suite
+across `328` files, typecheck, and the `363`-module build pass. Live
+`ModifyProjectile`, exact hitpause/tick ordering, negative/overflow semantics,
+nested helper/team topology, rollback, and full Projectile timing parity remain
+outside the supported claim. See [issue
+275](../.scratch/roadmap/issues/275-projectile-misstime-dynamic.md).
+
 ## 2026-08-09 T700 Projectile removetime checkpoint
 
 T700 is closed-bounded: fresh root- and Helper-authored Projectiles resolve

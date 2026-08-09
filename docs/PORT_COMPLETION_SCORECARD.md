@@ -1,5 +1,21 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-09 T701 Projectile misstime addendum - no score movement
+
+Final T701 verification: `783/783` trace artifacts (`749` required, `34`
+optional), full `3819/3819` Vitest across `328` files, typecheck, the
+`363`-module production build, and diff hygiene pass. Required root Projectile
+misstime trace is `90c039b1` / final `6868ca24`; the Helper trace is
+`24a8156a` / final `ce715b91`.
+
+Fresh root- and Helper-authored Projectiles now resolve dynamic `projmisstime`
+once in the original caller context, truncate/clamp it through the bounded
+Projectile-time domain, and gate the next accepted multi-hit contact. This is
+a bounded compatibility seam with no score movement: live `ModifyProjectile`,
+exact hitpause/tick ordering, negative/overflow semantics, nested helper/team
+topology, rollback, and full Projectile timing parity remain blocked. See
+[issue 275](../.scratch/roadmap/issues/275-projectile-misstime-dynamic.md).
+
 ## 2026-08-09 T700 Projectile removetime addendum - no score movement
 
 Final T700 verification: `781/781` trace artifacts (`747` required, `34`
