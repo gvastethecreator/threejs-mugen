@@ -1,6 +1,20 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T689 closed-bounded
+## Authoritative runtime cursor — T690 closed-bounded
+
+Final T690 verification: `765/765` trace artifacts (`731` required, `34`
+optional), with required fresh root Projectile `guard.velocity` trace
+checksum `781a8381` and final checksum `968a063c`. The full `3784/3784`
+Vitest suite across `328` files, typecheck, the `363`-module build, and the
+diff gate pass.
+
+T690 / issue 264 is closed-bounded: fresh root and Helper-authored Projectiles
+retain one-, two-, and three-component dynamic/mixed `guard.velocity`, resolve
+caller-context values once, derive missing fresh X/Z from effective ground
+velocity, default fresh Y to zero, and expose the accepted ground-guard vector
+through GetHitVar/physics plus target and lifecycle evidence. Dynamic `n`, live
+mutation, other vector defaults, and full Projectile parity remain excluded.
+See [issue 264](../.scratch/roadmap/issues/264-projectile-guard-velocity-dynamic.md).
 
 Final T682 verification: `756/756` trace artifacts (`722` required, `34`
 optional), with required root Projectile `air.velocity` checksums
@@ -54,6 +68,13 @@ it once in caller context, default missing fresh siblings to zero, and expose
 the accepted grounded-hit vector through GetHitVar/physics plus target and
 lifecycle evidence. Fresh default recalculation beyond this vector, dynamic
 `n`, live mutation, and full Projectile parity remain excluded.
+
+T690 / issue 264 extends the fresh Projectile seam to `guard.velocity`:
+dynamic/mixed X/Y/Z values resolve once in root/Helper caller context, fresh
+missing X/Z derive from effective ground velocity, fresh Y defaults to zero,
+and accepted ground guards expose the final vector through GetHitVar/physics
+with lifecycle and target evidence. Live mutation and full Projectile parity
+remain excluded.
 
 T675 / issue 249 is closed-bounded: live root-owned `ModifyHitDef
 down.velocity` dynamic Z resolves in caller context, preserves active X/Y,
