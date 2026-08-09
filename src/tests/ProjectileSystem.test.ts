@@ -1238,6 +1238,29 @@ describe("ProjectileSystem", () => {
     expect(create("unresolved", () => undefined).missTime).toBe(0);
   });
 
+  it("resolves fresh Projectile projpriority in the caller context", () => {
+    const operation = compileControllerIr(controller({ projpriority: "var(0) + 2" })).operation as ProjectileControllerOp;
+    const create = (serialId: string, resolvePriority?: () => number | undefined): RuntimeProjectile => createRuntimeProjectile({
+      serialId,
+      controller: controller({ projanim: "1005", projpriority: "var(0) + 2" }),
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolvePriority,
+    });
+
+    expect(operation.priorityExpression).toBe("var(0) + 2");
+    expect(create("dynamic", () => 7.9).priority).toBe(7);
+    expect(create("clamped", () => 99).priority).toBe(10);
+    expect(create("negative", () => -4).priority).toBe(0);
+    expect(create("unresolved", () => undefined).priority).toBe(1);
+  });
+
   it("resolves fresh Projectile down.hittime in the caller context", () => {
     const dynamicOperation = compileControllerIr(controller({ "down.hittime": "var(0) + 3" })).operation as ProjectileControllerOp;
     const dynamic = createRuntimeProjectile({

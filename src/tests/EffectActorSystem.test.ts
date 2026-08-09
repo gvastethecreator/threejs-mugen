@@ -1705,6 +1705,45 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("resolves fresh Helper Projectile projpriority in Helper caller context", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "43", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller(
+                "Projectile",
+                {
+                  projid: "8854",
+                  projanim: "930",
+                  projpriority: "var(0) + 2",
+                },
+                ["Time = 0"],
+              ),
+            ]),
+          ),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+    helper.vars[0] = 6;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(store.projectiles.find((projectile) => projectile.parentId === helper.serialId)).toMatchObject({
+      projectileId: 8854,
+      priority: 8,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+    });
+  });
+
   it("uses Helper ownprojectile identity for ownership queries and mutation", () => {
     const store = createRuntimeEffectActorStore();
     const rootProjectile = spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8852", projanim: "930", projhits: "2" }));
