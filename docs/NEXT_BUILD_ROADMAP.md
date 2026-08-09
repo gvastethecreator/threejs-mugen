@@ -1,6 +1,20 @@
 ﻿# Next Build Roadmap
 
-## Authoritative runtime cursor — T678 closed, T679 source-mapped
+## Authoritative runtime cursor — T687 closed-bounded
+
+Final T687 verification: `762/762` trace artifacts (`728` required, `34`
+optional), with required root-owned `ModifyProjectile guard.velocity` trace
+checksum `f1a7b429` and final checksum `df93f663`. The full `3772/3772`
+Vitest suite across `328` files, typecheck, and the `363`-module build pass.
+
+T687 / issue 261 is closed-bounded for root-owned live `ModifyProjectile
+guard.velocity` dynamic/mixed X/Y/Z replacement. The pinned caller-context
+resolver broadcasts Ikemen's zero-filled one/two/three-component vector, and
+the required ground-guard trace proves GetHitVar/physics, target, and
+Projectile lifecycle evidence. Helper-owned mutation remains blocked by the
+pinned upstream helper guard. The older T678/T679 summary below is historical.
+
+## Historical runtime cursor — T678 closed, T679 source-mapped
 
 Final T678 verification: `751/751` trace artifacts (`717` required, `34`
 optional), with T678 required trace checksum `3eeaa993` and final checksum
