@@ -3827,6 +3827,29 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles dynamic Projectile down.hittime and preserves the fresh default", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "down.hittime": "var(0) + 3",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      downHitTime: 20,
+      downHitTimeExpression: "var(0) + 3",
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "down.hittime": "16",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      downHitTime: 16,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "down.hittime": "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(1000, "Projectile", [], {})).operation).toMatchObject({
+      kind: "projectile",
+      downHitTime: 20,
+    });
+  });
+
   it("compiles dynamic Projectile guard.velocity components", () => {
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       "guard.velocity": "var(0),fvar(1),var(2)",

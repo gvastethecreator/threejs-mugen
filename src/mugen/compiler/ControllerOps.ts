@@ -588,6 +588,8 @@ export type ProjectileControllerOp = {
   groundSlideTime?: number;
   airHitTime?: number;
   downHitTime?: number;
+  /** Fresh Projectile down.hittime expression evaluated in the original caller context. */
+  downHitTimeExpression?: number | string;
   groundVelocity?: MugenProjectileVector;
   /** One-, two-, or three-component dynamic/mixed ground.velocity evaluated in projectile caller context. */
   groundVelocityExpressions?: MugenHitDefExpressionPair;
@@ -3458,6 +3460,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (getPower === false) return undefined;
   const givePower = optionalIntegerExpressionPairParam(controller, "givepower");
   if (givePower === false) return undefined;
+  const downHitTime = optionalIntegerExpressionParam(controller, "down.hittime");
+  if (downHitTime === false) return undefined;
   const standFriction = optionalScalarNumberOrExpression(controller, "stand.friction");
   const crouchFriction = optionalScalarNumberOrExpression(controller, "crouch.friction");
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
@@ -3645,7 +3649,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     airVelocity,
     ...(airVelocityExpressions === undefined ? {} : { airVelocityExpressions }),
     ...(airVelocityZExpression === undefined ? {} : { airVelocityZExpression }),
-    downHitTime: firstNumber(findParam(controller, "down.hittime")) ?? 20,
+    downHitTime: downHitTime === true || typeof downHitTime === "string" ? 20 : downHitTime,
+    ...(typeof downHitTime === "string" ? { downHitTimeExpression: downHitTime } : {}),
     downVelocity,
     ...(downVelocityExpressions === undefined ? {} : { downVelocityExpressions }),
     ...(downVelocityZExpression === undefined ? {} : { downVelocityZExpression }),

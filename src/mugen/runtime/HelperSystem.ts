@@ -1988,7 +1988,9 @@ export function resolveRuntimeHelperIntegerScalarParam(
     const operation = controller.operation;
     const value = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
       ? operation.downHitTime
-      : undefined;
+      : operation?.kind === "projectile"
+        ? operation.downHitTimeExpression
+        : undefined;
     if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
   }
   const raw = findControllerParam(controller.source, key) ??

@@ -330,6 +330,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveAirVelocity?: () => [number?, number?, number?] | undefined;
   /** Resolves Projectile down.velocity authored expressions in the original caller context. */
   resolveDownVelocity?: () => [number?, number?, number?] | undefined;
+  /** Resolves fresh Projectile down.hittime authored expressions in the original caller context. */
+  resolveDownHitTime?: () => number | undefined;
   /** Resolves Projectile airguard.velocity authored expressions in the original caller context. */
   resolveAirGuardVelocity?: () => [number?, number?, number?] | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
@@ -615,7 +617,18 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const hitStun = Math.max(1, Math.round(operation?.hitStun ?? firstNumber(findControllerParam(input.controller, "ground.hittime")) ?? 18));
   const groundSlideTime = operation?.groundSlideTime ?? firstNumber(findControllerParam(input.controller, "ground.slidetime"));
   const airHitTime = Math.max(0, Math.round(operation?.airHitTime ?? firstNumber(findControllerParam(input.controller, "air.hittime")) ?? 20));
-  const downHitTime = Math.max(0, Math.round(operation?.downHitTime ?? firstNumber(findControllerParam(input.controller, "down.hittime")) ?? 20));
+  const dynamicDownHitTime = operation?.downHitTimeExpression === undefined
+    ? undefined
+    : input.resolveDownHitTime?.();
+  const finiteDynamicDownHitTime = dynamicDownHitTime !== undefined && Number.isFinite(dynamicDownHitTime)
+    ? dynamicDownHitTime
+    : undefined;
+  const downHitTime = Math.max(
+    0,
+    finiteDynamicDownHitTime === undefined
+      ? Math.round(operation?.downHitTime ?? firstNumber(findControllerParam(input.controller, "down.hittime")) ?? 20)
+      : Math.trunc(finiteDynamicDownHitTime),
+  );
   const downBounce = operation?.downBounce ?? booleanNumber(findControllerParam(input.controller, "down.bounce"));
   const forceNoFall = operation?.forceNoFall ?? booleanNumber(findControllerParam(input.controller, "forcenofall"));
   const forceStand = operation?.forceStand ?? booleanNumber(findControllerParam(input.controller, "forcestand"));
