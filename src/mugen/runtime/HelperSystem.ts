@@ -2007,6 +2007,13 @@ export function resolveRuntimeHelperIntegerScalarParam(
       : undefined;
     if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
   }
+  if (key === "air.hittime") {
+    const operation = controller.operation;
+    const value = operation?.kind === "projectile"
+      ? operation.airHitTimeExpression
+      : undefined;
+    if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
+  }
   if (key === "guard.hittime") {
     const operation = controller.operation;
     const value = operation?.kind === "projectile"

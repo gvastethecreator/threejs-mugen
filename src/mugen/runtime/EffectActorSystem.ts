@@ -748,6 +748,7 @@ export function spawnRuntimeHelperProjectileActor(
     resolveDownHitTime: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "down.hittime", options),
     resolveGroundHitTime: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "ground.hittime", options),
     resolveGroundSlideTime: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "ground.slidetime", options),
+    resolveAirHitTime: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "air.hittime", options),
     resolveGuardHitTime: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "guard.hittime", options),
     resolveAirGuardVelocity: () => resolveRuntimeHelperProjectileAirGuardVelocity(helper, controller, options),
     resolvePaletteFx: resolveRuntimeHelperHitDefPaletteFx(helper, controller, options),

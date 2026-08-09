@@ -1331,6 +1331,51 @@ describe("ProjectileSystem", () => {
     expect(omitted.groundSlideTime).toBeUndefined();
   });
 
+  it("resolves fresh Projectile air.hittime in the caller context", () => {
+    const dynamicOperation = compileControllerIr(controller({ "air.hittime": "var(0) + 3" })).operation as ProjectileControllerOp;
+    const dynamic = createRuntimeProjectile({
+      serialId: "p1-projectile-air-hittime-dynamic",
+      controller: controller({ "air.hittime": "var(0) + 3" }),
+      operation: dynamicOperation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveAirHitTime: () => 17.9,
+    });
+    const unresolved = createRuntimeProjectile({
+      serialId: "p1-projectile-air-hittime-unresolved",
+      controller: controller({ "air.hittime": "var(0) + 3" }),
+      operation: dynamicOperation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveAirHitTime: () => undefined,
+    });
+    const omitted = createRuntimeProjectile({
+      serialId: "p1-projectile-air-hittime-omitted",
+      controller: controller({}),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+
+    expect(dynamic.airHitTime).toBe(17);
+    expect(unresolved.airHitTime).toBe(20);
+    expect(omitted.airHitTime).toBe(20);
+  });
+
   it("resolves fresh Projectile guard.hittime in the caller context", () => {
     const dynamicOperation = compileControllerIr(controller({ "guard.hittime": "var(0) + 3" })).operation as ProjectileControllerOp;
     const dynamic = createRuntimeProjectile({

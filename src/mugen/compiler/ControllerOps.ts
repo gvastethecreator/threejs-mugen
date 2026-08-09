@@ -586,6 +586,8 @@ export type ProjectileControllerOp = {
   hitStun: number;
   /** Fresh Projectile ground.slidetime expression evaluated in the original caller context. */
   groundSlideTimeExpression?: number | string;
+  /** Fresh Projectile air.hittime expression evaluated in the original caller context. */
+  airHitTimeExpression?: number | string;
   /** Fresh Projectile ground.hittime expression evaluated in the original caller context. */
   groundHitTimeExpression?: number | string;
   /** M.U.G.E.N grounded hit slide duration. */
@@ -3470,6 +3472,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (groundHitTime === false) return undefined;
   const groundSlideTime = optionalIntegerExpressionParam(controller, "ground.slidetime");
   if (groundSlideTime === false) return undefined;
+  const airHitTime = optionalIntegerExpressionParam(controller, "air.hittime");
+  if (airHitTime === false) return undefined;
   const downHitTime = optionalIntegerExpressionParam(controller, "down.hittime");
   if (downHitTime === false) return undefined;
   const guardHitTime = optionalIntegerExpressionParam(controller, "guard.hittime");
@@ -3656,7 +3660,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     ...(typeof groundHitTime === "string" ? { groundHitTimeExpression: groundHitTime } : {}),
     groundSlideTime: groundSlideTime === true || typeof groundSlideTime === "string" ? undefined : groundSlideTime,
     ...(typeof groundSlideTime === "string" ? { groundSlideTimeExpression: groundSlideTime } : {}),
-    airHitTime: firstNumber(findParam(controller, "air.hittime")) ?? 20,
+    airHitTime: airHitTime === true || typeof airHitTime === "string" ? 20 : airHitTime ?? 20,
+    ...(typeof airHitTime === "string" ? { airHitTimeExpression: airHitTime } : {}),
     groundVelocity,
     ...(groundVelocityExpressions === undefined ? {} : { groundVelocityExpressions }),
     ...(groundVelocityZExpression === undefined ? {} : { groundVelocityZExpression }),

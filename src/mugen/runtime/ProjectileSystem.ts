@@ -336,6 +336,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveGroundHitTime?: () => number | undefined;
   /** Resolves fresh Projectile ground.slidetime authored expressions in the original caller context. */
   resolveGroundSlideTime?: () => number | undefined;
+  /** Resolves fresh Projectile air.hittime authored expressions in the original caller context. */
+  resolveAirHitTime?: () => number | undefined;
   /** Resolves fresh Projectile guard.hittime authored expressions in the original caller context. */
   resolveGuardHitTime?: () => number | undefined;
   /** Resolves Projectile airguard.velocity authored expressions in the original caller context. */
@@ -641,7 +643,18 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const groundSlideTime = finiteDynamicGroundSlideTime === undefined
     ? operation?.groundSlideTime ?? firstNumber(findControllerParam(input.controller, "ground.slidetime"))
     : Math.trunc(finiteDynamicGroundSlideTime);
-  const airHitTime = Math.max(0, Math.round(operation?.airHitTime ?? firstNumber(findControllerParam(input.controller, "air.hittime")) ?? 20));
+  const dynamicAirHitTime = operation?.airHitTimeExpression === undefined
+    ? undefined
+    : input.resolveAirHitTime?.();
+  const finiteDynamicAirHitTime = dynamicAirHitTime !== undefined && Number.isFinite(dynamicAirHitTime)
+    ? dynamicAirHitTime
+    : undefined;
+  const airHitTime = Math.max(
+    0,
+    finiteDynamicAirHitTime === undefined
+      ? Math.round(operation?.airHitTime ?? firstNumber(findControllerParam(input.controller, "air.hittime")) ?? 20)
+      : Math.trunc(finiteDynamicAirHitTime),
+  );
   const dynamicDownHitTime = operation?.downHitTimeExpression === undefined
     ? undefined
     : input.resolveDownHitTime?.();
