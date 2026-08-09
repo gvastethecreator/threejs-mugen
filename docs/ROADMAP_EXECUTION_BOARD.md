@@ -1,26 +1,26 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T694 closed-bounded
+## Authoritative runtime cursor — T695 closed-bounded
 
-Final T694 verification: `769/769` trace artifacts (`735` required, `34`
-optional), with required Helper-authored fresh Projectile `down.hittime` trace
-checksum `258bc45a` and final checksum `bd70be12`. The full `3794/3794`
-Vitest suite across `328` files, typecheck, the `363`-module build, and the
-diff gate pass.
+Final T695 verification: `771/771` trace artifacts (`737` required, `34`
+optional), with required root Projectile `ground.hittime` trace checksum
+`0445dd30` / final `b6489c11` and Helper Projectile checksum `bf4326b5` /
+final `219a4ec4`. The full `3798/3798` Vitest suite across `328` files,
+typecheck, the `363`-module build, and the diff gate pass.
 
-T694 / issue 268 is closed-bounded: Helper-authored fresh Projectiles resolve
-dynamic `down.hittime` once in Helper caller context, and accepted lying
-contact exposes `GetHitVar(hittime)=17` with Helper/root/parent ownership,
-Projectile payload, lifecycle, target links, and imported Common1-style
-progression. Live `ModifyProjectile`, non-zero down launch, exact
-countdown/landing timing, negative/overflow values, teams, rollback, and full
-Projectile timing parity remain excluded. See [issue 268](../.scratch/roadmap/issues/268-helper-projectile-down-hittime-dynamic.md).
+T695 / issue 269 is closed-bounded: fresh Projectiles resolve dynamic
+`ground.hittime` once in the original root or Helper caller context. Accepted
+grounded contact exposes `GetHitVar(hittime)=17` with Projectile payload,
+lifecycle, target links, and Helper/root/parent ownership evidence. Fresh
+default changes, live `ModifyProjectile`, air/guard/down timing, exact
+countdown/tick phase, negative/overflow values, teams, rollback, and full
+Projectile timing parity remain excluded. See [issue 269](../.scratch/roadmap/issues/269-projectile-ground-hittime-dynamic.md).
 
-## Next parity cut — T695 proposed
+## Next parity cut — T696 proposed
 
-Map the next unclaimed Projectile/Helper timing parameter against pinned
-Ikemen source before implementation. Live `ModifyProjectile` timing remains
-unsupported until its upstream controller switch and local seam are proven.
+Map the next unclaimed Projectile timing parameter against the pinned Ikemen
+source before implementation. Live mutation remains unsupported until its
+upstream controller switch and local seam are proven independently.
 
 ## Previous runtime cursor — T693 closed-bounded
 

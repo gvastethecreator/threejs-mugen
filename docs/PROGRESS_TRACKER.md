@@ -1,6 +1,22 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T608-T694 (2026-08-09)
+## Latest implementation checkpoint — T695 (2026-08-09)
+
+Authoritative cursor: T695 is closed-bounded for fresh root and Helper
+Projectiles with dynamic `ground.hittime`. Caller expressions resolve once,
+and accepted grounded contact exposes `GetHitVar(hittime)=17` with Projectile
+payload, lifecycle, target links, and Helper/root/parent ownership. Root trace
+checksums are `0445dd30` / `b6489c11`; Helper checksums are `bf4326b5` /
+`219a4ec4`. Aggregate QA is `771/771` (`737` required, `34` optional), full
+Vitest is `3798/3798` across `328` files, and the `363`-module build/typecheck
+pass. Fresh default changes, live `ModifyProjectile`, air/guard/down timing,
+exact countdown/tick phase, negative/overflow values, teams, rollback, and full
+Projectile timing parity remain explicitly unclaimed. See [issue 269](../.scratch/roadmap/issues/269-projectile-ground-hittime-dynamic.md).
+
+Next proposed cut: T696 maps the next unclaimed Projectile timing parameter
+against pinned Ikemen source before implementation.
+
+## Previous implementation checkpoint — T608-T694 (2026-08-09)
 
 Authoritative cursor: T694 is closed-bounded for Helper-authored fresh
 Projectiles with dynamic `down.hittime`. Helper caller expressions resolve once,
@@ -12,8 +28,8 @@ build/typecheck pass. Live `ModifyProjectile`, non-zero down launch, exact
 countdown/landing timing, negative/overflow values, teams, rollback, and full
 Projectile timing parity remain explicitly unclaimed. See [issue 268](../.scratch/roadmap/issues/268-helper-projectile-down-hittime-dynamic.md).
 
-Next proposed cut: T695 maps the next unclaimed Projectile/Helper timing
-parameter against pinned Ikemen source before implementation.
+Next proposed cut: T696 maps the next unclaimed Projectile timing parameter
+against pinned Ikemen source before implementation.
 
 Authoritative cursor: T693 is closed-bounded for fresh root Projectile
 `down.hittime`. Caller expressions resolve once, omission resets to the pinned

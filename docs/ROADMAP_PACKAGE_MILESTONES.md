@@ -1,20 +1,21 @@
 ﻿# Roadmap Package Milestones
 
-## Latest runtime cursor — T694
+## Latest runtime cursor — T695
 
-T694 closes the Helper-authored fresh Projectile `down.hittime` caller-context
-seam: dynamic values resolve once, accepted lying contact exposes
-`GetHitVar(hittime)=17`, and Helper/root/parent ownership, Projectile payload,
-lifecycle, target links, and imported Common1-style progression are required.
-Verification is `769/769` traces (`735` required, `34` optional), `3794/3794`
-Vitest tests, typecheck, and the `363`-module build. Live `ModifyProjectile`,
-non-zero down launch, exact countdown/landing timing, negative/overflow values,
-teams, rollback, and full Projectile timing parity remain excluded. See [issue
-268](../.scratch/roadmap/issues/268-helper-projectile-down-hittime-dynamic.md).
+T695 closes the fresh root and Helper-authored Projectile `ground.hittime`
+caller-context seam: dynamic values resolve once, accepted grounded contact
+exposes `GetHitVar(hittime)=17`, and Projectile payload, lifecycle, target
+links, and Helper/root/parent ownership are required. Verification is
+`771/771` traces (`737` required, `34` optional), `3798/3798` Vitest tests,
+typecheck, and the `363`-module build. Root checksums are `0445dd30/b6489c11`;
+Helper checksums are `bf4326b5/219a4ec4`. Fresh default changes, live
+`ModifyProjectile`, air/guard/down timing, exact countdown/tick phase,
+negative/overflow values, teams, rollback, and full Projectile timing parity
+remain excluded. See [issue 269](../.scratch/roadmap/issues/269-projectile-ground-hittime-dynamic.md).
 
-Next queue: T695 maps the next unclaimed Projectile/Helper timing parameter
-against pinned Ikemen source before implementation; live `ModifyProjectile`
-timing is not assumed supported without source and seam evidence.
+Next queue: T696 maps the next unclaimed Projectile timing parameter against
+pinned Ikemen source before implementation; live mutation is not assumed
+supported without source and seam evidence.
 
 ## Previous runtime cursor — T693
 

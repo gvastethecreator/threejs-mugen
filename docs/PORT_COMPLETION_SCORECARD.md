@@ -1,5 +1,22 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-09 T695 Projectile ground.hittime addendum - no score movement
+
+Final T695 verification: `771/771` trace artifacts (`737` required, `34`
+optional), `3798/3798` Vitest tests across `328` files, typecheck, the
+`363`-module build, and diff hygiene pass. Required root Projectile trace
+`synthetic-imported-projectile-dynamic-ground-hittime` has checksum `0445dd30`
+and final checksum `b6489c11`; the Helper trace has `bf4326b5` and `219a4ec4`.
+
+Fresh root and Helper-authored Projectiles now resolve dynamic
+`ground.hittime` once in the original caller context. Accepted grounded
+contact exposes `GetHitVar(hittime)=17` with Projectile payload, lifecycle,
+target links, and Helper/root/parent ownership. This remains a bounded
+compatibility seam with no score movement: fresh default changes, live
+`ModifyProjectile`, air/guard/down timing, exact countdown/tick phase,
+negative/overflow values, teams, rollback, and full Projectile timing parity
+remain blocked.
+
 ## 2026-08-09 T694 Helper Projectile down.hittime addendum - no score movement
 
 Final T694 verification: `769/769` trace artifacts (`735` required, `34`

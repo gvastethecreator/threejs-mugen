@@ -1,4 +1,16 @@
 ﻿# Supported Features
+## 2026-08-09 T695 Projectile ground timing checkpoint
+
+T695 is closed-bounded: fresh root and Helper-authored Projectiles resolve
+dynamic `ground.hittime` once in the original caller context and feed accepted
+grounded `GetHitVar(hittime)=17` with Projectile payload, lifecycle, target
+links, and Helper/root/parent ownership. Required root checksums are
+`0445dd30` / `b6489c11`; Helper checksums are `bf4326b5` / `219a4ec4`; aggregate
+QA passes `771/771` artifacts (`737` required, `34` optional). Fresh default
+changes, live `ModifyProjectile`, air/guard/down timing, exact countdown/tick
+phase, negative/overflow values, teams, rollback, and full Projectile timing
+parity remain outside the supported claim. See [issue 269](../.scratch/roadmap/issues/269-projectile-ground-hittime-dynamic.md).
+
 ## 2026-08-09 T694 Helper Projectile timing checkpoint
 
 T694 is closed-bounded: Helper-authored fresh Projectiles resolve dynamic

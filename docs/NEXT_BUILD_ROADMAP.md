@@ -1,19 +1,20 @@
 ﻿# Next Build Roadmap
 
-## Authoritative runtime cursor — T694 closed-bounded
+## Authoritative runtime cursor — T695 closed-bounded
 
-Final T694 verification: `769/769` trace artifacts (`735` required, `34`
-optional), with required Helper-owned fresh Projectile `down.hittime`
-checksum `258bc45a` and final checksum `bd70be12`. The full `3794/3794`
-Vitest suite across `328` files, typecheck, and the `363`-module build pass.
+Final T695 verification: `771/771` trace artifacts (`737` required, `34`
+optional), with root Projectile checksum `0445dd30` / final `b6489c11` and
+Helper Projectile checksum `bf4326b5` / final `219a4ec4`. The full
+`3798/3798` Vitest suite across `328` files, typecheck, and the `363`-module
+build pass.
 
-T694 / issue 268 is closed-bounded for Helper-authored fresh Projectiles:
-dynamic `down.hittime` resolves once in Helper caller context and accepted
-lying contact exposes `GetHitVar(hittime)=17` with Helper/root/parent ownership,
-Projectile payload, lifecycle, target-link, and imported Common1-style
-progression evidence. Live `ModifyProjectile`, non-zero down launch, exact
-countdown/landing timing, negative/overflow values, teams, rollback, and full
-Projectile timing parity remain excluded. See [issue 268](../.scratch/roadmap/issues/268-helper-projectile-down-hittime-dynamic.md).
+T695 / issue 269 is closed-bounded for fresh root and Helper-authored
+Projectiles: dynamic `ground.hittime` resolves once in the original caller
+context and accepted grounded contact exposes `GetHitVar(hittime)=17` with
+Projectile payload, lifecycle, target links, and Helper/root/parent ownership.
+Fresh default changes, live `ModifyProjectile`, air/guard/down timing, exact
+countdown/tick phase, negative/overflow values, teams, rollback, and full
+Projectile timing parity remain excluded. See [issue 269](../.scratch/roadmap/issues/269-projectile-ground-hittime-dynamic.md).
 
 ## Previous runtime cursor — T693 closed-bounded
 
@@ -29,11 +30,11 @@ payload, target, and lifecycle evidence. Helper caller resolution is focused;
 live `ModifyProjectile`, non-zero down launch, exact countdown/landing timing,
 and full Projectile timing parity remain excluded. See [issue 267](../.scratch/roadmap/issues/267-projectile-down-hittime-dynamic.md).
 
-## Next parity cut — T695 proposed
+## Next parity cut — T696 proposed
 
-Map the next unclaimed Projectile/Helper timing parameter against the pinned
-Ikemen source before implementation. Treat live `ModifyProjectile` timing as
-unsupported until its controller switch and local seam are explicitly proven.
+Map the next unclaimed Projectile timing parameter against the pinned Ikemen
+source before implementation. Treat live mutation as unsupported until its
+controller switch and local seam are explicitly proven.
 
 ## Previous runtime cursor — T692 closed-bounded
 
