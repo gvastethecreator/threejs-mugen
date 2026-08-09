@@ -141,7 +141,8 @@ export type HitDefControllerOp = {
   groundSlideTime?: number | string;
   /** Direct air.hittime scalar evaluated in the HitDef caller context. */
   airHitTime?: number | string;
-  downHitTime?: number;
+  /** Direct down.hittime expression evaluated in the HitDef caller context. */
+  downHitTime?: number | string;
   /** M.U.G.E.N down.bounce toggle; explicit false suppresses the Common1 bounce. */
   downBounce?: boolean;
   /** Dynamic M.U.G.E.N down.bounce expression evaluated in the HitDef caller context. */
@@ -268,7 +269,8 @@ export type ModifyHitDefControllerOp = {
   airHitTime?: number | string;
   /** Live guard.dist replacement evaluated in the ModifyHitDef caller context. */
   guardDistance?: number | string;
-  downHitTime?: number;
+  /** Live down.hittime replacement evaluated in the ModifyHitDef caller context. */
+  downHitTime?: number | string;
   /** Component-wise live ground.velocity X/Y replacement evaluated in caller context. */
   groundVelocity?: MugenHitDefExpressionPair;
   /** Bounded Ikemen vector-Z mutation for an active HitDef. */
@@ -2429,6 +2431,7 @@ function compileHitDefControllerOp(
   const groundHitTime = optionalIntegerExpressionParam(controller, "ground.hittime");
   const groundSlideTime = optionalIntegerExpressionParam(controller, "ground.slidetime");
   const airHitTime = optionalIntegerExpressionParam(controller, "air.hittime");
+  const downHitTime = optionalIntegerExpressionParam(controller, "down.hittime");
   const guardDistance = optionalIntegerExpressionParam(controller, "guard.dist");
   const guardHitTime = optionalIntegerExpressionParam(controller, "guard.hittime");
   const guardSlideTime = optionalIntegerExpressionParam(controller, "guard.slidetime");
@@ -2483,6 +2486,7 @@ function compileHitDefControllerOp(
     groundHitTime === false ||
     groundSlideTime === false ||
     airHitTime === false ||
+    downHitTime === false ||
     guardDistance === false ||
     guardHitTime === false ||
     guardSlideTime === false ||
@@ -2556,7 +2560,7 @@ function compileHitDefControllerOp(
     ...(groundHitTime === true ? {} : { groundHitTime }),
     ...(groundSlideTime === true ? {} : { groundSlideTime }),
     ...(airHitTime === true ? {} : { airHitTime }),
-    downHitTime: firstNumber(findParam(controller, "down.hittime")),
+    ...(downHitTime === true ? {} : { downHitTime }),
     downBounce: booleanNumber(findParam(controller, "down.bounce")),
     ...(typeof downBounceExpression === "string" ? { downBounceExpression } : {}),
     ...(forceStand === true ? {} : { forceStand }),
@@ -2722,7 +2726,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const guardControlTime = optionalIntegerExpressionParam(controller, "guard.ctrltime");
   const airHitTime = optionalIntegerExpressionParam(controller, "air.hittime");
   const guardDistance = optionalIntegerExpressionParam(controller, "guard.dist");
-  const downHitTime = staticOptionalStrictNumberParam(controller, "down.hittime");
+  const downHitTime = optionalIntegerExpressionParam(controller, "down.hittime");
   const groundVelocityValue = optionalModifyHitDefVelocityParam(controller, "ground.velocity");
   const groundVelocity = typeof groundVelocityValue === "object" ? groundVelocityValue.xy : undefined;
   const groundVelocityZ = typeof groundVelocityValue === "object" && typeof groundVelocityValue.z === "number"

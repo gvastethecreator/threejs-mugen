@@ -48,7 +48,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   context?: RuntimeControllerEvaluationContext;
   resolveIntegerList?: (key: "nochainid") => number[] | undefined;
   resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
-  resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state") => number | undefined;
+  resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale") => [number?, number?] | undefined;
   resolveFloatScalar?: (key: "down.velocity" | "airguard.velocity") => number | undefined;
@@ -82,7 +82,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   context?: RuntimeControllerEvaluationContext;
   resolveIntegerList?: (key: "nochainid") => number[] | undefined;
   resolveIntegerPair?: (key: "damage" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
-  resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall") => number | undefined;
+  resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "airguard.velocity") => [number?, number?] | undefined;
   /** Resolves live dynamic float scalars in the caller context. */
   resolveFloatScalar?: (key: "down.velocity" | "airguard.velocity") => number | undefined;
@@ -297,7 +297,13 @@ export class RuntimeHitDefControllerDispatchWorld {
       context ?? {},
       resolveIntegerScalar?.("air.hittime"),
     ) ?? 20;
-    const downHitTime = operation?.downHitTime ?? firstNumber(findParam(source, "down.hittime")) ?? existing?.downHitTime ?? 20;
+    const downHitTime = resolveRuntimeHitDefIntegerScalar(
+      operation?.downHitTime,
+      findParam(source, "down.hittime"),
+      actor.runtime,
+      context ?? {},
+      resolveIntegerScalar?.("down.hittime"),
+    ) ?? 20;
     const priority = normalizeRuntimeHitDefPriority(resolveRuntimeHitDefIntegerScalar(
       operation?.priorityExpression ?? operation?.priority,
       findParam(source, "priority"),
@@ -998,7 +1004,14 @@ export class RuntimeHitDefControllerDispatchWorld {
       if (guardDistance !== undefined && guardDistance >= 0) existing.guardDistance = guardDistance;
     }
     if (operation.downHitTime !== undefined) {
-      existing.downHitTime = operation.downHitTime;
+      const downHitTime = resolveRuntimeHitDefIntegerScalar(
+        operation.downHitTime,
+        findParam(controller.source, "down.hittime"),
+        actor.runtime,
+        context ?? {},
+        resolveIntegerScalar?.("down.hittime"),
+      );
+      if (downHitTime !== undefined) existing.downHitTime = downHitTime;
     }
     if (operation.groundVelocity !== undefined) {
       const groundVelocity = resolveRuntimeHitDefFloatExpressionPair(

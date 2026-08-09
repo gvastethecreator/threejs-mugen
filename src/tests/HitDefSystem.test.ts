@@ -799,6 +799,51 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.airHitTime).toBe(24);
   });
 
+  it("resolves fresh and modified down.hittime in caller context without inheriting fresh state", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.currentMove = { ...actor.currentMove!, downHitTime: 99 };
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.downHitTime).toBe(20);
+
+    actor.firedHitDefs.clear();
+    caller.vars[1] = 17.9;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "down.hittime": "var(1)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.downHitTime).toBe(17);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { redirectid: "57" })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.downHitTime).toBe(17);
+
+    caller.vars[2] = 24.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "down.hittime": "var(2)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.downHitTime).toBe(24);
+  });
+
   it("resolves nonnegative guard.dist and preserves the live or default value for negatives", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

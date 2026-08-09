@@ -2138,6 +2138,30 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles dynamic direct HitDef and ModifyHitDef down.hittime scalars", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "down.hittime": "var(1) + 2",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      downHitTime: "var(1) + 2",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "down.hittime": "fvar(2) * 3",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      downHitTime: "fvar(2) * 3",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "down.hittime": "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "down.hittime": "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles dynamic direct HitDef and ModifyHitDef guard.dist scalars", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "guard.dist": "var(1) + 2",

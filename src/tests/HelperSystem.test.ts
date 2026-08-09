@@ -1850,6 +1850,28 @@ describe("HelperSystem", () => {
     expect(active.currentMove?.noChainIds).toEqual([43, 44]);
   });
 
+  it("resolves helper-local dynamic HitDef down.hittime in the helper caller context", () => {
+    const active = helper({
+      vars: [17.9],
+      currentMove: activeMove({ downHitTime: 99 }),
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              damage: "20",
+              "down.hittime": "var(0)",
+            }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.currentMove?.downHitTime).toBe(17);
+  });
+
   it("resolves helper-local dynamic HitDef unhittabletime and ticks its own receiver timer", () => {
     const active = helper({
       vars: [3, 7],
