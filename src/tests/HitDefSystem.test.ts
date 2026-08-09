@@ -1035,6 +1035,57 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("resolves live ModifyHitDef air.velocity X/Y independently and preserves omitted siblings", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "air.velocity": "-2,-3,4",
+      })),
+      frame: activeFrame(),
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { forcenofall: "1", redirectid: "57" })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.hitVelocities?.air).toEqual({ x: -2, y: -3, z: 4 });
+
+    caller.vars[1] = -7.25;
+    caller.vars[2] = -5.5;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "air.velocity": "var(1),var(2)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({
+      airVelocityZ: 4,
+      hitVelocities: { air: { x: -7.25, y: -5.5, z: 4 } },
+    });
+
+    caller.vars[3] = -11.75;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "air.velocity": "var(3)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({
+      airVelocityZ: 4,
+      hitVelocities: { air: { x: -11.75, y: -5.5, z: 4 } },
+    });
+  });
+
   it("resets omitted fresh ground.velocity without changing ModifyHitDef omission preservation", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
@@ -3137,6 +3188,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         downHitTime: 22,
         groundVelocity: [-3, -4],
         groundVelocityZ: 1.25,
+        airVelocity: [-5, -6],
         airVelocityZ: 1.5,
         downVelocity: [-2, 0, 1.75],
         downBounce: false,
@@ -3177,6 +3229,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       downBounce: false,
       hitVelocityZ: 1.25,
       airVelocityZ: 1.5,
+      hitVelocities: { air: { x: -5, y: -6, z: 1.5 } },
       guardVelocityZ: 2,
       airGuardVelocityZ: 2.5,
       airGuardControlTime: 17,

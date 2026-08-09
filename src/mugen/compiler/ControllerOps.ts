@@ -269,6 +269,8 @@ export type ModifyHitDefControllerOp = {
   groundVelocity?: MugenHitDefExpressionPair;
   /** Bounded Ikemen vector-Z mutation for an active HitDef. */
   groundVelocityZ?: number;
+  /** Component-wise live air.velocity X/Y replacement evaluated in caller context. */
+  airVelocity?: MugenHitDefExpressionPair;
   airVelocityZ?: number;
   downVelocity?: MugenHitDefVector;
   /** Root-owned live guard.velocity X replacement evaluated in caller context. */
@@ -2655,12 +2657,16 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const airHitTime = optionalIntegerExpressionParam(controller, "air.hittime");
   const guardDistance = optionalIntegerExpressionParam(controller, "guard.dist");
   const downHitTime = staticOptionalStrictNumberParam(controller, "down.hittime");
-  const groundVelocityValue = optionalModifyHitDefGroundVelocityParam(controller);
+  const groundVelocityValue = optionalModifyHitDefVelocityParam(controller, "ground.velocity");
   const groundVelocity = typeof groundVelocityValue === "object" ? groundVelocityValue.xy : undefined;
   const groundVelocityZ = typeof groundVelocityValue === "object" && groundVelocityValue.z !== undefined
     ? groundVelocityValue.z
     : true;
-  const airVelocityZ = staticOptionalStrictVectorZParam(controller, "air.velocity");
+  const airVelocityValue = optionalModifyHitDefVelocityParam(controller, "air.velocity");
+  const airVelocity = typeof airVelocityValue === "object" ? airVelocityValue.xy : undefined;
+  const airVelocityZ = typeof airVelocityValue === "object" && airVelocityValue.z !== undefined
+    ? airVelocityValue.z
+    : true;
   const downVelocity = staticOptionalStrictHitDefVectorParam(controller, "down.velocity");
   const downBounceValue = optionalIntegerExpressionParam(controller, "down.bounce");
   const downBounce = typeof downBounceValue === "number" ? downBounceValue !== 0 : undefined;
@@ -2745,6 +2751,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     downHitTime !== true ||
     groundVelocityValue !== true ||
     groundVelocityZ !== true ||
+    airVelocityValue !== true ||
     airVelocityZ !== true ||
     downVelocity !== true ||
     downBounceValue !== true ||
@@ -2804,7 +2811,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     guardDistance === false ||
     downHitTime === false ||
     groundVelocityValue === false ||
-    airVelocityZ === false ||
+    airVelocityValue === false ||
     downVelocity === false ||
     downBounceValue === false ||
     forceStand === false ||
@@ -2870,6 +2877,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(downHitTime === true ? {} : { downHitTime }),
     ...(groundVelocity === undefined ? {} : { groundVelocity }),
     ...(groundVelocityZ === true ? {} : { groundVelocityZ }),
+    ...(airVelocity === undefined ? {} : { airVelocity }),
     ...(airVelocityZ === true ? {} : { airVelocityZ }),
     ...(downVelocity === true ? {} : { downVelocity }),
     ...(downBounce === undefined ? {} : { downBounce }),
@@ -4338,18 +4346,11 @@ function staticOptionalStrictHitDefVectorParam(controller: MugenStateController,
   return strictStaticNumberVector(raw) ?? false;
 }
 
-function staticOptionalStrictVectorZParam(controller: MugenStateController, key: string): number | true | false {
-  const value = staticOptionalStrictHitDefVectorParam(controller, key);
-  if (value === true || value === false) {
-    return value;
-  }
-  return value[2] === undefined ? true : value[2];
-}
-
-function optionalModifyHitDefGroundVelocityParam(
+function optionalModifyHitDefVelocityParam(
   controller: MugenStateController,
+  key: "ground.velocity" | "air.velocity",
 ): { xy: MugenHitDefExpressionPair; z?: number } | true | false {
-  const raw = findParam(controller, "ground.velocity");
+  const raw = findParam(controller, key);
   if (raw === undefined) return true;
   const staticVector = strictStaticNumberVector(raw);
   if (staticVector !== undefined) {

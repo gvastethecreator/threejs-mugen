@@ -1,6 +1,6 @@
 # Issue 246 — Live ModifyHitDef air.velocity expressions
 
-- Status: `active-research`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -38,3 +38,15 @@ Describe ModifyHitDef as pinned-Ikemen compatibility. Do not claim Helper-owned
 ModifyHitDef, dynamic Z, `n` syntax, Projectile/ModifyProjectile, automatic
 re-defaulting of omitted components, exact localcoord/facing or landing timing,
 teams, rollback, or full air-hit physics.
+
+## Closure evidence
+
+- Live omission preserves X/Y/Z; one-component mutation replaces X only; a
+  pair replaces X/Y; existing static Z remains compatible.
+- RedirectID mutation evaluates expressions in the root caller and preserves
+  the target HitDef's omitted siblings.
+- Accepted airborne hit exposes the final vector through physical velocity and
+  GetHitVar.
+- Required trace checksum: `b72effd6`; final-state checksum: `ebe6c2eb`.
+- Full suite: 3725/3725. Aggregate traces: 745/745, with 711 required and 34
+  optional. Typecheck and the 363-module production build pass.

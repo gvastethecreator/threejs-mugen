@@ -27395,6 +27395,135 @@ export function createSyntheticImportedDynamicDirectAirVelocityTraceArtifact(
   });
 }
 
+export function createSyntheticImportedModifyHitDefDynamicAirVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5073;
+  const targetId = 77;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "seed and redirect live air velocity", frames: 2, p1: [], p2: [] },
+    { label: "modified target becomes airborne", frames: 2, p1: [], p2: ["U"] },
+    { label: "active HitDef reaches airborne target", frames: 14, p1: [], p2: [] },
+    { label: "modified air velocity settles", frames: 18, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-air-velocity-attacker",
+    displayName: "Dynamic ModifyHitDef Air Velocity Attacker",
+    withHitDef: false,
+    withPlayerPush: false,
+    activeRootHitDefRoute: {
+      damage: 37,
+      targetId,
+      airVelocity: [-2, -3, 4],
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      delayedPosX: { x: -35, trigger: "Time >= 2" },
+      clsn1Extent: 64,
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-air-velocity-defender",
+    displayName: "Dynamic ModifyHitDef Air Velocity Defender",
+    withHitDef: false,
+    withPlayerPush: false,
+    rootModifyHitDefRedirectRoute: {
+      redirectId: 56,
+      trigger: "Time = 1",
+      airVelocity: ["var(0)", "var(1)"],
+      varSeeds: [
+        { index: 0, value: -7 },
+        { index: 1, value: -5 },
+      ],
+    },
+    defaultGetHitProgression: {
+      shakeStateNo: 5020,
+      slideStateNo: 5021,
+      shakeStateType: "A",
+      slideStateType: "A",
+      shakePhysics: "N",
+      slidePhysics: "N",
+      slideHitVelSet: { x: true, y: true, z: true },
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchStateType: "A",
+      hitTimeBranchPhysics: "N",
+      hitTimeBranchExpression:
+        "GetHitVar(xvel) = 7 && GetHitVar(yvel) = -5 && GetHitVar(zvel) = 4 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "Modified Air Velocity GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-modifyhitdef-dynamic-air-velocity-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyhitdef-dynamic-air-velocity-golden",
+      label: "Synthetic imported dynamic live ModifyHitDef air.velocity route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root caller resolves var(0)=-7 and var(1)=-5 and redirects air.velocity X/Y into another root's active normal HitDef before contact. The later airborne hit creates target 77, exposes GetHitVar(xvel/yvel/zvel)=7/-5/4, applies that physical vector, and preserves the seeded Z=4. Direct HitDef expression resolution is separate. Omitted and single-component ModifyHitDef, Helper-authored controllers, dynamic Z, n syntax, Projectile, ModifyProjectile, localcoord/facing breadth, landing timing, teams, rollback, and full parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyhitdef-dynamic-air-velocity-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [5020, 5021, branchStateNo],
+      forbiddenExecutedStates: [130, 150, 151, 152, 153, 154, 155, 200, 5000, 5001, 5010, 5011, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["VarSet", "HitDef", "ModifyHitDef", "ChangeState", "HitVelSet"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "modifyhitdef", "kinematic:hitvelset"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId }],
+      requiredControllerEventSequences: [{
+        label: "dynamic ModifyHitDef air velocity precedes accepted airborne hit",
+        allowSameTick: true,
+        steps: [
+          { actorId: "p1", stateNo: 0, controller: "ModifyHitDef", name: "Root ModifyHitDef Redirect" },
+          { actorId: "p2", stateNo: 5020, controller: "ChangeState", name: "Hit Shake Over" },
+          { actorId: "p2", stateNo: 5021, controller: "HitVelSet", name: "Apply Hit Velocity" },
+          { actorId: "p2", stateNo: 5021, operation: "kinematic:hitvelset" },
+          { actorId: "p2", stateNo: 5021, controller: "ChangeState", name: "Modified Air Velocity GetHitVar Branch" },
+        ],
+      }],
+      requiredActorFrameSequences: [{
+        label: "dynamic ModifyHitDef air velocity airborne physical order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5020, stateType: "A", moveType: "H", minFrames: 1 },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5021,
+            stateType: "A",
+            moveType: "H",
+            physics: "N",
+            observedVelXAtLeast: 7,
+            observedVelXAtMost: 7,
+            observedVelYAtLeast: -5,
+            observedVelYAtMost: -5,
+            observedVelZAtLeast: 4,
+            observedVelZAtMost: 4,
+            minFrames: 1,
+          },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, stateType: "A", moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileAirGuardCornerPushTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -57169,6 +57298,7 @@ export type SyntheticImportedTraceFighterOptions = {
     guardKill?: boolean;
     fallKill?: boolean;
     hitOnce?: boolean;
+    airVelocity?: SyntheticPartialPairExpression;
     guardVelocity?: SyntheticPartialPairExpression;
     airGuardVelocity?: SyntheticPartialTripleExpression;
     varSeeds?: Array<{ index: number; value: number; trigger?: string }>;
@@ -64362,6 +64492,7 @@ ${route.kill === undefined ? "" : `kill = ${route.kill ? 1 : 0}`}
 ${route.guardKill === undefined ? "" : `guard.kill = ${route.guardKill ? 1 : 0}`}
 ${route.fallKill === undefined ? "" : `fall.kill = ${route.fallKill ? 1 : 0}`}
 ${route.hitOnce === undefined ? "" : `hitonce = ${route.hitOnce ? 1 : 0}`}
+${route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.join(", ")}`}
 ${route.guardVelocity === undefined ? "" : `guard.velocity = ${route.guardVelocity.join(", ")}`}
 ${route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGuardVelocity.join(", ")}`}
 redirectid = ${route.redirectId}

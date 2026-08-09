@@ -2230,7 +2230,7 @@ value = 1
     })).operation).toBeUndefined();
   });
 
-  it("compiles direct HitDef air.velocity X/Y expressions", () => {
+  it("compiles direct HitDef and root ModifyHitDef air.velocity X/Y expressions", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "air.velocity": "-6,-10,4",
     })).operation).toMatchObject({
@@ -2254,6 +2254,30 @@ value = 1
     })).operation).toBeUndefined();
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "air.velocity": "var(1),var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "air.velocity": "var(1)",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      airVelocity: ["var(1)"],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "air.velocity": "-7.5,fvar(2)",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      airVelocity: [-7.5, "fvar(2)"],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "air.velocity": "var(1),var(2),3",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "air.velocity": "var(1),var(",
+      redirectid: "57",
     })).operation).toBeUndefined();
   });
 
@@ -2792,6 +2816,7 @@ value = 1
         downHitTime: 20,
         groundVelocity: [-3, -4],
         groundVelocityZ: 1.25,
+        airVelocity: [-5, -6],
         airVelocityZ: 1.5,
         downVelocity: [-2, 0, 1.75],
         downBounce: false,

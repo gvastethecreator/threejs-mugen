@@ -82,7 +82,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   resolveIntegerList?: (key: "nochainid") => number[] | undefined;
   resolveIntegerPair?: (key: "damage" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall") => number | undefined;
-  resolveFloatPair?: (key: "ground.velocity") => [number?, number?] | undefined;
+  resolveFloatPair?: (key: "ground.velocity" | "air.velocity") => [number?, number?] | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
   resolveFallEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -999,6 +999,35 @@ export class RuntimeHitDefControllerDispatchWorld {
           z: operation.groundVelocityZ,
         },
       };
+    }
+    if (operation.airVelocity !== undefined) {
+      const airVelocity = resolveRuntimeHitDefFloatExpressionPair(
+        operation.airVelocity,
+        findParam(controller.source, "air.velocity"),
+        actor.runtime,
+        context ?? {},
+        resolveFloatPair?.("air.velocity"),
+      );
+      const currentAirVelocity = existing.hitVelocities?.air ?? {
+        x: 0,
+        y: 0,
+        z: existing.airVelocityZ ?? 0,
+      };
+      if (airVelocity?.first !== undefined) {
+        existing.hitVelocities = {
+          ...existing.hitVelocities,
+          air: { ...currentAirVelocity, x: airVelocity.first },
+        };
+      }
+      if (airVelocity?.componentCount === 2 && airVelocity.second !== undefined) {
+        existing.hitVelocities = {
+          ...existing.hitVelocities,
+          air: {
+            ...(existing.hitVelocities?.air ?? currentAirVelocity),
+            y: airVelocity.second,
+          },
+        };
+      }
     }
     if (operation.airVelocityZ !== undefined) {
       existing.airVelocityZ = operation.airVelocityZ;

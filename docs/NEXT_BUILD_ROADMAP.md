@@ -68,8 +68,9 @@ default. T667 closes the same default for fresh root-owned Projectiles. T668
 closes Helper-created Projectile ownership and contact evidence. T669 closes
 the imported static-HitDef mirror. T670 closes direct airborne-hit consumption
 of the existing static `air.velocity` vector. T671 closes X/Y caller
-expressions. T672 is active for live root-owned ModifyHitDef X/Y mutation.
-Latest evidence: 3722/3722 tests, the 363-module build, and 744/744 traces pass (710
+expressions. T672 closes live root-owned ModifyHitDef X/Y mutation. T673 is
+active for fresh `down.velocity` X/Y expressions and air-vector inheritance.
+Latest evidence: 3725/3725 tests, the 363-module build, and 745/745 traces pass (711
 required, 34 optional).
 Projectile facing, exact deferred facing/power order, broader
 `data/mugen.cfg`, rollback, and full HitDef parity remain outside these slices.
