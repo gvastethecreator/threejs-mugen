@@ -27524,6 +27524,136 @@ export function createSyntheticImportedModifyHitDefDynamicAirVelocityTraceArtifa
   });
 }
 
+export function createSyntheticImportedDynamicDirectDownVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5072;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "dynamic-down-velocity-defender-liedown", frames: 2, p1: [], p2: ["x"] },
+    { label: "dynamic-down-velocity-contact", frames: 12, p1: ["x"], p2: [] },
+    { label: "dynamic-down-velocity-settle", frames: 18, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-dynamic-direct-down-velocity-attacker",
+    displayName: "Dynamic Direct Down Velocity Attacker",
+    hitDefHitFlag: "D",
+    groundVelocity: [-1, 1],
+    airVelocity: [-6, -8, 2],
+    hitDefDownVelocity: ["var(0)"],
+    hitDefAirTime: 13,
+    hitDefGroundHitTime: 3,
+    hitDefVarSeeds: [{ index: 0, value: -3 }],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-dynamic-direct-down-velocity-defender",
+    displayName: "Dynamic Direct Down Velocity Defender",
+    withHitDef: false,
+    withStateTypeSet: { stateType: "L", moveType: "I", physics: "N" },
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5021,
+      shakeStateType: "A",
+      slideStateType: "A",
+      shakePhysics: "N",
+      slidePhysics: "N",
+      slideHitVelSet: { x: true, y: true, z: true },
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchStateType: "A",
+      hitTimeBranchPhysics: "N",
+      hitTimeBranchExpression:
+        "GetHitVar(hittime) = 13 && GetHitVar(xvel) = 3 && GetHitVar(yvel) = -8 && GetHitVar(zvel) = 2 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "Dynamic Down Velocity Air Timing Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-dynamic-direct-down-velocity-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-dynamic-direct-down-velocity-golden",
+      label: "Synthetic imported dynamic direct down.velocity route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves a fresh direct HitDef resolves root caller var(0)=-3 as the authored down.velocity X while inheriting omitted Y/Z from air.velocity=-6,-8,2. Accepted contact against a StateType L target creates target 77, launches through the airborne timing path with hittime=13 instead of adversarial ground.hittime=3, exposes GetHitVar(xvel/yvel/zvel)=3/-8/2, and applies the same physical vector through Common1-style HitVelSet. Two- and three-component dynamic syntax, omitted direct defaults, live ModifyHitDef, Helper, Projectile, ModifyProjectile, exact localcoord/facing and landing timing, teams, rollback, and full velocity parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-dynamic-direct-down-velocity-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5021, branchStateNo],
+      forbiddenExecutedStates: [130, 150, 151, 152, 153, 154, 155, 5001, 5010, 5011, 5020, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "StateTypeSet", "VarSet", "HitDef", "HitVelSet"],
+      requiredExecutedOperations: ["metadata:statetypeset", "variable:varset", "hitdef", "kinematic:hitvelset"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: ["Dynamic Direct Down Velocity Attacker hit Dynamic Direct Down Velocity Defender for 37"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredControllerEventSequences: [
+        {
+          label: "dynamic direct down velocity caller evaluation order",
+          actorId: "p1",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 200, controller: "VarSet", name: "HitDef Var 0" },
+            { stateNo: 200, controller: "HitDef", name: "HitDef" },
+          ],
+        },
+        {
+          label: "lying target launch uses airborne timing and physical velocity",
+          actorId: "p2",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 200, controller: "StateTypeSet", name: "StateTypeSet Probe" },
+            { stateNo: 5000, controller: "ChangeState", name: "Hit Shake Over" },
+            { stateNo: 5021, controller: "HitVelSet", name: "Apply Hit Velocity" },
+            { stateNo: 5021, operation: "kinematic:hitvelset" },
+            { stateNo: 5021, controller: "ChangeState", name: "Dynamic Down Velocity Air Timing Branch" },
+          ],
+        },
+      ],
+      requiredActorFrameSequences: [{
+        label: "dynamic direct down velocity lying-to-air physical order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 200, stateType: "L", moveType: "I", physics: "N", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, stateType: "A", moveType: "H", physics: "N", minFrames: 1 },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5021,
+            stateType: "A",
+            moveType: "H",
+            physics: "N",
+            observedVelXAtLeast: 3,
+            observedVelXAtMost: 3,
+            observedVelYAtLeast: -8,
+            observedVelYAtMost: -8,
+            observedVelZAtLeast: 2,
+            observedVelZAtMost: 2,
+            minFrames: 1,
+          },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, stateType: "A", moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileAirGuardCornerPushTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -56821,6 +56951,8 @@ export type SyntheticImportedTraceFighterOptions = {
   airVelocity?: [number, number?, number?];
   /** Synthetic fixture-only dynamic direct-HitDef air velocity X/Y. */
   hitDefAirVelocity?: SyntheticPartialPairExpression;
+  /** Synthetic fixture-only dynamic direct-HitDef down velocity X/Y. */
+  hitDefDownVelocity?: SyntheticPartialPairExpression;
   airGuardVelocity?: [number, number?, number?];
   /** Synthetic fixture-only dynamic airborne-guard velocity vector emitted into HitDef. */
   hitDefAirGuardVelocity?: SyntheticPartialTripleExpression;
@@ -58028,6 +58160,9 @@ value = ${seed.value}
   const airVelocityLine = options.hitDefAirVelocity === undefined && options.airVelocity === undefined
     ? ""
     : `air.velocity = ${(options.hitDefAirVelocity ?? options.airVelocity!).join(",")}`;
+  const downVelocityLine = options.hitDefDownVelocity === undefined
+    ? ""
+    : `down.velocity = ${options.hitDefDownVelocity.join(",")}`;
   const defaultAirGuardVelocity = derivePinnedIkemenFreshAirGuardVelocity(options.airVelocity);
   const resolvedAirGuardVelocity: [number, number?, number?] | undefined = options.airGuardVelocity === undefined
     ? defaultAirGuardVelocity
@@ -58171,6 +58306,7 @@ ${options.hitDefGroundSlideTime === undefined ? "" : `ground.slidetime = ${optio
 ${hitDefAirTimeLine}
 ${hitDefGroundVelocityLine}
 ${airVelocityLine}
+${downVelocityLine}
 ${options.hitSound === undefined ? "" : `hitsound = ${options.hitSound}`}
 ${options.guardSound === undefined ? "" : `guardsound = ${options.guardSound}`}
 ${options.hitSpark === undefined ? "" : `sparkno = ${options.hitSpark}`}

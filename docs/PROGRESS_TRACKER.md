@@ -1,6 +1,6 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T608-T672 (2026-08-09)
+## Latest implementation checkpoint — T608-T673 (2026-08-09)
 
 - T608-T637 are closed-bounded. T616-T621 add typed HitDef/Projectile
   `unhittabletime`, actor-role contact/admission/default/HitOverride slices,
@@ -71,9 +71,10 @@
   closes the imported static-HitDef mirror. T670 closes direct airborne-hit
   consumption of the existing static air vector. T671 closes X/Y caller
   expressions. T672 closes live root-owned ModifyHitDef mutation. T673 is
-  active for fresh down-velocity expressions and air-vector inheritance.
-- Latest full suite passes 3725/3725. Typecheck, 363-module build,
-  745/745 traces (711 required, 34 optional),
+  T673 closes fresh down-velocity expressions and air-vector inheritance. T674
+  is active for live root-owned ModifyHitDef down-velocity mutation.
+- Latest full suite passes 3729/3729. Typecheck, 363-module build,
+  746/746 traces (712 required, 34 optional),
   boundaries, redirect boundaries, and differential checks pass.
 
 ## Historical implementation checkpoint — T522-T552 and Fighter Lab (2026-08-08)

@@ -50,7 +50,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
-  resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "sparkscale" | "guard.sparkscale") => [number?, number?] | undefined;
+  resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "sparkscale" | "guard.sparkscale") => [number?, number?] | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
   resolveFallEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -438,10 +438,37 @@ export class RuntimeHitDefControllerDispatchWorld {
           resolvedAirVelocity.componentCount === 1 ? 0 : resolvedAirVelocity.second ?? 0,
           0,
         ];
-    const downVelocity = operation?.downVelocity ?? velocityPair(findParam(source, "down.velocity"));
-    const downVelocityX = downVelocity?.[0] ?? airVelocity?.[0] ?? existing?.downVelocityX;
-    const downVelocityY = downVelocity?.[1] ?? airVelocity?.[1] ?? existing?.downVelocityY ?? 0;
-    const downVelocityZ = downVelocity?.[2] ?? airVelocity?.[2] ?? existing?.downVelocityZ;
+    const inheritedDownVelocity: [number, number, number] = [
+      airVelocity?.[0] ?? 0,
+      airVelocity?.[1] ?? 0,
+      airVelocity?.[2] ?? 0,
+    ];
+    const staticDownVelocity = operation?.downVelocity ?? velocityPair(findParam(source, "down.velocity"));
+    const resolvedDownVelocity = operation?.downVelocityExpressions === undefined && staticDownVelocity !== undefined
+      ? undefined
+      : resolveRuntimeHitDefFloatExpressionPair(
+          operation?.downVelocityExpressions,
+          findParam(source, "down.velocity"),
+          actor.runtime,
+          context ?? {},
+          resolveFloatPair?.("down.velocity"),
+        );
+    const downVelocity: [number, number, number] = resolvedDownVelocity === undefined
+      ? [
+          staticDownVelocity?.[0] ?? inheritedDownVelocity[0],
+          staticDownVelocity?.[1] ?? inheritedDownVelocity[1],
+          staticDownVelocity?.[2] ?? inheritedDownVelocity[2],
+        ]
+      : [
+          resolvedDownVelocity.first ?? inheritedDownVelocity[0],
+          resolvedDownVelocity.componentCount === 1
+            ? inheritedDownVelocity[1]
+            : resolvedDownVelocity.second ?? inheritedDownVelocity[1],
+          inheritedDownVelocity[2],
+        ];
+    const downVelocityX = downVelocity[0];
+    const downVelocityY = downVelocity[1];
+    const downVelocityZ = downVelocity[2];
     const resolvedDownBounce = resolveRuntimeHitDefIntegerScalar(
       operation?.downBounceExpression,
       findParam(source, "down.bounce"),
@@ -476,7 +503,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     const hitVelocities: RuntimeHitVelocityMetadata = {
       ground: runtimeHitVelocityVector(groundVelocity),
       ...(airVelocity === undefined ? {} : { air: runtimeHitVelocityVector(airVelocity) }),
-      ...(downVelocity === undefined ? {} : { down: runtimeHitVelocityVector(downVelocity) }),
+      down: runtimeHitVelocityVector(downVelocity),
       ...(effectiveGuardVelocity === undefined ? {} : { guard: runtimeHitVelocityVector(effectiveGuardVelocity) }),
       ...(airGuardVelocity === undefined ? {} : { airGuard: runtimeHitVelocityVector(airGuardVelocity) }),
     };

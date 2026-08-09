@@ -2,7 +2,8 @@
 
 ## Current parity queue
 
-- **T673 active-research** — resolve fresh direct-HitDef `down.velocity` X/Y expressions in root/Helper caller context with per-component inheritance from `air.velocity`. See [issue 247](../.scratch/roadmap/issues/247-hitdef-down-velocity-dynamic.md).
+- **T674 active-research** — resolve live root-owned `ModifyHitDef down.velocity` X/Y expressions with component-wise preservation. See [issue 248](../.scratch/roadmap/issues/248-modifyhitdef-down-velocity-dynamic.md).
+- **T673 closed-bounded** — fresh direct-HitDef `down.velocity` X/Y expressions resolve in root/Helper caller context and inherit missing components from effective `air.velocity`. See [issue 247](../.scratch/roadmap/issues/247-hitdef-down-velocity-dynamic.md).
 - **T672 closed-bounded** — live root-owned `ModifyHitDef air.velocity` X/Y expressions resolve in caller context and preserve omitted live components through accepted airborne hits. See [issue 246](../.scratch/roadmap/issues/246-modifyhitdef-air-velocity-dynamic.md).
 - **T671 closed-bounded** — direct-HitDef `air.velocity` X/Y expressions resolve in root/Helper caller context; single values use Y zero and accepted airborne hits consume the result. See [issue 245](../.scratch/roadmap/issues/245-hitdef-air-velocity-dynamic.md).
 - **T670 closed-bounded** — accepted direct airborne hits select the existing static `air.velocity` X/Y/Z vector in root/Helper paths while ground/down/guard selection remains unchanged. See [issue 244](../.scratch/roadmap/issues/244-direct-air-hit-velocity-consumption.md).

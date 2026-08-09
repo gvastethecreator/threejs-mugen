@@ -70,7 +70,9 @@ the imported static-HitDef mirror. T670 closes direct airborne-hit consumption
 of the existing static `air.velocity` vector. T671 closes X/Y caller
 expressions. T672 closes live root-owned ModifyHitDef X/Y mutation. T673 is
 active for fresh `down.velocity` X/Y expressions and air-vector inheritance.
-Latest evidence: 3725/3725 tests, the 363-module build, and 745/745 traces pass (711
+T673 closes that fresh path. T674 is active for live root-owned ModifyHitDef
+down-velocity mutation. Latest evidence: 3729/3729 tests, the 363-module build,
+and 746/746 traces pass (712
 required, 34 optional).
 Projectile facing, exact deferred facing/power order, broader
 `data/mugen.cfg`, rollback, and full HitDef parity remain outside these slices.

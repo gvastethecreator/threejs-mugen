@@ -1,6 +1,6 @@
 # Issue 247 — Direct HitDef down.velocity expressions
 
-- Status: `active-research`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -18,9 +18,9 @@ finalizes every missing fresh component from the air vector.
 Source symbols:
 
 - M.U.G.E.N 1.1 `sctrls.html` HitDef `down.velocity`
-- pinned Ikemen `compiler_functions.go:1967-1969`
-- pinned Ikemen `bytecode.go:7565-7572`
-- pinned Ikemen `char.go:713-715,829-833,862-864`
+- pinned Ikemen `compiler_functions.go:2009-2010`
+- pinned Ikemen `bytecode.go:7725-7732`
+- pinned Ikemen `char.go:737-741,895-897`
 
 ## Acceptance fixture
 
@@ -36,3 +36,15 @@ Limit support to fresh direct HitDef root/Helper X/Y expressions and component
 inheritance. Do not claim live ModifyHitDef, dynamic Z, `n` syntax,
 Projectile/ModifyProjectile, exact lie-down/Common1 or landing timing,
 localcoord/facing equivalence, teams, rollback, or full down-hit physics.
+
+## Closure evidence
+
+- Fresh omission inherits air X/Y/Z; one-component X inherits Y/Z; a pair
+  inherits Z; existing static triples remain intact.
+- Root/Helper caller expressions resolve without leaking adversarial prior move
+  data.
+- Accepted lying hits with non-zero effective Y use the airborne timing/vector
+  route and expose X/Y/Z through physical velocity and GetHitVar.
+- Required trace checksum: `8043a64a`; final-state checksum: `39f71ee8`.
+- Full suite: 3729/3729. Aggregate traces: 746/746, with 712 required and 34
+  optional. Typecheck and the 363-module production build pass.

@@ -1882,17 +1882,19 @@ export function resolveRuntimeHelperIntegerScalarParam(
 export function resolveRuntimeHelperFloatPairParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "ground.velocity" | "air.velocity" | "sparkscale" | "guard.sparkscale",
+  key: "ground.velocity" | "air.velocity" | "down.velocity" | "sparkscale" | "guard.sparkscale",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): [number?, number?] | undefined {
   const operation = controller.operation;
   const operationValue: MugenHitDefExpressionPair | undefined =
     operation?.kind === "hitdef" || operation?.kind === "modifyhitdef" || operation?.kind === "projectile"
-      ? key === "ground.velocity" || key === "air.velocity"
+      ? key === "ground.velocity" || key === "air.velocity" || key === "down.velocity"
         ? operation.kind === "hitdef"
           ? key === "ground.velocity"
             ? operation.groundVelocityExpressions
-            : operation.airVelocityExpressions
+            : key === "air.velocity"
+              ? operation.airVelocityExpressions
+              : operation.downVelocityExpressions
           : operation.kind === "modifyhitdef"
             ? key === "ground.velocity"
               ? operation.groundVelocity
@@ -1909,7 +1911,7 @@ export function resolveRuntimeHelperFloatPairParam(
     };
     const first = resolveComponent(operationValue[0]);
     const second = resolveComponent(operationValue[1]);
-    if (key === "ground.velocity" || key === "air.velocity") {
+    if (key === "ground.velocity" || key === "air.velocity" || key === "down.velocity") {
       return operationValue.length === 1 ? [first] : [first, second];
     }
     return [first ?? 1, second];
@@ -1923,7 +1925,7 @@ export function resolveRuntimeHelperFloatPairParam(
     : [raw.slice(0, splits[0]).trim(), raw.slice(splits[0]! + 1).trim()];
   if (parts.some((part) => !part)) return undefined;
   const values = parts.map((part) => resolveHelperFloat(helper, part, options));
-  if (key === "ground.velocity" || key === "air.velocity") {
+  if (key === "ground.velocity" || key === "air.velocity" || key === "down.velocity") {
     return values.length === 2 ? [values[0], values[1]] : [values[0]];
   }
   if (values.some((value) => value === undefined) || values[0] === undefined) return undefined;

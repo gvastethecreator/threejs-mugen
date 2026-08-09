@@ -1086,6 +1086,78 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("resolves fresh direct down.velocity X/Y and inherits every omitted component from air.velocity", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+    const apply = (downVelocity?: string, resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "sparkscale" | "guard.sparkscale") => [number?, number?] | undefined) => {
+      actor.firedHitDefs.clear();
+      world.apply({
+        actor,
+        controller: compileControllerIr(controller("HitDef", {
+          attr: "S,NA",
+          "air.velocity": "-6,-8,2",
+          ...(downVelocity === undefined ? {} : { "down.velocity": downVelocity }),
+        })),
+        context: { self: caller },
+        resolveFloatPair,
+        frame: activeFrame(),
+      });
+    };
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "air.velocity": "30,-20,13",
+        "down.velocity": "40,-30,17",
+      })),
+      frame: activeFrame(),
+    });
+
+    apply();
+    expect(actor.currentMove).toMatchObject({
+      downVelocityX: -6,
+      downVelocityY: -8,
+      downVelocityZ: 2,
+      hitVelocities: { down: { x: -6, y: -8, z: 2 } },
+    });
+
+    caller.vars[1] = -3.25;
+    apply("var(1)");
+    expect(actor.currentMove).toMatchObject({
+      downVelocityX: -3.25,
+      downVelocityY: -8,
+      downVelocityZ: 2,
+      hitVelocities: { down: { x: -3.25, y: -8, z: 2 } },
+    });
+
+    caller.vars[2] = -5.5;
+    apply("var(1),var(2)");
+    expect(actor.currentMove).toMatchObject({
+      downVelocityX: -3.25,
+      downVelocityY: -5.5,
+      downVelocityZ: 2,
+      hitVelocities: { down: { x: -3.25, y: -5.5, z: 2 } },
+    });
+
+    apply("var(1),var(2)", (key) => key === "down.velocity" ? [undefined, -6.5] : undefined);
+    expect(actor.currentMove).toMatchObject({
+      downVelocityX: -6,
+      downVelocityY: -6.5,
+      downVelocityZ: 2,
+      hitVelocities: { down: { x: -6, y: -6.5, z: 2 } },
+    });
+
+    apply("-4,-6,3");
+    expect(actor.currentMove).toMatchObject({
+      downVelocityX: -4,
+      downVelocityY: -6,
+      downVelocityZ: 3,
+      hitVelocities: { down: { x: -4, y: -6, z: 3 } },
+    });
+  });
+
   it("resets omitted fresh ground.velocity without changing ModifyHitDef omission preservation", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
