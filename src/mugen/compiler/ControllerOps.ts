@@ -583,6 +583,8 @@ export type ProjectileControllerOp = {
   hitPause: number;
   /** Second `pausetime` value: defender hit-shake time. */
   hitShakeTime?: number;
+  /** Dynamic or mixed Projectile pausetime pair evaluated in original caller context. */
+  pauseTimeExpressions?: MugenHitDefExpressionPair;
   hitStun: number;
   /** Fresh Projectile ground.slidetime expression evaluated in the original caller context. */
   groundSlideTimeExpression?: number | string;
@@ -639,6 +641,8 @@ export type ProjectileControllerOp = {
   guardPauseTime?: number;
   /** Second `guard.pausetime` value: defender guard hit-shake time. */
   guardShakeTime?: number;
+  /** Dynamic or mixed Projectile guard.pausetime pair evaluated in original caller context. */
+  guardPauseTimeExpressions?: MugenHitDefExpressionPair;
   guardHitTime?: number;
   guardSlideTime?: number;
   guardControlTime?: number;
@@ -3495,6 +3499,21 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   const redLife = redLifeRaw === undefined ? undefined : strictStaticNumberPair(redLifeRaw);
   const scoreRaw = findParam(controller, "score");
   const score = scoreRaw === undefined ? undefined : strictStaticNumberPair(scoreRaw);
+  const pauseTimeValue = optionalIntegerExpressionPairParam(controller, "pausetime");
+  const pauseTimeExpressions = Array.isArray(pauseTimeValue) && pauseTimeValue.some((value) => typeof value === "string")
+    ? pauseTimeValue
+    : undefined;
+  const pauseTime = Array.isArray(pauseTimeValue) && pauseTimeExpressions === undefined
+    ? pauseTimeValue
+    : undefined;
+  const guardPauseTimeValue = optionalIntegerExpressionPairParam(controller, "guard.pausetime");
+  const guardPauseTimeExpressions = Array.isArray(guardPauseTimeValue) && guardPauseTimeValue.some((value) => typeof value === "string")
+    ? guardPauseTimeValue
+    : undefined;
+  const guardPauseTime = Array.isArray(guardPauseTimeValue) && guardPauseTimeExpressions === undefined
+    ? guardPauseTimeValue
+    : undefined;
+  if (pauseTimeValue === false || guardPauseTimeValue === false) return undefined;
   const pauseTimeRaw = findParam(controller, "pausetime");
   const guardPauseTimeRaw = findParam(controller, "guard.pausetime");
   const groundVelocityRaw = findParam(controller, "ground.velocity");
@@ -3654,8 +3673,11 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     guardKill: booleanNumber(findParam(controller, "guard.kill")),
     attr: stripMugenString(findParam(controller, "attr")),
     hitFlag: staticHitFlagParam(findParam(controller, "hitflag")),
-    hitPause: firstNumber(pauseTimeRaw) ?? 0,
-    hitShakeTime: pauseTimeRaw === undefined ? undefined : secondNumber(pauseTimeRaw) ?? 0,
+    hitPause: (typeof pauseTime?.[0] === "number" ? pauseTime[0] : undefined) ?? firstNumber(pauseTimeRaw) ?? 0,
+    hitShakeTime: pauseTimeRaw === undefined
+      ? undefined
+      : (typeof pauseTime?.[1] === "number" ? pauseTime[1] : undefined) ?? secondNumber(pauseTimeRaw) ?? 0,
+    ...(pauseTimeExpressions === undefined ? {} : { pauseTimeExpressions }),
     hitStun: groundHitTime === true || typeof groundHitTime === "string" ? 18 : groundHitTime ?? 18,
     ...(typeof groundHitTime === "string" ? { groundHitTimeExpression: groundHitTime } : {}),
     groundSlideTime: groundSlideTime === true || typeof groundSlideTime === "string" ? undefined : groundSlideTime,
@@ -3693,8 +3715,11 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     guardDamage: secondNumber(findParam(controller, "damage")),
     guardDistanceBounds,
     guardFlag: stripMugenString(findParam(controller, "guardflag")),
-    guardPauseTime: firstNumber(guardPauseTimeRaw),
-    guardShakeTime: guardPauseTimeRaw === undefined ? undefined : secondNumber(guardPauseTimeRaw) ?? 0,
+    guardPauseTime: (typeof guardPauseTime?.[0] === "number" ? guardPauseTime[0] : undefined) ?? firstNumber(guardPauseTimeRaw),
+    guardShakeTime: guardPauseTimeRaw === undefined
+      ? undefined
+      : (typeof guardPauseTime?.[1] === "number" ? guardPauseTime[1] : undefined) ?? secondNumber(guardPauseTimeRaw),
+    ...(guardPauseTimeExpressions === undefined ? {} : { guardPauseTimeExpressions }),
     guardHitTime: guardHitTime === true || typeof guardHitTime === "string" ? undefined : guardHitTime,
     ...(typeof guardHitTime === "string" ? { guardHitTimeExpression: guardHitTime } : {}),
     guardSlideTime: firstNumber(findParam(controller, "guard.slidetime")),

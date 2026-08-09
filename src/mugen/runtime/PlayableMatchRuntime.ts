@@ -6237,6 +6237,36 @@ function runActiveStateControllers(
                   return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
                 }
               : undefined,
+          resolveProjectilePauseTime:
+            effect === "projectile"
+              ? () => resolveProjectileIntegerPairComponents(
+                  controller.operation?.kind === "projectile"
+                    ? controller.operation.pauseTimeExpressions
+                    : undefined,
+                  actor,
+                  targetOpponent,
+                  stateOwner,
+                  stageBounds,
+                  activeTick,
+                  gameSpace,
+                  options.characters,
+                )
+              : undefined,
+          resolveProjectileGuardPauseTime:
+            effect === "projectile"
+              ? () => resolveProjectileIntegerPairComponents(
+                  controller.operation?.kind === "projectile"
+                    ? controller.operation.guardPauseTimeExpressions
+                    : undefined,
+                  actor,
+                  targetOpponent,
+                  stateOwner,
+                  stageBounds,
+                  activeTick,
+                  gameSpace,
+                  options.characters,
+                )
+              : undefined,
           resolveProjectileGuardHitTime:
             effect === "projectile"
               ? () => {
@@ -8433,6 +8463,36 @@ function resolveProjectileSparkScaleComponents(
     if (typeof component === "number") return Number.isFinite(component) ? component : undefined;
     if (component === undefined) return undefined;
     return resolveDispatchFloat(undefined, component, fighter, opponent, owner, stageBounds, stageTime);
+  };
+  return [resolveComponent(value[0]), resolveComponent(value[1])];
+}
+
+function resolveProjectileIntegerPairComponents(
+  value: MugenHitDefExpressionPair | undefined,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds: MugenStageDefinition["bounds"] | undefined,
+  stageTime: number | undefined,
+  gameSpace: ExpressionGameSpace,
+  characters?: readonly FighterMatchState[],
+): [number?, number?] | undefined {
+  if (value === undefined) return undefined;
+  const resolveComponent = (component: number | string | undefined): number | undefined => {
+    if (typeof component === "number") return Number.isFinite(component) ? Math.trunc(component) : undefined;
+    if (component === undefined) return undefined;
+    const resolved = resolveDispatchNumber(
+      undefined,
+      component,
+      fighter,
+      opponent,
+      owner,
+      stageBounds,
+      stageTime,
+      gameSpace,
+      characters,
+    );
+    return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
   };
   return [resolveComponent(value[0]), resolveComponent(value[1])];
 }

@@ -1959,7 +1959,33 @@ describe("ProjectileSystem", () => {
 
     expect(defaults).toMatchObject({ hitPause: 0, hitShakeTime: 0, guardPause: 0, guardShakeTime: 0 });
     expect(inherited).toMatchObject({ hitPause: 2, hitShakeTime: 7, guardPause: 2, guardShakeTime: 7 });
-    expect(explicit).toMatchObject({ hitPause: 2, hitShakeTime: 7, guardPause: 3, guardShakeTime: 0 });
+    expect(explicit).toMatchObject({ hitPause: 2, hitShakeTime: 7, guardPause: 3, guardShakeTime: 7 });
+  });
+
+  it("resolves fresh Projectile pause pairs from caller callbacks component-wise", () => {
+    const dynamic = createRuntimeProjectile({
+      serialId: "pause-pair-dynamic",
+      controller: controller({ pausetime: "var(0),var(1)", "guard.pausetime": "var(2)" }),
+      operation: compileControllerIr(controller({
+        pausetime: "var(0),var(1)",
+        "guard.pausetime": "var(2)",
+      })).operation as ProjectileControllerOp,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "demo",
+      spriteOwnerLabel: "Demo",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolvePauseTime: () => [4.9, 7.9],
+      resolveGuardPauseTime: () => [3.9, undefined],
+    });
+    expect(dynamic).toMatchObject({
+      hitPause: 4,
+      hitShakeTime: 7,
+      guardPause: 3,
+      guardShakeTime: 7,
+    });
   });
 
   it("creates Projectile guard-distance bounds with official defaults and negative preservation", () => {

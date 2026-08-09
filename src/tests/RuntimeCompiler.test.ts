@@ -4493,16 +4493,30 @@ value = 1
     })).operation).toMatchObject({ groundSlideTime: 37 });
   });
 
-  it("compiles Projectile and ModifyProjectile pause pairs with zero second-value defaults", () => {
-    expect(compileControllerIr(controller(1000, "Projectile", [], {
+  it("compiles Projectile pause pairs with dynamic caller expressions and guard inheritance", () => {
+    const projectile = compileControllerIr(controller(1000, "Projectile", [], {
       pausetime: "2,7",
       "guard.pausetime": "3",
-    })).operation).toMatchObject({
+    })).operation;
+    expect(projectile).toMatchObject({
       hitPause: 2,
       hitShakeTime: 7,
       guardPauseTime: 3,
-      guardShakeTime: 0,
     });
+    expect(projectile?.guardShakeTime).toBeUndefined();
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      pausetime: "var(0),fvar(1)",
+      "guard.pausetime": "var(2)",
+    })).operation).toMatchObject({
+      pauseTimeExpressions: ["var(0)", "fvar(1)"],
+      guardPauseTimeExpressions: ["var(2)"],
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      pausetime: "var(0),fvar(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      pausetime: "var(0),fvar(1),3",
+    })).operation).toBeUndefined();
     expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
       pausetime: "4",
       "guard.pausetime": "5,9",

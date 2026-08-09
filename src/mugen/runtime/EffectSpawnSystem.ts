@@ -71,6 +71,8 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveProjectileGroundHitTime?: RuntimeProjectileSpawnInput["resolveGroundHitTime"];
   resolveProjectileGroundSlideTime?: RuntimeProjectileSpawnInput["resolveGroundSlideTime"];
   resolveProjectileAirHitTime?: RuntimeProjectileSpawnInput["resolveAirHitTime"];
+  resolveProjectilePauseTime?: RuntimeProjectileSpawnInput["resolvePauseTime"];
+  resolveProjectileGuardPauseTime?: RuntimeProjectileSpawnInput["resolveGuardPauseTime"];
   resolveProjectileGuardHitTime?: RuntimeProjectileSpawnInput["resolveGuardHitTime"];
   resolveProjectileAirGuardVelocity?: RuntimeProjectileSpawnInput["resolveAirGuardVelocity"];
   resolveProjectilePaletteFx?: RuntimeProjectileSpawnInput["resolvePaletteFx"];
@@ -252,6 +254,8 @@ export class RuntimeEffectSpawnWorld {
     resolveGroundHitTime?: RuntimeProjectileSpawnInput["resolveGroundHitTime"],
     resolveGroundSlideTime?: RuntimeProjectileSpawnInput["resolveGroundSlideTime"],
     resolveAirHitTime?: RuntimeProjectileSpawnInput["resolveAirHitTime"],
+    resolvePauseTime?: RuntimeProjectileSpawnInput["resolvePauseTime"],
+    resolveGuardPauseTime?: RuntimeProjectileSpawnInput["resolveGuardPauseTime"],
     resolveGuardHitTime?: RuntimeProjectileSpawnInput["resolveGuardHitTime"],
     resolveAirGuardVelocity?: RuntimeProjectileSpawnInput["resolveAirGuardVelocity"],
     resolvePaletteFx?: RuntimeProjectileSpawnInput["resolvePaletteFx"],
@@ -302,6 +306,8 @@ export class RuntimeEffectSpawnWorld {
       resolveGroundHitTime,
       resolveGroundSlideTime,
       resolveAirHitTime,
+      resolvePauseTime,
+      resolveGuardPauseTime,
       resolveGuardHitTime,
       resolveAirGuardVelocity,
       resolvePaletteFx,
@@ -600,6 +606,8 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveProjectileGroundHitTime,
         options.resolveProjectileGroundSlideTime,
         options.resolveProjectileAirHitTime,
+        options.resolveProjectilePauseTime,
+        options.resolveProjectileGuardPauseTime,
         options.resolveProjectileGuardHitTime,
         options.resolveProjectileAirGuardVelocity,
         options.resolveProjectilePaletteFx,

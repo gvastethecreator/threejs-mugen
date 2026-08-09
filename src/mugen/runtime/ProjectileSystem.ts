@@ -338,6 +338,10 @@ export type RuntimeProjectileSpawnInput = {
   resolveGroundSlideTime?: () => number | undefined;
   /** Resolves fresh Projectile air.hittime authored expressions in the original caller context. */
   resolveAirHitTime?: () => number | undefined;
+  /** Resolves fresh Projectile pausetime authored expressions in the original caller context. */
+  resolvePauseTime?: () => [number?, number?] | undefined;
+  /** Resolves fresh Projectile guard.pausetime authored expressions in the original caller context. */
+  resolveGuardPauseTime?: () => [number?, number?] | undefined;
   /** Resolves fresh Projectile guard.hittime authored expressions in the original caller context. */
   resolveGuardHitTime?: () => number | undefined;
   /** Resolves Projectile airguard.velocity authored expressions in the original caller context. */
@@ -616,12 +620,19 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const airJuggle = operation?.airJuggle ?? firstNumber(findControllerParam(input.controller, "air.juggle"));
   const normalizedAirJuggle = airJuggle === undefined || !Number.isFinite(airJuggle) ? undefined : Math.trunc(airJuggle);
   const pauseTimeRaw = findControllerParam(input.controller, "pausetime");
-  const authoredPauseTime = projectileZeroDefaultPair(pauseTimeRaw);
-  const hitPause = Math.max(0, Math.round(operation?.hitPause ?? authoredPauseTime?.[0] ?? 0));
-  const hitShakeTime = Math.max(
-    0,
-    Math.round(operation?.hitShakeTime ?? authoredPauseTime?.[1] ?? 0),
+  const authoredPauseTime = runtimeProjectileStaticIntegerPair(pauseTimeRaw);
+  const resolvedPauseTime = resolveRuntimeProjectileFreshPausePair(
+    operation?.pauseTimeExpressions,
+    pauseTimeRaw,
+    input.resolvePauseTime?.(),
+    operation?.hitPause === undefined && operation?.hitShakeTime === undefined
+      ? undefined
+      : [operation.hitPause, operation.hitShakeTime],
+    [0, 0],
+    authoredPauseTime,
   );
+  const hitPause = Math.max(0, Math.round(resolvedPauseTime[0]));
+  const hitShakeTime = Math.max(0, Math.round(resolvedPauseTime[1]));
   const dynamicGroundHitTime = operation?.groundHitTimeExpression === undefined
     ? undefined
     : input.resolveGroundHitTime?.();
@@ -742,24 +753,23 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     operation?.layerNo ?? firstNumber(findControllerParam(input.controller, "projlayerno")) ?? input.ownerLayerNo ?? 0,
   );
   const guardPauseTimeRaw = findControllerParam(input.controller, "guard.pausetime");
-  const authoredGuardPauseTime = projectileZeroDefaultPair(guardPauseTimeRaw);
-  const inheritNormalPauseTime = guardPauseTimeRaw === undefined;
-  const guardPause = Math.max(
-    0,
-    Math.round(
-      operation?.guardPauseTime
-      ?? authoredGuardPauseTime?.[0]
-      ?? (inheritNormalPauseTime ? hitPause : 0),
-    ),
+  const authoredGuardPauseTime = runtimeProjectileStaticIntegerPair(guardPauseTimeRaw);
+  const guardPauseAuthored = guardPauseTimeRaw !== undefined ||
+    operation?.guardPauseTimeExpressions !== undefined ||
+    operation?.guardPauseTime !== undefined ||
+    operation?.guardShakeTime !== undefined;
+  const resolvedGuardPauseTime = resolveRuntimeProjectileFreshPausePair(
+    operation?.guardPauseTimeExpressions,
+    guardPauseTimeRaw,
+    input.resolveGuardPauseTime?.(),
+    operation?.guardPauseTime === undefined && operation?.guardShakeTime === undefined
+      ? undefined
+      : [operation.guardPauseTime, operation.guardShakeTime],
+    [hitPause, hitShakeTime],
+    guardPauseAuthored ? authoredGuardPauseTime : undefined,
   );
-  const guardShakeTime = Math.max(
-    0,
-    Math.round(
-      operation?.guardShakeTime
-      ?? authoredGuardPauseTime?.[1]
-      ?? (inheritNormalPauseTime ? hitShakeTime : 0),
-    ),
-  );
+  const guardPause = Math.max(0, Math.round(resolvedGuardPauseTime[0]));
+  const guardShakeTime = Math.max(0, Math.round(resolvedGuardPauseTime[1]));
   const guardDistanceBounds = runtimeProjectileGuardDistanceBounds(input.controller, operation?.guardDistanceBounds);
   const minDistance = operation?.minDistance ?? partialNumberTriple(findControllerParam(input.controller, "mindist"));
   const maxDistance = operation?.maxDistance ?? partialNumberTriple(findControllerParam(input.controller, "maxdist"));
@@ -2711,6 +2721,26 @@ function runtimeProjectileStaticIntegerPair(value: string | undefined): [number,
   const numbers = parts.map(Number);
   if (!numbers.every(Number.isFinite) || numbers[0] === undefined) return undefined;
   return numbers.length === 2 ? [Math.trunc(numbers[0]), Math.trunc(numbers[1]!)] : [Math.trunc(numbers[0])];
+}
+
+function resolveRuntimeProjectileFreshPausePair(
+  expressionValue: ProjectileControllerOp["pauseTimeExpressions"] | ProjectileControllerOp["guardPauseTimeExpressions"] | undefined,
+  rawValue: string | undefined,
+  resolvedValue: [number?, number?] | undefined,
+  operationValue: [number?, number?] | undefined,
+  fallback: [number, number],
+  staticRawValue?: [number, number?],
+): [number, number] {
+  const rawPair = staticRawValue ?? runtimeProjectileStaticIntegerPair(rawValue);
+  const component = (value: number | string | undefined): number | undefined =>
+    typeof value === "number" && Number.isFinite(value) ? Math.trunc(value) : undefined;
+  const resolveComponent = (index: 0 | 1): number =>
+    component(resolvedValue?.[index]) ??
+    component(expressionValue?.[index]) ??
+    component(operationValue?.[index]) ??
+    component(rawPair?.[index]) ??
+    fallback[index];
+  return [resolveComponent(0), resolveComponent(1)];
 }
 
 function resolveRuntimeProjectileSparkScale(
