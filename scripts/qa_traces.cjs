@@ -3537,6 +3537,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperModifyHitDefDynamicDownVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-modifyhitdef-dynamic-air-velocity",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperModifyHitDefDynamicAirVelocityTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-hitdef-sprite-priority",
       required: true,
       artifact: presets.createSyntheticImportedHelperHitDefSpritePriorityTraceArtifact(),
