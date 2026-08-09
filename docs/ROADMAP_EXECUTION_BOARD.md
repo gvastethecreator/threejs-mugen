@@ -1,6 +1,22 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T701 closed-bounded
+## Authoritative runtime cursor — T702 closed-bounded
+
+Final T702 verification: `785/785` trace artifacts (`751` required, `34`
+optional), full `3823/3823` Vitest across `328` files, typecheck, the
+`363`-module production build, boundaries, and diff hygiene pass. Root
+Projectile priority trace checksum is `cabff6a` / final `070ee2a6`; Helper
+checksum is `6ac655e1` / final `2667efd6`.
+
+T702 / issue 276 is closed-bounded: fresh root- and Helper-authored
+Projectiles resolve dynamic `projpriority` once in caller context, normalize
+through the local bounded `0..10` domain, and feed the existing
+clash/cancel/decrement path. `ModifyProjectile`, exact Ikemen priority
+classes/overflow, fine tick ordering, nested teams, rollback, and full
+Projectile parity remain excluded. T703 is unselected pending the next
+upstream ledger review. See [issue 276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
+
+## Previous runtime cursor — T701 closed-bounded
 
 Final T701 verification: `783/783` trace artifacts (`749` required, `34`
 optional), full `3819/3819` Vitest across `328` files, typecheck, the
@@ -31,15 +47,6 @@ T698 / issue 272 remains closed-bounded for fresh root and Helper-authored
 Projectile `air.hittime` caller-context resolution and accepted airborne
 non-falling `GetHitVar(hittime)` evidence. See [issue
 272](../.scratch/roadmap/issues/272-projectile-air-hittime-dynamic.md).
-
-## Active parity cut — T702 `projpriority` dynamic
-
-T702 is selected and mapped in [issue 276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
-Implement fresh root/Helper Projectile `projpriority` caller-context
-resolution, then prove priority clash/cancel/decrement. `ModifyProjectile`,
-exact VM priority classes/overflow, fine tick ordering, nested teams, rollback,
-and full Projectile parity remain excluded. T703 stays unselected until T702
-closes with compiler, runtime, trace, typecheck, build, and diff evidence.
 
 ## Previous runtime cursor — T693 closed-bounded
 

@@ -1,6 +1,22 @@
 ﻿# Next Build Roadmap
 
-## Authoritative runtime cursor — T701 closed-bounded
+## Authoritative runtime cursor — T702 closed-bounded
+
+Final T702 verification: `785/785` trace artifacts (`751` required, `34`
+optional), root Projectile priority checksum `cabff6a` / final `070ee2a6`,
+Helper checksum `6ac655e1` / final `2667efd6`, full `3823/3823` Vitest across
+`328` files, typecheck, boundaries, the `363`-module production build, and
+diff hygiene pass.
+
+T702 / issue 276 is closed-bounded for fresh root- and Helper-authored
+Projectiles: dynamic `projpriority` resolves once in caller context, uses the
+local bounded `0..10` normalization, and reaches the existing priority
+clash/cancel/decrement path. Exact Ikemen priority classes/overflow, live
+`ModifyProjectile`, fine tick order, nested teams, rollback, and full
+Projectile parity remain outside the claim. T703 is unselected. See [issue
+276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
+
+## Previous runtime cursor — T701 closed-bounded
 
 Final T701 verification: `783/783` trace artifacts (`749` required, `34`
 optional), root Projectile misstime checksum `90c039b1` / final
@@ -18,15 +34,6 @@ semantics, nested helper/team topology, rollback, and full Projectile timing
 parity remain excluded. See [issue
 275](../.scratch/roadmap/issues/275-projectile-misstime-dynamic.md).
 
-## Active next runtime cut — T702 `projpriority` dynamic
-
-T702 / issue 276 is selected: fresh root- and Helper-authored Projectiles
-resolve dynamic `projpriority` once in caller context and prove existing
-priority clash/cancel/decrement behavior. The local `0..10` normalization is
-an adaptation; exact Ikemen integer sentinel/overflow and priority classes,
-live `ModifyProjectile`, fine tick order, nested teams, rollback, and full
-Projectile parity remain outside the claim. T703 remains unselected.
-
 ## Previous runtime cursor — T700 closed-bounded
 
 T700 / issue 274 remains closed-bounded for fresh root- and Helper-authored
@@ -41,7 +48,7 @@ Projectile `air.hittime` caller-context resolution and accepted airborne
 non-falling contact. See [issue
 272](../.scratch/roadmap/issues/272-projectile-air-hittime-dynamic.md).
 
-## Next parity cut — T702 proposed
+## Next parity cut — T703 unselected
 
 Map the next unclaimed Projectile/effect lifecycle seam against the pinned
 Ikemen source. Treat live mutation as unsupported until its controller switch

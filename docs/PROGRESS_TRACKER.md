@@ -1,6 +1,22 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T701 (2026-08-09)
+## Latest implementation checkpoint — T702 (2026-08-09)
+
+Authoritative cursor: T702 is closed-bounded for fresh root- and Helper-authored
+Projectiles with dynamic `projpriority`. Caller expressions resolve once and
+normalize through the local bounded `0..10` priority domain before the existing
+clash/cancel/decrement path. Root checksum is `cabff6a` / final `070ee2a6`;
+Helper checksum is `6ac655e1` / final `2667efd6`. Aggregate QA is `785/785`
+(`751` required, `34` optional), the full `3823/3823` Vitest suite across
+`328` files, typecheck, boundaries, and the `363`-module production build pass.
+`ModifyProjectile`, exact Ikemen priority classes/overflow, fine tick ordering,
+nested teams, rollback, and full Projectile parity remain explicitly unclaimed.
+See [issue 276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
+
+T703 is not selected until the next fresh Projectile parameter is mapped
+against the pinned upstream ledger.
+
+## Previous implementation checkpoint — T701 (2026-08-09)
 
 Authoritative cursor: T701 is closed-bounded for fresh root- and Helper
 Projectiles with dynamic `projmisstime`. Caller expressions resolve once,
@@ -13,11 +29,6 @@ Helper checksums are `24a8156a` / `ce715b91`. Aggregate QA is `783/783`
 nested helper/team topology, rollback, and full Projectile timing parity remain
 explicitly unclaimed. See [issue
 275](../.scratch/roadmap/issues/275-projectile-misstime-dynamic.md).
-
-Active next cut: T702 implements fresh root/Helper Projectile `projpriority`
-caller-context resolution and priority clash evidence. See [issue
-276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md). T703 is
-not selected until this cut closes.
 
 ## Previous implementation checkpoint — T700 (2026-08-09)
 

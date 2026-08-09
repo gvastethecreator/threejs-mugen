@@ -1,5 +1,21 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-09 T702 Projectile priority addendum - no score movement
+
+Final T702 verification: `785/785` trace artifacts (`751` required, `34`
+optional), full `3823/3823` Vitest across `328` files, typecheck, boundaries,
+the `363`-module production build, and diff hygiene pass. Required root
+Projectile priority trace is `cabff6a` / final `070ee2a6`; the Helper trace is
+`6ac655e1` / final `2667efd6`.
+
+Fresh root- and Helper-authored Projectiles now resolve dynamic `projpriority`
+once in the original caller context, normalize it through the local bounded
+`0..10` domain, and feed the existing clash/cancel/decrement path. This is a
+bounded compatibility seam with no score movement: live `ModifyProjectile`,
+exact Ikemen priority classes/overflow, fine tick ordering, nested helper/team
+topology, rollback, and full Projectile parity remain blocked. See [issue
+276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
+
 ## 2026-08-09 T701 Projectile misstime addendum - no score movement
 
 Final T701 verification: `783/783` trace artifacts (`749` required, `34`

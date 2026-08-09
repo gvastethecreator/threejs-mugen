@@ -1,6 +1,6 @@
 # T702 — Fresh Projectile `projpriority` dinámico
 
-Estado: `ready-for-agent` (corte en implementación)
+Estado: `closed-bounded` (2026-08-09)
 
 ## Objetivo
 
@@ -55,8 +55,29 @@ y el valor llega al arbitraje de choque Projectile-vs-Projectile.
 5. `pnpm typecheck`, `pnpm test`, `pnpm run build`, `pnpm qa:trace` y
    `git diff --check` en el cierre.
 
+## Evidencia de cierre
+
+- Compiler/runtime: `ProjectileControllerOp.priorityExpression` conserva
+  literales, expresiones y redirects; root y Helper evalúan una vez en el
+  caller y normalizan al dominio local `0..10`.
+- Focal: RuntimeCompiler, ProjectileSystem y EffectActorSystem pasan `298/298`
+  tests; `pnpm typecheck` y `pnpm check:boundaries` pasan.
+- Traces requeridas: `synthetic-imported-projectile-dynamic-priority.json`
+  checksum `cabff6a8` / final `070ee2a6`; Helper
+  `synthetic-imported-helper-projectile-dynamic-priority.json` checksum
+  `6ac655e1` / final `2667efd6`. Ambas prueban `VarSet`, Projectile,
+  caller-context, clash `3 > 1`, cancelación, decremento `3 -> 2`, lifecycle
+  y ownership root/Helper-parent.
+- Gates finales: `pnpm qa:trace` pasa `785/785` artefactos (`751` required,
+  `34` optional), `pnpm test` pasa `3823/3823` en `328` archivos, build de
+  `363` módulos, typecheck, boundaries y `git diff --check` pasan.
+
+El cierre es bounded: no eleva el score de paridad. Exact priority classes,
+`IErr`/overflow, `ModifyProjectile`, timing fino, equipos anidados, rollback y
+paridad completa de Projectile siguen fuera del claim.
+
 ## Próximo corte
 
-T703: elegir el siguiente parámetro fresco de Projectile sólo después de
-revisar el ledger y mantener `ModifyProjectile`, timing exacto y clases de
-prioridad fuera de esta evidencia.
+T703 queda sin seleccionar hasta revisar el siguiente parámetro fresco de
+Projectile contra el pin upstream. Mantener `ModifyProjectile`, timing exacto
+y clases de prioridad fuera de la siguiente evidencia.

@@ -1,5 +1,19 @@
 ﻿# Supported Features
-## 2026-08-09 T701 Projectile misstime checkpoint
+## 2026-08-09 T702 Projectile `projpriority` checkpoint
+
+T702 is closed-bounded: fresh root- and Helper-authored Projectiles resolve
+dynamic `projpriority` once in the original caller context, normalize it
+through the local bounded `0..10` domain, and feed the existing
+clash/cancel/decrement path. Required root checksum is `cabff6a` / final
+`070ee2a6`; Helper checksum is `6ac655e1` / final `2667efd6`; aggregate QA
+passes `785/785` artifacts (`751` required, `34` optional); the full
+`3823/3823` Vitest suite across `328` files, typecheck, boundaries, and the
+`363`-module build pass. `ModifyProjectile`, exact Ikemen priority
+classes/overflow, fine timing, nested ownership, rollback, and full
+Projectile parity remain outside the supported claim. See [issue
+276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
+
+## Previous runtime cursor — T701 Projectile misstime checkpoint
 
 T701 is closed-bounded: fresh root- and Helper-authored Projectiles resolve
 dynamic `projmisstime` once in the original caller context, truncate/clamp
@@ -12,16 +26,6 @@ across `328` files, typecheck, and the `363`-module build pass. Live
 nested helper/team topology, rollback, and full Projectile timing parity remain
 outside the supported claim. See [issue
 275](../.scratch/roadmap/issues/275-projectile-misstime-dynamic.md).
-
-## Active next cut — T702 Projectile `projpriority`
-
-T702 is in implementation: fresh root/Helper Projectiles will resolve dynamic
-`projpriority` in caller context and feed the existing bounded clash/cancel /
-decrement path. This is not yet a supported claim until compiler/runtime,
-required traces, typecheck, build, and full QA close. Exact Ikemen priority
-classes/overflow, live `ModifyProjectile`, fine timing, nested ownership,
-rollback, and full Projectile parity remain outside scope. See [issue
-276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
 
 ## 2026-08-09 T700 Projectile removetime checkpoint
 

@@ -2,13 +2,25 @@
 
 ## Current parity queue
 
+- **T702 closed-bounded** — fresh root- and Helper-authored Projectiles resolve
+  dynamic `projpriority` once in caller context, normalize through the local
+  bounded `0..10` priority domain, and prove clash/cancel/decrement. Aggregate
+  traces pass `785/785` (`751` required, `34` optional); root checksum
+  `cabff6a` / final `070ee2a6`, Helper checksum `6ac655e1` / final `2667efd6`;
+  full Vitest passes `3823/3823` across `328` files, typecheck/build,
+  boundaries, and diff hygiene pass. `ModifyProjectile`, exact priority
+  classes/overflow, fine tick order, nested teams, rollback, and full
+  Projectile parity remain excluded. See [issue
+  276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
+
+- **T703 unselected** — map the next fresh Projectile parameter against the
+  pinned upstream ledger before implementation.
+
 - **T701 closed-bounded** — fresh root- and Helper-authored Projectiles resolve dynamic `projmisstime` once in caller context, truncate/clamp through the bounded Projectile-time domain, and enforce multi-hit cooldown eligibility before the next accepted contact. Aggregate traces pass `783/783` (`749` required, `34` optional); root checksum `90c039b1` / final `6868ca24`, Helper checksum `24a8156a` / final `ce715b91`; full Vitest passes `3819/3819` across `328` files, typecheck/build pass. Live `ModifyProjectile`, exact hitpause/tick ordering, negative/overflow values, nested helper/team topology, rollback, and full Projectile timing parity remain excluded. See [issue 275](../.scratch/roadmap/issues/275-projectile-misstime-dynamic.md).
 
 - **T699 closed-bounded** — fresh root and Helper-authored Projectiles resolve dynamic/mixed `pausetime` and `guard.pausetime` pairs once in caller context. Accepted hit/guard contacts preserve Projectile-local pause payload and defender `GetHitVar(hitshaketime)`, plus lifecycle, target, and Helper/root/parent ownership evidence. Aggregate traces pass `779/779` (`745` required, `34` optional); root checksum `1380caf8` / final `54d26b60`, Helper checksum `f342d3ad` / final `a7e23112`; full Vitest passes `3812/3812` across `328` files, typecheck/build pass. The first component is Projectile-local `hitPauseRemaining`, not owner-player HitPause. Live `ModifyProjectile`, exact stacking/tick order, negative/overflow values, nested helper/team topology, rollback, and full Projectile timing parity remain excluded. See [issue 273](../.scratch/roadmap/issues/273-projectile-pause-pairs-dynamic.md).
 
 - **T700 closed-bounded** — fresh root- and Helper-authored Projectiles resolve dynamic `projremovetime` once in the original caller context, truncate/clamp it through the existing bounded Projectile-time domain, persist the timeout payload, and complete timeout removal with root/Helper/parent ownership evidence. Aggregate traces pass `781/781` (`747` required, `34` optional); root checksum `63ef5373` / final `2824a6bb`, Helper checksum `c35241e4` / final `23b1bac3`; full Vitest passes `3815/3815` across `328` files, typecheck/build pass. Live `ModifyProjectile`, exact terminal animation/tick preemption, bounds-removal ordering, negative/overflow values, nested helper/team topology, rollback, and full Projectile lifecycle parity remain excluded. See [issue 274](../.scratch/roadmap/issues/274-projectile-removetime-dynamic.md).
-
-- **T702 active** — fresh root/Helper Projectiles resolve dynamic `projpriority` once in caller context, normalize through the local bounded priority domain, and prove priority clash/cancel/decrement. See [issue 276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md). `ModifyProjectile`, exact priority classes/overflow, fine tick ordering, nested teams, rollback, and full Projectile parity remain excluded. T703 waits for closeout evidence.
 
 - **T698 closed-bounded** — fresh root and Helper-authored Projectiles resolve dynamic `air.hittime` once in the original caller context and reach accepted airborne non-falling `GetHitVar(hittime)=16` with authored air velocity, Projectile payload, lifecycle, target links, and Helper/root/parent ownership evidence. The full `3810/3810` Vitest suite across `328` files, typecheck, the `363`-module build, and diff hygiene pass; aggregate traces pass `777/777` (`743` required, `34` optional); root checksum `d95c52d1` / final `cf7a06ba`, Helper checksum `c153c511` / final `0e089466`. Fresh default recalculation beyond the local seam, live `ModifyProjectile`, ground/down/guard timing, exact countdown/landing/physics, negative/overflow values, teams, rollback, and full Projectile timing parity remain excluded. See [issue 272](../.scratch/roadmap/issues/272-projectile-air-hittime-dynamic.md).
 - **T696 closed-bounded** — fresh root and Helper-authored Projectiles resolve dynamic `guard.hittime` once in the original caller context and reach accepted guard `GetHitVar(hittime)=17` with Projectile payload, lifecycle, target links, and Helper/root/parent ownership evidence. See [issue 270](../.scratch/roadmap/issues/270-projectile-guard-hittime-dynamic.md).

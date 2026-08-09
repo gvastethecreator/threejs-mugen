@@ -1,16 +1,28 @@
 # Controller Support Registry
 
-Authoritative cursor: T701 is closed-bounded for fresh root- and
-Helper-authored Projectiles with dynamic `projmisstime` resolution once in
-the original caller context. Values are truncated/clamped through the
-existing bounded Projectile-time domain and gate the next accepted multi-hit
-contact. Root trace checksum is `90c039b1`, final `6868ca24`; Helper checksum
-is `24a8156a`, final `ce715b91`; `pnpm qa:trace` passes `783/783` artifacts
-(`749` required, `34` optional). The full `3819/3819` Vitest suite across
-`328` files, typecheck, the `363`-module build, and diff hygiene also pass.
-Live `ModifyProjectile`, exact hitpause/tick ordering, negative/overflow
-semantics, nested helper/team topology, rollback, and full Projectile timing
-parity remain excluded. T702 is the next source-mapping queue item. See
+Authoritative cursor: T702 is closed-bounded for fresh root- and
+Helper-authored Projectiles with dynamic `projpriority` resolution once in
+the original caller context. Values are normalized through the local bounded
+`0..10` priority domain and feed the existing clash/cancel/decrement path.
+Root checksum is `cabff6a`, final `070ee2a6`; Helper checksum is `6ac655e1`,
+final `2667efd6`; `pnpm qa:trace` passes `785/785` artifacts (`751` required,
+`34` optional). The full `3823/3823` Vitest suite across `328` files,
+typecheck, boundaries, the `363`-module build, and diff hygiene also pass.
+Live `ModifyProjectile`, exact Ikemen priority classes/overflow, fine timing,
+nested helper/team topology, rollback, and full Projectile parity remain
+excluded. T703 is the next unselected source-mapping queue item. See [issue
+276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
+
+Previous cursor: T701 is closed-bounded for fresh root- and Helper-authored
+Projectiles with dynamic `projmisstime` resolution once in the original caller
+context. Values are truncated/clamped through the existing bounded
+Projectile-time domain and gate the next accepted multi-hit contact. Root
+checksum is `90c039b1`, final `6868ca24`; Helper checksum is `24a8156a`, final
+`ce715b91`; `pnpm qa:trace` passes `783/783` artifacts (`749` required, `34`
+optional). The full `3819/3819` Vitest suite across `328` files, typecheck,
+the `363`-module build, and diff hygiene also pass. Live `ModifyProjectile`,
+exact hitpause/tick ordering, negative/overflow semantics, nested helper/team
+topology, rollback, and full Projectile timing parity remain excluded. See
 [issue 275](../.scratch/roadmap/issues/275-projectile-misstime-dynamic.md).
 
 T696 remains closed-bounded for fresh root and Helper Projectile

@@ -1,6 +1,24 @@
 ﻿# Roadmap Package Milestones
 
-## Latest runtime cursor — T701
+## Latest runtime cursor — T702
+
+T702 closes the fresh root- and Helper-authored Projectile `projpriority`
+caller-context seam: dynamic values resolve once, normalize through the local
+bounded `0..10` priority domain, and feed existing clash/cancel/decrement
+behavior. Verification is `785/785` traces (`751` required, `34` optional),
+full `3823/3823` Vitest across `328` files, typecheck, boundaries, the
+`363`-module build, and diff hygiene. Root checksums are `cabff6a/070ee2a6`;
+Helper checksums are `6ac655e1/2667efd6`. `ModifyProjectile`, exact Ikemen
+priority classes/overflow, fine timing, nested teams, rollback, and full
+Projectile parity remain excluded. See [issue
+276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
+
+## Next cursor — T703 unselected
+
+The next fresh Projectile parameter will be selected only after the pinned
+upstream ledger and local seam are reviewed.
+
+## Previous runtime cursor — T701
 
 T701 closes the fresh root- and Helper-authored Projectile `projmisstime`
 caller-context seam: dynamic values resolve once, truncate/clamp through the
@@ -36,13 +54,6 @@ rollback, and full Projectile timing parity remain excluded. See [issue
 
 Previous cursor: T696 closed-bounded fresh root and Helper Projectile
 `guard.hittime` caller-context resolution. See [issue 270](../.scratch/roadmap/issues/270-projectile-guard-hittime-dynamic.md).
-
-Active next cursor: T702 closes fresh root/Helper Projectile `projpriority`
-caller-context resolution plus existing clash/cancel/decrement evidence. The
-local priority clamp is an explicit adaptation; live `ModifyProjectile`, exact
-VM priority classes/overflow, fine timing, nested teams, rollback, and full
-Projectile parity remain blocked. See [issue
-276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
 
 ## Previous runtime cursor — T693
 
