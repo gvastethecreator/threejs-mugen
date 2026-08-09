@@ -10389,6 +10389,69 @@ value = 0
     expect(snapshot.logs.some((line) => line.includes("Imported Fixture projectile hit Nadia Arce for 31"))).toBe(true);
   });
 
+  it("carries fresh Projectile air-guard depth through accepted root-owned contacts", () => {
+    const resolve = (airborne: boolean, airGuardVelocityExpression?: string) => {
+      const attacker = createImportedFixture({
+        id: `projectile-air-guard-depth-${airborne ? "air" : "ground"}`,
+        displayName: "Projectile Air Guard Depth Attacker",
+        withStateMove: false,
+        withProjectile: true,
+        projectileHitDefParams: `
+guardflag = MA
+guard.velocity = -2,0,1
+air.velocity = -6,-10,4
+${airGuardVelocityExpression === undefined ? "" : `airguard.velocity = ${airGuardVelocityExpression}`}
+`,
+      });
+      const defender = createImportedFixture({
+        id: `projectile-air-guard-depth-defender-${airborne ? "air" : "ground"}`,
+        displayName: "Projectile Air Guard Depth Defender",
+        withStateMove: false,
+      });
+      const runtime = new PlayableMatchRuntime(attacker, defender, {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -35, y: 0, facing: 1 as const },
+          p2: { x: 130, y: 0, facing: -1 as const },
+        },
+      });
+
+      if (airborne) {
+        runtime.step({ p1: new Set(), p2: new Set(["U"]) });
+      }
+      let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["B"]) });
+      for (let frame = 0; frame < 12 && !snapshot.logs.some((line) => line.includes("guarded")); frame += 1) {
+        snapshot = runtime.step({ p1: new Set(), p2: new Set(["B"]) });
+      }
+      expect(
+        snapshot.logs.some((line) =>
+          line.includes("Projectile Air Guard Depth Defender guarded Projectile Air Guard Depth Attacker projectile"),
+        ),
+      ).toBe(true);
+      return snapshot;
+    };
+    const expectGuardVelocity = (
+      snapshot: ReturnType<typeof resolve>,
+      expected: readonly [x: number, y: number, z: number],
+      stateType: "S" | "A",
+    ) => {
+      expect(snapshot.actors[1]?.runtime).toMatchObject({
+        guarding: true,
+        stateType,
+        vel: { x: expected[0], y: expected[1] },
+        hitVelocity: { x: expected[0], y: expected[1], z: expected[2] },
+        combatDepth: { velocity: expected[2] },
+      });
+      expect(runtimeHitVar(snapshot.actors[1]!.runtime, "xvel")).toBe(expected[0]);
+      expect(runtimeHitVar(snapshot.actors[1]!.runtime, "yvel")).toBe(expected[1]);
+      expect(runtimeHitVar(snapshot.actors[1]!.runtime, "zvel")).toBe(expected[2]);
+    };
+
+    expectGuardVelocity(resolve(true), [9, -5, 6], "A");
+    expectGuardVelocity(resolve(true, "-12,-6,7"), [12, -6, 7], "A");
+    expectGuardVelocity(resolve(false, "-12,-6,7"), [2, 0, 1], "S");
+  });
+
   it("evaluates bounded ProjHit triggers after imported Projectile contact", () => {
     const imported = createImportedFixture({
       withStateMove: false,
@@ -12973,6 +13036,7 @@ function createImportedFixture(
     withScreenBoundOff?: boolean;
     stateVelSet?: string;
     withProjectile?: boolean;
+    projectileHitDefParams?: string;
     withHelper?: boolean;
     helperType?: "normal" | "player";
     helperStandby?: number | string;
@@ -13446,6 +13510,7 @@ damage = 31
 pausetime = 4,4
 ground.hittime = 13
 ground.velocity = -5
+${options.projectileHitDefParams ?? ""}
 projsprpriority = 7
 `
     : "";

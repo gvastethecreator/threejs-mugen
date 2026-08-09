@@ -10,7 +10,7 @@ import type { DemoMove } from "./demoFighters";
 import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { normalizeRuntimeHitDefPriority } from "./HitDefContactPriority";
 import { resolveHitDefGuardTiming } from "./HitDefTiming";
-import { deriveDefaultDirectHitDefAirGuardVelocity } from "./HitDefVelocity";
+import { derivePinnedIkemenFreshAirGuardVelocity } from "./HitDefVelocity";
 import { runtimeDizzyPointsFromHitDef } from "./DizzyPointsDefaults";
 import { runtimeHitDefGetPowerDefaults, runtimeHitDefGivePowerDefaults } from "./HitDefGetPowerDefaults";
 import { resolveRuntimeHitDefPaletteFx } from "./HitDefPaletteFx";
@@ -447,7 +447,7 @@ export class RuntimeHitDefControllerDispatchWorld {
           context ?? {},
           undefined,
         );
-    const defaultAirGuardVelocity = deriveDefaultDirectHitDefAirGuardVelocity(airVelocity);
+    const defaultAirGuardVelocity = derivePinnedIkemenFreshAirGuardVelocity(airVelocity);
     const resolvedAirGuardVelocityVector: [number, number?] | undefined = resolvedAirGuardVelocity === undefined
       ? undefined
       : resolvedAirGuardVelocity.componentCount === 1

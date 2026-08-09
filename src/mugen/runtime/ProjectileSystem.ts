@@ -14,7 +14,7 @@ import { normalizeMugenAffectTeam, normalizeMugenTeamSide } from "../model/Mugen
 import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { collisionBoxesIntersect, runtimeWorldBox } from "./CombatResolver";
 import { resolveHitDefGuardTiming } from "./HitDefTiming";
-import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
+import { derivePinnedIkemenFreshAirGuardVelocity } from "./HitDefVelocity";
 import { runtimeHitDefGetPowerDefaults, runtimeHitDefGivePowerDefaults } from "./HitDefGetPowerDefaults";
 import { resolveRuntimeHitDefPaletteFx } from "./HitDefPaletteFx";
 import type { RuntimePaletteFxResolver } from "./SpriteEffectSystem";
@@ -617,10 +617,13 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const downVelocityX = downVelocity?.[0] ?? airVelocity?.[0] ?? 0;
   const downVelocityY = downVelocity?.[1] ?? airVelocity?.[1] ?? 0;
   const downVelocityZ = downVelocity?.[2] ?? airVelocity?.[2];
-  const airGuardVelocity =
+  const authoredAirGuardVelocity =
     normalizeOptionalVelocityVector(operation?.airGuardVelocity) ??
-    velocityPair(findControllerParam(input.controller, "airguard.velocity")) ??
-    deriveDefaultAirGuardVelocity(airVelocity);
+    partialNumberTriple(findControllerParam(input.controller, "airguard.velocity"));
+  const airGuardVelocity = completeFreshProjectileAirGuardVelocity(
+    authoredAirGuardVelocity,
+    derivePinnedIkemenFreshAirGuardVelocity(airVelocity),
+  );
   const hitVelocities = runtimeHitVelocityMetadata({ groundVelocity, airVelocity, downVelocity, guardVelocity, airGuardVelocity });
   const groundAnimType = operation?.animType ?? hitAnimType(findControllerParam(input.controller, "animtype")) ?? 0;
   const airAnimType = operation?.airAnimType ?? hitAnimType(findControllerParam(input.controller, "air.animtype")) ?? groundAnimType;
@@ -2855,6 +2858,16 @@ function isDefaultScale(value: { x: number; y: number }): boolean {
 function normalizeOptionalVelocityVector(value: [number, number, number?] | [number, number?] | undefined): [number, number, number?] | undefined {
   if (!value) return undefined;
   return value[2] === undefined ? [value[0], value[1] ?? 0] : [value[0], value[1] ?? 0, value[2]];
+}
+
+function completeFreshProjectileAirGuardVelocity(
+  authored: [number, number?, number?] | undefined,
+  defaults: [number, number?, number?] | undefined,
+): [number, number?, number?] | undefined {
+  if (authored === undefined) return defaults;
+  const y = authored[1] ?? defaults?.[1] ?? 0;
+  const z = authored[2] ?? defaults?.[2];
+  return z === undefined ? [authored[0], y] : [authored[0], y, z];
 }
 
 function runtimeProjectileHasExplicitDepth(projectile: RuntimeProjectile): boolean {

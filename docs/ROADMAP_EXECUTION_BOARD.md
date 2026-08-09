@@ -1,6 +1,6 @@
 ﻿# Roadmap Execution Board
 
-## Current official-parity queue — T424-T492 and T506-T666 closed-bounded; T667 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
+## Current official-parity queue — T424-T492 and T506-T667 closed-bounded; T668 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
 
 ### Active runtime checkpoint — live ModifyHitDef air-guard velocity
 
@@ -704,8 +704,15 @@ and accepted airborne guard exposes depth through GetHitVar. The full suite
 passes 3710/3710; required trace checksum is `80703443`; aggregate traces pass
 739/739 with 705 required; typecheck and the 363-module build pass.
 
-T667 / issue 241 is active-research: derive missing fresh root-Projectile
-`airguard.velocity` Z from effective `air.velocity.z * 1.5`.
+T667 / issue 241 is closed-bounded: fresh root Projectile omission/partial
+`airguard.velocity` derives missing Z from effective air Z, explicit Z wins,
+and accepted airborne guard exposes the effective value through physical depth
+and GetHitVar. The full suite passes 3712/3712; required trace checksum is
+`f2c12237`; aggregate traces pass 740/740 with 706 required; typecheck and the
+363-module build pass.
+
+T668 / issue 242 is active-research: prove the same pinned-Ikemen missing-Z
+default and root ownership for a Projectile created by a Helper.
 
 ### Latest visual checkpoint — Character Compare
 

@@ -10,8 +10,8 @@ export function deriveDefaultAirGuardVelocity(airVelocity: RuntimeVelocityVector
     : [airVelocity[0] * 1.5, (airVelocity[1] ?? 0) / 2, airVelocity[2]];
 }
 
-/** Pinned-Ikemen fresh direct-HitDef default; M.U.G.E.N 1.1 documents only X/Y. */
-export function deriveDefaultDirectHitDefAirGuardVelocity(
+/** Pinned-Ikemen fresh HitDef default; M.U.G.E.N 1.1 documents only X/Y. */
+export function derivePinnedIkemenFreshAirGuardVelocity(
   airVelocity: RuntimeVelocityVector | undefined,
 ): RuntimeVelocityVector | undefined {
   const airGuardVelocity = deriveDefaultAirGuardVelocity(airVelocity);

@@ -1059,15 +1059,16 @@ describe("ProjectileSystem", () => {
     });
   });
 
-  it("derives missing Projectile airguard.velocity from air.velocity", () => {
-    const projectile = createRuntimeProjectile({
-      serialId: "p1-projectile-air-default",
+  it("derives missing fresh Projectile airguard.velocity components from air.velocity", () => {
+    const create = (serialId: string, airGuardVelocity?: string): RuntimeProjectile => createRuntimeProjectile({
+      serialId,
       controller: controller({
         projanim: "1005",
         damage: "24,2",
         guardflag: "A",
         "ground.velocity": "-4",
-        "air.velocity": "-6,-8",
+        "air.velocity": "-6,-10,4",
+        ...(airGuardVelocity === undefined ? {} : { "airguard.velocity": airGuardVelocity }),
       }),
       spriteOwnerId: "p1",
       spriteOwnerDefinitionId: "kfm",
@@ -1078,11 +1079,36 @@ describe("ProjectileSystem", () => {
       fallbackFacing: 1,
     });
 
-    expect(projectile).toMatchObject({
+    const omitted = create("p1-projectile-air-default");
+    const single = create("p1-projectile-air-single", "-5");
+    const pair = create("p1-projectile-air-pair", "-9,-4");
+    const triple = create("p1-projectile-air-triple", "-12,-6,7");
+
+    expect(omitted).toMatchObject({
       guardDamage: 2,
       guardFlag: "A",
       airGuardPush: 9,
+      airGuardVelocityY: -5,
+      airGuardVelocityZ: 6,
+      hitVelocities: { airGuard: { x: -9, y: -5, z: 6 } },
+    });
+    expect(single).toMatchObject({
+      airGuardPush: 5,
+      airGuardVelocityY: -5,
+      airGuardVelocityZ: 6,
+      hitVelocities: { airGuard: { x: -5, y: -5, z: 6 } },
+    });
+    expect(pair).toMatchObject({
+      airGuardPush: 9,
       airGuardVelocityY: -4,
+      airGuardVelocityZ: 6,
+      hitVelocities: { airGuard: { x: -9, y: -4, z: 6 } },
+    });
+    expect(triple).toMatchObject({
+      airGuardPush: 12,
+      airGuardVelocityY: -6,
+      airGuardVelocityZ: 7,
+      hitVelocities: { airGuard: { x: -12, y: -6, z: 7 } },
     });
   });
 

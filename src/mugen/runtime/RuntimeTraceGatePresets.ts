@@ -26445,6 +26445,146 @@ export function createSyntheticImportedProjectileAirGuardVelocityDefaultTraceArt
   });
 }
 
+export function createSyntheticImportedProjectileAirGuardVelocityDerivedZTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5078;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...projectileCombatStage(),
+    id: "trace-projectile-airguard-velocity-derived-z-grid",
+    displayName: "Trace Projectile Derived Air Guard Velocity Z Grid",
+    playerStart: {
+      p1: { x: -160, y: 0, facing: 1 },
+      p2: { x: 120, y: 0, facing: -1 },
+    },
+  };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-airguard-velocity-derived-z-defender",
+    displayName: "Projectile Derived Air Guard Velocity Z Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+      airGuardedBranchStateNo: branchStateNo,
+      airGuardedBranchAnimNo: branchStateNo,
+      airGuardedBranchTrigger: "Time >= 1",
+      airGuardedBranchExpression:
+        "GetHitVar(xvel) = 5 && GetHitVar(yvel) = -4 && GetHitVar(zvel) = 9 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+      airGuardHitVelSetZ: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-airguard-velocity-derived-z-attacker",
+    displayName: "Projectile Derived Air Guard Velocity Z Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileGuardHitTime: 18,
+    projectileOffset: [62, -120],
+    projectileAirVelocity: [-6, -8, 6],
+    projectileAirGuardVelocity: [-5, -4],
+    guardFlag: "A",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    targetId: "synthetic-imported-projectile-airguard-velocity-derived-z-golden",
+    targetLabel: "Synthetic imported Projectile derived airguard velocity Z route",
+    requiredExecutedStates: [200, 154, 155, branchStateNo],
+    forbiddenExecutedStates: [150, 151, 152, 153, 5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+    requiredExecutedControllers: ["ChangeState", "Projectile", "HitVelSet", "VelAdd"],
+    requiredExecutedOperations: ["projectile", "kinematic:hitvelset", "kinematic:veladd"],
+    requiredControllerEventSequences: [
+      {
+        label: "derived airguard velocity Z Projectile spawn order",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "Projectile", name: "Fast Projectile" },
+          { stateNo: 200, operation: "projectile" },
+        ],
+      },
+      {
+        label: "derived Projectile airguard velocity Z accepted-contact GetHitVar order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 154, controller: "ChangeState", name: "Air Guard Shake Over" },
+          { stateNo: 155, controller: "HitVelSet", name: "Apply Air Guard Velocity" },
+          { stateNo: 155, operation: "kinematic:hitvelset" },
+          { stateNo: 155, controller: "ChangeState", name: "Air Guarded HitVar Branch" },
+        ],
+      },
+    ],
+    requiredActorFrames: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 154,
+        animNo: 40,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        observedPosYAtMost: -30,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 155,
+        animNo: 150,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        observedVelXAtLeast: 5,
+        observedVelXAtMost: 5,
+        observedVelYAtMost: -3.5,
+        observedVelZAtLeast: 9,
+        observedVelZAtMost: 9,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: branchStateNo,
+        animNo: branchStateNo,
+        stateType: "A",
+        minFrames: 1,
+      },
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+    requiredEffectPayloads: [
+      { actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1", effectId: 77, minAge: 1 },
+    ],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    forbiddenCombatReasons: ["hit", "override", "reversal"],
+    requiredFinalActors: [
+      { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+      { actorId: "p2", source: "imported", actorKind: "player", life: 996 },
+    ],
+    notes: [
+      "Pinned Ikemen GO compatibility trace proves a fresh root-owned Projectile with air.velocity Z=6 and an explicit two-component airguard.velocity X/Y pair derives the missing air-guard Z as 9. A real airborne guard creates target 77, completes the Projectile lifecycle, exposes GetHitVar(xvel/yvel/zvel)=5/-4/9, and applies physical Z velocity through Common1-style HitVelSet. M.U.G.E.N 1.1 documents only X/Y airguard.velocity and its X/Y defaults. Helper Projectiles, ModifyProjectile, dynamic Z, imported static-move metadata, exact 3D/localcoord/facing and landing timing, teams, rollback, and full Projectile parity remain excluded.",
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileAirGuardCornerPushTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -56265,8 +56405,8 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileGroundVelocity?: [number, number?];
   projectileGuardVelocity?: [number, number?];
   omitProjectileGuardVelocity?: boolean;
-  projectileAirVelocity?: [number, number?];
-  projectileAirGuardVelocity?: [number, number?];
+  projectileAirVelocity?: [number, number?, number?];
+  projectileAirGuardVelocity?: [number, number?, number?];
   projectileGroundCornerPush?: number;
   projectileAirCornerPush?: number;
   projectileDownCornerPush?: number;
@@ -61516,8 +61656,8 @@ function projectileControllerBlock(
   p2StateNo?: number,
   p2GetP1State?: boolean,
   missOnOverride?: boolean,
-  airVelocity?: [number, number?],
-  airGuardVelocity?: [number, number?],
+  airVelocity?: [number, number?, number?],
+  airGuardVelocity?: [number, number?, number?],
   groundCornerPush?: number,
   airCornerPush?: number,
   downCornerPush?: number,

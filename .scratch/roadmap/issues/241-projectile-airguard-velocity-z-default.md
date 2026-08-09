@@ -1,6 +1,6 @@
 # Issue 241 — Projectile airguard.velocity missing-Z default
 
-- Status: `active-research`
+- Status: `closed-bounded`
 - Lane: `R1 projectile contact physics`
 - Priority: `P1`
 
@@ -40,3 +40,13 @@ Describe Z as pinned-Ikemen compatibility, not M.U.G.E.N 1.1 syntax. Do not
 claim Helper Projectile breadth, imported static-move mirroring,
 ModifyProjectile recomputation, dynamic Z expressions, exact localcoord or
 landing timing, teams, rollback, or full Projectile physics.
+
+## Closure evidence
+
+- Fresh root Projectile omission, one-component, and two-component forms
+  derive missing Z from effective `air.velocity.z * 1.5`; explicit Z wins.
+- Accepted airborne guard exposes the effective Z through physical depth and
+  `GetHitVar(zvel)` without affecting the ground-guard route.
+- Required trace checksum: `f2c12237`; final-state checksum: `9238b559`.
+- Full suite: 3712/3712. Aggregate traces: 740/740, with 706 required and 34
+  optional. Typecheck and the 363-module production build pass.
