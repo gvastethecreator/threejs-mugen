@@ -429,6 +429,7 @@ import {
   createSyntheticImportedHelperProjCancelTimeIdTraceArtifact,
   createSyntheticImportedHelperProjCancelTimeDynamicTraceArtifact,
   createSyntheticImportedHelperHitDefTraceArtifact,
+  createSyntheticImportedHelperModifyHitDefDynamicDownVelocityTraceArtifact,
   createSyntheticImportedHelperHitDefSpritePriorityTraceArtifact,
   createSyntheticImportedHelperHitDefPersistTraceArtifact,
   createSyntheticImportedHelperHitCountPersistTraceArtifact,
@@ -8105,6 +8106,43 @@ describe("RuntimeTraceGatePresets", () => {
         hitEffect: expect.objectContaining({ kind: "hit", sparkNo: 7006, offsetX: 9, offsetY: -58 }),
       }),
     ]);
+  });
+
+  it("creates a required Helper-owned ModifyHitDef down.velocity artifact", () => {
+    const artifact = createSyntheticImportedHelperModifyHitDefDynamicDownVelocityTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-modifyhitdef-dynamic-down-velocity-golden",
+        source: "mixed",
+      },
+      gates: [{
+        label: "synthetic-imported-helper-modifyhitdef-dynamic-down-velocity-golden",
+        passed: true,
+        failures: [],
+      }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.ModifyHitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.modifyhitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 77 }),
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1-helper-0", actorKind: "helper", ownerId: "p1", stateNo: 1200 }),
+        expect.objectContaining({ actorId: "p2", stateNo: 5000, minVel: { x: 3, y: -8 }, minVelZ: 3 }),
+      ]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p2", actorKind: "player", stateNo: 5077, life: 963 }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported Helper HitDefPersist artifact with persisted helper HitDef evidence", () => {

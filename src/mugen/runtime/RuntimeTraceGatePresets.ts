@@ -52584,6 +52584,161 @@ export function createSyntheticImportedHelperHitDefTraceArtifact(options: Runtim
   });
 }
 
+export function createSyntheticImportedHelperModifyHitDefDynamicDownVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5077;
+  const targetId = 77;
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "helper-modifyhitdef-liedown", frames: 3, p1: ["x"], p2: ["x"] },
+    { label: "helper-modifyhitdef-contact", frames: 12, p1: [], p2: [] },
+    { label: "helper-modifyhitdef-settle", frames: 4, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyhitdef-down-velocity-attacker",
+    displayName: "Helper ModifyHitDef Down Velocity Attacker",
+    withHitDef: true,
+    hitDefHitFlag: "H",
+    hitDefDamage: 0,
+    withPlayerPush: false,
+    withHelper: true,
+    helperPostype: "p2",
+    helperPos: [0, -28],
+    helperTriggerTime: 2,
+    helperHitDefRoute: {
+      branchStateNo: 1260,
+      damage: 37,
+      targetId,
+      hitFlag: "D",
+      downVelocity: [-2, -8, 2],
+      modifyDownVelocity: ["var(0)", "var(1)", "var(2)"],
+      modifyVarSeeds: [
+        { index: 0, value: -3 },
+        { index: 1, value: -8 },
+        { index: 2, value: 3 },
+      ],
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyhitdef-down-velocity-defender",
+    displayName: "Helper ModifyHitDef Down Velocity Defender",
+    withHitDef: false,
+    withPlayerPush: false,
+    withStateTypeSet: { stateType: "L", moveType: "I", physics: "N" },
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5021,
+      shakeStateType: "A",
+      slideStateType: "A",
+      shakePhysics: "N",
+      slidePhysics: "N",
+      slideHitVelSet: { x: true, y: true, z: true },
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchStateType: "A",
+      hitTimeBranchPhysics: "N",
+      hitTimeBranchExpression:
+        "GetHitVar(xvel) = 3 && GetHitVar(yvel) = -8 && GetHitVar(zvel) = 3 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "Helper ModifyHitDef Down Velocity GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-helper-modifyhitdef-dynamic-down-velocity-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-modifyhitdef-dynamic-down-velocity-golden",
+      label: "Synthetic imported Helper-owned dynamic ModifyHitDef down.velocity route",
+      source: "mixed",
+      notes: [
+        "Pinned Ikemen GO trace proves a Helper-owned ModifyHitDef resolves caller-local var(0..2) into an active normal Helper HitDef before a lying-target contact. The accepted helper hit preserves the Helper/root/parent ownership chain, exposes GetHitVar(xvel/yvel/zvel)=3/-8/3, and applies the same physical vector through the lying-to-air route. Root RedirectID ModifyHitDef, fresh inheritance, Projectile, ModifyProjectile, exact landing timing, teams, rollback, and full Helper parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-modifyhitdef-dynamic-down-velocity-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper"],
+      requiredExecutedStates: [200, 5000, 5021, branchStateNo],
+      forbiddenExecutedStates: [130, 150, 151, 152, 153, 154, 155, 5001, 5010, 5011, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "StateTypeSet", "VarSet", "HitDef", "ModifyHitDef", "HitVelSet"],
+      requiredExecutedOperations: ["metadata:statetypeset", "variable:varset", "hitdef", "modifyhitdef", "kinematic:hitvelset"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p1-helper-0", actorId: "p2", targetId }],
+      requiredControllerEventSequences: [
+        {
+          label: "Helper-owned ModifyHitDef executes after the active HitDef",
+          actorId: "p1",
+           allowSameTick: true,
+           steps: [
+             { stateNo: 1200, controller: "HitDef", name: "Helper HitDef" },
+             { stateNo: 1200, controller: "VarSet", name: "Helper ModifyHitDef Var 0" },
+             { stateNo: 1200, controller: "VarSet", name: "Helper ModifyHitDef Var 1" },
+             { stateNo: 1200, controller: "VarSet", name: "Helper ModifyHitDef Var 2" },
+             { stateNo: 1200, controller: "ModifyHitDef", name: "Helper ModifyHitDef" },
+          ],
+        },
+        {
+          label: "lying target launch consumes Helper-modified down velocity",
+          actorId: "p2",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 200, controller: "StateTypeSet", name: "StateTypeSet Probe" },
+            { stateNo: 5000, controller: "ChangeState", name: "Hit Shake Over" },
+            { stateNo: 5021, controller: "HitVelSet", name: "Apply Hit Velocity" },
+            { stateNo: 5021, operation: "kinematic:hitvelset" },
+            { stateNo: 5021, controller: "ChangeState", name: "Helper ModifyHitDef Down Velocity GetHitVar Branch" },
+          ],
+        },
+      ],
+      requiredActorFrameSequences: [{
+        label: "Helper ModifyHitDef down velocity lying-to-air physical order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 200, stateType: "L", moveType: "I", physics: "N", minFrames: 1 },
+          { actorId: "p1-helper-0", source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1200, moveType: "A", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, stateType: "A", moveType: "H", physics: "N", minFrames: 1 },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5021,
+            stateType: "A",
+            moveType: "H",
+            physics: "N",
+            observedVelXAtLeast: 3,
+            observedVelXAtMost: 3,
+            observedVelYAtLeast: -8,
+            observedVelYAtMost: -8,
+            observedVelZAtLeast: 3,
+            observedVelZAtMost: 3,
+            minFrames: 1,
+          },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, stateType: "A", moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+      requiredEffectPayloads: [{ actorId: "p1-helper-0", kind: "helper", ownerId: "p1", parentId: "p1", helperStateNo: 1260, minAge: 1 }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperHitDefSpritePriorityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -57910,6 +58065,11 @@ export type SyntheticImportedTraceFighterOptions = {
     branchStateNo: number;
     branchAnimNo?: number;
     damage?: number;
+    hitFlag?: string;
+    downVelocity?: SyntheticPartialTripleExpression;
+    /** Synthetic Helper-owned live ModifyHitDef down.velocity expression. */
+    modifyDownVelocity?: SyntheticPartialTripleExpression;
+    modifyVarSeeds?: SyntheticRuntimeVarSeed[];
     p1SpritePriority?: number;
     p2SpritePriority?: number;
     targetId?: number;
@@ -66505,6 +66665,25 @@ ctrl = 0
 function helperHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperHitDefRoute"]>): string {
   const branchAnimNo = route.branchAnimNo ?? route.branchStateNo;
   const damage = route.damage ?? 29;
+  const hitFlagLine = route.hitFlag === undefined ? "" : `hitflag = ${route.hitFlag}`;
+  const downVelocityLine = route.downVelocity === undefined ? "" : `down.velocity = ${route.downVelocity.join(",")}`;
+  const modifyVarSeeds = route.modifyVarSeeds?.map((seed, index) => `
+[State 1200, Helper ModifyHitDef Var ${index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`).join("") ?? "";
+  const modifyDownVelocity = route.modifyDownVelocity === undefined
+    ? ""
+    : `
+${modifyVarSeeds}
+[State 1200, Helper ModifyHitDef]
+type = ModifyHitDef
+trigger1 = Time = 0
+redirectid = 0
+down.velocity = ${route.modifyDownVelocity.join(",")}
+`;
   const targetIdLine = route.targetId === undefined ? "" : `id = ${route.targetId}`;
   const p1SpritePriorityLine = route.p1SpritePriority === undefined ? "" : `p1sprpriority = ${route.p1SpritePriority}`;
   const p2SpritePriorityLine = route.p2SpritePriority === undefined ? "" : `p2sprpriority = ${route.p2SpritePriority}`;
@@ -66577,8 +66756,11 @@ ${hitSparkLine}
 ${guardSparkLine}
 ${sparkXyLine}
 priority = 4, Hit
+${hitFlagLine}
+${downVelocityLine}
 ${p1SpritePriorityLine}
 ${p2SpritePriorityLine}
+${modifyDownVelocity}
 ${branchLines}
 `;
 }
