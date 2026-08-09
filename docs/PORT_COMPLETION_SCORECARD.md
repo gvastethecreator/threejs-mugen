@@ -1,5 +1,20 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-09 T692 Helper ModifyHitDef down.hittime addendum - no score movement
+
+Final T692 verification: `767/767` trace artifacts (`733` required, `34`
+optional), `3790/3790` Vitest tests across `328` files, typecheck, the
+`363`-module build, and diff hygiene pass. Required trace
+`synthetic-imported-helper-modifyhitdef-dynamic-down-hittime` has checksum
+`7e836797` and final checksum `3597b35b`.
+
+Helper-owned live `ModifyHitDef down.hittime` now resolves typed caller-context
+values, mutates the active Helper HitDef, and reaches an accepted lying hit
+with `GetHitVar(hittime)=17`, Helper/root lifecycle, and target-link evidence.
+This remains a bounded compatibility seam with no score movement: root fresh
+defaults are T691; Projectile, nonzero down launch, exact countdown/landing
+timing, and full Helper timing parity remain blocked.
+
 ## 2026-08-09 T691 direct HitDef down.hittime addendum - no score movement
 
 Final T691 verification: `766/766` trace artifacts (`732` required, `34`

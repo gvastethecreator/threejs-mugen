@@ -1,6 +1,9 @@
 # Controller Support Registry
 
-Authoritative cursor: T691 is closed-bounded for direct HitDef `down.hittime`
+Authoritative cursor: T692 is closed-bounded for direct HitDef `down.hittime`
+plus Helper-owned live `ModifyHitDef down.hittime` caller-context resolution,
+active-move mutation, accepted lying-hit GetHitVar, lifecycle, and target-link
+evidence. T691 remains closed-bounded for direct HitDef `down.hittime`
 caller-context resolution, fresh reset, root-owned ModifyHitDef replacement/
 preservation, and accepted lying-hit GetHitVar evidence. T690 remains
 closed-bounded for fresh root/Helper Projectiles
@@ -63,6 +66,12 @@ required lying-hit trace exposes the value through GetHitVar/Common1
 progression. Projectile breadth, nonzero down launch, Helper-owned live
 mutation, exact countdown/landing timing, and full timing parity remain
 excluded.
+
+T692 adds Helper-owned live `ModifyHitDef down.hittime` caller-context
+resolution and accepted lying-hit evidence. The active Helper HitDef is mutated
+before contact, with Helper/root lifecycle and target ownership retained. Root
+fresh/default behavior remains T691; Projectile, nonzero down launch, exact
+countdown/landing timing, and full Helper timing parity remain excluded.
 
 This is the registry contract for CNS controller work. It prevents the runtime from growing controller behavior through invisible ad hoc paths.
 
