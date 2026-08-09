@@ -324,6 +324,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveSparkScale?: () => { hit?: [number?, number?]; guard?: [number?, number?] } | undefined;
   /** Resolves Projectile ground.velocity authored expressions in the original caller context. */
   resolveGroundVelocity?: () => [number?, number?, number?] | undefined;
+  /** Resolves Projectile guard.velocity authored expressions in the original caller context. */
+  resolveGuardVelocity?: () => [number?, number?, number?] | undefined;
   /** Resolves Projectile air.velocity authored expressions in the original caller context. */
   resolveAirVelocity?: () => [number?, number?, number?] | undefined;
   /** Resolves Projectile down.velocity authored expressions in the original caller context. */
@@ -621,7 +623,13 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const authoredFall = operation?.fall ?? projectileFallData(input.controller);
   const fall = Object.keys(authoredFall).length === 0 ? undefined : authoredFall;
   const push = Math.abs(groundVelocity?.[0] ?? 18);
-  const guardVelocity = normalizeOptionalVelocityVector(operation?.guardVelocity) ?? velocityPair(findControllerParam(input.controller, "guard.velocity"));
+  const hasDynamicGuardVelocity = operation?.guardVelocityExpressions !== undefined || operation?.guardVelocityZExpression !== undefined;
+  const authoredGuardVelocity = hasDynamicGuardVelocity
+    ? input.resolveGuardVelocity?.()
+    : normalizeOptionalVelocityVector(operation?.guardVelocity) ?? velocityPair(findControllerParam(input.controller, "guard.velocity"));
+  const guardVelocity: [number, number?, number?] | undefined = hasDynamicGuardVelocity
+    ? completeFreshProjectileGuardVelocity(authoredGuardVelocity, groundVelocity)
+    : authoredGuardVelocity as [number, number?, number?] | undefined;
   const guardVelocityX = guardVelocity?.[0] ?? groundVelocity?.[0];
   const hasDynamicAirVelocity = operation?.airVelocityExpressions !== undefined || operation?.airVelocityZExpression !== undefined;
   const authoredAirVelocity = hasDynamicAirVelocity
@@ -2907,6 +2915,17 @@ function completeFreshProjectileGroundVelocity(
   authored: [number?, number?, number?] | undefined,
 ): [number, number, number] {
   return [authored?.[0] ?? 0, authored?.[1] ?? 0, authored?.[2] ?? 0];
+}
+
+function completeFreshProjectileGuardVelocity(
+  authored: [number?, number?, number?] | undefined,
+  defaults: [number, number?, number?] | undefined,
+): [number, number, number] {
+  return [
+    authored?.[0] ?? defaults?.[0] ?? 0,
+    authored?.[1] ?? 0,
+    authored?.[2] ?? defaults?.[2] ?? 0,
+  ];
 }
 
 function completeFreshProjectileDownVelocity(

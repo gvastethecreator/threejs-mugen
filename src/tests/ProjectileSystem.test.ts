@@ -1241,6 +1241,57 @@ describe("ProjectileSystem", () => {
     });
   });
 
+  it("resolves fresh Projectile guard.velocity expressions with ground inheritance", () => {
+    const create = (serialId: string, guardVelocity: string, resolved: [number?, number?, number?]): RuntimeProjectile => {
+      const compiled = compileControllerIr(controller({
+        projanim: "1005",
+        "ground.velocity": "-6,-8,2",
+        "guard.velocity": guardVelocity,
+      }));
+      const operation = compiled.operation as ProjectileControllerOp;
+      return createRuntimeProjectile({
+        serialId,
+        controller: controller({
+          projanim: "1005",
+          "ground.velocity": "-6,-8,2",
+          "guard.velocity": guardVelocity,
+        }),
+        operation,
+        spriteOwnerId: "p1",
+        spriteOwnerDefinitionId: "kfm",
+        spriteOwnerLabel: "Kung Fu Man",
+        action,
+        animNo: 1005,
+        pos: { x: 0, y: 0 },
+        fallbackFacing: 1,
+        resolveGuardVelocity: () => resolved,
+      });
+    };
+
+    const dynamicTriplet = create("p1-projectile-guard-velocity-dynamic-triplet", "var(0),fvar(1),var(2)", [-5, -4, 6]);
+    const dynamicPair = create("p1-projectile-guard-velocity-dynamic-pair", "var(0),fvar(1)", [-5, -4]);
+    const dynamicSingle = create("p1-projectile-guard-velocity-dynamic-single", "var(0)", [-5]);
+
+    expect(dynamicTriplet).toMatchObject({
+      guardPush: 5,
+      guardVelocityY: -4,
+      guardVelocityZ: 6,
+      hitVelocities: { guard: { x: -5, y: -4, z: 6 } },
+    });
+    expect(dynamicPair).toMatchObject({
+      guardPush: 5,
+      guardVelocityY: -4,
+      guardVelocityZ: 2,
+      hitVelocities: { guard: { x: -5, y: -4, z: 2 } },
+    });
+    expect(dynamicSingle).toMatchObject({
+      guardPush: 5,
+      guardVelocityY: 0,
+      guardVelocityZ: 2,
+      hitVelocities: { guard: { x: -5, y: 0, z: 2 } },
+    });
+  });
+
   it("resolves fresh Projectile down.velocity expressions with air inheritance", () => {
     const create = (serialId: string, downVelocity: string, resolved: [number?, number?, number?]): RuntimeProjectile => {
       const compiled = compileControllerIr(controller({

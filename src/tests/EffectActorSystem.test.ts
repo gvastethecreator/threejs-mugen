@@ -487,6 +487,48 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("resolves Helper-authored Projectile guard.velocity XYZ in Helper caller context", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "45", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Projectile", {
+                projid: "8866",
+                projanim: "931",
+                velocity: "0,0",
+                "ground.velocity": "-6,-8,2",
+                "guard.velocity": "Parent,Var(0),Root,Var(1),Root,Var(2)",
+              }, ["Time = 0"]),
+            ]),
+          ),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [931, action(931, 4)],
+      ]),
+    });
+    const parentState = actor("p1", "Parent", { vars: [5] }).runtime;
+    const rootState = actor("p1", "Root", { vars: [0, -4, 6] }).runtime;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, { parentState, rootState });
+
+    const projectile = store.projectiles.find((candidate) => candidate.parentId === helper.serialId);
+    expect(projectile).toMatchObject({
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+      projectileId: 8866,
+      guardPush: 5,
+      guardVelocityY: -4,
+      guardVelocityZ: 6,
+      hitVelocities: { guard: { x: 5, y: -4, z: 6 } },
+    });
+  });
+
   it("resolves Helper-authored Projectile down.velocity with air inheritance", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {

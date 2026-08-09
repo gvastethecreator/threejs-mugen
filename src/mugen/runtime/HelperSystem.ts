@@ -2074,6 +2074,31 @@ export function resolveRuntimeHelperProjectileGroundVelocity(
 }
 
 /**
+ * Resolves a Helper-authored Projectile's dynamic fresh guard.velocity vector.
+ * Missing X/Z components fall back to the fresh ground velocity; Y defaults to zero.
+ */
+export function resolveRuntimeHelperProjectileGuardVelocity(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): [number?, number?, number?] | undefined {
+  const operation = controller.operation;
+  if (operation?.kind !== "projectile") return undefined;
+  const pair = operation.guardVelocityExpressions;
+  const zExpression = operation.guardVelocityZExpression;
+  if (pair === undefined && zExpression === undefined) return undefined;
+  const resolveComponent = (component: number | string | undefined): number | undefined => {
+    if (typeof component === "number") return Number.isFinite(component) ? component : undefined;
+    return resolveHelperFloat(helper, component, options);
+  };
+  return [
+    resolveComponent(pair?.[0]),
+    resolveComponent(pair?.[1]),
+    resolveComponent(zExpression),
+  ];
+}
+
+/**
  * Resolves a Helper-authored Projectile's dynamic fresh airguard vector.
  * Missing components stay undefined so ProjectileSystem can apply its pinned
  * fresh defaults after caller-context evaluation.
