@@ -2,11 +2,15 @@
 
 ## Current parity queue
 
-- **T703 selected** — map and implement fresh root/Helper Projectile
-  `projhits` caller-context expressions. Preserve typed VT_Int IR, initialize
-  `hitsRemaining`/`hitsMax`, and prove two accepted contacts, `ProjVar`,
-  lifecycle, and ownership. `ModifyProjectile`, VM overflow/negative parity,
-  fine timing, and full Projectile parity remain excluded. See [issue
+- **T703 closed-bounded** — fresh root/Helper Projectiles preserve typed
+  `projhits` caller-context expressions, initialize `hitsRemaining`/`hitsMax`,
+  and prove two accepted contacts, `ProjVar`, lifecycle, target, and
+  ownership. Aggregate traces pass `787/787` (`753` required, `34` optional);
+  root checksum `a670156c` / final `b2c3da50`, Helper checksum `223d0865` /
+  final `e6c928ed`; full Vitest passes `3827/3827` across `328` files,
+  typecheck/build, boundaries, redirected-target boundaries, and diff hygiene
+  pass. `ModifyProjectile`, VM overflow/negative parity, fine timing, nested
+  teams, rollback, and full Projectile parity remain excluded. See [issue
   277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
 
 - **T702 closed-bounded** — fresh root- and Helper-authored Projectiles resolve

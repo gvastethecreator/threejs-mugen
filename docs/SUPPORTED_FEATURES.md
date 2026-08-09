@@ -1,13 +1,17 @@
 ﻿# Supported Features
-## 2026-08-09 T703 Projectile `projhits` mapping
+## 2026-08-09 T703 Projectile `projhits` checkpoint
 
-T703 is selected, not yet closed: fresh root/Helper Projectile `projhits` is
-mapped to MUGEN default `1` and Ikemen caller-context VT_Int evaluation. The
-local store already exposes `hitsRemaining`, `hitsMax`, `ProjVar(projhits)`,
-and `ProjVar(projhitsmax)`; the next implementation adds typed expression
-preservation plus two-contact/lifecycle evidence. `ModifyProjectile`, exact VM
-overflow/negative behavior, fine timing, and full Projectile parity remain
-unsupported. See [issue
+T703 is closed-bounded: fresh root/Helper Projectile `projhits` preserves typed
+VT_Int expressions, resolves once in caller context, initializes
+`hitsRemaining`/`hitsMax`, and proves two accepted contacts plus
+`ProjVar(projhits/projhitsmax)`, lifecycle, target, and ownership evidence.
+Required root checksum is `a670156c` / final `b2c3da50`; Helper checksum is
+`223d0865` / final `e6c928ed`; aggregate QA passes `787/787` artifacts
+(`753` required, `34` optional); the full `3827/3827` Vitest suite across
+`328` files, typecheck, boundaries, redirected-target boundaries, and the
+`363`-module build pass. `ModifyProjectile`, exact VM overflow/negative
+behavior, fine timing, nested ownership, rollback, and full Projectile parity
+remain outside the supported claim. See [issue
 277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
 
 ## 2026-08-09 T702 Projectile `projpriority` checkpoint

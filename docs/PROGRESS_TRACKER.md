@@ -1,6 +1,19 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T702 (2026-08-09)
+## Latest implementation checkpoint — T703 (2026-08-09)
+
+Authoritative cursor: T703 is closed-bounded for fresh root- and Helper-authored
+Projectiles with dynamic `projhits`. Typed VT_Int expressions resolve once in
+caller context, initialize `hitsRemaining`/`hitsMax`, and prove two accepted
+contacts plus `ProjVar`, lifecycle, target, and ownership evidence. Root trace
+checksums are `a670156c` / `b2c3da50`; Helper checksums are `223d0865` /
+`e6c928ed`. Aggregate QA is `787/787` (`753` required, `34` optional), the
+full `3827/3827` Vitest suite across `328` files, typecheck/build, boundaries,
+redirected-target boundaries, and diff hygiene pass. `ModifyProjectile`, VM
+overflow/negative parity, fine timing, nested teams, rollback, and full
+Projectile parity remain explicitly unclaimed. See [issue 277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
+
+## Previous implementation checkpoint — T702 (2026-08-09)
 
 Authoritative cursor: T702 is closed-bounded for fresh root- and Helper-authored
 Projectiles with dynamic `projpriority`. Caller expressions resolve once and
@@ -12,12 +25,6 @@ Helper checksum is `6ac655e1` / final `2667efd6`. Aggregate QA is `785/785`
 `ModifyProjectile`, exact Ikemen priority classes/overflow, fine tick ordering,
 nested teams, rollback, and full Projectile parity remain explicitly unclaimed.
 See [issue 276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
-
-T703 is selected: fresh root/Helper `projhits` must preserve a typed VT_Int
-expression, resolve once in caller context, initialize `hitsRemaining` and
-`hitsMax`, and prove multi-hit contact plus `ProjVar` evidence. `ModifyProjectile`,
-VM overflow/negative parity, fine timing, and full Projectile parity remain
-unclaimed. See [issue 277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
 
 ## Previous implementation checkpoint — T701 (2026-08-09)
 

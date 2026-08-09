@@ -1,6 +1,21 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T702 closed-bounded
+## Authoritative runtime cursor — T703 closed-bounded
+
+Final T703 verification: `787/787` trace artifacts (`753` required, `34`
+optional), full `3827/3827` Vitest across `328` files, typecheck, the
+`363`-module production build, boundaries, redirected-target boundaries, and
+diff hygiene pass. Root Projectile `projhits` trace checksum is `a670156c` /
+final `b2c3da50`; Helper checksum is `223d0865` / final `e6c928ed`.
+
+T703 / issue 277 is closed-bounded: fresh root- and Helper-authored
+Projectiles preserve typed `projhits` expressions, resolve once in caller
+context, initialize `hitsRemaining`/`hitsMax`, and prove two accepted
+contacts plus `ProjVar` and lifecycle/ownership evidence. `ModifyProjectile`,
+VM overflow/negative parity, exact fine timing, nested teams, rollback, and
+full Projectile parity remain excluded. See [issue 277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
+
+## Previous runtime cursor — T702 closed-bounded
 
 Final T702 verification: `785/785` trace artifacts (`751` required, `34`
 optional), full `3823/3823` Vitest across `328` files, typecheck, the
@@ -14,16 +29,6 @@ through the local bounded `0..10` domain, and feed the existing
 clash/cancel/decrement path. `ModifyProjectile`, exact Ikemen priority
 classes/overflow, fine tick ordering, nested teams, rollback, and full
 Projectile parity remain excluded. See [issue 276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
-
-## Current next parity cut — T703 selected
-
-T703 / issue 277 maps fresh root- and Helper-authored Projectile `projhits`.
-MUGEN documents default `1`; Ikemen evaluates the VT_Int expression in the
-caller when spawning. Local `hitsRemaining`/`hitsMax` and `ProjVar` consumers
-already exist; implementation must add only typed expression preservation and
-root/Helper caller callbacks. `ModifyProjectile`, VM overflow/negative parity,
-fine tick timing, rollback, and full Projectile parity remain blocked. See
-[issue 277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
 
 ## Previous runtime cursor — T701 closed-bounded
 

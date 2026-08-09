@@ -1,6 +1,6 @@
 # T703 — Fresh Projectile `projhits` dinámico
 
-Estado: `selected` (2026-08-09)
+Estado: `closed-bounded` (2026-08-09)
 
 ## Objetivo
 
@@ -25,10 +25,10 @@ circuito local de contacto múltiple y `ProjVar(projhits/projhitsmax)`.
 | Contrato | Estado local |
 | --- | --- |
 | `projhits` estático | Ya existe en `ProjectileControllerOp.hitCount` y en el store de Projectile. |
-| Expresión fresca | Falta typed IR y callback root/Helper; el compiler actual usa `firstNumber` y pierde `var(...)`. |
+| Expresión fresca | Cerrado: typed IR conserva `number|string`; root y Helper evalúan una vez en caller context. |
 | Consumo | `hitsRemaining`/`hitsMax`, `ProjVar(projhits)` y `ProjVar(projhitsmax)` ya existen; no crear otra cuenta. |
-| Contexto | Reutilizar callbacks caller-context de `projmisstime`/`projpriority`; resolver una vez al spawn. |
-| Adaptación | Resolver finito, truncar y pasar por `clampProjectileHits`; no afirmar paridad `IErr`/overflow. |
+| Contexto | Cerrado: callbacks root/Helper resuelven una vez al spawn. |
+| Adaptación | Cerrado: valor finito, truncado y pasado por `clampProjectileHits`; no se afirma paridad `IErr`/overflow. |
 
 ## Alcance permitido
 
@@ -53,14 +53,17 @@ circuito local de contacto múltiple y `ProjVar(projhits/projhitsmax)`.
    del último; `ProjVar(projhits/projhitsmax)` refleja el estado.
 4. Trace gates: un artefacto root y uno Helper con `VarSet`, Projectile
    dinámico, dos contactos, lifecycle y ownership; ambos required.
-5. `pnpm typecheck`, `pnpm test`, `pnpm run build`, `pnpm qa:trace` y
-   `git diff --check` en cierre.
+5. Cierre verificado: `pnpm typecheck`, `pnpm test` (`3827/3827` en 328
+   archivos), `pnpm run build` (`363` módulos), `pnpm run check:boundaries`,
+   `pnpm run check:redirect-boundary`, `pnpm qa:trace` (`787/787`, 753
+   required, 34 optional) y `git diff --check`.
 
 ## Claim previsto
 
 Fresh root/Helper `projhits` caller-context, capacidad inicial y consumo local
-multi-hit quedan cubiertos. No elevar score de paridad; mantener explícitos los
-límites de `ModifyProjectile`, VM exacta y timing completo.
+multi-hit quedan cubiertos. Root trace: `a670156c` / final `b2c3da50`; Helper:
+`223d0865` / final `e6c928ed`. No elevar score de paridad; mantener explícitos
+los límites de `ModifyProjectile`, VM exacta y timing completo.
 
 ## Próximo corte
 

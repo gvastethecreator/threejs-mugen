@@ -1,6 +1,19 @@
 ﻿# Roadmap Package Milestones
 
-## Latest runtime cursor — T702
+## Latest runtime cursor — T703
+
+T703 closes the fresh root- and Helper-authored Projectile `projhits`
+caller-context seam: typed VT_Int expressions resolve once, initialize
+`hitsRemaining`/`hitsMax`, and reach two accepted contacts with `ProjVar`,
+lifecycle, target, and ownership evidence. Verification is `787/787` traces
+(`753` required, `34` optional), full `3827/3827` Vitest across `328` files,
+typecheck, boundaries, redirected-target boundaries, the `363`-module build,
+and diff hygiene. Root checksums are `a670156c/b2c3da50`; Helper checksums are
+`223d0865/e6c928ed`. `ModifyProjectile`, exact VM overflow/negative behavior,
+fine timing, nested teams, rollback, and full Projectile parity remain
+excluded. See [issue 277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
+
+## Previous runtime cursor — T702
 
 T702 closes the fresh root- and Helper-authored Projectile `projpriority`
 caller-context seam: dynamic values resolve once, normalize through the local
@@ -12,15 +25,6 @@ Helper checksums are `6ac655e1/2667efd6`. `ModifyProjectile`, exact Ikemen
 priority classes/overflow, fine timing, nested teams, rollback, and full
 Projectile parity remain excluded. See [issue
 276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
-
-## Next cursor — T703 selected
-
-T703 selects fresh Projectile `projhits`: MUGEN default `1`, Ikemen caller
-expression, local `hitsRemaining`/`hitsMax` initialization, `ProjVar`, and
-two-contact lifecycle evidence for root and Helper sources. `ModifyProjectile`,
-VM exact overflow/negative behavior, fine timing, and full Projectile parity
-remain blocked. See [issue
-277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
 
 ## Previous runtime cursor — T701
 

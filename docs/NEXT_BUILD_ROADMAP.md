@@ -1,6 +1,21 @@
 ﻿# Next Build Roadmap
 
-## Authoritative runtime cursor — T702 closed-bounded
+## Authoritative runtime cursor — T703 closed-bounded
+
+Final T703 verification: `787/787` trace artifacts (`753` required, `34`
+optional), root Projectile `projhits` checksum `a670156c` / final `b2c3da50`,
+Helper checksum `223d0865` / final `e6c928ed`, full `3827/3827` Vitest across
+`328` files, typecheck, boundaries, redirected-target boundaries, the
+`363`-module production build, and diff hygiene pass.
+
+T703 / issue 277 is closed-bounded for fresh root- and Helper-authored
+Projectiles: dynamic `projhits` preserves typed caller expressions, seeds
+`hitsRemaining`/`hitsMax`, and proves two accepted contacts plus `ProjVar`,
+lifecycle, target, and ownership evidence. `ModifyProjectile`, exact VM
+overflow/negative behavior, fine timing, nested teams, rollback, and full
+Projectile parity remain outside the claim. See [issue 277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
+
+## Previous runtime cursor — T702 closed-bounded
 
 Final T702 verification: `785/785` trace artifacts (`751` required, `34`
 optional), root Projectile priority checksum `cabff6a` / final `070ee2a6`,
@@ -47,15 +62,6 @@ T698 / issue 272 remains closed-bounded for fresh root and Helper-authored
 Projectile `air.hittime` caller-context resolution and accepted airborne
 non-falling contact. See [issue
 272](../.scratch/roadmap/issues/272-projectile-air-hittime-dynamic.md).
-
-## Next parity cut — T703 selected
-
-T703 / issue 277 targets fresh root/Helper `projhits`: preserve the typed
-VT_Int expression, resolve once in caller context, seed `hitsRemaining` and
-`hitsMax`, and prove two accepted contacts plus `ProjVar`/lifecycle evidence.
-`ModifyProjectile`, exact VM overflow/negative behavior, fine timing, nested
-teams, rollback, and full Projectile parity remain blocked. See [issue
-277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
 
 ## Previous runtime cursor — T692 closed-bounded
 

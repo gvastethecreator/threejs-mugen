@@ -1,12 +1,17 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-09 T703 Projectile `projhits` mapping - no score movement
+## 2026-08-09 T703 Projectile `projhits` checkpoint - no score movement
 
-T703 is selected for fresh root/Helper Projectile `projhits`: typed VT_Int
+T703 is closed-bounded for fresh root/Helper Projectile `projhits`: typed VT_Int
 preservation, caller-context resolution, initial `hitsRemaining`/`hitsMax`,
-`ProjVar`, and two-contact lifecycle evidence. This mapping does not move the
-score. `ModifyProjectile`, exact VM overflow/negative semantics, fine timing,
-rollback, and full Projectile parity remain blocked. See [issue
+`ProjVar`, and two-contact lifecycle/ownership evidence are required and pass.
+Root checksum is `a670156c` / final `b2c3da50`; Helper checksum is `223d0865`
+/ final `e6c928ed`; aggregate QA is `787/787` (`753` required, `34` optional),
+full Vitest is `3827/3827` across `328` files, and typecheck, boundaries,
+redirected-target boundaries, build, and diff hygiene pass. This bounded
+checkpoint does not move the score. `ModifyProjectile`, exact VM
+overflow/negative semantics, fine timing, rollback, and full Projectile parity
+remain blocked. See [issue
 277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
 
 ## 2026-08-09 T702 Projectile priority addendum - no score movement

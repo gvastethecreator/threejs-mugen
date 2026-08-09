@@ -1,6 +1,19 @@
 # Controller Support Registry
 
-Authoritative cursor: T702 is closed-bounded for fresh root- and
+Authoritative cursor: T703 is closed-bounded for fresh root- and
+Helper-authored Projectiles with dynamic `projhits` resolution once in the
+original caller context. Typed values initialize `hitsRemaining`/`hitsMax` and
+the required root/Helper traces prove two accepted contacts, `ProjVar`,
+lifecycle, target, and ownership. Root checksum is `a670156c`, final
+`b2c3da50`; Helper checksum is `223d0865`, final `e6c928ed`; `pnpm qa:trace`
+passes `787/787` artifacts (`753` required, `34` optional). The full
+`3827/3827` Vitest suite across `328` files, typecheck, boundaries,
+redirected-target boundaries, the `363`-module build, and diff hygiene also
+pass. `ModifyProjectile`, exact VM overflow/negative behavior, fine timing,
+nested helper/team topology, rollback, and full Projectile parity remain
+excluded. See [issue 277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
+
+Previous cursor: T702 is closed-bounded for fresh root- and
 Helper-authored Projectiles with dynamic `projpriority` resolution once in
 the original caller context. Values are normalized through the local bounded
 `0..10` priority domain and feed the existing clash/cancel/decrement path.
@@ -10,9 +23,8 @@ final `2667efd6`; `pnpm qa:trace` passes `785/785` artifacts (`751` required,
 typecheck, boundaries, the `363`-module build, and diff hygiene also pass.
 Live `ModifyProjectile`, exact Ikemen priority classes/overflow, fine timing,
 nested helper/team topology, rollback, and full Projectile parity remain
-excluded. T703 is selected for fresh Projectile `projhits` caller-context
-resolution and two-contact evidence; it is not closed yet. See [issue
-277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
+excluded. See [issue
+276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
 
 Previous cursor: T701 is closed-bounded for fresh root- and Helper-authored
 Projectiles with dynamic `projmisstime` resolution once in the original caller
