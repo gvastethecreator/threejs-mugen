@@ -671,6 +671,7 @@ import {
   createSyntheticImportedProjectileDynamicAirGuardVelocityTraceArtifact,
   createSyntheticImportedProjectileDynamicAirVelocityTraceArtifact,
   createSyntheticImportedProjectileDynamicGroundVelocityTraceArtifact,
+  createSyntheticImportedProjectileDynamicGuardVelocityTraceArtifact,
   createSyntheticImportedProjectileDynamicDownVelocityTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicDownVelocityTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicAirGuardVelocityTraceArtifact,
@@ -20977,6 +20978,30 @@ describe("RuntimeTraceGatePresets", () => {
     expect(physicalFrame?.maxVelZ).toBe(2);
     expect(gate?.evidence.combatReasons).toContain("hit");
     expect(gate?.evidence.combatReasons).not.toContain("guard");
+  });
+
+  it("creates a required imported Projectile dynamic guard.velocity artifact", () => {
+    const artifact = createSyntheticImportedProjectileDynamicGuardVelocityTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-guard-velocity-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-projectile-dynamic-guard-velocity-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    const physicalFrame = gate?.evidence.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 151);
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(3);
+    expect(gate?.evidence.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(3);
+    expect(gate?.evidence.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }));
+    expect(physicalFrame?.maxVel.x).toBe(7);
+    expect(physicalFrame?.maxVelZ).toBe(2);
+    expect(gate?.evidence.combatReasons).toContain("guard");
+    expect(gate?.evidence.combatReasons).not.toContain("hit");
   });
 
   it("creates a required imported Projectile dynamic down.velocity artifact", () => {
