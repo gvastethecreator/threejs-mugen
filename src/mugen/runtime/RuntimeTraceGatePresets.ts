@@ -29483,6 +29483,145 @@ export function createSyntheticImportedProjectileDynamicDownHitTimeTraceArtifact
   });
 }
 
+export function createSyntheticImportedHelperProjectileDynamicDownHitTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5084;
+  const projectileId = 8894;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-helper-projectile-dynamic-down-hittime-grid",
+    displayName: "Trace Helper Projectile Dynamic Down HitTime Grid",
+    playerStart: {
+      p1: { x: -54, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "helper-projectile-dynamic-down-hittime-defender-liedown", frames: 2, p1: [], p2: ["x"] },
+    { label: "helper-projectile-dynamic-down-hittime-contact", frames: 14, p1: ["x"], p2: [] },
+    { label: "helper-projectile-dynamic-down-hittime-settle", frames: 18, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-dynamic-down-hittime-attacker",
+    displayName: "Helper Projectile Dynamic Down HitTime Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1257,
+      waitAnimNo: 1011,
+      branchStateNo: 1258,
+      branchAnimNo: 1012,
+      projectileAnimNo: 1013,
+      projectileId,
+      pos: [360, -34],
+      damage: [37, 2],
+      hitPause: 4,
+      hitTime: 14,
+      groundVelocity: [-1, 1],
+      airVelocity: [-6, -8, 2],
+      downVelocity: [0, 0],
+      downHitTime: "var(0)",
+      hitFlag: "D",
+      varSeeds: [{ index: 0, value: 17 }],
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-dynamic-down-hittime-defender",
+    displayName: "Helper Projectile Dynamic Down HitTime Defender",
+    withHitDef: false,
+    withStateTypeSet: { stateType: "L", moveType: "I", physics: "N" },
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5021,
+      shakeStateType: "A",
+      slideStateType: "A",
+      shakePhysics: "N",
+      slidePhysics: "N",
+      slideHitVelSet: { x: true, y: true, z: true },
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchStateType: "A",
+      hitTimeBranchPhysics: "N",
+      hitTimeBranchExpression: "GetHitVar(hittime) = 17 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "Helper Projectile Dynamic Down HitTime GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-helper-projectile-dynamic-down-hittime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-dynamic-down-hittime-golden",
+      label: "Synthetic imported Helper Projectile dynamic down.hittime route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO and M.U.G.E.N-compatible trace proves a Helper-authored fresh Projectile evaluates down.hittime once in Helper caller context. Var(0)=17 replaces adversarial ground/air timer values for an accepted lying-target contact and remains observable through GetHitVar(hittime), while Helper/root/parent ownership and Projectile lifecycle remain visible. Live ModifyProjectile, non-zero down launch, exact countdown/landing timing, negative/overflow values, teams, rollback, and full Helper Projectile parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-projectile-dynamic-down-hittime-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper", "projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5021, branchStateNo],
+      forbiddenExecutedStates: [130, 150, 151, 152, 153, 154, 155, 5001, 5010, 5011, 5020, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "StateTypeSet", "VarSet", "Helper", "Projectile", "HitVelSet"],
+      requiredExecutedOperations: ["metadata:statetypeset", "variable:varset", "helper", "projectile", "kinematic:hitvelset"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [
+        { ownerId: "p1", actorId: "p2", targetId: projectileId },
+        { ownerId: "p1-helper-0", actorId: "p2", targetId: projectileId },
+      ],
+      requiredControllerEventSequences: [{
+        label: "Helper Projectile dynamic down.hittime lying target consumes timer",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "StateTypeSet", name: "StateTypeSet Probe" },
+          { stateNo: 5000, controller: "ChangeState", name: "Hit Shake Over" },
+          { stateNo: 5021, controller: "HitVelSet", name: "Apply Hit Velocity" },
+          { stateNo: 5021, operation: "kinematic:hitvelset" },
+          { stateNo: 5021, controller: "ChangeState", name: "Helper Projectile Dynamic Down HitTime GetHitVar Branch" },
+        ],
+      }],
+      requiredActorFrameSequences: [{
+        label: "Helper Projectile dynamic down.hittime lying-hit timing order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 200, stateType: "L", moveType: "I", physics: "N", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, stateType: "A", moveType: "H", physics: "N", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5021, stateType: "A", moveType: "H", physics: "N", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, stateType: "A", moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [
+        { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1258, minAge: 2 },
+        { actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: projectileId, minAge: 1, hasHit: true },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
