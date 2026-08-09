@@ -1436,6 +1436,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyhitdef-dynamic-down-velocity-z",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyHitDefDynamicDownVelocityZTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projectile-guard-velocity-default",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileGuardVelocityDefaultTraceArtifact(),

@@ -1148,12 +1148,29 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       hitVelocities: { down: { x: -11, y: -5, z: 2 } },
     });
 
+    caller.vars[4] = 3.75;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "down.velocity": "-11,-5,var(4)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+      resolveFloatScalar: (key) => key === "down.velocity" ? caller.vars[4] : undefined,
+    });
+    expect(actor.currentMove).toMatchObject({
+      downVelocityX: -11,
+      downVelocityY: -5,
+      downVelocityZ: 3.75,
+      hitVelocities: { down: { x: -11, y: -5, z: 3.75 } },
+    });
+
     world.modify({
       actor,
       controller: compileControllerIr(controller("ModifyHitDef", { forcenofall: "1", redirectid: "57" })),
       context: { self: caller },
     });
-    expect(actor.currentMove?.hitVelocities?.down).toEqual({ x: -11, y: -5, z: 2 });
+    expect(actor.currentMove?.hitVelocities?.down).toEqual({ x: -11, y: -5, z: 3.75 });
   });
 
   it("resolves fresh direct down.velocity X/Y and inherits every omitted component from air.velocity", () => {

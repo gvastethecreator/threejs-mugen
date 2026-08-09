@@ -83,6 +83,8 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   resolveIntegerPair?: (key: "damage" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity") => [number?, number?] | undefined;
+  /** Resolves live dynamic float scalars in the caller context. */
+  resolveFloatScalar?: (key: "down.velocity") => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
   resolveFallEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -857,6 +859,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     resolveIntegerPair,
     resolveIntegerScalar,
     resolveFloatPair,
+    resolveFloatScalar,
     resolvePaletteFx,
     resolveEnvShake,
     resolveFallEnvShake,
@@ -1119,6 +1122,29 @@ export class RuntimeHitDefControllerDispatchWorld {
             ...(existing.hitVelocities?.down ?? currentDownVelocity),
             y: downVelocity.second,
           },
+        };
+      }
+    }
+    if (operation.downVelocityZ !== undefined || operation.downVelocityZExpression !== undefined) {
+      const downVelocityZ = operation.downVelocityZExpression !== undefined
+        ? resolveRuntimeHitDefFloatExpressionScalar(
+            operation.downVelocityZExpression,
+            findParam(controller.source, "down.velocity"),
+            actor.runtime,
+            context ?? {},
+            resolveFloatScalar?.("down.velocity"),
+          )
+        : operation.downVelocityZ;
+      if (downVelocityZ !== undefined) {
+        const currentDownVelocity = existing.hitVelocities?.down ?? {
+          x: existing.downVelocityX ?? 0,
+          y: existing.downVelocityY ?? 0,
+          z: existing.downVelocityZ ?? 0,
+        };
+        existing.downVelocityZ = downVelocityZ;
+        existing.hitVelocities = {
+          ...existing.hitVelocities,
+          down: { ...currentDownVelocity, z: downVelocityZ },
         };
       }
     }
@@ -2038,6 +2064,20 @@ function resolveRuntimeHitDefFloatExpressionPair(
     ...(second === undefined ? {} : { second }),
     componentCount,
   };
+}
+
+function resolveRuntimeHitDefFloatExpressionScalar(
+  operationValue: number | string,
+  rawValue: string | undefined,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext,
+  resolvedOverride: number | undefined,
+): number | undefined {
+  const authored = resolvedOverride ?? operationValue ?? firstNumber(rawValue);
+  const resolved = typeof authored === "number"
+    ? authored
+    : evaluateRuntimeControllerNumber(authored, state, context);
+  return resolved !== undefined && Number.isFinite(resolved) ? resolved : undefined;
 }
 
 function runtimeHitDefUsesThrowAttribute(attr: string): boolean {

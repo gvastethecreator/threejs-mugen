@@ -11760,6 +11760,12 @@ trigger1 = Time = 0
 v = 29
 value = 7
 
+[State 0, Redirected ModifyHitDef down velocity Z]
+type = VarSet
+trigger1 = Time = 0
+v = 30
+value = 3.25
+
 [State 0, Redirected ModifyHitDef]
 type = ModifyHitDef
 trigger1 = Time = 1
@@ -11790,6 +11796,7 @@ p1getp2facing = var(25)
 p2facing = var(24)
 getpower = var(26),var(27)
 givepower = var(28),var(29)
+down.velocity = -6,-2,var(30)
 guard.velocity = var(29) - 13
 palfx.time = var(27)
 palfx.add = var(28),-var(29),3
@@ -11947,8 +11954,11 @@ down.bounce = 0
           hitVelocityZ?: number;
           hitVelocities?: DemoMove["hitVelocities"];
           guardPush?: number;
-          guardVelocityY?: number;
+      guardVelocityY?: number;
           guardVelocityZ?: number;
+          downVelocityX?: number;
+          downVelocityY?: number;
+          downVelocityZ?: number;
           attackerHitPower?: number;
           attackerGuardPower?: number;
           hitPower?: number;
@@ -12035,9 +12045,13 @@ down.bounce = 0
       guardPush: 6,
       guardVelocityY: -3,
       guardVelocityZ: 4,
+      downVelocityX: -6,
+      downVelocityY: -2,
+      downVelocityZ: 3.25,
       hitVelocities: expect.objectContaining({
         ground: { x: -6, y: -2, z: 0 },
         guard: { x: -6, y: -3, z: 4 },
+        down: { x: -6, y: -2, z: 3.25 },
       }),
       attackerHitPower: 110,
       attackerGuardPower: 44,
@@ -12094,6 +12108,9 @@ down.bounce = 0
       guardPush: 6,
       guardVelocityY: -3,
       guardVelocityZ: 4,
+      downVelocityX: -6,
+      downVelocityY: -2,
+      downVelocityZ: 3.25,
       attackerHitPower: 9,
       attackerGuardPower: 44,
       hitPower: 5,
@@ -12134,6 +12151,9 @@ down.bounce = 0
       guardPush: 6,
       guardVelocityY: -3,
       guardVelocityZ: 4,
+      downVelocityX: -6,
+      downVelocityY: -2,
+      downVelocityZ: 3.25,
       hitVars: { hitCount: 4 },
     });
     expect(preserved.compatibilitySession?.actors[1]?.executedControllers.ModifyHitDef).toBe(3);

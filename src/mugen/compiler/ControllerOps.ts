@@ -277,6 +277,9 @@ export type ModifyHitDefControllerOp = {
   downVelocity?: MugenHitDefVector;
   /** Component-wise live down.velocity X/Y replacement evaluated in caller context. */
   downVelocityExpressions?: MugenHitDefExpressionPair;
+  /** Live down.velocity Z replacement; dynamic values resolve in caller context. */
+  downVelocityZ?: number;
+  downVelocityZExpression?: number | string;
   /** Root-owned live guard.velocity X replacement evaluated in caller context. */
   guardVelocityExpression?: number | string;
   guardVelocityZ?: number;
@@ -2672,22 +2675,29 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const downHitTime = staticOptionalStrictNumberParam(controller, "down.hittime");
   const groundVelocityValue = optionalModifyHitDefVelocityParam(controller, "ground.velocity");
   const groundVelocity = typeof groundVelocityValue === "object" ? groundVelocityValue.xy : undefined;
-  const groundVelocityZ = typeof groundVelocityValue === "object" && groundVelocityValue.z !== undefined
+  const groundVelocityZ = typeof groundVelocityValue === "object" && typeof groundVelocityValue.z === "number"
     ? groundVelocityValue.z
     : true;
   const airVelocityValue = optionalModifyHitDefVelocityParam(controller, "air.velocity");
   const airVelocity = typeof airVelocityValue === "object" ? airVelocityValue.xy : undefined;
-  const airVelocityZ = typeof airVelocityValue === "object" && airVelocityValue.z !== undefined
+  const airVelocityZ = typeof airVelocityValue === "object" && typeof airVelocityValue.z === "number"
     ? airVelocityValue.z
     : true;
   const downVelocityRaw = findParam(controller, "down.velocity");
   const staticDownVelocity = downVelocityRaw === undefined ? undefined : strictStaticNumberVector(downVelocityRaw);
-  const downVelocityValue = optionalModifyHitDefVelocityParam(controller, "down.velocity");
+  const downVelocityValue = optionalModifyHitDefVelocityParam(controller, "down.velocity", true);
   const downVelocity = downVelocityRaw === undefined
     ? true
     : staticDownVelocity ?? (downVelocityValue === false ? false : undefined);
   const downVelocityExpressions = staticDownVelocity === undefined && typeof downVelocityValue === "object"
     ? downVelocityValue.xy
+    : undefined;
+  const downVelocityZValue = typeof downVelocityValue === "object" ? downVelocityValue.z : undefined;
+  const downVelocityZ = staticDownVelocity === undefined && typeof downVelocityZValue === "number"
+    ? downVelocityZValue
+    : undefined;
+  const downVelocityZExpression = staticDownVelocity === undefined && typeof downVelocityZValue === "string"
+    ? downVelocityZValue
     : undefined;
   const downBounceValue = optionalIntegerExpressionParam(controller, "down.bounce");
   const downBounce = typeof downBounceValue === "number" ? downBounceValue !== 0 : undefined;
@@ -2708,7 +2718,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const airGuardVelocityExpressions = typeof airGuardVelocityValue === "object"
     ? airGuardVelocityValue.xy
     : undefined;
-  const airGuardVelocityZ = typeof airGuardVelocityValue === "object" && airGuardVelocityValue.z !== undefined
+  const airGuardVelocityZ = typeof airGuardVelocityValue === "object" && typeof airGuardVelocityValue.z === "number"
     ? airGuardVelocityValue.z
     : true;
   const xAccel = optionalScalarNumberOrExpression(controller, "xaccel");
@@ -2902,6 +2912,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(airVelocityZ === true ? {} : { airVelocityZ }),
     ...(downVelocity === true || downVelocity === false || downVelocity === undefined ? {} : { downVelocity }),
     ...(downVelocityExpressions === undefined ? {} : { downVelocityExpressions }),
+    ...(downVelocityZ === undefined ? {} : { downVelocityZ }),
+    ...(downVelocityZExpression === undefined ? {} : { downVelocityZExpression }),
     ...(downBounce === undefined ? {} : { downBounce }),
     ...(downBounceExpression === undefined ? {} : { downBounceExpression }),
     ...(forceStand === true ? {} : { forceStand }),
@@ -4363,7 +4375,8 @@ function optionalIntegerExpressionPairParam(
 function optionalModifyHitDefVelocityParam(
   controller: MugenStateController,
   key: "ground.velocity" | "air.velocity" | "down.velocity",
-): { xy: MugenHitDefExpressionPair; z?: number } | true | false {
+  allowDynamicZ = false,
+): { xy: MugenHitDefExpressionPair; z?: number | string } | true | false {
   const raw = findParam(controller, key);
   if (raw === undefined) return true;
   const staticVector = strictStaticNumberVector(raw);
@@ -4374,7 +4387,12 @@ function optionalModifyHitDefVelocityParam(
     };
   }
   const dynamicPair = compileFloatExpressionPair(raw);
-  return dynamicPair === undefined ? false : { xy: dynamicPair };
+  if (dynamicPair !== undefined) return { xy: dynamicPair };
+  if (!allowDynamicZ) return false;
+  const dynamicTriplet = compileFloatExpressionTriplet(raw);
+  return dynamicTriplet === undefined
+    ? false
+    : { xy: [dynamicTriplet[0], dynamicTriplet[1]], z: dynamicTriplet[2] };
 }
 
 function optionalModifyHitDefAirGuardVelocityParam(

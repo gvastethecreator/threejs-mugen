@@ -5374,6 +5374,26 @@ function runActiveStateControllers(
               );
           return value === undefined || !Number.isFinite(value) ? undefined : Math.trunc(value);
         },
+        resolveFloatScalar: (key) => {
+          const operation = controller.operation?.kind === "modifyhitdef" ? controller.operation : undefined;
+          const value = key === "down.velocity"
+            ? operation?.downVelocityZExpression ?? operation?.downVelocityZ
+            : undefined;
+          if (value === undefined) return undefined;
+          const resolved = resolveDispatchFloat(
+            typeof value === "number" ? value : undefined,
+            typeof value === "string" ? value : undefined,
+            actor,
+            targetOpponent,
+            stateOwner,
+            stageBounds,
+            activeTick,
+            gameSpace,
+            options.characters,
+            createPlayerIdTarget(actor),
+          );
+          return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
+        },
         resolveIntegerPair: (key) => {
           const operation = controller.operation?.kind === "modifyhitdef" ? controller.operation : undefined;
           const pair = key === "damage"

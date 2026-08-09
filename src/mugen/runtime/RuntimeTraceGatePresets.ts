@@ -27657,8 +27657,30 @@ export function createSyntheticImportedDynamicDirectDownVelocityTraceArtifact(
 export function createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
-  const branchStateNo = 5074;
+  return createSyntheticImportedModifyHitDefDynamicDownVelocityArtifact(options, false);
+}
+
+export function createSyntheticImportedModifyHitDefDynamicDownVelocityZTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedModifyHitDefDynamicDownVelocityArtifact(options, true);
+}
+
+function createSyntheticImportedModifyHitDefDynamicDownVelocityArtifact(
+  options: RuntimeTraceGatePresetOptions,
+  dynamicZ: boolean,
+): RuntimeTraceArtifact {
+  const stem = dynamicZ
+    ? "synthetic-imported-modifyhitdef-dynamic-down-velocity-z"
+    : "synthetic-imported-modifyhitdef-dynamic-down-velocity";
+  const traceId = `${stem}-golden`;
+  const branchStateNo = dynamicZ ? 5075 : 5074;
   const targetId = 77;
+  const expectedX = dynamicZ ? 2 : 3;
+  const expectedZ = dynamicZ ? 3 : 2;
+  const modifyDownVelocity: SyntheticPartialTripleExpression = dynamicZ
+    ? [-2, -8, "var(0)"]
+    : ["var(0)"];
   const stage = options.stage ?? closeCombatStage();
   const script = expandRuntimeTraceScript([
     { label: "seed live down velocity", frames: 2, p1: [], p2: [] },
@@ -27666,8 +27688,8 @@ export function createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtif
     { label: "modified down velocity settles", frames: 18, p1: [], p2: [] },
   ]);
   const attacker = createSyntheticImportedTraceFighter({
-    id: "synthetic-imported-modifyhitdef-dynamic-down-velocity-attacker",
-    displayName: "Dynamic ModifyHitDef Down Velocity Attacker",
+    id: `${stem}-attacker`,
+    displayName: dynamicZ ? "Dynamic ModifyHitDef Down Velocity Z Attacker" : "Dynamic ModifyHitDef Down Velocity Attacker",
     withHitDef: false,
     withPlayerPush: false,
     hitDefHitFlag: "D",
@@ -27683,14 +27705,14 @@ export function createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtif
     },
   });
   const caller = createSyntheticImportedTraceFighter({
-    id: "synthetic-imported-modifyhitdef-dynamic-down-velocity-caller",
-    displayName: "Dynamic ModifyHitDef Down Velocity Caller",
+    id: `${stem}-caller`,
+    displayName: dynamicZ ? "Dynamic ModifyHitDef Down Velocity Z Caller" : "Dynamic ModifyHitDef Down Velocity Caller",
     withHitDef: false,
     rootModifyHitDefRedirectRoute: {
       redirectId: 56,
       trigger: "Time = 1",
-      downVelocity: ["var(0)"],
-      varSeeds: [{ index: 0, value: -3 }],
+      downVelocity: modifyDownVelocity,
+      varSeeds: [{ index: 0, value: dynamicZ ? 3 : -3 }],
     },
     withStateTypeSet: { stateType: "L", moveType: "I", physics: "N" },
     defaultGetHitProgression: {
@@ -27707,28 +27729,33 @@ export function createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtif
       hitTimeBranchAnimNo: branchStateNo,
       hitTimeBranchStateType: "A",
       hitTimeBranchPhysics: "N",
-      hitTimeBranchExpression:
-        "GetHitVar(xvel) = 3 && GetHitVar(yvel) = -8 && GetHitVar(zvel) = 2 && !GetHitVar(fall) && !GetHitVar(guarded)",
-      hitTimeBranchName: "Modified Down Velocity GetHitVar Branch",
+      hitTimeBranchExpression: dynamicZ
+        ? "GetHitVar(xvel) = 2 && GetHitVar(yvel) = -8 && GetHitVar(zvel) = 3 && !GetHitVar(fall) && !GetHitVar(guarded)"
+        : "GetHitVar(xvel) = 3 && GetHitVar(yvel) = -8 && GetHitVar(zvel) = 2 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: dynamicZ ? "Modified Down Velocity Z GetHitVar Branch" : "Modified Down Velocity GetHitVar Branch",
     },
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: caller, stage, runtimeProfile: "ikemen-go" }), script, {
-    label: "synthetic-imported-modifyhitdef-dynamic-down-velocity-golden",
+    label: traceId,
   });
   return createRuntimeTraceArtifact({
     trace,
     script,
     generatedAt: options.generatedAt,
     target: {
-      id: "synthetic-imported-modifyhitdef-dynamic-down-velocity-golden",
-      label: "Synthetic imported dynamic live ModifyHitDef down.velocity route",
+      id: traceId,
+      label: dynamicZ
+        ? "Synthetic imported dynamic live ModifyHitDef down.velocity Z route"
+        : "Synthetic imported dynamic live ModifyHitDef down.velocity route",
       source: "imported",
       notes: [
-        "Pinned Ikemen GO trace proves a root caller resolves var(0)=-3 and redirects down.velocity X into an already active normal HitDef before a lying-target contact. The accepted hit exposes GetHitVar(xvel/yvel/zvel)=3/-8/2 and applies that physical vector through the lying-to-air route. Fresh direct down.velocity, omitted/single ModifyHitDef preservation, Helpers, Projectile, ModifyProjectile, dynamic Z, n syntax, exact landing timing, teams, rollback, and full parity remain excluded.",
+        dynamicZ
+          ? "Pinned Ikemen GO trace proves a root caller resolves var(0)=3 as the live down.velocity Z component on an already active normal HitDef before a lying-target contact. The accepted hit preserves X/Y=-2/-8, exposes GetHitVar(xvel/yvel/zvel)=2/-8/3, and applies that physical vector through the lying-to-air route. Fresh inheritance, Helpers, Projectile, ModifyProjectile, dynamic Z elsewhere, n syntax, exact landing timing, teams, rollback, and full parity remain excluded."
+          : "Pinned Ikemen GO trace proves a root caller resolves var(0)=-3 and redirects down.velocity X into an already active normal HitDef before a lying-target contact. The accepted hit exposes GetHitVar(xvel/yvel/zvel)=3/-8/2 and applies that physical vector through the lying-to-air route. Fresh direct down.velocity, omitted/single ModifyHitDef preservation, Helpers, Projectile, ModifyProjectile, dynamic Z, n syntax, exact landing timing, teams, rollback, and full parity remain excluded.",
       ],
     },
     gates: [{
-      label: "synthetic-imported-modifyhitdef-dynamic-down-velocity-golden",
+      label: traceId,
       requiredActorSources: ["imported"],
       requiredActorKinds: ["player"],
       requiredExecutedStates: [200, 5000, 5021, branchStateNo],
@@ -27758,7 +27785,11 @@ export function createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtif
             { stateNo: 5000, controller: "ChangeState", name: "Hit Shake Over" },
             { stateNo: 5021, controller: "HitVelSet", name: "Apply Hit Velocity" },
             { stateNo: 5021, operation: "kinematic:hitvelset" },
-            { stateNo: 5021, controller: "ChangeState", name: "Modified Down Velocity GetHitVar Branch" },
+            {
+              stateNo: 5021,
+              controller: "ChangeState",
+              name: dynamicZ ? "Modified Down Velocity Z GetHitVar Branch" : "Modified Down Velocity GetHitVar Branch",
+            },
           ],
         },
       ],
@@ -27775,12 +27806,12 @@ export function createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtif
             stateType: "A",
             moveType: "H",
             physics: "N",
-            observedVelXAtLeast: 3,
-            observedVelXAtMost: 3,
+            observedVelXAtLeast: expectedX,
+            observedVelXAtMost: expectedX,
             observedVelYAtLeast: -8,
             observedVelYAtMost: -8,
-            observedVelZAtLeast: 2,
-            observedVelZAtMost: 2,
+            observedVelZAtLeast: expectedZ,
+            observedVelZAtMost: expectedZ,
             minFrames: 1,
           },
           { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, stateType: "A", moveType: "H", minFrames: 1 },
@@ -57573,8 +57604,8 @@ export type SyntheticImportedTraceFighterOptions = {
     fallKill?: boolean;
     hitOnce?: boolean;
     airVelocity?: SyntheticPartialPairExpression;
-    /** Synthetic fixture-only live ModifyHitDef down.velocity X/Y expression. */
-    downVelocity?: SyntheticPartialPairExpression;
+    /** Synthetic fixture-only live ModifyHitDef down.velocity expression. */
+    downVelocity?: SyntheticPartialTripleExpression;
     guardVelocity?: SyntheticPartialPairExpression;
     airGuardVelocity?: SyntheticPartialTripleExpression;
     varSeeds?: Array<{ index: number; value: number; trigger?: string }>;

@@ -2335,7 +2335,20 @@ value = 1
     expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
       redirectid: "57",
       "down.velocity": "var(1),var(2),var(3)",
-    })).operation).toBeUndefined();
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      downVelocityExpressions: ["var(1)", "var(2)"],
+      downVelocityZExpression: "var(3)",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "down.velocity": "-3.5,fvar(2),var(3)",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      downVelocityExpressions: [-3.5, "fvar(2)"],
+      downVelocityZExpression: "var(3)",
+    });
     expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
       redirectid: "57",
       "down.velocity": "var(1),var(",
