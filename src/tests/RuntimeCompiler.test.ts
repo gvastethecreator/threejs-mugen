@@ -2260,6 +2260,51 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles exact root ModifyHitDef airguard.velocity X/Y expressions", () => {
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "airguard.velocity": "-5.5,-2.25",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      airGuardVelocityExpressions: [-5.5, -2.25],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "airguard.velocity": "-6.5,var(3) + .5",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      airGuardVelocityExpressions: [-6.5, "var(3) + .5"],
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "airguard.velocity": "var(1),fvar(2)",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      airGuardVelocityExpressions: ["var(1)", "fvar(2)"],
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "airguard.velocity": "-7,-3,4",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      airGuardVelocityExpressions: [-7, -3],
+      airGuardVelocityZ: 4,
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "airguard.velocity": "var(1)",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "airguard.velocity": "var(1),var(2),var(3)",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "airguard.velocity": "var(1),var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles typed HitDef givepower expressions and rejects malformed pairs", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], { givepower: "9.8" })).operation).toMatchObject({
       kind: "hitdef",

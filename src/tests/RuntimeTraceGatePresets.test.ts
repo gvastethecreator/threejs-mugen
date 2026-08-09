@@ -309,6 +309,7 @@ import {
   createSyntheticImportedAirGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedAirGuardVelocityTraceArtifact,
   createSyntheticImportedHitDefDynamicAirGuardVelocityTraceArtifact,
+  createSyntheticImportedModifyHitDefDynamicAirGuardVelocityTraceArtifact,
   createSyntheticImportedAliveTraceArtifact,
   createSyntheticImportedInGuardDistTraceArtifact,
   createSyntheticImportedInGuardDistFarTraceArtifact,
@@ -16573,6 +16574,39 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.evidence.combatReasons).toContain("guard");
     expect(gate?.evidence.combatReasons).not.toContain("hit");
     expect(gate?.evidence.executedStates).not.toEqual(expect.arrayContaining([150, 151, 152, 153, 5000, 5030, 5050, 5100]));
+  });
+
+  it("creates a required imported dynamic live ModifyHitDef airguard.velocity artifact", () => {
+    const artifact = createSyntheticImportedModifyHitDefDynamicAirGuardVelocityTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-modifyhitdef-dynamic-airguard-velocity-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-modifyhitdef-dynamic-airguard-velocity-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    const airGuardFrame = gate?.evidence.actorFrames.find((actor) => actor.actorId === "p1" && actor.stateNo === 155);
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.ModifyHitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(2);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.modifyhitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 78 }),
+    );
+    expect(airGuardFrame?.minVel.x).toBeLessThanOrEqual(-8);
+    expect(airGuardFrame?.maxVel.x).toBeGreaterThanOrEqual(-8);
+    expect(airGuardFrame?.minVel.y).toBeLessThanOrEqual(-3.5);
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1", source: "imported", stateNo: 5081 }),
+    ]));
+    expect(gate?.evidence.combatReasons).toContain("guard");
+    expect(gate?.evidence.combatReasons).not.toContain("hit");
+    expect(gate?.evidence.executedStates).not.toEqual(expect.arrayContaining([150, 151, 152, 153, 200, 5000, 5030, 5050, 5100]));
   });
 
   it("creates a synthetic imported default airguard.velocity direct HitDef artifact", () => {

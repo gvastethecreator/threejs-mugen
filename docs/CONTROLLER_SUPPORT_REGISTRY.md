@@ -74,9 +74,10 @@ official fresh omitted `0,0,0` reset through root/Helper activation, accepted
 GetHitVar consumption, and live ModifyHitDef omission preservation. T662
 closes direct and root-owned live `guard.velocity` X expressions, fresh
 inheritance, accepted ground guard, and omission preservation. T663 closes
-root-owned direct `airguard.velocity` X/Y expressions, official
-omission defaults, and accepted airborne guard. T664 is active for exact X/Y
-live ModifyHitDef replacement.
+root-owned direct `airguard.velocity` X/Y expressions and official omission
+defaults. T664 closes exact X/Y live ModifyHitDef replacement, Z/omission
+preservation, and accepted airborne-guard consumption. T665 is active for the
+pinned-Ikemen one-component form.
 Projectile facing, exact deferred facing/power order,
 broader `data/mugen.cfg`, rollback, and full HitDef parity remain unsupported.
 

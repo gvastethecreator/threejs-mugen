@@ -2,7 +2,8 @@
 
 ## Current parity queue
 
-- **T664 active-research** — resolve exact X/Y `airguard.velocity` pairs for root-owned live ModifyHitDef and accepted airborne-guard consumption. See [issue 238](../.scratch/roadmap/issues/238-modifyhitdef-airguard-velocity-dynamic.md).
+- **T665 active-research** — add pinned-Ikemen one-component `airguard.velocity` compatibility for direct HitDef and root-owned live ModifyHitDef. See [issue 239](../.scratch/roadmap/issues/239-hitdef-airguard-velocity-single-component.md).
+- **T664 closed-bounded** — exact X/Y `airguard.velocity` pairs replace root-owned live ModifyHitDef X/Y in caller context, preserve Z/omission, and feed accepted airborne guard. See [issue 238](../.scratch/roadmap/issues/238-modifyhitdef-airguard-velocity-dynamic.md).
 - **T663 closed-bounded** — root-owned direct HitDef `airguard.velocity` X/Y expressions resolve in caller context, preserve official omission defaults, and feed accepted airborne guard plus GetHitVar. See [issue 237](../.scratch/roadmap/issues/237-hitdef-airguard-velocity-dynamic.md).
 - **T662 closed-bounded** — direct HitDef and root-owned ModifyHitDef `guard.velocity` X expressions resolve in caller context, preserve live Y/Z/omission, and feed accepted ground guard plus GetHitVar. See [issue 236](../.scratch/roadmap/issues/236-hitdef-guard-velocity-dynamic.md).
 - **T661 closed-bounded** — fresh direct HitDef omission resets `ground.velocity` X/Y/Z to zero in root/Helper paths, accepted contact exposes zero through GetHitVar, and live ModifyHitDef omission preserves the vector. See [issue 235](../.scratch/roadmap/issues/235-hitdef-ground-velocity-defaults.md).

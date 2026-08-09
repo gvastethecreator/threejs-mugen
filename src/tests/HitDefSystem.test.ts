@@ -2602,6 +2602,63 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("replaces exact root ModifyHitDef airguard.velocity X/Y while preserving Z and omission", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "airguard.velocity": "-5,-3,4",
+      })),
+      frame: activeFrame(),
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { forcenofall: "1", redirectid: "57" })),
+    });
+    expect(actor.currentMove).toMatchObject({
+      airGuardPush: 5,
+      airGuardVelocityY: -3,
+      airGuardVelocityZ: 4,
+      hitVelocities: { airGuard: { x: -5, y: -3, z: 4 } },
+    });
+
+    caller.vars[1] = -9.25;
+    caller.fvars[2] = -6.5;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "airguard.velocity": "var(1),fvar(2)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({
+      airGuardPush: 9.25,
+      airGuardVelocityY: -6.5,
+      airGuardVelocityZ: 4,
+      hitVelocities: { airGuard: { x: -9.25, y: -6.5, z: 4 } },
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "airguard.velocity": "-7,-2,6",
+        redirectid: "57",
+      })),
+    });
+    expect(actor.currentMove).toMatchObject({
+      airGuardPush: 7,
+      airGuardVelocityY: -2,
+      airGuardVelocityZ: 6,
+      hitVelocities: { airGuard: { x: -7, y: -2, z: 6 } },
+    });
+  });
+
   it("derives missing guard.velocity from ground.velocity x", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

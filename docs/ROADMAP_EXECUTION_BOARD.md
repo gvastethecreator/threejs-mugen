@@ -1,6 +1,6 @@
 ﻿# Roadmap Execution Board
 
-## Current official-parity queue — T424-T492 and T506-T663 closed-bounded; T664 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-08)
+## Current official-parity queue — T424-T492 and T506-T664 closed-bounded; T665 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-08)
 
 ### Active runtime checkpoint — live ModifyHitDef air-guard velocity
 
@@ -686,9 +686,14 @@ The full suite passes 3702/3702; required trace checksum is `ab3a928c`;
 aggregate traces pass 736/736 with 702 required; typecheck and the 363-module
 build pass.
 
-T664 / issue 238 is active-research: resolve exact X/Y `airguard.velocity`
-pairs for root-owned live ModifyHitDef, preserve Z/omission, and feed accepted
-airborne guard.
+T664 / issue 238 is closed-bounded: exact X/Y `airguard.velocity` pairs replace
+root-owned live ModifyHitDef X/Y in caller context, preserve Z and omission,
+and feed accepted airborne guard plus GetHitVar. The full suite passes
+3706/3706; required trace checksum is `57d92d73`; aggregate traces pass 737/737
+with 703 required; typecheck and the 363-module build pass.
+
+T665 / issue 239 is active-research: support the pinned-Ikemen one-component
+`airguard.velocity` form for direct HitDef and root-owned live ModifyHitDef.
 
 ### Latest visual checkpoint — Character Compare
 

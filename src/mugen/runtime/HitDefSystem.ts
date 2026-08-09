@@ -1084,6 +1084,36 @@ export class RuntimeHitDefControllerDispatchWorld {
         },
       };
     }
+    if (operation.airGuardVelocityExpressions !== undefined) {
+      const airGuardVelocity = resolveRuntimeHitDefFloatExpressionPair(
+        operation.airGuardVelocityExpressions,
+        findParam(controller.source, "airguard.velocity"),
+        actor.runtime,
+        context ?? {},
+        undefined,
+      );
+      if (
+        airGuardVelocity?.componentCount === 2 &&
+        airGuardVelocity.first !== undefined &&
+        airGuardVelocity.second !== undefined
+      ) {
+        const currentAirGuardVelocity = existing.hitVelocities?.airGuard ?? {
+          x: existing.airGuardPush ?? 0,
+          y: existing.airGuardVelocityY ?? 0,
+          z: existing.airGuardVelocityZ ?? 0,
+        };
+        existing.airGuardPush = Math.abs(airGuardVelocity.first);
+        existing.airGuardVelocityY = airGuardVelocity.second;
+        existing.hitVelocities = {
+          ...existing.hitVelocities,
+          airGuard: {
+            ...currentAirGuardVelocity,
+            x: airGuardVelocity.first,
+            y: airGuardVelocity.second,
+          },
+        };
+      }
+    }
     if (operation.airGuardVelocityZ !== undefined) {
       existing.airGuardVelocityZ = operation.airGuardVelocityZ;
       existing.hitVelocities = {

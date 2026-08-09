@@ -1,6 +1,6 @@
 # Issue 238 — ModifyHitDef airguard.velocity X/Y expressions
 
-- Status: `active-research`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -37,3 +37,15 @@ Source symbols:
 Do not claim partial one-component forms, Helpers, dynamic Z,
 `guard.velocity` Y/Z, Projectile/ModifyProjectile, exact localcoord/facing or
 gravity/landing timing, teams, rollback, or full air-guard physics.
+
+## Closure evidence
+
+- Literal, mixed, and dynamic exact X/Y pairs compile for ModifyHitDef; single
+  and malformed forms remain outside this slice.
+- Root-owned RedirectID mutation replaces X/Y in caller context, preserves Z,
+  and a later omitted ModifyHitDef preserves the full live vector.
+- Accepted airborne guard consumes the changed vector through physical
+  velocity and GetHitVar.
+- Required trace checksum: `57d92d73`; final-state checksum: `d2a8efe2`.
+- Full suite: 3706/3706. Aggregate traces: 737/737, with 703 required and 34
+  optional. Typecheck and the 363-module production build pass.

@@ -6969,6 +6969,111 @@ value = -4
     expect(runtimeHitVar(groundGuard.actors[1]!.runtime, "yvel")).toBe(0);
   });
 
+  it("preserves seeded airguard.velocity Z through RedirectID dynamic X/Y and later omissions", () => {
+    const caller = createImportedFixture({
+      id: "redirect-air-guard-caller",
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Receiver player id]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 57
+
+[State 0, Dynamic air guard X]
+type = VarSet
+trigger1 = Time = 0
+v = 10
+value = -9
+
+[State 0, Dynamic air guard Y]
+type = VarSet
+trigger1 = Time = 0
+v = 11
+value = -4
+
+[State 0, Redirected dynamic air guard velocity]
+type = ModifyHitDef
+trigger1 = 1
+airguard.velocity = var(10),var(11)
+RedirectID = var(0)
+
+[State 0, Later omission preserves air guard velocity]
+type = ModifyHitDef
+trigger1 = 1
+damage = 5
+RedirectID = var(0)
+`,
+    });
+    const receiver = createImportedFixture({
+      id: "redirect-air-guard-receiver",
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Receiver HitDef]
+type = HitDef
+trigger1 = Time = 0
+attr = S,NA
+damage = 0
+guardflag = MA
+pausetime = 0,0
+guard.pausetime = 0,0
+ground.hittime = 8
+ground.velocity = 0
+guard.velocity = -2
+airguard.velocity = -3,-2,5
+`,
+    });
+    const runtime = new PlayableMatchRuntime(caller, receiver, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -200, y: 0, facing: 1 as const },
+        p2: { x: 200, y: 0, facing: -1 as const },
+      },
+    }, { runtimeProfile: "ikemen-go" });
+    const internals = runtime as unknown as {
+      p1: { runtime: CharacterRuntimeState };
+      p2: { runtime: CharacterRuntimeState; currentMove?: DemoMove };
+    };
+
+    const seeded = runtime.step({ p1: new Set(), p2: new Set() });
+    const receiverMove = internals.p2.currentMove;
+    expect(seeded.actors[0]?.runtime.stateType).toBe("S");
+    expect(receiverMove).toMatchObject({
+      airGuardPush: 3,
+      airGuardVelocityY: -2,
+      airGuardVelocityZ: 5,
+      hitVelocities: { airGuard: { x: -3, y: -2, z: 5 } },
+    });
+
+    internals.p1.runtime.pos = { x: -20, y: 0 };
+    internals.p1.runtime.stateType = "A";
+    internals.p1.runtime.physics = "N";
+    internals.p1.runtime.vel = { x: 0, y: 0 };
+    internals.p2.runtime.pos = { x: 35, y: 0 };
+    const guarded = runtime.step({ p1: new Set(["B"]), p2: new Set() });
+
+    expect(internals.p2.currentMove).toBe(receiverMove);
+    expect(internals.p2.currentMove).toMatchObject({
+      damage: 5,
+      airGuardPush: 9,
+      airGuardVelocityY: -4,
+      airGuardVelocityZ: 5,
+      hitVelocities: { airGuard: { x: -9, y: -4, z: 5 } },
+    });
+    expect(guarded.actors[0]?.runtime).toMatchObject({
+      guarding: true,
+      stateType: "A",
+      vel: { x: -9, y: -4 },
+      hitVelocity: { x: -9, y: -4, z: 5 },
+      combatDepth: { velocity: 5 },
+    });
+    expect(runtimeHitVar(guarded.actors[0]!.runtime, "xvel")).toBe(-9);
+    expect(runtimeHitVar(guarded.actors[0]!.runtime, "yvel")).toBe(-4);
+    expect(
+      guarded.compatibilitySession?.actors.find(({ actorId }) => actorId === "p2")?.executedOperations.modifyhitdef,
+    ).toBe(2);
+  });
+
   it("uses the defender's own dynamic HitDef state when p2getp1state resolves to 0", () => {
     const attacker = createImportedFixture({
       withStateMove: false,

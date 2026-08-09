@@ -24958,6 +24958,153 @@ export function createSyntheticImportedHitDefDynamicAirGuardVelocityTraceArtifac
   });
 }
 
+export function createSyntheticImportedModifyHitDefDynamicAirGuardVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5081;
+  const targetId = 78;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "caller seeds and redirects live airguard velocity", frames: 2, p1: [], p2: [] },
+    { label: "caller jumps and guards after live mutation", frames: 2, p1: ["U", "B"], p2: [] },
+    { label: "receiver reaches airborne guarding caller", frames: 14, p1: ["B"], p2: [] },
+    { label: "modified airguard velocity settles", frames: 36, p1: ["B"], p2: [] },
+  ]);
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-airguard-velocity-caller",
+    displayName: "Dynamic ModifyHitDef Air Guard Velocity Caller",
+    withHitDef: false,
+    withPlayerPush: false,
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+      airGuardedBranchStateNo: branchStateNo,
+      airGuardedBranchAnimNo: branchStateNo,
+      airGuardedBranchTrigger: "Time >= 1",
+      airGuardedBranchExpression: "GetHitVar(xvel) = -8 && GetHitVar(yvel) = -4 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+    },
+    rootModifyHitDefRedirectRoute: {
+      redirectId: 57,
+      trigger: "Time = 1",
+      airGuardVelocity: ["var(0)", "var(1)"],
+      varSeeds: [
+        { index: 0, value: -8 },
+        { index: 1, value: -4 },
+      ],
+    },
+  });
+  const receiver = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-airguard-velocity-receiver",
+    displayName: "Dynamic ModifyHitDef Air Guard Velocity Receiver",
+    withHitDef: false,
+    withPlayerPush: false,
+    activeRootHitDefRoute: {
+      damage: 37,
+      guardDamage: 5,
+      targetId,
+      guardFlag: "A",
+      airGuardVelocity: [-2, -1],
+      hitDefTrigger: "Time = 0",
+      posX: 200,
+      delayedPosX: { x: 35, trigger: "Time >= 2" },
+      clsn1Extent: 64,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: caller, p2: receiver, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-modifyhitdef-dynamic-airguard-velocity-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyhitdef-dynamic-airguard-velocity-golden",
+      label: "Synthetic imported dynamic live ModifyHitDef airguard velocity route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root caller resolves var(0)=-8 and var(1)=-4 and redirects airguard.velocity X/Y into another root's already active normal HitDef before contact. The caller then becomes airborne, guards the later contact, creates target 78, exposes GetHitVar(xvel)=-8 and GetHitVar(yvel)=-4, and applies physical air-guard velocity instead of the seeded -2,-1 pair. Direct HitDef expression resolution is proved separately; omitted/partial ModifyHitDef, Helpers, dynamic Z, localcoord/facing breadth, exact gravity/landing timing, Projectile, ModifyProjectile, teams, rollback, and full guard parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyhitdef-dynamic-airguard-velocity-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [0, 154, 155, branchStateNo],
+      forbiddenExecutedStates: [150, 151, 152, 153, 200, 5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["VarSet", "HitDef", "ModifyHitDef", "ChangeState", "HitVelSet", "VelAdd"],
+      requiredExecutedOperations: [
+        "variable:varset",
+        "hitdef",
+        "modifyhitdef",
+        "kinematic:hitvelset",
+        "kinematic:veladd",
+      ],
+      requiredActiveCommands: ["holdback"],
+      requiredEventCategories: ["guard"],
+      requiredCombatReasons: ["guard"],
+      forbiddenCombatReasons: ["hit", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+      requiredControllerEventSequences: [{
+        label: "dynamic ModifyHitDef airguard velocity precedes accepted airborne guard",
+        allowSameTick: true,
+        steps: [
+          { actorId: "p2", stateNo: 0, controller: "ModifyHitDef", name: "Root ModifyHitDef Redirect" },
+          { actorId: "p1", stateNo: 154, controller: "ChangeState", name: "Air Guard Shake Over" },
+          { actorId: "p1", stateNo: 155, controller: "HitVelSet", name: "Apply Air Guard Velocity" },
+          { actorId: "p1", stateNo: 155, operation: "kinematic:hitvelset" },
+          { actorId: "p1", stateNo: 155, controller: "ChangeState", name: "Air Guarded HitVar Branch" },
+        ],
+      }],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 154,
+          animNo: 40,
+          stateType: "A",
+          moveType: "H",
+          physics: "N",
+          observedPosYAtMost: -8,
+          minFrames: 1,
+        },
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 155,
+          animNo: 150,
+          stateType: "A",
+          moveType: "H",
+          physics: "N",
+          observedVelXAtLeast: -8,
+          observedVelXAtMost: -8,
+          observedVelYAtMost: -3.5,
+          minFrames: 1,
+        },
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: branchStateNo,
+          animNo: branchStateNo,
+          stateType: "A",
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 995 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 1000 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedAirGuardVelocityDefaultTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const defender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-air-guard-velocity-default",
@@ -56092,6 +56239,7 @@ export type SyntheticImportedTraceFighterOptions = {
     guardDistance?: number;
     guardFlag?: string;
     guardVelocity?: SyntheticPartialPairExpression;
+    airGuardVelocity?: SyntheticPairExpression;
     pauseTime?: number;
     guardPause?: number;
     priority?: number;
@@ -56121,6 +56269,7 @@ export type SyntheticImportedTraceFighterOptions = {
     fallKill?: boolean;
     hitOnce?: boolean;
     guardVelocity?: SyntheticPartialPairExpression;
+    airGuardVelocity?: SyntheticPairExpression;
     varSeeds?: Array<{ index: number; value: number; trigger?: string }>;
     redirectId: SyntheticNumberExpression;
     trigger?: string;
@@ -63240,6 +63389,7 @@ ground.hittime = 8
 ground.velocity = 0, 0
 guardflag = ${route.guardFlag ?? "MA"}
 ${route.guardVelocity === undefined ? "" : `guard.velocity = ${route.guardVelocity.join(", ")}\n`}
+${route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGuardVelocity.join(", ")}\n`}
 ${route.pauseTime === undefined ? "" : `pausetime = ${route.pauseTime},${route.pauseTime}\n`}
 ${route.guardPause === undefined ? "" : `guard.pausetime = ${route.guardPause},${route.guardPause}\n`}
 ${route.guardDistance === undefined ? "" : `guard.dist = ${route.guardDistance}\n`}
@@ -63277,6 +63427,7 @@ ${route.guardKill === undefined ? "" : `guard.kill = ${route.guardKill ? 1 : 0}`
 ${route.fallKill === undefined ? "" : `fall.kill = ${route.fallKill ? 1 : 0}`}
 ${route.hitOnce === undefined ? "" : `hitonce = ${route.hitOnce ? 1 : 0}`}
 ${route.guardVelocity === undefined ? "" : `guard.velocity = ${route.guardVelocity.join(", ")}`}
+${route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGuardVelocity.join(", ")}`}
 redirectid = ${route.redirectId}
 `;
 }
