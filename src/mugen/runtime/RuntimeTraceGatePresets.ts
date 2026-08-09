@@ -30492,6 +30492,148 @@ export function createSyntheticImportedHelperProjectileDynamicPauseTimeTraceArti
   });
 }
 
+export function createSyntheticImportedProjectileDynamicRemoveTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedProjectileRemoveTerminalScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-dynamic-removetime-attacker",
+    displayName: "Projectile Dynamic RemoveTime Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileVarSeeds: [{ index: 0, value: 6 }],
+    projectileRemoveTime: "var(0)",
+    projectileRemoveAnim: 919,
+    projectileOffset: [80, -45],
+    projectileVelocity: [0, 0],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-dynamic-removetime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-dynamic-removetime-golden",
+      label: "Synthetic imported Projectile dynamic projremovetime route",
+      source: "mixed",
+      notes: [
+        "Pinned Ikemen GO and M.U.G.E.N-compatible trace proves a fresh root Projectile evaluates projremovetime var(0) in caller context and removes the effect through the timeout lifecycle at the authored bounded value. It does not claim exact tick/terminal preemption order, bounds-removal parity, live ModifyProjectile, helper breadth, negative/overflow values, teams, rollback, or full Projectile lifecycle parity.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-projectile-dynamic-removetime-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Projectile"],
+      requiredExecutedOperations: ["variable:varset", "projectile"],
+      requiredActiveCommands: ["x"],
+      forbiddenCombatReasons: ["hit", "guard", "override", "reversal"],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [{
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        parentId: "p1",
+        effectId: 77,
+        hasHit: false,
+        removalReason: "timeout",
+        terminalReason: "timeout",
+        minTerminalAge: 1,
+        minTerminalDuration: 2,
+      }],
+    }],
+  });
+}
+
+export function createSyntheticImportedHelperProjectileDynamicRemoveTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperProjectileRemoveTerminalScript();
+  const projectileId = 8902;
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-dynamic-removetime-attacker",
+    displayName: "Helper Projectile Dynamic RemoveTime Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjGuardRoute: {
+      waitStateNo: 1269,
+      waitAnimNo: 1030,
+      branchStateNo: 1270,
+      branchAnimNo: 1031,
+      branchTrigger: "Time >= 8",
+      projectileAnimNo: 1032,
+      projectileRemoveAnim: 919,
+      projectileId,
+      removeTime: "var(0)",
+      varSeeds: [{ index: 0, value: 6 }],
+      pos: [360, -92],
+      velocity: [0, 0],
+      projectileRemoveOnHit: false,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-projectile-dynamic-removetime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-dynamic-removetime-golden",
+      label: "Synthetic imported Helper Projectile dynamic projremovetime route",
+      source: "mixed",
+      notes: [
+        "Pinned Ikemen GO trace proves a Helper-authored fresh Projectile evaluates projremovetime var(0) in Helper caller context, remains root-owned with Helper parentage, and completes timeout removal. It does not claim exact tick/terminal preemption order, live ModifyProjectile, nested/team/rollback topology, negative/overflow values, or full Helper Projectile parity.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-projectile-dynamic-removetime-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper", "projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Helper", "Projectile"],
+      requiredExecutedOperations: ["variable:varset", "helper", "projectile"],
+      requiredActiveCommands: ["x"],
+      forbiddenCombatReasons: ["hit", "guard", "override", "reversal"],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [
+        { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1270, minAge: 2 },
+        {
+          actorId: "p1-projectile-0",
+          kind: "projectile",
+          ownerId: "p1",
+          parentId: "p1-helper-0",
+          effectId: projectileId,
+          minAge: 1,
+          minRemoveTime: 6,
+          maxHitsRemaining: 1,
+          hasHit: false,
+        },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -61233,7 +61375,7 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileAccel?: [number, number];
   projectileVelocityMultiplier?: [number, number];
   projectileScale?: [number, number];
-  projectileRemoveTime?: number;
+  projectileRemoveTime?: SyntheticNumberExpression;
   projectileEdgeBound?: number;
   projectileStageBound?: number;
   projectileHeightBound?: [number, number];
@@ -61816,7 +61958,10 @@ export type SyntheticImportedTraceFighterOptions = {
     branchTrigger?: string;
     projectileAnimNo: number;
     projectileHitAnim?: number;
+    projectileRemoveAnim?: number;
     projectileRemoveOnHit?: boolean;
+    /** Synthetic Helper-local dynamic Projectile projremovetime expression. */
+    removeTime?: SyntheticNumberExpression;
     projectileId?: number;
     pos?: [number, number];
     velocity?: [number, number];
@@ -63503,6 +63648,11 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                           projectileTraceAction(options.helperProjGuardRoute.projectileHitAnim),
                         ],
                       ] as Array<[number, MugenAnimationAction]>)),
+                  ...(options.helperProjGuardRoute.projectileRemoveAnim === undefined
+                    ? []
+                    : ([[options.helperProjGuardRoute.projectileRemoveAnim, projectileTerminalTraceAction(options.helperProjGuardRoute.projectileRemoveAnim)]] as Array<
+                        [number, MugenAnimationAction]
+                      >)),
                 ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperProjContactRoute === undefined
               ? []
@@ -66662,7 +66812,7 @@ function projectileControllerBlock(
   hitDefHitCount?: number,
   triggerTime = 2,
   damage: [number, number?] = [31, 4],
-  removeTime = 24,
+  removeTime: SyntheticNumberExpression = 24,
   edgeBound?: number,
   stageBound?: number,
   heightBound?: [number, number],
@@ -70310,6 +70460,7 @@ function helperProjGuardRouteBlock(route: NonNullable<SyntheticImportedTraceFigh
   const guardSparkLine = route.guardSpark === undefined ? "" : `guard.sparkno = ${route.guardSpark}`;
   const sparkXyLine = route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy[0]},${route.sparkXy[1]}`;
   const projectileHitAnimLine = route.projectileHitAnim === undefined ? "" : `projhitanim = ${route.projectileHitAnim}`;
+  const projectileRemoveAnimLine = route.projectileRemoveAnim === undefined ? "" : `projremanim = ${route.projectileRemoveAnim}`;
   const projectileRemoveLine = `projremove = ${route.projectileRemoveOnHit === undefined ? 0 : route.projectileRemoveOnHit ? 1 : 0}`;
   const guardSlideTimeLine = route.guardSlideTime === undefined ? "" : `guard.slidetime = ${route.guardSlideTime}`;
   const guardControlTimeLine = route.guardControlTime === undefined ? "" : `guard.ctrltime = ${route.guardControlTime}`;
@@ -70368,9 +70519,10 @@ projhits = 1
 projmisstime = 0
 projanim = ${route.projectileAnimNo}
 ${projectileHitAnimLine}
+${projectileRemoveAnimLine}
 offset = ${pos[0]},${pos[1]}
 velocity = ${velocity[0]},${velocity[1]}
-projremovetime = 48
+projremovetime = ${route.removeTime ?? 48}
 ${projectileRemoveLine}
 ${hitSoundLine}
 ${guardSoundLine}

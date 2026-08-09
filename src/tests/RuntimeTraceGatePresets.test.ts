@@ -426,6 +426,8 @@ import {
   createSyntheticImportedHelperProjectileDynamicAirHitTimeTraceArtifact,
   createSyntheticImportedProjectileDynamicPauseTimeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicPauseTimeTraceArtifact,
+  createSyntheticImportedProjectileDynamicRemoveTimeTraceArtifact,
+  createSyntheticImportedHelperProjectileDynamicRemoveTimeTraceArtifact,
   createSyntheticImportedProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact,
@@ -22718,6 +22720,52 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.targetLinks).toContainEqual(expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8897 }));
     expect(evidence?.combatReasons).toContain("guard");
     expect(evidence?.combatReasons).not.toContain("hit");
+  });
+
+  it("creates required imported Projectile projremovetime timeout artifacts", () => {
+    const rootArtifact = createSyntheticImportedProjectileDynamicRemoveTimeTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(rootArtifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-removetime-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-projectile-dynamic-removetime-golden", passed: true, failures: [] }],
+    });
+    const rootEvidence = rootArtifact.gates[0]?.evidence;
+    expect(rootEvidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(rootEvidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(rootEvidence?.worldLifecycleEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1" }),
+      expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", parentId: "p1" }),
+    ]));
+    expect(rootEvidence?.effectPayloads).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p1-projectile-0",
+        effect: expect.objectContaining({ removalReason: "timeout", terminalReason: "timeout" }),
+      }),
+    ]));
+
+    const helperArtifact = createSyntheticImportedHelperProjectileDynamicRemoveTimeTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(helperArtifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-projectile-dynamic-removetime-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-helper-projectile-dynamic-removetime-golden", passed: true, failures: [] }],
+    });
+    const helperEvidence = helperArtifact.gates[0]?.evidence;
+    expect(helperEvidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(helperEvidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(helperEvidence?.worldLifecycleEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+      expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+    ]));
+    expect(helperEvidence?.effectPayloads).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p1-projectile-0",
+        effect: expect.objectContaining({ removalReason: "timeout", terminalReason: "timeout" }),
+      }),
+    ]));
   });
 
   it("creates a required imported dynamic live ModifyHitDef down.velocity artifact", () => {
