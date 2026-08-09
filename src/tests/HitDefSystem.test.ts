@@ -1177,7 +1177,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
     const caller = runtimeState();
-    const apply = (downVelocity?: string, resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "sparkscale" | "guard.sparkscale") => [number?, number?] | undefined) => {
+    const apply = (downVelocity?: string, resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale") => [number?, number?] | undefined) => {
       actor.firedHitDefs.clear();
       world.apply({
         actor,
