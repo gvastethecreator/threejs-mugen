@@ -116,6 +116,7 @@ describe("RuntimeSnapshotWorld", () => {
           sparkNo: 7000,
           rawPrefix: "S",
           offset: { x: 8, y: -70 },
+          scale: { x: 1.5, y: -0.5 },
           stateNo: 200,
           tick: 3,
           runtimeTick: 13,
@@ -149,6 +150,7 @@ describe("RuntimeSnapshotWorld", () => {
     const snapshot = world.actor(actor);
     runtime.pos.x = 999;
     actor.hitEffectEvents[0].offset = { x: 999, y: 999 };
+    actor.hitEffectEvents[0].scale = { x: 999, y: 999 };
 
     expect(snapshot).toMatchObject({
       id: "p1",
@@ -189,6 +191,7 @@ describe("RuntimeSnapshotWorld", () => {
       envShakeEvents: [{ type: "EnvShake", time: 8, freq: 60, ampl: 4, phase: 0, stateNo: 200, tick: 3, runtimeTick: 14 }],
     });
     expect(snapshot.hitEffectEvents?.[0]?.offset).toEqual({ x: 8, y: -70 });
+    expect(snapshot.hitEffectEvents?.[0]?.scale).toEqual({ x: 1.5, y: -0.5 });
     expect(snapshot.hitEffectEvents?.[0]?.assetFrames).toEqual([
       {
         source: "player",
@@ -268,6 +271,7 @@ describe("RuntimeSnapshotWorld", () => {
     const p2Explod = effectSnapshot("p2-explod-1", "explod", "p2", { x: 2, y: 0 });
     const p1Helper = effectSnapshot("p1-helper-1", "helper", "p1", { x: 3, y: 0 });
     const p2Projectile = effectSnapshot("p2-projectile-1", "projectile", "p2", { x: 4, y: 0 });
+    if (p2Projectile.effect?.kind === "projectile") p2Projectile.effect.layerNo = 1;
     p1Explod.runtime.hitDefSpritePriority = {
       profile: "mugen-1.1",
       role: "p1",
@@ -293,6 +297,7 @@ describe("RuntimeSnapshotWorld", () => {
     expect(snapshots[0]?.runtime.pos.x).toBe(1);
     expect(snapshots[0]?.clsn1).toEqual([{ x1: 0, y1: -10, x2: 8, y2: 0 }]);
     expect(snapshots[0]?.presentationOrder).toMatchObject({ profile: "unknown", sourceKind: "explod", priority: 0 });
+    expect(snapshots[3]?.presentationOrder).toMatchObject({ phase: "stage-foreground", sourceKind: "projectile" });
   });
 
   it("owns full match snapshot envelope assembly", () => {
@@ -615,6 +620,7 @@ function effectPayload(kind: NonNullable<ActorSnapshot["effect"]>["kind"]): NonN
     kind,
     age: 1,
     removeTime: 30,
+    layerNo: 0,
     spritePriority: 2,
     priority: 1,
     hitsRemaining: 1,

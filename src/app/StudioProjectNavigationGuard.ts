@@ -1,4 +1,4 @@
-export type StudioProjectSurface = "match" | "inspect" | "studio";
+export type StudioProjectSurface = "match" | "lab" | "inspect" | "studio";
 
 export function needsStudioProjectNavigationGuard(surface: StudioProjectSurface, projectDirty: boolean): boolean {
   return surface === "studio" && projectDirty;

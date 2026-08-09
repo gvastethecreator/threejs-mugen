@@ -27,6 +27,7 @@ export type HitSparkPresentation = {
   x: number;
   y: number;
   size: number;
+  scale: { x: number; y: number };
   opacity: number;
   rotation: number;
   color: number;
@@ -121,6 +122,7 @@ export class HitSparkRenderer {
       lookupStatus: HitSparkLookupStatus;
       layer: HitSparkRenderLayer;
       renderOrder: number;
+      scale: { x: number; y: number };
       presentationOrder: ResolvedPresentationOrder;
       groupRenderOrder: number;
       meshRenderOrders: number[];
@@ -158,6 +160,7 @@ export class HitSparkRenderer {
         lookupStatus: presentation.asset.lookupStatus,
         layer: presentation.layer,
         renderOrder: presentation.renderOrder,
+        scale: { ...presentation.scale },
         presentationOrder: presentation.presentationOrder,
         groupRenderOrder: this.sparks.get(presentation.key)?.group.renderOrder ?? 0,
         meshRenderOrders:
@@ -200,7 +203,11 @@ export class HitSparkRenderer {
     const hasSprite = Boolean(sprite);
     spark.group.position.set(presentation.x, presentation.y, 6);
     spark.group.rotation.z = presentation.rotation;
-    spark.group.scale.set(presentation.size, presentation.size, 1);
+    spark.group.scale.set(
+      presentation.size * presentation.scale.x,
+      presentation.size * presentation.scale.y,
+      1,
+    );
     spark.group.renderOrder = 0;
     applyThreePresentationOrder(spark.flare, spark.flare.material, presentation.presentationOrder);
     applyThreePresentationOrder(spark.core, spark.core.material, presentation.presentationOrder);
@@ -348,6 +355,10 @@ export function resolveHitSparkPresentation(
     x: projected.x,
     y: projected.y,
     size: baseSize + sparkBias + progress * 32,
+    scale: {
+      x: Number.isFinite(event.scale?.x) ? event.scale!.x : 1,
+      y: Number.isFinite(event.scale?.y) ? event.scale!.y : 1,
+    },
     opacity: Math.max(0, 0.92 * (1 - progress)),
     rotation: Math.PI / 4 + age * 0.18 + sparkBias * 0.07,
     color: event.kind === "guard" ? 0x68d8ff : 0xffc247,

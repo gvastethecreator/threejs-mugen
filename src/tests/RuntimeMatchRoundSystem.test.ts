@@ -344,6 +344,45 @@ describe("RuntimeMatchRoundWorld", () => {
     expect(round.isOver).toBe(false);
   });
 
+  it("reduces global AssertSpecial from reserve roots during team finish", () => {
+    const round = new RuntimeRoundSystem(0);
+    const reserve = actor("P3", 400, { globalFlags: ["RoundNotOver"], roundNotOver: true });
+
+    const finish = new RuntimeMatchRoundWorld().finishIfNeeded({
+      round,
+      p1: actor("P1", 0),
+      p2: actor("P2", 700),
+      globalActors: [actor("P1", 0), actor("P2", 700), reserve],
+      stopPlaying: () => undefined,
+      log: () => undefined,
+    });
+
+    expect(finish).toBeUndefined();
+    expect(round.snapshot().state).toBe("fight");
+  });
+
+  it("reduces global AssertSpecial from a live Helper actor", () => {
+    const round = new RuntimeRoundSystem(0);
+    const helper = {
+      id: "helper-7",
+      label: "Helper 7",
+      runtime: {
+        life: 1,
+        assertSpecial: { flags: [], globalFlags: ["RoundNotOver"], roundNotOver: true },
+      },
+    };
+
+    expect(new RuntimeMatchRoundWorld().finishIfNeeded({
+      round,
+      p1: actor("P1", 0),
+      p2: actor("P2", 700),
+      globalActors: [actor("P1", 0), actor("P2", 700), helper],
+      stopPlaying: () => undefined,
+      log: () => undefined,
+    })).toBeUndefined();
+    expect(round.snapshot().state).toBe("fight");
+  });
+
   it("does not mutate match state when the round keeps fighting", () => {
     const round = new RuntimeRoundSystem();
     const logs: string[] = [];

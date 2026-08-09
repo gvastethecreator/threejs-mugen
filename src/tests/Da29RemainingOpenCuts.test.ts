@@ -35,8 +35,8 @@ function fileDigest(rel: string): { path: string; bytes: number; sha256: string 
 }
 
 describe("DA29 acceptance-executed measured evidence", () => {
-  it("DA29-084 executes parseAir on real nova.air and malformed input", () => {
-    const airPath = "public/characters/nova-boxer/mugen/nova.air";
+  it("DA29-084 executes parseAir on shipped Rocco AIR and malformed input", () => {
+    const airPath = "public/characters/rocco-vidal/mugen/rocco.air";
     expect(existsSync(resolve(root, airPath))).toBe(true);
     const text = readFileSync(resolve(root, airPath), "utf8");
     const parsed = parseAir(text, airPath);
@@ -56,7 +56,7 @@ describe("DA29 acceptance-executed measured evidence", () => {
         malformedDiagnostics: malformed.diagnostics.length,
         sampleActionIds: [...parsed.actions.keys()].slice(0, 5),
       },
-      claimCeiling: "AIR parse executed on repository nova.air + malformed path; not full AIR corpus matrix",
+      claimCeiling: "AIR parse executed on shipped Rocco AIR + malformed path; not full AIR corpus matrix",
     });
   });
 

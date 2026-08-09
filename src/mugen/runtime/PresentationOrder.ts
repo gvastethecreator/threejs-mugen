@@ -62,11 +62,19 @@ export function createActorPresentationOrder(
   sourceKind: Extract<MugenPresentationSourceKind, "player" | "helper" | "projectile" | "explod">,
   spritePriority: number,
   actorBias: number,
-  options: { profile?: MugenPresentationProfile; blendPolicy?: MugenPresentationBlendPolicy } = {},
+  options: {
+    profile?: MugenPresentationProfile;
+    blendPolicy?: MugenPresentationBlendPolicy;
+    layerNo?: -1 | 0 | 1;
+  } = {},
 ): MugenPresentationOrder {
   return createMugenPresentationOrder({
     profile: options.profile ?? "unknown",
-    phase: "actor",
+    phase: options.layerNo === -1
+      ? "actor-underlay"
+      : options.layerNo === 1
+        ? "stage-foreground"
+        : "actor",
     sourceKind,
     blendPolicy: options.blendPolicy ?? "alpha",
     priority: spritePriority,

@@ -237,6 +237,51 @@ describe("EffectSpawnSystem", () => {
     expect(effectActorWorld.getStore("p1").projectiles.map((projectile) => projectile.hitFlag)).toEqual([undefined, "H", "MAF"]);
   });
 
+  it("passes root Projectile getpower resolution through effect dispatch", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const dispatchWorld = new RuntimeEffectSpawnControllerDispatchWorld();
+    const fighter = actor("p1", effectActorWorld, {}, {
+      ...definition("p1", [baseAction, helperAction, terminalAction]),
+      constants: { "default.attack.lifetopowermul": 0.8 },
+    });
+    const opponent = actor("p2", effectActorWorld);
+
+    const result = dispatchWorld.apply({
+      actor: fighter,
+      opponent,
+      controller: compileControllerIr(controller("Projectile", {
+        projanim: "910",
+        getpower: "var(0) * 4,var(1) + 3",
+        givepower: "var(0) * 3,var(1) + 2",
+      })),
+      effect: "projectile",
+      effectSpawnWorld: spawnWorld,
+      resolveProjectileGetPower: () => ({ hit: 28, guard: 8 }),
+      resolveProjectileGivePower: () => ({ hit: 21, guard: 7 }),
+    });
+
+    expect(result).toMatchObject({ changed: true, changedCount: 1 });
+    expect(effectActorWorld.getStore("p1").projectiles[0]).toMatchObject({
+      attackerHitPower: 28,
+      attackerGuardPower: 8,
+      hitPower: 21,
+      guardPower: 7,
+    });
+
+    expect(spawnWorld.spawnProjectile(
+      fighter,
+      opponent,
+      controller("Projectile", { projanim: "910", attr: "S,NA", damage: "40" }),
+    )).toBe(true);
+    expect(effectActorWorld.getStore("p1").projectiles[0]).toMatchObject({
+      attackerHitPower: 32,
+      attackerGuardPower: 16,
+      hitPower: 24,
+      guardPower: 12,
+    });
+  });
+
   it("resolves initial Helper standby only for IKEMEN and preserves StateDef ctrl precedence", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const spawnWorld = new RuntimeEffectSpawnWorld();
@@ -578,7 +623,31 @@ describe("EffectSpawnSystem", () => {
     const changed = spawnWorld.modifyProjectiles(
       fighter,
       controller("ModifyProjectile", {
-        projid: "7",
+        id: "7",
+        chainid: "71",
+        projanim: "930",
+        projhitanim: "920",
+        projremanim: "930",
+        projcancelanim: "910",
+        attr: "A,NP",
+        guardflag: "A",
+        affectteam: "F",
+        animtype: "Medium",
+        "air.animtype": "Up",
+        "fall.animtype": "DiagUp",
+        kill: "0",
+        "guard.kill": "0",
+        "fall.kill": "0",
+        "air.juggle": "3",
+        damage: "41,7",
+        givepower: "43,33",
+        numhits: "5",
+        priority: "7, Miss",
+        p2stateno: "889",
+        p2getp1state: "0",
+        p1stateno: "777",
+        missonoverride: "0",
+        hitflag: "H-",
         velocity: "4,-2",
         projscale: "2,.5",
         projedgebound: "28",
@@ -589,6 +658,40 @@ describe("EffectSpawnSystem", () => {
 
     expect(changed).toBe(1);
     expect(effectActorWorld.getStore("p1").projectiles[0]).toMatchObject({
+      animNo: 930,
+      action: terminalAction,
+      frameIndex: 0,
+      frameElapsed: 0,
+      hitAnimNo: 920,
+      removeAnimNo: 930,
+      cancelAnimNo: 910,
+      targetId: 7,
+      chainId: 71,
+      attr: "A,NP",
+      guardFlag: "A",
+      affectTeam: -1,
+      hitAnimTypes: { ground: 1, air: 4, fall: 5 },
+      kill: false,
+      guardKill: false,
+      fall: expect.objectContaining({ kill: false }),
+      airJuggle: 3,
+      damage: 41,
+      guardDamage: 7,
+      hitPower: 43,
+      guardPower: 33,
+      hitDefHitCount: 5,
+      hitPriority: 7,
+      hitPriorityType: "miss",
+      p2StateNo: 889,
+      p2GetP1State: false,
+      p1StateNo: 777,
+      missOnOverride: false,
+      hitFlag: "H-",
+      terminalActions: {
+        hit: helperAction,
+        remove: terminalAction,
+        cancel: baseAction,
+      },
       vel: { x: 4, y: -2 },
       scale: { x: 2, y: 0.5 },
       edgeBound: 28,
@@ -679,7 +782,7 @@ describe("EffectSpawnSystem", () => {
     const changed = spawnWorld.modifyProjectiles(
       fighter,
       controller("ModifyProjectile", {
-        projid: "7",
+        id: "7",
         projedgebound: "var(0)",
         projstagebound: "var(1)",
         projheightbound: "var(2),var(3)",
@@ -708,9 +811,9 @@ describe("EffectSpawnSystem", () => {
       facing: -1,
     });
     const numberValues: Partial<Record<string, number>> = {
-      projid: 7,
+      id: 7,
       projremovetime: 42,
-      sprpriority: 8,
+      projsprpriority: 8,
       projpriority: 5,
       projhits: 6,
       projmisstime: 4,
@@ -727,13 +830,13 @@ describe("EffectSpawnSystem", () => {
     const changed = spawnWorld.modifyProjectiles(
       fighter,
       controller("ModifyProjectile", {
-        projid: "var(0)",
+        id: "var(0)",
         velocity: "var(1),var(2)",
         accel: "var(3),var(4)",
         velmul: "var(5),var(6)",
         projscale: "var(7),var(8)",
         projremovetime: "var(9)",
-        sprpriority: "var(10)",
+        projsprpriority: "var(10)",
         projpriority: "var(11)",
         projhits: "var(12)",
         projmisstime: "var(13)",

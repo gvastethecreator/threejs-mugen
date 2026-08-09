@@ -25,6 +25,24 @@ describe("RuntimeControllerExpressionContextSystem", () => {
         targetId === 77 || targetId === undefined ? { self: target, opponent: self } : undefined,
       playerIdTarget: (playerId: number) =>
         playerId === 58 ? { self: target, playerId: 58, playerNo: 2, opponent: self } : undefined,
+      animElemVar: (parameter: string) => (parameter.toLowerCase() === "group" ? 200 : undefined),
+      animLength: 8,
+      animPlayerNo: 2,
+      clsnVar: (group: "clsn1" | "clsn2" | "size", index: number, coordinate: "back" | "front" | "top" | "bottom") =>
+        group === "clsn2" && index === 0 && coordinate === "front" ? 48 : undefined,
+      clsnOverlap: (actorGroup: "clsn1" | "clsn2" | "size", playerId: number, targetGroup: "clsn1" | "clsn2" | "size") =>
+        actorGroup === "clsn1" && playerId === 58 && targetGroup === "clsn2",
+      projClsnOverlap: (index: number, playerId: number, targetGroup: "clsn1" | "clsn2" | "size") =>
+        index === 0 && playerId === 58 && targetGroup === "clsn2",
+      projVar: (projectileId: number, index: number, parameter: string) =>
+        projectileId === 77 && index === 0 && parameter.toLowerCase() === "projid" ? 77 : undefined,
+      projVarFlag: (
+        projectileId: number,
+        index: number,
+        parameter: "attr" | "guardflag" | "hitflag",
+        filter: string,
+        operator: "=" | "!=",
+      ) => projectileId === 77 && index === 0 && parameter === "hitflag" && filter === "H" && operator === "=",
     };
 
     expect(evaluateRuntimeControllerNumber("Target(77), Life - 960", self, context)).toBe(3);
@@ -38,6 +56,14 @@ describe("RuntimeControllerExpressionContextSystem", () => {
     expect(evaluateRuntimeControllerNumber("ScreenWidth + ScreenHeight", self, context)).toBe(1120);
     expect(evaluateRuntimeControllerNumber("Const240p(3)+Const480p(6)+Const720p(12)", self, context)).toBe(18);
     expect(evaluateRuntimeControllerNumber("GetHitVar(xvel)", self, context)).toBe(4);
+    expect(evaluateRuntimeControllerNumber("AnimElemVar(Group) + 1", self, context)).toBe(201);
+    expect(evaluateRuntimeControllerNumber("AnimLength - 3", self, context)).toBe(5);
+    expect(evaluateRuntimeControllerNumber("AnimPlayerNo + 1", self, context)).toBe(3);
+    expect(evaluateRuntimeControllerNumber("ClsnVar(Clsn2, var(0), Front)", self, context)).toBe(48);
+    expect(evaluateRuntimeControllerNumber("ClsnOverlap(Clsn1, 58, Clsn2)", self, context)).toBe(1);
+    expect(evaluateRuntimeControllerNumber("ProjClsnOverlap(0, 58, Clsn2)", self, context)).toBe(1);
+    expect(evaluateRuntimeControllerNumber("ProjVar(77, 0, ProjID)", self, context)).toBe(77);
+    expect(evaluateRuntimeControllerNumber("ProjVar(77, 0, hitflag) = H", self, context)).toBe(1);
   });
 
   it("builds expression contexts with helper identity and team ownership metadata", () => {

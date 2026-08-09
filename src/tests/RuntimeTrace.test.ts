@@ -65,7 +65,7 @@ describe("RuntimeTrace", () => {
     });
     expect(first.final.actors[1]?.life).toBeLessThan(1000);
     expect(first.events.some((event) => event.category === "hit")).toBe(true);
-    expect(first.events.some((event) => event.line.includes("Nova Boxer hit Mira Volt"))).toBe(true);
+    expect(first.events.some((event) => event.line.includes("Rocco Vidal hit Nadia Arce"))).toBe(true);
     expect(
       evaluateRuntimeTraceGate(first, {
         label: "native-hit-gate",

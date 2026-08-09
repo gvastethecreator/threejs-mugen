@@ -60,6 +60,12 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: RuntimeEffectSpawnControllerDispatchOperation) => void;
   resolveProjectileSound?: RuntimeProjectileSpawnInput["resolveSoundValue"];
+  resolveProjectileUnhittableTime?: RuntimeProjectileSpawnInput["resolveUnhittableTime"];
+  resolveProjectileGroundFriction?: RuntimeProjectileSpawnInput["resolveGroundFriction"];
+  resolveProjectileSparkScale?: RuntimeProjectileSpawnInput["resolveSparkScale"];
+  resolveProjectilePaletteFx?: RuntimeProjectileSpawnInput["resolvePaletteFx"];
+  resolveProjectileGetPower?: RuntimeProjectileSpawnInput["resolveProjectileGetPower"];
+  resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"];
   resolveModifyProjectile?: RuntimeProjectileModifyResolver;
   runtimeProfile?: RuntimeCompatibilityProfile;
   resolveHelperStandby?: (operation: HelperControllerOp) => boolean | undefined;
@@ -225,6 +231,12 @@ export class RuntimeEffectSpawnWorld {
     controller: MugenStateController,
     operation?: ProjectileControllerOp,
     resolveSoundValue?: RuntimeProjectileSpawnInput["resolveSoundValue"],
+    resolveUnhittableTime?: RuntimeProjectileSpawnInput["resolveUnhittableTime"],
+    resolveGroundFriction?: RuntimeProjectileSpawnInput["resolveGroundFriction"],
+    resolveSparkScale?: RuntimeProjectileSpawnInput["resolveSparkScale"],
+    resolvePaletteFx?: RuntimeProjectileSpawnInput["resolvePaletteFx"],
+    resolveProjectileGetPower?: RuntimeProjectileSpawnInput["resolveProjectileGetPower"],
+    resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"],
   ): boolean {
     const owner = effectSpriteOwner(fighter);
     const animNo = operation?.projAnim ?? firstNumber(findParam(controller, "projanim") ?? findParam(controller, "anim")) ?? 0;
@@ -250,10 +262,21 @@ export class RuntimeEffectSpawnWorld {
       pos: { ...spawnPos, ...(spawnDepth === 0 ? {} : { z: spawnDepth }) },
       fallbackFacing: fighter.runtime.facing,
       localCoord: owner.definition.localCoord,
+      clsnScale: {
+        x: finiteProjectileClsnScale(owner.definition.constants?.["size.xscale"]),
+        y: finiteProjectileClsnScale(owner.definition.constants?.["size.yscale"]),
+      },
       attackDepth: operation?.attackDepth ?? runtimeCombatDepthFromConstants(fighter.definition.constants).attack,
       damageScale: fighter.runtime.attackMultiplier,
+      constants: fighter.definition.constants,
       defaultHitFlag: runtimeDefaultHitFlagForSource(owner.definition.source),
       resolveSoundValue,
+      resolveUnhittableTime,
+      resolveGroundFriction,
+      resolveSparkScale,
+      resolvePaletteFx,
+      resolveProjectileGetPower,
+      resolveProjectileGivePower,
     });
     return true;
   }
@@ -264,12 +287,18 @@ export class RuntimeEffectSpawnWorld {
     operation?: ModifyProjectileControllerOp,
     resolveModifyProjectile?: RuntimeProjectileModifyResolver,
   ): number {
+    const owner = effectSpriteOwner(fighter);
     return fighter.effectActorWorld.modifyProjectiles(fighter.id, {
       controller,
       operation,
       resolveModifyProjectile,
+      resolveAction: (animNo) => owner.definition.animations.get(animNo),
     });
   }
+}
+
+function finiteProjectileClsnScale(value: number | undefined): number {
+  return value !== undefined && Number.isFinite(value) ? value : 1;
 }
 
 export class RuntimeEffectSpawnControllerDispatchWorld {
@@ -530,6 +559,12 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         controller.source,
         operation?.kind === "projectile" ? operation : undefined,
         options.resolveProjectileSound,
+        options.resolveProjectileUnhittableTime,
+        options.resolveProjectileGroundFriction,
+        options.resolveProjectileSparkScale,
+        options.resolveProjectilePaletteFx,
+        options.resolveProjectileGetPower,
+        options.resolveProjectileGivePower,
       )
         ? 1
         : 0;

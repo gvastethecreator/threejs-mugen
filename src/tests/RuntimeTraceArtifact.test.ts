@@ -888,6 +888,47 @@ describe("RuntimeTraceArtifact", () => {
     ]);
   });
 
+  it("fails hit-effect gates when authored non-uniform spark scale does not match", () => {
+    const attacker: RuntimeTraceFrame["actors"][number] = {
+      ...playerActor({ animNo: 200, moveType: "A" }),
+      id: "p1",
+      label: "Imported Attacker",
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: "p1",
+      facing: 1,
+      hitEffectEvents: [{
+        type: "HitSpark",
+        kind: "guard",
+        sparkNo: 7000,
+        scale: { x: 0, y: -1 },
+        stateNo: 200,
+        tick: 1,
+      }],
+    };
+    const trace = traceFromFrames([
+      traceFrame({ frameIndex: 0, tick: 1, checksum: "stable-hit-effect-scale", actors: [attacker], effects: [] }),
+    ]);
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      generatedAt: "2026-06-30T00:00:00.000Z",
+      target: { id: "synthetic-hit-effect-scale-mismatch", label: "Synthetic hit-effect scale mismatch", source: "mixed" },
+      gates: [{
+        label: "hit-effect-scale",
+        requiredHitEffectEvents: [{ actorId: "p1", kind: "guard", sparkNo: 7000, scaleX: 0, scaleY: -0.5 }],
+      }],
+    });
+
+    expect(artifact.status).toBe("failed");
+    expect(artifact.gates[0]?.evidence.hitEffectEvents).toEqual([
+      expect.objectContaining({ actorId: "p1", kind: "guard", sparkNo: 7000, scale: { x: 0, y: -1 } }),
+    ]);
+    expect(artifact.gates[0]?.failures).toEqual([
+      "Missing hit-effect event: actorId=p1, kind=guard, sparkNo=7000, scaleX=0, scaleY=-0.5 >= 1 (actual 0)",
+    ]);
+  });
+
   it("fails hit-effect gates when selected AIR frame metadata does not match", () => {
     const assetFrame = {
       source: "fightfx" as const,
@@ -1132,6 +1173,7 @@ function projectileEffect(
     id: 77,
     age: 4,
     removeTime: 30,
+    layerNo: 0,
     spritePriority: 4,
     priority: 2,
     hitsRemaining: 1,

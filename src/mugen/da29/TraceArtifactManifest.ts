@@ -84,7 +84,7 @@ export function buildTraceArtifactManifest(options?: {
     const inputFixture = /mugenLite|MugenLite/i.test(symbol)
       ? "mugen-lite-journey"
       : /native/i.test(symbol)
-        ? "nova-boxer"
+        ? "rocco-vidal"
         : /synthetic|imported/i.test(symbol)
           ? "synthetic-imported"
           : null;

@@ -621,6 +621,63 @@ describe("HitSparkRenderer helpers", () => {
     expect(renderer.getDiagnostics().presentations[0]?.assetFrame?.scale).toBe(2);
     renderer.dispose();
   });
+
+  it("composes non-uniform HitDef spark scale with size and authored asset scale", async () => {
+    const provider = new RecordingSpriteProvider([
+      sprite(14201, 0, { width: 32, height: 24, axisX: 10, axisY: 18 }),
+    ]);
+    const renderer = new HitSparkRenderer(provider, fakeTextureStore());
+    const sourceActor: ActorSnapshot = {
+      ...actor,
+      hitEffectEvents: [{
+        type: "HitSpark",
+        kind: "hit",
+        sparkNo: 7001,
+        raw: "7001",
+        scale: { x: 2, y: -0.5 },
+        stateNo: 200,
+        tick: 1,
+        runtimeTick: 10,
+        assetFrame: {
+          source: "common",
+          actionId: 7001,
+          frameIndex: 0,
+          spriteGroup: 14201,
+          spriteIndex: 0,
+          offsetX: 12,
+          offsetY: -6,
+          duration: 3,
+          scale: 2,
+        },
+      }],
+    };
+
+    await renderer.update([sourceActor], 11);
+
+    const sparkGroup = renderer.group.children[0] as THREE.Group;
+    const presentation = renderer.getDiagnostics().presentations[0];
+    const baseRenderOrder = presentation?.renderOrder ?? 0;
+    const spriteMesh = sparkGroup.children.find(
+      (child) => child instanceof THREE.Mesh && child.renderOrder === baseRenderOrder + 2,
+    ) as THREE.Mesh;
+    const expectedSize = 44 + Math.abs(7001 % 5);
+    expect(resolveHitSparkPresentation(
+      actor,
+      sourceActor.hitEffectEvents![0]!,
+      11,
+      0,
+      HIT_SPARK_LIFETIME_FRAMES,
+      11,
+    )?.size).toBe(expectedSize);
+    expect(sparkGroup.scale.x).toBeCloseTo(expectedSize * 2, 4);
+    expect(sparkGroup.scale.y).toBeCloseTo(expectedSize * -0.5, 4);
+    expect(spriteMesh.scale.x * sparkGroup.scale.x).toBeCloseTo(32 * 2 * 2, 4);
+    expect(spriteMesh.scale.y * sparkGroup.scale.y).toBeCloseTo(24 * 2 * -0.5, 4);
+    expect(Math.abs(spriteMesh.position.x)).toBeCloseTo((18 * 2) / expectedSize, 3);
+    expect(spriteMesh.position.y).toBeCloseTo((12 * 2) / expectedSize, 3);
+    expect(presentation).toMatchObject({ scale: { x: 2, y: -0.5 } });
+    renderer.dispose();
+  });
 });
 
 class RecordingSpriteProvider implements SpriteProvider {

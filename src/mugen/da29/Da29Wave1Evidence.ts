@@ -56,8 +56,8 @@ export function executeDa29_012_TraceManifest() {
 /** DA29-013 */
 export function executeDa29_013_CnsCensus() {
   const sources = [
-    "public/characters/nova-boxer/mugen/nova.cns",
-    "public/characters/mira-volt/mugen/mira.cns",
+    "public/characters/rocco-vidal/mugen/rocco.cns",
+    "public/characters/nadia-arce/mugen/nadia.cns",
   ].filter((p) => existsSync(resolve(root(), p)));
   if (!sources.length) throw new Error("no CNS fixtures");
   const censuses = sources.map((source) => {
@@ -344,7 +344,7 @@ export function executeDa29_029_MatchStateSerialization() {
 
 /** DA29-033 StateDef vs controller separation — execute parseCns */
 export function executeDa29_033_StateControllerSyntax() {
-  const source = "public/characters/nova-boxer/mugen/nova.cns";
+  const source = "public/characters/rocco-vidal/mugen/rocco.cns";
   const text = readFileSync(resolve(root(), source), "utf8");
   const parsed = parseCns(text, source);
   return {
@@ -362,7 +362,7 @@ export function executeDa29_033_StateControllerSyntax() {
 
 /** DA29-037 trigger groups surface in CNS params */
 export function executeDa29_037_TriggerGroups() {
-  const source = "public/characters/nova-boxer/mugen/nova.cns";
+  const source = "public/characters/rocco-vidal/mugen/rocco.cns";
   const text = readFileSync(resolve(root(), source), "utf8");
   const parsed = parseCns(text, source);
   let triggerall = 0;
@@ -387,7 +387,7 @@ export function executeDa29_037_TriggerGroups() {
 
 /** DA29-038 dynamic param audit — classify params from parsed controllers */
 export function executeDa29_038_DynamicParamAudit() {
-  const source = "public/characters/nova-boxer/mugen/nova.cns";
+  const source = "public/characters/rocco-vidal/mugen/rocco.cns";
   const parsed = parseCns(readFileSync(resolve(root(), source), "utf8"), source);
   let staticOnly = 0;
   let expressionLike = 0;
@@ -407,7 +407,7 @@ export function executeDa29_038_DynamicParamAudit() {
 
 /** DA29-040 compiler differential shape — parsed blocks digest */
 export function executeDa29_040_CompilerDifferential() {
-  const source = "public/characters/nova-boxer/mugen/nova.cns";
+  const source = "public/characters/rocco-vidal/mugen/rocco.cns";
   const parsed = parseCns(readFileSync(resolve(root(), source), "utf8"), source);
   const summary = {
     states: parsed.states.length,
@@ -542,57 +542,92 @@ function executeCharacterContactJourney(taskId: string, pkg: ContactPackage) {
   };
 }
 
-const NOVA_PKG: ContactPackage = {
-  id: "nova",
-  label: "nova-boxer",
-  cns: "public/characters/nova-boxer/mugen/nova.cns",
-  air: "public/characters/nova-boxer/mugen/nova.air",
-  cmd: "public/characters/nova-boxer/mugen/nova.cmd",
+const ROCCO_PKG: ContactPackage = {
+  id: "rocco",
+  label: "rocco-vidal",
+  cns: "public/characters/rocco-vidal/mugen/rocco.cns",
+  air: "public/characters/rocco-vidal/mugen/rocco.air",
+  cmd: "public/characters/rocco-vidal/mugen/rocco.cmd",
 };
-const MIRA_PKG: ContactPackage = {
-  id: "mira",
-  label: "mira-volt",
-  cns: "public/characters/mira-volt/mugen/mira.cns",
-  air: "public/characters/mira-volt/mugen/mira.air",
-  cmd: "public/characters/mira-volt/mugen/mira.cmd",
-};
-const ROOK_PKG: ContactPackage = {
-  id: "rook",
-  label: "rook-apprentice",
-  cns: "public/characters/rook-apprentice/mugen/rook.cns",
-  air: "public/characters/rook-apprentice/mugen/rook.air",
-  cmd: "public/characters/rook-apprentice/mugen/rook.cmd",
+const NADIA_PKG: ContactPackage = {
+  id: "nadia",
+  label: "nadia-arce",
+  cns: "public/characters/nadia-arce/mugen/nadia.cns",
+  air: "public/characters/nadia-arce/mugen/nadia.air",
+  cmd: "public/characters/nadia-arce/mugen/nadia.cmd",
 };
 
-/** DA29-041 Nova contact journey via shipped CombatResolver + ContactMemory */
-export function executeDa29_041_NovaContactSurface() {
-  return executeCharacterContactJourney("DA29-041", NOVA_PKG);
+/** DA29-041 Rocco contact journey via shipped CombatResolver + ContactMemory */
+export function executeDa29_041_RoccoContactSurface() {
+  return executeCharacterContactJourney("DA29-041", ROCCO_PKG);
 }
 
-export function executeDa29_042_MiraContactSurface() {
-  return executeCharacterContactJourney("DA29-042", MIRA_PKG);
+export function executeDa29_042_NadiaContactSurface() {
+  return executeCharacterContactJourney("DA29-042", NADIA_PKG);
 }
 
-export function executeDa29_043_ThirdCharacter() {
-  return executeCharacterContactJourney("DA29-043", ROOK_PKG);
+export function executeDa29_043_IndependentRosterEvidence() {
+  const rocco = executeCharacterContactJourney("DA29-043", ROCCO_PKG);
+  const nadia = executeCharacterContactJourney("DA29-043", NADIA_PKG);
+  const provenancePaths = [
+    "public/characters/rocco-vidal/source-provenance.json",
+    "public/characters/nadia-arce/source-provenance.json",
+  ];
+  const permissionPaths = [
+    "public/characters/rocco-vidal/asset-permission.json",
+    "public/characters/nadia-arce/asset-permission.json",
+  ];
+  const spritePaths = [
+    "public/characters/rocco-vidal/sprite-sheet-alpha.png",
+    "public/characters/nadia-arce/sprite-sheet-alpha.png",
+  ];
+  const spriteDigests = spritePaths.map(sha256File);
+  if (new Set(spriteDigests).size !== spriteDigests.length) {
+    throw new Error("shipped roster sprite sheets must have independent digests");
+  }
+  for (const path of [...provenancePaths, ...permissionPaths]) {
+    if (!existsSync(resolve(root(), path))) throw new Error(`missing ${path}`);
+  }
+  return {
+    id: "DA29-043",
+    functionResults: {
+      ...rocco.functionResults,
+      packages: [rocco.functionResults.package, nadia.functionResults.package],
+      contacts: [rocco.functionResults.contact, nadia.functionResults.contact],
+      checksums: [rocco.functionResults.checksum, nadia.functionResults.checksum],
+      spriteDigests,
+      independentAssetDigests: true,
+      permissionRecords: permissionPaths.length,
+      provenanceRecords: provenancePaths.length,
+    },
+    anchors: [
+      ...new Set([
+        ...rocco.anchors,
+        ...nadia.anchors,
+        ...spritePaths,
+        ...provenancePaths,
+        ...permissionPaths,
+      ]),
+    ],
+  };
 }
 
 /** Specialized combat surfaces 044–050: full journey facts with cut-specific telemetry. */
 export function executeDa29_044_to_050_CombatSurfaces(id: string) {
-  const base = executeCharacterContactJourney(id, NOVA_PKG);
-  const mira = executeCharacterContactJourney(id, MIRA_PKG);
+  const base = executeCharacterContactJourney(id, ROCCO_PKG);
+  const nadia = executeCharacterContactJourney(id, NADIA_PKG);
   const fr = base.functionResults as Record<string, unknown>;
-  const miraFr = mira.functionResults as Record<string, unknown>;
+  const nadiaFr = nadia.functionResults as Record<string, unknown>;
   return {
     id,
     functionResults: {
       ...fr,
       cut: id,
-      secondaryPackage: miraFr.package,
-      secondaryDamage: miraFr.damage,
-      secondaryChecksum: miraFr.checksum,
+      secondaryPackage: nadiaFr.package,
+      secondaryDamage: nadiaFr.damage,
+      secondaryChecksum: nadiaFr.checksum,
     },
-    anchors: [...new Set([...base.anchors, ...mira.anchors])],
+    anchors: [...new Set([...base.anchors, ...nadia.anchors])],
   };
 }
 
@@ -618,9 +653,9 @@ export const DA29_WAVE1_EXECUTORS: Record<
   "DA29-037": executeDa29_037_TriggerGroups,
   "DA29-038": executeDa29_038_DynamicParamAudit,
   "DA29-040": executeDa29_040_CompilerDifferential,
-  "DA29-041": executeDa29_041_NovaContactSurface,
-  "DA29-042": executeDa29_042_MiraContactSurface,
-  "DA29-043": executeDa29_043_ThirdCharacter,
+  "DA29-041": executeDa29_041_RoccoContactSurface,
+  "DA29-042": executeDa29_042_NadiaContactSurface,
+  "DA29-043": executeDa29_043_IndependentRosterEvidence,
   "DA29-044": () => executeDa29_044_to_050_CombatSurfaces("DA29-044"),
   "DA29-045": () => executeDa29_044_to_050_CombatSurfaces("DA29-045"),
   "DA29-046": () => executeDa29_044_to_050_CombatSurfaces("DA29-046"),

@@ -88,6 +88,8 @@ import { createFixtureAnimations } from "../mugen/runtime/fixture";
 import { createImportedFighterDefinition } from "../mugen/runtime/importedFighter";
 import { MatchWorld, type MatchWorldActorRegistrySnapshot } from "../mugen/runtime/MatchWorld";
 import { MugenRuntime } from "../mugen/runtime/MugenRuntime";
+import { runtimeAnimationElementVarForFrame, runtimeAnimationLength } from "../mugen/runtime/RuntimeAnimationSystem";
+import { runtimeCollisionBoxCoordinate } from "../mugen/runtime/RuntimeFrameSystem";
 import { createMatchSmokeTraceArtifact } from "../mugen/runtime/RuntimeTracePresets";
 import { fingerprintMugenStateSource } from "../mugen/compiler/StateSourceResolver";
 import type { RuntimeTraceArtifact } from "../mugen/runtime/RuntimeTraceArtifact";
@@ -253,7 +255,35 @@ import {
 } from "./StudioModel";
 
 type NavigatorTab = "animations" | "states" | "commands";
-type AppMode = "match" | "inspect" | "studio";
+type AppMode = "match" | "lab" | "inspect" | "studio";
+type FighterLabView = "gallery" | "timeline" | "showcase" | "matrix" | "compare" | "testbench";
+type FighterLabActionKind = "movement" | "combat" | "damage" | "result" | "effect" | "other";
+type FighterLabActionMeta = {
+  id: number;
+  label: string;
+  stateKey?: string;
+  kind: FighterLabActionKind;
+};
+
+const FIGHTER_LAB_ACTIONS: readonly FighterLabActionMeta[] = [
+  { id: 0, label: "Idle", stateKey: "idle", kind: "movement" },
+  { id: 10, label: "Crouch", stateKey: "crouch", kind: "movement" },
+  { id: 20, label: "Walk forward", stateKey: "walk-forward", kind: "movement" },
+  { id: 21, label: "Walk back", stateKey: "walk-back", kind: "movement" },
+  { id: 40, label: "Jump", stateKey: "jump", kind: "movement" },
+  { id: 120, label: "Guard", stateKey: "guard", kind: "combat" },
+  { id: 180, label: "Win", stateKey: "win", kind: "result" },
+  { id: 200, label: "Light strike", stateKey: "light-strike", kind: "combat" },
+  { id: 210, label: "Heavy strike", stateKey: "heavy-strike", kind: "combat" },
+  { id: 220, label: "Special", stateKey: "special", kind: "combat" },
+  { id: 500, label: "Hitstun", stateKey: "hitstun", kind: "damage" },
+  { id: 510, label: "Knockdown", stateKey: "knockdown", kind: "damage" },
+  { id: 515, label: "KO", stateKey: "ko", kind: "result" },
+  { id: 800, label: "Throw", stateKey: "throw", kind: "combat" },
+  { id: 7000, label: "Guard spark", kind: "effect" },
+  { id: 7001, label: "Hit spark", kind: "effect" },
+  { id: 7002, label: "Kick spark", kind: "effect" },
+];
 type ProjectStorageBackend = StudioProjectStoreBackend | "localstorage-cache";
 type CommandPaletteTone = "ok" | "warn" | "error" | "active" | "neutral";
 type CommandPaletteAction = {
@@ -388,6 +418,9 @@ function iconForStatus(status: StudioStatus): StudioIconName {
 function iconForMode(mode: AppMode): StudioIconName {
   if (mode === "match") {
     return "match";
+  }
+  if (mode === "lab") {
+    return "character";
   }
   if (mode === "inspect") {
     return "data";
@@ -890,32 +923,8 @@ type SourceImportOptions = {
 };
 
 const TRACE_ARTIFACT_HISTORY_LIMIT = 8;
-const CONTENT_PACK_FIGHTER_IDS = new Set([
-  "don-rayo",
-  "la-jefa-del-combo",
-  "turbo-abuela",
-  "tanque-de-carton",
-  "monje-wifi",
-  "sombra-del-super",
-  "mara-cinta",
-  "toro-pixel",
-  "nico-guante",
-  "luna-codo",
-  "sargento-pila",
-  "bruno-giro",
-  "vera-patada",
-  "rulo-viento",
-]);
-const CONTENT_PACK_ATLAS_FIGHTER_IDS = new Set([
-  "mara-cinta",
-  "toro-pixel",
-  "nico-guante",
-  "luna-codo",
-  "sargento-pila",
-  "bruno-giro",
-  "vera-patada",
-  "rulo-viento",
-]);
+const CONTENT_PACK_FIGHTER_IDS = new Set<string>();
+const CONTENT_PACK_ATLAS_FIGHTER_IDS = new Set<string>();
 
 export class App {
   private readonly spriteProvider = new CompositeSpriteProvider(new MockSpriteProvider());
@@ -929,6 +938,7 @@ export class App {
   private readonly stageLoader = new MugenStageLoader();
   private readonly fixtureAnimations = createFixtureAnimations();
   private inspectorRuntime = new MugenRuntime(this.fixtureAnimations);
+  private fighterLabRuntime = new MugenRuntime(demoFighters[0]!.animations);
   private matchRuntime = new MatchWorld({ p1: demoFighters[0]!, p2: demoFighters[1]! });
   private character?: MugenCharacter;
   private importedFighter?: DemoFighterDefinition;
@@ -942,6 +952,8 @@ export class App {
   private runtimeQaScenario?: RuntimeQaScenario;
   private selectedP1 = demoFighters[0]!.id;
   private selectedP2 = demoFighters[1]!.id;
+  private selectedLabFighterId = demoFighters[0]!.id;
+  private fighterLabView: FighterLabView = "timeline";
   private selectedStageId = rooftopDojoStage.id;
   private selectedTeamMode: RuntimeTeamRoundMode = "single";
   private activeTab: NavigatorTab = "animations";
@@ -1044,7 +1056,7 @@ export class App {
 
   start(): void {
     this.readUrlState();
-    this.studioLeftDockOpen = this.mode === "inspect";
+    this.studioLeftDockOpen = this.mode === "inspect" || this.mode === "lab";
     this.refreshStoredProjects();
     this.refreshStoredTraceEvidence();
     void this.refreshStoredSourceHandles();
@@ -1295,24 +1307,28 @@ export class App {
       }
       if (action === "play-pause" || action === "interface-play-pause") {
         const playing = !this.snapshot.playing;
-        this.snapshot =
-          this.isInspectorRuntimeSurface()
-            ? this.inspectorRuntime.dispatch({ type: "set-playing", playing })
-            : this.matchRuntime.dispatch({ type: "set-playing", playing });
+        const previewRuntime = this.getActivePreviewRuntime();
+        this.snapshot = previewRuntime
+          ? previewRuntime.dispatch({ type: "set-playing", playing })
+          : this.matchRuntime.dispatch({ type: "set-playing", playing });
         target.textContent = playing ? "Pause" : "Play";
         this.updateUi();
       } else if (action === "step") {
-        this.snapshot =
-          this.isInspectorRuntimeSurface()
-            ? this.inspectorRuntime.dispatch({ type: "step", ticks: 1 })
-            : this.matchRuntime.step(this.collectMatchInput(), { force: true });
+        const previewRuntime = this.getActivePreviewRuntime();
+        this.snapshot = previewRuntime
+          ? previewRuntime.dispatch({ type: "step", ticks: 1 })
+          : this.matchRuntime.step(this.collectMatchInput(), { force: true });
         if (!this.isInspectorRuntimeSurface()) {
           this.audio.processSnapshot(this.snapshot);
         }
         this.updateUi();
       } else if (action === "reset-round") {
         if (this.isInspectorRuntimeSurface()) {
-          this.resetInspectorRuntime();
+          if (this.mode === "lab") {
+            this.resetFighterLabRuntime();
+          } else {
+            this.resetInspectorRuntime();
+          }
         } else {
           this.audio.stopAll();
           this.matchRuntime.dispatch({ type: "reset" });
@@ -1414,10 +1430,15 @@ export class App {
         return;
       }
 
-      const mode = target.closest<HTMLElement>("[data-mode]")?.dataset.mode as AppMode | undefined;
+      const mode = target.closest<HTMLButtonElement>("button[data-mode]")?.dataset.mode as AppMode | undefined;
       if (mode) {
+        if (mode === "lab" && this.mode !== "lab") {
+          this.resetFighterLabRuntime();
+        } else if (mode === "inspect" && this.mode === "lab") {
+          this.resetInspectorRuntime();
+        }
         this.mode = mode;
-        this.studioLeftDockOpen = mode === "inspect";
+        this.studioLeftDockOpen = mode === "inspect" || mode === "lab";
         this.studioRightDockOpen = true;
         this.studioFocusMode = false;
         this.snapshot = this.getActiveSnapshot();
@@ -1434,6 +1455,9 @@ export class App {
 
       const studioTab = parseStudioTab(target.closest<HTMLElement>("[data-studio-tab]")?.dataset.studioTab);
       if (studioTab) {
+        if (studioTab === "inspector" && this.mode === "lab") {
+          this.resetInspectorRuntime();
+        }
         this.studioTab = studioTab;
         this.studioMobilePane = "workflow";
         this.studioLeftDockOpen = false;
@@ -1575,6 +1599,50 @@ export class App {
         this.updateUi();
       }
 
+      const labView = target.closest<HTMLElement>("[data-lab-view]")?.dataset.labView as FighterLabView | undefined;
+      if (labView === "gallery" || labView === "timeline" || labView === "showcase" || labView === "matrix" || labView === "compare" || labView === "testbench") {
+        const labFighterId = target.closest<HTMLElement>("[data-lab-fighter-id]")?.dataset.labFighterId;
+        if (labFighterId && this.getLabFighters().some((fighter) => fighter.id === labFighterId)) {
+          this.selectedLabFighterId = labFighterId;
+          this.resetFighterLabRuntime();
+        }
+        const labActionId = this.parseOptionalNumber(target.closest<HTMLElement>("[data-lab-action-id]")?.dataset.labActionId);
+        if (labActionId !== undefined && this.getSelectedLabFighter().animations.has(labActionId)) {
+          this.snapshot = this.fighterLabRuntime.dispatch({ type: "select-action", actionId: labActionId });
+        }
+        this.fighterLabView = labView;
+        this.writeUrlState();
+        this.updateUi();
+        this.scrollNavigatorToTop();
+        this.scrollRightPaneToTop();
+        return;
+      }
+
+      const labFighterId = target.closest<HTMLElement>("[data-lab-fighter-id]")?.dataset.labFighterId;
+      if (labFighterId && this.mode === "lab" && this.getLabFighters().some((fighter) => fighter.id === labFighterId)) {
+        this.selectedLabFighterId = labFighterId;
+        this.resetFighterLabRuntime();
+        this.writeUrlState();
+        this.updateUi();
+        return;
+      }
+
+      const labControl = target.closest<HTMLElement>("[data-lab-action-id], [data-lab-frame-index]");
+      if (labControl && this.mode === "lab") {
+        const actionId = this.parseOptionalNumber(labControl.dataset.labActionId);
+        const frameIndex = this.parseOptionalNumber(labControl.dataset.labFrameIndex);
+        if (actionId !== undefined && this.getSelectedLabFighter().animations.has(actionId)) {
+          this.snapshot = this.fighterLabRuntime.dispatch({ type: "select-action", actionId });
+        }
+        if (frameIndex !== undefined) {
+          this.fighterLabRuntime.dispatch({ type: "set-playing", playing: false });
+          this.snapshot = this.fighterLabRuntime.dispatch({ type: "select-frame", frameIndex });
+        }
+        this.writeUrlState();
+        this.updateUi();
+        return;
+      }
+
       const storedProjectId = target.closest<HTMLElement>("[data-stored-project-id]")?.dataset.storedProjectId;
       if (storedProjectId) {
         this.openStoredProject(storedProjectId);
@@ -1584,10 +1652,10 @@ export class App {
     this.root.addEventListener("change", (event) => {
       const target = event.target as HTMLInputElement | HTMLSelectElement;
       if (target instanceof HTMLSelectElement && target.dataset.action === "speed") {
-        this.snapshot =
-          this.isInspectorRuntimeSurface()
-            ? this.inspectorRuntime.dispatch({ type: "set-speed", speed: Number(target.value) })
-            : this.matchRuntime.dispatch({ type: "set-speed", speed: Number(target.value) });
+        const previewRuntime = this.getActivePreviewRuntime();
+        this.snapshot = previewRuntime
+          ? previewRuntime.dispatch({ type: "set-speed", speed: Number(target.value) })
+          : this.matchRuntime.dispatch({ type: "set-speed", speed: Number(target.value) });
       }
       if (target instanceof HTMLSelectElement && target.dataset.fighterSelect) {
         if (target.dataset.fighterSelect === "p1") {
@@ -1656,7 +1724,8 @@ export class App {
           key: target.dataset.toggle as "showClsn1" | "showClsn2" | "showAxis" | "showGrid",
           value: target.checked,
         };
-        this.snapshot = this.isInspectorRuntimeSurface() ? this.inspectorRuntime.dispatch(toggle) : this.matchRuntime.dispatch(toggle);
+        const previewRuntime = this.getActivePreviewRuntime();
+        this.snapshot = previewRuntime ? previewRuntime.dispatch(toggle) : this.matchRuntime.dispatch(toggle);
       }
       if (target instanceof HTMLInputElement && target.id === "project-input") {
         const file = target.files?.[0];
@@ -1777,20 +1846,11 @@ export class App {
   }
 
   private async installRuntimeAtlases(): Promise<void> {
-    const atlasVersion = "content-atlas-2026-07-30";
+    const atlasVersion = "karate-reset-2026-08-01";
     await this.installSatiricalFightFxAtlas(atlasVersion);
     const atlasRoutes = [
-      { fighterId: "nova-boxer", label: "Nova Boxer", path: "nova-boxer", minGroup: 10000, maxGroup: 10999 },
-      { fighterId: "mira-volt", label: "Mira Volt", path: "mira-volt", minGroup: 11000, maxGroup: 11999 },
-      { fighterId: "rook-apprentice", label: "Rook Apprentice", path: "rook-apprentice", minGroup: 14000, maxGroup: 14999 },
-      { fighterId: "mara-cinta", label: "Mara Cinta", path: "mara-cinta", minGroup: 21000, maxGroup: 21999 },
-      { fighterId: "toro-pixel", label: "Toro Pixel", path: "toro-pixel", minGroup: 22000, maxGroup: 22999 },
-      { fighterId: "nico-guante", label: "Nico Guante", path: "nico-guante", minGroup: 23000, maxGroup: 23999 },
-      { fighterId: "luna-codo", label: "Luna Codo", path: "luna-codo", minGroup: 24000, maxGroup: 24999 },
-      { fighterId: "sargento-pila", label: "Sargento Pila", path: "sargento-pila", minGroup: 25000, maxGroup: 25999 },
-      { fighterId: "bruno-giro", label: "Bruno Giro", path: "bruno-giro", minGroup: 26000, maxGroup: 26999 },
-      { fighterId: "vera-patada", label: "Vera Patada", path: "vera-patada", minGroup: 27000, maxGroup: 27999 },
-      { fighterId: "rulo-viento", label: "Rulo Viento", path: "rulo-viento", minGroup: 28000, maxGroup: 28999 },
+      { fighterId: "rocco-vidal", label: "Rocco Vidal", path: "rocco-vidal", minGroup: 15000, maxGroup: 15999 },
+      { fighterId: "nadia-arce", label: "Nadia Arce", path: "nadia-arce", minGroup: 16000, maxGroup: 16999 },
     ];
     const visibleFighterIds = new Set([this.selectedP1, this.selectedP2]);
     atlasRoutes.sort((left, right) => Number(!visibleFighterIds.has(left.fighterId)) - Number(!visibleFighterIds.has(right.fighterId)));
@@ -1881,7 +1941,7 @@ export class App {
     const scenario = params.get("scenario");
     this.runtimeQaScenario = scenario === "ikemen-tag-presentation" ? scenario : undefined;
     const mode = params.get("mode");
-    if (mode === "match" || mode === "inspect" || mode === "studio") {
+    if (mode === "match" || mode === "lab" || mode === "inspect" || mode === "studio") {
       this.mode = mode;
     }
 
@@ -1918,6 +1978,27 @@ export class App {
     this.studioDebugFilter = parseStudioDebugFilter(params.get("debug")) ?? this.studioDebugFilter;
     this.studioSelectedAssetId = params.get("assetId") ?? undefined;
     this.studioSelectedActorId = params.get("actor") ?? undefined;
+    const labView = params.get("labView");
+    if (labView === "gallery" || labView === "timeline" || labView === "showcase" || labView === "matrix" || labView === "compare" || labView === "testbench") {
+      this.fighterLabView = labView;
+    }
+    const labFighterId = params.get("fighter");
+    if (labFighterId && this.getLabFighters().some((fighter) => fighter.id === labFighterId)) {
+      this.selectedLabFighterId = labFighterId;
+    }
+    if (this.mode === "lab") {
+      this.resetFighterLabRuntime();
+      const labActionId = this.parseOptionalNumber(params.get("action"));
+      const fighter = this.getSelectedLabFighter();
+      if (labActionId !== undefined && fighter.animations.has(labActionId)) {
+        this.fighterLabRuntime.dispatch({ type: "select-action", actionId: labActionId });
+      }
+      const labFrameIndex = this.parseOptionalNumber(params.get("frame"));
+      if (labFrameIndex !== undefined) {
+        this.fighterLabRuntime.dispatch({ type: "set-playing", playing: false });
+        this.fighterLabRuntime.dispatch({ type: "select-frame", frameIndex: labFrameIndex });
+      }
+    }
     this.snapshot = this.getActiveSnapshot();
   }
 
@@ -1950,6 +2031,12 @@ export class App {
       if (this.activeTab === "commands" && this.selectedInspectorCommandName) {
         params.set("command", this.selectedInspectorCommandName);
       }
+    }
+    if (this.mode === "lab") {
+      params.set("fighter", this.selectedLabFighterId);
+      params.set("labView", this.fighterLabView);
+      params.set("action", String(this.snapshot.selectedActionId ?? this.getSelectedLabFighter().idleAction));
+      params.set("frame", String(this.snapshot.actors[0]?.runtime.frameIndex ?? 0));
     }
     if (this.mode === "studio") {
       params.set("studio", this.studioTab);
@@ -4181,7 +4268,46 @@ export class App {
     this.log(this.character ? "Inspector playback reset" : "Inspector is waiting for a character");
   }
 
+  private getSelectedLabFighter(): DemoFighterDefinition {
+    return this.getLabFighters().find((fighter) => fighter.id === this.selectedLabFighterId) ?? this.getLabFighters()[0] ?? demoFighters[0]!;
+  }
+
+  private getLabFighters(): DemoFighterDefinition[] {
+    const seen = new Set<string>();
+    return this.getAvailableFighters().filter((fighter) => {
+      if (seen.has(fighter.id)) {
+        return false;
+      }
+      seen.add(fighter.id);
+      return true;
+    });
+  }
+
+  private resetFighterLabRuntime(): void {
+    const fighter = this.getSelectedLabFighter();
+    this.selectedLabFighterId = fighter.id;
+    this.fighterLabRuntime = new MugenRuntime(fighter.animations);
+    this.snapshot = this.fighterLabRuntime.getSnapshot();
+    this.log(`Fighter Lab loaded ${fighter.displayName}`);
+  }
+
   private getRenderableSnapshot(): MugenSnapshot {
+    if (this.mode === "lab") {
+      const snapshot = this.fighterLabRuntime.getSnapshot();
+      const fighter = this.getSelectedLabFighter();
+      const actor = snapshot.actors[0];
+      return {
+        ...snapshot,
+        actors: actor
+          ? [{
+              ...actor,
+              label: fighter.displayName,
+              spriteOwnerDefinitionId: fighter.id,
+              spriteOwnerLabel: fighter.displayName,
+            }]
+          : [],
+      };
+    }
     if (this.mode === "studio" && this.studioTab === "inspector") {
       return this.inspectorRuntime.getSnapshot();
     }
@@ -4211,10 +4337,8 @@ export class App {
     if (this.snapshot.playing) {
       this.pendingMs += deltaMs;
       while (this.pendingMs >= 1000 / 60) {
-        this.snapshot =
-          this.isInspectorRuntimeSurface()
-            ? this.inspectorRuntime.step(1)
-            : this.matchRuntime.step(matchInput);
+        const previewRuntime = this.getActivePreviewRuntime();
+        this.snapshot = previewRuntime ? previewRuntime.step(1) : this.matchRuntime.step(matchInput);
         if (!this.isInspectorRuntimeSurface()) {
           this.audio.processSnapshot(this.snapshot);
         }
@@ -4248,6 +4372,7 @@ export class App {
   private syncShellState(): void {
     const shell = this.root.querySelector<HTMLElement>(".app-shell");
     shell?.classList.toggle("mode-match", this.mode === "match");
+    shell?.classList.toggle("mode-lab", this.mode === "lab");
     shell?.classList.toggle("mode-inspect", this.mode === "inspect");
     shell?.classList.toggle("mode-studio", this.mode === "studio");
     shell?.setAttribute("data-mode", this.mode);
@@ -4285,8 +4410,9 @@ export class App {
     }
     this.studioViewportDefaultsApplied = true;
     const disableOverlay = (key: "showClsn1" | "showClsn2" | "showAxis" | "showGrid"): void => {
-      this.snapshot = this.isInspectorRuntimeSurface()
-        ? this.inspectorRuntime.dispatch({ type: "toggle", key, value: false })
+      const previewRuntime = this.getActivePreviewRuntime();
+      this.snapshot = previewRuntime
+        ? previewRuntime.dispatch({ type: "toggle", key, value: false })
         : this.matchRuntime.dispatch({ type: "toggle", key, value: false });
     };
     disableOverlay("showGrid");
@@ -4380,12 +4506,16 @@ export class App {
     const contextTitle =
       this.mode === "studio"
         ? summary.name
+        : this.mode === "lab"
+          ? this.getSelectedLabFighter().displayName
         : this.mode === "inspect"
           ? characterName ?? "Character intake"
           : stage?.displayName ?? "Runtime Match";
     const contextDetail =
       this.mode === "studio"
         ? labelForStudioTab(this.studioTab)
+        : this.mode === "lab"
+          ? `Action ${this.snapshot.selectedActionId ?? "-"} / frame ${this.snapshot.actors[0]?.runtime.frameIndex ?? 0}`
         : this.mode === "inspect"
           ? this.character
             ? "Local package loaded"
@@ -4394,6 +4524,8 @@ export class App {
     const primaryAction =
       this.mode === "match"
         ? `<button type="button" class="interface-primary-action" data-action="interface-play-pause" data-runtime-state="${this.snapshot.playing ? "pause" : "play"}" aria-label="${this.snapshot.playing ? "Pause simulation" : "Resume simulation"}">${runtimeControlContent(this.snapshot.playing ? "pause" : "play", this.snapshot.playing ? "Pause" : "Play")}</button>`
+        : this.mode === "lab"
+          ? `<button type="button" class="interface-primary-action" data-action="interface-play-pause" data-runtime-state="${this.snapshot.playing ? "pause" : "play"}" aria-label="${this.snapshot.playing ? "Pause fighter preview" : "Resume fighter preview"}">${runtimeControlContent(this.snapshot.playing ? "pause" : "play", this.snapshot.playing ? "Pause" : "Play")}</button>`
         : this.mode === "inspect"
           ? `<button type="button" class="interface-primary-action" data-action="load-zip">${tablerIcon("folder", "ui-icon")}<span>Load source</span></button>`
           : `<button type="button" class="interface-primary-action" data-mode="match">${tablerIcon("play", "ui-icon")}<span>Playtest</span></button>`;
@@ -4405,6 +4537,7 @@ export class App {
         </div>
         <nav class="interface-mode-nav mode-switch" aria-label="Product mode">
           ${this.renderModeButton("match", "Match", "play")}
+          ${this.renderModeButton("lab", "Fighter Lab", "test")}
           ${this.renderModeButton("inspect", "Inspect", "source")}
           ${this.renderModeButton("studio", "Studio", "build")}
         </nav>
@@ -4413,7 +4546,7 @@ export class App {
           <span>${escapeHtml(contextDetail)}</span>
         </div>
         <div class="interface-actions" aria-label="Workspace controls">
-          <button type="button" class="interface-secondary-action ${this.studioLeftDockOpen ? "is-active" : ""}" data-action="toggle-left-dock" aria-expanded="${this.studioLeftDockOpen}" aria-controls="left-pane">${tablerIcon(this.mode === "studio" ? "workbench" : this.mode === "inspect" ? "folder" : "tools", "ui-icon")}<span>${this.mode === "studio" ? "Workspace" : this.mode === "inspect" ? "Source" : "Setup"}</span></button>
+          <button type="button" class="interface-secondary-action ${this.studioLeftDockOpen ? "is-active" : ""}" data-action="toggle-left-dock" aria-expanded="${this.studioLeftDockOpen}" aria-controls="left-pane">${tablerIcon(this.mode === "studio" ? "workbench" : this.mode === "lab" ? "character" : this.mode === "inspect" ? "folder" : "tools", "ui-icon")}<span>${this.mode === "studio" ? "Workspace" : this.mode === "lab" ? "Actions" : this.mode === "inspect" ? "Source" : "Setup"}</span></button>
           ${primaryAction}
           <button type="button" class="interface-icon-action ${this.studioRightDockOpen ? "is-active" : ""}" data-action="toggle-right-dock" aria-expanded="${this.studioRightDockOpen}" aria-controls="right-pane" aria-label="${this.studioRightDockOpen ? "Hide contextual lens" : "Show contextual lens"}" title="Contextual lens">${tablerIcon("character", "ui-icon")}</button>
           <button type="button" class="interface-icon-action ${this.interfaceConsoleOpen ? "is-active" : ""}" data-action="toggle-console" aria-expanded="${this.interfaceConsoleOpen}" aria-controls="console" aria-label="${this.interfaceConsoleOpen ? "Hide runtime log" : "Show runtime log"}" title="Runtime log">${tablerIcon("data", "ui-icon")}</button>
@@ -4427,6 +4560,10 @@ export class App {
   private renderNavigator(): string {
     if (this.mode === "match") {
       return this.renderMatchNavigator();
+    }
+
+    if (this.mode === "lab") {
+      return this.renderFighterLabNavigator();
     }
 
     if (this.mode === "studio") {
@@ -4469,11 +4606,465 @@ export class App {
     `;
   }
 
+  private renderFighterLabNavigator(): string {
+    if (this.fighterLabView === "gallery") {
+      return this.renderFighterGalleryNavigator();
+    }
+    if (this.fighterLabView === "showcase") {
+      return this.renderFighterShowcaseNavigator();
+    }
+    if (this.fighterLabView === "matrix") {
+      return this.renderFighterMatrixNavigator();
+    }
+    if (this.fighterLabView === "compare") {
+      return this.renderFighterCompareNavigator();
+    }
+    if (this.fighterLabView === "testbench") {
+      return this.renderFighterTestbenchNavigator();
+    }
+    const fighter = this.getSelectedLabFighter();
+    const fighters = this.getLabFighters();
+    const selectedActionId = this.snapshot.selectedActionId ?? fighter.idleAction;
+    const groups: Array<{ kind: FighterLabActionKind; label: string }> = [
+      { kind: "movement", label: "Movement" },
+      { kind: "combat", label: "Combat" },
+      { kind: "damage", label: "Damage" },
+      { kind: "result", label: "Result" },
+      { kind: "effect", label: "VFX elements" },
+      { kind: "other", label: "Other authored actions" },
+    ];
+    return `
+      <div class="fighter-lab-nav" data-fighter-lab-nav>
+        <section class="section fighter-lab-roster" aria-labelledby="fighter-lab-roster-title">
+          <div class="section-heading-row">
+            <div><span class="panel-kicker">Roster</span><h2 id="fighter-lab-roster-title">Fighter Lab</h2></div>
+            <span class="badge ok">${fighters.length} ready</span>
+          </div>
+          <div class="fighter-lab-view-switch" role="group" aria-label="Fighter Lab view">
+            <button type="button" class="is-active" data-lab-view="timeline" aria-pressed="true">Timeline</button>
+            <button type="button" data-lab-view="gallery" aria-pressed="false">Gallery</button>
+            <button type="button" data-lab-view="showcase" aria-pressed="false">Showcase</button>
+            <button type="button" data-lab-view="matrix" aria-pressed="false">Matrix</button>
+            <button type="button" data-lab-view="compare" aria-pressed="false">Compare</button>
+            <button type="button" data-lab-view="testbench" aria-pressed="false">Testbench</button>
+          </div>
+          <p class="section-copy">Select one fighter, then inspect every authored action, frame, collision box, atlas row, and shared effect in isolation.</p>
+          <div class="fighter-lab-fighter-list">
+            ${fighters.map((candidate) => `
+              <button
+                type="button"
+                class="fighter-lab-fighter ${candidate.id === fighter.id ? "is-selected" : ""}"
+                data-lab-fighter-id="${escapeHtml(candidate.id)}"
+                aria-pressed="${candidate.id === fighter.id}"
+              >
+                <span class="fighter-lab-palette" style="--fighter-color:${escapeHtml(candidate.palette)}" aria-hidden="true"></span>
+                <span><strong>${escapeHtml(candidate.displayName)}</strong><small>${candidate.animations.size} actions / 3 VFX</small></span>
+                <span class="mono">G${candidate.spriteGroupBase}</span>
+              </button>
+            `).join("")}
+          </div>
+        </section>
+        ${groups.map((group) => {
+          const knownIds = new Set(FIGHTER_LAB_ACTIONS.map((meta) => meta.id));
+          const rows = group.kind === "other"
+            ? [...fighter.animations.keys()]
+              .filter((id) => !knownIds.has(id))
+              .sort((left, right) => left - right)
+              .map((id) => ({ id, label: `Action ${id}`, kind: "other" as const }))
+            : FIGHTER_LAB_ACTIONS.filter((meta) => meta.kind === group.kind)
+              .filter((meta) => fighter.animations.has(meta.id));
+          if (!rows.length) return "";
+          return `
+            <section class="section fighter-lab-action-group" data-lab-action-group="${group.kind}">
+              <div class="fighter-lab-group-head"><h3>${group.label}</h3><span>${rows.length}</span></div>
+              <div class="fighter-lab-action-list">
+                ${rows.map((meta) => {
+                  const action = fighter.animations.get(meta.id)!;
+                  const duration = action.frames.reduce((total, frame) => total + Math.max(1, frame.duration), 0);
+                  const stateKey = "stateKey" in meta ? meta.stateKey : undefined;
+                  const thumbnail = stateKey
+                    ? `<img src="/characters/${escapeHtml(fighter.id)}/frames/${escapeHtml(stateKey)}/frame-0.png" alt="" loading="lazy" />`
+                    : `<span class="fighter-lab-fx-mark">FX</span>`;
+                  return `
+                    <button
+                      type="button"
+                      class="fighter-lab-action ${meta.id === selectedActionId ? "is-selected" : ""}"
+                      data-lab-action-id="${meta.id}"
+                      aria-pressed="${meta.id === selectedActionId}"
+                    >
+                      <span class="fighter-lab-action-thumb">${thumbnail}</span>
+                      <span class="fighter-lab-action-copy"><strong>${escapeHtml(meta.label)}</strong><small>Action ${meta.id} / ${action.frames.length} frames / ${duration} ticks</small></span>
+                    </button>
+                  `;
+                }).join("")}
+              </div>
+            </section>
+          `;
+        }).join("")}
+      </div>
+    `;
+  }
+
+  private renderFighterGalleryNavigator(): string {
+    const fighters = this.getLabFighters();
+    const selected = this.getSelectedLabFighter();
+    const actionCount = fighters.reduce((total, fighter) => total + fighter.animations.size, 0);
+    return `
+      <div class="fighter-gallery-nav" data-fighter-gallery-nav>
+        <section class="section fighter-gallery-header" aria-labelledby="fighter-gallery-title">
+          <div class="section-heading-row">
+            <div><span class="panel-kicker">Roster view</span><h2 id="fighter-gallery-title">Character Gallery</h2></div>
+            <span class="badge ok">${fighters.length} fighters</span>
+          </div>
+          <div class="fighter-lab-view-switch" role="group" aria-label="Fighter Lab view">
+            <button type="button" data-lab-view="timeline" aria-pressed="false">Timeline</button>
+            <button type="button" class="is-active" data-lab-view="gallery" aria-pressed="true">Gallery</button>
+            <button type="button" data-lab-view="showcase" aria-pressed="false">Showcase</button>
+            <button type="button" data-lab-view="matrix" aria-pressed="false">Matrix</button>
+            <button type="button" data-lab-view="compare" aria-pressed="false">Compare</button>
+            <button type="button" data-lab-view="testbench" aria-pressed="false">Testbench</button>
+          </div>
+          <p class="section-copy">A compact roster inventory for checking who is loaded, how many actions are available, and whether the presentation package is ready before opening the frame timeline.</p>
+          <div class="fighter-gallery-summary" aria-label="Gallery totals">
+            <span><strong>${fighters.length}</strong><small>characters</small></span>
+            <span><strong>${actionCount}</strong><small>actions</small></span>
+            <span><strong>${fighters.reduce((total, fighter) => total + [...fighter.animations.values()].reduce((frames, action) => frames + action.frames.length, 0), 0)}</strong><small>frames</small></span>
+          </div>
+        </section>
+        <section class="section fighter-gallery-grid" aria-label="Loaded characters">
+          ${fighters.map((fighter) => {
+            const frames = [...fighter.animations.values()].reduce((total, action) => total + action.frames.length, 0);
+            const boxes = [...fighter.animations.values()].reduce((total, action) => total + action.frames.reduce((count, frame) => count + frame.clsn1.length + frame.clsn2.length, 0), 0);
+            const isSelected = fighter.id === selected.id;
+            const atlasStatus = this.atlasStatusByFighter.get(fighter.id) ?? "loading";
+            return `
+              <article class="fighter-gallery-card ${isSelected ? "is-selected" : ""}" data-fighter-gallery-card="${escapeHtml(fighter.id)}">
+                <button type="button" class="fighter-gallery-card-main" data-lab-fighter-id="${escapeHtml(fighter.id)}" aria-pressed="${isSelected}">
+                  <span class="fighter-gallery-card-art" style="--fighter-color:${escapeHtml(fighter.palette)}">
+                    <img src="/characters/${escapeHtml(fighter.id)}/frames/idle/frame-0.png" alt="" loading="lazy" />
+                  </span>
+                  <span class="fighter-gallery-card-copy"><strong>${escapeHtml(fighter.displayName)}</strong><small>${escapeHtml(fighter.authorName ?? (fighter.source === "imported" ? "Imported package" : "Native roster"))}</small></span>
+                  <span class="fighter-gallery-card-status is-${atlasStatus === "loaded" ? "ok" : "warn"}">${escapeHtml(atlasStatus)}</span>
+                </button>
+                <dl class="fighter-gallery-card-facts">
+                  <div><dt>Actions</dt><dd>${fighter.animations.size}</dd></div>
+                  <div><dt>Frames</dt><dd>${frames}</dd></div>
+                  <div><dt>Boxes</dt><dd>${boxes}</dd></div>
+                  <div><dt>Group</dt><dd>${fighter.spriteGroupBase}</dd></div>
+                </dl>
+                <button type="button" class="fighter-gallery-open" data-lab-fighter-id="${escapeHtml(fighter.id)}" data-lab-view="timeline">Open timeline <span aria-hidden="true">→</span></button>
+              </article>
+            `;
+          }).join("")}
+        </section>
+      </div>
+    `;
+  }
+
+  private renderFighterShowcaseNavigator(): string {
+    const fighters = this.getLabFighters();
+    const selected = this.getSelectedLabFighter();
+    return `
+      <div class="fighter-showcase-nav" data-fighter-showcase-nav>
+        <section class="section fighter-gallery-header" aria-labelledby="fighter-showcase-title">
+          <div class="section-heading-row"><div><span class="panel-kicker">Animation playground</span><h2 id="fighter-showcase-title">Character Showcase</h2></div><span class="badge ok">${fighters.length} ready</span></div>
+          <div class="fighter-lab-view-switch" role="group" aria-label="Fighter Lab view">
+            <button type="button" data-lab-view="timeline" aria-pressed="false">Timeline</button>
+            <button type="button" data-lab-view="gallery" aria-pressed="false">Gallery</button>
+            <button type="button" class="is-active" data-lab-view="showcase" aria-pressed="true">Showcase</button>
+            <button type="button" data-lab-view="matrix" aria-pressed="false">Matrix</button>
+            <button type="button" data-lab-view="compare" aria-pressed="false">Compare</button>
+            <button type="button" data-lab-view="testbench" aria-pressed="false">Testbench</button>
+          </div>
+          <p class="section-copy">Elige un personaje y dispara cualquier animación o VFX directamente sobre el escenario. Ideal para revisar rápidamente la silueta, el timing y los elementos de cada paquete.</p>
+        </section>
+        <section class="section fighter-showcase-grid" aria-label="Character animation playground">
+          ${fighters.map((fighter) => `
+            <article class="fighter-showcase-card ${fighter.id === selected.id ? "is-selected" : ""}">
+              <button type="button" class="fighter-showcase-character" data-lab-fighter-id="${escapeHtml(fighter.id)}" data-lab-view="showcase" aria-pressed="${fighter.id === selected.id}">
+                <span class="fighter-gallery-card-art" style="--fighter-color:${escapeHtml(fighter.palette)}"><img src="/characters/${escapeHtml(fighter.id)}/frames/idle/frame-0.png" alt="" loading="lazy" /></span>
+                <span><strong>${escapeHtml(fighter.displayName)}</strong><small>${fighter.animations.size} animations / 3 VFX</small></span>
+              </button>
+              <div class="fighter-showcase-actions" aria-label="Animations for ${escapeHtml(fighter.displayName)}">
+                ${[0, 20, 200, 220, 500, 7001].filter((id) => fighter.animations.has(id)).map((id) => {
+                  const label = FIGHTER_LAB_ACTIONS.find((meta) => meta.id === id)?.label ?? `Action ${id}`;
+                  return `<button type="button" data-lab-fighter-id="${escapeHtml(fighter.id)}" data-lab-view="showcase" data-lab-action-id="${id}" class="${fighter.id === selected.id && (this.snapshot.selectedActionId ?? fighter.idleAction) === id ? "is-active" : ""}">${escapeHtml(label)}</button>`;
+                }).join("")}
+              </div>
+            </article>
+          `).join("")}
+        </section>
+      </div>
+    `;
+  }
+
+  private renderFighterMatrixNavigator(): string {
+    const fighters = this.getLabFighters();
+    const selected = this.getSelectedLabFighter();
+    const selectedActionId = this.snapshot.selectedActionId ?? selected.idleAction;
+    const totalActions = fighters.reduce((total, fighter) => total + fighter.animations.size, 0);
+    const totalFrames = fighters.reduce(
+      (total, fighter) => total + [...fighter.animations.values()].reduce((frames, action) => frames + action.frames.length, 0),
+      0,
+    );
+    const actionLabel = (actionId: number): string => FIGHTER_LAB_ACTIONS.find((candidate) => candidate.id === actionId)?.label ?? `Action ${actionId}`;
+    return `
+      <div class="fighter-matrix-nav" data-fighter-matrix-nav>
+        <section class="section fighter-matrix-header" aria-labelledby="fighter-matrix-title">
+          <div class="section-heading-row">
+            <div><span class="panel-kicker">Roster diagnostics</span><h2 id="fighter-matrix-title">Character Matrix</h2></div>
+            <span class="badge ok">${totalActions} actions</span>
+          </div>
+          <div class="fighter-lab-view-switch" role="group" aria-label="Fighter Lab view">
+            <button type="button" data-lab-view="timeline" aria-pressed="false">Timeline</button>
+            <button type="button" data-lab-view="gallery" aria-pressed="false">Gallery</button>
+            <button type="button" data-lab-view="showcase" aria-pressed="false">Showcase</button>
+            <button type="button" class="is-active" data-lab-view="matrix" aria-pressed="true">Matrix</button>
+            <button type="button" data-lab-view="compare" aria-pressed="false">Compare</button>
+            <button type="button" data-lab-view="testbench" aria-pressed="false">Testbench</button>
+          </div>
+          <p class="section-copy">Todos los personajes, acciones y componentes en una sola vista. Pulsa cualquier movimiento para cargarlo directamente en el escenario y abrir sus frames, colisiones y metadatos.</p>
+          <div class="fighter-matrix-summary" aria-label="Character Matrix totals">
+            <span><strong>${fighters.length}</strong><small>fighters</small></span>
+            <span><strong>${totalActions}</strong><small>actions</small></span>
+            <span><strong>${totalFrames}</strong><small>frames</small></span>
+          </div>
+        </section>
+
+        <section class="section fighter-matrix-roster" aria-label="Character animation matrix">
+          ${fighters.map((fighter) => {
+            const actions = [...fighter.animations.values()].sort((left, right) => left.id - right.id);
+            const frameCount = actions.reduce((total, action) => total + action.frames.length, 0);
+            const hitBoxCount = actions.reduce((total, action) => total + action.frames.reduce((count, frame) => count + frame.clsn1.length, 0), 0);
+            const hurtBoxCount = actions.reduce((total, action) => total + action.frames.reduce((count, frame) => count + frame.clsn2.length, 0), 0);
+            const vfxCount = [7000, 7001, 7002].filter((actionId) => fighter.animations.has(actionId)).length;
+            const atlasStatus = this.atlasStatusByFighter.get(fighter.id) ?? "loading";
+            const motionQa = this.atlasMotionQaByFighter.get(fighter.id);
+            const isSelected = fighter.id === selected.id;
+            const components = [
+              { id: "sprites", label: "Sprites", value: atlasStatus, tone: atlasStatus === "loaded" ? "ok" : "warn" },
+              { id: "air", label: "AIR", value: `${actions.length} / ${frameCount}f`, tone: actions.length ? "ok" : "error" },
+              { id: "collision", label: "Clsn", value: `${hitBoxCount}H / ${hurtBoxCount}B`, tone: hitBoxCount + hurtBoxCount ? "ok" : "warn" },
+              { id: "vfx", label: "VFX", value: `${vfxCount} actions`, tone: vfxCount ? "ok" : "warn" },
+              { id: "runtime", label: "Runtime", value: `${fighter.states?.length ?? 0} states / ${fighter.commands?.length ?? 0} cmd`, tone: fighter.states?.length || fighter.commands?.length ? "ok" : "warn" },
+              { id: "qa", label: "Motion QA", value: motionQa?.status ?? "loading", tone: motionQa?.status === "pass" ? "ok" : "warn" },
+            ] as const;
+            return `
+              <article class="fighter-matrix-character ${isSelected ? "is-selected" : ""}" data-fighter-matrix-character="${escapeHtml(fighter.id)}">
+                <button type="button" class="fighter-matrix-identity" data-lab-fighter-id="${escapeHtml(fighter.id)}" data-lab-view="matrix" aria-pressed="${isSelected}">
+                  <span class="fighter-gallery-card-art" style="--fighter-color:${escapeHtml(fighter.palette)}"><img src="/characters/${escapeHtml(fighter.id)}/frames/idle/frame-0.png" alt="" loading="lazy" /></span>
+                  <span class="fighter-matrix-identity-copy"><strong>${escapeHtml(fighter.displayName)}</strong><small>${escapeHtml(fighter.source === "imported" ? "Imported package" : "Native fighter")} · G${fighter.spriteGroupBase}</small></span>
+                  <span class="fighter-matrix-active">${isSelected ? "ON STAGE" : "LOAD"}</span>
+                </button>
+                <div class="fighter-matrix-components" aria-label="Components for ${escapeHtml(fighter.displayName)}">
+                  ${components.map((component) => `<span class="is-${component.tone}" data-fighter-matrix-component="${component.id}"><small>${escapeHtml(component.label)}</small><strong>${escapeHtml(component.value)}</strong></span>`).join("")}
+                </div>
+                <div class="fighter-matrix-actions" aria-label="All animations for ${escapeHtml(fighter.displayName)}">
+                  ${actions.map((action) => {
+                    const meta = FIGHTER_LAB_ACTIONS.find((candidate) => candidate.id === action.id);
+                    const frameBoxes = action.frames.reduce((count, frame) => count + frame.clsn1.length + frame.clsn2.length, 0);
+                    const stateKey = meta?.stateKey;
+                    const thumbnail = stateKey
+                      ? `<img src="/characters/${escapeHtml(fighter.id)}/frames/${escapeHtml(stateKey)}/frame-0.png" alt="" loading="lazy" />`
+                      : `<span class="fighter-matrix-action-fx">FX</span>`;
+                    const isActive = isSelected && action.id === selectedActionId;
+                    return `
+                      <button type="button" class="fighter-matrix-action ${isActive ? "is-active" : ""}" data-fighter-matrix-action data-lab-fighter-id="${escapeHtml(fighter.id)}" data-lab-view="matrix" data-lab-action-id="${action.id}" aria-pressed="${isActive}" aria-label="Test ${escapeHtml(actionLabel(action.id))} for ${escapeHtml(fighter.displayName)}">
+                        <span class="fighter-matrix-action-thumb">${thumbnail}</span>
+                        <span class="fighter-matrix-action-copy"><strong>${escapeHtml(actionLabel(action.id))}</strong><small>A${action.id} · ${action.frames.length}f · ${frameBoxes} boxes</small></span>
+                      </button>
+                    `;
+                  }).join("")}
+                </div>
+              </article>
+            `;
+          }).join("")}
+        </section>
+      </div>
+    `;
+  }
+
+  private renderFighterCompareNavigator(): string {
+    const fighters = this.getLabFighters();
+    const selected = this.getSelectedLabFighter();
+    const selectedActionId = this.snapshot.selectedActionId ?? selected.idleAction;
+    const actionIds = [...new Set(fighters.flatMap((fighter) => [...fighter.animations.keys()]))].sort((left, right) => left - right);
+    const selectedMeta = FIGHTER_LAB_ACTIONS.find((candidate) => candidate.id === selectedActionId) ?? {
+      id: selectedActionId,
+      label: `Action ${selectedActionId}`,
+      kind: "other" as const,
+    };
+    const availableCount = fighters.filter((fighter) => fighter.animations.has(selectedActionId)).length;
+    const actionLabel = (actionId: number): string => FIGHTER_LAB_ACTIONS.find((candidate) => candidate.id === actionId)?.label ?? `Action ${actionId}`;
+    return `
+      <div class="fighter-compare-nav" data-fighter-compare-nav>
+        <section class="section fighter-compare-header" aria-labelledby="fighter-compare-title">
+          <div class="section-heading-row">
+            <div><span class="panel-kicker">Roster comparison</span><h2 id="fighter-compare-title">Character Compare</h2></div>
+            <span class="badge ok">${availableCount}/${fighters.length} ready</span>
+          </div>
+          <div class="fighter-lab-view-switch" role="group" aria-label="Fighter Lab view">
+            <button type="button" data-lab-view="timeline" aria-pressed="false">Timeline</button>
+            <button type="button" data-lab-view="gallery" aria-pressed="false">Gallery</button>
+            <button type="button" data-lab-view="showcase" aria-pressed="false">Showcase</button>
+            <button type="button" data-lab-view="matrix" aria-pressed="false">Matrix</button>
+            <button type="button" class="is-active" data-lab-view="compare" aria-pressed="true">Compare</button>
+            <button type="button" data-lab-view="testbench" aria-pressed="false">Testbench</button>
+          </div>
+          <p class="section-copy">Compara la misma acción entre todos los personajes. Carga cualquier resultado disponible en el escenario para revisar frames, colisiones y componentes.</p>
+          <div class="fighter-compare-selection">
+            <span>${escapeHtml(selectedMeta.kind)} · action ${selectedActionId}</span>
+            <strong>${escapeHtml(selectedMeta.label)}</strong>
+            <small>${availableCount} of ${fighters.length} fighters provide this action</small>
+          </div>
+        </section>
+
+        <section class="section fighter-compare-actions" aria-labelledby="fighter-compare-actions-title">
+          <div class="fighter-lab-group-head"><h3 id="fighter-compare-actions-title">Action to compare</h3><span>${actionIds.length} unique</span></div>
+          <div class="fighter-compare-action-grid">
+            ${actionIds.map((actionId) => {
+              const firstFighter = fighters.find((fighter) => fighter.animations.has(actionId))!;
+              const count = fighters.filter((fighter) => fighter.animations.has(actionId)).length;
+              return `<button type="button" class="fighter-compare-action ${actionId === selectedActionId ? "is-selected" : ""}" data-fighter-compare-action data-lab-fighter-id="${escapeHtml(firstFighter.id)}" data-lab-view="compare" data-lab-action-id="${actionId}" aria-pressed="${actionId === selectedActionId}"><strong>${escapeHtml(actionLabel(actionId))}</strong><small>A${actionId} · ${count}/${fighters.length}</small></button>`;
+            }).join("")}
+          </div>
+        </section>
+
+        <section class="section fighter-compare-roster" aria-label="Character comparison results">
+          ${fighters.map((fighter) => {
+            const action = fighter.animations.get(selectedActionId);
+            const isSelected = fighter.id === selected.id;
+            const atlasStatus = this.atlasStatusByFighter.get(fighter.id) ?? "loading";
+            const motionQa = this.atlasMotionQaByFighter.get(fighter.id);
+            const frameCount = action?.frames.length ?? 0;
+            const duration = action?.frames.reduce((total, frame) => total + Math.max(1, frame.duration), 0) ?? 0;
+            const hitBoxes = action?.frames.reduce((total, frame) => total + frame.clsn1.length, 0) ?? 0;
+            const hurtBoxes = action?.frames.reduce((total, frame) => total + frame.clsn2.length, 0) ?? 0;
+            const stateKey = selectedMeta.stateKey;
+            const preview = action && stateKey
+              ? `<img src="/characters/${escapeHtml(fighter.id)}/frames/${escapeHtml(stateKey)}/frame-0.png" alt="" loading="lazy" />`
+              : action
+                ? `<span class="fighter-compare-fx">FX</span>`
+                : `<span class="fighter-compare-missing">N/A</span>`;
+            return `
+              <article class="fighter-compare-card ${isSelected ? "is-selected" : ""} ${action ? "is-ready" : "is-missing"}" data-fighter-compare-character="${escapeHtml(fighter.id)}">
+                <button type="button" class="fighter-compare-card-main" ${action ? `data-lab-fighter-id="${escapeHtml(fighter.id)}" data-lab-view="compare" data-lab-action-id="${selectedActionId}"` : "disabled"} aria-pressed="${isSelected && Boolean(action)}">
+                  <span class="fighter-compare-art" style="--fighter-color:${escapeHtml(fighter.palette)}">${preview}</span>
+                  <span class="fighter-compare-copy"><strong>${escapeHtml(fighter.displayName)}</strong><small>${action ? `${frameCount} frames · ${duration} ticks` : "Action not available"}</small></span>
+                  <span class="fighter-compare-load">${isSelected && action ? "ON STAGE" : action ? "LOAD" : "MISSING"}</span>
+                </button>
+                <dl class="fighter-compare-facts">
+                  <div><dt>Clsn1</dt><dd>${hitBoxes}</dd></div>
+                  <div><dt>Clsn2</dt><dd>${hurtBoxes}</dd></div>
+                  <div><dt>Sprites</dt><dd>${escapeHtml(atlasStatus)}</dd></div>
+                  <div><dt>Motion QA</dt><dd>${escapeHtml(motionQa?.status ?? "loading")}</dd></div>
+                  <div><dt>States</dt><dd>${fighter.states?.length ?? 0}</dd></div>
+                  <div><dt>Commands</dt><dd>${fighter.commands?.length ?? 0}</dd></div>
+                </dl>
+              </article>
+            `;
+          }).join("")}
+        </section>
+      </div>
+    `;
+  }
+
+  private renderFighterTestbenchNavigator(): string {
+    const fighters = this.getLabFighters();
+    const fighter = this.getSelectedLabFighter();
+    const selectedActionId = this.snapshot.selectedActionId ?? fighter.idleAction;
+    const actions = [...fighter.animations.values()].sort((left, right) => left.id - right.id);
+    const frameCount = actions.reduce((total, action) => total + action.frames.length, 0);
+    const hitBoxCount = actions.reduce((total, action) => total + action.frames.reduce((count, frame) => count + frame.clsn1.length, 0), 0);
+    const hurtBoxCount = actions.reduce((total, action) => total + action.frames.reduce((count, frame) => count + frame.clsn2.length, 0), 0);
+    const atlasStatus = this.atlasStatusByFighter.get(fighter.id) ?? "loading";
+    const motionQa = this.atlasMotionQaByFighter.get(fighter.id);
+    const stateCount = fighter.states?.length ?? 0;
+    const commandCount = fighter.commands?.length ?? 0;
+    const vfxActionIds = [7000, 7001, 7002].filter((actionId) => fighter.animations.has(actionId));
+    const componentRows = [
+      { id: "sprites", label: "Sprites / atlas", value: atlasStatus === "loaded" ? "ready" : atlasStatus, detail: `${actions.length} action rows`, tone: atlasStatus === "loaded" ? "ok" : "warn" },
+      { id: "air", label: "AIR animations", value: `${actions.length} loaded`, detail: `${frameCount} frames`, tone: actions.length ? "ok" : "error" },
+      { id: "collision", label: "Collision boxes", value: `${hitBoxCount + hurtBoxCount} boxes`, detail: `${hitBoxCount} hit / ${hurtBoxCount} hurt`, tone: hitBoxCount + hurtBoxCount ? "ok" : "warn" },
+      { id: "vfx", label: "Shared VFX", value: `${vfxActionIds.length} actions`, detail: vfxActionIds.length ? vfxActionIds.join(" / ") : "none loaded", tone: vfxActionIds.length ? "ok" : "warn" },
+      { id: "runtime", label: "Runtime links", value: `${stateCount} states`, detail: `${commandCount} commands`, tone: stateCount || commandCount ? "ok" : "warn" },
+      { id: "qa", label: "Motion QA", value: motionQa?.status ?? "loading", detail: motionQa?.warnings?.length ? `${motionQa.warnings.length} warnings` : "atlas evidence linked", tone: motionQa?.status === "pass" ? "ok" : "warn" },
+    ] as const;
+    const actionLabel = (actionId: number): string => FIGHTER_LAB_ACTIONS.find((candidate) => candidate.id === actionId)?.label ?? `Action ${actionId}`;
+    return `
+      <div class="fighter-testbench-nav" data-fighter-testbench-nav>
+        <section class="section fighter-testbench-header" aria-labelledby="fighter-testbench-title">
+          <div class="section-heading-row">
+            <div><span class="panel-kicker">Character diagnostics</span><h2 id="fighter-testbench-title">Animation Testbench</h2></div>
+            <span class="badge ok">${fighters.length} fighters</span>
+          </div>
+          <div class="fighter-lab-view-switch" role="group" aria-label="Fighter Lab view">
+            <button type="button" data-lab-view="timeline" aria-pressed="false">Timeline</button>
+            <button type="button" data-lab-view="gallery" aria-pressed="false">Gallery</button>
+            <button type="button" data-lab-view="showcase" aria-pressed="false">Showcase</button>
+            <button type="button" data-lab-view="matrix" aria-pressed="false">Matrix</button>
+            <button type="button" data-lab-view="compare" aria-pressed="false">Compare</button>
+            <button type="button" class="is-active" data-lab-view="testbench" aria-pressed="true">Testbench</button>
+          </div>
+          <p class="section-copy">Una mesa de prueba para recorrer todos los movimientos, frames, colisiones, VFX y enlaces del personaje sin entrar en un combate.</p>
+        </section>
+
+        <section class="section fighter-testbench-roster" aria-labelledby="fighter-testbench-roster-title">
+          <div class="fighter-lab-group-head"><h3 id="fighter-testbench-roster-title">Character under test</h3><span>${escapeHtml(fighter.source === "imported" ? "imported package" : "native fixture")}</span></div>
+          <div class="fighter-testbench-roster-grid">
+            ${fighters.map((candidate) => `
+              <button type="button" class="fighter-testbench-roster-card ${candidate.id === fighter.id ? "is-selected" : ""}" data-lab-fighter-id="${escapeHtml(candidate.id)}" aria-pressed="${candidate.id === fighter.id}">
+                <span class="fighter-gallery-card-art" style="--fighter-color:${escapeHtml(candidate.palette)}"><img src="/characters/${escapeHtml(candidate.id)}/frames/idle/frame-0.png" alt="" loading="lazy" /></span>
+                <span><strong>${escapeHtml(candidate.displayName)}</strong><small>${candidate.animations.size} actions · G${candidate.spriteGroupBase}</small></span>
+              </button>
+            `).join("")}
+          </div>
+        </section>
+
+        <section class="section fighter-testbench-actions" aria-labelledby="fighter-testbench-actions-title">
+          <div class="fighter-lab-group-head"><h3 id="fighter-testbench-actions-title">All animation actions</h3><span>${actions.length} actions · ${frameCount} frames</span></div>
+          <div class="fighter-testbench-action-grid">
+            ${actions.map((action) => {
+              const meta = FIGHTER_LAB_ACTIONS.find((candidate) => candidate.id === action.id) ?? { id: action.id, label: `Action ${action.id}`, kind: "other" as const };
+              const duration = action.frames.reduce((total, frame) => total + Math.max(1, frame.duration), 0);
+              const actionHitBoxes = action.frames.reduce((total, frame) => total + frame.clsn1.length, 0);
+              const actionHurtBoxes = action.frames.reduce((total, frame) => total + frame.clsn2.length, 0);
+              const thumbnail = "stateKey" in meta && meta.stateKey
+                ? `<img src="/characters/${escapeHtml(fighter.id)}/frames/${escapeHtml(meta.stateKey)}/frame-0.png" alt="" loading="lazy" />`
+                : `<span class="fighter-testbench-action-fx">FX</span>`;
+              return `
+                <button type="button" class="fighter-testbench-action ${action.id === selectedActionId ? "is-selected" : ""}" data-lab-action-id="${action.id}" aria-pressed="${action.id === selectedActionId}">
+                  <span class="fighter-testbench-action-thumb">${thumbnail}</span>
+                  <span class="fighter-testbench-action-main"><strong>${escapeHtml(actionLabel(action.id))}</strong><small>A${action.id} · ${action.frames.length} frames · ${duration} ticks</small></span>
+                  <span class="fighter-testbench-action-meta"><span>${escapeHtml(meta.kind)}</span><span>${actionHitBoxes}H / ${actionHurtBoxes}B</span></span>
+                </button>
+              `;
+            }).join("")}
+          </div>
+        </section>
+
+        <section class="section fighter-testbench-components" aria-labelledby="fighter-testbench-components-title">
+          <div class="fighter-lab-group-head"><h3 id="fighter-testbench-components-title">Package components</h3><span>read-only health</span></div>
+          <div class="fighter-testbench-component-grid">
+            ${componentRows.map((component) => `
+              <article class="fighter-testbench-component is-${component.tone}" data-testbench-component="${component.id}">
+                <span class="fighter-testbench-component-dot" aria-hidden="true"></span>
+                <div><strong>${escapeHtml(component.label)}</strong><small>${escapeHtml(component.detail)}</small></div>
+                <b>${escapeHtml(component.value)}</b>
+              </article>
+            `).join("")}
+          </div>
+        </section>
+      </div>
+    `;
+  }
+
   private renderModeControls(): string {
     return `
       <div class="mode-control-stack">
         <div class="mode-switch" role="group" aria-label="Sandbox mode">
           ${this.renderModeButton("match", "Match", "play")}
+          ${this.renderModeButton("lab", "Fighter Lab", "test")}
           ${this.renderModeButton("inspect", "Inspect", "import")}
           ${this.renderModeButton("studio", "Studio", "build")}
         </div>
@@ -4919,8 +5510,13 @@ export class App {
     const evidence = this.getStudioEvidenceSummary();
     const assetAttention = studioSummary.assets.filter((asset) => isAttentionStatus(asset.status)).length;
     const modeAction = (mode: AppMode): (() => void) => () => {
+      if (mode === "lab" && this.mode !== "lab") {
+        this.resetFighterLabRuntime();
+      } else if (mode === "inspect" && this.mode === "lab") {
+        this.resetInspectorRuntime();
+      }
       this.mode = mode;
-      this.studioLeftDockOpen = mode === "inspect";
+      this.studioLeftDockOpen = mode === "inspect" || mode === "lab";
       this.studioRightDockOpen = true;
       this.snapshot = this.getActiveSnapshot();
       this.writeUrlState();
@@ -4952,6 +5548,15 @@ export class App {
         keywords: ["character", "air", "cns", "cmd", "parser"],
         tone: this.character ? "ok" : "warn",
         run: modeAction("inspect"),
+      },
+      {
+        id: "mode-fighter-lab",
+        group: "Surface",
+        label: "Open Fighter Lab",
+        detail: "Inspect roster animations, frames, collisions, atlases, and VFX.",
+        keywords: ["fighter", "sprites", "animation", "atlas", "hitbox", "vfx"],
+        tone: this.mode === "lab" ? "ok" : "neutral",
+        run: modeAction("lab"),
       },
       {
         id: "studio-workbench",
@@ -5131,7 +5736,11 @@ export class App {
         tone: "active",
         run: () => {
           if (this.isInspectorRuntimeSurface()) {
-            this.resetInspectorRuntime();
+            if (this.mode === "lab") {
+              this.resetFighterLabRuntime();
+            } else {
+              this.resetInspectorRuntime();
+            }
           } else {
             this.audio.stopAll();
             this.matchRuntime.dispatch({ type: "reset" });
@@ -5162,10 +5771,10 @@ export class App {
         tone: this.snapshot.playing ? "ok" : "warn",
         run: () => {
           const playing = !this.snapshot.playing;
-          this.snapshot =
-            this.isInspectorRuntimeSurface()
-              ? this.inspectorRuntime.dispatch({ type: "set-playing", playing })
-              : this.matchRuntime.dispatch({ type: "set-playing", playing });
+          const previewRuntime = this.getActivePreviewRuntime();
+          this.snapshot = previewRuntime
+            ? previewRuntime.dispatch({ type: "set-playing", playing })
+            : this.matchRuntime.dispatch({ type: "set-playing", playing });
         },
       },
       {
@@ -5176,10 +5785,10 @@ export class App {
         keywords: ["1f", "frame", "tick", "debug"],
         tone: "neutral",
         run: () => {
-          this.snapshot =
-            this.isInspectorRuntimeSurface()
-              ? this.inspectorRuntime.dispatch({ type: "step", ticks: 1 })
-              : this.matchRuntime.step(this.collectMatchInput(), { force: true });
+          const previewRuntime = this.getActivePreviewRuntime();
+          this.snapshot = previewRuntime
+            ? previewRuntime.dispatch({ type: "step", ticks: 1 })
+            : this.matchRuntime.step(this.collectMatchInput(), { force: true });
           if (!this.isInspectorRuntimeSurface()) {
             this.audio.processSnapshot(this.snapshot);
           }
@@ -5410,6 +6019,12 @@ export class App {
     const surface =
       this.mode === "studio"
         ? studioSurfaces[this.studioTab]
+        : this.mode === "lab"
+          ? {
+              eyebrow: "Character QA",
+              title: "Fighter Lab",
+              description: "Isolate every animation, frame, collision box, atlas row, and combat effect.",
+            }
         : this.mode === "inspect"
           ? {
               eyebrow: "Local intake",
@@ -5448,6 +6063,11 @@ export class App {
   }
 
   private getModeButtonStatus(mode: AppMode): { label: string; tone: "ok" | "warn" | "neutral" } {
+    if (mode === "lab") {
+      const fighter = this.getSelectedLabFighter();
+      const atlas = this.atlasStatusByFighter.get(fighter.id) ?? "loading";
+      return atlas === "loaded" ? { label: "ready", tone: "ok" } : { label: atlas, tone: atlas === "fallback" ? "warn" : "neutral" };
+    }
     if (mode === "inspect") {
       return this.character ? { label: "loaded", tone: "ok" } : { label: "empty", tone: "warn" };
     }
@@ -5464,6 +6084,18 @@ export class App {
     const diagnostics = (this.character?.diagnostics.length ?? 0) + this.importedStages.reduce((total, stage) => total + stage.diagnostics.length, 0);
     if (this.mode === "studio") {
       return "";
+    }
+    if (this.mode === "lab") {
+      const fighter = this.getSelectedLabFighter();
+      const frames = [...fighter.animations.values()].reduce((total, action) => total + action.frames.length, 0);
+      return `
+        <div class="workspace-summary" aria-label="Fighter Lab status">
+          <span class="is-ok"><b>${escapeHtml(fighter.displayName)}</b><small>fighter</small></span>
+          <span><b>${fighter.animations.size}</b><small>actions</small></span>
+          <span><b>${frames}</b><small>frames</small></span>
+          <span><b>3</b><small>VFX</small></span>
+        </div>
+      `;
     }
     if (this.mode === "inspect") {
       const actions = this.character?.animations.size ?? 0;
@@ -5527,6 +6159,29 @@ export class App {
            ${this.renderProjectStorageConflict()}
            ${this.renderProjectStorageStatus()}
          </div>
+      `;
+    }
+
+    if (this.mode === "lab") {
+      const fighter = this.getSelectedLabFighter();
+      const actionButtons = [
+        { label: this.snapshot.playing ? "Pause" : "Play", detail: "Animation", attribute: 'data-action="play-pause"', primary: true },
+        { label: "Step", detail: "One tick", attribute: 'data-action="step"', primary: false },
+        { label: "Reset", detail: "Idle pose", attribute: 'data-action="reset-round"', primary: false },
+        { label: this.fighterLabView === "gallery" ? "Timeline" : "Gallery", detail: "Roster view", attribute: `data-lab-view="${this.fighterLabView === "gallery" ? "timeline" : "gallery"}"`, primary: false },
+        { label: "Fight", detail: "Playtest", attribute: 'data-mode="match"', primary: false },
+      ];
+      return `
+        <div class="workspace-actions fighter-lab-quick-actions" aria-label="Fighter Lab quick actions">
+          <div class="workspace-next">
+            <span>Isolated preview</span>
+            <strong>${escapeHtml(fighter.displayName)}</strong>
+            <small>${this.fighterLabView === "gallery" ? "Review the loaded roster, then open a character timeline." : "Select an action below. Use the stage toolbar for speed, grid, axis, Clsn1, and Clsn2."}</small>
+          </div>
+          <div class="workspace-action-grid">
+            ${actionButtons.map((button) => this.renderWorkspaceActionButton(button)).join("")}
+          </div>
+        </div>
       `;
     }
 
@@ -5827,6 +6482,24 @@ export class App {
   }
 
   private renderRuntimeRightPane(): string {
+    if (this.mode === "lab") {
+      if (this.fighterLabView === "gallery") {
+        return this.renderFighterGalleryRightPane();
+      }
+      if (this.fighterLabView === "showcase") {
+        return this.renderFighterLabRightPane();
+      }
+      if (this.fighterLabView === "matrix") {
+        return this.renderFighterTestbenchRightPane("matrix");
+      }
+      if (this.fighterLabView === "compare") {
+        return this.renderFighterTestbenchRightPane("compare");
+      }
+      if (this.fighterLabView === "testbench") {
+        return this.renderFighterTestbenchRightPane();
+      }
+      return this.renderFighterLabRightPane();
+    }
     const debugPanel = renderDebugPanel(
       this.character,
       this.snapshot,
@@ -5888,6 +6561,218 @@ export class App {
           <summary>Runtime details</summary>
           ${debugPanel}
         </details>
+      </section>
+    `;
+  }
+
+  private renderFighterGalleryRightPane(): string {
+    const fighter = this.getSelectedLabFighter();
+    const actions = [...fighter.animations.values()].sort((left, right) => left.id - right.id);
+    const selectedAction = this.snapshot.selectedActionId ?? fighter.idleAction;
+    return `
+      <section class="context-lens fighter-gallery-lens" aria-label="Character Gallery details for ${escapeHtml(fighter.displayName)}" data-fighter-gallery-lens>
+        <header class="context-lens-head">
+          <div><span class="panel-kicker">Selected character</span><h2>${escapeHtml(fighter.displayName)}</h2></div>
+          <button type="button" class="context-lens-close" data-action="toggle-right-dock" aria-label="Close Character Gallery details">${tablerIcon("close", "ui-icon")}</button>
+        </header>
+        <div class="fighter-gallery-lens-hero">
+          <span class="fighter-gallery-card-art" style="--fighter-color:${escapeHtml(fighter.palette)}"><img src="/characters/${escapeHtml(fighter.id)}/frames/idle/frame-0.png" alt="" loading="lazy" /></span>
+          <div><strong>${escapeHtml(fighter.displayName)}</strong><p>${escapeHtml(fighter.authorName ?? "Native roster")} / group ${fighter.spriteGroupBase}</p></div>
+        </div>
+        <dl class="fighter-lab-frame-facts fighter-gallery-lens-facts">
+          <div><dt>Actions</dt><dd>${actions.length}</dd></div>
+          <div><dt>Frames</dt><dd>${actions.reduce((total, action) => total + action.frames.length, 0)}</dd></div>
+          <div><dt>Current</dt><dd>${selectedAction}</dd></div>
+          <div><dt>VFX</dt><dd>3 shared</dd></div>
+        </dl>
+        <section class="fighter-gallery-action-index" aria-labelledby="fighter-gallery-action-index-title">
+          <div class="fighter-lab-lens-head"><h3 id="fighter-gallery-action-index-title">Animation index</h3><span>${actions.length} total</span></div>
+          <div class="fighter-gallery-action-index-list">
+            ${actions.map((action) => `
+              <button type="button" class="${action.id === selectedAction ? "is-selected" : ""}" data-lab-fighter-id="${escapeHtml(fighter.id)}" data-lab-view="timeline" data-lab-action-id="${action.id}">
+                <span>${action.id}</span><strong>${escapeHtml(FIGHTER_LAB_ACTIONS.find((meta) => meta.id === action.id)?.label ?? `Action ${action.id}`)}</strong><small>${action.frames.length} frames</small>
+              </button>
+            `).join("")}
+          </div>
+        </section>
+      </section>
+    `;
+  }
+
+  private renderFighterLabRightPane(): string {
+    const fighter = this.getSelectedLabFighter();
+    const actionId = this.snapshot.selectedActionId ?? fighter.idleAction;
+    const action = fighter.animations.get(actionId) ?? fighter.animations.get(fighter.idleAction)!;
+    const meta = FIGHTER_LAB_ACTIONS.find((candidate) => candidate.id === action.id) ?? {
+      id: action.id,
+      label: `Action ${action.id}`,
+      kind: "combat" as const,
+    };
+    const frameIndex = Math.max(0, Math.min(action.frames.length - 1, this.snapshot.actors[0]?.runtime.frameIndex ?? 0));
+    const frame = action.frames[frameIndex];
+    const atlasStatus = this.atlasStatusByFighter.get(fighter.id) ?? "loading";
+    const motionQa = this.atlasMotionQaByFighter.get(fighter.id);
+    const boxRows = (label: string, boxes: (typeof action.frames)[number]["clsn1"], tone: "hit" | "hurt") => boxes.length
+      ? boxes.map((box, index) => `<li class="is-${tone}"><span>${label} ${index + 1}</span><code>${box.x1},${box.y1} -> ${box.x2},${box.y2}</code></li>`).join("")
+      : `<li><span>${label}</span><code>none</code></li>`;
+    return `
+      <section class="context-lens fighter-lab-lens" aria-label="Fighter Lab details for ${escapeHtml(fighter.displayName)}" data-fighter-lab-lens>
+        <header class="context-lens-head">
+          <div><span class="panel-kicker">Fighter Lab</span><h2>${escapeHtml(fighter.displayName)}</h2></div>
+          <button type="button" class="context-lens-close" data-action="toggle-right-dock" aria-label="Close Fighter Lab details">${tablerIcon("close", "ui-icon")}</button>
+        </header>
+
+        <div class="fighter-lab-selection" data-fighter-lab-selection>
+          <span>${escapeHtml(meta.kind)}</span>
+          <strong>${escapeHtml(meta.label)}</strong>
+          <p>Action ${action.id} / frame ${frameIndex + 1} of ${action.frames.length}</p>
+        </div>
+
+        <section class="fighter-lab-frame-section" aria-labelledby="fighter-lab-frame-title">
+          <div class="fighter-lab-lens-head"><h3 id="fighter-lab-frame-title">Frame scrubber</h3><span>${this.snapshot.playing ? "playing" : "paused"}</span></div>
+          <div class="fighter-lab-frame-strip" role="list" aria-label="Frames for ${escapeHtml(meta.label)}">
+            ${action.frames.map((_, index) => {
+              const thumbnail = meta.stateKey
+                ? `<img src="/characters/${escapeHtml(fighter.id)}/frames/${escapeHtml(meta.stateKey)}/frame-${index}.png" alt="" loading="lazy" />`
+                : `<span>FX<br>${index + 1}</span>`;
+              return `
+                <button
+                  type="button"
+                  class="fighter-lab-frame ${index === frameIndex ? "is-selected" : ""}"
+                  data-lab-action-id="${action.id}"
+                  data-lab-frame-index="${index}"
+                  aria-label="Show frame ${index + 1} of ${escapeHtml(meta.label)}"
+                  aria-pressed="${index === frameIndex}"
+                >
+                  ${thumbnail}
+                  <small>${index + 1}</small>
+                </button>
+              `;
+            }).join("")}
+          </div>
+        </section>
+
+        <dl class="fighter-lab-frame-facts">
+          <div><dt>Sprite</dt><dd>${frame ? `${frame.spriteGroup},${frame.spriteIndex}` : "-"}</dd></div>
+          <div><dt>Duration</dt><dd>${frame?.duration ?? 0} ticks</dd></div>
+          <div><dt>Offset</dt><dd>${frame ? `${frame.offsetX}, ${frame.offsetY}` : "-"}</dd></div>
+          <div><dt>Loop</dt><dd>${action.loopStart === undefined ? "no" : `frame ${action.loopStart + 1}`}</dd></div>
+          <div><dt>Flip</dt><dd>${escapeHtml(frame?.flip ?? "none")}</dd></div>
+          <div><dt>Blend</dt><dd>${escapeHtml(frame?.blend ?? "normal")}</dd></div>
+        </dl>
+
+        <section class="fighter-lab-collision-section" aria-labelledby="fighter-lab-collision-title">
+          <div class="fighter-lab-lens-head"><h3 id="fighter-lab-collision-title">Collision elements</h3><span>${frame?.clsn1.length ?? 0} hit / ${frame?.clsn2.length ?? 0} hurt</span></div>
+          <ul class="fighter-lab-box-list">
+            ${frame ? boxRows("Clsn1", frame.clsn1, "hit") : ""}
+            ${frame ? boxRows("Clsn2", frame.clsn2, "hurt") : ""}
+          </ul>
+        </section>
+
+        <section class="fighter-lab-atlas-section" aria-labelledby="fighter-lab-atlas-title">
+          <div class="fighter-lab-lens-head"><h3 id="fighter-lab-atlas-title">Atlas and evidence</h3><span class="is-${atlasStatus === "loaded" ? "ok" : "warn"}">${escapeHtml(atlasStatus)}</span></div>
+          <a class="fighter-lab-atlas-preview" href="/characters/${escapeHtml(fighter.id)}/sprite-sheet-alpha.png" target="_blank" rel="noreferrer">
+            <img src="/characters/${escapeHtml(fighter.id)}/sprite-sheet-alpha.webp" alt="${escapeHtml(fighter.displayName)} complete spritesheet atlas" loading="lazy" />
+            <span>1536 x 2688 / nearest-neighbor</span>
+          </a>
+          <div class="fighter-lab-evidence-grid">
+            <a href="/characters/${escapeHtml(fighter.id)}/manifest.json" target="_blank" rel="noreferrer">Manifest</a>
+            <a href="/characters/${escapeHtml(fighter.id)}/runtime-states.json" target="_blank" rel="noreferrer">Runtime map</a>
+            <a href="/characters/${escapeHtml(fighter.id)}/qa/all-contact.png" target="_blank" rel="noreferrer">Contact sheet</a>
+            <span>Motion QA: ${escapeHtml(motionQa?.status ?? "loading")}</span>
+          </div>
+        </section>
+      </section>
+    `;
+  }
+
+  private renderFighterTestbenchRightPane(view: "testbench" | "matrix" | "compare" = "testbench"): string {
+    const fighter = this.getSelectedLabFighter();
+    const actionId = this.snapshot.selectedActionId ?? fighter.idleAction;
+    const action = fighter.animations.get(actionId) ?? fighter.animations.get(fighter.idleAction)!;
+    const meta = FIGHTER_LAB_ACTIONS.find((candidate) => candidate.id === action.id) ?? { id: action.id, label: `Action ${action.id}`, kind: "other" as const };
+    const frameIndex = Math.max(0, Math.min(action.frames.length - 1, this.snapshot.actors[0]?.runtime.frameIndex ?? 0));
+    const frame = action.frames[frameIndex];
+    const animElemVar = (parameter: string) => runtimeAnimationElementVarForFrame(frame, parameter);
+    const clsnVarGroup = frame?.clsn1.length ? { label: "Clsn1[0]", boxes: frame.clsn1 } : frame?.clsn2.length ? { label: "Clsn2[0]", boxes: frame.clsn2 } : undefined;
+    const clsnVarValue = clsnVarGroup
+      ? `${clsnVarGroup.label} · back ${runtimeCollisionBoxCoordinate(clsnVarGroup.boxes, 0, "back")} · top ${runtimeCollisionBoxCoordinate(clsnVarGroup.boxes, 0, "top")} · front ${runtimeCollisionBoxCoordinate(clsnVarGroup.boxes, 0, "front")} · bottom ${runtimeCollisionBoxCoordinate(clsnVarGroup.boxes, 0, "bottom")}`
+      : "no current boxes";
+    const actions = [...fighter.animations.values()].sort((left, right) => left.id - right.id);
+    const atlasStatus = this.atlasStatusByFighter.get(fighter.id) ?? "loading";
+    const motionQa = this.atlasMotionQaByFighter.get(fighter.id);
+    const frameCount = actions.reduce((total, candidate) => total + candidate.frames.length, 0);
+    const hitBoxCount = actions.reduce((total, candidate) => total + candidate.frames.reduce((count, candidateFrame) => count + candidateFrame.clsn1.length, 0), 0);
+    const hurtBoxCount = actions.reduce((total, candidate) => total + candidate.frames.reduce((count, candidateFrame) => count + candidateFrame.clsn2.length, 0), 0);
+    const vfxActionIds = [7000, 7001, 7002].filter((candidateActionId) => fighter.animations.has(candidateActionId));
+    const componentStatus = [
+      { label: "Sprites / atlas", value: atlasStatus, tone: atlasStatus === "loaded" ? "ok" : "warn" },
+      { label: "AIR rows", value: `${actions.length} / ${frameCount}f`, tone: actions.length ? "ok" : "error" },
+      { label: "Collision", value: `${hitBoxCount} hit · ${hurtBoxCount} hurt`, tone: hitBoxCount + hurtBoxCount ? "ok" : "warn" },
+      { label: "VFX", value: `${vfxActionIds.length} shared actions`, tone: vfxActionIds.length ? "ok" : "warn" },
+      { label: "Runtime", value: `${fighter.states?.length ?? 0} states · ${fighter.commands?.length ?? 0} commands`, tone: fighter.states?.length || fighter.commands?.length ? "ok" : "warn" },
+      { label: "Motion QA", value: motionQa?.status ?? "loading", tone: motionQa?.status === "pass" ? "ok" : "warn" },
+    ] as const;
+    const boxRows = (label: string, boxes: (typeof action.frames)[number]["clsn1"], tone: "hit" | "hurt") => boxes.length
+      ? boxes.map((box, index) => `<li class="is-${tone}"><span>${label} ${index + 1}</span><code>${box.x1},${box.y1} → ${box.x2},${box.y2}</code></li>`).join("")
+      : `<li><span>${label}</span><code>none</code></li>`;
+    const viewTitle = view === "matrix" ? "Character Matrix" : view === "compare" ? "Character Compare" : "Animation Testbench";
+    return `
+      <section class="context-lens fighter-testbench-lens" aria-label="${viewTitle} details for ${escapeHtml(fighter.displayName)}" data-fighter-testbench-lens>
+        <header class="context-lens-head">
+          <div><span class="panel-kicker">${viewTitle}</span><h2>${escapeHtml(fighter.displayName)}</h2></div>
+          <button type="button" class="context-lens-close" data-action="toggle-right-dock" aria-label="Close ${viewTitle} details">${tablerIcon("close", "ui-icon")}</button>
+        </header>
+        <div class="fighter-testbench-selection">
+          <span>${escapeHtml(meta.kind)} · action ${action.id}</span>
+          <strong>${escapeHtml(meta.label)}</strong>
+          <p>${this.snapshot.playing ? "playing" : "paused"} · frame ${frameIndex + 1} of ${action.frames.length}</p>
+        </div>
+
+        <section class="fighter-testbench-frame-section" aria-labelledby="fighter-testbench-frame-title">
+          <div class="fighter-lab-lens-head"><h3 id="fighter-testbench-frame-title">Frame test</h3><span>click to pause</span></div>
+          <div class="fighter-lab-frame-strip" role="list" aria-label="Frames for ${escapeHtml(meta.label)}">
+            ${action.frames.map((_, index) => {
+              const thumbnail = "stateKey" in meta && meta.stateKey
+                ? `<img src="/characters/${escapeHtml(fighter.id)}/frames/${escapeHtml(meta.stateKey)}/frame-${index}.png" alt="" loading="lazy" />`
+                : `<span>FX<br>${index + 1}</span>`;
+              return `<button type="button" class="fighter-lab-frame ${index === frameIndex ? "is-selected" : ""}" data-lab-action-id="${action.id}" data-lab-frame-index="${index}" aria-label="Show frame ${index + 1} of ${escapeHtml(meta.label)}" aria-pressed="${index === frameIndex}">${thumbnail}<small>${index + 1}</small></button>`;
+            }).join("")}
+          </div>
+        </section>
+
+        <dl class="fighter-lab-frame-facts fighter-testbench-facts">
+          <div><dt>Sprite</dt><dd>${frame ? `${frame.spriteGroup},${frame.spriteIndex}` : "-"}</dd></div>
+          <div><dt>Duration</dt><dd>${frame?.duration ?? 0} ticks</dd></div>
+          <div><dt>Offset</dt><dd>${frame ? `${frame.offsetX}, ${frame.offsetY}` : "-"}</dd></div>
+          <div><dt>Flip / blend</dt><dd>${escapeHtml(`${frame?.flip ?? "none"} / ${frame?.blend ?? "normal"}`)}</dd></div>
+          <div><dt>AnimLength</dt><dd>${runtimeAnimationLength(action)} ticks</dd></div>
+          <div><dt>AnimElemVar</dt><dd>G${animElemVar("Group") ?? "-"} · I${animElemVar("Image") ?? "-"} · T${animElemVar("Time") ?? "-"}</dd></div>
+          <div><dt>ClsnVar</dt><dd>${escapeHtml(clsnVarValue)}</dd></div>
+          <div><dt>Clsn / flip flags</dt><dd>${animElemVar("NumClsn1") ?? 0}/${animElemVar("NumClsn2") ?? 0} · H${animElemVar("HFlip") ?? 0} V${animElemVar("VFlip") ?? 0}</dd></div>
+        </dl>
+
+        <section class="fighter-testbench-component-list" aria-labelledby="fighter-testbench-component-list-title">
+          <div class="fighter-lab-lens-head"><h3 id="fighter-testbench-component-list-title">Components</h3><span>selected package</span></div>
+          <div class="fighter-testbench-component-stack">
+            ${componentStatus.map((component) => `<div class="fighter-testbench-component-row is-${component.tone}"><span class="fighter-testbench-component-dot" aria-hidden="true"></span><strong>${escapeHtml(component.label)}</strong><small>${escapeHtml(component.value)}</small></div>`).join("")}
+          </div>
+        </section>
+
+        <section class="fighter-testbench-collision-section" aria-labelledby="fighter-testbench-collision-title">
+          <div class="fighter-lab-lens-head"><h3 id="fighter-testbench-collision-title">Current collision</h3><span>${frame?.clsn1.length ?? 0} hit / ${frame?.clsn2.length ?? 0} hurt</span></div>
+          <ul class="fighter-lab-box-list">${frame ? boxRows("Clsn1", frame.clsn1, "hit") : ""}${frame ? boxRows("Clsn2", frame.clsn2, "hurt") : ""}</ul>
+        </section>
+
+        <section class="fighter-testbench-links" aria-labelledby="fighter-testbench-links-title">
+          <div class="fighter-lab-lens-head"><h3 id="fighter-testbench-links-title">Evidence links</h3><span>open source facts</span></div>
+          <div class="fighter-lab-evidence-grid">
+            <a href="/characters/${escapeHtml(fighter.id)}/manifest.json" target="_blank" rel="noreferrer">Manifest</a>
+            <a href="/characters/${escapeHtml(fighter.id)}/runtime-states.json" target="_blank" rel="noreferrer">Runtime map</a>
+            <a href="/characters/${escapeHtml(fighter.id)}/sprite-sheet-alpha.png" target="_blank" rel="noreferrer">Atlas</a>
+            <a href="/characters/${escapeHtml(fighter.id)}/qa/all-contact.png" target="_blank" rel="noreferrer">Contact sheet</a>
+          </div>
+        </section>
       </section>
     `;
   }
@@ -14083,6 +14968,18 @@ export class App {
     const renderSnapshot = this.getRenderableSnapshot();
     const p1 = renderSnapshot.actors[0];
     const p2 = renderSnapshot.actors[1];
+    if (this.mode === "lab") {
+      const fighter = this.getSelectedLabFighter();
+      const action = fighter.animations.get(renderSnapshot.selectedActionId ?? fighter.idleAction);
+      const meta = FIGHTER_LAB_ACTIONS.find((candidate) => candidate.id === action?.id);
+      return `
+        <div class="round-hud-panel inspector fighter-lab-hud" data-fighter-lab-hud>
+          <span>${escapeHtml(fighter.displayName)}</span>
+          <strong>${escapeHtml(meta?.label ?? `Action ${action?.id ?? "-"}`)}</strong>
+          <span>Frame ${(p1?.runtime.frameIndex ?? 0) + 1}/${action?.frames.length ?? 0}</span>
+        </div>
+      `;
+    }
     if (this.isInspectorRuntimeSurface() || !p1 || !p2) {
       if (!this.character && this.mode !== "studio") {
         return `
@@ -14610,6 +15507,9 @@ export class App {
         for (const sourceFile of permissionMetadata.sourceFiles) {
           add(`${sourceRoot}/${sourceFile.path}`, `${packageRoot}/${sourceFile.path}`, "Source file " + sourceFile.path);
         }
+        for (const outputFile of permissionMetadata.outputFiles) {
+          add(`${sourceRoot}/${outputFile.path}`, `${packageRoot}/${outputFile.path}`, "Output file " + outputFile.path);
+        }
       }
       for (const extension of ["def", "air", "cmd", "cns"]) {
         add(`${sourceRoot}/mugen/${mugenPrefix}.${extension}`, `${packageRoot}/mugen/${mugenPrefix}.${extension}`, `MUGEN-lite ${extension.toUpperCase()} template`, false);
@@ -14779,6 +15679,8 @@ export class App {
         atlasMotionQa: Record<string, AtlasMotionQa>;
         runtimeRoster: RuntimeRosterEntry[];
         actorRegistry?: MatchWorldActorRegistrySnapshot;
+        activeRootIds: readonly string[];
+        helperTeamResourceBindings: ReturnType<MatchWorld["getHelperTeamResourceBindings"]>;
         studio: StudioProjectSummary;
         studioAssets: StudioAssetLibrarySummary;
         studioAssetReleasePolicies: AssetReleasePolicyRecord[];
@@ -14877,6 +15779,8 @@ export class App {
       atlasMotionQa: Object.fromEntries(this.atlasMotionQaByFighter),
       runtimeRoster: this.buildRuntimeRosterReport(),
       actorRegistry: this.getActiveActorRegistry(),
+      activeRootIds: this.matchRuntime.getActiveRootIds(),
+      helperTeamResourceBindings: this.matchRuntime.getHelperTeamResourceBindings(),
       studio,
       studioAssets: this.getStudioAssetLibrarySummary(),
       studioAssetReleasePolicies: this.getStudioAssetReleasePolicies(studio.assets),
@@ -14989,6 +15893,28 @@ export class App {
     const actor = renderSnapshot.actors[0];
     const opponent = renderSnapshot.actors[1];
     const frame = actor?.frame;
+    if (this.mode === "lab") {
+      const fighter = this.getSelectedLabFighter();
+      const actionId = renderSnapshot.selectedActionId ?? fighter.idleAction;
+      const action = fighter.animations.get(actionId);
+      const meta = FIGHTER_LAB_ACTIONS.find((candidate) => candidate.id === actionId);
+      const atlas = this.atlasStatusByFighter.get(fighter.id) ?? "loading";
+      return `
+        <div class="stage-status-card fighter-lab-stage-status" data-fighter-lab-stage-status>
+          <div class="stage-status-main">
+            <span class="stage-status-mode">Fighter Lab</span>
+            <strong>${escapeHtml(fighter.displayName)} / ${escapeHtml(meta?.label ?? `Action ${actionId}`)}</strong>
+            <small>Frame ${(actor?.runtime.frameIndex ?? 0) + 1}/${action?.frames.length ?? 0} / sprite ${frame ? `${frame.spriteGroup},${frame.spriteIndex}` : "-"}</small>
+          </div>
+          <div class="stage-status-grid" aria-label="Fighter Lab frame summary">
+            ${this.renderStageStatusMetric("Atlas", atlas, atlas === "loaded" ? "ok" : "warn", "assetAtlas")}
+            ${this.renderStageStatusMetric("Clsn1", String(frame?.clsn1.length ?? 0), frame?.clsn1.length ? "active" : undefined, "hit")}
+            ${this.renderStageStatusMetric("Clsn2", String(frame?.clsn2.length ?? 0), frame?.clsn2.length ? "ok" : undefined, "hurt")}
+            ${this.renderStageStatusMetric("Playback", renderSnapshot.playing ? `${renderSnapshot.speed}x` : "paused", renderSnapshot.playing ? "active" : undefined, renderSnapshot.playing ? "play" : "pause")}
+          </div>
+        </div>
+      `;
+    }
     if (this.mode === "match") {
       const activeCommands = this.getActiveCommandNames().slice(0, 3);
       const gamepadDiagnostics = this.gamepad.getDiagnostics();
@@ -15219,7 +16145,7 @@ export class App {
   }
 
   private getActiveSnapshot(): MugenSnapshot {
-    return this.isInspectorRuntimeSurface() ? this.inspectorRuntime.getSnapshot() : this.matchRuntime.getSnapshot();
+    return this.getActivePreviewRuntime()?.getSnapshot() ?? this.matchRuntime.getSnapshot();
   }
 
   private getActiveActorRegistry(): MatchWorldActorRegistrySnapshot | undefined {
@@ -15227,7 +16153,17 @@ export class App {
   }
 
   private isInspectorRuntimeSurface(): boolean {
-    return this.mode === "inspect" || (this.mode === "studio" && this.studioTab === "inspector");
+    return Boolean(this.getActivePreviewRuntime());
+  }
+
+  private getActivePreviewRuntime(): MugenRuntime | undefined {
+    if (this.mode === "lab") {
+      return this.fighterLabRuntime;
+    }
+    if (this.mode === "inspect" || (this.mode === "studio" && this.studioTab === "inspector")) {
+      return this.inspectorRuntime;
+    }
+    return undefined;
   }
 
   private getAvailableFighters(): DemoFighterDefinition[] {

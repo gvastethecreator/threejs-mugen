@@ -12,7 +12,7 @@ describe("ProjectCompiler", () => {
 
     expect(runtimeManifest.schemaVersion).toBe("mugen-web-sandbox/runtime-manifest/v0");
     expect(runtimeManifest.projectId).toBe("local-fighting-project");
-    expect(runtimeManifest.entry).toEqual({ mode: "match", p1: "nova-boxer", p2: "mira-volt", stage: rooftopDojoStage.id });
+    expect(runtimeManifest.entry).toEqual({ mode: "match", p1: "rocco-vidal", p2: "nadia-arce", stage: rooftopDojoStage.id });
     expect(runtimeManifest.runtime).toEqual({
       primaryModule: "mugen-compat",
       renderer: "three-render",
@@ -31,7 +31,7 @@ describe("ProjectCompiler", () => {
     expect(runtimeManifest.modules.planned.find((module) => module.id === "platformer-module")?.forbiddenSharedCoreConcepts).toEqual(
       expect.arrayContaining(["CNS", "HitDef", "round", "helper", "MUGEN command routing"]),
     );
-    expect(runtimeManifest.assets.characters).toEqual(["nova-boxer", "mira-volt", "rook-apprentice"]);
+    expect(runtimeManifest.assets.characters).toEqual(["rocco-vidal", "nadia-arce"]);
   });
 
   it("warns when requested modules are not executable by the compiler yet", () => {
@@ -53,7 +53,7 @@ describe("ProjectCompiler", () => {
     const manifest = {
       ...projectManifest(),
       assets: {
-        characters: ["nova-boxer"],
+        characters: ["rocco-vidal"],
         stages: [],
         audio: [],
         ui: [],
@@ -64,7 +64,7 @@ describe("ProjectCompiler", () => {
     const runtimeManifest = compileGameProjectManifest(manifest);
 
     expect(runtimeManifest.diagnostics.errors).toEqual([]);
-    expect(runtimeManifest.diagnostics.warnings).toContain("Entry P2 'mira-volt' is not listed in assets.characters");
+    expect(runtimeManifest.diagnostics.warnings).toContain("Entry P2 'nadia-arce' is not listed in assets.characters");
     expect(runtimeManifest.diagnostics.warnings).toContain(`Entry stage '${rooftopDojoStage.id}' is not listed in assets.stages`);
   });
 });
@@ -72,20 +72,18 @@ describe("ProjectCompiler", () => {
 function projectManifest() {
   const summary = buildStudioProjectSummary({
     fighters: demoFighters,
-    selectedP1: "nova-boxer",
-    selectedP2: "mira-volt",
+    selectedP1: "rocco-vidal",
+    selectedP2: "nadia-arce",
     stage: rooftopDojoStage,
     stages: [rooftopDojoStage, trainingStage],
     stageReports: [],
     atlasStatusByFighter: {
-      "nova-boxer": "loaded",
-      "mira-volt": "loaded",
-      "rook-apprentice": "loaded",
+      "rocco-vidal": "loaded",
+      "nadia-arce": "loaded",
     },
     atlasMotionQaByFighter: {
-      "nova-boxer": { status: "pass", checkedStates: ["walk"], warnings: [], errors: [] },
-      "mira-volt": { status: "pass", checkedStates: ["walk"], warnings: [], errors: [] },
-      "rook-apprentice": { status: "pass", checkedStates: ["walk"], warnings: [], errors: [] },
+      "rocco-vidal": { status: "pass", checkedStates: ["walk"], warnings: [], errors: [] },
+      "nadia-arce": { status: "pass", checkedStates: ["walk"], warnings: [], errors: [] },
     },
   });
   return buildGameProjectManifest(summary, { generatedAt: "2026-06-25T00:00:00.000Z" });

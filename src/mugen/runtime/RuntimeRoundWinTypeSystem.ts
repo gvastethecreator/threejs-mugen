@@ -18,24 +18,30 @@ type RuntimeRootSelfKoActor = {
 
 export type RuntimeRoundHitSourceActor = {
   id: string;
+  playerId?: number;
   playerNo?: number;
   rootId?: string;
   rootOwned?: boolean;
   attr?: string;
+  guardFlag?: string;
+  hitFlag?: string;
   guardKo?: boolean;
 };
 
 export function runtimeRoundHitSourceMetadata(
   source: RuntimeRoundHitSourceActor,
-): Pick<NonNullable<CharacterRuntimeState["hitVars"]>, "sourcePlayerNo" | "sourceActorId" | "sourceRootId" | "sourceRootOwned" | "sourceAttr" | "sourceGuardKo"> | undefined {
-  if (source.playerNo === undefined) return undefined;
+): Pick<NonNullable<CharacterRuntimeState["hitVars"]>, "sourcePlayerId" | "sourcePlayerNo" | "sourceActorId" | "sourceRootId" | "sourceRootOwned" | "sourceAttr" | "sourceGuardFlag" | "sourceHitFlag" | "sourceGuardKo"> | undefined {
+  if (source.playerId === undefined && source.playerNo === undefined) return undefined;
   const rootId = source.rootId ?? source.id;
   return {
-    sourcePlayerNo: source.playerNo,
+    ...(source.playerId === undefined ? {} : { sourcePlayerId: source.playerId }),
+    ...(source.playerNo === undefined ? {} : { sourcePlayerNo: source.playerNo }),
     sourceActorId: source.id,
     sourceRootId: rootId,
     sourceRootOwned: source.rootOwned ?? source.id === rootId,
     ...(source.attr === undefined ? {} : { sourceAttr: source.attr }),
+    ...(source.guardFlag === undefined ? {} : { sourceGuardFlag: source.guardFlag }),
+    ...(source.hitFlag === undefined ? {} : { sourceHitFlag: source.hitFlag }),
     ...(source.guardKo === undefined ? {} : { sourceGuardKo: source.guardKo }),
   };
 }

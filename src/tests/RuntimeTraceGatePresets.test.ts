@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { demoFighters } from "../mugen/runtime/demoFighters";
 import {
   createNativeHitTraceArtifact,
   createNativeWhiffTraceArtifact,
@@ -56,6 +57,50 @@ import {
   createSyntheticImportedGetHitVarDamageTraceArtifact,
   createSyntheticImportedGetHitVarKillTraceArtifact,
   createSyntheticImportedGetHitVarGuardKillTraceArtifact,
+  createSyntheticImportedDirectHitDefNoChainIdTraceArtifact,
+  createSyntheticImportedMugenEqualChainNoChainTraceArtifact,
+  createSyntheticImportedHitDefUnhittableTimeTraceArtifact,
+  createSyntheticImportedHitDefAttackerUnhittableTimeTraceArtifact,
+  createSyntheticImportedHitDefDefaultUnhittableTimeTraceArtifact,
+  createSyntheticImportedHitOverrideUnhittableTimeTraceArtifact,
+  createSyntheticImportedProjectileUnhittableTimeTraceArtifact,
+  createSyntheticImportedProjectileDynamicUnhittableTimeTraceArtifact,
+  createSyntheticImportedProjectileGroundFrictionTraceArtifact,
+  createSyntheticImportedProjectileSparkScaleTraceArtifact,
+  createSyntheticImportedHitDefAttackerFacingTraceArtifact,
+  createSyntheticImportedHitDefGetPowerTraceArtifact,
+  createSyntheticImportedHitDefGetPowerDefaultTraceArtifact,
+  createSyntheticImportedHitDefRulesPowerDefaultsTraceArtifact,
+  createSyntheticImportedHitDefContactPalFxTraceArtifact,
+  createSyntheticImportedHitDefContactEnvShakeTraceArtifact,
+  createSyntheticImportedHitDefDynamicFallEnvShakeTraceArtifact,
+  createSyntheticImportedHitDefDynamicFallImpactTraceArtifact,
+  createSyntheticImportedHitDefDynamicFallRecoveryTraceArtifact,
+  createSyntheticImportedHitDefDynamicFallFlagsTraceArtifact,
+  createSyntheticImportedHitDefDynamicDownBounceTraceArtifact,
+  createSyntheticImportedHitDefDynamicLethalFlagsTraceArtifact,
+  createSyntheticImportedHitDefDynamicAirJuggleTraceArtifact,
+  createSyntheticImportedHitDefDynamicNumHitsTraceArtifact,
+  createSyntheticImportedHitDefDynamicForcePostureTraceArtifact,
+  createSyntheticImportedHitDefDynamicForceNoFallTraceArtifact,
+  createSyntheticImportedHitDefDynamicP2FacingTraceArtifact,
+  createSyntheticImportedHitDefDynamicIdChainIdTraceArtifact,
+  createSyntheticImportedHitDefDynamicDamageTraceArtifact,
+  createSyntheticImportedHitDefOmittedDamageTraceArtifact,
+  createSyntheticImportedHitDefDynamicPauseTimeTraceArtifact,
+  createSyntheticImportedHitDefDynamicGroundHitTimeTraceArtifact,
+  createSyntheticImportedHitDefDynamicGroundSlideTimeTraceArtifact,
+  createSyntheticImportedHitDefDynamicGuardHitTimeTraceArtifact,
+  createSyntheticImportedHitDefDynamicGuardSlideTimeTraceArtifact,
+  createSyntheticImportedHitDefDynamicGuardControlTimeTraceArtifact,
+  createSyntheticImportedHitDefDynamicAirGuardControlTimeTraceArtifact,
+  createSyntheticImportedHitDefDynamicAirHitTimeTraceArtifact,
+  createSyntheticImportedHitDefDynamicGuardDistanceTraceArtifact,
+  createSyntheticImportedHitDefDynamicGroundVelocityTraceArtifact,
+  createSyntheticImportedHitDefDynamicStateTransitionTraceArtifact,
+  createSyntheticImportedHitDefDynamicPriorityTraceArtifact,
+  createSyntheticImportedHitDefDynamicSpritePriorityTraceArtifact,
+  createSyntheticImportedHitDefDynamicGivePowerTraceArtifact,
   createSyntheticImportedGetHitVarHitIdChainIdTraceArtifact,
   createSyntheticImportedGetHitVarHitCountTraceArtifact,
   createSyntheticImportedHitCountPersistTraceArtifact,
@@ -500,6 +545,7 @@ import {
   createSyntheticImportedProjectileMotionTraceArtifact,
   createSyntheticImportedProjectileGuardDistanceLatchTraceArtifact,
   createSyntheticImportedModifyExplodTraceArtifact,
+  createSyntheticImportedModifyProjectileDynamicGetPowerTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicBoundsTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicParamsTraceArtifact,
   createSyntheticImportedModifyProjectileOmittedBoundsTraceArtifact,
@@ -575,6 +621,8 @@ import {
   createSyntheticImportedDynamicSoundPanTraceArtifact,
   createSyntheticImportedDynamicSoundValueTraceArtifact,
   createSyntheticImportedProjectileMultiHitTraceArtifact,
+  createSyntheticImportedIkemenProjectileGetHitVarHitCountMultiHitTraceArtifact,
+  createSyntheticImportedIkemenProjectileGetHitVarVelAddKoTraceArtifact,
   createSyntheticImportedProjectilePriorityCancelTraceArtifact,
   createSyntheticImportedProjectileCancelRemoveFallbackTerminalTraceArtifact,
   createSyntheticImportedProjectileCancelTimeTraceArtifact,
@@ -585,6 +633,7 @@ import {
   createSyntheticImportedProjectileHitCountTraceArtifact,
   createSyntheticImportedProjectileGetHitVarHitCountTraceArtifact,
   createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtifact,
+  createSyntheticImportedProjectileNoChainIdTraceArtifact,
   createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifact,
   createSyntheticImportedProjectileDownHitCornerPushTraceArtifact,
   createSyntheticImportedProjectileDownHitCornerPushDefaultTraceArtifact,
@@ -663,6 +712,8 @@ import {
   createSyntheticImportedMatchOutcomeState5900TraceArtifact,
   createSyntheticImportedRoundContextSequenceTraceArtifact,
   createSyntheticImportedHelperLocalResourceTraceArtifact,
+  createSyntheticImportedHelperSharedResourceTraceArtifact,
+  createSyntheticImportedHelperSharedRedLifeTraceArtifact,
   createSyntheticImportedRoundNoKoSlowTraceArtifact,
   createSyntheticImportedRoundTimeOverTraceArtifact,
   createSyntheticImportedRoundTriggerTraceArtifact,
@@ -1393,7 +1444,7 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({ actorId: "p2", minLife: 750, maxLife: 750, minPower: 900, maxPower: 900 }),
       ]),
     );
-    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 290, life: 1000, power: 35 });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 290, life: 1000, power: 0 });
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 750, power: 900 });
   });
 
@@ -1418,7 +1469,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations["resource:lifeset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["resource:poweradd"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["resource:powerset"]).toBeGreaterThanOrEqual(1);
-    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 200, life: 1000, power: 35 });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 200, life: 1000, power: 0 });
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 750, power: 900 });
   });
 
@@ -1519,8 +1570,8 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
     expect(artifact.trace.finalActors).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: "p1", power: 75, targetCount: 1 }),
-        expect.objectContaining({ id: "p2", power: 35, targetCount: 1 }),
+        expect.objectContaining({ id: "p1", power: 40, targetCount: 1 }),
+        expect.objectContaining({ id: "p2", power: 0, targetCount: 1 }),
       ]),
     );
   });
@@ -1603,8 +1654,8 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
     expect(artifact.trace.finalActors).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: "p1", power: 35, targetCount: 1 }),
-        expect.objectContaining({ id: "p2", power: 110, targetCount: 1 }),
+        expect.objectContaining({ id: "p1", power: 0, targetCount: 1 }),
+        expect.objectContaining({ id: "p2", power: 40, targetCount: 1 }),
       ]),
     );
   });
@@ -3686,6 +3737,7 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
+
   it("proves red life is cleared by the explicit next-round transition", () => {
     const artifact = createSyntheticImportedRedLifeRoundResetTraceArtifact({ generatedAt: "2026-07-14T00:00:00.000Z" });
 
@@ -3775,7 +3827,7 @@ describe("RuntimeTraceGatePresets", () => {
     });
     expect(final?.teamRoundResourceBanks?.banks).toEqual(expect.arrayContaining([
       expect.objectContaining({ bankId: "team:2:life", resourceOwnerId: "team:2", value: 943, max: 1000, actorIds: ["p2", "p4"] }),
-      expect.objectContaining({ bankId: "p2:power", resourceOwnerId: "p2", value: 40, max: 3000, actorIds: ["p2"] }),
+      expect.objectContaining({ bankId: "p2:power", resourceOwnerId: "p2", value: 62, max: 3000, actorIds: ["p2"] }),
       expect.objectContaining({ bankId: "p4:power", resourceOwnerId: "p4", value: 0, max: 3000, actorIds: ["p4"] }),
     ]));
     expect(artifact.trace.finalReserveActors?.find((actor) => actor.id === "p4")).toMatchObject({ life: 943, power: 0 });
@@ -3804,6 +3856,47 @@ describe("RuntimeTraceGatePresets", () => {
       expect.arrayContaining([expect.objectContaining({ id: "p1", life: 1000, power: 0 })]),
     );
   });
+
+  it("proves imported Helper shared Life/Power writes preserve local resources", () => {
+    const artifact = createSyntheticImportedHelperSharedResourceTraceArtifact({ generatedAt: "2026-08-02T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-shared-resource-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-helper-shared-resource-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p1", life: 750, power: 900 })]),
+    );
+    expect(artifact.trace.finalEffects).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p1-helper-0", stateNo: 1212, life: 1000, power: 0 })]),
+    );
+  });
+
+  it("proves imported Helper shared RedLife writes preserve local resources", () => {
+    const artifact = createSyntheticImportedHelperSharedRedLifeTraceArtifact({ generatedAt: "2026-08-02T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-shared-red-life-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-helper-shared-red-life-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p1", life: 750, power: 900, redLife: 800 })]),
+    );
+    expect(artifact.trace.finalReserveActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p3", life: 750, power: 900, redLife: 800 })]),
+    );
+    const helper = artifact.trace.finalEffects?.find((actor) => actor.id === "p1-helper-0");
+    expect(helper).toMatchObject({ id: "p1-helper-0", stateNo: 1213, life: 1000, power: 0 });
+    expect(helper?.redLife ?? 0).toBe(0);
+  });
+
+
+
+
+
+
+
+
 
   it("creates a synthetic imported round time-over artifact with RoundSnapshot evidence", () => {
     const artifact = createSyntheticImportedRoundTimeOverTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
@@ -6601,7 +6694,7 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(evidence?.finalActors).toEqual(
-      expect.arrayContaining([expect.objectContaining({ id: "p2", actorKind: "player", life: 958, power: 40 })]),
+      expect.arrayContaining([expect.objectContaining({ id: "p2", actorKind: "player", life: 958, power: 50 })]),
     );
     expect(evidence?.effectPayloads).toEqual(
       expect.arrayContaining([
@@ -6857,7 +6950,7 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(evidence?.finalActors).toEqual(
-      expect.arrayContaining([expect.objectContaining({ id: "p2", actorKind: "player", life: 958, power: 40 })]),
+      expect.arrayContaining([expect.objectContaining({ id: "p2", actorKind: "player", life: 958, power: 50 })]),
     );
     expect(evidence?.effectPayloads).toEqual(
       expect.arrayContaining([
@@ -8654,7 +8747,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       actorKind: "player",
       life: 944,
-      power: 40,
+      power: 62,
     });
     expect(gate?.requirements.requiredEffectPayloads).toEqual([
       {
@@ -8732,7 +8825,7 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: "p1", life: 981, power: 75 }),
+        expect.objectContaining({ id: "p1", life: 981, power: 65 }),
         expect.objectContaining({ id: "p2", life: 926, targetCount: 0 }),
       ]),
     );
@@ -13419,7 +13512,7 @@ describe("RuntimeTraceGatePresets", () => {
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("hit");
-    expect(evidence?.eventLines.some((line) => line.includes("hit Mira Volt for 2000"))).toBe(true);
+    expect(evidence?.eventLines.some((line) => line.includes(`hit ${demoFighters[1]!.displayName} for 2000`))).toBe(true);
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", source: "demo", life: 1, moveType: "H" })]),
     );
@@ -18235,12 +18328,12 @@ describe("RuntimeTraceGatePresets", () => {
       gates: [{ label: "synthetic-imported-ikemen-helper-self-tag-golden", passed: true, failures: [] }],
       trace: {
         frameCount: 4,
-        checksum: "08014285",
+        checksum: "70f3853f",
         frameChecksums: [
-          "17bffcaa",
-          "750da07e",
-          "6cde1d19",
-          "910fa3f3",
+          "b3f6f69e",
+          "ed0dac42",
+          "ead3ec9d",
+          "e54d7a0f",
         ],
       },
     });
@@ -18293,8 +18386,8 @@ describe("RuntimeTraceGatePresets", () => {
       },
     });
     expect(artifact.trace.frames.every(({ reserveActorCount }) => reserveActorCount === 2)).toBe(true);
-    expect(artifact.trace.checksum).toBe("dff92731");
-    expect(artifact.trace.frameChecksums).toEqual(["019f58ec", "a855626a", "db154ac1"]);
+    expect(artifact.trace.checksum).toBe("c939dc09");
+    expect(artifact.trace.frameChecksums).toEqual(["b9a234fc", "8888ccf6", "c77f4b95"]);
     expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
       {
         label: "opposite-side isolation before same-side command",
@@ -18329,8 +18422,8 @@ describe("RuntimeTraceGatePresets", () => {
       },
     });
     expect(artifact.trace.frames.every(({ reserveActorCount }) => reserveActorCount === 2)).toBe(true);
-    expect(artifact.trace.checksum).toBe("8ee92f65");
-    expect(artifact.trace.frameChecksums).toEqual(["2cdd8661", "3a90a6dd", "64d76d9a", "df69cd20"]);
+    expect(artifact.trace.checksum).toBe("20bce39d");
+    expect(artifact.trace.frameChecksums).toEqual(["0280fa31", "30c75e71", "44b97646", "44b12781"]);
     const admissionFrames = artifact.trace.frames.filter(({ rootHitAdmission }) => rootHitAdmission !== undefined);
     expect(admissionFrames.length).toBeGreaterThan(0);
     expect(admissionFrames.some(({ rootHitAdmission }) => rootHitAdmission?.rootIds.includes("p3"))).toBe(true);
@@ -19163,8 +19256,8 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.rootPresentationFrames).toEqual([
       expect.objectContaining({ mode: "ikemen-tag", drawRootIds: ["p3", "p2"], cameraRootIds: ["p3", "p2"], collisionRootIds: ["p3", "p2"] }),
     ]);
-    expect(artifact.trace.checksum).toBe("97255586");
-    expect(artifact.trace.frameChecksums).toEqual(["65b85d54", "65b00e8f"]);
+    expect(artifact.trace.checksum).toBe("4a36db75");
+    expect(artifact.trace.frameChecksums).toEqual(["8db99592", "8dbbd429"]);
     expect(artifact.trace.finalEffects).toEqual([]);
   });
 
@@ -19200,8 +19293,8 @@ describe("RuntimeTraceGatePresets", () => {
       rootIds: ["p1", "p2", "p3"],
       pairIds: [],
     });
-    expect(artifact.trace.checksum).toBe("8f70d7c0");
-    expect(artifact.trace.frameChecksums).toEqual(["37e1175b", "2fe7b680", "ba6192a2"]);
+    expect(artifact.trace.checksum).toBe("50f12ece");
+    expect(artifact.trace.frameChecksums).toEqual(["087c8a3d", "f43c57b6", "85a5596e"]);
   });
 
   it("creates a required IKEMEN simultaneous Pause buffer artifact", () => {
@@ -19771,6 +19864,8 @@ describe("RuntimeTraceGatePresets", () => {
           freq: 178,
           ampl: 6,
           phase: 0,
+          mul: 0.75,
+          dir: 67.5,
         },
       },
     });
@@ -19790,6 +19885,8 @@ describe("RuntimeTraceGatePresets", () => {
           envShakeFreq: 178,
           envShakeAmpl: 6,
           envShakePhase: 0,
+          envShakeMul: 0.75,
+          envShakeDir: 67.5,
         },
       },
     ]);
@@ -20075,7 +20172,7 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(evidence?.effectPayloads).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1-projectile-0", effect: expect.objectContaining({ id: 77, hasHit: true }) }),
+        expect.objectContaining({ actorId: "p1-projectile-1", effect: expect.objectContaining({ id: 77, hasHit: true }) }),
       ]),
     );
     expect(evidence?.targetLinks).toEqual(expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 78 })]));
@@ -20092,6 +20189,43 @@ describe("RuntimeTraceGatePresets", () => {
         steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitTime Branch" }],
       },
     ]);
+  });
+
+  it("creates a synthetic imported Projectile NoChainID artifact with same-player repeat rejection evidence", () => {
+    const artifact = createSyntheticImportedProjectileNoChainIdTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-nochainid-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-nochainid-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.eventCategories).toEqual(expect.arrayContaining(["hit", "reject"]));
+    expect(gate?.evidence.combatReasons).toEqual(expect.arrayContaining(["hit", "reject"]));
+    expect(artifact.trace.events.some((event) => event.line.includes("NoChainID 44"))).toBe(true);
+    expect(gate?.evidence.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-1",
+          effect: expect.objectContaining({ id: 77, hitsRemaining: 1, hasHit: false }),
+        }),
+      ]),
+    );
+    expect(gate?.evidence.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 44 })]),
+    );
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")?.life).toBe(969);
   });
 
   it("creates a synthetic imported Projectile GetHitVar hitcount artifact with normal get-hit branch evidence", () => {
@@ -20720,7 +20854,7 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(evidence?.effectPayloads).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1-projectile-0", effect: expect.objectContaining({ id: 8891, hasHit: true }) }),
+        expect.objectContaining({ actorId: "p1-projectile-1", effect: expect.objectContaining({ id: 8891, hasHit: true }) }),
       ]),
     );
     expect(evidence?.targetLinks).toEqual(
@@ -22941,6 +23075,1159 @@ describe("RuntimeTraceGatePresets", () => {
         steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitTime Branch" }],
       },
     ]);
+  });
+
+  it("creates a synthetic imported direct HitDef NoChainID artifact with a real seed hit", () => {
+    const artifact = createSyntheticImportedDirectHitDefNoChainIdTraceArtifact({ generatedAt: "2026-08-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-direct-hitdef-nochainid-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-direct-hitdef-nochainid-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(2);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 43 })]),
+    );
+    expect(evidence?.targetLinks).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 1000 });
+    expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toEqual(["via NoChainID 43"]);
+  });
+
+  it("creates a synthetic imported MUGEN equal ChainID/NoChainID artifact", () => {
+    const artifact = createSyntheticImportedMugenEqualChainNoChainTraceArtifact({ generatedAt: "2026-08-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-mugen-equal-chain-nochain-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-mugen-equal-chain-nochain-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(2);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")?.life).toBeLessThan(1000);
+    expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toBeUndefined();
+  });
+
+  it("creates a synthetic imported HitDef unhittabletime receiver-window artifact", () => {
+    const artifact = createSyntheticImportedHitDefUnhittableTimeTraceArtifact({ generatedAt: "2026-08-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-unhittabletime-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-hitdef-unhittabletime-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(2);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+    expect(evidence?.targetLinks).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 78 })]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 990 });
+    expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toEqual(["via HitDef unhittabletime"]);
+  });
+
+  it("creates a synthetic imported HitDef unhittabletime attacker-window artifact", () => {
+    const artifact = createSyntheticImportedHitDefAttackerUnhittableTimeTraceArtifact({ generatedAt: "2026-08-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-attacker-unhittabletime-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-hitdef-attacker-unhittabletime-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+    expect(evidence?.targetLinks).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 88 })]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ life: 1000 });
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 990 });
+    expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toEqual(["via HitDef unhittabletime"]);
+  });
+
+  it("creates a synthetic imported HitDef default throw unhittabletime artifact", () => {
+    const artifact = createSyntheticImportedHitDefDefaultUnhittableTimeTraceArtifact({ generatedAt: "2026-08-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-default-unhittabletime-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-hitdef-default-unhittabletime-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+    expect(evidence?.targetLinks).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 88 })]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ life: 1000 });
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 990 });
+    expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toEqual(["via HitDef unhittabletime"]);
+  });
+
+  it("creates a synthetic imported HitOverride unhittabletime contact artifact", () => {
+    const artifact = createSyntheticImportedHitOverrideUnhittableTimeTraceArtifact({ generatedAt: "2026-08-08T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitoverride-unhittabletime-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-hitoverride-unhittabletime-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.HitOverride).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitoverride).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+    expect(evidence?.targetLinks).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 88 })]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ life: 1000 });
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 1000 });
+    expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toEqual([
+      "Override Timer P2 rejected Override Timer P1",
+      "Override Timer P1 rejected Override Timer P2",
+      "via HitDef unhittabletime",
+    ]);
+  });
+
+  it("creates a synthetic imported Projectile unhittabletime receiver-window artifact", () => {
+    const artifact = createSyntheticImportedProjectileUnhittableTimeTraceArtifact({ generatedAt: "2026-08-08T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-unhittabletime-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-unhittabletime-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(2);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ life: 1000 });
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 990 });
+    expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toEqual(["via HitDef unhittabletime"]);
+  });
+
+  it("creates a synthetic imported dynamic Projectile unhittabletime receiver-window artifact", () => {
+    const artifact = createSyntheticImportedProjectileDynamicUnhittableTimeTraceArtifact({ generatedAt: "2026-08-08T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-dynamic-unhittabletime-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-dynamic-unhittabletime-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(2);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ life: 1000 });
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 990 });
+    expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toEqual(["via HitDef unhittabletime"]);
+  });
+
+  it("creates a synthetic imported dynamic Projectile ground-friction custom-state artifact", () => {
+    const artifact = createSyntheticImportedProjectileGroundFrictionTraceArtifact({ generatedAt: "2026-08-08T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-ground-friction-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-ground-friction-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 888, 899]));
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ChangeState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.SelfState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", customOwnerId: "p1", stateNo: 888, animNo: 888, moveType: "H" }),
+        expect.objectContaining({ actorId: "p2", customOwnerId: "p1", stateNo: 899, animNo: 888, moveType: "H" }),
+      ]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      customOwnerId: undefined,
+      stateNo: 0,
+      ctrl: true,
+      moveType: "I",
+      life: 969,
+    });
+  });
+
+  it("creates a synthetic imported dynamic Projectile spark-scale artifact", () => {
+    const artifact = createSyntheticImportedProjectileSparkScaleTraceArtifact({ generatedAt: "2026-08-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-spark-scale-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-projectile-spark-scale-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.hitEffectEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          kind: "hit",
+          sparkNo: 7001,
+          raw: "S7001",
+          scale: { x: 1.5, y: -0.5 },
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported dynamic direct-HitDef attacker-facing artifact", () => {
+    const artifact = createSyntheticImportedHitDefAttackerFacingTraceArtifact({ generatedAt: "2026-08-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-attacker-facing-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-attacker-facing-golden", passed: true, failures: [] }],
+    });
+  });
+
+  it("creates a required imported direct-HitDef getpower artifact", () => {
+    const artifact = createSyntheticImportedHitDefGetPowerTraceArtifact({ generatedAt: "2026-08-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-getpower-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-getpower-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ power: 47 });
+  });
+
+  it("creates a required imported omitted direct-HitDef getpower default artifact", () => {
+    const artifact = createSyntheticImportedHitDefGetPowerDefaultTraceArtifact({ generatedAt: "2026-08-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-getpower-default-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-getpower-default-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ power: 7 });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ power: 6 });
+  });
+
+  it("creates a required imported direct-HitDef MUGEN Rules power defaults artifact", () => {
+    const artifact = createSyntheticImportedHitDefRulesPowerDefaultsTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-rules-power-defaults-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-rules-power-defaults-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ power: 10 });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 0,
+      life: 960,
+      power: 16,
+    });
+    expect(artifact.gates[0]?.evidence.controllerEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", stateNo: 888, controller: "ChangeState", name: "Rules Power GetHitVar Branch" }),
+      ]),
+    );
+  });
+
+  it("creates a required imported dynamic direct-HitDef givepower artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicGivePowerTraceArtifact({ generatedAt: "2026-08-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-givepower-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-givepower-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ power: 7 });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 0,
+      life: 990,
+      power: 22,
+    });
+  });
+
+  it("creates a required imported dynamic direct-HitDef contact PalFX artifact", () => {
+    const artifact = createSyntheticImportedHitDefContactPalFxTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-contact-palfx-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-contact-palfx-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p2",
+        paletteFxTime: 12,
+        paletteFxAddR: 64,
+        paletteFxMulG: 144,
+        paletteFxColor: 200,
+        paletteFxInvert: true,
+      }),
+    ]));
+  });
+
+  it("creates a required imported dynamic direct-HitDef contact EnvShake artifact", () => {
+    const artifact = createSyntheticImportedHitDefContactEnvShakeTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-contact-envshake-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-contact-envshake-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.envShakeEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p1",
+        time: 14,
+        freq: 72,
+        ampl: -11,
+        phase: 30,
+        stateNo: 200,
+      }),
+    ]));
+  });
+
+  it("creates a required imported dynamic HitDef fall EnvShake artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicFallEnvShakeTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-fall-envshake-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-fall-envshake-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(6);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(6);
+    expect(evidence?.executedControllers.FallEnvShake).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.fallenvshake).toBeGreaterThanOrEqual(1);
+    expect(evidence?.envShakeEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", time: 15, freq: 178, ampl: 6, phase: 0, stateNo: 5100 }),
+    ]));
+  });
+
+  it("creates a required imported dynamic HitDef fall impact artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicFallImpactTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-fall-impact-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-fall-impact-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(4);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(4);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 305,
+      customOwnerId: "p1",
+      hitFall: { damage: 17, velocity: { x: 3.5, y: -6.25 } },
+    });
+  });
+
+  it("creates a required imported dynamic HitDef fall recovery artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicFallRecoveryTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-fall-recovery-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-fall-recovery-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(4);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(4);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 307,
+      customOwnerId: "p1",
+      hitFall: {
+        recover: false,
+        recoverTime: 19,
+        downRecover: true,
+        downRecoverTime: 45,
+      },
+    });
+  });
+
+  it("creates a required imported dynamic HitDef fall flags artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicFallFlagsTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-fall-flags-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-fall-flags-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(3);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(3);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 306,
+      customOwnerId: "p1",
+      hitFall: { falling: true, kill: false },
+    });
+  });
+
+  it("creates a required imported dynamic HitDef down.bounce artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicDownBounceTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-down-bounce-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-down-bounce-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 306,
+      customOwnerId: "p1",
+      hitFall: { falling: true, downBounce: true },
+    });
+  });
+
+  it("creates a required imported dynamic HitDef lethal-flags artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicLethalFlagsTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-lethal-flags-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-lethal-flags-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "demo",
+      life: 1,
+      moveType: "H",
+    });
+  });
+
+  it("creates a required imported dynamic HitDef air.juggle artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicAirJuggleTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-air-juggle-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-air-juggle-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      juggle: 3,
+      juggleOrigin: "hitdef",
+    });
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 963 });
+  });
+
+  it("creates a required imported dynamic HitDef numhits artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicNumHitsTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-numhits-golden", source: "mixed" },
+      gates: [{ label: "imported-x-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      stateNo: 899,
+    });
+  });
+
+  it("creates a required imported dynamic HitDef sprite-priority artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicSpritePriorityTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-sprite-priority-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-sprite-priority-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1", spritePriority: 7, hitDefSpritePrioritySource: "authored" }),
+      expect.objectContaining({ actorId: "p2", spritePriority: -4, hitDefSpritePrioritySource: "authored" }),
+    ]));
+  });
+
+  it("creates a required imported dynamic HitDef priority-clash artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicPriorityTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-priority-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-priority-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.eventLines.join("\n")).toContain("priority 6 beat");
+  });
+
+  it("creates a required imported dynamic HitDef forcestand posture artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicForcePostureTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-force-posture-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-force-posture-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedStates).toContain(5000);
+    expect(gate?.evidence.executedStates).not.toContain(5010);
+    expect(gate?.requirements.forbiddenExecutedStates).toEqual([5010]);
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 10, stateType: "C" }),
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5000, stateType: "S", moveType: "H" }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5000,
+      stateType: "S",
+      moveType: "H",
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef forcenofall artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicForceNoFallTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-forcenofall-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-forcenofall-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.HitFallSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["hitfall:hitfallset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedStates).toContain(5000);
+    expect(gate?.evidence.executedStates).not.toContain(5100);
+    expect(gate?.requirements.forbiddenExecutedStates).toEqual([5100]);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.requirements.requiredActorFrameSequences?.[0]?.steps).toEqual([
+      expect.objectContaining({
+        actorId: "p2",
+        stateNo: 0,
+      }),
+      expect.objectContaining({
+        actorId: "p2",
+        stateNo: 5000,
+      }),
+    ]);
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5000,
+      moveType: "H",
+      hitFall: { falling: false, velocity: { x: 3.25, y: -7.5, z: 1.75 } },
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef p2facing artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicP2FacingTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-p2facing-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-p2facing-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 0, facing: -1 }),
+      expect.objectContaining({ actorId: "p2", source: "imported", facing: 1, moveType: "H" }),
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5094, moveType: "H" }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5094,
+      moveType: "H",
+      life: 963,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef ID and ChainID artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicIdChainIdTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-id-chainid-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-id-chainid-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(2);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(2);
+    expect(gate?.evidence.targetLinks).toEqual(expect.arrayContaining([
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 43 }),
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 44 }),
+    ]));
+    expect(gate?.evidence.eventLines.join("\n")).not.toContain("via ChainID");
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5095, moveType: "H" }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5095,
+      moveType: "H",
+      life: 963,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef damage artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicDamageTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-damage-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-damage-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(2);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.eventLines).toContain(
+      "Dynamic HitDef Damage Attacker hit Dynamic HitDef Damage Defender for 41",
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5096, moveType: "H" }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5096,
+      moveType: "H",
+      life: 959,
+    });
+  });
+
+  it("creates a required imported direct HitDef omitted-damage artifact", () => {
+    const artifact = createSyntheticImportedHitDefOmittedDamageTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-omitted-damage-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-omitted-damage-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.eventLines).toContain(
+      "Omitted HitDef Damage Attacker hit Omitted HitDef Damage Defender for 0",
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5097, moveType: "H" }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ power: 0 });
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5097,
+      moveType: "H",
+      life: 1000,
+      power: 0,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef PauseTime pair artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicPauseTimeTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-pausetime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-pausetime-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(2);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.executedStates).toEqual(expect.arrayContaining([5098, 5099]));
+    expect(gate?.evidence.controllerEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p1",
+        stateNo: 200,
+        controller: "ChangeState",
+        name: "HitPauseTime Branch",
+      }),
+    ]));
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1", source: "imported", stateNo: 5099 }),
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5098, moveType: "H" }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5098,
+      moveType: "H",
+      life: 963,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef ground HitTime artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicGroundHitTimeTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-ground-hittime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-ground-hittime-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5093, moveType: "H" }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5093,
+      moveType: "H",
+      life: 963,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef ground SlideTime artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicGroundSlideTimeTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-ground-slidetime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-ground-slidetime-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5092, moveType: "H" }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5092,
+      moveType: "H",
+      life: 963,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef guard HitTime artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicGuardHitTimeTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-guard-hittime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-guard-hittime-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5091, moveType: "I" }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      life: 995,
+      ctrl: true,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef guard SlideTime artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicGuardSlideTimeTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-guard-slidetime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-guard-slidetime-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5090, moveType: "I" }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      life: 995,
+      ctrl: true,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef guard ControlTime artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicGuardControlTimeTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-guard-ctrltime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-guard-ctrltime-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5089, moveType: "I" }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      life: 995,
+      ctrl: true,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef air guard ControlTime artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicAirGuardControlTimeTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-airguard-ctrltime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-airguard-ctrltime-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5088, stateType: "A", moveType: "I" }),
+    ]));
+    expect(gate?.evidence.executedStates).not.toEqual(expect.arrayContaining([150, 151, 152, 153]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      life: 995,
+      ctrl: true,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef air HitTime artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicAirHitTimeTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-air-hittime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-air-hittime-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 40, stateType: "A", moveType: "I" }),
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5020, stateType: "A", moveType: "H" }),
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5087, moveType: "H" }),
+    ]));
+    expect(gate?.evidence.executedStates).not.toEqual(expect.arrayContaining([150, 154, 5030, 5050]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5087,
+      life: 963,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef guard-distance artifact without contact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicGuardDistanceTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-guard-distance-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-guard-distance-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.combatReasons).toContain("whiff");
+    expect(gate?.evidence.combatReasons).not.toContain("hit");
+    expect(gate?.evidence.combatReasons).not.toContain("guard");
+    expect(gate?.evidence.targetLinks).toEqual([]);
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", inGuardDistAttackerIds: ["p1"], inGuardDistSources: ["direct"] }),
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 130, animNo: 130 }),
+    ]));
+    expect(gate?.evidence.executedStates).not.toContain(5000);
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 130,
+      ctrl: false,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef ground velocity artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicGroundVelocityTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-ground-velocity-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-ground-velocity-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(2);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p2",
+        source: "imported",
+        stateNo: 5000,
+        minVel: expect.objectContaining({ x: 4, y: -2 }),
+        maxVel: expect.objectContaining({ x: 4, y: -2 }),
+      }),
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5086, moveType: "H" }),
+    ]));
+    expect(gate?.evidence.combatReasons).not.toContain("guard");
+    expect(gate?.evidence.executedStates).not.toEqual(expect.arrayContaining([150, 154, 5030, 5050]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5086,
+      life: 963,
+    });
+  });
+
+  it("creates a required imported dynamic HitDef state-transition artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicStateTransitionTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-state-transition-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-state-transition-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedStates).toEqual(expect.arrayContaining([200, 777, 888]));
+    expect(gate?.evidence.executedStates).toEqual(expect.not.arrayContaining([5000, 5010, 150, 151, 152, 153, 154, 155]));
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1", source: "imported", stateNo: 777, moveType: "A" }),
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 888, moveType: "H", customOwnerId: "p1" }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      stateNo: 777,
+      customOwnerId: undefined,
+    });
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 888,
+      moveType: "H",
+      customOwnerId: "p1",
+    });
   });
 
   it("creates a synthetic imported GetHitVar hitcount artifact for normal get-hit CNS", () => {
@@ -25337,7 +26624,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       actorKind: "player",
       life: 943,
-      power: 40,
+      power: 62,
     });
     expect(artifact.trace.finalActors[0]?.actorKind).toBe("player");
   });
@@ -26897,7 +28184,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: "p1", actorKind: "player", source: "imported", targetCount: 0 }),
-        expect.objectContaining({ id: "p2", actorKind: "player", life: 949, power: 40 }),
+        expect.objectContaining({ id: "p2", actorKind: "player", life: 949, power: 58 }),
       ]),
     );
     expect(evidence?.effectPayloads).toEqual(
@@ -26962,7 +28249,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: "p1", actorKind: "player", source: "imported", targetCount: 0 }),
-        expect.objectContaining({ id: "p2", actorKind: "player", life: 949, power: 40 }),
+        expect.objectContaining({ id: "p2", actorKind: "player", life: 949, power: 58 }),
       ]),
     );
     expect(evidence?.effectPayloads).toEqual(
@@ -28666,6 +29953,48 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
+  it("creates a required imported dynamic ModifyProjectile getpower artifact", () => {
+    const artifact = createSyntheticImportedModifyProjectileDynamicGetPowerTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-modifyprojectile-dynamic-getpower-golden",
+        source: "imported",
+      },
+      gates: [{
+        label: "synthetic-imported-modifyprojectile-dynamic-getpower-golden",
+        passed: true,
+        failures: [],
+      }],
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      life: 1000,
+      power: 44,
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ life: 969 });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      projectile: expect.any(Number),
+      modifyprojectile: expect.any(Number),
+    });
+    expect(artifact.gates[0]?.evidence.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ownerId: "p1",
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 77,
+            hasHit: true,
+            removalReason: "hit",
+            terminalReason: "hit",
+          }),
+        }),
+      ]),
+    );
+  });
+
   it("creates a required synthetic imported BindToTarget logical Z artifact", () => {
     const artifact = createSyntheticImportedBindToTargetDepthTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
 
@@ -29130,7 +30459,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("hit");
-    expect(evidence?.eventLines.filter((line) => line.includes("projectile hit") && line.includes("Mira Volt"))).toHaveLength(2);
+    expect(evidence?.eventLines.filter((line) => line.includes("projectile hit") && line.includes(demoFighters[1]!.displayName))).toHaveLength(2);
     expect(evidence?.eventLines.some((line) => line.includes("hits remaining 1") && line.includes("miss 3"))).toBe(true);
     expect(evidence?.eventLines.some((line) => line.includes("hits remaining 0") && line.includes("miss 0"))).toBe(true);
     expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toEqual([
@@ -29148,6 +30477,79 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(evidence?.targetLinks).toEqual(
       expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+  });
+
+  it("creates an Ikemen Projectile GetHitVar hitcount multi-hit artifact with a guarded break", () => {
+    const artifact = createSyntheticImportedIkemenProjectileGetHitVarHitCountMultiHitTraceArtifact({
+      generatedAt: "2026-08-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-ikemen-projectile-gethitvar-hitcount-multihit-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-ikemen-projectile-gethitvar-hitcount-multihit-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.eventCategories).toEqual(expect.arrayContaining(["hit", "guard"]));
+    expect(evidence?.combatReasons).toEqual(expect.arrayContaining(["hit", "guard"]));
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([327, 154]));
+    expect(artifact.trace.events.filter((event) => event.category === "hit")).toHaveLength(2);
+    expect(artifact.trace.events.filter((event) => event.category === "guard")).toHaveLength(1);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 327, 154]);
+  });
+
+  it("creates an Ikemen Projectile GetHitVar velocity-add KO artifact", () => {
+    const artifact = createSyntheticImportedIkemenProjectileGetHitVarVelAddKoTraceArtifact({
+      generatedAt: "2026-08-02T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-ikemen-projectile-gethitvar-veladd-ko-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-ikemen-projectile-gethitvar-veladd-ko-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 328, 5000]));
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1" }),
+        expect.objectContaining({ type: "active", kind: "projectile", ownerId: "p1" }),
+      ]),
+    );
+    expect(evidence?.controllerEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p2",
+          stateNo: 5000,
+          controller: "ChangeState",
+          name: "KO Velocity Delta Branch",
+        }),
+      ]),
+    );
+    expect(artifact.trace.events).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ category: "hit", line: expect.stringContaining("projectile hit") }),
+      ]),
     );
   });
 

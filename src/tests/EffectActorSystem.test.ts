@@ -1335,9 +1335,21 @@ describe("EffectActorSystem", () => {
                   velocity: "5,0",
                   projremovetime: "24",
                   damage: "20,3",
+                  getpower: "var(0) * 7,var(1) + 5",
+                  givepower: "var(0) * 6,var(1) + 4",
                   hitsound: "Svar(0),var(1)",
                   guardsound: "S6,0",
-                  sprpriority: "6",
+                  projsprpriority: "6",
+                  unhittabletime: "var(0) + 1,var(1) + 2",
+                  "stand.friction": "var(0) * 0.1",
+                  "crouch.friction": "var(1) * 0.1",
+                  sparkscale: "var(0) * 0.25",
+                  "guard.sparkscale": "-var(1) * 0.25,var(0) * 0.1",
+                  "palfx.time": "var(0) + 2",
+                  "palfx.add": "var(0),-var(1),2",
+                  "palfx.mul": "200,var(1) * 20,240",
+                  "palfx.color": "var(1) * 30",
+                  "palfx.invertall": "var(0) - 5",
                 },
                 ["Time = 0"],
               ),
@@ -1373,8 +1385,62 @@ describe("EffectActorSystem", () => {
       vel: { x: 5, y: 0 },
       removeTime: 24,
       spritePriority: 6,
+      attackerHitPower: 35,
+      attackerGuardPower: 9,
+      hitPower: 30,
+      guardPower: 8,
+      unhittableTime: [6, 6],
+      standFriction: 0.5,
+      crouchFriction: 0.4,
+      hitSparkScale: [1.25, 1],
+      guardSparkScale: [-1, 0.5],
+      paletteFx: {
+        time: 7,
+        add: [5, -4, 2],
+        mul: [200, 80, 240],
+        color: 120,
+        invert: false,
+      },
       hitSoundValue: { rawPrefix: "S", group: 5, index: 4 },
       guardSoundValue: { rawPrefix: "S", group: 6, index: 0 },
+    });
+  });
+
+  it("keeps each finite helper Projectile spark-scale component when its peer is non-finite", () => {
+    const store = createRuntimeEffectActorStore();
+    spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller(
+                "Projectile",
+                {
+                  projid: "8851",
+                  projanim: "930",
+                  sparkscale: "var(0),var(1)",
+                  "guard.sparkscale": "var(1),var(0)",
+                },
+                ["Time = 0"],
+              ),
+            ]),
+          ),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+    store.helpers[0]!.vars[0] = 1.5;
+    store.helpers[0]!.vars[1] = Number.NaN;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(store.projectiles[0]).toMatchObject({
+      hitSparkScale: [1.5, 1],
+      guardSparkScale: [1, 1.5],
     });
   });
 
@@ -1418,9 +1484,9 @@ describe("EffectActorSystem", () => {
     expect(runtimeHelperProjectileContactTime(store, helper, "hit", 8852)).toBe(0);
 
     const modifyController = compileControllerIr(
-      controller("ModifyProjectile", { projid: "8852", projpriority: "8" }),
+      controller("ModifyProjectile", { id: "8852", projpriority: "8" }),
     );
-    expect(modifyController.operation).toMatchObject({ kind: "modifyprojectile", projectileId: 8852, priority: 8 });
+    expect(modifyController.operation).toMatchObject({ kind: "modifyprojectile", selectionId: 8852, priority: 8 });
     expect(modifyRuntimeHelperProjectileActors(store, helper, modifyController)).toBe(1);
     expect(helperProjectile.priority).toBe(8);
     expect(rootProjectile.priority).toBe(1);
@@ -1454,7 +1520,7 @@ describe("EffectActorSystem", () => {
     expect(runtimeProjectileTeamSide(helperProjectile)).toBe(1);
 
     const modifyController = compileControllerIr(
-      controller("ModifyProjectile", { projid: "8853", projpriority: "8" }),
+      controller("ModifyProjectile", { id: "8853", projpriority: "8" }),
     );
     const modifyOperation = modifyController.operation?.kind === "modifyprojectile" ? modifyController.operation : undefined;
     expect(world.modifyProjectiles("p1", {
@@ -1463,6 +1529,27 @@ describe("EffectActorSystem", () => {
     })).toBe(1);
     expect(rootProjectile.priority).toBe(8);
     expect(helperProjectile.priority).toBe(1);
+  });
+
+  it("indexes active owner projectiles in Ikemen insertion order", () => {
+    const world = new RuntimeEffectActorWorld();
+    const oldest = world.spawnProjectile("p1", projectileInput({ projid: "10" }));
+    world.spawnProjectile("p1", {
+      ...projectileInput({ projid: "20" }),
+      ownerId: "p1-helper-0",
+      parentId: "p1-helper-0",
+      rootId: "p1",
+    });
+    const newest = world.spawnProjectile("p1", projectileInput({ projid: "30" }));
+
+    expect(world.projectilesOwnedBy("p1").map((projectile) => projectile.serialId)).toEqual([
+      oldest.serialId,
+      newest.serialId,
+    ]);
+    expect(world.projectilesOwnedBy("p1", 30).map((projectile) => projectile.serialId)).toEqual([newest.serialId]);
+    expect(world.projectilesOwnedBy("p1", 99)).toEqual([]);
+    markRuntimeProjectileForRemoval(oldest, "timeout");
+    expect(world.projectilesOwnedBy("p1").map((projectile) => projectile.serialId)).toEqual([newest.serialId]);
   });
 
   it("keeps lowercase helper fvar sound expressions distinct from F-prefixed sound refs", () => {
@@ -1550,7 +1637,7 @@ describe("EffectActorSystem", () => {
               controller(
                 "Projectile",
                 {
-                  projid: "8860",
+                  id: "8860",
                   projanim: "930",
                   velocity: "1,0",
                   projpriority: "2",
@@ -1569,7 +1656,7 @@ describe("EffectActorSystem", () => {
               controller(
                 "ModifyProjectile",
                 {
-                  projid: "8860",
+                  id: "8860",
                   velocity: "6,-1",
                   accel: ".5,.25",
                   velmul: "1.25,.5",
@@ -1578,7 +1665,7 @@ describe("EffectActorSystem", () => {
                   projstagebound: "24",
                   projheightbound: "-120,60",
                   projremovetime: "88",
-                  sprpriority: "8",
+                  projsprpriority: "8",
                   projpriority: "4",
                   projhits: "3",
                   projmisstime: "7",
@@ -1666,6 +1753,7 @@ describe("EffectActorSystem", () => {
                   projanim: "930",
                   velocity: "1,0",
                   projremovetime: "24",
+                  "ground.velocity": "-5,-2,0.5",
                 },
                 ["Time = 0"],
               ),
@@ -1677,7 +1765,97 @@ describe("EffectActorSystem", () => {
               controller(
                 "ModifyProjectile",
                 {
-                  projid: "Parent,Var(4)",
+                  id: "Parent,Var(4)",
+                  chainid: "Parent,Var(4)",
+                  nochainid: "Parent,Var(25),Root,Var(16)",
+                  index: "Root,Var(19)",
+                  projid: "Parent,Var(20)",
+                  projanim: "Parent,Var(21)",
+                  projhitanim: "Parent,Var(22)",
+                  projremanim: "Parent,Var(23)",
+                  projcancelanim: "Parent,Var(24)",
+                  attr: "A,NP",
+                  guardflag: "A",
+                  affectteam: "F",
+                  animtype: "Medium",
+                  "air.animtype": "Up",
+                  "fall.animtype": "DiagUp",
+                  kill: "Root,Var(18)",
+                  "guard.kill": "Root,Var(18)",
+                  "fall.kill": "Root,Var(18)",
+                  forcenofall: "Parent,Var(32)",
+                  forcestand: "Parent,Var(33)",
+                  forcecrouch: "Root,Var(34)",
+                  "fall.damage": "Parent,Var(35)",
+                  "fall.xvelocity": "Parent,Var(36)",
+                  "fall.yvelocity": "Root,Var(37)",
+                  "fall.zvelocity": "Root,Var(38)",
+                  "fall.recover": "Parent,Var(39)",
+                  "fall.recovertime": "Root,Var(40)",
+                  "down.recover": "Parent,Var(49)",
+                  "down.recovertime": "Root,Var(49)",
+                  "fall.envshake.time": "Parent,Var(41)",
+                  "fall.envshake.freq": "Parent,Var(42)",
+                  "fall.envshake.ampl": "Root,Var(43)",
+                  "fall.envshake.phase": "Root,Var(44)",
+                  "fall.envshake.mul": "Parent,Var(45)",
+                  "fall.envshake.dir": "Root,FVar(1)",
+                  dizzypoints: "Parent,Var(46)",
+                  guardpoints: "Root,Var(47)",
+                  "air.juggle": "Parent,Var(15)",
+                  damage: "Parent,Var(13),Root,Var(14)",
+                  getpower: "Parent,Var(13),Root,Var(14)",
+                  givepower: "Parent,Var(13),Root,Var(14)",
+                  redlife: "Parent,Var(48),Root,Var(48)",
+                  score: "Parent,FVar(0),Root,FVar(0)",
+                  "attack.depth": "Parent,FVar(1),Root,FVar(1)",
+                  numhits: "Parent,Var(25)",
+                  priority: "Parent,Var(26), Miss",
+                  p2stateno: "Parent,Var(27)",
+                  p2getp1state: "Root,Var(28)",
+                  p2facing: "Parent,Var(50)",
+                  mindist: "Parent,Var(13),Root,Var(14),Root,Var(31)",
+                  maxdist: "Root,Var(51),Root,Var(52),Root,Var(54)",
+                  "air.hittime": "Root,Var(50)",
+                  fall: "Parent,Var(32)",
+                  "air.fall": "Root,Var(34)",
+                  "down.bounce": "Parent,Var(33)",
+                  "ground.hittime": "Root,Var(51)",
+                  pausetime: "Root,Var(58),Root,Var(14)",
+                  "guard.pausetime": "Root,Var(59),Root,Var(48)",
+                  "guard.dist.width": "Root,Var(51),Root,Var(14)",
+                  "guard.dist.height": "Root,Var(52),Root,Var(53)",
+                  "guard.dist.depth": "Root,Var(54),Root,Var(48)",
+                  sparkno: "F7101",
+                  sparkangle: "Root,FVar(0)",
+                  "guard.sparkno": "S7100",
+                  "guard.sparkangle": "-1.5",
+                  sparkxy: "Parent,Var(46),Root,Var(31)",
+                  "ground.slidetime": "Root,Var(57)",
+                  "guard.hittime": "Root,Var(52)",
+                  "guard.slidetime": "Root,Var(53)",
+                  "guard.ctrltime": "Root,Var(54)",
+                  "airguard.ctrltime": "Root,Var(55)",
+                  "down.hittime": "Root,Var(56)",
+                  "ground.velocity": "Parent,Var(36),n,Root,Var(38)",
+                  "down.velocity": "Parent,Var(36),Root,Var(37),Root,Var(38)",
+                  "air.velocity": "Parent,Var(36),Root,Var(37),Root,Var(38)",
+                  "guard.velocity": "Parent,Var(36),Root,Var(37),Root,Var(38)",
+                  "airguard.velocity": "Parent,Var(50),Root,Var(34),Root,Var(38)",
+                  xaccel: "Parent,FVar(0)",
+                  yaccel: "Root,FVar(0)",
+                  zaccel: "Root,FVar(1)",
+                  "envshake.time": "Parent,Var(29)",
+                  "envshake.freq": "Root,FVar(1)",
+                  "envshake.ampl": "Parent,Var(36)",
+                  "envshake.phase": "Root,FVar(0)",
+                  "envshake.mul": "Parent,FVar(0)",
+                  "envshake.dir": "Root,FVar(1)",
+                  p1stateno: "Parent,Var(29)",
+                  missonoverride: "Root,Var(30)",
+                  p2clsncheck: "Clsn1",
+                  p2clsnrequire: "Size",
+                  hitflag: "H-",
                   velocity: "Parent,Var(5),Root,Var(6)",
                   accel: "Parent,Var(7),Root,Var(8)",
                   velmul: "Parent,Var(9),Root,Var(10)",
@@ -1686,7 +1864,9 @@ describe("EffectActorSystem", () => {
                   projstagebound: "Root,Var(1)",
                   projheightbound: "Parent,Var(2),Root,Var(3)",
                   projremovetime: "Parent,Var(13)",
-                  sprpriority: "Root,Var(14)",
+                  p1sprpriority: "Parent,Var(25)",
+                  p2sprpriority: "Root,Var(31)",
+                  projsprpriority: "Root,Var(14)",
                   projpriority: "Parent,Var(15)",
                   projhits: "Root,Var(16)",
                   projmisstime: "Parent,Var(17)",
@@ -1705,6 +1885,10 @@ describe("EffectActorSystem", () => {
         [901, action(901, 4)],
         [902, action(902, 4)],
         [930, action(930, 4)],
+        [931, action(931, 4)],
+        [932, action(932, 4)],
+        [933, action(933, 4)],
+        [934, action(934, 4)],
       ]),
     });
     const parentVars = Array.from({ length: 60 }, () => 0);
@@ -1718,6 +1902,27 @@ describe("EffectActorSystem", () => {
     parentVars[13] = 44;
     parentVars[15] = 5;
     parentVars[17] = 6;
+    parentVars[20] = 9001;
+    parentVars[21] = 931;
+    parentVars[22] = 932;
+    parentVars[23] = 933;
+    parentVars[24] = 934;
+    parentVars[25] = 9;
+    parentVars[26] = 8;
+    parentVars[27] = 889;
+    parentVars[29] = 777;
+    parentVars[32] = 1;
+    parentVars[33] = 1;
+    parentVars[35] = 13;
+    parentVars[36] = -3.5;
+    parentVars[39] = 0;
+    parentVars[41] = 15;
+    parentVars[42] = 178.5;
+    parentVars[45] = 0.75;
+    parentVars[46] = 23;
+    parentVars[48] = 23;
+    parentVars[49] = 0;
+    parentVars[50] = -2;
     const rootVars = Array.from({ length: 60 }, () => 0);
     rootVars[1] = 36;
     rootVars[3] = 72;
@@ -1728,8 +1933,31 @@ describe("EffectActorSystem", () => {
     rootVars[14] = 7;
     rootVars[16] = 6;
     rootVars[18] = 0;
-    const parentState = actor("p1", "Parent", { vars: parentVars }).runtime;
-    const rootState = actor("p1", "Root", { vars: rootVars }).runtime;
+    rootVars[19] = 0;
+    rootVars[28] = 0;
+    rootVars[30] = 0;
+    rootVars[31] = -6;
+    rootVars[34] = 0;
+    rootVars[37] = -8.25;
+    rootVars[38] = 2.5;
+    rootVars[40] = 19;
+    rootVars[43] = 6;
+    rootVars[44] = 0.25;
+    rootVars[47] = 17;
+    rootVars[48] = 9;
+    rootVars[49] = 27;
+    rootVars[50] = 23;
+    rootVars[51] = 29;
+    rootVars[52] = 31;
+    rootVars[53] = 37;
+    rootVars[54] = 39;
+    rootVars[55] = 41;
+    rootVars[56] = 43;
+    rootVars[57] = 45;
+    rootVars[58] = 2;
+    rootVars[59] = 3;
+    const parentState = actor("p1", "Parent", { vars: parentVars, fvars: [6.5, 4.5] }).runtime;
+    const rootState = actor("p1", "Root", { vars: rootVars, fvars: [2.25, 8.25] }).runtime;
     const executed: string[] = [];
 
     advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
@@ -1737,6 +1965,10 @@ describe("EffectActorSystem", () => {
       rootState,
       onController: (_helper, item) => executed.push(item.type),
     });
+    const spawnedHelperProjectile = store.projectiles.find((projectile) => projectile.parentId === helper.serialId);
+    expect(spawnedHelperProjectile).toBeDefined();
+    spawnedHelperProjectile!.frameIndex = 2;
+    spawnedHelperProjectile!.frameElapsed = 3;
     advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
       parentState,
       rootState,
@@ -1746,7 +1978,121 @@ describe("EffectActorSystem", () => {
     const helperProjectile = store.projectiles.find((projectile) => projectile.parentId === helper.serialId);
     expect(executed).toEqual(["Projectile", "ChangeState", "ModifyProjectile", "ChangeState"]);
     expect(helperProjectile).toMatchObject({
-      projectileId: 8861,
+      projectileId: 9001,
+      animNo: 931,
+      action: expect.objectContaining({ id: 931 }),
+      frameIndex: 0,
+      frameElapsed: 0,
+      hitAnimNo: 932,
+      removeAnimNo: 933,
+      cancelAnimNo: 934,
+      targetId: 8861,
+      chainId: 8861,
+      noChainIds: [9, 6],
+      attr: "A,NP",
+      guardFlag: "A",
+      affectTeam: -1,
+      hitAnimTypes: { ground: 1, air: 4, fall: 5 },
+      kill: false,
+      guardKill: false,
+      fall: expect.objectContaining({
+        enabled: true,
+        airFall: false,
+        kill: false,
+        damage: 13,
+        xVelocity: -3.5,
+        yVelocity: -8.25,
+        zVelocity: 2.5,
+        recover: false,
+        recoverTime: 19,
+        downRecover: false,
+        downRecoverTime: 27,
+        envShakeTime: 15,
+        envShakeFrequency: 178.5,
+        envShakeAmplitude: 6,
+        envShakePhase: 0.25,
+        envShakeMultiplier: 0.75,
+        envShakeDirection: 8.25,
+      }),
+      forceNoFall: true,
+      forceStand: true,
+      forceCrouch: false,
+      dizzyPoints: 23,
+      guardPoints: 17,
+      airJuggle: 5,
+      damage: 44,
+      guardDamage: 7,
+      attackerHitPower: 44,
+      attackerGuardPower: 7,
+      hitPower: 44,
+      guardPower: 7,
+      redLife: 23,
+      guardRedLife: 9,
+      score: 6.5,
+      guardScore: 2.25,
+      attackDepth: [4.5, 8.25],
+      hitDefHitCount: 9,
+      hitPriority: 8,
+      hitPriorityType: "miss",
+      p2SpritePriority: -6,
+      p2StateNo: 889,
+      p2GetP1State: false,
+      p2Facing: -2,
+      minDistance: [44, 7, -6],
+      maxDistance: [29, 31, 39],
+      airHitTime: 23,
+      downBounce: true,
+      hitStun: 29,
+      hitPause: 2,
+      hitShakeTime: 7,
+      guardPause: 3,
+      guardShakeTime: 9,
+      guardDistanceBounds: {
+        width: [29, 7],
+        height: [31, 37],
+        depth: [39, 9],
+      },
+      hitSpark: "F7101",
+      hitSparkAngle: 2.25,
+      guardSpark: "S7100",
+      guardSparkAngle: -1.5,
+      sparkXy: [23, -6],
+      groundSlideTime: 45,
+      guardStun: 31,
+      guardSlideTime: 37,
+      guardControlTime: 39,
+      airGuardControlTime: 41,
+      downHitTime: 43,
+      push: 3.5,
+      hitVelocityY: -2,
+      hitVelocityZ: 2.5,
+      hitVelocities: expect.objectContaining({ ground: { x: -3.5, y: -2, z: 2.5 } }),
+      downVelocityX: -3.5,
+      downVelocityY: -8.25,
+      downVelocityZ: 2.5,
+      airVelocityX: -3.5,
+      airVelocityY: -8.25,
+      airVelocityZ: 2.5,
+      guardPush: 3.5,
+      guardVelocityY: -8.25,
+      guardVelocityZ: 2.5,
+      airGuardPush: 2,
+      airGuardVelocityY: 0,
+      airGuardVelocityZ: 2.5,
+      hitXAccel: 6.5,
+      hitYAccel: 2.25,
+      hitZAccel: 8.25,
+      envShake: { time: 777, freq: 8.25, ampl: -3, phase: 2.25, mul: 6.5, dir: 8.25 },
+      p1StateNo: 777,
+      missOnOverride: false,
+      p2ClsnCheck: "clsn1",
+      p2ClsnRequire: "size",
+      hitFlag: "H-",
+      terminalActions: {
+        hit: expect.objectContaining({ id: 932 }),
+        remove: expect.objectContaining({ id: 933 }),
+        cancel: expect.objectContaining({ id: 934 }),
+      },
       parentId: "p1-helper-0",
       vel: { x: 8, y: -2 },
       accel: { x: 1, y: 0 },
@@ -1762,6 +2108,7 @@ describe("EffectActorSystem", () => {
       missTime: 6,
       removeOnHit: false,
     });
+    expect(helperProjectile).not.toHaveProperty("p1SpritePriority");
   });
 
   it("evaluates helper-local ProjHit against only helper-parented Projectile contact", () => {
@@ -2409,11 +2756,35 @@ describe("EffectActorSystem", () => {
       pauseKind: "Pause",
       stage: { bounds: { left: -160, right: 160 } },
       advanceHelpers: () => pausedCalls.push("helpers"),
+      advanceProjectiles: () => pausedCalls.push("projectiles"),
       advanceExplods: () => pausedCalls.push("explods"),
     });
 
     expect(normalCalls).toEqual(["explods"]);
-    expect(pausedCalls).toEqual(["helpers", "explods"]);
+    expect(pausedCalls).toEqual(["helpers", "projectiles", "explods"]);
+  });
+
+  it("advances only eligible projectiles through paused presentation", () => {
+    const world = new RuntimeEffectActorWorld();
+    const moving = world.spawnProjectile("p1", projectileInput({ velocity: "3,0", pausemovetime: "1" }));
+    const frozen = world.spawnProjectile("p1", projectileInput({ projid: "78", velocity: "5,0", pausemovetime: "0" }));
+    frozen.pauseMoveTime = 0;
+
+    world.advancePresentationEffects("p1", undefined, {
+      pauseKind: "Pause",
+      stage: { bounds: { left: -160, right: 160 } },
+    });
+
+    expect(moving).toMatchObject({ pos: { x: 3, y: 0 }, age: 1, pauseMoveTime: 1 });
+    expect(frozen).toMatchObject({ pos: { x: 0, y: 0 }, age: 0, pauseMoveTime: 0 });
+
+    world.advancePresentationEffects("p1", undefined, {
+      pauseKind: "Pause",
+      stage: { bounds: { left: -160, right: 160 } },
+    });
+
+    expect(moving).toMatchObject({ pos: { x: 6, y: 0 }, age: 2, pauseMoveTime: 0 });
+    expect(frozen).toMatchObject({ pos: { x: 0, y: 0 }, age: 0, pauseMoveTime: 0 });
   });
 
   it("separates active effect ticks from presentation effect ticks", () => {
@@ -2489,7 +2860,7 @@ describe("EffectActorSystem", () => {
     const logs: string[] = [];
     const targets: string[] = [];
 
-    world.spawnProjectile("p1", projectileInput({ projremove: "1", damage: "40" }));
+    world.spawnProjectile("p1", projectileInput({ projremove: "1", damage: "40", pausetime: "6,6" }));
     world.resolveProjectileCombat("p1", {
       attacker,
       defender,
@@ -2507,7 +2878,7 @@ describe("EffectActorSystem", () => {
     expect(defender.hitStun).toBe(18);
     expect(defender.runtime.receivedHitSequence).toBe(5);
     expect(defender.runtime.moveType).toBe("H");
-    expect(attacker.runtime.power).toBe(35);
+    expect(attacker.runtime.power).toBe(28);
     expect(targets).toEqual(["p2:0"]);
     expect(logs).toEqual(["Attacker projectile hit Defender for 40; hits remaining 0, miss 0; hit removal anim none"]);
     expect(world.projectiles("p1")).toEqual([]);
@@ -2594,7 +2965,7 @@ describe("EffectActorSystem", () => {
     expect(defender.runtime.guarding).toBe(true);
     expect(defender.runtime.receivedHitSequence).toBe(4);
     expect(defender.runtime.vel).toEqual({ x: 4, y: -1 });
-    expect(attacker.runtime.power).toBe(12);
+    expect(attacker.runtime.power).toBe(14);
     expect(guardHitApplied).toBe(true);
     expect(logs).toEqual(["Defender guarded Attacker projectile for 6; hits remaining 0, miss 0; hit removal anim none"]);
     expect(world.projectiles("p1")).toEqual([]);

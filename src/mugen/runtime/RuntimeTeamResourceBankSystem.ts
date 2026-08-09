@@ -29,6 +29,15 @@ export type RuntimeTeamResourceBinding = {
   representativeActorId: string;
 };
 
+export type RuntimeHelperTeamResourceBinding = {
+  helperId: string;
+  kind: "life" | "power";
+  mode: "local" | "deferred" | "shared";
+  resourceOwnerId: string;
+  rootBindingOwnerId?: string;
+  reason: string;
+};
+
 export type RuntimeTeamResourceBank = {
   bankId: string;
   kind: "life" | "power";
@@ -94,6 +103,57 @@ export type RuntimeTeamResourceBankRuntimeResult = {
 };
 
 export class RuntimeTeamResourceBankWorld {
+  resolveHelperBinding(input: {
+    helperId: string;
+    kind: "life" | "power";
+    teamShareEnabled: boolean;
+    contractEnabled?: boolean;
+    rootBinding?: RuntimeTeamResourceBinding;
+  }): RuntimeHelperTeamResourceBinding {
+    const helperId = input.helperId.trim();
+    const rootOwner = input.rootBinding?.resourceOwnerId;
+    if (!helperId) {
+      return { helperId, kind: input.kind, mode: "deferred", resourceOwnerId: "", reason: "missing-helper-id" };
+    }
+    if (input.teamShareEnabled && rootOwner && input.contractEnabled === true) {
+      return {
+        helperId,
+        kind: input.kind,
+        mode: "shared",
+        resourceOwnerId: rootOwner,
+        rootBindingOwnerId: rootOwner,
+        reason: "helper-share-contract-enabled",
+      };
+    }
+    if (input.teamShareEnabled && rootOwner) {
+      return {
+        helperId,
+        kind: input.kind,
+        mode: "deferred",
+        resourceOwnerId: helperId,
+        rootBindingOwnerId: rootOwner,
+        reason: "helper-share-contract-pending",
+      };
+    }
+    return {
+      helperId,
+      kind: input.kind,
+      mode: "local",
+      resourceOwnerId: helperId,
+      ...(rootOwner ? { rootBindingOwnerId: rootOwner } : {}),
+      reason: "helper-local-resource",
+    };
+  }
+
+  resolveBinding(
+    diagnostic: RuntimeTeamResourceBankDiagnostic,
+    actorId: string,
+    kind: "life" | "power",
+  ): RuntimeTeamResourceBinding | undefined {
+    const binding = diagnostic.actors.find((actor) => actor.actorId === actorId);
+    return binding?.[kind];
+  }
+
   snapshot(input: RuntimeTeamResourceBankInput): RuntimeTeamResourceBankDiagnostic {
     const diagnostics: string[] = [];
     const actorsBySide: Record<RuntimeTeamSide, RuntimeTeamResourceBankActor[]> = { 1: [], 2: [] };

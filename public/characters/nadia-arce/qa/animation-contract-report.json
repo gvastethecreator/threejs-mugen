@@ -1,0 +1,759 @@
+{
+  "ok": true,
+  "engine": "animation-contract-heuristic",
+  "run_dir": ".",
+  "states_mode": "animated",
+  "checked_states": [
+    "idle",
+    "walk-forward",
+    "walk-back",
+    "crouch",
+    "jump",
+    "light-strike",
+    "heavy-strike",
+    "special",
+    "throw",
+    "guard",
+    "hitstun",
+    "knockdown",
+    "ko",
+    "win"
+  ],
+  "visual_review_required": true,
+  "quality_gate_note": "Automated checks catch obvious phase failures. Visual playback/contact review remains required for row semantics before final approval.",
+  "errors": [],
+  "warnings": [
+    "walk-back: lower-body screen-space balance barely varies (range 0.041; diagnostic target >= 0.045)",
+    "crouch: loop seam has high alpha difference (0.603); verify end-to-start playback",
+    "light-strike: strongest extent is on the first or last frame; verify active/contact is not missing",
+    "heavy-strike: strongest extent is on the first or last frame; verify active/contact is not missing",
+    "special: strongest extent is on the first or last frame; verify active/contact is not missing",
+    "throw: strongest extent is on the first or last frame; verify active/contact is not missing",
+    "hitstun: force direction may be unreadable; verify recoil/drag visually"
+  ],
+  "results": [
+    {
+      "state": "idle",
+      "frames": 4,
+      "loop": true,
+      "workflows": [
+        "fighting-stance-idle"
+      ],
+      "workflow_source": "request",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "phase_contract": [
+        "combat stance",
+        "breath or weight rhythm",
+        "extremity offset",
+        "return"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "guard, support side, and weapon or fist logic read clearly",
+        "extremities amplify the torso without becoming random bobbing",
+        "stance communicates role, not a generic idle with raised hands"
+      ],
+      "metrics": {
+        "frame_count": 4,
+        "pair_diffs": [
+          0.1123,
+          0.304,
+          0.2581,
+          0.0741
+        ],
+        "bbox_width_range": 0.0417,
+        "bbox_height_range": 0,
+        "center_x_range": 0,
+        "center_y_range": 0,
+        "alpha_area_range_ratio": 0.1205,
+        "loop": {
+          "loop_closure_diff": 0.0741,
+          "alpha_area_range_ratio": 0.1205,
+          "average_pair_diff": 0.1871,
+          "average_in_loop_transition_diff": 0.2248
+        }
+      }
+    },
+    {
+      "state": "walk-forward",
+      "frames": 8,
+      "loop": true,
+      "workflows": [
+        "sideview-locomotion"
+      ],
+      "workflow_source": "request",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "phase_contract": [
+        "contact A",
+        "down/pass",
+        "contact B",
+        "up/pass"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "frame 1 and the opposite contact frame show opposite anatomical support legs",
+        "pass/down frames do not keep both legs drifting to the same side",
+        "foot sliding, frozen knees, and loop seam are reviewed at playback speed"
+      ],
+      "metrics": {
+        "frame_count": 8,
+        "pair_diffs": [
+          0.3332,
+          0.4392,
+          0.3421,
+          0.2688,
+          0.4351,
+          0.534,
+          0.4445,
+          0.2202
+        ],
+        "bbox_width_range": 0.2344,
+        "bbox_height_range": 0,
+        "center_x_range": 0.0026,
+        "center_y_range": 0,
+        "alpha_area_range_ratio": 0.2325,
+        "locomotion": {
+          "average_lower_body_diff": 0.461,
+          "min_lower_body_diff": 0.2674,
+          "support_balance_range": 0.1601,
+          "support_balances": [
+            -0.0423,
+            -0.0127,
+            -0.1564,
+            -0.0411,
+            -0.0449,
+            -0.016,
+            -0.1729,
+            -0.0541
+          ],
+          "contact_phase_check": {
+            "ok": true,
+            "frame_1_index": 0,
+            "frame_1_support_balance": -0.0423,
+            "frame_1_support_side": "left",
+            "opposite_contact_index": 4,
+            "opposite_contact_frame": 5,
+            "opposite_contact_support_balance": -0.0449,
+            "opposite_contact_support_side": "left",
+            "contact_delta": 0.0027,
+            "opposite_contact_pose_diff": 0.2114,
+            "min_opposite_contact_pose_diff": 0.08,
+            "min_contact_balance_abs": 0.012,
+            "min_contact_opposition": 0.035,
+            "screen_side_is_diagnostic_only": true,
+            "anatomical_leg_alternation_requires_visual_review": true,
+            "reason": "distinct opposite-contact lower-body poses"
+          }
+        }
+      }
+    },
+    {
+      "state": "walk-back",
+      "frames": 8,
+      "loop": true,
+      "workflows": [
+        "sideview-locomotion"
+      ],
+      "workflow_source": "request",
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "lower-body screen-space balance barely varies (range 0.041; diagnostic target >= 0.045)"
+      ],
+      "phase_contract": [
+        "contact A",
+        "down/pass",
+        "contact B",
+        "up/pass"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "frame 1 and the opposite contact frame show opposite anatomical support legs",
+        "pass/down frames do not keep both legs drifting to the same side",
+        "foot sliding, frozen knees, and loop seam are reviewed at playback speed"
+      ],
+      "metrics": {
+        "frame_count": 8,
+        "pair_diffs": [
+          0.3935,
+          0.2155,
+          0.3383,
+          0.3967,
+          0.2212,
+          0.2997,
+          0.2901,
+          0.3754
+        ],
+        "bbox_width_range": 0.0885,
+        "bbox_height_range": 0,
+        "center_x_range": 0.0026,
+        "center_y_range": 0,
+        "alpha_area_range_ratio": 0.0744,
+        "locomotion": {
+          "average_lower_body_diff": 0.3081,
+          "min_lower_body_diff": 0.2213,
+          "support_balance_range": 0.0407,
+          "support_balances": [
+            -0.023,
+            -0.0181,
+            -0.0339,
+            -0.0277,
+            -0.0289,
+            -0.055,
+            -0.0243,
+            -0.0143
+          ],
+          "contact_phase_check": {
+            "ok": true,
+            "frame_1_index": 0,
+            "frame_1_support_balance": -0.023,
+            "frame_1_support_side": "left",
+            "opposite_contact_index": 4,
+            "opposite_contact_frame": 5,
+            "opposite_contact_support_balance": -0.0289,
+            "opposite_contact_support_side": "left",
+            "contact_delta": 0.0059,
+            "opposite_contact_pose_diff": 0.3953,
+            "min_opposite_contact_pose_diff": 0.08,
+            "min_contact_balance_abs": 0.012,
+            "min_contact_opposition": 0.035,
+            "screen_side_is_diagnostic_only": true,
+            "anatomical_leg_alternation_requires_visual_review": true,
+            "reason": "distinct opposite-contact lower-body poses"
+          }
+        }
+      }
+    },
+    {
+      "state": "crouch",
+      "frames": 4,
+      "loop": false,
+      "workflows": [
+        "fighting-stance-idle"
+      ],
+      "workflow_source": "request",
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "loop seam has high alpha difference (0.603); verify end-to-start playback"
+      ],
+      "phase_contract": [
+        "combat stance",
+        "breath or weight rhythm",
+        "extremity offset",
+        "return"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "guard, support side, and weapon or fist logic read clearly",
+        "extremities amplify the torso without becoming random bobbing",
+        "stance communicates role, not a generic idle with raised hands"
+      ],
+      "metrics": {
+        "frame_count": 4,
+        "pair_diffs": [
+          0.3654,
+          0.3047,
+          0.2815
+        ],
+        "bbox_width_range": 0.0781,
+        "bbox_height_range": 0.2135,
+        "center_x_range": 0.0026,
+        "center_y_range": 0.1068,
+        "alpha_area_range_ratio": 0.1863,
+        "loop": {
+          "loop_closure_diff": 0.6031,
+          "alpha_area_range_ratio": 0.1863,
+          "average_pair_diff": 0.3172,
+          "average_in_loop_transition_diff": 0.335
+        }
+      }
+    },
+    {
+      "state": "jump",
+      "frames": 6,
+      "loop": false,
+      "workflows": [
+        "responsive-jump"
+      ],
+      "workflow_source": "request",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "phase_contract": [
+        "launch/up",
+        "airborne",
+        "down",
+        "landing/compression"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "body scale remains locked to idle while the character moves through the slot",
+        "up and down poses are distinct enough for input response",
+        "dust or motion marks do not compensate for weak body placement"
+      ],
+      "metrics": {
+        "frame_count": 6,
+        "pair_diffs": [
+          0.6096,
+          0.2813,
+          0.161,
+          0.2967,
+          0.6636
+        ],
+        "bbox_width_range": 0.1042,
+        "bbox_height_range": 0.099,
+        "center_x_range": 0,
+        "center_y_range": 0.1641,
+        "alpha_area_range_ratio": 0.1504,
+        "jump": {
+          "center_y_range": 0.1641,
+          "bottom_range": 0.1562,
+          "bbox_width_range": 0.1042,
+          "bbox_height_range": 0.099
+        }
+      }
+    },
+    {
+      "state": "light-strike",
+      "frames": 4,
+      "loop": false,
+      "workflows": [
+        "combat-quick-strike"
+      ],
+      "workflow_source": "request",
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "strongest extent is on the first or last frame; verify active/contact is not missing"
+      ],
+      "phase_contract": [
+        "guard/start",
+        "brief smear",
+        "hit/contact",
+        "follow-through",
+        "recover"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "active/contact frame is the strongest silhouette",
+        "visual range matches gameplay range",
+        "smear follows the motion direction and does not appear during recovery"
+      ],
+      "metrics": {
+        "frame_count": 4,
+        "pair_diffs": [
+          0.3934,
+          0.3372,
+          0.432
+        ],
+        "bbox_width_range": 0.1927,
+        "bbox_height_range": 0.0885,
+        "center_x_range": 0.0026,
+        "center_y_range": 0.0026,
+        "alpha_area_range_ratio": 0.1677,
+        "action": {
+          "bbox_width_range": 0.1927,
+          "bbox_height_range": 0.0885,
+          "center_x_range": 0.0026,
+          "center_y_range": 0.0026,
+          "alpha_area_range_ratio": 0.1677,
+          "average_pair_diff": 0.3875,
+          "peak_area_frame": 2,
+          "peak_extent_frame": 1
+        }
+      }
+    },
+    {
+      "state": "heavy-strike",
+      "frames": 6,
+      "loop": false,
+      "workflows": [
+        "combat-power-strike"
+      ],
+      "workflow_source": "request",
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "strongest extent is on the first or last frame; verify active/contact is not missing"
+      ],
+      "phase_contract": [
+        "load",
+        "fast smear",
+        "hit/contact",
+        "held follow-through",
+        "recovery",
+        "settle"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "anticipation communicates weight instead of input lag",
+        "active/contact frame reads as committed impact",
+        "overshoot and recovery preserve the same body scale"
+      ],
+      "metrics": {
+        "frame_count": 6,
+        "pair_diffs": [
+          0.1872,
+          0.5084,
+          0.1902,
+          0.5351,
+          0.1699
+        ],
+        "bbox_width_range": 0.1719,
+        "bbox_height_range": 0,
+        "center_x_range": 0.0026,
+        "center_y_range": 0,
+        "alpha_area_range_ratio": 0.0961,
+        "action": {
+          "bbox_width_range": 0.1719,
+          "bbox_height_range": 0,
+          "center_x_range": 0.0026,
+          "center_y_range": 0,
+          "alpha_area_range_ratio": 0.0961,
+          "average_pair_diff": 0.3182,
+          "peak_area_frame": 3,
+          "peak_extent_frame": 1
+        }
+      }
+    },
+    {
+      "state": "special",
+      "frames": 8,
+      "loop": false,
+      "workflows": [
+        "combat-power-strike"
+      ],
+      "workflow_source": "request",
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "strongest extent is on the first or last frame; verify active/contact is not missing"
+      ],
+      "phase_contract": [
+        "load",
+        "fast smear",
+        "hit/contact",
+        "held follow-through",
+        "recovery",
+        "settle"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "anticipation communicates weight instead of input lag",
+        "active/contact frame reads as committed impact",
+        "overshoot and recovery preserve the same body scale"
+      ],
+      "metrics": {
+        "frame_count": 8,
+        "pair_diffs": [
+          0.4881,
+          0.3483,
+          0.4777,
+          0.2219,
+          0.4469,
+          0.3902,
+          0.289
+        ],
+        "bbox_width_range": 0.1823,
+        "bbox_height_range": 0.0938,
+        "center_x_range": 0.0026,
+        "center_y_range": 0.0026,
+        "alpha_area_range_ratio": 0.3451,
+        "action": {
+          "bbox_width_range": 0.1823,
+          "bbox_height_range": 0.0938,
+          "center_x_range": 0.0026,
+          "center_y_range": 0.0026,
+          "alpha_area_range_ratio": 0.3451,
+          "average_pair_diff": 0.3803,
+          "peak_area_frame": 2,
+          "peak_extent_frame": 1
+        }
+      }
+    },
+    {
+      "state": "throw",
+      "frames": 6,
+      "loop": false,
+      "workflows": [
+        "combat-power-strike"
+      ],
+      "workflow_source": "request",
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "strongest extent is on the first or last frame; verify active/contact is not missing"
+      ],
+      "phase_contract": [
+        "load",
+        "fast smear",
+        "hit/contact",
+        "held follow-through",
+        "recovery",
+        "settle"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "anticipation communicates weight instead of input lag",
+        "active/contact frame reads as committed impact",
+        "overshoot and recovery preserve the same body scale"
+      ],
+      "metrics": {
+        "frame_count": 6,
+        "pair_diffs": [
+          0.448,
+          0.4462,
+          0.5635,
+          0.6646,
+          0.4649
+        ],
+        "bbox_width_range": 0.1927,
+        "bbox_height_range": 0.1667,
+        "center_x_range": 0.0026,
+        "center_y_range": 0.0026,
+        "alpha_area_range_ratio": 0.2722,
+        "action": {
+          "bbox_width_range": 0.1927,
+          "bbox_height_range": 0.1667,
+          "center_x_range": 0.0026,
+          "center_y_range": 0.0026,
+          "alpha_area_range_ratio": 0.2722,
+          "average_pair_diff": 0.5174,
+          "peak_area_frame": 3,
+          "peak_extent_frame": 1
+        }
+      }
+    },
+    {
+      "state": "guard",
+      "frames": 4,
+      "loop": true,
+      "workflows": [
+        "fighting-stance-idle"
+      ],
+      "workflow_source": "request",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "phase_contract": [
+        "combat stance",
+        "breath or weight rhythm",
+        "extremity offset",
+        "return"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "guard, support side, and weapon or fist logic read clearly",
+        "extremities amplify the torso without becoming random bobbing",
+        "stance communicates role, not a generic idle with raised hands"
+      ],
+      "metrics": {
+        "frame_count": 4,
+        "pair_diffs": [
+          0.3351,
+          0.0328,
+          0.3382,
+          0.0249
+        ],
+        "bbox_width_range": 0.0938,
+        "bbox_height_range": 0,
+        "center_x_range": 0,
+        "center_y_range": 0,
+        "alpha_area_range_ratio": 0.1275,
+        "loop": {
+          "loop_closure_diff": 0.0249,
+          "alpha_area_range_ratio": 0.1275,
+          "average_pair_diff": 0.1827,
+          "average_in_loop_transition_diff": 0.2354
+        }
+      }
+    },
+    {
+      "state": "hitstun",
+      "frames": 4,
+      "loop": false,
+      "workflows": [
+        "hit-reaction-knockdown"
+      ],
+      "workflow_source": "request",
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "force direction may be unreadable; verify recoil/drag visually"
+      ],
+      "phase_contract": [
+        "impact direction",
+        "recoil/drag",
+        "loss of balance",
+        "ground/contact",
+        "settle"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "force direction is readable",
+        "pose loses support or braces instead of becoming a surprised idle",
+        "final/contact pose is not cropped and keeps character scale"
+      ],
+      "metrics": {
+        "frame_count": 4,
+        "pair_diffs": [
+          0.2392,
+          0.5064,
+          0.6137
+        ],
+        "bbox_width_range": 0.1302,
+        "bbox_height_range": 0.0052,
+        "center_x_range": 0.0026,
+        "center_y_range": 0.0026,
+        "alpha_area_range_ratio": 0.0851,
+        "reaction": {
+          "center_x_range": 0.0026,
+          "center_y_range": 0.0026,
+          "bbox_height_range": 0.0052,
+          "average_pair_diff": 0.4531
+        }
+      }
+    },
+    {
+      "state": "knockdown",
+      "frames": 6,
+      "loop": false,
+      "workflows": [
+        "hit-reaction-knockdown"
+      ],
+      "workflow_source": "request",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "phase_contract": [
+        "impact direction",
+        "recoil/drag",
+        "loss of balance",
+        "ground/contact",
+        "settle"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "force direction is readable",
+        "pose loses support or braces instead of becoming a surprised idle",
+        "final/contact pose is not cropped and keeps character scale"
+      ],
+      "metrics": {
+        "frame_count": 6,
+        "pair_diffs": [
+          0.4031,
+          0.632,
+          0.3977,
+          0.4447,
+          0.3591
+        ],
+        "bbox_width_range": 0.0573,
+        "bbox_height_range": 0.5208,
+        "center_x_range": 0.0026,
+        "center_y_range": 0.2604,
+        "alpha_area_range_ratio": 0.4635,
+        "reaction": {
+          "center_x_range": 0.0026,
+          "center_y_range": 0.2604,
+          "bbox_height_range": 0.5208,
+          "average_pair_diff": 0.4473
+        }
+      }
+    },
+    {
+      "state": "ko",
+      "frames": 6,
+      "loop": false,
+      "workflows": [
+        "hit-reaction-knockdown"
+      ],
+      "workflow_source": "request",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "phase_contract": [
+        "impact direction",
+        "recoil/drag",
+        "loss of balance",
+        "ground/contact",
+        "settle"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "force direction is readable",
+        "pose loses support or braces instead of becoming a surprised idle",
+        "final/contact pose is not cropped and keeps character scale"
+      ],
+      "metrics": {
+        "frame_count": 6,
+        "pair_diffs": [
+          0.6926,
+          0.4612,
+          0.5996,
+          0.4339,
+          0.1784
+        ],
+        "bbox_width_range": 0.1042,
+        "bbox_height_range": 0.5573,
+        "center_x_range": 0,
+        "center_y_range": 0.2786,
+        "alpha_area_range_ratio": 0.5715,
+        "reaction": {
+          "center_x_range": 0,
+          "center_y_range": 0.2786,
+          "bbox_height_range": 0.5573,
+          "average_pair_diff": 0.4731
+        }
+      }
+    },
+    {
+      "state": "win",
+      "frames": 5,
+      "loop": false,
+      "workflows": [
+        "fighting-stance-idle"
+      ],
+      "workflow_source": "request",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "phase_contract": [
+        "combat stance",
+        "breath or weight rhythm",
+        "extremity offset",
+        "return"
+      ],
+      "visual_review_required": true,
+      "visual_review_checklist": [
+        "guard, support side, and weapon or fist logic read clearly",
+        "extremities amplify the torso without becoming random bobbing",
+        "stance communicates role, not a generic idle with raised hands"
+      ],
+      "metrics": {
+        "frame_count": 5,
+        "pair_diffs": [
+          0.4616,
+          0.2918,
+          0.2044,
+          0.2032
+        ],
+        "bbox_width_range": 0.1198,
+        "bbox_height_range": 0,
+        "center_x_range": 0.0026,
+        "center_y_range": 0,
+        "alpha_area_range_ratio": 0.2184,
+        "loop": {
+          "loop_closure_diff": 0.5036,
+          "alpha_area_range_ratio": 0.2184,
+          "average_pair_diff": 0.2903,
+          "average_in_loop_transition_diff": 0.3193
+        }
+      }
+    }
+  ]
+}

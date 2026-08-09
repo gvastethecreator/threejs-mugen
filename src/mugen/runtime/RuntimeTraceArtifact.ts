@@ -237,6 +237,7 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
         hitEffectEvents: gate.evidence.hitEffectEvents.map((event) => ({
           ...event,
           offset: event.offset ? { ...event.offset } : undefined,
+          scale: event.scale ? { ...event.scale } : undefined,
           assetFrameIndices: event.assetFrameIndices ? [...event.assetFrameIndices] : undefined,
         })),
         contactEffectPackages: gate.evidence.contactEffectPackages.map((event) => ({
@@ -820,6 +821,7 @@ function cloneTraceActor(actor: RuntimeTraceFrame["actors"][number]): RuntimeTra
     hitEffectEvents: actor.hitEffectEvents?.map((event) => ({
       ...event,
       offset: event.offset ? { ...event.offset } : undefined,
+      scale: event.scale ? { ...event.scale } : undefined,
       assetFrame: event.assetFrame ? { ...event.assetFrame } : undefined,
       assetFrames: event.assetFrames?.map((frame) => ({ ...frame })),
     })),

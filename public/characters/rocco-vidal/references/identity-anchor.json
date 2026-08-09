@@ -1,0 +1,17 @@
+{
+  "state": "idle",
+  "frame": 0,
+  "source": "raw\\idle.png",
+  "output": "references\\identity-anchor.png",
+  "method": "components",
+  "background_method": "matte",
+  "cell": {
+    "shape": "square",
+    "width": 192,
+    "height": 192,
+    "safe_margin_x": 24,
+    "safe_margin_y": 24,
+    "size": 192,
+    "safe_margin": 24
+  }
+}

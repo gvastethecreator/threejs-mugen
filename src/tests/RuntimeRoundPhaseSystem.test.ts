@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { RuntimeRoundPhaseWorld } from "../mugen/runtime/RuntimeRoundPhaseSystem";
+import {
+  RuntimeRoundPhaseWorld,
+  runtimeRoundStateFromPhase,
+} from "../mugen/runtime/RuntimeRoundPhaseSystem";
 
 describe("RuntimeRoundPhaseWorld", () => {
   it("walks the explicit pre-intro, intro, and fight phases", () => {
@@ -38,5 +41,22 @@ describe("RuntimeRoundPhaseWorld", () => {
 
     expect(world.transition("reset")).toMatchObject({ applied: true, from: 4, to: 2 });
     expect(world.currentPhase).toBe(2);
+  });
+
+  it.each(["mugen-1.1", "ikemen-go"] as const)(
+    "projects the control-locked Fight screen as RoundState 1 for %s",
+    (profile) => {
+      const world = new RuntimeRoundPhaseWorld(profile, 0);
+
+      expect(runtimeRoundStateFromPhase(world.currentPhase)).toBe(0);
+      world.transition("intro");
+      expect(runtimeRoundStateFromPhase(world.currentPhase)).toBe(1);
+      world.transition("fight");
+      expect(runtimeRoundStateFromPhase(world.currentPhase)).toBe(2);
+    },
+  );
+
+  it("falls back to the ordinary fight value when no phase projection exists", () => {
+    expect(runtimeRoundStateFromPhase(undefined)).toBe(2);
   });
 });

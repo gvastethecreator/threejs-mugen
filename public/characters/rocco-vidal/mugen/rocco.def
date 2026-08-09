@@ -1,0 +1,16 @@
+; Generated karate-reset MUGEN-lite template
+[Info]
+name = "Rocco Vidal"
+displayname = "Rocco Vidal"
+versiondate = 08,01,2026
+mugenversion = 1.0
+author = "mugen-web-sandbox + imagegen"
+localcoord = 320,240
+
+[Files]
+cmd = rocco.cmd
+cns = rocco.cns
+st = rocco.cns
+sprite = rocco.sff ; native SFF is not shipped; browser runtime uses ../sprite-sheet-alpha.png
+anim = rocco.air
+sound =

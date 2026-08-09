@@ -30,7 +30,18 @@ export class RuntimeContactPresentationWorld {
   emitHitDefContact<TActor extends RuntimeContactPresentationActor>(input: {
     attacker: TActor;
     defender: { id: string };
-    move: Pick<DemoMove, "guardSound" | "hitSound" | "guardSoundValue" | "hitSoundValue" | "guardSpark" | "hitSpark" | "sparkXy">;
+    move: Pick<
+      DemoMove,
+      | "guardSound"
+      | "hitSound"
+      | "guardSoundValue"
+      | "hitSoundValue"
+      | "guardSpark"
+      | "hitSpark"
+      | "guardSparkScale"
+      | "hitSparkScale"
+      | "sparkXy"
+    >;
     kind: RuntimeHitDefContactKind;
     runtimeTick: number;
     recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
@@ -56,6 +67,8 @@ export class RuntimeContactPresentationWorld {
         assetFrames[0],
         assetFrames,
         contact,
+        undefined,
+        input.kind === "guard" ? input.move.guardSparkScale : input.move.hitSparkScale,
       ),
     };
   }
@@ -88,6 +101,8 @@ export class RuntimeContactPresentationWorld {
         assetFrames[0],
         assetFrames,
         contact,
+        input.kind === "guard" ? input.projectile.guardSparkAngle : input.projectile.hitSparkAngle,
+        input.kind === "guard" ? input.projectile.guardSparkScale : input.projectile.hitSparkScale,
       ),
     };
   }

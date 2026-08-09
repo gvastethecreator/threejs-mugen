@@ -1,4 +1,4 @@
-import type { ModifyReversalDefControllerOp, ReversalDefControllerOp } from "../compiler/ControllerOps";
+import type { ModifyReversalDefControllerOp, ReversalDefControllerOp, MugenHitDefExpressionPair } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenStateController } from "../model/MugenState";
@@ -12,6 +12,11 @@ import { applyRuntimePowerDelta } from "./RuntimeResourceSystem";
 import { resetRuntimeHitDefContactMemory, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
 import { findControllerParam } from "./StateProgramExecutor";
 import { markRuntimeHitTmpReversal } from "./RuntimeHitTmpSystem";
+import { evaluateRuntimeControllerNumber, type RuntimeControllerEvaluationContext } from "./RuntimeControllerExpressionContextSystem";
+import {
+  applyRuntimeAttackerUnhittableTime,
+  applyRuntimeReceiverUnhittableTime,
+} from "./RuntimeUnhittableTimeSystem";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeReversalActor = {
@@ -50,6 +55,7 @@ export type RuntimeReversalActivation = {
   p2Facing?: number;
   targetId?: number;
   attackDepth?: [number, number];
+  unhittableTime?: [number, number];
 };
 
 export type RuntimeReversalHooks<TActor extends RuntimeReversalActor = RuntimeReversalActor> = {
@@ -89,6 +95,7 @@ export type RuntimeReversalControllerDispatchOptions<TActor extends RuntimeRever
   controller: ControllerIr;
   hitbox?: CollisionBox;
   reversalWorld: RuntimeReversalWorld;
+  context?: RuntimeControllerEvaluationContext;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: ReversalDefControllerOp) => void;
 };
@@ -121,6 +128,7 @@ export class RuntimeReversalControllerDispatchWorld {
     controller,
     hitbox,
     reversalWorld,
+    context,
     recordController,
     recordOperation,
   }: RuntimeReversalControllerDispatchOptions<TActor>): RuntimeReversalControllerDispatchResult {
@@ -130,6 +138,7 @@ export class RuntimeReversalControllerDispatchWorld {
     if (operation) {
       recordOperation?.(actor, operation);
     }
+    const hitPause = operation?.hitPause ?? Math.max(0, Math.round(firstNumber(findParam(source, "pausetime")) ?? 0));
     const activated = reversalWorld.activate(actor, {
       attr: (operation?.attr ?? stripMugenString(findParam(source, "reversal.attr")))?.trim() ?? "",
       reversalGuardFlag: operation?.reversalGuardFlag,
@@ -139,7 +148,7 @@ export class RuntimeReversalControllerDispatchWorld {
       missOnOverride: operation?.missOnOverride,
       hitbox,
       label: source.name ?? "ReversalDef",
-      hitPause: operation?.hitPause ?? Math.max(0, Math.round(firstNumber(findParam(source, "pausetime")) ?? 0)),
+      hitPause,
       hitCount: operation?.hitCount ?? staticReversalHitCount(findParam(source, "numhits")),
       p1SpritePriority: operation?.p1SpritePriority,
       p2SpritePriority: operation?.p2SpritePriority,
@@ -150,6 +159,13 @@ export class RuntimeReversalControllerDispatchWorld {
       targetId: operation?.targetId ?? firstNumber(findParam(source, "id")),
       attackDepth:
         operation?.attackDepth ?? normalizedNumberPair(findParam(source, "attack.depth")) ?? actor.runtime.combatDepth?.attack,
+      unhittableTime: resolveRuntimeReversalIntegerPair(
+        operation?.unhittableTime,
+        findParam(source, "unhittabletime"),
+        actor.runtime,
+        context,
+        [-1, Math.trunc(hitPause) + 1],
+      ),
     });
     return {
       activated,
@@ -299,6 +315,7 @@ export class RuntimeReversalWorld {
       hitPause: activation.hitPause,
       hitVars: { hitCount },
       ...(activation.attackDepth ? { attackDepth: [...activation.attackDepth] as [number, number] } : {}),
+      ...(activation.unhittableTime ? { unhittableTime: [...activation.unhittableTime] as [number, number] } : {}),
       hitStun: 0,
       push: 0,
       hitbox: cloneBox(activation.hitbox),
@@ -317,6 +334,7 @@ export class RuntimeReversalWorld {
       ...(activation.p1SpritePriority === undefined ? {} : { p1SpritePriority: activation.p1SpritePriority }),
       ...(activation.p2SpritePriority === undefined ? {} : { p2SpritePriority: activation.p2SpritePriority }),
       ...(activation.attackDepth ? { attackDepth: [...activation.attackDepth] as [number, number] } : {}),
+      ...(activation.unhittableTime ? { unhittableTime: [...activation.unhittableTime] as [number, number] } : {}),
       ...(activation.p1StateNo !== undefined ? { p1StateNo: activation.p1StateNo } : {}),
       ...(activation.p2StateNo !== undefined ? { p2StateNo: activation.p2StateNo } : {}),
       ...(activation.p2GetP1State === undefined ? {} : { p2GetP1State: activation.p2GetP1State }),
@@ -384,6 +402,8 @@ export class RuntimeReversalWorld {
     attacker.runtime.guardSlideTimeRemaining = undefined;
     attacker.runtime.guardControlTimeRemaining = undefined;
     attacker.runtime.guarding = false;
+    applyRuntimeReceiverUnhittableTime(attacker.runtime, reversal);
+    applyRuntimeAttackerUnhittableTime(reverser.runtime, reversal);
     markRuntimeEffectActorGotHit(attacker);
     applyRuntimePowerDelta(reverser.runtime, 25, reverser.definition.constants);
 
@@ -437,6 +457,43 @@ function normalizedNumberPair(value: string | undefined): [number, number] | und
     return undefined;
   }
   return [values[0], values[1] ?? values[0]];
+}
+
+function resolveRuntimeReversalIntegerPair(
+  operationValue: MugenHitDefExpressionPair | undefined,
+  rawValue: string | undefined,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+  fallback: [number, number] = [-1, -1],
+): [number, number] {
+  const source = operationValue ?? splitRuntimeReversalExpressionPair(rawValue);
+  if (!source) return [...fallback];
+  const resolve = (value: number | string | undefined, fallback: number): number => {
+    if (value === undefined) return fallback;
+    const result = typeof value === "number" ? value : evaluateRuntimeControllerNumber(value, state, context);
+    return Number.isFinite(result) ? Math.trunc(result!) : fallback;
+  };
+  return [resolve(source[0], -1), resolve(source[1], -1)];
+}
+
+function splitRuntimeReversalExpressionPair(raw: string | undefined): [string, string?] | undefined {
+  if (!raw) return undefined;
+  let depth = 0;
+  let split = -1;
+  for (let index = 0; index < raw.length; index += 1) {
+    const char = raw[index]!;
+    if (char === "(") depth += 1;
+    else if (char === ")") depth -= 1;
+    else if (char === "," && depth === 0) {
+      if (split >= 0) return undefined;
+      split = index;
+    }
+    if (depth < 0) return undefined;
+  }
+  if (depth !== 0) return undefined;
+  const first = (split < 0 ? raw : raw.slice(0, split)).trim();
+  const second = split < 0 ? undefined : raw.slice(split + 1).trim();
+  return first && (split < 0 || second) ? [first, second] : undefined;
 }
 
 function staticReversalHitCount(value: string | undefined): number | undefined {

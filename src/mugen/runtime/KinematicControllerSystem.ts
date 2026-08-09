@@ -63,12 +63,16 @@ export class RuntimeKinematicControllerWorld {
     }
 
     if (controllerType === "hitvelset") {
-      const { x, y } = movementAxisParamsFromOperation(effectiveOperation);
+      const { x, y, z } = movementAxisParamsFromOperation(effectiveOperation);
       if (state.hitVelocity && (x ?? 0) !== 0) {
         state.vel.x = state.hitVelocity.x;
       }
       if (state.hitVelocity && (y ?? 0) !== 0) {
         state.vel.y = state.hitVelocity.y;
+      }
+      if (state.hitVelocity && (z ?? 0) !== 0) {
+        state.combatDepth ??= runtimeCombatDepthFromConstants();
+        state.combatDepth.velocity = state.hitVelocity.z ?? 0;
       }
       return { applied: true, controllerType, ...(effectiveOperation ? { operation: effectiveOperation } : {}) };
     }
@@ -138,10 +142,7 @@ function movementAxisParams(
   return {
     x: operation?.x ?? numberParam(controller, state, context, "x") ?? pair?.[0],
     y: operation?.y ?? numberParam(controller, state, context, "y") ?? pair?.[1],
-    z:
-      controller.normalizedType !== "hitvelset"
-        ? operation?.z ?? numberParam(controller, state, context, "z")
-        : undefined,
+    z: operation?.z ?? numberParam(controller, state, context, "z"),
   };
 }
 

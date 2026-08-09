@@ -1,7 +1,15 @@
 import type { TriggerIr } from "../compiler/RuntimeIr";
+import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenCommand } from "../model/MugenCommand";
 import type { MugenStateSpecial } from "../model/MugenState";
-import { hitAttributeMatches } from "./CombatResolver";
+import {
+  hitAttributeMatches,
+  runtimeGuardFlagComparison,
+  runtimeGuardFlagOverlaps,
+  runtimeHitAttributeComparison,
+  runtimeHitFlagComparison,
+  runtimeHitFlagOverlaps,
+} from "./CombatResolver";
 import type { CommandBuffer } from "./CommandBuffer";
 import type { RuntimeContactKind, RuntimeContactMemory, RuntimeContactMemoryWorld } from "./ContactMemorySystem";
 import type { RuntimeEffectActorCountKind, RuntimeEffectActorWorld } from "./EffectActorSystem";
@@ -14,6 +22,15 @@ import { runtimeTeamSide } from "./RuntimeTeamTopologySystem";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
 import { runtimeCurrentSizeBox } from "./RuntimeSizeBoxSystem";
+import { runtimeAnimationElementVar, runtimeAnimationLength, runtimeAnimationPlayerNo } from "./RuntimeAnimationSystem";
+import { runtimeClsnOverlap, runtimeClsnVar } from "./RuntimeFrameSystem";
+import { runtimeProjectileClsnOverlap, runtimeProjectileVar } from "./ProjectileSystem";
+import {
+  runtimeFightScreenStateValue,
+  runtimeGameVarValue,
+  runtimeFightScreenVarValue,
+  type RuntimeFightScreenContext,
+} from "./RuntimeFightScreenTriggerSystem";
 
 export { runtimeHitVar, type RuntimeHitVarTiming } from "./RuntimeHitVarSystem";
 
@@ -32,9 +49,11 @@ export type RuntimeExpressionContextDefinition = {
 export type RuntimeExpressionContextActor = RuntimeTargetWorldActor & {
   playerId?: number;
   playerNo?: number;
+  animationOwnerPlayerNo?: number;
   definition: RuntimeExpressionContextDefinition;
   runtimeProgram?: { states: readonly { id: number; special?: MugenStateSpecial }[] };
   commandBuffer: Pick<CommandBuffer, "isCommandActive">;
+  currentAction?: MugenAnimationAction;
   currentMove?: { attr?: string };
   stateElapsed: number;
   hitPause: number;
@@ -52,7 +71,9 @@ export type RuntimeExpressionContextActor = RuntimeTargetWorldActor & {
     | "projectileCancelTime"
   >;
   targetWorld: Pick<RuntimeTargetWorld, "count" | "find">;
-  effectActorWorld: Pick<RuntimeEffectActorWorld, "countActors">;
+  effectActorWorld: Pick<RuntimeEffectActorWorld, "countActors"> &
+    Partial<Pick<RuntimeEffectActorWorld, "projectilesOwnedBy">>;
+  fightScreen?: RuntimeFightScreenContext;
 };
 
 export type RuntimeExpressionContextInput<TActor extends RuntimeExpressionContextActor> = {
@@ -92,20 +113,49 @@ export class RuntimeExpressionContextWorld {
     const selectedP7 = partnerRoster[2];
     const selectedP8 = p2Roster[3];
     const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
+    const currentAction = actor.currentAction;
+    const expressionActors = input.characters ?? [actor, input.opponent, ...(input.opponents ?? [])];
 
     return {
       self: actor.runtime,
       playerId: actor.playerId,
       playerNo: actor.playerNo,
+      animPlayerNo: runtimeAnimationPlayerNo(actor),
       opponent: selectedP2?.runtime,
       opponentPlayerId: selectedP2?.playerId,
       opponentPlayerNo: selectedP2?.playerNo,
-      enemyNear: (index) => this.resolveEnemyNearRedirect(actor, opponentRoster, index),
+      opponentAnimPlayerNo: selectedP2 ? runtimeAnimationPlayerNo(selectedP2) : undefined,
+      clsnVar: runtimeExpressionClsnVar(actor),
+      opponentClsnVar: selectedP2 ? runtimeExpressionClsnVar(selectedP2) : undefined,
+      parentClsnVar: runtimeExpressionClsnVar(owner),
+      rootClsnVar: runtimeExpressionClsnVar(actor),
+      clsnOverlap: runtimeExpressionClsnOverlap(actor, expressionActors),
+      opponentClsnOverlap: selectedP2 ? runtimeExpressionClsnOverlap(selectedP2, expressionActors) : undefined,
+      parentClsnOverlap: runtimeExpressionClsnOverlap(owner, expressionActors),
+      rootClsnOverlap: runtimeExpressionClsnOverlap(actor, expressionActors),
+      projClsnOverlap: runtimeExpressionProjClsnOverlap(actor, expressionActors),
+      opponentProjClsnOverlap: selectedP2 ? runtimeExpressionProjClsnOverlap(selectedP2, expressionActors) : undefined,
+      parentProjClsnOverlap: runtimeExpressionProjClsnOverlap(owner, expressionActors),
+      rootProjClsnOverlap: runtimeExpressionProjClsnOverlap(actor, expressionActors),
+      projVar: runtimeExpressionProjVar(actor),
+      opponentProjVar: selectedP2 ? runtimeExpressionProjVar(selectedP2) : undefined,
+      parentProjVar: runtimeExpressionProjVar(owner),
+      rootProjVar: runtimeExpressionProjVar(actor),
+      projVarFlag: runtimeExpressionProjVarFlag(actor),
+      opponentProjVarFlag: selectedP2 ? runtimeExpressionProjVarFlag(selectedP2) : undefined,
+      parentProjVarFlag: runtimeExpressionProjVarFlag(owner),
+      rootProjVarFlag: runtimeExpressionProjVarFlag(actor),
+      enemyNear: (index) => this.resolveEnemyNearRedirect(actor, opponentRoster, index, expressionActors),
       enemyNearFallbackToOpponent: input.rootSelection ? false : undefined,
-      partner: (index) => this.resolveRosterRedirect(actor, partnerRoster, index),
-      enemy: (index) => this.resolveRosterRedirect(actor, enemyRoster, index),
+      partner: (index) => this.resolveRosterRedirect(actor, partnerRoster, index, expressionActors),
+      enemy: (index) => this.resolveRosterRedirect(actor, enemyRoster, index, expressionActors),
       name: actor.definition.displayName,
       authorName: actor.definition.authorName,
+      introState: actor.fightScreen?.introState ?? 0,
+      fightScreen: actor.fightScreen,
+      fightScreenState: (parameter) => runtimeFightScreenStateValue(actor.fightScreen, parameter),
+      fightScreenVar: (parameter) => runtimeFightScreenVarValue(actor.fightScreen, parameter),
+      gameVar: (parameter) => runtimeGameVarValue(actor.fightScreen, parameter),
       opponentName: selectedP2?.definition.displayName,
       opponentAuthorName: selectedP2?.definition.authorName,
       p3Name: selectedP3?.definition.displayName,
@@ -132,20 +182,41 @@ export class RuntimeExpressionContextWorld {
       parentPlayerNo: owner.playerNo,
       rootPlayerId: actor.playerId,
       rootPlayerNo: actor.playerNo,
-      target: (targetId) => this.resolveTargetRedirect(actor, input.opponent, targetId),
+      target: (targetId) => this.resolveTargetRedirect(actor, input.opponent, targetId, expressionActors),
       playerIdTarget:
         input.playerIdTarget ??
         (input.characters ? (playerId) => this.resolvePlayerIdRedirect(actor, input.characters ?? [], playerId) : undefined),
       stageTime: input.stageTime,
       stateTime: runtimeExpressionStateTime(actor),
       random: input.random,
+      animLength: currentAction ? runtimeAnimationLength(currentAction) : undefined,
       animTimeRemaining: input.animTimeRemaining,
       animElemTime: input.animElemTime,
+      animElemVar: currentAction
+        ? (parameter) => runtimeAnimationElementVar({ currentAction, runtime: actor.runtime }, parameter)
+        : undefined,
       animExists: (animationId) => actor.definition.animations.has(animationId),
       stateExists: (stateNo) => runtimeActorHasState(actor, stateNo),
       commandActive: (name) => actor.commandBuffer.isCommandActive(name, actor.definition.commands ?? []),
       getConst: (name) => runtimeDefinitionConst(owner.definition, name),
-      getHitVar: (name) => runtimeHitVar(actor.runtime, name, { hitPause: actor.hitPause, hitStun: actor.hitStun }),
+      getHitVar: (name) => runtimeHitVar(actor.runtime, name, {
+        hitPause: actor.hitPause,
+        hitStun: actor.hitStun,
+        standFriction: actor.definition.constants?.["movement.stand.friction"],
+        crouchFriction: actor.definition.constants?.["movement.crouch.friction"],
+      }),
+      getHitVarAttr: (state, filter) => {
+        const sourceAttr = state.hitVars?.sourceAttr;
+        return sourceAttr !== undefined && hitAttributeMatches(filter, sourceAttr);
+      },
+      getHitVarGuardFlag: (state, filter) => {
+        const sourceGuardFlag = state.hitVars?.sourceGuardFlag;
+        return sourceGuardFlag !== undefined && runtimeGuardFlagOverlaps(filter, sourceGuardFlag);
+      },
+      getHitVarHitFlag: (state, filter) => {
+        const sourceHitFlag = state.hitVars?.sourceHitFlag;
+        return sourceHitFlag !== undefined && runtimeHitFlagOverlaps(filter, sourceHitFlag);
+      },
       hitDefAttr: (filter) => (actor.currentMove ? hitAttributeMatches(filter, actor.currentMove.attr ?? "S,NA") : false),
       hitCount: () => this.moveHitCountValue(actor, false),
       hitPauseTime: () => actor.hitPause,
@@ -196,13 +267,14 @@ export class RuntimeExpressionContextWorld {
     actor: TActor,
     opponent: TActor,
     targetId?: number,
+    characters: readonly TActor[] = [actor, opponent],
   ): ExpressionRedirectTarget | undefined {
     if (!actor.targetWorld.find(actor, opponent.id, targetId)) {
       return undefined;
     }
     const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
     return {
-      ...this.createRedirectTarget(actor, opponent, includeWidth),
+      ...this.createRedirectTarget(actor, opponent, includeWidth, characters),
     };
   }
 
@@ -216,13 +288,14 @@ export class RuntimeExpressionContextWorld {
       return undefined;
     }
     const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
-    return this.createRedirectTarget(actor, redirected, includeWidth);
+    return this.createRedirectTarget(actor, redirected, includeWidth, characters);
   }
 
   resolveEnemyNearRedirect<TActor extends RuntimeExpressionContextActor>(
     actor: TActor,
     opponents: readonly TActor[],
     index: number,
+    characters: readonly TActor[] = [actor, ...opponents],
   ): ExpressionRedirectTarget | undefined {
     const opponent = opponents[index];
     if (!opponent) {
@@ -230,7 +303,7 @@ export class RuntimeExpressionContextWorld {
     }
     const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
     return {
-      ...this.createRedirectTarget(actor, opponent, includeWidth),
+      ...this.createRedirectTarget(actor, opponent, includeWidth, characters),
     };
   }
 
@@ -328,23 +401,37 @@ export class RuntimeExpressionContextWorld {
     actor: TActor,
     roster: readonly TActor[],
     index: number,
+    characters: readonly TActor[] = [actor, ...roster],
   ): ExpressionRedirectTarget | undefined {
     const redirected = roster[index];
-    return redirected ? this.createRedirectTarget(actor, redirected) : undefined;
+    return redirected ? this.createRedirectTarget(actor, redirected, undefined, characters) : undefined;
   }
 
   private createRedirectTarget<TActor extends RuntimeExpressionContextActor>(
     actor: TActor,
     redirected: TActor,
     includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition),
+    characters: readonly TActor[] = [actor, redirected],
   ): ExpressionRedirectTarget {
     return {
       self: redirected.runtime,
       playerId: redirected.playerId,
       playerNo: redirected.playerNo,
+      animPlayerNo: runtimeAnimationPlayerNo(redirected),
       opponent: actor.runtime,
       opponentPlayerId: actor.playerId,
       opponentPlayerNo: actor.playerNo,
+      opponentAnimPlayerNo: runtimeAnimationPlayerNo(actor),
+      clsnVar: runtimeExpressionClsnVar(redirected),
+      opponentClsnVar: runtimeExpressionClsnVar(actor),
+      clsnOverlap: runtimeExpressionClsnOverlap(redirected, characters),
+      opponentClsnOverlap: runtimeExpressionClsnOverlap(actor, characters),
+      projClsnOverlap: runtimeExpressionProjClsnOverlap(redirected, characters),
+      opponentProjClsnOverlap: runtimeExpressionProjClsnOverlap(actor, characters),
+      projVar: runtimeExpressionProjVar(redirected),
+      opponentProjVar: runtimeExpressionProjVar(actor),
+      projVarFlag: runtimeExpressionProjVarFlag(redirected),
+      opponentProjVarFlag: runtimeExpressionProjVarFlag(actor),
       localCoord: redirected.definition.localCoord,
       opponentLocalCoord: actor.definition.localCoord,
       sizeBoxX: runtimeExpressionSizeBoxX(redirected, includeWidth),
@@ -360,6 +447,89 @@ export class RuntimeExpressionContextWorld {
     };
   }
 
+}
+
+function runtimeExpressionClsnVar(
+  actor: Pick<RuntimeExpressionContextActor, "currentAction" | "definition" | "runtime">,
+): ExpressionContext["clsnVar"] {
+  if (!actor.currentAction) return undefined;
+  return (group, index, coordinate) => runtimeClsnVar({
+    runtime: actor.runtime,
+    currentAction: actor.currentAction!,
+    definition: actor.definition,
+  }, group, index, coordinate);
+}
+
+function runtimeExpressionClsnOverlap<TActor extends RuntimeExpressionContextActor>(
+  actor: TActor,
+  characters: readonly TActor[],
+): ExpressionContext["clsnOverlap"] {
+  if (!actor.currentAction) return undefined;
+  return (actorGroup, playerId, targetGroup) => {
+    const target = characters.find((candidate) => candidate.playerId === playerId);
+    if (!target?.currentAction) return false;
+    return runtimeClsnOverlap({
+      runtime: actor.runtime,
+      currentAction: actor.currentAction!,
+      definition: actor.definition,
+    }, {
+      runtime: target.runtime,
+      currentAction: target.currentAction,
+      definition: target.definition,
+    }, actorGroup, targetGroup);
+  };
+}
+
+function runtimeExpressionProjClsnOverlap<TActor extends RuntimeExpressionContextActor>(
+  actor: TActor,
+  characters: readonly TActor[],
+): ExpressionContext["projClsnOverlap"] {
+  return (index, playerId, targetGroup) => {
+    const projectile = actor.effectActorWorld.projectilesOwnedBy?.(actor.id)[index];
+    const target = characters.find((candidate) => candidate.playerId === playerId);
+    if (!projectile || !target?.currentAction) return false;
+    return runtimeProjectileClsnOverlap(projectile, {
+      runtime: target.runtime,
+      currentAction: target.currentAction,
+      definition: target.definition,
+    }, targetGroup);
+  };
+}
+
+function runtimeExpressionProjVar<TActor extends RuntimeExpressionContextActor>(
+  actor: TActor,
+): ExpressionContext["projVar"] {
+  return (projectileId, index, parameter, outputLocalCoord) => {
+    const projectile = runtimeExpressionOwnedProjectile(actor, projectileId, index);
+    return projectile ? runtimeProjectileVar(projectile, parameter, outputLocalCoord) : undefined;
+  };
+}
+
+function runtimeExpressionProjVarFlag<TActor extends RuntimeExpressionContextActor>(
+  actor: TActor,
+): ExpressionContext["projVarFlag"] {
+  return (projectileId, index, parameter, filter, operator) => {
+    const projectile = runtimeExpressionOwnedProjectile(actor, projectileId, index);
+    if (!projectile) return false;
+    if (parameter === "attr") {
+      return projectile.attr !== undefined && runtimeHitAttributeComparison(filter, projectile.attr, operator);
+    }
+    if (parameter === "guardflag") {
+      return projectile.guardFlag !== undefined && runtimeGuardFlagComparison(filter, projectile.guardFlag, operator);
+    }
+    return projectile.hitFlag !== undefined && runtimeHitFlagComparison(filter, projectile.hitFlag, operator);
+  };
+}
+
+function runtimeExpressionOwnedProjectile<TActor extends RuntimeExpressionContextActor>(
+  actor: TActor,
+  projectileId: number,
+  index: number,
+) {
+  return actor.effectActorWorld.projectilesOwnedBy?.(
+    actor.id,
+    projectileId < 0 ? undefined : projectileId,
+  )[index];
 }
 
 function runtimeExpressionStateTime(actor: Pick<RuntimeExpressionContextActor, "runtime" | "stateElapsed">): number {

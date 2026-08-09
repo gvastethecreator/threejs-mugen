@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { writeFileSync, mkdirSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   applyGamepadEvent,
@@ -14,11 +15,10 @@ import {
   swapSeats,
 } from "../mugen/da30/SocdProfileStore";
 import { buildClockDomainAudit } from "../mugen/da30/ClockDomainAudit";
-import { runMiraContactCases } from "../mugen/da30/MiraContactRevalidation";
+import { runNadiaContactCases } from "../mugen/da30/MiraContactRevalidation";
 import { runGuardPriorityMatrix } from "../mugen/da30/GuardPriorityMatrix";
 import { buildRoundResetLedger } from "../mugen/da30/RoundResetLedger";
-import { runNovaContactCases } from "../mugen/da30/CombatJourneyRevalidation";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { runRoccoContactCases } from "../mugen/da30/CombatJourneyRevalidation";
 
 const evidence = resolve(process.cwd(), "docs/evidence/da30");
 function persist(name: string, body: unknown) {
@@ -68,10 +68,10 @@ describe("DA30 open-wave modules", () => {
     persist("da30-036-clock-domain-audit.json", audit);
   });
 
-  it("DA30-042 Mira reciprocal contact/guard", () => {
-    const r = runMiraContactCases();
+  it("DA30-042 Nadia reciprocal contact/guard", () => {
+    const r = runNadiaContactCases();
     expect(r.ok).toBe(true);
-    persist("da30-042-mira-contact.json", r);
+    persist("da30-042-nadia-contact.json", r);
   });
 
   it("DA30-044 guard/priority matrix cases", () => {
@@ -86,29 +86,35 @@ describe("DA30 open-wave modules", () => {
     persist("da30-049-round-reset-ledger.json", ledger);
   });
 
-  it("DA30-041 still green for nova contact", () => {
-    expect(runNovaContactCases().ok).toBe(true);
+  it("DA30-041 still green for Rocco contact", () => {
+    expect(runRoccoContactCases().ok).toBe(true);
   });
 
-  it("DA30-043 rook package files distinct from nova/mira", () => {
-    const rook = resolve(process.cwd(), "public/characters/rook-apprentice/mugen");
-    expect(existsSync(rook)).toBe(true);
-    const files = readdirSync(rook);
-    expect(files.some((f) => f.endsWith(".cns"))).toBe(true);
-    expect(files.some((f) => f.endsWith(".air"))).toBe(true);
-    expect(files.some((f) => f.endsWith(".cmd"))).toBe(true);
-    const cns = readFileSync(resolve(rook, files.find((f) => f.endsWith(".cns"))!), "utf8");
-    const nova = readFileSync(resolve(process.cwd(), "public/characters/nova-boxer/mugen/nova.cns"), "utf8");
-    const mira = readFileSync(resolve(process.cwd(), "public/characters/mira-volt/mugen/mira.cns"), "utf8");
-    expect(cns.length).not.toBe(nova.length);
-    expect(cns.includes("rook") || cns.length !== mira.length).toBe(true);
-    persist("da30-043-rook-package.json", {
+  it("DA30-043 Rocco and Nadia package files are complete and distinct", () => {
+    const packages = [
+      { id: "rocco-vidal", base: "rocco" },
+      { id: "nadia-arce", base: "nadia" },
+    ];
+    const digests = packages.map(({ id, base }) => {
+      const mugen = resolve(process.cwd(), "public/characters", id, "mugen");
+      expect(existsSync(mugen)).toBe(true);
+      const files = readdirSync(mugen);
+      for (const extension of [".def", ".cmd", ".cns", ".air"]) {
+        expect(files).toContain(`${base}${extension}`);
+      }
+      const hash = createHash("sha256");
+      for (const file of files.sort()) {
+        hash.update(file);
+        hash.update("\0");
+        hash.update(readFileSync(resolve(mugen, file)));
+      }
+      return { id, files, digest: hash.digest("hex") };
+    });
+    expect(digests[0]!.digest).not.toBe(digests[1]!.digest);
+    persist("da30-043-current-roster-packages.json", {
       ok: true,
-      files: files.slice(0, 20),
-      cnsBytes: cns.length,
-      novaBytes: nova.length,
-      miraBytes: mira.length,
-      distinctSizeFromNova: cns.length !== nova.length,
+      packages: digests,
+      independentDigests: digests[0]!.digest !== digests[1]!.digest,
     });
   });
 });

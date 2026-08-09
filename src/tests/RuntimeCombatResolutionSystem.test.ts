@@ -17,6 +17,7 @@ import { RuntimeGuardWorld } from "../mugen/runtime/GuardSystem";
 import { RuntimeGetHitStateWorld } from "../mugen/runtime/GetHitStateSystem";
 import { RuntimeHitStateTransitionWorld } from "../mugen/runtime/HitStateTransitionSystem";
 import { RuntimeContactPresentationWorld } from "../mugen/runtime/RuntimeContactPresentationSystem";
+import { runtimeHitVar } from "../mugen/runtime/RuntimeExpressionContextSystem";
 import {
   RuntimeCombatResolutionWorld,
   type RuntimeCombatResolutionActor,
@@ -361,6 +362,389 @@ describe("RuntimeCombatResolutionSystem", () => {
       "P3 hit P4 for 17",
       "P4 hit P3 for 23",
     ]);
+  });
+
+  it("enforces direct HitDef ChainID against the defender's previous HitDef id", () => {
+    const resolve = (chainId: number | undefined, previousHitId: number | undefined) => {
+      const contactWorld = new RuntimeContactMemoryWorld();
+      const world = new RuntimeCombatResolutionWorld();
+      const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+      const attacker = actor("p1", "P1", contactWorld, {
+        currentMove: move({
+          damage: 17,
+          targetId: 43,
+          hitVars: { hitId: 43, ...(chainId === undefined ? {} : { chainId }) },
+        }),
+        moveTick: 1,
+        hitDefTargets: [],
+        pendingHitDefTargets: [],
+      });
+      const defender = actor("p2", "P2", contactWorld, {
+        runtime: runtimeState({
+          pos: { x: 10, y: 0 },
+          life: 100,
+          ...(previousHitId === undefined ? {} : { hitVars: { hitId: previousHitId } }),
+        }),
+      });
+      const logs: string[] = [];
+      const result = world.resolveDirect({
+        attacker,
+        defender,
+        ...directInputBase(contactWorld, directCombatWorld, logs),
+      });
+      return { attacker, defender, logs, result };
+    };
+
+    for (const [chainId, previousHitId] of [
+      [undefined, undefined],
+      [-1, undefined],
+      [43, 43],
+    ] as const) {
+      const accepted = resolve(chainId, previousHitId);
+      expect(accepted.result).toMatchObject({ kind: "hit", damage: 17 });
+      expect(accepted.defender.runtime.life).toBe(83);
+      expect(accepted.attacker.pendingHitDefTargets).toEqual(["p2"]);
+      expect(accepted.attacker.targets).toEqual([{ actorId: "p2", targetId: 43, age: 0 }]);
+      expect(accepted.defender.runtime.hitVars).toMatchObject({
+        hitId: 43,
+        ...(chainId === undefined ? {} : { chainId }),
+      });
+      expect(runtimeHitVar(accepted.defender.runtime, "hitid")).toBe(43);
+      if (chainId === 43) expect(runtimeHitVar(accepted.defender.runtime, "chainid")).toBe(43);
+    }
+
+    for (const previousHitId of [undefined, 42] as const) {
+      const rejected = resolve(43, previousHitId);
+      expect(rejected.result).toEqual({ kind: "skipped", reason: "chainid-rejected" });
+      expect(rejected.defender.runtime.life).toBe(100);
+      expect(rejected.attacker.pendingHitDefTargets).toEqual([]);
+      expect(rejected.attacker.targets).toEqual([]);
+      expect(rejected.logs).toEqual([
+        `P2 rejected P1 S,NA via ChainID 43 (previous HitDef id ${previousHitId === undefined ? "none" : previousHitId})`,
+      ]);
+    }
+  });
+
+  it("enforces direct HitDef ChainID before committing an equal-priority bilateral hit", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const world = new RuntimeCombatResolutionWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const left = actor("p3", "P3", contactWorld, {
+      runtime: runtimeState({ pos: { x: -10, y: 0 }, life: 100 }),
+      currentMove: move({ priority: 4, damage: 17, hitVars: { chainId: 43 } }),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+    });
+    const right = actor("p4", "P4", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, facing: -1, life: 100, hitVars: { hitId: 42 } }),
+      currentMove: move({ priority: 4, damage: 23 }),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+    });
+    const logs: string[] = [];
+    const base = directInputBase(contactWorld, directCombatWorld, logs);
+
+    expect(world.resolvePriorityClash({ left, right, directCombatWorld })).toBeUndefined();
+    expect(world.resolveEqualPriorityOutcomes({ actors: [left, right], ...base })).toBe(0);
+    expect(left.runtime.life).toBe(100);
+    expect(right.runtime.life).toBe(100);
+    expect(left.pendingHitDefTargets).toEqual([]);
+    expect(right.pendingHitDefTargets).toEqual([]);
+
+    right.runtime.hitVars = { hitId: 43 };
+    expect(world.resolvePriorityClash({ left, right, directCombatWorld })).toBeUndefined();
+    expect(world.resolveEqualPriorityOutcomes({ actors: [left, right], ...base })).toBe(1);
+    expect(left.runtime.life).toBe(77);
+    expect(right.runtime.life).toBe(83);
+  });
+
+  it("enforces direct HitDef NoChainID for the same source player during hitshake or the latest targeting actor", () => {
+    const resolve = (input: {
+      noChainIds?: number[];
+      previousHitId?: number;
+      previousSourcePlayerId?: number;
+      previousSourceActorId?: string;
+      hitPause?: number;
+    }) => {
+      const contactWorld = new RuntimeContactMemoryWorld();
+      const world = new RuntimeCombatResolutionWorld();
+      const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+      const attacker = actor("p1", "P1", contactWorld, {
+        playerId: 56,
+        currentMove: move({ damage: 17, ...(input.noChainIds === undefined ? {} : { noChainIds: input.noChainIds }) }),
+        moveTick: 1,
+        hitDefTargets: [],
+        pendingHitDefTargets: [],
+      });
+      const defender = actor("p2", "P2", contactWorld, {
+        runtime: runtimeState({
+          pos: { x: 10, y: 0 },
+          life: 100,
+          ...(input.previousHitId === undefined
+            ? {}
+            : {
+                hitVars: {
+                  hitId: input.previousHitId,
+                  ...(input.previousSourcePlayerId === undefined ? {} : { sourcePlayerId: input.previousSourcePlayerId }),
+                  ...(input.previousSourceActorId === undefined ? {} : { sourceActorId: input.previousSourceActorId }),
+                },
+              }),
+        }),
+      });
+      defender.hitPause = input.hitPause ?? 0;
+      const logs: string[] = [];
+      const result = world.resolveDirect({
+        attacker,
+        defender,
+        ...directInputBase(contactWorld, directCombatWorld, logs),
+      });
+      return { attacker, defender, logs, result };
+    };
+
+    for (const rejected of [
+      resolve({ noChainIds: [43], previousHitId: 43, previousSourcePlayerId: 56, previousSourceActorId: "other", hitPause: 2 }),
+      resolve({ noChainIds: [43], previousHitId: 43, previousSourcePlayerId: 56, previousSourceActorId: "p1" }),
+    ]) {
+      expect(rejected.result).toEqual({ kind: "skipped", reason: "nochainid-rejected" });
+      expect(rejected.defender.runtime.life).toBe(100);
+      expect(rejected.attacker.pendingHitDefTargets).toEqual([]);
+      expect(rejected.logs).toEqual(["P2 rejected P1 S,NA via NoChainID 43"]);
+    }
+
+    for (const accepted of [
+      resolve({ previousHitId: 43, previousSourcePlayerId: 56, previousSourceActorId: "p1", hitPause: 2 }),
+      resolve({ noChainIds: [-1], previousHitId: 43, previousSourcePlayerId: 56, previousSourceActorId: "p1", hitPause: 2 }),
+      resolve({ noChainIds: [42], previousHitId: 43, previousSourcePlayerId: 56, previousSourceActorId: "p1", hitPause: 2 }),
+      resolve({ noChainIds: [43], previousHitId: 43, previousSourcePlayerId: 57, previousSourceActorId: "other", hitPause: 2 }),
+      resolve({ noChainIds: [43], previousHitId: 43, previousSourcePlayerId: 56, previousSourceActorId: "other" }),
+    ]) {
+      expect(accepted.result).toMatchObject({ kind: "hit", damage: 17 });
+      expect(accepted.defender.runtime.life).toBe(83);
+      expect(accepted.attacker.pendingHitDefTargets).toEqual(["p2"]);
+    }
+  });
+
+  it("splits equal direct ChainID and NoChainID by MUGEN/Ikemen profile", () => {
+    const resolve = (runtimeProfile: "mugen-1.1" | "ikemen-go" | "unknown", includeChainId = true) => {
+      const contactWorld = new RuntimeContactMemoryWorld();
+      const attacker = actor("p1", "P1", contactWorld, {
+        playerId: 56,
+        currentMove: move({
+          damage: 17,
+          noChainIds: [43],
+          ...(includeChainId ? { hitVars: { chainId: 43 } } : {}),
+        }),
+        moveTick: 1,
+        hitDefTargets: [],
+        pendingHitDefTargets: [],
+      });
+      const defender = actor("p2", "P2", contactWorld, {
+        runtime: runtimeState({
+          pos: { x: 10, y: 0 },
+          life: 100,
+          hitVars: { hitId: 43, sourcePlayerId: 56, sourceActorId: "p1" },
+        }),
+      });
+      const logs: string[] = [];
+      const result = new RuntimeCombatResolutionWorld().resolveDirect({
+        attacker,
+        defender,
+        runtimeProfile,
+        ...directInputBase(contactWorld, new RuntimeDirectCombatWorld(contactWorld), logs),
+      });
+      return { life: defender.runtime.life, logs, result };
+    };
+
+    expect(resolve("mugen-1.1")).toMatchObject({ life: 83, result: { kind: "hit", damage: 17 } });
+    for (const profile of ["ikemen-go", "unknown"] as const) {
+      expect(resolve(profile)).toEqual({
+        life: 100,
+        logs: ["P2 rejected P1 S,NA via NoChainID 43"],
+        result: { kind: "skipped", reason: "nochainid-rejected" },
+      });
+    }
+    expect(resolve("mugen-1.1", false)).toEqual({
+      life: 100,
+      logs: ["P2 rejected P1 S,NA via NoChainID 43"],
+      result: { kind: "skipped", reason: "nochainid-rejected" },
+    });
+  });
+
+  it("enforces direct HitDef NoChainID before committing an equal-priority bilateral hit", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const world = new RuntimeCombatResolutionWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const left = actor("p3", "P3", contactWorld, {
+      playerId: 56,
+      runtime: runtimeState({ pos: { x: -10, y: 0 }, life: 100 }),
+      currentMove: move({ priority: 4, damage: 17, noChainIds: [43] }),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+    });
+    const right = actor("p4", "P4", contactWorld, {
+      runtime: runtimeState({
+        pos: { x: 10, y: 0 },
+        facing: -1,
+        life: 100,
+        hitVars: { hitId: 43, sourcePlayerId: 56, sourceActorId: "p3" },
+      }),
+      currentMove: move({ priority: 4, damage: 23 }),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+    });
+    const base = directInputBase(contactWorld, directCombatWorld, []);
+
+    expect(world.resolvePriorityClash({ left, right, directCombatWorld })).toBeUndefined();
+    expect(world.resolveEqualPriorityOutcomes({ actors: [left, right], ...base })).toBe(0);
+    expect(left.runtime.life).toBe(100);
+    expect(right.runtime.life).toBe(100);
+
+    right.runtime.hitVars = { hitId: 43, sourcePlayerId: 57, sourceActorId: "other" };
+    expect(world.resolvePriorityClash({ left, right, directCombatWorld })).toBeUndefined();
+    expect(world.resolveEqualPriorityOutcomes({ actors: [left, right], ...base })).toBe(1);
+    expect(left.runtime.life).toBe(77);
+    expect(right.runtime.life).toBe(83);
+  });
+
+  it("runs direct ChainID and NoChainID admission before defender ReversalDef", () => {
+    const resolve = (moveOverrides: Partial<DemoMove>, previousHitVars: CharacterRuntimeState["hitVars"]) => {
+      const contactWorld = new RuntimeContactMemoryWorld();
+      const reversalWorld = new RuntimeReversalWorld(contactWorld);
+      const attacker = actor("p1", "P1", contactWorld, {
+        playerId: 56,
+        runtime: runtimeState({ stateNo: 200 }),
+        currentMove: move({ attr: "S,NA", ...moveOverrides }),
+        moveTick: 1,
+        hitDefTargets: [],
+        pendingHitDefTargets: [],
+      });
+      const defender = actor("p2", "P2", contactWorld, {
+        runtime: runtimeState({ pos: { x: 10, y: 0 }, stateNo: 300, hitVars: previousHitVars }),
+      });
+      reversalWorld.activate(defender, {
+        attr: "S,NA",
+        hitbox: { x1: -24, y1: -40, x2: 24, y2: 0 },
+        hitPause: 5,
+      });
+      const logs: string[] = [];
+      const result = new RuntimeCombatResolutionWorld().resolveDirect({
+        attacker,
+        defender,
+        ...directInputBase(contactWorld, new RuntimeDirectCombatWorld(contactWorld), logs),
+        reversalWorld,
+      });
+      return { attacker, defender, logs, result };
+    };
+
+    const chainRejected = resolve({ hitVars: { chainId: 44 } }, { hitId: 43 });
+    expect(chainRejected.result).toEqual({ kind: "skipped", reason: "chainid-rejected" });
+    expect(chainRejected.logs).toEqual(["P2 rejected P1 S,NA via ChainID 44 (previous HitDef id 43)"]);
+
+    const noChainRejected = resolve(
+      { noChainIds: [43] },
+      { hitId: 43, sourcePlayerId: 56, sourceActorId: "p1" },
+    );
+    expect(noChainRejected.result).toEqual({ kind: "skipped", reason: "nochainid-rejected" });
+    expect(noChainRejected.logs).toEqual(["P2 rejected P1 S,NA via NoChainID 43"]);
+
+    for (const rejected of [chainRejected, noChainRejected]) {
+      expect([rejected.attacker.hasHit, rejected.defender.hasHit]).toEqual([false, false]);
+      expect([rejected.attacker.hitPause, rejected.defender.hitPause]).toEqual([0, 0]);
+      expect([rejected.attacker.runtime.stateNo, rejected.defender.runtime.stateNo]).toEqual([200, 300]);
+      expect(rejected.attacker.pendingHitDefTargets).toEqual([]);
+      expect(rejected.attacker.targets).toEqual([]);
+    }
+
+    const accepted = resolve({ hitVars: { chainId: 43 } }, { hitId: 43 });
+    expect(accepted.result).toMatchObject({ kind: "reversal" });
+    expect([accepted.attacker.hasHit, accepted.defender.hasHit]).toEqual([true, true]);
+    expect([accepted.attacker.hitPause, accepted.defender.hitPause]).toEqual([5, 5]);
+  });
+
+  it("rejects positive receiver unhittabletime before direct hit or ReversalDef mutation", () => {
+    const resolve = (withReversal: boolean, unhittableTime: number) => {
+      const contactWorld = new RuntimeContactMemoryWorld();
+      const reversalWorld = new RuntimeReversalWorld(contactWorld);
+      const attacker = actor("p1", "P1", contactWorld, {
+        runtime: runtimeState({ stateNo: 200 }),
+        currentMove: move({ attr: "S,NA", damage: 17 }),
+        moveTick: 1,
+        hitDefTargets: [],
+        pendingHitDefTargets: [],
+      });
+      const defender = actor("p2", "P2", contactWorld, {
+        runtime: runtimeState({ pos: { x: 10, y: 0 }, stateNo: 300, life: 100, unhittableTime }),
+      });
+      if (withReversal) {
+        reversalWorld.activate(defender, {
+          attr: "S,NA",
+          hitbox: { x1: -24, y1: -40, x2: 24, y2: 0 },
+          hitPause: 5,
+          unhittableTime: [1, 7],
+        });
+      }
+      const logs: string[] = [];
+      const result = new RuntimeCombatResolutionWorld().resolveDirect({
+        attacker,
+        defender,
+        ...directInputBase(contactWorld, new RuntimeDirectCombatWorld(contactWorld), logs),
+        reversalWorld,
+      });
+      return { attacker, defender, logs, result };
+    };
+
+    for (const withReversal of [false, true]) {
+      const rejected = resolve(withReversal, 2);
+      expect(rejected.result).toEqual({ kind: "skipped", reason: "unhittable-time" });
+      expect(rejected.logs).toEqual(["P2 rejected P1 S,NA via HitDef unhittabletime"]);
+      expect(rejected.attacker.hasHit).toBe(false);
+      expect(rejected.defender.hasHit).toBe(false);
+      expect(rejected.defender.runtime.life).toBe(100);
+      expect(rejected.defender.runtime.unhittableTime).toBe(2);
+    }
+
+    expect(resolve(false, 0).result).toMatchObject({ kind: "hit", damage: 17 });
+    const reversed = resolve(true, 0);
+    expect(reversed.result).toMatchObject({ kind: "reversal" });
+    expect(reversed.attacker.runtime.unhittableTime).toBe(7);
+    expect(reversed.defender.runtime.unhittableTime).toBe(1);
+  });
+
+  it("blocks a later incoming HitDef with the accepted attacker's unhittabletime", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const directCombatWorld = new RuntimeDirectCombatWorld(contactWorld);
+    const world = new RuntimeCombatResolutionWorld();
+    const logs: string[] = [];
+    const p1 = actor("p1", "P1", contactWorld, {
+      runtime: runtimeState({ stateNo: 200, life: 100 }),
+      currentMove: move({ damage: 10, unhittableTime: [6, -1] }),
+      moveTick: 1,
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+    });
+    const p2 = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 10, y: 0 }, stateNo: 300, life: 100 }),
+      hitDefTargets: [],
+      pendingHitDefTargets: [],
+    });
+    const base = directInputBase(contactWorld, directCombatWorld, logs);
+
+    expect(world.resolveDirect({ attacker: p1, defender: p2, ...base })).toMatchObject({ kind: "hit", damage: 10 });
+    expect(p1.runtime.unhittableTime).toBe(6);
+    expect(p2.runtime.life).toBe(90);
+
+    rearmHitDef(p2, move({ damage: 40 }));
+    expect(world.resolveDirect({ attacker: p2, defender: p1, ...base })).toEqual({
+      kind: "skipped",
+      reason: "unhittable-time",
+    });
+    expect(p1.runtime.life).toBe(100);
+    expect(p2.pendingHitDefTargets).toEqual([]);
+    expect(logs.at(-1)).toBe("P1 rejected P2 S,NA via HitDef unhittabletime");
   });
 
   it("does not prepare equal-priority custom state redirects during pending state change", () => {
@@ -778,8 +1162,8 @@ describe("RuntimeCombatResolutionSystem", () => {
     const world = new RuntimeCombatResolutionWorld();
     const entries: string[] = [];
     const attacker = actor("p1", "P1", contactWorld, {
-      runtime: runtimeState({ stateNo: 200 }),
-      currentMove: move({ attr: "S,NA", targetId: 77, p2StateNo: 888, p2GetP1State: true, missOnOverride: false }),
+      runtime: runtimeState({ stateNo: 200, unhittableTime: 4 }),
+      currentMove: move({ attr: "S,NA", targetId: 77, p2StateNo: 888, p2GetP1State: true, missOnOverride: false, unhittableTime: [7, 9] }),
       moveTick: 2,
     });
     const defender = actor("p2", "P2", contactWorld, {
@@ -787,6 +1171,7 @@ describe("RuntimeCombatResolutionSystem", () => {
         pos: { x: 18, y: 0 },
         stateNo: 0,
         life: 100,
+        unhittableTime: 0,
         hitOverrides: [{ slot: 1, attr: "S,NA", stateNo: 777, remaining: 30 }],
       }),
     });
@@ -815,6 +1200,8 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(entries).toEqual(["p2:777:self"]);
     expect(defender.runtime.stateNo).toBe(777);
     expect(defender.runtime.life).toBe(100);
+    expect(attacker.runtime.unhittableTime).toBe(7);
+    expect(defender.runtime.unhittableTime).toBe(9);
     expect(logs).toEqual(["P2 HitOverride slot 1 redirected P1 to state 777"]);
   });
 
@@ -823,8 +1210,8 @@ describe("RuntimeCombatResolutionSystem", () => {
     const world = new RuntimeCombatResolutionWorld();
     const entries: string[] = [];
     const attacker = actor("p1", "P1", contactWorld, {
-      runtime: runtimeState({ stateNo: 200 }),
-      currentMove: move({ attr: "S,NA", targetId: 77, missOnOverride: true }),
+      runtime: runtimeState({ stateNo: 200, unhittableTime: 4 }),
+      currentMove: move({ attr: "S,NA", targetId: 77, missOnOverride: true, unhittableTime: [7, 9] }),
       moveTick: 2,
     });
     const defender = actor("p2", "P2", contactWorld, {
@@ -832,6 +1219,7 @@ describe("RuntimeCombatResolutionSystem", () => {
         pos: { x: 18, y: 0 },
         stateNo: 0,
         life: 100,
+        unhittableTime: 0,
         hitOverrides: [{ slot: 1, attr: "S,NA", stateNo: 777, remaining: 30 }],
       }),
     });
@@ -859,6 +1247,8 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(entries).toEqual([]);
     expect(defender.runtime.stateNo).toBe(0);
     expect(defender.runtime.life).toBe(100);
+    expect(attacker.runtime.unhittableTime).toBe(4);
+    expect(defender.runtime.unhittableTime).toBe(0);
     expect(logs).toEqual(["P2 rejected P1 S,NA because missonoverride = 1 forces active override miss"]);
   });
 
@@ -878,7 +1268,7 @@ describe("RuntimeCombatResolutionSystem", () => {
       const reversalWorld = new RuntimeReversalWorld(contactWorld);
       const override = { slot: 1, attr: "S,SP", stateNo: 889, remaining: 30, guardFlag: "A" };
       const attacker = actor("p1", "P1", contactWorld, {
-        runtime: runtimeState({ stateNo: 200, ...(attackerOverride ? { hitOverrides: [override] } : {}) }),
+        runtime: runtimeState({ stateNo: 200, unhittableTime: 11, ...(attackerOverride ? { hitOverrides: [override] } : {}) }),
         currentMove: move({ attr: "S,NA", guardFlag: "H", targetId: 77 }),
         moveTick: 2,
       });
@@ -887,6 +1277,7 @@ describe("RuntimeCombatResolutionSystem", () => {
           pos: { x: 18, y: 0 },
           stateNo: 0,
           life: 100,
+          unhittableTime: 0,
           ...(reverserOverride ? { hitOverrides: [override] } : {}),
         }),
       });
@@ -897,6 +1288,7 @@ describe("RuntimeCombatResolutionSystem", () => {
         hitbox: { x1: -24, y1: -40, x2: 24, y2: 0 },
         hitPause: 3,
         targetId: 77,
+        unhittableTime: [5, 6],
         ...(p1StateNo === null ? {} : { p1StateNo }),
         ...(missOnOverride === undefined ? {} : { missOnOverride }),
       });
@@ -938,6 +1330,8 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(defaultMissRoute.attacker.hasHit).toBe(false);
     expect(defaultMissRoute.attacker.runtime.stateNo).toBe(200);
     expect(defaultMissRoute.defender.runtime.stateNo).toBe(0);
+    expect(defaultMissRoute.attacker.runtime.unhittableTime).toBe(11);
+    expect(defaultMissRoute.defender.runtime.unhittableTime).toBe(0);
     expect(defaultMissLogs).toEqual(["P1 rejected P2 S,SP because active override cannot receive custom-state ReversalDef"]);
 
     const forcedMissRoute = createRoute({ attackerOverride: true, missOnOverride: true, p1StateNo: null });
@@ -974,6 +1368,8 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(redirectRoute.defender.hasHit).toBe(true);
     expect(redirectRoute.defender.runtime.stateNo).toBe(0);
     expect(redirectRoute.defender.targets).toEqual([{ actorId: "p1", targetId: 77, age: 0 }]);
+    expect(redirectRoute.attacker.runtime.unhittableTime).toBe(6);
+    expect(redirectRoute.defender.runtime.unhittableTime).toBe(5);
   });
 
   it("rejects direct HitDef contact while SuperPause unhittable protects the defender", () => {
@@ -1571,6 +1967,7 @@ describe("RuntimeCombatResolutionSystem", () => {
       input.recordProjectileContact?.(input.attacker, input.defender, projectile, "hit");
       input.recordReceivedDamage?.(input.defender, 12);
       input.emitProjectileContactEffects?.(input.attacker, input.defender, projectile, "hit");
+      input.emitProjectileEnvShake?.(input.attacker, projectile);
     };
     const attacker = actor("p1", "P1", contactWorld, { runtime: runtimeState({ stateNo: 300 }), projectileResolver: resolver });
     const defender = actor("p2", "P2", contactWorld, { runtime: runtimeState({ stateNo: 5000 }) });
@@ -1590,10 +1987,11 @@ describe("RuntimeCombatResolutionSystem", () => {
       stateHooks: hooks(),
       rememberProjectileTarget: (_source, _target, entry) => calls.push(`projectile-target:${entry.serialId}`),
       recordAudioOperation: (actor, operation) => calls.push(`audio:${actor.id}:${operation.value}`),
+      emitProjectileEnvShake: (actor, entry) => calls.push(`envshake:${actor.id}:${entry.serialId}`),
       log: (line) => calls.push(`log:${line}`),
     });
 
-    expect(calls).toEqual(["owner:p1", "projectile-target:p1-projectile-0", "audio:p1:S6,0"]);
+    expect(calls).toEqual(["owner:p1", "projectile-target:p1-projectile-0", "audio:p1:S6,0", "envshake:p1:p1-projectile-0"]);
     expect(attacker.targets).toEqual([{ actorId: "p2", targetId: 88, age: 0 }]);
     expect(contactWorld.hasProjectileContact(attacker.contact, 300, "hit", 88)).toBe(true);
     expect(runtimeMoveHitCountValue(attacker.contact, 300, false)).toBe(1);
@@ -1613,6 +2011,7 @@ describe("RuntimeCombatResolutionSystem", () => {
     });
     const helper = {
       serialId: "p1-helper-0",
+      playerId: 60,
       rootId: "p1",
       parentId: "p1",
       playerNo: 1,
@@ -1621,6 +2020,7 @@ describe("RuntimeCombatResolutionSystem", () => {
       contact: createRuntimeContactMemory(),
     } as RuntimeHelper;
     const attacker = actor("p1", "P1", contactWorld, {
+      playerId: 56,
       playerNo: 1,
       runtime: runtimeState({ pos: { x: 0, y: 0 }, stateNo: 300 }),
       projectiles: [projectile],
@@ -1649,6 +2049,7 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(defender.runtime.life).toBe(0);
     expect(attacker.runtime.roundWinType).toBe("hyper");
     expect(defender.runtime.hitVars).toMatchObject({
+      sourcePlayerId: 60,
       sourcePlayerNo: 1,
       sourceActorId: "p1-helper-0",
       sourceRootId: "p1",
@@ -1666,6 +2067,7 @@ describe("RuntimeCombatResolutionSystem", () => {
     });
     const helper = {
       serialId: "p1-helper-nested",
+      playerId: 61,
       rootId: "p1",
       parentId: "p1-helper-parent",
       playerNo: 1,
@@ -1674,6 +2076,7 @@ describe("RuntimeCombatResolutionSystem", () => {
       contact: createRuntimeContactMemory(),
     } as RuntimeHelper;
     const attacker = actor("p1", "P1", contactWorld, {
+      playerId: 56,
       playerNo: 1,
       runtime: runtimeState({ pos: { x: 0, y: 0 }, stateNo: 300 }),
       projectiles: [projectile],
@@ -1706,6 +2109,7 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(defender.runtime.life).toBe(0);
     expect(attacker.runtime.roundWinType).toBe("hyper");
     expect(defender.runtime.hitVars).toMatchObject({
+      sourcePlayerId: 61,
       sourcePlayerNo: 1,
       sourceActorId: helper.serialId,
       sourceRootId: "p1",
@@ -1715,7 +2119,7 @@ describe("RuntimeCombatResolutionSystem", () => {
 
   it("routes Projectile p2stateno through target hit-state ownership when no HitOverride is active", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
-    const projectile = projectileActor({ projectileId: 88, p2StateNo: 889, p2GetP1State: false });
+    const projectile = projectileActor({ projectileId: 88, p1StateNo: 777, p2StateNo: 889, p2GetP1State: false });
     const entries: string[] = [];
     const calls: string[] = [];
     const resolver: ProjectileResolver = (_ownerId, input) => {
@@ -1741,9 +2145,124 @@ describe("RuntimeCombatResolutionSystem", () => {
       log: (line) => calls.push(`log:${line}`),
     });
 
-    expect(entries).toEqual(["p2:889:clear"]);
+    expect(entries).toEqual(["p2:889:clear", "p1:777:self"]);
     expect(defender.runtime.stateNo).toBe(889);
+    expect(attacker.runtime.stateNo).toBe(777);
     expect(attacker.targets).toEqual([{ actorId: "p2", targetId: 88, age: 0 }]);
+  });
+
+  it("keeps the default Projectile get-hit path when only p1stateno is authored", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const projectile = projectileActor({ projectileId: 88, p1StateNo: 777 });
+    const entries: string[] = [];
+    const resolver: ProjectileResolver = (_ownerId, input) => {
+      input.applyHitState?.(input.attacker, input.defender, projectile);
+    };
+    const attacker = actor("p1", "P1", contactWorld, { runtime: runtimeState({ stateNo: 300 }), projectileResolver: resolver });
+    const defender = actor("p2", "P2", contactWorld, { source: "imported", runtime: runtimeState({ stateNo: 0, stateType: "S" }) });
+
+    new RuntimeCombatResolutionWorld().resolveProjectile({
+      attacker,
+      defender,
+      hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
+      effectLifecycleWorld: { markGetHit: () => undefined },
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      runtimeTick: 12,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      stateHooks: hooks(entries),
+      log: () => undefined,
+    });
+
+    expect(attacker.runtime.stateNo).toBe(777);
+    expect(defender.runtime.stateNo).toBe(5000);
+    expect(entries).toEqual(["p1:777:self", "p2:5000:clear"]);
+  });
+
+  it("uses direct HitDef forced posture only for accepted default get-hit selection", () => {
+    const resolve = (
+      stateType: CharacterRuntimeState["stateType"],
+      moveOverrides: Partial<DemoMove>,
+      currentInput: Iterable<string> = new Set<string>(),
+    ) => {
+      const contactWorld = new RuntimeContactMemoryWorld();
+      const attacker = actor("p1", "P1", contactWorld, {
+        currentMove: move(moveOverrides),
+        moveTick: 1,
+      });
+      const defender = actor("p2", "P2", contactWorld, {
+        source: "imported",
+        runtime: runtimeState({ pos: { x: 18, y: 0 }, stateType }),
+      });
+      defender.currentInput = currentInput;
+      const entries: string[] = [];
+      const outcome = new RuntimeCombatResolutionWorld().resolveDirect({
+        attacker,
+        defender,
+        ...directInputBase(contactWorld, new RuntimeDirectCombatWorld(contactWorld), []),
+        stateHooks: hooks(entries),
+      });
+      return { kind: outcome.kind, stateNo: defender.runtime.stateNo, entries };
+    };
+
+    expect(resolve("C", { forceStand: true })).toMatchObject({ kind: "hit", stateNo: 5000 });
+    expect(resolve("S", { forceCrouch: true })).toMatchObject({ kind: "hit", stateNo: 5010 });
+    expect(resolve("A", { forceStand: true, forceCrouch: true })).toMatchObject({ kind: "hit", stateNo: 5020 });
+    expect(resolve("C", { forceStand: true, p2StateNo: 889 })).toEqual({
+      kind: "hit",
+      stateNo: 889,
+      entries: ["p2:889:p1"],
+    });
+    expect(resolve("C", { forceStand: true }, new Set(["B"]))).toMatchObject({ kind: "guard", stateNo: 152 });
+    expect(resolve("C", {})).toMatchObject({ kind: "hit", stateNo: 5010 });
+  });
+
+  it("uses Projectile forced posture only for bounded default get-hit selection", () => {
+    const resolve = (
+      stateType: CharacterRuntimeState["stateType"],
+      overrides: Partial<RuntimeProjectile>,
+    ) => {
+      const contactWorld = new RuntimeContactMemoryWorld();
+      const projectile = projectileActor(overrides);
+      const entries: string[] = [];
+      const resolver: ProjectileResolver = (_ownerId, input) => {
+        input.applyHitState?.(input.attacker, input.defender, projectile);
+      };
+      const attacker = actor("p1", "P1", contactWorld, { projectileResolver: resolver });
+      const defender = actor("p2", "P2", contactWorld, {
+        source: "imported",
+        runtime: runtimeState({ stateType }),
+      });
+
+      new RuntimeCombatResolutionWorld().resolveProjectile({
+        attacker,
+        defender,
+        hitOverrideWorld: new RuntimeHitOverrideWorld(),
+        reversalWorld: new RuntimeReversalWorld(contactWorld),
+        effectLifecycleWorld: { markGetHit: () => undefined },
+        guardWorld: new RuntimeGuardWorld(),
+        getHitStateWorld: new RuntimeGetHitStateWorld(),
+        hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+        contactPresentationWorld: new RuntimeContactPresentationWorld(),
+        runtimeTick: 12,
+        getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+        stateHooks: hooks(entries),
+        log: () => undefined,
+      });
+      return { stateNo: defender.runtime.stateNo, entries };
+    };
+
+    expect(resolve("C", { forceStand: true })).toMatchObject({ stateNo: 5000 });
+    expect(resolve("S", { forceCrouch: true })).toMatchObject({ stateNo: 5010 });
+    expect(resolve("A", { forceStand: true, forceCrouch: true })).toMatchObject({ stateNo: 5020 });
+    expect(resolve("C", { forceStand: true, p2StateNo: 889 })).toEqual({
+      stateNo: 889,
+      entries: ["p2:889:p1"],
+    });
+    expect(resolve("C", {})).toMatchObject({ stateNo: 5010 });
   });
 });
 
@@ -1757,6 +2276,8 @@ type ProjectileResolver = <TActor extends RuntimeProjectileCombatActor>(
 ) => void;
 
 type ActorOptions = {
+  source?: "demo" | "imported";
+  playerId?: number;
   playerNo?: number;
   runtime?: CharacterRuntimeState;
   currentMove?: DemoMove;
@@ -1776,9 +2297,10 @@ function actor(id: string, label: string, contactWorld: RuntimeContactMemoryWorl
   return {
     id,
     label,
+    ...(options.playerId === undefined ? {} : { playerId: options.playerId }),
     ...(options.playerNo === undefined ? {} : { playerNo: options.playerNo }),
     definition: {
-      source: "demo",
+      source: options.source ?? "demo",
       constants: {},
       animations: new Map([[7000, sparkAction(7000)], [7001, sparkAction(7001)]]),
       hitSparkLibraries: {},
@@ -1951,16 +2473,31 @@ function projectileActor(overrides: Partial<RuntimeProjectile> = {}): RuntimePro
     accel: { x: 0, y: 0 },
     velMul: { x: 1, y: 1 },
     scale: { x: 1, y: 1 },
+    angle: 0,
+    xAngle: 0,
+    yAngle: 0,
+    xShear: 0,
+    shadow: [0, 0, 0],
+    reflection: -1,
+    projection: "orthographic",
+    focalLength: 0,
+    window: [0, 0, 0, 0],
+    ownPalette: false,
+    drawPalette: [0, 0],
     facing: 1,
     frameIndex: 0,
     frameElapsed: 0,
     age: 0,
     removeTime: 24,
+    layerNo: 0,
     spritePriority: 7,
     priority: 1,
     hitsRemaining: 1,
     missTime: 0,
     missTimeRemaining: 0,
+    remVelocity: { x: 0, y: 0 },
+    pauseMoveTime: 0,
+    superMoveTime: 0,
     opacity: 1,
     damage: 12,
     kill: true,
@@ -1968,12 +2505,19 @@ function projectileActor(overrides: Partial<RuntimeProjectile> = {}): RuntimePro
     attr: "S,SP",
     targetId: 88,
     hitPause: 4,
+    hitShakeTime: 4,
+    hitPauseRemaining: 0,
     hitStun: 13,
     push: 5,
     guardDamage: 3,
-    guardDistance: 120,
+    guardDistanceBounds: {
+      width: [120, 0],
+      height: [1000, 1000],
+      depth: [10, 10],
+    },
     guardFlag: "MA",
     guardPause: 3,
+    guardShakeTime: 3,
     guardStun: 8,
     guardPush: 2,
     hitbox: { x1: 6, y1: -18, x2: 34, y2: 6 },

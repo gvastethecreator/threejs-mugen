@@ -5,8 +5,8 @@ const JSZip = require("jszip");
 const net = require("net");
 const path = require("path");
 
-const DEFAULT_P1 = "nova-boxer";
-const DEFAULT_P2 = "mira-volt";
+const DEFAULT_P1 = "rocco-vidal";
+const DEFAULT_P2 = "nadia-arce";
 const DEFAULT_STAGE = "rooftop-dojo";
 const DEFAULT_OUT_DIR = ".scratch/qa/qa-smoke";
 const DEFAULT_IMPORTED_FIXTURE = ".scratch/fixtures/kfm-official.zip";
@@ -425,6 +425,7 @@ async function resolveServer() {
       host: "127.0.0.1",
       port,
       strictPort: true,
+      watch: null,
     },
   });
   await vite.listen();
@@ -501,8 +502,8 @@ async function captureRuntime(page, baseUrl, options) {
         title: document.title,
         mode: bridge?.mode,
         bodyHasRuntime: document.body.textContent.includes("Runtime"),
-        bodyHasP1: document.body.textContent.includes("Nova Boxer"),
-        bodyHasP2: document.body.textContent.includes("Mira Volt"),
+        bodyHasP1: document.body.textContent.includes("Rocco Vidal"),
+        bodyHasP2: document.body.textContent.includes("Nadia Arce"),
         actorCount: bridge?.snapshot?.actors?.length ?? 0,
         tickSchedule: bridge?.snapshot?.tickSchedule,
         actorRegistryCount: bridge?.actorRegistry?.actors?.length ?? 0,
@@ -1077,13 +1078,13 @@ async function captureMugenLiteGuardJourney(page, options, importedId) {
     throw new Error(`MUGEN-lite guard reset did not produce a fresh round: ${JSON.stringify(resetSnapshot)}`);
   }
   await changeHiddenSelect(page, '[data-fighter-select="p1"]', importedId);
-  await changeHiddenSelect(page, '[data-fighter-select="p2"]', "nova-boxer");
+  await changeHiddenSelect(page, '[data-fighter-select="p2"]', "rocco-vidal");
   await page.waitForFunction((importedId) => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const p1 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p1");
     const p2 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p2");
-    return bridge?.project?.entry?.p1 === importedId && bridge.project.entry.p2 === "nova-boxer" &&
-      p1?.source === "imported" && p1.label === "MUGEN Lite Journey" && p2?.source === "demo" && p2.label === "Nova Boxer";
+    return bridge?.project?.entry?.p1 === importedId && bridge.project.entry.p2 === "rocco-vidal" &&
+      p1?.source === "imported" && p1.label === "MUGEN Lite Journey" && p2?.source === "demo" && p2.label === "Rocco Vidal";
   }, importedId);
   const roster = await page.evaluate(() => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
@@ -1223,13 +1224,13 @@ async function captureMugenLiteNoKoSlowJourney(page, options, importedId) {
       p1.runtime?.stateNo === 0;
   }, null, { timeout: 5000 });
   await changeHiddenSelect(page, '[data-fighter-select="p1"]', importedId);
-  await changeHiddenSelect(page, '[data-fighter-select="p2"]', "nova-boxer");
+  await changeHiddenSelect(page, '[data-fighter-select="p2"]', "rocco-vidal");
   await page.waitForFunction((importedId) => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const p1 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p1");
     const p2 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p2");
-    return bridge?.project?.entry?.p1 === importedId && bridge.project.entry.p2 === "nova-boxer" &&
-      p1?.source === "imported" && p1.label === "MUGEN Lite Journey" && p2?.source === "demo" && p2.label === "Nova Boxer" &&
+    return bridge?.project?.entry?.p1 === importedId && bridge.project.entry.p2 === "rocco-vidal" &&
+      p1?.source === "imported" && p1.label === "MUGEN Lite Journey" && p2?.source === "demo" && p2.label === "Rocco Vidal" &&
       p1.runtime?.stateNo === 0;
   }, importedId);
   const roster = await page.evaluate(() => {
@@ -1324,14 +1325,14 @@ async function captureMugenLiteRecoveryJourney(page, options, importedId) {
     return bridge?.snapshot?.round?.state === "fight" && p1?.runtime?.life === 1000 && p2?.runtime?.life === 1000 &&
       p1.runtime.stateNo === 0 && p2.runtime.stateNo === 0;
   }, null, { timeout: waitMs });
-  await changeHiddenSelect(page, '[data-fighter-select="p1"]', "nova-boxer");
+  await changeHiddenSelect(page, '[data-fighter-select="p1"]', "rocco-vidal");
   await changeHiddenSelect(page, '[data-fighter-select="p2"]', importedId);
   await page.waitForFunction((importedId) => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const p1 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p1");
     const p2 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p2");
-    return bridge?.project?.entry?.p1 === "nova-boxer" && bridge.project.entry.p2 === importedId &&
-      p1?.source === "demo" && p1.label === "Nova Boxer" && p2?.source === "imported" && p2.label === "MUGEN Lite Journey";
+    return bridge?.project?.entry?.p1 === "rocco-vidal" && bridge.project.entry.p2 === importedId &&
+      p1?.source === "demo" && p1.label === "Rocco Vidal" && p2?.source === "imported" && p2.label === "MUGEN Lite Journey";
   }, importedId, { timeout: waitMs });
   const roster = await page.evaluate(() => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
@@ -1500,14 +1501,14 @@ async function setMugenLiteQaGamepad(page, pressedButtons) {
 async function captureMugenLiteCombatJourney(page, options) {
   const importedId = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.runtimeRoster?.find((entry) => entry.id.startsWith("imported-"))?.id);
   if (!importedId) throw new Error("MUGEN-lite imported roster id was unavailable");
-  await changeHiddenSelect(page, '[data-fighter-select="p1"]', "nova-boxer");
+  await changeHiddenSelect(page, '[data-fighter-select="p1"]', "rocco-vidal");
   await changeHiddenSelect(page, '[data-fighter-select="p2"]', importedId);
   await page.waitForFunction((importedId) => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const p1 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p1");
     const p2 = bridge?.snapshot?.actors?.find((actor) => actor.id === "p2");
-    return bridge?.project?.entry?.p1 === "nova-boxer" && bridge.project.entry.p2 === importedId &&
-      p1?.source === "demo" && p1.label === "Nova Boxer" && p2?.source === "imported" && p2.label === "MUGEN Lite Journey";
+    return bridge?.project?.entry?.p1 === "rocco-vidal" && bridge.project.entry.p2 === importedId &&
+      p1?.source === "demo" && p1.label === "Rocco Vidal" && p2?.source === "imported" && p2.label === "MUGEN Lite Journey";
   }, importedId);
   const roster = await page.evaluate(() => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
@@ -2091,8 +2092,8 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
   const nameInput = page.locator("[data-project-name]").first();
   await nameInput.fill(authoredName);
   await nameInput.press("Tab");
-  await changeHiddenSelect(page, '[data-studio-fighter-select="p1"]', "rook-apprentice", "p1");
-  await changeHiddenSelect(page, '[data-studio-fighter-select="p2"]', "nova-boxer", "p2");
+  await changeHiddenSelect(page, '[data-studio-fighter-select="p1"]', "nadia-arce", "p1");
+  await changeHiddenSelect(page, '[data-studio-fighter-select="p2"]', "rocco-vidal", "p2");
   await changeHiddenSelect(page, "[data-studio-stage-select]", "training-grid", "stage");
   const historyAfterEdits = await page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.studioEditHistory);
   await page.locator('[data-action="undo-project-edit"]').first().click();
@@ -2134,8 +2135,8 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
         (entry) =>
           entry.name === authoredName &&
           entry.manifest?.name === authoredName &&
-          entry.manifest?.entry?.p1 === "rook-apprentice" &&
-          entry.manifest?.entry?.p2 === "nova-boxer" &&
+          entry.manifest?.entry?.p1 === "nadia-arce" &&
+          entry.manifest?.entry?.p2 === "rocco-vidal" &&
           entry.manifest?.entry?.stage === "training-grid",
       );
   }, { authoredName }, { timeout: Math.max(30_000, autosaveDelayMs + 5_000) });
@@ -2150,8 +2151,8 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
         (entry) =>
           entry.name === authoredName &&
           entry.manifest?.name === authoredName &&
-          entry.manifest?.entry?.p1 === "rook-apprentice" &&
-          entry.manifest?.entry?.p2 === "nova-boxer" &&
+          entry.manifest?.entry?.p1 === "nadia-arce" &&
+          entry.manifest?.entry?.p2 === "rocco-vidal" &&
           entry.manifest?.entry?.stage === "training-grid",
       ),
     };
@@ -2164,8 +2165,8 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
       (entry) =>
         entry.name === authoredName &&
         entry.manifest?.name === authoredName &&
-        entry.manifest?.entry?.p1 === "rook-apprentice" &&
-        entry.manifest?.entry?.p2 === "nova-boxer" &&
+        entry.manifest?.entry?.p1 === "nadia-arce" &&
+        entry.manifest?.entry?.p2 === "rocco-vidal" &&
         entry.manifest?.entry?.stage === "training-grid",
     );
   }, { authoredName });
@@ -2565,8 +2566,8 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
     await page.locator('[data-mode="studio"]').first().evaluate((button) => button.click());
     await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio");
     await selectStudioTab(page, "workbench");
-    await changeHiddenSelect(page, '[data-studio-fighter-select="p1"]', "nova-boxer");
-    await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.project?.entry?.p1 === "nova-boxer");
+    await changeHiddenSelect(page, '[data-studio-fighter-select="p1"]', "rocco-vidal");
+    await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.project?.entry?.p1 === "rocco-vidal");
     await selectStudioTab(page, "build");
   }
   await page.locator('button[data-action="compile-project"]:visible').first().click({ force: true }).catch(async () => {
@@ -3406,7 +3407,7 @@ function writeSourceRelinkProject(outDir) {
       },
     ],
     assets: {
-      characters: ["nova-boxer", "mira-volt", "rook-apprentice"],
+      characters: ["rocco-vidal", "nadia-arce"],
       stages: ["rooftop-dojo"],
       audio: [],
       ui: [],
@@ -3416,7 +3417,7 @@ function writeSourceRelinkProject(outDir) {
     entry: { mode: "match", p1: DEFAULT_P1, p2: DEFAULT_P2, stage: DEFAULT_STAGE },
     compatibility: {
       gates: [],
-      stats: { characters: 3, stages: 1, importedCharacters: 1, importedStages: 0, generatedAtlases: 3 },
+      stats: { characters: 3, stages: 1, importedCharacters: 1, importedStages: 0, generatedAtlases: 2 },
     },
   };
   fs.writeFileSync(projectPath, JSON.stringify(project, null, 2));
@@ -3447,7 +3448,7 @@ function writeFolderHandleRecoveryProject(outDir) {
       requiredPaths: ["chars/kfm/kfm.def", "chars/kfm/kfm.sff", "chars/kfm/kfm.air", "chars/kfm/kfm.cmd", "chars/kfm/kfm.cns"],
     }],
     assets: {
-      characters: ["nova-boxer", "mira-volt", "rook-apprentice"],
+      characters: ["rocco-vidal", "nadia-arce"],
       stages: ["rooftop-dojo"],
       audio: [],
       ui: [],
@@ -3457,7 +3458,7 @@ function writeFolderHandleRecoveryProject(outDir) {
     entry: { mode: "match", p1: DEFAULT_P1, p2: DEFAULT_P2, stage: DEFAULT_STAGE },
     compatibility: {
       gates: [],
-      stats: { characters: 3, stages: 1, importedCharacters: 1, importedStages: 0, generatedAtlases: 3 },
+      stats: { characters: 3, stages: 1, importedCharacters: 1, importedStages: 0, generatedAtlases: 2 },
     },
   };
   fs.writeFileSync(projectPath, JSON.stringify(project, null, 2));
@@ -3550,7 +3551,7 @@ async function inspectPackageZip(packagePath) {
     const token = unsafePackagePath(evidence.reference);
     return token ? { assetId: record.assetId, evidenceId: evidence.id, reference: evidence.reference, token } : undefined;
   }).filter(Boolean));
-  const assetReleasePolicyNova = assetReleasePolicies.find((record) => record.assetId === "nova-boxer");
+  const assetReleasePolicyRocco = assetReleasePolicies.find((record) => record.assetId === "rocco-vidal");
   const provenanceDigestMismatches = assetProvenance.flatMap((record) => (record.outputFiles ?? []).flatMap((file) => {
     const packageAsset = packageAssetByPath.get(file.path);
     if (!file.digest?.digest || !packageAsset || packageAsset.status !== "bundled" || packageAsset.sha256?.toLowerCase() !== file.digest.digest.toLowerCase() || (file.bytes !== undefined && packageAsset.bytes !== file.bytes)) {
@@ -3558,13 +3559,13 @@ async function inspectPackageZip(packagePath) {
     }
     return [];
   }));
-  const firstPartyPermissionPath = "assets/characters/nova-boxer/asset-permission.json";
+  const firstPartyPermissionPath = "assets/characters/rocco-vidal/asset-permission.json";
   const firstPartyPermission = files.includes(firstPartyPermissionPath)
     ? JSON.parse(await zip.file(firstPartyPermissionPath).async("string"))
     : undefined;
   const firstPartyPermissionDigestMismatches = [];
   for (const file of [...(firstPartyPermission?.sourceFiles ?? []), ...(firstPartyPermission?.outputFiles ?? [])]) {
-    const packagePath = "assets/characters/nova-boxer/" + String(file.path).replace(/\\/g, "/");
+    const packagePath = "assets/characters/rocco-vidal/" + String(file.path).replace(/\\/g, "/");
     const entry = zip.file(packagePath);
     if (!entry) {
       firstPartyPermissionDigestMismatches.push({ path: packagePath, reason: "missing from ZIP" });
@@ -3605,12 +3606,12 @@ async function inspectPackageZip(packagePath) {
     assetReleasePolicyBlocked: manifest.assets?.releasePolicyBlocked,
     assetReleasePolicyReadyAssetIds: assetReleasePolicies.filter((record) => record.canRelease).map((record) => record.assetId),
     assetReleasePolicyPathViolations,
-    assetReleasePolicyNova: assetReleasePolicyNova ? {
-      status: assetReleasePolicyNova.status,
-      canRelease: assetReleasePolicyNova.canRelease,
-      blockedBy: assetReleasePolicyNova.blockedBy,
-      warnings: assetReleasePolicyNova.warnings,
-      evidenceKinds: [...new Set((assetReleasePolicyNova.evidence ?? []).map((evidence) => evidence.kind))],
+    assetReleasePolicyRocco: assetReleasePolicyRocco ? {
+      status: assetReleasePolicyRocco.status,
+      canRelease: assetReleasePolicyRocco.canRelease,
+      blockedBy: assetReleasePolicyRocco.blockedBy,
+      warnings: assetReleasePolicyRocco.warnings,
+      evidenceKinds: [...new Set((assetReleasePolicyRocco.evidence ?? []).map((evidence) => evidence.kind))],
     } : undefined,
     hasFirstPartyPermission: Boolean(firstPartyPermission),
     firstPartyPermissionSchema: firstPartyPermission?.schemaVersion,
@@ -3619,7 +3620,7 @@ async function inspectPackageZip(packagePath) {
     firstPartyPermissionLicenseProfile: firstPartyPermission?.license?.profile,
     firstPartyPermissionLicense: firstPartyPermission?.license,
     firstPartyPermissionDigestMismatches,
-    hasFirstPartyLicense: files.includes("assets/characters/nova-boxer/LICENSE.txt"),
+    hasFirstPartyLicense: files.includes("assets/characters/rocco-vidal/LICENSE.txt"),
     projectSourcePackages: project.sourcePackages?.length ?? 0,
     linkedProjectSourcePackages: project.sourcePackages?.filter((sourcePackage) => sourcePackage.status === "linked").length ?? 0,
     projectSourceRequiredPaths: project.sourcePackages?.reduce((total, sourcePackage) => total + (sourcePackage.requiredPaths?.length ?? 0), 0) ?? 0,
@@ -3719,7 +3720,7 @@ async function inspectPackageZip(packagePath) {
     sourceWriteReceiptDigest: sourceWriteReceipt?.digest,
     sourceWriteReceiptCommittedDigest: sourceWriteReceipt?.committedDigest,
     hasRuntimeAtlas: files.some((file) => file.endsWith("sprite-sheet-alpha.png")),
-    hasStageArt: files.some((file) => file.endsWith("rooftop-dojo.png")),
+    hasStageArt: files.some((file) => /^assets\/stages\/[^/]+\/.+\.(?:png|webp|jpe?g)$/i.test(file)),
   };
 }
 
@@ -3890,7 +3891,7 @@ async function captureStudioAssets(page, outDir) {
   await selectStudioTab(page, "assets");
   await ensureLeftDockOpen(page);
   await page.waitForFunction(
-    () => window.__MUGEN_WEB_SANDBOX__?.studioAssets?.provenance?.some((record) => record.assetId === "nova-boxer" && record.license?.status === "declared"),
+    () => window.__MUGEN_WEB_SANDBOX__?.studioAssets?.provenance?.some((record) => record.assetId === "rocco-vidal" && record.license?.status === "declared"),
     undefined,
     { timeout: 30000 },
   );
@@ -5093,6 +5094,7 @@ function assertSmoke(diagnostics) {
       failures.push(`mugen-lite visual ${viewport}: idle/walk/crouch/jump masks were not mutually distinct`);
     }
     const combatExpected = { getHit: 5000, fallMotion: 5050, fallen: 5100 };
+    const expectedActorLifeAfterRoccoPunch = 944;
     for (const [id, action] of Object.entries(combatExpected)) {
       const state = probe.combat?.[id];
       if (
@@ -5107,12 +5109,12 @@ function assertSmoke(diagnostics) {
     }
     const combatMasks = Object.keys(combatExpected).map((id) => probe.combat?.[id]?.spritePixels?.fixtureMaskChecksum);
     if (
-      probe.combat?.roster?.p1 !== "nova-boxer" ||
+      probe.combat?.roster?.p1 !== "rocco-vidal" ||
       probe.combat?.roster?.p2 !== probe.combat?.importedId ||
       probe.combat?.roster?.actors?.find((actor) => actor.id === "p1")?.source !== "demo" ||
       probe.combat?.roster?.actors?.find((actor) => actor.id === "p2")?.source !== "imported" ||
       probe.combat?.roster?.actors?.find((actor) => actor.id === "p2")?.life !== 1000 ||
-      Object.keys(combatExpected).some((id) => probe.combat?.[id]?.actorLife !== 945) ||
+      Object.keys(combatExpected).some((id) => probe.combat?.[id]?.actorLife !== expectedActorLifeAfterRoccoPunch) ||
       combatMasks.some((checksum) => !checksum) ||
       new Set(combatMasks).size !== combatMasks.length ||
       !probe.combat?.returnedToIdle
@@ -5140,7 +5142,7 @@ function assertSmoke(diagnostics) {
       probe.recovery.roster.actors?.find((actor) => actor.id === "p1")?.source !== "demo" ||
       probe.recovery.roster.actors?.find((actor) => actor.id === "p2")?.source !== "imported" ||
       probe.recovery.roster.actors?.find((actor) => actor.id === "p1")?.life !== 1000 ||
-      Object.keys(recoveryExpected).some((id) => probe.recovery?.[id]?.actorLife !== 945) ||
+      Object.keys(recoveryExpected).some((id) => probe.recovery?.[id]?.actorLife !== expectedActorLifeAfterRoccoPunch) ||
       recoveryMasks.some((checksum) => !checksum) ||
       new Set(recoveryMasks).size !== recoveryMasks.length ||
       !probe.recovery?.returnedToIdle
@@ -5150,7 +5152,7 @@ function assertSmoke(diagnostics) {
     const guarded = probe.guard?.guarded;
     if (
       probe.guard?.roster?.p1 !== probe.combat?.importedId ||
-      probe.guard?.roster?.p2 !== "nova-boxer" ||
+      probe.guard?.roster?.p2 !== "rocco-vidal" ||
       probe.guard?.roster?.actors?.find((actor) => actor.id === "p1")?.source !== "imported" ||
       probe.guard?.roster?.actors?.find((actor) => actor.id === "p2")?.source !== "demo" ||
       probe.guard?.roster?.actors?.find((actor) => actor.id === "p1")?.life !== 1000 ||
@@ -5168,7 +5170,7 @@ function assertSmoke(diagnostics) {
     const noKoSlow = probe.noKoSlow?.finisher;
     if (
       probe.noKoSlow?.roster?.p1 !== probe.combat?.importedId ||
-      probe.noKoSlow?.roster?.p2 !== "nova-boxer" ||
+      probe.noKoSlow?.roster?.p2 !== "rocco-vidal" ||
       probe.noKoSlow?.roster?.actors?.find((actor) => actor.id === "p1")?.source !== "imported" ||
       probe.noKoSlow?.roster?.actors?.find((actor) => actor.id === "p2")?.source !== "demo" ||
       noKoSlow?.actorSource !== "imported" ||
@@ -5315,7 +5317,7 @@ function assertSmoke(diagnostics) {
     studioWorkbench.studioTab !== "workbench" ||
     studioWorkbench.legacyDeckVisible ||
     studioWorkbench.legacyPipelineVisible ||
-    studioWorkbench.globalModeCount !== 3 ||
+    studioWorkbench.globalModeCount !== 4 ||
     studioWorkbench.studioRouteCount !== 8 ||
     studioWorkbench.primaryActionCount !== 1 ||
     !studioWorkbench.currentTaskVisible ||
@@ -5341,11 +5343,11 @@ function assertSmoke(diagnostics) {
     !studioWorkbench.projectAuthoring?.saved ||
     studioWorkbench.projectAuthoring.reopenedName !== studioWorkbench.projectAuthoring.authoredName ||
     studioWorkbench.projectAuthoring.name !== studioWorkbench.projectAuthoring.authoredName ||
-    studioWorkbench.projectAuthoring.entry?.p1 !== "rook-apprentice" ||
-    studioWorkbench.projectAuthoring.entry?.p2 !== "nova-boxer" ||
+    studioWorkbench.projectAuthoring.entry?.p1 !== "nadia-arce" ||
+    studioWorkbench.projectAuthoring.entry?.p2 !== "rocco-vidal" ||
     studioWorkbench.projectAuthoring.entry?.stage !== "training-grid" ||
     studioWorkbench.projectAuthoring.dirty !== false ||
-    (studioWorkbench.projectAuthoring.historyAfterEdits?.undoCount ?? 0) < 4 ||
+    (studioWorkbench.projectAuthoring.historyAfterEdits?.undoCount ?? 0) < 3 ||
     studioWorkbench.projectAuthoring.afterUndo?.project?.entry?.stage === "training-grid" ||
     !studioWorkbench.projectAuthoring.afterUndo?.history?.canRedo ||
     studioWorkbench.projectAuthoring.afterRedo?.project?.entry?.stage !== "training-grid" ||
@@ -5586,14 +5588,14 @@ function assertSmoke(diagnostics) {
     (studioBuild.downloadedPackage?.provenanceLicenseUnknown ?? 0) < 1 ||
     (studioBuild.downloadedPackage?.provenanceAbsolutePathLeaks ?? 0) !== 0 ||
     (studioBuild.downloadedPackage?.provenanceReady ?? 0) < 1 ||
-    !studioBuild.downloadedPackage?.provenanceReadyAssetIds?.includes("nova-boxer") ||
-    !studioBuild.downloadedPackage?.provenanceDeclaredLicenses?.includes("nova-boxer") ||
+    !studioBuild.downloadedPackage?.provenanceReadyAssetIds?.includes("rocco-vidal") ||
+    !studioBuild.downloadedPackage?.provenanceDeclaredLicenses?.includes("rocco-vidal") ||
     (studioBuild.downloadedPackage?.provenancePathViolations?.length ?? 0) !== 0 ||
     (studioBuild.downloadedPackage?.provenanceDigestMismatches?.length ?? 0) !== 0 ||
     (studioBuild.downloadedPackage?.packageAssetPathViolations?.length ?? 0) !== 0 ||
     !studioBuild.downloadedPackage?.hasFirstPartyPermission ||
     studioBuild.downloadedPackage?.firstPartyPermissionSchema !== "mugen-web-sandbox/asset-permission/v0" ||
-    studioBuild.downloadedPackage?.firstPartyPermissionAssetId !== "nova-boxer" ||
+    studioBuild.downloadedPackage?.firstPartyPermissionAssetId !== "rocco-vidal" ||
     studioBuild.downloadedPackage?.firstPartyPermissionOwnership !== "repository-owned" ||
     studioBuild.downloadedPackage?.firstPartyPermissionLicenseProfile !== "mugen-web-sandbox/spdx-expression-subset/v0" ||
     studioBuild.downloadedPackage?.firstPartyPermissionLicense?.expression !== "CC0-1.0" ||
@@ -5689,8 +5691,8 @@ function assertSmoke(diagnostics) {
       studioBuild.provenanceLicenseUnknown < 1 ||
       studioBuild.provenanceTransformCount < studioBuild.provenanceRecords * 2 ||
       studioBuild.provenanceFilePathLeaks !== 0 ||
-      !studioBuild.provenanceReadyAssetIds?.includes("nova-boxer") ||
-      !studioBuild.provenanceDeclaredLicenses?.includes("nova-boxer"))
+      !studioBuild.provenanceReadyAssetIds?.includes("rocco-vidal") ||
+      !studioBuild.provenanceDeclaredLicenses?.includes("rocco-vidal"))
   ) {
     failures.push("studio-build: imported asset provenance did not join per-file source and bundled output hashes");
   }
@@ -5698,17 +5700,18 @@ function assertSmoke(diagnostics) {
     studioBuild.downloadedPackage?.hasAssetReleasePolicy !== true ||
     studioBuild.downloadedPackage?.manifestListsAssetReleasePolicy !== true ||
     studioBuild.downloadedPackage?.assetReleasePolicySchema !== "mugen-web-sandbox/asset-release-policy/v0" ||
-    studioBuild.downloadedPackage?.assetReleasePolicyReady !== 1 ||
+    studioBuild.downloadedPackage?.assetReleasePolicyReady !== 2 ||
     (studioBuild.downloadedPackage?.assetReleasePolicyBlocked ?? 0) < 1 ||
-    !studioBuild.downloadedPackage?.assetReleasePolicyReadyAssetIds?.includes("nova-boxer") ||
+    !studioBuild.downloadedPackage?.assetReleasePolicyReadyAssetIds?.includes("rocco-vidal") ||
+    !studioBuild.downloadedPackage?.assetReleasePolicyReadyAssetIds?.includes("nadia-arce") ||
     (studioBuild.downloadedPackage?.assetReleasePolicyPathViolations?.length ?? 0) !== 0 ||
-    studioBuild.downloadedPackage?.assetReleasePolicyNova?.status !== "ready" ||
-    studioBuild.downloadedPackage?.assetReleasePolicyNova?.canRelease !== true ||
-    (studioBuild.downloadedPackage?.assetReleasePolicyNova?.blockedBy?.length ?? 0) !== 0 ||
-    !studioBuild.downloadedPackage?.assetReleasePolicyNova?.evidenceKinds?.includes("permission") ||
-    !studioBuild.downloadedPackage?.assetReleasePolicyNova?.evidenceKinds?.includes("playtest")
+    studioBuild.downloadedPackage?.assetReleasePolicyRocco?.status !== "ready" ||
+    studioBuild.downloadedPackage?.assetReleasePolicyRocco?.canRelease !== true ||
+    (studioBuild.downloadedPackage?.assetReleasePolicyRocco?.blockedBy?.length ?? 0) !== 0 ||
+    !studioBuild.downloadedPackage?.assetReleasePolicyRocco?.evidenceKinds?.includes("permission") ||
+    !studioBuild.downloadedPackage?.assetReleasePolicyRocco?.evidenceKinds?.includes("playtest")
   ) {
-    failures.push("studio-build: downloaded project package did not include one fresh releaseable asset policy and diagnostic-only records");
+    failures.push("studio-build: downloaded project package did not include both authored releaseable asset policies and diagnostic-only records");
   }
   if (
     studioBuild.importedFixtureLoaded &&
@@ -5959,8 +5962,8 @@ function assertSmoke(diagnostics) {
     studioAssets.provenanceSchema !== "mugen-web-sandbox/asset-provenance/v2" ||
       studioAssets.provenanceRecords < studioAssets.assetTotal ||
       studioAssets.provenanceReady < 1 ||
-      !studioAssets.provenanceReadyAssetIds?.includes("nova-boxer") ||
-      !studioAssets.provenanceDeclaredLicenses?.includes("nova-boxer") ||
+      !studioAssets.provenanceReadyAssetIds?.includes("rocco-vidal") ||
+      !studioAssets.provenanceDeclaredLicenses?.includes("rocco-vidal") ||
       studioAssets.provenanceFilePathLeaks !== 0 ||
       studioAssets.provenancePathViolations !== 0 ||
       studioAssets.provenanceBlocked < 1 ||
@@ -6550,7 +6553,7 @@ function summarizeDiagnostics(diagnostics) {
       releasePolicyReady: diagnostics.checks.studioBuild.downloadedPackage?.assetReleasePolicyReady,
       releasePolicyReadyAssetIds: diagnostics.checks.studioBuild.downloadedPackage?.assetReleasePolicyReadyAssetIds,
       releasePolicyBlocked: diagnostics.checks.studioBuild.downloadedPackage?.assetReleasePolicyBlocked,
-      releasePolicyNova: diagnostics.checks.studioBuild.downloadedPackage?.assetReleasePolicyNova,
+      releasePolicyRocco: diagnostics.checks.studioBuild.downloadedPackage?.assetReleasePolicyRocco,
       architectureGateStatus: diagnostics.checks.studioBuild.architectureGateStatus,
       architectureEvidenceRecord: diagnostics.checks.studioBuild.architectureEvidenceRecord,
       architectureEvidenceStatus: diagnostics.checks.studioBuild.architectureEvidenceStatus,

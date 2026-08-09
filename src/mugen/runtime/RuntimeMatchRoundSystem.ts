@@ -19,6 +19,18 @@ import {
   type RuntimeTeamRoundHandoffInput,
   type RuntimeTeamRoundHandoffResult,
 } from "./RuntimeTeamRoundHandoffSystem";
+import {
+  RuntimePauseGlobalAssertSpecialWorld,
+  type RuntimePauseAssertSpecialPhase,
+  type RuntimePauseGlobalAssertSpecialSnapshot,
+  type RuntimePauseGlobalAssertSpecialPolicy,
+} from "./RuntimePauseGlobalAssertSpecialSystem";
+import {
+  RuntimeHelperResourceOwnershipWorld,
+  type RuntimeHelperResourceOwnershipInput,
+  type RuntimeHelperResourceOwnershipSnapshot,
+  type RuntimeHelperResourceOwnershipMatrix,
+} from "./RuntimeHelperResourceOwnershipSystem";
 
 export type RuntimeMatchRoundActor = RuntimeGlobalAssertSpecialActor & {
   label: string;
@@ -41,6 +53,8 @@ export type RuntimeMatchRoundFinishOptions<TActor extends RuntimeMatchRoundActor
   round: RuntimeRoundSystem;
   p1: TActor;
   p2: TActor;
+  /** Complete root/helper set used for global AssertSpecial ownership in teams. */
+  globalActors?: readonly RuntimeGlobalAssertSpecialActor[];
   tick?: number;
   participants?: readonly RuntimeRoundParticipant[];
   stopPlaying: () => void;
@@ -53,10 +67,12 @@ export class RuntimeMatchRoundWorld {
     private readonly globalAssertSpecialWorld = new RuntimeGlobalAssertSpecialWorld(),
     private readonly teamRoundDecisionWorld = new RuntimeTeamRoundDecisionWorld(),
     private readonly teamRoundHandoffWorld = new RuntimeTeamRoundHandoffWorld(),
+    private readonly pauseGlobalAssertSpecialWorld = new RuntimePauseGlobalAssertSpecialWorld(),
+    private readonly helperResourceOwnershipWorld = new RuntimeHelperResourceOwnershipWorld(),
   ) {}
 
   snapshotGlobalAssertSpecial(
-    actors: readonly RuntimeMatchRoundActor[] = [],
+    actors: readonly RuntimeGlobalAssertSpecialActor[] = [],
     tick = 0,
   ): RuntimeGlobalAssertSpecialSnapshot {
     return this.globalAssertSpecialWorld.snapshot({ actors, tick });
@@ -64,6 +80,37 @@ export class RuntimeMatchRoundWorld {
 
   snapshotTeamRoundDecision(input: RuntimeTeamRoundDecisionInput): RuntimeTeamRoundDecision {
     return this.teamRoundDecisionWorld.snapshot(input);
+  }
+
+  snapshotPauseGlobalAssertSpecial(
+    actors: readonly RuntimeGlobalAssertSpecialActor[],
+    pauseType: "Pause" | "SuperPause",
+    phase: RuntimePauseAssertSpecialPhase,
+    tick = 0,
+  ): RuntimePauseGlobalAssertSpecialSnapshot {
+    return this.pauseGlobalAssertSpecialWorld.snapshot({ actors, pauseType, phase, tick });
+  }
+
+  pauseGlobalAssertSpecialPolicy(
+    snapshot: RuntimePauseGlobalAssertSpecialSnapshot,
+  ): RuntimePauseGlobalAssertSpecialPolicy {
+    return this.pauseGlobalAssertSpecialWorld.policy(snapshot);
+  }
+
+  snapshotHelperResourceOwnership(
+    input: RuntimeHelperResourceOwnershipInput,
+  ): RuntimeHelperResourceOwnershipSnapshot {
+    return this.helperResourceOwnershipWorld.snapshot(input);
+  }
+
+  snapshotHelperResourceOwnershipMatrix(
+    inputs: readonly RuntimeHelperResourceOwnershipInput[],
+  ): RuntimeHelperResourceOwnershipMatrix {
+    return this.helperResourceOwnershipWorld.matrix(inputs);
+  }
+
+  admitHelperResourceWrite(input: RuntimeHelperResourceOwnershipInput): boolean {
+    return this.helperResourceOwnershipWorld.admitLocalWrite(this.helperResourceOwnershipWorld.snapshot(input));
   }
 
   applyTeamRoundHandoff(input: RuntimeTeamRoundHandoffInput): RuntimeTeamRoundHandoffResult {
@@ -113,7 +160,10 @@ export class RuntimeMatchRoundWorld {
   finishIfNeeded<TActor extends RuntimeMatchRoundActor>(
     options: RuntimeMatchRoundFinishOptions<TActor>,
   ): RuntimeRoundFinishResult | undefined {
-    const globalAssertSpecial = this.snapshotGlobalAssertSpecial([options.p1, options.p2], options.tick);
+    const globalAssertSpecial = this.snapshotGlobalAssertSpecial(
+      options.globalActors ?? [options.p1, options.p2],
+      options.tick,
+    );
     if (globalAssertSpecial.roundNotOver) {
       return undefined;
     }

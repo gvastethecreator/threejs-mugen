@@ -10,6 +10,10 @@ export type RuntimeHitDefSpritePriorityActor = {
   runtime: CharacterRuntimeState;
 };
 
+export type RuntimeProjectileHitDefSpritePriority = {
+  p2SpritePriority?: number;
+};
+
 export function applyRuntimeHitDefSpritePriorityContact<
   TAttacker extends RuntimeHitDefSpritePriorityActor,
   TDefender extends RuntimeHitDefSpritePriorityActor,
@@ -32,6 +36,29 @@ export function applyRuntimeHitDefSpritePriorityContact<
     },
   });
   applyResolvedSpritePriority(attacker.runtime, profile, "p1", contactKind, priorities.p1);
+  applyResolvedSpritePriority(defender.runtime, profile, "p2", contactKind, priorities.p2);
+}
+
+/**
+ * Projectile contacts only replace P2 sprite priority in Ikemen. The
+ * projectile's visual order remains owned by projsprpriority.
+ */
+export function applyRuntimeProjectileHitDefSpritePriorityContact<
+  TDefender extends RuntimeHitDefSpritePriorityActor,
+>(
+  defender: TDefender,
+  projectile: RuntimeProjectileHitDefSpritePriority,
+  contactKind: RuntimeHitDefContactKind,
+  profile: RuntimeHitDefPriorityProfile,
+): void {
+  const priorities = resolveRuntimeHitDefSpritePriorities({
+    profile,
+    authored: { p2: projectile.p2SpritePriority },
+    current: {
+      p1: 0,
+      p2: defender.runtime.spritePriority ?? 0,
+    },
+  });
   applyResolvedSpritePriority(defender.runtime, profile, "p2", contactKind, priorities.p2);
 }
 

@@ -2,7 +2,7 @@ import type { SpriteEffectControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
-import type { CharacterRuntimeState, RuntimeAfterImageSample } from "./types";
+import type { CharacterRuntimeState, RuntimeAfterImageSample, RuntimePaletteFxPayload } from "./types";
 
 export type RuntimeAfterImageSampleFactory = () => RuntimeAfterImageSample | undefined;
 
@@ -298,6 +298,25 @@ export function applyRuntimePaletteFxController(
       (invertParam === undefined ? undefined : legacyBoolean(resolvePaletteFx?.resolveNumber("invert"))) ??
       (firstNumber(invertAllParam) ?? firstNumber(invertParam)) === 1,
   };
+}
+
+/** Apply the PalFX payload carried by an accepted, unguarded HitDef contact. */
+export function applyRuntimeContactPaletteFx(
+  state: CharacterRuntimeState,
+  payload: RuntimePaletteFxPayload | undefined,
+): boolean {
+  if (!payload || !Number.isFinite(payload.time) || payload.time <= 0) return false;
+  const time = clampFxTime(payload.time);
+  if (time <= 0) return false;
+  state.paletteFx = {
+    remaining: time,
+    time,
+    add: clampColorTriplet(payload.add, -255, 255) ?? [0, 0, 0],
+    mul: clampColorTriplet(payload.mul, 0, 512) ?? [255, 255, 255],
+    color: clampColorLevel(payload.color),
+    invert: payload.invert,
+  };
+  return true;
 }
 
 export function resolveRuntimePaletteFxControllerOperation(

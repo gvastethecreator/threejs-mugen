@@ -15,16 +15,23 @@ import { normalizeRuntimeHitDefPriority } from "./HitDefContactPriority";
 import type { RuntimeHitDefPriorityProfile } from "./HitDefPriorityPolicy";
 import { applyRuntimeHitDefSpritePriorityContact } from "./HitDefSpritePrioritySystem";
 import {
+  applyRuntimeAttackerUnhittableTime,
+  applyRuntimeReceiverUnhittableTime,
+} from "./RuntimeUnhittableTimeSystem";
+import {
   RuntimeContactMemoryWorld,
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
 import { applyRuntimeControl, applyRuntimeDizzyPointsAdd, applyRuntimeGuardPointsAdd, applyRuntimePowerDelta, applyRuntimeRedLifeAdd } from "./RuntimeResourceSystem";
+import { applyRuntimeContactPaletteFx } from "./SpriteEffectSystem";
 import type { CharacterRuntimeState } from "./types";
 import {
   recordRuntimeRoundWinType,
   runtimeRoundHitSourceMetadata,
 } from "./RuntimeRoundWinTypeSystem";
 import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
+import { runtimeTeamSideFromId } from "./RuntimeTeamTopologySystem";
+import { RUNTIME_DEFAULT_HIT_FLAG } from "./RuntimeHitFlagDefaults";
 import {
   bufferRuntimeHitDefTarget,
   type RuntimeHitDefContactMemoryActor,
@@ -32,6 +39,7 @@ import {
 
 export type RuntimeDirectCombatActor = {
   id: string;
+  playerId?: number;
   playerNo?: number;
   rootId?: string;
   rootOwned?: boolean;
@@ -45,6 +53,8 @@ export type RuntimeDirectCombatActor = {
   hitStun: number;
   hitPause: number;
   hasHit: boolean;
+  /** One-shot target-facing override consumed after the next auto-facing pass. */
+  pendingDirectHitFacing?: 1 | -1;
   hitDefTargets?: RuntimeHitDefContactMemoryActor["hitDefTargets"];
   pendingHitDefTargets?: RuntimeHitDefContactMemoryActor["pendingHitDefTargets"];
   contact: RuntimeContactMemory;
@@ -56,6 +66,7 @@ export type RuntimeDirectCombatHooks<TActor extends RuntimeDirectCombatActor = R
   applyHitStateTransitions: (attacker: TActor, defender: TActor, move: DemoMove) => void;
   applyDefaultGetHit: (defender: TActor, move: DemoMove) => void;
   applyDizzyState?: (defender: TActor, move: DemoMove) => void;
+  emitHitEnvShake?: (attacker: TActor, move: DemoMove) => void;
 };
 
 export type RuntimeDirectCombatOutcome = {
@@ -68,6 +79,10 @@ export type RuntimeDirectCombatOptions = {
   stageBounds?: RuntimeStageBounds;
   hitDefPriorityProfile?: RuntimeHitDefPriorityProfile;
   preserveDefenderMove?: boolean;
+  /** Ikemen-GO keeps GetHitVar(hitcount) mutable even when HitDef numhits exists. */
+  trackAuthoredHitCountCombo?: boolean;
+  /** Ikemen-GO records the extra KO velocity separately for xveladd/yveladd. */
+  trackIkemenKoVelocityDelta?: boolean;
 };
 
 export type RuntimeDirectPriorityHooks = {
@@ -168,6 +183,7 @@ export class RuntimeDirectCombatWorld {
     options: RuntimeDirectCombatOptions = {},
   ): RuntimeDirectCombatOutcome {
     attacker.hasHit = true;
+    applyRuntimeAttackerUnhittableTime(attacker.runtime, move);
     applyRuntimeHitDefSpritePriorityContact(attacker, defender, move, result.kind, options.hitDefPriorityProfile ?? "unknown");
     if (result.kind === "guard") {
       return this.applyGuard(attacker, defender, move, result, hooks, options);
@@ -184,9 +200,11 @@ export class RuntimeDirectCombatWorld {
     options: RuntimeDirectCombatOptions,
   ): RuntimeDirectCombatOutcome {
     this.contactWorld.markMoveContact(attacker.contact, attacker.runtime.stateNo, "guard", defender.id);
+    const previousComboHitCount = defender.runtime.hitVars?.comboHitCount;
+    const tracksComboHitCount = options.trackAuthoredHitCountCombo === true || move.hitVars?.hitCount === undefined;
     if (!options.preserveDefenderMove) interruptRuntimeDirectMove(defender);
     const lifeBefore = defender.runtime.life;
-    attacker.hitPause = result.pause;
+    attacker.hitPause = result.attackerPause ?? result.pause;
     defender.hitPause = result.pause;
     defender.runtime.guardStun = result.stun;
     defender.runtime.guardSlideTime = result.slideTime ?? 0;
@@ -222,6 +240,8 @@ export class RuntimeDirectCombatWorld {
       damage: result.damage,
       hitShakeTime: result.pause,
       hitTime: result.stun,
+      guardCount: (defender.runtime.hitVars?.guardCount ?? 0) + 1,
+      comboHitCount: tracksComboHitCount ? previousComboHitCount : undefined,
       sourceGuardKo: defender.runtime.life <= 0,
     }, attacker);
     if (result.hitVelocityY !== undefined) {
@@ -229,7 +249,16 @@ export class RuntimeDirectCombatWorld {
     }
     markRuntimeEffectActorGotHit(defender);
     applyRuntimeControl(defender.runtime, false);
-    applyRuntimePowerDelta(attacker.runtime, result.powerGain, attacker.definition.constants);
+    applyRuntimePowerDelta(
+      attacker.runtime,
+      runtimeAttackerPowerGain(move.attackerGuardPower, result.powerGain),
+      attacker.definition.constants,
+    );
+    applyRuntimePowerDelta(
+      defender.runtime,
+      runtimeAttackerPowerGain(move.guardPower, 0),
+      defender.definition.constants,
+    );
     hooks.applyGuardHit(defender);
     return {
       kind: "guard",
@@ -247,7 +276,18 @@ export class RuntimeDirectCombatWorld {
     options: RuntimeDirectCombatOptions,
   ): RuntimeDirectCombatOutcome {
     this.contactWorld.markMoveContact(attacker.contact, attacker.runtime.stateNo, "hit", defender.id);
-    attacker.hitPause = result.pause;
+    const authoredHitCount = Math.trunc(move.hitVars?.hitCount ?? 1);
+    if (authoredHitCount !== 1) {
+      this.contactWorld.applyHitAdd(attacker.contact, attacker.runtime.stateNo, authoredHitCount - 1);
+    }
+    applyRuntimeDirectAttackerFacing(attacker, defender, move);
+    latchRuntimeDirectDefenderFacing(attacker, defender, move);
+    const tracksComboHitCount = options.trackAuthoredHitCountCombo === true || move.hitVars?.hitCount === undefined;
+    const wasInHitCombo = tracksComboHitCount && defender.runtime.moveType === "H" && defender.runtime.hitVars?.guarded !== true;
+    const comboHitCount = tracksComboHitCount
+      ? (wasInHitCombo ? (defender.runtime.hitVars?.comboHitCount ?? 0) + 1 : 1)
+      : undefined;
+    attacker.hitPause = result.attackerPause ?? result.pause;
     if (!options.preserveDefenderMove) interruptRuntimeDirectMove(defender);
     const lifeBefore = defender.runtime.life;
     defender.hitPause = result.pause;
@@ -259,6 +299,7 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.guardControlTimeRemaining = undefined;
     defender.runtime.guarding = false;
     defender.runtime.receivedHitSequence = (defender.runtime.receivedHitSequence ?? 0) + 1;
+    applyRuntimeReceiverUnhittableTime(defender.runtime, move);
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
     recordRuntimeRoundWinType(attacker, defender, move.attr, result.kind, lifeBefore);
     const previousDizzyPoints = defender.runtime.dizzyPoints ?? defender.runtime.dizzyPointsMax ?? 1000;
@@ -284,19 +325,49 @@ export class RuntimeDirectCombatWorld {
       };
     }
     applyRuntimeCornerPush(attacker.runtime, defender.runtime, options.stageBounds, result.cornerPush, result.push);
+    const hitVelocityAdd = options.trackIkemenKoVelocityDelta === true &&
+      defender.runtime.life <= 0
+      ? runtimeKoVelocityAddFromMove(move)
+      : undefined;
     defender.runtime.hitVars = runtimeGetHitVarsFromMove(move, {
+      grounded: defender.runtime.stateType === "S" || defender.runtime.stateType === "C",
       damage: result.damage,
       hitShakeTime: result.pause,
       hitTime: result.stun,
+      guardCount: defender.runtime.hitVars?.guardCount,
+      comboHitCount,
       sourceGuardKo: false,
+      hitVelocityAdd,
     }, attacker);
-    defender.runtime.hitFall = runtimeHitFallFromMove(move, defender.runtime.stateType, defender.definition.localCoord);
+    const hitFall = runtimeHitFallFromMove(move, defender.runtime.stateType, defender.definition.localCoord);
+    if (hitFall) {
+      defender.runtime.hitFall = hitFall;
+    } else if (move.forceNoFall && defender.runtime.hitFall) {
+      defender.runtime.hitFall = { ...defender.runtime.hitFall, falling: false };
+    } else {
+      defender.runtime.hitFall = undefined;
+    }
     applyHitSnap(attacker, defender, move);
     if (result.hitVelocityY !== undefined) {
       defender.runtime.vel.y = result.hitVelocityY;
     }
+    if (hitVelocityAdd) {
+      defender.runtime.vel.x += hitVelocityAdd.x;
+      defender.runtime.vel.y += hitVelocityAdd.y;
+    }
     markRuntimeEffectActorGotHit(defender);
-    applyRuntimePowerDelta(attacker.runtime, result.powerGain, attacker.definition.constants);
+    applyRuntimeContactPaletteFx(defender.runtime, move.paletteFx);
+    hooks.emitHitEnvShake?.(attacker, move);
+    applyRuntimePowerDelta(
+      attacker.runtime,
+      runtimeAttackerPowerGain(move.attackerHitPower, result.powerGain),
+      attacker.definition.constants,
+    );
+    applyRuntimePowerDelta(
+      defender.runtime,
+      runtimeAttackerPowerGain(move.hitPower, 0),
+      defender.definition.constants,
+    );
     hooks.applyHitStateTransitions(attacker, defender, move);
     hooks.applyDefaultGetHit(defender, move);
     if (result.dizzyPoints !== undefined && previousDizzyPoints > 0 && defender.runtime.dizzyPoints === 0) {
@@ -313,6 +384,49 @@ export class RuntimeDirectCombatWorld {
       message: `${attacker.label} hit ${defender.label} for ${result.damage}`,
     };
   }
+}
+
+export function consumeRuntimeDirectHitFacing(
+  actor: Pick<RuntimeDirectCombatActor, "runtime" | "pendingDirectHitFacing">,
+): boolean {
+  const facing = actor.pendingDirectHitFacing;
+  if (facing === undefined) return false;
+  actor.runtime.facing = facing;
+  delete actor.pendingDirectHitFacing;
+  return true;
+}
+
+function runtimeAttackerPowerGain(authored: number | undefined, fallback: number): number {
+  return authored !== undefined && Number.isFinite(authored)
+    ? Math.trunc(authored)
+    : fallback;
+}
+
+function applyRuntimeDirectAttackerFacing<TActor extends RuntimeDirectCombatActor>(
+  attacker: TActor,
+  defender: TActor,
+  move: DemoMove,
+): void {
+  const getP2Facing = move.p1GetP2Facing ?? 0;
+  if (getP2Facing !== 0) {
+    attacker.runtime.facing = getP2Facing < 0
+      ? (defender.runtime.facing === 1 ? -1 : 1)
+      : defender.runtime.facing;
+  } else if ((move.p1Facing ?? 0) < 0) {
+    attacker.runtime.facing = attacker.runtime.facing === 1 ? -1 : 1;
+  }
+}
+
+function latchRuntimeDirectDefenderFacing<TActor extends RuntimeDirectCombatActor>(
+  attacker: TActor,
+  defender: TActor,
+  move: DemoMove,
+): void {
+  const authored = Math.trunc(move.p2Facing ?? 0);
+  if (authored === 0) return;
+  defender.pendingDirectHitFacing = authored > 0
+    ? attacker.runtime.facing
+    : attacker.runtime.facing === 1 ? -1 : 1;
 }
 
 function normalizeGuardTimer(value: number | undefined): number {
@@ -343,21 +457,61 @@ export function interruptRuntimeDirectMove(actor: RuntimeDirectCombatActor, expe
 
 function runtimeGetHitVarsFromMove(
   move: DemoMove,
-  timing: { guarded?: boolean; damage: number; hitShakeTime: number; hitTime: number; sourceGuardKo?: boolean },
+  timing: {
+    guarded?: boolean;
+    grounded?: boolean;
+    damage: number;
+    hitShakeTime: number;
+      hitTime: number;
+    guardCount?: number;
+    comboHitCount?: number;
+    sourceGuardKo?: boolean;
+    hitVelocityAdd?: { x: number; y: number };
+  },
   source?: RuntimeDirectCombatActor,
 ): CharacterRuntimeState["hitVars"] {
   const sourceMetadata = source === undefined ? undefined : runtimeRoundHitSourceMetadata({
     id: source.id,
+    playerId: source.playerId,
     playerNo: source.playerNo,
     rootId: source.rootId,
     rootOwned: source.rootOwned ?? (source.rootId === undefined || source.rootId === source.id),
     attr: move.attr ?? "S,NA",
+    guardFlag: move.guardFlag ?? "MA",
+    hitFlag: move.hitFlag ?? RUNTIME_DEFAULT_HIT_FLAG,
     guardKo: timing.sourceGuardKo,
   });
+  const sourceTeamSide = source === undefined ? undefined : (move.teamSide ?? runtimeTeamSideFromId(source.id));
+  const keepState = move.keepState ?? move.hitVars?.keepState;
   return {
     damage: Math.max(0, Math.round(timing.damage)),
+    hitDamage: Math.max(0, Math.round(move.damage)),
+    guardDamage: Math.max(0, Math.round(move.guardDamage ?? 0)),
     kill: timing.guarded ? (move.guardKill ?? true) : (move.kill ?? true),
     ...(sourceMetadata ?? {}),
+    ...(source === undefined ? {} : { sourceTeamSide: sourceTeamSide ?? -1 }),
+    sourcePriority: normalizeRuntimeHitDefPriority(move.priority),
+    ...(move.dizzyPoints === undefined ? {} : { sourceDizzyPoints: Math.trunc(move.dizzyPoints) }),
+    ...(move.guardPoints === undefined ? {} : { sourceGuardPoints: Math.trunc(move.guardPoints) }),
+    ...(move.redLife === undefined ? {} : { sourceRedLife: Math.trunc(move.redLife) }),
+    ...(move.guardPower === undefined ? {} : { sourceGuardPower: Math.trunc(move.guardPower) }),
+    ...(move.hitPower === undefined ? {} : { sourceHitPower: Math.trunc(move.hitPower) }),
+    ...((timing.guarded ? move.guardPower : move.hitPower) === undefined
+      ? {}
+      : { sourcePower: Math.trunc((timing.guarded ? move.guardPower : move.hitPower) as number) }),
+    ...(timing.guarded || move.p2Facing === undefined
+      ? {}
+      : { sourceFacing: Math.trunc(move.p2Facing) }),
+    ...(move.score === undefined ? {} : { sourceScore: move.score }),
+    ...(keepState === undefined ? {} : { keepState }),
+    ...(timing.guardCount === undefined || timing.guardCount <= 0
+      ? {}
+      : { guardCount: Math.max(0, Math.trunc(timing.guardCount)) }),
+    ...(timing.comboHitCount === undefined || timing.comboHitCount <= 0
+      ? {}
+      : { comboHitCount: Math.max(0, Math.trunc(timing.comboHitCount)) }),
+    ...(timing.hitVelocityAdd === undefined ? {} : { hitVelocityAdd: timing.hitVelocityAdd }),
+    frame: true,
     ...(move.hitVars?.hitId !== undefined ? { hitId: move.hitVars.hitId } : {}),
     ...(move.hitVars?.chainId !== undefined ? { chainId: move.hitVars.chainId } : {}),
     ...(move.hitVars?.hitCount !== undefined ? { hitCount: move.hitVars.hitCount } : {}),
@@ -371,14 +525,41 @@ function runtimeGetHitVarsFromMove(
         }
       : {}),
     animType: move.hitVars?.animType ?? 0,
+    groundAnimType: move.hitVars?.groundAnimType ?? move.hitVars?.animType ?? 0,
+    airAnimType: move.hitVars?.airAnimType ?? move.hitVars?.groundAnimType ?? move.hitVars?.animType ?? 0,
+    fallAnimType:
+      move.hitVars?.fallAnimType
+      ?? move.hitVars?.animType
+      ?? move.hitVars?.airAnimType
+      ?? move.hitVars?.groundAnimType
+      ?? 0,
     groundType: move.hitVars?.groundType ?? 1,
     airType: move.hitVars?.airType ?? move.hitVars?.groundType ?? 1,
     isBound: false,
     hitShakeTime: timing.hitShakeTime,
     hitTime: timing.hitTime,
+    ...(timing.guarded || timing.grounded !== true || move.hitVars?.slideTime === undefined
+      ? {}
+      : { slideTime: move.hitVars.slideTime }),
+    ...(move.hitVars?.xAccel !== undefined ? { xAccel: move.hitVars.xAccel } : {}),
     ...(move.hitVars?.yAccel !== undefined ? { yAccel: move.hitVars.yAccel } : {}),
+    ...(move.hitVars?.zAccel !== undefined ? { zAccel: move.hitVars.zAccel } : {}),
+    ...(move.hitVars?.standFriction !== undefined ? { standFriction: move.hitVars.standFriction } : {}),
+    ...(move.hitVars?.crouchFriction !== undefined ? { crouchFriction: move.hitVars.crouchFriction } : {}),
+    ...(move.hitVelocities === undefined ? {} : { hitVelocities: move.hitVelocities }),
     ...(timing.guarded ? { guarded: true } : {}),
   };
+}
+
+function runtimeKoVelocityAddFromMove(move: DemoMove): { x: number; y: number } | undefined {
+  const x = move.koVelocityAdd?.x;
+  const y = move.koVelocityAdd?.y;
+  const hasX = typeof x === "number" && Number.isFinite(x);
+  const hasY = typeof y === "number" && Number.isFinite(y);
+  if (!hasX && !hasY) {
+    return undefined;
+  }
+  return { x: hasX ? x! : 0, y: hasY ? y! : 0 };
 }
 
 function applyHitSnap<TActor extends RuntimeDirectCombatActor>(attacker: TActor, defender: TActor, move: DemoMove): void {

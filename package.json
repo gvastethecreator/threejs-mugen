@@ -24,6 +24,7 @@
     "materialize:repository-stage-journey": "node scripts/materialize_repository_stage_journey.cjs",
     "materialize:repository-stage-journey:native": "node scripts/materialize_repository_stage_journey_native.cjs",
     "qa:smoke": "node scripts/qa_smoke.cjs",
+    "qa:browser:fighter-lab": "node scripts/qa_browser_gate_fighter_lab.cjs",
     "qa:trace": "node scripts/qa_traces.cjs",
     "materialize:compatibility-snapshot": "node scripts/materialize_compatibility_corpus_snapshot.cjs",
     "materialize:source-authority": "node scripts/materialize_source_authority_manifest.cjs",

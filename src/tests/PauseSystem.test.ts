@@ -717,6 +717,7 @@ describe("PauseSystem", () => {
       opponents: string[];
       stageTime?: number;
       runtimeTick?: number;
+      projectilePauseKind?: string;
     }> = [];
     const pausedLifecycleOptions: Array<{
       actorId: string;
@@ -756,6 +757,7 @@ describe("PauseSystem", () => {
             opponents: options?.opponents?.map((entry) => entry.id ?? "none") ?? [],
             stageTime: options?.stageTime,
             runtimeTick: options?.runtimeTick,
+            projectilePauseKind: options?.projectilePauseKind,
           });
         },
         advancePresentation: (actor) => calls.push(`presentation:${actor.id}`),
@@ -799,7 +801,14 @@ describe("PauseSystem", () => {
       "tick-pause",
     ]);
     expect(activeLifecycleOptions).toEqual([
-      { actorId: "p1", opponentId: "p2", opponents: ["p2"], stageTime: 111, runtimeTick: 222 },
+      {
+        actorId: "p1",
+        opponentId: "p2",
+        opponents: ["p2"],
+        stageTime: 111,
+        runtimeTick: 222,
+        projectilePauseKind: "Pause",
+      },
     ]);
     expect(pausedLifecycleOptions).toEqual([
       { actorId: "p2", pauseKind: "Pause", opponentId: "p1", opponents: ["p1"], stageTime: 111, runtimeTick: 222 },

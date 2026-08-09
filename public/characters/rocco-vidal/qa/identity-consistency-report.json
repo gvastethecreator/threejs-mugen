@@ -1,0 +1,617 @@
+{
+  "ok": false,
+  "engine": "identity-consistency-proxy",
+  "run_dir": ".",
+  "states_mode": "all",
+  "quality_gate_note": "Head/upper/body proxy metrics are guardrails. Visual contact/onion/runtime review still wins when metrics miss a visible drift.",
+  "errors": [
+    "heavy-strike: head_width_vs_reference grows to 1.40x reference; expected <= 1.28x",
+    "special: upper_width_vs_reference varies by 0.54x across row; expected <= 0.42x",
+    "throw: upper_width_vs_reference varies by 0.43x across row; expected <= 0.42x",
+    "guard: head_width_vs_reference grows to 1.45x reference; expected <= 1.28x",
+    "hitstun: head_width_vs_reference grows to 1.33x reference; expected <= 1.28x",
+    "knockdown: head_width_vs_reference grows to 1.37x reference; expected <= 1.28x",
+    "knockdown: head_width_vs_reference varies by 0.82x across row; expected <= 0.42x",
+    "knockdown: upper_width_vs_reference grows to 1.75x reference; expected <= 1.55x",
+    "knockdown: upper_width_vs_reference varies by 1.13x across row; expected <= 0.42x",
+    "ko: head_width_vs_reference grows to 1.47x reference; expected <= 1.28x",
+    "ko: head_width_vs_reference varies by 0.43x across row; expected <= 0.42x",
+    "ko: opaque_area_vs_reference shrinks to 0.44x reference; expected >= 0.45x"
+  ],
+  "warnings": [],
+  "results": [
+    {
+      "state": "idle",
+      "kind": "default",
+      "ok": true,
+      "metrics": {
+        "head_width_vs_reference": {
+          "min": 0.9167,
+          "median": 1,
+          "max": 1.1,
+          "spread": 0.1833,
+          "floor": 0.82,
+          "ceiling": 1.28
+        },
+        "upper_width_vs_reference": {
+          "min": 0.9559,
+          "median": 1,
+          "max": 1.0735,
+          "spread": 0.1176,
+          "floor": 0.62,
+          "ceiling": 1.55
+        },
+        "body_mass_width_80_vs_reference": {
+          "min": 0.9692,
+          "median": 1,
+          "max": 1.0615,
+          "spread": 0.0923,
+          "floor": 0.68,
+          "ceiling": 1.65
+        },
+        "opaque_area_vs_reference": {
+          "min": 0.9599,
+          "median": 1,
+          "max": 1.0794,
+          "spread": 0.1195,
+          "floor": 0.58,
+          "ceiling": 1.55
+        }
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "walk-forward",
+      "kind": "grounded-locomotion",
+      "ok": true,
+      "metrics": {
+        "head_width_vs_reference": {
+          "min": 0.95,
+          "median": 0.9916,
+          "max": 1.0167,
+          "spread": 0.0667,
+          "floor": 0.82,
+          "ceiling": 1.28
+        },
+        "upper_width_vs_reference": {
+          "min": 0.8971,
+          "median": 0.9412,
+          "max": 0.9706,
+          "spread": 0.0735,
+          "floor": 0.62,
+          "ceiling": 1.55
+        },
+        "body_mass_width_80_vs_reference": {
+          "min": 0.7692,
+          "median": 0.9,
+          "max": 1.0308,
+          "spread": 0.2616,
+          "floor": 0.68,
+          "ceiling": 1.65
+        },
+        "opaque_area_vs_reference": {
+          "min": 0.8941,
+          "median": 0.9551,
+          "max": 1.0001,
+          "spread": 0.106,
+          "floor": 0.58,
+          "ceiling": 1.55
+        }
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "walk-back",
+      "kind": "grounded-locomotion",
+      "ok": true,
+      "metrics": {
+        "head_width_vs_reference": {
+          "min": 1.05,
+          "median": 1.0917,
+          "max": 1.15,
+          "spread": 0.1,
+          "floor": 0.82,
+          "ceiling": 1.28
+        },
+        "upper_width_vs_reference": {
+          "min": 1.0441,
+          "median": 1.0882,
+          "max": 1.1176,
+          "spread": 0.0735,
+          "floor": 0.62,
+          "ceiling": 1.55
+        },
+        "body_mass_width_80_vs_reference": {
+          "min": 0.9692,
+          "median": 1.1154,
+          "max": 1.2,
+          "spread": 0.2308,
+          "floor": 0.68,
+          "ceiling": 1.65
+        },
+        "opaque_area_vs_reference": {
+          "min": 1.0402,
+          "median": 1.1244,
+          "max": 1.1502,
+          "spread": 0.11,
+          "floor": 0.58,
+          "ceiling": 1.55
+        }
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "crouch",
+      "kind": "crouch",
+      "ok": true,
+      "metrics": {
+        "head_width_vs_reference": {
+          "min": 0.9833,
+          "median": 1.0167,
+          "max": 1.0333,
+          "spread": 0.05,
+          "floor": 0.82,
+          "ceiling": 1.28
+        },
+        "upper_width_vs_reference": {
+          "min": 0.9706,
+          "median": 1.1177,
+          "max": 1.1912,
+          "spread": 0.2206,
+          "floor": 0.62,
+          "ceiling": 1.55
+        },
+        "body_mass_width_80_vs_reference": {
+          "min": 0.9538,
+          "median": 1.0231,
+          "max": 1.0462,
+          "spread": 0.0924,
+          "floor": 0.68,
+          "ceiling": 1.65
+        },
+        "opaque_area_vs_reference": {
+          "min": 0.7398,
+          "median": 0.8129,
+          "max": 0.879,
+          "spread": 0.1392,
+          "floor": 0.45,
+          "ceiling": 1.55
+        }
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "jump",
+      "kind": "jump",
+      "ok": true,
+      "metrics": {
+        "head_width_vs_reference": {
+          "min": 0.9,
+          "median": 0.9167,
+          "max": 0.9333,
+          "spread": 0.0333,
+          "floor": 0.82,
+          "ceiling": 1.28
+        },
+        "upper_width_vs_reference": {
+          "min": 0.8529,
+          "median": 0.8824,
+          "max": 0.8971,
+          "spread": 0.0442,
+          "floor": 0.72,
+          "ceiling": 1.55
+        },
+        "body_mass_width_80_vs_reference": {
+          "min": 0.7231,
+          "median": 0.7385,
+          "max": 0.8615,
+          "spread": 0.1384,
+          "floor": 0.68,
+          "ceiling": 1.65
+        },
+        "opaque_area_vs_reference": {
+          "min": 0.666,
+          "median": 0.6905,
+          "max": 0.7061,
+          "spread": 0.0401,
+          "floor": 0.45,
+          "ceiling": 1.55
+        }
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "light-strike",
+      "kind": "default",
+      "ok": true,
+      "metrics": {
+        "head_width_vs_reference": {
+          "min": 1.1,
+          "median": 1.1167,
+          "max": 1.2,
+          "spread": 0.1,
+          "floor": 0.82,
+          "ceiling": 1.28
+        },
+        "upper_width_vs_reference": {
+          "min": 0.9706,
+          "median": 1.0294,
+          "max": 1.0882,
+          "spread": 0.1176,
+          "floor": 0.62,
+          "ceiling": 1.55
+        },
+        "body_mass_width_80_vs_reference": {
+          "min": 1.0615,
+          "median": 1.1,
+          "max": 1.1692,
+          "spread": 0.1077,
+          "floor": 0.68,
+          "ceiling": 1.65
+        },
+        "opaque_area_vs_reference": {
+          "min": 0.8825,
+          "median": 1.0263,
+          "max": 1.0943,
+          "spread": 0.2118,
+          "floor": 0.58,
+          "ceiling": 1.55
+        }
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "heavy-strike",
+      "kind": "default",
+      "ok": false,
+      "metrics": {
+        "head_width_vs_reference": {
+          "min": 1.0167,
+          "median": 1.1833,
+          "max": 1.4,
+          "spread": 0.3833,
+          "floor": 0.82,
+          "ceiling": 1.28
+        },
+        "upper_width_vs_reference": {
+          "min": 0.9559,
+          "median": 1.1323,
+          "max": 1.2059,
+          "spread": 0.25,
+          "floor": 0.62,
+          "ceiling": 1.55
+        },
+        "body_mass_width_80_vs_reference": {
+          "min": 1.0769,
+          "median": 1.1692,
+          "max": 1.2,
+          "spread": 0.1231,
+          "floor": 0.68,
+          "ceiling": 1.65
+        },
+        "opaque_area_vs_reference": {
+          "min": 0.9736,
+          "median": 1.1495,
+          "max": 1.2225,
+          "spread": 0.2489,
+          "floor": 0.58,
+          "ceiling": 1.55
+        }
+      },
+      "errors": [
+        "head_width_vs_reference grows to 1.40x reference; expected <= 1.28x"
+      ],
+      "warnings": []
+    },
+    {
+      "state": "special",
+      "kind": "default",
+      "ok": false,
+      "metrics": {
+        "head_width_vs_reference": {
+          "min": 0.8667,
+          "median": 1.1334,
+          "max": 1.1833,
+          "spread": 0.3166,
+          "floor": 0.82,
+          "ceiling": 1.28
+        },
+        "upper_width_vs_reference": {
+          "min": 0.8824,
+          "median": 1.0588,
+          "max": 1.4265,
+          "spread": 0.5441,
+          "floor": 0.62,
+          "ceiling": 1.55
+        },
+        "body_mass_width_80_vs_reference": {
+          "min": 1.0615,
+          "median": 1.2692,
+          "max": 1.4615,
+          "spread": 0.4,
+          "floor": 0.68,
+          "ceiling": 1.65
+        },
+        "opaque_area_vs_reference": {
+          "min": 0.9413,
+          "median": 1.0964,
+          "max": 1.3704,
+          "spread": 0.4291,
+          "floor": 0.58,
+          "ceiling": 1.55
+        }
+      },
+      "errors": [
+        "upper_width_vs_reference varies by 0.54x across row; expected <= 0.42x"
+      ],
+      "warnings": []
+    },
+    {
+      "state": "throw",
+      "kind": "default",
+      "ok": false,
+      "metrics": {
+        "head_width_vs_reference": {
+          "min": 0.9333,
+          "median": 1.1084,
+          "max": 1.2667,
+          "spread": 0.3334,
+          "floor": 0.82,
+          "ceiling": 1.28
+        },
+        "upper_width_vs_reference": {
+          "min": 1.0441,
+          "median": 1.1177,
+          "max": 1.4706,
+          "spread": 0.4265,
+          "floor": 0.62,
+          "ceiling": 1.55
+        },
+        "body_mass_width_80_vs_reference": {
+          "min": 1.0615,
+          "median": 1.2231,
+          "max": 1.2308,
+          "spread": 0.1693,
+          "floor": 0.68,
+          "ceiling": 1.65
+        },
+        "opaque_area_vs_reference": {
+          "min": 0.9827,
+          "median": 1.1387,
+          "max": 1.3315,
+          "spread": 0.3488,
+          "floor": 0.58,
+          "ceiling": 1.55
+        }
+      },
+      "errors": [
+        "upper_width_vs_reference varies by 0.43x across row; expected <= 0.42x"
+      ],
+      "warnings": []
+    },
+    {
+      "state": "guard",
+      "kind": "default",
+      "ok": false,
+      "metrics": {
+        "head_width_vs_reference": {
+          "min": 1.1333,
+          "median": 1.325,
+          "max": 1.45,
+          "spread": 0.3167,
+          "floor": 0.82,
+          "ceiling": 1.28
+        },
+        "upper_width_vs_reference": {
+          "min": 1.0882,
+          "median": 1.1839,
+          "max": 1.3088,
+          "spread": 0.2206,
+          "floor": 0.62,
+          "ceiling": 1.55
+        },
+        "body_mass_width_80_vs_reference": {
+          "min": 1.0615,
+          "median": 1.1,
+          "max": 1.2154,
+          "spread": 0.1539,
+          "floor": 0.68,
+          "ceiling": 1.65
+        },
+        "opaque_area_vs_reference": {
+          "min": 1.087,
+          "median": 1.138,
+          "max": 1.2496,
+          "spread": 0.1626,
+          "floor": 0.58,
+          "ceiling": 1.55
+        }
+      },
+      "errors": [
+        "head_width_vs_reference grows to 1.45x reference; expected <= 1.28x"
+      ],
+      "warnings": []
+    },
+    {
+      "state": "hitstun",
+      "kind": "default",
+      "ok": false,
+      "metrics": {
+        "head_width_vs_reference": {
+          "min": 1.1667,
+          "median": 1.2,
+          "max": 1.3333,
+          "spread": 0.1666,
+          "floor": 0.82,
+          "ceiling": 1.28
+        },
+        "upper_width_vs_reference": {
+          "min": 1.0882,
+          "median": 1.2058,
+          "max": 1.3235,
+          "spread": 0.2353,
+          "floor": 0.62,
+          "ceiling": 1.55
+        },
+        "body_mass_width_80_vs_reference": {
+          "min": 1.1077,
+          "median": 1.2692,
+          "max": 1.4308,
+          "spread": 0.3231,
+          "floor": 0.68,
+          "ceiling": 1.65
+        },
+        "opaque_area_vs_reference": {
+          "min": 1.1084,
+          "median": 1.1305,
+          "max": 1.2218,
+          "spread": 0.1134,
+          "floor": 0.58,
+          "ceiling": 1.55
+        }
+      },
+      "errors": [
+        "head_width_vs_reference grows to 1.33x reference; expected <= 1.28x"
+      ],
+      "warnings": []
+    },
+    {
+      "state": "knockdown",
+      "kind": "knockdown",
+      "ok": false,
+      "metrics": {
+        "head_width_vs_reference": {
+          "min": 0.55,
+          "median": 0.9917,
+          "max": 1.3667,
+          "spread": 0.8167,
+          "floor": 0.55,
+          "ceiling": 1.28
+        },
+        "upper_width_vs_reference": {
+          "min": 0.6176,
+          "median": 1.3308,
+          "max": 1.75,
+          "spread": 1.1324,
+          "floor": 0.58,
+          "ceiling": 1.55
+        },
+        "body_mass_width_80_vs_reference": {
+          "min": 1.2923,
+          "median": 1.4462,
+          "max": 1.5538,
+          "spread": 0.2615,
+          "floor": 0.5,
+          "ceiling": 1.65
+        },
+        "opaque_area_vs_reference": {
+          "min": 0.511,
+          "median": 0.8116,
+          "max": 1.1136,
+          "spread": 0.6026,
+          "floor": 0.45,
+          "ceiling": 1.55
+        }
+      },
+      "errors": [
+        "head_width_vs_reference grows to 1.37x reference; expected <= 1.28x",
+        "head_width_vs_reference varies by 0.82x across row; expected <= 0.42x",
+        "upper_width_vs_reference grows to 1.75x reference; expected <= 1.55x",
+        "upper_width_vs_reference varies by 1.13x across row; expected <= 0.42x"
+      ],
+      "warnings": []
+    },
+    {
+      "state": "ko",
+      "kind": "knockdown",
+      "ok": false,
+      "metrics": {
+        "head_width_vs_reference": {
+          "min": 1.0333,
+          "median": 1.1416,
+          "max": 1.4667,
+          "spread": 0.4334,
+          "floor": 0.55,
+          "ceiling": 1.28
+        },
+        "upper_width_vs_reference": {
+          "min": 1.1176,
+          "median": 1.2721,
+          "max": 1.4559,
+          "spread": 0.3383,
+          "floor": 0.58,
+          "ceiling": 1.55
+        },
+        "body_mass_width_80_vs_reference": {
+          "min": 1.1846,
+          "median": 1.3154,
+          "max": 1.5692,
+          "spread": 0.3846,
+          "floor": 0.5,
+          "ceiling": 1.65
+        },
+        "opaque_area_vs_reference": {
+          "min": 0.4423,
+          "median": 0.9963,
+          "max": 1.3522,
+          "spread": 0.9099,
+          "floor": 0.45,
+          "ceiling": 1.55
+        }
+      },
+      "errors": [
+        "head_width_vs_reference grows to 1.47x reference; expected <= 1.28x",
+        "head_width_vs_reference varies by 0.43x across row; expected <= 0.42x",
+        "opaque_area_vs_reference shrinks to 0.44x reference; expected >= 0.45x"
+      ],
+      "warnings": []
+    },
+    {
+      "state": "win",
+      "kind": "default",
+      "ok": true,
+      "metrics": {
+        "head_width_vs_reference": {
+          "min": 0.8833,
+          "median": 1.0333,
+          "max": 1.0667,
+          "spread": 0.1834,
+          "floor": 0.82,
+          "ceiling": 1.28
+        },
+        "upper_width_vs_reference": {
+          "min": 0.9412,
+          "median": 1.0588,
+          "max": 1.1176,
+          "spread": 0.1764,
+          "floor": 0.62,
+          "ceiling": 1.55
+        },
+        "body_mass_width_80_vs_reference": {
+          "min": 0.8154,
+          "median": 0.8462,
+          "max": 1.0615,
+          "spread": 0.2461,
+          "floor": 0.68,
+          "ceiling": 1.65
+        },
+        "opaque_area_vs_reference": {
+          "min": 0.9088,
+          "median": 0.9352,
+          "max": 1.0721,
+          "spread": 0.1633,
+          "floor": 0.58,
+          "ceiling": 1.55
+        }
+      },
+      "errors": [],
+      "warnings": []
+    }
+  ]
+}

@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenStateController } from "../mugen/model/MugenState";
-import { hitAttributeMatches } from "../mugen/runtime/CombatResolver";
+import {
+  hitAttributeMatches,
+  runtimeGuardFlagComparison,
+  runtimeGuardFlagOverlaps,
+  runtimeHitAttributeComparison,
+  runtimeHitFlagComparison,
+  runtimeHitFlagOverlaps,
+} from "../mugen/runtime/CombatResolver";
 import { evaluateExpression } from "../mugen/runtime/ExpressionEvaluator";
 import { executeControllerIr, executeStateController } from "../mugen/runtime/StateControllerExecutor";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
@@ -140,6 +147,173 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("AnimElemTime(3) < 0", { self: state, animElemTime: (elem) => (elem === 3 ? -2 : undefined) })).toBe(1);
   });
 
+  it("evaluates AnimElemVar through the active-frame metadata callback", () => {
+    const state = runtimeState({ frameIndex: 1 });
+    const values: Record<string, number> = { group: 200, image: 3, time: 5, hflip: 1 };
+
+    expect(evaluateExpression("AnimElemVar(Group) + AnimElemVar(Image) = 203", {
+      self: state,
+      animElemVar: (parameter) => values[parameter.toLowerCase()],
+    })).toBe(1);
+    expect(evaluateExpression("AnimElemVar(Time) = 5 && AnimElemVar(HFlip) = 1", {
+      self: state,
+      animElemVar: (parameter) => values[parameter.toLowerCase()],
+    })).toBe(1);
+    expect(evaluateExpression("AnimElemVar(AlphaDest)", { self: state })).toBe(0);
+  });
+
+  it("evaluates AnimLength as a total action duration read", () => {
+    const state = runtimeState({ animTime: 3 });
+
+    expect(evaluateExpression("AnimLength = 8", { self: state, animLength: 8 })).toBe(1);
+    expect(evaluateExpression("AnimPlayerNo = 2", { self: state, animPlayerNo: 2 })).toBe(1);
+    expect(evaluateExpression("AnimLength > AnimTime", { self: state, animLength: 8, animTimeRemaining: 8 })).toBe(0);
+    expect(evaluateExpression("AnimLength", { self: state })).toBe(0);
+  });
+
+  it("evaluates ClsnVar enums with a dynamic box index and localcoord conversion", () => {
+    const state = runtimeState({ vars: [1] });
+    const clsnVar = (group: "clsn1" | "clsn2" | "size", index: number, coordinate: "back" | "front" | "top" | "bottom") => {
+      if (group === "clsn2" && index === 1 && coordinate === "front") return 64;
+      return undefined;
+    };
+
+    expect(evaluateExpression("ClsnVar(Clsn2, var(0), Front) = 32", {
+      self: state,
+      clsnVar,
+      localCoord: [640, 480],
+      outputLocalCoord: [320, 240],
+    })).toBe(1);
+    expect(Number.isNaN(evaluateExpression("ClsnVar(Clsn1, 9, Back)", { self: state, clsnVar }))).toBe(true);
+  });
+
+  it("evaluates ClsnOverlap box enums and a redirected player-ID expression", () => {
+    const self = runtimeState();
+    const opponent = runtimeState();
+    const reads: Array<[string, number, string]> = [];
+
+    expect(evaluateExpression("ClsnOverlap(Clsn1, EnemyNear, ID, Clsn2)", {
+      self,
+      opponent,
+      opponentPlayerId: 58,
+      clsnOverlap: (actorGroup, playerId, targetGroup) => {
+        reads.push([actorGroup, playerId, targetGroup]);
+        return actorGroup === "clsn1" && playerId === 58 && targetGroup === "clsn2";
+      },
+    })).toBe(1);
+    expect(reads).toEqual([["clsn1", 58, "clsn2"]]);
+  });
+
+  it("evaluates ProjClsnOverlap with dynamic index and redirected player ID", () => {
+    const self = runtimeState({ vars: [2] });
+    const opponent = runtimeState();
+    const reads: Array<[number, number, string]> = [];
+    const context = {
+      self,
+      opponent,
+      opponentPlayerId: 58,
+      projClsnOverlap: (index: number, playerId: number, targetGroup: "clsn1" | "clsn2" | "size") => {
+        reads.push([index, playerId, targetGroup]);
+        return index === 2 && playerId === 58 && targetGroup === "size";
+      },
+    };
+
+    expect(evaluateExpression("ProjClsnOverlap(var(0), EnemyNear, ID, Size)", context)).toBe(1);
+    expect(evaluateExpression("ProjClsnOverlap(-1, 58, Clsn2)", context)).toBe(0);
+    expect(evaluateExpression("ProjClsnOverlap(9, 999, Clsn2)", context)).toBe(0);
+    expect(reads).toEqual([[2, 58, "size"], [9, 999, "clsn2"]]);
+  });
+
+  it("evaluates numeric ProjVar fields with dynamic ID, index, and redirects", () => {
+    const self = runtimeState({ vars: [77, 1] });
+    const opponent = runtimeState();
+    const reads: Array<[number, number, string]> = [];
+    const projVar = (projectileId: number, index: number, parameter: string) => {
+      reads.push([projectileId, index, parameter.toLowerCase()]);
+      if (projectileId === 77 && index === 1 && parameter.toLowerCase() === "projid") return 77;
+      if (projectileId === 77 && index === 1 && parameter.toLowerCase() === "drawpal.group") return 2;
+      if (projectileId === -1 && index === 0 && parameter.toLowerCase().replace(/\s/g, "") === "posx") return 32;
+      return undefined;
+    };
+    const context = {
+      self,
+      opponent,
+      projVar,
+      opponentProjVar: (projectileId: number, index: number, parameter: string) =>
+        projectileId === -1 && index === 0 && parameter.toLowerCase() === "time" ? 9 : undefined,
+    };
+
+    expect(evaluateExpression("ProjVar(var(0), var(1), ProjID)", context)).toBe(77);
+    expect(evaluateExpression("ProjVar(-1, 0, Pos X)", context)).toBe(32);
+    expect(evaluateExpression("EnemyNear, ProjVar(-1, 0, Time)", context)).toBe(9);
+    expect(evaluateExpression("ProjVar(77, 1, DrawPal.Group)", context)).toBe(2);
+    expect(Number.isNaN(evaluateExpression("ProjVar(77, -1, ProjID)", context))).toBe(true);
+    expect(Number.isNaN(evaluateExpression("ProjVar(77, 9, DrawPal.Group)", context))).toBe(true);
+    expect(reads).toEqual([
+      [77, 1, "projid"],
+      [-1, 0, "posx"],
+      [77, 1, "drawpal.group"],
+      [77, 9, "drawpal.group"],
+    ]);
+  });
+
+  it("evaluates static ProjVar attribute and flag comparisons", () => {
+    const self = runtimeState({ vars: [77, 0, 1] });
+    const opponent = runtimeState();
+    const reads: Array<[number, number, string, string, string]> = [];
+    const projVarFlag = (
+      projectileId: number,
+      index: number,
+      parameter: "attr" | "guardflag" | "hitflag",
+      filter: string,
+      operator: "=" | "!=",
+    ) => {
+      reads.push([projectileId, index, parameter, filter, operator]);
+      if (projectileId !== 77 || index !== 0) return false;
+      if (parameter === "attr") return runtimeHitAttributeComparison(filter, "S,SP", operator);
+      if (parameter === "guardflag") return runtimeGuardFlagComparison(filter, "MA", operator);
+      return runtimeHitFlagComparison(filter, "MAF", operator);
+    };
+    const context = {
+      self,
+      opponent,
+      projVarFlag,
+      opponentProjVarFlag: (
+        projectileId: number,
+        index: number,
+        parameter: "attr" | "guardflag" | "hitflag",
+        filter: string,
+        operator: "=" | "!=",
+      ) => projectileId === 88 && index === 0 && parameter === "hitflag" && runtimeHitFlagComparison(filter, "D", operator),
+    };
+
+    expect(evaluateExpression("ProjVar(var(0), var(1), attr) = SCA, SP", context)).toBe(1);
+    expect(evaluateExpression("ProjVar(77, 0, attr) = SCA, S", context)).toBe(1);
+    expect(evaluateExpression("ProjVar(77, 0, guardflag) = L", context)).toBe(1);
+    expect(evaluateExpression("ProjVar(77, 0, guardflag) != L", context)).toBe(1);
+    expect(evaluateExpression("ProjVar(77, 0, hitflag) = HAF", context)).toBe(1);
+    expect(evaluateExpression("ProjVar(77, 0, hitflag) != D", context)).toBe(1);
+    expect(evaluateExpression("ProjVar(77, 0, hitflag) != H", context)).toBe(1);
+    expect(evaluateExpression("ProjVar(77, 0, attr) != S, NA", context)).toBe(0);
+    expect(evaluateExpression("ProjVar(77, 0, attr) != A, NA", context)).toBe(1);
+    expect(evaluateExpression("(ProjVar(77, 0, attr) = S, SP) && Life > 0", context)).toBe(1);
+    expect(evaluateExpression("EnemyNear, ProjVar(88, 0, hitflag) = D", context)).toBe(1);
+    expect(evaluateExpression("ProjVar(77, -1, hitflag) = H", context)).toBe(0);
+    expect(evaluateExpression("ProjVar(77, 0, hitflag) = var(2)", context)).toBe(0);
+    expect(reads).toEqual([
+      [77, 0, "attr", "SCA,SP", "="],
+      [77, 0, "attr", "SCA,S", "="],
+      [77, 0, "guardflag", "L", "="],
+      [77, 0, "guardflag", "L", "!="],
+      [77, 0, "hitflag", "HAF", "="],
+      [77, 0, "hitflag", "D", "!="],
+      [77, 0, "hitflag", "H", "!="],
+      [77, 0, "attr", "S,NA", "!="],
+      [77, 0, "attr", "A,NA", "!="],
+      [77, 0, "attr", "S,SP", "="],
+    ]);
+  });
+
   it("evaluates legacy AnimElem trigger timing through the runtime timing callback", () => {
     const state = runtimeState({ frameIndex: 1 });
     const context = {
@@ -188,6 +362,56 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("HitDefAttr = SC, NA, SA, HA", { self: state, hitDefAttr: (filter) => hitAttributeMatches(filter, "S,NA") })).toBe(1);
     expect(evaluateExpression("HitDefAttr != A, NT", { self: state, hitDefAttr: (filter) => hitAttributeMatches(filter, "S,NA") })).toBe(1);
     expect(evaluateExpression("HitDefAttr(A, NT)", { self: state, hitDefAttr: (filter) => hitAttributeMatches(filter, "S,NA") })).toBe(0);
+    const getHitVarAttr = (runtime: CharacterRuntimeState, filter: string) => {
+      const sourceAttr = runtime.hitVars?.sourceAttr;
+      return sourceAttr !== undefined && hitAttributeMatches(filter, sourceAttr);
+    };
+    const hitVarState = runtimeState({ hitVars: { sourceAttr: "S,HA" } });
+    expect(evaluateExpression("GetHitVar(attr) = SCA, HA", { self: hitVarState, getHitVarAttr })).toBe(1);
+    expect(evaluateExpression("GetHitVar(attr) != A, NT", { self: hitVarState, getHitVarAttr })).toBe(1);
+    expect(evaluateExpression("(GetHitVar(attr) = SCA, HA) && Life > 0", { self: hitVarState, getHitVarAttr })).toBe(1);
+    expect(evaluateExpression("GetHitVar(attr) = SCA, HA", { self: state, getHitVarAttr })).toBe(0);
+    expect(
+      evaluateExpression("Target, GetHitVar(attr) = A, NP", {
+        self: hitVarState,
+        target: () => ({ self: runtimeState({ hitVars: { sourceAttr: "A,NP" } }) }),
+        getHitVarAttr,
+      }),
+    ).toBe(1);
+    const getHitVarGuardFlag = (runtime: CharacterRuntimeState, filter: string) => {
+      const sourceGuardFlag = runtime.hitVars?.sourceGuardFlag;
+      return sourceGuardFlag !== undefined && runtimeGuardFlagOverlaps(filter, sourceGuardFlag);
+    };
+    const guardFlagState = runtimeState({ hitVars: { sourceGuardFlag: "MA" } });
+    expect(evaluateExpression("GetHitVar(guardflag) = L", { self: guardFlagState, getHitVarGuardFlag })).toBe(1);
+    expect(evaluateExpression("GetHitVar(guardflag) = A", { self: guardFlagState, getHitVarGuardFlag })).toBe(1);
+    expect(evaluateExpression("GetHitVar(guardflag) != D", { self: guardFlagState, getHitVarGuardFlag })).toBe(1);
+    expect(evaluateExpression("GetHitVar(guardflag) = F", { self: guardFlagState, getHitVarGuardFlag })).toBe(0);
+    expect(evaluateExpression("GetHitVar(guardflag) = L", { self: state, getHitVarGuardFlag })).toBe(0);
+    expect(
+      evaluateExpression("Target, GetHitVar(guardflag) = A", {
+        self: guardFlagState,
+        target: () => ({ self: runtimeState({ hitVars: { sourceGuardFlag: "A" } }) }),
+        getHitVarGuardFlag,
+      }),
+    ).toBe(1);
+    const getHitVarHitFlag = (runtime: CharacterRuntimeState, filter: string) => {
+      const sourceHitFlag = runtime.hitVars?.sourceHitFlag;
+      return sourceHitFlag !== undefined && runtimeHitFlagOverlaps(filter, sourceHitFlag);
+    };
+    const hitFlagState = runtimeState({ hitVars: { sourceHitFlag: "MAF" } });
+    expect(evaluateExpression("GetHitVar(hitflag) = H", { self: hitFlagState, getHitVarHitFlag })).toBe(1);
+    expect(evaluateExpression("GetHitVar(hitflag) = L", { self: hitFlagState, getHitVarHitFlag })).toBe(1);
+    expect(evaluateExpression("GetHitVar(hitflag) = F", { self: hitFlagState, getHitVarHitFlag })).toBe(1);
+    expect(evaluateExpression("GetHitVar(hitflag) != D", { self: hitFlagState, getHitVarHitFlag })).toBe(1);
+    expect(evaluateExpression("GetHitVar(hitflag) = D", { self: hitFlagState, getHitVarHitFlag })).toBe(0);
+    expect(
+      evaluateExpression("Target, GetHitVar(hitflag) = A", {
+        self: hitFlagState,
+        target: () => ({ self: runtimeState({ hitVars: { sourceHitFlag: "A" } }) }),
+        getHitVarHitFlag,
+      }),
+    ).toBe(1);
     expect(evaluateExpression("ProjHit(77)", { self: state, projHit: (id) => id === 77 })).toBe(1);
     expect(evaluateExpression("ProjContact && !ProjGuarded(77)", { self: state, projContact: () => true, projGuarded: () => false })).toBe(1);
     expect(evaluateExpression("ProjHitTime(77) >= 2", { self: state, projHitTime: (id) => (id === 77 ? 2 : -1) })).toBe(1);

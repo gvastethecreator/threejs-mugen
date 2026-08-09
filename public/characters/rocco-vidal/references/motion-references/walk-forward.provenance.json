@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "kind": "motion-reference-provenance",
+  "art_engine": "imagegen",
+  "state": "walk-forward",
+  "selected_source": "imagegen:exec-c32c85e0-7478-4e22-8aa5-41d39b43f644",
+  "sha256": "5b586505a1c48ead14bb3bff6284c8620a2342320fd86ab5e8144fad80e19ae4",
+  "notes": "Approved side-view eight-phase mannequin walk reference."
+}

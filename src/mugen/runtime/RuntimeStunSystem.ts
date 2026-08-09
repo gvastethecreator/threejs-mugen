@@ -1,8 +1,9 @@
+import { resetRuntimeGuardCount } from "./RuntimeHitEligibilitySystem";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeStunActor = {
   runtime: Pick<CharacterRuntimeState, "guardStun" | "guarding" | "moveType" | "vel">
-    & Partial<Pick<CharacterRuntimeState, "ctrl" | "guardSlideTimeRemaining" | "guardControlTimeRemaining">>;
+    & Partial<Pick<CharacterRuntimeState, "ctrl" | "guardSlideTimeRemaining" | "guardControlTimeRemaining" | "hitVars">>;
   hitStun: number;
 };
 
@@ -111,6 +112,7 @@ export class RuntimeStunWorld {
 
     if (!options.hasCurrentMove && !hasRuntimeStun(actor) && !preserveImportedStateMoveType) {
       actor.runtime.moveType = "I";
+      resetRuntimeGuardCount(actor.runtime);
       result.restoredIdleMoveType = true;
     }
 

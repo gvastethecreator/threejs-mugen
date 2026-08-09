@@ -4,7 +4,7 @@ import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenStateController } from "../mugen/model/MugenState";
 import { RuntimeAudioWorld } from "../mugen/runtime/AudioEventSystem";
 import { RuntimeHitEffectWorld } from "../mugen/runtime/HitEffectSystem";
-import { createRuntimeProjectile } from "../mugen/runtime/ProjectileSystem";
+import { createRuntimeProjectile, modifyRuntimeProjectiles } from "../mugen/runtime/ProjectileSystem";
 import {
   RuntimeContactPresentationWorld,
   type RuntimeContactPresentationActor,
@@ -25,6 +25,8 @@ describe("RuntimeContactPresentationSystem", () => {
         hitSpark: "S7001",
         guardSound: "S6,0",
         guardSpark: "S7000",
+        hitSparkScale: [1.5, 0.75],
+        guardSparkScale: [0.5, -1],
         sparkXy: [42, -58],
       },
     });
@@ -44,6 +46,7 @@ describe("RuntimeContactPresentationSystem", () => {
     expect(attacker.hitEffectEvents[0]).toMatchObject({
       sparkNo: 7001,
       offset: { x: 42, y: -58 },
+      scale: { x: 1.5, y: 0.75 },
       contactId: "direct:p1:p2:140:200:6:hit",
       contactTick: 140,
       contactKind: "hit",
@@ -97,6 +100,8 @@ describe("RuntimeContactPresentationSystem", () => {
         guardsound: "S6,0",
         sparkno: "S7001",
         "guard.sparkno": "S7000",
+        sparkscale: "1.5,0.75",
+        "guard.sparkscale": "0,-1",
         sparkxy: "18,-44",
       }),
       spriteOwnerId: "p1",
@@ -130,9 +135,54 @@ describe("RuntimeContactPresentationSystem", () => {
     expect(attacker.hitEffectEvents[0]).toMatchObject({
       sparkNo: 7000,
       offset: { x: 18, y: -44 },
+      scale: { x: 0, y: -1 },
       contactId: "projectile:p1:p1-projectile-0:155:guard",
       contactTick: 155,
       contactKind: "guard",
+    });
+  });
+
+  it("presents the spark payload changed on a selected live Projectile", () => {
+    const world = new RuntimeContactPresentationWorld();
+    const attacker = actor("p1", 1000, 3);
+    const projectile = createRuntimeProjectile({
+      serialId: "p1-projectile-spark-modified",
+      controller: controller("Projectile", { sparkno: "S7001", "guard.sparkno": "S7000" }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "test-fighter",
+      spriteOwnerLabel: "Test Fighter",
+      action: action(900, 1),
+      animNo: 900,
+      pos: { x: 20, y: 0 },
+      fallbackFacing: 1,
+    });
+    expect(modifyRuntimeProjectiles([projectile], {
+      controller: controller("ModifyProjectile", {
+        id: String(projectile.projectileId),
+        sparkno: "F7101",
+        sparkangle: "1.25",
+        "guard.sparkno": "S7100",
+        "guard.sparkangle": "-1.5",
+        sparkxy: "24,-60",
+      }),
+    })).toBe(1);
+
+    world.emitProjectileContact({ actor: attacker, projectile, kind: "guard", runtimeTick: 155 });
+    world.emitProjectileContact({ actor: attacker, projectile, kind: "hit", runtimeTick: 156 });
+
+    expect(attacker.hitEffectEvents[0]).toMatchObject({
+      kind: "hit",
+      sparkNo: 7101,
+      rawPrefix: "F",
+      angle: 1.25,
+      offset: { x: 24, y: -60 },
+    });
+    expect(attacker.hitEffectEvents[1]).toMatchObject({
+      kind: "guard",
+      sparkNo: 7100,
+      rawPrefix: "S",
+      angle: -1.5,
+      offset: { x: 24, y: -60 },
     });
   });
 

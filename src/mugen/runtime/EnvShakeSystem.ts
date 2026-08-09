@@ -2,6 +2,8 @@ import type { EnvShakeControllerOp, FallEnvShakeControllerOp } from "../compiler
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
+import type { RuntimeProjectile } from "./ProjectileSystem";
+import type { DemoMove } from "./demoFighters";
 import type { CharacterRuntimeState, RuntimeEnvShakeEvent } from "./types";
 
 export type RuntimeEnvShakeActor = {
@@ -120,6 +122,52 @@ export function createRuntimeFallEnvShakeEvent(
     freq: clampShakeFrequency(envShake.freq),
     ampl: clampShakeAmplitude(envShake.ampl),
     phase: envShake.phase,
+    ...(envShake.mul === undefined ? {} : { mul: envShake.mul }),
+    ...(envShake.dir === undefined ? {} : { dir: envShake.dir }),
+    stateNo: actor.runtime.stateNo,
+    tick: actor.stateElapsed,
+    runtimeTick,
+  };
+}
+
+export function createRuntimeProjectileEnvShakeEvent(
+  actor: RuntimeEnvShakeActor,
+  projectile: Pick<RuntimeProjectile, "envShake">,
+  runtimeTick: number,
+): RuntimeEnvShakeEvent | undefined {
+  const envShake = projectile.envShake;
+  if (!envShake || envShake.time <= 0) {
+    return undefined;
+  }
+  return {
+    type: "EnvShake",
+    time: clampShakeTime(envShake.time),
+    freq: Math.max(0, envShake.freq),
+    ampl: clampShakeAmplitude(envShake.ampl),
+    phase: envShake.phase,
+    mul: envShake.mul,
+    dir: envShake.dir,
+    stateNo: actor.runtime.stateNo,
+    tick: actor.stateElapsed,
+    runtimeTick,
+  };
+}
+
+export function createRuntimeHitDefEnvShakeEvent(
+  actor: RuntimeEnvShakeActor,
+  move: Pick<DemoMove, "envShake">,
+  runtimeTick: number,
+): RuntimeEnvShakeEvent | undefined {
+  const envShake = move.envShake;
+  if (!envShake || envShake.time <= 0) return undefined;
+  return {
+    type: "EnvShake",
+    time: clampShakeTime(envShake.time),
+    freq: Math.max(0, envShake.freq),
+    ampl: clampShakeAmplitude(envShake.ampl),
+    phase: envShake.phase,
+    mul: envShake.mul,
+    dir: envShake.dir,
     stateNo: actor.runtime.stateNo,
     tick: actor.stateElapsed,
     runtimeTick,
@@ -152,6 +200,30 @@ export class RuntimeEnvShakeWorld {
     if (!event) {
       return undefined;
     }
+    pushRuntimeEnvShakeEvent(actor.envShakeEvents, event);
+    return event;
+  }
+
+  emitProjectile(
+    actor: RuntimeEnvShakeWorldActor,
+    projectile: Pick<RuntimeProjectile, "envShake">,
+    runtimeTick: number,
+  ): RuntimeEnvShakeEvent | undefined {
+    const event = createRuntimeProjectileEnvShakeEvent(actor, projectile, runtimeTick);
+    if (!event) {
+      return undefined;
+    }
+    pushRuntimeEnvShakeEvent(actor.envShakeEvents, event);
+    return event;
+  }
+
+  emitHitDef(
+    actor: RuntimeEnvShakeWorldActor,
+    move: Pick<DemoMove, "envShake">,
+    runtimeTick: number,
+  ): RuntimeEnvShakeEvent | undefined {
+    const event = createRuntimeHitDefEnvShakeEvent(actor, move, runtimeTick);
+    if (!event) return undefined;
     pushRuntimeEnvShakeEvent(actor.envShakeEvents, event);
     return event;
   }
@@ -240,7 +312,22 @@ export function calculateRuntimeCameraShake(
   const { event, age } = strongest;
   const remaining = Math.max(0, event.time - age);
   const decay = remaining / Math.max(1, event.time);
-  const amplitude = event.ampl * decay;
+  let amplitude = event.ampl * decay;
+  if (event.mul !== undefined || event.dir !== undefined) {
+    const cycleMultiplier = event.mul === undefined || event.mul === 0 || event.mul === 1
+      ? 1
+      : Math.pow(event.mul, Math.floor((event.freq * age) / 360));
+    amplitude *= cycleMultiplier;
+    const phase = (event.phase + event.freq * age) * Math.PI / 180;
+    const direction = (event.dir ?? 0) * Math.PI / 180;
+    const offset = Math.sin(phase) * amplitude;
+    return {
+      x: Math.sin(-direction) * offset,
+      y: Math.cos(-direction) * offset,
+      remaining,
+      amplitude,
+    };
+  }
   const phase = event.phase + (age / Math.max(1, event.freq)) * Math.PI * 2;
   return {
     x: Math.cos(phase * 0.63) * amplitude * 0.35,

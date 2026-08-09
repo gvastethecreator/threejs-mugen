@@ -1,0 +1,610 @@
+{
+  "version": 1,
+  "kind": "sprite-preview-workbench",
+  "artifact": {
+    "path": "qa/preview-workbench/index.html",
+    "sha256": "105c225fc00364de9a994749e0fb480281d029dded1ddb10aae76bbffdb4f12c",
+    "size_bytes": 2242765
+  },
+  "states": [
+    "idle",
+    "walk-forward",
+    "walk-back",
+    "crouch",
+    "jump",
+    "light-strike",
+    "heavy-strike",
+    "special",
+    "throw",
+    "guard",
+    "hitstun",
+    "knockdown",
+    "ko",
+    "win"
+  ],
+  "sources": [
+    {
+      "role": "atlas",
+      "path": "sprite-sheet-alpha.png",
+      "sha256": "bbcfff566119e977ea25549004cf59b6b35f02a9d0680bf9d4a4416de1fcebb7",
+      "size_bytes": 1663936
+    },
+    {
+      "role": "manifest",
+      "path": "manifest.json",
+      "sha256": "d291d5f2090e959ae0eb082c0e772412177c3d989d9a73855461129d04fbe7a8",
+      "size_bytes": 12642
+    }
+  ],
+  "evidence": [
+    {
+      "role": "evidence",
+      "path": "qa/background-matte-review.png",
+      "sha256": "e5ffeb6973d1002a80e6c7b20839ecd59482f21b9734217ab9964eeca27c5d2b",
+      "size_bytes": 567070,
+      "label": "Background matte"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/all-contact.png",
+      "sha256": "23d1da2a9892c2bb4215d2d79222e3353e2dc8d2898831bbbcbc9988528faafa",
+      "size_bytes": 1538813,
+      "label": "All-frame contact sheet"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/frame-alignment-report.json",
+      "sha256": "8ee5cfc4a1799ac9f332d4cc0966758023645f48a7948ba1b08dba352f45f5b3",
+      "size_bytes": 8114,
+      "label": "Alignment report"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/identity-consistency-report.json",
+      "sha256": "c5cfb9efa9386c67c03073cdfec90650c47736cc4b808f1c0f59350b5df084bb",
+      "size_bytes": 18129,
+      "label": "Identity report"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/animation-contract-report.json",
+      "sha256": "741832f65dcebc9223e62261d173270584b38fc10ed18401abb616e5fd303865",
+      "size_bytes": 22316,
+      "label": "Animation contract"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/idle-contact.png",
+      "sha256": "230d6c1456af3f689f3fe21ea342b3db5027f3bcf390e293fa68054819fa54fe",
+      "size_bytes": 76080,
+      "label": "idle: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/idle-onion.png",
+      "sha256": "38e1d08bd93432586733efa62aba56305c5065a82c4f826dfa70a6d3ec645e5d",
+      "size_bytes": 6179,
+      "label": "idle: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/walk-forward-contact.png",
+      "sha256": "4d2195fcc15b7fe81d88a22885ad916d4c20c166b338dc7463322743fca73073",
+      "size_bytes": 143647,
+      "label": "walk-forward: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/walk-forward-onion.png",
+      "sha256": "a64119a2f0da2f6c04361fdcf295154a956b6eb6202dc2a9c29bb19059139679",
+      "size_bytes": 9442,
+      "label": "walk-forward: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/walk-back-contact.png",
+      "sha256": "3e1f29f6c9a6cddcc2e41e381ccde778de904360596313a67449fb10d6b8e564",
+      "size_bytes": 156964,
+      "label": "walk-back: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/walk-back-onion.png",
+      "sha256": "f90728d4dd8177b4943b861a3082ac3c75a10626091d1da5b957bb7aec517f68",
+      "size_bytes": 9277,
+      "label": "walk-back: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/crouch-contact.png",
+      "sha256": "2a5d57425e4e5a3a13894fb3a81665754ff6ea3dfbab9e0ae8d47387e4e1a2a2",
+      "size_bytes": 73037,
+      "label": "crouch: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/crouch-onion.png",
+      "sha256": "724e0deeacfdee32086c44cdb3c2333f25265d569e02d0e345ad19fbfdb185ea",
+      "size_bytes": 6112,
+      "label": "crouch: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/jump-contact.png",
+      "sha256": "0ad623b0de76c75f638843e5d99af726172966dde16a9c36f73791f9ee31048d",
+      "size_bytes": 73604,
+      "label": "jump: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/jump-onion.png",
+      "sha256": "7d9dc22cda37b44a864782ba6f6c4b6224d16758c9835b20aaf7339625c9759b",
+      "size_bytes": 6850,
+      "label": "jump: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/light-strike-contact.png",
+      "sha256": "0c2efd49ec0f5d8a37e5e8a2c2d8a0371ada4f63083be6b579826ab30e03cf36",
+      "size_bytes": 83383,
+      "label": "light-strike: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/light-strike-onion.png",
+      "sha256": "9ce0468955b1494a4918877b0a99389fbe4a3a0c38f5f15e4a07bb6387ce000f",
+      "size_bytes": 6683,
+      "label": "light-strike: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/heavy-strike-contact.png",
+      "sha256": "4f6533499a33cda3f929eafd259e7fda48118f3902c117a7fa46837c16e2ec01",
+      "size_bytes": 125484,
+      "label": "heavy-strike: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/heavy-strike-onion.png",
+      "sha256": "b2f888fbd3aafc4b6494d3ee390ed48335b1474cc55dbe95d1dd17a65b3839f7",
+      "size_bytes": 8182,
+      "label": "heavy-strike: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/special-contact.png",
+      "sha256": "7ea55c7b2215a6d4eac8e7a067f525d81b11fea5598701ee6f48e46dd638174e",
+      "size_bytes": 168583,
+      "label": "special: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/special-onion.png",
+      "sha256": "f00dfa2b72993fb4546d2f2bcbfc7f6dcce2b32864a6e5085f98e520b3989fdf",
+      "size_bytes": 10680,
+      "label": "special: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/throw-contact.png",
+      "sha256": "6a8783f9d942499f53a0e2f55567cf175ff3c28bc6928127fdae920adbdd2384",
+      "size_bytes": 129911,
+      "label": "throw: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/throw-onion.png",
+      "sha256": "5d8091866772894f85f329aa24409d8ef676047d2e786be1489ca3922412c374",
+      "size_bytes": 8877,
+      "label": "throw: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/guard-contact.png",
+      "sha256": "62db13a54f176b13551b216fd0a490619defb672c113bbb554e2eac759690d0d",
+      "size_bytes": 86242,
+      "label": "guard: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/guard-onion.png",
+      "sha256": "cc1287c8333d74b84d994e6acab226867f79c503675e4011a3c466c939d5d9e9",
+      "size_bytes": 6018,
+      "label": "guard: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/hitstun-contact.png",
+      "sha256": "cbef68a8214fc1df842d9d14fad34168c9ce9c4442264c47c4d0ca9d6c7d7f09",
+      "size_bytes": 94884,
+      "label": "hitstun: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/hitstun-onion.png",
+      "sha256": "ea2b6b82a0db9e70fd7e22c9c24297be489d1375606a1d046f1e395f412e8b2f",
+      "size_bytes": 6894,
+      "label": "hitstun: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/knockdown-contact.png",
+      "sha256": "92dcdcdfcf2399fdd30436b46a283b9bce1e025c87eaa60a62b3872b6ffc9067",
+      "size_bytes": 117846,
+      "label": "knockdown: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/knockdown-onion.png",
+      "sha256": "33bc40ce412cd8827c84149b4984481a0b2757d9d97f5a58292cc348439ba793",
+      "size_bytes": 8204,
+      "label": "knockdown: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/ko-contact.png",
+      "sha256": "176e5e2871c13c95c876a49e50d0caf0c2a961da8f0ac243190d1b3020dca1de",
+      "size_bytes": 100839,
+      "label": "ko: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/ko-onion.png",
+      "sha256": "6f846396647f94d28b8adcd8f098f7ff4b3f19695ff93c55adf5fad9185942c0",
+      "size_bytes": 7301,
+      "label": "ko: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/win-contact.png",
+      "sha256": "6474ad72d3313f99ce0b650723b9ef9532a44de66ca815ae518235d21f59449f",
+      "size_bytes": 88351,
+      "label": "win: contact"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/win-onion.png",
+      "sha256": "9fcd31cfd55ee566909e58eeb6228889ec918ac2b01e785c3b058e9acf310d0c",
+      "size_bytes": 6448,
+      "label": "win: onion"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/crouch-playback.evidence.json",
+      "sha256": "aaa672a43ad9b5084a54ea927064ceda09dce8bbca654b83c7a182b66c0d8495",
+      "size_bytes": 2238,
+      "label": "Runtime: crouch-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/guard-playback.evidence.json",
+      "sha256": "5c5bb9b62e951f1d06d94868733d59592d99296876a94326ccfd6a4db821f8b9",
+      "size_bytes": 2240,
+      "label": "Runtime: guard-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/heavy-strike-playback.evidence.json",
+      "sha256": "b5ca90d6295f0a79c08bfa409cf68402dc959dacc977ae2b89310901c6e7758d",
+      "size_bytes": 2726,
+      "label": "Runtime: heavy-strike-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/hitstun-playback.evidence.json",
+      "sha256": "ae96b851f13d5587cd4759a3e4c46947bfd9f4d4fff6d7de09a6adde1d4980a4",
+      "size_bytes": 2244,
+      "label": "Runtime: hitstun-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/idle-playback.evidence.json",
+      "sha256": "ec8209ae2e81c2feefe270e4238b11814ad42e30665945d0702e33b59ccc10eb",
+      "size_bytes": 2226,
+      "label": "Runtime: idle-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/jump-playback.evidence.json",
+      "sha256": "c470d61ad41a9dd6bc9aa23e98989ef26d29d655efad54964bf73acc49dde499",
+      "size_bytes": 2704,
+      "label": "Runtime: jump-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/knockdown-playback.evidence.json",
+      "sha256": "12844e057287b41ab41199fc75e347380e1abc304dd04ec4018d69935fcc4b27",
+      "size_bytes": 2720,
+      "label": "Runtime: knockdown-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/ko-playback.evidence.json",
+      "sha256": "d1f77ad98afdad1a851ffd8726fb8e3f951681672005df67bb7b0a9044200335",
+      "size_bytes": 2706,
+      "label": "Runtime: ko-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/light-strike-playback.evidence.json",
+      "sha256": "244ead6e630b18ac54c55d1f782f42f0e8c6bd61f06eacd8a2df9f35a49fb323",
+      "size_bytes": 2246,
+      "label": "Runtime: light-strike-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/special-playback.evidence.json",
+      "sha256": "cd6f6a6894c3112200c79c35a4da4837d5f22f46f9f41fdbf203c36a7cbc57a4",
+      "size_bytes": 3182,
+      "label": "Runtime: special-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/throw-playback.evidence.json",
+      "sha256": "82795227298249f197944aedd4e3eff11f2f36835b2c20ce3de83ea970af4a15",
+      "size_bytes": 2712,
+      "label": "Runtime: throw-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/walk-back-playback.evidence.json",
+      "sha256": "7f539f483ec00b51c5f1ebe45e2ffaef40b6633829c8bc471502a5a596a9af43",
+      "size_bytes": 3186,
+      "label": "Runtime: walk-back-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/walk-forward-playback.evidence.json",
+      "sha256": "eeae5d5082102029d9349b686e6062f8cfbdccce04da2e544456d5f82269b8ec",
+      "size_bytes": 3192,
+      "label": "Runtime: walk-forward-playback"
+    },
+    {
+      "role": "evidence",
+      "path": "qa/runtime-preview/win-playback.evidence.json",
+      "sha256": "8e1eb08fc44469c6cb51e1f26e2e8b8145126598f61f942dce23c3b47885e735",
+      "size_bytes": 2472,
+      "label": "Runtime: win-playback"
+    }
+  ],
+  "evidence_links": [
+    {
+      "label": "Background matte",
+      "path": "qa/background-matte-review.png",
+      "href": "../background-matte-review.png"
+    },
+    {
+      "label": "All-frame contact sheet",
+      "path": "qa/all-contact.png",
+      "href": "../all-contact.png"
+    },
+    {
+      "label": "Alignment report",
+      "path": "qa/frame-alignment-report.json",
+      "href": "../frame-alignment-report.json"
+    },
+    {
+      "label": "Identity report",
+      "path": "qa/identity-consistency-report.json",
+      "href": "../identity-consistency-report.json"
+    },
+    {
+      "label": "Animation contract",
+      "path": "qa/animation-contract-report.json",
+      "href": "../animation-contract-report.json"
+    },
+    {
+      "label": "idle: contact",
+      "path": "qa/idle-contact.png",
+      "href": "../idle-contact.png"
+    },
+    {
+      "label": "idle: onion",
+      "path": "qa/idle-onion.png",
+      "href": "../idle-onion.png"
+    },
+    {
+      "label": "walk-forward: contact",
+      "path": "qa/walk-forward-contact.png",
+      "href": "../walk-forward-contact.png"
+    },
+    {
+      "label": "walk-forward: onion",
+      "path": "qa/walk-forward-onion.png",
+      "href": "../walk-forward-onion.png"
+    },
+    {
+      "label": "walk-back: contact",
+      "path": "qa/walk-back-contact.png",
+      "href": "../walk-back-contact.png"
+    },
+    {
+      "label": "walk-back: onion",
+      "path": "qa/walk-back-onion.png",
+      "href": "../walk-back-onion.png"
+    },
+    {
+      "label": "crouch: contact",
+      "path": "qa/crouch-contact.png",
+      "href": "../crouch-contact.png"
+    },
+    {
+      "label": "crouch: onion",
+      "path": "qa/crouch-onion.png",
+      "href": "../crouch-onion.png"
+    },
+    {
+      "label": "jump: contact",
+      "path": "qa/jump-contact.png",
+      "href": "../jump-contact.png"
+    },
+    {
+      "label": "jump: onion",
+      "path": "qa/jump-onion.png",
+      "href": "../jump-onion.png"
+    },
+    {
+      "label": "light-strike: contact",
+      "path": "qa/light-strike-contact.png",
+      "href": "../light-strike-contact.png"
+    },
+    {
+      "label": "light-strike: onion",
+      "path": "qa/light-strike-onion.png",
+      "href": "../light-strike-onion.png"
+    },
+    {
+      "label": "heavy-strike: contact",
+      "path": "qa/heavy-strike-contact.png",
+      "href": "../heavy-strike-contact.png"
+    },
+    {
+      "label": "heavy-strike: onion",
+      "path": "qa/heavy-strike-onion.png",
+      "href": "../heavy-strike-onion.png"
+    },
+    {
+      "label": "special: contact",
+      "path": "qa/special-contact.png",
+      "href": "../special-contact.png"
+    },
+    {
+      "label": "special: onion",
+      "path": "qa/special-onion.png",
+      "href": "../special-onion.png"
+    },
+    {
+      "label": "throw: contact",
+      "path": "qa/throw-contact.png",
+      "href": "../throw-contact.png"
+    },
+    {
+      "label": "throw: onion",
+      "path": "qa/throw-onion.png",
+      "href": "../throw-onion.png"
+    },
+    {
+      "label": "guard: contact",
+      "path": "qa/guard-contact.png",
+      "href": "../guard-contact.png"
+    },
+    {
+      "label": "guard: onion",
+      "path": "qa/guard-onion.png",
+      "href": "../guard-onion.png"
+    },
+    {
+      "label": "hitstun: contact",
+      "path": "qa/hitstun-contact.png",
+      "href": "../hitstun-contact.png"
+    },
+    {
+      "label": "hitstun: onion",
+      "path": "qa/hitstun-onion.png",
+      "href": "../hitstun-onion.png"
+    },
+    {
+      "label": "knockdown: contact",
+      "path": "qa/knockdown-contact.png",
+      "href": "../knockdown-contact.png"
+    },
+    {
+      "label": "knockdown: onion",
+      "path": "qa/knockdown-onion.png",
+      "href": "../knockdown-onion.png"
+    },
+    {
+      "label": "ko: contact",
+      "path": "qa/ko-contact.png",
+      "href": "../ko-contact.png"
+    },
+    {
+      "label": "ko: onion",
+      "path": "qa/ko-onion.png",
+      "href": "../ko-onion.png"
+    },
+    {
+      "label": "win: contact",
+      "path": "qa/win-contact.png",
+      "href": "../win-contact.png"
+    },
+    {
+      "label": "win: onion",
+      "path": "qa/win-onion.png",
+      "href": "../win-onion.png"
+    },
+    {
+      "label": "Runtime: crouch-playback",
+      "path": "qa/runtime-preview/crouch-playback.evidence.json",
+      "href": "../runtime-preview/crouch-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: guard-playback",
+      "path": "qa/runtime-preview/guard-playback.evidence.json",
+      "href": "../runtime-preview/guard-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: heavy-strike-playback",
+      "path": "qa/runtime-preview/heavy-strike-playback.evidence.json",
+      "href": "../runtime-preview/heavy-strike-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: hitstun-playback",
+      "path": "qa/runtime-preview/hitstun-playback.evidence.json",
+      "href": "../runtime-preview/hitstun-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: idle-playback",
+      "path": "qa/runtime-preview/idle-playback.evidence.json",
+      "href": "../runtime-preview/idle-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: jump-playback",
+      "path": "qa/runtime-preview/jump-playback.evidence.json",
+      "href": "../runtime-preview/jump-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: knockdown-playback",
+      "path": "qa/runtime-preview/knockdown-playback.evidence.json",
+      "href": "../runtime-preview/knockdown-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: ko-playback",
+      "path": "qa/runtime-preview/ko-playback.evidence.json",
+      "href": "../runtime-preview/ko-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: light-strike-playback",
+      "path": "qa/runtime-preview/light-strike-playback.evidence.json",
+      "href": "../runtime-preview/light-strike-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: special-playback",
+      "path": "qa/runtime-preview/special-playback.evidence.json",
+      "href": "../runtime-preview/special-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: throw-playback",
+      "path": "qa/runtime-preview/throw-playback.evidence.json",
+      "href": "../runtime-preview/throw-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: walk-back-playback",
+      "path": "qa/runtime-preview/walk-back-playback.evidence.json",
+      "href": "../runtime-preview/walk-back-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: walk-forward-playback",
+      "path": "qa/runtime-preview/walk-forward-playback.evidence.json",
+      "href": "../runtime-preview/walk-forward-playback.evidence.json"
+    },
+    {
+      "label": "Runtime: win-playback",
+      "path": "qa/runtime-preview/win-playback.evidence.json",
+      "href": "../runtime-preview/win-playback.evidence.json"
+    }
+  ],
+  "input_fingerprint": "647ad437fbc9150f2ffacc8dc16b7c0a23bc2c08f1e9f7961c81ee46c33238b7",
+  "self_contained": true,
+  "initial_zoom": 2
+}

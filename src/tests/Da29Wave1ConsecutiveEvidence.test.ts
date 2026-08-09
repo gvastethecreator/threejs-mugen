@@ -53,7 +53,7 @@ describe("DA29 wave1 consecutive acceptance-executed evidence", () => {
   });
 
   it("DA29-013 builds CNS controller census without treating StateDef type as controllers", () => {
-    const source = "public/characters/nova-boxer/mugen/nova.cns";
+    const source = "public/characters/rocco-vidal/mugen/rocco.cns";
     const census = buildCnsControllerCensus(readFileSync(resolve(process.cwd(), source), "utf8"), source);
     expect(census.controllerCount).toBeGreaterThan(0);
     expect(census.stateDefCount).toBeGreaterThan(0);

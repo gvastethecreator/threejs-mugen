@@ -12,6 +12,7 @@ import { runtimeDizzyPointsFromHitDef } from "./DizzyPointsDefaults";
 import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
 import { parseRuntimeSocdResolution, type RuntimeSocdResolution } from "./RuntimeInput";
 import { RUNTIME_DEFAULT_HIT_FLAG } from "./RuntimeHitFlagDefaults";
+import type { RuntimeHitVelocityMetadata } from "./types";
 
 type FrameWindow = {
   index: number;
@@ -174,6 +175,7 @@ function buildStateMoves(
     const actionId = state.anim ?? state.id;
     const fallbackHitbox = { x1: 14, y1: -72, x2: 78, y2: -38 };
     const groundVelocity = numberTriple(hitDef.params["ground.velocity"]);
+    const koVelocityAdd = numberTriple(hitDef.params["ko.velocity.add"]);
     const guardVelocity = numberTriple(hitDef.params["guard.velocity"]);
     const guardVelocityX = guardVelocity?.[0] ?? groundVelocity?.[0];
     const airGuardVelocity = numberTriple(hitDef.params["airguard.velocity"]) ?? deriveDefaultAirGuardVelocity(numberTriple(hitDef.params["air.velocity"]));
@@ -209,6 +211,7 @@ function buildStateMoves(
         guardPoints: firstNumber(hitDef.params.guardpoints) ?? undefined,
         dizzyPoints: firstNumber(hitDef.params.dizzypoints) ?? runtimeDizzyPointsFromHitDef(damage, hitDef.params.attr, constants),
         kill: boolParam(hitDef.params.kill),
+        keepState: boolParam(hitDef.params.keepstate),
         redLife: firstNumber(hitDef.params.redlife) ?? undefined,
         guardRedLife: secondNumber(hitDef.params.redlife) ?? undefined,
         targetId: firstNumber(hitDef.params.id) ?? undefined,
@@ -223,6 +226,8 @@ function buildStateMoves(
         hitVelocityY: groundVelocity?.[1] ?? undefined,
         hitVelocityZ: groundVelocity?.[2] ?? undefined,
         airVelocityZ: airVelocity?.[2] ?? undefined,
+        hitVelocities: runtimeHitVelocityMetadata({ groundVelocity, airVelocity, downVelocity, guardVelocity, airGuardVelocity }),
+        koVelocityAdd: koVelocityAdd === undefined ? undefined : { x: koVelocityAdd[0], y: koVelocityAdd[1] ?? 0 },
         guardDistance: firstNumber(hitDef.params["guard.dist"]) ?? undefined,
         guardFlag: hitDef.params.guardflag,
         guardDamage: secondNumber(hitDef.params.damage) ?? undefined,
@@ -348,6 +353,8 @@ function buildMove(
       | "hitVelocityY"
       | "hitVelocityZ"
       | "airVelocityZ"
+      | "hitVelocities"
+      | "koVelocityAdd"
       | "guardDistance"
       | "guardFlag"
       | "guardDamage"
@@ -375,6 +382,7 @@ function buildMove(
       | "sparkXy"
       | "attackDepth"
       | "hitVars"
+      | "keepState"
       | "fall"
     >
   > = {},
@@ -407,6 +415,7 @@ function buildMove(
     redLife: overrides.redLife,
     guardRedLife: overrides.guardRedLife,
     kill: overrides.kill,
+    keepState: overrides.keepState,
     targetId: overrides.targetId,
     requiresHitDef: overrides.requiresHitDef,
     hitPause: overrides.hitPause ?? (damage >= 60 ? 9 : 7),
@@ -420,6 +429,8 @@ function buildMove(
     hitVelocityY: overrides.hitVelocityY,
     hitVelocityZ: overrides.hitVelocityZ,
     airVelocityZ: overrides.airVelocityZ,
+    hitVelocities: overrides.hitVelocities,
+    koVelocityAdd: overrides.koVelocityAdd,
     guardDistance: overrides.guardDistance,
     guardFlag: overrides.guardFlag,
     guardDamage: overrides.guardDamage,
@@ -449,20 +460,30 @@ function buildMove(
 
 function buildHitVars(params: Record<string, string>): DemoMove["hitVars"] | undefined {
   const animType = hitAnimType(params.animtype);
+  const airAnimType = hitAnimType(params["air.animtype"]);
   const fallAnimType = hitAnimType(params["fall.animtype"]);
   const groundType = hitType(params["ground.type"] ?? params.type);
   const airType = hitType(params["air.type"]);
+  const xAccel = firstNumber(params.xaccel);
   const yAccel = firstNumber(params.yaccel);
+  const zAccel = firstNumber(params.zaccel);
+  const standFriction = firstNumber(params["stand.friction"]);
+  const crouchFriction = firstNumber(params["crouch.friction"]);
   const hitId = firstNumber(params.id);
   const chainId = firstNumber(params.chainid);
   const hitCount = firstNumber(params.numhits);
   const snap = numberPair(params.snap);
   if (
     animType === undefined &&
+    airAnimType === undefined &&
     fallAnimType === undefined &&
     groundType === undefined &&
     airType === undefined &&
+    xAccel === undefined &&
     yAccel === undefined &&
+    zAccel === undefined &&
+    standFriction === undefined &&
+    crouchFriction === undefined &&
     hitId === undefined &&
     chainId === undefined &&
     hitCount === undefined &&
@@ -487,14 +508,32 @@ function buildHitVars(params: Record<string, string>): DemoMove["hitVars"] | und
   if (resolvedAnimType !== undefined) {
     hitVars.animType = resolvedAnimType;
   }
+  const resolvedGroundAnimType = animType ?? 0;
+  const resolvedAirAnimType = airAnimType ?? resolvedGroundAnimType;
+  const resolvedFallAnimType = fallAnimType ?? defaultFallAnimType(resolvedAirAnimType);
+  hitVars.groundAnimType = resolvedGroundAnimType;
+  hitVars.airAnimType = resolvedAirAnimType;
+  hitVars.fallAnimType = resolvedFallAnimType;
   if (groundType !== undefined) {
     hitVars.groundType = groundType;
   }
   if (airType !== undefined) {
     hitVars.airType = airType;
   }
+  if (xAccel !== undefined) {
+    hitVars.xAccel = xAccel;
+  }
   if (yAccel !== undefined) {
     hitVars.yAccel = yAccel;
+  }
+  if (zAccel !== undefined) {
+    hitVars.zAccel = zAccel;
+  }
+  if (standFriction !== undefined) {
+    hitVars.standFriction = standFriction;
+  }
+  if (crouchFriction !== undefined) {
+    hitVars.crouchFriction = crouchFriction;
   }
   return hitVars;
 }
@@ -516,6 +555,8 @@ function buildFallData(params: Record<string, string>): DemoMove["fall"] | undef
   const envShakeFreq = firstNumber(params["fall.envshake.freq"]);
   const envShakeAmpl = firstNumber(params["fall.envshake.ampl"]);
   const envShakePhase = firstNumber(params["fall.envshake.phase"]);
+  const envShakeMul = firstNumber(params["fall.envshake.mul"]);
+  const envShakeDir = firstNumber(params["fall.envshake.dir"]);
   const hasAny =
     enabled !== undefined ||
     airFall !== undefined ||
@@ -529,7 +570,12 @@ function buildFallData(params: Record<string, string>): DemoMove["fall"] | undef
     recoverTime !== undefined ||
     downRecover !== undefined ||
     downRecoverTime !== undefined ||
-    envShakeTime !== undefined;
+    envShakeTime !== undefined ||
+    envShakeFreq !== undefined ||
+    envShakeAmpl !== undefined ||
+    envShakePhase !== undefined ||
+    envShakeMul !== undefined ||
+    envShakeDir !== undefined;
   if (!hasAny) {
     return undefined;
   }
@@ -548,12 +594,14 @@ function buildFallData(params: Record<string, string>): DemoMove["fall"] | undef
     downRecover: downRecover !== undefined ? downRecover !== 0 : undefined,
     downRecoverTime,
     envShake:
-      envShakeTime !== undefined
+      envShakeTime !== undefined || envShakeFreq !== undefined || envShakeAmpl !== undefined || envShakePhase !== undefined || envShakeMul !== undefined || envShakeDir !== undefined
         ? {
-            time: envShakeTime,
+            time: envShakeTime ?? 0,
             freq: envShakeFreq ?? 60,
             ampl: envShakeAmpl ?? -4,
             phase: envShakePhase ?? 0,
+            ...(envShakeMul === undefined ? {} : { mul: envShakeMul }),
+            ...(envShakeDir === undefined ? {} : { dir: envShakeDir }),
           }
         : undefined,
   };
@@ -609,6 +657,10 @@ function hitAnimType(value: string | undefined): number | undefined {
   return values[normalized];
 }
 
+function defaultFallAnimType(airAnimType: number): number {
+  return airAnimType >= 4 ? airAnimType : 3;
+}
+
 function hitType(value: string | undefined): number | undefined {
   const numeric = firstNumber(value);
   if (numeric !== undefined) {
@@ -632,6 +684,24 @@ function stripMugenString(value: string | undefined): string | undefined {
     return undefined;
   }
   return trimmed.replace(/^"|"$/g, "");
+}
+
+function runtimeHitVelocityMetadata(input: {
+  groundVelocity?: [number, number?, number?];
+  airVelocity?: [number, number?, number?];
+  downVelocity?: [number, number?, number?];
+  guardVelocity?: [number, number?, number?];
+  airGuardVelocity?: [number, number?, number?];
+}): RuntimeHitVelocityMetadata | undefined {
+  const vector = (value: [number, number?, number?]) => ({ x: value[0] ?? 0, y: value[1] ?? 0, z: value[2] ?? 0 });
+  const result: RuntimeHitVelocityMetadata = {
+    ...(input.groundVelocity === undefined ? {} : { ground: vector(input.groundVelocity) }),
+    ...(input.airVelocity === undefined ? {} : { air: vector(input.airVelocity) }),
+    ...(input.downVelocity === undefined ? {} : { down: vector(input.downVelocity) }),
+    ...(input.guardVelocity === undefined ? {} : { guard: vector(input.guardVelocity) }),
+    ...(input.airGuardVelocity === undefined ? {} : { airGuard: vector(input.airGuardVelocity) }),
+  };
+  return Object.keys(result).length > 0 ? result : undefined;
 }
 
 function numberPair(value: string | undefined): [number, number] | undefined {

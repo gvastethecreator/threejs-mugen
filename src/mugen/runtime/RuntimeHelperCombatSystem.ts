@@ -7,6 +7,10 @@ import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import { RuntimeGuardWorld } from "./GuardSystem";
 import {
+  RuntimeHitOverrideWorld,
+  shouldRuntimeHitOverrideMissDirect,
+} from "./HitOverrideSystem";
+import {
   applyRuntimeStateToHelper,
   helperRuntimeState,
   rememberRuntimeHelperTarget,
@@ -26,10 +30,16 @@ import { RuntimeTargetWorld } from "./TargetSystem";
 import { scaleRuntimeCollisionBoxes } from "./RuntimeCollisionTransformSystem";
 import type { RuntimeStageBounds } from "./HitDefCornerPush";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+import { runtimeChainIdOverridesEqualNoChainId } from "./RuntimeChainIdPolicy";
+import {
+  applyRuntimeHitOverrideUnhittableTime,
+  hasRuntimeUnhittableTime,
+} from "./RuntimeUnhittableTimeSystem";
 import type { CharacterRuntimeState, RuntimeHitEffectEvent, RuntimeSoundEvent } from "./types";
 import {
   canRuntimeBeHitBy,
   collisionBoxesIntersect,
+  findRuntimeHitOverride,
   hasRuntimeBoxContact,
   hitAttributeMatches,
   runtimeHitFlagRejectionReason,
@@ -74,6 +84,7 @@ export type RuntimeHelperCombatInput<TDefender extends RuntimeHelperCombatDefend
   defender: TDefender;
   runtimeProfile?: RuntimeCompatibilityProfile;
   directCombatWorld: RuntimeDirectCombatWorld;
+  hitOverrideWorld?: RuntimeHitOverrideWorld;
   reversalWorld: RuntimeReversalWorld;
   guardWorld: RuntimeGuardWorld;
   getHitStateWorld: RuntimeGetHitStateWorld;
@@ -86,6 +97,7 @@ export type RuntimeHelperCombatInput<TDefender extends RuntimeHelperCombatDefend
   isHelperRootOwned?: RuntimeHelperRootOwnershipResolver;
   stateHooks: RuntimeHelperCombatStateHooks<TDefender>;
   recordAudioOperation?: (owner: RuntimeHelperCombatOwner, operation: AudioControllerOp) => void;
+  emitDirectEnvShake?: (owner: RuntimeHelperCombatOwner, move: DemoMove) => void;
   defaultHurtBoxes?: CollisionBox[];
   log?: (line: string) => void;
 };
@@ -124,6 +136,15 @@ export class RuntimeHelperCombatWorld {
         boxesIntersect: collisionBoxesIntersect,
         attrMatches: hitAttributeMatches,
       }, { incomingUnguardable: attacker.runtime.assertSpecial?.unguardable });
+      if (reversal && hasRuntimeUnhittableTime(input.defender.runtime)) {
+        input.log?.(`${input.defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via HitDef unhittabletime`);
+        continue;
+      }
+      const chainAdmissionRejection = runtimeHelperChainAdmissionRejection(move, attacker, input.defender, input.runtimeProfile);
+      if (reversal && chainAdmissionRejection) {
+        input.log?.(chainAdmissionRejection);
+        continue;
+      }
       if (reversal) {
         const outcome = input.reversalWorld.apply(input.defender, attacker, reversal, {
           rememberTarget: () => undefined,
@@ -139,6 +160,10 @@ export class RuntimeHelperCombatWorld {
       }
       const hurtBoxes = input.getHurtBoxes(input.defender) ?? input.defaultHurtBoxes ?? defaultHelperCombatHurtBoxes;
       if (!hasRuntimeBoxContact(attackBox, input.defender.runtime, hurtBoxes)) {
+        continue;
+      }
+      if (hasRuntimeUnhittableTime(input.defender.runtime)) {
+        input.log?.(`${input.defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via HitDef unhittabletime`);
         continue;
       }
       if (input.canDefenderBeHit?.(input.defender) === false) {
@@ -159,6 +184,10 @@ export class RuntimeHelperCombatWorld {
       }
       if (!canRuntimeBeHitBy(input.defender.runtime, move.attr ?? "S,NA")) {
         input.log?.(`${input.defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via HitBy/NotHitBy`);
+        continue;
+      }
+      if (chainAdmissionRejection) {
+        input.log?.(chainAdmissionRejection);
         continue;
       }
       const defenderJuggleActor: RuntimeDirectJuggleActor = {
@@ -187,6 +216,44 @@ export class RuntimeHelperCombatWorld {
         attack: move,
         holdingBack: isRuntimeHoldingBack(input.defender.currentInput),
       });
+      const override = findRuntimeHitOverride(input.defender.runtime, move.attr ?? "S,NA", move.guardFlag ?? "MA");
+      if (override) {
+        if (shouldRuntimeHitOverrideMissDirect(move)) {
+          const missReason = move.missOnOverride === true
+            ? "because missonoverride = 1 forces active override miss"
+            : "because active override cannot receive custom-state HitDef";
+          input.log?.(`${input.defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} ${missReason}`);
+          continue;
+        }
+        attacker.hasHit = true;
+        if (move.targetId !== undefined) {
+          rememberRuntimeHelperTarget(helper, input.defender.id, move.targetId, input.targetWorld);
+        }
+        applyRuntimeHitOverrideUnhittableTime(
+          attacker.runtime,
+          input.defender.runtime,
+          move,
+          override.forceGuard === true || result.kind === "guard",
+        );
+        const redirect = (input.hitOverrideWorld ?? new RuntimeHitOverrideWorld()).applyRedirect(
+          attacker,
+          input.defender,
+          override,
+          move.hitPause,
+          {
+            tryEnterState: (target, stateNo) => {
+              if (!input.stateHooks.canEnterState(target, stateNo)) {
+                return false;
+              }
+              input.stateHooks.enterState(target, stateNo);
+              return true;
+            },
+          },
+        );
+        syncHelperFromDirectCombatActor(helper, attacker);
+        input.log?.(redirect.message);
+        continue;
+      }
       const outcome = input.directCombatWorld.applyResolvedHit<RuntimeDirectCombatActor>(
         attacker,
         input.defender,
@@ -195,7 +262,8 @@ export class RuntimeHelperCombatWorld {
         {
           applyGuardHit: () => applyDefaultHelperGuardHitState(input.defender, input.guardWorld, input.stateHooks),
           applyHitStateTransitions: () => {},
-          applyDefaultGetHit: () => applyDefaultHelperGetHitState(input.defender, input.getHitStateWorld, input.stateHooks),
+          applyDefaultGetHit: () => applyDefaultHelperGetHitState(input.defender, move, input.getHitStateWorld, input.stateHooks),
+          emitHitEnvShake: (_source, moveArg) => input.emitDirectEnvShake?.(input.owner, moveArg),
         },
         {
           stageBounds: input.stageBounds,
@@ -235,6 +303,7 @@ function helperDirectCombatActor(
 ): RuntimeHelperDirectCombatActor {
   return {
     id: helper.serialId,
+    playerId: helper.playerId,
     playerNo: helper.playerNo,
     rootId: helper.rootId,
     rootOwned: isHelperRootOwned
@@ -255,7 +324,7 @@ function helperDirectCombatActor(
     currentMoveLabel: helper.currentMoveLabel,
     moveTick: helper.moveTick,
     hitStun: 0,
-    hitPause: 0,
+    hitPause: helper.hitPause,
     hasHit: helper.hasHit,
     contact: helper.contact,
     effectActorWorld: owner.effectActorWorld,
@@ -293,6 +362,7 @@ function syncHelperFromDirectCombatActor(helper: RuntimeHelper, actor: RuntimeHe
   helper.currentMoveLabel = actor.currentMoveLabel;
   helper.moveTick = actor.moveTick;
   helper.hasHit = actor.hasHit;
+  helper.hitPause = actor.hitPause;
   applyRuntimeStateToHelper(helper, actor.runtime);
 }
 
@@ -300,16 +370,66 @@ function runtimeHelperMoveIsActive(move: DemoMove, tick: number): boolean {
   return tick >= move.activeStart && tick <= move.activeEnd;
 }
 
+function runtimeHelperChainIdRejects(move: DemoMove, defender: CharacterRuntimeState): boolean {
+  const chainId = move.hitVars?.chainId;
+  return chainId !== undefined && chainId >= 0 && defender.hitVars?.hitId !== Math.trunc(chainId);
+}
+
+function runtimeHelperChainAdmissionRejection(
+  move: DemoMove,
+  attacker: Pick<RuntimeHelperDirectCombatActor, "id" | "label" | "playerId">,
+  defender: Pick<RuntimeHelperCombatDefender, "hitPause" | "label" | "runtime">,
+  profile?: RuntimeCompatibilityProfile,
+): string | undefined {
+  if (runtimeHelperChainIdRejects(move, defender.runtime)) {
+    const previousHitId = defender.runtime.hitVars?.hitId;
+    return `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via ChainID ${Math.trunc(move.hitVars!.chainId!)} (previous HitDef id ${previousHitId === undefined ? "none" : previousHitId})`;
+  }
+  const blockedNoChainId = runtimeHelperNoChainIdRejection(move, attacker, defender, profile);
+  return blockedNoChainId === undefined
+    ? undefined
+    : `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via NoChainID ${blockedNoChainId}`;
+}
+
+function runtimeHelperNoChainIdRejection(
+  move: DemoMove,
+  attacker: Pick<RuntimeHelperDirectCombatActor, "id" | "playerId">,
+  defender: Pick<RuntimeHelperCombatDefender, "hitPause" | "runtime">,
+  profile?: RuntimeCompatibilityProfile,
+): number | undefined {
+  const previous = defender.runtime.hitVars;
+  if (!previous || previous.hitId === undefined) {
+    return undefined;
+  }
+  const blockedId = move.noChainIds
+    ?.slice(0, 8)
+    .map(Math.trunc)
+    .find((candidate) => candidate >= 0 && candidate === previous.hitId);
+  if (blockedId === undefined) return undefined;
+  if (runtimeChainIdOverridesEqualNoChainId(profile, move.hitVars?.chainId, blockedId)) return undefined;
+  const sameSourcePlayer = attacker.playerId !== undefined && previous.sourcePlayerId === attacker.playerId;
+  const sameSourceActor = previous.sourceActorId === attacker.id;
+  return sameSourceActor || (sameSourcePlayer && defender.hitPause > 0) ? blockedId : undefined;
+}
+
 function applyDefaultHelperGetHitState<TDefender extends RuntimeHelperCombatDefender>(
   defender: TDefender,
+  move: DemoMove,
   getHitStateWorld: RuntimeGetHitStateWorld,
   stateHooks: RuntimeHelperCombatStateHooks<TDefender>,
 ): void {
-  if (defender.definition.source !== "imported") {
+  if (move.p2StateNo !== undefined || defender.definition.source !== "imported") {
     return;
   }
-  const stateNo = getHitStateWorld.defaultGetHitStateNo(defender.runtime, (candidate) =>
-    stateHooks.canEnterState(defender, candidate),
+  const forcedStateType =
+    move.forceStand && defender.runtime.stateType === "C"
+      ? "S"
+      : move.forceCrouch && defender.runtime.stateType === "S"
+        ? "C"
+        : defender.runtime.stateType;
+  const stateNo = getHitStateWorld.defaultGetHitStateNo(
+    { ...defender.runtime, stateType: forcedStateType },
+    (candidate) => stateHooks.canEnterState(defender, candidate),
   );
   if (stateNo === undefined || !stateHooks.canEnterState(defender, stateNo)) {
     return;

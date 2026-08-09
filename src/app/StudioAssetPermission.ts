@@ -6,15 +6,8 @@ import {
 export const ASSET_PERMISSION_SCHEMA = "mugen-web-sandbox/asset-permission/v0" as const;
 
 export const FIRST_PARTY_ASSET_PERMISSION_PATHS: Readonly<Record<string, string>> = {
-  "nova-boxer": "/characters/nova-boxer/asset-permission.json",
-  "mara-cinta": "/characters/mara-cinta/asset-permission.json",
-  "toro-pixel": "/characters/toro-pixel/asset-permission.json",
-  "nico-guante": "/characters/nico-guante/asset-permission.json",
-  "luna-codo": "/characters/luna-codo/asset-permission.json",
-  "sargento-pila": "/characters/sargento-pila/asset-permission.json",
-  "bruno-giro": "/characters/bruno-giro/asset-permission.json",
-  "vera-patada": "/characters/vera-patada/asset-permission.json",
-  "rulo-viento": "/characters/rulo-viento/asset-permission.json",
+  "rocco-vidal": "/characters/rocco-vidal/asset-permission.json",
+  "nadia-arce": "/characters/nadia-arce/asset-permission.json",
 };
 
 export type AssetPermissionFile = {

@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -31,6 +32,12 @@ async function loadNamed(id: string, name: string, entry: string, dir: string) {
   const packageRoot = join(process.cwd(), dir);
   const vfs = loadPackageFromDir(packageRoot);
   const character = await new MugenCharacterLoader().load(entry, vfs);
+  const packageDigest = createHash("sha256");
+  for (const path of vfs.listFiles()) {
+    packageDigest.update(path);
+    packageDigest.update("\0");
+    packageDigest.update(vfs.readBytes(path)!);
+  }
   const licensePath = join(packageRoot, "LICENSE.txt");
   let licenseVerified = false;
   try {
@@ -46,7 +53,7 @@ async function loadNamed(id: string, name: string, entry: string, dir: string) {
       licenseSpdx: "CC0-1.0",
       licenseVerified,
       entryDef: entry,
-      packageDigest: `${id}-digest`,
+      packageDigest: packageDigest.digest("hex"),
       routes: ["import", "walk", "jump", "hit", "guard", "ko"] as const,
     },
     character,
@@ -54,18 +61,18 @@ async function loadNamed(id: string, name: string, entry: string, dir: string) {
 }
 
 describe("DualCharacterLegalJourney", () => {
-  it("loads Nova and Mira packages through independent legal routes", async () => {
+  it("loads Rocco and Nadia packages through independent legal routes", async () => {
     const first = await loadNamed(
-      "nova-boxer",
-      "Nova Boxer",
-      "mugen/nova.def",
-      "public/characters/nova-boxer",
+      "rocco-vidal",
+      "Rocco Vidal",
+      "mugen/rocco.def",
+      "public/characters/rocco-vidal",
     );
     const second = await loadNamed(
-      "mira-volt",
-      "Mira Volt",
-      "mugen/mira.def",
-      "public/characters/mira-volt",
+      "nadia-arce",
+      "Nadia Arce",
+      "mugen/nadia.def",
+      "public/characters/nadia-arce",
     );
     const report = runDualCharacterLegalJourney(first, second);
     expect(report.independent).toBe(true);
@@ -75,5 +82,10 @@ describe("DualCharacterLegalJourney", () => {
     expect(report.diagnostics).toEqual([]);
     expect(report.first.routePassCount).toBe(6);
     expect(report.second.routePassCount).toBe(6);
+    expect(report.first.licenseSpdx).toBe("CC0-1.0");
+    expect(report.second.licenseSpdx).toBe("CC0-1.0");
+    expect(report.first.packageDigest).toMatch(/^[0-9a-f]{64}$/);
+    expect(report.second.packageDigest).toMatch(/^[0-9a-f]{64}$/);
+    expect(report.first.packageDigest).not.toBe(report.second.packageDigest);
   });
 });

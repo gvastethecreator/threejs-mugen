@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
-import { SATIRICAL_FIGHTFX_ACTIONS, contentPackFighters } from "../mugen/runtime/demoFighters";
+import { demoFighters } from "../mugen/runtime/demoFighters";
 import {
   hitSparkLibrarySource,
   resolveRuntimeHitSparkAssetFrames,
@@ -100,31 +100,13 @@ describe("HitSparkAssetSystem", () => {
     ]);
   });
 
-  it("wires the authored satirical FightFX rows into content-pack moves", () => {
-    const fighter = contentPackFighters.find((entry) => entry.id === "mara-cinta");
-    expect(fighter).toBeDefined();
-    const actorDefinition = {
-      animations: fighter!.animations,
-      fightFxPrefix: fighter!.fightFxPrefix,
-      hitSparkLibraries: fighter!.hitSparkLibraries,
-    } satisfies RuntimeHitSparkAssetActor["definition"];
-
-    expect(fighter!.moves.punch.hitSpark).toBe(`F${SATIRICAL_FIGHTFX_ACTIONS.hit}`);
-    expect(resolveRuntimeHitSparkAssetFrames({ definition: actorDefinition }, fighter!.moves.punch.hitSpark)[0]).toMatchObject(
-      {
-        source: "fightfx",
-        actionId: SATIRICAL_FIGHTFX_ACTIONS.hit,
-        spriteGroup: SATIRICAL_FIGHTFX_ACTIONS.hit,
-        frameIndex: 0,
-      },
-    );
-    expect(resolveRuntimeHitSparkAssetFrames({ definition: actorDefinition }, fighter!.moves.punch.guardSpark)[0]).toMatchObject(
-      {
-        source: "fightfx",
-        actionId: SATIRICAL_FIGHTFX_ACTIONS.guard,
-        spriteGroup: SATIRICAL_FIGHTFX_ACTIONS.guard,
-      },
-    );
+  it("keeps the sober karate-reset roster on native hit sparks", () => {
+    expect(demoFighters.map((fighter) => fighter.id)).toEqual(["rocco-vidal", "nadia-arce"]);
+    for (const fighter of demoFighters) {
+      expect(fighter.moves.punch.hitSpark).toBe("S7001");
+      expect(fighter.moves.kick.hitSpark).toBe("S7002");
+      expect(fighter.hitSparkLibraries?.fightfx).toBeUndefined();
+    }
   });
 
   it("returns an empty frame list for unsupported prefixes or missing actions", () => {

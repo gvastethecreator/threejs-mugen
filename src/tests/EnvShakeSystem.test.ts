@@ -5,6 +5,7 @@ import {
   calculateRuntimeCameraShake,
   createRuntimeEnvShakeEvent,
   createRuntimeFallEnvShakeEvent,
+  createRuntimeProjectileEnvShakeEvent,
   pushRuntimeEnvShakeEvent,
   resolveRuntimeEnvShakeControllerOperation,
   RuntimeEnvShakeControllerDispatchWorld,
@@ -107,7 +108,7 @@ describe("EnvShakeSystem", () => {
 
   it("creates FallEnvShake events from hit fall metadata", () => {
     const event = createRuntimeFallEnvShakeEvent(
-      actor(5050, 9, { time: 15, freq: 178, ampl: 6, phase: 0.25 }),
+      actor(5050, 9, { time: 15, freq: 178, ampl: 6, phase: 0.25, mul: 0.75, dir: 67.5 }),
       77,
     );
 
@@ -117,10 +118,42 @@ describe("EnvShakeSystem", () => {
       freq: 178,
       ampl: 6,
       phase: 0.25,
+      mul: 0.75,
+      dir: 67.5,
       stateNo: 5050,
       tick: 9,
       runtimeTick: 77,
     });
+  });
+
+  it("emits Projectile contact shake metadata and projects mul and dir", () => {
+    const event = createRuntimeProjectileEnvShakeEvent(
+      actor(1000, 6),
+      { envShake: { time: 20, freq: 90, ampl: -8, phase: 45, mul: 2, dir: 90 } },
+      10,
+    );
+
+    expect(event).toEqual({
+      type: "EnvShake",
+      time: 20,
+      freq: 90,
+      ampl: -8,
+      phase: 45,
+      mul: 2,
+      dir: 90,
+      stateNo: 1000,
+      tick: 6,
+      runtimeTick: 10,
+    });
+    expect(calculateRuntimeCameraShake(14, [event!])).toMatchObject({
+      remaining: 16,
+      amplitude: -12.8,
+    });
+    expect(calculateRuntimeCameraShake(14, [event!])?.x).toBeCloseTo(9.0509, 3);
+    expect(calculateRuntimeCameraShake(14, [event!])?.y).toBeCloseTo(0, 5);
+    expect(createRuntimeProjectileEnvShakeEvent(actor(1000, 6), {
+      envShake: { time: 0, freq: 60, ampl: -4, phase: 0, mul: 1, dir: 0 },
+    }, 10)).toBeUndefined();
   });
 
   it("keeps newest shake events first and bounds history", () => {
@@ -219,7 +252,7 @@ describe("EnvShakeSystem", () => {
 function actor(
   stateNo: number,
   stateElapsed: number,
-  envShake?: { time: number; freq: number; ampl: number; phase: number },
+  envShake?: { time: number; freq: number; ampl: number; phase: number; mul?: number; dir?: number },
 ) {
   return {
     runtime: {

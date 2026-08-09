@@ -53,7 +53,7 @@ function proj(
 
 /** DA29-052 nested Helper command/state journey — parse + compile Helper controllers */
 export function executeDa29_052_HelperJourney() {
-  const source = "public/characters/nova-boxer/mugen/nova.cns";
+  const source = "public/characters/rocco-vidal/mugen/rocco.cns";
   const parsed = parseCns(read(source), source);
   const helperControllers = parsed.controllers.filter((c) => /helper/i.test(c.type));
   const compiled = helperControllers.slice(0, 8).map((c) => {
@@ -330,10 +330,14 @@ export function executeDa29_075_StageShadow() {
 }
 
 export function executeDa29_077_ActPalette() {
-  const actCandidates = [
-    "public/characters/nova-boxer/mugen/nova.act",
-    "public/characters/mira-volt/mugen/mira.act",
-  ].filter((p) => exists(p));
+  const actCandidates = ["rocco-vidal", "nadia-arce"].flatMap((character) => {
+    const mugenDir = resolve(root(), `public/characters/${character}/mugen`);
+    return exists(`public/characters/${character}/mugen`)
+      ? readdirSync(mugenDir)
+          .filter((name) => name.toLowerCase().endsWith(".act"))
+          .map((name) => `public/characters/${character}/mugen/${name}`)
+      : [];
+  });
   let result;
   if (actCandidates.length) {
     result = parseAct(readBuf(actCandidates[0]), actCandidates[0]);
@@ -354,7 +358,7 @@ export function executeDa29_077_ActPalette() {
 }
 
 export function executeDa29_078_AirTiming() {
-  const airPath = "public/characters/nova-boxer/mugen/nova.air";
+  const airPath = "public/characters/rocco-vidal/mugen/rocco.air";
   const parsed = parseAir(read(airPath), airPath);
   const actions = [...parsed.actions.values()];
   return {
@@ -417,8 +421,10 @@ export function executeDa29_083_SndParse() {
 }
 
 export function executeDa29_085_CnsCmdRecovery() {
-  const cns = parseCns(read("public/characters/nova-boxer/mugen/nova.cns"), "nova.cns");
-  const cmd = parseCmd(read("public/characters/nova-boxer/mugen/nova.cmd"), "nova.cmd");
+  const cnsPath = "public/characters/rocco-vidal/mugen/rocco.cns";
+  const cmdPath = "public/characters/rocco-vidal/mugen/rocco.cmd";
+  const cns = parseCns(read(cnsPath), cnsPath);
+  const cmd = parseCmd(read(cmdPath), cmdPath);
   const malformed = parseCns("[Statedef 0]\nnot a pair\n", "bad.cns");
   return {
     id: "DA29-085",
@@ -434,8 +440,8 @@ export function executeDa29_085_CnsCmdRecovery() {
     anchors: [
       "src/mugen/parsers/CnsParser.ts",
       "src/mugen/parsers/CmdParser.ts",
-      "public/characters/nova-boxer/mugen/nova.cns",
-      "public/characters/nova-boxer/mugen/nova.cmd",
+      cnsPath,
+      cmdPath,
     ],
   };
 }

@@ -27,6 +27,10 @@ import {
   advanceRuntimeHelpers,
   createRuntimeHelper,
   removeRuntimeHelpers,
+  resolveRuntimeHelperFloatParam,
+  resolveRuntimeHelperFloatPairParam,
+  resolveRuntimeHelperIntegerPairParam,
+  resolveRuntimeHelperHitDefPaletteFx,
   resolveRuntimeHelperSoundValueParam,
   runtimeHelpersToSnapshots,
   type RuntimeHelper,
@@ -44,11 +48,13 @@ import {
   runtimeProjectilesToSnapshots,
   shouldKeepRuntimeProjectileAfterRemoval,
   type RuntimeProjectile,
+  type RuntimeProjectileAdvanceOptions,
   type RuntimeProjectileContactKind,
   type RuntimeProjectileModifyInput,
   type RuntimeProjectileModifyResolver,
   type RuntimeProjectileSpawnInput,
   type RuntimeProjectileStage,
+  type RuntimeProjectilePauseKind,
 } from "./ProjectileSystem";
 import {
   RuntimeProjectileCombatWorld,
@@ -109,6 +115,11 @@ export type RuntimeEffectPresentationAdvanceOptions = RuntimeExplodAdvanceOption
   skipHelpers?: boolean;
 };
 
+export type RuntimeEffectActiveAdvanceOptions = RuntimeHelperAdvanceOptions & {
+  skipHelpers?: boolean;
+  projectilePauseKind?: RuntimeProjectilePauseKind;
+};
+
 export type RuntimeEffectActorActiveAdvanceInput = {
   advanceHelpers: () => void;
   advanceProjectiles: () => void;
@@ -118,6 +129,7 @@ export type RuntimeEffectActorPresentationAdvanceInput = {
   pauseKind?: RuntimeExplodPauseKind;
   stage?: Pick<MugenStageDefinition, "bounds">;
   advanceHelpers: () => void;
+  advanceProjectiles?: () => void;
   advanceExplods: () => void;
 };
 
@@ -130,6 +142,7 @@ export class RuntimeEffectActorAdvanceWorld {
   advancePresentation(input: RuntimeEffectActorPresentationAdvanceInput): void {
     if (input.pauseKind && input.stage) {
       input.advanceHelpers();
+      input.advanceProjectiles?.();
     }
     input.advanceExplods();
   }
@@ -224,7 +237,7 @@ export class RuntimeEffectActorWorld {
   advanceActiveEffects(
     ownerId: string,
     stage: RuntimeProjectileStage,
-    options?: RuntimeHelperAdvanceOptions & { skipHelpers?: boolean },
+    options?: RuntimeEffectActiveAdvanceOptions,
   ): void {
     this.advanceWorld.advanceActive({
       advanceHelpers: () => {
@@ -232,7 +245,9 @@ export class RuntimeEffectActorWorld {
           this.advanceHelpers(ownerId, stage, options);
         }
       },
-      advanceProjectiles: () => this.advanceProjectiles(ownerId, stage),
+      advanceProjectiles: () => this.advanceProjectiles(ownerId, stage, {
+        pauseKind: options?.projectilePauseKind,
+      }),
     });
   }
 
@@ -243,6 +258,11 @@ export class RuntimeEffectActorWorld {
       advanceHelpers: () => {
         if (options?.stage && !options.skipHelpers) {
           this.advanceHelpers(ownerId, options.stage, options);
+        }
+      },
+      advanceProjectiles: () => {
+        if (options?.stage) {
+          this.advanceProjectiles(ownerId, options.stage, { pauseKind: options.pauseKind });
         }
       },
       advanceExplods: () => this.advanceExplods(ownerId, bindAnchor, options),
@@ -340,12 +360,29 @@ export class RuntimeEffectActorWorld {
     return modifyRuntimeProjectileActors(this.getStore(ownerId), input, ownerId);
   }
 
-  advanceProjectiles(ownerId: string, stage: RuntimeProjectileStage): void {
-    advanceRuntimeProjectileActors(this.getStore(ownerId), stage);
+  advanceProjectiles(
+    ownerId: string,
+    stage: RuntimeProjectileStage,
+    options?: RuntimeProjectileAdvanceOptions,
+  ): void {
+    advanceRuntimeProjectileActors(this.getStore(ownerId), stage, options);
   }
 
   projectiles(ownerId: string): RuntimeProjectile[] {
     return this.getStore(ownerId).projectiles;
+  }
+
+  /** Active projectiles owned by one character, in Ikemen insertion order (oldest first). */
+  projectilesOwnedBy(ownerId: string, projectileId?: number): RuntimeProjectile[] {
+    return uniqueRuntimeEffectActorStores(this.stores)
+      .flatMap((store) => store.projectiles)
+      .filter((projectile) =>
+        projectile.ownerId === ownerId &&
+        !projectile.removalReason &&
+        !projectile.terminalPlayback &&
+        (projectileId === undefined || projectile.projectileId === projectileId)
+      )
+      .reverse();
   }
 
   countProjectiles(ownerId: string, projectileId?: number): number {
@@ -677,14 +714,59 @@ export function spawnRuntimeHelperProjectileActor(
     spriteOwnerDefinitionId: helper.spriteOwnerDefinitionId,
     spriteOwnerLabel: helper.spriteOwnerLabel,
     localCoord: helper.localCoord,
+    clsnScale: runtimeProjectileDefaultClsnScale(options.constants),
     action,
     animNo,
     terminalActions: resolveHelperProjectileTerminalActions(helper, controller, operation),
     pos,
     fallbackFacing: helper.facing,
+    constants: options.constants,
     defaultHitFlag: options.defaultHitFlag,
     resolveSoundValue: (key) => resolveRuntimeHelperSoundValueParam(helper, controller, key, options),
+    resolveUnhittableTime: () => {
+      const value = resolveRuntimeHelperIntegerPairParam(helper, controller, "unhittabletime", options);
+      return value?.[0] === undefined ? undefined : [value[0], value[1]];
+    },
+    resolveGroundFriction: () => ({
+      stand: resolveRuntimeHelperFloatParam(helper, controller, "stand.friction", options),
+      crouch: resolveRuntimeHelperFloatParam(helper, controller, "crouch.friction", options),
+    }),
+    resolveSparkScale: () => ({
+      hit: resolveRuntimeHelperFloatPairParam(helper, controller, "sparkscale", options),
+      guard: resolveRuntimeHelperFloatPairParam(helper, controller, "guard.sparkscale", options),
+    }),
+    resolvePaletteFx: resolveRuntimeHelperHitDefPaletteFx(helper, controller, options),
+    resolveProjectileGetPower: () => resolveHelperProjectilePowerPair(helper, controller, "getpower", options),
+    resolveProjectileGivePower: () => resolveHelperProjectilePowerPair(helper, controller, "givepower", options),
   });
+}
+
+function resolveHelperProjectilePowerPair(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "getpower" | "givepower",
+  options: RuntimeHelperAdvanceOptions,
+): { hit?: number; guard?: number } | undefined {
+  const value = resolveRuntimeHelperIntegerPairParam(helper, controller, key, options);
+  const hit = value?.[0];
+  const guard = value?.[1];
+  return hit === undefined && guard === undefined
+    ? undefined
+    : {
+        ...(hit === undefined ? {} : { hit }),
+        ...(guard === undefined ? {} : { guard }),
+      };
+}
+
+function runtimeProjectileDefaultClsnScale(constants?: Readonly<Record<string, number | undefined>>): { x: number; y: number } {
+  return {
+    x: finiteRuntimeProjectileClsnScale(constants?.["size.xscale"]),
+    y: finiteRuntimeProjectileClsnScale(constants?.["size.yscale"]),
+  };
+}
+
+function finiteRuntimeProjectileClsnScale(value: number | undefined): number {
+  return value !== undefined && Number.isFinite(value) ? value : 1;
 }
 
 export function spawnRuntimeHelperExplodActor(
@@ -749,14 +831,14 @@ export function modifyRuntimeHelperProjectileActors(
   resolveModifyProjectile?: RuntimeProjectileModifyResolver,
 ): number {
   const operation = modifyProjectileOperation(controller);
-  const projectileId = operation?.projectileId ?? firstNumber(findControllerParam(controller, "projid") ?? findControllerParam(controller, "id"));
   const helperProjectiles = store.projectiles.filter(
-    (projectile) => helperOwnsProjectile(helper, projectile) && (projectileId === undefined || projectile.projectileId === projectileId),
+    (projectile) => helperOwnsProjectile(helper, projectile),
   );
   return modifyRuntimeProjectiles(helperProjectiles, {
     controller: controller.source,
     operation,
     resolveModifyProjectile,
+    resolveAction: (animNo) => helper.animations?.get(animNo),
   });
 }
 
@@ -904,8 +986,9 @@ export function modifyRuntimeProjectileActors(
 export function advanceRuntimeProjectileActors(
   store: RuntimeEffectActorStore,
   stage: RuntimeProjectileStage,
+  options?: RuntimeProjectileAdvanceOptions,
 ): void {
-  store.projectiles = advanceRuntimeProjectiles(store.projectiles, stage);
+  store.projectiles = advanceRuntimeProjectiles(store.projectiles, stage, options);
 }
 
 export function removeRuntimeProjectilesMarkedForRemoval(store: RuntimeEffectActorStore): void {

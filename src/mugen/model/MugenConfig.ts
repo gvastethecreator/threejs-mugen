@@ -6,8 +6,15 @@ export type MugenGameSpaceConfig = {
   sourcePath?: string;
 };
 
+export type MugenPowerRules = {
+  defaultAttackLifeToPowerMultiplier?: number;
+  defaultGetHitLifeToPowerMultiplier?: number;
+  sourcePath?: string;
+};
+
 export type MugenGameConfig = {
   gameSpace?: MugenGameSpaceConfig;
+  powerRules?: MugenPowerRules;
   rawSections: Record<string, Record<string, string>>;
   rawLines: string[];
   diagnostics: MugenDiagnostic[];

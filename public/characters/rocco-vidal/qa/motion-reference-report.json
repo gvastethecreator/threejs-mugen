@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "checked_states": [
+    "walk-forward",
+    "walk-back"
+  ],
+  "references": [
+    {
+      "state": "walk-forward",
+      "ok": true,
+      "image": "references/motion-references/walk-forward.png",
+      "provenance": "references/motion-references/walk-forward.provenance.json",
+      "size": [
+        1536,
+        1024
+      ],
+      "errors": []
+    },
+    {
+      "state": "walk-back",
+      "ok": true,
+      "image": "references/motion-references/walk-back.png",
+      "provenance": "references/motion-references/walk-back.provenance.json",
+      "size": [
+        1536,
+        1024
+      ],
+      "errors": []
+    }
+  ]
+}

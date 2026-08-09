@@ -1,0 +1,398 @@
+{
+  "version": 2,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "asset_kind": "sprite",
+  "extraction_mode": "components",
+  "character": {
+    "id": "nadia-arce",
+    "description": "Original powerful female karateka. Scarred eyebrow, short black hair, thick shoulders, strong back, muscular thighs and an unblinking stare. Normal worn-ivory karate gi, black belt, dark-gray undershirt, gray hand wraps, bare feet.",
+    "base_image": null
+  },
+  "cell": {
+    "shape": "square",
+    "width": 192,
+    "height": 192,
+    "safe_margin_x": 24,
+    "safe_margin_y": 24,
+    "size": 192,
+    "safe_margin": 24
+  },
+  "chroma_key": {
+    "name": "legacy-magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "compatibility-only"
+  },
+  "generation_background": {
+    "family": "neutral",
+    "name": "gray",
+    "hex": "#808080",
+    "rgb": [
+      128,
+      128,
+      128
+    ],
+    "selection": "manual"
+  },
+  "background_removal": {
+    "method": "auto",
+    "model": "birefnet-general",
+    "device": "auto",
+    "alpha_matting": false,
+    "post_rembg_chroma_cleanup": false,
+    "source_family": "neutral"
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "fps": 6,
+      "loop": true,
+      "action": "grounded side-view karate fighting stance with guarded hands, subtle breathing and stable feet",
+      "animation_workflows": [
+        "fighting-stance-idle"
+      ],
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 2,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      },
+      "label": "Idle"
+    },
+    "walk-forward": {
+      "frames": 8,
+      "fps": 10,
+      "loop": true,
+      "action": "grounded side-view karate advance with alternating contacts, passing poses and guarded upper body",
+      "animation_workflows": [
+        "sideview-locomotion"
+      ],
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 4,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      },
+      "label": "Walk Forward"
+    },
+    "walk-back": {
+      "frames": 8,
+      "fps": 10,
+      "loop": true,
+      "action": "grounded side-view guarded karate retreat with distinct backward footwork and weight transfer",
+      "animation_workflows": [
+        "sideview-locomotion"
+      ],
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 4,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      },
+      "label": "Walk Back"
+    },
+    "crouch": {
+      "frames": 4,
+      "fps": 8,
+      "loop": false,
+      "action": "descent from karate guard into a low guarded crouch with feet locked to the baseline",
+      "animation_workflows": [
+        "fighting-stance-idle"
+      ],
+      "pose_geometry": {
+        "kind": "crouch",
+        "grounded": true,
+        "height_curve": "compress",
+        "start_height_vs_reference": 1.0,
+        "guide_height_ratio": 0.7,
+        "target_height_vs_reference": 0.7,
+        "min_height_vs_reference": 0.62,
+        "min_width_vs_reference": 0.78,
+        "min_head_width_vs_reference": 0.84,
+        "min_upper_width_vs_reference": 0.84,
+        "max_height_vs_reference": 1.05,
+        "baseline": "feet"
+      },
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 2,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      },
+      "label": "Crouch"
+    },
+    "jump": {
+      "frames": 6,
+      "fps": 10,
+      "loop": false,
+      "action": "vertical karate jump with launch, rising pose, peak, descent and compressed landing",
+      "animation_workflows": [
+        "responsive-jump"
+      ],
+      "pose_geometry": {
+        "kind": "jump",
+        "grounded": false,
+        "guide_height_ratio": 0.74,
+        "target_height_vs_reference": 1.0,
+        "max_height_vs_reference": 1.12,
+        "min_head_width_vs_reference": 0.9,
+        "min_upper_width_vs_reference": 0.72,
+        "arc_peak_ratio": 0.22,
+        "baseline": "jump-arc"
+      },
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 3,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      },
+      "label": "Jump"
+    },
+    "light-strike": {
+      "frames": 4,
+      "fps": 12,
+      "loop": false,
+      "action": "fast lead-hand karate jab with immediate launch, contact, follow-through and guard recovery",
+      "animation_workflows": [
+        "combat-quick-strike"
+      ],
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 2,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      },
+      "label": "Light Strike"
+    },
+    "heavy-strike": {
+      "frames": 6,
+      "fps": 10,
+      "loop": false,
+      "action": "committed rooted karate reverse punch with load, hip drive, contact, follow-through and recovery",
+      "animation_workflows": [
+        "combat-power-strike"
+      ],
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 3,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      },
+      "label": "Heavy Strike"
+    },
+    "special": {
+      "frames": 8,
+      "fps": 12,
+      "loop": false,
+      "action": "original full-body karate kata strike with load, contact, follow-through and recovery",
+      "animation_workflows": [
+        "combat-power-strike"
+      ],
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 4,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      },
+      "label": "Special"
+    },
+    "throw": {
+      "frames": 6,
+      "fps": 10,
+      "loop": false,
+      "action": "close-range karate foot sweep without an opponent sprite, with entry, hook, sweep, release and recovery",
+      "animation_workflows": [
+        "combat-power-strike"
+      ],
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 3,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      },
+      "label": "Throw"
+    },
+    "guard": {
+      "frames": 4,
+      "fps": 8,
+      "loop": true,
+      "action": "karate forearm guard with stable stance, compact impact recoil and return to guard",
+      "animation_workflows": [
+        "fighting-stance-idle"
+      ],
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 2,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      },
+      "label": "Guard"
+    },
+    "hitstun": {
+      "frames": 4,
+      "fps": 10,
+      "loop": false,
+      "action": "torso impact reaction from the front with recoil, overshoot and partial balance recovery",
+      "animation_workflows": [
+        "hit-reaction-knockdown"
+      ],
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 2,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      },
+      "label": "Hitstun"
+    },
+    "knockdown": {
+      "frames": 6,
+      "fps": 10,
+      "loop": false,
+      "action": "forceful backward knockdown with balance loss, rotation, ground contact and settled pose",
+      "animation_workflows": [
+        "hit-reaction-knockdown"
+      ],
+      "pose_geometry": {
+        "kind": "knockdown",
+        "grounded": false,
+        "guide_height_ratio": 0.62,
+        "target_height_vs_reference": 0.7,
+        "max_height_vs_reference": 1.12,
+        "min_height_vs_reference": 0.45,
+        "baseline": "collapse"
+      },
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 3,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      },
+      "label": "Knockdown"
+    },
+    "ko": {
+      "frames": 6,
+      "fps": 8,
+      "loop": false,
+      "action": "heavy knockout collapse with stagger, knee failure, full fall, ground impact and final still pose",
+      "animation_workflows": [
+        "hit-reaction-knockdown"
+      ],
+      "pose_geometry": {
+        "kind": "knockdown",
+        "grounded": false,
+        "guide_height_ratio": 0.62,
+        "target_height_vs_reference": 0.7,
+        "max_height_vs_reference": 1.12,
+        "min_height_vs_reference": 0.45,
+        "baseline": "collapse"
+      },
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 3,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      },
+      "label": "Ko"
+    },
+    "win": {
+      "frames": 5,
+      "fps": 8,
+      "loop": false,
+      "action": "restrained karate victory sequence with breath release, belt adjustment and severe final stance",
+      "animation_workflows": [
+        "fighting-stance-idle"
+      ],
+      "raw_layout": {
+        "kind": "compact-grid",
+        "columns": 3,
+        "rows": 2,
+        "order": "row-major",
+        "delivery": "compose-runtime-row",
+        "reason": "body-animation-anti-drift"
+      },
+      "label": "Win"
+    }
+  },
+  "style_preset": "pixel-art",
+  "style": "crisp 16-bit side-view fighting-game pixel art, original extreme martial-arts manga anatomy, dense neck shoulders forearms core and thighs, plausible joints, thick stepped dark outline, restrained neutral and earth palette, readable at 192px, no chibi, no gradients, no neon, no logos, no text, no trademarks, no franchise costume details",
+  "motion_phase_guides": true,
+  "motion_reference_policy": "imagegen-color-coded-mannequin-v1",
+  "art_direction": {
+    "mode": "pixel-art",
+    "source": "pixel-art-wiki-derived",
+    "reference": "references/pixel-art-direction.md",
+    "workflow_reference": "references/pixel-animation-workflows.md",
+    "profiles": [
+      "pixel-core",
+      "pixel-character",
+      "pixel-motion",
+      "pixel-sideview",
+      "pixel-combat"
+    ]
+  },
+  "raw_layout_policy": "compact-body-grids",
+  "preset": {
+    "id": "fighting-game-character",
+    "camera": "side",
+    "columns": 12,
+    "formats": [
+      "png",
+      "webp"
+    ],
+    "compatibility": [],
+    "asset_kind": "sprite"
+  },
+  "output": {
+    "use": "animated-character",
+    "frame_semantics": "animation"
+  },
+  "frame_semantics": "animation",
+  "sampling_policy": {
+    "filter": "nearest",
+    "wrap": "clamp-to-edge",
+    "mipmaps": false,
+    "pixel_snap": true
+  },
+  "licenses": [
+    {
+      "id": "imagegen-original-nadia-arce-v1",
+      "status": "generated",
+      "note": "Original Imagegen rows generated for the native Nadia Arce package."
+    }
+  ],
+  "identity_anchor": {
+    "path": "references/identity-anchor.png",
+    "sha256": "acdaa2ad6b2170d252969c4636f55c8327b307e1f5df5a26eebf4e881daf7e56"
+  }
+}

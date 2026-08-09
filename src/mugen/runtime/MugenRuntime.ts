@@ -25,6 +25,9 @@ export class MugenRuntime implements SnapshotRuntime {
     if (command.type === "select-action") {
       this.actor.selectAction(command.actionId);
       this.logs.unshift(`Selected Action ${command.actionId}`);
+    } else if (command.type === "select-frame") {
+      this.actor.selectFrame(command.frameIndex);
+      this.logs.unshift(`Selected frame ${this.actor.state.frameIndex}`);
     } else if (command.type === "set-playing") {
       this.playing = command.playing;
     } else if (command.type === "step") {

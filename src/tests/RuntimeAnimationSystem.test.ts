@@ -4,6 +4,10 @@ import {
   RuntimeAnimationWorld,
   runtimeAnimationElapsedBeforeFrame,
   runtimeAnimationElementTime,
+  runtimeAnimationElementVar,
+  runtimeAnimationElementVarForFrame,
+  runtimeAnimationLength,
+  runtimeAnimationPlayerNo,
   runtimeAnimationTimeRemaining,
   type RuntimeAnimationActor,
   type RuntimeAnimationChangeActor,
@@ -29,6 +33,23 @@ describe("RuntimeAnimationWorld", () => {
     expect(actor.runtime).toMatchObject({ animTime: 0, frameIndex: 0 });
     expect(actor.frameElapsed).toBe(0);
     expect(actor.animationComplete).toBe(false);
+  });
+
+  it("tracks the player that owns a ChangeAnim2 action", () => {
+    const world = new RuntimeAnimationWorld();
+    const nextAction = action(920, [2]);
+    const actor = runtimeChangeActor(action(10, [1]), { animationOwnerPlayerNo: 1 });
+
+    const result = world.changeAction(actor, {
+      actionId: 920,
+      source: "state-owner",
+      actionOwner: { ...actionOwner(nextAction), playerNo: 2 },
+    });
+
+    expect(result.actionFound).toBe(true);
+    expect(actor.animationOwnerPlayerNo).toBe(2);
+    expect(runtimeAnimationPlayerNo({ ...actor, playerNo: 1 })).toBe(2);
+    expect(runtimeAnimationPlayerNo({ animationOwnerPlayerNo: undefined, playerNo: 1 })).toBe(1);
   });
 
   it("ticks inside a frame until authored duration elapses", () => {
@@ -119,6 +140,42 @@ describe("RuntimeAnimationWorld", () => {
     expect(runtimeAnimationElementTime(actor, 1)).toBe(2);
     expect(runtimeAnimationElementTime(actor, 2)).toBe(0);
     expect(runtimeAnimationElementTime(actor, 99)).toBeUndefined();
+  });
+
+  it("sums effective frame durations for AnimLength", () => {
+    expect(runtimeAnimationLength(action(10, [2, 0, -5, 4]))).toBe(8);
+    expect(runtimeAnimationLength(action(11, []))).toBe(0);
+    expect(runtimeAnimationLength(undefined)).toBe(0);
+  });
+
+  it("reads supported AnimElemVar metadata from the active AIR frame", () => {
+    const currentAction = action(10, [5, 7]);
+    currentAction.frames[0] = {
+      ...currentAction.frames[0]!,
+      spriteGroup: 200,
+      spriteIndex: 3,
+      offsetX: -4,
+      offsetY: 9,
+      flip: "H",
+      clsn1: [{ x1: 1, y1: 2, x2: 3, y2: 4 }],
+      clsn2: [
+        { x1: -1, y1: -2, x2: 5, y2: 6 },
+        { x1: 7, y1: 8, x2: 9, y2: 10 },
+      ],
+    };
+    const actor = runtimeActor(currentAction);
+
+    expect(runtimeAnimationElementVar(actor, "Group")).toBe(200);
+    expect(runtimeAnimationElementVar(actor, "Image")).toBe(3);
+    expect(runtimeAnimationElementVar(actor, "Time")).toBe(5);
+    expect(runtimeAnimationElementVar(actor, "XOffset")).toBe(-4);
+    expect(runtimeAnimationElementVar(actor, "YOffset")).toBe(9);
+    expect(runtimeAnimationElementVar(actor, "HFlip")).toBe(1);
+    expect(runtimeAnimationElementVar(actor, "VFlip")).toBe(0);
+    expect(runtimeAnimationElementVar(actor, "NumClsn1")).toBe(1);
+    expect(runtimeAnimationElementVar(actor, "NumClsn2")).toBe(2);
+    expect(runtimeAnimationElementVarForFrame(undefined, "Group")).toBeUndefined();
+    expect(runtimeAnimationElementVar(actor, "AlphaDest")).toBeUndefined();
   });
 
   it("changes to an authored action and applies elem timing through the animation world", () => {

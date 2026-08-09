@@ -36,6 +36,20 @@ describe("MugenPresentationOrder/v0", () => {
     expect(p2Tie.three.renderOrder).toBeLessThan(p1Tie.three.renderOrder);
   });
 
+  it("maps normalized Projectile layers to underlay, actor, and foreground bands", () => {
+    const under = resolveActorPresentationOrder("projectile", 4, 0, { layerNo: -1 });
+    const normal = resolveActorPresentationOrder("projectile", 4, 0, { layerNo: 0 });
+    const front = resolveActorPresentationOrder("projectile", 4, 0, { layerNo: 1 });
+
+    expect([under.semantic.phase, normal.semantic.phase, front.semantic.phase]).toEqual([
+      "actor-underlay",
+      "actor",
+      "stage-foreground",
+    ]);
+    expect(under.three.renderOrder).toBeLessThan(normal.three.renderOrder);
+    expect(normal.three.renderOrder).toBeLessThan(front.three.renderOrder);
+  });
+
   it("preserves authored stage order inside each MUGEN layer", () => {
     expect(resolveStagePresentationOrder(0, 0).three.renderOrder).toBeLessThan(resolveStagePresentationOrder(0, 1).three.renderOrder);
     expect(resolveStagePresentationOrder(1, 3).three.renderOrder).toBeLessThan(resolveStagePresentationOrder(1, 4).three.renderOrder);

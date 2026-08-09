@@ -201,6 +201,7 @@ export class RuntimeSnapshotWorld {
       hitEffectEvents: actor.hitEffectEvents.map((event) => ({
         ...event,
         offset: event.offset ? { ...event.offset } : undefined,
+        scale: event.scale ? { ...event.scale } : undefined,
         assetFrame: event.assetFrame ? { ...event.assetFrame } : undefined,
         assetFrames: event.assetFrames?.map((assetFrame) => ({ ...assetFrame })),
       })),
@@ -225,6 +226,7 @@ export class RuntimeSnapshotWorld {
         {
           profile: "unknown",
           blendPolicy: clone.runtime.paletteFx?.add.some((value) => value > 0) ? "additive" : "alpha",
+          ...(clone.effect?.kind === "projectile" ? { layerNo: clone.effect.layerNo } : {}),
         },
       );
       return clone;

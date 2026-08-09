@@ -143,6 +143,7 @@ function helperState(stateNo: number | undefined): RuntimeHelper {
     frameElapsed: 0,
     age: 0,
     stateTime: 0,
+    hitPause: 0,
     removeTime: -1,
     ignoreHitPause: false,
     pauseMoveTime: 0,

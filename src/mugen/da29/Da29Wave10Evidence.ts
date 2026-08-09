@@ -57,9 +57,8 @@ export function executeDa29_102(): ExecResult {
 
 export function executeDa29_103(): ExecResult {
   const sheets = [
-    "public/characters/nova-boxer/sprite-sheet-alpha.png",
-    "public/characters/mira-volt/sprite-sheet-alpha.png",
-    "public/characters/rook-apprentice/sprite-sheet-alpha.png",
+    "public/characters/rocco-vidal/sprite-sheet-alpha.png",
+    "public/characters/nadia-arce/sprite-sheet-alpha.png",
   ].filter((p) => exists(p));
   if (sheets.length < 2) throw new Error("need 2+ independent asset records");
   return {
@@ -87,8 +86,10 @@ export function executeDa29_104(): ExecResult {
 
 export function executeDa29_105(): ExecResult {
   must("src/game/render/CollisionBoxRenderer.ts");
-  const cns = parseCns(read("public/characters/nova-boxer/mugen/nova.cns"), "nova.cns");
-  const withClsn = [...parseAir(read("public/characters/nova-boxer/mugen/nova.air"), "nova.air").actions.values()].filter(
+  const cnsPath = "public/characters/rocco-vidal/mugen/rocco.cns";
+  const airPath = "public/characters/rocco-vidal/mugen/rocco.air";
+  const cns = parseCns(read(cnsPath), cnsPath);
+  const withClsn = [...parseAir(read(airPath), airPath).actions.values()].filter(
     (a) => a.frames.some((f) => f.clsn1.length || f.clsn2.length),
   );
   return {
@@ -100,8 +101,8 @@ export function executeDa29_105(): ExecResult {
     },
     anchors: [
       "src/game/render/CollisionBoxRenderer.ts",
-      "public/characters/nova-boxer/mugen/nova.air",
-      "public/characters/nova-boxer/sprite-sheet-alpha.png",
+      airPath,
+      "public/characters/rocco-vidal/sprite-sheet-alpha.png",
     ],
   };
 }
@@ -645,7 +646,8 @@ export function executeDa29_150(): ExecResult {
 // --- Waves 15–19 ---
 
 export function executeDa29_152(): ExecResult {
-  const cmd = parseCmd(read("public/characters/nova-boxer/mugen/nova.cmd"), "nova.cmd");
+  const cmdPath = "public/characters/rocco-vidal/mugen/rocco.cmd";
+  const cmd = parseCmd(read(cmdPath), cmdPath);
   const commands = (cmd as { commands?: Array<{ name?: string }> }).commands ?? [];
   return {
     id: "DA29-152",
@@ -653,13 +655,13 @@ export function executeDa29_152(): ExecResult {
       commandCount: Array.isArray(commands) ? commands.length : 0,
       sampleNames: Array.isArray(commands) ? commands.slice(0, 10).map((c) => c.name) : [],
     },
-    anchors: ["src/mugen/parsers/CmdParser.ts", "public/characters/nova-boxer/mugen/nova.cmd"],
+    anchors: ["src/mugen/parsers/CmdParser.ts", cmdPath],
   };
 }
 
 export function executeDa29_153(): ExecResult {
   const r = executeDa29_152();
-  const text = read("public/characters/nova-boxer/mugen/nova.cmd");
+  const text = read("public/characters/rocco-vidal/mugen/rocco.cmd");
   return {
     id: "DA29-153",
     functionResults: {
@@ -672,7 +674,8 @@ export function executeDa29_153(): ExecResult {
 }
 
 export function executeDa29_154(): ExecResult {
-  const cns = parseCns(read("public/characters/nova-boxer/mugen/nova.cns"), "nova.cns");
+  const cnsPath = "public/characters/rocco-vidal/mugen/rocco.cns";
+  const cns = parseCns(read(cnsPath), cnsPath);
   const stateMinus1 = cns.controllers.filter((c) => c.stateId === -1 || String((c as { special?: string }).special ?? "") === "-1");
   return {
     id: "DA29-154",
@@ -681,7 +684,7 @@ export function executeDa29_154(): ExecResult {
       totalControllers: cns.controllers.length,
       sample: stateMinus1.slice(0, 5).map((c) => ({ type: c.type, line: c.line })),
     },
-    anchors: ["src/mugen/parsers/CnsParser.ts", "public/characters/nova-boxer/mugen/nova.cns"],
+    anchors: ["src/mugen/parsers/CnsParser.ts", cnsPath],
   };
 }
 
@@ -730,7 +733,7 @@ export function executeDa29_159(): ExecResult {
     id: "DA29-159",
     functionResults: {
       ...r.functionResults,
-      characters: ["nova-boxer", "mira-volt", "rook-apprentice"].filter((c) =>
+      characters: ["rocco-vidal", "nadia-arce"].filter((c) =>
         exists(`public/characters/${c}`),
       ),
     },
@@ -821,18 +824,56 @@ export function executeDa29_167(): ExecResult {
 }
 
 export function executeDa29_169(): ExecResult {
-  const chars = ["nova-boxer", "mira-volt", "rook-apprentice"].filter((c) => exists(`public/characters/${c}`));
-  if (chars.length < 3) throw new Error("need 3 packages");
+  type CorpusPackage = {
+    id: string;
+    kind: "character" | "stage" | "screenpack";
+    path: string;
+    entry: string;
+    provenance?: string;
+  };
+  const characters: CorpusPackage[] = ["rocco-vidal", "nadia-arce"].map((id) => ({
+    id,
+    kind: "character",
+    path: `public/characters/${id}`,
+    entry: `public/characters/${id}/mugen/${id === "rocco-vidal" ? "rocco" : "nadia"}.def`,
+    provenance: `public/characters/${id}/source-provenance.json`,
+  }));
+  const companionPackages: CorpusPackage[] = [
+    {
+      id: "rooftop-dojo",
+      kind: "stage",
+      path: "public/stages/rooftop-dojo",
+      entry: "public/stages/rooftop-dojo/rooftop-dojo.png",
+    },
+    {
+      id: "sandbox-fightscreen",
+      kind: "screenpack",
+      path: "public/system",
+      entry: "public/system/sandbox-fightscreen.zip",
+    },
+  ];
+  const packages = [...characters, ...companionPackages];
+  for (const pkg of packages) {
+    must(pkg.path);
+    must(pkg.entry);
+    if (pkg.provenance) must(pkg.provenance);
+  }
   return {
     id: "DA29-169",
     functionResults: {
-      packages: chars.map((c) => ({
-        id: c,
-        hasDef: exists(`public/characters/${c}/mugen`),
+      packages: packages.map((pkg) => ({
+        id: pkg.id,
+        kind: pkg.kind,
+        entry: pkg.entry,
+        digest: sha(pkg.entry),
+        hasProvenance: Boolean(pkg.provenance),
       })),
-      count: chars.length,
+      characterCount: characters.length,
+      companionPackageCount: companionPackages.length,
+      independentDigestCount: new Set(packages.map((pkg) => sha(pkg.entry))).size,
+      count: packages.length,
     },
-    anchors: chars.map((c) => `public/characters/${c}`),
+    anchors: packages.flatMap((pkg) => (pkg.provenance ? [pkg.entry, pkg.provenance] : [pkg.entry])),
   };
 }
 

@@ -27,6 +27,8 @@ function actor(
     runtime: {
       life: 1000,
       lifeMax: 1000,
+      power: 500,
+      powerMax: 3000,
       redLife: 25,
       guardPointsMax: 800,
       guardPoints: 700,
@@ -82,6 +84,7 @@ describe("RuntimeAuxiliaryResourceProjectionWorld", () => {
       redLife: { status: "available", ownerId: "p1", scope: "actor-local", value: 25, max: 1000 },
       guardPoints: { status: "available", ownerId: "p1", scope: "actor-local", value: 700, max: 800 },
       dizzyPoints: { status: "available", ownerId: "p1", scope: "actor-local", value: 800, max: 900 },
+      power: { status: "available", ownerId: "p1", scope: "actor-local", value: 500, max: 3000 },
     });
     expect(diagnostic.actors[1]?.resources.redLife.ownerId).toBe("helper-p1");
     expect(diagnostic.actors[1]?.resources.guardPoints.scope).toBe("actor-local");

@@ -976,6 +976,226 @@ async function main() {
       artifact: presets.createSyntheticImportedGetHitVarHitIdChainIdTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-direct-hitdef-nochainid",
+      required: true,
+      artifact: presets.createSyntheticImportedDirectHitDefNoChainIdTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-mugen-equal-chain-nochain",
+      required: true,
+      artifact: presets.createSyntheticImportedMugenEqualChainNoChainTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-unhittabletime",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefUnhittableTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-attacker-unhittabletime",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefAttackerUnhittableTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-default-unhittabletime",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDefaultUnhittableTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitoverride-unhittabletime",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideUnhittableTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-unhittabletime",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileUnhittableTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-dynamic-unhittabletime",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileDynamicUnhittableTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-ground-friction",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGroundFrictionTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-spark-scale",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileSparkScaleTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-attacker-facing",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefAttackerFacingTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-getpower",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefGetPowerTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-getpower-default",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefGetPowerDefaultTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-rules-power-defaults",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefRulesPowerDefaultsTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-givepower",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicGivePowerTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-contact-palfx",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefContactPalFxTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-contact-envshake",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefContactEnvShakeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-fall-envshake",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicFallEnvShakeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-fall-impact",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicFallImpactTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-fall-recovery",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicFallRecoveryTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-fall-flags",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicFallFlagsTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-down-bounce",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicDownBounceTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-lethal-flags",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicLethalFlagsTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-air-juggle",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicAirJuggleTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-numhits",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicNumHitsTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-sprite-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicSpritePriorityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicPriorityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-force-posture",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicForcePostureTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-forcenofall",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicForceNoFallTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-p2facing",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicP2FacingTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-id-chainid",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicIdChainIdTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-damage",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicDamageTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-omitted-damage",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefOmittedDamageTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-pausetime",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicPauseTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-ground-hittime",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicGroundHitTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-ground-slidetime",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicGroundSlideTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-guard-hittime",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicGuardHitTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-guard-slidetime",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicGuardSlideTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-guard-ctrltime",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicGuardControlTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-airguard-ctrltime",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicAirGuardControlTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-air-hittime",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicAirHitTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-guard-distance",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicGuardDistanceTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-ground-velocity",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicGroundVelocityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-state-transition",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicStateTransitionTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-gethitvar-hitcount",
       required: true,
       artifact: presets.createSyntheticImportedGetHitVarHitCountTraceArtifact(),
@@ -1019,6 +1239,11 @@ async function main() {
       name: "synthetic-imported-projectile-gethitvar-hitid-chainid",
       required: true,
       artifact: presets.createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-nochainid",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileNoChainIdTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-projectile-gethitvar-hitcount",
@@ -1889,6 +2114,16 @@ async function main() {
       name: "synthetic-imported-helper-local-resource",
       required: true,
       artifact: presets.createSyntheticImportedHelperLocalResourceTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-shared-resource",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperSharedResourceTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-shared-red-life",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperSharedRedLifeTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-ikemen-superpause-p2defmul-stack",
@@ -2782,6 +3017,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyProjectileTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyprojectile-dynamic-getpower",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyProjectileDynamicGetPowerTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-modifyprojectile-dynamic-bounds",
       required: true,
       artifact: presets.createSyntheticImportedModifyProjectileDynamicBoundsTraceArtifact(),
@@ -2865,6 +3105,16 @@ async function main() {
       name: "synthetic-imported-projectile-multihit",
       required: true,
       artifact: presets.createSyntheticImportedProjectileMultiHitTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-ikemen-projectile-gethitvar-hitcount-multihit",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenProjectileGetHitVarHitCountMultiHitTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-ikemen-projectile-gethitvar-veladd-ko",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenProjectileGetHitVarVelAddKoTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-projectile-clash",
@@ -3545,7 +3795,7 @@ async function main() {
               actorKind: "player",
               stateNo: 1000,
               animNo: 1000,
-              power: 35,
+              power: 59,
               ctrl: false,
               stateType: "S",
               moveType: "A",
@@ -4685,6 +4935,8 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-gethitvar-crouch-guard-kill",
     "synthetic-imported-gethitvar-air-guard-kill",
     "synthetic-imported-gethitvar-hitid-chainid",
+    "synthetic-imported-direct-hitdef-nochainid",
+    "synthetic-imported-mugen-equal-chain-nochain",
     "synthetic-imported-gethitvar-hitcount",
     "synthetic-imported-gethitvar-velocity",
     "synthetic-imported-gethitvar-guard-timing",
@@ -4697,6 +4949,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-crouch-guard-hold-crouch-return",
     "synthetic-imported-projectile-gethitvar-hit-metadata",
     "synthetic-imported-projectile-gethitvar-hitid-chainid",
+    "synthetic-imported-projectile-nochainid",
     "synthetic-imported-projectile-gethitvar-guarded",
     "synthetic-imported-projectile-gethitvar-guard-kill",
     "synthetic-imported-projectile-gethitvar-guard-hitshaketime",
@@ -4715,6 +4968,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-stagebound-terminal",
     "synthetic-imported-projectile-edgebound-terminal",
     "synthetic-imported-projectile-heightbound-terminal",
+    "synthetic-imported-ikemen-projectile-gethitvar-hitcount-multihit",
     "synthetic-imported-projectile-air-guard-cornerpush",
     "synthetic-imported-projectile-air-guard-cornerpush-default",
     "synthetic-imported-projectile-guard-cornerpush-default",

@@ -2,7 +2,8 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeKinematicsActor = {
   currentMove?: unknown;
-  runtime: Pick<CharacterRuntimeState, "combatDepth" | "physics" | "pos" | "stateType" | "vel">;
+  runtime: Pick<CharacterRuntimeState, "combatDepth" | "physics" | "pos" | "stateType" | "vel">
+    & Partial<Pick<CharacterRuntimeState, "hitVars" | "moveType">>;
 };
 
 export type RuntimeKinematicsHooks = {
@@ -43,17 +44,23 @@ export class RuntimeKinematicsWorld {
 
     const friction = options.groundFriction;
     if (friction && actor.runtime.physics === "S") {
-      actor.runtime.vel.x *= friction.stand;
+      const standFriction = actor.runtime.moveType === "H"
+        ? finite(actor.runtime.hitVars?.standFriction) ?? friction.stand
+        : friction.stand;
+      actor.runtime.vel.x *= standFriction;
       if (Math.abs(actor.runtime.vel.x) < friction.standThreshold) actor.runtime.vel.x = 0;
       if (actor.runtime.combatDepth) {
-        actor.runtime.combatDepth.velocity *= friction.stand;
+        actor.runtime.combatDepth.velocity *= standFriction;
         if (Math.abs(actor.runtime.combatDepth.velocity) < friction.standThreshold) {
           actor.runtime.combatDepth.velocity = 0;
         }
       }
     } else if (friction && actor.runtime.physics === "C") {
-      actor.runtime.vel.x *= friction.crouch;
-      if (actor.runtime.combatDepth) actor.runtime.combatDepth.velocity *= friction.crouch;
+      const crouchFriction = actor.runtime.moveType === "H"
+        ? finite(actor.runtime.hitVars?.crouchFriction) ?? friction.crouch
+        : friction.crouch;
+      actor.runtime.vel.x *= crouchFriction;
+      if (actor.runtime.combatDepth) actor.runtime.combatDepth.velocity *= crouchFriction;
     }
 
     if (actor.runtime.pos.y <= 0 || options.preserveImportedStateMoveType) {

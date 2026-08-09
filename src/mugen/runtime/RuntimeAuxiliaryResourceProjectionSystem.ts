@@ -11,6 +11,8 @@ export type RuntimeAuxiliaryResourceRuntimeState = Pick<
   CharacterRuntimeState,
   "life" | "lifeMax" | "redLife" | "guardPoints" | "guardPointsMax" | "assertSpecial"
 > & {
+  power?: number;
+  powerMax?: number;
   dizzyPoints?: number;
   dizzyPointsMax?: number;
 };
@@ -49,6 +51,7 @@ export type RuntimeAuxiliaryResourceProjectionActor = {
   runOrder?: number;
   teamState?: RuntimeTeamState;
   resources: {
+    power: RuntimeAuxiliaryResourceValue;
     redLife: RuntimeAuxiliaryResourceValue;
     guardPoints: RuntimeAuxiliaryResourceValue;
     dizzyPoints: RuntimeAuxiliaryResourceValue;
@@ -59,6 +62,10 @@ export type RuntimeAuxiliaryResourceProjectionDiagnostic = {
   schema: typeof RUNTIME_AUXILIARY_RESOURCE_PROJECTION_SCHEMA;
   tick: number;
   ownership: {
+    power: {
+      owner: "actor";
+      share: "deferred-team-power-share";
+    };
     redLife: {
       owner: "actor";
       share: "deferred-root-life-share";
@@ -73,11 +80,13 @@ export type RuntimeAuxiliaryResourceProjectionDiagnostic = {
     };
   };
   mutation: {
+    power: "bounded";
     redLife: "bounded";
     guardPoints: "bounded";
     dizzyPoints: "bounded";
   };
   suppression: {
+    power: "unimplemented";
     redLife: "unimplemented";
     guardPoints: "unimplemented";
     dizzyPoints: "bounded";
@@ -141,6 +150,7 @@ export class RuntimeAuxiliaryResourceProjectionWorld {
       }
       const resolvedLifeMax = lifeMax(actor.runtime, id, diagnostics);
       const resolvedGuardPointsMax = guardPointsMax(actor.runtime, id, diagnostics);
+      const resolvedPowerMax = powerMax(actor.runtime, id, diagnostics);
 
       normalizedActors.push({
         id,
@@ -154,6 +164,11 @@ export class RuntimeAuxiliaryResourceProjectionWorld {
         ...(actor.runOrder === undefined ? {} : { runOrder: actor.runOrder }),
         ...(actor.teamState ? { teamState: cloneTeamState(actor.teamState) } : {}),
         resources: {
+          power: availableResource(
+            resourceOwnerId,
+            normalizeValue(actor.runtime.power, 0, resolvedPowerMax, id, "power", diagnostics),
+            resolvedPowerMax,
+          ),
           redLife: availableResource(
             resourceOwnerId,
             normalizeValue(actor.runtime.redLife, 0, resolvedLifeMax, id, "red-life", diagnostics),
@@ -187,16 +202,19 @@ export class RuntimeAuxiliaryResourceProjectionWorld {
       schema: RUNTIME_AUXILIARY_RESOURCE_PROJECTION_SCHEMA,
       tick: normalizeTick(input.tick),
       ownership: {
+        power: { owner: "actor", share: "deferred-team-power-share" },
         redLife: { owner: "actor", share: "deferred-root-life-share" },
         guardPoints: { owner: "actor", share: "none" },
         dizzyPoints: { owner: "actor", share: "none" },
       },
       mutation: {
+        power: "bounded",
         redLife: "bounded",
         guardPoints: "bounded",
         dizzyPoints: "bounded",
       },
       suppression: {
+        power: "unimplemented",
         redLife: "unimplemented",
         guardPoints: "unimplemented",
         dizzyPoints: "bounded",
@@ -243,6 +261,14 @@ function lifeMax(
   diagnostics: string[],
 ): number {
   return positiveMax(runtime.lifeMax, 1000, actorId, "life-max", diagnostics);
+}
+
+function powerMax(
+  runtime: RuntimeAuxiliaryResourceRuntimeState,
+  actorId: string,
+  diagnostics: string[],
+): number {
+  return positiveMax(runtime.powerMax, 3000, actorId, "power-max", diagnostics);
 }
 
 function guardPointsMax(

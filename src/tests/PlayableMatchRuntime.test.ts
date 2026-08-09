@@ -9,16 +9,129 @@ import { runtimeWorldBox } from "../mugen/runtime/CombatResolver";
 import { runtimeHelperCanDirectlyInteract, type RuntimeHelperProgram } from "../mugen/runtime/HelperSystem";
 import { PlayableMatchRuntime } from "../mugen/runtime/PlayableMatchRuntime";
 import type { RuntimeCollisionBox } from "../mugen/runtime/RuntimeCollisionTransformSystem";
+import { runtimeHitVar } from "../mugen/runtime/RuntimeExpressionContextSystem";
 import type { RuntimeTarget } from "../mugen/runtime/TargetSystem";
 
 describe("PlayableMatchRuntime", () => {
+  it("exposes the active root pair independently from roster labels", () => {
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!);
+    expect(runtime.getActiveRootIds()).toEqual(["p1", "p2"]);
+  });
+
+  it("routes an imported Helper Life/Power write into the Ikemen team bank", () => {
+    const imported = createImportedFixture({
+      id: "imported-helper-team-resource",
+      withStateMove: false,
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Shared Life]
+type = LifeSet
+trigger1 = Time = 0
+value = 750
+
+[State 1200, Shared Power]
+type = PowerSet
+trigger1 = Time = 0
+value = 900
+`,
+    });
+    const reserve = createImportedFixture({ id: "imported-helper-team-reserve", withStateMove: false });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      teamLifeShare: true,
+      teamPowerShare: true,
+      helperResourceShareContractEnabled: true,
+      effectActorWorld,
+      reserveFighters: [reserve, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const helper = effectActorWorld.helpers("p1")[0];
+
+    expect(snapshot.actors[0]?.runtime).toMatchObject({ life: 750, power: 900 });
+    expect(snapshot.reserveActors?.[0]?.runtime).toMatchObject({ life: 750, power: 900 });
+    expect(helper).toMatchObject({ life: 1000, power: 0 });
+  });
+
+  it("routes an imported Helper RedLife write into the Ikemen LifeShare bank", () => {
+    const imported = createImportedFixture({
+      id: "imported-helper-team-red-life",
+      withStateMove: false,
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Shared Life]
+type = LifeSet
+trigger1 = Time = 0
+value = 750
+
+[State 1200, Shared RedLife]
+type = RedLifeSet
+trigger1 = Time = 0
+value = 800
+`,
+    });
+    const reserve = createImportedFixture({ id: "imported-helper-team-red-life-reserve", withStateMove: false });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      teamLifeShare: true,
+      helperResourceShareContractEnabled: true,
+      effectActorWorld,
+      reserveFighters: [reserve, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const helper = effectActorWorld.helpers("p1")[0];
+
+    expect(snapshot.actors[0]?.runtime).toMatchObject({ redLife: 800 });
+    expect(snapshot.reserveActors?.[0]?.runtime).toMatchObject({ redLife: 800 });
+    expect(helper).toMatchObject({ redLife: 0 });
+  });
+
+  it("fails closed for imported Helper resources when the shared contract is disabled", () => {
+    const imported = createImportedFixture({
+      id: "imported-helper-team-resource-no-contract",
+      withStateMove: false,
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Blocked Life]
+type = LifeSet
+trigger1 = Time = 0
+value = 750
+
+[State 1200, Blocked Power]
+type = PowerSet
+trigger1 = Time = 0
+value = 900
+`,
+    });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      teamMode: "tag",
+      teamLifeShare: true,
+      teamPowerShare: true,
+      effectActorWorld,
+      reserveFighters: [demoFighters[0]!, demoFighters[1]!],
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime).toMatchObject({ life: 1000, power: 0 });
+    expect(snapshot.reserveActors?.[0]?.runtime).toMatchObject({ life: 1000, power: 0 });
+    expect(effectActorWorld.helpers("p1")[0]).toMatchObject({ life: 1000, power: 0 });
+  });
+
   it("starts a two-fighter round on the training stage", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!);
     const snapshot = runtime.getSnapshot();
 
     expect(snapshot.actors).toHaveLength(2);
-    expect(snapshot.actors[0]?.label).toBe("Nova Boxer");
-    expect(snapshot.actors[1]?.label).toBe("Mira Volt");
+    expect(snapshot.actors[0]?.label).toBe("Rocco Vidal");
+    expect(snapshot.actors[1]?.label).toBe("Nadia Arce");
     expect(snapshot.stage.floorY).toBe(0);
     expect(snapshot.playing).toBe(true);
     expect(snapshot.tickSchedule).toMatchObject({
@@ -2860,7 +2973,7 @@ RedirectID = 56
 [State 0, Redirected ModifyProjectile]
 type = ModifyProjectile
 trigger1 = 1
-projid = 77
+id = 77
 projedgebound = var(0)
 RedirectID = 57
 `,
@@ -2886,6 +2999,278 @@ RedirectID = 57
     expect(snapshot.compatibilitySession?.actors.some((actor) => actor.executedControllers.ModifyProjectile)).toBe(true);
   });
 
+  it("resolves dynamic ModifyProjectile id, index, and projid as separate root fields", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const fighter = createImportedFixture({
+      id: "dynamic-modify-projectile-root",
+      withStateMove: false,
+      withProjectile: true,
+      passiveVarSet: { trigger: "1", index: 0, value: 77 },
+      passiveResourceController: `
+[State 0, Dynamic ModifyProjectile Selection]
+type = ModifyProjectile
+trigger1 = 1
+id = var(0)
+chainid = var(0) + 1
+nochainid = var(0) + 23, var(0) + 24
+index = 0
+projid = var(0) + 14
+projanim = var(0) + 923
+projhitanim = var(0) + 823
+projremanim = var(0) + 843
+projcancelanim = var(0) + 923
+attr = A,NP
+guardflag = A
+affectteam = B
+animtype = Medium
+air.animtype = Up
+fall.animtype = DiagUp
+kill = 0
+guard.kill = 0
+fall.kill = 0
+forcenofall = var(0) - 76
+forcestand = var(0) - 76
+forcecrouch = var(0) - 77
+fall.damage = var(0) - 64
+fall.xvelocity = var(0) - 80.5
+fall.yvelocity = var(0) - 85.25
+fall.zvelocity = var(0) - 74.5
+fall.recover = var(0) - 77
+fall.recovertime = var(0) - 58
+down.recover = var(0) - 77
+down.recovertime = var(0) - 50
+fall.envshake.time = var(0) - 62
+fall.envshake.freq = var(0) + 101.5
+fall.envshake.ampl = var(0) - 71
+fall.envshake.phase = var(0) - 76.75
+fall.envshake.mul = var(0) - 76.25
+fall.envshake.dir = var(0) - 9.5
+dizzypoints = var(0) - 54
+guardpoints = var(0) - 60
+air.juggle = var(0) - 74
+damage = var(0) - 36,var(0) - 70
+getpower = var(0) - 22,var(0) - 66
+givepower = var(0) - 34,var(0) - 44
+redlife = var(0) - 54,var(0) - 68
+score = (var(0) - 70.5) / 1.0,(var(0) - 74.75) / 1.0
+attack.depth = (var(0) - 72.5) / 1.0,(var(0) - 68.75) / 1.0
+numhits = var(0) - 68
+priority = var(0) - 69, Dodge
+p1sprpriority = var(0) - 66
+p2sprpriority = var(0) - 82
+p2stateno = var(0) + 812
+p2getp1state = var(0) - 77
+p2facing = var(0) - 79
+mindist = (var(0) - 52.5) / 1.0,(var(0) - 70.75) / 1.0,(var(0) - 73.5) / 1.0
+maxdist = (var(0) - 4.5) / 1.0,(var(0) - 58.75) / 1.0,(var(0) - 67.5) / 1.0
+air.hittime = var(0) - 54
+fall = var(0) - 76
+air.fall = var(0) - 77
+down.bounce = var(0) - 76
+ground.hittime = var(0) - 48
+pausetime = var(0) - 75,var(0) - 70
+guard.pausetime = var(0) - 74,var(0) - 68
+guard.dist.width = var(0) + 13,var(0) - 65
+guard.dist.height = var(0) + 3,var(0) - 7
+guard.dist.depth = var(0) - 69,var(0) - 68
+sparkno = F7101
+sparkangle = (var(0) - 75.75) / 1.0
+guard.sparkno = S7100
+guard.sparkangle = (var(0) - 78.5) / 1.0
+sparkxy = var(0) - 53,var(0) - 137
+ground.slidetime = var(0) - 42
+guard.hittime = var(0) - 46
+guard.slidetime = var(0) - 40
+guard.ctrltime = var(0) - 38
+airguard.ctrltime = var(0) - 36
+down.hittime = var(0) - 34
+ground.velocity = (var(0) - 82.5) / 1.0,n,(var(0) - 75.25) / 1.0
+down.velocity = (var(0) - 80.5) / 1.0,(var(0) - 85.25) / 1.0,(var(0) - 74.5) / 1.0
+air.velocity = (var(0) - 83.5) / 1.0,(var(0) - 86.25) / 1.0,(var(0) - 73.5) / 1.0
+guard.velocity = (var(0) - 81.5) / 1.0,(var(0) - 78.25) / 1.0,(var(0) - 75.5) / 1.0
+airguard.velocity = (var(0) - 84.5) / 1.0,(var(0) - 79.25) / 1.0,(var(0) - 74.5) / 1.0
+xaccel = (var(0) - 77.125) / 1.0
+yaccel = (var(0) - 76.625) / 1.0
+zaccel = (var(0) - 76.375) / 1.0
+envshake.time = var(0) - 57
+envshake.freq = var(0) + 13
+envshake.ampl = var(0) - 83
+envshake.phase = var(0) - 47
+envshake.mul = var(0) - 75
+envshake.dir = var(0) + 13
+p1stateno = var(0) + 700
+missonoverride = var(0) - 77
+p2clsncheck = Clsn1
+p2clsnrequire = Size
+hitflag = H-
+projpriority = 8
+`,
+    });
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 3; frame += 1) {
+      runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(effectActorWorld.projectiles("p1")).toHaveLength(1);
+    expect(effectActorWorld.projectiles("p1")[0]).toMatchObject({
+      projectileId: 91,
+      animNo: 1000,
+      hitAnimNo: 900,
+      removeAnimNo: 920,
+      cancelAnimNo: 1000,
+      targetId: 77,
+      chainId: 78,
+      noChainIds: [100, 101],
+      attr: "A,NP",
+      guardFlag: "A",
+      affectTeam: 0,
+      hitAnimTypes: { ground: 1, air: 4, fall: 5 },
+      kill: false,
+      guardKill: false,
+      fall: expect.objectContaining({
+        enabled: true,
+        airFall: false,
+        kill: false,
+        damage: 13,
+        xVelocity: -3.5,
+        yVelocity: -8.25,
+        zVelocity: 2.5,
+        recover: false,
+        recoverTime: 19,
+        downRecover: false,
+        downRecoverTime: 27,
+        envShakeTime: 15,
+        envShakeFrequency: 178.5,
+        envShakeAmplitude: 6,
+        envShakePhase: 0.25,
+        envShakeMultiplier: 0.75,
+        envShakeDirection: 67.5,
+      }),
+      forceNoFall: true,
+      forceStand: true,
+      forceCrouch: false,
+      dizzyPoints: 23,
+      guardPoints: 17,
+      airJuggle: 3,
+      damage: 41,
+      guardDamage: 7,
+      attackerHitPower: 55,
+      attackerGuardPower: 11,
+      hitPower: 43,
+      guardPower: 33,
+      redLife: 23,
+      guardRedLife: 9,
+      score: 6.5,
+      guardScore: 2.25,
+      attackDepth: [4.5, 8.25],
+      hitDefHitCount: 9,
+      hitPriority: 8,
+      hitPriorityType: "dodge",
+      p2SpritePriority: -5,
+      p2StateNo: 889,
+      p2GetP1State: false,
+      p2Facing: -2,
+      minDistance: [24.5, 6.25, 3.5],
+      maxDistance: [72.5, 18.25, 9.5],
+      airHitTime: 23,
+      downBounce: true,
+      hitStun: 29,
+      hitPause: 2,
+      hitShakeTime: 7,
+      guardPause: 3,
+      guardShakeTime: 9,
+      guardDistanceBounds: {
+        width: [90, 12],
+        height: [80, 70],
+        depth: [8, 9],
+      },
+      hitSpark: "F7101",
+      hitSparkAngle: 1.25,
+      guardSpark: "S7100",
+      guardSparkAngle: -1.5,
+      sparkXy: [24, -60],
+      groundSlideTime: 35,
+      guardStun: 31,
+      guardSlideTime: 37,
+      guardControlTime: 39,
+      airGuardControlTime: 41,
+      downHitTime: 43,
+      push: 5.5,
+      hitVelocityY: 0,
+      hitVelocityZ: 1.75,
+      hitVelocities: expect.objectContaining({ ground: { x: -5.5, y: 0, z: 1.75 } }),
+      downVelocityX: -3.5,
+      downVelocityY: -8.25,
+      downVelocityZ: 2.5,
+      airVelocityX: -6.5,
+      airVelocityY: -9.25,
+      airVelocityZ: 3.5,
+      guardPush: 4.5,
+      guardVelocityY: -1.25,
+      guardVelocityZ: 1.5,
+      airGuardPush: 7.5,
+      airGuardVelocityY: -2.25,
+      airGuardVelocityZ: 2.5,
+      hitXAccel: -0.125,
+      hitYAccel: 0.375,
+      hitZAccel: 0.625,
+      envShake: { time: 20, freq: 90, ampl: -6, phase: 30, mul: 2, dir: 90 },
+      p1StateNo: 777,
+      missOnOverride: false,
+      p2ClsnCheck: "clsn1",
+      p2ClsnRequire: "size",
+      hitFlag: "H-",
+      terminalActions: {
+        hit: expect.objectContaining({ id: 900 }),
+        remove: expect.objectContaining({ id: 920 }),
+        cancel: expect.objectContaining({ id: 1000 }),
+      },
+      priority: 8,
+    });
+    expect(effectActorWorld.projectiles("p1")[0]).not.toHaveProperty("p1SpritePriority");
+  });
+
+  it("uses zero for omitted dynamic ModifyProjectile guard power components", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const fighter = createImportedFixture({
+      id: "dynamic-modify-projectile-single-givepower",
+      withStateMove: false,
+      withProjectile: true,
+      passiveVarSet: { trigger: "1", index: 0, value: 77 },
+      passiveResourceController: `
+[State 0, Dynamic single-value ModifyProjectile power]
+type = ModifyProjectile
+trigger1 = 1
+id = var(0)
+index = 0
+getpower = var(0) - 22
+givepower = var(0) - 34
+`,
+    });
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 3; frame += 1) {
+      runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(effectActorWorld.projectiles("p1")).toHaveLength(1);
+    expect(effectActorWorld.projectiles("p1")[0]).toMatchObject({
+      attackerHitPower: 55,
+      attackerGuardPower: 0,
+      hitPower: 43,
+      guardPower: 0,
+    });
+  });
+
   it("fails closed for invalid active ModifyProjectile RedirectID", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const caller = createImportedFixture({
@@ -2895,7 +3280,7 @@ RedirectID = 57
 [State 0, Invalid ModifyProjectile Redirect]
 type = ModifyProjectile
 trigger1 = 1
-projid = 77
+id = 77
 projedgebound = 66
 RedirectID = 999
 `,
@@ -3186,16 +3571,20 @@ RedirectID = 999
       teamMode: "tag",
       reserveFighters: [demoFighters[0]!, demoFighters[1]!],
     });
+    runtime.dispatch({ type: "set-root-standby", changes: [{ id: "p3", standby: false }] });
 
     const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
-    expect(snapshot.actors[0]?.runtime.vars[0]).toBe(2);
-    expect(snapshot.actors[0]?.runtime.teamState?.standby).toBe(true);
+    const taggedOut = snapshot.reserveActors?.find(({ id }) => id === "p1");
+    expect(taggedOut?.runtime.vars[0]).toBe(2);
+    expect(taggedOut?.runtime.teamState?.standby).toBe(true);
     expect(snapshot.tagTeamOrder?.sides[0]).toMatchObject({
       stableRootIds: ["p1", "p3"],
       memberOrderIds: ["p3", "p1"],
       leaderId: "p1",
     });
-    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["team-standby:tagout"]).toBe(1);
+    expect(
+      snapshot.reserveCompatibilitySession?.actors.find(({ actorId }) => actorId === "p1")?.executedOperations["team-standby:tagout"],
+    ).toBe(1);
   });
 
   it.each([
@@ -5306,7 +5695,7 @@ ctrl = 0
     const walk = runtime.step({ p1: new Set(["F"]), p2: new Set() });
     expect(walk.actors[0]?.runtime.stateNo).toBe(20);
     expect(walk.actors[0]?.runtime.animNo).toBe(20);
-    expect(walk.actors[0]?.runtime.vel.x).toBeCloseTo(1.08);
+    expect(walk.actors[0]?.runtime.vel.x).toBeCloseTo(1.02);
   });
 
   it("keeps airborne movement inputs from collapsing into the walk state", () => {
@@ -5319,7 +5708,7 @@ ctrl = 0
     expect(airBack.actors[0]?.runtime.animNo).toBe(40);
     expect(airBack.actors[0]?.runtime.stateType).toBe("A");
     expect(airBack.actors[0]?.runtime.physics).toBe("A");
-    expect(airBack.actors[0]?.runtime.vel.x).toBeCloseTo(-1.08);
+    expect(airBack.actors[0]?.runtime.vel.x).toBeCloseTo(-1.02);
   });
 
   it("lets P1 close distance and damage the opponent with a basic attack", () => {
@@ -5426,7 +5815,43 @@ ctrl = 0
     expect(snapshot.actors[1]?.runtime.life).toBe(963);
     expect(snapshot.actors[1]?.runtime.hitVelocity).toEqual({ x: 4, y: 0 });
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.HitDef).toBe(1);
-    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 37"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Nadia Arce for 37"))).toBe(true);
+  });
+
+  it("resolves a fresh imported HitDef numhits expression from the root caller", () => {
+    const imported = createImportedFixture({ withStateMove: false });
+    const dynamicState = parseCns(`
+[Statedef 200]
+type = S
+movetype = A
+physics = S
+anim = 200
+ctrl = 0
+
+[State 200, Seed NumHits]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 1
+
+[State 200, Dynamic NumHits]
+type = HitDef
+trigger1 = Time = 1
+attr = S,NA
+damage = 10
+pausetime = 0,0
+ground.hittime = 9
+ground.velocity = 0
+numhits = var(0) + 2
+`).states[0]!;
+    imported.states = imported.states?.map((state) => state.id === 200 ? dynamicState : state);
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, trainingStage, { runtimeProfile: "ikemen-go" });
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const internals = runtime as unknown as { p1: { currentMove?: DemoMove } };
+
+    expect(internals.p1.currentMove?.hitVars?.hitCount).toBe(3);
   });
 
   it("resolves package-backed common and FightFX HitDef spark refs on imported attacks", () => {
@@ -5527,7 +5952,7 @@ ctrl = 0
     });
 
     let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
-    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 37"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Nadia Arce for 37"))).toBe(true);
 
     for (let frame = 0; frame < 10; frame += 1) {
       snapshot = runtime.step({ p1: new Set(), p2: new Set() });
@@ -5553,7 +5978,7 @@ ctrl = 0
     });
 
     let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
-    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 37"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Nadia Arce for 37"))).toBe(true);
 
     for (let frame = 0; frame < 10; frame += 1) {
       snapshot = runtime.step({ p1: new Set(), p2: new Set() });
@@ -5580,7 +6005,7 @@ ctrl = 0
     });
 
     let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
-    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 37"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Nadia Arce for 37"))).toBe(true);
 
     for (let frame = 0; frame < 10; frame += 1) {
       snapshot = runtime.step({ p1: new Set(), p2: new Set() });
@@ -5607,7 +6032,7 @@ ctrl = 0
     });
 
     let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
-    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 37"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Nadia Arce for 37"))).toBe(true);
 
     for (let frame = 0; frame < 10; frame += 1) {
       snapshot = runtime.step({ p1: new Set(), p2: new Set() });
@@ -5634,7 +6059,7 @@ ctrl = 0
     });
 
     let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
-    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 37"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Nadia Arce for 37"))).toBe(true);
 
     for (let frame = 0; frame < 10; frame += 1) {
       snapshot = runtime.step({ p1: new Set(), p2: new Set() });
@@ -5726,7 +6151,7 @@ ctrl = 0
     const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
 
     expect(snapshot.actors[1]?.runtime.life).toBe(1);
-    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 2000"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Nadia Arce for 2000"))).toBe(true);
   });
 
   it("respects defender AssertSpecial NoKO for imported direct hits", () => {
@@ -5862,7 +6287,7 @@ ctrl = 0
     expect(snapshot.actors[1]?.runtime.guardControlTime).toBe(7);
     expect(snapshot.actors[1]?.runtime.hitVelocity).toEqual({ x: 2, y: 0 });
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.HitDef).toBe(1);
-    expect(snapshot.logs.some((line) => line.includes("Mira Volt guarded Imported Fixture for 5"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Nadia Arce guarded Imported Fixture for 5"))).toBe(true);
   });
 
   it("respects imported HitDef guard.kill = 0 on guarded hits", () => {
@@ -5884,7 +6309,7 @@ ctrl = 0
     const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["B"]) });
 
     expect(snapshot.actors[1]?.runtime.life).toBe(1);
-    expect(snapshot.logs.some((line) => line.includes("Mira Volt guarded Imported Fixture for 2000"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Nadia Arce guarded Imported Fixture for 2000"))).toBe(true);
   });
 
   it("treats atomic down-back input as a crouch guard direction", () => {
@@ -5907,7 +6332,7 @@ ctrl = 0
 
     expect(snapshot.actors[1]?.runtime.life).toBe(995);
     expect(snapshot.actors[1]?.runtime.guarding).toBe(true);
-    expect(snapshot.logs.some((line) => line.includes("Mira Volt guarded Imported Fixture for 5"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Nadia Arce guarded Imported Fixture for 5"))).toBe(true);
   });
 
   it("does not guard a HitDef when guardflag does not allow the defender statetype", () => {
@@ -5925,7 +6350,7 @@ ctrl = 0
 
     expect(snapshot.actors[1]?.runtime.life).toBe(963);
     expect(snapshot.actors[1]?.runtime.guarding).toBe(false);
-    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 37"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Nadia Arce for 37"))).toBe(true);
   });
 
   it("uses imported NotHitBy to block matching HitDef attrs without consuming the active attack", () => {
@@ -6172,6 +6597,406 @@ RedirectID = var(0)
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.HitDef).toBe(1);
   });
 
+  it("resolves dynamic root HitDef custom states in the attacker's caller context", () => {
+    const attacker = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 37,
+      hitDefP1StateNo: 777,
+      hitDefP2StateNo: 888,
+      hitDefP1StateExpression: "var(10)",
+      hitDefP2StateExpression: "var(11)",
+      hitDefP2GetP1StateExpression: "var(12)",
+      passiveResourceController: `
+[State 0, Dynamic P1 custom state]
+type = VarSet
+trigger1 = 1
+v = 10
+value = 777
+
+[State 0, Dynamic P2 custom state]
+type = VarSet
+trigger1 = 1
+v = 11
+value = 888
+
+[State 0, Dynamic P2 state owner]
+type = VarSet
+trigger1 = 1
+v = 12
+value = 1
+`,
+    });
+    const runtime = new PlayableMatchRuntime(attacker, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime).toMatchObject({ stateNo: 777, moveType: "A" });
+    expect(snapshot.actors[0]?.runtime.animationSource).toBe("self");
+    expect(snapshot.actors[0]?.runtime.customState).toBeUndefined();
+    expect(snapshot.actors[1]?.runtime).toMatchObject({ life: 963, stateNo: 888, moveType: "H" });
+    expect(snapshot.actors[1]?.runtime.animationSource).toBe("state-owner");
+    expect(snapshot.actors[1]?.runtime.customState).toEqual({ ownerId: "p1", stateNo: 888, getP1State: true });
+  });
+
+  it("applies dynamic root HitDef p2facing once after the next auto-facing pass", () => {
+    const attacker = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 37,
+      hitDefP2Facing: "var(10)",
+      passiveResourceController: `
+[State 0, Dynamic target facing]
+type = VarSet
+trigger1 = 1
+v = 10
+value = 1
+`,
+    });
+    const runtime = new PlayableMatchRuntime(attacker, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+    const internals = runtime as unknown as { p2: { pendingDirectHitFacing?: 1 | -1 } };
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const contacted = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(contacted.actors[1]?.runtime.facing).toBe(-1);
+    expect(contacted.actors[1]?.runtime.hitVars?.sourceFacing).toBe(1);
+    expect(internals.p2.pendingDirectHitFacing).toBe(1);
+
+    const applied = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(applied.actors[1]?.runtime.facing).toBe(1);
+    expect(applied.actors[1]?.runtime.hitVars?.sourceFacing).toBe(1);
+    expect(internals.p2.pendingDirectHitFacing).toBeUndefined();
+
+    const consumed = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(consumed.actors[1]?.runtime.facing).toBe(-1);
+    expect(consumed.actors[1]?.runtime.hitVars?.sourceFacing).toBe(1);
+  });
+
+  it("uses dynamic root HitDef id and chainid for admission, target memory, and GetHitVar metadata", () => {
+    const resolve = (chainId: number) => {
+      const attacker = createImportedFixture({
+        withStateMove: false,
+        hitDefDamage: 37,
+        hitDefIdExpression: "var(10)",
+        hitDefChainIdExpression: "var(11)",
+        passiveResourceController: `
+[State 0, Dynamic HitDef id]
+type = VarSet
+trigger1 = 1
+v = 10
+value = 43
+
+[State 0, Dynamic HitDef chain id]
+type = VarSet
+trigger1 = 1
+v = 11
+value = ${chainId}
+`,
+      });
+      const runtime = new PlayableMatchRuntime(attacker, demoFighters[1]!, {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      });
+      const internals = runtime as unknown as {
+        p1: { targets: Array<{ actorId: string; targetId: number; age: number }> };
+        p2: { runtime: { hitVars?: { hitId?: number; chainId?: number } } };
+      };
+      internals.p2.runtime.hitVars = { hitId: 43 };
+
+      runtime.step({ p1: new Set(), p2: new Set() });
+      const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+      return { internals, snapshot };
+    };
+
+    const accepted = resolve(43);
+    expect(accepted.snapshot.actors[1]?.runtime.life).toBe(963);
+    expect(accepted.snapshot.actors[1]?.runtime.hitVars).toMatchObject({ hitId: 43, chainId: 43 });
+    expect(accepted.internals.p1.targets).toEqual([{ actorId: "p2", targetId: 43, age: 0 }]);
+
+    const rejected = resolve(44);
+    expect(rejected.snapshot.actors[1]?.runtime.life).toBe(1000);
+    expect(rejected.snapshot.actors[1]?.runtime.hitVars).toMatchObject({ hitId: 43 });
+    expect(rejected.internals.p1.targets).toEqual([]);
+    expect(rejected.snapshot.logs.some((line) => line.includes("via ChainID 44 (previous HitDef id 43)"))).toBe(true);
+  });
+
+  it("uses dynamic root HitDef damage for hit, guard, and fresh single-value guard zero", () => {
+    const resolve = (damageExpression: string, guarding: boolean) => {
+      const attacker = createImportedFixture({
+        withStateMove: false,
+        hitDefDamageExpression: damageExpression,
+        guardFlag: "MA",
+        passiveResourceController: `
+[State 0, Dynamic hit damage]
+type = VarSet
+trigger1 = 1
+v = 10
+value = 41
+
+[State 0, Dynamic guard damage]
+type = VarSet
+trigger1 = 1
+v = 11
+value = 7
+`,
+      });
+      const runtime = new PlayableMatchRuntime(attacker, demoFighters[1]!, {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      });
+
+      runtime.step({ p1: new Set(), p2: new Set() });
+      return runtime.step({ p1: new Set(["x"]), p2: guarding ? new Set(["B"]) : new Set() });
+    };
+
+    const hit = resolve("var(10),var(11)", false);
+    expect(hit.actors[1]?.runtime.life).toBe(959);
+    expect(hit.actors[1]?.runtime.hitVars).toMatchObject({ damage: 41, hitDamage: 41, guardDamage: 7 });
+    expect(runtimeHitVar(hit.actors[1]!.runtime, "damage")).toBe(41);
+    expect(runtimeHitVar(hit.actors[1]!.runtime, "hitdamage")).toBe(41);
+    expect(runtimeHitVar(hit.actors[1]!.runtime, "guarddamage")).toBe(7);
+
+    const guard = resolve("var(10),var(11)", true);
+    expect(guard.actors[1]?.runtime).toMatchObject({ life: 993, guarding: true });
+    expect(guard.actors[1]?.runtime.hitVars).toMatchObject({ damage: 7, hitDamage: 41, guardDamage: 7 });
+    expect(runtimeHitVar(guard.actors[1]!.runtime, "damage")).toBe(7);
+    expect(runtimeHitVar(guard.actors[1]!.runtime, "hitdamage")).toBe(41);
+    expect(runtimeHitVar(guard.actors[1]!.runtime, "guarddamage")).toBe(7);
+
+    const single = resolve("var(10)", true);
+    expect(single.actors[1]?.runtime).toMatchObject({ life: 1000, guarding: true });
+    expect(single.actors[1]?.runtime.hitVars).toMatchObject({ damage: 0, hitDamage: 41, guardDamage: 0 });
+  });
+
+  it("accepts an omitted-damage root HitDef as zero damage while retaining target and GetHitVar metadata", () => {
+    const attacker = createImportedFixture({
+      withStateMove: false,
+      omitHitDefDamage: true,
+      hitDefTargetId: 77,
+    });
+    const runtime = new PlayableMatchRuntime(attacker, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+    const internals = runtime as unknown as {
+      p1: { targets: Array<{ actorId: string; targetId: number; age: number }> };
+    };
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(snapshot.actors[1]?.runtime).toMatchObject({ life: 1000, moveType: "H" });
+    expect(internals.p1.targets).toEqual([{ actorId: "p2", targetId: 77, age: 0 }]);
+    expect(snapshot.actors[1]?.runtime.hitVars).toMatchObject({ damage: 0, hitDamage: 0, guardDamage: 0 });
+    expect(runtimeHitVar(snapshot.actors[1]!.runtime, "damage")).toBe(0);
+    expect(runtimeHitVar(snapshot.actors[1]!.runtime, "hitdamage")).toBe(0);
+    expect(runtimeHitVar(snapshot.actors[1]!.runtime, "guarddamage")).toBe(0);
+  });
+
+  it("uses dynamic root HitDef pause pairs asymmetrically for hit and guard", () => {
+    const resolve = (guarding: boolean) => {
+      const attacker = createImportedFixture({
+        withStateMove: false,
+        hitDefPauseExpression: "var(10),var(11)",
+        guardPauseExpression: "var(12),var(13)",
+        guardFlag: "MA",
+        passiveResourceController: `
+[State 0, Dynamic hit attacker pause]
+type = VarSet
+trigger1 = 1
+v = 10
+value = 4
+
+[State 0, Dynamic hit defender pause]
+type = VarSet
+trigger1 = 1
+v = 11
+value = 9
+
+[State 0, Dynamic guard attacker pause]
+type = VarSet
+trigger1 = 1
+v = 12
+value = 3
+
+[State 0, Dynamic guard defender pause]
+type = VarSet
+trigger1 = 1
+v = 13
+value = 7
+`,
+      });
+      const runtime = new PlayableMatchRuntime(attacker, demoFighters[1]!, {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      });
+
+      runtime.step({ p1: new Set(), p2: new Set() });
+      return runtime.step({ p1: new Set(["x"]), p2: guarding ? new Set(["B"]) : new Set() });
+    };
+
+    const hit = resolve(false);
+    expect([hit.actors[0]?.hitPause, hit.actors[1]?.hitPause]).toEqual([4, 9]);
+    expect(runtimeHitVar(hit.actors[1]!.runtime, "hitshaketime", { hitPause: hit.actors[1]!.hitPause })).toBe(9);
+
+    const guard = resolve(true);
+    expect([guard.actors[0]?.hitPause, guard.actors[1]?.hitPause]).toEqual([3, 7]);
+    expect(runtimeHitVar(guard.actors[1]!.runtime, "hitshaketime", { hitPause: guard.actors[1]!.hitPause })).toBe(7);
+  });
+
+  it("uses the defender's own dynamic HitDef state when p2getp1state resolves to 0", () => {
+    const attacker = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 37,
+      hitDefP1StateNo: 777,
+      hitDefP2StateNo: 888,
+      hitDefP1StateExpression: "var(10)",
+      hitDefP2StateExpression: "var(11)",
+      hitDefP2GetP1StateExpression: "var(12)",
+      passiveResourceController: `
+[State 0, Dynamic custom states]
+type = VarSet
+trigger1 = 1
+v = 10
+value = 777
+
+[State 0, Dynamic target state]
+type = VarSet
+trigger1 = 1
+v = 11
+value = 888
+
+[State 0, Dynamic target state owner]
+type = VarSet
+trigger1 = 1
+v = 12
+value = 0
+`,
+    });
+    const defender = createImportedFixture({ withStateMove: false, extraStateNos: [888] });
+    const runtime = new PlayableMatchRuntime(attacker, defender, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(snapshot.actors[1]?.runtime).toMatchObject({ life: 963, stateNo: 888, moveType: "H" });
+    expect(snapshot.actors[1]?.runtime.animationSource).toBe("self");
+    expect(snapshot.actors[1]?.runtime.customState).toBeUndefined();
+    expect(snapshot.compatibilitySession?.actors[1]?.executedStates).toContain(888);
+  });
+
+  it("does not apply dynamic HitDef custom states on guard", () => {
+    const attacker = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 37,
+      guardDamage: 5,
+      guardFlag: "MA",
+      hitDefP1StateNo: 777,
+      hitDefP2StateNo: 888,
+      hitDefP1StateExpression: "var(10)",
+      hitDefP2StateExpression: "var(11)",
+      hitDefP2GetP1StateExpression: "1",
+      passiveResourceController: `
+[State 0, Dynamic attacker state]
+type = VarSet
+trigger1 = 1
+v = 10
+value = 777
+
+[State 0, Dynamic defender state]
+type = VarSet
+trigger1 = 1
+v = 11
+value = 888
+`,
+    });
+    const runtime = new PlayableMatchRuntime(attacker, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["B"]) });
+
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(200);
+    expect(snapshot.actors[0]?.runtime.customState).toBeUndefined();
+    expect(snapshot.actors[1]?.runtime).toMatchObject({ life: 995, guarding: true });
+    expect(snapshot.actors[1]?.runtime.stateNo).not.toBe(888);
+    expect(snapshot.actors[1]?.runtime.customState).toBeUndefined();
+  });
+
+  it("leaves both actors in place when dynamic HitDef custom states are unavailable", () => {
+    const attacker = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 37,
+      hitDefP1StateNo: 777,
+      hitDefP2StateNo: 888,
+      hitDefP1StateExpression: "var(10)",
+      hitDefP2StateExpression: "var(11)",
+      hitDefP2GetP1StateExpression: "1",
+      passiveResourceController: `
+[State 0, Missing attacker state]
+type = VarSet
+trigger1 = 1
+v = 10
+value = 779
+
+[State 0, Missing defender state]
+type = VarSet
+trigger1 = 1
+v = 11
+value = 889
+`,
+    });
+    const runtime = new PlayableMatchRuntime(attacker, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(200);
+    expect(snapshot.actors[0]?.runtime.customState).toBeUndefined();
+    expect(snapshot.actors[1]?.runtime).toMatchObject({ life: 963, stateNo: 0 });
+    expect(snapshot.actors[1]?.runtime.customState).toBeUndefined();
+  });
+
   it("uses the target's own state data when HitDef p2getp1state is 0", () => {
     const attacker = createImportedFixture({
       withStateMove: false,
@@ -6334,7 +7159,7 @@ RedirectID = var(0)
     expect(snapshot.actors[1]?.runtime.life).toBe(940);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.AttackMulSet).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["damage-scale:attackmulset"]).toBe(1);
-    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 60"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Nadia Arce for 60"))).toBe(true);
   });
 
   it("uses bounded imported HitDef priority to suppress a lower-priority direct attack", () => {
@@ -6407,7 +7232,7 @@ RedirectID = var(0)
 
     expect(snapshot.actors[0]?.runtime.targetCount).toBe(1);
     expect(snapshot.actors[1]?.runtime.life).toBe(970);
-    expect(snapshot.actors[1]?.runtime.power).toBe(40);
+    expect(snapshot.actors[1]?.runtime.power).toBe(46);
     expect(snapshot.actors[1]?.runtime.vel).toEqual({ x: 0.88, y: -3 });
     expect(snapshot.actors[1]?.runtime.facing).toBe(1);
     expect(snapshot.actors[1]?.runtime.stateNo).toBe(500);
@@ -6471,8 +7296,8 @@ RedirectID = 57
       snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     }
 
-    expect(snapshot.actors[0]?.runtime.power).toBe(75);
-    expect(snapshot.actors[1]?.runtime.power).toBe(35);
+    expect(snapshot.actors[0]?.runtime.power).toBe(40);
+    expect(snapshot.actors[1]?.runtime.power).toBe(0);
     expect(snapshot.actors[1]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
     expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetPowerAdd).toBeGreaterThanOrEqual(1);
     expect(snapshot.compatibilitySession?.actors[1]?.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
@@ -6660,8 +7485,8 @@ value = 1
     }
     snapshot = runtime.step({ p1: new Set(), p2: new Set(["x"]) });
 
-    expect(snapshot.actors[0]?.runtime.power).toBe(35);
-    expect(snapshot.actors[1]?.runtime.power).toBe(75);
+    expect(snapshot.actors[0]?.runtime.power).toBe(0);
+    expect(snapshot.actors[1]?.runtime.power).toBe(40);
     expect(snapshot.actors[0]?.runtime.targetCount).toBeGreaterThanOrEqual(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetPowerAdd).toBeGreaterThanOrEqual(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
@@ -8264,11 +9089,11 @@ RedirectID = 57
       snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     }
     snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
-    for (let frame = 0; frame < 20 && snapshot.actors[0]?.runtime.power !== 75; frame += 1) {
+    for (let frame = 0; frame < 20 && snapshot.actors[0]?.runtime.power !== 56; frame += 1) {
       snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     }
-    expect(snapshot.actors[0]?.runtime.power).toBe(75);
-    expect(snapshot.actors[1]?.runtime.power).toBe(35);
+    expect(snapshot.actors[0]?.runtime.power).toBe(56);
+    expect(snapshot.actors[1]?.runtime.power).toBe(13);
     expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.TargetPowerAdd).toBeGreaterThanOrEqual(1);
     expect(snapshot.logs.some((line) => line.includes("Blocked TargetPowerAdd RedirectID"))).toBe(false);
     expect(snapshot.compatibilitySession?.actors[0]?.redirectedTargetDispatches).toEqual(
@@ -9284,7 +10109,7 @@ value = 0
     }
 
     expect(snapshot.actors[1]!.runtime.life).toBeLessThan(lifeBefore);
-    expect(snapshot.logs.some((line) => line.includes("Imported Fixture projectile hit Mira Volt for 31"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture projectile hit Nadia Arce for 31"))).toBe(true);
   });
 
   it("evaluates bounded ProjHit triggers after imported Projectile contact", () => {
@@ -9309,7 +10134,7 @@ value = 0
       snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     }
 
-    expect(snapshot.logs.some((line) => line.includes("Imported Fixture projectile hit Mira Volt for 31"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture projectile hit Nadia Arce for 31"))).toBe(true);
     expect(snapshot.actors[0]?.runtime.stateNo).toBe(270);
     expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toContain(270);
   });
@@ -10125,30 +10950,163 @@ trigger1 = Time = 0
 v = 0
 value = 57
 
+[State 0, Redirected ModifyHitDef stand friction]
+type = VarSet
+trigger1 = Time = 0
+v = 20
+value = .62
+
+[State 0, Redirected ModifyHitDef crouch friction]
+type = VarSet
+trigger1 = Time = 0
+v = 21
+value = .72
+
+[State 0, Redirected ModifyHitDef spark scale]
+type = VarSet
+trigger1 = Time = 0
+v = 22
+value = 1.5
+
+[State 0, Redirected ModifyHitDef guard spark scale]
+type = VarSet
+trigger1 = Time = 0
+v = 23
+value = -.5
+
+[State 0, Redirected ModifyHitDef P1 facing]
+type = VarSet
+trigger1 = Time = 0
+v = 24
+value = -1
+
+[State 0, Redirected ModifyHitDef P1 from P2 facing]
+type = VarSet
+trigger1 = Time = 0
+v = 25
+value = 2
+
+[State 0, Redirected ModifyHitDef hit getpower]
+type = VarSet
+trigger1 = Time = 0
+v = 26
+value = 110
+
+[State 0, Redirected ModifyHitDef guard getpower]
+type = VarSet
+trigger1 = Time = 0
+v = 27
+value = 44
+
+[State 0, Redirected ModifyHitDef hit givepower]
+type = VarSet
+trigger1 = Time = 0
+v = 28
+value = 18
+
+[State 0, Redirected ModifyHitDef guard givepower]
+type = VarSet
+trigger1 = Time = 0
+v = 29
+value = 7
+
 [State 0, Redirected ModifyHitDef]
 type = ModifyHitDef
 trigger1 = Time = 1
-id = 92
-chainid = 13
-numhits = 3
+damage = var(28),var(29)
+id = var(26) - 18
+chainid = var(27) - 31
+nochainid = var(0) + 43,var(0) + 44
+numhits = var(26) - 107
 attr = C,HP
 guardflag = H
 hitflag = LAF
 p1stateno = 777
 p2stateno = 888
 p2getp1state = 0
-p1sprpriority = 5
-p2sprpriority = -4
-priority = 12, Dodge
-kill = 0
-guard.kill = 0
+p1sprpriority = var(26) - 105
+p2sprpriority = var(27) - 48
+priority = var(26) - 98, Dodge
+forcenofall = var(25) - 1
+forcestand = var(25) - 1
+forcecrouch = var(24) + 1
+unhittabletime = var(0) - 50,var(0) - 49
+stand.friction = var(20)
+crouch.friction = var(21)
+sparkscale = var(22)
+guard.sparkscale = var(23),var(22)
+p1facing = var(24)
+p1getp2facing = var(25)
+p2facing = var(24)
+getpower = var(26),var(27)
+givepower = var(28),var(29)
+palfx.time = var(27)
+palfx.add = var(28),-var(29),3
+palfx.mul = 200,var(26),240
+palfx.color = var(27) * 4
+palfx.invertall = var(25) - 2
+envshake.time = var(27)
+envshake.freq = var(26)
+envshake.ampl = -var(28)
+envshake.phase = var(29) * 5
+envshake.mul = var(25) * .75
+envshake.dir = var(24) * 30
+fall.envshake.time = var(27)
+fall.envshake.freq = var(26)
+fall.envshake.ampl = -var(28)
+fall.envshake.phase = var(29) * 5
+fall.envshake.mul = var(25) * .75
+fall.envshake.dir = var(24) * 30
+fall.damage = var(28)
+fall.xvelocity = var(29) * .5
+fall.yvelocity = -var(28) * .25
+fall.zvelocity = var(25) + .75
+fall = var(25) - 1
+air.fall = var(24) + 1
+fall.kill = var(24) + 1
+fall.recover = var(24) + 1
+fall.recovertime = var(28) + 1
+down.recover = var(25) - 1
+down.recovertime = var(27) + 1
+down.bounce = var(25) - 1
+kill = var(24) + 1
+guard.kill = var(25) - 2
+hitonce = var(25) - 1
 RedirectID = var(0)
 
 [State 0, Restore redirected ModifyHitDef kill flags]
 type = ModifyHitDef
 trigger1 = Time = 2
-kill = 1
-guard.kill = 1
+damage = var(27) - 39
+unhittabletime = 2
+stand.friction = .82
+sparkscale = .25
+p1facing = 1
+getpower = 9
+givepower = 5
+numhits = var(27) - 42
+palfx.time = 2
+envshake.time = 3
+envshake.dir = 15
+fall.envshake.time = 3
+fall.envshake.dir = 15
+fall.damage = 5
+fall.xvelocity = 1.25
+air.fall = 1
+fall.kill = 1
+fall.recover = 1
+down.recovertime = 12
+down.bounce = var(24) + 1
+kill = var(25) - 1
+guard.kill = var(25) - 1
+hitonce = var(24) + 1
+forcecrouch = var(25) - 1
+RedirectID = var(0)
+
+[State 0, Preserve redirected ModifyHitDef damage]
+type = ModifyHitDef
+trigger1 = Time = 3
+numhits = var(27) - 40
 RedirectID = var(0)
 `,
     });
@@ -10165,6 +11123,37 @@ id = 91
 pausetime = 0,0
 ground.hittime = 8
 ground.velocity = 0,0
+sparkscale = .8,.9
+guard.sparkscale = .7,.6
+getpower = 4,2
+givepower = 4,2
+palfx.time = 5
+palfx.add = 1,2,3
+palfx.mul = 250,251,252
+palfx.color = 200
+palfx.invertall = 1
+envshake.time = 5
+envshake.freq = 60
+envshake.ampl = -4
+envshake.phase = 0
+envshake.mul = 1
+envshake.dir = 0
+fall.envshake.time = 5
+fall.envshake.freq = 60
+fall.envshake.ampl = -4
+fall.envshake.phase = 0
+fall.envshake.mul = 1
+fall.envshake.dir = 0
+fall = 1
+fall.damage = 2
+fall.xvelocity = 1
+fall.yvelocity = -2
+fall.zvelocity = .5
+fall.recover = 1
+fall.recovertime = 4
+down.recover = 0
+down.recovertime = 10
+down.bounce = 0
 `,
     });
     const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
@@ -10188,9 +11177,65 @@ ground.velocity = 0,0
           p2SpritePriority?: number;
           priority?: number;
           priorityType?: "hit" | "miss" | "dodge";
+          forceNoFall?: boolean;
+          forceStand?: boolean;
+          forceCrouch?: boolean;
           kill?: boolean;
           guardKill?: boolean;
-          hitVars?: { hitId?: number; chainId?: number; hitCount?: number };
+          hitOnce?: boolean;
+          noChainIds?: number[];
+          unhittableTime?: [number, number];
+          hitSparkScale?: [number, number];
+          guardSparkScale?: [number, number];
+          p1Facing?: number;
+          p1GetP2Facing?: number;
+          p2Facing?: number;
+          attackerHitPower?: number;
+          attackerGuardPower?: number;
+          hitPower?: number;
+          guardPower?: number;
+          downBounce?: boolean;
+          paletteFx?: {
+            time: number;
+            add: [number, number, number];
+            mul: [number, number, number];
+            color: number;
+            invert: boolean;
+          };
+          envShake?: {
+            time: number;
+            freq: number;
+            ampl: number;
+            phase: number;
+            mul: number;
+            dir: number;
+          };
+          fall?: {
+            enabled?: boolean;
+            airFall?: boolean;
+            kill?: boolean;
+            damage?: number;
+            velocity?: { x?: number; y?: number; z?: number };
+            recover?: boolean;
+            recoverTime?: number;
+            downRecover?: boolean;
+            downRecoverTime?: number;
+            envShake?: {
+              time: number;
+              freq: number;
+              ampl: number;
+              phase: number;
+              mul?: number;
+              dir?: number;
+            };
+          };
+          hitVars?: {
+            hitId?: number;
+            chainId?: number;
+            hitCount?: number;
+            standFriction?: number;
+            crouchFriction?: number;
+          };
         };
       };
     };
@@ -10199,8 +11244,8 @@ ground.velocity = 0,0
 
     expect(internals.p2.currentMove).toBe(receiverMove);
     expect(internals.p2.currentMove).toMatchObject({
-      damage: 12,
-      guardDamage: 4,
+      damage: 18,
+      guardDamage: 7,
       targetId: 92,
       attr: "C,HP",
       guardFlag: "H",
@@ -10212,9 +11257,39 @@ ground.velocity = 0,0
       p2SpritePriority: -4,
       priority: 12,
       priorityType: "dodge",
+      forceNoFall: true,
+      forceStand: true,
+      forceCrouch: false,
       kill: false,
       guardKill: false,
-      hitVars: { hitId: 92, chainId: 13, hitCount: 3 },
+      hitOnce: true,
+      noChainIds: [100, 101],
+      unhittableTime: [7, 8],
+      hitSparkScale: [1.5, 0.9],
+      guardSparkScale: [-0.5, 1.5],
+      p1Facing: -1,
+      p1GetP2Facing: 2,
+      p2Facing: -1,
+      attackerHitPower: 110,
+      attackerGuardPower: 44,
+      hitPower: 18,
+      guardPower: 7,
+      downBounce: true,
+      paletteFx: { time: 44, add: [18, -7, 3], mul: [200, 110, 240], color: 176, invert: false },
+      envShake: { time: 44, freq: 110, ampl: -18, phase: 35, mul: 1.5, dir: -30 },
+      fall: {
+        enabled: true,
+        airFall: false,
+        kill: false,
+        damage: 18,
+        velocity: { x: 3.5, y: -4.5, z: 2.75 },
+        recover: false,
+        recoverTime: 19,
+        downRecover: true,
+        downRecoverTime: 45,
+        envShake: { time: 44, freq: 110, ampl: -18, phase: 35, mul: 1.5, dir: -30 },
+      },
+      hitVars: { hitId: 92, chainId: 13, hitCount: 3, standFriction: 0.62, crouchFriction: 0.72 },
     });
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.HitDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyHitDef).toBe(1);
@@ -10225,10 +11300,55 @@ ground.velocity = 0,0
     const restored = runtime.step({ p1: new Set(), p2: new Set() });
 
     expect(internals.p2.currentMove).toBe(receiverMove);
-    expect(internals.p2.currentMove).toMatchObject({ kill: true, guardKill: true });
+    expect(internals.p2.currentMove).toMatchObject({
+      damage: 5,
+      guardDamage: 7,
+      kill: true,
+      guardKill: true,
+      hitOnce: false,
+      forceNoFall: true,
+      forceStand: true,
+      forceCrouch: true,
+      unhittableTime: [2, 8],
+      hitSparkScale: [0.25, 0.9],
+      guardSparkScale: [-0.5, 1.5],
+      p1Facing: 1,
+      p1GetP2Facing: 2,
+      p2Facing: -1,
+      attackerHitPower: 9,
+      attackerGuardPower: 44,
+      hitPower: 5,
+      guardPower: 7,
+      downBounce: false,
+      paletteFx: { time: 2, add: [18, -7, 3], mul: [200, 110, 240], color: 176, invert: false },
+      envShake: { time: 3, freq: 110, ampl: -18, phase: 35, mul: 1.5, dir: 15 },
+      fall: {
+        enabled: true,
+        airFall: true,
+        kill: true,
+        damage: 5,
+        velocity: { x: 1.25, y: -4.5, z: 2.75 },
+        recover: true,
+        recoverTime: 19,
+        downRecover: true,
+        downRecoverTime: 12,
+        envShake: { time: 3, freq: 110, ampl: -18, phase: 35, mul: 1.5, dir: 15 },
+      },
+      hitVars: { hitCount: 2, standFriction: 0.82, crouchFriction: 0.72 },
+    });
     expect(restored.compatibilitySession?.actors[1]?.executedControllers.ModifyHitDef).toBe(2);
     expect(restored.compatibilitySession?.actors[1]?.executedOperations.modifyhitdef).toBe(2);
     expect(restored.logs.some((line) => line.includes("Blocked ModifyHitDef RedirectID"))).toBe(false);
+
+    const preserved = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(internals.p2.currentMove).toBe(receiverMove);
+    expect(internals.p2.currentMove).toMatchObject({
+      damage: 5,
+      guardDamage: 7,
+      hitVars: { hitCount: 4 },
+    });
+    expect(preserved.compatibilitySession?.actors[1]?.executedControllers.ModifyHitDef).toBe(3);
+    expect(preserved.compatibilitySession?.actors[1]?.executedOperations.modifyhitdef).toBe(3);
   });
 
   it("routes IKEMEN root ModifyReversalDef RedirectID core fields to an active receiver without resetting its move", () => {
@@ -11318,7 +12438,7 @@ affectteam = E
     }
 
     expect(snapshot.actors[1]?.runtime.moveType).toBe("H");
-    expect(snapshot.logs.some((line) => line.includes("Nova Boxer hit RemoveOnGetHit Defender"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Rocco Vidal hit RemoveOnGetHit Defender"))).toBe(true);
     expect(snapshot.effects?.some((effect) => effect.ownerId === "p2" && effect.label === "Explod 9004")).toBe(false);
     expect(runtime.getEffectActorStores()[1]).toMatchObject({
       ownerId: "p2",
@@ -11452,15 +12572,24 @@ function createImportedFixture(
     multiFrameAction?: { id: number; durations: number[] };
     withStateMove?: boolean;
     hitDefDamage?: number;
+    hitDefDamageExpression?: string;
+    omitHitDefDamage?: boolean;
+    hitDefPauseExpression?: string;
     hitDefKill?: boolean;
     hitDefAttr?: string;
     attackStateType?: "S" | "C" | "A" | "L";
     hitDefPriority?: number;
     hitDefTargetId?: number;
+    hitDefIdExpression?: string;
+    hitDefChainIdExpression?: string;
     ignoreReversalDef?: boolean;
     hitDefP1StateNo?: number;
     hitDefP2StateNo?: number;
     hitDefP2GetP1State?: boolean;
+    hitDefP1StateExpression?: string;
+    hitDefP2StateExpression?: string;
+    hitDefP2GetP1StateExpression?: string;
+    hitDefP2Facing?: number | string;
     hitDefP2SelfStateAfter?: number;
     hitDefP2ChangeStateTo?: number;
     hitDefP2ChangeStateAfter?: number;
@@ -11472,6 +12601,7 @@ function createImportedFixture(
     guardSpark?: string;
     hitSparkLibraries?: DemoFighterDefinition["hitSparkLibraries"];
     guardDamage?: number;
+    guardPauseExpression?: string;
     guardKill?: boolean;
     guardFlag?: string;
     guardDistance?: number;
@@ -11586,19 +12716,26 @@ function createImportedFixture(
   const hitDefAttr = options.hitDefAttr ?? "S,NA";
   const hitDefPriority = options.hitDefPriority ?? 4;
   const hitDefTargetId = options.hitDefTargetId ?? 7;
+  const hitDefIdValue = options.hitDefIdExpression ?? hitDefTargetId;
   const fixtureAction = (
     id: number,
     actionOptions: { clsn1?: Array<{ x1: number; y1: number; x2: number; y2: number }>; durations?: number[] } = {},
   ): MugenAnimationAction => action(id, actionOptions, options.actionGroupOffset ?? 0);
+  const hitDefP1StateValue = options.hitDefP1StateExpression ?? options.hitDefP1StateNo;
+  const hitDefP2StateValue = options.hitDefP2StateExpression ?? options.hitDefP2StateNo;
+  const hitDefP2GetP1StateValue = options.hitDefP2GetP1StateExpression ?? (options.hitDefP2GetP1State === false ? 0 : 1);
   const hitDefCustomStateLines =
-    options.hitDefP1StateNo !== undefined || options.hitDefP2StateNo !== undefined
+    hitDefP1StateValue !== undefined || hitDefP2StateValue !== undefined
       ? `
-${options.hitDefP1StateNo !== undefined ? `p1stateno = ${options.hitDefP1StateNo}` : ""}
-${options.hitDefP2StateNo !== undefined ? `p2stateno = ${options.hitDefP2StateNo}` : ""}
-${options.hitDefP2StateNo !== undefined ? `p2getp1state = ${options.hitDefP2GetP1State === false ? 0 : 1}` : ""}
+${hitDefP1StateValue === undefined ? "" : `p1stateno = ${hitDefP1StateValue}`}
+${hitDefP2StateValue === undefined ? "" : `p2stateno = ${hitDefP2StateValue}`}
+${hitDefP2StateValue === undefined ? "" : `p2getp1state = ${hitDefP2GetP1StateValue}`}
 `
       : "";
-  const damageLine = options.guardDamage !== undefined ? `${hitDefDamage},${options.guardDamage}` : `${hitDefDamage}`;
+  const damageLine = options.omitHitDefDamage
+    ? undefined
+    : options.hitDefDamageExpression ??
+      (options.guardDamage !== undefined ? `${hitDefDamage},${options.guardDamage}` : `${hitDefDamage}`);
   const hitDefKillLine = options.hitDefKill === undefined ? "" : `kill = ${options.hitDefKill ? 1 : 0}`;
   const hitSparkLines =
     options.hitSpark !== undefined || options.guardSpark !== undefined
@@ -11614,7 +12751,7 @@ sparkxy = 10,-72
 guardflag = ${options.guardFlag}
 ${options.guardDistance === undefined ? "" : `guard.dist = ${options.guardDistance}`}
 ${options.guardKill === undefined ? "" : `guard.kill = ${options.guardKill ? 1 : 0}`}
-guard.pausetime = 4,4
+guard.pausetime = ${options.guardPauseExpression ?? "4,4"}
 guard.hittime = 9
 ${options.guardSlideTime === undefined ? "" : `guard.slidetime = ${options.guardSlideTime}`}
 ${options.guardControlTime === undefined ? "" : `guard.ctrltime = ${options.guardControlTime}`}
@@ -11988,7 +13125,7 @@ damage = 31
 pausetime = 4,4
 ground.hittime = 13
 ground.velocity = -5
-sprpriority = 7
+projsprpriority = 7
 `
     : "";
   const helper = options.withHelper
@@ -12556,16 +13693,18 @@ ${prevStateTypeEntry}
 [State 200, Runtime HitDef]
 type = HitDef
 trigger1 = Time = 0
-id = ${hitDefTargetId}
+id = ${hitDefIdValue}
+${options.hitDefChainIdExpression === undefined ? "" : `chainid = ${options.hitDefChainIdExpression}`}
 attr = ${hitDefAttr}
-damage = ${damageLine}
+${damageLine === undefined ? "" : `damage = ${damageLine}`}
 ${hitDefKillLine}
 priority = ${hitDefPriority}, Hit
 ${options.ignoreReversalDef === undefined ? "" : `ignorereversaldef = ${options.ignoreReversalDef ? 1 : 0}`}
 ${hitSparkLines}
 ${guardLine}
 ${hitDefCustomStateLines}
-pausetime = 8,8
+${options.hitDefP2Facing === undefined ? "" : `p2facing = ${options.hitDefP2Facing}`}
+pausetime = ${options.hitDefPauseExpression ?? "8,8"}
 ground.hittime = 11
 ground.velocity = -4
 ${fallHitDef}

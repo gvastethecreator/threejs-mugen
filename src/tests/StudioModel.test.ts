@@ -23,26 +23,24 @@ describe("StudioModel", () => {
   it("summarizes the current playable project as a modular studio workspace", () => {
     const summary = buildStudioProjectSummary({
       fighters: demoFighters,
-      selectedP1: "nova-boxer",
-      selectedP2: "mira-volt",
+      selectedP1: "rocco-vidal",
+      selectedP2: "nadia-arce",
       stage: rooftopDojoStage,
       stages: [rooftopDojoStage, trainingStage],
       stageReports: [],
       atlasStatusByFighter: {
-        "nova-boxer": "loaded",
-        "mira-volt": "loaded",
-        "rook-apprentice": "loaded",
+        "rocco-vidal": "loaded",
+        "nadia-arce": "loaded",
       },
       atlasMotionQaByFighter: {
-        "nova-boxer": passQa(),
-        "mira-volt": passQa(),
-        "rook-apprentice": passQa(),
+        "rocco-vidal": passQa(),
+        "nadia-arce": passQa(),
       },
     });
 
     expect(summary.projectType).toBe("mugen-port");
-    expect(summary.entry).toEqual({ mode: "match", p1: "nova-boxer", p2: "mira-volt", stage: rooftopDojoStage.id });
-    expect(summary.stats.generatedAtlases).toBe(3);
+    expect(summary.entry).toEqual({ mode: "match", p1: "rocco-vidal", p2: "nadia-arce", stage: rooftopDojoStage.id });
+    expect(summary.stats.generatedAtlases).toBe(2);
     expect(summary.assets.some((asset) => asset.tags.includes("sprite-atlas-builder"))).toBe(true);
     expect(summary.assets.every((asset) => asset.impact.length > 0 && asset.nextAction.label.length > 0)).toBe(true);
     expect(summary.modules.map((module) => module.id)).toContain("studio-workspace");
@@ -68,7 +66,7 @@ describe("StudioModel", () => {
     const summary = buildStudioProjectSummary({
       fighters: [imported, ...demoFighters],
       selectedP1: imported.id,
-      selectedP2: "mira-volt",
+      selectedP2: "nadia-arce",
       stage: rooftopDojoStage,
       stages: [rooftopDojoStage, trainingStage],
       character,
@@ -133,14 +131,12 @@ describe("StudioModel", () => {
         },
       ],
       atlasStatusByFighter: {
-        "nova-boxer": "loaded",
-        "mira-volt": "loaded",
-        "rook-apprentice": "loaded",
+        "rocco-vidal": "loaded",
+        "nadia-arce": "loaded",
       },
       atlasMotionQaByFighter: {
-        "nova-boxer": passQa(),
-        "mira-volt": passQa(),
-        "rook-apprentice": passQa(),
+        "rocco-vidal": passQa(),
+        "nadia-arce": passQa(),
       },
     });
 
@@ -158,20 +154,18 @@ describe("StudioModel", () => {
   it("builds a project.json-style manifest from the studio summary", () => {
     const summary = buildStudioProjectSummary({
       fighters: demoFighters,
-      selectedP1: "nova-boxer",
-      selectedP2: "mira-volt",
+      selectedP1: "rocco-vidal",
+      selectedP2: "nadia-arce",
       stage: rooftopDojoStage,
       stages: [rooftopDojoStage, trainingStage],
       stageReports: [],
       atlasStatusByFighter: {
-        "nova-boxer": "loaded",
-        "mira-volt": "loaded",
-        "rook-apprentice": "loaded",
+        "rocco-vidal": "loaded",
+        "nadia-arce": "loaded",
       },
       atlasMotionQaByFighter: {
-        "nova-boxer": passQa(),
-        "mira-volt": passQa(),
-        "rook-apprentice": passQa(),
+        "rocco-vidal": passQa(),
+        "nadia-arce": passQa(),
       },
     });
 
@@ -186,7 +180,7 @@ describe("StudioModel", () => {
     expect(manifest.entry).toEqual(summary.entry);
     expect(manifest.modules).toContain("mugen-compat");
     expect(manifest.sourcePackages).toEqual([]);
-    expect(manifest.assets.characters).toEqual(["nova-boxer", "mira-volt", "rook-apprentice"]);
+    expect(manifest.assets.characters).toEqual(["rocco-vidal", "nadia-arce"]);
     expect(manifest.assets.stages).toEqual([rooftopDojoStage.id, trainingStage.id]);
     expect(manifest.assetRecords).toHaveLength(summary.assets.length);
     expect(manifest.compatibility.gates).toHaveLength(summary.gates.length);
@@ -198,20 +192,18 @@ describe("StudioModel", () => {
     const summary = buildStudioProjectSummary({
       fighters: [importedFighter(), ...demoFighters],
       selectedP1: "imported-kfm",
-      selectedP2: "mira-volt",
+      selectedP2: "nadia-arce",
       stage: rooftopDojoStage,
       stages: [rooftopDojoStage, trainingStage],
       character: importedCharacter(importedFighter()),
       stageReports: [],
       atlasStatusByFighter: {
-        "nova-boxer": "loaded",
-        "mira-volt": "loaded",
-        "rook-apprentice": "loaded",
+        "rocco-vidal": "loaded",
+        "nadia-arce": "loaded",
       },
       atlasMotionQaByFighter: {
-        "nova-boxer": passQa(),
-        "mira-volt": passQa(),
-        "rook-apprentice": passQa(),
+        "rocco-vidal": passQa(),
+        "nadia-arce": passQa(),
       },
     });
 
@@ -339,20 +331,18 @@ describe("StudioModel", () => {
   it("parses exported project manifests back into the project contract", () => {
     const summary = buildStudioProjectSummary({
       fighters: demoFighters,
-      selectedP1: "rook-apprentice",
-      selectedP2: "mira-volt",
+      selectedP1: "rocco-vidal",
+      selectedP2: "nadia-arce",
       stage: trainingStage,
       stages: [rooftopDojoStage, trainingStage],
       stageReports: [],
       atlasStatusByFighter: {
-        "nova-boxer": "loaded",
-        "mira-volt": "loaded",
-        "rook-apprentice": "loaded",
+        "rocco-vidal": "loaded",
+        "nadia-arce": "loaded",
       },
       atlasMotionQaByFighter: {
-        "nova-boxer": passQa(),
-        "mira-volt": passQa(),
-        "rook-apprentice": passQa(),
+        "rocco-vidal": passQa(),
+        "nadia-arce": passQa(),
       },
     });
     const manifest = buildGameProjectManifest(summary, { generatedAt: "2026-06-25T00:00:00.000Z" });
@@ -360,8 +350,8 @@ describe("StudioModel", () => {
     const parsed = parseGameProjectManifestJson(JSON.stringify(manifest));
 
     expect(parsed.errors).toEqual([]);
-    expect(parsed.manifest?.entry).toEqual({ mode: "match", p1: "rook-apprentice", p2: "mira-volt", stage: trainingStage.id });
-    expect(parsed.manifest?.assets.characters).toContain("rook-apprentice");
+    expect(parsed.manifest?.entry).toEqual({ mode: "match", p1: "rocco-vidal", p2: "nadia-arce", stage: trainingStage.id });
+    expect(parsed.manifest?.assets.characters).toContain("rocco-vidal");
   });
 
   it("rejects incompatible project schemas before applying entry data", () => {
@@ -369,7 +359,7 @@ describe("StudioModel", () => {
       JSON.stringify({
         schemaVersion: "other/schema",
         projectType: "mugen-port",
-        entry: { mode: "match", p1: "nova-boxer", p2: "mira-volt", stage: rooftopDojoStage.id },
+        entry: { mode: "match", p1: "rocco-vidal", p2: "nadia-arce", stage: rooftopDojoStage.id },
       }),
     );
 
@@ -387,14 +377,14 @@ describe("StudioModel", () => {
         engineVersion: "old",
         generatedAt: "2026-06-25T00:00:00.000Z",
         modules: ["mugen-compat"],
-        entry: { mode: "match", p1: "nova-boxer", p2: "mira-volt", stage: rooftopDojoStage.id },
+        entry: { mode: "match", p1: "rocco-vidal", p2: "nadia-arce", stage: rooftopDojoStage.id },
       }),
     );
 
     expect(parsed.errors).toEqual([]);
     expect(parsed.warnings.length).toBeGreaterThan(0);
     expect(parsed.manifest?.assets.characters).toEqual([]);
-    expect(parsed.manifest?.entry.p1).toBe("nova-boxer");
+    expect(parsed.manifest?.entry.p1).toBe("rocco-vidal");
   });
 
   it("normalizes legacy asset and gate records into actionable Studio records", () => {
@@ -407,12 +397,12 @@ describe("StudioModel", () => {
         engineVersion: "old",
         generatedAt: "2026-06-25T00:00:00.000Z",
         modules: ["mugen-compat"],
-        entry: { mode: "match", p1: "nova-boxer", p2: "mira-volt", stage: rooftopDojoStage.id },
-        assets: { characters: ["nova-boxer", "mira-volt"], stages: [rooftopDojoStage.id], audio: [], ui: [], effects: [] },
+        entry: { mode: "match", p1: "rocco-vidal", p2: "nadia-arce", stage: rooftopDojoStage.id },
+        assets: { characters: ["rocco-vidal", "nadia-arce"], stages: [rooftopDojoStage.id], audio: [], ui: [], effects: [] },
         assetRecords: [
           {
-            id: "nova-boxer",
-            label: "Nova Boxer",
+            id: "rocco-vidal",
+            label: "Rocco Vidal",
             kind: "sprite-atlas",
             source: "generated",
             status: "warn",

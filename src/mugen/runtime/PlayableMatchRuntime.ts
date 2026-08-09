@@ -2,6 +2,7 @@ import type {
   AudioControllerOp,
   ControllerOp,
   EnvColorControllerOp,
+  MugenHitDefExpressionPair,
   PauseControllerOp,
   TeamStandbyControllerOp,
 } from "../compiler/ControllerOps";
@@ -50,7 +51,7 @@ import {
 } from "./EnvColorSystem";
 import { scaleRuntimeIncomingDamage } from "./CombatResolver";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
-import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
+import { consumeRuntimeDirectHitFacing, RuntimeDirectCombatWorld } from "./DirectCombatSystem";
 import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
 import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
 import { RuntimeHitEffectWorld } from "./HitEffectSystem";
@@ -154,6 +155,12 @@ import {
 } from "./RuntimeHitDefContactMemorySystem";
 import { RuntimeMatchPresentationSnapshotWorld } from "./RuntimeMatchPresentationSnapshotSystem";
 import { RuntimeMatchRoundWorld } from "./RuntimeMatchRoundSystem";
+import type { RuntimePauseGlobalAssertSpecialSnapshot } from "./RuntimePauseGlobalAssertSpecialSystem";
+import type {
+  RuntimeHelperResourceOwnershipInput,
+  RuntimeHelperResourceOwnershipMatrix,
+  RuntimeHelperResourceOwnershipSnapshot,
+} from "./RuntimeHelperResourceOwnershipSystem";
 import { RuntimeControllerEvaluationContextWorld } from "./RuntimeControllerEvaluationContextSystem";
 import { RuntimeMatchHelperProjectileTargetWorld } from "./RuntimeMatchHelperProjectileTargetSystem";
 import { RuntimeMatchHelperTargetStateWorld } from "./RuntimeMatchHelperTargetStateSystem";
@@ -210,6 +217,7 @@ import {
   type RuntimeRoundTiming,
 } from "./RuntimeRoundSystem";
 import { resolveRuntimeRoundAnnouncementTiming } from "./RuntimeRoundAnnouncementSystem";
+import { runtimeFightScreenContextFromRound } from "./RuntimeFightScreenTriggerSystem";
 import {
   resolveFightScreenAnimationCompletion,
   resolveFightScreenAnnouncementCompletion,
@@ -248,10 +256,19 @@ import {
   type LiveTurnsRootLike,
 } from "./LiveRuntimeTurnsBridge";
 import { nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
-import type { RuntimeModifyProjectileNumberParam, RuntimeModifyProjectilePairParam } from "./ProjectileSystem";
+import type {
+  RuntimeModifyProjectileIntegerListParam,
+  RuntimeModifyProjectileNumberParam,
+  RuntimeModifyProjectileGroundVelocity,
+  RuntimeModifyProjectilePairParam,
+  RuntimeModifyProjectilePartialTripleParam,
+  RuntimeModifyProjectileTripleParam,
+} from "./ProjectileSystem";
 import {
   applyRuntimeControl,
   applyRuntimePowerDelta,
+  applyRuntimeRedLifeAdd,
+  applyRuntimeRedLifeSet,
   resolveRuntimeResourceControllerOperation,
 } from "./RuntimeResourceSystem";
 import { recordRuntimeRootSelfKoCause, recordRuntimeTargetLifeKoCause } from "./RuntimeRoundWinTypeSystem";
@@ -275,6 +292,7 @@ import {
   RuntimeTeamResourceBankWorld,
   type RuntimeTeamResourceBankActor,
   type RuntimeTeamResourceBankRuntimeActor,
+  type RuntimeHelperTeamResourceBinding,
 } from "./RuntimeTeamResourceBankSystem";
 import {
   RuntimeRedLifeShareRuntime,
@@ -499,6 +517,7 @@ export type PlayableMatchRuntimeOptions = {
   teamMode?: RuntimeTeamRoundMode;
   teamLifeShare?: boolean;
   teamPowerShare?: boolean;
+  helperResourceShareContractEnabled?: boolean;
 };
 
 type PauseControllerHandler = (
@@ -619,6 +638,8 @@ export class PlayableMatchRuntime {
   private characterIdentity?: RuntimeCharacterIdentityRegistry<RuntimeMatchCharacterIdentity>;
   private readonly tagTeamOrder?: RuntimeTagTeamOrder;
   private readonly stage: MugenStageDefinition;
+  private readonly fightScreenTiming?: MugenFightScreenTiming;
+  private readonly fightScreenAssets?: MugenFightScreenAssets;
   private readonly effectActorWorld: RuntimeEffectActorWorld;
   private readonly effectLifecycleWorld: RuntimeEffectLifecycleWorld;
   private readonly effectSpawnWorld: RuntimeEffectSpawnWorld;
@@ -671,6 +692,7 @@ export class PlayableMatchRuntime {
   private readonly roundWinPoseWorld = new RuntimeRoundWinPoseWorld();
   private readonly turnsContinuationWorld = new RuntimeTurnsContinuationWorld();
   private lastRoundContext: RuntimeRoundContextSnapshot;
+  private lastPauseGlobalAssertSpecial?: RuntimePauseGlobalAssertSpecialSnapshot;
   private lastRoundState5900?: RuntimeRoundState5900Snapshot;
   private lastTurnsContinuation?: RuntimeTurnsContinuationResult;
   private lastLiveTurnsBridge?: LiveRuntimeTurnsBridgeReport;
@@ -688,6 +710,7 @@ export class PlayableMatchRuntime {
   private readonly teamRoundMode: RuntimeTeamRoundMode;
   private readonly teamLifeShare: boolean;
   private readonly teamPowerShare: boolean;
+  private readonly helperResourceShareContractEnabled: boolean;
   private lastP2Controlled = false;
   private readonly superPauseTargetDefenseValue?: number;
   private superPauseTargetDefenseOverrides: SuperPauseTargetDefenseOverride[] = [];
@@ -717,6 +740,7 @@ export class PlayableMatchRuntime {
     this.teamRoundMode = options.teamMode ?? "single";
     this.teamLifeShare = options.teamLifeShare === true;
     this.teamPowerShare = options.teamPowerShare === true;
+    this.helperResourceShareContractEnabled = options.helperResourceShareContractEnabled === true;
     this.superPauseTargetDefenseValue = defaultSuperPauseTargetDefenseValue(
       this.runtimeProfile,
       options.superPauseTargetDefenseValue,
@@ -724,6 +748,8 @@ export class PlayableMatchRuntime {
     this.pauseWorld = new RuntimePauseWorld(this.runtimeProfile);
     this.roundTimerFrames = options.roundTimerFrames;
     const fightScreenDefinition = p1Definition.fightScreenTiming ? p1Definition : p2Definition;
+    this.fightScreenTiming = fightScreenDefinition.fightScreenTiming;
+    this.fightScreenAssets = fightScreenDefinition.fightScreenAssets;
     const roundTiming = options.roundTiming ?? runtimeRoundTimingFromFightScreen(
       fightScreenDefinition.fightScreenTiming,
       fightScreenDefinition.fightScreenAssets,
@@ -1209,6 +1235,31 @@ export class PlayableMatchRuntime {
     return [this.p1, this.p2, ...this.reserveRoots];
   }
 
+  /** Global AssertSpecial includes live IKEMEN Helpers, not only roots. */
+  private globalAssertSpecialActors(): Array<{
+    id: string;
+    label: string;
+    runtime: {
+      life: number;
+      lifeMax?: number;
+      assertSpecial?: FighterMatchState["runtime"]["assertSpecial"];
+    };
+  }> {
+    const roots = this.characterRoots();
+    const rootActors = roots.map((root) => ({ id: root.id, label: root.label, runtime: root.runtime }));
+    if (this.runtimeProfile !== "ikemen-go") return rootActors;
+    const helperActors = roots.flatMap((root) =>
+      this.effectActorWorld.helpers(root.id)
+        .filter((helper) => !helper.destroyed)
+        .map((helper) => ({
+          id: helper.serialId,
+          label: helper.name ?? helper.serialId,
+          runtime: { life: helper.life, lifeMax: helper.lifeMax, assertSpecial: helper.assertSpecial },
+        })),
+    );
+    return [...rootActors, ...helperActors];
+  }
+
   private applyIntroSkipReset(): void {
     const roots = this.characterRoots();
     for (const root of roots) this.effectActorWorld.resetOwner(root.id);
@@ -1287,19 +1338,30 @@ export class PlayableMatchRuntime {
   }
 
   private syncTurnsActiveRoots(): boolean {
-    const next = ([1, 2] as const).map((side) => {
+    const next = this.selectActiveTeamRoots();
+    if (!next[0] || !next[1]) return false;
+    this.activeRoots = [next[0], next[1]];
+    this.turnsContinuationActive = true;
+    return true;
+  }
+
+  private selectActiveTeamRoots(excludedRootIds: ReadonlySet<string> = new Set()): [FighterMatchState | undefined, FighterMatchState | undefined] {
+    return ([1, 2] as const).map((side) => {
       const candidates = this.characterRoots()
         .filter((root) => runtimeTeamSide(root) === side)
         .filter((root) => {
           const teamState = root.runtime.teamState;
-          return teamState?.playerType && !teamState.disabled && !teamState.standby && !teamState.overKo;
+          return !excludedRootIds.has(root.id) && teamState?.playerType && !teamState.disabled && !teamState.standby && !teamState.overKo;
         })
         .sort((left, right) => (left.playerNo ?? Number.MAX_SAFE_INTEGER) - (right.playerNo ?? Number.MAX_SAFE_INTEGER));
       return candidates[0];
     }) as [FighterMatchState | undefined, FighterMatchState | undefined];
+  }
+
+  private refreshActiveRootsAfterTeamStandby(): boolean {
+    const next = this.selectActiveTeamRoots();
     if (!next[0] || !next[1]) return false;
     this.activeRoots = [next[0], next[1]];
-    this.turnsContinuationActive = true;
     return true;
   }
 
@@ -1434,6 +1496,8 @@ export class PlayableMatchRuntime {
         runtime: {
           life: helper.life,
           lifeMax: helper.lifeMax,
+          power: helper.power,
+          powerMax: helper.powerMax,
           redLife: helper.redLife,
           guardPoints: helper.guardPoints,
           guardPointsMax: helper.guardPointsMax,
@@ -1727,6 +1791,7 @@ export class PlayableMatchRuntime {
   }
 
   private advanceOneTick(input: MatchInput): void {
+    this.lastPauseGlobalAssertSpecial = undefined;
     this.tick += 1;
     this.deferredInputControls.clear();
     const [activeP1, activeP2] = this.activePair();
@@ -1772,10 +1837,12 @@ export class PlayableMatchRuntime {
     matchFrameStartWorld.advance({
       p1: activeP1,
       p2: activeP2,
-      resetFrameFlags: (fighter) => this.hitEligibilityWorld.resetFrameFlags(fighter.runtime),
+      resetFrameFlags: (fighter) => this.hitEligibilityWorld.resetFrameFlags(fighter.runtime, fighter.hitPause > 0),
       applyPreFacingAssertSpecial: (fighter, opponent) => this.applyPreFacingAssertSpecial(fighter, opponent),
       updateAutoFacing: (fighter, opponent) => this.orientationWorld.updateAutoFacing(fighter.runtime, opponent.runtime),
     });
+    consumeRuntimeDirectHitFacing(activeP1);
+    consumeRuntimeDirectHitFacing(activeP2);
     this.captureFramePosFreezeStarts();
     for (const root of this.characterRoots()) collisionOverrideWorld.resetFrame(root.runtime);
 
@@ -2062,6 +2129,8 @@ export class PlayableMatchRuntime {
                   this.resolveHelperTargetRedirect(helper, playerId, controller),
                 resolveResourceRedirect: (helper, playerId, controller) =>
                   this.resolveHelperResourceRedirect(helper, playerId, controller),
+                admitResourceWrite: (helper, operation) => this.admitHelperResourceWrite(helper, operation),
+                applySharedResourceWrite: (helper, operation) => this.applySharedHelperResourceWrite(helper, operation),
                 onTargetRedirectBlocked: (helper, controller, playerId) =>
                   this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
                 onResourceRedirectBlocked: (helper, controller, playerId) =>
@@ -2225,6 +2294,10 @@ export class PlayableMatchRuntime {
           helperStateHooks: runtimeHelperCombatStateHooks,
           recordAudioOperation: (actor, audioOperation: AudioControllerOp) =>
             compatibilityTelemetryWorld.recordOperation(actor, audioOperation),
+          emitDirectEnvShake: (actor, move) =>
+            actor.envShakeWorld.emitHitDef(actor, move, this.tick),
+          emitProjectileEnvShake: (actor, projectile) =>
+            actor.envShakeWorld.emitProjectile(actor, projectile, this.tick),
           defaultHurtBoxes: defaultRuntimeHurtBoxes,
           canActorBeHit: (actorId) => this.pauseWorld.canActorBeHit(actorId),
           rememberProjectileTarget: (source, target, projectile) =>
@@ -2366,6 +2439,7 @@ export class PlayableMatchRuntime {
           round: this.round,
           p1: activeP1,
           p2: activeP2,
+          globalActors: this.teamGameplayActive() ? this.globalAssertSpecialActors() : undefined,
           tick: this.tick,
           participants: this.teamGameplayActive() ? this.teamRoundOutcomeParticipants() : undefined,
           stopPlaying: () => {
@@ -2385,6 +2459,15 @@ export class PlayableMatchRuntime {
     preparedActorRunOrder: RuntimeActorRunOrderResult<FighterMatchState, RuntimeHelper>,
     recordPhase: (phase: RuntimeMatchTickPhaseId, actorId?: string) => void,
   ): void {
+    const pause = this.pauseWorld.current();
+    if (pause) {
+      this.lastPauseGlobalAssertSpecial = matchRoundWorld.snapshotPauseGlobalAssertSpecial(
+        this.globalAssertSpecialActors(),
+        pause.type,
+        "pause-tick",
+        this.tick,
+      );
+    }
     const gameSpace = runtimeStageGameSpace(this.stage);
     const [activeP1, activeP2] = this.activePair();
     if (this.runtimeProfile === "ikemen-go") {
@@ -2620,6 +2703,8 @@ export class PlayableMatchRuntime {
               this.resolveHelperTargetRedirect(helper, playerId, controller),
             resolveResourceRedirect: (helper, playerId, controller) =>
               this.resolveHelperResourceRedirect(helper, playerId, controller),
+            admitResourceWrite: (helper, operation) => this.admitHelperResourceWrite(helper, operation),
+            applySharedResourceWrite: (helper, operation) => this.applySharedHelperResourceWrite(helper, operation),
             onTargetRedirectBlocked: (helper, controller, playerId) =>
               this.logs.unshift(`Blocked ${controller.normalizedType} RedirectID ${playerId} for ${helper.serialId}`),
             onResourceRedirectBlocked: (helper, controller, playerId) =>
@@ -2916,6 +3001,15 @@ export class PlayableMatchRuntime {
         return undefined;
       }
     }
+    if (operation.controllerType === "tagout" && operation.self && this.teamGameplayActive()) {
+      const excluded = new Set<string>([fighter.id]);
+      if (partner && operation.standby) excluded.add(partner.id);
+      const nextActiveRoots = this.selectActiveTeamRoots(excluded);
+      if (!nextActiveRoots[0] || !nextActiveRoots[1]) {
+        this.logs.unshift(`Blocked ${operation.controllerType} active-root handoff for ${fighter.id}`);
+        return undefined;
+      }
+    }
     const targetIds = new Set<string>();
     if (operation.self) targetIds.add(fighter.id);
     if (partner) targetIds.add(partner.id);
@@ -2953,6 +3047,11 @@ export class PlayableMatchRuntime {
     }
     if (partner && operation.partnerControl !== undefined) {
       applyRuntimeControl(partner.runtime, operation.partnerControl);
+    }
+    if ((operation.controllerType === "tagout" || operation.controllerType === "tagin") && this.teamGameplayActive()) {
+      if (!this.refreshActiveRootsAfterTeamStandby()) {
+        this.logs.unshift(`Deferred ${operation.controllerType} active-root handoff for ${fighter.id}: no valid pair`);
+      }
     }
     return operation;
   }
@@ -3103,16 +3202,6 @@ export class PlayableMatchRuntime {
       );
       return undefined;
     };
-    if (sourceOperation.controllerType === "tagout" && hasAuthoredCallerControl(sourceOperation)) {
-      return block("TagOut Helper control unsupported");
-    }
-    if (
-      sourceOperation.controllerType !== "tagin" &&
-      (sourceOperation.leaderPlayerNo !== undefined || sourceOperation.leaderPlayerNoExpression !== undefined)
-    ) {
-      return block("TagOut Helper leader unsupported");
-    }
-
     const operation = resolveDynamicTeamStandbyOperation(sourceOperation, caller, context);
     if (!operation) return block("invalid Helper Tag expression");
     const stateNo = operation.callerStateNo;
@@ -3168,8 +3257,16 @@ export class PlayableMatchRuntime {
 
     const hasLocalMutation = stateNo !== undefined ||
       operation.memberPosition !== undefined ||
-      (operation.controllerType === "tagin" && hasAuthoredCallerControl(operation));
+      hasAuthoredCallerControl(operation);
     if (!operation.self && !hasLocalMutation && !partner && !leader) return block("Helper local mutation required");
+
+    if (operation.controllerType === "tagout" && operation.self && this.teamGameplayActive()) {
+      const excluded = new Set([helper.rootId]);
+      const nextActiveRoots = this.selectActiveTeamRoots(excluded);
+      if (!nextActiveRoots[0] || !nextActiveRoots[1]) {
+        return block("active root handoff unavailable");
+      }
+    }
 
     if (!applyRuntimeHelperTagStateControl(helper, { stateNo })) {
       return block(`Helper state ${stateNo ?? "invalid"} unavailable for ${helper.serialId}`);
@@ -3178,7 +3275,11 @@ export class PlayableMatchRuntime {
       this.tagTeamOrder!.swapPositionOne(targetSide!, operation.memberPosition);
     }
     if (operation.callerControl !== undefined) {
-      applyRuntimeHelperTagStateControl(helper, { control: operation.callerControl });
+      if (operation.controllerType === "tagout") {
+        applyRuntimeControl(caller.runtime, operation.callerControl);
+      } else {
+        applyRuntimeHelperTagStateControl(helper, { control: operation.callerControl });
+      }
     }
     if (leader) {
       this.tagTeamOrder!.rotateLeader(targetSide!, leader.id, (id) => (rootById.get(id)?.runtime.life ?? 0) > 0);
@@ -3198,6 +3299,11 @@ export class PlayableMatchRuntime {
       }
       if (operation.partnerControl !== undefined) {
         applyRuntimeControl(partner.runtime, operation.partnerControl);
+      }
+    }
+    if ((operation.controllerType === "tagout" || operation.controllerType === "tagin") && this.teamGameplayActive()) {
+      if (!this.refreshActiveRootsAfterTeamStandby()) {
+        this.logs.unshift(`Deferred ${operation.controllerType} active-root handoff for ${helper.serialId}: no valid pair`);
       }
     }
     return operation;
@@ -3459,7 +3565,10 @@ export class PlayableMatchRuntime {
     const roots = this.characterRoots();
     const [activeP1, activeP2] = this.activePair();
     const teamMode = this.teamPresentationMode();
-    const globalAssertSpecial = matchRoundWorld.snapshotGlobalAssertSpecial(roots, this.tick);
+    const globalAssertSpecial = matchRoundWorld.snapshotGlobalAssertSpecial(this.globalAssertSpecialActors(), this.tick);
+    const pausePolicy = this.lastPauseGlobalAssertSpecial === undefined
+      ? undefined
+      : matchRoundWorld.pauseGlobalAssertSpecialPolicy(this.lastPauseGlobalAssertSpecial);
     const rootPresentation = rootPresentationWorld.diagnostic({
       runtimeProfile: this.runtimeProfile,
       teamMode,
@@ -3487,7 +3596,9 @@ export class PlayableMatchRuntime {
       ? teamRoundLifebarWorld.snapshot({
           actors: this.teamRoundLifebarActors(),
           mode: this.teamRoundMode,
-          visible: !globalAssertSpecial.activeFlags.includes("nobardisplay"),
+          visible: !globalAssertSpecial.activeFlags.includes("nobardisplay")
+            && pausePolicy?.skipRoundDisplay !== true
+            && pausePolicy?.skipFightDisplay !== true,
           tick: this.tick,
         })
       : undefined;
@@ -3569,7 +3680,7 @@ export class PlayableMatchRuntime {
 
   getTeamRoundDecision(): RuntimeTeamRoundDecision {
     const actors = this.teamRoundActors();
-    const globalAssertSpecial = matchRoundWorld.snapshotGlobalAssertSpecial(this.characterRoots(), this.tick);
+    const globalAssertSpecial = matchRoundWorld.snapshotGlobalAssertSpecial(this.globalAssertSpecialActors(), this.tick);
     return matchRoundWorld.snapshotTeamRoundDecision({
       actors,
       modeBySide: { 1: this.teamRoundMode, 2: this.teamRoundMode },
@@ -3578,12 +3689,166 @@ export class PlayableMatchRuntime {
     });
   }
 
+  getPauseGlobalAssertSpecialSnapshot(): RuntimePauseGlobalAssertSpecialSnapshot | undefined {
+    return this.lastPauseGlobalAssertSpecial
+      ? structuredClone(this.lastPauseGlobalAssertSpecial)
+      : undefined;
+  }
+
+  getActiveRootIds(): readonly string[] {
+    return this.activeRoots.map((root) => root.id);
+  }
+
+  getHelperResourceOwnershipDiagnostics(): RuntimeHelperResourceOwnershipSnapshot[] {
+    return this.getHelperResourceOwnershipInputs().map((input) =>
+      matchRoundWorld.snapshotHelperResourceOwnership(input),
+    );
+  }
+
+  getHelperResourceOwnershipMatrix(): RuntimeHelperResourceOwnershipMatrix {
+    return matchRoundWorld.snapshotHelperResourceOwnershipMatrix(this.getHelperResourceOwnershipInputs());
+  }
+
+  getHelperTeamResourceBindings(): RuntimeHelperTeamResourceBinding[] {
+    if (this.runtimeProfile !== "ikemen-go" || this.teamRoundMode === "single") return [];
+    const diagnostic = teamResourceBankWorld.snapshot({
+      actors: this.teamResourceBankActors(),
+      mode: this.teamRoundMode,
+      lifeShare: this.teamLifeShare,
+      powerShare: this.teamPowerShare,
+      tick: this.tick,
+    });
+    return this.characterRoots().flatMap((root) => {
+      const rootBinding = diagnostic.actors.find((actor) => actor.actorId === root.id);
+      return this.effectActorWorld.helpers(root.id)
+        .filter((helper) => !helper.destroyed)
+        .flatMap((helper) => (["life", "power"] as const).map((kind) =>
+          teamResourceBankWorld.resolveHelperBinding({
+            helperId: helper.serialId,
+            kind,
+          teamShareEnabled: kind === "life" ? this.teamLifeShare : this.teamPowerShare,
+          contractEnabled: this.helperResourceShareContractEnabled,
+          rootBinding: rootBinding?.[kind],
+          }),
+        ));
+    });
+  }
+
+  private admitHelperResourceWrite(helper: { serialId: string; rootId?: string }, operation: { controllerType: string }): boolean {
+    const kind = operation.controllerType === "lifeadd" || operation.controllerType === "lifeset"
+      ? "life"
+      : operation.controllerType === "poweradd" || operation.controllerType === "powerset"
+        ? "power"
+        : operation.controllerType === "redlifeadd" || operation.controllerType === "redlifeset"
+          ? "red-life"
+          : undefined;
+    if (!kind) return true;
+    const teamShareEnabled = kind === "life" || kind === "red-life"
+      ? this.teamLifeShare
+      : this.teamPowerShare;
+    if (teamShareEnabled) {
+      return this.helperResourceShareContractEnabled
+        ? matchRoundWorld.admitHelperResourceWrite({
+            helperId: helper.serialId,
+            rootId: helper.rootId ?? "",
+            kind,
+            teamShareEnabled: true,
+          })
+        : false;
+    }
+    return matchRoundWorld.admitHelperResourceWrite({
+      helperId: helper.serialId,
+      rootId: helper.rootId ?? "",
+      kind,
+      teamShareEnabled,
+    });
+  }
+
+  private applySharedHelperResourceWrite(
+    helper: { serialId: string; rootId?: string },
+    operation: { controllerType: string; value?: number | boolean },
+  ): boolean {
+    if (!this.helperResourceShareContractEnabled || !helper.rootId || typeof operation.value !== "number") return false;
+    const kind = operation.controllerType === "lifeadd" || operation.controllerType === "lifeset"
+      ? "life"
+      : operation.controllerType === "poweradd" || operation.controllerType === "powerset"
+        ? "power"
+        : operation.controllerType === "redlifeadd" || operation.controllerType === "redlifeset"
+          ? "red-life"
+        : undefined;
+    if (!kind) return false;
+    const root = this.characterRoots().find((actor) => actor.id === helper.rootId);
+    if (!root) return false;
+    // Shared writes are applied on behalf of the imported Helper but belong to
+    // the imported root for compatibility telemetry and trace promotion.
+    compatibilityTelemetryWorld.recordOperation(root, {
+      controllerType: operation.controllerType,
+      value: operation.value,
+    } as ControllerOp);
+    const teamShareEnabled = kind === "life" || kind === "red-life"
+      ? this.teamLifeShare
+      : this.teamPowerShare;
+    if (!teamShareEnabled) return false;
+    if (kind === "red-life") {
+      if (operation.controllerType === "redlifeadd") {
+        applyRuntimeRedLifeAdd(root.runtime, operation.value, (operation as { absolute?: boolean }).absolute ?? false);
+      } else {
+        applyRuntimeRedLifeSet(root.runtime, operation.value);
+      }
+      this.reconcileTeamRedLifeShare();
+      return true;
+    }
+    const diagnostic = teamResourceBankWorld.snapshot({
+      actors: this.teamResourceBankActors(),
+      mode: this.teamRoundMode,
+      lifeShare: this.teamLifeShare,
+      powerShare: this.teamPowerShare,
+      tick: this.tick,
+    });
+    const binding = diagnostic.actors.find((actor) => actor.actorId === root.id)?.[kind];
+    const helperBinding = teamResourceBankWorld.resolveHelperBinding({
+      helperId: helper.serialId,
+      kind,
+      teamShareEnabled,
+      contractEnabled: true,
+      rootBinding: binding,
+    });
+    if (helperBinding.mode !== "shared") return false;
+    const max = kind === "life" ? root.runtime.lifeMax ?? 1000 : root.runtime.powerMax ?? 3000;
+    const next = operation.controllerType.endsWith("set")
+      ? operation.value
+      : (kind === "life" ? root.runtime.life : root.runtime.power) + operation.value;
+    if (kind === "life") root.runtime.life = Math.max(0, Math.min(max, next));
+    else root.runtime.power = Math.max(0, Math.min(max, next));
+    this.reconcileTeamResourceBanks();
+    return true;
+  }
+
+  private getHelperResourceOwnershipInputs(): RuntimeHelperResourceOwnershipInput[] {
+    if (this.runtimeProfile !== "ikemen-go") return [];
+    return this.characterRoots().flatMap((root) =>
+      this.effectActorWorld.helpers(root.id)
+        .filter((helper) => !helper.destroyed)
+        .flatMap((helper) => (["life", "power", "red-life"] as const).map((kind) =>
+          ({
+            helperId: helper.serialId,
+            rootId: root.id,
+            teamSide: runtimeTeamSide(root),
+            kind,
+            teamShareEnabled: kind === "life" || kind === "red-life"
+              ? this.teamLifeShare
+              : this.teamPowerShare,
+          }),
+        )),
+    );
+  }
+
   applyTeamRoundHandoff(): RuntimeTeamRoundHandoffResult {
     const actors = this.teamRoundActors();
     const decision = matchRoundWorld.snapshotTeamRoundDecision({
       actors,
       modeBySide: { 1: this.teamRoundMode, 2: this.teamRoundMode },
-      roundNotOver: matchRoundWorld.snapshotGlobalAssertSpecial(this.characterRoots(), this.tick).roundNotOver,
+      roundNotOver: matchRoundWorld.snapshotGlobalAssertSpecial(this.globalAssertSpecialActors(), this.tick).roundNotOver,
       tick: this.tick,
     });
     const result = matchRoundWorld.applyTeamRoundHandoff({ actors, decision });
@@ -3592,7 +3857,7 @@ export class PlayableMatchRuntime {
         throw new Error("Turns handoff committed without one active root per side");
       }
       this.logTeamRoundHandoff(result);
-      this.reconcileTeamRedLifeShare();
+      this.reconcileTeamResourceBanks();
     }
     return result;
   }
@@ -3675,7 +3940,7 @@ export class PlayableMatchRuntime {
 
     const roots = this.characterRoots();
     const actors = this.teamRoundActors();
-    const globalAssertSpecial = matchRoundWorld.snapshotGlobalAssertSpecial(roots, this.tick);
+    const globalAssertSpecial = matchRoundWorld.snapshotGlobalAssertSpecial(this.globalAssertSpecialActors(), this.tick);
     const baseDecision = matchRoundWorld.snapshotTeamRoundDecision({
       actors,
       modeBySide: { 1: "turns", 2: "turns" },
@@ -4092,10 +4357,21 @@ export class PlayableMatchRuntime {
 
   private applyRuntimeRoundPhase(): void {
     const phase = this.round.currentPhase;
+    const fightScreen = runtimeFightScreenContextFromRound({
+      phase,
+      round: this.round.snapshot(),
+      timing: this.fightScreenTiming,
+      assets: this.fightScreenAssets,
+      clock: {
+        fightTimeFrames: this.round.fightTimeFramesElapsed,
+        pause: this.pauseWorld.snapshot(),
+      },
+    });
     const matchProjection = this.currentMatchOutcomeProjection();
     const winPose = phase === 4 ? this.applyRoundWinPose() : undefined;
     const activeIds = new Set(this.activeRoots.map(({ id }) => id));
     for (const root of this.characterRoots()) {
+      root.fightScreen = fightScreen;
       if (phase === 2) {
         delete root.runtime.roundPhase;
       } else {
@@ -4666,6 +4942,7 @@ function advanceFighter(
     prepareActTmp: (actor) => actTmpWorld.prepare(actor.runtime, isMatchPaused()),
     tickSpriteEffects: (actor) => spriteEffectWorld.tick(actor.runtime, () => createAfterImageSample(actor)),
     tickHitBySlots: (actor) => hitEligibilityWorld.tickHitBySlots(actor.runtime),
+    tickUnhittableTime: (actor) => hitEligibilityWorld.tickUnhittableTime(actor.runtime),
     tickHitOverrideSlots: (actor) => hitOverrideWorld.tickSlots(actor.runtime),
     advanceContactTimers,
     advanceStateClock: (actor) => stateClockWorld.advance(actor),
@@ -4783,13 +5060,16 @@ function changeAction(
   fighter: FighterMatchState,
   actionId: number,
   source: NonNullable<CharacterRuntimeState["animationSource"]> = "self",
-  actionOwner: DemoFighterDefinition = fighter.definition,
+  actionOwner: FighterMatchState = fighter,
   elementOptions: AnimationElementOptions = {},
 ): boolean {
   const result = animationChangeWorld.changeAction(fighter, {
     actionId,
     source,
-    actionOwner,
+    actionOwner: {
+      animations: actionOwner.definition.animations,
+      playerNo: actionOwner.playerNo,
+    },
     ...elementOptions,
   });
   return result.actionFound;
@@ -4809,7 +5089,7 @@ function enterState(fighter: FighterMatchState, stateId: number, move?: DemoMove
         compatibilityTelemetryWorld.recordStateExecution(actor, executedStateId, owner),
       resetContactState,
       changeAction: (actor, actionId, source, actionOwner, elementOptions) =>
-        changeAction(actor, actionId, source, actionOwner.definition, elementOptions),
+        changeAction(actor, actionId, source, actionOwner, elementOptions),
     },
   );
   resetControllerPersistentCadence(fighter);
@@ -4952,7 +5232,7 @@ function runActiveStateControllers(
     enterState: (actor, stateId, stateOptions) => enterState(actor, stateId, undefined, stateOptions),
     applyControl: (actor, ctrl) => applyRuntimeControl(actor.runtime, ctrl),
     changeAction: (actor, actionId, source, actionOwner, elementOptions) =>
-      changeAction(actor, actionId, source, actionOwner.definition, elementOptions),
+      changeAction(actor, actionId, source, actionOwner, elementOptions),
     hitDef: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       const context = runtimeControllerContext(
         actor,
@@ -4979,6 +5259,64 @@ function runActiveStateControllers(
         frame: getCurrentCollisionFrame(target),
         constants: target.definition.constants,
         runtimeProfile: activeMatchRuntimeProfile,
+        context,
+        resolveIntegerList: (key) =>
+          resolveModifyProjectileIntegerListParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+        resolveIntegerScalar: (key) => {
+          const operation = controller.operation?.kind === "hitdef" ? controller.operation : undefined;
+          const raw = key === "priority" && operation?.priorityExpression !== undefined
+            ? operation.priorityExpression
+            : findParam(controller, key) ??
+            (key === "p1sprpriority" ? findParam(controller, "sprpriority") : undefined);
+          const value = raw === undefined
+            ? undefined
+            : resolveDispatchNumber(
+                typeof raw === "number" ? raw : undefined,
+                typeof raw === "string" ? raw : undefined,
+                actor,
+                targetOpponent,
+                stateOwner,
+                stageBounds,
+                activeTick,
+                gameSpace,
+                options.characters,
+                createPlayerIdTarget(actor),
+              );
+          return value === undefined || !Number.isFinite(value) ? undefined : Math.trunc(value);
+        },
+        resolveIntegerPair: (key) => {
+          const operation = controller.operation?.kind === "hitdef" ? controller.operation : undefined;
+          const pair = key === "damage"
+            ? operation?.damageExpressions
+            : key === "pausetime"
+              ? operation?.pauseTimeExpressions
+              : key === "guard.pausetime"
+                ? operation?.guardPauseTimeExpressions
+                : key === "unhittabletime"
+                  ? operation?.unhittableTime
+                  : key === "getpower"
+                    ? operation?.getPower
+                    : operation?.givePower;
+          if (pair === undefined) return undefined;
+          const resolveComponent = (component: number | string | undefined): number | undefined => {
+            if (typeof component === "number") return Number.isFinite(component) ? Math.trunc(component) : undefined;
+            if (component === undefined) return undefined;
+            const value = resolveDispatchNumber(
+              undefined,
+              component,
+              actor,
+              targetOpponent,
+              stateOwner,
+              stageBounds,
+              activeTick,
+              gameSpace,
+              options.characters,
+              createPlayerIdTarget(actor),
+            );
+            return value === undefined || !Number.isFinite(value) ? undefined : Math.trunc(value);
+          };
+          return [resolveComponent(pair[0]), resolveComponent(pair[1])];
+        },
         resolveSoundValue: (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
         ...runtimeActiveControllerTelemetryHooks,
       });
@@ -5011,6 +5349,60 @@ function runActiveStateControllers(
       const result = hitDefControllerDispatchWorld.modify({
         actor: target,
         controller,
+        context,
+        resolveIntegerList: (key) =>
+          resolveModifyProjectileIntegerListParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+        resolveIntegerScalar: (key) => {
+          const operation = controller.operation?.kind === "modifyhitdef" ? controller.operation : undefined;
+          const raw = key === "priority" && operation?.priorityExpression !== undefined
+            ? operation.priorityExpression
+            : findParam(controller, key) ??
+            (key === "p1sprpriority" ? findParam(controller, "sprpriority") : undefined);
+          const value = raw === undefined
+            ? undefined
+            : resolveDispatchNumber(
+                typeof raw === "number" ? raw : undefined,
+                typeof raw === "string" ? raw : undefined,
+                actor,
+                targetOpponent,
+                stateOwner,
+                stageBounds,
+                activeTick,
+                gameSpace,
+                options.characters,
+                createPlayerIdTarget(actor),
+              );
+          return value === undefined || !Number.isFinite(value) ? undefined : Math.trunc(value);
+        },
+        resolveIntegerPair: (key) => {
+          const operation = controller.operation?.kind === "modifyhitdef" ? controller.operation : undefined;
+          const pair = key === "damage"
+            ? operation?.damageExpressions
+            : key === "unhittabletime"
+              ? operation?.unhittableTime
+              : key === "getpower"
+                ? operation?.getPower
+                : operation?.givePower;
+          if (pair === undefined) return undefined;
+          const resolveComponent = (component: number | string | undefined): number | undefined => {
+            if (typeof component === "number") return Number.isFinite(component) ? Math.trunc(component) : undefined;
+            if (component === undefined) return undefined;
+            const value = resolveDispatchNumber(
+              undefined,
+              component,
+              actor,
+              targetOpponent,
+              stateOwner,
+              stageBounds,
+              activeTick,
+              gameSpace,
+              options.characters,
+              createPlayerIdTarget(actor),
+            );
+            return value === undefined || !Number.isFinite(value) ? undefined : Math.trunc(value);
+          };
+          return [resolveComponent(pair[0]), resolveComponent(pair[1])];
+        },
         ...runtimeActiveControllerTelemetryHooks,
       });
       if (!result.modified) {
@@ -5078,6 +5470,7 @@ function runActiveStateControllers(
       reversalControllerDispatchWorld.apply({
         actor: target,
         controller,
+        context,
         hitbox: frameWorld.firstCurrentAttackBox(target),
         reversalWorld,
         ...runtimeActiveControllerTelemetryHooks,
@@ -5505,13 +5898,193 @@ function runActiveStateControllers(
             effect === "projectile"
               ? (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick)
               : undefined,
+          resolveProjectileUnhittableTime:
+            effect === "projectile"
+              ? () => {
+                  const raw = findParam(controller, "unhittabletime");
+                  return raw === undefined
+                    ? undefined
+                    : resolveModifyProjectileExpressionPair(
+                        raw,
+                        actor,
+                        targetOpponent,
+                        stateOwner,
+                        stageBounds,
+                        activeTick,
+                        -1,
+                      );
+                }
+              : undefined,
+          resolveProjectileGroundFriction:
+            effect === "projectile"
+              ? () => {
+                  const stand = findParam(controller, "stand.friction");
+                  const crouch = findParam(controller, "crouch.friction");
+                  return {
+                    stand: stand === undefined
+                      ? undefined
+                      : resolveDispatchFloat(undefined, stand, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+                    crouch: crouch === undefined
+                      ? undefined
+                      : resolveDispatchFloat(undefined, crouch, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+                  };
+                }
+              : undefined,
+          resolveProjectileSparkScale:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  return {
+                    hit: resolveProjectileSparkScaleComponents(
+                      operation?.hitSparkScale,
+                      actor,
+                      targetOpponent,
+                      stateOwner,
+                      stageBounds,
+                      activeTick,
+                    ),
+                    guard: resolveProjectileSparkScaleComponents(
+                      operation?.guardSparkScale,
+                      actor,
+                      targetOpponent,
+                      stateOwner,
+                      stageBounds,
+                      activeTick,
+                    ),
+                  };
+                }
+              : undefined,
+          resolveProjectilePaletteFx:
+            effect === "projectile"
+              ? {
+                  resolveNumber: (key) => {
+                    const operation = controller.operation?.kind === "projectile" ? controller.operation : undefined;
+                    const value = key === "time"
+                      ? operation?.paletteFx?.time
+                      : key === "color"
+                        ? operation?.paletteFx?.color
+                        : key === "invertall"
+                          ? operation?.paletteFx?.invertAll
+                          : undefined;
+                    if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+                    return value === undefined
+                      ? undefined
+                      : resolveDispatchNumber(
+                          undefined,
+                          value,
+                          actor,
+                          targetOpponent,
+                          stateOwner,
+                          stageBounds,
+                          activeTick,
+                          gameSpace,
+                          options.characters,
+                          createPlayerIdTarget(actor),
+                        );
+                  },
+                  resolveTriplet: (key) => {
+                    const operation = controller.operation?.kind === "projectile" ? controller.operation : undefined;
+                    const value = key === "add" ? operation?.paletteFx?.add : operation?.paletteFx?.mul;
+                    if (!value) return undefined;
+                    const resolved = value.map((component) => typeof component === "number"
+                      ? component
+                      : resolveDispatchNumber(
+                          undefined,
+                          component,
+                          actor,
+                          targetOpponent,
+                          stateOwner,
+                          stageBounds,
+                          activeTick,
+                          gameSpace,
+                          options.characters,
+                          createPlayerIdTarget(actor),
+                        ));
+                    return resolved.some((component) => component === undefined || !Number.isFinite(component))
+                      ? undefined
+                      : [resolved[0]!, resolved[1]!, resolved[2]!];
+                  },
+                }
+              : undefined,
+          resolveProjectileGetPower:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  const resolveComponent = (component: number | string | undefined): number | undefined => {
+                    if (typeof component === "number") {
+                      return Number.isFinite(component) ? Math.trunc(component) : undefined;
+                    }
+                    if (component === undefined) return undefined;
+                    const value = resolveDispatchNumber(
+                      undefined,
+                      component,
+                      actor,
+                      targetOpponent,
+                      stateOwner,
+                      stageBounds,
+                      activeTick,
+                      gameSpace,
+                      options.characters,
+                      createPlayerIdTarget(actor),
+                    );
+                    return value === undefined || !Number.isFinite(value) ? undefined : Math.trunc(value);
+                  };
+                  const value = operation?.getPower;
+                  if (value === undefined) return undefined;
+                  return { hit: resolveComponent(value[0]), guard: resolveComponent(value[1]) };
+                }
+              : undefined,
+          resolveProjectileGivePower:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  const resolveComponent = (component: number | string | undefined): number | undefined => {
+                    if (typeof component === "number") {
+                      return Number.isFinite(component) ? Math.trunc(component) : undefined;
+                    }
+                    if (component === undefined) return undefined;
+                    const value = resolveDispatchNumber(
+                      undefined,
+                      component,
+                      actor,
+                      targetOpponent,
+                      stateOwner,
+                      stageBounds,
+                      activeTick,
+                      gameSpace,
+                      options.characters,
+                      createPlayerIdTarget(actor),
+                    );
+                    return value === undefined || !Number.isFinite(value) ? undefined : Math.trunc(value);
+                  };
+                  const value = operation?.givePower;
+                  if (value === undefined) return undefined;
+                  return { hit: resolveComponent(value[0]), guard: resolveComponent(value[1]) };
+                }
+              : undefined,
           resolveModifyProjectile:
             effect === "modifyprojectile"
               ? {
                   resolveNumber: (key) =>
                     resolveModifyProjectileNumberParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+                  resolveFloat: (key) =>
+                    resolveModifyProjectileFloatParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
                   resolvePair: (key) =>
                     resolveModifyProjectilePairParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+                  resolveFloatPair: (key) =>
+                    resolveModifyProjectileFloatPairParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+                  resolveFloatTriple: (key) =>
+                    resolveModifyProjectileFloatTripleParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+                  resolveFloatPartialTriple: (key) =>
+                    resolveModifyProjectileFloatPartialTripleParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+                  resolveIntegerList: (key) =>
+                    resolveModifyProjectileIntegerListParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
                 }
               : undefined,
           ...runtimeActiveControllerTelemetryHooks,
@@ -7300,6 +7873,22 @@ function resolveModifyProjectileNumberParam(
   return resolveDispatchNumber(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
 }
 
+function resolveModifyProjectileFloatParam(
+  controller: ControllerIr,
+  key: RuntimeModifyProjectileNumberParam,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const raw = findModifyProjectileNumberRawParam(controller, key);
+  if (raw === undefined) {
+    return undefined;
+  }
+  return resolveDispatchFloat(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
 function resolveModifyProjectilePairParam(
   controller: ControllerIr,
   key: RuntimeModifyProjectilePairParam,
@@ -7313,7 +7902,106 @@ function resolveModifyProjectilePairParam(
   if (raw === undefined) {
     return undefined;
   }
-  return resolveModifyProjectileExpressionPair(raw, fighter, opponent, owner, stageBounds, stageTime);
+  return resolveModifyProjectileExpressionPair(
+    raw,
+    fighter,
+    opponent,
+    owner,
+    stageBounds,
+    stageTime,
+    key === "projclsnscale" ||
+      key === "damage" ||
+      key === "getpower" ||
+      key === "givepower" ||
+      key === "redlife" ||
+      key === "pausetime" ||
+      key === "guard.pausetime" ||
+      key === "guard.dist" ||
+      key === "guard.dist.width" ||
+      key === "guard.dist.height" ||
+      key === "guard.dist.depth"
+      ? 0
+      : undefined,
+  );
+}
+
+function resolveModifyProjectileFloatPairParam(
+  controller: ControllerIr,
+  key: RuntimeModifyProjectilePairParam,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): [number, number] | undefined {
+  const raw = findModifyProjectilePairRawParam(controller, key);
+  if (raw === undefined) {
+    return undefined;
+  }
+  return resolveModifyProjectileExpressionFloatPair(
+    raw,
+    fighter,
+    opponent,
+    owner,
+    stageBounds,
+    stageTime,
+    key === "score" || key === "attack.depth" || key === "sparkxy" ? 0 : undefined,
+  );
+}
+
+function resolveModifyProjectileFloatTripleParam(
+  controller: ControllerIr,
+  key: RuntimeModifyProjectileTripleParam,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): [number, number, number] | undefined {
+  const raw = findParam(controller, key);
+  return raw === undefined
+    ? undefined
+    : resolveModifyProjectileExpressionFloatTriple(raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolveModifyProjectileFloatPartialTripleParam(
+  controller: ControllerIr,
+  key: RuntimeModifyProjectilePartialTripleParam,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): RuntimeModifyProjectileGroundVelocity | undefined {
+  const raw = findParam(controller, key);
+  return raw === undefined
+    ? undefined
+    : resolveModifyProjectileExpressionFloatPartialTriple(raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolveModifyProjectileIntegerListParam(
+  controller: ControllerIr,
+  key: RuntimeModifyProjectileIntegerListParam,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number[] | undefined {
+  const raw = findParam(controller, key);
+  if (raw === undefined) return undefined;
+  const splitIndices = topLevelCommaIndices(raw);
+  for (let componentCount = Math.min(8, splitIndices.length + 1); componentCount >= 1; componentCount -= 1) {
+    for (const expressions of expressionPartitions(raw, splitIndices, componentCount)) {
+      if (expressions.some(isBareModifyProjectileRedirectExpression)) continue;
+      const values = expressions.map((expression) =>
+        resolveDispatchNumber(undefined, expression, fighter, opponent, owner, stageBounds, stageTime));
+      if (values.every((value): value is number => value !== undefined)) {
+        return values.map(Math.trunc);
+      }
+    }
+  }
+  return undefined;
 }
 
 function findModifyProjectileNumberRawParam(
@@ -7322,13 +8010,19 @@ function findModifyProjectileNumberRawParam(
 ): string | undefined {
   switch (key) {
     case "projid":
-      return findParam(controller, "projid") ?? findParam(controller, "id");
+      return findParam(controller, "projid");
     case "projremovetime":
       return findParam(controller, "projremovetime") ?? findParam(controller, "removetime");
-    case "sprpriority":
-      return findParam(controller, "sprpriority") ?? findParam(controller, "projsprpriority");
+    case "projsprpriority":
+      return findParam(controller, "projsprpriority");
     case "projpriority":
-      return findParam(controller, "projpriority") ?? findParam(controller, "priority");
+      return findParam(controller, "projpriority");
+    case "priority": {
+      const raw = findParam(controller, "priority");
+      if (raw === undefined) return undefined;
+      const suffix = /,\s*"?(?:hit|miss|dodge)"?\s*$/i.exec(raw);
+      return suffix?.index === undefined ? raw : raw.slice(0, suffix.index).trim();
+    }
     default:
       return findParam(controller, key);
   }
@@ -7355,11 +8049,12 @@ function resolveModifyProjectileExpressionPair(
   owner: FighterMatchState,
   stageBounds?: MugenStageDefinition["bounds"],
   stageTime?: number,
+  singleValueSecond?: number,
 ): [number, number] | undefined {
   const splitIndices = topLevelCommaIndices(raw);
   if (splitIndices.length === 0) {
     const value = resolveDispatchNumber(undefined, raw.trim(), fighter, opponent, owner, stageBounds, stageTime);
-    return value === undefined ? undefined : [value, value];
+    return value === undefined ? undefined : [value, singleValueSecond ?? value];
   }
   let best: { pair: [number, number]; maxCommaCount: number; balance: number; index: number } | undefined;
   for (const index of splitIndices) {
@@ -7390,6 +8085,154 @@ function resolveModifyProjectileExpressionPair(
     }
   }
   return best?.pair;
+}
+
+function resolveProjectileSparkScaleComponents(
+  value: MugenHitDefExpressionPair | undefined,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): [number?, number?] | undefined {
+  if (value === undefined) return undefined;
+  const resolveComponent = (component: number | string | undefined): number | undefined => {
+    if (typeof component === "number") return Number.isFinite(component) ? component : undefined;
+    if (component === undefined) return undefined;
+    return resolveDispatchFloat(undefined, component, fighter, opponent, owner, stageBounds, stageTime);
+  };
+  return [resolveComponent(value[0]), resolveComponent(value[1])];
+}
+
+function resolveModifyProjectileExpressionFloatPair(
+  raw: string,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+  singleValueSecond?: number,
+): [number, number] | undefined {
+  const splitIndices = topLevelCommaIndices(raw);
+  if (splitIndices.length === 0) {
+    const value = resolveDispatchFloat(undefined, raw.trim(), fighter, opponent, owner, stageBounds, stageTime);
+    return value === undefined ? undefined : [value, singleValueSecond ?? value];
+  }
+  let best: { pair: [number, number]; maxCommaCount: number; balance: number; index: number } | undefined;
+  for (const index of splitIndices) {
+    const lowExpression = raw.slice(0, index).trim();
+    const highExpression = raw.slice(index + 1).trim();
+    if (!lowExpression || !highExpression) continue;
+    const low = resolveDispatchFloat(undefined, lowExpression, fighter, opponent, owner, stageBounds, stageTime);
+    const high = resolveDispatchFloat(undefined, highExpression, fighter, opponent, owner, stageBounds, stageTime);
+    if (low !== undefined && high !== undefined) {
+      const leftCommaCount = topLevelCommaIndices(lowExpression).length;
+      const rightCommaCount = topLevelCommaIndices(highExpression).length;
+      const candidate = {
+        pair: [low, high] as [number, number],
+        maxCommaCount: Math.max(leftCommaCount, rightCommaCount),
+        balance: Math.abs(leftCommaCount - rightCommaCount),
+        index,
+      };
+      if (
+        !best ||
+        candidate.maxCommaCount < best.maxCommaCount ||
+        (candidate.maxCommaCount === best.maxCommaCount && candidate.balance < best.balance) ||
+        (candidate.maxCommaCount === best.maxCommaCount && candidate.balance === best.balance && candidate.index > best.index)
+      ) {
+        best = candidate;
+      }
+    }
+  }
+  return best?.pair;
+}
+
+function resolveModifyProjectileExpressionFloatTriple(
+  raw: string,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): [number, number, number] | undefined {
+  const splitIndices = topLevelCommaIndices(raw);
+  for (let componentCount = Math.min(3, splitIndices.length + 1); componentCount >= 1; componentCount -= 1) {
+    const candidates = expressionPartitions(raw, splitIndices, componentCount);
+    for (const expressions of candidates) {
+      const values = expressions.map((expression) =>
+        resolveDispatchFloat(undefined, expression, fighter, opponent, owner, stageBounds, stageTime));
+      if (values.every((value): value is number => value !== undefined)) {
+        return [values[0]!, values[1] ?? 0, values[2] ?? 0];
+      }
+    }
+  }
+  return undefined;
+}
+
+function resolveModifyProjectileExpressionFloatPartialTriple(
+  raw: string,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): RuntimeModifyProjectileGroundVelocity | undefined {
+  const splitIndices = topLevelCommaIndices(raw);
+  for (let componentCount = Math.min(3, splitIndices.length + 1); componentCount >= 1; componentCount -= 1) {
+    const candidates = expressionPartitions(raw, splitIndices, componentCount);
+    for (const expressions of candidates) {
+      const values = expressions.map((expression): number | null | undefined =>
+        /^n$/i.test(expression.trim())
+          ? null
+          : hasEmbeddedGroundVelocityPreserveComponent(expression)
+            ? undefined
+            : resolveDispatchFloat(undefined, expression, fighter, opponent, owner, stageBounds, stageTime));
+      if (values.every((value) => value !== undefined)) {
+        const result: RuntimeModifyProjectileGroundVelocity = {};
+        if (values[0] !== null) result.x = values[0]!;
+        if (values[1] !== undefined && values[1] !== null) result.y = values[1];
+        if (values[2] !== undefined && values[2] !== null) result.z = values[2];
+        return result;
+      }
+    }
+  }
+  return undefined;
+}
+
+function hasEmbeddedGroundVelocityPreserveComponent(expression: string): boolean {
+  const splitIndices = topLevelCommaIndices(expression);
+  const starts = [0, ...splitIndices.map((index) => index + 1)];
+  const ends = [...splitIndices, expression.length];
+  return starts.some((start, index) => /^n$/i.test(expression.slice(start, ends[index]).trim()));
+}
+
+function expressionPartitions(raw: string, splitIndices: number[], componentCount: number): string[][] {
+  if (componentCount === 1) {
+    const expression = raw.trim();
+    return expression ? [[expression]] : [];
+  }
+  const results: string[][] = [];
+  const visit = (start: number, remaining: number, parts: string[]): void => {
+    if (remaining === 1) {
+      const tail = raw.slice(start).trim();
+      if (tail) results.push([...parts, tail]);
+      return;
+    }
+    for (const index of splitIndices) {
+      if (index < start) continue;
+      const part = raw.slice(start, index).trim();
+      if (!part) continue;
+      visit(index + 1, remaining - 1, [...parts, part]);
+    }
+  };
+  visit(0, componentCount, []);
+  return results.sort((left, right) =>
+    Math.max(...left.map((part) => topLevelCommaIndices(part).length))
+      - Math.max(...right.map((part) => topLevelCommaIndices(part).length)));
+}
+
+function isBareModifyProjectileRedirectExpression(expression: string): boolean {
+  return /^(?:parent|root|partner|enemynear|enemy|target|helper|playerid)$/i.test(expression.trim());
 }
 
 function topLevelCommaIndices(raw: string): number[] {

@@ -38,6 +38,7 @@ describe("ReversalSystem", () => {
       p2facing: "-1",
       id: "9",
       "attack.depth": "6",
+      unhittabletime: "2,9",
     }));
 
     const result = dispatchWorld.apply({
@@ -67,6 +68,7 @@ describe("ReversalSystem", () => {
       p2Facing: -1,
       targetId: 9,
       attackDepth: [6, 6],
+      unhittableTime: [2, 9],
     });
     expect(fighter.currentMove).toMatchObject({
       isReversal: true,
@@ -81,10 +83,12 @@ describe("ReversalSystem", () => {
       p2Facing: -1,
       targetId: 9,
       attackDepth: [6, 6],
+      unhittableTime: [2, 9],
     });
     expect(recordedControllers).toEqual(["ReversalDef"]);
     expect(recordedOperations).toEqual(["reversaldef"]);
     expect(fighter.runtime.reversal?.attackDepth).toEqual([6, 6]);
+    expect(fighter.runtime.reversal?.unhittableTime).toEqual([2, 9]);
     expect(fighter.runtime.reversal).toMatchObject({
       hitDefAttr: "S,SP",
       guardFlag: "A",
@@ -92,6 +96,25 @@ describe("ReversalSystem", () => {
       p2GetP1State: false,
       p2Facing: -1,
     });
+  });
+
+  it("derives omitted ReversalDef receiver unhittabletime from attacker pausetime", () => {
+    const world = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const reverser = actor("p2", "Reverser", { stateNo: 300, unhittableTime: 4 });
+    const attacker = actor("p1", "Attacker", { currentMove: move(), currentMoveLabel: "Punch" });
+    const ir = compileControllerIr(controller("ReversalDef", {
+      "reversal.attr": "S,NA",
+      attr: "S,SP",
+      pausetime: "5,2",
+    }));
+
+    dispatchWorld.apply({ actor: reverser, controller: ir, hitbox: box(), reversalWorld: world });
+    expect(reverser.currentMove?.unhittableTime).toEqual([-1, 6]);
+
+    world.apply(reverser, attacker, reverser.currentMove!, hooks());
+    expect(reverser.runtime.unhittableTime).toBe(4);
+    expect(attacker.runtime.unhittableTime).toBe(6);
   });
 
   it("mutates an active ReversalDef in place without clearing contact state", () => {
@@ -561,7 +584,7 @@ describe("ReversalSystem", () => {
   it("applies bounded reversal result and delegates state routing through hooks", () => {
     const contactWorld = new RecordingContactWorld();
     const world = new RuntimeReversalWorld(contactWorld);
-    const reverser = actor("p2", "Reverser", { power: 2990, powerMax: 3000, stateNo: 300 });
+    const reverser = actor("p2", "Reverser", { power: 2990, powerMax: 3000, stateNo: 300, unhittableTime: 5 });
     const attacker = actor("p1", "Attacker", {
       stateNo: 200,
       currentMove: move(),
@@ -573,7 +596,15 @@ describe("ReversalSystem", () => {
       guardControlTime: 5,
       guarding: true,
     });
-    const reversal = move({ isReversal: true, reversalAttr: "SA,AA", hitPause: 6, p1StateNo: 777, p2StateNo: 778, targetId: 4 });
+    const reversal = move({
+      isReversal: true,
+      reversalAttr: "SA,AA",
+      hitPause: 6,
+      p1StateNo: 777,
+      p2StateNo: 778,
+      targetId: 4,
+      unhittableTime: [2, 11],
+    });
     const calls: string[] = [];
 
     const result = world.apply(reverser, attacker, reversal, hooks({
@@ -597,6 +628,8 @@ describe("ReversalSystem", () => {
     expect(attacker.runtime.guarding).toBe(false);
     expect(attacker.runtime.moveType).toBe("H");
     expect(attacker.runtime.hitTmp).toBe(-1);
+    expect(attacker.runtime.unhittableTime).toBe(11);
+    expect(reverser.runtime.unhittableTime).toBe(2);
     expect(attacker.removedExplodsOnGetHit).toBe(1);
     expect(reverser.runtime.power).toBe(3000);
     expect(contactWorld.calls).toEqual(["reversed:200"]);

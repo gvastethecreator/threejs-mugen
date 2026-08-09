@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "kind": "sprite-visual-review",
+  "reviewer_kind": "vision-model",
+  "scope": "full-character",
+  "stage": "pre-package",
+  "status": "pass",
+  "rubric": [
+    {
+      "id": "identity",
+      "answer": "pass",
+      "score": 4,
+      "notes": "The same face, eyebrow scar, short hair, muscular build, ivory gi and gray wraps remain readable across all fourteen rows; proxy outliers come from foreshortening and floor poses."
+    },
+    {
+      "id": "motion",
+      "answer": "pass",
+      "score": 4,
+      "notes": "Forward and backward walks alternate support, strikes show anticipation and recovery, and jump, sweep, collapse and victory sequences read in order."
+    },
+    {
+      "id": "silhouette",
+      "answer": "pass",
+      "score": 4,
+      "notes": "Every pose keeps a clear side-view silhouette, connected anatomy, restrained clothing shapes and a readable center of mass without detached effects."
+    },
+    {
+      "id": "alignment",
+      "answer": "pass",
+      "score": 5,
+      "notes": "Grounded states hold the shared foot baseline, jump leaves and returns to it, and knockdown and knockout settle consistently."
+    },
+    {
+      "id": "matte",
+      "answer": "pass",
+      "score": 4,
+      "notes": "Checker, black, gray, white and alpha-mask panels preserve hair, gi edges, toes and interior gaps without visible source-background fringe."
+    },
+    {
+      "id": "runtime-playback",
+      "answer": "pass",
+      "score": 4,
+      "notes": "All seventy-nine frames are present in the workbench and every state has deterministic playback evidence with stable scale and timing."
+    }
+  ],
+  "failures": [],
+  "waivers": [],
+  "reviewed_artifacts": [
+    {
+      "path": "qa/all-contact.png",
+      "sha256": "23d1da2a9892c2bb4215d2d79222e3353e2dc8d2898831bbbcbc9988528faafa",
+      "size_bytes": 1538813
+    },
+    {
+      "path": "qa/pose-scale-review.png",
+      "sha256": "be55143d57eccb21314875ed7f3a002172ec80bb3bf0a4e12c6324e468587fda",
+      "size_bytes": 454253
+    },
+    {
+      "path": "qa/background-matte-review.png",
+      "sha256": "e5ffeb6973d1002a80e6c7b20839ecd59482f21b9734217ab9964eeca27c5d2b",
+      "size_bytes": 567070
+    },
+    {
+      "path": "qa/preview-workbench/index.html",
+      "sha256": "105c225fc00364de9a994749e0fb480281d029dded1ddb10aae76bbffdb4f12c",
+      "size_bytes": 2242765
+    }
+  ],
+  "reviewed_at": "2026-08-01T22:54:39Z",
+  "input_fingerprint": "sha256:af4592109ae7117d1d4f16b6f86416c3ce6d4fba2ad3e1c8ebed9c97d536e156"
+}

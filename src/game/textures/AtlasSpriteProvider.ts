@@ -25,10 +25,17 @@ const defaultActionMapping: AtlasActionMapping = {
   0: "idle",
   10: "crouch",
   20: "walk-forward",
+  21: "walk-back",
   40: "jump",
+  120: "guard",
+  180: "win",
   200: "punch",
   210: "kick",
+  220: "special",
   500: "hitstun",
+  510: "knockdown",
+  515: "ko",
+  800: "throw",
 };
 
 const actionRowAliases: Record<string, string[]> = {

@@ -1,0 +1,596 @@
+{
+  "mode": "pixel-art",
+  "source": "pixel-art-wiki-derived",
+  "reference": "references/pixel-art-direction.md",
+  "workflow_reference": "references/pixel-animation-workflows.md",
+  "requested_profiles": [
+    "pixel-core",
+    "pixel-character",
+    "pixel-motion",
+    "pixel-sideview",
+    "pixel-combat"
+  ],
+  "requested_workflows": [
+    "auto"
+  ],
+  "rows": {
+    "idle": {
+      "profiles": [
+        "pixel-core",
+        "pixel-character",
+        "pixel-motion",
+        "pixel-sideview",
+        "pixel-combat"
+      ],
+      "sources": [
+        "01-color-palettes",
+        "02-texture",
+        "05-back-to-basics",
+        "06-light-and-shadow",
+        "07-developing-style",
+        "17-human-anatomy",
+        "22-top-down-character-sprites",
+        "25-motion-cycles",
+        "57-knights-monsters-castles",
+        "58-top-down-character-animation-part-3",
+        "08-intro-to-animation",
+        "50-human-walk-cycle",
+        "55-top-down-character-animation",
+        "60-side-view-run-n-gun",
+        "28-side-view-tiles",
+        "37-castlevania-study",
+        "38-metroid-study",
+        "09-melee-attacks",
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks",
+        "56-top-down-character-attack-animation"
+      ],
+      "animation_workflows": [
+        "fighting-stance-idle"
+      ],
+      "workflow_sources": [
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks"
+      ],
+      "production_workflows": [],
+      "production_workflow_sources": []
+    },
+    "walk-forward": {
+      "profiles": [
+        "pixel-core",
+        "pixel-character",
+        "pixel-motion",
+        "pixel-sideview",
+        "pixel-combat"
+      ],
+      "sources": [
+        "01-color-palettes",
+        "02-texture",
+        "05-back-to-basics",
+        "06-light-and-shadow",
+        "07-developing-style",
+        "17-human-anatomy",
+        "22-top-down-character-sprites",
+        "25-motion-cycles",
+        "57-knights-monsters-castles",
+        "58-top-down-character-animation-part-3",
+        "08-intro-to-animation",
+        "50-human-walk-cycle",
+        "55-top-down-character-animation",
+        "60-side-view-run-n-gun",
+        "28-side-view-tiles",
+        "37-castlevania-study",
+        "38-metroid-study",
+        "09-melee-attacks",
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks",
+        "56-top-down-character-attack-animation"
+      ],
+      "animation_workflows": [
+        "sideview-locomotion"
+      ],
+      "workflow_sources": [
+        "08-intro-to-animation",
+        "25-motion-cycles",
+        "50-human-walk-cycle",
+        "60-side-view-run-n-gun"
+      ],
+      "production_workflows": [],
+      "production_workflow_sources": []
+    },
+    "walk-back": {
+      "profiles": [
+        "pixel-core",
+        "pixel-character",
+        "pixel-motion",
+        "pixel-sideview",
+        "pixel-combat"
+      ],
+      "sources": [
+        "01-color-palettes",
+        "02-texture",
+        "05-back-to-basics",
+        "06-light-and-shadow",
+        "07-developing-style",
+        "17-human-anatomy",
+        "22-top-down-character-sprites",
+        "25-motion-cycles",
+        "57-knights-monsters-castles",
+        "58-top-down-character-animation-part-3",
+        "08-intro-to-animation",
+        "50-human-walk-cycle",
+        "55-top-down-character-animation",
+        "60-side-view-run-n-gun",
+        "28-side-view-tiles",
+        "37-castlevania-study",
+        "38-metroid-study",
+        "09-melee-attacks",
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks",
+        "56-top-down-character-attack-animation"
+      ],
+      "animation_workflows": [
+        "sideview-locomotion"
+      ],
+      "workflow_sources": [
+        "08-intro-to-animation",
+        "25-motion-cycles",
+        "50-human-walk-cycle",
+        "60-side-view-run-n-gun"
+      ],
+      "production_workflows": [],
+      "production_workflow_sources": []
+    },
+    "crouch": {
+      "profiles": [
+        "pixel-core",
+        "pixel-character",
+        "pixel-motion",
+        "pixel-sideview",
+        "pixel-combat"
+      ],
+      "sources": [
+        "01-color-palettes",
+        "02-texture",
+        "05-back-to-basics",
+        "06-light-and-shadow",
+        "07-developing-style",
+        "17-human-anatomy",
+        "22-top-down-character-sprites",
+        "25-motion-cycles",
+        "57-knights-monsters-castles",
+        "58-top-down-character-animation-part-3",
+        "08-intro-to-animation",
+        "50-human-walk-cycle",
+        "55-top-down-character-animation",
+        "60-side-view-run-n-gun",
+        "28-side-view-tiles",
+        "37-castlevania-study",
+        "38-metroid-study",
+        "09-melee-attacks",
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks",
+        "56-top-down-character-attack-animation"
+      ],
+      "animation_workflows": [
+        "fighting-stance-idle"
+      ],
+      "workflow_sources": [
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks"
+      ],
+      "production_workflows": [],
+      "production_workflow_sources": []
+    },
+    "jump": {
+      "profiles": [
+        "pixel-core",
+        "pixel-character",
+        "pixel-motion",
+        "pixel-sideview",
+        "pixel-combat"
+      ],
+      "sources": [
+        "01-color-palettes",
+        "02-texture",
+        "05-back-to-basics",
+        "06-light-and-shadow",
+        "07-developing-style",
+        "17-human-anatomy",
+        "22-top-down-character-sprites",
+        "25-motion-cycles",
+        "57-knights-monsters-castles",
+        "58-top-down-character-animation-part-3",
+        "08-intro-to-animation",
+        "50-human-walk-cycle",
+        "55-top-down-character-animation",
+        "60-side-view-run-n-gun",
+        "28-side-view-tiles",
+        "37-castlevania-study",
+        "38-metroid-study",
+        "09-melee-attacks",
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks",
+        "56-top-down-character-attack-animation"
+      ],
+      "animation_workflows": [
+        "responsive-jump"
+      ],
+      "workflow_sources": [
+        "08-intro-to-animation",
+        "60-side-view-run-n-gun"
+      ],
+      "production_workflows": [],
+      "production_workflow_sources": []
+    },
+    "light-strike": {
+      "profiles": [
+        "pixel-core",
+        "pixel-character",
+        "pixel-motion",
+        "pixel-sideview",
+        "pixel-combat"
+      ],
+      "sources": [
+        "01-color-palettes",
+        "02-texture",
+        "05-back-to-basics",
+        "06-light-and-shadow",
+        "07-developing-style",
+        "17-human-anatomy",
+        "22-top-down-character-sprites",
+        "25-motion-cycles",
+        "57-knights-monsters-castles",
+        "58-top-down-character-animation-part-3",
+        "08-intro-to-animation",
+        "50-human-walk-cycle",
+        "55-top-down-character-animation",
+        "60-side-view-run-n-gun",
+        "28-side-view-tiles",
+        "37-castlevania-study",
+        "38-metroid-study",
+        "09-melee-attacks",
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks",
+        "56-top-down-character-attack-animation"
+      ],
+      "animation_workflows": [
+        "combat-quick-strike"
+      ],
+      "workflow_sources": [
+        "09-melee-attacks",
+        "53-punches-and-kicks"
+      ],
+      "production_workflows": [],
+      "production_workflow_sources": []
+    },
+    "heavy-strike": {
+      "profiles": [
+        "pixel-core",
+        "pixel-character",
+        "pixel-motion",
+        "pixel-sideview",
+        "pixel-combat"
+      ],
+      "sources": [
+        "01-color-palettes",
+        "02-texture",
+        "05-back-to-basics",
+        "06-light-and-shadow",
+        "07-developing-style",
+        "17-human-anatomy",
+        "22-top-down-character-sprites",
+        "25-motion-cycles",
+        "57-knights-monsters-castles",
+        "58-top-down-character-animation-part-3",
+        "08-intro-to-animation",
+        "50-human-walk-cycle",
+        "55-top-down-character-animation",
+        "60-side-view-run-n-gun",
+        "28-side-view-tiles",
+        "37-castlevania-study",
+        "38-metroid-study",
+        "09-melee-attacks",
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks",
+        "56-top-down-character-attack-animation"
+      ],
+      "animation_workflows": [
+        "combat-power-strike"
+      ],
+      "workflow_sources": [
+        "09-melee-attacks",
+        "53-punches-and-kicks"
+      ],
+      "production_workflows": [],
+      "production_workflow_sources": []
+    },
+    "special": {
+      "profiles": [
+        "pixel-core",
+        "pixel-character",
+        "pixel-motion",
+        "pixel-sideview",
+        "pixel-combat"
+      ],
+      "sources": [
+        "01-color-palettes",
+        "02-texture",
+        "05-back-to-basics",
+        "06-light-and-shadow",
+        "07-developing-style",
+        "17-human-anatomy",
+        "22-top-down-character-sprites",
+        "25-motion-cycles",
+        "57-knights-monsters-castles",
+        "58-top-down-character-animation-part-3",
+        "08-intro-to-animation",
+        "50-human-walk-cycle",
+        "55-top-down-character-animation",
+        "60-side-view-run-n-gun",
+        "28-side-view-tiles",
+        "37-castlevania-study",
+        "38-metroid-study",
+        "09-melee-attacks",
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks",
+        "56-top-down-character-attack-animation"
+      ],
+      "animation_workflows": [
+        "combat-power-strike"
+      ],
+      "workflow_sources": [
+        "09-melee-attacks",
+        "53-punches-and-kicks"
+      ],
+      "production_workflows": [],
+      "production_workflow_sources": []
+    },
+    "throw": {
+      "profiles": [
+        "pixel-core",
+        "pixel-character",
+        "pixel-motion",
+        "pixel-sideview",
+        "pixel-combat"
+      ],
+      "sources": [
+        "01-color-palettes",
+        "02-texture",
+        "05-back-to-basics",
+        "06-light-and-shadow",
+        "07-developing-style",
+        "17-human-anatomy",
+        "22-top-down-character-sprites",
+        "25-motion-cycles",
+        "57-knights-monsters-castles",
+        "58-top-down-character-animation-part-3",
+        "08-intro-to-animation",
+        "50-human-walk-cycle",
+        "55-top-down-character-animation",
+        "60-side-view-run-n-gun",
+        "28-side-view-tiles",
+        "37-castlevania-study",
+        "38-metroid-study",
+        "09-melee-attacks",
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks",
+        "56-top-down-character-attack-animation"
+      ],
+      "animation_workflows": [
+        "combat-power-strike"
+      ],
+      "workflow_sources": [
+        "09-melee-attacks",
+        "53-punches-and-kicks"
+      ],
+      "production_workflows": [],
+      "production_workflow_sources": []
+    },
+    "guard": {
+      "profiles": [
+        "pixel-core",
+        "pixel-character",
+        "pixel-motion",
+        "pixel-sideview",
+        "pixel-combat"
+      ],
+      "sources": [
+        "01-color-palettes",
+        "02-texture",
+        "05-back-to-basics",
+        "06-light-and-shadow",
+        "07-developing-style",
+        "17-human-anatomy",
+        "22-top-down-character-sprites",
+        "25-motion-cycles",
+        "57-knights-monsters-castles",
+        "58-top-down-character-animation-part-3",
+        "08-intro-to-animation",
+        "50-human-walk-cycle",
+        "55-top-down-character-animation",
+        "60-side-view-run-n-gun",
+        "28-side-view-tiles",
+        "37-castlevania-study",
+        "38-metroid-study",
+        "09-melee-attacks",
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks",
+        "56-top-down-character-attack-animation"
+      ],
+      "animation_workflows": [
+        "fighting-stance-idle"
+      ],
+      "workflow_sources": [
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks"
+      ],
+      "production_workflows": [],
+      "production_workflow_sources": []
+    },
+    "hitstun": {
+      "profiles": [
+        "pixel-core",
+        "pixel-character",
+        "pixel-motion",
+        "pixel-sideview",
+        "pixel-combat"
+      ],
+      "sources": [
+        "01-color-palettes",
+        "02-texture",
+        "05-back-to-basics",
+        "06-light-and-shadow",
+        "07-developing-style",
+        "17-human-anatomy",
+        "22-top-down-character-sprites",
+        "25-motion-cycles",
+        "57-knights-monsters-castles",
+        "58-top-down-character-animation-part-3",
+        "08-intro-to-animation",
+        "50-human-walk-cycle",
+        "55-top-down-character-animation",
+        "60-side-view-run-n-gun",
+        "28-side-view-tiles",
+        "37-castlevania-study",
+        "38-metroid-study",
+        "09-melee-attacks",
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks",
+        "56-top-down-character-attack-animation"
+      ],
+      "animation_workflows": [
+        "hit-reaction-knockdown"
+      ],
+      "workflow_sources": [
+        "09-melee-attacks",
+        "53-punches-and-kicks"
+      ],
+      "production_workflows": [],
+      "production_workflow_sources": []
+    },
+    "knockdown": {
+      "profiles": [
+        "pixel-core",
+        "pixel-character",
+        "pixel-motion",
+        "pixel-sideview",
+        "pixel-combat"
+      ],
+      "sources": [
+        "01-color-palettes",
+        "02-texture",
+        "05-back-to-basics",
+        "06-light-and-shadow",
+        "07-developing-style",
+        "17-human-anatomy",
+        "22-top-down-character-sprites",
+        "25-motion-cycles",
+        "57-knights-monsters-castles",
+        "58-top-down-character-animation-part-3",
+        "08-intro-to-animation",
+        "50-human-walk-cycle",
+        "55-top-down-character-animation",
+        "60-side-view-run-n-gun",
+        "28-side-view-tiles",
+        "37-castlevania-study",
+        "38-metroid-study",
+        "09-melee-attacks",
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks",
+        "56-top-down-character-attack-animation"
+      ],
+      "animation_workflows": [
+        "hit-reaction-knockdown"
+      ],
+      "workflow_sources": [
+        "09-melee-attacks",
+        "53-punches-and-kicks"
+      ],
+      "production_workflows": [],
+      "production_workflow_sources": []
+    },
+    "ko": {
+      "profiles": [
+        "pixel-core",
+        "pixel-character",
+        "pixel-motion",
+        "pixel-sideview",
+        "pixel-combat"
+      ],
+      "sources": [
+        "01-color-palettes",
+        "02-texture",
+        "05-back-to-basics",
+        "06-light-and-shadow",
+        "07-developing-style",
+        "17-human-anatomy",
+        "22-top-down-character-sprites",
+        "25-motion-cycles",
+        "57-knights-monsters-castles",
+        "58-top-down-character-animation-part-3",
+        "08-intro-to-animation",
+        "50-human-walk-cycle",
+        "55-top-down-character-animation",
+        "60-side-view-run-n-gun",
+        "28-side-view-tiles",
+        "37-castlevania-study",
+        "38-metroid-study",
+        "09-melee-attacks",
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks",
+        "56-top-down-character-attack-animation"
+      ],
+      "animation_workflows": [
+        "hit-reaction-knockdown"
+      ],
+      "workflow_sources": [
+        "09-melee-attacks",
+        "53-punches-and-kicks"
+      ],
+      "production_workflows": [],
+      "production_workflow_sources": []
+    },
+    "win": {
+      "profiles": [
+        "pixel-core",
+        "pixel-character",
+        "pixel-motion",
+        "pixel-sideview",
+        "pixel-combat"
+      ],
+      "sources": [
+        "01-color-palettes",
+        "02-texture",
+        "05-back-to-basics",
+        "06-light-and-shadow",
+        "07-developing-style",
+        "17-human-anatomy",
+        "22-top-down-character-sprites",
+        "25-motion-cycles",
+        "57-knights-monsters-castles",
+        "58-top-down-character-animation-part-3",
+        "08-intro-to-animation",
+        "50-human-walk-cycle",
+        "55-top-down-character-animation",
+        "60-side-view-run-n-gun",
+        "28-side-view-tiles",
+        "37-castlevania-study",
+        "38-metroid-study",
+        "09-melee-attacks",
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks",
+        "56-top-down-character-attack-animation"
+      ],
+      "animation_workflows": [
+        "fighting-stance-idle"
+      ],
+      "workflow_sources": [
+        "52-idle-fighting-stance",
+        "53-punches-and-kicks"
+      ],
+      "production_workflows": [],
+      "production_workflow_sources": []
+    }
+  }
+}

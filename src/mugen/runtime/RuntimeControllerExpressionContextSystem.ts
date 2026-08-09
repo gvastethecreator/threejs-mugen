@@ -20,6 +20,24 @@ export type RuntimeControllerExpressionBindings = Pick<
   | "p6Name"
   | "p7Name"
   | "p8Name"
+  | "introState"
+  | "fightScreen"
+  | "fightScreenState"
+  | "fightScreenVar"
+  | "gameVar"
+  | "animElemVar"
+  | "animLength"
+  | "animPlayerNo"
+  | "clsnVar"
+  | "opponentClsnVar"
+  | "clsnOverlap"
+  | "opponentClsnOverlap"
+  | "projClsnOverlap"
+  | "opponentProjClsnOverlap"
+  | "projVar"
+  | "opponentProjVar"
+  | "projVarFlag"
+  | "opponentProjVarFlag"
 >;
 
 export type RuntimeControllerEvaluationContext = RuntimeControllerExpressionBindings & {
@@ -63,6 +81,24 @@ export type RuntimeControllerEvaluationContext = RuntimeControllerExpressionBind
   isHelper?: boolean;
   helperId?: number;
   stateTime?: number;
+  introState?: number;
+  fightScreen?: ExpressionContext["fightScreen"];
+  fightScreenState?: ExpressionContext["fightScreenState"];
+  fightScreenVar?: ExpressionContext["fightScreenVar"];
+  gameVar?: ExpressionContext["gameVar"];
+  animElemVar?: ExpressionContext["animElemVar"];
+  animLength?: ExpressionContext["animLength"];
+  animPlayerNo?: ExpressionContext["animPlayerNo"];
+  parentClsnVar?: ExpressionContext["parentClsnVar"];
+  rootClsnVar?: ExpressionContext["rootClsnVar"];
+  parentClsnOverlap?: ExpressionContext["parentClsnOverlap"];
+  rootClsnOverlap?: ExpressionContext["rootClsnOverlap"];
+  parentProjClsnOverlap?: ExpressionContext["parentProjClsnOverlap"];
+  rootProjClsnOverlap?: ExpressionContext["rootProjClsnOverlap"];
+  parentProjVar?: ExpressionContext["parentProjVar"];
+  rootProjVar?: ExpressionContext["rootProjVar"];
+  parentProjVarFlag?: ExpressionContext["parentProjVarFlag"];
+  rootProjVarFlag?: ExpressionContext["rootProjVarFlag"];
 };
 
 export function createRuntimeControllerExpressionContext(
@@ -98,6 +134,34 @@ export function createRuntimeControllerExpressionContext(
     p6Name: context.p6Name,
     p7Name: context.p7Name,
     p8Name: context.p8Name,
+    introState: context.introState,
+    fightScreen: context.fightScreen,
+    fightScreenState: context.fightScreenState,
+    fightScreenVar: context.fightScreenVar,
+    gameVar: context.gameVar,
+    animElemVar: context.animElemVar,
+    animLength: context.animLength,
+    animPlayerNo: context.animPlayerNo,
+    clsnVar: context.clsnVar,
+    opponentClsnVar: context.opponentClsnVar,
+    parentClsnVar: context.parentClsnVar,
+    rootClsnVar: context.rootClsnVar,
+    clsnOverlap: context.clsnOverlap,
+    opponentClsnOverlap: context.opponentClsnOverlap,
+    parentClsnOverlap: context.parentClsnOverlap,
+    rootClsnOverlap: context.rootClsnOverlap,
+    projClsnOverlap: context.projClsnOverlap,
+    opponentProjClsnOverlap: context.opponentProjClsnOverlap,
+    parentProjClsnOverlap: context.parentProjClsnOverlap,
+    rootProjClsnOverlap: context.rootProjClsnOverlap,
+    projVar: context.projVar,
+    opponentProjVar: context.opponentProjVar,
+    parentProjVar: context.parentProjVar,
+    rootProjVar: context.rootProjVar,
+    projVarFlag: context.projVarFlag,
+    opponentProjVarFlag: context.opponentProjVarFlag,
+    parentProjVarFlag: context.parentProjVarFlag,
+    rootProjVarFlag: context.rootProjVarFlag,
     getConst: context.getConst,
     getHitVar: (name) => runtimeHitVar(state, name),
     hitPauseTime: context.hitPauseTime,

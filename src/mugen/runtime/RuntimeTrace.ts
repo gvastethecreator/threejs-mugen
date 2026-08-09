@@ -77,6 +77,14 @@ export type RuntimeTraceActor = {
   collisionScaleMultiplier?: { x: number; y: number };
   collisionAngle?: number;
   renderAngle?: number;
+  renderAngleX?: number;
+  renderAngleY?: number;
+  renderShearX?: number;
+  shadowColor?: [number, number, number];
+  reflectionMode?: number;
+  renderProjection?: "orthographic" | "perspective" | "perspective2";
+  renderFocalLength?: number;
+  renderWindow?: [number, number, number, number];
   bodyWidth?: { front: number; back: number };
   playerPush?: boolean;
   spritePriority?: number;
@@ -171,6 +179,7 @@ export type RuntimeTraceCombatReason = {
 export type RuntimeTraceHitFallSummary = {
   falling: boolean;
   damage: number;
+  downBounce?: boolean;
   kill?: boolean;
   velocity: {
     x?: number;
@@ -186,12 +195,15 @@ export type RuntimeTraceHitFallSummary = {
     freq: number;
     ampl: number;
     phase: number;
+    mul?: number;
+    dir?: number;
   };
 };
 
 export type RuntimeTraceHitFallRequirement = {
   falling?: boolean;
   damage?: number;
+  downBounce?: boolean;
   kill?: boolean;
   velocityX?: number;
   velocityY?: number;
@@ -204,6 +216,8 @@ export type RuntimeTraceHitFallRequirement = {
   envShakeFreq?: number;
   envShakeAmpl?: number;
   envShakePhase?: number;
+  envShakeMul?: number;
+  envShakeDir?: number;
 };
 
 export type RuntimeTraceFrame = {
@@ -521,6 +535,8 @@ export type RuntimeTraceFinalActorRequirement = {
   assertSpecialGlobalFlags?: string[];
   hitFall?: RuntimeTraceHitFallRequirement;
   airJugglePoints?: Record<string, number>;
+  juggle?: number;
+  juggleOrigin?: "statedef" | "hitdef" | "reset" | "default";
   targetCount?: number;
 };
 
@@ -842,6 +858,8 @@ export type RuntimeTraceGateFinalActorEvidence = Pick<
   | "assertSpecialGlobalFlags"
   | "hitFall"
   | "airJugglePoints"
+  | "juggle"
+  | "juggleOrigin"
   | "targetCount"
 >;
 
@@ -909,6 +927,8 @@ export type RuntimeTraceHitEffectEventRequirement = {
   rawPrefix?: string;
   offsetX?: number;
   offsetY?: number;
+  scaleX?: number;
+  scaleY?: number;
   assetSource?: NonNullable<NonNullable<ActorSnapshot["hitEffectEvents"]>[number]["assetFrame"]>["source"];
   fightFxPrefix?: string;
   assetActionId?: number;
@@ -940,6 +960,7 @@ export type RuntimeTraceGateHitEffectEventEvidence = {
   raw?: string;
   rawPrefix?: string;
   offset?: { x: number; y: number };
+  scale?: { x: number; y: number };
   assetSource?: NonNullable<NonNullable<ActorSnapshot["hitEffectEvents"]>[number]["assetFrame"]>["source"];
   fightFxPrefix?: string;
   assetActionId?: number;
@@ -2792,6 +2813,7 @@ function summarizeHitEffectEventEvidence(
     raw: event.raw,
     rawPrefix: event.rawPrefix,
     offset: event.offset ? { ...event.offset } : undefined,
+    scale: event.scale ? { ...event.scale } : undefined,
     assetSource: event.assetFrame?.source,
     ...(fightFxPrefix ? { fightFxPrefix } : {}),
     assetActionId: event.assetFrame?.actionId,
@@ -2826,6 +2848,8 @@ function hitEffectEventEvidenceKey(event: RuntimeTraceGateHitEffectEventEvidence
     event.rawPrefix ?? "",
     event.offset?.x ?? "",
     event.offset?.y ?? "",
+    event.scale?.x ?? "",
+    event.scale?.y ?? "",
     event.assetSource ?? "",
     event.fightFxPrefix ?? "",
     event.assetActionId ?? "",
@@ -2861,6 +2885,8 @@ function matchesHitEffectEventRequirement(
     (requirement.rawPrefix === undefined || event.rawPrefix === requirement.rawPrefix) &&
     (requirement.offsetX === undefined || sameTraceNumber(event.offset?.x ?? NaN, requirement.offsetX)) &&
     (requirement.offsetY === undefined || sameTraceNumber(event.offset?.y ?? NaN, requirement.offsetY)) &&
+    (requirement.scaleX === undefined || sameTraceNumber(event.scale?.x ?? NaN, requirement.scaleX)) &&
+    (requirement.scaleY === undefined || sameTraceNumber(event.scale?.y ?? NaN, requirement.scaleY)) &&
     (requirement.assetSource === undefined || event.assetSource === requirement.assetSource) &&
     (requirement.fightFxPrefix === undefined || event.fightFxPrefix === requirement.fightFxPrefix) &&
     (requirement.assetActionId === undefined || event.assetActionId === requirement.assetActionId) &&
@@ -3065,6 +3091,8 @@ function summarizeFinalActorEvidence(actor: RuntimeTraceActor): RuntimeTraceGate
     assertSpecialGlobalFlags: actor.assertSpecialGlobalFlags ? [...actor.assertSpecialGlobalFlags] : undefined,
     hitFall: actor.hitFall ? cloneTraceHitFall(actor.hitFall) : undefined,
     airJugglePoints: actor.airJugglePoints ? { ...actor.airJugglePoints } : undefined,
+    ...(actor.juggle === undefined ? {} : { juggle: actor.juggle }),
+    ...(actor.juggleOrigin === undefined ? {} : { juggleOrigin: actor.juggleOrigin }),
     targetCount: actor.targetCount,
   };
 }
@@ -3471,6 +3499,14 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
     actor.renderOpacity === undefined ? "op*" : `op${actor.renderOpacity}`,
     actor.shadowVisible === false ? "sh0" : "sh1",
     actor.renderAngle === undefined ? "ang*" : `ang${actor.renderAngle}`,
+    ...(actor.renderAngleX === undefined ? [] : [`angx${actor.renderAngleX}`]),
+    ...(actor.renderAngleY === undefined ? [] : [`angy${actor.renderAngleY}`]),
+    ...(actor.renderShearX === undefined ? [] : [`shx${actor.renderShearX}`]),
+    ...(actor.shadowColor === undefined ? [] : [`shc${actor.shadowColor.join(",")}`]),
+    ...(actor.reflectionMode === undefined ? [] : [`refl${actor.reflectionMode}`]),
+    ...(actor.renderProjection === undefined ? [] : [`proj${actor.renderProjection}`]),
+    ...(actor.renderFocalLength === undefined ? [] : [`focal${actor.renderFocalLength}`]),
+    ...(actor.renderWindow === undefined ? [] : [`pwin${actor.renderWindow.join(",")}`]),
     actor.paletteFx === undefined
       ? "pf*"
       : `pf${actor.paletteFx.time}:${actor.paletteFx.add.join(",")}:${actor.paletteFx.mul.join(",")}:${actor.paletteFx.color}:${actor.paletteFx.invert ? 1 : 0}`,
@@ -3744,6 +3780,7 @@ function compareHitFallRequirement(
   const comparisons: Array<[string, number | boolean | undefined, number | boolean | undefined]> = [
     ["hitFall.falling", requirement.falling, hitFall.falling],
     ["hitFall.damage", requirement.damage, hitFall.damage],
+    ["hitFall.downBounce", requirement.downBounce, hitFall.downBounce],
     ["hitFall.kill", requirement.kill, hitFall.kill],
     ["hitFall.velocity.x", requirement.velocityX, hitFall.velocity.x],
     ["hitFall.velocity.y", requirement.velocityY, hitFall.velocity.y],
@@ -3756,6 +3793,8 @@ function compareHitFallRequirement(
     ["hitFall.envShake.freq", requirement.envShakeFreq, hitFall.envShake?.freq],
     ["hitFall.envShake.ampl", requirement.envShakeAmpl, hitFall.envShake?.ampl],
     ["hitFall.envShake.phase", requirement.envShakePhase, hitFall.envShake?.phase],
+    ["hitFall.envShake.mul", requirement.envShakeMul, hitFall.envShake?.mul],
+    ["hitFall.envShake.dir", requirement.envShakeDir, hitFall.envShake?.dir],
   ];
   for (const [label, expected, actual] of comparisons) {
     if (expected !== undefined && actual !== expected) {
@@ -4044,6 +4083,14 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     renderOpacity: actor.runtime.renderOpacity === undefined ? undefined : roundTraceNumber(actor.runtime.renderOpacity),
     shadowVisible: actor.shadowVisible === false ? false : undefined,
     renderAngle: actor.runtime.renderAngle === undefined ? undefined : roundTraceNumber(actor.runtime.renderAngle),
+    ...(actor.runtime.renderAngleX === undefined ? {} : { renderAngleX: roundTraceNumber(actor.runtime.renderAngleX) }),
+    ...(actor.runtime.renderAngleY === undefined ? {} : { renderAngleY: roundTraceNumber(actor.runtime.renderAngleY) }),
+    ...(actor.runtime.renderShearX === undefined ? {} : { renderShearX: roundTraceNumber(actor.runtime.renderShearX) }),
+    ...(actor.runtime.shadowColor === undefined ? {} : { shadowColor: [...actor.runtime.shadowColor] }),
+    ...(actor.runtime.reflectionMode === undefined ? {} : { reflectionMode: Math.trunc(actor.runtime.reflectionMode) }),
+    ...(actor.runtime.renderProjection === undefined ? {} : { renderProjection: actor.runtime.renderProjection }),
+    ...(actor.runtime.renderFocalLength === undefined ? {} : { renderFocalLength: roundTraceNumber(actor.runtime.renderFocalLength) }),
+    ...(actor.runtime.renderWindow === undefined ? {} : { renderWindow: actor.runtime.renderWindow.map(roundTraceNumber) as [number, number, number, number] }),
     bodyWidth: actor.runtime.bodyWidth
       ? {
           front: roundTraceNumber(actor.runtime.bodyWidth.front),
@@ -4117,6 +4164,7 @@ function cloneTraceHitEffectEvent(event: NonNullable<ActorSnapshot["hitEffectEve
     raw: event.raw,
     rawPrefix: event.rawPrefix,
     offset: event.offset ? { ...event.offset } : undefined,
+    scale: event.scale ? { ...event.scale } : undefined,
     assetFrame: event.assetFrame ? { ...event.assetFrame } : undefined,
     assetFrames: event.assetFrames?.map((frame) => ({ ...frame })),
     ...(event.fightFxPrefix ? { fightFxPrefix: event.fightFxPrefix } : {}),
@@ -4267,6 +4315,7 @@ function cloneTraceHitFall(hitFall: RuntimeTraceHitFallSummary): RuntimeTraceHit
   return {
     falling: hitFall.falling,
     damage: roundTraceNumber(hitFall.damage),
+    downBounce: hitFall.downBounce,
     kill: hitFall.kill,
     velocity: {
       ...(hitFall.velocity.x === undefined ? {} : { x: roundTraceNumber(hitFall.velocity.x) }),
@@ -4283,6 +4332,8 @@ function cloneTraceHitFall(hitFall: RuntimeTraceHitFallSummary): RuntimeTraceHit
           freq: roundTraceNumber(hitFall.envShake.freq),
           ampl: roundTraceNumber(hitFall.envShake.ampl),
           phase: roundTraceNumber(hitFall.envShake.phase),
+          ...(hitFall.envShake.mul === undefined ? {} : { mul: roundTraceNumber(hitFall.envShake.mul) }),
+          ...(hitFall.envShake.dir === undefined ? {} : { dir: roundTraceNumber(hitFall.envShake.dir) }),
         }
       : undefined,
   };

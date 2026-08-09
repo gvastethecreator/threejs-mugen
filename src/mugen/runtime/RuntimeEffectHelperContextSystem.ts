@@ -43,6 +43,8 @@ export type RuntimeEffectHelperContextOptions = Pick<
   | "onResourceRedirectBlocked"
   | "onRedirectedController"
   | "onRedirectedOperation"
+  | "admitResourceWrite"
+  | "applySharedResourceWrite"
   | "onTargetLifeAdd"
   | "onRedirectedTargetDispatch"
   | "enterRedirectedTargetState"
@@ -76,6 +78,8 @@ export type RuntimeEffectHelperContext = {
   onResourceRedirectBlocked?: RuntimeHelperAdvanceOptions["onResourceRedirectBlocked"];
   onRedirectedController?: RuntimeHelperAdvanceOptions["onRedirectedController"];
   onRedirectedOperation?: RuntimeHelperAdvanceOptions["onRedirectedOperation"];
+  admitResourceWrite?: RuntimeHelperAdvanceOptions["admitResourceWrite"];
+  applySharedResourceWrite?: RuntimeHelperAdvanceOptions["applySharedResourceWrite"];
   onTargetLifeAdd?: RuntimeHelperAdvanceOptions["onTargetLifeAdd"];
   onRedirectedTargetDispatch?: RuntimeHelperAdvanceOptions["onRedirectedTargetDispatch"];
   enterTargetState?: RuntimeHelperAdvanceOptions["enterTargetState"];
@@ -131,6 +135,8 @@ export class RuntimeEffectHelperContextWorld {
       ...(actor.enterHelperTargetState ? { enterTargetState: actor.enterHelperTargetState } : {}),
       ...(actor.onHelperController ? { onController: actor.onHelperController } : {}),
       ...(actor.onHelperOperation ? { onOperation: actor.onHelperOperation } : {}),
+      ...(options.admitResourceWrite ? { admitResourceWrite: options.admitResourceWrite } : {}),
+      ...(options.applySharedResourceWrite ? { applySharedResourceWrite: options.applySharedResourceWrite } : {}),
       ...(actor.onHelperPauseController ? { onPauseController: actor.onHelperPauseController } : {}),
       ...(actor.onHelperTeamStandby ? { onTeamStandby: actor.onHelperTeamStandby } : {}),
       ...(actor.scaleHelperTargetDamage ? { scaleTargetDamage: actor.scaleHelperTargetDamage } : {}),

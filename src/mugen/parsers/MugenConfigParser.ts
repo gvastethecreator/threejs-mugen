@@ -39,15 +39,68 @@ export function parseMugenConfig(text: string, file?: string): MugenGameConfig {
   const config = getSection(rawSections, "Config");
   const width = positiveNumberValue(config, "GameWidth", diagnostics, file);
   const height = positiveNumberValue(config, "GameHeight", diagnostics, file);
+  const rules = getSection(rawSections, "Rules");
+  const defaultAttackLifeToPowerMultiplier = finiteNumberValue(
+    rules,
+    "Default.Attack.LifeToPowerMul",
+    diagnostics,
+    file,
+  );
+  const defaultGetHitLifeToPowerMultiplier = finiteNumberValue(
+    rules,
+    "Default.GetHit.LifeToPowerMul",
+    diagnostics,
+    file,
+  );
+  const hasPowerRules =
+    defaultAttackLifeToPowerMultiplier !== undefined ||
+    defaultGetHitLifeToPowerMultiplier !== undefined;
 
   return {
     ...(width !== undefined && height !== undefined
       ? { gameSpace: { width, height, ...(file ? { sourcePath: file } : {}) } }
       : {}),
+    ...(hasPowerRules
+      ? {
+          powerRules: {
+            ...(defaultAttackLifeToPowerMultiplier === undefined
+              ? {}
+              : { defaultAttackLifeToPowerMultiplier }),
+            ...(defaultGetHitLifeToPowerMultiplier === undefined
+              ? {}
+              : { defaultGetHitLifeToPowerMultiplier }),
+            ...(file ? { sourcePath: file } : {}),
+          },
+        }
+      : {}),
     rawSections,
     rawLines: lines.map((line) => line.raw),
     diagnostics,
   };
+}
+
+function finiteNumberValue(
+  section: Record<string, string>,
+  key: string,
+  diagnostics: MugenGameConfig["diagnostics"],
+  file: string | undefined,
+): number | undefined {
+  const match = Object.entries(section).find(([candidate]) => candidate.toLowerCase() === key.toLowerCase());
+  if (!match) {
+    return undefined;
+  }
+  const value = parseNumber(match[1]);
+  if (value !== undefined) {
+    return value;
+  }
+  diagnostics.push(
+    createDiagnostic("warning", `Invalid [Rules] ${key}; expected a finite number`, {
+      format: "config",
+      file,
+      raw: `${match[0]} = ${match[1]}`,
+    }),
+  );
+  return undefined;
 }
 
 function getSection(

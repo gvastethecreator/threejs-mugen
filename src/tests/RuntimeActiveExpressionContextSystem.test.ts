@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { RuntimeContactMemoryWorld, type RuntimeContactMemory } from "../mugen/runtime/ContactMemorySystem";
 import { evaluateExpression } from "../mugen/runtime/ExpressionEvaluator";
+import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import { RuntimeActiveExpressionContextWorld } from "../mugen/runtime/RuntimeActiveExpressionContextSystem";
 import type { RuntimeExpressionContextActor } from "../mugen/runtime/RuntimeExpressionContextSystem";
 import { RuntimeTargetWorld } from "../mugen/runtime/TargetSystem";
@@ -60,6 +61,78 @@ describe("RuntimeActiveExpressionContextWorld", () => {
     expect(randomActors).toEqual(["p1"]);
     expect(elemReads).toEqual([{ actorId: "p1", elementNumber: 3 }]);
     expect(guardReads).toEqual([{ actorId: "p1", opponentId: "p2" }]);
+  });
+
+  it("projects AnimLength from the live actor action into active contexts", () => {
+    const world = new RuntimeActiveExpressionContextWorld();
+    const actor = runtimeActor("p1");
+    const opponent = runtimeActor("p2");
+    actor.currentAction = {
+      id: 400,
+      rawLines: [],
+      frames: [
+        { ...emptyAnimationFrame(1), duration: 3 },
+        { ...emptyAnimationFrame(2), duration: 5 },
+      ],
+    } satisfies MugenAnimationAction;
+
+    const context = world.create({
+      actor,
+      opponent,
+      owner: actor,
+      nextRandom: () => 0,
+      animTimeRemaining: () => 0,
+      animElemTime: () => undefined,
+      inGuardDist: () => false,
+    });
+
+    expect(context.animLength).toBe(8);
+    expect(evaluateExpression("AnimLength = 8", context)).toBe(1);
+  });
+
+  it("projects the live animation owner into active contexts", () => {
+    const world = new RuntimeActiveExpressionContextWorld();
+    const actor = runtimeActor("p1");
+    const opponent = runtimeActor("p2");
+    actor.playerNo = 1;
+    actor.animationOwnerPlayerNo = 2;
+
+    const context = world.create({
+      actor,
+      opponent,
+      owner: actor,
+      nextRandom: () => 0,
+      animTimeRemaining: () => 0,
+      animElemTime: () => undefined,
+      inGuardDist: () => false,
+    });
+
+    expect(context.animPlayerNo).toBe(2);
+    expect(evaluateExpression("AnimPlayerNo = 2", context)).toBe(1);
+  });
+
+  it("projects current-frame ClsnVar reads into active contexts", () => {
+    const world = new RuntimeActiveExpressionContextWorld();
+    const actor = runtimeActor("p1");
+    const opponent = runtimeActor("p2");
+    actor.currentAction = {
+      id: 400,
+      rawLines: [],
+      frames: [{ ...emptyAnimationFrame(1), clsn1: [{ x1: -14, y1: -72, x2: 26, y2: 4 }] }],
+    } satisfies MugenAnimationAction;
+
+    const context = world.create({
+      actor,
+      opponent,
+      owner: actor,
+      nextRandom: () => 0,
+      animTimeRemaining: () => 0,
+      animElemTime: () => undefined,
+      inGuardDist: () => false,
+    });
+
+    expect(evaluateExpression("ClsnVar(Clsn1, 0, Back) = -14", context)).toBe(1);
+    expect(evaluateExpression("ClsnVar(Clsn1, 0, Bottom) = 4", context)).toBe(1);
   });
 
   it("propagates an explicit IKEMEN root selection while legacy factories stay unselected", () => {
@@ -153,6 +226,20 @@ function runtimeState(overrides: Partial<CharacterRuntimeState> = {}): Character
     vars: [],
     fvars: [],
     ...overrides,
+  };
+}
+
+function emptyAnimationFrame(index: number) {
+  return {
+    spriteGroup: 0,
+    spriteIndex: index,
+    offsetX: 0,
+    offsetY: 0,
+    duration: 1,
+    clsn1: [],
+    clsn2: [],
+    raw: "",
+    line: index,
   };
 }
 

@@ -5,7 +5,7 @@ import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenCommand } from "../model/MugenCommand";
 import type { MugenStateController, MugenStateDef, MugenStateSourceSelection } from "../model/MugenState";
 import type { MugenFightScreenAssets, MugenFightScreenTiming } from "../model/MugenSystemAssets";
-import type { RuntimeGetHitVars, RuntimeResolvedSoundRef } from "./types";
+import type { RuntimeContactEnvShake, RuntimeGetHitVars, RuntimeHitVelocityMetadata, RuntimePaletteFxPayload, RuntimeResolvedSoundRef } from "./types";
 import type { RuntimeHitDefPriorityProfile } from "./HitDefPriorityPolicy";
 import type { MugenAffectTeam, MugenTeamSide } from "../model/MugenTeam";
 import type { RuntimeSocdResolution } from "./RuntimeInput";
@@ -50,9 +50,23 @@ export type DemoMove = {
   dizzyPoints?: number;
   redLife?: number;
   guardRedLife?: number;
+  /** Second HitDef givepower value exposed by GetHitVar(guardpower). */
+  guardPower?: number;
+  /** First HitDef givepower value exposed by GetHitVar(hitpower). */
+  hitPower?: number;
+  /** Authored HitDef score exposed by GetHitVar(score). */
+  score?: number;
+  /** Attacker power gain on an accepted unguarded direct hit. */
+  attackerHitPower?: number;
+  /** Attacker power gain on guard; one-value getpower derives this from attackerHitPower. */
+  attackerGuardPower?: number;
   kill?: boolean;
+  /** Ikemen GetHitVar(keepstate) source flag for direct HitDef contacts. */
+  keepState?: boolean;
   hitOnce?: boolean;
   airJuggle?: number;
+  /** Up to eight HitDef ids blocked by direct NoChainID admission. */
+  noChainIds?: number[];
   attr?: string;
   hitFlag?: string;
   affectTeam?: MugenAffectTeam;
@@ -64,6 +78,9 @@ export type DemoMove = {
   p1SpritePriority?: number;
   p2SpritePriority?: number;
   attackDepth?: [number, number];
+  /** HitDef values: attacker-side component 0 and receiver-side component 1. */
+  unhittableTime?: [number, number];
+  /** Resolved nonnegative direct HitDef ID. */
   targetId?: number;
   requiresHitDef?: boolean;
   isReversal?: boolean;
@@ -73,11 +90,25 @@ export type DemoMove = {
   p1StateNo?: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;
+  /** Direct-hit attacker facing override. Zero leaves the attacker unchanged. */
+  p1Facing?: number;
+  /** Direct-hit attacker facing derived from P2; nonzero values take precedence over p1Facing. */
+  p1GetP2Facing?: number;
+  /** Force a crouching defender into standing get-hit states. */
+  forceStand?: boolean;
+  /** Force a standing defender into crouching get-hit states. */
+  forceCrouch?: boolean;
+  /** Clear the receiver fall flag for this direct hit. */
+  forceNoFall?: boolean;
+  /** Resolved defender-facing override; zero leaves the defender unchanged. */
   p2Facing?: number;
   missOnOverride?: boolean;
   ignoreReversalDef?: boolean;
   defaultTargetStateNo?: number;
+  /** Attacker-side component of HitDef pausetime. */
   hitPause: number;
+  /** Defender-side component of HitDef pausetime. */
+  hitShakeTime?: number;
   hitStun: number;
   airHitTime?: number;
   /** M.U.G.E.N down.hittime for a lying defender. */
@@ -96,12 +127,19 @@ export type DemoMove = {
   hitVelocityZ?: number;
   /** Air HitDef velocity Z, selected for airborne defenders. */
   airVelocityZ?: number;
+  /** Last HitDef velocity vectors for Ikemen GetHitVar readback aliases. */
+  hitVelocities?: RuntimeHitVelocityMetadata;
+  /** Bounded Ikemen-GO KO velocity delta metadata, separate from hit velocity. */
+  koVelocityAdd?: { x?: number; y?: number };
   hitVars?: RuntimeGetHitVars;
   guardDistance?: number;
   guardFlag?: string;
   guardDamage?: number;
   guardKill?: boolean;
+  /** Attacker-side component of guard.pausetime. */
   guardPause?: number;
+  /** Defender-side component of guard.pausetime. */
+  guardShakeTime?: number;
   guardStun?: number;
   guardSlideTime?: number;
   guardControlTime?: number;
@@ -123,6 +161,13 @@ export type DemoMove = {
   guardSoundValue?: RuntimeResolvedSoundRef;
   hitSpark?: string;
   guardSpark?: string;
+  /** Independent X/Y draw scales for normal and guarded hit sparks. */
+  hitSparkScale?: [number, number];
+  guardSparkScale?: [number, number];
+  /** PalFX copied to the receiver by an accepted, unguarded contact. */
+  paletteFx?: RuntimePaletteFxPayload;
+  /** Camera shake emitted by an accepted, unguarded direct contact. */
+  envShake?: RuntimeContactEnvShake;
   sparkXy?: [number, number];
   fall?: {
     enabled: boolean;
@@ -146,6 +191,10 @@ export type DemoMove = {
       freq: number;
       ampl: number;
       phase: number;
+      /** Ikemen-GO fall.envshake.mul; omitted uses the engine default of 1. */
+      mul?: number;
+      /** Ikemen-GO fall.envshake.dir in degrees. */
+      dir?: number;
     };
   };
   hitbox: CollisionBox;
@@ -189,58 +238,29 @@ export type DemoFighterDefinition = {
 
 export const demoFighters: DemoFighterDefinition[] = [
   createFighter({
-    id: "nova-boxer",
-    displayName: "Nova Boxer",
-    palette: "#4458d8",
-    spriteGroupBase: 10000,
-    speed: 1.08,
-    jumpVelocity: -9.5,
-    punchDamage: 55,
-    kickDamage: 72,
-  }),
-  createFighter({
-    id: "mira-volt",
-    displayName: "Mira Volt",
-    palette: "#b13f7a",
-    spriteGroupBase: 11000,
-    speed: 1.14,
-    jumpVelocity: -10.2,
-    punchDamage: 48,
-    kickDamage: 84,
-  }),
-  createFighter({
-    id: "rook-apprentice",
-    displayName: "Rook Apprentice",
-    palette: "#0f8f85",
-    spriteGroupBase: 14000,
-    speed: 1.08,
+    id: "rocco-vidal",
+    displayName: "Rocco Vidal",
+    palette: "#34383b",
+    spriteGroupBase: 15000,
+    speed: 1.02,
     jumpVelocity: -9.6,
-    punchDamage: 42,
-    kickDamage: 58,
+    punchDamage: 56,
+    kickDamage: 82,
+  }),
+  createFighter({
+    id: "nadia-arce",
+    displayName: "Nadia Arce",
+    palette: "#d8d1c2",
+    spriteGroupBase: 16000,
+    speed: 1.1,
+    jumpVelocity: -10.1,
+    punchDamage: 52,
+    kickDamage: 78,
   }),
 ];
 
-/** User-directed content entries stay outside the three-fighter baseline; eight classic entries now bind generated runtime atlases. */
-export const contentPackFighters: DemoFighterDefinition[] = [
-  createContentFighter({ id: "don-rayo", displayName: "Don Rayo", palette: "#ff6b24", spriteGroupBase: 15000, speed: 1.12, jumpVelocity: -9.8, punchDamage: 51, kickDamage: 68 }),
-  createContentFighter({ id: "la-jefa-del-combo", displayName: "La Jefa del Combo", palette: "#d83d62", spriteGroupBase: 16000, speed: 1.08, jumpVelocity: -10, punchDamage: 54, kickDamage: 75 }),
-  createContentFighter({ id: "turbo-abuela", displayName: "Turbo Abuela", palette: "#d88b2f", spriteGroupBase: 17000, speed: 1.22, jumpVelocity: -9.2, punchDamage: 46, kickDamage: 62 }),
-  createContentFighter({ id: "tanque-de-carton", displayName: "Tanque de Cartón", palette: "#a77c52", spriteGroupBase: 18000, speed: 0.92, jumpVelocity: -8.7, punchDamage: 66, kickDamage: 86 }),
-  createContentFighter({ id: "monje-wifi", displayName: "Monje Wi-Fi", palette: "#3b82f6", spriteGroupBase: 19000, speed: 1.15, jumpVelocity: -10.4, punchDamage: 49, kickDamage: 70 }),
-  createContentFighter({ id: "sombra-del-super", displayName: "Sombra del Súper", palette: "#5b3b8d", spriteGroupBase: 20000, speed: 1.18, jumpVelocity: -10.1, punchDamage: 50, kickDamage: 73 }),
-  createContentFighter({ id: "mara-cinta", displayName: "Mara Cinta", palette: "#de3a63", spriteGroupBase: 21000, speed: 1.1, jumpVelocity: -9.9, punchDamage: 52, kickDamage: 71 }),
-  createContentFighter({ id: "toro-pixel", displayName: "Toro Pixel", palette: "#b74435", spriteGroupBase: 22000, speed: 0.98, jumpVelocity: -8.9, punchDamage: 61, kickDamage: 82 }),
-  createContentFighter({ id: "nico-guante", displayName: "Nico Guante", palette: "#2f9d9f", spriteGroupBase: 23000, speed: 1.16, jumpVelocity: -10.2, punchDamage: 56, kickDamage: 67 }),
-  createContentFighter({ id: "luna-codo", displayName: "Luna Codo", palette: "#6f4dd8", spriteGroupBase: 24000, speed: 1.12, jumpVelocity: -10.3, punchDamage: 53, kickDamage: 76 }),
-  createContentFighter({ id: "sargento-pila", displayName: "Sargento Pila", palette: "#879436", spriteGroupBase: 25000, speed: 1.03, jumpVelocity: -9.4, punchDamage: 58, kickDamage: 74 }),
-  createContentFighter({ id: "bruno-giro", displayName: "Bruno Giro", palette: "#d27a32", spriteGroupBase: 26000, speed: 1.2, jumpVelocity: -10.1, punchDamage: 47, kickDamage: 69 }),
-  createContentFighter({ id: "vera-patada", displayName: "Vera Patada", palette: "#bc4b8c", spriteGroupBase: 27000, speed: 1.14, jumpVelocity: -10.5, punchDamage: 49, kickDamage: 79 }),
-  createContentFighter({ id: "rulo-viento", displayName: "Rulo Viento", palette: "#2796be", spriteGroupBase: 28000, speed: 1.19, jumpVelocity: -10, punchDamage: 50, kickDamage: 72 }),
-];
-
-function createContentFighter(options: FighterOptions): DemoFighterDefinition {
-  return createFighter({ ...options, satiricalFightFx: true });
-}
+/** The reset roster intentionally has no secondary public content pack. */
+export const contentPackFighters: DemoFighterDefinition[] = [];
 
 type FighterOptions = {
   id: string;
@@ -259,32 +279,46 @@ function createFighter(options: FighterOptions): DemoFighterDefinition {
   const crouchAction = 10;
   const walkAction = 20;
   const jumpAction = 40;
+  const walkBackAction = 21;
+  const guardAction = 120;
+  const winAction = 180;
   const punchAction = 200;
   const kickAction = 210;
+  const specialAction = 220;
   const hitstunAction = 500;
+  const knockdownAction = 510;
+  const koAction = 515;
+  const throwAction = 800;
   const animations = new Map<number, MugenAnimationAction>([
-    [idleAction, action(options.spriteGroupBase, idleAction, [7, 7, 7, 7], { loopStart: 0 })],
-    [crouchAction, action(options.spriteGroupBase, crouchAction, [5, 7, 7], { height: 78, loopStart: 2 })],
-    [walkAction, action(options.spriteGroupBase, walkAction, [10, 10, 10, 10, 10, 10, 10, 10], { loopStart: 0, step: 1 })],
-    [jumpAction, action(options.spriteGroupBase, jumpAction, [6, 7, 8, 8], { airborne: true })],
+    [idleAction, action(options.spriteGroupBase, idleAction, [10, 10, 10, 10], { loopStart: 0 })],
+    [crouchAction, action(options.spriteGroupBase, crouchAction, [8, 8, 8, 8], { height: 78 })],
+    [walkAction, action(options.spriteGroupBase, walkAction, [6, 6, 6, 6, 6, 6, 6, 6], { loopStart: 0, step: 1 })],
+    [walkBackAction, action(options.spriteGroupBase, walkBackAction, [6, 6, 6, 6, 6, 6, 6, 6], { loopStart: 0, step: -1 })],
+    [jumpAction, action(options.spriteGroupBase, jumpAction, [6, 6, 6, 6, 6, 6], { airborne: true })],
+    [guardAction, action(options.spriteGroupBase, guardAction, [8, 8, 8, 8], { loopStart: 0 })],
+    [winAction, action(options.spriteGroupBase, winAction, [8, 8, 8, 8, 8])],
     [7000, sparkAction(7000, [3, 3, 4])],
     [7001, sparkAction(7001, [3, 3, 4])],
     [7002, sparkAction(7002, [3, 3, 4])],
     [
       punchAction,
-      action(options.spriteGroupBase, punchAction, [4, 4, 5, 7], {
+      action(options.spriteGroupBase, punchAction, [5, 5, 5, 5], {
         clsn1Frame: 2,
         hitbox: { x1: 18, y1: -72, x2: 86, y2: -42 },
       }),
     ],
     [
       kickAction,
-      action(options.spriteGroupBase, kickAction, [5, 5, 5, 8, 8], {
-        clsn1Frame: 2,
+      action(options.spriteGroupBase, kickAction, [6, 6, 6, 6, 6, 6], {
+        clsn1Frame: 3,
         hitbox: { x1: 12, y1: -54, x2: 96, y2: -18 },
       }),
     ],
-    [hitstunAction, action(options.spriteGroupBase, hitstunAction, [6, 6, 6], { height: 92 })],
+    [specialAction, action(options.spriteGroupBase, specialAction, [5, 5, 5, 5, 5, 5, 5, 5])],
+    [throwAction, action(options.spriteGroupBase, throwAction, [6, 6, 6, 6, 6, 6])],
+    [hitstunAction, action(options.spriteGroupBase, hitstunAction, [6, 6, 6, 6], { height: 92 })],
+    [knockdownAction, action(options.spriteGroupBase, knockdownAction, [6, 6, 6, 6, 6, 6], { height: 72 })],
+    [koAction, action(options.spriteGroupBase, koAction, [8, 8, 8, 8, 8, 8], { height: 62 })],
   ]);
   const fightFxAnimations = options.satiricalFightFx ? createSatiricalFightFxAnimations() : undefined;
 

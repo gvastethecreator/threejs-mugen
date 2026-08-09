@@ -53,11 +53,41 @@ describe("RuntimeHitEligibilitySystem", () => {
     expect(state.assertSpecial).toBeUndefined();
     expect(state.renderOpacity).toBeUndefined();
 
+    state.hitVars = { frame: true, sourcePlayerId: 7 };
+    world.resetFrameFlags(state);
+    expect(state.hitVars).toEqual({ frame: false, sourcePlayerId: 7 });
+
+    state.hitVars = { frame: true, sourcePlayerId: 7 };
+    world.resetFrameFlags(state, true);
+    expect(state.hitVars?.frame).toBe(true);
+
     state.assertSpecial = { flags: ["noko"], globalFlags: [], noKo: true };
     state.renderOpacity = 0.25;
     resetRuntimeAssertSpecial(state);
     expect(state.assertSpecial).toBeUndefined();
     expect(state.renderOpacity).toBeUndefined();
+  });
+
+  it("clears guardcount after returning to idle but preserves it during get-hit", () => {
+    const state = runtime({ moveType: "I", hitVars: { guardCount: 3, sourcePlayerId: 7 } });
+    const world = new RuntimeHitEligibilityWorld();
+
+    world.resetFrameFlags(state);
+    expect(state.hitVars).toEqual({ sourcePlayerId: 7 });
+
+    state.moveType = "H";
+    state.hitVars = { guardCount: 4, sourcePlayerId: 7 };
+    world.resetFrameFlags(state);
+    expect(state.hitVars).toEqual({ guardCount: 4, sourcePlayerId: 7 });
+  });
+
+  it("ticks the per-actor HitDef unhittabletime countdown to zero", () => {
+    const state = runtime({ unhittableTime: 2 });
+    const world = new RuntimeHitEligibilityWorld();
+
+    expect(world.tickUnhittableTime(state)).toBe(1);
+    expect(world.tickUnhittableTime(state)).toBe(0);
+    expect(world.tickUnhittableTime(state)).toBe(0);
   });
 });
 

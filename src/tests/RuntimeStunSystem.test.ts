@@ -62,7 +62,7 @@ describe("RuntimeStunSystem", () => {
 
   it("owns hitstun action requests and moveType recovery after timers expire", () => {
     const world = new RuntimeStunWorld();
-    const fighter = actor({ hitStun: 1, guardStun: 1, velX: 10, moveType: "H" });
+    const fighter = actor({ hitStun: 1, guardStun: 1, velX: 10, moveType: "H", guardCount: 2 });
     const actions: RuntimeStunActor[] = [];
 
     const result = world.advance(fighter, {
@@ -77,6 +77,7 @@ describe("RuntimeStunSystem", () => {
     });
     expect(actions).toEqual([fighter, fighter]);
     expect(fighter.runtime.moveType).toBe("I");
+    expect(fighter.runtime.hitVars).toBeUndefined();
     expect(world.hasStun(fighter)).toBe(false);
   });
 
@@ -188,6 +189,7 @@ function actor(options: {
   ctrl?: boolean;
   guardSlideTimeRemaining?: number;
   guardControlTimeRemaining?: number;
+  guardCount?: number;
 }): RuntimeStunActor {
   return {
     hitStun: options.hitStun,
@@ -199,6 +201,7 @@ function actor(options: {
       ...(options.ctrl === undefined ? {} : { ctrl: options.ctrl }),
       ...(options.guardSlideTimeRemaining === undefined ? {} : { guardSlideTimeRemaining: options.guardSlideTimeRemaining }),
       ...(options.guardControlTimeRemaining === undefined ? {} : { guardControlTimeRemaining: options.guardControlTimeRemaining }),
+      ...(options.guardCount === undefined ? {} : { hitVars: { guardCount: options.guardCount } }),
     },
   };
 }

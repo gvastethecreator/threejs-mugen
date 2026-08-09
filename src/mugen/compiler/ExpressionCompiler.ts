@@ -49,7 +49,9 @@ function legacyProjectileIdArgument(rawId: string): string {
 export function compileExpression(expression: string): ExpressionIr {
   const normalized = normalizeMugenExpression(expression);
   const redirect = expressionForSupportScan(normalized);
-  const withoutStrings = stripRawFunctionArguments(redirect.expression).replace(/"[^"]*"/g, "\"\"");
+  const withoutStrings = stripRawFunctionArguments(
+    stripGetHitVarHitFlagComparisons(stripGetHitVarGuardFlagComparisons(redirect.expression)),
+  ).replace(/"[^"]*"/g, "\"\"");
   const unsupportedFeatures = new Set<string>();
   const identifiers = new Set<string>();
   const functions = new Set<string>();
@@ -98,6 +100,20 @@ function stripRawFunctionArguments(expression: string): string {
   return expression
     .replace(/\b(helpervar)\s*\(\s*(?:helpertype|id|keyctrl|clsnproxy|ownclsnscale|ownpal|ownprojectile|preserve)\s*\)/gi, (_match, name: string) => `${name}()`)
     .replace(/\b(const|gethitvar|hitdefattr)\s*\([^)]*\)/gi, (_match, name: string) => `${name}()`);
+}
+
+function stripGetHitVarGuardFlagComparisons(expression: string): string {
+  return expression.replace(
+    /\bgethitvar\s*\(\s*guardflag\s*\)\s*(?:=|!=)\s*[hlmadfp]+[+-]?/gi,
+    "GetHitVar(guardflag)",
+  );
+}
+
+function stripGetHitVarHitFlagComparisons(expression: string): string {
+  return expression.replace(
+    /\bgethitvar\s*\(\s*hitflag\s*\)\s*(?:=|!=)\s*[hlmadfpd]+[+-]?/gi,
+    "GetHitVar(hitflag)",
+  );
 }
 
 function stripRedirectContextsForSupportScan(expression: string, unsupportedFeatures: Set<string>): string {
@@ -329,7 +345,27 @@ const supportedExpressionFunctions = new Set([
   "var",
 ]);
 
-const supportedExpressionLiterals = new Set(["a", "c", "h", "i", "l", "n", "s", "sc", "na", "sa", "ha"]);
+const supportedExpressionLiterals = new Set([
+  "a",
+  "c",
+  "h",
+  "i",
+  "l",
+  "n",
+  "s",
+  "ca",
+  "sa",
+  "sc",
+  "sca",
+  "na",
+  "nt",
+  "np",
+  "st",
+  "sp",
+  "ha",
+  "ht",
+  "hp",
+]);
 
 function isFunctionCall(expression: string, identifier: string, index: number): boolean {
   return expression.slice(index + identifier.length).trimStart()[0] === "(";

@@ -1,0 +1,519 @@
+{
+  "version": 1,
+  "kind": "sprite-run-validation-report",
+  "run_dir": ".",
+  "stage": "pre-package",
+  "workflow": "production",
+  "ok": false,
+  "status": "fail",
+  "complete": true,
+  "exit_code": 1,
+  "input_fingerprint": "34f18ce66b0b7a34bc30631f3a7913b4780033f8eb69106eb53b17ea1f6556c4",
+  "evidence": {
+    "production_media": {
+      "representative": true,
+      "provenance_verified": true,
+      "source_types": [
+        "imagegen"
+      ]
+    }
+  },
+  "policy": {
+    "workflow": "production",
+    "categories": [
+      "animated",
+      "generated"
+    ],
+    "selectors": null,
+    "required_gate_ids": [
+      "generation-provenance",
+      "animation-contracts",
+      "frame-alignment",
+      "identity-consistency",
+      "motion-variation",
+      "runtime-preview"
+    ],
+    "decisions": [
+      {
+        "id": "generation-provenance",
+        "applied": true,
+        "reason": "production source_type=imagegen requires provenance"
+      },
+      {
+        "id": "animation-contracts",
+        "applied": true,
+        "reason": "frame_semantics=animation is animated"
+      },
+      {
+        "id": "frame-alignment",
+        "applied": true,
+        "reason": "animated asset_kind=sprite requires frame alignment"
+      },
+      {
+        "id": "identity-consistency",
+        "applied": true,
+        "reason": "animated asset_kind=sprite requires identity consistency"
+      },
+      {
+        "id": "motion-variation",
+        "applied": true,
+        "reason": "explicit locomotion workflow: sideview-locomotion"
+      },
+      {
+        "id": "asset-slots",
+        "applied": false,
+        "reason": "extraction_mode=components does not use slots"
+      },
+      {
+        "id": "isometric-tiles",
+        "applied": false,
+        "reason": "asset_kind is not tileset"
+      },
+      {
+        "id": "segmentation-diagnostic",
+        "applied": false,
+        "reason": "production workflow does not use diagnostic segmentation as a gate"
+      },
+      {
+        "id": "frame-registration",
+        "applied": false,
+        "reason": "requires import-diagnostic asset_kind=sprite"
+      },
+      {
+        "id": "runtime-preview",
+        "applied": true,
+        "reason": "frame_semantics=animation requires manifest-driven runtime evidence"
+      }
+    ]
+  },
+  "checked_items": [
+    "crouch",
+    "guard",
+    "heavy-strike",
+    "hitstun",
+    "idle",
+    "jump",
+    "knockdown",
+    "ko",
+    "light-strike",
+    "qa/all-contact.png",
+    "qa/background-matte-review.png",
+    "qa/pose-scale-review.png",
+    "qa/preview-workbench/index.html",
+    "special",
+    "throw",
+    "walk-back",
+    "walk-forward",
+    "win"
+  ],
+  "results": [
+    {
+      "id": "generation-provenance",
+      "applicable": true,
+      "checked_items": [
+        "crouch",
+        "guard",
+        "heavy-strike",
+        "hitstun",
+        "idle",
+        "jump",
+        "knockdown",
+        "ko",
+        "light-strike",
+        "special",
+        "throw",
+        "walk-back",
+        "walk-forward",
+        "win"
+      ],
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "provenance": ".\\source-provenance.json",
+        "source_type": "imagegen",
+        "sources": [
+          {
+            "path": ".\\raw\\idle.png",
+            "sha256": "2647c68c357d8c54ead4050ad398f5142746cc68cf97a4a6b3b40458c7d3cf8a",
+            "size_bytes": 1705798,
+            "states": [
+              "idle"
+            ]
+          },
+          {
+            "path": ".\\raw\\walk-forward.png",
+            "sha256": "bdfb6375cab381546dadc2edfec0bcca5bcba76c089046740e27b7df17b42f48",
+            "size_bytes": 1843171,
+            "states": [
+              "walk-forward"
+            ]
+          },
+          {
+            "path": ".\\raw\\walk-back.png",
+            "sha256": "5ca6eeab7bc1fdd6dc8fab58d1f266b46810e0fbcb3b15c3c498f561eec6d081",
+            "size_bytes": 1776355,
+            "states": [
+              "walk-back"
+            ]
+          },
+          {
+            "path": ".\\raw\\crouch.png",
+            "sha256": "40bdbc1fb625895d80b6b9356ab1d2b10bd96b574a887284e7893669f3a7b1ef",
+            "size_bytes": 1614389,
+            "states": [
+              "crouch"
+            ]
+          },
+          {
+            "path": ".\\raw\\jump.png",
+            "sha256": "ff9ba3688df864a1b83a9c402a85fcc04987e5269400a7ffb8e211a4b14e238a",
+            "size_bytes": 1554768,
+            "states": [
+              "jump"
+            ]
+          },
+          {
+            "path": ".\\raw\\light-strike.png",
+            "sha256": "27a8abbc6e92f30b81355163beb80f646300d4f36539a37f940d14b6614218dd",
+            "size_bytes": 1604365,
+            "states": [
+              "light-strike"
+            ]
+          },
+          {
+            "path": ".\\raw\\heavy-strike.png",
+            "sha256": "49f8c9243c89b258d502bcab0d7977035da4d34f687e500855ae4f8b5bb4bb30",
+            "size_bytes": 1619522,
+            "states": [
+              "heavy-strike"
+            ]
+          },
+          {
+            "path": ".\\raw\\special.png",
+            "sha256": "452d97e122ba5210c0cfb7c8267dea6be1a19be69fce64c2cf01841bb16ea512",
+            "size_bytes": 1781610,
+            "states": [
+              "special"
+            ]
+          },
+          {
+            "path": ".\\raw\\throw.png",
+            "sha256": "303e510f37ba9562d38c3ff77288d34eb9fc2dc93e5a7ca020fa6487c65132d1",
+            "size_bytes": 1598882,
+            "states": [
+              "throw"
+            ]
+          },
+          {
+            "path": ".\\raw\\guard.png",
+            "sha256": "b4aed6ee597c45d500669ca3fa70537a1ade50f2eb39b44e625173bf1552c245",
+            "size_bytes": 1645521,
+            "states": [
+              "guard"
+            ]
+          },
+          {
+            "path": ".\\raw\\hitstun.png",
+            "sha256": "03d4be8418ffbeb4bc2ae5b6dac8ff83298f82445e1b94f2f8002e13e45c1d2b",
+            "size_bytes": 1604843,
+            "states": [
+              "hitstun"
+            ]
+          },
+          {
+            "path": ".\\raw\\knockdown.png",
+            "sha256": "587e41a89343243f6fb20d6a8f49ee4d6bf086b52066d6ec59a0661d020036e9",
+            "size_bytes": 1593634,
+            "states": [
+              "knockdown"
+            ]
+          },
+          {
+            "path": ".\\raw\\ko.png",
+            "sha256": "40e44d0d8399da1cccd0e8008eda7f41046e274094e2adb7541f69ccf51ca521",
+            "size_bytes": 1530149,
+            "states": [
+              "ko"
+            ]
+          },
+          {
+            "path": ".\\raw\\win.png",
+            "sha256": "9c9ea315806b8d2aaee7825a9ef70226c4424fabff1a058359aa7ce2c791ca29",
+            "size_bytes": 1905890,
+            "states": [
+              "win"
+            ]
+          }
+        ]
+      },
+      "input_fingerprint": "b6c309613d799f2c77afb5fd0e2a84d713574c5af246f7999d7b1dcb17771c9c",
+      "complete": true,
+      "status": "pass"
+    },
+    {
+      "id": "animation-contracts",
+      "applicable": true,
+      "checked_items": [
+        "idle",
+        "walk-forward",
+        "walk-back",
+        "crouch",
+        "jump",
+        "light-strike",
+        "heavy-strike",
+        "special",
+        "throw",
+        "guard",
+        "hitstun",
+        "knockdown",
+        "ko",
+        "win"
+      ],
+      "errors": [],
+      "warnings": [
+        "light-strike: strongest extent is on the first or last frame; verify active/contact is not missing",
+        "heavy-strike: strongest extent is on the first or last frame; verify active/contact is not missing",
+        "special: strongest extent is on the first or last frame; verify active/contact is not missing",
+        "throw: strongest extent is on the first or last frame; verify active/contact is not missing",
+        "hitstun: force direction may be unreadable; verify recoil/drag visually"
+      ],
+      "evidence": {
+        "process_exit_code": 0,
+        "report_path": "qa/animation-contract-report.json",
+        "report_sha256": "60139d7bb290374db221d707bff30ffacc92c2b9dcac1c896cff44b0bdbc9b13",
+        "stdout_tail": "{\n  \"ok\": true,\n  \"engine\": \"animation-contract-heuristic\",\n  \"run_dir\": \".\",\n  \"states_mode\": \"animated\",\n  \"checked_states\": [\n    \"idle\",\n    \"walk-forward\",\n    \"walk-back\",\n    \"crouch\",\n    \"jump\",\n    \"light-strike\",\n    \"heavy-strike\",\n    \"special\",\n    \"throw\",\n    \"guard\",\n    \"hitstun\",\n    \"knockdown\",\n    \"ko\",\n    \"win\"\n  ],\n  \"visual_review_required\": true,\n  \"quality_gate_note\": \"Automated checks catch obvious phase failures. Visual playback/contact review remains required for row semantics before final approval.\",\n  \"errors\": [],\n  \"warnings\": [\n    \"light-strike: strongest extent is on the first or last frame; verify active/contact is not missing\",\n    \"heavy-strike: strongest extent is on the first or last frame; verify active/contact is not missing\",\n    \"special: strongest extent is on the first or last frame; verify active/contact is not missing\",\n    \"throw: strongest extent is on the first or last frame; verify active/contact is not missing\",\n    \"hitstun: force direction may be unreadable; verify recoil/drag visually\"\n  ]\n}\n"
+      },
+      "input_fingerprint": "60139d7bb290374db221d707bff30ffacc92c2b9dcac1c896cff44b0bdbc9b13",
+      "complete": true,
+      "status": "pass"
+    },
+    {
+      "id": "frame-alignment",
+      "applicable": true,
+      "checked_items": [
+        "idle",
+        "walk-forward",
+        "walk-back",
+        "crouch",
+        "jump",
+        "light-strike",
+        "heavy-strike",
+        "special",
+        "throw",
+        "guard",
+        "hitstun",
+        "knockdown",
+        "ko",
+        "win"
+      ],
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "process_exit_code": 0,
+        "report_path": "qa/frame-alignment-report.json",
+        "report_sha256": "280526eb8abf65a43a0cabd683b1df4fafc602873f690ce1fac24fc7d06fe314",
+        "stdout_tail": " [\n        168,\n        168,\n        168,\n        161,\n        168,\n        168\n      ],\n      \"center_x\": [\n        94.97,\n        96.01,\n        95.22,\n        90.82,\n        94.17,\n        95.11\n      ],\n      \"center_y\": [\n        95.03,\n        94.77,\n        93.84,\n        93.98,\n        94.73,\n        95.15\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"special\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\special-onion.png\",\n      \"bottom_y\": [\n        168,\n        166,\n        168,\n        163,\n        160,\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        95.82,\n        97.11,\n        101.09,\n        92.5,\n        94.45,\n        96.1,\n        95.68,\n        95.49\n      ],\n      \"center_y\": [\n        95.64,\n        98.39,\n        98.75,\n        94.29,\n        95.85,\n        97.23,\n        95.66,\n        95.77\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"throw\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\throw-onion.png\",\n      \"bottom_y\": [\n        168,\n        159,\n        159,\n        159,\n        162,\n        168\n      ],\n      \"center_x\": [\n        94.92,\n        95.4,\n        87.59,\n        79.46,\n        85.19,\n        94.77\n      ],\n      \"center_y\": [\n        95.67,\n        96.55,\n        97.57,\n        96.05,\n        94.31,\n        95.69\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"guard\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\guard-onion.png\",\n      \"bottom_y\": [\n        168,\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        96.12,\n        96.28,\n        95.78,\n        95.36\n      ],\n      \"center_y\": [\n        94.84,\n        94.08,\n        92.32,\n        95.91\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"hitstun\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\hitstun-onion.png\",\n      \"bottom_y\": [\n        168,\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        85.84,\n        89.44,\n        87.14,\n        91.94\n      ],\n      \"center_y\": [\n        94.95,\n        94.81,\n        93.3,\n        94.86\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"knockdown\",\n      \"kind\": \"knockdown\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\knockdown-onion.png\",\n      \"bottom_y\": [\n        168,\n        168,\n        168,\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        91.48,\n        82.89,\n        85.2,\n        91.04,\n        83.57,\n        87.94\n      ],\n      \"center_y\": [\n        92.72,\n        118.71,\n        121.04,\n        135.2,\n        141.37,\n        146.51\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"ko\",\n      \"kind\": \"knockdown\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\ko-onion.png\",\n      \"bottom_y\": [\n        168,\n        168,\n        168,\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        90.0,\n        89.69,\n        98.64,\n        108.46,\n        90.36,\n        100.05\n      ],\n      \"center_y\": [\n        93.75,\n        90.87,\n        122.01,\n        121.13,\n        148.92,\n        151.62\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    },\n    {\n      \"state\": \"win\",\n      \"kind\": \"action\",\n      \"ok\": true,\n      \"onion\": \"qa\\\\win-onion.png\",\n      \"bottom_y\": [\n        168,\n        168,\n        168,\n        168,\n        168\n      ],\n      \"center_x\": [\n        94.93,\n        93.21,\n        95.75,\n        96.94,\n        93.51\n      ],\n      \"center_y\": [\n        96.03,\n        97.71,\n        95.15,\n        93.84,\n        95.17\n      ],\n      \"baseline_y\": 168,\n      \"errors\": [],\n      \"warnings\": []\n    }\n  ],\n  \"errors\": [],\n  \"warnings\": []\n}\n"
+      },
+      "input_fingerprint": "280526eb8abf65a43a0cabd683b1df4fafc602873f690ce1fac24fc7d06fe314",
+      "complete": true,
+      "status": "pass"
+    },
+    {
+      "id": "identity-consistency",
+      "applicable": true,
+      "checked_items": [
+        "idle",
+        "walk-forward",
+        "walk-back",
+        "crouch",
+        "jump",
+        "light-strike",
+        "heavy-strike",
+        "special",
+        "throw",
+        "guard",
+        "hitstun",
+        "knockdown",
+        "ko",
+        "win"
+      ],
+      "errors": [
+        "heavy-strike: head_width_vs_reference grows to 1.40x reference; expected <= 1.28x",
+        "special: upper_width_vs_reference varies by 0.54x across row; expected <= 0.42x",
+        "throw: upper_width_vs_reference varies by 0.43x across row; expected <= 0.42x",
+        "guard: head_width_vs_reference grows to 1.45x reference; expected <= 1.28x",
+        "hitstun: head_width_vs_reference grows to 1.33x reference; expected <= 1.28x",
+        "knockdown: head_width_vs_reference grows to 1.37x reference; expected <= 1.28x",
+        "knockdown: head_width_vs_reference varies by 0.82x across row; expected <= 0.42x",
+        "knockdown: upper_width_vs_reference grows to 1.75x reference; expected <= 1.55x",
+        "knockdown: upper_width_vs_reference varies by 1.13x across row; expected <= 0.42x",
+        "ko: head_width_vs_reference grows to 1.47x reference; expected <= 1.28x",
+        "ko: head_width_vs_reference varies by 0.43x across row; expected <= 0.42x",
+        "ko: opaque_area_vs_reference shrinks to 0.44x reference; expected >= 0.45x",
+        "report declared ok:false"
+      ],
+      "warnings": [],
+      "evidence": {
+        "process_exit_code": 1,
+        "report_path": "qa/identity-consistency-report.json",
+        "report_sha256": "56af041ac938dcb45536904c007f587e742cc03e74cdfd148b0a7a2157aced92",
+        "stdout_tail": "{\n  \"ok\": false,\n  \"engine\": \"identity-consistency-proxy\",\n  \"run_dir\": \".\",\n  \"states_mode\": \"all\",\n  \"quality_gate_note\": \"Head/upper/body proxy metrics are guardrails. Visual contact/onion/runtime review still wins when metrics miss a visible drift.\",\n  \"errors\": [\n    \"heavy-strike: head_width_vs_reference grows to 1.40x reference; expected <= 1.28x\",\n    \"special: upper_width_vs_reference varies by 0.54x across row; expected <= 0.42x\",\n    \"throw: upper_width_vs_reference varies by 0.43x across row; expected <= 0.42x\",\n    \"guard: head_width_vs_reference grows to 1.45x reference; expected <= 1.28x\",\n    \"hitstun: head_width_vs_reference grows to 1.33x reference; expected <= 1.28x\",\n    \"knockdown: head_width_vs_reference grows to 1.37x reference; expected <= 1.28x\",\n    \"knockdown: head_width_vs_reference varies by 0.82x across row; expected <= 0.42x\",\n    \"knockdown: upper_width_vs_reference grows to 1.75x reference; expected <= 1.55x\",\n    \"knockdown: upper_width_vs_reference varies by 1.13x across row; expected <= 0.42x\",\n    \"ko: head_width_vs_reference grows to 1.47x reference; expected <= 1.28x\",\n    \"ko: head_width_vs_reference varies by 0.43x across row; expected <= 0.42x\",\n    \"ko: opaque_area_vs_reference shrinks to 0.44x reference; expected >= 0.45x\"\n  ],\n  \"warnings\": []\n}\n"
+      },
+      "input_fingerprint": "56af041ac938dcb45536904c007f587e742cc03e74cdfd148b0a7a2157aced92",
+      "complete": true,
+      "status": "fail"
+    },
+    {
+      "id": "motion-variation",
+      "applicable": true,
+      "checked_items": [
+        "walk-forward",
+        "walk-back"
+      ],
+      "errors": [],
+      "warnings": [
+        "walk-forward: body center is nearly static; verify body bob/weight shift visually",
+        "walk-back: body center is nearly static; verify body bob/weight shift visually"
+      ],
+      "evidence": {
+        "process_exit_code": 0,
+        "report_path": "qa/motion-variation-report.json",
+        "report_sha256": "5591984d01a620543d5d47c1085e7b845a7ae1ae79690f3af3095cd51f50c56d",
+        "stdout_tail": "{\n  \"ok\": true,\n  \"engine\": \"motion-variation-heuristic\",\n  \"run_dir\": \".\",\n  \"states_mode\": \"locomotion\",\n  \"checked_states\": [\n    \"walk-forward\",\n    \"walk-back\"\n  ],\n  \"semantic_review_required\": true,\n  \"quality_gate_note\": \"Motion variation is a heuristic. Locomotion still needs visual leg-phase review before final approval.\",\n  \"errors\": [],\n  \"warnings\": [\n    \"walk-forward: body center is nearly static; verify body bob/weight shift visually\",\n    \"walk-back: body center is nearly static; verify body bob/weight shift visually\"\n  ]\n}\n"
+      },
+      "input_fingerprint": "5591984d01a620543d5d47c1085e7b845a7ae1ae79690f3af3095cd51f50c56d",
+      "complete": true,
+      "status": "pass"
+    },
+    {
+      "id": "asset-slots",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "extraction_mode=components does not use slots"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "isometric-tiles",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "asset_kind is not tileset"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "segmentation-diagnostic",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "production workflow does not use diagnostic segmentation as a gate"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "frame-registration",
+      "applicable": false,
+      "checked_items": [],
+      "errors": [],
+      "warnings": [
+        "requires import-diagnostic asset_kind=sprite"
+      ],
+      "evidence": {},
+      "input_fingerprint": null,
+      "complete": true,
+      "status": "skipped"
+    },
+    {
+      "id": "runtime-preview",
+      "applicable": true,
+      "checked_items": [
+        "crouch",
+        "guard",
+        "heavy-strike",
+        "hitstun",
+        "idle",
+        "jump",
+        "knockdown",
+        "ko",
+        "light-strike",
+        "special",
+        "throw",
+        "walk-back",
+        "walk-forward",
+        "win"
+      ],
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "fingerprints": {
+          "crouch": "sha256:c94caf887b8dec888722583cedcae333db02425992a4366551d1ffe11c4caa64",
+          "guard": "sha256:e7a23b07a71257c86ebfeced201221e05da69527a8d78c83e42f817b51aa55da",
+          "heavy-strike": "sha256:0c39ed21cf261b5277208a595fa52ee32a41599fec9c96ad200fd24064a8b93d",
+          "hitstun": "sha256:92ab5bd982042d270eb0592253b57a9efdbe764f67bb18f0c02a58e182aa8345",
+          "idle": "sha256:9a10e62ee845acf79a13f157686a8069aceb904e54fb176bdfbf9b010659afd2",
+          "jump": "sha256:bca2cfcb5e979aa8d88c4f528af3ab1490b1fa29e6ccc80232e61b3c991df945",
+          "knockdown": "sha256:df2811337969b5cbd3c481e8e49f33e91165b4a3d7acb9b4e1ae04b5b885ac4f",
+          "ko": "sha256:57d02098ba8a1cd12920d986965ec7b757855acf1f77d85e2bd1ca77203e6f88",
+          "light-strike": "sha256:22b24ab763efa9803fbbf632d467d76fab1a597c8bcd689feb3d8ed1f5b89eb1",
+          "special": "sha256:a9f36b916c2250de46941a2ee38d61ab3b3f2278d6e3f0dfcf215f66725065d4",
+          "throw": "sha256:f5c3c1c3c5644da0f12a63770bee0b80cd781babb8e5760c077131a86156ee3d",
+          "walk-back": "sha256:26f0083704344989a40a8a1662dcbcca3b85c8a51349ab7b639b93521d131fe9",
+          "walk-forward": "sha256:30480470536dbd3adf8262d0178ef7dee18d5cf57acb2540dc0320d28cdf16e6",
+          "win": "sha256:3ee99da805f5efa195d7b906ef49d97ac6aa23071eeb57f8fdc3b143c92a0a04"
+        }
+      },
+      "input_fingerprint": "sha256:7023eea8851346af9ca53a3a6cf08153ca13ebb3b488ee821711c0ceab4d1a04",
+      "complete": true,
+      "status": "pass"
+    },
+    {
+      "id": "visual-review",
+      "applicable": true,
+      "checked_items": [
+        "qa/all-contact.png",
+        "qa/pose-scale-review.png",
+        "qa/background-matte-review.png",
+        "qa/preview-workbench/index.html"
+      ],
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "input_fingerprint": "sha256:ee95a36b23ef3a054df958e7a292bac295eae33261946485cb93db704e57232d",
+        "review_path": "qa/visual-review.json",
+        "reviewer_kind": "vision-model"
+      },
+      "input_fingerprint": "sha256:ee95a36b23ef3a054df958e7a292bac295eae33261946485cb93db704e57232d",
+      "complete": true,
+      "status": "pass"
+    }
+  ],
+  "blockers": [
+    "identity-consistency: heavy-strike: head_width_vs_reference grows to 1.40x reference; expected <= 1.28x",
+    "identity-consistency: special: upper_width_vs_reference varies by 0.54x across row; expected <= 0.42x",
+    "identity-consistency: throw: upper_width_vs_reference varies by 0.43x across row; expected <= 0.42x",
+    "identity-consistency: guard: head_width_vs_reference grows to 1.45x reference; expected <= 1.28x",
+    "identity-consistency: hitstun: head_width_vs_reference grows to 1.33x reference; expected <= 1.28x",
+    "identity-consistency: knockdown: head_width_vs_reference grows to 1.37x reference; expected <= 1.28x",
+    "identity-consistency: knockdown: head_width_vs_reference varies by 0.82x across row; expected <= 0.42x",
+    "identity-consistency: knockdown: upper_width_vs_reference grows to 1.75x reference; expected <= 1.55x",
+    "identity-consistency: knockdown: upper_width_vs_reference varies by 1.13x across row; expected <= 0.42x",
+    "identity-consistency: ko: head_width_vs_reference grows to 1.47x reference; expected <= 1.28x",
+    "identity-consistency: ko: head_width_vs_reference varies by 0.43x across row; expected <= 0.42x",
+    "identity-consistency: ko: opaque_area_vs_reference shrinks to 0.44x reference; expected >= 0.45x",
+    "identity-consistency: report declared ok:false"
+  ]
+}

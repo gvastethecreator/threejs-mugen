@@ -5,6 +5,8 @@ export type RuntimeAnimationActor = {
   currentAction: MugenAnimationAction;
   frameElapsed: number;
   animationComplete: boolean;
+  /** Player number that owns the currently selected animation. */
+  animationOwnerPlayerNo?: number;
   runtime: Pick<CharacterRuntimeState, "animTime" | "frameIndex">;
 };
 
@@ -14,6 +16,7 @@ export type RuntimeAnimationChangeActor = Omit<RuntimeAnimationActor, "runtime">
 
 export type RuntimeAnimationActionOwner = {
   animations: Pick<Map<number, MugenAnimationAction>, "get">;
+  playerNo?: number;
 };
 
 export type RuntimeAnimationElementOptions = {
@@ -64,6 +67,7 @@ export class RuntimeAnimationWorld {
       });
     }
 
+    actor.animationOwnerPlayerNo = options.actionOwner.playerNo;
     const alreadyCurrent =
       actor.runtime.animNo === options.actionId && actor.runtime.animationSource === source && actor.currentAction === action;
     if (alreadyCurrent) {
@@ -188,6 +192,21 @@ export function runtimeAnimationElapsedBeforeFrame(action: MugenAnimationAction,
   return elapsed;
 }
 
+/** Total effective duration of an AIR action, independent of the live cursor. */
+export function runtimeAnimationLength(action: MugenAnimationAction | undefined): number {
+  if (!action) {
+    return 0;
+  }
+  return action.frames.reduce((total, frame) => total + runtimeAnimationFrameDuration(frame), 0);
+}
+
+/** Player number for the owner of the active animation, with the actor as fallback. */
+export function runtimeAnimationPlayerNo(
+  actor: Pick<RuntimeAnimationActor, "animationOwnerPlayerNo"> & { playerNo?: number },
+): number | undefined {
+  return actor.animationOwnerPlayerNo ?? actor.playerNo;
+}
+
 export function runtimeAnimationTimeRemaining(actor: RuntimeAnimationActor): number {
   const frames = actor.currentAction.frames;
   if (frames.length === 0 || actor.animationComplete) {
@@ -217,6 +236,53 @@ export function runtimeAnimationElementTime(
   return currentElapsed - targetElapsed;
 }
 
+/**
+ * Read the metadata exposed by Ikemen's AnimElemVar for the active AIR frame.
+ *
+ * This deliberately stays at the metadata already represented by the imported
+ * AIR model. Alpha/angle/scale fields need richer AIR blend data and therefore
+ * return undefined until that source contract exists.
+ */
+export function runtimeAnimationElementVarForFrame(
+  frame: MugenAnimationFrame | undefined,
+  parameter: string,
+): number | undefined {
+  if (!frame) {
+    return undefined;
+  }
+
+  switch (normalizeAnimationElementVarParameter(parameter)) {
+    case "group":
+      return frame.spriteGroup;
+    case "image":
+      return frame.spriteIndex;
+    case "time":
+      return runtimeAnimationFrameDuration(frame);
+    case "xoffset":
+      return frame.offsetX;
+    case "yoffset":
+      return frame.offsetY;
+    case "hflip":
+      return animationFrameHasFlip(frame.flip, "H") ? 1 : 0;
+    case "vflip":
+      return animationFrameHasFlip(frame.flip, "V") ? 1 : 0;
+    case "numclsn1":
+      return frame.clsn1.length;
+    case "numclsn2":
+      return frame.clsn2.length;
+    default:
+      return undefined;
+  }
+}
+
+/** Read AnimElemVar against the actor's current AIR cursor. */
+export function runtimeAnimationElementVar(
+  actor: Pick<RuntimeAnimationActor, "currentAction" | "runtime">,
+  parameter: string,
+): number | undefined {
+  return runtimeAnimationElementVarForFrame(actor.currentAction.frames[actor.runtime.frameIndex], parameter);
+}
+
 function animationChangeResult(
   actor: RuntimeAnimationChangeActor,
   result: Pick<RuntimeAnimationChangeActionResult, "applied" | "actionFound" | "changed" | "elementApplied">,
@@ -231,4 +297,16 @@ function animationChangeResult(
 
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
+}
+
+function normalizeAnimationElementVarParameter(parameter: string): string {
+  return parameter
+    .trim()
+    .replace(/^['"]|['"]$/g, "")
+    .replace(/[\s._-]/g, "")
+    .toLowerCase();
+}
+
+function animationFrameHasFlip(flip: string | undefined, axis: "H" | "V"): boolean {
+  return (flip ?? "").toUpperCase().includes(axis);
 }

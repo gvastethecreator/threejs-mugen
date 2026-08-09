@@ -122,6 +122,8 @@ export type RuntimeRoundIntroSkipResult = {
 
 export class RuntimeRoundSystem {
   private timerFrames: number;
+  /** Ticks elapsed since control was released into the actual Fight phase. */
+  private fightTimeFrames = 0;
   private state: RoundSnapshot["state"] = "fight";
   private winner?: string;
   private winnerDisplaySelection?: RuntimeRoundWinnerDisplaySelection;
@@ -175,6 +177,11 @@ export class RuntimeRoundSystem {
 
   get remainingTimerFrames(): number {
     return this.timerFrames;
+  }
+
+  /** Read-only Ikemen-compatible FightTime source clock. */
+  get fightTimeFramesElapsed(): number {
+    return this.fightTimeFrames;
   }
 
   get playbackRate(): number {
@@ -292,6 +299,9 @@ export class RuntimeRoundSystem {
     if (introActive) {
       return { finishedNow: false };
     }
+    if (this.state === "fight" && this.currentPhase === 2) {
+      this.fightTimeFrames += 1;
+    }
     this.timerFrames = Math.max(0, this.timerFrames - 1);
     return { finishedNow: false };
   }
@@ -346,6 +356,7 @@ export class RuntimeRoundSystem {
 
   private resetState(timerFrames: number): void {
     this.timerFrames = boundedRoundFrames(timerFrames);
+    this.fightTimeFrames = 0;
     this.state = "fight";
     this.winner = undefined;
     this.winnerDisplaySelection = undefined;

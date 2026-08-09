@@ -12,6 +12,8 @@ export type RuntimeCombatAttack = {
   kill?: boolean;
   attr?: string;
   hitPause: number;
+  /** Defender-side HitDef pausetime component; omitted preserves legacy scalar pause. */
+  hitShakeTime?: number;
   hitStun: number;
   airHitTime?: number;
   /** M.U.G.E.N down.hittime for a lying defender. */
@@ -33,6 +35,9 @@ export type RuntimeCombatAttack = {
   hitVelocityY?: number;
   /** Ground HitDef velocity Z. */
   hitVelocityZ?: number;
+  /** Air HitDef velocity X/Y, selected for airborne defenders. */
+  airVelocityX?: number;
+  airVelocityY?: number;
   /** Air HitDef velocity Z, selected for airborne defenders. */
   airVelocityZ?: number;
   guardDistance?: number;
@@ -40,6 +45,8 @@ export type RuntimeCombatAttack = {
   guardDamage?: number;
   guardKill?: boolean;
   guardPause?: number;
+  /** Defender-side guard.pausetime component; omitted preserves legacy scalar guard pause. */
+  guardShakeTime?: number;
   guardStun?: number;
   guardSlideTime?: number;
   guardControlTime?: number;
@@ -65,6 +72,8 @@ export type RuntimeCombatHitResult =
       redLife?: number;
       kill: boolean;
       pause: number;
+      /** Attacker-side pause when the authored pair differs from defender shaketime. */
+      attackerPause?: number;
       stun: number;
       slideTime?: number;
       controlTime?: number;
@@ -81,6 +90,8 @@ export type RuntimeCombatHitResult =
       redLife?: number;
       kill: boolean;
       pause: number;
+      /** Attacker-side pause when the authored pair differs from defender shaketime. */
+      attackerPause?: number;
       stun: number;
       push: number;
       hitVelocityX?: number;
@@ -398,7 +409,8 @@ export function resolveRuntimeCombatHit(input: {
       attackUnguardable: input.attacker.assertSpecial?.unguardable,
     })
   ) {
-    const pause = input.attack.guardPause ?? Math.max(1, Math.round(input.attack.hitPause * 0.75));
+    const attackerPause = input.attack.guardPause ?? Math.max(1, Math.round(input.attack.hitPause * 0.75));
+    const pause = input.attack.guardShakeTime ?? attackerPause;
     const stun = input.attack.guardStun ?? Math.max(1, Math.round(input.attack.hitStun * 0.55));
     const isAirGuard = input.defender.stateType === "A";
     const push =
@@ -422,6 +434,7 @@ export function resolveRuntimeCombatHit(input: {
         : { redLife: scaleRuntimeIncomingAmount(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.guardRedLife)) }),
       kill: input.attack.guardKill ?? true,
       pause,
+      ...(pause === attackerPause ? {} : { attackerPause }),
       stun,
       slideTime: input.attack.guardSlideTime,
       controlTime: (isAirGuard ? input.attack.airGuardControlTime : undefined) ?? input.attack.guardControlTime,
@@ -439,6 +452,7 @@ export function resolveRuntimeCombatHit(input: {
   const usesAirHitTime =
     (isAirHit || (isDownHit && !usesDownHitTime)) &&
     !resolveRuntimeFallEnabled(input.attack.fall, input.defender.stateType);
+  const pause = input.attack.hitShakeTime ?? input.attack.hitPause;
   return {
     kind: "hit",
     damage: scaleRuntimeIncomingDamage(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.damage)),
@@ -454,15 +468,22 @@ export function resolveRuntimeCombatHit(input: {
       ? {}
       : { redLife: scaleRuntimeIncomingAmount(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.redLife)) }),
     kill: input.attack.kill ?? true,
-    pause: input.attack.hitPause,
+    pause,
+    ...(pause === input.attack.hitPause ? {} : { attackerPause: input.attack.hitPause }),
     stun: usesDownHitTime
       ? input.attack.downHitTime ?? 20
       : usesAirHitTime
         ? input.attack.airHitTime ?? 20
         : input.attack.hitStun,
-    push: input.attack.push,
-    ...(isDownHit && input.attack.downVelocityX !== undefined ? { hitVelocityX: input.attack.downVelocityX } : {}),
-    hitVelocityY: isDownHit ? input.attack.downVelocityY ?? input.attack.hitVelocityY : input.attack.hitVelocityY,
+    push: isAirHit ? Math.abs(input.attack.airVelocityX ?? input.attack.push) : input.attack.push,
+    ...((isDownHit ? input.attack.downVelocityX : isAirHit ? input.attack.airVelocityX : undefined) === undefined
+      ? {}
+      : { hitVelocityX: isDownHit ? input.attack.downVelocityX : input.attack.airVelocityX }),
+    hitVelocityY: isDownHit
+      ? input.attack.downVelocityY ?? input.attack.hitVelocityY
+      : isAirHit
+        ? input.attack.airVelocityY ?? input.attack.hitVelocityY
+        : input.attack.hitVelocityY,
     hitVelocityZ: isDownHit
       ? input.attack.downVelocityZ ?? input.attack.airVelocityZ ?? input.attack.hitVelocityZ
       : isAirHit
@@ -639,9 +660,75 @@ function hitOverrideGuardFlagsMatch(
 }
 
 export function runtimeGuardFlagOverlaps(filter: string, attackGuardFlag: string): boolean {
+  return runtimeHitFlagOverlaps(filter, attackGuardFlag);
+}
+
+export function runtimeGuardFlagComparison(
+  filter: string,
+  attackGuardFlag: string,
+  operator: "=" | "!=",
+): boolean {
+  return runtimeHitFlagComparison(filter, attackGuardFlag, operator);
+}
+
+/**
+ * Ikemen's GetHitVar(hitflag) compares the last HitDef hitflag against a
+ * documented flag filter. The same M/H/L expansion and +/- markers used by
+ * guardflag matching apply to this read-only predicate.
+ */
+export function runtimeHitFlagOverlaps(filter: string, attackHitFlag: string): boolean {
+  return runtimeHitFlagComparison(filter, attackHitFlag, "=");
+}
+
+export function runtimeHitFlagComparison(
+  filter: string,
+  attackHitFlag: string,
+  operator: "=" | "!=",
+): boolean {
   const filterFlags = normalizeGuardFlagSet(filter);
-  const attackFlags = normalizeGuardFlagSet(attackGuardFlag);
-  return [...filterFlags].some((flag) => attackFlags.has(flag));
+  const attackFlags = normalizeGuardFlagSet(attackHitFlag);
+  return operator === "="
+    ? [...attackFlags].some((flag) => filterFlags.has(flag))
+    : [...attackFlags].some((flag) => !filterFlags.has(flag));
+}
+
+export function runtimeHitAttributeComparison(
+  filter: string,
+  attackAttr: string,
+  operator: "=" | "!=",
+): boolean {
+  const filterParts = parseHitAttribute(filter);
+  const attackParts = parseHitAttribute(attackAttr);
+  const filterTypes = expandRuntimeHitAttributeTypes(filterParts.types);
+  const attackTypes = expandRuntimeHitAttributeTypes(attackParts.types);
+  if (operator === "=") {
+    return [...attackParts.states].some((state) => filterParts.states.has(state))
+      && [...attackTypes].some((type) => filterTypes.has(type));
+  }
+  return [...attackParts.states].some((state) => !filterParts.states.has(state))
+    && [...attackTypes].some((type) => !filterTypes.has(type));
+}
+
+function expandRuntimeHitAttributeTypes(types: Set<string>): Set<string> {
+  const expanded = new Set<string>();
+  for (const type of types) {
+    if (type === "N") {
+      expanded.add("NA");
+      expanded.add("NT");
+      expanded.add("NP");
+    } else if (type === "S") {
+      expanded.add("SA");
+      expanded.add("ST");
+      expanded.add("SP");
+    } else if (type === "H" || type === "A") {
+      expanded.add("HA");
+      expanded.add("HT");
+      expanded.add("HP");
+    } else {
+      expanded.add(type);
+    }
+  }
+  return expanded;
 }
 
 function normalizeGuardFlagSet(value: string): Set<string> {

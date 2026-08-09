@@ -174,7 +174,15 @@ export class MugenCharacterLoader {
     }
 
     const stateSources: MugenStateSourceInput[] = [];
-    const constants: MugenCharacter["constants"] = {};
+    const powerRules = systemAssets?.gameConfig?.powerRules;
+    const constants: MugenCharacter["constants"] = {
+      ...(powerRules?.defaultAttackLifeToPowerMultiplier === undefined
+        ? {}
+        : { "default.attack.lifetopowermul": powerRules.defaultAttackLifeToPowerMultiplier }),
+      ...(powerRules?.defaultGetHitLifeToPowerMultiplier === undefined
+        ? {}
+        : { "default.gethit.lifetopowermul": powerRules.defaultGetHitLifeToPowerMultiplier }),
+    };
     const parsedCnsByPath = new Map<string, { text: string; parsed: ReturnType<typeof parseCns> }>();
     const parseCnsFile = (path: string): { text: string; parsed: ReturnType<typeof parseCns> } => {
       const cached = parsedCnsByPath.get(path);

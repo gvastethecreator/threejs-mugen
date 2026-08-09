@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { contentPackFighters } from "../mugen/runtime/demoFighters";
+import { contentPackFighters, demoFighters } from "../mugen/runtime/demoFighters";
 import { azoteaWifiStage, patioDojoPublicidadStage, rooftopDojoStage, terminalSupermercado24hStage } from "../mugen/runtime/demoStage";
 import { parseAssetPermissionMetadata } from "../app/StudioAssetPermission";
 
@@ -42,47 +42,22 @@ describe("content pack stage registry", () => {
     }
   });
 
-  it("keeps the fourteen content-pack fighters selectable", () => {
-    const expected = [
-      "don-rayo",
-      "la-jefa-del-combo",
-      "turbo-abuela",
-      "tanque-de-carton",
-      "monje-wifi",
-      "sombra-del-super",
-      "mara-cinta",
-      "toro-pixel",
-      "nico-guante",
-      "luna-codo",
-      "sargento-pila",
-      "bruno-giro",
-      "vera-patada",
-      "rulo-viento",
-    ];
-    expect(expected.every((id) => contentPackFighters.some((fighter) => fighter.id === id))).toBe(true);
+  it("keeps the reset roster limited to the two original karatekas", () => {
+    expect(demoFighters.map((fighter) => fighter.id)).toEqual(["rocco-vidal", "nadia-arce"]);
+    expect(contentPackFighters).toEqual([]);
   });
 
-  it("registers the eight classic recolors as runtime atlas packages", () => {
-    const classicIds = [
-      "mara-cinta",
-      "toro-pixel",
-      "nico-guante",
-      "luna-codo",
-      "sargento-pila",
-      "bruno-giro",
-      "vera-patada",
-      "rulo-viento",
-    ];
-    for (const id of classicIds) {
+  it("registers both karate-reset fighters as complete runtime atlas packages", () => {
+    for (const id of ["rocco-vidal", "nadia-arce"]) {
       const root = resolve(process.cwd(), "public", "characters", id);
       expect(existsSync(resolve(root, "sprite-sheet-alpha.png"))).toBe(true);
       expect(existsSync(resolve(root, "manifest.json"))).toBe(true);
-      expect(existsSync(resolve(root, "base-source.png"))).toBe(true);
+      expect(existsSync(resolve(root, "references", "identity-anchor.png"))).toBe(true);
       expect(existsSync(resolve(root, "asset-permission.json"))).toBe(true);
       expect(existsSync(resolve(root, "LICENSE.txt"))).toBe(true);
       expect(existsSync(resolve(root, "runtime-states.json"))).toBe(true);
       expect(existsSync(resolve(root, "states.contract.json"))).toBe(true);
-      const prefix = id.split("-")[0]!;
+      const prefix = id === "rocco-vidal" ? "rocco" : "nadia";
       for (const extension of ["def", "cmd", "cns", "air"]) {
         expect(existsSync(resolve(root, "mugen", `${prefix}.${extension}`))).toBe(true);
       }
@@ -93,6 +68,10 @@ describe("content pack stage registry", () => {
       expect(manifest.animation?.rows?.["walk-forward"]?.frames).toBe(8);
       expect(manifest.animation?.rows?.special?.frames).toBe(8);
       expect(Object.keys(manifest.animation?.rows ?? {})).toHaveLength(14);
+      const frameManifest = JSON.parse(readFileSync(resolve(root, "frames", "frames-manifest.json"), "utf8")) as {
+        rows?: Array<{ frames?: number }>;
+      };
+      expect(frameManifest.rows?.reduce((total, row) => total + (row.frames ?? 0), 0)).toBe(79);
       const permission = JSON.parse(readFileSync(resolve(root, "asset-permission.json"), "utf8")) as {
         assetId?: string;
         sourceFiles?: unknown[];
@@ -100,7 +79,7 @@ describe("content pack stage registry", () => {
       };
       expect(parseAssetPermissionMetadata(permission)).toBeDefined();
       expect(permission.assetId).toBe(id);
-      expect(permission.sourceFiles?.length).toBeGreaterThanOrEqual(2);
+      expect(permission.sourceFiles).toHaveLength(14);
       expect(permission.outputFiles?.length).toBeGreaterThanOrEqual(10);
     }
   });

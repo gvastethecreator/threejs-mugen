@@ -1,4 +1,5 @@
 import type { CharacterRuntimeState, RuntimeHitBySlot } from "./types";
+import { tickRuntimeUnhittableTime } from "./RuntimeUnhittableTimeSystem";
 
 export type RuntimeHitEligibilityTickResult = {
   slot1Active: boolean;
@@ -6,13 +7,33 @@ export type RuntimeHitEligibilityTickResult = {
 };
 
 export class RuntimeHitEligibilityWorld {
-  resetFrameFlags(state: CharacterRuntimeState): void {
+  resetFrameFlags(state: CharacterRuntimeState, preserveHitFrame = false): void {
     resetRuntimeAssertSpecial(state);
+    if (!preserveHitFrame && state.hitVars?.frame) {
+      state.hitVars = { ...state.hitVars, frame: false };
+    }
+    resetRuntimeGuardCount(state);
   }
 
   tickHitBySlots(state: CharacterRuntimeState): RuntimeHitEligibilityTickResult {
     return tickRuntimeHitBySlots(state);
   }
+
+  tickUnhittableTime(state: CharacterRuntimeState): number {
+    return tickRuntimeUnhittableTime(state);
+  }
+}
+
+/** Ikemen clears GetHitVar(guardcount) once the actor is no longer in get-hit. */
+export function resetRuntimeGuardCount(
+  state: Pick<CharacterRuntimeState, "moveType"> & Partial<Pick<CharacterRuntimeState, "hitVars">>,
+): void {
+  if (state.moveType === "H" || state.hitVars?.guardCount === undefined) {
+    return;
+  }
+  const next = { ...state.hitVars };
+  delete next.guardCount;
+  state.hitVars = Object.keys(next).length > 0 ? next : undefined;
 }
 
 export function resetRuntimeAssertSpecial(state: CharacterRuntimeState): void {

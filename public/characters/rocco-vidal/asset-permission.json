@@ -1,0 +1,176 @@
+{
+  "schemaVersion": "mugen-web-sandbox/asset-permission/v0",
+  "assetId": "rocco-vidal",
+  "ownership": "repository-owned",
+  "permission": "repository-owned",
+  "license": {
+    "expression": "CC0-1.0",
+    "profile": "mugen-web-sandbox/spdx-expression-subset/v0",
+    "sourceRef": "LICENSE.txt",
+    "verified": true
+  },
+  "sourceFiles": [
+    {
+      "path": "raw/crouch.png",
+      "bytes": 1614389,
+      "sha256": "40bdbc1fb625895d80b6b9356ab1d2b10bd96b574a887284e7893669f3a7b1ef"
+    },
+    {
+      "path": "raw/guard.png",
+      "bytes": 1645521,
+      "sha256": "b4aed6ee597c45d500669ca3fa70537a1ade50f2eb39b44e625173bf1552c245"
+    },
+    {
+      "path": "raw/heavy-strike.png",
+      "bytes": 1619522,
+      "sha256": "49f8c9243c89b258d502bcab0d7977035da4d34f687e500855ae4f8b5bb4bb30"
+    },
+    {
+      "path": "raw/hitstun.png",
+      "bytes": 1604843,
+      "sha256": "03d4be8418ffbeb4bc2ae5b6dac8ff83298f82445e1b94f2f8002e13e45c1d2b"
+    },
+    {
+      "path": "raw/idle.png",
+      "bytes": 1705798,
+      "sha256": "2647c68c357d8c54ead4050ad398f5142746cc68cf97a4a6b3b40458c7d3cf8a"
+    },
+    {
+      "path": "raw/jump.png",
+      "bytes": 1554768,
+      "sha256": "ff9ba3688df864a1b83a9c402a85fcc04987e5269400a7ffb8e211a4b14e238a"
+    },
+    {
+      "path": "raw/knockdown.png",
+      "bytes": 1593634,
+      "sha256": "587e41a89343243f6fb20d6a8f49ee4d6bf086b52066d6ec59a0661d020036e9"
+    },
+    {
+      "path": "raw/ko.png",
+      "bytes": 1530149,
+      "sha256": "40e44d0d8399da1cccd0e8008eda7f41046e274094e2adb7541f69ccf51ca521"
+    },
+    {
+      "path": "raw/light-strike.png",
+      "bytes": 1604365,
+      "sha256": "27a8abbc6e92f30b81355163beb80f646300d4f36539a37f940d14b6614218dd"
+    },
+    {
+      "path": "raw/special.png",
+      "bytes": 1781610,
+      "sha256": "452d97e122ba5210c0cfb7c8267dea6be1a19be69fce64c2cf01841bb16ea512"
+    },
+    {
+      "path": "raw/throw.png",
+      "bytes": 1598882,
+      "sha256": "303e510f37ba9562d38c3ff77288d34eb9fc2dc93e5a7ca020fa6487c65132d1"
+    },
+    {
+      "path": "raw/walk-back.png",
+      "bytes": 1776355,
+      "sha256": "5ca6eeab7bc1fdd6dc8fab58d1f266b46810e0fbcb3b15c3c498f561eec6d081"
+    },
+    {
+      "path": "raw/walk-forward.png",
+      "bytes": 1843171,
+      "sha256": "bdfb6375cab381546dadc2edfec0bcca5bcba76c089046740e27b7df17b42f48"
+    },
+    {
+      "path": "raw/win.png",
+      "bytes": 1905890,
+      "sha256": "9c9ea315806b8d2aaee7825a9ef70226c4424fabff1a058359aa7ce2c791ca29"
+    }
+  ],
+  "outputFiles": [
+    {
+      "path": "README.md",
+      "bytes": 818,
+      "sha256": "fce8c7864b8a1057fa1f4a717c5daa4e70f8fc2682e5c193d356fc9e3cc5b6dc"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 12643,
+      "sha256": "1e7b74e88d2b43e53d83976d1052b2be92368167000fa19320feeb3e49664bf2"
+    },
+    {
+      "path": "runtime-states.json",
+      "bytes": 1926,
+      "sha256": "d22dd8fd8dc2bd5ab471815c324e03589e169a8ce7ba38e300b7f918ecdae9ab"
+    },
+    {
+      "path": "sprite-sheet-alpha.png",
+      "bytes": 1879194,
+      "sha256": "45e0ca3d3ac939cf4250ef327779465478fe67d8c59d357f2d4a0974e8ff4f73"
+    },
+    {
+      "path": "sprite-sheet-alpha.webp",
+      "bytes": 1211798,
+      "sha256": "1757abf8c484021cb3b0932e8c1597d56874ef8f8c36575aa60c669cb10db28e"
+    },
+    {
+      "path": "sprite-sheet-alpha.report.json",
+      "bytes": 31504,
+      "sha256": "50e4a9b06425021e2bd47c6a4a9a75ec4f8fcac8e75329f38045d0115b6818f8"
+    },
+    {
+      "path": "states.contract.json",
+      "bytes": 4556,
+      "sha256": "636d4c0b82cc2de5c6e1ed36e88bfa3df8fa973674e7297d5b51a9a25c9233e4"
+    },
+    {
+      "path": "source-provenance.json",
+      "bytes": 3511,
+      "sha256": "6bd565d04be5f9a8ea58ffda57f502fb7db9c0bdf32adbf15c1ec9380021e89d"
+    },
+    {
+      "path": "sprite-request.json",
+      "bytes": 11774,
+      "sha256": "7ca0fe98d16753ddb53010566b9866d8c118d8fbecb4358ca99b9d786317be4b"
+    },
+    {
+      "path": "frames/frames-manifest.json",
+      "bytes": 65199,
+      "sha256": "5d79261311457aad3a6da7759c36dfd7d1fc0ac89e057fe437a031dff0ef8e9c"
+    },
+    {
+      "path": "qa/run-validation-report.json",
+      "bytes": 24560,
+      "sha256": "63177b571bcd2b3b1fde2b63246b0a69e918bd6a9f92a3333f066be300b0d024"
+    },
+    {
+      "path": "qa/visual-review.json",
+      "bytes": 2561,
+      "sha256": "cb227a858999360100b7a98681e22088b4a1792cb00880c12c228a8ddef5efdf"
+    },
+    {
+      "path": "qa/motion-variation-report.json",
+      "bytes": 3988,
+      "sha256": "9ef8a1eaefd0c4754286664d42548a2d4ddea021b6c00962ec0ce3d12a10cff6"
+    },
+    {
+      "path": "mugen/rocco.def",
+      "bytes": 382,
+      "sha256": "f26bf9faaa33730206ce4d3a9fcf0e71ecf196a2c21cd5bb04b62d60b7ed71f0"
+    },
+    {
+      "path": "mugen/rocco.air",
+      "bytes": 2373,
+      "sha256": "62c700b5a6f6ee488dd7772168812e962829cd86a2a0e6b8d09f60b64300f73b"
+    },
+    {
+      "path": "mugen/rocco.cmd",
+      "bytes": 611,
+      "sha256": "dc04ce7b93d793966a302e949db1b9827c221bd7041337585c87064bf6445ce1"
+    },
+    {
+      "path": "mugen/rocco.cns",
+      "bytes": 1466,
+      "sha256": "e8a637faa34a73b69b396fd23d3a8c83f580df811f4f959703c4c6b209ed30c7"
+    },
+    {
+      "path": "qa/generation-provenance-report.json",
+      "bytes": 3698,
+      "sha256": "593e3aa99dd84f915ad2e9c27c2873b116bfcee51429db4556605745c409e82a"
+    }
+  ]
+}

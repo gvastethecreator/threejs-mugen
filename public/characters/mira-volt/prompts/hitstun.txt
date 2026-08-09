@@ -1,3 +1,0 @@
-Mira Volt: original side-view electric striker with magenta jacket, cyan accents, black pants. Rebuilt with fixed character-scale atlas normalization.
-Character: Mira Volt.
-State: hitstun. Frames normalized: 3.

@@ -1,6 +1,7 @@
 import "./style.css";
 import "./styles/studio.css";
 import "./styles/redesign.css";
+import "./styles/fighter-lab.css";
 import { App } from "./app/App";
 
 const root = document.querySelector<HTMLDivElement>("#app");

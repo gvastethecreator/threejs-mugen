@@ -2225,7 +2225,7 @@ export function createSyntheticImportedResourceRedirectTraceArtifact(options: Ru
         },
       ],
       requiredFinalActors: [
-        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 290, life: 1000, power: 35 },
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 290, life: 1000, power: 0 },
         { actorId: "p2", source: "demo", actorKind: "player", life: 750, power: 900 },
       ],
       notes: [
@@ -2267,7 +2267,7 @@ export function createSyntheticImportedResourceStateEntryRedirectTraceArtifact(o
         },
       ],
       requiredFinalActors: [
-        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, life: 1000, power: 35 },
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, life: 1000, power: 0 },
         { actorId: "p2", source: "demo", actorKind: "player", life: 750, power: 900 },
       ],
       notes: [
@@ -2318,7 +2318,7 @@ export function createSyntheticImportedResourceAuxiliaryRedirectTraceArtifact(op
         },
       ],
       requiredFinalActors: [
-        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 292, life: 1000, power: 35 },
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 292, life: 1000, power: 0 },
         { actorId: "p2", source: "demo", actorKind: "player", life: 750, power: 900, guardPoints: 650, dizzyPoints: 650, redLife: 800 },
       ],
       notes: [
@@ -2355,7 +2355,7 @@ export function createSyntheticImportedResourceAuxiliaryStateEntryRedirectTraceA
         "resource:redlifeadd", "resource:redlifeset",
       ],
       requiredFinalActors: [
-        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, life: 1000, power: 35 },
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, life: 1000, power: 0 },
         { actorId: "p2", source: "demo", actorKind: "player", life: 750, power: 900, guardPoints: 650, dizzyPoints: 650, redLife: 800 },
       ],
       notes: [
@@ -2434,7 +2434,7 @@ export function createSyntheticImportedControlRedirectTraceArtifact(options: Run
       requiredExecutedControllers: ["ChangeState", "HitDef", "VarSet", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet", "CtrlSet"],
       requiredExecutedOperations: ["hitdef", "variable:varset", "resource:lifeadd", "resource:lifeset", "resource:poweradd", "resource:powerset", "resource:ctrlset"],
       requiredFinalActors: [
-        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 293, life: 1000, power: 35 },
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 293, life: 1000, power: 0 },
         { actorId: "p2", source: "demo", actorKind: "player", life: 750, power: 900, ctrl: false },
       ],
       notes: [
@@ -2464,7 +2464,7 @@ export function createSyntheticImportedControlStateEntryRedirectTraceArtifact(op
       requiredExecutedControllers: ["ChangeState", "HitDef", "VarSet", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet", "CtrlSet"],
       requiredExecutedOperations: ["hitdef", "variable:varset", "resource:lifeadd", "resource:lifeset", "resource:poweradd", "resource:powerset", "resource:ctrlset"],
       requiredFinalActors: [
-        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, life: 1000, power: 35 },
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, life: 1000, power: 0 },
         { actorId: "p2", source: "demo", actorKind: "player", life: 750, power: 900, ctrl: false },
       ],
       notes: [
@@ -2726,12 +2726,12 @@ export function createSyntheticImportedTargetPowerRedirectTraceArtifact(
           { ownerId: "p2", actorId: "p1", targetId: 77, minFrames: 1 },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", observedPowerAtLeast: 75, minFrames: 1 },
-          { actorId: "p2", source: "imported", actorKind: "player", observedPowerAtMost: 35, minFrames: 1 },
+          { actorId: "p1", source: "imported", actorKind: "player", observedPowerAtLeast: 40, minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", observedPowerAtMost: 0, minFrames: 1 },
         ],
         requiredFinalActors: [
-          { actorId: "p1", source: "imported", actorKind: "player", power: 75, targetCount: 1 },
-          { actorId: "p2", source: "imported", actorKind: "player", power: 35, targetCount: 1 },
+          { actorId: "p1", source: "imported", actorKind: "player", power: 40, targetCount: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", power: 0, targetCount: 1 },
         ],
       },
     ],
@@ -2884,12 +2884,12 @@ export function createSyntheticImportedTargetPowerStateEntryRedirectTraceArtifac
           { ownerId: "p2", actorId: "p1", targetId: 77, minFrames: 1 },
         ],
         requiredActorFrames: [
-          { actorId: "p1", source: "imported", actorKind: "player", observedPowerAtMost: 35, minFrames: 1 },
-          { actorId: "p2", source: "imported", actorKind: "player", observedPowerAtLeast: 110, minFrames: 1 },
+          { actorId: "p1", source: "imported", actorKind: "player", observedPowerAtMost: 0, minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", observedPowerAtLeast: 40, minFrames: 1 },
         ],
         requiredFinalActors: [
-          { actorId: "p1", source: "imported", actorKind: "player", power: 35, targetCount: 1 },
-          { actorId: "p2", source: "imported", actorKind: "player", power: 110, targetCount: 1 },
+          { actorId: "p1", source: "imported", actorKind: "player", power: 0, targetCount: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", power: 40, targetCount: 1 },
         ],
       },
     ],
@@ -5299,7 +5299,7 @@ export function createSyntheticImportedIdentityTraceArtifact(options: RuntimeTra
       authorName: "Trace Author",
       identityEntry: {
         name: "Synthetic Imported Identity",
-        p2Name: "Mira Volt",
+        p2Name: demoFighters[1]!.displayName,
         authorName: "Trace Author",
         enemyAuthorName: "mugen-web-sandbox",
         stateNo: 276,
@@ -6041,7 +6041,7 @@ export function createSyntheticImportedTeamRedLifeHelperTraceArtifact(
     stage: options.stage ?? trainingStage,
     runtimeProfile: "ikemen-go",
     teamMode: "tag",
-    teamLifeShare: true,
+    teamLifeShare: false,
     teamPowerShare: false,
     reserveFighters: [
       createSyntheticImportedTraceFighter({
@@ -6061,10 +6061,10 @@ export function createSyntheticImportedTeamRedLifeHelperTraceArtifact(
     generatedAt: options.generatedAt,
     target: {
       id: targetId,
-      label: "Synthetic imported helper-local red-life under team LifeShare",
+      label: "Synthetic imported helper-local red-life baseline",
       source: "mixed",
       notes: [
-        "Required IKEMEN tag trace proves RedLifeAdd/RedLifeSet execute against the helper runtime actor while the root-only LifeShare adapter leaves the owning root and standby root at zero red life. Helper red-life sharing, projectile ownership, round reset/persistence, HUD, rollback/netplay, and full MUGEN/IKEMEN auxiliary-resource parity remain blocked.",
+        "Required IKEMEN tag trace proves Life/Power/RedLife controllers execute against the helper runtime actor in a non-shared baseline. Team resource ownership is covered by the dedicated T533/T534 integration fixtures; this artifact intentionally remains local while projectile ownership, round reset/persistence, HUD, rollback/netplay, and full MUGEN/IKEMEN auxiliary-resource parity remain blocked.",
       ],
     },
     gates: [{
@@ -6549,7 +6549,7 @@ function createSyntheticImportedTeamResourceBoundaryTraceArtifact(
             minFrames: 1,
           },
         ],
-        requiredFinalActors: [{ actorId: "p2", source: "imported" as const, actorKind: "player" as const, life: 943, power: 40 }],
+        requiredFinalActors: [{ actorId: "p2", source: "imported" as const, actorKind: "player" as const, life: 943, power: 62 }],
       };
   return createRuntimeTraceArtifact({
     trace,
@@ -12664,6 +12664,1276 @@ export function createSyntheticImportedHitDefPriorityTraceArtifact(options: Runt
   });
 }
 
+export function createSyntheticImportedHitDefDynamicPriorityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedHitDefPriorityScript();
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-priority-p1",
+    displayName: "Dynamic HitDef Priority P1",
+    hitDefDamage: 31,
+    hitDefVarSeeds: [{ index: 0, value: 4 }],
+    hitDefPriority: "var(0) + 2",
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-priority-p2",
+    displayName: "Dynamic HitDef Priority P2",
+    hitDefDamage: 31,
+    hitDefPriority: 3,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-priority-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-priority-golden",
+      label: "Synthetic imported dynamic HitDef priority clash",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves a caller-context numeric priority expression resolves before a real direct-hit clash and suppresses the lower-priority attack. Helper caller context, static priority classes, redirected ModifyHitDef replacement, and malformed values are covered by focused tests. Projectile, equal-priority trade timing, ReversalDef, teams, rollback, and full arbitration parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-priority-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["runtime", "hit"],
+      requiredCombatReasons: ["hit"],
+      requiredEventSubstrings: ["HitDef priority clash", "priority 6 beat", "hit Dynamic HitDef Priority P2 for 31"],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 969, moveType: "H" },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicForcePostureTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultCrouchGetHitScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-force-posture-attacker",
+    displayName: "Dynamic HitDef Force Posture Attacker",
+    hitDefVarSeeds: [{ index: 0, value: 1 }],
+    hitDefForceStand: "var(0)",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-force-posture-defender",
+    displayName: "Dynamic HitDef Force Posture Defender",
+    defaultGetHitState: { stateNo: 5010, animNo: 5010 },
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      shakeStateType: "S",
+      slideStateType: "S",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-force-posture-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-force-posture-golden",
+      label: "Synthetic imported dynamic HitDef force-posture route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=1 resolves direct-HitDef forcestand and routes a crouching imported defender into standing Common1 state 5000 instead of crouching state 5010. The omitted-field ground-velocity default, explicit zero, forcecrouch, Helper caller context, and ModifyHitDef replacement remain covered by focused tests. Projectile, guard, airborne/lying posture, custom p2 states, teams, rollback, and full posture parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-force-posture-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000],
+      forbiddenExecutedStates: [5010],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["holddown", "x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredActorFrameSequences: [{
+        label: "dynamic forcestand crouch-to-standing get-hit order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 10, stateType: "C", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, stateType: "S", moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, stateType: "S", moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicForceNoFallTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "seed receiver fall payload", frames: 1, p1: [], p2: [] },
+    { label: "dynamic direct HitDef clears fall flag", frames: 5, p1: ["x"], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-forcenofall-attacker",
+    displayName: "Dynamic HitDef ForceNoFall Attacker",
+    hitDefVarSeeds: [{ index: 0, value: 1 }],
+    hitDefForceNoFall: "var(0)",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-forcenofall-defender",
+    displayName: "Dynamic HitDef ForceNoFall Defender",
+    passiveHitFallSet: { falling: true, xVelocity: 3.25, yVelocity: -7.5, zVelocity: 1.75 },
+    defaultGetHitProgression: { shakeStateNo: 5000, slideStateNo: 5001 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-forcenofall-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-forcenofall-golden",
+      label: "Synthetic imported dynamic direct HitDef forcenofall route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=1 resolves direct-HitDef forcenofall on accepted contact. A receiver-authored HitFallSet first establishes a falling payload; the hit clears only its fall flag, preserves velocity metadata, and selects standing Common1 state 5000 instead of fall state 5100. Explicit zero, omitted values, fall=1 precedence, guard contact, Helper caller context, and redirected ModifyHitDef replacement remain covered by focused tests. Projectile, ReversalDef, full fall recovery/bounce timing, teams, rollback, and full parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-forcenofall-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000],
+      forbiddenExecutedStates: [5100],
+      requiredExecutedControllers: ["ChangeState", "HitFallSet", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["hitfall:hitfallset", "variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredActorFrameSequences: [{
+        label: "dynamic forcenofall routes seeded receiver to standing get-hit",
+        steps: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 0,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5000,
+            moveType: "H",
+            minFrames: 1,
+          },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 5000,
+          moveType: "H",
+          life: 963,
+          hitFall: { falling: false, velocityX: 3.25, velocityY: -7.5, velocityZ: 1.75 },
+        },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicP2FacingTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-p2facing-attacker",
+    displayName: "Dynamic HitDef P2Facing Attacker",
+    hitDefVarSeeds: [{ index: 0, value: 1 }],
+    hitDefP2Facing: "var(0)",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-p2facing-defender",
+    displayName: "Dynamic HitDef P2Facing Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 5094,
+      hitTimeBranchAnimNo: 5094,
+      hitTimeBranchExpression: "GetHitVar(facing) = 1",
+      hitTimeBranchName: "Dynamic P2Facing GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-p2facing-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-p2facing-golden",
+      label: "Synthetic imported dynamic direct HitDef p2facing route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=1 resolves direct-HitDef p2facing on accepted unguarded contact. P2 changes from opposite facing to P1's facing, retains authored GetHitVar(facing)=1 evidence through an imported Common1 branch, and enters normal get-hit processing. Negative/zero/omitted values, Helper caller context, redirected ModifyHitDef replacement, and guard exclusion remain covered by focused tests. Projectile, ModifyProjectile, ReversalDef, noautoturn interactions, custom states, teams, rollback, and exact deferred tick synchronization remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-p2facing-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5094],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredActorFrameSequences: [{
+        label: "dynamic p2facing applies after accepted hit",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, facing: -1, minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", facing: 1, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5094, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5094, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicIdChainIdTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-id-chainid-attacker",
+    displayName: "Dynamic HitDef ID ChainID Attacker",
+    hitDefVarSeeds: [{ index: 0, value: 43 }],
+    hitDefSeedIdExpression: "var(0)",
+    hitDefTargetIdExpression: "var(0) + 1",
+    hitDefChainIdExpression: "var(0)",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-id-chainid-defender",
+    displayName: "Dynamic HitDef ID ChainID Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 5095,
+      hitTimeBranchAnimNo: 5095,
+      hitTimeBranchExpression: "GetHitVar(hitid) = 44 && GetHitVar(chainid) = 43",
+      hitTimeBranchName: "Dynamic ID ChainID GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-hitdef-dynamic-id-chainid-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-id-chainid-golden",
+      label: "Synthetic imported dynamic direct HitDef ID and ChainID route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=43 resolves a first direct-HitDef id 43 and a second chainid 43 with id 44. Both contacts are accepted, target memory advances from 43 to 44, and imported Common1 branches on GetHitVar(hitid)=44 plus GetHitVar(chainid)=43. Negative ID clamping, chainid=-1, omitted values, Helper caller context, redirected ModifyHitDef replacement, mismatch rejection, and NoChainID precedence remain covered by focused tests. Projectile, ModifyProjectile, ReversalDef, cross-player chains, teams, rollback, and full chain lifetime parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-id-chainid-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5095],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: [
+        "Dynamic HitDef ID ChainID Attacker hit Dynamic HitDef ID ChainID Defender for 0",
+        "Dynamic HitDef ID ChainID Attacker hit Dynamic HitDef ID ChainID Defender for 37",
+      ],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [
+        { ownerId: "p1", actorId: "p2", targetId: 43 },
+        { ownerId: "p1", actorId: "p2", targetId: 44 },
+      ],
+      requiredActorFrameSequences: [{
+        label: "dynamic ID and ChainID accepted-contact order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, moveType: "I", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5095, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5095, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicDamageTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-damage-attacker",
+    displayName: "Dynamic HitDef Damage Attacker",
+    hitDefVarSeeds: [
+      { index: 0, value: 41 },
+      { index: 1, value: 7 },
+    ],
+    hitDefDamageExpression: ["var(0)", "var(1)"],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-damage-defender",
+    displayName: "Dynamic HitDef Damage Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 5096,
+      hitTimeBranchAnimNo: 5096,
+      hitTimeBranchExpression: "GetHitVar(damage) = 41 && GetHitVar(hitdamage) = 41 && GetHitVar(guarddamage) = 7",
+      hitTimeBranchName: "Dynamic Damage GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-damage-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-damage-golden",
+      label: "Synthetic imported dynamic direct HitDef damage route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=41 and var(1)=7 resolve the direct-HitDef hit and guard damage pair. Accepted unguarded contact deals 41 life and imported Common1 branches on effective GetHitVar(damage)=41 plus authored GetHitVar(hitdamage)=41 and GetHitVar(guarddamage)=7. One-component fresh/ModifyHitDef behavior, Helper caller context, redirected mutation, guard contact, malformed expressions, and default power derivation remain covered by focused tests. Fully omitted damage defaults, negative-damage parity, Projectile, ModifyProjectile, ReversalDef, teams, rollback, and global multiplier rounding remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-damage-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5096],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: ["Dynamic HitDef Damage Attacker hit Dynamic HitDef Damage Defender for 41"],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredActorFrameSequences: [{
+        label: "dynamic damage accepted-contact GetHitVar order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, moveType: "I", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5096, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5096, moveType: "H", life: 959 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefOmittedDamageTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-omitted-damage-attacker",
+    displayName: "Omitted HitDef Damage Attacker",
+    hitDefDamage: 37,
+    omitHitDefDamage: true,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-omitted-damage-defender",
+    displayName: "Omitted HitDef Damage Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 5097,
+      hitTimeBranchAnimNo: 5097,
+      hitTimeBranchExpression: "GetHitVar(damage) = 0 && GetHitVar(hitdamage) = 0 && GetHitVar(guarddamage) = 0",
+      hitTimeBranchName: "Omitted Damage GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-omitted-damage-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-omitted-damage-golden",
+      label: "Synthetic imported direct HitDef omitted-damage defaults route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves a fresh direct HitDef with its damage parameter fully omitted resets hit and guard damage to zero. The fixture deliberately retains native move metadata damage=37, while the accepted imported contact deals zero life, creates target 77, and branches through Common1 on effective GetHitVar(damage), GetHitVar(hitdamage), and GetHitVar(guarddamage) all being zero. One-component damage, ModifyHitDef preservation, Helper caller context, redirected mutation, guard contact, Projectile, ModifyProjectile, ReversalDef, negative damage, other omitted HitDef defaults, teams, rollback, and global multiplier rounding remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-omitted-damage-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5097],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155],
+      requiredExecutedControllers: ["ChangeState", "HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: ["Omitted HitDef Damage Attacker hit Omitted HitDef Damage Defender for 0"],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredActorFrameSequences: [{
+        label: "omitted damage accepted-contact GetHitVar order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, moveType: "I", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5097, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000, power: 0 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5097, moveType: "H", life: 1000, power: 0 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicPauseTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-pausetime-attacker",
+    displayName: "Dynamic HitDef Pause Attacker",
+    hitDefVarSeeds: [
+      { index: 0, value: 3 },
+      { index: 1, value: 7 },
+    ],
+    hitDefPauseTimeExpression: ["var(0)", "var(1)"],
+    hitPauseTimeIgnoreHitPauseStateNo: 5099,
+    hitPauseTimeIgnoreHitPauseExpression: "HitPauseTime = 3",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-pausetime-defender",
+    displayName: "Dynamic HitDef Pause Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 5098,
+      hitTimeBranchAnimNo: 5098,
+      hitTimeBranchExpression: "GetHitVar(hitshaketime) = 7",
+      hitTimeBranchName: "Dynamic PauseTime GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-pausetime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-pausetime-golden",
+      label: "Synthetic imported dynamic direct HitDef PauseTime pair route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=3 and var(1)=7 resolve the fresh direct-HitDef PauseTime pair independently. Accepted unguarded contact pauses P1 for 3 ticks, shakes P2 for 7 ticks, creates target 77, and routes imported Common1 through the official GetHitVar(hitshaketime)=7 key. One-component and omitted defaults, guard.pausetime inheritance, Helper caller context, redirected/live ModifyHitDef mutation, negative values, Projectile, ModifyProjectile, ReversalDef, exact hitpause tick phase, ignorehitpause scheduling, pause stacking, teams, rollback, and full pause parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-pausetime-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5098, 5099],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: ["Dynamic HitDef Pause Attacker hit Dynamic HitDef Pause Defender for 37"],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredControllerEventSequences: [{
+        label: "P1 exact three-tick HitPauseTime branch",
+        actorId: "p1",
+        steps: [{ stateNo: 200, controller: "ChangeState", name: "HitPauseTime Branch" }],
+      }],
+      requiredActorFrameSequences: [{
+        label: "dynamic PauseTime accepted-contact GetHitVar order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, moveType: "I", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5098, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 5099, life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5098, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicGroundHitTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-ground-hittime-attacker",
+    displayName: "Dynamic HitDef Ground HitTime Attacker",
+    hitDefVarSeeds: [{ index: 0, value: 13 }],
+    hitDefGroundHitTime: "var(0)",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-ground-hittime-defender",
+    displayName: "Dynamic HitDef Ground HitTime Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 5093,
+      hitTimeBranchAnimNo: 5093,
+      hitTimeBranchExpression: "GetHitVar(hittime) = 13",
+      hitTimeBranchName: "Dynamic Ground HitTime GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-ground-hittime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-ground-hittime-golden",
+      label: "Synthetic imported dynamic direct HitDef ground HitTime route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=13 resolves fresh direct-HitDef ground.hittime. Accepted grounded contact creates target 77, applies the authored hit duration, and routes imported Common1 through GetHitVar(hittime)=13. Fresh omission, live ModifyHitDef preservation/replacement, Helper caller context, ground.slidetime, guard timing, air/down timing, negative values, Projectile, ModifyProjectile, ReversalDef, exact countdown/tick phase, teams, rollback, and full timing parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-ground-hittime-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5093],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: ["Dynamic HitDef Ground HitTime Attacker hit Dynamic HitDef Ground HitTime Defender for 37"],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredActorFrameSequences: [{
+        label: "dynamic ground HitTime accepted-contact GetHitVar order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, moveType: "I", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5093, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5093, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicGroundSlideTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-ground-slidetime-attacker",
+    displayName: "Dynamic HitDef Ground SlideTime Attacker",
+    hitDefVarSeeds: [{ index: 0, value: 9 }],
+    hitDefGroundSlideTime: "var(0)",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-ground-slidetime-defender",
+    displayName: "Dynamic HitDef Ground SlideTime Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 5092,
+      hitTimeBranchAnimNo: 5092,
+      hitTimeBranchExpression: "GetHitVar(slidetime) = 9",
+      hitTimeBranchName: "Dynamic Ground SlideTime GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-ground-slidetime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-ground-slidetime-golden",
+      label: "Synthetic imported dynamic direct HitDef ground SlideTime route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=9 resolves fresh direct-HitDef ground.slidetime. Accepted grounded contact creates target 77 and routes imported Common1 through GetHitVar(slidetime)=9. Fresh omission, live ModifyHitDef preservation/replacement, Helper caller context, physical slide/state-exit scheduling, guard timing, air/down timing, negative values, Projectile, ModifyProjectile, ReversalDef, exact countdown/tick phase, teams, rollback, and full timing parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-ground-slidetime-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5092],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: ["Dynamic HitDef Ground SlideTime Attacker hit Dynamic HitDef Ground SlideTime Defender for 37"],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredActorFrameSequences: [{
+        label: "dynamic ground SlideTime accepted-contact GetHitVar order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, moveType: "I", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5092, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5092, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicGuardHitTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-hittime-defender",
+    displayName: "Dynamic HitDef Guard HitTime Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      guardStateNo: 130,
+      guardedBranchStateNo: 5091,
+      guardedBranchAnimNo: 5091,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression: "GetHitVar(hittime) = 14",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-hittime-attacker",
+    displayName: "Dynamic HitDef Guard HitTime Attacker",
+    hitDefVarSeeds: [{ index: 0, value: 14 }],
+    guardDamage: 5,
+    guardFlag: "MA",
+    guardHitTime: "var(0)",
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultGuardStateScript(),
+    targetId: "synthetic-imported-hitdef-dynamic-guard-hittime-golden",
+    targetLabel: "Synthetic imported dynamic direct HitDef guard HitTime route",
+    requiredExecutedStates: [200, 150, 151, 5091],
+    requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "HitVelSet"],
+    requiredExecutedOperations: ["variable:varset", "hitdef", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [{
+      label: "dynamic guard HitTime accepted-contact GetHitVar order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 150, controller: "ChangeAnim", name: "Guard Shake Anim" },
+        { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+        { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+        { stateNo: 151, operation: "kinematic:hitvelset" },
+        { stateNo: 151, controller: "ChangeState", name: "Guarded HitVar Branch" },
+      ],
+    }],
+    requiredActorFrames: [
+      syntheticStandGuardHitPhysicsFrames()[0]!,
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5091, animNo: 5091, minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 995, ctrl: true }],
+    forbiddenExecutedStates: [5000, 5001, 5010, 5011],
+    notes: [
+      "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=14 resolves explicit direct-HitDef guard.hittime. A real guarded contact creates target 77 and routes imported Common1 through GetHitVar(hittime)=14. Profile-dependent fresh omission, ModifyHitDef preservation/replacement, Helper caller context, guard.slidetime and guard.ctrltime dynamics, exact countdown/tick phase, Projectile, ModifyProjectile, teams, rollback, and full guard timing parity remain excluded.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicGuardSlideTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-slidetime-defender",
+    displayName: "Dynamic HitDef Guard SlideTime Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      guardStateNo: 130,
+      guardedBranchStateNo: 5090,
+      guardedBranchAnimNo: 5090,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression: "GetHitVar(slidetime) = 6",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-slidetime-attacker",
+    displayName: "Dynamic HitDef Guard SlideTime Attacker",
+    hitDefVarSeeds: [{ index: 0, value: 6 }],
+    guardDamage: 5,
+    guardFlag: "MA",
+    hitDefGuardSlideTime: "var(0)",
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultGuardStateScript(),
+    targetId: "synthetic-imported-hitdef-dynamic-guard-slidetime-golden",
+    targetLabel: "Synthetic imported dynamic direct HitDef guard SlideTime route",
+    requiredExecutedStates: [200, 150, 151, 5090],
+    requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "HitVelSet"],
+    requiredExecutedOperations: ["variable:varset", "hitdef", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [{
+      label: "dynamic guard SlideTime accepted-contact GetHitVar order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 150, controller: "ChangeAnim", name: "Guard Shake Anim" },
+        { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+        { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+        { stateNo: 151, operation: "kinematic:hitvelset" },
+        { stateNo: 151, controller: "ChangeState", name: "Guarded HitVar Branch" },
+      ],
+    }],
+    requiredActorFrames: [
+      syntheticStandGuardHitPhysicsFrames()[0]!,
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5090, animNo: 5090, minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 995, ctrl: true }],
+    forbiddenExecutedStates: [5000, 5001, 5010, 5011],
+    notes: [
+      "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=6 resolves explicit direct-HitDef guard.slidetime. A real guarded contact creates target 77 and routes imported Common1 through GetHitVar(slidetime)=6. Fresh omission, ModifyHitDef preservation/replacement, Helper caller context, dynamic guard.ctrltime, negative values, physical slide/friction, exact countdown/tick phase, Projectile, ModifyProjectile, teams, rollback, and full guard timing parity remain excluded.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicGuardControlTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-ctrltime-defender",
+    displayName: "Dynamic HitDef Guard ControlTime Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      guardStateNo: 130,
+      guardedBranchStateNo: 5089,
+      guardedBranchAnimNo: 5089,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression: "GetHitVar(ctrltime) = 8",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-ctrltime-attacker",
+    displayName: "Dynamic HitDef Guard ControlTime Attacker",
+    hitDefVarSeeds: [{ index: 0, value: 8 }],
+    guardDamage: 5,
+    guardFlag: "MA",
+    hitDefGuardControlTime: "var(0)",
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultGuardStateScript(),
+    targetId: "synthetic-imported-hitdef-dynamic-guard-ctrltime-golden",
+    targetLabel: "Synthetic imported dynamic direct HitDef guard ControlTime route",
+    requiredExecutedStates: [200, 150, 151, 5089],
+    requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "HitVelSet"],
+    requiredExecutedOperations: ["variable:varset", "hitdef", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [{
+      label: "dynamic guard ControlTime accepted-contact GetHitVar order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 150, controller: "ChangeAnim", name: "Guard Shake Anim" },
+        { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+        { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+        { stateNo: 151, operation: "kinematic:hitvelset" },
+        { stateNo: 151, controller: "ChangeState", name: "Guarded HitVar Branch" },
+      ],
+    }],
+    requiredActorFrames: [
+      syntheticStandGuardHitPhysicsFrames()[0]!,
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5089, animNo: 5089, minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 995, ctrl: true }],
+    forbiddenExecutedStates: [5000, 5001, 5010, 5011],
+    notes: [
+      "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=8 resolves explicit direct-HitDef guard.ctrltime. A real grounded guard creates target 77 and routes imported Common1 through GetHitVar(ctrltime)=8. Fresh omission, ModifyHitDef preservation/replacement, Helper caller context, dynamic airguard.ctrltime, exact control-return/countdown/tick phase, Projectile, ModifyProjectile, teams, rollback, and full guard timing parity remain excluded.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicAirGuardControlTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-airguard-ctrltime-defender",
+    displayName: "Dynamic HitDef Air Guard ControlTime Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+      airGuardedBranchStateNo: 5088,
+      airGuardedBranchAnimNo: 5088,
+      airGuardedBranchTrigger: "Time >= 1",
+      airGuardedBranchExpression: "GetHitVar(ctrltime) = 12",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-airguard-ctrltime-attacker",
+    displayName: "Dynamic HitDef Air Guard ControlTime Attacker",
+    hitDefVarSeeds: [{ index: 0, value: 12 }],
+    guardDamage: 5,
+    guardFlag: "A",
+    guardControlTime: 3,
+    hitDefAirGuardControlTime: "var(0)",
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    targetId: "synthetic-imported-hitdef-dynamic-airguard-ctrltime-golden",
+    targetLabel: "Synthetic imported dynamic direct HitDef air guard ControlTime route",
+    requiredExecutedStates: [200, 154, 155, 5088],
+    requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "HitVelSet", "VelAdd"],
+    requiredExecutedOperations: ["variable:varset", "hitdef", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [{
+      label: "dynamic air guard ControlTime accepted-contact GetHitVar order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 154, controller: "ChangeAnim", name: "Air Guard Shake Anim" },
+        { stateNo: 154, controller: "ChangeState", name: "Air Guard Shake Over" },
+        { stateNo: 155, controller: "HitVelSet", name: "Apply Air Guard Velocity" },
+        { stateNo: 155, operation: "kinematic:hitvelset" },
+        { stateNo: 155, controller: "VelAdd", name: "Apply Air Guard Gravity" },
+        { stateNo: 155, controller: "ChangeState", name: "Air Guarded HitVar Branch" },
+      ],
+    }],
+    requiredActorFrames: [
+      syntheticAirGuardHitPhysicsFrames()[0]!,
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5088,
+        animNo: 5088,
+        stateType: "A",
+        moveType: "I",
+        physics: "N",
+        minFrames: 1,
+      },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 995, ctrl: true }],
+    forbiddenExecutedStates: [150, 151, 152, 153, 5000, 5001, 5010, 5011],
+    notes: [
+      "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=12 resolves explicit direct-HitDef airguard.ctrltime. A real airborne guard creates target 77 and routes imported Common1 through GetHitVar(ctrltime)=12, while an adversarial ground guard.ctrltime=3 and forbidden ground/crouch guard states prove the air-specific selection. Fresh omission, ModifyHitDef preservation/replacement, Helper caller context, exact control-return/countdown/tick phase, landing, Projectile, ModifyProjectile, teams, rollback, and full air guard timing parity remain excluded.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicAirHitTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "dynamic-air-hittime-jump", frames: 2, p1: [], p2: ["U"] },
+    { label: "dynamic-air-hittime-contact", frames: 12, p1: ["x"], p2: [] },
+    { label: "dynamic-air-hittime-settle", frames: 18, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-air-hittime-attacker",
+    displayName: "Dynamic HitDef Air HitTime Attacker",
+    hitDefVarSeeds: [{ index: 0, value: 16 }],
+    hitDefGroundHitTime: 3,
+    hitDefAirTime: "var(0)",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-air-hittime-defender",
+    displayName: "Dynamic HitDef Air HitTime Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5020,
+      slideStateNo: 5021,
+      shakeStateType: "A",
+      slideStateType: "A",
+      shakePhysics: "N",
+      slidePhysics: "N",
+      hitTimeBranchStateNo: 5087,
+      hitTimeBranchAnimNo: 5087,
+      hitTimeBranchExpression: "GetHitVar(hittime) = 16",
+      hitTimeBranchName: "Dynamic Air HitTime GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-air-hittime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-air-hittime-golden",
+      label: "Synthetic imported dynamic direct HitDef air HitTime route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=16 resolves explicit direct-HitDef air.hittime. An airborne non-falling hit creates target 77 and routes imported Common1 through GetHitVar(hittime)=16, while adversarial ground.hittime=3 proves the air-specific selection. Fresh omission, live ModifyHitDef preservation/replacement, Helper caller context, grounded launch into air, exact countdown/landing/physics, negative values, Projectile, ModifyProjectile, ReversalDef, teams, rollback, and full timing parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-air-hittime-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5020, 5087],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155, 5000, 5010, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: ["Dynamic HitDef Air HitTime Attacker hit Dynamic HitDef Air HitTime Defender for 37"],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredControllerEventSequences: [{
+        label: "dynamic air HitTime accepted-contact GetHitVar order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [{ stateNo: 5020, controller: "ChangeState", name: "Dynamic Air HitTime GetHitVar Branch" }],
+      }],
+      requiredActorFrameSequences: [{
+        label: "dynamic air HitTime airborne accepted-contact order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 40, stateType: "A", moveType: "I", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5020, stateType: "A", moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5087, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5087, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicGuardDistanceTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-distance-attacker",
+    displayName: "Dynamic HitDef Guard Distance Attacker",
+    hitDefVarSeeds: [{ index: 0, value: 96 }],
+    hitDefGuardDistance: "var(0)",
+    guardDistance: 1,
+    guardDamage: 5,
+    guardFlag: "MA",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-distance-defender",
+    displayName: "Dynamic HitDef Guard Distance Defender",
+    withInGuardDistGuardStart: true,
+  });
+  const stage = options.stage ?? guardDistanceOnlyStage();
+  const script = importedInGuardDistScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-guard-distance-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-guard-distance-golden",
+      label: "Synthetic imported dynamic direct HitDef guard-distance route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=96 resolves explicit direct-HitDef legacy guard.dist. The dynamic value overrides adversarial fixture metadata 1, latches a near-but-not-contacting direct threat, and routes P2 through imported InGuardDist state 130 without hit, guard, get-hit, or target memory. Player-variable defaults, hitdefpersist/reset, negative-value preservation, ModifyHitDef replacement, Helper caller context, asymmetric width/height/depth, exact guard-start tick order, Projectile, ModifyProjectile, teams, rollback, and full guard-distance parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-guard-distance-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [130, 200],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155, 5000, 5010, 5020, 5030, 5050],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredCombatReasons: ["whiff"],
+      forbiddenCombatReasons: ["hit", "guard"],
+      requiredActorFrameSequences: [{
+        label: "dynamic direct InGuardDist latch before explicit guard state",
+        steps: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            inGuardDistAttackerId: "p1",
+            inGuardDistSource: "direct",
+            minFrames: 1,
+          },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 130, animNo: 130, minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [{
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 130,
+        animNo: 130,
+        ctrl: false,
+        stateType: "S",
+        moveType: "I",
+      }],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicGroundVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-ground-velocity-attacker",
+    displayName: "Dynamic HitDef Ground Velocity Attacker",
+    hitDefVarSeeds: [
+      { index: 0, value: 4 },
+      { index: 1, value: -2 },
+    ],
+    hitDefGroundVelocity: ["var(0)", "var(1)"],
+    groundVelocity: [1, 1],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-ground-velocity-defender",
+    displayName: "Dynamic HitDef Ground Velocity Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 5086,
+      hitTimeBranchAnimNo: 5086,
+      hitTimeBranchExpression: "GetHitVar(xvel) = 4 && GetHitVar(yvel) = -2 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "Dynamic Ground Velocity GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-ground-velocity-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-ground-velocity-golden",
+      label: "Synthetic imported dynamic direct HitDef ground velocity route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=4 and var(1)=-2 resolve direct-HitDef ground.velocity X/Y independently. Accepted grounded contact overrides adversarial fixture metadata 1,1, creates target 77, applies the physical velocity, and routes imported Common1 through GetHitVar(xvel)=4 and GetHitVar(yvel)=-2 without guard or fall. Fully omitted defaults, live ModifyHitDef partial replacement, Helper caller context, legacy n syntax, Ikemen Z, launch-to-air timing, exact facing/localcoord/physics, Projectile, ModifyProjectile, teams, rollback, and full velocity parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-ground-velocity-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5086],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: ["Dynamic HitDef Ground Velocity Attacker hit Dynamic HitDef Ground Velocity Defender for 37"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredControllerEventSequences: [{
+        label: "dynamic ground velocity accepted-contact GetHitVar order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [{ stateNo: 5000, controller: "ChangeState", name: "Dynamic Ground Velocity GetHitVar Branch" }],
+      }],
+      requiredActorFrames: [
+        {
+          ...defaultGetHitProgressionPhysicsFrames()[0],
+          observedVelXAtLeast: 4,
+          observedVelXAtMost: 4,
+          observedVelYAtLeast: -2,
+          observedVelYAtMost: -2,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 5086,
+          animNo: 5086,
+          stateType: "S",
+          moveType: "H",
+          physics: "S",
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5086, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicStateTransitionTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCustomStateScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-state-transition-attacker",
+    displayName: "Dynamic HitDef State Transition Attacker",
+    hitDefVarSeeds: [{ index: 0, value: 1 }],
+    hitDefP1StateNo: "var(0) + 776",
+    hitDefP2StateNo: "var(0) + 887",
+    hitDefP2GetP1State: "var(0)",
+    passiveControllerStates: [{ stateNo: 777, stateType: "S", moveType: "A", physics: "S", animNo: 777, ctrl: 0 }],
+    customStateRoute: { startStateNo: 888, selfStateAfter: 100 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-state-transition-defender",
+    displayName: "Dynamic HitDef State Transition Defender",
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-state-transition-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-state-transition-golden",
+      label: "Synthetic imported dynamic HitDef state-transition route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves finite caller-context direct-HitDef p1stateno, p2stateno, and p2getp1state expressions resolve on accepted unguarded contact: var(0)=1 routes P1 into its own attack state 777 and P2 into attacker-owned get-hit state 888. Static target-owned/default ownership, unavailable states, and malformed expressions remain covered by focused tests. Negative state numbers, Helper, RedirectID, ModifyHitDef, Projectile, ReversalDef, guard, HitOverride, throws/binds, teams, rollback, and exact simultaneous tick order remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-state-transition-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 777, 888],
+      forbiddenExecutedStates: [5000, 5010, 150, 151, 152, 153, 154, 155],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredActorFrameSequences: [
+        {
+          label: "dynamic p1stateno own-state order",
+          steps: [
+            { actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, moveType: "A", minFrames: 1 },
+            { actorId: "p1", source: "imported", actorKind: "player", stateNo: 777, moveType: "A", minFrames: 1 },
+          ],
+        },
+        {
+          label: "dynamic p2stateno attacker-owned order",
+          steps: [
+            { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, moveType: "I", minFrames: 1 },
+            { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", stateNo: 888, moveType: "H", minFrames: 1 },
+          ],
+        },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 777, life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", stateNo: 888, moveType: "H", life: 963, ctrl: false },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHitDefSpritePriorityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -12768,7 +14038,7 @@ export function createSyntheticImportedHitDefKillTraceArtifact(options: RuntimeT
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
-        requiredEventSubstrings: ["hit Mira Volt for 2000"],
+        requiredEventSubstrings: [`hit ${demoFighters[1]!.displayName} for 2000`],
         requiredFinalActors: [
           {
             actorId: "p2",
@@ -19787,6 +21057,175 @@ export function createSyntheticImportedHelperLocalResourceTraceArtifact(
   });
 }
 
+export function createSyntheticImportedHelperSharedResourceTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = "synthetic-imported-helper-shared-resource-golden";
+  const script = expandRuntimeTraceScript([
+    { label: "spawn helper shared resources", p1: ["x"], p2: [], frames: 1 },
+    { label: "settle helper shared resources", p1: [], p2: [], frames: 4 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-shared-resource-p1",
+    displayName: "Synthetic Imported Helper Shared Resources P1",
+    withHitDef: false,
+    withHelper: true,
+    helperTriggerTime: 0,
+    helperPos: [0, 0],
+    helperResourceRouteShared: true,
+    helperResourceRoute: { stateNo: 1212, lifeAdd: -100, lifeSet: 750, powerAdd: 200, powerSet: 900 },
+  });
+  const world = new MatchWorld({
+    p1,
+    p2: demoFighters[1]!,
+    stage: options.stage ?? trainingStage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    teamLifeShare: true,
+    teamPowerShare: true,
+    helperResourceShareContractEnabled: true,
+    reserveFighters: [
+      createSyntheticImportedTraceFighter({ id: "synthetic-imported-helper-shared-resource-reserve-one", withHitDef: false }),
+      createSyntheticImportedTraceFighter({ id: "synthetic-imported-helper-shared-resource-reserve-two", withHitDef: false }),
+    ],
+  });
+  const trace = runRuntimeTrace(world, script, { label: targetId });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: targetId,
+      label: "Synthetic imported Helper shared Life/Power contract",
+      source: "mixed",
+      notes: ["Required Ikemen Tag trace proves Helper Life/Power writes mutate team roots through the explicit contract while the Helper remains local.", "Helper red-life sharing is covered separately by T534/issue 108; broader auxiliary-resource parity remains separate scope."],
+    },
+    gates: [{
+      label: targetId,
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "Helper", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet"],
+      requiredExecutedOperations: ["helper", "resource:lifeadd", "resource:lifeset", "resource:poweradd", "resource:powerset"],
+      requiredEffectPayloads: [{ actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, helperStateNo: 1212, minAge: 1 }],
+      requiredActorFrames: [
+        { actorId: "p1", source: "imported", actorKind: "player", observedLifeAtLeast: 750, observedLifeAtMost: 750, observedPowerAtLeast: 900, observedPowerAtMost: 900, minFrames: 1 },
+        { actorId: "p1-helper-0", source: "effect", actorKind: "helper", stateNo: 1212, observedLifeAtLeast: 1000, observedLifeAtMost: 1000, observedPowerAtLeast: 0, observedPowerAtMost: 0, minFrames: 1 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHelperSharedRedLifeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = "synthetic-imported-helper-shared-red-life-golden";
+  const script = expandRuntimeTraceScript([
+    { label: "spawn helper shared red life", p1: ["x"], p2: [], frames: 1 },
+    { label: "settle helper shared red life", p1: [], p2: [], frames: 4 },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-shared-red-life-p1",
+    displayName: "Synthetic Imported Helper Shared Red Life P1",
+    withHitDef: false,
+    withHelper: true,
+    helperTriggerTime: 0,
+    helperPos: [0, 0],
+    helperResourceRouteShared: true,
+    helperResourceRoute: {
+      stateNo: 1213,
+      lifeAdd: -100,
+      lifeSet: 750,
+      powerAdd: 200,
+      powerSet: 900,
+      redLifeAdd: 0,
+      redLifeSet: 800,
+    },
+  });
+  const world = new MatchWorld({
+    p1,
+    p2: demoFighters[1]!,
+    stage: options.stage ?? trainingStage,
+    runtimeProfile: "ikemen-go",
+    teamMode: "tag",
+    teamLifeShare: true,
+    teamPowerShare: true,
+    helperResourceShareContractEnabled: true,
+    reserveFighters: [
+      createSyntheticImportedTraceFighter({ id: "synthetic-imported-helper-shared-red-life-reserve-one", withHitDef: false }),
+      createSyntheticImportedTraceFighter({ id: "synthetic-imported-helper-shared-red-life-reserve-two", withHitDef: false }),
+    ],
+  });
+  const trace = runRuntimeTrace(world, script, { label: targetId });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: targetId,
+      label: "Synthetic imported Helper shared red-life contract",
+      source: "mixed",
+      notes: [
+        "Required Ikemen Tag trace proves Helper RedLifeAdd/RedLifeSet writes mutate the root LifeShare bank and mirror the standby root while the Helper keeps its local red-life pool unchanged.",
+        "Redirected resource writes, guard/dizzy ownership, round persistence, rollback/netplay, and full MUGEN/IKEMEN auxiliary-resource parity remain separate scope.",
+      ],
+    },
+    gates: [{
+      label: targetId,
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "Helper", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet", "RedLifeAdd", "RedLifeSet"],
+      requiredExecutedOperations: ["helper", "resource:lifeadd", "resource:lifeset", "resource:poweradd", "resource:powerset", "resource:redlifeadd", "resource:redlifeset"],
+      requiredEventSubstrings: ["TeamResource life team:1", "TeamRedLife team:1"],
+      requiredEffectPayloads: [{ actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, helperStateNo: 1213, minAge: 1 }],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          observedLifeAtLeast: 750,
+          observedLifeAtMost: 750,
+          observedPowerAtLeast: 900,
+          observedPowerAtMost: 900,
+          observedRedLifeAtLeast: 800,
+          observedRedLifeAtMost: 800,
+          minFrames: 1,
+        },
+        {
+          actorId: "p3",
+          source: "imported",
+          actorKind: "player",
+          observedLifeAtLeast: 750,
+          observedLifeAtMost: 750,
+          observedPowerAtLeast: 900,
+          observedPowerAtMost: 900,
+          observedRedLifeAtLeast: 800,
+          observedRedLifeAtMost: 800,
+          minFrames: 1,
+        },
+        {
+          actorId: "p1-helper-0",
+          source: "effect",
+          actorKind: "helper",
+          stateNo: 1213,
+          observedLifeAtLeast: 1000,
+          observedLifeAtMost: 1000,
+          observedPowerAtLeast: 0,
+          observedPowerAtMost: 0,
+          observedRedLifeAtLeast: 0,
+          observedRedLifeAtMost: 0,
+          minFrames: 1,
+        },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -25508,12 +26947,15 @@ export function createSyntheticImportedGetHitVarFallEnvShakeTraceArtifact(option
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-gethitvar-fall-envshake-attacker",
     displayName: "Synthetic Imported GetHitVar Fall EnvShake Attacker",
-    fall: commonGetHitFallData(),
+    fall: {
+      ...commonGetHitFallData(),
+      envShake: { ...commonGetHitFallData().envShake!, mul: 0.75, dir: 67.5 },
+    },
     getHitState: { stateNo: 5100, animNo: 500 },
     getHitVarBranch: {
       stateNo: 306,
       expression:
-        "GetHitVar(fall.envshake.time) = 15 && GetHitVar(fall.envshake.freq) = 178 && GetHitVar(fall.envshake.ampl) = 6 && GetHitVar(fall.envshake.phase) = 0",
+        "GetHitVar(fall.envshake.time) = 15 && GetHitVar(fall.envshake.freq) = 178 && GetHitVar(fall.envshake.ampl) = 6 && GetHitVar(fall.envshake.phase) = 0 && GetHitVar(fall.envshake.mul) = 0.75 && GetHitVar(fall.envshake.dir) = 67.5",
     },
   });
   const stage = options.stage ?? closeCombatStage();
@@ -25530,7 +26972,7 @@ export function createSyntheticImportedGetHitVarFallEnvShakeTraceArtifact(option
       label: "Synthetic imported GetHitVar fall.envshake route",
       source: "mixed",
       notes: [
-        "Synthetic imported GetHitVar fall.envshake trace proves a bounded owner-backed get-hit state can route through stored fall.envshake.time, freq, ampl, and phase metadata before FallEnvShake presentation executes. It does not claim exact camera waveform, pause/stage/layer interaction, helper/projectile inheritance, or full MUGEN/IKEMEN fall presentation parity.",
+        "Synthetic imported GetHitVar fall.envshake trace proves a bounded owner-backed get-hit state can route through stored fall.envshake.time, freq, ampl, phase, mul, and dir metadata before FallEnvShake presentation executes. It does not claim exact camera waveform, pause/stage/layer interaction, helper/projectile inheritance, or full MUGEN/IKEMEN fall presentation parity.",
       ],
     },
     gates: [
@@ -25561,6 +27003,8 @@ export function createSyntheticImportedGetHitVarFallEnvShakeTraceArtifact(option
               envShakeFreq: 178,
               envShakeAmpl: 6,
               envShakePhase: 0,
+              envShakeMul: 0.75,
+              envShakeDir: 67.5,
             },
           },
         ],
@@ -26272,13 +27716,24 @@ export function createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtif
     displayName: "Synthetic Imported Projectile GetHitVar HitId ChainId Attacker",
     withHitDef: false,
     withProjectile: true,
-    projectileTargetId: 78,
-    projectileChainId: 44,
-    projectileGroundVelocity: [4, -2],
+    projectileTriggerTime: 1,
+    projectileId: 76,
+    projectileTargetId: 44,
+    projectileGroundVelocity: [0, 0],
     projectileHitAnim: 911,
-    projectileHitSound: "S5,46",
-    projectileHitSpark: "F7002",
-    projectileSparkXy: [18, -68],
+    action200Duration: 20,
+    secondaryProjectile: {
+      triggerTime: 9,
+      id: 77,
+      targetId: 78,
+      chainId: 44,
+      attr: "S,NA",
+      groundVelocity: [4, -2],
+      hitAnim: 911,
+      hitSound: "S5,46",
+      hitSpark: "F7002",
+      sparkXy: [18, -68],
+    },
     hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
   });
   const stage = options.stage ?? projectileCombatStage();
@@ -26298,7 +27753,7 @@ export function createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtif
       label: "Synthetic imported Projectile GetHitVar hitid/chainid route",
       source: "imported",
       notes: [
-        "Synthetic imported Projectile GetHitVar hitid/chainid trace proves bounded player-owned Projectile normal-hit HitDef id and chainID metadata can route defender-owned Common1-style get-hit CNS from state 5000 while preserving a separate Projectile id, typed audio:playsnd telemetry from attacker-side hitsound, and FightFX hit-spark package metadata. It does not claim exact chain-hit eligibility arbitration, combo accumulation, exact SND playback/mixing, custom-state inheritance, or full MUGEN/IKEMEN Projectile parity.",
+        "Synthetic imported Projectile GetHitVar hitid/chainid trace proves a player-owned seed Projectile writes HitDef id 44 and a later Projectile with chainID 44 is admitted, writes HitDef id 78, and routes defender-owned Common1-style get-hit CNS from state 5000 while preserving a separate Projectile id, typed audio:playsnd telemetry, and FightFX hit-spark package metadata. It does not claim nochainid, cross-player chain ownership, exact hitshake timing, combo accumulation, exact SND playback/mixing, custom-state inheritance, or full MUGEN/IKEMEN Projectile parity.",
       ],
     },
     gates: [
@@ -26348,10 +27803,10 @@ export function createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtif
           { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
           { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
         ],
-        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 2, minNextProjectileSerial: 2 }],
         requiredEffectPayloads: [
           {
-            actorId: "p1-projectile-0",
+            actorId: "p1-projectile-1",
             kind: "projectile",
             ownerId: "p1",
             parentId: "p1",
@@ -26369,6 +27824,96 @@ export function createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtif
             actorKind: "player",
             stateNo: 337,
             moveType: "H",
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileNoChainIdTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-nochainid-defender",
+    displayName: "Synthetic Imported Projectile NoChainID Defender",
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-nochainid-attacker",
+    displayName: "Synthetic Imported Projectile NoChainID Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileTriggerTime: 1,
+    projectileId: 76,
+    projectileTargetId: 44,
+    projectileGroundVelocity: [0, 0],
+    projectileHitAnim: 911,
+    action200Duration: 20,
+    secondaryProjectile: {
+      triggerTime: 9,
+      id: 77,
+      targetId: 78,
+      noChainIds: [44],
+      attr: "S,NA",
+    },
+  });
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "imported-projectile-nochainid-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-nochainid-settle", frames: 24, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-projectile-nochainid-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-nochainid-golden",
+      label: "Synthetic imported Projectile NoChainID repeat rejection",
+      source: "imported",
+      notes: [
+        "Synthetic imported Projectile NoChainID trace proves a player-owned seed Projectile writes HitDef id 44 and a later same-player Projectile with nochainid = 44 is rejected without damage, target memory, or Projectile contact consumption. The bounded last-source actor proof remains valid after hitshake ends. It does not claim exact Ikemen targetedBy lifetime/order, cross-player team/tag ownership, chainID/nochainID equality precedence, direct HitDef NoChainID parity, or full HitDef chain parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-nochainid-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit", "reject"],
+        requiredEventSubstrings: ["NoChainID 44"],
+        requiredCombatReasons: ["hit", "reject"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 2, minNextProjectileSerial: 2 }],
+        requiredEffectPayloads: [
+          {
+            actorId: "p1-projectile-1",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1",
+            effectId: 77,
+            minHitsRemaining: 1,
+            hasHit: false,
+          },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 44 }],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            life: 969,
           },
         ],
       },
@@ -27437,17 +28982,24 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitIdChainIdTrac
       branchStateNo: 1254,
       branchAnimNo: 1006,
       projectileAnimNo: 1007,
-      projectileId: 8891,
-      targetId: 78,
-      chainId: 44,
+      projectileId: 8890,
+      targetId: 44,
+      branchTrigger: "ProjHit(8891)",
       pos: [360, -34],
       damage: [37, 2],
       hitPause: 4,
       hitTime: 14,
       groundVelocity: [4, -2],
-      hitSound: "S5,41",
-      hitSpark: "F7002",
-      sparkXy: [18, -68],
+      secondaryProjectile: {
+        triggerTime: 0,
+        projectileId: 8891,
+        targetId: 78,
+        chainId: 44,
+        attr: "S,NA",
+        hitSound: "S5,41",
+        hitSpark: "F7002",
+        sparkXy: [18, -68],
+      },
     },
     hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
   });
@@ -27468,7 +29020,7 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitIdChainIdTrac
       label: "Synthetic imported Helper Projectile GetHitVar hitid/chainid route",
       source: "imported",
       notes: [
-        "Synthetic imported Helper Projectile GetHitVar hitid/chainid trace proves bounded helper-parented/root-owned Projectile normal-hit HitDef id and chainID metadata can route defender-owned Common1-style get-hit CNS from state 5000, record typed audio:playsnd telemetry from helper-local hitsound, and preserve separate owner/helper target links. It does not claim exact chain-hit eligibility arbitration, combo accumulation, helper-owned custom states, custom-state inheritance, exact SND playback/mixing, or full MUGEN/IKEMEN helper Projectile parity.",
+        "Synthetic imported Helper Projectile GetHitVar hitid/chainid trace proves a helper-parented seed Projectile writes HitDef id 44 and a later helper Projectile with chainID 44 is admitted, writes HitDef id 78, routes defender-owned Common1-style get-hit CNS from state 5000, records helper-local audio telemetry, and preserves separate owner/helper target links. It does not claim nochainid, cross-player chain ownership, exact hitshake timing, combo accumulation, helper-owned custom states, custom-state inheritance, exact SND playback/mixing, or full MUGEN/IKEMEN helper Projectile parity.",
       ],
     },
     gates: [
@@ -27566,11 +29118,11 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitIdChainIdTrac
           { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
           { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
         ],
-        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 3, minHelpers: 1, minProjectiles: 2, minNextHelperSerial: 1, minNextProjectileSerial: 2 }],
         requiredEffectPayloads: [
           { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1254, minAge: 2 },
           {
-            actorId: "p1-projectile-0",
+            actorId: "p1-projectile-1",
             kind: "projectile",
             ownerId: "p1",
             parentId: "p1-helper-0",
@@ -28492,6 +30044,7 @@ export function createSyntheticImportedCustomStateGetHitVarHitCountHitIdChainIdT
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-custom-state-gethitvar-hitcount-hitid-chainid-attacker",
     displayName: "Synthetic Imported Custom State GetHitVar HitCount HitId ChainId Attacker",
+    hitDefSeedId: 43,
     hitDefChainId: 43,
     hitDefHitCount: 3,
     customStateRoute: {
@@ -28521,7 +30074,7 @@ export function createSyntheticImportedCustomStateGetHitVarHitCountHitIdChainIdT
       label: "Synthetic imported owner-backed custom-state GetHitVar hitcount/hitid/chainid route",
       source: "imported",
       notes: [
-        "Synthetic imported custom-state GetHitVar hitcount/hitid/chainid trace proves a bounded owner-backed p2stateno route can branch on stored HitDef numhits, id, and chainID metadata while the defender is executing attacker-owned state data, then SelfState back to its own state data. It does not claim exact combo accumulation, chain-hit eligibility arbitration, helper/projectile inheritance, exact target lifetime, exact tick order, or full MUGEN/IKEMEN custom-state parity.",
+        "Synthetic imported custom-state GetHitVar hitcount/hitid/chainid trace proves a bounded two-HitDef sequence admits chainID 43 only after a real previous HitDef id 43, then branches on stored numhits, id, and chainID metadata while the defender executes attacker-owned state data before SelfState returns it to its own state data. It does not claim exact combo accumulation, NoChainID arbitration, helper/projectile inheritance, exact target lifetime, exact tick order, or full MUGEN/IKEMEN custom-state parity.",
       ],
     },
     gates: [
@@ -34149,6 +35702,7 @@ export function createSyntheticImportedGetHitVarHitIdChainIdTraceArtifact(option
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-gethitvar-hitid-chainid-attacker",
     displayName: "Synthetic Imported GetHitVar HitId ChainId Attacker",
+    hitDefSeedId: 43,
     hitDefChainId: 43,
   });
   const stage = options.stage ?? closeCombatStage();
@@ -34165,7 +35719,7 @@ export function createSyntheticImportedGetHitVarHitIdChainIdTraceArtifact(option
       label: "Synthetic imported GetHitVar hitid/chainid route",
       source: "imported",
       notes: [
-        "Synthetic imported GetHitVar hitid/chainid trace proves bounded defender-owned Common1-style get-hit CNS can branch through runtime-backed HitDef id and chainID metadata after direct HitDef contact. It does not claim exact chain-hit eligibility arbitration, helper/projectile inheritance, custom-state inheritance, or full MUGEN/IKEMEN get-hit parity.",
+        "Synthetic imported GetHitVar hitid/chainid trace proves bounded defender-owned Common1-style get-hit CNS admits chainID 43 after a real previous HitDef id 43 and can branch through the chained HitDef id/chainID metadata. It does not claim NoChainID arbitration, helper/projectile inheritance, custom-state inheritance, or full MUGEN/IKEMEN get-hit parity.",
       ],
     },
     gates: [
@@ -34211,6 +35765,1671 @@ export function createSyntheticImportedGetHitVarHitIdChainIdTraceArtifact(option
             stateNo: 326,
             moveType: "H",
           },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedDirectHitDefNoChainIdTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-direct-hitdef-nochainid-attacker",
+    displayName: "Synthetic Imported Direct HitDef NoChainID Attacker",
+    hitDefSeedId: 43,
+    hitDefChainId: 43,
+    hitDefNoChainIds: [43],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-direct-hitdef-nochainid-defender",
+    displayName: "Synthetic Imported Direct HitDef NoChainID Defender",
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-direct-hitdef-nochainid-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-direct-hitdef-nochainid-golden",
+      label: "Synthetic imported direct HitDef NoChainID route",
+      source: "imported",
+      notes: [
+        "Synthetic imported direct HitDef NoChainID trace proves pinned Ikemen GO rejects a later same-player direct HitDef when matching chainid = 43 and nochainid = 43 follow a real seed HitDef id 43, without damage or target id 77 memory. It does not claim exact Ikemen targetedBy lifetime/order, team/tag ownership, Projectile parity, or full HitDef parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-direct-hitdef-nochainid-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 43 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredEventSubstrings: ["via NoChainID 43"],
+        requiredCombatReasons: ["hit"],
+        requiredFinalActors: [
+          { actorId: "p2", source: "imported", actorKind: "player", life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedMugenEqualChainNoChainTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-mugen-equal-chain-nochain-attacker",
+    displayName: "Synthetic Imported MUGEN Equal Chain Attacker",
+    hitDefSeedId: 43,
+    hitDefChainId: 43,
+    hitDefNoChainIds: [43],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-mugen-equal-chain-nochain-defender",
+    displayName: "Synthetic Imported MUGEN Equal Chain Defender",
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "mugen-1.1" }), script, {
+    label: "synthetic-imported-mugen-equal-chain-nochain-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-mugen-equal-chain-nochain-golden",
+      label: "Synthetic imported MUGEN equal ChainID/NoChainID route",
+      source: "imported",
+      notes: [
+        "Synthetic imported MUGEN 1.1 trace proves matching chainid = 43 overrides the equal nochainid = 43 entry after a real seed HitDef id 43, allowing target id 77 contact. It does not claim other MUGEN versions, cross-player changes, Projectile ReversalDef ordering, or full chain parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-mugen-equal-chain-nochain-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefUnhittableTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-unhittabletime-attacker",
+    displayName: "Synthetic Imported HitDef UnhittableTime Attacker",
+    hitDefDamage: 10,
+    hitDefTargetId: 77,
+    hitDefUnhittableTime: [0, 3],
+    repeatHitDef: { triggerTime: 2, damage: 50, targetId: 78 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-unhittabletime-defender",
+    displayName: "Synthetic Imported HitDef UnhittableTime Defender",
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-hitdef-unhittabletime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-unhittabletime-golden",
+      label: "Synthetic imported HitDef unhittabletime receiver window",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves an accepted direct HitDef writes receiver-side unhittabletime and rejects the next overlapping HitDef before damage or target memory. Attacker-side throw arbitration, ModifyPlayer, Projectiles, default throw/ReversalDef values, exact pause order, rollback, and full priority parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitdef-unhittabletime-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit", "reject"],
+        requiredEventSubstrings: ["via HitDef unhittabletime"],
+        requiredCombatReasons: ["hit", "reject"],
+        requiredFinalActors: [
+          { actorId: "p2", source: "imported", actorKind: "player", life: 990 },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefAttackerUnhittableTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-attacker-unhittabletime-p1",
+    displayName: "Synthetic Imported HitDef Attacker Window P1",
+    hitDefDamage: 10,
+    hitDefTargetId: 77,
+    hitDefUnhittableTime: [90, -1],
+    groundVelocity: [0, 0],
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-attacker-unhittabletime-p2",
+    displayName: "Synthetic Imported HitDef Attacker Window P2",
+    hitDefDamage: 50,
+    hitDefTargetId: 88,
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "attacker-window-p1-hit", frames: 12, p1: ["x"], p2: [] },
+    { label: "attacker-window-recover", frames: 18, p1: [], p2: [] },
+    { label: "attacker-window-p2-counter", frames: 12, p1: [], p2: ["x"] },
+    { label: "attacker-window-settle", frames: 8, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-hitdef-attacker-unhittabletime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-attacker-unhittabletime-golden",
+      label: "Synthetic imported HitDef attacker unhittabletime window",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves an accepted direct HitDef writes attacker-side unhittabletime and rejects the opponent's later overlapping HitDef before damage or target memory. Throw default derivation and random same-priority throw arbitration, HitOverride redirects, ModifyPlayer, Projectiles, exact pause order, rollback, and full priority parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitdef-attacker-unhittabletime-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit", "reject"],
+        requiredEventSubstrings: ["via HitDef unhittabletime"],
+        requiredCombatReasons: ["hit", "reject"],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 990 },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefDefaultUnhittableTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-default-unhittabletime-p1",
+    displayName: "Synthetic Imported HitDef Default Throw Window P1",
+    hitDefAttr: "S,NT",
+    hitDefDamage: 10,
+    hitDefTargetId: 77,
+    hitDefPauseTime: 90,
+    groundVelocity: [0, 0],
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-default-unhittabletime-p2",
+    displayName: "Synthetic Imported HitDef Default Throw Window P2",
+    hitDefDamage: 50,
+    hitDefTargetId: 88,
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "default-throw-window-p1-hit", frames: 4, p1: ["x"], p2: [] },
+    { label: "default-throw-window-recover", frames: 110, p1: [], p2: [] },
+    { label: "default-throw-window-p2-counter", frames: 12, p1: [], p2: ["x"] },
+    { label: "default-throw-window-settle", frames: 8, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-hitdef-default-unhittabletime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-default-unhittabletime-golden",
+      label: "Synthetic imported HitDef default throw unhittabletime",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves an omitted throw HitDef derives attacker and receiver unhittabletime from attacker pausetime plus one. The accepted throw then rejects the opponent's later overlapping HitDef before damage or target memory. Random same-priority throw arbitration, HitOverride redirects, Helper ReversalDef, ModifyPlayer, Projectiles, exact pause order, rollback, and full priority parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitdef-default-unhittabletime-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit", "reject"],
+        requiredEventSubstrings: ["via HitDef unhittabletime"],
+        requiredCombatReasons: ["hit", "reject"],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 990 },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHitOverrideUnhittableTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitoverride-unhittabletime-p1",
+    displayName: "Override Timer P1",
+    hitDefDamage: 10,
+    hitDefTargetId: 77,
+    hitDefUnhittableTime: [90, 90],
+    groundVelocity: [0, 0],
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitoverride-unhittabletime-p2",
+    displayName: "Override Timer P2",
+    hitDefDamage: 50,
+    hitDefTargetId: 88,
+    passiveHitOverride: { attr: "S,NA", stateNo: 777, slot: 1, time: 30, keepState: true },
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "hitoverride-window-initial", frames: 12, p1: ["x"], p2: [] },
+    { label: "hitoverride-window-recover-one", frames: 18, p1: [], p2: [] },
+    { label: "hitoverride-window-receiver-reject", frames: 12, p1: ["x"], p2: [] },
+    { label: "hitoverride-window-recover-two", frames: 18, p1: [], p2: [] },
+    { label: "hitoverride-window-attacker-reject", frames: 12, p1: [], p2: ["x"] },
+    { label: "hitoverride-window-settle", frames: 8, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-hitoverride-unhittabletime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitoverride-unhittabletime-golden",
+      label: "Synthetic imported HitOverride unhittabletime contact",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves an accepted direct HitOverride contact writes non-negative attacker and receiver unhittabletime values. Each actor then rejects the opponent's next overlapping HitDef before damage or new target memory. Projectile HitOverride, Helper ReversalDef, ModifyPlayer, exact pause order, rollback, random same-priority throw arbitration, and full priority parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitoverride-unhittabletime-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "HitOverride"],
+        requiredExecutedOperations: ["hitdef", "hitoverride"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["override", "reject"],
+        requiredEventSubstrings: [
+          "Override Timer P2 rejected Override Timer P1",
+          "Override Timer P1 rejected Override Timer P2",
+          "via HitDef unhittabletime",
+        ],
+        requiredCombatReasons: ["override", "reject"],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileUnhittableTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-unhittabletime-p1",
+    displayName: "Projectile Timer P1",
+    withHitDef: false,
+    withProjectile: true,
+    projectileTargetId: 77,
+    projectileDamage: [10, 0],
+    projectileUnhittableTime: [-1, 90],
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-unhittabletime-p2",
+    displayName: "Projectile Timer P2",
+    withHitDef: false,
+  });
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "projectile-window-initial", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-window-recover", frames: 20, p1: [], p2: [] },
+    { label: "projectile-window-reject", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-window-settle", frames: 6, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-projectile-unhittabletime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-unhittabletime-golden",
+      label: "Synthetic imported Projectile unhittabletime receiver window",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves an accepted unguarded Projectile writes receiver-side unhittabletime and rejects the next overlapping Projectile before contact mutation. Dynamic spawn expressions, ModifyProjectile mutation, Projectile-owner component zero, throw defaults, exact timer order, rollback, and full Projectile priority parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-unhittabletime-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 2 }],
+        requiredEffectPayloads: [
+          { actorId: "p1-projectile-1", kind: "projectile", ownerId: "p1", effectId: 77, hasHit: false, minHitsRemaining: 1 },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit", "reject"],
+        requiredEventSubstrings: ["via HitDef unhittabletime"],
+        requiredCombatReasons: ["hit", "reject"],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 990 },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileDynamicUnhittableTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-dynamic-unhittabletime-p1",
+    displayName: "Dynamic Projectile Timer P1",
+    withHitDef: false,
+    withProjectile: true,
+    projectileTargetId: 77,
+    projectileDamage: [10, 0],
+    projectileUnhittableTime: ["Time - 3", "Time + 88"],
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-dynamic-unhittabletime-p2",
+    displayName: "Dynamic Projectile Timer P2",
+    withHitDef: false,
+  });
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "projectile-dynamic-window-initial", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-dynamic-window-recover", frames: 20, p1: [], p2: [] },
+    { label: "projectile-dynamic-window-reject", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-dynamic-window-settle", frames: 6, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-projectile-dynamic-unhittabletime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-dynamic-unhittabletime-golden",
+      label: "Synthetic imported dynamic Projectile unhittabletime receiver window",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves root Projectile unhittabletime expressions resolve in the active spawn context. The accepted unguarded Projectile writes receiver-side unhittabletime and the next overlapping Projectile is rejected before contact mutation. Helper-local expression resolution is covered by a focused runtime test. ModifyProjectile mutation is intentionally excluded because the pinned runtime switch does not apply this parameter.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-dynamic-unhittabletime-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 2 }],
+        requiredEffectPayloads: [
+          { actorId: "p1-projectile-1", kind: "projectile", ownerId: "p1", effectId: 77, hasHit: false, minHitsRemaining: 1 },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit", "reject"],
+        requiredEventSubstrings: ["via HitDef unhittabletime"],
+        requiredCombatReasons: ["hit", "reject"],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 990 },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileSparkScaleTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-spark-scale-p1",
+    displayName: "Dynamic Projectile Spark Scale P1",
+    withHitDef: false,
+    withProjectile: true,
+    projectileTargetId: 77,
+    projectileDamage: [10, 0],
+    projectileHitSpark: "S7001",
+    projectileSparkScale: { hit: ["Time * .75", "Time * -.25"] },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-spark-scale-p2",
+    displayName: "Dynamic Projectile Spark Scale P2",
+    withHitDef: false,
+  });
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "projectile-spark-scale-hit", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-spark-scale-settle", frames: 6, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-projectile-spark-scale-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-spark-scale-golden",
+      label: "Synthetic imported dynamic Projectile spark scale",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves root Projectile sparkscale expressions resolve in the spawn context and reach accepted-hit presentation as independent X/Y values, including a negative component. Guard selection, Helper-local resolution, fresh defaults, ModifyHitDef preservation, and renderer composition are covered by focused tests.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-projectile-spark-scale-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "Projectile"],
+      requiredExecutedOperations: ["projectile"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredHitEffectEvents: [{ actorId: "p1", kind: "hit", sparkNo: 7001, raw: "S7001", rawPrefix: "S", scaleX: 1.5, scaleY: -0.5 }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 990 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefAttackerFacingTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-attacker-facing-p1",
+    displayName: "Dynamic HitDef Attacker Facing P1",
+    hitDefDamage: 10,
+    hitDefP1GetP2Facing: "Time",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-attacker-facing-p2",
+    displayName: "Dynamic HitDef Attacker Facing P2",
+    withHitDef: false,
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-hitdef-attacker-facing-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-attacker-facing-golden",
+      label: "Synthetic imported dynamic HitDef attacker facing",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves a dynamic direct-HitDef p1getp2facing expression can derive P1 facing from P2 after accepted unguarded contact. Precedence, p1facing inversion, guard exclusion, Helper dispatch, and redirected ModifyHitDef are covered by focused tests. Projectile, ReversalDef, and exact deferred tick synchronization remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-attacker-facing-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredActorFrames: [
+        { actorId: "p1", source: "imported", actorKind: "player", animNo: 200, facing: -1, minFrames: 1 },
+      ],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 990 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefGetPowerTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-getpower-p1",
+    displayName: "HitDef GetPower P1",
+    hitDefDamage: 10,
+    hitDefGetPower: [47, 19],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-getpower-p2",
+    displayName: "HitDef GetPower P2",
+    withHitDef: false,
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-hitdef-getpower-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-getpower-golden",
+      label: "Synthetic imported HitDef getpower",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves explicit direct-HitDef getpower replaces the legacy attacker power reward on accepted hit contact. Guard selection, Helper ownership, Projectile spawn, dynamic expressions, and redirected ModifyHitDef are covered by focused tests. Damage-derived defaults, givepower mutation, ModifyProjectile, teams, and rollback remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-getpower-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000, power: 47 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 990 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefGetPowerDefaultTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-getpower-default-p1",
+    displayName: "HitDef GetPower Default P1",
+    hitDefDamage: 10,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-getpower-default-p2",
+    displayName: "HitDef GetPower Default P2",
+    withHitDef: false,
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-hitdef-getpower-default-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-getpower-default-golden",
+      label: "Synthetic imported omitted HitDef getpower default",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves an omitted normal direct-HitDef derives attacker getpower from authored damage and the built-in 0.7 multiplier, while omitted givepower adds the built-in 0.6-derived delta to the defender. Hyper selection, authored constant overrides, Helper ownership, Projectile spawn, guard derivation, and ModifyProjectile givepower are covered by focused tests. Dynamic fresh givepower, teams, global data/mugen.cfg loading, and rollback remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-getpower-default-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000, power: 7 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 990, power: 6 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefRulesPowerDefaultsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const rulesPowerConstants = {
+    "default.attack.lifetopowermul": 0.25,
+    "default.gethit.lifetopowermul": 0.4,
+  };
+  const attackerBase = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-rules-power-defaults-p1",
+    displayName: "HitDef Rules Power Defaults P1",
+    hitDefDamage: 40,
+    customStateRoute: {
+      startStateNo: 888,
+      getHitVarBranchStateNo: 899,
+      getHitVarBranchAnimNo: 888,
+      getHitVarBranchExpression: "GetHitVar(power) = 16 && !GetHitVar(guarded)",
+      getHitVarBranchName: "Rules Power GetHitVar Branch",
+      getHitVarBranchAfter: 1,
+      getHitVarBranchSelfStateAfter: 2,
+    },
+  });
+  const attacker: DemoFighterDefinition = {
+    ...attackerBase,
+    constants: { ...attackerBase.constants, ...rulesPowerConstants },
+  };
+  const defenderBase = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-rules-power-defaults-p2",
+    displayName: "HitDef Rules Power Defaults P2",
+    withHitDef: false,
+  });
+  const defender: DemoFighterDefinition = {
+    ...defenderBase,
+    constants: { ...defenderBase.constants, ...rulesPowerConstants },
+  };
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCustomStateScript();
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-hitdef-rules-power-defaults-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-rules-power-defaults-golden",
+      label: "Synthetic imported HitDef MUGEN Rules power defaults",
+      source: "imported",
+      notes: [
+        "M.U.G.E.N [Rules]-equivalent constants prove omitted normal direct-HitDef getpower/givepower defaults: damage 40 with Default.Attack.LifeToPowerMul 0.25 adds 10 attacker power, Default.GetHit.LifeToPowerMul 0.4 adds 16 defender power, and GetHitVar(power)=16 remains visible in the attacker-owned custom state. Actual data/mugen.cfg parsing and common/character precedence remain covered by focused loader tests; Projectile, guards, explicit overrides, teams, reload, and rollback remain outside this trace.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-rules-power-defaults-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 888, 899],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "SelfState"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredControllerEventSequences: [{
+        label: "rules power GetHitVar branch order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 888, controller: "ChangeState", name: "Rules Power GetHitVar Branch" },
+          { stateNo: 899, controller: "SelfState", name: "Return To Self" },
+        ],
+      }],
+      requiredActorFrameSequences: [{
+        label: "rules power GetHitVar actor-frame order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", stateNo: 888, animNo: 888, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", stateNo: 899, animNo: 888, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000, power: 10 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, life: 960, power: 16, ctrl: true },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefContactPalFxTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-contact-palfx-p1",
+    displayName: "Dynamic HitDef Contact PalFX P1",
+    hitDefDamage: 10,
+    hitDefVarSeeds: [
+      { index: 0, value: 12 },
+      { index: 1, value: 64 },
+      { index: 2, value: -16 },
+      { index: 3, value: 80 },
+      { index: 4, value: 224 },
+      { index: 5, value: 144 },
+      { index: 6, value: 200 },
+      { index: 7, value: 1 },
+    ],
+    hitDefPaletteFx: {
+      time: "var(0)",
+      add: ["var(1)", "var(2)", "var(3)"],
+      mul: ["var(4)", "var(5)", "256"],
+      color: "var(6)",
+      invertAll: "var(7)",
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-contact-palfx-p2",
+    displayName: "Dynamic HitDef Contact PalFX P2",
+    withHitDef: false,
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-hitdef-contact-palfx-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-contact-palfx-golden",
+      label: "Synthetic imported dynamic HitDef contact PalFX",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves finite HitDef palfx.time/add/mul/color/invertall expressions resolve in caller context and reach the receiver only after accepted unguarded contact. Guard exclusion, Helper ownership, Projectile spawn, redirected ModifyHitDef preservation, and rejected contacts are covered by focused tests. Sinadd, non-positive or infinite duration, ModifyProjectile, exact palette math, hitpause ordering, teams, and rollback remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-contact-palfx-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredActorFrames: [{
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        paletteFxTime: 12,
+        paletteFxAddR: 64,
+        paletteFxAddG: -16,
+        paletteFxAddB: 80,
+        paletteFxMulR: 224,
+        paletteFxMulG: 144,
+        paletteFxMulB: 256,
+        paletteFxColor: 200,
+        paletteFxInvert: true,
+        minFrames: 1,
+      }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 990 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefContactEnvShakeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-contact-envshake-p1",
+    displayName: "Dynamic HitDef Contact EnvShake P1",
+    hitDefDamage: 10,
+    hitDefVarSeeds: [
+      { index: 0, value: 14 },
+      { index: 1, value: 72 },
+      { index: 2, value: -11 },
+      { index: 3, value: 30 },
+      { index: 4, value: 1.25 },
+      { index: 5, value: -25 },
+    ],
+    hitDefEnvShake: {
+      time: "var(0)",
+      freq: "var(1)",
+      ampl: "var(2)",
+      phase: "var(3)",
+      mul: "var(4)",
+      dir: "var(5)",
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-contact-envshake-p2",
+    displayName: "Dynamic HitDef Contact EnvShake P2",
+    withHitDef: false,
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-hitdef-contact-envshake-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-contact-envshake-golden",
+      label: "Synthetic imported dynamic direct-HitDef contact EnvShake",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves finite direct-HitDef envshake.time/freq/ampl/phase expressions resolve in caller context and emit through the existing camera-shake event path only after accepted unguarded contact. Ikemen mul/dir, Helper ownership, redirected ModifyHitDef preservation, guard exclusion, and rejected contacts are covered by focused tests. Exact local-coordinate amplitude truncation, diradd, decay, hitpause order, teams, rollback, and full camera parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-contact-envshake-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredEnvShakeEvents: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        time: 14,
+        freq: 72,
+        ampl: -11,
+        phase: 30,
+        stateNo: 200,
+      }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 990 },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicFallEnvShakeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const { envShake: _staticEnvShake, ...fall } = commonGetHitFallData();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-fall-envshake-p1",
+    displayName: "Dynamic HitDef Fall EnvShake P1",
+    fall,
+    getHitState: { stateNo: 5100, animNo: 500 },
+    hitDefVarSeeds: [
+      { index: 0, value: 15 },
+      { index: 1, value: 178 },
+      { index: 2, value: 6 },
+      { index: 3, value: 0 },
+      { index: 4, value: 0.75 },
+      { index: 5, value: 67.5 },
+    ],
+    hitDefFallEnvShake: {
+      time: "var(0)",
+      freq: "var(1)",
+      ampl: "var(2)",
+      phase: "var(3)",
+      mul: "var(4)",
+      dir: "var(5)",
+    },
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCommonGetHitScript();
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-hitdef-dynamic-fall-envshake-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-fall-envshake-golden",
+      label: "Synthetic imported dynamic HitDef fall EnvShake",
+      source: "mixed",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves finite fall.envshake expressions resolve in the HitDef caller context, survive accepted-hit metadata transfer, and feed the existing FallEnvShake camera event. Ikemen mul/dir, Helper context, and redirected ModifyHitDef partial replacement are covered by focused tests. Exact local-coordinate conversion, diradd, decay, ground-impact timing, teams, rollback, and full fall presentation parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-fall-envshake-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5100],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "HitFallVel", "HitFallDamage", "HitFallSet", "FallEnvShake"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "hitfall:hitfallvel", "hitfall:hitfalldamage", "hitfall:hitfallset", "fallenvshake"],
+      requiredControllerEventSequences: [commonGetHitControllerSequence(5100)],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredEnvShakeEvents: [{
+        actorId: "p2",
+        source: "demo",
+        actorKind: "player",
+        time: 15,
+        freq: 178,
+        ampl: 6,
+        phase: 0,
+        stateNo: 5100,
+      }],
+      requiredFinalActors: [{
+        actorId: "p2",
+        actorKind: "player",
+        source: "demo",
+        stateNo: 5100,
+        hitFall: {
+          falling: false,
+          damage: 0,
+          velocityX: 2,
+          velocityY: -7,
+          recover: false,
+          recoverTime: 30,
+        },
+      }],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicFallImpactTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-fall-impact-p1",
+    displayName: "Dynamic HitDef Fall Impact P1",
+    fall: { enabled: true, recover: false, recoverTime: 30 },
+    getHitState: { stateNo: 5100, animNo: 500 },
+    getHitVarBranch: {
+      stateNo: 305,
+      expression: "GetHitVar(fall.damage) = 17 && GetHitVar(fall.xvel) = 3.5 && GetHitVar(fall.yvel) = -6.25",
+    },
+    hitDefVarSeeds: [
+      { index: 0, value: 17.9 },
+      { index: 1, value: 3.5 },
+      { index: 2, value: -6.25 },
+      { index: 3, value: 2.75 },
+    ],
+    hitDefFallImpact: {
+      damage: "var(0)",
+      xVelocity: "var(1)",
+      yVelocity: "var(2)",
+      zVelocity: "var(3)",
+    },
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCommonGetHitScript();
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-hitdef-dynamic-fall-impact-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-fall-impact-golden",
+      label: "Synthetic imported dynamic HitDef fall impact metadata",
+      source: "mixed",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves finite fall.damage and fall.x/y/zvelocity expressions resolve in the HitDef caller context and transfer to bounded get-hit metadata after accepted contact. Helper context, redirected ModifyHitDef partial replacement, and later impact consumers are covered by focused or existing required gates. Dynamic recovery, exact localcoord defaults, bounce timing, teams, rollback, and full fall parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-fall-impact-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5100, 305],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "HitFallVel"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "hitfall:hitfallvel"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredFinalActors: [{
+        actorId: "p2",
+        actorKind: "player",
+        source: "demo",
+        stateNo: 305,
+        customOwnerId: "p1",
+        hitFall: {
+          falling: true,
+          damage: 17,
+          velocityX: 3.5,
+          velocityY: -6.25,
+          recover: false,
+          recoverTime: 30,
+        },
+      }],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicFallRecoveryTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-fall-recovery-p1",
+    displayName: "Dynamic HitDef Fall Recovery P1",
+    fall: { enabled: true },
+    getHitState: { stateNo: 5100, animNo: 500 },
+    getHitVarBranch: {
+      stateNo: 307,
+      expression: "GetHitVar(fall.recover) = 0 && GetHitVar(fall.recovertime) = 19 && GetHitVar(down.recover) = 1 && GetHitVar(down.recovertime) = 45 && GetHitVar(recovertime) = 45",
+    },
+    hitDefVarSeeds: [
+      { index: 0, value: 0 },
+      { index: 1, value: 19 },
+      { index: 2, value: 1 },
+      { index: 3, value: 45 },
+    ],
+    hitDefFallRecovery: {
+      recover: "var(0)",
+      recoverTime: "var(1)",
+      downRecover: "var(2)",
+      downRecoverTime: "var(3)",
+    },
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCommonGetHitScript();
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-hitdef-dynamic-fall-recovery-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-fall-recovery-golden",
+      label: "Synthetic imported dynamic HitDef fall recovery metadata",
+      source: "mixed",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves finite fall.recover, fall.recovertime, down.recover, and down.recovertime expressions resolve in the HitDef caller context, transfer after accepted contact, and remain observable through GetHitVar aliases. Helper context and redirected ModifyHitDef partial replacement are covered by focused tests. Exact recovery input, liedown tables, fast-recovery arbitration, teams, rollback, and full Common1 recovery parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-fall-recovery-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5100, 307],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "HitFallVel"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "hitfall:hitfallvel"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredFinalActors: [{
+        actorId: "p2",
+        actorKind: "player",
+        source: "demo",
+        stateNo: 307,
+        customOwnerId: "p1",
+        hitFall: {
+          falling: true,
+          recover: false,
+          recoverTime: 19,
+          downRecover: true,
+          downRecoverTime: 45,
+        },
+      }],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicFallFlagsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-fall-flags-p1",
+    displayName: "Dynamic HitDef Fall Flags P1",
+    getHitState: { stateNo: 5100, animNo: 500 },
+    getHitVarBranch: {
+      stateNo: 306,
+      expression: "GetHitVar(fall) = 1 && GetHitVar(fall.kill) = 0",
+    },
+    hitDefVarSeeds: [
+      { index: 0, value: 1 },
+      { index: 1, value: 0 },
+      { index: 2, value: 0 },
+    ],
+    hitDefFallFlags: {
+      enabled: "var(0)",
+      airFall: "var(1)",
+      kill: "var(2)",
+    },
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCommonGetHitScript();
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-hitdef-dynamic-fall-flags-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-fall-flags-golden",
+      label: "Synthetic imported dynamic HitDef fall flags",
+      source: "mixed",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves finite fall, air.fall, and fall.kill expressions resolve in the HitDef caller context. The accepted hit transfers enabled fall plus nonlethal fall-impact policy into HitFall and GetHitVar consumers. Airborne-only selection, Helper context, and redirected ModifyHitDef partial replacement are covered by focused tests. Exact fall-count arbitration, KO timing, Projectiles, teams, rollback, and full Common1 fall parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-fall-flags-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5100, 306],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "HitFallVel"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "hitfall:hitfallvel"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredFinalActors: [{
+        actorId: "p2",
+        actorKind: "player",
+        source: "demo",
+        stateNo: 306,
+        customOwnerId: "p1",
+        hitFall: { falling: true, kill: false },
+      }],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicDownBounceTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-down-bounce-p1",
+    displayName: "Dynamic HitDef Down Bounce P1",
+    getHitState: { stateNo: 5100, animNo: 500 },
+    getHitVarBranch: {
+      stateNo: 306,
+      expression: "GetHitVar(fall) = 1",
+    },
+    hitDefVarSeeds: [{ index: 0, value: 1 }],
+    hitDefFallFlags: { enabled: 1 },
+    hitDefDownBounce: "var(0)",
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCommonGetHitScript();
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-hitdef-dynamic-down-bounce-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-down-bounce-golden",
+      label: "Synthetic imported dynamic HitDef down.bounce",
+      source: "mixed",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves a finite down.bounce expression resolves in the direct HitDef caller context and transfers into the accepted hit's HitFall metadata. Helper caller context, redirected ModifyHitDef replacement, and malformed expressions are covered by focused tests. Projectile and ModifyProjectile parity, omitted-value default adjudication, exact Common1 ground-impact ordering, teams, rollback, and full fall arbitration remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-down-bounce-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5100, 306],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "HitFallVel"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "hitfall:hitfallvel"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredFinalActors: [{
+        actorId: "p2",
+        actorKind: "player",
+        source: "demo",
+        stateNo: 306,
+        customOwnerId: "p1",
+        hitFall: { falling: true, downBounce: true },
+      }],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicLethalFlagsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-lethal-flags-p1",
+    displayName: "Dynamic HitDef Lethal Flags P1",
+    hitDefDamage: 2000,
+    hitDefVarSeeds: [{ index: 0, value: 0 }],
+    hitDefKillExpression: "var(0)",
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedHitDefKillScript();
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-hitdef-dynamic-lethal-flags-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-lethal-flags-golden",
+      label: "Synthetic imported dynamic HitDef lethal flags",
+      source: "mixed",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves a finite dynamic kill expression resolves in the direct HitDef caller context and the accepted hit preserves one defender life. Dynamic guard.kill and hitonce, Helper caller context, redirected ModifyHitDef partial replacement, and malformed expressions are covered by focused tests. Projectile and ModifyProjectile parity, throw defaults, exact target-drop ordering, teams, rollback, and full KO arbitration remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-lethal-flags-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredEventSubstrings: [`hit ${demoFighters[1]!.displayName} for 2000`],
+      requiredFinalActors: [{
+        actorId: "p2",
+        source: "demo",
+        actorKind: "player",
+        life: 1,
+        moveType: "H",
+      }],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicAirJuggleTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const damage = 37;
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-air-juggle-p1",
+    displayName: "Dynamic HitDef Air Juggle P1",
+    hitDefDamage: damage,
+    hitDefVarSeeds: [{ index: 0, value: 1 }],
+    hitDefAirJuggle: "var(0) + 2",
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedHitDefKillScript();
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-hitdef-dynamic-air-juggle-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-air-juggle-golden",
+      label: "Synthetic imported dynamic HitDef air.juggle",
+      source: "mixed",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves a finite air.juggle expression resolves in the direct HitDef caller context, arms the active Ikemen character cost, and reaches accepted direct contact. Helper caller context and malformed expressions are covered by focused tests. ModifyHitDef, Projectile, M.U.G.E.N direct-character cost, exact target-list timing, teams, rollback, and full juggle parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-air-juggle-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", juggle: 3, juggleOrigin: "hitdef" },
+        { actorId: "p2", source: "demo", actorKind: "player", life: 1000 - damage },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicNumHitsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-numhits-p1",
+    displayName: "Dynamic HitDef NumHits P1",
+    hitDefDamage: 10,
+    hitDefVarSeeds: [{ index: 0, value: 1 }],
+    hitDefHitCount: "var(0) + 2",
+    hitAddStateNo: 899,
+  });
+  return createImportedXTraceArtifact(attacker, {
+    ...options,
+    runtimeProfile: "ikemen-go",
+    targetId: "synthetic-imported-hitdef-dynamic-numhits-golden",
+    targetLabel: "Synthetic imported dynamic HitDef numhits",
+    requireHitEvent: true,
+    requiredExecutedStates: [200, 899],
+    requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+    requiredExecutedOperations: ["variable:varset", "hitdef"],
+    requiredFinalActors: [
+      { actorId: "p1", actorKind: "player", source: "imported", stateNo: 899, life: 1000 },
+      { actorId: "p2", actorKind: "player", source: "demo", life: 990 },
+    ],
+    notes: [
+      "Official M.U.G.E.N and pinned Ikemen GO trace proves a finite numhits expression resolves in the direct HitDef caller context and adds the authored value three to the accepted-contact HitCount consumer. GetHitVar(hitcount) remains the separate consecutive-contact counter defined by the pinned engine. Helper caller context, redirected ModifyHitDef replacement, and malformed expressions are covered by focused tests. Projectile, ReversalDef, negative-value clamp parity, exact delayed combo UI ordering, teams, rollback, and full combo parity remain excluded.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicSpritePriorityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-sprite-priority-attacker",
+    displayName: "Dynamic HitDef Sprite Priority Attacker",
+    hitDefPriorityProfile: "mugen-1.1",
+    hitDefVarSeeds: [{ index: 0, value: 6 }, { index: 1, value: 4 }],
+    hitDefP1SpritePriority: "var(0) + 1",
+    hitDefP1SpritePriorityAlias: true,
+    hitDefP2SpritePriority: "-var(1)",
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-sprite-priority-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-sprite-priority-golden",
+      label: "Synthetic imported dynamic HitDef sprite priorities",
+      source: "mixed",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context sprite-priority expressions, including the legacy sprpriority alias, reach both players on accepted direct hit contact. Helper caller context, redirected ModifyHitDef replacement, and guard contact are covered by focused tests. Projectile P1 priority, ReversalDef, renderer-wide sorting, teams, rollback, and full presentation parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-sprite-priority-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          spritePriority: 7,
+          hitDefSpritePriorityProfile: "mugen-1.1",
+          hitDefSpritePriorityRole: "p1",
+          hitDefSpritePriorityContactKind: "hit",
+          hitDefSpritePrioritySource: "authored",
+          hitDefSpritePrioritySupported: true,
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          actorKind: "player",
+          spritePriority: -4,
+          hitDefSpritePriorityProfile: "mugen-1.1",
+          hitDefSpritePriorityRole: "p2",
+          hitDefSpritePriorityContactKind: "hit",
+          hitDefSpritePrioritySource: "authored",
+          hitDefSpritePrioritySupported: true,
+          minFrames: 1,
+        },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedHitDefDynamicGivePowerTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-givepower-p1",
+    displayName: "Dynamic HitDef GivePower P1",
+    hitDefDamage: 10,
+    hitDefVarSeeds: [{ index: 0, value: 11 }],
+    hitDefGivePower: ["var(0) * 2", "var(0) - 3"],
+    customStateRoute: {
+      startStateNo: 888,
+      getHitVarBranchStateNo: 899,
+      getHitVarBranchAnimNo: 888,
+      getHitVarBranchExpression: "GetHitVar(power) = 22 && !GetHitVar(guarded)",
+      getHitVarBranchName: "Dynamic GivePower GetHitVar Branch",
+      getHitVarBranchAfter: 1,
+      getHitVarBranchSelfStateAfter: 2,
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-givepower-p2",
+    displayName: "Dynamic HitDef GivePower P2",
+    withHitDef: false,
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCustomStateScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-hitdef-dynamic-givepower-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-givepower-golden",
+      label: "Synthetic imported dynamic HitDef givepower",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves a finite two-component direct-HitDef givepower expression evaluates in caller context: var(0)=11 produces a hit reward of 22, adds 22 power to the defender, and remains observable as GetHitVar(power)=22 inside the attacker-owned custom state. Single-component derivation, guard selection, Helper dispatch, Projectile, ModifyHitDef, ModifyProjectile, int32 overflow, teams, and rollback remain covered only by focused tests or excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-givepower-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 888, 899],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "SelfState"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredControllerEventSequences: [{
+        label: "dynamic givepower GetHitVar branch order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 888, controller: "ChangeState", name: "Dynamic GivePower GetHitVar Branch" },
+          { stateNo: 899, controller: "SelfState", name: "Return To Self" },
+        ],
+      }],
+      requiredActorFrameSequences: [{
+        label: "dynamic givepower GetHitVar actor-frame order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", stateNo: 888, animNo: 888, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", stateNo: 899, animNo: 888, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000, power: 7 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, life: 990, power: 22, ctrl: true },
+      ],
+    }],
+  });
+}
+
+export function createSyntheticImportedProjectileGroundFrictionTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedCustomStateScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-ground-friction-attacker",
+    displayName: "Synthetic Imported Projectile Ground Friction Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileTargetId: 77,
+    projectileP2StateNo: 888,
+    projectileP2GetP1State: true,
+    projectileGroundFriction: { stand: "Time * .25", crouch: "Time * .125" },
+    customStateRoute: {
+      startStateNo: 888,
+      getHitVarBranchStateNo: 899,
+      getHitVarBranchAnimNo: 888,
+      getHitVarBranchExpression:
+        "GetHitVar(stand.friction) = .5 && GetHitVar(crouch.friction) = .25 && !GetHitVar(guarded)",
+      getHitVarBranchName: "Owner Custom State GetHitVar Ground Friction Branch",
+      getHitVarBranchAfter: 1,
+      getHitVarBranchSelfStateAfter: 2,
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-ground-friction-defender",
+    displayName: "Synthetic Imported Projectile Ground Friction Defender",
+    withHitDef: false,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-projectile-ground-friction-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-ground-friction-golden",
+      label: "Synthetic imported dynamic Projectile ground-friction custom-state route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves root Projectile stand.friction and crouch.friction expressions resolve independently in the spawn context, reach the receiver GetHitVar payload after normal accepted contact, and remain readable from attacker-owned custom state data before SelfState returns control. Helper-local resolution, direct HitDef contact, get-hit kinematics, omitted-value fallback, and invalid-value fail-closed behavior are covered by focused runtime tests. Projectile HitOverride and ModifyProjectile mutation remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-ground-friction-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 888, 899],
+        requiredExecutedControllers: ["ChangeState", "Projectile", "SelfState"],
+        requiredExecutedOperations: ["projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredControllerEventSequences: [
+          {
+            label: "owner custom-state GetHitVar ground-friction branch order",
+            actorId: "p2",
+            allowSameTick: true,
+            steps: [
+              { stateNo: 888, controller: "ChangeState", name: "Owner Custom State GetHitVar Ground Friction Branch" },
+              { stateNo: 899, controller: "SelfState", name: "Return To Self" },
+            ],
+          },
+        ],
+        requiredActorFrameSequences: [
+          {
+            label: "owner custom-state GetHitVar ground-friction actor-frame order",
+            steps: [
+              { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", stateNo: 888, animNo: 888, moveType: "H", minFrames: 1 },
+              { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", stateNo: 899, animNo: 888, moveType: "H", minFrames: 1 },
+            ],
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, ctrl: true, moveType: "I", life: 969 },
         ],
       },
     ],
@@ -34765,7 +37984,7 @@ export function createSyntheticImportedTargetTraceArtifact(options: RuntimeTrace
         ],
         requiredFinalActors: [
           { actorId: "p1", source: "imported", actorKind: "player", targetCount: 0 },
-          { actorId: "p2", actorKind: "player", life: 943, power: 40 },
+          { actorId: "p2", actorKind: "player", life: 943, power: 62 },
         ],
       },
     ],
@@ -36107,6 +39326,7 @@ export function createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact(
     displayName: "Synthetic Imported SuperPause Projectile Attacker",
     withSuperPause: true,
     withProjectile: true,
+    projectileSuperMoveTime: 1,
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
     label: "synthetic-imported-superpause-projectile-freeze-golden",
@@ -36697,7 +39917,7 @@ export function createSyntheticImportedProjectileTargetControllersTraceArtifact(
         ],
         requiredFinalActors: [
           { actorId: "p1", source: "imported", actorKind: "player", targetCount: 0 },
-          { actorId: "p2", actorKind: "player", life: 949, power: 40 },
+          { actorId: "p2", actorKind: "player", life: 949, power: 58 },
         ],
         requiredWorldLifecycleEvents: [
           { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
@@ -36805,7 +40025,7 @@ export function createSyntheticImportedProjectileDefaultTargetControllersTraceAr
         ],
         requiredFinalActors: [
           { actorId: "p1", source: "imported", actorKind: "player", targetCount: 0 },
-          { actorId: "p2", actorKind: "player", life: 949, power: 40 },
+          { actorId: "p2", actorKind: "player", life: 949, power: 58 },
         ],
         requiredWorldLifecycleEvents: [
           { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
@@ -39442,7 +42662,7 @@ export function createSyntheticImportedProjectileGuardDistanceLatchTraceArtifact
     displayName: "Synthetic Imported Projectile Guard Distance Latch Attacker",
     withProjectile: true,
     guardDistance: 1,
-    projectileOffset: [40, -45],
+    projectileOffset: [100, -45],
     projectileVelocity: [0, 0],
     projectileRemoveTime: 8,
   });
@@ -39631,6 +42851,75 @@ export function createSyntheticImportedModifyProjectileTraceArtifact(options: Ru
         ],
       },
     ],
+  });
+}
+
+export function createSyntheticImportedModifyProjectileDynamicGetPowerTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-dynamic-getpower-attacker",
+    displayName: "Dynamic ModifyProjectile GetPower Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileId: 77,
+    projectileHitAnim: 911,
+    withModifyProjectile: true,
+    modifyProjectileTriggerTime: 3,
+    modifyProjectileVarSeeds: [{ index: 0, value: 11 }],
+    modifyProjectileGetPower: ["var(0) * 4", "var(0) - 3"],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-dynamic-getpower-defender",
+    displayName: "Dynamic ModifyProjectile GetPower Defender",
+    withHitDef: false,
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-modifyprojectile-dynamic-getpower-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyprojectile-dynamic-getpower-golden",
+      label: "Synthetic imported dynamic ModifyProjectile getpower",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves root owner-side ModifyProjectile evaluates two getpower expressions in caller context, replaces the selected live Projectile attacker reward, and contributes 44 power after accepted hit contact. Guard selection, one-component zeroing, RedirectID, Helper ownership, teams, multi-selection, exact tick order, and int32 overflow remain covered by focused tests or excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyprojectile-dynamic-getpower-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Projectile", "ModifyProjectile"],
+      requiredExecutedOperations: ["variable:varset", "projectile", "modifyprojectile"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [
+        { kind: "projectile", ownerId: "p1", effectId: 77, hasHit: true, removalReason: "hit", terminalReason: "hit" },
+      ],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000, power: 44 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 969 },
+      ],
+    }],
   });
 }
 
@@ -40114,6 +43403,196 @@ export function createSyntheticImportedProjectileMultiHitTraceArtifact(options: 
           { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
           { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
           { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minNextProjectileSerial: 1 }],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedIkemenProjectileGetHitVarHitCountMultiHitTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "ikemen-projectile-hitcount-combo", frames: 7, p1: ["x"], p2: [] },
+    { label: "ikemen-projectile-hitcount-guard-break", frames: 17, p1: [], p2: ["B"] },
+    { label: "ikemen-projectile-hitcount-release", frames: 8, p1: [], p2: [] },
+  ]);
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-projectile-hitcount-multihit",
+    displayName: "Synthetic Imported Ikemen Projectile HitCount Multi-Hit",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 327,
+      hitTimeBranchAnimNo: 327,
+      hitTimeBranchExpression: "GetHitVar(hitcount) = 2 && !GetHitVar(guarded)",
+      hitTimeBranchName: "Combo HitCount Branch",
+      hitTimeBranchReturnAfter: 2,
+    },
+    defaultGuardHit: {
+      guardedBranchStateNo: 154,
+      guardedBranchAnimNo: 154,
+      guardedBranchTrigger: "Time >= 0",
+      guardedBranchExpression: "GetHitVar(hitcount) = 2 && GetHitVar(guarded)",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-projectile-hitcount-multihit-attacker",
+    displayName: "Synthetic Imported Ikemen Projectile HitCount Multi-Hit Attacker",
+    withProjectile: true,
+    projectileOffset: [300, -45],
+    projectileVelocity: [0, 0],
+    projectileGroundVelocity: [0],
+    projectileHits: 3,
+    projectileMissTime: 5,
+    projectileHitDefHitCount: 3,
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1: attacker,
+      p2: defender,
+      stage,
+      runtimeProfile: options.runtimeProfile ?? "ikemen-go",
+    }),
+    script,
+    { label: "synthetic-imported-ikemen-projectile-gethitvar-hitcount-multihit-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-projectile-gethitvar-hitcount-multihit-golden",
+      label: "Synthetic imported Ikemen Projectile GetHitVar hitcount multi-hit route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Ikemen-GO trace proves a player-owned Projectile with authored numhits can expose mutable GetHitVar(hitcount) across a second eligible contact and a guarded break. It does not claim helper/redirect/team ownership, GetHitVarSet, exact multi-target arbitration, or full M.U.G.E.N/Ikemen parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-projectile-gethitvar-hitcount-multihit-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 327, 154],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit", "guard"],
+        requiredCombatReasons: ["hit", "guard"],
+        requiredEventSubstrings: ["projectile hit", "guard"],
+        requiredControllerEventSequences: [
+          {
+            label: "GetHitVar(hitcount) combo branch after second contact",
+            actorId: "p2",
+            allowSameTick: true,
+            steps: [{ stateNo: 5000, controller: "ChangeState", name: "Combo HitCount Branch" }],
+          },
+          {
+            label: "GetHitVar(hitcount) guarded break branch",
+            actorId: "p2",
+            allowSameTick: true,
+            steps: [{ stateNo: 151, controller: "ChangeState", name: "Guarded HitVar Branch" }],
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minNextProjectileSerial: 1 }],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedIkemenProjectileGetHitVarVelAddKoTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "ikemen-projectile-veladd-ko", frames: 7, p1: ["x"], p2: [] },
+    { label: "ikemen-projectile-veladd-settle", frames: 20, p1: [], p2: [] },
+  ]);
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-projectile-veladd-ko",
+    displayName: "Synthetic Imported Ikemen Projectile KO Velocity Add Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 328,
+      hitTimeBranchAnimNo: 328,
+      hitTimeBranchExpression: "GetHitVar(xveladd) = 4 && GetHitVar(yveladd) = 2",
+      hitTimeBranchName: "KO Velocity Delta Branch",
+      hitTimeBranchReturnAfter: 2,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-projectile-veladd-ko-attacker",
+    displayName: "Synthetic Imported Ikemen Projectile KO Velocity Add Attacker",
+    withProjectile: true,
+    projectileOffset: [300, -45],
+    projectileVelocity: [0, 0],
+    projectileGroundVelocity: [0],
+    projectileDamage: [1001, 0],
+    projectileHits: 2,
+    projectileMissTime: 3,
+    projectileRemoveOnHit: false,
+    projectileRemoveTime: 8,
+    projectileKoVelocityAdd: [4, 2],
+  });
+  const trace = runRuntimeTrace(
+    new MatchWorld({
+      p1: attacker,
+      p2: defender,
+      stage,
+      runtimeProfile: options.runtimeProfile ?? "ikemen-go",
+    }),
+    script,
+    { label: "synthetic-imported-ikemen-projectile-gethitvar-veladd-ko-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-projectile-gethitvar-veladd-ko-golden",
+      label: "Synthetic imported Ikemen Projectile GetHitVar xveladd/yveladd KO route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Ikemen-GO trace proves a root-owned Projectile KO can retain authored KO velocity-add metadata and read it through GetHitVar(xveladd/yveladd). The ko.velocity.add key is fixture-only metadata; this does not claim full parser support for an official CNS spelling, exact KO physics, helper ownership, or complete M.U.G.E.N/Ikemen parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-projectile-gethitvar-veladd-ko-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 328],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredEventSubstrings: ["projectile hit"],
+        requiredCombatReasons: ["hit"],
+        requiredControllerEventSequences: [
+          {
+            label: "GetHitVar(xveladd|yveladd) KO delta branch",
+            actorId: "p2",
+            allowSameTick: true,
+            steps: [{ stateNo: 5000, controller: "ChangeState", name: "KO Velocity Delta Branch" }],
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
         ],
         requiredEffectStores: [{ ownerId: "p1", minNextProjectileSerial: 1 }],
         requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
@@ -45198,7 +48677,7 @@ export function createSyntheticImportedHelperProjectileTargetControllersTraceArt
           { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 967, moveType: "A", minFrames: 1 },
           { actorId: "p2", actorKind: "player", facing: 1, observedLifeAtMost: 958, observedVelXAtLeast: 0.8, observedVelYAtMost: -3 },
         ],
-        requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 958, power: 40 }],
+        requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 958, power: 50 }],
         requiredWorldLifecycleEvents: [
           { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
           { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
@@ -45630,7 +49109,7 @@ export function createSyntheticImportedHelperProjectileDefaultTargetControllersT
           { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 970, moveType: "A", minFrames: 1 },
           { actorId: "p2", actorKind: "player", facing: 1, observedLifeAtMost: 958, observedVelXAtLeast: 0.8, observedVelYAtMost: -3 },
         ],
-        requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 958, power: 40 }],
+        requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 958, power: 50 }],
         requiredWorldLifecycleEvents: [
           { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
           { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
@@ -48631,7 +52110,7 @@ export function createSyntheticImportedHelperTargetControllersTraceArtifact(opti
           { actorId: "p2", actorKind: "player", facing: 1, observedLifeAtMost: 944, observedVelXAtLeast: 0.8, observedVelYAtMost: -3 },
         ],
         requiredFinalActors: [
-          { actorId: "p2", actorKind: "player", life: 944, power: 40 },
+          { actorId: "p2", actorKind: "player", life: 944, power: 62 },
         ],
         requiredWorldLifecycleEvents: [
           { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
@@ -48753,11 +52232,11 @@ export function createSyntheticImportedHelperTargetRedirectTraceArtifact(options
         requiredActorFrames: [
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1200, animNo: 920, moveType: "A", clsn1Count: 1, minFrames: 1 },
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1234, animNo: 965, moveType: "I", minFrames: 1 },
-          { actorId: "p1", source: "imported", actorKind: "player", observedLifeAtMost: 981, observedPowerAtLeast: 75, minFrames: 1 },
+          { actorId: "p1", source: "imported", actorKind: "player", observedLifeAtMost: 981, observedPowerAtLeast: 65, minFrames: 1 },
           { actorId: "p2", source: "imported", actorKind: "player", observedLifeAtMost: 963, minFrames: 1 },
         ],
         requiredFinalActors: [
-          { actorId: "p1", source: "imported", actorKind: "player", life: 981, power: 75 },
+          { actorId: "p1", source: "imported", actorKind: "player", life: 981, power: 65 },
           { actorId: "p2", source: "imported", actorKind: "player", life: 926, targetCount: 0 },
         ],
         requiredWorldLifecycleEvents: [
@@ -51616,8 +55095,28 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefHitFlag?: string;
   attackStateType?: "S" | "C" | "A" | "L";
   hitDefDamage?: number;
-  hitDefAirTime?: number;
-  hitDefAirJuggle?: number;
+  /** Omits the authored HitDef damage parameter while retaining fixture move metadata. */
+  omitHitDefDamage?: boolean;
+  /** Synthetic fixture-only dynamic hit/guard damage pair emitted into HitDef. */
+  hitDefDamageExpression?: SyntheticPairExpression;
+  hitDefPauseTime?: number;
+  /** Synthetic fixture-only dynamic P1 pause/P2 shake pair emitted into HitDef. */
+  hitDefPauseTimeExpression?: SyntheticPairExpression;
+  /** Synthetic fixture-only ground HitTime expression emitted into HitDef. */
+  hitDefGroundHitTime?: SyntheticNumberExpression;
+  /** Synthetic fixture-only ground SlideTime expression emitted into HitDef. */
+  hitDefGroundSlideTime?: SyntheticNumberExpression;
+  /** Synthetic fixture-only guard SlideTime expression emitted into HitDef. */
+  hitDefGuardSlideTime?: SyntheticNumberExpression;
+  /** Synthetic fixture-only ground-guard ControlTime expression emitted into HitDef. */
+  hitDefGuardControlTime?: SyntheticNumberExpression;
+  /** Synthetic fixture-only air-guard ControlTime expression emitted into HitDef. */
+  hitDefAirGuardControlTime?: SyntheticNumberExpression;
+  /** Synthetic fixture-only KO velocity delta metadata for direct HitDef. */
+  hitDefKoVelocityAdd?: [number, number];
+  /** Synthetic fixture-only air HitTime expression emitted into HitDef. */
+  hitDefAirTime?: SyntheticNumberExpression;
+  hitDefAirJuggle?: SyntheticNumberExpression;
   hitDefGuardPoints?: number;
   hitDefDizzyPoints?: number;
   dizzyPointMultipliers?: { default?: number; super?: number };
@@ -51626,14 +55125,84 @@ export type SyntheticImportedTraceFighterOptions = {
   guardRedLife?: number;
   withHitDef?: boolean;
   hitDefKill?: boolean;
+  hitDefKillExpression?: SyntheticNumberExpression;
   hitDefTargetId?: number;
+  /** Synthetic fixture-only expression emitted as the primary HitDef target ID. */
+  hitDefTargetIdExpression?: string;
+  /** Synthetic fixture-only previous HitDef id used to establish a real ChainID sequence. */
+  hitDefSeedId?: number;
+  /** Synthetic fixture-only expression emitted as the seed HitDef ID. */
+  hitDefSeedIdExpression?: string;
   hitDefChainId?: number;
-  hitDefHitCount?: number;
+  /** Synthetic fixture-only expression emitted as the primary HitDef ChainID. */
+  hitDefChainIdExpression?: string;
+  hitDefNoChainIds?: number[];
+  hitDefUnhittableTime?: SyntheticPairExpression;
+  hitDefGroundFriction?: { stand?: SyntheticNumberExpression; crouch?: SyntheticNumberExpression };
+  hitDefGetPower?: SyntheticPairExpression;
+  hitDefGivePower?: SyntheticPairExpression;
+  hitDefVarSeeds?: SyntheticRuntimeVarSeed[];
+  hitDefPaletteFx?: {
+    time?: SyntheticNumberExpression;
+    add?: [SyntheticNumberExpression, SyntheticNumberExpression, SyntheticNumberExpression];
+    mul?: [SyntheticNumberExpression, SyntheticNumberExpression, SyntheticNumberExpression];
+    color?: SyntheticNumberExpression;
+    invertAll?: SyntheticNumberExpression;
+  };
+  hitDefEnvShake?: {
+    time?: SyntheticNumberExpression;
+    freq?: SyntheticNumberExpression;
+    ampl?: SyntheticNumberExpression;
+    phase?: SyntheticNumberExpression;
+    mul?: SyntheticNumberExpression;
+    dir?: SyntheticNumberExpression;
+  };
+  hitDefFallEnvShake?: {
+    time?: SyntheticNumberExpression;
+    freq?: SyntheticNumberExpression;
+    ampl?: SyntheticNumberExpression;
+    phase?: SyntheticNumberExpression;
+    mul?: SyntheticNumberExpression;
+    dir?: SyntheticNumberExpression;
+  };
+  hitDefFallImpact?: {
+    damage?: SyntheticNumberExpression;
+    xVelocity?: SyntheticNumberExpression;
+    yVelocity?: SyntheticNumberExpression;
+    zVelocity?: SyntheticNumberExpression;
+  };
+  hitDefFallRecovery?: {
+    recover?: SyntheticNumberExpression;
+    recoverTime?: SyntheticNumberExpression;
+    downRecover?: SyntheticNumberExpression;
+    downRecoverTime?: SyntheticNumberExpression;
+  };
+  hitDefFallFlags?: {
+    enabled?: SyntheticNumberExpression;
+    airFall?: SyntheticNumberExpression;
+    kill?: SyntheticNumberExpression;
+  };
+  hitDefDownBounce?: SyntheticNumberExpression;
+  hitDefForceStand?: SyntheticNumberExpression;
+  hitDefForceNoFall?: SyntheticNumberExpression;
+  hitDefP1StateNo?: SyntheticNumberExpression;
+  hitDefP2StateNo?: SyntheticNumberExpression;
+  hitDefP2GetP1State?: SyntheticNumberExpression;
+  hitDefP1Facing?: SyntheticNumberExpression;
+  hitDefP1GetP2Facing?: SyntheticNumberExpression;
+  hitDefP2Facing?: SyntheticNumberExpression;
+  repeatHitDef?: {
+    triggerTime: number;
+    damage: number;
+    targetId: number;
+  };
+  hitDefHitCount?: SyntheticNumberExpression;
   hitDefMissOnOverride?: boolean;
   omitHitDefId?: boolean;
-  hitDefPriority?: number;
-  hitDefP1SpritePriority?: number;
-  hitDefP2SpritePriority?: number;
+  hitDefPriority?: SyntheticNumberExpression;
+  hitDefP1SpritePriority?: SyntheticNumberExpression;
+  hitDefP1SpritePriorityAlias?: boolean;
+  hitDefP2SpritePriority?: SyntheticNumberExpression;
   hitAnimType?: string;
   hitGroundType?: string;
   hitAirType?: string;
@@ -51644,6 +55213,12 @@ export type SyntheticImportedTraceFighterOptions = {
   passiveHitBy?: string;
   passiveHitOverride?: SyntheticImportedPassiveHitOverride;
   passiveHitOverrides?: SyntheticImportedPassiveHitOverride[];
+  passiveHitFallSet?: {
+    falling: boolean;
+    xVelocity?: number;
+    yVelocity?: number;
+    zVelocity?: number;
+  };
   passiveReversalDef?: {
     attr: string;
     reversalGuardFlag?: string;
@@ -51664,6 +55239,7 @@ export type SyntheticImportedTraceFighterOptions = {
   passiveControllerStates?: Array<{
     stateNo: number;
     stateType?: "S" | "C" | "A" | "L";
+    moveType?: "I" | "A" | "H";
     physics?: "S" | "C" | "A" | "N";
     animNo?: number;
     ctrl?: number;
@@ -51679,13 +55255,17 @@ export type SyntheticImportedTraceFighterOptions = {
   guardDamage?: number;
   guardKill?: boolean;
   guardFlag?: string;
+  /** Synthetic fixture-only legacy guard-distance expression emitted into HitDef. */
+  hitDefGuardDistance?: SyntheticNumberExpression;
   guardDistance?: number;
-  guardHitTime?: number;
+  guardHitTime?: SyntheticNumberExpression;
   omitGuardHitTime?: boolean;
   guardSlideTime?: number;
   guardControlTime?: number;
   guardVelocity?: [number, number?];
   omitGuardVelocity?: boolean;
+  /** Synthetic fixture-only dynamic ground velocity pair emitted into HitDef. */
+  hitDefGroundVelocity?: SyntheticPairExpression;
   groundVelocity?: [number, number?];
   airVelocity?: [number, number?];
   airGuardVelocity?: [number, number?];
@@ -51722,6 +55302,7 @@ export type SyntheticImportedTraceFighterOptions = {
     hitTimeBranchAnimNo?: number;
     hitTimeBranchExpression?: string;
     hitTimeBranchName?: string;
+    hitTimeBranchReturnAfter?: number;
   };
   defaultGuardHit?: {
     shakeStateNo?: number;
@@ -51854,6 +55435,11 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileChainId?: number;
   projectileHitDefHitCount?: number;
   projectileDamage?: [number, number?];
+  projectileUnhittableTime?: SyntheticPairExpression;
+  projectileGroundFriction?: { stand?: SyntheticNumberExpression; crouch?: SyntheticNumberExpression };
+  projectileSparkScale?: { hit?: SyntheticPairExpression; guard?: SyntheticPairExpression };
+  /** Synthetic fixture-only KO velocity delta metadata for player-owned Projectile. */
+  projectileKoVelocityAdd?: [number, number];
   projectileAirJuggle?: number;
   projectileP2StateNo?: number;
   projectileP2GetP1State?: boolean;
@@ -51868,6 +55454,8 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileEdgeBound?: number;
   projectileStageBound?: number;
   projectileHeightBound?: [number, number];
+  projectilePauseMoveTime?: number;
+  projectileSuperMoveTime?: number;
   withModifyProjectile?: boolean;
   modifyProjectileTriggerTime?: number;
   modifyProjectileId?: SyntheticNumberExpression;
@@ -51878,6 +55466,7 @@ export type SyntheticImportedTraceFighterOptions = {
   modifyProjectileEdgeBound?: SyntheticNumberExpression;
   modifyProjectileStageBound?: SyntheticNumberExpression;
   modifyProjectileHeightBound?: SyntheticPairExpression;
+  modifyProjectileGetPower?: SyntheticPairExpression;
   modifyProjectileVarSeeds?: Array<{ index: number; value: number; trigger?: string }>;
   modifyProjectileRemoveTime?: SyntheticNumberExpression;
   modifyProjectileSpritePriority?: SyntheticNumberExpression;
@@ -51911,12 +55500,17 @@ export type SyntheticImportedTraceFighterOptions = {
   secondaryProjectile?: {
     triggerTime?: number;
     id: number;
+    targetId?: number;
+    chainId?: number;
+    noChainIds?: number[];
+    attr?: string;
     offset?: [number, number];
     velocity?: [number, number];
     groundVelocity?: [number, number?];
     hits?: number;
     missTime?: number;
     removeOnHit?: boolean;
+    hitAnim?: number;
     hitSound?: string;
     guardSound?: string;
     hitSpark?: string;
@@ -52075,6 +55669,7 @@ export type SyntheticImportedTraceFighterOptions = {
   moveReversedStateNo?: number;
   moveGuardStateNo?: number;
   hitPauseTimeIgnoreHitPauseStateNo?: number;
+  hitPauseTimeIgnoreHitPauseExpression?: string;
   hitDefAttrStateNo?: number;
   numTargetStateNo?: number;
   numTargetId?: number;
@@ -52192,6 +55787,7 @@ export type SyntheticImportedTraceFighterOptions = {
     redLifeAdd?: number;
     redLifeSet?: number;
   };
+  helperResourceRouteShared?: boolean;
   helperPauseRoute?: boolean;
   helperIsHelperRoute?: { stateNo: number; animNo?: number; helperId?: number };
   helperRunOrderRoute?: { expected: number; stateNo: number };
@@ -52338,6 +55934,9 @@ export type SyntheticImportedTraceFighterOptions = {
     secondaryProjectile?: {
       triggerTime?: number;
       projectileId?: number;
+      targetId?: number;
+      chainId?: number;
+      attr?: string;
       projectileAnimNo?: number;
       pos?: [number, number];
       velocity?: [number, number];
@@ -52814,16 +56413,49 @@ export function createSyntheticImportedTraceFighter(options: SyntheticImportedTr
   const hitDefHitFlagLine = options.hitDefHitFlag === undefined ? "" : `hitflag = ${options.hitDefHitFlag}`;
   const hitDefDamage = options.hitDefDamage ?? 37;
   const withHitDef = options.withHitDef ?? true;
-  const damageLine = options.guardDamage === undefined ? String(hitDefDamage) : `${hitDefDamage},${options.guardDamage}`;
+  const damageLine = options.omitHitDefDamage
+    ? ""
+    : `damage = ${options.hitDefDamageExpression === undefined
+      ? options.guardDamage === undefined ? String(hitDefDamage) : `${hitDefDamage},${options.guardDamage}`
+      : options.hitDefDamageExpression.join(",")}`;
+  const pauseTimeLine = options.hitDefPauseTimeExpression === undefined
+    ? `${options.hitDefPauseTime ?? 4},${options.hitDefPauseTime ?? 4}`
+    : options.hitDefPauseTimeExpression.join(",");
   const guardPointsLine = options.hitDefGuardPoints === undefined ? "" : `guardpoints = ${options.hitDefGuardPoints}`;
   const dizzyPointsLine = options.hitDefDizzyPoints === undefined ? "" : `dizzypoints = ${options.hitDefDizzyPoints}`;
   const redLifeLine = options.hitDefRedLife === undefined
     ? ""
     : `redlife = ${options.hitDefRedLife}${options.guardRedLife === undefined ? "" : `,${options.guardRedLife}`}`;
-  const hitDefKillLine = options.hitDefKill === undefined ? "" : `kill = ${options.hitDefKill ? 1 : 0}`;
+  const hitDefKillLine = options.hitDefKillExpression !== undefined
+    ? `kill = ${options.hitDefKillExpression}`
+    : options.hitDefKill === undefined
+      ? ""
+      : `kill = ${options.hitDefKill ? 1 : 0}`;
   const targetMemoryId = options.omitHitDefId ? 0 : options.hitDefTargetId ?? 77;
-  const hitDefIdLine = options.omitHitDefId ? "" : `id = ${targetMemoryId}`;
-  const hitDefChainIdLine = options.hitDefChainId === undefined ? "" : `chainID = ${options.hitDefChainId}`;
+  const hitDefAuthoredId = options.hitDefTargetIdExpression ?? targetMemoryId;
+  const hitDefIdLine = options.omitHitDefId ? "" : `id = ${hitDefAuthoredId}`;
+  const hitDefChainId = options.hitDefChainIdExpression ?? options.hitDefChainId;
+  const hitDefChainIdLine = hitDefChainId === undefined ? "" : `chainID = ${hitDefChainId}`;
+  const hitDefNoChainIdLine = options.hitDefNoChainIds === undefined
+    ? ""
+    : `nochainid = ${options.hitDefNoChainIds.slice(0, 8).join(",")}`;
+  const hitDefUnhittableTimeLine = options.hitDefUnhittableTime === undefined
+    ? ""
+    : `unhittabletime = ${options.hitDefUnhittableTime.join(",")}`;
+  const hitDefGroundFrictionLines = `
+${options.hitDefGroundFriction?.stand === undefined ? "" : `stand.friction = ${options.hitDefGroundFriction.stand}`}
+${options.hitDefGroundFriction?.crouch === undefined ? "" : `crouch.friction = ${options.hitDefGroundFriction.crouch}`}
+`;
+  const hitDefSeedId = options.hitDefSeedIdExpression ?? options.hitDefSeedId;
+  const hitDefTriggerTime = hitDefSeedId === undefined ? 1 : 2;
+  const hitDefVarSeedBlock = options.hitDefVarSeeds
+    ?.map((seed) => `[State 200, HitDef Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`)
+    .join("") ?? "";
   const hitDefHitCountLine = options.hitDefHitCount === undefined ? "" : `numhits = ${options.hitDefHitCount}`;
   const airVelocityLine = options.airVelocity === undefined ? "" : `air.velocity = ${options.airVelocity.join(",")}`;
   const resolvedAirGuardVelocity = options.airGuardVelocity ?? deriveDefaultAirGuardVelocity(options.airVelocity);
@@ -52838,7 +56470,13 @@ ${options.hitYAccel === undefined ? "" : `yaccel = ${options.hitYAccel}`}
 ${options.hitSnap === undefined ? "" : `snap = ${options.hitSnap.join(",")}`}
 ${options.fallAnimType === undefined ? "" : `fall.animtype = ${options.fallAnimType}`}
 `;
+  const hitDefKoVelocityAddLine = options.hitDefKoVelocityAdd === undefined
+    ? ""
+    : `ko.velocity.add = ${options.hitDefKoVelocityAdd.join(",")}`;
   const groundVelocity = options.groundVelocity ?? [-3];
+  const hitDefGroundVelocityLine = options.hitDefGroundVelocity === undefined
+    ? groundVelocity.join(",")
+    : options.hitDefGroundVelocity.join(",");
   const cornerPushLines = `
 ${options.groundCornerPush === undefined ? "" : `ground.cornerpush.veloff = ${options.groundCornerPush}`}
 ${options.airCornerPush === undefined ? "" : `air.cornerpush.veloff = ${options.airCornerPush}`}
@@ -52854,6 +56492,15 @@ ${options.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = 
     options.airGuardCornerPush !== undefined;
   const guardVelocityLine = options.omitGuardVelocity ? "" : `guard.velocity = ${(options.guardVelocity ?? [-2]).join(",")}`;
   const guardHitTimeLine = options.omitGuardHitTime ? "" : `guard.hittime = ${options.guardHitTime ?? 9}`;
+  const guardSlideTimeLine = options.hitDefGuardSlideTime === undefined
+    ? options.guardSlideTime === undefined ? "" : `guard.slidetime = ${options.guardSlideTime}`
+    : `guard.slidetime = ${options.hitDefGuardSlideTime}`;
+  const guardControlTimeLine = options.hitDefGuardControlTime === undefined
+    ? options.guardControlTime === undefined ? "" : `guard.ctrltime = ${options.guardControlTime}`
+    : `guard.ctrltime = ${options.hitDefGuardControlTime}`;
+  const airGuardControlTimeLine = options.hitDefAirGuardControlTime === undefined
+    ? ""
+    : `airguard.ctrltime = ${options.hitDefAirGuardControlTime}`;
   const guardLine =
     options.guardDamage === undefined &&
     options.hitDefGuardPoints === undefined &&
@@ -52861,8 +56508,11 @@ ${options.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = 
     options.guardKill === undefined &&
     options.guardHitTime === undefined &&
     !options.omitGuardHitTime &&
+    options.hitDefGuardSlideTime === undefined &&
     options.guardSlideTime === undefined &&
+    options.hitDefGuardControlTime === undefined &&
     options.guardControlTime === undefined &&
+    options.hitDefAirGuardControlTime === undefined &&
     options.guardVelocity === undefined &&
     !options.omitGuardVelocity &&
     options.airGuardVelocity === undefined &&
@@ -52873,22 +56523,31 @@ guardflag = ${options.guardFlag ?? "MA"}
 ${options.guardKill === undefined ? "" : `guard.kill = ${options.guardKill ? 1 : 0}`}
 guard.pausetime = 4,4
 ${guardHitTimeLine}
-${options.guardSlideTime === undefined ? "" : `guard.slidetime = ${options.guardSlideTime}`}
-${options.guardControlTime === undefined ? "" : `guard.ctrltime = ${options.guardControlTime}`}
+${guardSlideTimeLine}
+${guardControlTimeLine}
+${airGuardControlTimeLine}
 ${guardVelocityLine}
 ${options.airGuardVelocity === undefined ? "" : `airguard.velocity = ${options.airGuardVelocity.join(",")}`}
 ${cornerPushLines}
 `;
-  const guardDistanceLine = options.guardDistance === undefined ? "" : `guard.dist = ${options.guardDistance}`;
+  const guardDistanceLine = options.hitDefGuardDistance === undefined
+    ? options.guardDistance === undefined ? "" : `guard.dist = ${options.guardDistance}`
+    : `guard.dist = ${options.hitDefGuardDistance}`;
   const fallLine = options.fall ? fallHitDefBlock(options.fall) : "";
   const hitDefAirJuggleLine = options.hitDefAirJuggle === undefined ? "" : `air.juggle = ${options.hitDefAirJuggle}`;
   const hitDefAirTimeLine = options.hitDefAirTime === undefined ? "" : `air.hittime = ${options.hitDefAirTime}`;
   const customStateLine = options.customStateRoute
+    && options.hitDefP2StateNo === undefined
     ? `
 p2stateno = ${options.customStateRoute.startStateNo}
 p2getp1state = ${options.customStateRoute.p2GetP1State === false ? 0 : 1}
 `
     : "";
+  const hitDefStateLines = `
+${options.hitDefP1StateNo === undefined ? "" : `p1stateno = ${options.hitDefP1StateNo}`}
+${options.hitDefP2StateNo === undefined ? "" : `p2stateno = ${options.hitDefP2StateNo}`}
+${options.hitDefP2GetP1State === undefined ? "" : `p2getp1state = ${options.hitDefP2GetP1State}`}
+`;
   const getHitStateLine = options.getHitState
     ? `
 p2stateno = ${options.getHitState.stateNo}
@@ -52897,21 +56556,35 @@ p2getp1state = 1
     : "";
   const hitDefControllerBlock = withHitDef
     ? `
-[State 200, HitDef]
+${hitDefVarSeedBlock}
+${hitDefSeedId === undefined ? "" : `[State 200, Seed HitDef]
 type = HitDef
 trigger1 = Time = 1
 attr = ${hitDefAttr}
 ${hitDefHitFlagLine}
-damage = ${damageLine}
+damage = 0
+pausetime = 0,0
+ground.hittime = 9
+ground.velocity = 0
+id = ${hitDefSeedId}
+priority = ${options.hitDefPriority ?? 4}, Hit
+`}
+[State 200, HitDef]
+type = HitDef
+trigger1 = Time = ${hitDefTriggerTime}
+attr = ${hitDefAttr}
+${hitDefHitFlagLine}
+${damageLine}
 ${redLifeLine}
 ${guardPointsLine}
 ${dizzyPointsLine}
 ${hitDefKillLine}
 ${hitVarLines}
-pausetime = 4,4
-ground.hittime = 9
+pausetime = ${pauseTimeLine}
+ground.hittime = ${options.hitDefGroundHitTime ?? 9}
+${options.hitDefGroundSlideTime === undefined ? "" : `ground.slidetime = ${options.hitDefGroundSlideTime}`}
 ${hitDefAirTimeLine}
-ground.velocity = ${groundVelocity.join(",")}
+ground.velocity = ${hitDefGroundVelocityLine}
 ${airVelocityLine}
 ${options.hitSound === undefined ? "" : `hitsound = ${options.hitSound}`}
 ${options.guardSound === undefined ? "" : `guardsound = ${options.guardSound}`}
@@ -52920,16 +56593,69 @@ ${options.guardSpark === undefined ? "" : `guard.sparkno = ${options.guardSpark}
 ${options.sparkXy === undefined ? "" : `sparkxy = ${options.sparkXy.join(",")}`}
 ${hitDefIdLine}
 ${hitDefChainIdLine}
+${hitDefNoChainIdLine}
+${hitDefUnhittableTimeLine}
+${hitDefGroundFrictionLines}
+${options.hitDefGetPower === undefined ? "" : `getpower = ${options.hitDefGetPower.join(",")}`}
+${options.hitDefGivePower === undefined ? "" : `givepower = ${options.hitDefGivePower.join(",")}`}
+${options.hitDefPaletteFx?.time === undefined ? "" : `palfx.time = ${options.hitDefPaletteFx.time}`}
+${options.hitDefPaletteFx?.add === undefined ? "" : `palfx.add = ${options.hitDefPaletteFx.add.join(",")}`}
+${options.hitDefPaletteFx?.mul === undefined ? "" : `palfx.mul = ${options.hitDefPaletteFx.mul.join(",")}`}
+${options.hitDefPaletteFx?.color === undefined ? "" : `palfx.color = ${options.hitDefPaletteFx.color}`}
+${options.hitDefPaletteFx?.invertAll === undefined ? "" : `palfx.invertall = ${options.hitDefPaletteFx.invertAll}`}
+${options.hitDefEnvShake?.time === undefined ? "" : `envshake.time = ${options.hitDefEnvShake.time}`}
+${options.hitDefEnvShake?.freq === undefined ? "" : `envshake.freq = ${options.hitDefEnvShake.freq}`}
+${options.hitDefEnvShake?.ampl === undefined ? "" : `envshake.ampl = ${options.hitDefEnvShake.ampl}`}
+${options.hitDefEnvShake?.phase === undefined ? "" : `envshake.phase = ${options.hitDefEnvShake.phase}`}
+${options.hitDefEnvShake?.mul === undefined ? "" : `envshake.mul = ${options.hitDefEnvShake.mul}`}
+${options.hitDefEnvShake?.dir === undefined ? "" : `envshake.dir = ${options.hitDefEnvShake.dir}`}
+${options.hitDefFallEnvShake?.time === undefined ? "" : `fall.envshake.time = ${options.hitDefFallEnvShake.time}`}
+${options.hitDefFallEnvShake?.freq === undefined ? "" : `fall.envshake.freq = ${options.hitDefFallEnvShake.freq}`}
+${options.hitDefFallEnvShake?.ampl === undefined ? "" : `fall.envshake.ampl = ${options.hitDefFallEnvShake.ampl}`}
+${options.hitDefFallEnvShake?.phase === undefined ? "" : `fall.envshake.phase = ${options.hitDefFallEnvShake.phase}`}
+${options.hitDefFallEnvShake?.mul === undefined ? "" : `fall.envshake.mul = ${options.hitDefFallEnvShake.mul}`}
+${options.hitDefFallEnvShake?.dir === undefined ? "" : `fall.envshake.dir = ${options.hitDefFallEnvShake.dir}`}
+${options.hitDefFallImpact?.damage === undefined ? "" : `fall.damage = ${options.hitDefFallImpact.damage}`}
+${options.hitDefFallImpact?.xVelocity === undefined ? "" : `fall.xvelocity = ${options.hitDefFallImpact.xVelocity}`}
+${options.hitDefFallImpact?.yVelocity === undefined ? "" : `fall.yvelocity = ${options.hitDefFallImpact.yVelocity}`}
+${options.hitDefFallImpact?.zVelocity === undefined ? "" : `fall.zvelocity = ${options.hitDefFallImpact.zVelocity}`}
+${options.hitDefFallRecovery?.recover === undefined ? "" : `fall.recover = ${options.hitDefFallRecovery.recover}`}
+${options.hitDefFallRecovery?.recoverTime === undefined ? "" : `fall.recovertime = ${options.hitDefFallRecovery.recoverTime}`}
+${options.hitDefFallRecovery?.downRecover === undefined ? "" : `down.recover = ${options.hitDefFallRecovery.downRecover}`}
+${options.hitDefFallRecovery?.downRecoverTime === undefined ? "" : `down.recovertime = ${options.hitDefFallRecovery.downRecoverTime}`}
+${options.hitDefFallFlags?.enabled === undefined ? "" : `fall = ${options.hitDefFallFlags.enabled}`}
+${options.hitDefFallFlags?.airFall === undefined ? "" : `air.fall = ${options.hitDefFallFlags.airFall}`}
+${options.hitDefFallFlags?.kill === undefined ? "" : `fall.kill = ${options.hitDefFallFlags.kill}`}
+${options.hitDefDownBounce === undefined ? "" : `down.bounce = ${options.hitDefDownBounce}`}
+${options.hitDefForceStand === undefined ? "" : `forcestand = ${options.hitDefForceStand}`}
+${options.hitDefForceNoFall === undefined ? "" : `forcenofall = ${options.hitDefForceNoFall}`}
+${options.hitDefP1Facing === undefined ? "" : `p1facing = ${options.hitDefP1Facing}`}
+${options.hitDefP1GetP2Facing === undefined ? "" : `p1getp2facing = ${options.hitDefP1GetP2Facing}`}
+${options.hitDefP2Facing === undefined ? "" : `p2facing = ${options.hitDefP2Facing}`}
 ${hitDefHitCountLine}
+${hitDefKoVelocityAddLine}
 priority = ${options.hitDefPriority ?? 4}, Hit
-${options.hitDefP1SpritePriority === undefined ? "" : `p1sprpriority = ${options.hitDefP1SpritePriority}`}
+${options.hitDefP1SpritePriority === undefined ? "" : `${options.hitDefP1SpritePriorityAlias ? "sprpriority" : "p1sprpriority"} = ${options.hitDefP1SpritePriority}`}
 ${options.hitDefP2SpritePriority === undefined ? "" : `p2sprpriority = ${options.hitDefP2SpritePriority}`}
 ${options.hitDefMissOnOverride === undefined ? "" : `missonoverride = ${options.hitDefMissOnOverride ? 1 : 0}`}
 ${guardLine}
 ${guardDistanceLine}
 ${fallLine}
 ${hitDefAirJuggleLine}
+${hitDefStateLines}
 ${customStateLine || getHitStateLine}
+${options.repeatHitDef === undefined ? "" : `
+[State 200, Repeat HitDef]
+type = HitDef
+trigger1 = Time = ${options.repeatHitDef.triggerTime}
+attr = ${hitDefAttr}
+damage = ${options.repeatHitDef.damage}
+pausetime = 0,0
+ground.hittime = 9
+ground.velocity = 0
+id = ${options.repeatHitDef.targetId}
+priority = ${options.hitDefPriority ?? 4}, Hit
+`}
 `
     : "";
   const assertSpecialLine = options.assertSpecialFlags?.length
@@ -53028,6 +56754,7 @@ ${options.passiveNotHitBy ? passiveHitByController("NotHitBy", "Reject Attrs", o
 ${options.passiveHitBy ? passiveHitByController("HitBy", "Allow Attrs", options.passiveHitBy) : ""}
 ${options.passiveHitOverride ? passiveHitOverrideController(options.passiveHitOverride) : ""}
 ${passiveHitOverrideControllers(options.passiveHitOverrides)}
+${options.passiveHitFallSet ? passiveHitFallSetController(options.passiveHitFallSet) : ""}
 ${options.passiveAssertSpecialFlags?.length ? passiveAssertSpecialController(options.passiveAssertSpecialFlags, options.passiveAssertSpecialTrigger) : ""}
 ${options.passiveAssertSpecialFlagGroups?.map((flags, index) => passiveAssertSpecialController(flags, options.passiveAssertSpecialTrigger, ` ${index + 2}`)).join("") ?? ""}
 ${options.defenseMultiplier !== undefined ? defenseMultiplierController(options.defenseMultiplier) : ""}
@@ -53114,7 +56841,7 @@ ${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, op
 ${options.extraSuperPauseP2DefMul === undefined ? "" : extraSuperPauseP2DefMulBlock(options.extraSuperPauseP2DefMul)}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale) : ""}
 ${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secondaryProjectile) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
@@ -53126,6 +56853,7 @@ ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   edgeBound: options.modifyProjectileEdgeBound,
   stageBound: options.modifyProjectileStageBound,
   heightBound: options.modifyProjectileHeightBound,
+  getPower: options.modifyProjectileGetPower,
   varSeeds: options.modifyProjectileVarSeeds,
   removeTime: options.modifyProjectileRemoveTime,
   spritePriority: options.modifyProjectileSpritePriority,
@@ -53178,7 +56906,12 @@ ${options.withDynamicSoundValueControllers ? dynamicSoundValueControllerBlock() 
 ${options.withNoOpControllers ? noOpControllerBlock() : ""}
 ${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveReversed >= 1", options.moveReversedStateNo, "MoveReversed Branch")}
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
-${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : hitPauseTimeIgnoreHitPauseBranchBlock(options.hitPauseTimeIgnoreHitPauseStateNo)}
+${options.hitPauseTimeIgnoreHitPauseStateNo === undefined
+    ? ""
+    : hitPauseTimeIgnoreHitPauseBranchBlock(
+        options.hitPauseTimeIgnoreHitPauseStateNo,
+        options.hitPauseTimeIgnoreHitPauseExpression,
+      )}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
 ${options.numTargetStateNo === undefined ? "" : contactBranchBlock(`NumTarget(${numTargetId}) > 0`, options.numTargetStateNo, "NumTarget Branch")}
 ${options.targetRedirectStateNo === undefined ? "" : contactBranchBlock(targetRedirectExpression, options.targetRedirectStateNo, "Target Redirect Branch")}
@@ -53283,7 +57016,7 @@ ${options.helperIsHelperRoute ? helperIsHelperRouteBlock(options.helperIsHelperR
 ${options.helperRunOrderRoute ? helperRunOrderRouteBlock(options.helperRunOrderRoute) : ""}
 ${options.helperSelfTagRoute ? helperSelfTagRouteBlock(options.helperSelfTagRoute) : ""}
 ${options.helperPauseRoute ? helperPauseRouteBlock() : ""}
-${options.helperResourceRoute ? helperResourceRouteBlock(options.helperResourceRoute, options.helperPauseRoute !== true) : ""}
+${options.helperResourceRoute ? helperResourceRouteBlock(options.helperResourceRoute, options.helperPauseRoute !== true, options.helperResourceRouteShared === true) : ""}
 ${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNearRoute) : ""}
 ${options.helperParentRootRedirectRoute ? helperParentRootRedirectRouteBlock(options.helperParentRootRedirectRoute) : ""}
 ${options.helperControllerParamRedirectRoute ? helperControllerParamRedirectRouteBlock(options.helperControllerParamRedirectRoute) : ""}
@@ -53343,7 +57076,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
     ...(options.hitDefRedLife === undefined ? {} : { redLife: options.hitDefRedLife }),
     ...(options.guardRedLife === undefined ? {} : { guardRedLife: options.guardRedLife }),
     kill: options.hitDefKill,
-    priority: options.hitDefPriority ?? 4,
+    priority: typeof options.hitDefPriority === "number" ? options.hitDefPriority : 4,
     attr: hitDefAttr,
     targetId: targetMemoryId,
     requiresHitDef: true,
@@ -53351,6 +57084,9 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
     hitStun: 9,
     push: Math.abs(groundVelocity[0] ?? 3),
     hitVelocityY: groundVelocity[1],
+    ...(options.hitDefKoVelocityAdd === undefined
+      ? {}
+      : { koVelocityAdd: { x: options.hitDefKoVelocityAdd[0], y: options.hitDefKoVelocityAdd[1] } }),
     guardFlag: options.guardFlag,
     guardDistance: options.guardDistance,
     guardDamage: options.guardDamage,
@@ -54289,6 +58025,20 @@ time = 12
 `;
 }
 
+function passiveHitFallSetController(
+  config: NonNullable<SyntheticImportedTraceFighterOptions["passiveHitFallSet"]>,
+): string {
+  return `
+[State 0, Seed HitFall Payload]
+type = HitFallSet
+trigger1 = Time = 0
+value = ${config.falling ? 1 : 0}
+${config.xVelocity === undefined ? "" : `xvel = ${config.xVelocity}`}
+${config.yVelocity === undefined ? "" : `yvel = ${config.yVelocity}`}
+${config.zVelocity === undefined ? "" : `zvel = ${config.zVelocity}`}
+`;
+}
+
 function passiveHitOverrideControllers(configs: SyntheticImportedPassiveHitOverride[] | undefined): string {
   return configs?.map((config, index) => passiveHitOverrideController(config, ` ${index + 2}`)).join("") ?? "";
 }
@@ -54363,7 +58113,7 @@ function passiveControllerStateBlocks(options: SyntheticImportedTraceFighterOpti
       return `
 [Statedef ${state.stateNo}]
 type = ${state.stateType ?? "S"}
-movetype = I
+movetype = ${state.moveType ?? "I"}
 physics = ${state.physics ?? "S"}
 anim = ${state.animNo ?? state.stateNo}
 ctrl = ${state.ctrl ?? 1}
@@ -55626,6 +59376,8 @@ ${fall.envShake?.time === undefined ? "" : `fall.envshake.time = ${fall.envShake
 ${fall.envShake?.freq === undefined ? "" : `fall.envshake.freq = ${fall.envShake.freq}`}
 ${fall.envShake?.ampl === undefined ? "" : `fall.envshake.ampl = ${fall.envShake.ampl}`}
 ${fall.envShake?.phase === undefined ? "" : `fall.envshake.phase = ${fall.envShake.phase}`}
+${fall.envShake?.mul === undefined ? "" : `fall.envshake.mul = ${fall.envShake.mul}`}
+${fall.envShake?.dir === undefined ? "" : `fall.envshake.dir = ${fall.envShake.dir}`}
 `;
 }
 
@@ -55775,6 +59527,7 @@ function defaultGetHitProgressionBlock(state: {
   hitTimeBranchAnimNo?: number;
   hitTimeBranchExpression?: string;
   hitTimeBranchName?: string;
+  hitTimeBranchReturnAfter?: number;
 }): string {
   const shakeStateNo = state.shakeStateNo ?? 5000;
   const slideStateNo = state.slideStateNo ?? 5001;
@@ -55788,6 +59541,7 @@ function defaultGetHitProgressionBlock(state: {
   const hitTimeBranchAnimNo = state.hitTimeBranchAnimNo ?? hitTimeBranchStateNo;
   const hitTimeBranchExpression = state.hitTimeBranchExpression ?? "GetHitVar(hittime) > 0";
   const hitTimeBranchName = state.hitTimeBranchName ?? "Normal HitTime Branch";
+  const hitTimeBranchReturnAfter = state.hitTimeBranchReturnAfter;
   const hitTimeBranchController =
     hitTimeBranchStateNo === undefined
       ? ""
@@ -55808,6 +59562,13 @@ movetype = H
 physics = S
 anim = ${hitTimeBranchAnimNo}
 ctrl = 0
+${hitTimeBranchReturnAfter === undefined ? "" : `
+[State ${hitTimeBranchStateNo}, Return After HitCount Probe]
+type = SelfState
+trigger1 = Time >= ${hitTimeBranchReturnAfter}
+value = 0
+ctrl = 1
+`}
 `;
   return `
 [Statedef ${shakeStateNo}]
@@ -56967,6 +60728,12 @@ function projectileControllerBlock(
   stageBound?: number,
   heightBound?: [number, number],
   airJuggle?: number,
+  koVelocityAdd?: [number, number],
+  pauseMoveTime?: number,
+  superMoveTime?: number,
+  unhittableTime?: SyntheticPairExpression,
+  groundFriction?: { stand?: SyntheticNumberExpression; crouch?: SyntheticNumberExpression },
+  sparkScale?: { hit?: SyntheticPairExpression; guard?: SyntheticPairExpression },
   label = "Fast Projectile",
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
@@ -57001,6 +60768,18 @@ function projectileControllerBlock(
   const stageBoundLine = stageBound === undefined ? "" : `projstagebound = ${stageBound}`;
   const heightBoundLine = heightBound === undefined ? "" : `projheightbound = ${heightBound[0]},${heightBound[1]}`;
   const airJuggleLine = airJuggle === undefined ? "" : `air.juggle = ${airJuggle}`;
+  const koVelocityAddLine = koVelocityAdd === undefined ? "" : `ko.velocity.add = ${koVelocityAdd.join(",")}`;
+  const pauseMoveTimeLine = pauseMoveTime === undefined ? "" : `pausemovetime = ${pauseMoveTime}`;
+  const superMoveTimeLine = superMoveTime === undefined ? "" : `supermovetime = ${superMoveTime}`;
+  const unhittableTimeLine = unhittableTime === undefined ? "" : `unhittabletime = ${unhittableTime.join(",")}`;
+  const groundFrictionLines = `
+${groundFriction?.stand === undefined ? "" : `stand.friction = ${groundFriction.stand}`}
+${groundFriction?.crouch === undefined ? "" : `crouch.friction = ${groundFriction.crouch}`}
+`;
+  const sparkScaleLines = `
+${sparkScale?.hit === undefined ? "" : `sparkscale = ${sparkScale.hit.join(",")}`}
+${sparkScale?.guard === undefined ? "" : `guard.sparkscale = ${sparkScale.guard.join(",")}`}
+`;
   const cornerPushLines = `
 ${groundCornerPush === undefined ? "" : `ground.cornerpush.veloff = ${groundCornerPush}`}
 ${airCornerPush === undefined ? "" : `air.cornerpush.veloff = ${airCornerPush}`}
@@ -57030,11 +60809,14 @@ ${accelLine}
 ${velocityMultiplierLine}
 ${scaleLine}
 projremovetime = ${removeTime}
+${pauseMoveTimeLine}
+${superMoveTimeLine}
 ${edgeBoundLine}
 ${stageBoundLine}
 ${heightBoundLine}
 damage = ${damage.join(",")}
 ${airJuggleLine}
+${koVelocityAddLine}
 ${hitFlagLine}
 ${killLine}
 ${guardKillLine}
@@ -57042,6 +60824,9 @@ pausetime = 4,4
 ground.hittime = 13
 ground.velocity = ${groundVelocity.join(",")}
 ${airVelocityLine}
+${unhittableTimeLine}
+${groundFrictionLines}
+${sparkScaleLines}
 ${p2StateNoLine}
 ${p2GetP1StateLine}
 ${missOnOverrideLine}
@@ -57059,7 +60844,7 @@ ${guardVelocityLine}
 ${airGuardVelocityLine}
 ${cornerPushLines}
 guard.dist = 120
-sprpriority = 7
+projsprpriority = 7
 `;
 }
 
@@ -57068,6 +60853,11 @@ function secondaryProjectileControllerBlock(projectile: NonNullable<SyntheticImp
   const velocity = projectile.velocity ?? [36, 0];
   const groundVelocity = projectile.groundVelocity ?? [-5];
   const removeOnHitLine = projectile.removeOnHit === undefined ? "" : `projremove = ${projectile.removeOnHit ? 1 : 0}`;
+  const targetIdLine = projectile.targetId === undefined ? "" : `id = ${projectile.targetId}`;
+  const chainIdLine = projectile.chainId === undefined ? "" : `chainID = ${projectile.chainId}`;
+  const noChainIdLine = projectile.noChainIds === undefined ? "" : `nochainid = ${projectile.noChainIds.slice(0, 8).join(",")}`;
+  const attrLine = projectile.attr === undefined ? "" : `attr = ${projectile.attr}`;
+  const hitAnimLine = projectile.hitAnim === undefined ? "" : `projhitanim = ${projectile.hitAnim}`;
   const hitSoundLine = projectile.hitSound === undefined ? "" : `hitsound = ${projectile.hitSound}`;
   const guardSoundLine = projectile.guardSound === undefined ? "" : `guardsound = ${projectile.guardSound}`;
   const hitSparkLine = projectile.hitSpark === undefined ? "" : `sparkno = ${projectile.hitSpark}`;
@@ -57078,11 +60868,16 @@ function secondaryProjectileControllerBlock(projectile: NonNullable<SyntheticImp
 type = Projectile
 trigger1 = Time = ${projectile.triggerTime ?? 2}
 projid = ${projectile.id}
+${targetIdLine}
+${chainIdLine}
+${noChainIdLine}
+${attrLine}
 projpriority = 1
 projhits = ${projectile.hits ?? 1}
 projmisstime = ${projectile.missTime ?? 0}
 ${removeOnHitLine}
 projanim = 910
+${hitAnimLine}
 offset = ${offset[0]},${offset[1]}
 velocity = ${velocity[0]},${velocity[1]}
 projremovetime = 24
@@ -57100,7 +60895,7 @@ guard.pausetime = 3,3
 guard.hittime = 8
 guard.velocity = -2
 guard.dist = 120
-sprpriority = 7
+projsprpriority = 7
 `;
 }
 
@@ -57114,6 +60909,7 @@ function modifyProjectileControllerBlock(input: {
   edgeBound?: SyntheticNumberExpression;
   stageBound?: SyntheticNumberExpression;
   heightBound?: SyntheticPairExpression;
+  getPower?: SyntheticPairExpression;
   varSeeds?: Array<{ index: number; value: number; trigger?: string }>;
   removeTime?: SyntheticNumberExpression;
   spritePriority?: SyntheticNumberExpression;
@@ -57142,8 +60938,9 @@ value = ${seed.value}
   const edgeBoundLine = input.edgeBound === undefined ? "" : `projedgebound = ${input.edgeBound}`;
   const stageBoundLine = input.stageBound === undefined ? "" : `projstagebound = ${input.stageBound}`;
   const heightBoundLine = input.heightBound === undefined ? "" : `projheightbound = ${input.heightBound[0]},${input.heightBound[1]}`;
+  const getPowerLine = input.getPower === undefined ? "" : `getpower = ${input.getPower[0]},${input.getPower[1]}`;
   const removeTimeLine = input.removeTime === undefined ? "" : `projremovetime = ${input.removeTime}`;
-  const spritePriorityLine = input.spritePriority === undefined ? "" : `sprpriority = ${input.spritePriority}`;
+  const spritePriorityLine = input.spritePriority === undefined ? "" : `projsprpriority = ${input.spritePriority}`;
   const priorityLine = input.priority === undefined ? "" : `projpriority = ${input.priority}`;
   const hitsLine = input.hits === undefined ? "" : `projhits = ${input.hits}`;
   const missTimeLine = input.missTime === undefined ? "" : `projmisstime = ${input.missTime}`;
@@ -57152,7 +60949,7 @@ value = ${seed.value}
 [State 200, Modify Fast Projectile]
 type = ModifyProjectile
 trigger1 = Time = ${input.triggerTime ?? 3}
-projid = ${input.projectileId ?? 77}
+id = ${input.projectileId ?? 77}
 ${velocityLine}
 ${accelLine}
 ${velocityMultiplierLine}
@@ -57160,6 +60957,7 @@ ${scaleLine}
 ${edgeBoundLine}
 ${stageBoundLine}
 ${heightBoundLine}
+${getPowerLine}
 ${removeTimeLine}
 ${spritePriorityLine}
 ${priorityLine}
@@ -57363,11 +61161,11 @@ value = ${seed.value}
 `;
 }
 
-function hitPauseTimeIgnoreHitPauseBranchBlock(stateNo: number): string {
+function hitPauseTimeIgnoreHitPauseBranchBlock(stateNo: number, expression = "HitPauseTime > 0"): string {
   return `
 [State 200, HitPauseTime Branch]
 type = ChangeState
-trigger1 = HitPauseTime > 0
+trigger1 = ${expression}
 ignorehitpause = 1
 value = ${stateNo}
 ctrl = 0
@@ -59362,21 +63160,24 @@ ${clsnProxyLine}
 function helperResourceRouteBlock(
   route: NonNullable<SyntheticImportedTraceFighterOptions["helperResourceRoute"]>,
   includeStateDef = true,
+  sharedResourceContract = false,
 ): string {
   const lifeAfterAdd = Math.max(0, Math.min(1000, 1000 + route.lifeAdd));
   const powerAfterAdd = Math.max(0, Math.min(3000, route.powerAdd));
+  const resourceTrigger = sharedResourceContract ? "Time = 0" : undefined;
+  const redLifeTrigger = sharedResourceContract ? "Time = 0" : `Life = ${route.lifeSet}`;
   const redLifeControllers = route.redLifeAdd === undefined && route.redLifeSet === undefined
     ? ""
     : `
 [State 1200, Helper RedLife Add Probe]
 type = RedLifeAdd
-trigger1 = Life = ${route.lifeSet}
+trigger1 = ${redLifeTrigger}
 value = ${route.redLifeAdd ?? 0}
 absolute = 1
 
 [State 1200, Helper RedLife Set Probe]
 type = RedLifeSet
-trigger1 = Life = ${route.lifeSet}
+trigger1 = ${redLifeTrigger}
 value = ${route.redLifeSet ?? 0}
 `;
   const redLifeBranch = "";
@@ -59402,19 +63203,19 @@ value = ${route.lifeSet}
 
 [State 1200, Helper PowerAdd Probe]
 type = PowerAdd
-trigger1 = Life = ${route.lifeSet}
+trigger1 = ${resourceTrigger ?? `Life = ${route.lifeSet}`}
 value = ${route.powerAdd}
 
 [State 1200, Helper PowerSet Probe]
 type = PowerSet
-trigger1 = Power = ${powerAfterAdd}
+trigger1 = ${resourceTrigger ?? `Power = ${powerAfterAdd}`}
 value = ${route.powerSet}
 ${redLifeControllers}
 
 [State 1200, Helper Resource Branch]
 type = ChangeState
-trigger1 = Life = ${route.lifeSet}
-trigger1 = Power = ${route.powerSet}
+trigger1 = ${resourceTrigger ?? `Life = ${route.lifeSet}`}
+trigger1 = ${resourceTrigger ?? `Power = ${route.powerSet}`}
 ${redLifeBranch}
 value = ${route.stateNo}
 ctrl = 0
@@ -59510,7 +63311,7 @@ pausetime = 3,3
 ground.hittime = 11
 ground.velocity = -3
 guardflag = MA
-sprpriority = 6
+projsprpriority = 6
 
 [State 1200, Default Self TagOut]
 type = TagOut
@@ -59996,7 +63797,7 @@ guard.pausetime = 2,2
 guard.hittime = 7
 guard.velocity = -2
 guard.dist = 100
-sprpriority = 6
+projsprpriority = 6
 
 [State 1200, Helper Projectile Route]
 type = ChangeState
@@ -60199,7 +64000,7 @@ ${projectileEdgeBoundLine}
 ${projectileStageBoundLine}
 ${projectileHeightBoundLine}
 projremove = 1
-sprpriority = 4
+projsprpriority = 4
 
 [State 1200, Helper ModifyProjectile Route]
 type = ChangeState
@@ -60217,7 +64018,7 @@ ctrl = 0
 [State ${route.modifyStateNo}, Helper ModifyProjectile]
 type = ModifyProjectile
 trigger1 = Time = ${modifyTriggerTime}
-projid = ${modifyProjectileId}
+id = ${modifyProjectileId}
 velocity = ${velocity[0]},${velocity[1]}
 accel = ${accel[0]},${accel[1]}
 velmul = ${velocityMultiplier[0]},${velocityMultiplier[1]}
@@ -60226,7 +64027,7 @@ ${edgeBoundLine}
 ${stageBoundLine}
 ${heightBoundLine}
 projremovetime = ${removeTime}
-sprpriority = ${spritePriority}
+projsprpriority = ${spritePriority}
 projpriority = ${priority}
 projhits = ${hits}
 projmisstime = ${missTime}
@@ -60304,6 +64105,9 @@ ${route.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = ${
       : (() => {
           const secondaryProjectileId = secondaryProjectile.projectileId ?? projectileId;
           const secondaryProjectileAnimNo = secondaryProjectile.projectileAnimNo ?? route.projectileAnimNo;
+          const secondaryTargetIdLine = secondaryProjectile.targetId === undefined ? hitTargetIdLine : `id = ${secondaryProjectile.targetId}`;
+          const secondaryChainIdLine = secondaryProjectile.chainId === undefined ? chainIdLine : `chainID = ${secondaryProjectile.chainId}`;
+          const secondaryAttrLine = secondaryProjectile.attr === undefined ? "" : `attr = ${secondaryProjectile.attr}`;
           const secondaryPos = secondaryProjectile.pos ?? pos;
           const secondaryVelocity = secondaryProjectile.velocity ?? velocity;
           const secondaryHitSoundLine =
@@ -60324,8 +64128,9 @@ ${route.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = ${
 type = Projectile
 trigger1 = Time = ${secondaryProjectile.triggerTime ?? 18}
 projid = ${secondaryProjectileId}
-${hitTargetIdLine}
-${chainIdLine}
+${secondaryTargetIdLine}
+${secondaryChainIdLine}
+${secondaryAttrLine}
 ${hitCountLine}
 projpriority = 2
 projhits = 1
@@ -60354,7 +64159,7 @@ guard.hittime = 7
 guard.velocity = -2
 ${cornerPushLines}
 guard.dist = 100
-sprpriority = 6
+projsprpriority = 6
 `;
         })();
   const trapBranchBlocks = (route.trapTriggers ?? [])
@@ -60423,7 +64228,7 @@ guard.hittime = 7
 guard.velocity = -2
 ${cornerPushLines}
 guard.dist = 100
-sprpriority = 6
+projsprpriority = 6
 
 [State 1200, Helper ProjHit Wait]
 type = ChangeState
@@ -60530,7 +64335,7 @@ ${guardVelocityLine}
 ${airGuardVelocityLine}
 ${cornerPushLines}
 guard.dist = 100
-sprpriority = 6
+projsprpriority = 6
 
 [State 1200, Helper ProjGuard Wait]
 type = ChangeState
@@ -60623,7 +64428,7 @@ guard.pausetime = 2,2
 guard.hittime = 7
 guard.velocity = -2
 guard.dist = 100
-sprpriority = 6
+projsprpriority = 6
 
 [State 1200, Helper ProjContact Wait]
 type = ChangeState
@@ -60728,7 +64533,7 @@ guard.pausetime = 2,2
 guard.hittime = 7
 guard.velocity = -2
 guard.dist = 100
-sprpriority = 6
+projsprpriority = 6
 
 [State 1200, Helper ProjCancel Wait]
 type = ChangeState

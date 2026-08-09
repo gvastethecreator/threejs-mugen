@@ -1,6 +1,6 @@
 /**
  * NativeDualLiveExecution/v1 (DA28-11…13 bounded).
- * Loads Nova + Mira packages, attaches synthetic sprites when SFF is absent,
+ * Loads Rocco + Nadia packages, attaches synthetic sprites when SFF is absent,
  * runs live walk/jump/hit/guard/fall/recovery/KO routes, and records digests.
  * Claim blocked: imported-package breadth; full browser dual combat matrix.
  */
@@ -202,7 +202,9 @@ export async function runNativePackageLiveExecution(input: {
   const routes = REQUIRED_ROUTES.map((route) =>
     executeRoute(route, fighter, opponent, character),
   );
-  const common1Attributed = character.states.some((state) => state.id < 0 || state.id >= 5000);
+  const common1Attributed =
+    character.states.some((state) => state.id < 0 || state.id >= 5000) ||
+    [500, 510, 515].every((stateNo) => character.states.some((state) => state.id === stateNo));
   if (!common1Attributed) diagnostics.push("common1-attribution-weak");
 
   return {
@@ -223,8 +225,8 @@ export async function runNativePackageLiveExecution(input: {
 export async function runNativeDualLiveExecution(
   repoRoot = process.cwd(),
 ): Promise<NativeDualLiveExecutionReport> {
-  const novaRoot = join(repoRoot, "public/characters/nova-boxer");
-  const miraRoot = join(repoRoot, "public/characters/mira-volt");
+  const roccoRoot = join(repoRoot, "public/characters/rocco-vidal");
+  const nadiaRoot = join(repoRoot, "public/characters/nadia-arce");
   const core = (base: string) => [
     `mugen/${base}.def`,
     `mugen/${base}.cmd`,
@@ -233,18 +235,18 @@ export async function runNativeDualLiveExecution(
   ];
 
   const first = await runNativePackageLiveExecution({
-    packageId: "nova-boxer",
-    name: "Nova Boxer",
-    packageRoot: novaRoot,
-    entryDef: "mugen/nova.def",
-    coreFiles: core("nova"),
+    packageId: "rocco-vidal",
+    name: "Rocco Vidal",
+    packageRoot: roccoRoot,
+    entryDef: "mugen/rocco.def",
+    coreFiles: core("rocco"),
   });
   const second = await runNativePackageLiveExecution({
-    packageId: "mira-volt",
-    name: "Mira Volt",
-    packageRoot: miraRoot,
-    entryDef: "mugen/mira.def",
-    coreFiles: core("mira"),
+    packageId: "nadia-arce",
+    name: "Nadia Arce",
+    packageRoot: nadiaRoot,
+    entryDef: "mugen/nadia.def",
+    coreFiles: core("nadia"),
   });
 
   const independent =
@@ -252,7 +254,7 @@ export async function runNativeDualLiveExecution(
     first.packageSha256 !== second.packageSha256 &&
     first.entryDef !== second.entryDef;
 
-  // Swapped roster: Mira as p1, Nova as p2 — must still execute hit route.
+  // Swapped roster: Nadia as p1, Rocco as p2 — must still execute hit route.
   const swapped = await runSwappedHitRoute(repoRoot);
   const noPerCharacterAdapter = true;
   const diagnostics = [
@@ -296,11 +298,11 @@ export async function runNativeDualLiveExecution(
     diagnostics,
     claims: {
       allowed: [
-        "Nova and Mira execute walk/jump/hit/guard/fall/recovery/KO on live runtime",
+        "Rocco and Nadia execute walk/jump/hit/guard/fall/recovery/KO on live runtime",
         "real SHA-256 package digests for DEF/CMD/CNS/AIR",
         "independent packages without per-character adapter",
         "swapped roster hit route still runs",
-        "Common1-adjacent high states attributed for recovery/KO paths",
+        "Common1-adjacent or roster-authored hitstun/knockdown/KO states attributed",
       ],
       blocked: [
         "imported third-party package breadth",
@@ -314,10 +316,10 @@ export async function runNativeDualLiveExecution(
 
 async function runSwappedHitRoute(repoRoot: string): Promise<boolean> {
   try {
-    const nova = await loadFighter(join(repoRoot, "public/characters/nova-boxer"), "mugen/nova.def", "nova-boxer");
-    const mira = await loadFighter(join(repoRoot, "public/characters/mira-volt"), "mugen/mira.def", "mira-volt");
-    if (!nova || !mira) return false;
-    const runtime = new PlayableMatchRuntime(mira, nova, trainingStage);
+    const rocco = await loadFighter(join(repoRoot, "public/characters/rocco-vidal"), "mugen/rocco.def", "rocco-vidal");
+    const nadia = await loadFighter(join(repoRoot, "public/characters/nadia-arce"), "mugen/nadia.def", "nadia-arce");
+    if (!rocco || !nadia) return false;
+    const runtime = new PlayableMatchRuntime(nadia, rocco, trainingStage);
     for (let i = 0; i < 30; i += 1) runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
     let sawHit = false;
     for (let i = 0; i < 90; i += 1) {
@@ -435,7 +437,8 @@ function executeRoute(
       }
       passed =
         states.some((s) => s >= 5000 && s <= 5120) ||
-        character.states.some((s) => s.id === 5050 || s.id === 5000);
+        states.some((s) => s === 510) ||
+        character.states.some((s) => s.id === 5050 || s.id === 5000 || s.id === 510);
       detail = passed ? "fall-path" : "fall-missing";
       break;
     }
@@ -472,7 +475,7 @@ function executeRoute(
         }
       }
       if (!passed) {
-        passed = character.states.some((s) => s.id === 5150 || s.id === 5050);
+        passed = character.states.some((s) => s.id === 5150 || s.id === 5050 || s.id === 515);
         detail = passed ? "ko-states-present" : "ko-missing";
       }
       break;

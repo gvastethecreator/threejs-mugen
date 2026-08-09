@@ -31,6 +31,18 @@ import type { RuntimeStateTransitionCycleDiagnostic } from "./RuntimeStateTransi
 export type RuntimeHitTmp = -1 | 0 | 1 | 2;
 export type RuntimeActTmp = -3 | -2 | -1 | 0 | 1;
 
+export type RuntimePaletteFxPayload = {
+  time: number;
+  add: [number, number, number];
+  mul: [number, number, number];
+  color: number;
+  invert: boolean;
+};
+
+export type RuntimePaletteFxState = RuntimePaletteFxPayload & {
+  remaining: number;
+};
+
 export type CharacterRuntimeState = {
   teamState?: RuntimeTeamState;
   pos: { x: number; y: number };
@@ -79,6 +91,8 @@ export type CharacterRuntimeState = {
   };
   hitOverrides?: RuntimeHitOverrideSlot[];
   reversal?: RuntimeReversalDef;
+  /** Remaining direct HitDef/ReversalDef admission lock for this actor. */
+  unhittableTime?: number;
   defenseMultiplier?: number;
   superPauseDefenseMultiplier?: number;
   /** Incoming-damage factor from Common1 fall.defence_up; upstream stores its inverse. */
@@ -96,14 +110,7 @@ export type CharacterRuntimeState = {
     source: RuntimeHitDefSpritePrioritySource;
     supported: boolean;
   };
-  paletteFx?: {
-    remaining: number;
-    time: number;
-    add: [number, number, number];
-    mul: [number, number, number];
-    color: number;
-    invert: boolean;
-  };
+  paletteFx?: RuntimePaletteFxState;
   afterImage?: {
     remaining: number;
     time: number;
@@ -120,6 +127,14 @@ export type CharacterRuntimeState = {
   renderScale?: { x: number; y: number };
   angle?: number;
   renderAngle?: number;
+  renderAngleX?: number;
+  renderAngleY?: number;
+  renderShearX?: number;
+  shadowColor?: [number, number, number];
+  reflectionMode?: number;
+  renderProjection?: "orthographic" | "perspective" | "perspective2";
+  renderFocalLength?: number;
+  renderWindow?: [number, number, number, number];
   animationSource?: "self" | "state-owner";
   customState?: RuntimeCustomState;
   assertSpecial?: RuntimeAssertSpecial;
@@ -239,29 +254,108 @@ export type RuntimeReversalDef = {
   hitCount?: number;
   hitPause: number;
   attackDepth?: [number, number];
+  unhittableTime?: [number, number];
+};
+
+export type RuntimeHitVelocityVector = {
+  x: number;
+  y: number;
+  z: number;
+};
+
+/** Last HitDef velocity vectors exposed by Ikemen's GetHitVar aliases. */
+export type RuntimeHitVelocityMetadata = {
+  ground?: RuntimeHitVelocityVector;
+  air?: RuntimeHitVelocityVector;
+  down?: RuntimeHitVelocityVector;
+  guard?: RuntimeHitVelocityVector;
+  airGuard?: RuntimeHitVelocityVector;
+};
+
+/** Last HitDef reaction animation types exposed by Ikemen GetHitVar aliases. */
+export type RuntimeHitAnimTypeMetadata = {
+  ground?: number;
+  air?: number;
+  fall?: number;
 };
 
 export type RuntimeGetHitVars = {
   damage?: number;
+  /** First/second HitDef damage values exposed by Ikemen GetHitVar. */
+  hitDamage?: number;
+  guardDamage?: number;
   kill?: boolean;
   sourcePlayerNo?: number;
+  /** Numeric Ikemen character identity that authored the last HitDef. */
+  sourcePlayerId?: number;
   sourceActorId?: string;
   sourceRootId?: string;
   sourceRootOwned?: boolean;
   sourceAttr?: string;
+  /** Effective guardflag from the last HitDef, including the runtime default. */
+  sourceGuardFlag?: string;
+  /** Effective hitflag from the last HitDef, including the runtime default. */
+  sourceHitFlag?: string;
+  /** Projectile ID that authored the last hit; direct HitDef hits read as -1. */
+  sourceProjectileId?: number;
+  /** 1-based team side carried by the last HitDef; missing metadata reads -1. */
+  sourceTeamSide?: -1 | 1 | 2;
+  /** Numerical attack priority carried by the last HitDef. */
+  sourcePriority?: number;
+  /** Authored dizzypoints carried by the last HitDef; separate from the current dizzy pool. */
+  sourceDizzyPoints?: number;
+  /** Authored guardpoints carried by the last HitDef; separate from the current guard pool. */
+  sourceGuardPoints?: number;
+  /** Authored redlife carried by the last HitDef; separate from the current red-life pool. */
+  sourceRedLife?: number;
+  /** Authored second givepower value carried by the last HitDef; separate from current power. */
+  sourceGuardPower?: number;
+  /** Authored first givepower value carried by the last HitDef; separate from current power. */
+  sourceHitPower?: number;
+  /** Effective givepower value received by the defender on the last contact. */
+  sourcePower?: number;
+  /** Authored HitDef p2facing value from the last hit contact. */
+  sourceFacing?: number;
+  /** Authored HitDef score carried by the last hit; separate from score adjudication. */
+  sourceScore?: number;
+  /** Cumulative guard contacts while the defender remains in get-hit/guard state. */
+  guardCount?: number;
+  /** Mutable consecutive hit contacts exposed by GetHitVar(hitcount). */
+  comboHitCount?: number;
+  /** Authored direct HitDef keepstate flag; missing metadata reads 0. */
+  keepState?: boolean;
+  /** Ephemeral same-frame contact marker exposed by GetHitVar(frame). */
+  frame?: boolean;
   sourceGuardKo?: boolean;
   hitId?: number;
   chainId?: number;
   hitCount?: number;
   hitOffset?: { x: number; y?: number; z?: number };
   animType?: number;
+  /** Literal ground/air/fall HitDef animation types for Ikemen aliases. */
+  groundAnimType?: number;
+  airAnimType?: number;
+  fallAnimType?: number;
   groundType?: number;
   airType?: number;
+  /** Authored Ikemen-GO HitDef x acceleration metadata. */
+  xAccel?: number;
   yAccel?: number;
+  /** Authored Ikemen-GO HitDef z acceleration metadata. */
+  zAccel?: number;
+  /** HitDef grounded friction overrides used only while the receiver is in get-hit state. */
+  standFriction?: number;
+  crouchFriction?: number;
+  /** Authored/effective HitDef velocity vectors for Ikemen GetHitVar aliases. */
+  hitVelocities?: RuntimeHitVelocityMetadata;
+  /** Ikemen-GO KO-only velocity delta exposed by GetHitVar(xveladd|yveladd). */
+  hitVelocityAdd?: { x: number; y: number };
   isBound?: boolean;
   guarded?: boolean;
   hitTime?: number;
   hitShakeTime?: number;
+  /** Unguarded HitDef ground.slidetime copied into get-hit metadata. */
+  slideTime?: number;
 };
 
 export type RuntimeCustomState = {
@@ -296,6 +390,10 @@ export type RuntimeHitFall = {
     freq: number;
     ampl: number;
     phase: number;
+    /** Ikemen-GO fall.envshake.mul; omitted uses the engine default of 1. */
+    mul?: number;
+    /** Ikemen-GO fall.envshake.dir in degrees. */
+    dir?: number;
   };
 };
 
@@ -403,6 +501,9 @@ export type RuntimeHitEffectEvent = {
   raw?: string;
   rawPrefix?: string;
   offset?: { x: number; y: number };
+  angle?: number;
+  /** Authored HitDef non-uniform X/Y spark scale. */
+  scale?: { x: number; y: number };
   stateNo: number;
   tick: number;
   runtimeTick?: number;
@@ -414,12 +515,25 @@ export type RuntimeHitEffectEvent = {
   contactKind?: RuntimeHitDefContactKind;
 };
 
+export type RuntimeContactEnvShake = {
+  time: number;
+  freq: number;
+  ampl: number;
+  phase: number;
+  mul: number;
+  dir: number;
+};
+
 export type RuntimeEnvShakeEvent = {
   type: "EnvShake";
   time: number;
   freq: number;
   ampl: number;
   phase: number;
+  /** Optional Ikemen cycle multiplier. */
+  mul?: number;
+  /** Optional Ikemen shake direction in degrees. */
+  dir?: number;
   stateNo: number;
   tick: number;
   runtimeTick: number;
@@ -493,6 +607,19 @@ export type ActorEffectSnapshot =
       edgeBound?: number;
       stageBound?: number;
       heightBound?: { low: number; high: number };
+      layerNo: -1 | 0 | 1;
+      angle?: number;
+      xAngle?: number;
+      yAngle?: number;
+      xShear?: number;
+      shadow?: [number, number, number];
+      reflection?: number;
+      projection?: "orthographic" | "perspective" | "perspective2";
+      focalLength?: number;
+      window?: [number, number, number, number];
+      ownPalette?: true;
+      drawPalette?: [number, number];
+      paletteRemap?: RuntimePaletteRemap;
       spritePriority: number;
       priority: number;
       affectTeam?: -1 | 0 | 1;
@@ -500,6 +627,8 @@ export type ActorEffectSnapshot =
       hitsRemaining: number;
       missTime: number;
       missTimeRemaining: number;
+      pauseMoveTime?: number;
+      superMoveTime?: number;
       damage: number;
       airJuggle?: number;
       hitPause: number;
@@ -525,7 +654,8 @@ export type ActorEffectSnapshot =
       removeAnimNo?: number;
       cancelAnimNo?: number;
       accel?: { x: number; y: number };
-      velMul?: { x: number; y: number };
+      remVelocity?: { x: number; y: number; z?: number };
+      velMul?: { x: number; y: number; z?: number };
       scale?: { x: number; y: number };
       depthBound?: number;
       depth?: {
@@ -884,6 +1014,7 @@ export type MugenSnapshot = {
 
 export type RuntimeCommand =
   | { type: "select-action"; actionId: number }
+  | { type: "select-frame"; frameIndex: number }
   | { type: "set-playing"; playing: boolean }
   | { type: "step"; ticks?: number }
   | { type: "set-speed"; speed: number }

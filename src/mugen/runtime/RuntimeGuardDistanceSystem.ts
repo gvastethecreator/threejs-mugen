@@ -5,6 +5,7 @@ import {
   isRuntimeGuarding,
 } from "./CombatResolver";
 import type { CharacterRuntimeState, RuntimeInGuardDistanceLatch } from "./types";
+import type { RuntimeProjectileGuardDistanceBounds } from "./ProjectileSystem";
 
 export type RuntimeGuardDistanceMove = {
   activeStart: number;
@@ -15,7 +16,7 @@ export type RuntimeGuardDistanceMove = {
 };
 
 export type RuntimeGuardDistanceDefender = {
-  runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "moveType" | "stateType" | "assertSpecial">;
+  runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "moveType" | "stateType" | "assertSpecial" | "combatDepth">;
   hurtBoxes: CollisionBox[];
 };
 
@@ -27,18 +28,15 @@ export type RuntimeGuardDistanceAttacker = {
 };
 
 export type RuntimeGuardDistanceProjectile = {
-  pos: { x: number; y: number };
+  pos: { x: number; y: number; z?: number };
   facing: 1 | -1;
-  guardDistance: number;
+  guardDistanceBounds: RuntimeProjectileGuardDistanceBounds;
   guardFlag?: string;
   removalReason?: string;
   terminalPlayback?: unknown;
   hasHit: boolean;
   hitsRemaining: number;
   missTimeRemaining: number;
-  action: { frames: Array<{ clsn1: CollisionBox[] }> };
-  frameIndex: number;
-  hitbox: CollisionBox;
 };
 
 export type RuntimeGuardDistanceLatchInput = {
@@ -124,15 +122,12 @@ export function isRuntimeProjectileInGuardDistance(
   ) {
     return false;
   }
-  const authoredHitboxes = projectile.action.frames[projectile.frameIndex]?.clsn1;
-  const hitboxes = authoredHitboxes?.length ? authoredHitboxes : [projectile.hitbox];
-  return hitboxes.some((hitbox) =>
-    hasRuntimeGuardDistance(
-      { pos: projectile.pos, facing: projectile.facing },
-      hitbox,
-      defender.runtime,
-      defender.hurtBoxes,
-      projectile.guardDistance,
-    ),
-  );
+  const distX = (defender.runtime.pos.x - projectile.pos.x) * projectile.facing;
+  const distY = defender.runtime.pos.y - projectile.pos.y;
+  const distZ = (defender.runtime.combatDepth?.position ?? 0) - (projectile.pos.z ?? 0);
+  const { width, height, depth } = projectile.guardDistanceBounds;
+  const inWidth = distX < width[0] && distX > -width[1];
+  const inHeight = distY === 0 || (distY > -height[0] && distY < height[1]);
+  const inDepth = distZ === 0 || (distZ > -depth[0] && distZ < depth[1]);
+  return inWidth && inHeight && inDepth;
 }

@@ -55,6 +55,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
           );
           input.rememberProjectileTarget?.(input.attacker, input.defender, projectile);
           input.recordAudioOperation?.(input.attacker, { kind: "audio", controllerType: "playsnd", value: "S6,0" });
+          input.emitProjectileEnvShake?.(input.attacker, projectile);
           input.log("projectile-log");
         },
       } satisfies Pick<RuntimeCombatResolutionWorld, "resolvePriorityClash" | "resolveEqualPriorityOutcomes" | "resolveReversalClash" | "resolveDirect" | "resolveProjectile">,
@@ -89,6 +90,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
       defaultHurtBoxes,
       rememberProjectileTarget: (source, target, entry) => calls.push(`remember:${source.id}:${target.id}:${entry.serialId}`),
       recordAudioOperation: (actor, operation) => calls.push(`audio:${actor.id}:${operation.value}`),
+      emitProjectileEnvShake: (actor, entry) => calls.push(`envshake:${actor.id}:${entry.serialId}`),
       log: (line) => calls.push(`log:${line}`),
     });
 
@@ -107,6 +109,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
       "projectile:p1:p2:effect-lifecycle:reversal:true",
       "remember:p1:p2:proj-1",
       "audio:p1:S6,0",
+      "envshake:p1:proj-1",
       "log:projectile-log",
       "helper:p1:p2:target-world:reversal:helper-hooks:1:true",
       "hurt:p2",

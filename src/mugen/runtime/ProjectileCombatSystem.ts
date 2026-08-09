@@ -12,10 +12,14 @@ import {
   resolveRuntimeFallRecoveryDefaults,
   runtimeHitFlagRejectionReason,
   runtimeWorldBox,
+  type RuntimeCombatAttack,
   type RuntimeHitFlagRejectionReason,
 } from "./CombatResolver";
 import { applyRuntimeCornerPush, type RuntimeStageBounds } from "./HitDefCornerPush";
+import { normalizeRuntimeHitDefPriority } from "./HitDefContactPriority";
+import { applyRuntimeProjectileHitDefSpritePriorityContact } from "./HitDefSpritePrioritySystem";
 import {
+  beginRuntimeProjectileHitPause,
   canRuntimeProjectileContact,
   describeRuntimeProjectileRemoval,
   getRuntimeProjectileCollisionBoxes,
@@ -29,10 +33,11 @@ import {
   type RuntimeProjectile,
 } from "./ProjectileSystem";
 import { applyRuntimeControl, applyRuntimePowerDelta } from "./RuntimeResourceSystem";
+import { applyRuntimeContactPaletteFx } from "./SpriteEffectSystem";
 import type { CharacterRuntimeState, RuntimeHitOverrideSlot } from "./types";
 import type { DemoFighterDefinition } from "./demoFighters";
 import type { MugenAffectTeam } from "../model/MugenTeam";
-import { runtimeAffectTeamAllows, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
+import { runtimeAffectTeamAllows, runtimeTeamSideFromId, type RuntimeTeamSide } from "./RuntimeTeamTopologySystem";
 import { hasRuntimeCombatDepthContact, runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
 import {
   applyRuntimeProjectileAirJuggleHit,
@@ -42,14 +47,21 @@ import {
 } from "./RuntimeJuggleSystem";
 import { runtimeStateChangeTmpBlocksProjectile } from "./RuntimeStateChangeTmpSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+import { runtimeChainIdOverridesEqualNoChainId } from "./RuntimeChainIdPolicy";
 import {
   recordRuntimeRoundWinType,
   runtimeRoundHitSourceMetadata,
   type RuntimeRoundHitSourceActor,
 } from "./RuntimeRoundWinTypeSystem";
+import { RUNTIME_DEFAULT_HIT_FLAG } from "./RuntimeHitFlagDefaults";
+import {
+  applyRuntimeReceiverUnhittableTime,
+  hasRuntimeUnhittableTime,
+} from "./RuntimeUnhittableTimeSystem";
 
 export type RuntimeProjectileCombatActor = {
   id: string;
+  playerId?: number;
   playerNo?: number;
   label: string;
   runtime: CharacterRuntimeState;
@@ -101,6 +113,7 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
   markDefenderGotHit?: (defender: TActor) => void;
   recordProjectileContact?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile, kind: "hit" | "guard") => void;
   emitProjectileContactEffects?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile, kind: "hit" | "guard") => void;
+  emitProjectileEnvShake?: (attacker: TActor, projectile: RuntimeProjectile) => void;
   recordReceivedDamage?: (defender: TActor, damage: number) => void;
   removeProjectilesMarkedForRemoval: () => void;
   stageBounds?: RuntimeStageBounds;
@@ -183,6 +196,30 @@ export class RuntimeProjectileCombatWorld {
       if (!contactAttackBox) {
         continue;
       }
+      if (hasRuntimeUnhittableTime(defender.runtime)) {
+        log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via HitDef unhittabletime`);
+        continue;
+      }
+      if (runtimeProjectileChainIdRejects(projectile, defender.runtime)) {
+        const previousHitId = defender.runtime.hitVars?.hitId;
+        log(
+          `${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via ChainID ${Math.trunc(projectile.chainId!)} (previous HitDef id ${previousHitId === undefined ? "none" : previousHitId})`,
+        );
+        continue;
+      }
+      const projectileHitSource = resolveRuntimeProjectileHitSource(input, attacker, projectile);
+      const rejectedNoChainId = runtimeProjectileNoChainIdRejection(
+        projectile,
+        defender,
+        projectileHitSource,
+        input.runtimeProfile,
+      );
+      if (rejectedNoChainId !== undefined) {
+        log(
+          `${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via NoChainID ${rejectedNoChainId} (same source player ${projectileHitSource?.playerId})`,
+        );
+        continue;
+      }
       const reversalResult = input.applyProjectileReversal?.(attacker, defender, projectile, contactAttackBox);
       if (reversalResult === true) {
         continue;
@@ -244,63 +281,52 @@ export class RuntimeProjectileCombatWorld {
           log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} because missonoverride = 1 forces active override miss`);
           continue;
         }
+        const overrideContact = resolveRuntimeCombatHit({
+          attacker: attacker.runtime,
+          defender: defender.runtime,
+          attack: runtimeCombatAttackFromProjectile(projectile),
+          holdingBack: input.holdingBack,
+        });
         recordRuntimeProjectileContact(projectile);
         if (projectileIsAp) apProjectileContacted = true;
         input.rememberTarget(attacker, defender, projectile.targetId, projectile);
-        input.applyHitOverride(attacker, defender, override, projectile.hitPause, log);
+        if (override.forceGuard !== true && overrideContact.kind !== "guard") {
+          applyRuntimeReceiverUnhittableTime(defender.runtime, projectile);
+        }
+        input.applyHitOverride(attacker, defender, override, projectile.hitShakeTime, log);
         continue;
       }
       const result = resolveRuntimeCombatHit({
         attacker: attacker.runtime,
         defender: defender.runtime,
-        attack: {
-          damage: projectile.damage,
-          kill: projectile.kill,
-          attr: projectile.attr,
-          hitPause: projectile.hitPause,
-          hitStun: projectile.hitStun,
-          airHitTime: projectile.airHitTime,
-          downHitTime: projectile.downHitTime,
-          downVelocityX: projectile.downVelocityX,
-          downVelocityY: projectile.downVelocityY,
-          downVelocityZ: projectile.downVelocityZ,
-          downBounce: projectile.downBounce,
-          ...(projectile.fall === undefined
-            ? {}
-            : { fall: { enabled: projectile.fall.enabled ?? false, airFall: projectile.fall.airFall } }),
-          push: projectile.push,
-          hitVelocityY: projectile.hitVelocityY,
-          hitVelocityZ: projectile.hitVelocityZ,
-          airVelocityZ: projectile.airVelocityZ,
-          guardDistance: projectile.guardDistance,
-          guardFlag: projectile.guardFlag,
-          guardDamage: projectile.guardDamage,
-          guardKill: projectile.guardKill,
-          guardPause: projectile.guardPause,
-          guardStun: projectile.guardStun,
-          guardSlideTime: projectile.guardSlideTime,
-          guardControlTime: projectile.guardControlTime,
-          airGuardControlTime: projectile.airGuardControlTime,
-          guardPush: projectile.guardPush,
-          guardVelocityY: projectile.guardVelocityY,
-          guardVelocityZ: projectile.guardVelocityZ,
-          airGuardPush: projectile.airGuardPush,
-          airGuardVelocityY: projectile.airGuardVelocityY,
-          airGuardVelocityZ: projectile.airGuardVelocityZ,
-          cornerPush: projectile.cornerPush,
-          airCornerPush: projectile.airCornerPush,
-          downCornerPush: projectile.downCornerPush,
-          guardCornerPush: projectile.guardCornerPush,
-          airGuardCornerPush: projectile.airGuardCornerPush,
-        },
+        attack: runtimeCombatAttackFromProjectile(projectile),
         holdingBack: input.holdingBack,
       });
+      if (result.kind === "hit") {
+        applyRuntimeReceiverUnhittableTime(defender.runtime, projectile);
+      }
+      applyRuntimeProjectileHitDefSpritePriorityContact(
+        defender,
+        projectile,
+        result.kind,
+        input.runtimeProfile ?? "unknown",
+      );
       recordRuntimeProjectileContact(projectile, result.kind);
+      beginRuntimeProjectileHitPause(projectile, result.kind);
       if (projectileIsAp) apProjectileContacted = true;
       input.rememberTarget(attacker, defender, projectile.targetId, projectile);
-      const source = resolveRuntimeProjectileHitSource(input, attacker, projectile);
+      applyRuntimeProjectileTargetDistanceBounds(projectile, defender, result.kind);
+      input.emitProjectileEnvShake?.(attacker, projectile);
+      const source = projectileHitSource;
+      const tracksComboHitCount = input.runtimeProfile === "ikemen-go" || projectile.hitDefHitCount === undefined;
+      const wasInHitCombo = tracksComboHitCount && defender.runtime.moveType === "H" && defender.runtime.hitVars?.guarded !== true;
+      const previousComboHitCount = defender.runtime.hitVars?.comboHitCount;
+      const comboHitCount = tracksComboHitCount
+        ? result.kind === "hit"
+          ? (wasInHitCombo ? (previousComboHitCount ?? 0) + 1 : 1)
+          : previousComboHitCount
+        : undefined;
       const lifeBefore = defender.runtime.life;
-      attacker.hitPause = result.pause;
       defender.hitPause = result.pause;
       defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
       recordRuntimeRoundWinType(attacker, defender, projectile.attr ?? "S,SP", result.kind, lifeBefore, {
@@ -325,12 +351,33 @@ export class RuntimeProjectileCombatWorld {
       if (result.hitVelocityY !== undefined) {
         defender.runtime.vel.y = result.hitVelocityY;
       }
+      const hitVelocityAdd = result.kind === "hit" &&
+        input.runtimeProfile === "ikemen-go" &&
+        source?.rootOwned === true &&
+        defender.runtime.life <= 0
+        ? runtimeKoVelocityAddFromProjectile(projectile)
+        : undefined;
+      if (hitVelocityAdd) {
+        defender.runtime.vel.x += hitVelocityAdd.x;
+        defender.runtime.vel.y += hitVelocityAdd.y;
+      }
       if (input.markDefenderGotHit) {
         input.markDefenderGotHit(defender);
       } else {
         defender.runtime.moveType = "H";
       }
-      applyRuntimePowerDelta(attacker.runtime, result.powerGain);
+      applyRuntimePowerDelta(
+        attacker.runtime,
+        runtimeAttackerPowerGain(
+          result.kind === "guard" ? projectile.attackerGuardPower : projectile.attackerHitPower,
+          result.powerGain,
+        ),
+      );
+      applyRuntimePowerDelta(
+        defender.runtime,
+        runtimeAttackerPowerGain(result.kind === "guard" ? projectile.guardPower : projectile.hitPower, 0),
+        defender.definition?.constants,
+      );
       if (result.kind === "guard") {
         input.recordProjectileContact?.(attacker, defender, projectile, "guard");
         input.emitProjectileContactEffects?.(attacker, defender, projectile, "guard");
@@ -342,7 +389,18 @@ export class RuntimeProjectileCombatWorld {
         defender.runtime.guardSlideTimeRemaining = normalizeGuardTimer(guardSlideTime);
         defender.runtime.guardControlTimeRemaining = normalizeGuardTimer(guardControlTime);
         defender.runtime.guarding = true;
-        defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(projectile, true, result.damage, result.stun, result.pause, result.kill, source, defender.runtime.life <= 0);
+        defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(
+          projectile,
+          true,
+          result.damage,
+          result.stun,
+          result.pause,
+          result.kill,
+          source,
+          defender.runtime.life <= 0,
+          (defender.runtime.hitVars?.guardCount ?? 0) + 1,
+          comboHitCount,
+        );
         applyRuntimeControl(defender.runtime, false);
         input.applyGuardHit?.(defender);
         log(
@@ -360,10 +418,27 @@ export class RuntimeProjectileCombatWorld {
       defender.runtime.guardControlTimeRemaining = undefined;
       defender.runtime.guarding = false;
       defender.runtime.receivedHitSequence = (defender.runtime.receivedHitSequence ?? 0) + 1;
-      defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(projectile, false, result.damage, result.stun, result.pause, result.kill, source, false);
+      defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(
+        projectile,
+        false,
+        result.damage,
+        result.stun,
+        result.pause,
+        result.kill,
+        source,
+        false,
+        defender.runtime.hitVars?.guardCount,
+        comboHitCount,
+        hitVelocityAdd,
+      );
+      applyRuntimeContactPaletteFx(defender.runtime, projectile.paletteFx);
       const projectileHitFall = runtimeHitFallFromProjectile(projectile, defender.runtime.stateType);
       if (projectileHitFall) {
-        defender.runtime.hitFall = projectileHitFall;
+        defender.runtime.hitFall = projectile.forceNoFall
+          ? { ...projectileHitFall, falling: false }
+          : projectileHitFall;
+      } else if (projectile.forceNoFall && defender.runtime.hitFall) {
+        defender.runtime.hitFall = { ...defender.runtime.hitFall, falling: false };
       }
       input.applyHitState?.(attacker, defender, projectile);
       if (projectileJuggleOwner) {
@@ -467,6 +542,111 @@ export class RuntimeProjectileCombatWorld {
   }
 }
 
+function runtimeAttackerPowerGain(authored: number | undefined, fallback: number): number {
+  return authored !== undefined && Number.isFinite(authored)
+    ? Math.trunc(authored)
+    : fallback;
+}
+
+function runtimeCombatAttackFromProjectile(projectile: RuntimeProjectile): RuntimeCombatAttack {
+  return {
+    damage: projectile.damage,
+    kill: projectile.kill,
+    attr: projectile.attr,
+    hitPause: projectile.hitShakeTime,
+    hitStun: projectile.hitStun,
+    airHitTime: projectile.airHitTime,
+    downHitTime: projectile.downHitTime,
+    downVelocityX: projectile.downVelocityX,
+    downVelocityY: projectile.downVelocityY,
+    downVelocityZ: projectile.downVelocityZ,
+    downBounce: projectile.downBounce,
+    ...(projectile.fall === undefined
+      ? {}
+      : { fall: { enabled: projectile.fall.enabled ?? false, airFall: projectile.fall.airFall } }),
+    push: projectile.push,
+    hitVelocityY: projectile.hitVelocityY,
+    hitVelocityZ: projectile.hitVelocityZ,
+    airVelocityX: projectile.airVelocityX,
+    airVelocityY: projectile.airVelocityY,
+    airVelocityZ: projectile.airVelocityZ,
+    guardDistance: projectile.guardDistanceBounds.width[0],
+    guardFlag: projectile.guardFlag,
+    guardDamage: projectile.guardDamage,
+    guardKill: projectile.guardKill,
+    guardPause: projectile.guardShakeTime,
+    guardStun: projectile.guardStun,
+    guardSlideTime: projectile.guardSlideTime,
+    guardControlTime: projectile.guardControlTime,
+    airGuardControlTime: projectile.airGuardControlTime,
+    guardPush: projectile.guardPush,
+    guardVelocityY: projectile.guardVelocityY,
+    guardVelocityZ: projectile.guardVelocityZ,
+    airGuardPush: projectile.airGuardPush,
+    airGuardVelocityY: projectile.airGuardVelocityY,
+    airGuardVelocityZ: projectile.airGuardVelocityZ,
+    cornerPush: projectile.cornerPush,
+    airCornerPush: projectile.airCornerPush,
+    downCornerPush: projectile.downCornerPush,
+    guardCornerPush: projectile.guardCornerPush,
+    airGuardCornerPush: projectile.airGuardCornerPush,
+  };
+}
+
+function applyRuntimeProjectileTargetDistanceBounds<TActor extends RuntimeProjectileCombatActor>(
+  projectile: RuntimeProjectile,
+  defender: TActor,
+  contactKind: "hit" | "guard",
+): void {
+  const minDistance = projectile.minDistance;
+  const maxDistance = projectile.maxDistance;
+  if (!minDistance && !maxDistance) return;
+
+  const origin = projectile.pos;
+  const facing = projectile.facing;
+  const minX = finiteDistanceComponent(minDistance?.[0]);
+  const maxX = finiteDistanceComponent(maxDistance?.[0]);
+  if (minX !== undefined) {
+    const limit = origin.x + facing * minX;
+    if ((facing < 0 && defender.runtime.pos.x > limit) || (facing > 0 && defender.runtime.pos.x < limit)) {
+      defender.runtime.pos.x = limit;
+    }
+  }
+  if (maxX !== undefined) {
+    const limit = origin.x + facing * maxX;
+    if ((facing < 0 && defender.runtime.pos.x < limit) || (facing > 0 && defender.runtime.pos.x > limit)) {
+      defender.runtime.pos.x = limit;
+    }
+  }
+
+  if (contactKind === "hit" || defender.runtime.stateType === "A") {
+    const minY = finiteDistanceComponent(minDistance?.[1]);
+    const maxY = finiteDistanceComponent(maxDistance?.[1]);
+    if (minY !== undefined && defender.runtime.pos.y < origin.y + minY) {
+      defender.runtime.pos.y = origin.y + minY;
+    }
+    if (maxY !== undefined && defender.runtime.pos.y > origin.y + maxY) {
+      defender.runtime.pos.y = origin.y + maxY;
+    }
+  }
+
+  const minZ = finiteDistanceComponent(minDistance?.[2]);
+  const maxZ = finiteDistanceComponent(maxDistance?.[2]);
+  if (minZ === undefined && maxZ === undefined) return;
+  const depth = defender.runtime.combatDepth ?? runtimeCombatDepthFromConstants(defender.definition?.constants);
+  if (minZ !== undefined && depth.position < (origin.z ?? 0) + minZ) {
+    depth.position = (origin.z ?? 0) + minZ;
+  }
+  if (maxZ !== undefined && depth.position > (origin.z ?? 0) + maxZ) {
+    depth.position = (origin.z ?? 0) + maxZ;
+  }
+  defender.runtime.combatDepth = depth;
+}
+
+function finiteDistanceComponent(value: number | undefined): number | undefined {
+  return Number.isFinite(value) ? value : undefined;
+}
+
 function runtimeHitFallFromProjectile(
   projectile: RuntimeProjectile,
   defenderStateType: CharacterRuntimeState["stateType"],
@@ -479,6 +659,13 @@ function runtimeHitFallFromProjectile(
   const zVelocity = fall.zVelocity;
   const falling = resolveRuntimeFallEnabled(fall, defenderStateType);
   const recovery = resolveRuntimeFallRecoveryDefaults({ ...fall, enabled: falling });
+  const hasEnvShake =
+    fall.envShakeTime !== undefined ||
+    fall.envShakeFrequency !== undefined ||
+    fall.envShakeAmplitude !== undefined ||
+    fall.envShakePhase !== undefined ||
+    fall.envShakeMultiplier !== undefined ||
+    fall.envShakeDirection !== undefined;
   return {
     falling,
     damage: Math.max(0, fall.damage ?? 0),
@@ -497,13 +684,15 @@ function runtimeHitFallFromProjectile(
       ...(zVelocity === undefined ? {} : { z: zVelocity }),
     },
     envShake:
-      fall.envShakeTime === undefined
+      !hasEnvShake
         ? undefined
         : {
-            time: fall.envShakeTime,
+            time: fall.envShakeTime ?? 0,
             freq: fall.envShakeFrequency ?? 60,
             ampl: fall.envShakeAmplitude ?? -4,
             phase: fall.envShakePhase ?? 0,
+            ...(fall.envShakeMultiplier === undefined ? {} : { mul: fall.envShakeMultiplier }),
+            ...(fall.envShakeDirection === undefined ? {} : { dir: fall.envShakeDirection }),
           },
   };
 }
@@ -545,6 +734,34 @@ function runtimeHitFlagRejectionLabel(
   return "HitFlag +";
 }
 
+function runtimeProjectileChainIdRejects(projectile: RuntimeProjectile, defender: CharacterRuntimeState): boolean {
+  if (projectile.chainId === undefined || projectile.chainId < 0) {
+    return false;
+  }
+  return defender.hitVars?.hitId !== Math.trunc(projectile.chainId);
+}
+
+function runtimeProjectileNoChainIdRejection(
+  projectile: RuntimeProjectile,
+  defender: RuntimeProjectileCombatActor,
+  source: RuntimeRoundHitSourceActor | undefined,
+  profile?: RuntimeCompatibilityProfile,
+): number | undefined {
+  const previous = defender.runtime.hitVars;
+  if (!previous || previous.hitId === undefined || source?.playerId === undefined || previous.sourcePlayerId !== source.playerId) {
+    return undefined;
+  }
+  const blockedId = projectile.noChainIds
+    ?.slice(0, 8)
+    .map(Math.trunc)
+    .find((candidate) => candidate >= 0 && candidate === previous.hitId);
+  if (blockedId === undefined) return undefined;
+  if (runtimeChainIdOverridesEqualNoChainId(profile, projectile.chainId, blockedId)) return undefined;
+  const activeHitShake = defender.hitPause > 0;
+  const sameLastTargetingActor = previous.sourceActorId === source.id;
+  return activeHitShake || sameLastTargetingActor ? blockedId : undefined;
+}
+
 function resolveRuntimeProjectileHitSource<TActor extends RuntimeProjectileCombatActor>(
   input: RuntimeProjectileCombatInput<TActor>,
   attacker: TActor,
@@ -558,6 +775,7 @@ function resolveRuntimeProjectileHitSource<TActor extends RuntimeProjectileComba
   }
   return {
     id: attacker.id,
+    playerId: attacker.playerId,
     playerNo: attacker.playerNo,
     rootId: projectile.rootId,
     rootOwned: true,
@@ -573,27 +791,80 @@ function runtimeGetHitVarsFromProjectileResult(
   kill: boolean,
   source: RuntimeRoundHitSourceActor | undefined,
   guardKo: boolean,
+  guardCount?: number,
+  comboHitCount?: number,
+  hitVelocityAdd?: { x: number; y: number },
 ): CharacterRuntimeState["hitVars"] {
   const sourceMetadata = source === undefined ? undefined : runtimeRoundHitSourceMetadata({
     ...source,
     attr: projectile.attr ?? "S,SP",
+    guardFlag: projectile.guardFlag ?? "MA",
+    hitFlag: projectile.hitFlag ?? RUNTIME_DEFAULT_HIT_FLAG,
     guardKo,
   });
   return {
     damage: Math.max(0, Math.round(damage)),
+    hitDamage: Math.max(0, Math.round(projectile.damage)),
+    guardDamage: Math.max(0, Math.round(projectile.guardDamage)),
     kill,
     ...(sourceMetadata ?? {}),
+    sourceProjectileId: projectile.projectileId ?? -1,
+    sourceTeamSide: projectile.teamSide ?? runtimeTeamSideFromId(source?.id ?? projectile.rootId) ?? -1,
+    sourcePriority: normalizeRuntimeHitDefPriority(projectile.hitPriority),
+    ...(projectile.dizzyPoints === undefined ? {} : { sourceDizzyPoints: Math.trunc(projectile.dizzyPoints) }),
+    ...(projectile.guardPoints === undefined ? {} : { sourceGuardPoints: Math.trunc(projectile.guardPoints) }),
+    ...((guarded ? projectile.guardRedLife ?? projectile.redLife : projectile.redLife) === undefined
+      ? {}
+      : { sourceRedLife: Math.trunc((guarded ? projectile.guardRedLife ?? projectile.redLife : projectile.redLife) as number) }),
+    ...(projectile.guardPower === undefined ? {} : { sourceGuardPower: Math.trunc(projectile.guardPower) }),
+    ...(projectile.hitPower === undefined ? {} : { sourceHitPower: Math.trunc(projectile.hitPower) }),
+    ...((guarded ? projectile.guardPower : projectile.hitPower) === undefined
+      ? {}
+      : { sourcePower: Math.trunc((guarded ? projectile.guardPower : projectile.hitPower) as number) }),
+    ...(guarded || projectile.p2Facing === undefined
+      ? {}
+      : { sourceFacing: Math.trunc(projectile.p2Facing) }),
+    ...((guarded ? projectile.guardScore ?? projectile.score : projectile.score) === undefined
+      ? {}
+      : { sourceScore: (guarded ? projectile.guardScore ?? projectile.score : projectile.score) as number }),
+    ...(guardCount === undefined || guardCount <= 0 ? {} : { guardCount: Math.max(0, Math.trunc(guardCount)) }),
+    ...(comboHitCount === undefined || comboHitCount <= 0 ? {} : { comboHitCount: Math.max(0, Math.trunc(comboHitCount)) }),
+    ...(hitVelocityAdd === undefined ? {} : { hitVelocityAdd }),
+    frame: true,
     hitId: projectile.targetId,
     ...(projectile.chainId !== undefined ? { chainId: projectile.chainId } : {}),
     hitCount: projectile.hitDefHitCount ?? 1,
     animType: 0,
+    groundAnimType: projectile.hitAnimTypes?.ground ?? 0,
+    airAnimType: projectile.hitAnimTypes?.air ?? projectile.hitAnimTypes?.ground ?? 0,
+    fallAnimType: projectile.hitAnimTypes?.fall ?? 0,
     groundType: 1,
     airType: 1,
+    ...(projectile.hitXAccel !== undefined ? { xAccel: projectile.hitXAccel } : {}),
+    ...(projectile.hitYAccel !== undefined ? { yAccel: projectile.hitYAccel } : {}),
+    ...(projectile.hitZAccel !== undefined ? { zAccel: projectile.hitZAccel } : {}),
+    ...(projectile.standFriction !== undefined ? { standFriction: projectile.standFriction } : {}),
+    ...(projectile.crouchFriction !== undefined ? { crouchFriction: projectile.crouchFriction } : {}),
+    ...(projectile.hitVelocities === undefined ? {} : { hitVelocities: projectile.hitVelocities }),
     isBound: false,
     hitShakeTime,
     hitTime,
+    ...(!guarded && projectile.groundSlideTime !== undefined
+      ? { slideTime: Math.trunc(projectile.groundSlideTime) }
+      : {}),
     ...(guarded ? { guarded: true } : {}),
   };
+}
+
+function runtimeKoVelocityAddFromProjectile(projectile: RuntimeProjectile): { x: number; y: number } | undefined {
+  const x = projectile.koVelocityAdd?.x;
+  const y = projectile.koVelocityAdd?.y;
+  const hasX = typeof x === "number" && Number.isFinite(x);
+  const hasY = typeof y === "number" && Number.isFinite(y);
+  if (!hasX && !hasY) {
+    return undefined;
+  }
+  return { x: hasX ? x! : 0, y: hasY ? y! : 0 };
 }
 
 function findProjectileContactAttackBox<TActor extends RuntimeProjectileCombatActor>(

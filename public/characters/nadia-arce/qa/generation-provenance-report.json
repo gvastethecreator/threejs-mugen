@@ -1,0 +1,143 @@
+{
+  "id": "generation-provenance",
+  "applicable": true,
+  "checked_items": [
+    "crouch",
+    "guard",
+    "heavy-strike",
+    "hitstun",
+    "idle",
+    "jump",
+    "knockdown",
+    "ko",
+    "light-strike",
+    "special",
+    "throw",
+    "walk-back",
+    "walk-forward",
+    "win"
+  ],
+  "errors": [],
+  "warnings": [],
+  "evidence": {
+    "provenance": ".\\source-provenance.json",
+    "source_type": "imagegen",
+    "sources": [
+      {
+        "path": ".\\raw\\idle.png",
+        "sha256": "1f224af9f1d82070e1b44299a259b872e72d471918614be14ac592930365e147",
+        "size_bytes": 1635926,
+        "states": [
+          "idle"
+        ]
+      },
+      {
+        "path": ".\\raw\\walk-forward.png",
+        "sha256": "34a12a5d73fb0355a81cf426c62f785a915d03190fdd61f2201545fdad63658a",
+        "size_bytes": 1754819,
+        "states": [
+          "walk-forward"
+        ]
+      },
+      {
+        "path": ".\\raw\\walk-back.png",
+        "sha256": "d4d9f333311313821aa1272198605bb28af485bd4becb8fef7a3503e16af21e3",
+        "size_bytes": 1789161,
+        "states": [
+          "walk-back"
+        ]
+      },
+      {
+        "path": ".\\raw\\crouch.png",
+        "sha256": "c9e7d16b0c616d1c455041bbf9ac44c5b7535272aad51e98b246334b431747d3",
+        "size_bytes": 1600869,
+        "states": [
+          "crouch"
+        ]
+      },
+      {
+        "path": ".\\raw\\jump.png",
+        "sha256": "846a256020294fb7147028036e1f25e52482dae1c650b91b9bbc96346234987a",
+        "size_bytes": 1550357,
+        "states": [
+          "jump"
+        ]
+      },
+      {
+        "path": ".\\raw\\light-strike.png",
+        "sha256": "7561dcfcc58064285e3806980de491ecf9660d1a5e5bac006345556a3388bf84",
+        "size_bytes": 1583878,
+        "states": [
+          "light-strike"
+        ]
+      },
+      {
+        "path": ".\\raw\\heavy-strike.png",
+        "sha256": "ca043cf56ad539fe0bec92b8c4fb555983613cff5bcc2a701cf79bf6fd735809",
+        "size_bytes": 1684216,
+        "states": [
+          "heavy-strike"
+        ]
+      },
+      {
+        "path": ".\\raw\\special.png",
+        "sha256": "2010a2f2c08566541d0c225ec4a9f60ac59685742d91b35959a3f10602cc831b",
+        "size_bytes": 1727312,
+        "states": [
+          "special"
+        ]
+      },
+      {
+        "path": ".\\raw\\throw.png",
+        "sha256": "7eaf525213bae4b16a5ac533f2e5a14e3003d4e6799426da1fe391f7b8aa1537",
+        "size_bytes": 1635512,
+        "states": [
+          "throw"
+        ]
+      },
+      {
+        "path": ".\\raw\\guard.png",
+        "sha256": "1aeb4c8c008cb5aff165d998cb79523e1350e762d1e261e18833fe3514e51d83",
+        "size_bytes": 1566790,
+        "states": [
+          "guard"
+        ]
+      },
+      {
+        "path": ".\\raw\\hitstun.png",
+        "sha256": "2c0b2c2903b6562b6fb1e32b8b481ad7cd0fabddef7f4c377a74576adac4ed31",
+        "size_bytes": 1622115,
+        "states": [
+          "hitstun"
+        ]
+      },
+      {
+        "path": ".\\raw\\knockdown.png",
+        "sha256": "4b27c8e711cff8141415f022aa531aee2c6f15901ee0786bbcd47d1849320468",
+        "size_bytes": 1652287,
+        "states": [
+          "knockdown"
+        ]
+      },
+      {
+        "path": ".\\raw\\ko.png",
+        "sha256": "fbd44515ec3b1a3cedbcb26c3f86a285941dbacbb6bfa0d25495d933625d223c",
+        "size_bytes": 1573157,
+        "states": [
+          "ko"
+        ]
+      },
+      {
+        "path": ".\\raw\\win.png",
+        "sha256": "596f4df4d5a486dada9417920cebc66e47fa058a121ef105ec8349e4c3c22226",
+        "size_bytes": 1640876,
+        "states": [
+          "win"
+        ]
+      }
+    ]
+  },
+  "input_fingerprint": "316c2f1e6f095d24a0990b8eed816bfa2505570597594f256607638dc6eeba60",
+  "complete": true,
+  "status": "pass"
+}

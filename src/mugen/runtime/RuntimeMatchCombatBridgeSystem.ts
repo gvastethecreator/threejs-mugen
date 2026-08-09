@@ -9,6 +9,7 @@ import type { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem"
 import type { RuntimeProjectile } from "./ProjectileSystem";
 import type { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import type { RuntimeStageBounds } from "./HitDefCornerPush";
+import type { DemoMove } from "./demoFighters";
 import type {
   RuntimeCombatResolutionActor,
   RuntimeCombatResolutionStateHooks,
@@ -55,6 +56,8 @@ export type RuntimeMatchCombatBridgeInput<TActor extends RuntimeMatchCombatBridg
   combatStateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   helperStateHooks: RuntimeHelperCombatStateHooks<TActor>;
   recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
+  emitDirectEnvShake?: (actor: TActor, move: DemoMove) => void;
+  emitProjectileEnvShake?: (actor: TActor, projectile: RuntimeProjectile) => void;
   defaultHurtBoxes: CollisionBox[];
   canActorBeHit?: (actorId: string) => boolean;
   rememberProjectileTarget?: (source: TActor, target: TActor, projectile: RuntimeProjectile) => void;
@@ -100,6 +103,7 @@ export class RuntimeMatchCombatBridgeWorld {
           getCollisionBoxes: input.getCollisionBoxes,
           canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
           recordAudioOperation: input.recordAudioOperation,
+          emitDirectEnvShake: input.emitDirectEnvShake,
           stateHooks: input.combatStateHooks,
           log: input.log,
         }),
@@ -132,6 +136,7 @@ export class RuntimeMatchCombatBridgeWorld {
           getCollisionBoxes: input.getCollisionBoxes,
           canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
           recordAudioOperation: input.recordAudioOperation,
+          emitDirectEnvShake: input.emitDirectEnvShake,
           stateHooks: input.combatStateHooks,
           log: input.log,
         });
@@ -155,6 +160,7 @@ export class RuntimeMatchCombatBridgeWorld {
           canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
           isHelperRootOwned: input.isHelperRootOwned,
           recordAudioOperation: input.recordAudioOperation,
+          emitProjectileEnvShake: input.emitProjectileEnvShake,
           stateHooks: input.combatStateHooks,
           rememberProjectileTarget: input.rememberProjectileTarget,
           log: input.log,
@@ -165,6 +171,7 @@ export class RuntimeMatchCombatBridgeWorld {
           owner: attacker,
           defender,
           directCombatWorld: input.directCombatWorld,
+          hitOverrideWorld: input.hitOverrideWorld,
           reversalWorld: input.reversalWorld,
           guardWorld: input.guardWorld,
           getHitStateWorld: input.getHitStateWorld,
@@ -178,6 +185,7 @@ export class RuntimeMatchCombatBridgeWorld {
           isHelperRootOwned: input.isHelperRootOwned,
           stateHooks: input.helperStateHooks,
           recordAudioOperation: (_owner, operation) => input.recordAudioOperation?.(attacker, operation),
+          emitDirectEnvShake: (_owner, move) => input.emitDirectEnvShake?.(attacker, move),
           defaultHurtBoxes: input.defaultHurtBoxes,
           log: input.log,
         });

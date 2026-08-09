@@ -1,0 +1,143 @@
+{
+  "idle": {
+    "frames": 4,
+    "fps": 6,
+    "loop": true,
+    "action": "grounded side-view karate fighting stance with guarded hands, subtle breathing and stable feet",
+    "animation_workflows": ["fighting-stance-idle"]
+  },
+  "walk-forward": {
+    "frames": 8,
+    "fps": 10,
+    "loop": true,
+    "action": "grounded side-view karate advance with alternating contacts, passing poses and guarded upper body",
+    "animation_workflows": ["sideview-locomotion"]
+  },
+  "walk-back": {
+    "frames": 8,
+    "fps": 10,
+    "loop": true,
+    "action": "grounded side-view guarded karate retreat with distinct backward footwork and weight transfer",
+    "animation_workflows": ["sideview-locomotion"]
+  },
+  "crouch": {
+    "frames": 4,
+    "fps": 8,
+    "loop": false,
+    "action": "descent from karate guard into a low guarded crouch with feet locked to the baseline",
+    "animation_workflows": ["fighting-stance-idle"],
+    "pose_geometry": {
+      "kind": "crouch",
+      "grounded": true,
+      "height_curve": "compress",
+      "start_height_vs_reference": 1.0,
+      "guide_height_ratio": 0.7,
+      "target_height_vs_reference": 0.7,
+      "min_height_vs_reference": 0.62,
+      "min_width_vs_reference": 0.78,
+      "min_head_width_vs_reference": 0.84,
+      "min_upper_width_vs_reference": 0.84,
+      "max_height_vs_reference": 1.05,
+      "baseline": "feet"
+    }
+  },
+  "jump": {
+    "frames": 6,
+    "fps": 10,
+    "loop": false,
+    "action": "vertical karate jump with launch, rising pose, peak, descent and compressed landing",
+    "animation_workflows": ["responsive-jump"],
+    "pose_geometry": {
+      "kind": "jump",
+      "grounded": false,
+      "guide_height_ratio": 0.74,
+      "target_height_vs_reference": 1.0,
+      "max_height_vs_reference": 1.12,
+      "min_head_width_vs_reference": 0.9,
+      "min_upper_width_vs_reference": 0.72,
+      "arc_peak_ratio": 0.22,
+      "baseline": "jump-arc"
+    }
+  },
+  "light-strike": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false,
+    "action": "fast lead-hand karate jab with immediate launch, contact, follow-through and guard recovery",
+    "animation_workflows": ["combat-quick-strike"]
+  },
+  "heavy-strike": {
+    "frames": 6,
+    "fps": 10,
+    "loop": false,
+    "action": "committed rooted karate reverse punch with load, hip drive, contact, follow-through and recovery",
+    "animation_workflows": ["combat-power-strike"]
+  },
+  "special": {
+    "frames": 8,
+    "fps": 12,
+    "loop": false,
+    "action": "original full-body karate kata strike with load, contact, follow-through and recovery",
+    "animation_workflows": ["combat-power-strike"]
+  },
+  "throw": {
+    "frames": 6,
+    "fps": 10,
+    "loop": false,
+    "action": "close-range karate foot sweep without an opponent sprite, with entry, hook, sweep, release and recovery",
+    "animation_workflows": ["combat-power-strike"]
+  },
+  "guard": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true,
+    "action": "karate forearm guard with stable stance, compact impact recoil and return to guard",
+    "animation_workflows": ["fighting-stance-idle"]
+  },
+  "hitstun": {
+    "frames": 4,
+    "fps": 10,
+    "loop": false,
+    "action": "torso impact reaction from the front with recoil, overshoot and partial balance recovery",
+    "animation_workflows": ["hit-reaction-knockdown"]
+  },
+  "knockdown": {
+    "frames": 6,
+    "fps": 10,
+    "loop": false,
+    "action": "forceful backward knockdown with balance loss, rotation, ground contact and settled pose",
+    "animation_workflows": ["hit-reaction-knockdown"],
+    "pose_geometry": {
+      "kind": "knockdown",
+      "grounded": false,
+      "guide_height_ratio": 0.62,
+      "target_height_vs_reference": 0.7,
+      "max_height_vs_reference": 1.12,
+      "min_height_vs_reference": 0.45,
+      "baseline": "collapse"
+    }
+  },
+  "ko": {
+    "frames": 6,
+    "fps": 8,
+    "loop": false,
+    "action": "heavy knockout collapse with stagger, knee failure, full fall, ground impact and final still pose",
+    "animation_workflows": ["hit-reaction-knockdown"],
+    "pose_geometry": {
+      "kind": "knockdown",
+      "grounded": false,
+      "guide_height_ratio": 0.62,
+      "target_height_vs_reference": 0.7,
+      "max_height_vs_reference": 1.12,
+      "min_height_vs_reference": 0.45,
+      "baseline": "collapse"
+    }
+  },
+  "win": {
+    "frames": 5,
+    "fps": 8,
+    "loop": false,
+    "action": "restrained karate victory sequence with breath release, belt adjustment and severe final stance",
+    "animation_workflows": ["fighting-stance-idle"]
+  }
+}

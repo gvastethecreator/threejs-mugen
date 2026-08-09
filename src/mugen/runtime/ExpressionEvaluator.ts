@@ -1,5 +1,13 @@
 import { normalizeMugenExpression } from "../compiler/ExpressionCompiler";
+import { runtimeRoundStateFromPhase } from "./RuntimeRoundPhaseSystem";
+import {
+  runtimeFightScreenStateValue,
+  runtimeGameVarValue,
+  runtimeFightScreenVarValue,
+  type RuntimeFightScreenContext,
+} from "./RuntimeFightScreenTriggerSystem";
 import type { CharacterRuntimeState } from "./types";
+import type { RuntimeClsnVarCoordinate, RuntimeClsnVarGroup } from "./RuntimeFrameSystem";
 
 export { normalizeMugenExpression } from "../compiler/ExpressionCompiler";
 
@@ -7,9 +15,37 @@ export type ExpressionContext = {
   self: CharacterRuntimeState;
   playerId?: number;
   playerNo?: number;
+  animPlayerNo?: number;
   opponent?: CharacterRuntimeState;
   opponentPlayerId?: number;
   opponentPlayerNo?: number;
+  opponentAnimPlayerNo?: number;
+  clsnVar?: (group: RuntimeClsnVarGroup, index: number, coordinate: RuntimeClsnVarCoordinate) => number | undefined;
+  opponentClsnVar?: ExpressionContext["clsnVar"];
+  parentClsnVar?: ExpressionContext["clsnVar"];
+  rootClsnVar?: ExpressionContext["clsnVar"];
+  clsnOverlap?: (actorGroup: RuntimeClsnVarGroup, playerId: number, targetGroup: RuntimeClsnVarGroup) => boolean;
+  opponentClsnOverlap?: ExpressionContext["clsnOverlap"];
+  parentClsnOverlap?: ExpressionContext["clsnOverlap"];
+  rootClsnOverlap?: ExpressionContext["clsnOverlap"];
+  projClsnOverlap?: (index: number, playerId: number, targetGroup: RuntimeClsnVarGroup) => boolean;
+  opponentProjClsnOverlap?: ExpressionContext["projClsnOverlap"];
+  parentProjClsnOverlap?: ExpressionContext["projClsnOverlap"];
+  rootProjClsnOverlap?: ExpressionContext["projClsnOverlap"];
+  projVar?: (projectileId: number, index: number, parameter: string, outputLocalCoord?: [number, number]) => number | undefined;
+  opponentProjVar?: ExpressionContext["projVar"];
+  parentProjVar?: ExpressionContext["projVar"];
+  rootProjVar?: ExpressionContext["projVar"];
+  projVarFlag?: (
+    projectileId: number,
+    index: number,
+    parameter: RuntimeProjVarFlagParameter,
+    filter: string,
+    operator: "=" | "!=",
+  ) => boolean;
+  opponentProjVarFlag?: ExpressionContext["projVarFlag"];
+  parentProjVarFlag?: ExpressionContext["projVarFlag"];
+  rootProjVarFlag?: ExpressionContext["projVarFlag"];
   enemyNear?: (index: number) => ExpressionRedirectTarget | undefined;
   enemyNearFallbackToOpponent?: boolean;
   partner?: (index: number) => ExpressionRedirectTarget | undefined;
@@ -44,6 +80,11 @@ export type ExpressionContext = {
   p6Name?: string;
   p7Name?: string;
   p8Name?: string;
+  introState?: number;
+  fightScreen?: RuntimeFightScreenContext;
+  fightScreenState?: (parameter: string) => boolean;
+  fightScreenVar?: (parameter: string) => number | string | undefined;
+  gameVar?: (parameter: string) => number | string | undefined;
   teamSide?: number;
   opponentTeamSide?: number;
   parentTeamSide?: number;
@@ -63,6 +104,9 @@ export type ExpressionContext = {
   commandActive?: (name: string) => boolean;
   getConst?: (name: string) => number | undefined;
   getHitVar?: (name: string) => number | undefined;
+  getHitVarAttr?: (state: CharacterRuntimeState, attrFilter: string) => boolean;
+  getHitVarGuardFlag?: (state: CharacterRuntimeState, flagFilter: string) => boolean;
+  getHitVarHitFlag?: (state: CharacterRuntimeState, flagFilter: string) => boolean;
   hitDefAttr?: (attrFilter: string) => boolean;
   hitCount?: () => number;
   hitOver?: () => boolean;
@@ -86,6 +130,7 @@ export type ExpressionContext = {
   projHitTime?: (projectileId?: number) => number;
   projGuardedTime?: (projectileId?: number) => number;
   projCancelTime?: (projectileId?: number) => number;
+  animElemVar?: (parameter: string) => number | string | undefined;
   animElemTime?: (elementNumber: number) => number | undefined;
   random?: () => number;
   reportUnsupported?: (feature: string) => void;
@@ -96,6 +141,7 @@ export type ExpressionContext = {
   stageTime?: number;
   stateTime?: number;
   uniqueHitCount?: () => number;
+  animLength?: number;
   animTimeRemaining?: number;
 };
 
@@ -109,9 +155,21 @@ export type ExpressionRedirectTarget = {
   self: CharacterRuntimeState;
   playerId?: number;
   playerNo?: number;
+  animPlayerNo?: number;
   opponent?: CharacterRuntimeState;
   opponentPlayerId?: number;
   opponentPlayerNo?: number;
+  opponentAnimPlayerNo?: number;
+  clsnVar?: ExpressionContext["clsnVar"];
+  opponentClsnVar?: ExpressionContext["clsnVar"];
+  clsnOverlap?: ExpressionContext["clsnOverlap"];
+  opponentClsnOverlap?: ExpressionContext["clsnOverlap"];
+  projClsnOverlap?: ExpressionContext["projClsnOverlap"];
+  opponentProjClsnOverlap?: ExpressionContext["projClsnOverlap"];
+  projVar?: ExpressionContext["projVar"];
+  opponentProjVar?: ExpressionContext["projVar"];
+  projVarFlag?: ExpressionContext["projVarFlag"];
+  opponentProjVarFlag?: ExpressionContext["projVarFlag"];
   localCoord?: [number, number];
   opponentLocalCoord?: [number, number];
   sizeBoxX?: { x1: number; x2: number } | null;
@@ -147,7 +205,14 @@ export function evaluateExpression(expression: string, context: ExpressionContex
     return hitDefAttrMatch[1] === "!=" ? (active ? 0 : 1) : active;
   }
 
-  const parser = new ExpressionParser(tokenize(rewriteAnimElemTriggerSyntax(normalized)), context);
+  const executable = rewriteProjVarFlagComparisons(
+    rewriteGetHitVarHitFlagComparisons(
+      rewriteGetHitVarGuardFlagComparisons(
+        rewriteGetHitVarAttrComparisons(rewriteAnimElemTriggerSyntax(normalized)),
+      ),
+    ),
+  );
+  const parser = new ExpressionParser(tokenize(executable), context);
   return parser.parse();
 }
 
@@ -223,6 +288,130 @@ function rewriteAnimElemTriggerSyntax(expression: string): string {
     .replace(atElementStart, "AnimElemTime($1) = 0");
 }
 
+function rewriteGetHitVarAttrComparisons(expression: string): string {
+  const attrComparison = /\bgethitvar\s*\(\s*attr\s*\)\s*(=|!=)\s*([sca]+\s*,\s*[nsh][atp](?:\s*,\s*[nsh][atp])*)/gi;
+  return expression.replace(attrComparison, (_match, operator: string, filter: string) => {
+    const predicate = `GetHitVarAttr(${filter})`;
+    return operator === "!=" ? `(!${predicate})` : predicate;
+  });
+}
+
+function rewriteGetHitVarGuardFlagComparisons(expression: string): string {
+  const flagComparison = /\bgethitvar\s*\(\s*guardflag\s*\)\s*(=|!=)\s*([hlmadfp]+[+-]?)/gi;
+  return expression.replace(flagComparison, (_match, operator: string, filter: string) => {
+    const predicate = `GetHitVarGuardFlag(${filter})`;
+    return operator === "!=" ? `(!${predicate})` : predicate;
+  });
+}
+
+function rewriteGetHitVarHitFlagComparisons(expression: string): string {
+  const flagComparison = /\bgethitvar\s*\(\s*hitflag\s*\)\s*(=|!=)\s*([hlmadfpd]+[+-]?)/gi;
+  return expression.replace(flagComparison, (_match, operator: string, filter: string) => {
+    const predicate = `GetHitVarHitFlag(${filter})`;
+    return operator === "!=" ? `(!${predicate})` : predicate;
+  });
+}
+
+export type RuntimeProjVarFlagParameter = "attr" | "guardflag" | "hitflag";
+
+function rewriteProjVarFlagComparisons(expression: string): string {
+  const callPattern = /\bprojvar\s*\(/gi;
+  let rewritten = "";
+  let sourceCursor = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = callPattern.exec(expression)) !== null) {
+    const callStart = match.index;
+    const openParen = expression.indexOf("(", callStart);
+    const closeParen = findBalancedClosingParen(expression, openParen);
+    if (closeParen < 0) break;
+    const args = splitBalancedArgumentText(expression.slice(openParen + 1, closeParen));
+    const parameter = normalizeProjVarFlagParameter(args.at(-1));
+    if (!parameter || args.length < 3) {
+      callPattern.lastIndex = closeParen + 1;
+      continue;
+    }
+    const operatorMatch = /^\s*(=|!=)\s*/.exec(expression.slice(closeParen + 1));
+    if (!operatorMatch) {
+      callPattern.lastIndex = closeParen + 1;
+      continue;
+    }
+    const filterSource = expression.slice(closeParen + 1 + operatorMatch[0].length);
+    const filterMatch = projVarFlagFilterPattern(parameter).exec(filterSource);
+    if (!filterMatch?.[1]) {
+      callPattern.lastIndex = closeParen + 1;
+      continue;
+    }
+    const projectileId = args[0] ?? "-1";
+    const index = args.slice(1, -1).join(",") || "0";
+    const filter = filterMatch[1].replace(/\s+/g, "");
+    const predicateBase = parameter === "attr"
+      ? "ProjVarAttr"
+      : parameter === "guardflag"
+        ? "ProjVarGuardFlag"
+        : "ProjVarHitFlag";
+    const predicateName = operatorMatch[1] === "!=" ? `${predicateBase}Not` : predicateBase;
+    const predicate = `${predicateName}(${projectileId},${index},"${filter}")`;
+    const replacementEnd = closeParen + 1 + operatorMatch[0].length + filterMatch[0].length;
+    rewritten += expression.slice(sourceCursor, callStart) + predicate;
+    sourceCursor = replacementEnd;
+    callPattern.lastIndex = replacementEnd;
+  }
+
+  return rewritten + expression.slice(sourceCursor);
+}
+
+function findBalancedClosingParen(expression: string, openParen: number): number {
+  let depth = 0;
+  let quoted = false;
+  for (let index = openParen; index < expression.length; index += 1) {
+    const char = expression[index];
+    if (char === '"' && expression[index - 1] !== "\\") {
+      quoted = !quoted;
+      continue;
+    }
+    if (quoted) continue;
+    if (char === "(") depth += 1;
+    if (char === ")") {
+      depth -= 1;
+      if (depth === 0) return index;
+    }
+  }
+  return -1;
+}
+
+function splitBalancedArgumentText(value: string): string[] {
+  const args: string[] = [];
+  let current = "";
+  let depth = 0;
+  let quoted = false;
+  for (let index = 0; index < value.length; index += 1) {
+    const char = value[index] ?? "";
+    if (char === '"' && value[index - 1] !== "\\") quoted = !quoted;
+    if (!quoted && char === "(") depth += 1;
+    if (!quoted && char === ")") depth -= 1;
+    if (!quoted && char === "," && depth === 0) {
+      args.push(current.trim());
+      current = "";
+      continue;
+    }
+    current += char;
+  }
+  args.push(current.trim());
+  return args;
+}
+
+function normalizeProjVarFlagParameter(value: string | undefined): RuntimeProjVarFlagParameter | undefined {
+  const normalized = value?.trim().toLowerCase();
+  return normalized === "attr" || normalized === "guardflag" || normalized === "hitflag" ? normalized : undefined;
+}
+
+function projVarFlagFilterPattern(parameter: RuntimeProjVarFlagParameter): RegExp {
+  return parameter === "attr"
+    ? /^([sca]+\s*,\s*(?:[nsh][atp]|[nsha])(?:\s*,\s*(?:[nsh][atp]|[nsha]))*)/i
+    : /^([hlmadfp]+[+-]?)/i;
+}
+
 function evaluateActorRedirect(expression: string, context: ExpressionContext): ExpressionValue | undefined {
   const redirect = /^(enemynear|partner|enemy|parent|root|target|playerid)(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
   if (!redirect) {
@@ -288,6 +477,11 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
     playerNo: target === "parent" ? context.parentPlayerNo : context.rootPlayerNo,
     localCoord: target === "parent" ? context.parentLocalCoord ?? context.localCoord : context.rootLocalCoord ?? context.localCoord,
     teamSide: target === "parent" ? context.parentTeamSide : context.rootTeamSide,
+    clsnVar: target === "parent" ? context.parentClsnVar : context.rootClsnVar,
+    clsnOverlap: target === "parent" ? context.parentClsnOverlap : context.rootClsnOverlap,
+    projClsnOverlap: target === "parent" ? context.parentProjClsnOverlap : context.rootProjClsnOverlap,
+    projVar: target === "parent" ? context.parentProjVar : context.rootProjVar,
+    projVarFlag: target === "parent" ? context.parentProjVarFlag : context.rootProjVarFlag,
   });
 }
 
@@ -539,6 +733,11 @@ class ExpressionParser {
       playerNo: target === "parent" ? this.context.parentPlayerNo : this.context.rootPlayerNo,
       localCoord: target === "parent" ? this.context.parentLocalCoord ?? this.context.localCoord : this.context.rootLocalCoord ?? this.context.localCoord,
       teamSide: target === "parent" ? this.context.parentTeamSide : this.context.rootTeamSide,
+      clsnVar: target === "parent" ? this.context.parentClsnVar : this.context.rootClsnVar,
+      clsnOverlap: target === "parent" ? this.context.parentClsnOverlap : this.context.rootClsnOverlap,
+      projClsnOverlap: target === "parent" ? this.context.parentProjClsnOverlap : this.context.rootProjClsnOverlap,
+      projVar: target === "parent" ? this.context.parentProjVar : this.context.rootProjVar,
+      projVarFlag: target === "parent" ? this.context.parentProjVarFlag : this.context.rootProjVarFlag,
     };
   }
 
@@ -618,8 +817,14 @@ class ExpressionParser {
       }
       return this.context.playerNo!;
     }
+    if (lower === "animplayerno") {
+      return this.context.animPlayerNo ?? 0;
+    }
     if (lower === "statetime") {
       return this.context.stateTime ?? this.context.self.animTime;
+    }
+    if (lower === "animlength") {
+      return this.context.animLength ?? 0;
     }
     if (lower === "animtime") {
       return this.context.animTimeRemaining ?? 0;
@@ -656,6 +861,9 @@ class ExpressionParser {
     }
     if (lower === "life") {
       return this.context.self.life;
+    }
+    if (lower === "redlife") {
+      return this.context.self.redLife ?? 0;
     }
     if (lower === "lifemax") {
       return this.context.lifeMax ?? this.context.self.lifeMax ?? 1000;
@@ -754,7 +962,13 @@ class ExpressionParser {
       return this.context.self.roundNo ?? 1;
     }
     if (lower === "roundstate") {
-      return this.context.self.roundPhase ?? 2;
+      return runtimeRoundStateFromPhase(this.context.self.roundPhase);
+    }
+    if (lower === "introstate") {
+      return this.context.introState ?? 0;
+    }
+    if (lower === "fighttime") {
+      return this.context.fightScreen?.fightTime ?? 0;
     }
     if (lower === "roundsexisted" || lower === "matchover") {
       return lower === "roundsexisted" ? (this.context.self.roundsExisted ?? 0) : (this.context.self.matchOver ? 1 : 0);
@@ -862,7 +1076,7 @@ class ExpressionParser {
     if (lower === "projcanceltime") {
       return this.context.projCancelTime?.() ?? -1;
     }
-    if (/^(s|c|a|l|i|h|n|sc|na|sa|ha)$/i.test(identifier)) {
+    if (/^(s|c|a|l|i|h|n|sc|ca|sa|sca|na|nt|np|st|sp|ha|ht|hp)$/i.test(identifier)) {
       return identifier.toUpperCase();
     }
     this.context.reportUnsupported?.(identifier);
@@ -894,6 +1108,32 @@ class ExpressionParser {
     }
     if (lower === "gethitvar") {
       return this.context.getHitVar?.(String(args[0] ?? "")) ?? defaultHitVar(String(args[0] ?? ""));
+    }
+    if (lower === "gethitvarattr") {
+      const filter = args.map(String).join(",");
+      return this.context.getHitVarAttr?.(this.context.self, filter) ? 1 : 0;
+    }
+    if (lower === "gethitvarguardflag") {
+      return this.context.getHitVarGuardFlag?.(this.context.self, String(args[0] ?? "")) ? 1 : 0;
+    }
+    if (lower === "gethitvarhitflag") {
+      return this.context.getHitVarHitFlag?.(this.context.self, String(args[0] ?? "")) ? 1 : 0;
+    }
+    if (lower === "fightscreenstate") {
+      return this.context.fightScreenState?.(String(args[0] ?? ""))
+        ?? runtimeFightScreenStateValue(this.context.fightScreen, String(args[0] ?? ""))
+        ? 1
+        : 0;
+    }
+    if (lower === "fightscreenvar") {
+      return this.context.fightScreenVar?.(String(args[0] ?? ""))
+        ?? runtimeFightScreenVarValue(this.context.fightScreen, String(args[0] ?? ""))
+        ?? 0;
+    }
+    if (lower === "gamevar") {
+      return this.context.gameVar?.(String(args[0] ?? ""))
+        ?? runtimeGameVarValue(this.context.fightScreen, String(args[0] ?? ""))
+        ?? 0;
     }
     if (lower === "helpervar") {
       const key = String(args[0] ?? "").toLowerCase();
@@ -957,6 +1197,93 @@ class ExpressionParser {
     }
     if (lower === "fvar") {
       return this.context.self.fvars[Math.max(0, Math.floor(numeric(args[0] ?? 0)))] ?? 0;
+    }
+    if (lower === "animelemvar") {
+      return this.context.animElemVar?.(String(args[0] ?? "")) ?? 0;
+    }
+    if (lower === "clsnvar") {
+      const group = String(args[0] ?? "").trim().toLowerCase();
+      const coordinate = String(args[2] ?? "").trim().toLowerCase();
+      if (!isRuntimeClsnVarGroup(group) || !isRuntimeClsnVarCoordinate(coordinate)) {
+        this.context.reportUnsupported?.(`clsnvar(${group || "?"},${coordinate || "?"})`);
+        return Number.NaN;
+      }
+      const indexValue = evaluateExpressionFragmentPreservingBottom(String(args[1] ?? "0"), this.context);
+      if (isFailedRedirect(indexValue)) return failedRedirectMarker;
+      const index = numeric(indexValue);
+      if (!Number.isFinite(index)) return Number.NaN;
+      const value = this.context.clsnVar?.(group, Math.trunc(index), coordinate);
+      if (value === undefined || !Number.isFinite(value)) return Number.NaN;
+      const currentWidth = this.localCoordWidth();
+      const outputWidth = this.context.outputLocalCoord?.[0] ?? currentWidth;
+      return value * outputWidth / currentWidth;
+    }
+    if (lower === "clsnoverlap") {
+      const actorGroup = String(args[0] ?? "").trim().toLowerCase();
+      const targetGroup = String(args.at(-1) ?? "").trim().toLowerCase();
+      if (args.length < 3 || !isRuntimeClsnVarGroup(actorGroup) || !isRuntimeClsnVarGroup(targetGroup)) {
+        this.context.reportUnsupported?.(`clsnoverlap(${actorGroup || "?"},${targetGroup || "?"})`);
+        return 0;
+      }
+      const playerIdValue = evaluateExpressionFragmentPreservingBottom(args.slice(1, -1).map(String).join(","), this.context);
+      if (isFailedRedirect(playerIdValue)) return failedRedirectMarker;
+      const playerId = numeric(playerIdValue);
+      if (!Number.isFinite(playerId)) return 0;
+      return this.context.clsnOverlap?.(actorGroup, Math.trunc(playerId), targetGroup) ? 1 : 0;
+    }
+    if (lower === "projclsnoverlap") {
+      const targetGroup = String(args.at(-1) ?? "").trim().toLowerCase();
+      if (args.length < 3 || !isRuntimeClsnVarGroup(targetGroup)) {
+        this.context.reportUnsupported?.(`projclsnoverlap(${targetGroup || "?"})`);
+        return 0;
+      }
+      const indexValue = evaluateExpressionFragmentPreservingBottom(String(args[0] ?? "-1"), this.context);
+      if (isFailedRedirect(indexValue)) return failedRedirectMarker;
+      const playerIdValue = evaluateExpressionFragmentPreservingBottom(args.slice(1, -1).map(String).join(","), this.context);
+      if (isFailedRedirect(playerIdValue)) return failedRedirectMarker;
+      const index = numeric(indexValue);
+      const playerId = numeric(playerIdValue);
+      if (!Number.isFinite(index) || index < 0 || !Number.isFinite(playerId)) return 0;
+      return this.context.projClsnOverlap?.(Math.trunc(index), Math.trunc(playerId), targetGroup) ? 1 : 0;
+    }
+    if (lower === "projvar") {
+      const parameter = String(args.at(-1) ?? "").trim();
+      if (args.length < 3 || !parameter) {
+        this.context.reportUnsupported?.(`projvar(${parameter || "?"})`);
+        return Number.NaN;
+      }
+      const projectileIdValue = evaluateExpressionFragmentPreservingBottom(String(args[0] ?? "-1"), this.context);
+      if (isFailedRedirect(projectileIdValue)) return failedRedirectMarker;
+      const indexValue = evaluateExpressionFragmentPreservingBottom(args.slice(1, -1).map(String).join(","), this.context);
+      if (isFailedRedirect(indexValue)) return failedRedirectMarker;
+      const projectileId = numeric(projectileIdValue);
+      const index = numeric(indexValue);
+      if (!Number.isFinite(projectileId) || !Number.isFinite(index) || index < 0) return Number.NaN;
+      const value = this.context.projVar?.(
+        Math.trunc(projectileId),
+        Math.trunc(index),
+        parameter,
+        this.context.outputLocalCoord ?? this.context.localCoord,
+      );
+      return value === undefined || !Number.isFinite(value) ? Number.NaN : value;
+    }
+    if (/^projvar(?:attr|guardflag|hitflag)(?:not)?$/.test(lower)) {
+      const parameter: RuntimeProjVarFlagParameter = lower.startsWith("projvarattr")
+        ? "attr"
+        : lower.startsWith("projvarguardflag")
+          ? "guardflag"
+          : "hitflag";
+      const operator = lower.endsWith("not") ? "!=" : "=";
+      const filter = String(args.at(-1) ?? "").trim();
+      if (args.length < 3 || !filter) return 0;
+      const projectileIdValue = evaluateExpressionFragmentPreservingBottom(String(args[0] ?? "-1"), this.context);
+      if (isFailedRedirect(projectileIdValue)) return failedRedirectMarker;
+      const indexValue = evaluateExpressionFragmentPreservingBottom(args.slice(1, -1).map(String).join(","), this.context);
+      if (isFailedRedirect(indexValue)) return failedRedirectMarker;
+      const projectileId = numeric(projectileIdValue);
+      const index = numeric(indexValue);
+      if (!Number.isFinite(projectileId) || !Number.isFinite(index) || index < 0) return 0;
+      return this.context.projVarFlag?.(Math.trunc(projectileId), Math.trunc(index), parameter, filter, operator) ? 1 : 0;
     }
     if (lower === "animelemtime") {
       const elementNumber = Math.floor(numeric(args[0] ?? 0));
@@ -1266,7 +1593,30 @@ function tokenize(expression: string): Token[] {
   return tokens;
 }
 
-const rawArgumentFunctions = new Set(["cond", "const", "gethitvar", "helpervar", "hitdefattr"]);
+const rawArgumentFunctions = new Set([
+  "cond",
+  "const",
+  "gethitvar",
+  "gethitvarattr",
+  "gethitvarguardflag",
+  "gethitvarhitflag",
+  "fightscreenstate",
+  "fightscreenvar",
+  "gamevar",
+  "helpervar",
+  "hitdefattr",
+  "animelemvar",
+  "clsnvar",
+  "clsnoverlap",
+  "projclsnoverlap",
+  "projvar",
+  "projvarattr",
+  "projvarattrnot",
+  "projvarguardflag",
+  "projvarguardflagnot",
+  "projvarhitflag",
+  "projvarhitflagnot",
+]);
 
 function pushRawArg(args: string[], tokens: Token[]): void {
   if (tokens.length === 0 && args.length === 0) {
@@ -1471,6 +1821,17 @@ function enemyNearRedirectContext(index: string | undefined, context: Expression
     self: context.opponent,
     playerId: context.opponentPlayerId,
     playerNo: context.opponentPlayerNo,
+    animPlayerNo: context.opponentAnimPlayerNo,
+    clsnVar: context.opponentClsnVar,
+    opponentClsnVar: context.clsnVar,
+    clsnOverlap: context.opponentClsnOverlap,
+    opponentClsnOverlap: context.clsnOverlap,
+    projClsnOverlap: context.opponentProjClsnOverlap,
+    opponentProjClsnOverlap: context.projClsnOverlap,
+    projVar: context.opponentProjVar,
+    opponentProjVar: context.projVar,
+    projVarFlag: context.opponentProjVarFlag,
+    opponentProjVarFlag: context.projVarFlag,
     opponent: context.self,
     opponentPlayerId: context.playerId,
     opponentPlayerNo: context.playerNo,
@@ -1513,9 +1874,21 @@ function redirectedTargetContext(context: ExpressionContext, redirected: Express
     self: redirected.self,
     playerId: redirected.playerId,
     playerNo: redirected.playerNo,
+    animPlayerNo: redirected.animPlayerNo,
+    clsnVar: redirected.clsnVar,
+    opponentClsnVar: redirected.opponentClsnVar ?? context.clsnVar,
+    clsnOverlap: redirected.clsnOverlap,
+    opponentClsnOverlap: redirected.opponentClsnOverlap ?? context.clsnOverlap,
+    projClsnOverlap: redirected.projClsnOverlap,
+    opponentProjClsnOverlap: redirected.opponentProjClsnOverlap ?? context.projClsnOverlap,
+    projVar: redirected.projVar,
+    opponentProjVar: redirected.opponentProjVar ?? context.projVar,
+    projVarFlag: redirected.projVarFlag,
+    opponentProjVarFlag: redirected.opponentProjVarFlag ?? context.projVarFlag,
     opponent: redirected.opponent ?? context.self,
     opponentPlayerId: redirected.opponentPlayerId ?? context.playerId,
     opponentPlayerNo: redirected.opponentPlayerNo ?? context.playerNo,
+    opponentAnimPlayerNo: redirected.opponentAnimPlayerNo ?? context.animPlayerNo,
     localCoord: redirected.localCoord ?? context.localCoord,
     opponentLocalCoord: redirected.opponentLocalCoord ?? context.localCoord,
     outputLocalCoord: context.outputLocalCoord ?? context.localCoord,
@@ -1530,6 +1903,14 @@ function redirectedTargetContext(context: ExpressionContext, redirected: Express
     teamSide: redirected.teamSide,
     opponentTeamSide: redirected.opponentTeamSide ?? context.teamSide,
   };
+}
+
+function isRuntimeClsnVarGroup(value: string): value is RuntimeClsnVarGroup {
+  return value === "clsn1" || value === "clsn2" || value === "size";
+}
+
+function isRuntimeClsnVarCoordinate(value: string): value is RuntimeClsnVarCoordinate {
+  return value === "back" || value === "front" || value === "top" || value === "bottom";
 }
 
 function resolveEnemyNearIndex(index: string | undefined, context: ExpressionContext): number | "unsupported" {

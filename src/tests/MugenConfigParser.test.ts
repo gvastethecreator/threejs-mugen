@@ -35,4 +35,54 @@ GameHeight = 720
       message: "Invalid [Config] GameWidth; expected a positive number",
     });
   });
+
+  it("parses case-insensitive finite [Rules] life-to-power multipliers including zero", () => {
+    const parsed = parseMugenConfig(
+      `
+[rUlEs]
+default.attack.lifetopowermul = 0
+DEFAULT.GETHIT.LIFETOPOWERMUL = -0.25
+`,
+      "data/mugen.cfg",
+    );
+
+    expect(parsed.powerRules).toEqual({
+      defaultAttackLifeToPowerMultiplier: 0,
+      defaultGetHitLifeToPowerMultiplier: -0.25,
+      sourcePath: "data/mugen.cfg",
+    });
+    expect(parsed.rawSections.rUlEs?.["default.attack.lifetopowermul"]).toBe("0");
+    expect(parsed.diagnostics).toEqual([]);
+  });
+
+  it("warns for malformed [Rules] multipliers while preserving their raw values", () => {
+    const parsed = parseMugenConfig(
+      `
+[Rules]
+Default.Attack.LifeToPowerMul = nope
+Default.GetHit.LifeToPowerMul = Infinity
+`,
+      "config.ini",
+    );
+
+    expect(parsed.powerRules).toBeUndefined();
+    expect(parsed.rawSections.Rules).toMatchObject({
+      "Default.Attack.LifeToPowerMul": "nope",
+      "Default.GetHit.LifeToPowerMul": "Infinity",
+    });
+    expect(parsed.diagnostics).toEqual([
+      expect.objectContaining({
+        severity: "warning",
+        format: "config",
+        file: "config.ini",
+        message: "Invalid [Rules] Default.Attack.LifeToPowerMul; expected a finite number",
+      }),
+      expect.objectContaining({
+        severity: "warning",
+        format: "config",
+        file: "config.ini",
+        message: "Invalid [Rules] Default.GetHit.LifeToPowerMul; expected a finite number",
+      }),
+    ]);
+  });
 });

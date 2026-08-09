@@ -1,0 +1,121 @@
+{
+  "ok": true,
+  "engine": "motion-variation-heuristic",
+  "run_dir": ".",
+  "states_mode": "locomotion",
+  "checked_states": [
+    "walk-forward",
+    "walk-back"
+  ],
+  "semantic_review_required": true,
+  "quality_gate_note": "Motion variation is a heuristic. Locomotion still needs visual leg-phase review before final approval.",
+  "errors": [],
+  "warnings": [
+    "walk-forward: body center is nearly static; verify body bob/weight shift visually",
+    "walk-back: lower-body screen-space balance barely varies (range 0.041; diagnostic target >= 0.045)",
+    "walk-back: body center is nearly static; verify body bob/weight shift visually"
+  ],
+  "results": [
+    {
+      "state": "walk-forward",
+      "frames": 8,
+      "loop": true,
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "body center is nearly static; verify body bob/weight shift visually"
+      ],
+      "semantic_review_required": true,
+      "semantic_review": [
+        "inspect playback/contact sheet; metric pass is not final approval",
+        "frame 1 and the opposite contact frame must show opposite anatomical support/contact legs",
+        "pass/down frames must not keep both legs drifting to the same side"
+      ],
+      "metrics": {
+        "average_lower_body_diff": 0.461,
+        "min_lower_body_diff": 0.2674,
+        "support_balance_range": 0.1601,
+        "contact_phase_check": {
+          "ok": true,
+          "opposite_contact_index": 4,
+          "opposite_contact_frame": 5,
+          "frame_1_support_balance": -0.0423,
+          "frame_1_support_side": "left",
+          "opposite_contact_support_balance": -0.0449,
+          "opposite_contact_support_side": "left",
+          "contact_delta": 0.0027,
+          "opposite_contact_pose_diff": 0.2114,
+          "min_opposite_contact_pose_diff": 0.08,
+          "min_contact_balance_abs": 0.012,
+          "min_contact_opposition": 0.035,
+          "screen_side_is_diagnostic_only": true,
+          "anatomical_leg_alternation_requires_visual_review": true,
+          "reason": "distinct opposite-contact lower-body poses"
+        },
+        "body_center_x_range": 0.0026,
+        "body_center_y_range": 0,
+        "support_balances": [
+          -0.0423,
+          -0.0127,
+          -0.1564,
+          -0.0411,
+          -0.0449,
+          -0.016,
+          -0.1729,
+          -0.0541
+        ]
+      }
+    },
+    {
+      "state": "walk-back",
+      "frames": 8,
+      "loop": true,
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "lower-body screen-space balance barely varies (range 0.041; diagnostic target >= 0.045)",
+        "body center is nearly static; verify body bob/weight shift visually"
+      ],
+      "semantic_review_required": true,
+      "semantic_review": [
+        "inspect playback/contact sheet; metric pass is not final approval",
+        "frame 1 and the opposite contact frame must show opposite anatomical support/contact legs",
+        "pass/down frames must not keep both legs drifting to the same side"
+      ],
+      "metrics": {
+        "average_lower_body_diff": 0.3081,
+        "min_lower_body_diff": 0.2213,
+        "support_balance_range": 0.0407,
+        "contact_phase_check": {
+          "ok": true,
+          "opposite_contact_index": 4,
+          "opposite_contact_frame": 5,
+          "frame_1_support_balance": -0.023,
+          "frame_1_support_side": "left",
+          "opposite_contact_support_balance": -0.0289,
+          "opposite_contact_support_side": "left",
+          "contact_delta": 0.0059,
+          "opposite_contact_pose_diff": 0.3953,
+          "min_opposite_contact_pose_diff": 0.08,
+          "min_contact_balance_abs": 0.012,
+          "min_contact_opposition": 0.035,
+          "screen_side_is_diagnostic_only": true,
+          "anatomical_leg_alternation_requires_visual_review": true,
+          "reason": "distinct opposite-contact lower-body poses"
+        },
+        "body_center_x_range": 0.0026,
+        "body_center_y_range": 0,
+        "support_balances": [
+          -0.023,
+          -0.0181,
+          -0.0339,
+          -0.0277,
+          -0.0289,
+          -0.055,
+          -0.0243,
+          -0.0143
+        ]
+      }
+    }
+  ]
+}

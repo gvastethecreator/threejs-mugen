@@ -40,6 +40,16 @@ export class CharacterInstance {
     this.frameElapsed = 0;
   }
 
+  selectFrame(frameIndex: number): void {
+    const action = this.getAction();
+    const lastFrameIndex = Math.max(0, (action?.frames.length ?? 1) - 1);
+    this.state.frameIndex = Math.max(0, Math.min(lastFrameIndex, Math.trunc(frameIndex)));
+    this.state.animTime = action?.frames
+      .slice(0, this.state.frameIndex)
+      .reduce((total, frame) => total + Math.max(1, frame.duration), 0) ?? 0;
+    this.frameElapsed = 0;
+  }
+
   step(ticks = 1): void {
     for (let tick = 0; tick < ticks; tick += 1) {
       this.advanceOneTick();

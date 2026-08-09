@@ -462,6 +462,7 @@ export class RuntimePausedMatchWorld {
           runtimeTick: input.runtimeTick,
           commandInput: actor === input.p1 ? input.p1Input : input.p2Input,
           opponents: context.opponents,
+          projectilePauseKind: input.currentPause()?.type,
         });
       },
       advancePresentationEffects: (actor) => effectLifecycleWorld.advancePresentation(actor),

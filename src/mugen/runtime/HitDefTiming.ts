@@ -1,3 +1,5 @@
+import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+
 export type RuntimeHitDefGuardTiming = {
   guardHitTime?: number;
   guardSlideTime?: number;
@@ -7,12 +9,17 @@ export type RuntimeHitDefGuardTiming = {
 
 export function resolveHitDefGuardTiming(input: {
   groundHitTime?: number;
+  groundSlideTime?: number;
   guardHitTime?: number;
   guardSlideTime?: number;
   guardControlTime?: number;
   airGuardControlTime?: number;
+  runtimeProfile?: RuntimeCompatibilityProfile;
 }): RuntimeHitDefGuardTiming {
-  const guardHitTime = finiteTiming(input.guardHitTime) ?? finiteTiming(input.groundHitTime);
+  const fallbackGuardHitTime = input.runtimeProfile === "mugen-1.1"
+    ? finiteTiming(input.groundSlideTime)
+    : finiteTiming(input.groundHitTime);
+  const guardHitTime = finiteTiming(input.guardHitTime) ?? fallbackGuardHitTime;
   const guardSlideTime = finiteTiming(input.guardSlideTime) ?? guardHitTime;
   const guardControlTime = finiteTiming(input.guardControlTime) ?? guardSlideTime;
   return {

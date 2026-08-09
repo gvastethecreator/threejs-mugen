@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
 import type { MugenAnimationFrame } from "../mugen/model/MugenAnimation";
-import { defaultRuntimeHurtBoxes, RuntimeFrameWorld, type RuntimeFrameActor } from "../mugen/runtime/RuntimeFrameSystem";
+import {
+  defaultRuntimeHurtBoxes,
+  runtimeClsnVar,
+  runtimeClsnOverlap,
+  runtimeCurrentClsnVarBoxes,
+  RuntimeFrameWorld,
+  type RuntimeClsnVarActor,
+  type RuntimeClsnOverlapActor,
+  type RuntimeFrameActor,
+} from "../mugen/runtime/RuntimeFrameSystem";
 
 describe("RuntimeFrameSystem", () => {
   it("resolves the current AIR frame from runtime frameIndex", () => {
@@ -90,6 +99,62 @@ describe("RuntimeFrameSystem", () => {
 
     expect(world.currentHurtBoxes(actor)).toEqual([]);
   });
+
+  it("projects raw current-frame ClsnVar boxes, size, overrides, and coordinates", () => {
+    const actor: RuntimeClsnVarActor = {
+      runtime: {
+        frameIndex: 0,
+        stateType: "S",
+        bodyWidthDelta: { back: 2, front: 4 },
+        bodyHeightDelta: { top: 3, bottom: 5 },
+        clsnOverrides: [
+          { group: 1, index: 0, rect: { x1: -20, y1: -30, x2: 40, y2: 10 } },
+          { group: 3, index: 0, rect: { x1: -18, y1: -70, x2: 22, y2: 5 } },
+        ],
+      },
+      currentAction: { frames: [frame()] },
+      definition: { constants: { "size.ground.back": 16, "size.ground.front": 16, "size.height": 60 } },
+    };
+
+    expect(runtimeCurrentClsnVarBoxes(actor, "clsn1")).toEqual([{ x1: -20, y1: -30, x2: 40, y2: 10 }]);
+    expect(runtimeCurrentClsnVarBoxes(actor, "size")).toEqual([{ x1: -18, y1: -70, x2: 22, y2: 5 }]);
+    expect(runtimeClsnVar(actor, "clsn1", 0, "back")).toBe(-20);
+    expect(runtimeClsnVar(actor, "clsn1", 0, "front")).toBe(40);
+    expect(runtimeClsnVar(actor, "clsn1", 0, "top")).toBe(-30);
+    expect(runtimeClsnVar(actor, "clsn1", 0, "bottom")).toBe(10);
+    expect(runtimeClsnVar(actor, "clsn1", -1, "back")).toBeUndefined();
+    expect(runtimeClsnVar(actor, "clsn1", 1, "back")).toBeUndefined();
+  });
+
+  it("checks ClsnOverlap in shared world space with localcoord, scale, angle, and size exceptions", () => {
+    const actor = clsnOverlapActor({
+      localCoord: [640, 480],
+      clsn1: [{ x1: 20, y1: -4, x2: 40, y2: 4 }],
+      runtime: { clsnScaleMultiplier: { x: 2, y: 1 } },
+    });
+    const target = clsnOverlapActor({
+      localCoord: [320, 240],
+      clsn2: [{ x1: -2, y1: -2, x2: 2, y2: 2 }],
+      runtime: { pos: { x: 24, y: 0 } },
+    });
+
+    expect(runtimeClsnOverlap(actor, target, "clsn1", "clsn2")).toBe(true);
+    actor.runtime.clsnScaleMultiplier = undefined;
+    expect(runtimeClsnOverlap(actor, target, "clsn1", "clsn2")).toBe(false);
+
+    actor.definition.localCoord = [320, 240];
+    actor.currentAction.frames[0]!.clsn1 = [{ x1: 10, y1: -2, x2: 20, y2: 2 }];
+    actor.runtime.clsnAngle = 90;
+    target.runtime.pos = { x: 0, y: -15 };
+    expect(runtimeClsnOverlap(actor, target, "clsn1", "clsn2")).toBe(true);
+    actor.runtime.clsnAngle = 0;
+    expect(runtimeClsnOverlap(actor, target, "clsn1", "clsn2")).toBe(false);
+
+    actor.runtime.clsnAngle = 90;
+    actor.runtime.clsnScaleMultiplier = { x: 10, y: 10 };
+    target.runtime.pos = { x: 20, y: 0 };
+    expect(runtimeClsnOverlap(actor, target, "size", "clsn2")).toBe(false);
+  });
 });
 
 function frameActor(
@@ -131,5 +196,26 @@ function frame(overrides: Partial<MugenAnimationFrame> = {}): MugenAnimationFram
     ...overrides,
     raw: overrides.raw ?? base.raw,
     line: overrides.line ?? base.line,
+  };
+}
+
+function clsnOverlapActor(options: {
+  localCoord?: [number, number];
+  clsn1?: MugenAnimationFrame["clsn1"];
+  clsn2?: MugenAnimationFrame["clsn2"];
+  runtime?: Partial<RuntimeClsnOverlapActor["runtime"]>;
+} = {}): RuntimeClsnOverlapActor {
+  return {
+    runtime: {
+      frameIndex: 0,
+      stateType: "S",
+      pos: { x: 0, y: 0 },
+      facing: 1,
+      ...options.runtime,
+    },
+    currentAction: {
+      frames: [frame({ clsn1: options.clsn1 ?? [], clsn2: options.clsn2 ?? [] })],
+    },
+    definition: { localCoord: options.localCoord },
   };
 }

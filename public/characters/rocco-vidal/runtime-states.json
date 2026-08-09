@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "kind": "mugen-web-sandbox/generated-fighter-runtime",
+  "fighterId": "rocco-vidal",
+  "spriteGroupBase": 15000,
+  "atlas": "sprite-sheet-alpha.png",
+  "manifest": "manifest.json",
+  "states": {
+    "idle": {
+      "action": 0,
+      "group": 15000,
+      "frames": 4,
+      "fps": 6,
+      "loop": true
+    },
+    "crouch": {
+      "action": 10,
+      "group": 15010,
+      "frames": 4,
+      "fps": 8,
+      "loop": false
+    },
+    "walk-forward": {
+      "action": 20,
+      "group": 15020,
+      "frames": 8,
+      "fps": 10,
+      "loop": true
+    },
+    "walk-back": {
+      "action": 21,
+      "group": 15021,
+      "frames": 8,
+      "fps": 10,
+      "loop": true
+    },
+    "jump": {
+      "action": 40,
+      "group": 15040,
+      "frames": 6,
+      "fps": 10,
+      "loop": false
+    },
+    "guard": {
+      "action": 120,
+      "group": 15120,
+      "frames": 4,
+      "fps": 8,
+      "loop": true
+    },
+    "win": {
+      "action": 180,
+      "group": 15180,
+      "frames": 5,
+      "fps": 8,
+      "loop": false
+    },
+    "light-strike": {
+      "action": 200,
+      "group": 15200,
+      "frames": 4,
+      "fps": 12,
+      "loop": false
+    },
+    "heavy-strike": {
+      "action": 210,
+      "group": 15210,
+      "frames": 6,
+      "fps": 10,
+      "loop": false
+    },
+    "special": {
+      "action": 220,
+      "group": 15220,
+      "frames": 8,
+      "fps": 12,
+      "loop": false
+    },
+    "hitstun": {
+      "action": 500,
+      "group": 15500,
+      "frames": 4,
+      "fps": 10,
+      "loop": false
+    },
+    "knockdown": {
+      "action": 510,
+      "group": 15510,
+      "frames": 6,
+      "fps": 10,
+      "loop": false
+    },
+    "ko": {
+      "action": 515,
+      "group": 15515,
+      "frames": 6,
+      "fps": 8,
+      "loop": false
+    },
+    "throw": {
+      "action": 800,
+      "group": 15800,
+      "frames": 6,
+      "fps": 10,
+      "loop": false
+    }
+  }
+}

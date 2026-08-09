@@ -41,6 +41,28 @@ describe("RuntimeRoundSystem", () => {
     expect(round.isOver).toBe(false);
   });
 
+  it("counts FightTime only after the intro gate and resets at the next round", () => {
+    const round = new RuntimeRoundSystem(20, "ikemen-go", {
+      startWaitTimeFrames: 1,
+      controlTimeFrames: 1,
+    });
+
+    expect(round.fightTimeFramesElapsed).toBe(0);
+    round.tickTimer();
+    expect(round.fightTimeFramesElapsed).toBe(0);
+    round.tickTimer();
+    expect(round.fightTimeFramesElapsed).toBe(0);
+    round.tickTimer();
+    expect(round.currentPhase).toBe(2);
+    expect(round.fightTimeFramesElapsed).toBe(1);
+
+    round.finishIfNeeded({ label: "P1", life: 600 }, { label: "P2", life: 0 });
+    round.tickTimer();
+    expect(round.fightTimeFramesElapsed).toBe(1);
+    round.startNextRound(20);
+    expect(round.fightTimeFramesElapsed).toBe(0);
+  });
+
   it("finishes a KO round and emits the previous runtime message", () => {
     const round = new RuntimeRoundSystem();
 
@@ -646,6 +668,38 @@ describe("RuntimeRoundSystem", () => {
     round.startNextRound(121);
     expect(round.snapshot()).toMatchObject({ roundNo: 2, roundPhase: 0, preRound: { intro: { frame: 0, remaining: 6, phase: 0 } } });
   });
+
+  it.each(["mugen-1.1", "ikemen-go"] as const)(
+    "keeps RoundState source values across Fight, KO, over, and the next round for %s",
+    (profile) => {
+      const round = new RuntimeRoundSystem(20, profile, {
+        startWaitTimeFrames: 1,
+        controlTimeFrames: 2,
+        postKoPhase4StartFrames: 1,
+        postKoFrames: 1,
+        koSlowFrames: 0,
+      });
+
+      expect(round.snapshot().roundPhase).toBe(0);
+      round.tickTimer();
+      expect(round.snapshot().roundPhase).toBe(1);
+      round.tickTimer();
+      round.tickTimer();
+      round.tickTimer();
+      expect(round.currentPhase).toBe(2);
+
+      expect(round.finishIfNeeded(
+        { label: "Rocco", life: 0 },
+        { label: "Nadia", life: 1000 },
+      )).toMatchObject({ state: "ko", winner: "Nadia" });
+      expect(round.snapshot().roundPhase).toBe(3);
+
+      round.tickTimer();
+      expect(round.snapshot().roundPhase).toBe(4);
+      round.startNextRound(20);
+      expect(round.snapshot()).toMatchObject({ roundNo: 2, roundPhase: 0 });
+    },
+  );
 
   it("skips the imported character-intro wait through a source-shaped shutter", () => {
     const round = new RuntimeRoundSystem(121, "ikemen-go", {

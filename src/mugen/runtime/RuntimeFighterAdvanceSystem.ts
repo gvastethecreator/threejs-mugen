@@ -20,6 +20,7 @@ export type RuntimeFighterAdvanceHooks<TActor extends RuntimeFighterAdvanceActor
   prepareActTmp?: (actor: TActor) => void;
   tickSpriteEffects: (actor: TActor) => void;
   tickHitBySlots: (actor: TActor) => void;
+  tickUnhittableTime?: (actor: TActor) => void;
   tickHitOverrideSlots: (actor: TActor) => void;
   advanceContactTimers: (actor: TActor) => void;
   advanceStateClock: (actor: TActor) => void;
@@ -59,6 +60,7 @@ export class RuntimeFighterAdvanceWorld {
     hooks.prepareActTmp?.(actor);
     hooks.tickSpriteEffects(actor);
     hooks.tickHitBySlots(actor);
+    hooks.tickUnhittableTime?.(actor);
     hooks.tickHitOverrideSlots(actor);
     hooks.advanceContactTimers(actor);
     actor.runtime.renderAngle = undefined;

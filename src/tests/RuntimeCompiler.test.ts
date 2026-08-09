@@ -52,6 +52,24 @@ time = 20
     const unsupportedHelperVar = compileExpression("HelperVar(unknownfield) = 1");
     const characterIdentity = compileExpression("ID >= 56 && PlayerNo = 1 && EnemyNear, ID >= 56");
     const hitDefAttr = compileExpression("HitDefAttr = SC, NA, SA, HA");
+    const getHitVarAttr = compileExpression("GetHitVar(attr) = SCA, HA");
+    const getHitVarGuardFlag = compileExpression("GetHitVar(guardflag) = MA");
+    const getHitVarHitFlag = compileExpression("GetHitVar(hitflag) = MAF");
+    const getHitVarProjectileId = compileExpression("GetHitVar(projid) = 77");
+    const getHitVarTeamSide = compileExpression("GetHitVar(teamside) = 1");
+    const getHitVarKeepState = compileExpression("GetHitVar(keepstate) = 1");
+    const getHitVarFrame = compileExpression("GetHitVar(frame) = 1");
+    const getHitVarPriority = compileExpression("GetHitVar(priority) = 4");
+    const getHitVarDizzyPoints = compileExpression("GetHitVar(dizzypoints) = 20");
+    const getHitVarGuardPoints = compileExpression("GetHitVar(guardpoints) = 15");
+    const getHitVarGuardCount = compileExpression("GetHitVar(guardcount) = 2");
+    const getHitVarHitCount = compileExpression("GetHitVar(hitcount) = 2");
+    const getHitVarRedLife = compileExpression("GetHitVar(redlife) = 12");
+    const getHitVarGuardPower = compileExpression("GetHitVar(guardpower) = 11");
+    const getHitVarHitPower = compileExpression("GetHitVar(hitpower) = 5");
+    const getHitVarPower = compileExpression("GetHitVar(power) = 6");
+    const getHitVarScore = compileExpression("GetHitVar(score) = 6.5");
+    const getHitVarFacing = compileExpression("GetHitVar(facing) = -1");
     const enemyNear = compileExpression("enemynear, stateno = 5000");
     const parentRedirect = compileExpression("Parent,Var(3) = 7");
     const rootRedirect = compileExpression("Root,Vel X = 4");
@@ -129,6 +147,60 @@ time = 20
     expect(characterIdentity.identifiers).toEqual(["ID", "PlayerNo"]);
     expect(hitDefAttr.supportLevel).toBe("executable");
     expect(hitDefAttr.identifiers).toEqual(["HitDefAttr"]);
+    expect(getHitVarAttr.supportLevel).toBe("executable");
+    expect(getHitVarAttr.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarAttr.identifiers).toEqual([]);
+    expect(getHitVarGuardFlag.supportLevel).toBe("executable");
+    expect(getHitVarGuardFlag.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarGuardFlag.identifiers).toEqual([]);
+    expect(getHitVarHitFlag.supportLevel).toBe("executable");
+    expect(getHitVarHitFlag.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarHitFlag.identifiers).toEqual([]);
+    expect(getHitVarProjectileId.supportLevel).toBe("executable");
+    expect(getHitVarProjectileId.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarProjectileId.identifiers).toEqual([]);
+    expect(getHitVarTeamSide.supportLevel).toBe("executable");
+    expect(getHitVarTeamSide.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarTeamSide.identifiers).toEqual([]);
+    expect(getHitVarKeepState.supportLevel).toBe("executable");
+    expect(getHitVarKeepState.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarKeepState.identifiers).toEqual([]);
+    expect(getHitVarFrame.supportLevel).toBe("executable");
+    expect(getHitVarFrame.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarFrame.identifiers).toEqual([]);
+    expect(getHitVarPriority.supportLevel).toBe("executable");
+    expect(getHitVarPriority.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarPriority.identifiers).toEqual([]);
+    expect(getHitVarDizzyPoints.supportLevel).toBe("executable");
+    expect(getHitVarDizzyPoints.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarDizzyPoints.identifiers).toEqual([]);
+    expect(getHitVarGuardPoints.supportLevel).toBe("executable");
+    expect(getHitVarGuardPoints.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarGuardPoints.identifiers).toEqual([]);
+    expect(getHitVarGuardCount.supportLevel).toBe("executable");
+    expect(getHitVarGuardCount.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarGuardCount.identifiers).toEqual([]);
+    expect(getHitVarHitCount.supportLevel).toBe("executable");
+    expect(getHitVarHitCount.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarHitCount.identifiers).toEqual([]);
+    expect(getHitVarRedLife.supportLevel).toBe("executable");
+    expect(getHitVarRedLife.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarRedLife.identifiers).toEqual([]);
+    expect(getHitVarGuardPower.supportLevel).toBe("executable");
+    expect(getHitVarGuardPower.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarGuardPower.identifiers).toEqual([]);
+    expect(getHitVarHitPower.supportLevel).toBe("executable");
+    expect(getHitVarHitPower.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarHitPower.identifiers).toEqual([]);
+    expect(getHitVarPower.supportLevel).toBe("executable");
+    expect(getHitVarPower.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarPower.identifiers).toEqual([]);
+    expect(getHitVarScore.supportLevel).toBe("executable");
+    expect(getHitVarScore.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarScore.identifiers).toEqual([]);
+    expect(getHitVarFacing.supportLevel).toBe("executable");
+    expect(getHitVarFacing.functions).toEqual(["GetHitVar"]);
+    expect(getHitVarFacing.identifiers).toEqual([]);
     expect(enemyNear.supportLevel).toBe("executable");
     expect(enemyNear.identifiers).toEqual(["stateno"]);
     expect(parentRedirect.supportLevel).toBe("executable");
@@ -670,6 +742,8 @@ value = 1
     const compiled = compileControllerIr(
       controller(200, "HitDef", ["AnimElem = 3"], {
         id: "7",
+        chainid: "13",
+        nochainid: "40,41,42,43,44,45,46,47,48,49",
         numhits: "3",
         attr: "S, NA",
         hitflag: "H,L,A,F,P",
@@ -679,6 +753,7 @@ value = 1
         p2clsnrequire: "Clsn1",
         damage: "42,5",
         kill: "0",
+        keepstate: "1",
         "guard.kill": "0",
         "air.juggle": "7",
         priority: "6, Hit",
@@ -713,6 +788,7 @@ value = 1
         p1stateno: "210",
         p2stateno: "5100",
         p2getp1state: "0",
+        p2facing: "-1",
         missonoverride: "0",
         ignorereversaldef: "1",
         fall: "1",
@@ -722,6 +798,8 @@ value = 1
         "fall.zvelocity": "2.5",
         "fall.recover": "0",
         "fall.recovertime": "19",
+        "fall.envshake.mul": "0.75",
+        "fall.envshake.dir": "67.5",
         "down.recover": "1",
         "down.recovertime": "45",
       }),
@@ -730,6 +808,8 @@ value = 1
     expect(compiled.operation).toMatchObject({
       kind: "hitdef",
       id: 7,
+      chainId: 13,
+      noChainIds: [40, 41, 42, 43, 44, 45, 46, 47],
       hitCount: 3,
       attr: "S, NA",
       hitFlag: "H,L,A,F,P",
@@ -740,6 +820,7 @@ value = 1
       damage: 42,
       guardDamage: 5,
       kill: false,
+      keepState: true,
       guardKill: false,
       airJuggle: 7,
       priority: 6,
@@ -747,6 +828,7 @@ value = 1
       p1SpritePriority: 3,
       p2SpritePriority: -2,
       pauseTime: 8,
+      hitShakeTime: 9,
       groundHitTime: 17,
       airHitTime: 19,
       downHitTime: 21,
@@ -757,6 +839,7 @@ value = 1
       guardDistance: 96,
       guardFlag: "MA",
       guardPauseTime: 4,
+      guardShakeTime: 5,
       guardHitTime: 11,
       guardSlideTime: 6,
       guardControlTime: 8,
@@ -774,7 +857,8 @@ value = 1
       sparkXy: [12, -64],
       p1StateNo: 210,
       p2StateNo: 5100,
-      p2GetP1State: false,
+      p2GetP1State: 0,
+      p2Facing: -1,
       missOnOverride: false,
       ignoreReversalDef: true,
       fall: {
@@ -787,6 +871,8 @@ value = 1
         recoverTime: 19,
         downRecover: true,
         downRecoverTime: 45,
+        envShakeMultiplier: 0.75,
+        envShakeDirection: 67.5,
       },
     });
   });
@@ -805,6 +891,8 @@ value = 1
         p2sprpriority: "fvar(1)",
       }),
     );
+    const alias = compileControllerIr(controller(200, "HitDef", [], { sprpriority: "var(2) + 1" }));
+    const malformed = compileControllerIr(controller(200, "HitDef", [], { p1sprpriority: "var(" }));
 
     expect(authored.operation).toMatchObject({
       kind: "hitdef",
@@ -813,8 +901,43 @@ value = 1
     });
     expect(omitted.operation).not.toHaveProperty("p1SpritePriority");
     expect(omitted.operation).not.toHaveProperty("p2SpritePriority");
-    expect(dynamic.operation).not.toHaveProperty("p1SpritePriority");
-    expect(dynamic.operation).not.toHaveProperty("p2SpritePriority");
+    expect(dynamic.operation).toMatchObject({
+      kind: "hitdef",
+      p1SpritePriorityExpression: "var(0)",
+      p2SpritePriorityExpression: "fvar(1)",
+    });
+    expect(alias.operation).toMatchObject({ kind: "hitdef", p1SpritePriorityExpression: "var(2) + 1" });
+    expect(malformed.operation).toBeUndefined();
+  });
+
+  it("compiles dynamic HitDef priority with a static class", () => {
+    const dynamic = compileControllerIr(controller(200, "HitDef", [], { priority: "var(0) + 2, Dodge" }));
+    const redirected = compileControllerIr(controller(200, "HitDef", [], { priority: "Parent,var(1), Miss" }));
+    const redirectedDefaultClass = compileControllerIr(controller(200, "HitDef", [], { priority: "Parent, Time" }));
+    const functionDefaultClass = compileControllerIr(controller(200, "HitDef", [], { priority: "ifelse(1, 4, Time)" }));
+    const malformed = compileControllerIr(controller(200, "HitDef", [], { priority: "var(0), Unknown" }));
+
+    expect(dynamic.operation).toMatchObject({
+      kind: "hitdef",
+      priorityExpression: "var(0) + 2",
+      priorityType: "dodge",
+    });
+    expect(redirected.operation).toMatchObject({
+      kind: "hitdef",
+      priorityExpression: "Parent,var(1)",
+      priorityType: "miss",
+    });
+    expect(redirectedDefaultClass.operation).toMatchObject({
+      kind: "hitdef",
+      priorityExpression: "Parent, Time",
+      priorityType: "hit",
+    });
+    expect(functionDefaultClass.operation).toMatchObject({
+      kind: "hitdef",
+      priorityExpression: "ifelse(1, 4, Time)",
+      priorityType: "hit",
+    });
+    expect(malformed.operation).toBeUndefined();
   });
 
   it("compiles Target controllers into typed target operations", () => {
@@ -1154,7 +1277,7 @@ value = 1
     const velAdd = compileControllerIr(controller(200, "VelAdd", [], { y: "0.5", z: "-1" }));
     const posSet = compileControllerIr(controller(200, "PosSet", [], { x: "12", y: "-24", z: "9" }));
     const posAdd = compileControllerIr(controller(200, "PosAdd", [], { value: "8,-2", z: "-3" }));
-    const hitVelSet = compileControllerIr(controller(200, "HitVelSet", [], { x: "1", y: "0" }));
+    const hitVelSet = compileControllerIr(controller(200, "HitVelSet", [], { x: "1", y: "0", z: "1" }));
     const gravity = compileControllerIr(controller(200, "Gravity", [], {}));
     const dynamic = compileControllerIr(controller(200, "VelAdd", [], { y: "Const(movement.yaccel)" }));
 
@@ -1162,7 +1285,7 @@ value = 1
     expect(velAdd.operation).toEqual({ kind: "kinematic", controllerType: "veladd", y: 0.5, z: -1 });
     expect(posSet.operation).toEqual({ kind: "kinematic", controllerType: "posset", x: 12, y: -24, z: 9 });
     expect(posAdd.operation).toEqual({ kind: "kinematic", controllerType: "posadd", x: 8, y: -2, z: -3 });
-    expect(hitVelSet.operation).toEqual({ kind: "kinematic", controllerType: "hitvelset", x: 1, y: 0 });
+    expect(hitVelSet.operation).toEqual({ kind: "kinematic", controllerType: "hitvelset", x: 1, y: 0, z: 1 });
     expect(gravity.operation).toEqual({ kind: "kinematic", controllerType: "gravity", y: 0.55 });
     expect(dynamic.operation).toBeUndefined();
   });
@@ -1661,16 +1784,710 @@ value = 1
     expect(invalidRedirect.operation).toBeUndefined();
   });
 
+  it("compiles direct HitDef facing integer expressions and rejects malformed values", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      p1facing: "-1.8",
+      p1getp2facing: "var(2)",
+      p2facing: "var(3)",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      p1Facing: -1,
+      p1GetP2Facing: "var(2)",
+      p2Facing: "var(3)",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      p1facing: "Parent,var(0)",
+      p1getp2facing: "-2.9",
+      p2facing: "var(4)",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      p1Facing: "Parent,var(0)",
+      p1GetP2Facing: -2,
+      p2Facing: "var(4)",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { p1facing: "var(" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      p1getp2facing: "1,2",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      p2facing: "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles direct HitDef posture integer expressions and rejects malformed values", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      forcestand: "0.8",
+      forcecrouch: "var(2)",
+      forcenofall: "var(4)",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      forceStand: 0,
+      forceCrouch: "var(2)",
+      forceNoFall: "var(4)",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      forcestand: "Parent,var(0)",
+      forcecrouch: "-2.9",
+      forcenofall: "var(5)",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      forceStand: "Parent,var(0)",
+      forceCrouch: -2,
+      forceNoFall: "var(5)",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { forcestand: "var(" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      forcecrouch: "1,2",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      forcenofall: "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles fresh root HitDef state integer expressions and rejects malformed values", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      p1stateno: "777.9",
+      p2stateno: "var(2)",
+      p2getp1state: "Parent,var(3)",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      p1StateNo: 777,
+      p2StateNo: "var(2)",
+      p2GetP1State: "Parent,var(3)",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { p1stateno: "var(" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "HitDef", [], { p2stateno: "1,2" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "HitDef", [], { p2getp1state: "1e999" })).operation).toBeUndefined();
+  });
+
+  it("compiles direct HitDef id and chainid integer expressions", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      id: "-3.8",
+      chainid: "-1.8",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      id: 0,
+      chainId: -1,
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      id: "var(1)",
+      chainid: "Parent,var(2)",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      id: "var(1)",
+      chainId: "Parent,var(2)",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { id: "var(" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      chainid: "1,2",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles typed direct-HitDef getpower expressions and rejects malformed pairs", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], { getpower: "9.8" })).operation).toMatchObject({
+      kind: "hitdef",
+      getPower: [9],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      getpower: "var(1),Parent,var(2)",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      getPower: ["var(1)", "Parent,var(2)"],
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      getpower: "var(3)",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      getPower: ["var(3)"],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "Projectile", [], {
+      getpower: "var(4),-3.8",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      getPower: ["var(4)", -3],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { getpower: "1,2,3" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      getpower: "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic and mixed direct-HitDef damage pairs", () => {
+    const staticPair = compileControllerIr(controller(200, "HitDef", [], { damage: "40,7" }));
+    const dynamicSingle = compileControllerIr(controller(200, "HitDef", [], { damage: "var(1)" }));
+    const mixedPair = compileControllerIr(controller(200, "HitDef", [], { damage: "40,Parent,var(2)" }));
+    const modified = compileControllerIr(controller(200, "ModifyHitDef", [], {
+      damage: "var(3),fvar(1)",
+      redirectid: "57",
+    }));
+
+    expect(staticPair.operation).toMatchObject({ kind: "hitdef", damage: 40, guardDamage: 7 });
+    expect(staticPair.operation).not.toHaveProperty("damageExpressions");
+    expect(dynamicSingle.operation).toMatchObject({ kind: "hitdef", damageExpressions: ["var(1)"] });
+    expect(mixedPair.operation).toMatchObject({
+      kind: "hitdef",
+      damageExpressions: [40, "Parent,var(2)"],
+    });
+    expect(modified.operation).toMatchObject({
+      kind: "modifyhitdef",
+      damageExpressions: ["var(3)", "fvar(1)"],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { damage: "1,2,3" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      damage: "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic and mixed direct-HitDef pause pairs", () => {
+    const staticSingle = compileControllerIr(controller(200, "HitDef", [], { pausetime: "8" }));
+    const dynamic = compileControllerIr(controller(200, "HitDef", [], {
+      pausetime: "var(1),fvar(2)",
+      "guard.pausetime": "4,Parent,var(3)",
+    }));
+
+    expect(staticSingle.operation).toMatchObject({ kind: "hitdef", pauseTime: 8, hitShakeTime: 0 });
+    expect(staticSingle.operation).not.toHaveProperty("pauseTimeExpressions");
+    expect(dynamic.operation).toMatchObject({
+      kind: "hitdef",
+      pauseTimeExpressions: ["var(1)", "fvar(2)"],
+      guardPauseTimeExpressions: [4, "Parent,var(3)"],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { pausetime: "1,2,3" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "HitDef", [], { "guard.pausetime": "var(" })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef and ModifyHitDef ground.hittime scalars", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "ground.hittime": "var(1) + 2",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      groundHitTime: "var(1) + 2",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "ground.hittime": "fvar(2) * 3",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      groundHitTime: "fvar(2) * 3",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "ground.hittime": "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "ground.hittime": "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef and ModifyHitDef ground.slidetime scalars", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "ground.slidetime": "var(1) + 2",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      groundSlideTime: "var(1) + 2",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "ground.slidetime": "fvar(2) * 3",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      groundSlideTime: "fvar(2) * 3",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "ground.slidetime": "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "ground.slidetime": "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef and ModifyHitDef guard.hittime scalars", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "guard.hittime": "var(1) + 2",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      guardHitTime: "var(1) + 2",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.hittime": "fvar(2) * 3",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardHitTime: "fvar(2) * 3",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "guard.hittime": "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.hittime": "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef and ModifyHitDef guard.slidetime scalars", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "guard.slidetime": "var(1) + 2",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      guardSlideTime: "var(1) + 2",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.slidetime": "fvar(2) * 3",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardSlideTime: "fvar(2) * 3",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "guard.slidetime": "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.slidetime": "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef and ModifyHitDef guard.ctrltime scalars", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "guard.ctrltime": "var(1) + 2",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      guardControlTime: "var(1) + 2",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.ctrltime": "fvar(2) * 3",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardControlTime: "fvar(2) * 3",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "guard.ctrltime": "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.ctrltime": "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef and ModifyHitDef airguard.ctrltime scalars", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "airguard.ctrltime": "var(1) + 2",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      airGuardControlTime: "var(1) + 2",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "airguard.ctrltime": "fvar(2) * 3",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      airGuardControlTime: "fvar(2) * 3",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "airguard.ctrltime": "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "airguard.ctrltime": "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef and ModifyHitDef air.hittime scalars", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "air.hittime": "var(1) + 2",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      airHitTime: "var(1) + 2",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "air.hittime": "fvar(2) * 3",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      airHitTime: "fvar(2) * 3",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "air.hittime": "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "air.hittime": "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef and ModifyHitDef guard.dist scalars", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "guard.dist": "var(1) + 2",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      guardDistance: "var(1) + 2",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.dist": "fvar(2) * 3",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardDistance: "fvar(2) * 3",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "guard.dist": "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.dist": "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef and ModifyHitDef ground.velocity X/Y pairs", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "ground.velocity": "var(1)",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      groundVelocityExpressions: ["var(1)"],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "ground.velocity": "-4.5,var(2)",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      groundVelocityExpressions: [-4.5, "var(2)"],
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "ground.velocity": "fvar(1),var(2) + .5",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      groundVelocity: ["fvar(1)", "var(2) + .5"],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "ground.velocity": "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "ground.velocity": "var(1),var(2),var(3)",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles typed HitDef givepower expressions and rejects malformed pairs", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], { givepower: "9.8" })).operation).toMatchObject({
+      kind: "hitdef",
+      givePower: [9],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      givepower: "var(1),Parent,var(2)",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      givePower: ["var(1)", "Parent,var(2)"],
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      givepower: "var(3)",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      givePower: ["var(3)"],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "Projectile", [], {
+      givepower: "var(4),-3.8",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      givePower: ["var(4)", -3],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { givepower: "1,2,3" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      givepower: "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles contact PalFX for HitDef, ModifyHitDef, and Projectile", () => {
+    const params = {
+      "palfx.time": "var(0) + 2",
+      "palfx.add": "var(1),Parent,var(2),-3",
+      "palfx.mul": "200,201,202",
+      "palfx.color": "var(3)",
+      "palfx.invertall": "1",
+    };
+    expect(compileControllerIr(controller(200, "HitDef", [], params)).operation).toMatchObject({
+      kind: "hitdef",
+      paletteFx: {
+        time: "var(0) + 2",
+        add: ["var(1)", "Parent,var(2)", -3],
+        mul: [200, 201, 202],
+        color: "var(3)",
+        invertAll: 1,
+      },
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], { ...params, redirectid: "57" })).operation)
+      .toMatchObject({ kind: "modifyhitdef", paletteFx: expect.any(Object) });
+    expect(compileControllerIr(controller(200, "Projectile", [], params)).operation)
+      .toMatchObject({ kind: "projectile", paletteFx: expect.any(Object) });
+    expect(compileControllerIr(controller(200, "HitDef", [], { "palfx.add": "1,2" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "palfx.mul": "1,2,3,4",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles direct HitDef contact and fall EnvShake expressions and rejects malformed values", () => {
+    const params = {
+      "envshake.time": "var(0) + 2",
+      "envshake.freq": "Parent,var(1)",
+      "envshake.ampl": "-7.8",
+      "envshake.phase": "var(2) * .5",
+      "envshake.mul": "1.25",
+      "envshake.dir": "-30",
+      "fall.envshake.time": "var(3) + 4",
+      "fall.envshake.freq": "Root,var(4)",
+      "fall.envshake.ampl": "-11.9",
+      "fall.envshake.phase": "var(5) * .25",
+      "fall.envshake.mul": ".75",
+      "fall.envshake.dir": "67.5",
+    };
+    expect(compileControllerIr(controller(200, "HitDef", [], params)).operation).toMatchObject({
+      kind: "hitdef",
+      envShake: {
+        time: "var(0) + 2",
+        freq: "Parent,var(1)",
+        ampl: -7,
+        phase: "var(2) * .5",
+        mul: 1.25,
+        dir: -30,
+      },
+      fallEnvShake: {
+        time: "var(3) + 4",
+        freq: "Root,var(4)",
+        ampl: -11,
+        phase: "var(5) * .25",
+        mul: 0.75,
+        dir: 67.5,
+      },
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], { ...params, redirectid: "57" })).operation)
+      .toMatchObject({ kind: "modifyhitdef", envShake: expect.any(Object), fallEnvShake: expect.any(Object) });
+    expect(compileControllerIr(controller(200, "HitDef", [], { "envshake.time": "var(" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "envshake.freq": "Parent,",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "HitDef", [], { "fall.envshake.phase": "var(" })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef fall impact fields and live ModifyHitDef replacements", () => {
+    const params = {
+      "fall.damage": "var(0) + 3",
+      "fall.xvelocity": "Parent,var(1)",
+      "fall.yvelocity": "var(2) * .5",
+      "fall.zvelocity": "Root,var(3)",
+    };
+    expect(compileControllerIr(controller(200, "HitDef", [], params)).operation).toMatchObject({
+      kind: "hitdef",
+      fallImpact: {
+        damage: "var(0) + 3",
+        xVelocity: "Parent,var(1)",
+        yVelocity: "var(2) * .5",
+        zVelocity: "Root,var(3)",
+      },
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], { ...params, redirectid: "57" })).operation)
+      .toMatchObject({ kind: "modifyhitdef", fallImpact: expect.any(Object) });
+    expect(compileControllerIr(controller(200, "HitDef", [], { "fall.damage": "var(" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "fall.zvelocity": "Parent,",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef fall recovery fields and live ModifyHitDef replacements", () => {
+    const params = {
+      "fall.recover": "var(0) - 3",
+      "fall.recovertime": "Parent,var(1)",
+      "down.recover": "var(2) - 2",
+      "down.recovertime": "Root,var(3)",
+    };
+    expect(compileControllerIr(controller(200, "HitDef", [], params)).operation).toMatchObject({
+      kind: "hitdef",
+      fallRecovery: {
+        recover: "var(0) - 3",
+        recoverTime: "Parent,var(1)",
+        downRecover: "var(2) - 2",
+        downRecoverTime: "Root,var(3)",
+      },
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], { ...params, redirectid: "57" })).operation)
+      .toMatchObject({ kind: "modifyhitdef", fallRecovery: expect.any(Object) });
+    expect(compileControllerIr(controller(200, "HitDef", [], { "fall.recover": "var(" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "down.recovertime": "Parent,",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef fall flags and live ModifyHitDef replacements", () => {
+    const params = {
+      fall: "var(0) - 2",
+      "air.fall": "Parent,var(1)",
+      "fall.kill": "Root,var(2)",
+    };
+    expect(compileControllerIr(controller(200, "HitDef", [], params)).operation).toMatchObject({
+      kind: "hitdef",
+      fallFlags: {
+        enabled: "var(0) - 2",
+        airFall: "Parent,var(1)",
+        kill: "Root,var(2)",
+      },
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], { ...params, redirectid: "57" })).operation)
+      .toMatchObject({ kind: "modifyhitdef", fallFlags: expect.any(Object) });
+    expect(compileControllerIr(controller(200, "HitDef", [], { fall: "var(" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "air.fall": "Parent,",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef down.bounce and live ModifyHitDef replacement", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "down.bounce": "var(0) - 2",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      downBounceExpression: "var(0) - 2",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "down.bounce": "Parent,var(1)",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      downBounceExpression: "Parent,var(1)",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { "down.bounce": "var(" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "down.bounce": "Parent,",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef air.juggle and rejects malformed expressions", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "air.juggle": "var(0) + 2",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      airJuggleExpression: "var(0) + 2",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "air.juggle": "Parent,var(1)",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      airJuggleExpression: "Parent,var(1)",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { "air.juggle": "var(" })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef numhits and live ModifyHitDef replacement", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      numhits: "var(0) + 2",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      hitCountExpression: "var(0) + 2",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      numhits: "Parent,var(1)",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      hitCountExpression: "Parent,var(1)",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { numhits: "var(" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      numhits: "Parent,",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles dynamic direct HitDef lethal flags and live ModifyHitDef replacements", () => {
+    const params = {
+      kill: "var(0)",
+      "guard.kill": "Parent,var(1)",
+      hitonce: "Root,var(2)",
+    };
+    expect(compileControllerIr(controller(200, "HitDef", [], params)).operation).toMatchObject({
+      kind: "hitdef",
+      lethalFlags: {
+        kill: "var(0)",
+        guardKill: "Parent,var(1)",
+        hitOnce: "Root,var(2)",
+      },
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], { ...params, redirectid: "57" })).operation)
+      .toMatchObject({ kind: "modifyhitdef", lethalFlags: expect.any(Object) });
+    expect(compileControllerIr(controller(200, "HitDef", [], { kill: "var(" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "guard.kill": "Parent,",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles typed ModifyProjectile getpower expressions and rejects malformed pairs", () => {
+    expect(compileControllerIr(controller(200, "ModifyProjectile", [], { getpower: "9.8" })).operation).toMatchObject({
+      kind: "modifyprojectile",
+      getPower: [9],
+    });
+    expect(compileControllerIr(controller(200, "ModifyProjectile", [], {
+      getpower: "var(1),Parent,var(2)",
+    })).operation).toMatchObject({
+      kind: "modifyprojectile",
+      getPower: ["var(1)", "Parent,var(2)"],
+    });
+    expect(compileControllerIr(controller(200, "ModifyProjectile", [], { getpower: "1,2,3" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyProjectile", [], { getpower: "var(" })).operation).toBeUndefined();
+  });
+
   it("compiles static root ModifyHitDef RedirectID payloads and rejects unsupported values", () => {
     const modified = compileControllerIr(
       controller(200, "ModifyHitDef", [], {
         damage: "41,8",
         "air.hittime": "18",
         "down.hittime": "20",
-        "down.velocity": "-2,0",
+        "ground.velocity": "-3,-4,1.25",
+        "air.velocity": "-5,-6,1.5",
+        "down.velocity": "-2,0,1.75",
         "down.bounce": "0",
+        "guard.velocity": "-1,0,2",
+        "airguard.velocity": "-2,-1,2.5",
+        xaccel: "-.2",
+        yaccel: ".4",
+        zaccel: ".15",
+        "stand.friction": ".62",
+        "crouch.friction": ".72",
+        sparkscale: "1.5,-0.5",
+        "guard.sparkscale": "0.75",
         id: "92",
         chainid: "13",
+        nochainid: "40,41,42,43,44,45,46,47,48,49",
         numhits: "3",
         attr: "C,HP",
         guardflag: "H",
@@ -1706,6 +2523,29 @@ value = 1
     const dynamicPayload = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "var(1)", redirectid: "57" }),
     );
+    const dynamicAcceleration = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { xaccel: "var(1)", redirectid: "57" }),
+    );
+    const dynamicFriction = compileControllerIr(
+      controller(200, "ModifyHitDef", [], {
+        "stand.friction": "var(1) + .1",
+        "crouch.friction": "var(2)",
+        redirectid: "57",
+      }),
+    );
+    const malformedFriction = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { "stand.friction": "var(", redirectid: "57" }),
+    );
+    const dynamicSparkScale = compileControllerIr(
+      controller(200, "ModifyHitDef", [], {
+        sparkscale: "var(3)",
+        "guard.sparkscale": "fvar(1),-var(4)",
+        redirectid: "57",
+      }),
+    );
+    const malformedSparkScale = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { sparkscale: "1,2,3", redirectid: "57" }),
+    );
     const dynamicHitCount = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", numhits: "var(1)", redirectid: "57" }),
     );
@@ -1714,6 +2554,12 @@ value = 1
     );
     const dynamicChainId = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", chainid: "var(1)", redirectid: "57" }),
+    );
+    const dynamicNoChainIds = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { nochainid: "var(1) + 40,var(1) + 41", redirectid: "57" }),
+    );
+    const malformedNoChainIds = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { nochainid: "var(", redirectid: "57" }),
     );
     const dynamicAttr = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", attr: "var(1)", redirectid: "57" }),
@@ -1766,9 +2612,6 @@ value = 1
     const malformedHitOnce = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", hitonce: "never", redirectid: "57" }),
     );
-    const unsupportedPayload = compileControllerIr(
-      controller(200, "ModifyHitDef", [], { damage: "41", forcenofall: "1", redirectid: "57" }),
-    );
     const malformedRedirect = compileControllerIr(
       controller(200, "ModifyHitDef", [], { damage: "41", redirectid: "var(" }),
     );
@@ -1787,10 +2630,23 @@ value = 1
         guardDamage: 8,
         airHitTime: 18,
         downHitTime: 20,
-        downVelocity: [-2, 0],
+        groundVelocity: [-3, -4],
+        groundVelocityZ: 1.25,
+        airVelocityZ: 1.5,
+        downVelocity: [-2, 0, 1.75],
         downBounce: false,
+        guardVelocityZ: 2,
+        airGuardVelocityZ: 2.5,
+        xAccel: -0.2,
+        yAccel: 0.4,
+        zAccel: 0.15,
+        standFriction: 0.62,
+        crouchFriction: 0.72,
+        hitSparkScale: [1.5, -0.5],
+        guardSparkScale: [0.75],
         id: 92,
         chainId: 13,
+        noChainIds: [40, 41, 42, 43, 44, 45, 46, 47],
         hitCount: 3,
         attr: "C,HP",
         guardFlag: "H",
@@ -1836,14 +2692,41 @@ value = 1
       redirectPlayerIdExpression: "57",
     });
     expect(noPayload.operation).toBeUndefined();
-    expect(dynamicPayload.supportLevel).toBe("unsupported");
-    expect(dynamicPayload.operation).toBeUndefined();
-    expect(dynamicHitCount.supportLevel).toBe("unsupported");
-    expect(dynamicHitCount.operation).toBeUndefined();
-    expect(dynamicId.supportLevel).toBe("unsupported");
-    expect(dynamicId.operation).toBeUndefined();
-    expect(dynamicChainId.supportLevel).toBe("unsupported");
-    expect(dynamicChainId.operation).toBeUndefined();
+    expect(dynamicPayload.supportLevel).toBe("partial");
+    expect(dynamicPayload.operation).toMatchObject({ damageExpressions: ["var(1)"] });
+    expect(dynamicAcceleration.supportLevel).toBe("partial");
+    expect(dynamicAcceleration.operation).toMatchObject({
+      kind: "modifyhitdef",
+      xAccel: "var(1)",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(dynamicFriction.supportLevel).toBe("partial");
+    expect(dynamicFriction.operation).toMatchObject({
+      kind: "modifyhitdef",
+      standFriction: "var(1) + .1",
+      crouchFriction: "var(2)",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(malformedFriction.supportLevel).toBe("unsupported");
+    expect(malformedFriction.operation).toBeUndefined();
+    expect(dynamicSparkScale.operation).toMatchObject({
+      hitSparkScale: ["var(3)"],
+      guardSparkScale: ["fvar(1)", "-var(4)"],
+    });
+    expect(malformedSparkScale.operation).toBeUndefined();
+    expect(dynamicHitCount.supportLevel).toBe("partial");
+    expect(dynamicHitCount.operation).toMatchObject({ hitCountExpression: "var(1)" });
+    expect(dynamicId.supportLevel).toBe("partial");
+    expect(dynamicId.operation).toMatchObject({ id: "var(1)" });
+    expect(dynamicChainId.supportLevel).toBe("partial");
+    expect(dynamicChainId.operation).toMatchObject({ chainId: "var(1)" });
+    expect(dynamicNoChainIds.supportLevel).toBe("partial");
+    expect(dynamicNoChainIds.operation).toEqual({
+      kind: "modifyhitdef",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(malformedNoChainIds.supportLevel).toBe("unsupported");
+    expect(malformedNoChainIds.operation).toBeUndefined();
     expect(dynamicAttr.supportLevel).toBe("unsupported");
     expect(dynamicAttr.operation).toBeUndefined();
     expect(dynamicGuardFlag.supportLevel).toBe("unsupported");
@@ -1856,25 +2739,28 @@ value = 1
     expect(dynamicP2StateNo.operation).toBeUndefined();
     expect(dynamicP2GetP1State.supportLevel).toBe("unsupported");
     expect(dynamicP2GetP1State.operation).toBeUndefined();
-    expect(dynamicP1SpritePriority.supportLevel).toBe("unsupported");
-    expect(dynamicP1SpritePriority.operation).toBeUndefined();
-    expect(dynamicP2SpritePriority.supportLevel).toBe("unsupported");
-    expect(dynamicP2SpritePriority.operation).toBeUndefined();
-    expect(dynamicPriority.supportLevel).toBe("unsupported");
-    expect(dynamicPriority.operation).toBeUndefined();
+    expect(dynamicP1SpritePriority.supportLevel).toBe("partial");
+    expect(dynamicP1SpritePriority.operation).toMatchObject({ p1SpritePriorityExpression: "var(1)" });
+    expect(dynamicP2SpritePriority.supportLevel).toBe("partial");
+    expect(dynamicP2SpritePriority.operation).toMatchObject({ p2SpritePriorityExpression: "var(1)" });
+    expect(dynamicPriority.supportLevel).toBe("partial");
+    expect(dynamicPriority.operation).toMatchObject({ priorityExpression: "var(1)", priorityType: "hit" });
     expect(malformedPriority.operation).toBeUndefined();
-    expect(dynamicKill.supportLevel).toBe("unsupported");
-    expect(dynamicKill.operation).toBeUndefined();
-    expect(dynamicGuardKill.supportLevel).toBe("unsupported");
-    expect(dynamicGuardKill.operation).toBeUndefined();
-    expect(dynamicFallKill.supportLevel).toBe("unsupported");
-    expect(dynamicFallKill.operation).toBeUndefined();
-    expect(dynamicHitOnce.supportLevel).toBe("unsupported");
-    expect(dynamicHitOnce.operation).toBeUndefined();
+    expect(dynamicKill.supportLevel).toBe("partial");
+    expect(dynamicKill.operation).toMatchObject({ lethalFlags: { kill: "var(1)" } });
+    expect(dynamicGuardKill.supportLevel).toBe("partial");
+    expect(dynamicGuardKill.operation).toMatchObject({ lethalFlags: { guardKill: "var(1)" } });
+    expect(dynamicFallKill.supportLevel).toBe("partial");
+    expect(dynamicFallKill.operation).toMatchObject({
+      kind: "modifyhitdef",
+      fallFlags: { kill: "var(1)" },
+      redirectPlayerIdExpression: "57",
+    });
+    expect(dynamicHitOnce.supportLevel).toBe("partial");
+    expect(dynamicHitOnce.operation).toMatchObject({ lethalFlags: { hitOnce: "var(1)" } });
     expect(malformedKill.operation).toBeUndefined();
     expect(malformedFallKill.operation).toBeUndefined();
     expect(malformedHitOnce.operation).toBeUndefined();
-    expect(unsupportedPayload.operation).toBeUndefined();
     expect(malformedRedirect.operation).toBeUndefined();
     expect(oversizedPair.operation).toBeUndefined();
     expect(negativeId.operation).toEqual({ kind: "modifyhitdef", damage: 41, id: 0, redirectPlayerIdExpression: "57" });
@@ -2242,10 +3128,13 @@ value = 1
         numhits: "3",
         damage: "40",
         animtype: "Medium",
+        "air.animtype": "Up",
         "fall.animtype": "Up",
         "ground.type": "Low",
         "air.type": "Trip",
+        xaccel: "-.18",
         yaccel: ".62",
+        zaccel: ".27",
         snap: "16,-24",
       }),
     );
@@ -2257,10 +3146,13 @@ value = 1
       hitCount: 3,
       damage: 40,
       animType: 1,
+      airAnimType: 4,
       fallAnimType: 4,
       groundType: 2,
       airType: 3,
+      xAccel: -0.18,
       yAccel: 0.62,
+      zAccel: 0.27,
       snap: [16, -24],
     });
   });
@@ -2336,6 +3228,7 @@ value = 1
         id: "78",
         redirectid: "ID + var(0)",
         chainID: "43",
+        nochainid: "40,41,42,43,44,45,46,47,48,49",
         numhits: "3",
         affectteam: "B",
         teamside: "2",
@@ -2343,17 +3236,46 @@ value = 1
         offset: "62,-45",
         postype: "p1",
         velocity: "12,0",
+        remvelocity: "-3,2,0.5",
         accel: "0.5,0.25",
-        velmul: "0.75,1.25",
+        velmul: "0.75,1.25,1.5",
         projscale: "2,0.5",
+        projangle: "33.5",
+        projxangle: "-22.5",
+        projyangle: "17.25",
+        projxshear: "0.375",
+        projshadow: "32,64,96",
+        projreflection: "1",
+        projprojection: "perspective",
+        projfocallength: "320",
+        projwindow: "-48,-24,64,32",
+        ownpal: "1",
+        remappal: "2,3",
+        projclsnscale: "1.25,0.75",
+        projclsnangle: "20",
         facing: "-1",
         projhitanim: "911",
         projremanim: "912",
         projcancelanim: "913",
         projremovetime: "60",
+        projlayerno: "7",
         projhits: "2",
         projmisstime: "3",
+        priority: "6, Dodge",
+        p1sprpriority: "5",
+        p2sprpriority: "-4",
+        projpriority: "2",
+        pausemovetime: "6",
+        supermovetime: "8",
         damage: "31",
+        dizzypoints: "23",
+        guardpoints: "17",
+        redlife: "13,5",
+        givepower: "5,11",
+        score: "6.5,2.25",
+        animtype: "Medium",
+        "air.animtype": "Up",
+        "fall.animtype": "DiagUp",
         kill: "0",
         "guard.kill": "0",
         attr: "S, SP",
@@ -2363,11 +3285,23 @@ value = 1
          "air.hittime": "15",
          "down.hittime": "16",
          "down.bounce": "1",
+         forcenofall: "1",
+         forcestand: "1",
+         forcecrouch: "0",
          "ground.velocity": "-5,-2",
         "air.velocity": "-4,-8",
         "down.velocity": "-2,0",
         "guard.velocity": "-3,-1",
         "airguard.velocity": "-6,-2",
+        xaccel: "-.12",
+        yaccel: ".35",
+        zaccel: ".2",
+        "envshake.time": "20",
+        "envshake.freq": "90.5",
+        "envshake.ampl": "-6",
+        "envshake.phase": "30.25",
+        "envshake.mul": "1.5",
+        "envshake.dir": "75",
         "ground.cornerpush.veloff": "3",
         "air.cornerpush.veloff": "4",
         "down.cornerpush.veloff": "5",
@@ -2375,10 +3309,12 @@ value = 1
         "airguard.cornerpush.veloff": "7",
         p2stateno: "889",
         p2getp1state: "0",
+        p1stateno: "777",
+        p2facing: "-1",
         p2clsncheck: "Clsn1",
         p2clsnrequire: "Size",
         missonoverride: "1",
-        sprpriority: "7",
+        projsprpriority: "7",
         trans: "add",
         "air.juggle": "3.5",
         projremove: "0",
@@ -2391,25 +3327,59 @@ value = 1
       projectileId: 77,
       targetId: 78,
       chainId: 43,
+      noChainIds: [40, 41, 42, 43, 44, 45, 46, 47],
       hitDefHitCount: 3,
       affectTeam: 0,
       teamSide: 2,
       hitFlag: "H,L,A,F,+",
+      dizzyPoints: 23,
+      guardPoints: 17,
+      redLife: 13,
+      guardRedLife: 5,
+      guardPower: 11,
+      hitPower: 5,
+      score: 6.5,
+      guardScore: 2.25,
       projAnim: 910,
       offset: [62, -45],
       postype: "p1",
       velocity: [12, 0],
+      removalVelocity: [-3, 2, 0.5],
       acceleration: [0.5, 0.25],
-      velocityMultiplier: [0.75, 1.25],
+      velocityMultiplier: [0.75, 1.25, 1.5],
       scale: [2, 0.5],
+      angle: 33.5,
+      xAngle: -22.5,
+      yAngle: 17.25,
+      xShear: 0.375,
+      shadow: [32, 64, 96],
+      reflection: 1,
+      projection: "perspective",
+      focalLength: 320,
+      window: [-48, -24, 64, 32],
+      ownPalette: true,
+      paletteRemap: [2, 3],
+      clsnScale: [1.25, 0.75],
+      clsnAngle: 20,
       facing: -1,
       hitAnim: 911,
       removeAnim: 912,
       cancelAnim: 913,
       removeTime: 60,
+      layerNo: 1,
       hitCount: 2,
       missTime: 3,
+      hitPriority: 6,
+      hitPriorityType: "dodge",
+      p1SpritePriority: 5,
+      p2SpritePriority: -4,
+      priority: 2,
+      pauseMoveTime: 6,
+      superMoveTime: 8,
       damage: 31,
+      animType: 1,
+      airAnimType: 4,
+      fallAnimType: 5,
       airJuggle: 3.5,
       kill: false,
       guardKill: false,
@@ -2419,11 +3389,23 @@ value = 1
       airHitTime: 15,
       downHitTime: 16,
       downBounce: true,
+      forceNoFall: true,
+      forceStand: true,
+      forceCrouch: false,
       groundVelocity: [-5, -2],
       airVelocity: [-4, -8],
       downVelocity: [-2, 0],
       guardVelocity: [-3, -1],
       airGuardVelocity: [-6, -2],
+      xAccel: -0.12,
+      yAccel: 0.35,
+      zAccel: 0.2,
+      envShakeTime: 20,
+      envShakeFrequency: 90.5,
+      envShakeAmplitude: -6,
+      envShakePhase: 30.25,
+      envShakeMultiplier: 1.5,
+      envShakeDirection: 75,
       groundCornerPush: 3,
       airCornerPush: 4,
       downCornerPush: 5,
@@ -2431,6 +3413,8 @@ value = 1
       airGuardCornerPush: 7,
       p2StateNo: 889,
       p2GetP1State: false,
+      p1StateNo: 777,
+      p2Facing: -1,
       p2ClsnCheck: "clsn1",
       p2ClsnRequire: "size",
       missOnOverride: true,
@@ -2443,23 +3427,106 @@ value = 1
   it("compiles ModifyProjectile controllers into typed projectile mutation operations", () => {
     const modifyProjectile = compileControllerIr(
       controller(1000, "ModifyProjectile", [], {
-        projid: "77",
+        id: "77",
+        chainid: "43",
+        nochainid: "101,102",
+        index: "1",
+        projid: "91",
+        projanim: "1000",
+        projhitanim: "1001",
+        projremanim: "1002",
+        projcancelanim: "1003",
+        attr: "A,NP",
+        guardflag: "A",
+        affectteam: "B",
+        animtype: "Medium",
+        "air.animtype": "Up",
+        "fall.animtype": "DiagUp",
+        kill: "0",
+        "guard.kill": "0",
+        "fall.kill": "0",
+        forcenofall: "0",
+        forcestand: "0",
+        forcecrouch: "1",
+        "fall.damage": "13",
+        "fall.xvelocity": "-3.5",
+        "fall.yvelocity": "-8.25",
+        "fall.zvelocity": "2.5",
+        "fall.recover": "0",
+        "fall.recovertime": "19",
+        "down.recover": "0",
+        "down.recovertime": "27",
+        "fall.envshake.time": "15",
+        "fall.envshake.freq": "178.5",
+        "fall.envshake.ampl": "6",
+        "fall.envshake.phase": "0.25",
+        "fall.envshake.mul": "0.75",
+        "fall.envshake.dir": "67.5",
+        dizzypoints: "23",
+        guardpoints: "17",
+        "air.juggle": "3",
+        damage: "41,7",
+        givepower: "43,33",
+        redlife: "23,9",
+        score: "6.5,2.25",
+        numhits: "5",
+        priority: "7, Miss",
+        p1sprpriority: "9",
+        p2sprpriority: "-5",
+        p2stateno: "889",
+        p2getp1state: "0",
+        p2facing: "-2",
+        "air.hittime": "23",
+        fall: "1",
+        "air.fall": "0",
+        "down.bounce": "1",
+        "ground.hittime": "29",
+        "guard.hittime": "31",
+        "guard.slidetime": "37",
+        "guard.ctrltime": "39",
+        "airguard.ctrltime": "41",
+        "down.hittime": "43",
+        "down.velocity": "-3.5,-8.25,2.5",
+        "air.velocity": "-6.5,-9.25,3.5",
+        "guard.velocity": "-4.5,-1.25,1.5",
+        "airguard.velocity": "-7.5,-2.25,2.5",
+        p1stateno: "777",
+        missonoverride: "0",
+        p2clsncheck: "Clsn1",
+        p2clsnrequire: "Size",
         teamside: "1",
         redirectid: "ID + var(0)",
         velocity: "5,-1",
+        remvelocity: "-4,1,0.75",
         accel: "0.25,0",
-        velmul: "0.5,1",
+        velmul: "0.5,1,1.25",
         projscale: "1.5,0.75",
+        projangle: "-12.25",
+        projxangle: "14.5",
+        projyangle: "-9.75",
+        projxshear: "-0.625",
+        projshadow: "128",
+        projreflection: "0",
+        projprojection: "perspective2",
+        projfocallength: "-10",
+        projwindow: "-20,-10,40,30",
+        ownpal: "1",
+        remappal: "4,5",
+        projclsnscale: "0.8,1.2",
+        projclsnangle: "-15",
         projedgebound: "48",
         projstagebound: "32",
         projdepthbound: "12",
         projheightbound: "-96,64",
+        projlayerno: "-3",
         hitflag: "H-",
         projremovetime: "18",
-        sprpriority: "8",
+        projsprpriority: "8",
         projpriority: "3",
         projhits: "4",
         projmisstime: "5",
+        pausemovetime: "7",
+        supermovetime: "9",
         projremove: "0",
       }),
     );
@@ -2467,23 +3534,169 @@ value = 1
     expect(modifyProjectile.operation).toEqual({
       kind: "modifyprojectile",
       redirectPlayerIdExpression: "ID + var(0)",
-      projectileId: 77,
+      selectionId: 77,
+      targetId: 77,
+      chainId: 43,
+      noChainIds: [101, 102],
+      selectionIndex: 1,
+      projectileId: 91,
+      projAnim: 1000,
+      hitAnim: 1001,
+      removeAnim: 1002,
+      cancelAnim: 1003,
+      attr: "A,NP",
+      guardFlag: "A",
+      affectTeam: 0,
+      animType: 1,
+      airAnimType: 4,
+      fallAnimType: 5,
+      kill: false,
+      guardKill: false,
+      fallKill: false,
+      forceNoFall: false,
+      forceStand: false,
+      forceCrouch: true,
+      fallDamage: 13,
+      fallXVelocity: -3.5,
+      fallYVelocity: -8.25,
+      fallZVelocity: 2.5,
+      fallRecover: false,
+      fallRecoverTime: 19,
+      downRecover: false,
+      downRecoverTime: 27,
+      fallEnvShakeTime: 15,
+      fallEnvShakeFrequency: 178.5,
+      fallEnvShakeAmplitude: 6,
+      fallEnvShakePhase: 0.25,
+      fallEnvShakeMultiplier: 0.75,
+      fallEnvShakeDirection: 67.5,
+      dizzyPoints: 23,
+      guardPoints: 17,
+      airJuggle: 3,
+      damage: 41,
+      guardDamage: 7,
+      hitPower: 43,
+      guardPower: 33,
+      redLife: 23,
+      guardRedLife: 9,
+      score: 6.5,
+      guardScore: 2.25,
+      hitDefHitCount: 5,
+      hitPriority: 7,
+      hitPriorityType: "miss",
+      p2SpritePriority: -5,
+      p2StateNo: 889,
+      p2GetP1State: false,
+      p2Facing: -2,
+      airHitTime: 23,
+      groundFall: true,
+      airFall: false,
+      downBounce: true,
+      hitStun: 29,
+      guardHitTime: 31,
+      guardSlideTime: 37,
+      guardControlTime: 39,
+      airGuardControlTime: 41,
+      downHitTime: 43,
+      downVelocity: [-3.5, -8.25, 2.5],
+      airVelocity: [-6.5, -9.25, 3.5],
+      guardVelocity: [-4.5, -1.25, 1.5],
+      airGuardVelocity: [-7.5, -2.25, 2.5],
+      p1StateNo: 777,
+      missOnOverride: false,
+      p2ClsnCheck: "clsn1",
+      p2ClsnRequire: "size",
       teamSide: 1,
       hitFlag: "H-",
       velocity: [5, -1],
+      removalVelocity: [-4, 1, 0.75],
       acceleration: [0.25, 0],
-      velocityMultiplier: [0.5, 1],
+      velocityMultiplier: [0.5, 1, 1.25],
       scale: [1.5, 0.75],
+      angle: -12.25,
+      xAngle: 14.5,
+      yAngle: -9.75,
+      xShear: -0.625,
+      shadow: [128],
+      reflection: 0,
+      projection: "perspective2",
+      focalLength: -10,
+      window: [-20, -10, 40, 30],
+      clsnScale: [0.8, 1.2],
+      clsnAngle: -15,
       edgeBound: 48,
       stageBound: 32,
       depthBound: 12,
       heightBound: { low: -96, high: 64 },
       removeTime: 18,
+      layerNo: -1,
       spritePriority: 8,
       priority: 3,
       hitCount: 4,
       missTime: 5,
+      pauseMoveTime: 7,
+      superMoveTime: 9,
       removeOnHit: false,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], { velmul: "2" })).operation).toMatchObject({
+      velocityMultiplier: [2, 1, 1],
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], { velmul: "2" })).operation).toMatchObject({
+      velocityMultiplier: [2, 0, 0],
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], { ownpal: "var(0)", remappal: "2,var(1)" })).operation).not.toHaveProperty("paletteRemap");
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], { ownpal: "1", remappal: "2,3" })).operation).toEqual({
+      kind: "modifyprojectile",
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      attr: "ifelse(var(0),S, A)",
+      guardflag: "var(1)",
+      hitflag: "ifelse(var(2),H,L)",
+    })).operation).toEqual({
+      kind: "modifyprojectile",
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], { affectteam: "X" })).operation).toEqual({
+      kind: "modifyprojectile",
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], { damage: "41" })).operation).toEqual({
+      kind: "modifyprojectile",
+      damage: 41,
+      guardDamage: 0,
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], { givepower: "43" })).operation).toEqual({
+      kind: "modifyprojectile",
+      hitPower: 43,
+      guardPower: 0,
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], { redlife: "23", score: "6.5" })).operation).toEqual({
+      kind: "modifyprojectile",
+      redLife: 23,
+      guardRedLife: 0,
+      score: 6.5,
+      guardScore: 0,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      sprpriority: "6",
+      projsprpriority: "8",
+    })).operation).toMatchObject({
+      p1SpritePriority: 6,
+      spritePriority: 8,
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      p1sprpriority: "9",
+      p2sprpriority: "-5",
+    })).operation).toEqual({
+      kind: "modifyprojectile",
+      p2SpritePriority: -5,
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      p2clsncheck: "var(0)",
+      p2clsnrequire: "invalid",
+    })).operation).toEqual({
+      kind: "modifyprojectile",
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], { projlayerno: "0" })).operation).toMatchObject({
+      layerNo: 0,
     });
   });
 
@@ -2507,6 +3720,263 @@ value = 1
       acceleration: [0.25, 0, -0.1],
       depthBound: 12,
       attackDepth: [7, 9],
+    });
+  });
+
+  it("compiles ModifyProjectile attack.depth with its official zero second default", () => {
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "attack.depth": "7.5,9.25",
+    })).operation).toMatchObject({
+      kind: "modifyprojectile",
+      attackDepth: [7.5, 9.25],
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "attack.depth": "6.5",
+    })).operation).toMatchObject({
+      kind: "modifyprojectile",
+      attackDepth: [6.5, 0],
+    });
+  });
+
+  it("compiles ModifyProjectile down.velocity with official zero defaults", () => {
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "down.velocity": "-3.5,-8.25,2.5",
+    })).operation).toMatchObject({ downVelocity: [-3.5, -8.25, 2.5] });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "down.velocity": "-4.5,-7.25",
+    })).operation).toMatchObject({ downVelocity: [-4.5, -7.25, 0] });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "down.velocity": "-6.5",
+    })).operation).toMatchObject({ downVelocity: [-6.5, 0, 0] });
+  });
+
+  it("compiles ModifyProjectile guard velocities with official zero defaults", () => {
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "guard.velocity": "-4.5,-1.25,1.5",
+      "airguard.velocity": "-7.5,-2.25,2.5",
+    })).operation).toMatchObject({
+      guardVelocity: [-4.5, -1.25, 1.5],
+      airGuardVelocity: [-7.5, -2.25, 2.5],
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "guard.velocity": "-5.5",
+      "airguard.velocity": "-8.5,-3.25",
+    })).operation).toMatchObject({
+      guardVelocity: [-5.5, 0, 0],
+      airGuardVelocity: [-8.5, -3.25, 0],
+    });
+  });
+
+  it("compiles ModifyProjectile air.velocity with official zero defaults", () => {
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "air.velocity": "-6.5,-9.25,3.5",
+    })).operation).toMatchObject({ airVelocity: [-6.5, -9.25, 3.5] });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "air.velocity": "-7.5,-10.25",
+    })).operation).toMatchObject({ airVelocity: [-7.5, -10.25, 0] });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "air.velocity": "-8.5",
+    })).operation).toMatchObject({ airVelocity: [-8.5, 0, 0] });
+  });
+
+  it("compiles ModifyProjectile ground.velocity as component-wise replacements", () => {
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "ground.velocity": "-5.5,n,1.75",
+    })).operation).toMatchObject({ groundVelocity: { x: -5.5, z: 1.75 } });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "ground.velocity": "n,-4.25,n",
+    })).operation).toMatchObject({ groundVelocity: { y: -4.25 } });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "ground.velocity": "n,n,n",
+    })).operation).toMatchObject({ groundVelocity: {} });
+  });
+
+  it("compiles ModifyProjectile ground.slidetime", () => {
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "ground.slidetime": "37",
+    })).operation).toMatchObject({ groundSlideTime: 37 });
+  });
+
+  it("compiles Projectile and ModifyProjectile pause pairs with zero second-value defaults", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      pausetime: "2,7",
+      "guard.pausetime": "3",
+    })).operation).toMatchObject({
+      hitPause: 2,
+      hitShakeTime: 7,
+      guardPauseTime: 3,
+      guardShakeTime: 0,
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      pausetime: "4",
+      "guard.pausetime": "5,9",
+    })).operation).toMatchObject({
+      pauseTime: [4, 0],
+      guardPauseTime: [5, 9],
+    });
+  });
+
+  it("compiles typed Projectile unhittabletime expressions with the official omitted receiver default", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      unhittabletime: "3,8",
+    })).operation).toMatchObject({ unhittableTime: [3, 8] });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      unhittabletime: "5",
+    })).operation).toMatchObject({ unhittableTime: [5] });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      unhittabletime: "var(0),8",
+    })).operation).toMatchObject({ unhittableTime: ["var(0)", 8] });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      unhittabletime: "var(0),8,9",
+    })).operation).toBeUndefined();
+  });
+
+  it("compiles typed HitDef and Projectile grounded friction and spark-scale expressions", () => {
+    expect(compileControllerIr(controller(1000, "HitDef", [], {
+      "stand.friction": "0.45",
+      "crouch.friction": "var(1) * 0.1",
+      sparkscale: "2",
+      "guard.sparkscale": "var(2),-0.5",
+    })).operation).toMatchObject({
+      standFriction: 0.45,
+      crouchFriction: "var(1) * 0.1",
+      hitSparkScale: [2],
+      guardSparkScale: ["var(2)", -0.5],
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "stand.friction": "fvar(0)",
+      "crouch.friction": "0.35",
+      sparkscale: "var(3)",
+      "guard.sparkscale": "0,-1",
+    })).operation).toMatchObject({
+      standFriction: "fvar(0)",
+      crouchFriction: 0.35,
+      hitSparkScale: ["var(3)"],
+      guardSparkScale: [0, -1],
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "stand.friction": "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      sparkscale: "1,2,3",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(1000, "HitDef", [], {
+      sparkscale: "Parent,var(0)",
+    })).operation).toMatchObject({
+      hitSparkScale: ["Parent,var(0)"],
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "guard.sparkscale": "Parent,var(0),2",
+    })).operation).toMatchObject({
+      guardSparkScale: ["Parent,var(0)", 2],
+    });
+    expect(compileControllerIr(controller(1000, "ModifyHitDef", [], {
+      sparkscale: "var(0),Parent,var(1)",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      hitSparkScale: ["var(0)", "Parent,var(1)"],
+    });
+  });
+
+  it("compiles Projectile guard-distance bounds and prefers the explicit width key", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "guard.dist": "96",
+      "guard.dist.height": "80,70",
+      "guard.dist.depth": "8",
+    })).operation).toMatchObject({
+      guardDistanceBounds: {
+        width: [96, 0],
+        height: [80, 70],
+        depth: [8, 0],
+      },
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "guard.dist": "40,30",
+      "guard.dist.width": "90,12",
+      "guard.dist.height": "75",
+      "guard.dist.depth": "10,9",
+    })).operation).toMatchObject({
+      guardDistanceBounds: {
+        width: [90, 12],
+        height: [75, 0],
+        depth: [10, 9],
+      },
+    });
+  });
+
+  it("compiles Projectile and ModifyProjectile spark presentation payloads", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      sparkno: "S7001",
+      sparkangle: "0.25",
+      "guard.sparkno": "F7002",
+      "guard.sparkangle": "-0.5",
+      sparkxy: "18",
+    })).operation).toMatchObject({
+      hitSpark: "S7001",
+      hitSparkAngle: 0.25,
+      guardSpark: "F7002",
+      guardSparkAngle: -0.5,
+      sparkXy: [18, 0],
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      sparkno: "F7101",
+      sparkangle: "1.25",
+      "guard.sparkno": "S7100",
+      "guard.sparkangle": "-1.5",
+      sparkxy: "24,-60",
+    })).operation).toMatchObject({
+      hitSpark: "F7101",
+      hitSparkAngle: 1.25,
+      guardSpark: "S7100",
+      guardSparkAngle: -1.5,
+      sparkXy: [24, -60],
+    });
+  });
+
+  it("compiles Projectile target-distance bounds and ModifyProjectile zero defaults", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      mindist: "24",
+      maxdist: "80,30,12",
+    })).operation).toMatchObject({
+      minDistance: [24],
+      maxDistance: [80, 30, 12],
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      mindist: "26",
+      maxdist: "72,18",
+    })).operation).toMatchObject({
+      minDistance: [26, 0, 0],
+      maxDistance: [72, 18, 0],
+    });
+  });
+
+  it("compiles ModifyProjectile hit acceleration metadata", () => {
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      xaccel: "-0.125",
+      yaccel: "0.375",
+      zaccel: "0.625",
+    })).operation).toMatchObject({
+      xAccel: -0.125,
+      yAccel: 0.375,
+      zAccel: 0.625,
+    });
+  });
+
+  it("compiles ModifyProjectile contact EnvShake metadata", () => {
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "envshake.time": "24",
+      "envshake.freq": "120.5",
+      "envshake.ampl": "-8",
+      "envshake.phase": "45.25",
+      "envshake.mul": "1.75",
+      "envshake.dir": "90",
+    })).operation).toMatchObject({
+      envShakeTime: 24,
+      envShakeFrequency: 120.5,
+      envShakeAmplitude: -8,
+      envShakePhase: 45.25,
+      envShakeMultiplier: 1.75,
+      envShakeDirection: 90,
     });
   });
 

@@ -1,0 +1,16 @@
+; Generated karate-reset MUGEN-lite template
+[Info]
+name = "Nadia Arce"
+displayname = "Nadia Arce"
+versiondate = 08,01,2026
+mugenversion = 1.0
+author = "mugen-web-sandbox + imagegen"
+localcoord = 320,240
+
+[Files]
+cmd = nadia.cmd
+cns = nadia.cns
+st = nadia.cns
+sprite = nadia.sff ; native SFF is not shipped; browser runtime uses ../sprite-sheet-alpha.png
+anim = nadia.air
+sound =

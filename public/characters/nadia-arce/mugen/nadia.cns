@@ -1,0 +1,124 @@
+[Statedef 0]
+type = S
+movetype = I
+physics = S
+anim = 0
+ctrl = 1
+
+[Statedef 20]
+type = S
+movetype = I
+physics = S
+anim = 20
+ctrl = 1
+
+[Statedef 40]
+type = A
+movetype = I
+physics = A
+anim = 40
+ctrl = 0
+
+[Statedef 120]
+type = S
+movetype = I
+physics = S
+anim = 120
+ctrl = 0
+
+[Statedef 200]
+type = S
+movetype = A
+physics = S
+anim = 200
+ctrl = 0
+velset = 0,0
+
+[State 200, HitDef]
+type = HitDef
+trigger1 = Time = 1
+damage = 52,4
+guardflag = MA
+pausetime = 7,7
+ground.hittime = 14
+ground.velocity = -4
+
+[State 200, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 210]
+type = S
+movetype = A
+physics = S
+anim = 210
+ctrl = 0
+velset = 0,0
+
+[State 210, HitDef]
+type = HitDef
+trigger1 = Time = 1
+damage = 78,6
+guardflag = MA
+pausetime = 9,9
+ground.hittime = 18
+ground.velocity = -6
+
+[State 210, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 220]
+type = S
+movetype = A
+physics = S
+anim = 220
+ctrl = 0
+velset = 0,0
+
+[State 220, HitDef]
+type = HitDef
+trigger1 = Time = 2
+damage = 98,8
+guardflag = MA
+pausetime = 10,10
+ground.hittime = 22
+ground.velocity = -8
+
+[State 220, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 500]
+type = S
+movetype = H
+physics = S
+anim = 500
+ctrl = 0
+
+[Statedef 510]
+type = A
+movetype = H
+physics = N
+anim = 510
+ctrl = 0
+
+[Statedef 515]
+type = S
+movetype = H
+physics = S
+anim = 515
+ctrl = 0
+
+[Statedef 800]
+type = S
+movetype = A
+physics = S
+anim = 800
+ctrl = 0

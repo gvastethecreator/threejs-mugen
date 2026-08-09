@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "kind": "imagegen-motion-reference",
+  "state": "walk-back",
+  "required_before_row_generation": true,
+  "art_engine": "imagegen",
+  "role": "motion-and-anatomy-only",
+  "prompt": "prompts/motion-references/walk-back.txt",
+  "expected_output": "references/motion-references/walk-back.png",
+  "layout": {
+    "columns": 4,
+    "rows": 2,
+    "order": "row-major",
+    "frames": 8
+  },
+  "view": "back",
+  "facing": "center",
+  "palette": {
+    "head": "flat warm light gray",
+    "torso_pelvis": "flat neutral charcoal gray",
+    "anatomical_left_arm": "flat coral red",
+    "anatomical_right_arm": "flat clear blue",
+    "anatomical_left_leg": "flat amber orange",
+    "anatomical_right_leg": "flat leaf green",
+    "joints": "small flat near-black circles"
+  },
+  "phase_sequence": [
+    {
+      "frame": 1,
+      "name": "contact",
+      "body_y": 0,
+      "note": "front foot contacts ground, back foot pushes off",
+      "anatomy": "LEFT/ORANGE leg reaches forward with heel contacting; RIGHT/GREEN leg extends behind on toes; RIGHT/BLUE arm swings forward and LEFT/RED arm swings back"
+    },
+    {
+      "frame": 2,
+      "name": "down",
+      "body_y": 6,
+      "note": "weight drops over planted foot",
+      "anatomy": "LEFT/ORANGE leg is the bent planted support under the pelvis; RIGHT/GREEN toes leave the ground behind; arms retain the same cross-lateral direction"
+    },
+    {
+      "frame": 3,
+      "name": "passing",
+      "body_y": 2,
+      "note": "swing leg passes under body",
+      "anatomy": "LEFT/ORANGE leg is nearly vertical and planted; RIGHT/GREEN bent foot passes low beneath the pelvis; both arms pass close to neutral"
+    },
+    {
+      "frame": 4,
+      "name": "up",
+      "body_y": -6,
+      "note": "body lifts before the opposite contact",
+      "anatomy": "LEFT/ORANGE leg extends behind on toes; RIGHT/GREEN knee swings only slightly forward with the foot low; LEFT/RED arm is forward and RIGHT/BLUE arm is back"
+    },
+    {
+      "frame": 5,
+      "name": "opposite_contact",
+      "body_y": 0,
+      "note": "opposite foot contacts ground",
+      "anatomy": "RIGHT/GREEN leg reaches forward with heel contacting; LEFT/ORANGE leg extends behind on toes; LEFT/RED arm swings forward and RIGHT/BLUE arm swings back"
+    },
+    {
+      "frame": 6,
+      "name": "opposite_down",
+      "body_y": 6,
+      "note": "weight drops over the opposite planted foot",
+      "anatomy": "RIGHT/GREEN leg is the bent planted support under the pelvis; LEFT/ORANGE toes leave the ground behind; arms retain the same cross-lateral direction"
+    },
+    {
+      "frame": 7,
+      "name": "opposite_passing",
+      "body_y": 2,
+      "note": "first leg passes under body",
+      "anatomy": "RIGHT/GREEN leg is nearly vertical and planted; LEFT/ORANGE bent foot passes low beneath the pelvis; both arms pass close to neutral"
+    },
+    {
+      "frame": 8,
+      "name": "opposite_up",
+      "body_y": -6,
+      "note": "body lifts back toward frame 1",
+      "anatomy": "RIGHT/GREEN leg extends behind on toes; LEFT/ORANGE knee swings only slightly forward with the foot low; RIGHT/BLUE arm is forward and LEFT/RED arm is back"
+    }
+  ],
+  "do_not_use_for": [
+    "identity",
+    "costume",
+    "rendering-style",
+    "palette",
+    "character-proportions"
+  ],
+  "source": {
+    "mode": "generate-once",
+    "status": "pending"
+  }
+}

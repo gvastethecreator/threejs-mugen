@@ -20,6 +20,8 @@ export class RuntimeHitEffectWorld {
     assetFrame?: RuntimeHitEffectAssetFrame,
     assetFrames?: RuntimeHitEffectAssetFrame[],
     contact?: RuntimeHitDefContactMetadata,
+    angle?: number,
+    scale?: [number, number],
   ): RuntimeHitEffectEvent | undefined {
     if (!spark) {
       return undefined;
@@ -36,6 +38,8 @@ export class RuntimeHitEffectWorld {
       raw: spark,
       rawPrefix: parsed?.rawPrefix,
       offset: offset ? { x: offset[0], y: offset[1] } : undefined,
+      ...(angle === undefined ? {} : { angle }),
+      ...(scale === undefined ? {} : { scale: { x: scale[0], y: scale[1] } }),
       stateNo: actor.runtime.stateNo,
       tick: actor.stateElapsed,
       runtimeTick,

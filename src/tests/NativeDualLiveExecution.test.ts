@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { runNativeDualLiveExecution } from "../mugen/runtime/NativeDualLiveExecution";
 
 describe("NativeDualLiveExecution", () => {
-  it("executes Nova and Mira live routes with real digests and independence", async () => {
+  it("executes Rocco and Nadia live routes with real digests and independence", async () => {
     const report = await runNativeDualLiveExecution();
     // Helpful failure surface.
     if (!report.canClaimNativeExecution) {
@@ -18,6 +18,7 @@ describe("NativeDualLiveExecution", () => {
     expect(report.schema).toBe("NativeDualLiveExecution/v1");
     expect(report.canClaimNativeExecution).toBe(true);
     expect(report.independent).toBe(true);
+    expect([report.first.packageId, report.second.packageId]).toEqual(["rocco-vidal", "nadia-arce"]);
     expect(report.noPerCharacterAdapter).toBe(true);
     expect(report.swappedRosterPassed).toBe(true);
     expect(report.first.packageSha256).toMatch(/^[0-9a-f]{64}$/);

@@ -1,5 +1,5 @@
 /**
- * DA30-041: semantic Nova contact revalidation with hit/miss/guard cases.
+ * DA30-041: semantic Rocco contact revalidation with hit/miss/guard cases.
  * Uses shipped CombatResolver collision + resolveRuntimeCombatHit.
  */
 import {
@@ -55,7 +55,7 @@ export type CombatCaseResult = {
  * Local attack box on attacker at origin; defender at x=30 overlaps world attack.
  * Miss defender at x=200 does not overlap.
  */
-export function runNovaContactCases(): { cases: CombatCaseResult[]; ok: boolean; packageHint: string } {
+export function runRoccoContactCases(): { cases: CombatCaseResult[]; ok: boolean; packageHint: string } {
   const attacker = actor({ pos: { x: 0, y: 0 }, facing: 1, moveType: "A", attackMultiplier: 1 });
   const localAttack = { x1: 10, y1: -40, x2: 50, y2: -5 };
   const worldAttack = runtimeWorldBox(attacker, localAttack);
@@ -116,5 +116,8 @@ export function runNovaContactCases(): { cases: CombatCaseResult[]; ok: boolean;
     cases[2]!.kind === "miss" &&
     cases[2]!.contact === false;
 
-  return { cases, ok, packageHint: "nova-boxer combat surface via CombatResolver" };
+  return { cases, ok, packageHint: "rocco-vidal combat surface via CombatResolver" };
 }
+
+/** @deprecated Kept for older DA30 evidence readers. */
+export const runNovaContactCases = runRoccoContactCases;

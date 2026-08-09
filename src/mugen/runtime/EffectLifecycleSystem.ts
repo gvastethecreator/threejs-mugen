@@ -1,6 +1,7 @@
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeExplodPauseKind } from "./ExplodSystem";
 import type { RuntimeHelper, RuntimeHelperAdvanceOptions } from "./HelperSystem";
+import type { RuntimeProjectilePauseKind } from "./ProjectileSystem";
 import { runtimeStageGameSpace, type RuntimeStageGameSpaceSource } from "./RuntimeStageGameSpaceSystem";
 import {
   RuntimeEffectHelperContextWorld,
@@ -25,6 +26,7 @@ export type RuntimeEffectLifecycleActor = RuntimeEffectGetHitActor & {
   enterHelperTargetState?: (helper: RuntimeHelper, target: RuntimeTargetWorldActor, stateId: number) => void;
   onHelperController?: RuntimeHelperAdvanceOptions["onController"];
   onHelperOperation?: RuntimeHelperAdvanceOptions["onOperation"];
+  admitResourceWrite?: RuntimeHelperAdvanceOptions["admitResourceWrite"];
   onHelperPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
   onHelperTeamStandby?: RuntimeHelperAdvanceOptions["onTeamStandby"];
   scaleHelperTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
@@ -41,7 +43,10 @@ export type RuntimeEffectLifecycleActor = RuntimeEffectGetHitActor & {
 
 export type RuntimeEffectLifecycleOpponent = RuntimeEffectHelperContextOpponent;
 
-export type RuntimeEffectLifecycleAdvanceOptions = RuntimeEffectHelperContextOptions & { skipHelpers?: boolean };
+export type RuntimeEffectLifecycleAdvanceOptions = RuntimeEffectHelperContextOptions & {
+  skipHelpers?: boolean;
+  projectilePauseKind?: RuntimeProjectilePauseKind;
+};
 
 export type RuntimeEffectSnapshotGroups = {
   explods: ActorSnapshot[];
@@ -63,6 +68,7 @@ export class RuntimeEffectLifecycleWorld {
       ...this.helperContextWorld.create({ actor, opponent, options }),
       gameSpace: options.gameSpace ?? runtimeStageGameSpace(stage),
       skipHelpers: options.skipHelpers,
+      projectilePauseKind: options.projectilePauseKind,
     });
   }
 

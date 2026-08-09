@@ -65,6 +65,7 @@ export type MatchWorldOptions = {
   teamMode?: RuntimeTeamRoundMode;
   teamLifeShare?: boolean;
   teamPowerShare?: boolean;
+  helperResourceShareContractEnabled?: boolean;
 };
 
 export type MatchWorldActorRecord = {
@@ -144,6 +145,7 @@ export class MatchWorld {
         teamMode: options.teamMode,
         teamLifeShare: options.teamLifeShare,
         teamPowerShare: options.teamPowerShare,
+        helperResourceShareContractEnabled: options.helperResourceShareContractEnabled,
       },
     );
     this.actorRegistry = this.refreshActorRegistry(this.runtime.getSnapshot(), true);
@@ -170,6 +172,14 @@ export class MatchWorld {
   getActorRegistry(): MatchWorldActorRegistrySnapshot {
     this.refreshActorRegistry(this.runtime.getSnapshot());
     return structuredClone(this.actorRegistry);
+  }
+
+  getActiveRootIds(): readonly string[] {
+    return this.runtime.getActiveRootIds();
+  }
+
+  getHelperTeamResourceBindings() {
+    return structuredClone(this.runtime.getHelperTeamResourceBindings());
   }
 
   getEffectActorStores(): RuntimeEffectActorStoreSummary[] {

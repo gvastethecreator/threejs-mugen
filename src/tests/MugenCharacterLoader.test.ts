@@ -343,7 +343,35 @@ GameHeight = 720
     );
   });
 
-  it("seeds constants from ordered Common.Const sources before character CNS overrides", async () => {
+  it("seeds character power constants from data/mugen.cfg [Rules]", async () => {
+    const vfs = new VirtualFileSystem();
+    vfs.addFile(
+      "chars/power-rules/power-rules.def",
+      textBytes(`[Info]
+name = "Power Rules"
+
+[Files]
+cns = power-rules.cns
+`),
+    );
+    vfs.addFile("chars/power-rules/power-rules.cns", textBytes("[Data]\nlife = 1000\n"));
+    vfs.addFile(
+      "data/mugen.cfg",
+      textBytes(`[Rules]
+Default.Attack.LifeToPowerMul = .25
+Default.GetHit.LifeToPowerMul = .4
+`),
+    );
+
+    const character = await new MugenCharacterLoader().load("power-rules.zip", vfs);
+
+    expect(character.constants).toMatchObject({
+      "default.attack.lifetopowermul": 0.25,
+      "default.gethit.lifetopowermul": 0.4,
+    });
+  });
+
+  it("seeds Rules before ordered Common.Const sources and character CNS overrides", async () => {
     const vfs = new VirtualFileSystem();
     vfs.addFile(
       "chars/common-const/common-const.def",
@@ -359,6 +387,7 @@ cns = common-const.cns
       textBytes(`[Constants]
 shared.value = 99
 character.only = 7
+default.gethit.lifetopowermul = .9
 `),
     );
     vfs.addFile(
@@ -366,6 +395,7 @@ character.only = 7
       textBytes(`[Constants]
 shared.value = 1
 common.only = 10
+default.attack.lifetopowermul = .5
 `),
     );
     vfs.addFile(
@@ -377,7 +407,11 @@ second.only = 20
     );
     vfs.addFile(
       "data/mugen.cfg",
-      textBytes(`[Common]
+      textBytes(`[Rules]
+Default.Attack.LifeToPowerMul = .25
+Default.GetHit.LifeToPowerMul = .4
+
+[Common]
 Const1 = common-second.const
 Const = data/common-first.const
 Const2 = data/missing.const
@@ -396,6 +430,8 @@ GameHeight = 720
       "common.only": 10,
       "second.only": 20,
       "character.only": 7,
+      "default.attack.lifetopowermul": 0.5,
+      "default.gethit.lifetopowermul": 0.9,
     });
     expect(character.diagnostics).toContainEqual(
       expect.objectContaining({ message: "Referenced global common constant file was not found: data/missing.const" }),

@@ -1,0 +1,119 @@
+{
+  "ok": true,
+  "engine": "motion-variation-heuristic",
+  "run_dir": ".",
+  "states_mode": "locomotion",
+  "checked_states": [
+    "walk-forward",
+    "walk-back"
+  ],
+  "semantic_review_required": true,
+  "quality_gate_note": "Motion variation is a heuristic. Locomotion still needs visual leg-phase review before final approval.",
+  "errors": [],
+  "warnings": [
+    "walk-forward: body center is nearly static; verify body bob/weight shift visually",
+    "walk-back: body center is nearly static; verify body bob/weight shift visually"
+  ],
+  "results": [
+    {
+      "state": "walk-forward",
+      "frames": 8,
+      "loop": true,
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "body center is nearly static; verify body bob/weight shift visually"
+      ],
+      "semantic_review_required": true,
+      "semantic_review": [
+        "inspect playback/contact sheet; metric pass is not final approval",
+        "frame 1 and the opposite contact frame must show opposite anatomical support/contact legs",
+        "pass/down frames must not keep both legs drifting to the same side"
+      ],
+      "metrics": {
+        "average_lower_body_diff": 0.282,
+        "min_lower_body_diff": 0.0883,
+        "support_balance_range": 0.1476,
+        "contact_phase_check": {
+          "ok": true,
+          "opposite_contact_index": 4,
+          "opposite_contact_frame": 5,
+          "frame_1_support_balance": -0.0216,
+          "frame_1_support_side": "left",
+          "opposite_contact_support_balance": -0.033,
+          "opposite_contact_support_side": "left",
+          "contact_delta": 0.0115,
+          "opposite_contact_pose_diff": 0.2188,
+          "min_opposite_contact_pose_diff": 0.08,
+          "min_contact_balance_abs": 0.012,
+          "min_contact_opposition": 0.035,
+          "screen_side_is_diagnostic_only": true,
+          "anatomical_leg_alternation_requires_visual_review": true,
+          "reason": "distinct opposite-contact lower-body poses"
+        },
+        "body_center_x_range": 0.0026,
+        "body_center_y_range": 0,
+        "support_balances": [
+          -0.0216,
+          -0.0671,
+          -0.0837,
+          -0.0268,
+          -0.033,
+          -0.152,
+          -0.1692,
+          -0.0392
+        ]
+      }
+    },
+    {
+      "state": "walk-back",
+      "frames": 8,
+      "loop": true,
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "body center is nearly static; verify body bob/weight shift visually"
+      ],
+      "semantic_review_required": true,
+      "semantic_review": [
+        "inspect playback/contact sheet; metric pass is not final approval",
+        "frame 1 and the opposite contact frame must show opposite anatomical support/contact legs",
+        "pass/down frames must not keep both legs drifting to the same side"
+      ],
+      "metrics": {
+        "average_lower_body_diff": 0.3147,
+        "min_lower_body_diff": 0.1278,
+        "support_balance_range": 0.0493,
+        "contact_phase_check": {
+          "ok": true,
+          "opposite_contact_index": 4,
+          "opposite_contact_frame": 5,
+          "frame_1_support_balance": -0.0537,
+          "frame_1_support_side": "left",
+          "opposite_contact_support_balance": -0.0682,
+          "opposite_contact_support_side": "left",
+          "contact_delta": 0.0144,
+          "opposite_contact_pose_diff": 0.3354,
+          "min_opposite_contact_pose_diff": 0.08,
+          "min_contact_balance_abs": 0.012,
+          "min_contact_opposition": 0.035,
+          "screen_side_is_diagnostic_only": true,
+          "anatomical_leg_alternation_requires_visual_review": true,
+          "reason": "distinct opposite-contact lower-body poses"
+        },
+        "body_center_x_range": 0.0026,
+        "body_center_y_range": 0,
+        "support_balances": [
+          -0.0537,
+          -0.0343,
+          -0.0189,
+          -0.028,
+          -0.0682,
+          -0.0235,
+          -0.0348,
+          -0.0471
+        ]
+      }
+    }
+  ]
+}

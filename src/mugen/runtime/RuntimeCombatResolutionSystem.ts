@@ -24,7 +24,10 @@ import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import { RuntimeDizzyStateWorld } from "./DizzyStateSystem";
 import type { RuntimeGuardWorld } from "./GuardSystem";
-import type { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
+import {
+  shouldRuntimeHitOverrideMissDirect,
+  type RuntimeHitOverrideWorld,
+} from "./HitOverrideSystem";
 import type {
   RuntimeHitStateEntryOptions,
   RuntimeHitStateTransitionActor,
@@ -40,6 +43,7 @@ import type { RuntimeHelperRootOwnershipResolver } from "./RuntimeHelperCombatSy
 import type { RuntimeStageBounds } from "./HitDefCornerPush";
 import { hasRuntimeCombatDepthContact } from "./RuntimeCombatDepthSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
+import { runtimeChainIdOverridesEqualNoChainId } from "./RuntimeChainIdPolicy";
 import { runtimeAffectTeamAllows, runtimeTeamSideFromId } from "./RuntimeTeamTopologySystem";
 import type { RuntimeRoundHitSourceActor } from "./RuntimeRoundWinTypeSystem";
 import {
@@ -53,6 +57,10 @@ import {
   type RuntimeDirectJuggleActor,
 } from "./RuntimeJuggleSystem";
 import { runtimeStateChangeTmpBlocksDirectStateRedirect } from "./RuntimeStateChangeTmpSystem";
+import {
+  applyRuntimeHitOverrideUnhittableTime,
+  hasRuntimeUnhittableTime,
+} from "./RuntimeUnhittableTimeSystem";
 
 const defaultHurtBoxes: CollisionBox[] = [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
 
@@ -67,6 +75,7 @@ function directHitDirectionKey(attackerId: string, defenderId: string): string {
 export type RuntimeCombatResolutionActor = RuntimeHitStateTransitionActor &
   RuntimeContactPresentationActor & {
     label: string;
+    playerId?: number;
     playerNo?: number;
     runtime: CharacterRuntimeState;
     currentMove?: DemoMove;
@@ -112,6 +121,7 @@ export type RuntimeCombatResolutionDirectInput<TActor extends RuntimeCombatResol
   getCollisionBoxes?: (actor: TActor, boxType: MugenCollisionBoxType) => CollisionBox[] | undefined;
   canDefenderBeHit?: (defender: TActor) => boolean;
   recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
+  emitDirectEnvShake?: (actor: TActor, move: DemoMove) => void;
   stateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   log: (line: string) => void;
 };
@@ -134,6 +144,7 @@ export type RuntimeCombatResolutionProjectileInput<TActor extends RuntimeCombatR
   canDefenderBeHit?: (defender: TActor) => boolean;
   isHelperRootOwned?: RuntimeHelperRootOwnershipResolver;
   recordAudioOperation?: (actor: TActor, operation: AudioControllerOp) => void;
+  emitProjectileEnvShake?: (actor: TActor, projectile: RuntimeProjectile) => void;
   stateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   rememberProjectileTarget?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile) => void;
   log: (line: string) => void;
@@ -177,6 +188,9 @@ export type RuntimeDirectCombatSkipReason =
   | "inactive"
   | "no-contact"
   | "superpause-unhittable"
+  | "unhittable-time"
+  | "chainid-rejected"
+  | "nochainid-rejected"
   | "hitby-rejected"
   | RuntimeHitFlagRejectionReason
   | "affectteam-rejected"
@@ -344,6 +358,16 @@ export class RuntimeCombatResolutionWorld {
         attrMatches: hitAttributeMatches,
       }, { incomingUnguardable: attacker.runtime.assertSpecial?.unguardable })
       : undefined;
+    if (reversal && hasRuntimeUnhittableTime(defender.runtime)) {
+      const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via HitDef unhittabletime`;
+      input.log(message);
+      return { kind: "skipped", reason: "unhittable-time" };
+    }
+    const chainAdmissionRejection = runtimeDirectChainAdmissionRejection(move, attacker, defender, input.runtimeProfile);
+    if (reversal && chainAdmissionRejection) {
+      input.log(chainAdmissionRejection.message);
+      return { kind: "skipped", reason: chainAdmissionRejection.reason };
+    }
     if (reversal) {
       if (runtimeStateChangeTmpBlocksDirectStateRedirect(defender.runtime, attacker.runtime, reversal)) {
         const message = `${attacker.label} rejected ${defender.label} ${reversal.attr ?? "S,NA"} via pending state change`;
@@ -369,6 +393,12 @@ export class RuntimeCombatResolutionWorld {
         defender.hasHit = true;
         bufferRuntimeHitDefTarget(defender, attacker.id);
         this.rememberTarget(defender, attacker, reversal.targetId);
+        applyRuntimeHitOverrideUnhittableTime(
+          defender.runtime,
+          attacker.runtime,
+          reversal,
+          override.forceGuard === true,
+        );
         const result = input.hitOverrideWorld.applyRedirect(defender, attacker, override, reversal.hitPause, {
           tryEnterState: (target, stateNo) => {
             if (!input.stateHooks.canEnterState(target, stateNo)) {
@@ -421,6 +451,11 @@ export class RuntimeCombatResolutionWorld {
     if (!hasContact) {
       return { kind: "skipped", reason: "no-contact" };
     }
+    if (hasRuntimeUnhittableTime(defender.runtime)) {
+      const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via HitDef unhittabletime`;
+      input.log(message);
+      return { kind: "skipped", reason: "unhittable-time" };
+    }
     if (input.canDefenderBeHit?.(defender) === false) {
       const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via SuperPause unhittable`;
       input.log(message);
@@ -436,6 +471,10 @@ export class RuntimeCombatResolutionWorld {
       const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via HitBy/NotHitBy`;
       input.log(message);
       return { kind: "skipped", reason: "hitby-rejected" };
+    }
+    if (chainAdmissionRejection) {
+      input.log(chainAdmissionRejection.message);
+      return { kind: "skipped", reason: chainAdmissionRejection.reason };
     }
     if (runtimeStateChangeTmpBlocksDirectStateRedirect(attacker.runtime, defender.runtime, move)) {
       const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via pending state change`;
@@ -453,6 +492,12 @@ export class RuntimeCombatResolutionWorld {
       return { kind: "skipped", reason: "air-juggle-rejected" };
     }
 
+    const resolvedContact = resolveRuntimeCombatHit({
+      attacker: attacker.runtime,
+      defender: defender.runtime,
+      attack: move,
+      holdingBack: isRuntimeHoldingBack(defender.currentInput),
+    });
     const override = findRuntimeHitOverride(defender.runtime, move.attr ?? "S,NA", move.guardFlag ?? "MA");
     if (override) {
       if (shouldRuntimeHitOverrideMissDirect(move)) {
@@ -467,6 +512,12 @@ export class RuntimeCombatResolutionWorld {
       attacker.hasHit = true;
       bufferRuntimeHitDefTarget(attacker, defender.id);
       this.rememberTarget(attacker, defender, move.targetId);
+      applyRuntimeHitOverrideUnhittableTime(
+        attacker.runtime,
+        defender.runtime,
+        move,
+        override.forceGuard === true || resolvedContact.kind === "guard",
+      );
       const result = input.hitOverrideWorld.applyRedirect(attacker, defender, override, move.hitPause, {
         tryEnterState: (target, stateNo) => {
           if (!input.stateHooks.canEnterState(target, stateNo)) {
@@ -484,12 +535,7 @@ export class RuntimeCombatResolutionWorld {
     attacker.hasHit = true;
     bufferRuntimeHitDefTarget(attacker, defender.id);
     this.rememberTarget(attacker, defender, move.targetId);
-    const result = resolveRuntimeCombatHit({
-      attacker: attacker.runtime,
-      defender: defender.runtime,
-      attack: move,
-      holdingBack: isRuntimeHoldingBack(defender.currentInput),
-    });
+    const result = resolvedContact;
     const targetWasFalling = defender.runtime.hitFall?.falling === true;
     const outcome = input.directCombatWorld.applyResolvedHit(attacker, defender, move, result, {
       applyGuardHit: (target) => this.applyDefaultGuardHitState(target, input.guardWorld, input.stateHooks),
@@ -503,9 +549,12 @@ export class RuntimeCombatResolutionWorld {
       applyDefaultGetHit: (target, moveArg) =>
         this.applyDefaultGetHitState(target, moveArg, input.getHitStateWorld, input.stateHooks),
       applyDizzyState: (target, moveArg) => this.applyDefaultDizzyState(target, moveArg, input.stateHooks),
+      emitHitEnvShake: (source, moveArg) => input.emitDirectEnvShake?.(source, moveArg),
     }, {
       stageBounds: input.stageBounds,
       hitDefPriorityProfile: attacker.definition.hitDefPriorityProfile,
+      trackAuthoredHitCountCombo: input.runtimeProfile === "ikemen-go",
+      trackIkemenKoVelocityDelta: input.runtimeProfile === "ikemen-go",
     });
     if (outcome.kind === "hit") {
       applyRuntimeDirectAirJuggleHit({
@@ -643,6 +692,12 @@ export class RuntimeCombatResolutionWorld {
       || findRuntimeHitOverride(defender.runtime, move.attr ?? "S,NA", move.guardFlag ?? "MA")) {
       return undefined;
     }
+    if (runtimeDirectChainIdRejects(move, defender.runtime)) {
+      return undefined;
+    }
+    if (runtimeDirectNoChainIdRejection(move, attacker, defender, input.runtimeProfile) !== undefined) {
+      return undefined;
+    }
     if (runtimeStateChangeTmpBlocksDirectStateRedirect(attacker.runtime, defender.runtime, move)) {
       return undefined;
     }
@@ -685,9 +740,12 @@ export class RuntimeCombatResolutionWorld {
       applyDefaultGetHit: (target, moveArg) =>
         this.applyDefaultGetHitState(target, moveArg, input.getHitStateWorld, input.stateHooks),
       applyDizzyState: (target, moveArg) => this.applyDefaultDizzyState(target, moveArg, input.stateHooks),
+      emitHitEnvShake: (source, moveArg) => input.emitDirectEnvShake?.(source, moveArg),
     }, {
       stageBounds: input.stageBounds,
       hitDefPriorityProfile: attacker.definition.hitDefPriorityProfile,
+      trackAuthoredHitCountCombo: input.runtimeProfile === "ikemen-go",
+      trackIkemenKoVelocityDelta: input.runtimeProfile === "ikemen-go",
       preserveDefenderMove: true,
     });
     if (outcome.kind === "hit") {
@@ -821,6 +879,7 @@ export class RuntimeCombatResolutionWorld {
           recordAudioOperation: input.recordAudioOperation,
         });
       },
+      emitProjectileEnvShake: (source, projectile) => input.emitProjectileEnvShake?.(source, projectile),
       recordReceivedDamage: (target, damage) => {
         target.contactWorld.markReceivedDamage(target.contact, target.runtime.stateNo, damage);
       },
@@ -845,9 +904,18 @@ export class RuntimeCombatResolutionWorld {
     if (move.p2StateNo !== undefined || defender.definition.source !== "imported") {
       return;
     }
+    const forcedStateType =
+      move.forceStand && defender.runtime.stateType === "C"
+        ? "S"
+        : move.forceCrouch && defender.runtime.stateType === "S"
+          ? "C"
+          : defender.runtime.stateType;
     const stateNo =
       move.defaultTargetStateNo ??
-      getHitStateWorld.defaultGetHitStateNo(defender.runtime, (candidate) => stateHooks.canEnterState(defender, candidate));
+      getHitStateWorld.defaultGetHitStateNo(
+        { ...defender.runtime, stateType: forcedStateType },
+        (candidate) => stateHooks.canEnterState(defender, candidate),
+      );
     if (stateNo === undefined || !stateHooks.canEnterState(defender, stateNo)) {
       return;
     }
@@ -888,11 +956,12 @@ export class RuntimeCombatResolutionWorld {
     defender: TActor,
     getHitStateWorld: RuntimeGetHitStateWorld,
     stateHooks: RuntimeCombatResolutionStateHooks<TActor>,
+    stateType: CharacterRuntimeState["stateType"] = defender.runtime.stateType,
   ): void {
     if (defender.definition.source !== "imported") {
       return;
     }
-    const stateNo = getHitStateWorld.defaultGetHitStateNo(defender.runtime, (candidate) => stateHooks.canEnterState(defender, candidate));
+    const stateNo = getHitStateWorld.defaultGetHitStateNo({ stateType }, (candidate) => stateHooks.canEnterState(defender, candidate));
     if (stateNo === undefined || !stateHooks.canEnterState(defender, stateNo)) {
       return;
     }
@@ -907,17 +976,21 @@ export class RuntimeCombatResolutionWorld {
     getHitStateWorld: RuntimeGetHitStateWorld,
     stateHooks: RuntimeCombatResolutionStateHooks<TActor>,
   ): void {
-    if (projectile.p2StateNo !== undefined) {
-      hitStateTransitionWorld.enterTargetHitState(
-        defender,
-        attacker,
-        projectile.p2StateNo,
-        projectile.p2GetP1State ?? true,
-        this.hitStateTransitionHooks(stateHooks),
-      );
-      return;
+    hitStateTransitionWorld.applyHitStateTransitions(
+      attacker,
+      defender,
+      projectile,
+      this.hitStateTransitionHooks(stateHooks),
+    );
+    if (projectile.p2StateNo === undefined) {
+      const forcedStateType =
+        projectile.forceStand && defender.runtime.stateType === "C"
+          ? "S"
+          : projectile.forceCrouch && defender.runtime.stateType === "S"
+            ? "C"
+            : defender.runtime.stateType;
+      this.applyDefaultProjectileGetHitState(defender, getHitStateWorld, stateHooks, forcedStateType);
     }
-    this.applyDefaultProjectileGetHitState(defender, getHitStateWorld, stateHooks);
   }
 
   private hitStateTransitionHooks<TActor extends RuntimeCombatResolutionActor>(
@@ -1062,6 +1135,54 @@ function hasRuntimeProjectileHitFlag(value: string | undefined): boolean {
   return value?.toUpperCase().replace(/[\s,]/g, "").includes("P") ?? false;
 }
 
+function runtimeDirectChainIdRejects(move: DemoMove, defender: CharacterRuntimeState): boolean {
+  const chainId = move.hitVars?.chainId;
+  return chainId !== undefined && chainId >= 0 && defender.hitVars?.hitId !== Math.trunc(chainId);
+}
+
+function runtimeDirectChainAdmissionRejection(
+  move: DemoMove,
+  attacker: Pick<RuntimeCombatResolutionActor, "id" | "label" | "playerId">,
+  defender: Pick<RuntimeCombatResolutionActor, "hitPause" | "label" | "runtime">,
+  profile?: RuntimeCompatibilityProfile,
+): { reason: "chainid-rejected" | "nochainid-rejected"; message: string } | undefined {
+  if (runtimeDirectChainIdRejects(move, defender.runtime)) {
+    const previousHitId = defender.runtime.hitVars?.hitId;
+    return {
+      reason: "chainid-rejected",
+      message: `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via ChainID ${Math.trunc(move.hitVars!.chainId!)} (previous HitDef id ${previousHitId === undefined ? "none" : previousHitId})`,
+    };
+  }
+  const blockedNoChainId = runtimeDirectNoChainIdRejection(move, attacker, defender, profile);
+  return blockedNoChainId === undefined
+    ? undefined
+    : {
+        reason: "nochainid-rejected",
+        message: `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via NoChainID ${blockedNoChainId}`,
+      };
+}
+
+function runtimeDirectNoChainIdRejection(
+  move: DemoMove,
+  attacker: Pick<RuntimeCombatResolutionActor, "id" | "playerId">,
+  defender: Pick<RuntimeCombatResolutionActor, "hitPause" | "runtime">,
+  profile?: RuntimeCompatibilityProfile,
+): number | undefined {
+  const previous = defender.runtime.hitVars;
+  if (!previous || previous.hitId === undefined) {
+    return undefined;
+  }
+  const blockedId = move.noChainIds
+    ?.slice(0, 8)
+    .map(Math.trunc)
+    .find((candidate) => candidate >= 0 && candidate === previous.hitId);
+  if (blockedId === undefined) return undefined;
+  if (runtimeChainIdOverridesEqualNoChainId(profile, move.hitVars?.chainId, blockedId)) return undefined;
+  const sameSourcePlayer = attacker.playerId !== undefined && previous.sourcePlayerId === attacker.playerId;
+  const sameSourceActor = previous.sourceActorId === attacker.id;
+  return sameSourceActor || (sameSourcePlayer && defender.hitPause > 0) ? blockedId : undefined;
+}
+
 function runtimeHitFlagRejectionMessage(
   defenderLabel: string,
   attackerLabel: string,
@@ -1084,13 +1205,6 @@ function getActiveRuntimeProjectileDefenseMove(actor: RuntimeCombatResolutionAct
     return undefined;
   }
   return hasRuntimeProjectileHitFlag(move.hitFlag) ? move : undefined;
-}
-
-function shouldRuntimeHitOverrideMissDirect(move: DemoMove): boolean {
-  if (move.missOnOverride !== undefined) {
-    return move.missOnOverride;
-  }
-  return move.p1StateNo !== undefined || move.p2StateNo !== undefined;
 }
 
 function runtimeMoveIsActive(move: DemoMove, tick: number): boolean {
@@ -1128,6 +1242,7 @@ function runtimeProjectileHitSource<TActor extends RuntimeCombatResolutionActor>
   if (projectile.parentId === attacker.id && projectile.rootId === attacker.id) {
     return {
       id: attacker.id,
+      playerId: attacker.playerId,
       playerNo: attacker.playerNo,
       rootId: attacker.id,
       rootOwned: true,
@@ -1148,6 +1263,7 @@ function runtimeProjectileHitSource<TActor extends RuntimeCombatResolutionActor>
       helper.rootPlayerNo === helper.playerNo;
   return {
     id: helper.serialId,
+    playerId: helper.playerId,
     playerNo: helper.playerNo,
     rootId: helper.rootId,
     rootOwned,

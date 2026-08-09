@@ -5,6 +5,70 @@ import { normalizeMugenAffectTeam, normalizeMugenTeamSide, type MugenAffectTeam 
 
 export type MugenProjectileVector = [number, number, number?];
 export type MugenHitDefVector = [number, number?, number?];
+export type MugenHitDefExpressionPair = [number | string, (number | string)?];
+export type MugenHitDefExpressionTriplet = [number | string, number | string, number | string];
+export type MugenHitDefPaletteFxOp = {
+  time?: number | string;
+  add?: MugenHitDefExpressionTriplet;
+  mul?: MugenHitDefExpressionTriplet;
+  color?: number | string;
+  invertAll?: number | string;
+};
+export type MugenHitDefEnvShakeOp = {
+  time?: number | string;
+  freq?: number | string;
+  ampl?: number | string;
+  phase?: number | string;
+  /** Ikemen-GO contact EnvShake multiplier. */
+  mul?: number | string;
+  /** Ikemen-GO contact EnvShake direction in degrees. */
+  dir?: number | string;
+};
+export type MugenHitDefFallImpactOp = {
+  damage?: number | string;
+  xVelocity?: number | string;
+  yVelocity?: number | string;
+  /** Pinned Ikemen-GO depth-axis fall velocity. */
+  zVelocity?: number | string;
+};
+export type MugenHitDefFallRecoveryOp = {
+  /** M.U.G.E.N air-recovery permission after a fall. */
+  recover?: number | string;
+  /** Delay before the air-recovery command is accepted. */
+  recoverTime?: number | string;
+  /** Ikemen-GO lie-down fast-recovery permission. */
+  downRecover?: number | string;
+  /** Ikemen-GO lie-down recovery countdown. */
+  downRecoverTime?: number | string;
+};
+export type MugenHitDefFallFlagsOp = {
+  /** Grounded knockdown policy. */
+  enabled?: number | string;
+  /** Airborne-only knockdown policy; omitted follows the base fall flag. */
+  airFall?: number | string;
+  /** Deferred fall-damage KO permission. */
+  kill?: number | string;
+};
+export type MugenHitDefLethalFlagsOp = {
+  /** Whether normal hit damage may reduce the receiver to zero life. */
+  kill?: number | string;
+  /** Whether guarded damage may reduce the receiver to zero life. */
+  guardKill?: number | string;
+  /** Whether one accepted direct contact retires the active HitDef target set. */
+  hitOnce?: number | string;
+};
+export type MugenPartialHitDefVector = { x?: number; y?: number; z?: number };
+export type MugenProjectileShadow = [number, number?, number?];
+export type MugenProjectileProjection = "orthographic" | "perspective" | "perspective2";
+export type MugenProjectileWindow = [number, number, number, number];
+export type MugenProjectileGuardDistanceBounds = {
+  /** Front/back width pair. Old `guard.dist` is an alias for this field. */
+  width?: [number, number];
+  /** Top/bottom height pair. */
+  height?: [number, number];
+  /** Top/bottom depth pair. */
+  depth?: [number, number];
+};
 
 export type ControllerCompileContext = {
   constants?: Record<string, number>;
@@ -13,9 +77,14 @@ export type ControllerCompileContext = {
 export type HitDefControllerOp = {
   kind: "hitdef";
   redirectPlayerIdExpression?: string;
-  id?: number;
-  chainId?: number;
+  /** Nonnegative HitDef ID expression evaluated in caller context. */
+  id?: number | string;
+  /** Raw HitDef chain ID expression; -1 disables chaining. */
+  chainId?: number | string;
+  noChainIds?: number[];
   hitCount?: number;
+  /** Dynamic direct HitDef numhits expression evaluated in the caller context. */
+  hitCountExpression?: number | string;
   attr?: string;
   hitFlag?: string;
   affectTeam?: MugenAffectTeam;
@@ -24,35 +93,86 @@ export type HitDefControllerOp = {
   p2ClsnRequire?: MugenCollisionBoxType;
   damage?: number;
   guardDamage?: number;
+  /** Dynamic or mixed HitDef damage pair evaluated in caller context. */
+  damageExpressions?: MugenHitDefExpressionPair;
   guardPoints?: number;
   dizzyPoints?: number;
   redLife?: number;
   guardRedLife?: number;
+  /** Second HitDef givepower value exposed by GetHitVar(guardpower). */
+  guardPower?: number;
+  /** First HitDef givepower value exposed by GetHitVar(hitpower). */
+  hitPower?: number;
+  /** One or two defender power-gain expressions from HitDef givepower. */
+  givePower?: MugenHitDefExpressionPair;
+  /** Authored HitDef score exposed by GetHitVar(score). */
+  score?: number;
+  /** One or two attacker power-gain expressions from HitDef getpower. */
+  getPower?: MugenHitDefExpressionPair;
   kill?: boolean;
+  /** Ikemen direct HitDef keepstate flag exposed by GetHitVar(keepstate). */
+  keepState?: boolean;
   guardKill?: boolean;
   hitOnce?: boolean;
   airJuggle?: number;
+  /** Dynamic direct HitDef air.juggle expression evaluated in the caller context. */
+  airJuggleExpression?: number | string;
   priority?: number;
+  /** Dynamic direct HitDef numeric priority expression. */
+  priorityExpression?: number | string;
   priorityType?: "hit" | "miss" | "dodge";
   p1SpritePriority?: number;
   p2SpritePriority?: number;
+  /** Dynamic direct HitDef P1 sprite-priority expression. */
+  p1SpritePriorityExpression?: number | string;
+  /** Dynamic direct HitDef P2 sprite-priority expression. */
+  p2SpritePriorityExpression?: number | string;
   attackDepth?: [number, number];
+  unhittableTime?: MugenHitDefExpressionPair;
+  /** Static attacker component of HitDef pausetime. */
   pauseTime?: number;
-  groundHitTime?: number;
-  airHitTime?: number;
+  /** Static defender component of HitDef pausetime. */
+  hitShakeTime?: number;
+  /** Dynamic or mixed HitDef pausetime pair evaluated in caller context. */
+  pauseTimeExpressions?: MugenHitDefExpressionPair;
+  /** Direct ground.hittime scalar evaluated in the HitDef caller context. */
+  groundHitTime?: number | string;
+  /** Direct ground.slidetime scalar evaluated in the HitDef caller context. */
+  groundSlideTime?: number | string;
+  /** Direct air.hittime scalar evaluated in the HitDef caller context. */
+  airHitTime?: number | string;
   downHitTime?: number;
   /** M.U.G.E.N down.bounce toggle; explicit false suppresses the Common1 bounce. */
   downBounce?: boolean;
+  /** Dynamic M.U.G.E.N down.bounce expression evaluated in the HitDef caller context. */
+  downBounceExpression?: number | string;
+  /** Direct-hit defender posture overrides evaluated in the HitDef caller context. */
+  forceStand?: number | string;
+  forceCrouch?: number | string;
+  /** Direct-hit fall suppression evaluated in the HitDef caller context. */
+  forceNoFall?: number | string;
   groundVelocity?: MugenHitDefVector;
+  /** Dynamic direct HitDef ground.velocity X/Y pair evaluated in caller context. */
+  groundVelocityExpressions?: MugenHitDefExpressionPair;
   airVelocity?: MugenHitDefVector;
   downVelocity?: MugenHitDefVector;
-  guardDistance?: number;
+  /** Direct guard.dist scalar evaluated in the HitDef caller context. */
+  guardDistance?: number | string;
   guardFlag?: string;
+  /** Static attacker component of guard.pausetime. */
   guardPauseTime?: number;
-  guardHitTime?: number;
-  guardSlideTime?: number;
-  guardControlTime?: number;
-  airGuardControlTime?: number;
+  /** Static defender component of guard.pausetime. */
+  guardShakeTime?: number;
+  /** Dynamic or mixed guard.pausetime pair evaluated in caller context. */
+  guardPauseTimeExpressions?: MugenHitDefExpressionPair;
+  /** Direct guard.hittime scalar evaluated in the HitDef caller context. */
+  guardHitTime?: number | string;
+  /** Direct guard.slidetime scalar evaluated in the HitDef caller context. */
+  guardSlideTime?: number | string;
+  /** Direct guard.ctrltime scalar evaluated in the HitDef caller context. */
+  guardControlTime?: number | string;
+  /** Direct airguard.ctrltime scalar evaluated in the HitDef caller context. */
+  airGuardControlTime?: number | string;
   guardVelocity?: MugenHitDefVector;
   airGuardVelocity?: MugenHitDefVector;
   groundCornerPush?: number;
@@ -60,16 +180,52 @@ export type HitDefControllerOp = {
   downCornerPush?: number;
   guardCornerPush?: number;
   airGuardCornerPush?: number;
-  p1StateNo?: number;
-  p2StateNo?: number;
-  p2GetP1State?: boolean;
+  /** Root-owned attacker state expression evaluated when this fresh HitDef activates. */
+  p1StateNo?: number | string;
+  /** Root-owned target state expression evaluated when this fresh HitDef activates. */
+  p2StateNo?: number | string;
+  /** State-owner toggle for p2StateNo, evaluated only when p2StateNo resolves. */
+  p2GetP1State?: number | string;
+  /** Direct-hit attacker facing override; evaluated in the HitDef caller context. */
+  p1Facing?: number | string;
+  /** Direct-hit attacker facing derived from P2; nonzero values take precedence over p1facing. */
+  p1GetP2Facing?: number | string;
+  /** HitDef p2facing expression evaluated in the caller context. */
+  p2Facing?: number | string;
   missOnOverride?: boolean;
   ignoreReversalDef?: boolean;
   snap?: [number, number?];
   animType?: number;
+  /** Ikemen GetHitVar ground/air reaction metadata. */
+  airAnimType?: number;
   groundType?: number;
   airType?: number;
-  yAccel?: number;
+  /** Ikemen-GO HitDef acceleration metadata copied into GetHitVars. */
+  xAccel?: number | string;
+  yAccel?: number | string;
+  zAccel?: number | string;
+  /** Grounded get-hit friction overrides copied to the receiver on contact. */
+  standFriction?: number | string;
+  crouchFriction?: number | string;
+  /** Independent X/Y scales for normal and guarded hit sparks. */
+  hitSparkScale?: MugenHitDefExpressionPair;
+  guardSparkScale?: MugenHitDefExpressionPair;
+  /** PalFX copied to the receiver by an accepted, unguarded contact. */
+  paletteFx?: MugenHitDefPaletteFxOp;
+  /** Camera shake emitted by an accepted, unguarded direct contact. */
+  envShake?: MugenHitDefEnvShakeOp;
+  /** Camera shake stored on the receiver until the authored fall impact. */
+  fallEnvShake?: MugenHitDefEnvShakeOp;
+  /** Deferred ground-impact damage and bounce velocity. */
+  fallImpact?: MugenHitDefFallImpactOp;
+  /** Fall and lie-down recovery policy evaluated in the HitDef caller context. */
+  fallRecovery?: MugenHitDefFallRecoveryOp;
+  /** Fall, air-fall, and deferred KO policy evaluated in the HitDef caller context. */
+  fallFlags?: MugenHitDefFallFlagsOp;
+  /** Dynamic lethal and direct one-contact policy evaluated in the HitDef caller context. */
+  lethalFlags?: MugenHitDefLethalFlagsOp;
+  /** Bounded synthetic/Ikemen KO velocity-delta metadata, separate from HitDef velocity. */
+  koVelocityAdd?: MugenHitDefVector;
   fallAnimType?: number;
   hitSound?: string;
   guardSound?: string;
@@ -84,29 +240,104 @@ export type ModifyHitDefControllerOp = {
   redirectPlayerIdExpression: string;
   damage?: number;
   guardDamage?: number;
-  airHitTime?: number;
+  /** Dynamic or mixed live damage pair evaluated in caller context. */
+  damageExpressions?: MugenHitDefExpressionPair;
+  /** Live ground.hittime replacement evaluated in the ModifyHitDef caller context. */
+  groundHitTime?: number | string;
+  /** Live ground.slidetime replacement evaluated in the ModifyHitDef caller context. */
+  groundSlideTime?: number | string;
+  /** Live guard.hittime replacement evaluated in the ModifyHitDef caller context. */
+  guardHitTime?: number | string;
+  /** Live guard.slidetime replacement evaluated in the ModifyHitDef caller context. */
+  guardSlideTime?: number | string;
+  /** Live guard.ctrltime replacement evaluated in the ModifyHitDef caller context. */
+  guardControlTime?: number | string;
+  /** Live airguard.ctrltime replacement evaluated in the ModifyHitDef caller context. */
+  airGuardControlTime?: number | string;
+  /** Live air.hittime replacement evaluated in the ModifyHitDef caller context. */
+  airHitTime?: number | string;
+  /** Live guard.dist replacement evaluated in the ModifyHitDef caller context. */
+  guardDistance?: number | string;
   downHitTime?: number;
-  downVelocity?: [number, number?];
+  /** Component-wise live ground.velocity X/Y replacement evaluated in caller context. */
+  groundVelocity?: MugenHitDefExpressionPair;
+  /** Bounded Ikemen vector-Z mutation for an active HitDef. */
+  groundVelocityZ?: number;
+  airVelocityZ?: number;
+  downVelocity?: MugenHitDefVector;
+  guardVelocityZ?: number;
+  airGuardVelocityZ?: number;
+  /** HitDef acceleration metadata mutation; dynamic scalar expressions are retained for runtime evaluation. */
+  xAccel?: number | string;
+  yAccel?: number | string;
+  zAccel?: number | string;
+  /** Grounded get-hit friction mutation; each scalar remains independent. */
+  standFriction?: number | string;
+  crouchFriction?: number | string;
+  /** Component-wise live hit/guard spark scale mutation. */
+  hitSparkScale?: MugenHitDefExpressionPair;
+  guardSparkScale?: MugenHitDefExpressionPair;
+  /** Component-wise live replacement for the contact PalFX payload. */
+  paletteFx?: MugenHitDefPaletteFxOp;
+  /** Component-wise live replacement for direct-contact camera shake. */
+  envShake?: MugenHitDefEnvShakeOp;
+  /** Component-wise live replacement for fall-impact camera shake. */
+  fallEnvShake?: MugenHitDefEnvShakeOp;
+  /** Component-wise live replacement for deferred fall impact metadata. */
+  fallImpact?: MugenHitDefFallImpactOp;
+  /** Component-wise live replacement for fall and lie-down recovery policy. */
+  fallRecovery?: MugenHitDefFallRecoveryOp;
+  /** Component-wise live replacement for fall, air-fall, and deferred KO policy. */
+  fallFlags?: MugenHitDefFallFlagsOp;
+  /** Component-wise live replacement for lethal and direct one-contact policy. */
+  lethalFlags?: MugenHitDefLethalFlagsOp;
+  /** Component-wise live replacement for attacker hit/guard power gain. */
+  getPower?: MugenHitDefExpressionPair;
+  /** Component-wise live replacement for defender hit/guard power gain. */
+  givePower?: MugenHitDefExpressionPair;
   /** M.U.G.E.N down.bounce toggle for an active normal HitDef. */
   downBounce?: boolean;
-  airGuardControlTime?: number;
-  id?: number;
-  chainId?: number;
+  /** Dynamic M.U.G.E.N down.bounce replacement evaluated in the ModifyHitDef caller context. */
+  downBounceExpression?: number | string;
+  /** Live defender posture replacements evaluated independently in caller context. */
+  forceStand?: number | string;
+  forceCrouch?: number | string;
+  /** Live fall-suppression replacement evaluated in caller context. */
+  forceNoFall?: number | string;
+  /** Live nonnegative HitDef ID replacement evaluated in caller context. */
+  id?: number | string;
+  /** Live raw chain ID replacement; -1 disables chaining. */
+  chainId?: number | string;
+  noChainIds?: number[];
   hitCount?: number;
+  /** Dynamic live numhits replacement evaluated in the ModifyHitDef caller context. */
+  hitCountExpression?: number | string;
   attr?: string;
   guardFlag?: string;
   hitFlag?: string;
   p1StateNo?: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;
+  /** Live direct-HitDef attacker-facing replacements, evaluated independently. */
+  p1Facing?: number | string;
+  p1GetP2Facing?: number | string;
+  /** Live defender-facing replacement evaluated in the ModifyHitDef caller context. */
+  p2Facing?: number | string;
   p1SpritePriority?: number;
   p2SpritePriority?: number;
+  /** Dynamic live P1 sprite-priority replacement. */
+  p1SpritePriorityExpression?: number | string;
+  /** Dynamic live P2 sprite-priority replacement. */
+  p2SpritePriorityExpression?: number | string;
   priority?: number;
+  /** Dynamic live numeric priority replacement. */
+  priorityExpression?: number | string;
   priorityType?: "hit" | "miss" | "dodge";
   kill?: boolean;
   guardKill?: boolean;
   fallKill?: boolean;
   hitOnce?: boolean;
+  unhittableTime?: MugenHitDefExpressionPair;
 };
 
 export type ModifyReversalDefControllerOp = {
@@ -149,6 +380,10 @@ export type HitDefFallOp = {
   envShakeFrequency?: number;
   envShakeAmplitude?: number;
   envShakePhase?: number;
+  /** Ikemen-GO fall.envshake.mul readback metadata. */
+  envShakeMultiplier?: number;
+  /** Ikemen-GO fall.envshake.dir readback and presentation metadata. */
+  envShakeDirection?: number;
 };
 
 export type TargetControllerOp =
@@ -226,7 +461,10 @@ export type ProjectileControllerOp = {
   projectileId?: number;
   targetId?: number;
   chainId?: number;
+  /** Up to eight HitDef IDs that block repeat contact from the same source player. */
+  noChainIds?: number[];
   hitDefHitCount?: number;
+  p1StateNo?: number;
   affectTeam?: MugenAffectTeam;
   teamSide?: 1 | 2;
   projAnim?: number;
@@ -234,11 +472,31 @@ export type ProjectileControllerOp = {
   pos?: MugenProjectileVector;
   postype?: string;
   velocity: MugenProjectileVector;
+  removalVelocity?: MugenProjectileVector;
   acceleration?: MugenProjectileVector;
-  velocityMultiplier?: [number, number];
+  velocityMultiplier?: MugenProjectileVector;
   scale?: [number, number];
+  angle?: number;
+  xAngle?: number;
+  yAngle?: number;
+  xShear?: number;
+  shadow?: MugenProjectileShadow;
+  reflection?: number;
+  projection?: MugenProjectileProjection;
+  focalLength?: number;
+  window?: MugenProjectileWindow;
+  /** Ikemen spawn-only palette isolation flag. ModifyProjectile intentionally omits it. */
+  ownPalette?: boolean;
+  /** Ikemen spawn-only destination palette requested by remappal. */
+  paletteRemap?: [number, number];
+  clsnScale?: [number, number];
+  clsnAngle?: number;
   facing?: number;
   hitAnim?: number;
+  /** Ikemen GetHitVar reaction animation metadata carried by projectile HitDef. */
+  animType?: number;
+  airAnimType?: number;
+  fallAnimType?: number;
   removeAnim?: number;
   cancelAnim?: number;
   edgeBound?: number;
@@ -246,19 +504,63 @@ export type ProjectileControllerOp = {
   depthBound?: number;
   heightBound?: { low: number; high: number };
   removeTime: number;
+  layerNo?: -1 | 0 | 1;
   spritePriority: number;
+  /** Nested HitDef priority, separate from Projectile `projpriority`. */
+  hitPriority?: number;
+  hitPriorityType?: "hit" | "miss" | "dodge";
+  /** Nested HitDef sprite priorities, separate from Projectile `projsprpriority`. */
+  p1SpritePriority?: number;
+  p2SpritePriority?: number;
   priority: number;
   hitCount: number;
   missTime: number;
+  pauseMoveTime?: number;
+  superMoveTime?: number;
   trans?: string;
   damage: number;
+  /** Authored Projectile HitDef dizzypoints exposed by GetHitVar. */
+  dizzyPoints?: number;
+  /** Authored Projectile HitDef guardpoints exposed by GetHitVar. */
+  guardPoints?: number;
+  /** Authored Projectile HitDef redlife exposed by GetHitVar. */
+  redLife?: number;
+  /** Authored Projectile guard redlife exposed by guarded GetHitVar. */
+  guardRedLife?: number;
+  /** Authored Projectile second givepower value exposed by GetHitVar. */
+  guardPower?: number;
+  /** Authored Projectile first givepower value exposed by GetHitVar. */
+  hitPower?: number;
+  /** One or two defender power-gain expressions from Projectile HitDef givepower. */
+  givePower?: MugenHitDefExpressionPair;
+  /** Authored Projectile HitDef score exposed by GetHitVar. */
+  score?: number;
+  /** Authored Projectile guard score exposed by guarded GetHitVar. */
+  guardScore?: number;
+  /** One or two attacker power-gain expressions from Projectile HitDef getpower. */
+  getPower?: MugenHitDefExpressionPair;
+  /** Projectile HitDef actor-role immunity expressions; only receiver component one mutates on contact. */
+  unhittableTime?: MugenHitDefExpressionPair;
+  /** Grounded get-hit friction expressions resolved in the Projectile caller context. */
+  standFriction?: number | string;
+  crouchFriction?: number | string;
+  /** Independent X/Y scales for normal and guarded Projectile hit sparks. */
+  hitSparkScale?: MugenHitDefExpressionPair;
+  guardSparkScale?: MugenHitDefExpressionPair;
+  /** PalFX copied to the receiver by an accepted, unguarded Projectile contact. */
+  paletteFx?: MugenHitDefPaletteFxOp;
   airJuggle?: number;
   kill?: boolean;
   guardKill?: boolean;
   attr?: string;
   hitFlag?: string;
+  /** First `pausetime` value: Projectile-local pause after hit contact. */
   hitPause: number;
+  /** Second `pausetime` value: defender hit-shake time. */
+  hitShakeTime?: number;
   hitStun: number;
+  /** M.U.G.E.N grounded hit slide duration. */
+  groundSlideTime?: number;
   airHitTime?: number;
   downHitTime?: number;
   groundVelocity?: MugenProjectileVector;
@@ -266,23 +568,49 @@ export type ProjectileControllerOp = {
   downVelocity?: MugenProjectileVector;
   /** M.U.G.E.N down.bounce toggle carried by projectile HitDef data. */
   downBounce?: boolean;
+  /** Ikemen HitDef flag that clears the target fall flag on contact. */
+  forceNoFall?: boolean;
+  /** Ikemen HitDef posture overrides used before default get-hit selection. */
+  forceStand?: boolean;
+  forceCrouch?: boolean;
   fall?: HitDefFallOp;
   attackDepth?: [number, number];
   p2StateNo?: number;
   p2GetP1State?: boolean;
+  /** Authored Projectile HitDef p2facing exposed by GetHitVar(facing). */
+  p2Facing?: number;
+  /** Optional Projectile target-distance bounds; omitted spawn components stay unset. */
+  minDistance?: MugenHitDefVector;
+  maxDistance?: MugenHitDefVector;
   p2ClsnCheck?: MugenCollisionBoxType;
   p2ClsnRequire?: MugenCollisionBoxType;
   missOnOverride?: boolean;
   guardDamage?: number;
-  guardDistance?: number;
+  guardDistanceBounds?: MugenProjectileGuardDistanceBounds;
   guardFlag?: string;
+  /** First `guard.pausetime` value: Projectile-local pause after guard contact. */
   guardPauseTime?: number;
+  /** Second `guard.pausetime` value: defender guard hit-shake time. */
+  guardShakeTime?: number;
   guardHitTime?: number;
   guardSlideTime?: number;
   guardControlTime?: number;
   airGuardControlTime?: number;
   guardVelocity?: MugenProjectileVector;
   airGuardVelocity?: MugenProjectileVector;
+  /** Ikemen-GO HitDef acceleration metadata carried by projectile impacts. */
+  xAccel?: number;
+  yAccel?: number;
+  zAccel?: number;
+  /** Ikemen-GO HitDef EnvShake metadata emitted by accepted projectile contact. */
+  envShakeTime?: number;
+  envShakeFrequency?: number;
+  envShakeAmplitude?: number;
+  envShakePhase?: number;
+  envShakeMultiplier?: number;
+  envShakeDirection?: number;
+  /** Bounded synthetic/Ikemen KO velocity-delta metadata, separate from Projectile velocity. */
+  koVelocityAdd?: MugenProjectileVector;
   groundCornerPush?: number;
   airCornerPush?: number;
   downCornerPush?: number;
@@ -291,7 +619,9 @@ export type ProjectileControllerOp = {
   hitSound?: string;
   guardSound?: string;
   hitSpark?: string;
+  hitSparkAngle?: number;
   guardSpark?: string;
+  guardSparkAngle?: number;
   sparkXy?: [number, number];
   removeOnHit: boolean;
 };
@@ -299,22 +629,170 @@ export type ProjectileControllerOp = {
 export type ModifyProjectileControllerOp = {
   kind: "modifyprojectile";
   redirectPlayerIdExpression?: string;
+  /** Ikemen `id` selector. Negative or omitted values match every active projectile. */
+  selectionId?: number;
+  /** The same authored `id` also replaces the selected Projectile HitDef target ID. */
+  targetId?: number;
+  chainId?: number;
+  /** Replacement list for the selected Projectile HitDef, capped to Ikemen's first eight entries. */
+  noChainIds?: number[];
+  /** Ikemen `index` selector over oldest-first ID matches. */
+  selectionIndex?: number;
+  /** Shared Projectile `projid` field mutates the selected projectile IDs. */
   projectileId?: number;
+  /** Numeric owner AIR action selected by Ikemen `projanim`. */
+  projAnim?: number;
+  hitAnim?: number;
+  removeAnim?: number;
+  cancelAnim?: number;
   teamSide?: 1 | 2;
+  affectTeam?: MugenAffectTeam;
+  animType?: number;
+  airAnimType?: number;
+  fallAnimType?: number;
+  kill?: boolean;
+  guardKill?: boolean;
+  fallKill?: boolean;
+  /** Ikemen ModifyProjectile mutation for the nested HitDef fall flag. */
+  forceNoFall?: boolean;
+  /** Ikemen ModifyProjectile mutations for default get-hit posture. */
+  forceStand?: boolean;
+  forceCrouch?: boolean;
+  /** Core Ikemen fall payload replaced on selected Projectile HitDef data. */
+  fallDamage?: number;
+  fallXVelocity?: number;
+  fallYVelocity?: number;
+  fallZVelocity?: number;
+  fallRecover?: boolean;
+  fallRecoverTime?: number;
+  /** Grounded recovery policy carried into the target's fall metadata. */
+  downRecover?: boolean;
+  downRecoverTime?: number;
+  /** Supported fall envshake fields carried into target get-hit metadata. */
+  fallEnvShakeTime?: number;
+  fallEnvShakeFrequency?: number;
+  fallEnvShakeAmplitude?: number;
+  fallEnvShakePhase?: number;
+  fallEnvShakeMultiplier?: number;
+  fallEnvShakeDirection?: number;
+  airJuggle?: number;
+  damage?: number;
+  guardDamage?: number;
+  /** Authored point metadata exposed by the later contact GetHitVar payload. */
+  dizzyPoints?: number;
+  guardPoints?: number;
+  hitPower?: number;
+  guardPower?: number;
+  /** Selected Projectile attacker hit/guard power replacement from getpower. */
+  getPower?: MugenHitDefExpressionPair;
+  /** Hit and guard redlife metadata exposed by the later contact GetHitVar payload. */
+  redLife?: number;
+  guardRedLife?: number;
+  /** Hit and guard score metadata exposed without moving score resources. */
+  score?: number;
+  guardScore?: number;
+  /** HitDef `numhits` metadata, separate from Projectile `projhits` capacity. */
+  hitDefHitCount?: number;
+  /** Nested HitDef priority, separate from Projectile `projpriority`. */
+  hitPriority?: number;
+  hitPriorityType?: "hit" | "miss" | "dodge";
+  /** Ikemen ModifyProjectile mutates only the defender's HitDef sprite priority. */
+  p2SpritePriority?: number;
+  p1StateNo?: number;
+  p2StateNo?: number;
+  p2GetP1State?: boolean;
+  /** Ikemen ModifyProjectile replacement for accepted-hit target facing. */
+  p2Facing?: number;
+  /** Ikemen target-distance replacement; omitted components become zero. */
+  minDistance?: MugenHitDefVector;
+  maxDistance?: MugenHitDefVector;
+  /** Ikemen ModifyProjectile airborne get-hit duration. */
+  airHitTime?: number;
+  /** Ikemen ModifyProjectile fall admission flags. */
+  groundFall?: boolean;
+  airFall?: boolean;
+  downBounce?: boolean;
+  /** Ikemen ModifyProjectile grounded get-hit duration. */
+  hitStun?: number;
+  /** Ikemen two-value Projectile-local and defender pause replacement. */
+  pauseTime?: [number, number];
+  /** Ikemen two-value guarded Projectile-local and defender pause replacement. */
+  guardPauseTime?: [number, number];
+  /** Ikemen live Projectile guard-distance width/height/depth replacement. */
+  guardDistanceBounds?: MugenProjectileGuardDistanceBounds;
+  /** Selected live Projectile hit/guard spark presentation replacement. */
+  hitSpark?: string;
+  hitSparkAngle?: number;
+  guardSpark?: string;
+  guardSparkAngle?: number;
+  sparkXy?: [number, number];
+  /** Ikemen ModifyProjectile unguarded grounded slide duration. */
+  groundSlideTime?: number;
+  /** Ikemen ModifyProjectile guarded get-hit duration. */
+  guardHitTime?: number;
+  guardSlideTime?: number;
+  guardControlTime?: number;
+  airGuardControlTime?: number;
+  /** Ikemen ModifyProjectile lying-state get-hit duration. */
+  downHitTime?: number;
+  /** Ikemen ModifyProjectile component-wise grounded velocity replacement; omitted components preserve live values. */
+  groundVelocity?: MugenPartialHitDefVector;
+  /** Ikemen ModifyProjectile replacement for the selected HitDef down velocity. */
+  downVelocity?: MugenHitDefVector;
+  /** Ikemen ModifyProjectile replacement for the selected HitDef air velocity. */
+  airVelocity?: MugenHitDefVector;
+  /** Ikemen ModifyProjectile replacement for ground and air guard velocity. */
+  guardVelocity?: MugenHitDefVector;
+  airGuardVelocity?: MugenHitDefVector;
+  /** Ikemen ModifyProjectile replacement for contact GetHitVar acceleration metadata. */
+  xAccel?: number;
+  yAccel?: number;
+  zAccel?: number;
+  /** Ikemen-GO ModifyProjectile contact EnvShake replacement fields. */
+  envShakeTime?: number;
+  envShakeFrequency?: number;
+  envShakeAmplitude?: number;
+  envShakePhase?: number;
+  envShakeMultiplier?: number;
+  envShakeDirection?: number;
+  missOnOverride?: boolean;
+  /** Static target collision group used by the selected Projectile HitDef. */
+  p2ClsnCheck?: MugenCollisionBoxType;
+  /** Static target collision group required before Projectile contact. */
+  p2ClsnRequire?: MugenCollisionBoxType;
+  /** Ikemen ModifyProjectile replaces both nested HitDef depth bounds. */
+  attackDepth?: [number, number];
+  attr?: string;
+  guardFlag?: string;
   hitFlag?: string;
   velocity?: MugenProjectileVector;
+  removalVelocity?: MugenProjectileVector;
   acceleration?: MugenProjectileVector;
-  velocityMultiplier?: [number, number];
+  velocityMultiplier?: MugenProjectileVector;
   scale?: [number, number];
+  angle?: number;
+  xAngle?: number;
+  yAngle?: number;
+  xShear?: number;
+  shadow?: MugenProjectileShadow;
+  reflection?: number;
+  projection?: MugenProjectileProjection;
+  focalLength?: number;
+  window?: MugenProjectileWindow;
+  clsnScale?: [number, number];
+  clsnAngle?: number;
   edgeBound?: number;
   stageBound?: number;
   depthBound?: number;
   heightBound?: { low: number; high: number };
   removeTime?: number;
+  layerNo?: -1 | 0 | 1;
   spritePriority?: number;
   priority?: number;
   hitCount?: number;
   missTime?: number;
+  pauseMoveTime?: number;
+  superMoveTime?: number;
   removeOnHit?: boolean;
 };
 
@@ -692,6 +1170,7 @@ export type ReversalDefControllerOp = {
   p2Facing?: number;
   targetId?: number;
   attackDepth?: [number, number];
+  unhittableTime?: MugenHitDefExpressionPair;
   redirectPlayerIdExpression?: string;
 };
 
@@ -1124,7 +1603,7 @@ function compileKinematicControllerOp(controller: MugenStateController, type: Ki
     return { kind: "kinematic", controllerType: "gravity", y: 0.55 };
   }
   const pair = strictNumberPair(findParam(controller, "value"));
-  const supportsZ = type !== "hitvelset";
+  const supportsZ = true;
   const op = definedObject({
     kind: "kinematic" as const,
     controllerType: type,
@@ -1744,6 +2223,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   const targetId = staticOptionalNumberParam(controller, "id");
   const attackDepthRaw = findParam(controller, "attack.depth");
   const attackDepth = normalizedNumberPair(attackDepthRaw);
+  const unhittableTime = optionalIntegerExpressionPairParam(controller, "unhittabletime");
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   if (
     hitPause === undefined ||
@@ -1761,6 +2241,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     p2Facing === false ||
     targetId === false ||
     (attackDepthRaw !== undefined && attackDepth === undefined) ||
+    unhittableTime === false ||
     redirectPlayerIdExpression === "invalid"
   ) {
     return undefined;
@@ -1783,6 +2264,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     p2Facing: p2Facing === true ? undefined : p2Facing,
     targetId: targetId === true ? undefined : Math.max(0, Math.round(targetId)),
     attackDepth,
+    unhittableTime: unhittableTime === true ? undefined : unhittableTime,
     redirectPlayerIdExpression: redirectPlayerIdExpression === undefined ? undefined : redirectPlayerIdExpression,
   });
   return operation as ReversalDefControllerOp;
@@ -1809,57 +2291,192 @@ function compileHitDefControllerOp(
   controller: MugenStateController,
   context: ControllerCompileContext,
 ): HitDefControllerOp | undefined {
-  const damage = numberPair(findParam(controller, "damage"));
-  const groundVelocity = hitDefVelocity(findParam(controller, "ground.velocity"));
+  const damageValue = optionalIntegerExpressionPairParam(controller, "damage");
+  const damageExpressions = Array.isArray(damageValue) && damageValue.some((value) => typeof value === "string")
+    ? damageValue
+    : undefined;
+  const damage = Array.isArray(damageValue) && damageExpressions === undefined ? damageValue : undefined;
+  const groundVelocityRaw = findParam(controller, "ground.velocity");
+  const groundVelocity = groundVelocityRaw === undefined ? undefined : strictStaticNumberVector(groundVelocityRaw);
+  const groundVelocityExpressionValue = groundVelocityRaw === undefined || groundVelocity !== undefined
+    ? true
+    : optionalFloatExpressionPairParam(controller, "ground.velocity");
+  const groundVelocityExpressions = Array.isArray(groundVelocityExpressionValue)
+    ? groundVelocityExpressionValue
+    : undefined;
   const airVelocity = hitDefVelocity(findParam(controller, "air.velocity"));
   const downVelocity = hitDefVelocity(findParam(controller, "down.velocity"));
   const guardVelocity = hitDefVelocity(findParam(controller, "guard.velocity"));
   const airGuardVelocity = hitDefVelocity(findParam(controller, "airguard.velocity"));
-  const p2StateNo = firstNumber(findParam(controller, "p2stateno"));
+  const p1StateNo = optionalIntegerExpressionParam(controller, "p1stateno");
+  const p2StateNo = optionalIntegerExpressionParam(controller, "p2stateno");
+  const p2GetP1State = optionalIntegerExpressionParam(controller, "p2getp1state");
+  const id = optionalIntegerExpressionParam(controller, "id");
+  const chainId = optionalIntegerExpressionParam(controller, "chainid");
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   if (redirectPlayerIdExpression === "invalid") return undefined;
+  const xAccel = optionalScalarNumberOrExpression(controller, "xaccel");
+  const yAccel = optionalScalarNumberOrExpression(controller, "yaccel");
+  const zAccel = optionalScalarNumberOrExpression(controller, "zaccel");
+  const standFriction = optionalScalarNumberOrExpression(controller, "stand.friction");
+  const crouchFriction = optionalScalarNumberOrExpression(controller, "crouch.friction");
+  const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
+  const guardSparkScale = optionalFloatExpressionPairParam(controller, "guard.sparkscale");
+  const paletteFx = optionalHitDefPaletteFxParam(controller);
+  const envShake = optionalHitDefEnvShakeParam(controller);
+  const fallEnvShake = optionalHitDefEnvShakeParam(controller, "fall.envshake");
+  const fallImpact = optionalHitDefFallImpactParam(controller);
+  const fallRecovery = optionalHitDefFallRecoveryParam(controller);
+  const fallFlags = optionalHitDefFallFlagsParam(controller);
+  const lethalFlags = optionalHitDefLethalFlagsParam(controller);
+  const downBounceExpression = optionalIntegerExpressionParam(controller, "down.bounce");
+  const forceStand = optionalIntegerExpressionParam(controller, "forcestand");
+  const forceCrouch = optionalIntegerExpressionParam(controller, "forcecrouch");
+  const forceNoFall = optionalIntegerExpressionParam(controller, "forcenofall");
+  const groundHitTime = optionalIntegerExpressionParam(controller, "ground.hittime");
+  const groundSlideTime = optionalIntegerExpressionParam(controller, "ground.slidetime");
+  const airHitTime = optionalIntegerExpressionParam(controller, "air.hittime");
+  const guardDistance = optionalIntegerExpressionParam(controller, "guard.dist");
+  const guardHitTime = optionalIntegerExpressionParam(controller, "guard.hittime");
+  const guardSlideTime = optionalIntegerExpressionParam(controller, "guard.slidetime");
+  const guardControlTime = optionalIntegerExpressionParam(controller, "guard.ctrltime");
+  const airGuardControlTime = optionalIntegerExpressionParam(controller, "airguard.ctrltime");
+  const airJuggleExpression = optionalIntegerExpressionParam(controller, "air.juggle");
+  const hitCountExpression = optionalIntegerExpressionParam(controller, "numhits");
+  const getPower = optionalIntegerExpressionPairParam(controller, "getpower");
+  const givePower = optionalIntegerExpressionPairParam(controller, "givepower");
+  const p1Facing = optionalIntegerExpressionParam(controller, "p1facing");
+  const p1GetP2Facing = optionalIntegerExpressionParam(controller, "p1getp2facing");
+  const p2Facing = optionalIntegerExpressionParam(controller, "p2facing");
+  const p1SpritePriorityKey = findParam(controller, "p1sprpriority") === undefined ? "sprpriority" : "p1sprpriority";
+  const p1SpritePriorityValue = optionalIntegerExpressionParam(controller, p1SpritePriorityKey);
+  const p2SpritePriorityValue = optionalIntegerExpressionParam(controller, "p2sprpriority");
+  const priorityValue = optionalHitDefPriorityParam(controller);
+  const pauseTimeValue = optionalIntegerExpressionPairParam(controller, "pausetime");
+  const pauseTimeExpressions = Array.isArray(pauseTimeValue) && pauseTimeValue.some((value) => typeof value === "string")
+    ? pauseTimeValue
+    : undefined;
+  const pauseTime = Array.isArray(pauseTimeValue) && pauseTimeExpressions === undefined ? pauseTimeValue : undefined;
+  const guardPauseTimeValue = optionalIntegerExpressionPairParam(controller, "guard.pausetime");
+  const guardPauseTimeExpressions = Array.isArray(guardPauseTimeValue) && guardPauseTimeValue.some((value) => typeof value === "string")
+    ? guardPauseTimeValue
+    : undefined;
+  const guardPauseTime = Array.isArray(guardPauseTimeValue) && guardPauseTimeExpressions === undefined
+    ? guardPauseTimeValue
+    : undefined;
+  const noChainIds = optionalIntegerExpressionListParam(controller, "nochainid", 8);
+  if (
+    noChainIds === false ||
+    damageValue === false ||
+    groundVelocityExpressionValue === false ||
+    hitSparkScale === false ||
+    guardSparkScale === false ||
+    paletteFx === false ||
+    envShake === false ||
+    fallEnvShake === false ||
+    fallImpact === false ||
+    fallRecovery === false ||
+    fallFlags === false ||
+    lethalFlags === false ||
+    downBounceExpression === false ||
+    forceStand === false ||
+    forceCrouch === false ||
+    forceNoFall === false ||
+    groundHitTime === false ||
+    groundSlideTime === false ||
+    airHitTime === false ||
+    guardDistance === false ||
+    guardHitTime === false ||
+    guardSlideTime === false ||
+    guardControlTime === false ||
+    airGuardControlTime === false ||
+    airJuggleExpression === false ||
+    hitCountExpression === false ||
+    getPower === false ||
+    givePower === false ||
+    p1Facing === false ||
+    p1GetP2Facing === false ||
+    p2Facing === false ||
+    p1StateNo === false ||
+    p2StateNo === false ||
+    p2GetP1State === false ||
+    id === false ||
+    chainId === false ||
+    p1SpritePriorityValue === false ||
+    p2SpritePriorityValue === false ||
+    priorityValue === false
+    || pauseTimeValue === false
+    || guardPauseTimeValue === false
+  ) return undefined;
+  const unhittableTime = optionalIntegerExpressionPairParam(controller, "unhittabletime");
+  if (unhittableTime === false) return undefined;
+  const koVelocityAdd = hitDefVelocity(findParam(controller, "ko.velocity.add"));
   return definedObject({
     kind: "hitdef" as const,
     ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
-    id: firstNumber(findParam(controller, "id")),
-    chainId: firstNumber(findParam(controller, "chainid")),
+    ...(id === true ? {} : { id: typeof id === "number" ? Math.max(0, id) : id }),
+    ...(chainId === true ? {} : { chainId }),
+    noChainIds: Array.isArray(noChainIds) ? noChainIds : undefined,
     hitCount: firstNumber(findParam(controller, "numhits")),
+    ...(typeof hitCountExpression === "string" ? { hitCountExpression } : {}),
     attr: stripMugenString(findParam(controller, "attr")),
     hitFlag: stripMugenString(findParam(controller, "hitflag")),
     affectTeam: normalizeMugenAffectTeam(findParam(controller, "affectteam")),
     teamSide: normalizeMugenTeamSide(firstNumber(findParam(controller, "teamside"))),
     p2ClsnCheck: normalizeMugenCollisionBoxType(findParam(controller, "p2clsncheck")),
     p2ClsnRequire: normalizeMugenCollisionBoxType(findParam(controller, "p2clsnrequire")),
-    damage: damage?.[0],
-    guardDamage: damage?.[1],
+    damage: damage?.[0] as number | undefined,
+    guardDamage: damage?.[1] as number | undefined,
+    ...(damageExpressions === undefined ? {} : { damageExpressions }),
     redLife: firstNumber(findParam(controller, "redlife")),
     guardRedLife: secondNumber(findParam(controller, "redlife")),
+    guardPower: secondNumber(findParam(controller, "givepower")),
+    hitPower: firstNumber(findParam(controller, "givepower")),
+    ...(givePower === true ? {} : { givePower }),
+    score: firstNumber(findParam(controller, "score")),
+    ...(getPower === true ? {} : { getPower }),
     guardPoints: firstNumber(findParam(controller, "guardpoints")),
     dizzyPoints: firstNumber(findParam(controller, "dizzypoints")),
     kill: booleanNumber(findParam(controller, "kill")),
+    keepState: booleanNumber(findParam(controller, "keepstate")),
     guardKill: booleanNumber(findParam(controller, "guard.kill")),
     hitOnce: booleanNumber(findParam(controller, "hitonce")),
     airJuggle: firstNumber(findParam(controller, "air.juggle")),
-    priority: firstNumber(findParam(controller, "priority")),
-    priorityType: hitDefPriorityType(findParam(controller, "priority")),
-    p1SpritePriority: firstNumber(findParam(controller, "p1sprpriority")),
-    p2SpritePriority: firstNumber(findParam(controller, "p2sprpriority")),
+    ...(typeof airJuggleExpression === "string" ? { airJuggleExpression } : {}),
+    priority: typeof priorityValue === "object" && typeof priorityValue.priority === "number" ? priorityValue.priority : undefined,
+    ...(typeof priorityValue === "object" && typeof priorityValue.priority === "string" ? { priorityExpression: priorityValue.priority } : {}),
+    priorityType: typeof priorityValue === "object" ? priorityValue.priorityType : undefined,
+    p1SpritePriority: typeof p1SpritePriorityValue === "number" ? p1SpritePriorityValue : undefined,
+    p2SpritePriority: typeof p2SpritePriorityValue === "number" ? p2SpritePriorityValue : undefined,
+    ...(typeof p1SpritePriorityValue === "string" ? { p1SpritePriorityExpression: p1SpritePriorityValue } : {}),
+    ...(typeof p2SpritePriorityValue === "string" ? { p2SpritePriorityExpression: p2SpritePriorityValue } : {}),
     attackDepth: normalizedNumberPair(findParam(controller, "attack.depth")),
-    pauseTime: firstNumber(findParam(controller, "pausetime")),
-    groundHitTime: firstNumber(findParam(controller, "ground.hittime")),
-    airHitTime: firstNumber(findParam(controller, "air.hittime")),
+    unhittableTime: unhittableTime === true ? undefined : unhittableTime,
+    pauseTime: pauseTime?.[0] as number | undefined,
+    hitShakeTime: pauseTime === undefined ? undefined : (pauseTime[1] as number | undefined) ?? 0,
+    ...(pauseTimeExpressions === undefined ? {} : { pauseTimeExpressions }),
+    ...(groundHitTime === true ? {} : { groundHitTime }),
+    ...(groundSlideTime === true ? {} : { groundSlideTime }),
+    ...(airHitTime === true ? {} : { airHitTime }),
     downHitTime: firstNumber(findParam(controller, "down.hittime")),
     downBounce: booleanNumber(findParam(controller, "down.bounce")),
+    ...(typeof downBounceExpression === "string" ? { downBounceExpression } : {}),
+    ...(forceStand === true ? {} : { forceStand }),
+    ...(forceCrouch === true ? {} : { forceCrouch }),
+    ...(forceNoFall === true ? {} : { forceNoFall }),
     groundVelocity,
+    ...(groundVelocityExpressions === undefined ? {} : { groundVelocityExpressions }),
     airVelocity,
     downVelocity,
-    guardDistance: firstNumber(findParam(controller, "guard.dist")),
+    ...(guardDistance === true ? {} : { guardDistance }),
     guardFlag: stripMugenString(findParam(controller, "guardflag")),
-    guardPauseTime: firstNumber(findParam(controller, "guard.pausetime")),
-    guardHitTime: firstNumber(findParam(controller, "guard.hittime")),
-    guardSlideTime: firstNumber(findParam(controller, "guard.slidetime")),
-    guardControlTime: firstNumber(findParam(controller, "guard.ctrltime")),
-    airGuardControlTime: firstNumber(findParam(controller, "airguard.ctrltime")),
+    guardPauseTime: guardPauseTime?.[0] as number | undefined,
+    guardShakeTime: guardPauseTime === undefined ? undefined : (guardPauseTime[1] as number | undefined) ?? 0,
+    ...(guardPauseTimeExpressions === undefined ? {} : { guardPauseTimeExpressions }),
+    ...(guardHitTime === true ? {} : { guardHitTime }),
+    ...(guardSlideTime === true ? {} : { guardSlideTime }),
+    ...(guardControlTime === true ? {} : { guardControlTime }),
+    ...(airGuardControlTime === true ? {} : { airGuardControlTime }),
     guardVelocity,
     airGuardVelocity,
     groundCornerPush: firstNumber(findParam(controller, "ground.cornerpush.veloff")),
@@ -1867,16 +2484,34 @@ function compileHitDefControllerOp(
     downCornerPush: firstNumber(findParam(controller, "down.cornerpush.veloff")),
     guardCornerPush: firstNumber(findParam(controller, "guard.cornerpush.veloff")),
     airGuardCornerPush: firstNumber(findParam(controller, "airguard.cornerpush.veloff")),
-    p1StateNo: firstNumber(findParam(controller, "p1stateno")),
-    p2StateNo,
-    p2GetP1State: p2StateNo !== undefined ? (firstNumber(findParam(controller, "p2getp1state")) ?? 1) !== 0 : undefined,
+    ...(p1StateNo === true ? {} : { p1StateNo }),
+    ...(p2StateNo === true ? {} : { p2StateNo }),
+    ...(p2GetP1State === true ? {} : { p2GetP1State }),
+    ...(p1Facing === true ? {} : { p1Facing }),
+    ...(p1GetP2Facing === true ? {} : { p1GetP2Facing }),
+    ...(p2Facing === true ? {} : { p2Facing }),
     missOnOverride: booleanNumber(findParam(controller, "missonoverride")),
     ignoreReversalDef: booleanNumber(findParam(controller, "ignorereversaldef")),
     snap: numberPair(findParam(controller, "snap")),
     animType: hitAnimType(findParam(controller, "animtype")),
+    airAnimType: hitAnimType(findParam(controller, "air.animtype")),
     groundType: hitType(findParam(controller, "ground.type") ?? findParam(controller, "type")),
     airType: hitType(findParam(controller, "air.type")),
-    yAccel: firstNumber(findParam(controller, "yaccel")),
+    ...(xAccel === true || xAccel === false ? {} : { xAccel }),
+    ...(yAccel === true || yAccel === false ? {} : { yAccel }),
+    ...(zAccel === true || zAccel === false ? {} : { zAccel }),
+    ...(standFriction === true || standFriction === false ? {} : { standFriction }),
+    ...(crouchFriction === true || crouchFriction === false ? {} : { crouchFriction }),
+    ...(hitSparkScale === true ? {} : { hitSparkScale }),
+    ...(guardSparkScale === true ? {} : { guardSparkScale }),
+    ...(paletteFx === true ? {} : { paletteFx }),
+    ...(envShake === true ? {} : { envShake }),
+    ...(fallEnvShake === true ? {} : { fallEnvShake }),
+    ...(fallImpact === true ? {} : { fallImpact }),
+    ...(fallRecovery === true ? {} : { fallRecovery }),
+    ...(fallFlags === true ? {} : { fallFlags }),
+    ...(lethalFlags === true ? {} : { lethalFlags }),
+    ...(koVelocityAdd === undefined ? {} : { koVelocityAdd }),
     fallAnimType: hitAnimType(findParam(controller, "fall.animtype")),
     hitSound: stripMugenString(findParam(controller, "hitsound")),
     guardSound: stripMugenString(findParam(controller, "guardsound")),
@@ -1892,13 +2527,63 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "type",
     "redirectid",
     "damage",
+    "ground.hittime",
+    "ground.slidetime",
+    "guard.hittime",
+    "guard.slidetime",
+    "guard.ctrltime",
     "air.hittime",
+    "guard.dist",
     "down.hittime",
+    "ground.velocity",
+    "air.velocity",
     "down.velocity",
     "down.bounce",
+    "forcestand",
+    "forcecrouch",
+    "forcenofall",
     "airguard.ctrltime",
+    "guard.velocity",
+    "airguard.velocity",
+    "xaccel",
+    "yaccel",
+    "zaccel",
+    "stand.friction",
+    "crouch.friction",
+    "sparkscale",
+    "guard.sparkscale",
+    "palfx.time",
+    "palfx.add",
+    "palfx.mul",
+    "palfx.color",
+    "palfx.invertall",
+    "envshake.time",
+    "envshake.freq",
+    "envshake.ampl",
+    "envshake.phase",
+    "envshake.mul",
+    "envshake.dir",
+    "fall.envshake.time",
+    "fall.envshake.freq",
+    "fall.envshake.ampl",
+    "fall.envshake.phase",
+    "fall.envshake.mul",
+    "fall.envshake.dir",
+    "fall.damage",
+    "fall.xvelocity",
+    "fall.yvelocity",
+    "fall.zvelocity",
+    "fall",
+    "air.fall",
+    "fall.recover",
+    "fall.recovertime",
+    "down.recover",
+    "down.recovertime",
+    "getpower",
+    "givepower",
     "id",
     "chainid",
+    "nochainid",
     "numhits",
     "attr",
     "guardflag",
@@ -1906,89 +2591,212 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "p1stateno",
     "p2stateno",
     "p2getp1state",
+    "p1facing",
+    "p1getp2facing",
+    "p2facing",
     "p1sprpriority",
+    "sprpriority",
     "p2sprpriority",
     "priority",
     "kill",
     "guard.kill",
     "fall.kill",
     "hitonce",
+    "unhittabletime",
   ]);
   if (Object.keys(controller.params).some((key) => !allowedParams.has(key.toLowerCase()))) {
     return undefined;
   }
-  const damageRaw = findParam(controller, "damage");
-  const damage = damageRaw === undefined ? undefined : strictNumberPair(damageRaw);
-  const damageParts = damageRaw?.split(",").map((part) => part.trim());
-  const airHitTime = staticOptionalStrictNumberParam(controller, "air.hittime");
+  const damageValue = optionalIntegerExpressionPairParam(controller, "damage");
+  const damageExpressions = Array.isArray(damageValue) && damageValue.some((value) => typeof value === "string")
+    ? damageValue
+    : undefined;
+  const damage = Array.isArray(damageValue) && damageExpressions === undefined ? damageValue : undefined;
+  const groundHitTime = optionalIntegerExpressionParam(controller, "ground.hittime");
+  const groundSlideTime = optionalIntegerExpressionParam(controller, "ground.slidetime");
+  const guardHitTime = optionalIntegerExpressionParam(controller, "guard.hittime");
+  const guardSlideTime = optionalIntegerExpressionParam(controller, "guard.slidetime");
+  const guardControlTime = optionalIntegerExpressionParam(controller, "guard.ctrltime");
+  const airHitTime = optionalIntegerExpressionParam(controller, "air.hittime");
+  const guardDistance = optionalIntegerExpressionParam(controller, "guard.dist");
   const downHitTime = staticOptionalStrictNumberParam(controller, "down.hittime");
-  const downVelocity = staticOptionalStrictNumberPairParam(controller, "down.velocity");
-  const downBounce = staticOptionalHitDefBooleanParam(controller, "down.bounce");
-  const airGuardControlTime = staticOptionalStrictNumberParam(controller, "airguard.ctrltime");
-  const id = staticOptionalHitIdParam(controller, "id");
-  const chainId = staticOptionalIntegerParam(controller, "chainid");
-  const hitCount = staticOptionalHitCountParam(controller, "numhits");
+  const groundVelocityValue = optionalModifyHitDefGroundVelocityParam(controller);
+  const groundVelocity = typeof groundVelocityValue === "object" ? groundVelocityValue.xy : undefined;
+  const groundVelocityZ = typeof groundVelocityValue === "object" && groundVelocityValue.z !== undefined
+    ? groundVelocityValue.z
+    : true;
+  const airVelocityZ = staticOptionalStrictVectorZParam(controller, "air.velocity");
+  const downVelocity = staticOptionalStrictHitDefVectorParam(controller, "down.velocity");
+  const downBounceValue = optionalIntegerExpressionParam(controller, "down.bounce");
+  const downBounce = typeof downBounceValue === "number" ? downBounceValue !== 0 : undefined;
+  const downBounceExpression = typeof downBounceValue === "string" ? downBounceValue : undefined;
+  const forceStand = optionalIntegerExpressionParam(controller, "forcestand");
+  const forceCrouch = optionalIntegerExpressionParam(controller, "forcecrouch");
+  const forceNoFall = optionalIntegerExpressionParam(controller, "forcenofall");
+  const airGuardControlTime = optionalIntegerExpressionParam(controller, "airguard.ctrltime");
+  const guardVelocityZ = staticOptionalStrictVectorZParam(controller, "guard.velocity");
+  const airGuardVelocityZ = staticOptionalStrictVectorZParam(controller, "airguard.velocity");
+  const xAccel = optionalScalarNumberOrExpression(controller, "xaccel");
+  const yAccel = optionalScalarNumberOrExpression(controller, "yaccel");
+  const zAccel = optionalScalarNumberOrExpression(controller, "zaccel");
+  const standFriction = optionalScalarNumberOrExpression(controller, "stand.friction");
+  const crouchFriction = optionalScalarNumberOrExpression(controller, "crouch.friction");
+  const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
+  const guardSparkScale = optionalFloatExpressionPairParam(controller, "guard.sparkscale");
+  const paletteFx = optionalHitDefPaletteFxParam(controller);
+  const envShake = optionalHitDefEnvShakeParam(controller);
+  const fallEnvShake = optionalHitDefEnvShakeParam(controller, "fall.envshake");
+  const fallImpact = optionalHitDefFallImpactParam(controller);
+  const fallRecovery = optionalHitDefFallRecoveryParam(controller);
+  const fallFlags = optionalHitDefFallFlagsParam(controller);
+  const lethalFlags = optionalHitDefLethalFlagsParam(controller);
+  const getPower = optionalIntegerExpressionPairParam(controller, "getpower");
+  const givePower = optionalIntegerExpressionPairParam(controller, "givepower");
+  const id = optionalIntegerExpressionParam(controller, "id");
+  const chainId = optionalIntegerExpressionParam(controller, "chainid");
+  const noChainIds = optionalIntegerExpressionListParam(controller, "nochainid", 8);
+  const hitCountValue = optionalIntegerExpressionParam(controller, "numhits");
+  const hitCount = typeof hitCountValue === "number" ? hitCountValue : undefined;
+  const hitCountExpression = typeof hitCountValue === "string" ? hitCountValue : undefined;
   const attr = staticOptionalHitAttributeParam(controller, "attr");
   const guardFlag = staticOptionalGuardFlagParam(controller, "guardflag");
   const hitFlag = staticOptionalHitFlagParam(controller, "hitflag");
   const p1StateNo = staticOptionalStrictNumberParam(controller, "p1stateno");
   const p2StateNo = staticOptionalStrictNumberParam(controller, "p2stateno");
   const p2GetP1State = staticOptionalStrictNumberParam(controller, "p2getp1state");
-  const p1SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p1sprpriority");
-  const p2SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p2sprpriority");
-  const priority = staticOptionalHitDefPriorityParam(controller);
-  const kill = staticOptionalHitDefBooleanParam(controller, "kill");
-  const guardKill = staticOptionalHitDefBooleanParam(controller, "guard.kill");
-  const fallKill = staticOptionalHitDefBooleanParam(controller, "fall.kill");
-  const hitOnce = staticOptionalHitDefBooleanParam(controller, "hitonce");
+  const p1Facing = optionalIntegerExpressionParam(controller, "p1facing");
+  const p1GetP2Facing = optionalIntegerExpressionParam(controller, "p1getp2facing");
+  const p2Facing = optionalIntegerExpressionParam(controller, "p2facing");
+  const p1SpritePriorityKey = findParam(controller, "p1sprpriority") === undefined ? "sprpriority" : "p1sprpriority";
+  const p1SpritePriorityValue = optionalIntegerExpressionParam(controller, p1SpritePriorityKey);
+  const p2SpritePriorityValue = optionalIntegerExpressionParam(controller, "p2sprpriority");
+  const p1SpritePriority = typeof p1SpritePriorityValue === "number" ? p1SpritePriorityValue : undefined;
+  const p2SpritePriority = typeof p2SpritePriorityValue === "number" ? p2SpritePriorityValue : undefined;
+  const p1SpritePriorityExpression = typeof p1SpritePriorityValue === "string" ? p1SpritePriorityValue : undefined;
+  const p2SpritePriorityExpression = typeof p2SpritePriorityValue === "string" ? p2SpritePriorityValue : undefined;
+  const priority = optionalHitDefPriorityParam(controller);
+  const staticKill = strictNumberSingle(findParam(controller, "kill"));
+  const kill = staticKill === undefined ? undefined : staticKill !== 0;
+  const staticGuardKill = strictNumberSingle(findParam(controller, "guard.kill"));
+  const guardKill = staticGuardKill === undefined ? undefined : staticGuardKill !== 0;
+  const staticFallKill = strictNumberSingle(findParam(controller, "fall.kill"));
+  const fallKill = staticFallKill === undefined ? undefined : staticFallKill !== 0;
+  const staticHitOnce = strictNumberSingle(findParam(controller, "hitonce"));
+  const hitOnce = staticHitOnce === undefined ? undefined : staticHitOnce !== 0;
+  const unhittableTime = optionalIntegerExpressionPairParam(controller, "unhittabletime");
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   const hasPayload =
-    damage !== undefined ||
+    damageValue !== true ||
+    groundHitTime !== true ||
+    groundSlideTime !== true ||
+    guardHitTime !== true ||
+    guardSlideTime !== true ||
+    guardControlTime !== true ||
     airHitTime !== true ||
+    guardDistance !== true ||
     downHitTime !== true ||
+    groundVelocityValue !== true ||
+    groundVelocityZ !== true ||
+    airVelocityZ !== true ||
     downVelocity !== true ||
-    downBounce !== undefined ||
+    downBounceValue !== true ||
+    forceStand !== true ||
+    forceCrouch !== true ||
+    forceNoFall !== true ||
     airGuardControlTime !== true ||
+    guardVelocityZ !== true ||
+    airGuardVelocityZ !== true ||
+    xAccel !== true ||
+    yAccel !== true ||
+    zAccel !== true ||
+    standFriction !== true ||
+    crouchFriction !== true ||
+    hitSparkScale !== true ||
+    guardSparkScale !== true ||
+    paletteFx !== true ||
+    envShake !== true ||
+    fallEnvShake !== true ||
+    fallImpact !== true ||
+    fallRecovery !== true ||
+    fallFlags !== true ||
+    lethalFlags !== true ||
+    getPower !== true ||
+    givePower !== true ||
     id !== true ||
     chainId !== true ||
-    hitCount !== true ||
+    noChainIds !== true ||
+    hitCountValue !== true ||
     attr !== true ||
     guardFlag !== true ||
     hitFlag !== true ||
     p1StateNo !== true ||
     p2StateNo !== true ||
     p2GetP1State !== true ||
-    p1SpritePriority !== true ||
-    p2SpritePriority !== true ||
+    p1Facing !== true ||
+    p1GetP2Facing !== true ||
+    p2Facing !== true ||
+    p1SpritePriorityValue !== true ||
+    p2SpritePriorityValue !== true ||
     priority !== true ||
     kill !== undefined ||
     guardKill !== undefined ||
     fallKill !== undefined ||
-    hitOnce !== undefined;
+    hitOnce !== undefined ||
+    unhittableTime !== true;
   if (
     !hasPayload ||
-    (damageRaw !== undefined && (!damage || !damageParts || damageParts.length > 2 || damageParts.some((part) => part.length === 0))) ||
+    damageValue === false ||
+    groundHitTime === false ||
+    groundSlideTime === false ||
+    guardHitTime === false ||
+    guardSlideTime === false ||
+    guardControlTime === false ||
     airHitTime === false ||
+    guardDistance === false ||
     downHitTime === false ||
+    groundVelocityValue === false ||
+    airVelocityZ === false ||
     downVelocity === false ||
-    downBounce === "invalid" ||
+    downBounceValue === false ||
+    forceStand === false ||
+    forceCrouch === false ||
+    forceNoFall === false ||
     airGuardControlTime === false ||
+    guardVelocityZ === false ||
+    airGuardVelocityZ === false ||
+    xAccel === false ||
+    yAccel === false ||
+    zAccel === false ||
+    standFriction === false ||
+    crouchFriction === false ||
+    hitSparkScale === false ||
+    guardSparkScale === false ||
+    paletteFx === false ||
+    envShake === false ||
+    fallEnvShake === false ||
+    fallImpact === false ||
+    fallRecovery === false ||
+    fallFlags === false ||
+    lethalFlags === false ||
+    getPower === false ||
+    givePower === false ||
     id === false ||
     chainId === false ||
-    hitCount === false ||
+    noChainIds === false ||
+    hitCountValue === false ||
     attr === false ||
     guardFlag === false ||
     hitFlag === false ||
     p1StateNo === false ||
     p2StateNo === false ||
     p2GetP1State === false ||
-    p1SpritePriority === false ||
-    p2SpritePriority === false ||
+    p1Facing === false ||
+    p1GetP2Facing === false ||
+    p2Facing === false ||
+    p1SpritePriorityValue === false ||
+    p2SpritePriorityValue === false ||
     priority === false ||
-    kill === "invalid" ||
-    guardKill === "invalid" ||
-    fallKill === "invalid" ||
-    hitOnce === "invalid" ||
+    unhittableTime === false ||
     redirectPlayerIdExpression === undefined ||
     redirectPlayerIdExpression === "invalid"
   ) {
@@ -2000,29 +2808,71 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   return {
     kind: "modifyhitdef",
     redirectPlayerIdExpression,
-    ...(damage === undefined ? {} : { damage: damage[0] }),
-    ...(damage?.[1] === undefined ? {} : { guardDamage: damage[1] }),
+    ...(damage === undefined ? {} : { damage: damage[0] as number }),
+    ...(damage?.[1] === undefined ? {} : { guardDamage: damage[1] as number }),
+    ...(damageExpressions === undefined ? {} : { damageExpressions }),
+    ...(groundHitTime === true ? {} : { groundHitTime }),
+    ...(groundSlideTime === true ? {} : { groundSlideTime }),
+    ...(guardHitTime === true ? {} : { guardHitTime }),
+    ...(guardSlideTime === true ? {} : { guardSlideTime }),
+    ...(guardControlTime === true ? {} : { guardControlTime }),
     ...(airHitTime === true ? {} : { airHitTime }),
+    ...(guardDistance === true ? {} : { guardDistance }),
     ...(downHitTime === true ? {} : { downHitTime }),
+    ...(groundVelocity === undefined ? {} : { groundVelocity }),
+    ...(groundVelocityZ === true ? {} : { groundVelocityZ }),
+    ...(airVelocityZ === true ? {} : { airVelocityZ }),
     ...(downVelocity === true ? {} : { downVelocity }),
     ...(downBounce === undefined ? {} : { downBounce }),
+    ...(downBounceExpression === undefined ? {} : { downBounceExpression }),
+    ...(forceStand === true ? {} : { forceStand }),
+    ...(forceCrouch === true ? {} : { forceCrouch }),
+    ...(forceNoFall === true ? {} : { forceNoFall }),
     ...(airGuardControlTime === true ? {} : { airGuardControlTime }),
-    ...(id === true ? {} : { id }),
+    ...(guardVelocityZ === true ? {} : { guardVelocityZ }),
+    ...(airGuardVelocityZ === true ? {} : { airGuardVelocityZ }),
+    ...(xAccel === true ? {} : { xAccel }),
+    ...(yAccel === true ? {} : { yAccel }),
+    ...(zAccel === true ? {} : { zAccel }),
+    ...(standFriction === true ? {} : { standFriction }),
+    ...(crouchFriction === true ? {} : { crouchFriction }),
+    ...(hitSparkScale === true ? {} : { hitSparkScale }),
+    ...(guardSparkScale === true ? {} : { guardSparkScale }),
+    ...(paletteFx === true ? {} : { paletteFx }),
+    ...(envShake === true ? {} : { envShake }),
+    ...(fallEnvShake === true ? {} : { fallEnvShake }),
+    ...(fallImpact === true ? {} : { fallImpact }),
+    ...(fallRecovery === true ? {} : { fallRecovery }),
+    ...(fallFlags === true ? {} : { fallFlags }),
+    ...(lethalFlags === true ? {} : { lethalFlags }),
+    ...(getPower === true ? {} : { getPower }),
+    ...(givePower === true ? {} : { givePower }),
+    ...(id === true ? {} : { id: typeof id === "number" ? Math.max(0, id) : id }),
     ...(chainId === true ? {} : { chainId }),
-    ...(hitCount === true ? {} : { hitCount }),
+    ...(Array.isArray(noChainIds) ? { noChainIds } : {}),
+    ...(hitCount === undefined ? {} : { hitCount }),
+    ...(hitCountExpression === undefined ? {} : { hitCountExpression }),
     ...(attr === true ? {} : { attr }),
     ...(guardFlag === true ? {} : { guardFlag }),
     ...(hitFlag === true ? {} : { hitFlag }),
     ...(normalizedP1StateNo === undefined ? {} : { p1StateNo: normalizedP1StateNo }),
     ...(normalizedP2StateNo === undefined ? {} : { p2StateNo: normalizedP2StateNo }),
     ...(normalizedP2GetP1State === undefined ? {} : { p2GetP1State: normalizedP2GetP1State }),
-    ...(p1SpritePriority === true ? {} : { p1SpritePriority }),
-    ...(p2SpritePriority === true ? {} : { p2SpritePriority }),
-    ...(typeof priority === "object" ? priority : {}),
+    ...(p1Facing === true ? {} : { p1Facing }),
+    ...(p1GetP2Facing === true ? {} : { p1GetP2Facing }),
+    ...(p2Facing === true ? {} : { p2Facing }),
+    ...(p1SpritePriority === undefined ? {} : { p1SpritePriority }),
+    ...(p2SpritePriority === undefined ? {} : { p2SpritePriority }),
+    ...(p1SpritePriorityExpression === undefined ? {} : { p1SpritePriorityExpression }),
+    ...(p2SpritePriorityExpression === undefined ? {} : { p2SpritePriorityExpression }),
+    ...(typeof priority === "object" && typeof priority.priority === "number" ? { priority: priority.priority } : {}),
+    ...(typeof priority === "object" && typeof priority.priority === "string" ? { priorityExpression: priority.priority } : {}),
+    ...(typeof priority === "object" ? { priorityType: priority.priorityType } : {}),
     ...(kill === undefined ? {} : { kill }),
     ...(guardKill === undefined ? {} : { guardKill }),
     ...(fallKill === undefined ? {} : { fallKill }),
     ...(hitOnce === undefined ? {} : { hitOnce }),
+    ...(unhittableTime === true ? {} : { unhittableTime }),
   };
 }
 
@@ -2174,6 +3024,8 @@ function compileHitDefFallOp(controller: MugenStateController): HitDefFallOp {
     envShakeFrequency: firstNumber(findParam(controller, "fall.envshake.freq")),
     envShakeAmplitude: firstNumber(findParam(controller, "fall.envshake.ampl")),
     envShakePhase: firstNumber(findParam(controller, "fall.envshake.phase")),
+    envShakeMultiplier: firstNumber(findParam(controller, "fall.envshake.mul")),
+    envShakeDirection: firstNumber(findParam(controller, "fall.envshake.dir")),
   });
 }
 
@@ -2449,14 +3301,41 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (redirectPlayerIdExpression === "invalid") {
     return undefined;
   }
+  const unhittableTime = optionalIntegerExpressionPairParam(controller, "unhittabletime");
+  if (unhittableTime === false) return undefined;
+  const getPower = optionalIntegerExpressionPairParam(controller, "getpower");
+  if (getPower === false) return undefined;
+  const givePower = optionalIntegerExpressionPairParam(controller, "givepower");
+  if (givePower === false) return undefined;
+  const standFriction = optionalScalarNumberOrExpression(controller, "stand.friction");
+  const crouchFriction = optionalScalarNumberOrExpression(controller, "crouch.friction");
+  const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
+  const guardSparkScale = optionalFloatExpressionPairParam(controller, "guard.sparkscale");
+  const paletteFx = optionalHitDefPaletteFxParam(controller);
+  if (
+    standFriction === false ||
+    crouchFriction === false ||
+    hitSparkScale === false ||
+    guardSparkScale === false ||
+    paletteFx === false
+  ) return undefined;
   const fall = compileHitDefFallOp(controller);
+  const redLifeRaw = findParam(controller, "redlife");
+  const redLife = redLifeRaw === undefined ? undefined : strictStaticNumberPair(redLifeRaw);
+  const scoreRaw = findParam(controller, "score");
+  const score = scoreRaw === undefined ? undefined : strictStaticNumberPair(scoreRaw);
+  const pauseTimeRaw = findParam(controller, "pausetime");
+  const guardPauseTimeRaw = findParam(controller, "guard.pausetime");
+  const guardDistanceBounds = staticProjectileGuardDistanceBounds(controller);
   return definedObject({
     kind: "projectile" as const,
     ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
     projectileId: firstNumber(findParam(controller, "projid") ?? findParam(controller, "id")),
     targetId: firstNumber(findParam(controller, "id")),
     chainId: firstNumber(findParam(controller, "chainid")),
+    noChainIds: staticIntegerList(findParam(controller, "nochainid"), 8),
     hitDefHitCount: firstNumber(findParam(controller, "numhits")),
+    p1StateNo: firstNumber(findParam(controller, "p1stateno")),
     affectTeam: normalizeMugenAffectTeam(findParam(controller, "affectteam")),
     teamSide: normalizeMugenTeamSide(firstNumber(findParam(controller, "teamside"))),
     projAnim: firstNumber(findParam(controller, "projanim") ?? findParam(controller, "anim")),
@@ -2464,11 +3343,28 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     pos: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "pos"))),
     postype: stripMugenString(findParam(controller, "postype")),
     velocity: tripleWithDefault(numberTriple(findParam(controller, "velocity") ?? findParam(controller, "vel"))),
+    removalVelocity: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "remvelocity"))),
     acceleration: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "accel"))),
-    velocityMultiplier: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "velmul"))),
+    velocityMultiplier: projectileVelocityMultiplierParam(findParam(controller, "velmul"), 1),
     scale: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "projscale") ?? findParam(controller, "scale"))),
+    angle: firstNumber(findParam(controller, "projangle")),
+    xAngle: firstNumber(findParam(controller, "projxangle")),
+    yAngle: firstNumber(findParam(controller, "projyangle")),
+    xShear: firstNumber(findParam(controller, "projxshear")),
+    shadow: numberPartialTriple(findParam(controller, "projshadow")),
+    reflection: firstNumber(findParam(controller, "projreflection")),
+    projection: projectileProjection(findParam(controller, "projprojection")),
+    focalLength: firstNumber(findParam(controller, "projfocallength")),
+    window: numberQuad(findParam(controller, "projwindow")),
+    ownPalette: booleanNumber(findParam(controller, "ownpal")),
+    paletteRemap: projectilePaletteRemap(findParam(controller, "remappal")),
+    clsnScale: projectileClsnScaleWithDefaultOrUndefined(numberPair(findParam(controller, "projclsnscale")), 1),
+    clsnAngle: firstNumber(findParam(controller, "projclsnangle")),
     facing: firstNumber(findParam(controller, "facing")),
     hitAnim: firstNumber(findParam(controller, "projhitanim")),
+    animType: hitAnimType(findParam(controller, "animtype")),
+    airAnimType: hitAnimType(findParam(controller, "air.animtype")),
+    fallAnimType: hitAnimType(findParam(controller, "fall.animtype")),
     removeAnim: firstNumber(findParam(controller, "projremanim")),
     cancelAnim: firstNumber(findParam(controller, "projcancelanim")),
     edgeBound: firstNumber(findParam(controller, "projedgebound")),
@@ -2476,25 +3372,53 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     depthBound: firstNumber(findParam(controller, "projdepthbound")),
     heightBound: projectileHeightBound(numberPair(findParam(controller, "projheightbound"))),
     removeTime: firstNumber(findParam(controller, "projremovetime") ?? findParam(controller, "removetime")) ?? -1,
-    spritePriority: firstNumber(findParam(controller, "sprpriority")) ?? 4,
-    priority: firstNumber(findParam(controller, "projpriority") ?? findParam(controller, "priority")) ?? 1,
+    layerNo: projectileLayerNo(firstNumber(findParam(controller, "projlayerno"))),
+    spritePriority: firstNumber(findParam(controller, "projsprpriority")) ?? 4,
+    hitPriority: firstNumber(findParam(controller, "priority")),
+    hitPriorityType: hitDefPriorityType(findParam(controller, "priority")),
+    p1SpritePriority: firstNumber(findParam(controller, "p1sprpriority") ?? findParam(controller, "sprpriority")),
+    p2SpritePriority: firstNumber(findParam(controller, "p2sprpriority")),
+    priority: firstNumber(findParam(controller, "projpriority")) ?? 1,
     hitCount: firstNumber(findParam(controller, "projhits")) ?? 1,
     missTime: firstNumber(findParam(controller, "projmisstime")) ?? 0,
+    pauseMoveTime: firstNumber(findParam(controller, "pausemovetime")),
+    superMoveTime: firstNumber(findParam(controller, "supermovetime")),
     trans: stripMugenString(findParam(controller, "trans")),
     damage: firstNumber(findParam(controller, "damage")) ?? 30,
+    dizzyPoints: firstNumber(findParam(controller, "dizzypoints")),
+    guardPoints: firstNumber(findParam(controller, "guardpoints")),
+    redLife: redLife?.[0],
+    guardRedLife: redLife === undefined ? undefined : redLife[1] ?? 0,
+    guardPower: secondNumber(findParam(controller, "givepower")),
+    hitPower: firstNumber(findParam(controller, "givepower")),
+    givePower: givePower === true ? undefined : givePower,
+    score: score?.[0],
+    guardScore: score === undefined ? undefined : score[1] ?? 0,
+    getPower: getPower === true ? undefined : getPower,
+    unhittableTime: unhittableTime === true ? undefined : unhittableTime,
+    ...(standFriction === true ? {} : { standFriction }),
+    ...(crouchFriction === true ? {} : { crouchFriction }),
+    ...(hitSparkScale === true ? {} : { hitSparkScale }),
+    ...(guardSparkScale === true ? {} : { guardSparkScale }),
+    ...(paletteFx === true ? {} : { paletteFx }),
     airJuggle: firstNumber(findParam(controller, "air.juggle")),
     kill: booleanNumber(findParam(controller, "kill")),
     guardKill: booleanNumber(findParam(controller, "guard.kill")),
     attr: stripMugenString(findParam(controller, "attr")),
     hitFlag: staticHitFlagParam(findParam(controller, "hitflag")),
-    hitPause: firstNumber(findParam(controller, "pausetime")) ?? 6,
+    hitPause: firstNumber(pauseTimeRaw) ?? 0,
+    hitShakeTime: pauseTimeRaw === undefined ? undefined : secondNumber(pauseTimeRaw) ?? 0,
     hitStun: firstNumber(findParam(controller, "ground.hittime")) ?? 18,
+    groundSlideTime: firstNumber(findParam(controller, "ground.slidetime")),
     airHitTime: firstNumber(findParam(controller, "air.hittime")) ?? 20,
     groundVelocity: numberTriple(findParam(controller, "ground.velocity")),
     airVelocity: numberTriple(findParam(controller, "air.velocity")),
     downHitTime: firstNumber(findParam(controller, "down.hittime")) ?? 20,
     downVelocity: numberTriple(findParam(controller, "down.velocity")),
     downBounce: booleanNumber(findParam(controller, "down.bounce")),
+    forceNoFall: booleanNumber(findParam(controller, "forcenofall")),
+    forceStand: booleanNumber(findParam(controller, "forcestand")),
+    forceCrouch: booleanNumber(findParam(controller, "forcecrouch")),
     ...(Object.keys(fall).length === 0 ? {} : { fall }),
     attackDepth: normalizedNumberPair(findParam(controller, "attack.depth")),
     p2StateNo: firstNumber(findParam(controller, "p2stateno")),
@@ -2502,19 +3426,33 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
       firstNumber(findParam(controller, "p2stateno")) !== undefined
         ? (firstNumber(findParam(controller, "p2getp1state")) ?? 1) !== 0
         : undefined,
+    p2Facing: firstNumber(findParam(controller, "p2facing")),
+    minDistance: numberPartialTriple(findParam(controller, "mindist")),
+    maxDistance: numberPartialTriple(findParam(controller, "maxdist")),
     p2ClsnCheck: normalizeMugenCollisionBoxType(findParam(controller, "p2clsncheck")),
     p2ClsnRequire: normalizeMugenCollisionBoxType(findParam(controller, "p2clsnrequire")),
     missOnOverride: booleanNumber(findParam(controller, "missonoverride")),
     guardDamage: secondNumber(findParam(controller, "damage")),
-    guardDistance: firstNumber(findParam(controller, "guard.dist")),
+    guardDistanceBounds,
     guardFlag: stripMugenString(findParam(controller, "guardflag")),
-    guardPauseTime: firstNumber(findParam(controller, "guard.pausetime")),
+    guardPauseTime: firstNumber(guardPauseTimeRaw),
+    guardShakeTime: guardPauseTimeRaw === undefined ? undefined : secondNumber(guardPauseTimeRaw) ?? 0,
     guardHitTime: firstNumber(findParam(controller, "guard.hittime")),
     guardSlideTime: firstNumber(findParam(controller, "guard.slidetime")),
     guardControlTime: firstNumber(findParam(controller, "guard.ctrltime")),
     airGuardControlTime: firstNumber(findParam(controller, "airguard.ctrltime")),
     guardVelocity: numberTriple(findParam(controller, "guard.velocity")),
     airGuardVelocity: numberTriple(findParam(controller, "airguard.velocity")),
+    xAccel: firstNumber(findParam(controller, "xaccel")),
+    yAccel: firstNumber(findParam(controller, "yaccel")),
+    zAccel: firstNumber(findParam(controller, "zaccel")),
+    envShakeTime: firstNumber(findParam(controller, "envshake.time")),
+    envShakeFrequency: firstNumber(findParam(controller, "envshake.freq")),
+    envShakeAmplitude: firstNumber(findParam(controller, "envshake.ampl")),
+    envShakePhase: firstNumber(findParam(controller, "envshake.phase")),
+    envShakeMultiplier: firstNumber(findParam(controller, "envshake.mul")),
+    envShakeDirection: firstNumber(findParam(controller, "envshake.dir")),
+    koVelocityAdd: numberTriple(findParam(controller, "ko.velocity.add")),
     groundCornerPush: firstNumber(findParam(controller, "ground.cornerpush.veloff")),
     airCornerPush: firstNumber(findParam(controller, "air.cornerpush.veloff")),
     downCornerPush: firstNumber(findParam(controller, "down.cornerpush.veloff")),
@@ -2522,8 +3460,10 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     airGuardCornerPush: firstNumber(findParam(controller, "airguard.cornerpush.veloff")),
     hitSound: stripMugenString(findParam(controller, "hitsound")),
     guardSound: stripMugenString(findParam(controller, "guardsound")),
-    hitSpark: stripMugenString(findParam(controller, "sparkno")),
-    guardSpark: stripMugenString(findParam(controller, "guard.sparkno")),
+    hitSpark: staticProjectileSparkRef(findParam(controller, "sparkno")),
+    hitSparkAngle: firstNumber(findParam(controller, "sparkangle")),
+    guardSpark: staticProjectileSparkRef(findParam(controller, "guard.sparkno")),
+    guardSparkAngle: firstNumber(findParam(controller, "guard.sparkangle")),
     sparkXy: pairWithDefaultOrUndefined(numberPair(findParam(controller, "sparkxy"))),
     removeOnHit: (firstNumber(findParam(controller, "projremove")) ?? 1) !== 0,
   });
@@ -2534,25 +3474,155 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
   if (redirectPlayerIdExpression === "invalid") {
     return undefined;
   }
+  const damageRaw = findParam(controller, "damage");
+  const damage = damageRaw === undefined ? undefined : strictStaticNumberPair(damageRaw);
+  const getPower = optionalIntegerExpressionPairParam(controller, "getpower");
+  if (getPower === false) return undefined;
+  const givePowerRaw = findParam(controller, "givepower");
+  const givePower = givePowerRaw === undefined ? undefined : strictStaticNumberPair(givePowerRaw);
+  const redLifeRaw = findParam(controller, "redlife");
+  const redLife = redLifeRaw === undefined ? undefined : strictStaticNumberPair(redLifeRaw);
+  const scoreRaw = findParam(controller, "score");
+  const score = scoreRaw === undefined ? undefined : strictStaticNumberPair(scoreRaw);
+  const attackDepthRaw = findParam(controller, "attack.depth");
+  const attackDepth = attackDepthRaw === undefined ? undefined : strictStaticNumberPair(attackDepthRaw);
+  const pauseTimeRaw = findParam(controller, "pausetime");
+  const pauseTime = pauseTimeRaw === undefined ? undefined : strictStaticNumberPair(pauseTimeRaw);
+  const guardPauseTimeRaw = findParam(controller, "guard.pausetime");
+  const guardPauseTime = guardPauseTimeRaw === undefined ? undefined : strictStaticNumberPair(guardPauseTimeRaw);
+  const guardDistanceBounds = staticProjectileGuardDistanceBounds(controller);
   return definedObject({
     kind: "modifyprojectile" as const,
     ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
-    projectileId: firstNumber(findParam(controller, "projid") ?? findParam(controller, "id")),
+    selectionId: firstNumber(findParam(controller, "id")),
+    targetId: firstNumber(findParam(controller, "id")),
+    chainId: firstNumber(findParam(controller, "chainid")),
+    noChainIds: staticIntegerList(findParam(controller, "nochainid"), 8),
+    selectionIndex: firstNumber(findParam(controller, "index")),
+    projectileId: firstNumber(findParam(controller, "projid")),
+    projAnim: firstNumber(findParam(controller, "projanim")),
+    hitAnim: firstNumber(findParam(controller, "projhitanim")),
+    removeAnim: firstNumber(findParam(controller, "projremanim")),
+    cancelAnim: firstNumber(findParam(controller, "projcancelanim")),
     teamSide: normalizeMugenTeamSide(firstNumber(findParam(controller, "teamside"))),
+    affectTeam: normalizeMugenAffectTeam(findParam(controller, "affectteam")),
+    animType: hitAnimType(findParam(controller, "animtype")),
+    airAnimType: hitAnimType(findParam(controller, "air.animtype")),
+    fallAnimType: hitAnimType(findParam(controller, "fall.animtype")),
+    kill: booleanNumber(findParam(controller, "kill")),
+    guardKill: booleanNumber(findParam(controller, "guard.kill")),
+    fallKill: booleanNumber(findParam(controller, "fall.kill")),
+    forceNoFall: booleanNumber(findParam(controller, "forcenofall")),
+    forceStand: booleanNumber(findParam(controller, "forcestand")),
+    forceCrouch: booleanNumber(findParam(controller, "forcecrouch")),
+    fallDamage: firstNumber(findParam(controller, "fall.damage")),
+    fallXVelocity: firstNumber(findParam(controller, "fall.xvelocity")),
+    fallYVelocity: firstNumber(findParam(controller, "fall.yvelocity")),
+    fallZVelocity: firstNumber(findParam(controller, "fall.zvelocity")),
+    fallRecover: booleanNumber(findParam(controller, "fall.recover")),
+    fallRecoverTime: firstNumber(findParam(controller, "fall.recovertime")),
+    downRecover: booleanNumber(findParam(controller, "down.recover")),
+    downRecoverTime: firstNumber(findParam(controller, "down.recovertime")),
+    fallEnvShakeTime: firstNumber(findParam(controller, "fall.envshake.time")),
+    fallEnvShakeFrequency: firstNumber(findParam(controller, "fall.envshake.freq")),
+    fallEnvShakeAmplitude: firstNumber(findParam(controller, "fall.envshake.ampl")),
+    fallEnvShakePhase: firstNumber(findParam(controller, "fall.envshake.phase")),
+    fallEnvShakeMultiplier: firstNumber(findParam(controller, "fall.envshake.mul")),
+    fallEnvShakeDirection: firstNumber(findParam(controller, "fall.envshake.dir")),
+    airJuggle: firstNumber(findParam(controller, "air.juggle")),
+    damage: damage?.[0],
+    guardDamage: damage === undefined ? undefined : damage[1] ?? 0,
+    dizzyPoints: firstNumber(findParam(controller, "dizzypoints")),
+    guardPoints: firstNumber(findParam(controller, "guardpoints")),
+    hitPower: givePower?.[0],
+    guardPower: givePower === undefined ? undefined : givePower[1] ?? 0,
+    getPower: getPower === true ? undefined : getPower,
+    redLife: redLife?.[0],
+    guardRedLife: redLife === undefined ? undefined : redLife[1] ?? 0,
+    score: score?.[0],
+    guardScore: score === undefined ? undefined : score[1] ?? 0,
+    hitDefHitCount: firstNumber(findParam(controller, "numhits")),
+    hitPriority: firstNumber(findParam(controller, "priority")),
+    hitPriorityType: hitDefPriorityType(findParam(controller, "priority")),
+    p2SpritePriority: firstNumber(findParam(controller, "p2sprpriority")),
+    p1StateNo: firstNumber(findParam(controller, "p1stateno")),
+    p2StateNo: firstNumber(findParam(controller, "p2stateno")),
+    p2GetP1State: booleanNumber(findParam(controller, "p2getp1state")),
+    p2Facing: firstNumber(findParam(controller, "p2facing")),
+    minDistance: modifyProjectileVelocityVector(findParam(controller, "mindist")),
+    maxDistance: modifyProjectileVelocityVector(findParam(controller, "maxdist")),
+    airHitTime: firstNumber(findParam(controller, "air.hittime")),
+    groundFall: booleanNumber(findParam(controller, "fall")),
+    airFall: booleanNumber(findParam(controller, "air.fall")),
+    downBounce: booleanNumber(findParam(controller, "down.bounce")),
+    hitStun: firstNumber(findParam(controller, "ground.hittime")),
+    pauseTime: pauseTime === undefined ? undefined : [pauseTime[0], pauseTime[1] ?? 0] as [number, number],
+    guardPauseTime: guardPauseTime === undefined
+      ? undefined
+      : [guardPauseTime[0], guardPauseTime[1] ?? 0] as [number, number],
+    guardDistanceBounds,
+    hitSpark: staticProjectileSparkRef(findParam(controller, "sparkno")),
+    hitSparkAngle: firstNumber(findParam(controller, "sparkangle")),
+    guardSpark: staticProjectileSparkRef(findParam(controller, "guard.sparkno")),
+    guardSparkAngle: firstNumber(findParam(controller, "guard.sparkangle")),
+    sparkXy: staticProjectileZeroDefaultPair(findParam(controller, "sparkxy")),
+    groundSlideTime: firstNumber(findParam(controller, "ground.slidetime")),
+    guardHitTime: firstNumber(findParam(controller, "guard.hittime")),
+    guardSlideTime: firstNumber(findParam(controller, "guard.slidetime")),
+    guardControlTime: firstNumber(findParam(controller, "guard.ctrltime")),
+    airGuardControlTime: firstNumber(findParam(controller, "airguard.ctrltime")),
+    downHitTime: firstNumber(findParam(controller, "down.hittime")),
+    groundVelocity: modifyProjectileGroundVelocity(findParam(controller, "ground.velocity")),
+    downVelocity: modifyProjectileVelocityVector(findParam(controller, "down.velocity")),
+    airVelocity: modifyProjectileVelocityVector(findParam(controller, "air.velocity")),
+    guardVelocity: modifyProjectileVelocityVector(findParam(controller, "guard.velocity")),
+    airGuardVelocity: modifyProjectileVelocityVector(findParam(controller, "airguard.velocity")),
+    xAccel: firstNumber(findParam(controller, "xaccel")),
+    yAccel: firstNumber(findParam(controller, "yaccel")),
+    zAccel: firstNumber(findParam(controller, "zaccel")),
+    envShakeTime: firstNumber(findParam(controller, "envshake.time")),
+    envShakeFrequency: firstNumber(findParam(controller, "envshake.freq")),
+    envShakeAmplitude: firstNumber(findParam(controller, "envshake.ampl")),
+    envShakePhase: firstNumber(findParam(controller, "envshake.phase")),
+    envShakeMultiplier: firstNumber(findParam(controller, "envshake.mul")),
+    envShakeDirection: firstNumber(findParam(controller, "envshake.dir")),
+    missOnOverride: booleanNumber(findParam(controller, "missonoverride")),
+    p2ClsnCheck: normalizeMugenCollisionBoxType(findParam(controller, "p2clsncheck")),
+    p2ClsnRequire: normalizeMugenCollisionBoxType(findParam(controller, "p2clsnrequire")),
+    attackDepth: attackDepth === undefined
+      ? undefined
+      : [attackDepth[0], attackDepth[1] ?? 0] as [number, number],
+    attr: staticHitFlagParam(findParam(controller, "attr")),
+    guardFlag: staticHitFlagParam(findParam(controller, "guardflag")),
     hitFlag: staticHitFlagParam(findParam(controller, "hitflag")),
     velocity: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "velocity") ?? findParam(controller, "vel"))),
+    removalVelocity: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "remvelocity"))),
     acceleration: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "accel"))),
-    velocityMultiplier: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "velmul"))),
+    velocityMultiplier: projectileVelocityMultiplierParam(findParam(controller, "velmul"), 0),
     scale: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "projscale") ?? findParam(controller, "scale"))),
+    angle: firstNumber(findParam(controller, "projangle")),
+    xAngle: firstNumber(findParam(controller, "projxangle")),
+    yAngle: firstNumber(findParam(controller, "projyangle")),
+    xShear: firstNumber(findParam(controller, "projxshear")),
+    shadow: numberPartialTriple(findParam(controller, "projshadow")),
+    reflection: firstNumber(findParam(controller, "projreflection")),
+    projection: projectileProjection(findParam(controller, "projprojection")),
+    focalLength: firstNumber(findParam(controller, "projfocallength")),
+    window: numberQuad(findParam(controller, "projwindow")),
+    clsnScale: projectileClsnScaleWithDefaultOrUndefined(numberPair(findParam(controller, "projclsnscale")), 0),
+    clsnAngle: firstNumber(findParam(controller, "projclsnangle")),
     edgeBound: firstNumber(findParam(controller, "projedgebound")),
     stageBound: firstNumber(findParam(controller, "projstagebound")),
     depthBound: firstNumber(findParam(controller, "projdepthbound")),
     heightBound: projectileHeightBound(numberPair(findParam(controller, "projheightbound"))),
     removeTime: firstNumber(findParam(controller, "projremovetime") ?? findParam(controller, "removetime")),
-    spritePriority: firstNumber(findParam(controller, "sprpriority")),
-    priority: firstNumber(findParam(controller, "projpriority") ?? findParam(controller, "priority")),
+    layerNo: projectileLayerNo(firstNumber(findParam(controller, "projlayerno"))),
+    spritePriority: firstNumber(findParam(controller, "projsprpriority")),
+    priority: firstNumber(findParam(controller, "projpriority")),
     hitCount: firstNumber(findParam(controller, "projhits")),
     missTime: firstNumber(findParam(controller, "projmisstime")),
+    pauseMoveTime: firstNumber(findParam(controller, "pausemovetime")),
+    superMoveTime: firstNumber(findParam(controller, "supermovetime")),
     removeOnHit: booleanNumber(findParam(controller, "projremove")),
   });
 }
@@ -2859,6 +3929,31 @@ function firstNumber(value: string | undefined): number | undefined {
   return Number.isFinite(numberValue) ? numberValue : undefined;
 }
 
+function staticIntegerList(value: string | undefined, maxLength: number): number[] | undefined {
+  if (value === undefined) return undefined;
+  const parts = value.split(",").map((part) => part.trim());
+  if (parts.length === 0 || parts.some((part) => part.length === 0)) return undefined;
+  const values = parts.slice(0, maxLength).map(Number);
+  return values.every(Number.isFinite) ? values.map(Math.trunc) : undefined;
+}
+
+function optionalIntegerExpressionListParam(
+  controller: MugenStateController,
+  key: string,
+  maxLength: number,
+): number[] | "dynamic" | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) return true;
+  const staticValues = staticIntegerList(raw, maxLength);
+  if (staticValues !== undefined) return staticValues;
+  const expressions = raw.split(",").slice(0, maxLength).map((part) => part.trim());
+  if (expressions.length === 0 || expressions.some((part) => part.length === 0)) return false;
+  return expressions.every((expression) =>
+    hasValidScalarExpressionStructure(expression) && compileExpression(expression).supportLevel !== "unsupported")
+    ? "dynamic"
+    : false;
+}
+
 function staticNumberParam(controller: MugenStateController, key: string, fallback: number): number | undefined {
   const raw = findParam(controller, key);
   if (raw === undefined) {
@@ -2895,12 +3990,325 @@ function staticOptionalStrictNumberParam(controller: MugenStateController, key: 
   return strictNumberSingle(raw) ?? false;
 }
 
-function staticOptionalStrictNumberPairParam(controller: MugenStateController, key: string): [number, number?] | true | false {
+/**
+ * Keep one scalar controller parameter typed when it is static, while retaining
+ * a supported expression for the runtime to evaluate in the active context.
+ * `true` means omitted and `false` means malformed/unsupported.
+ */
+function optionalScalarNumberOrExpression(controller: MugenStateController, key: string): number | string | true | false {
   const raw = findParam(controller, key);
   if (raw === undefined) {
     return true;
   }
-  return strictStaticNumberPair(raw) ?? false;
+  const staticValue = strictNumberSingle(raw);
+  if (staticValue !== undefined) {
+    return staticValue;
+  }
+  if (!hasValidScalarExpressionStructure(raw)) {
+    return false;
+  }
+  const compiled = compileExpression(raw);
+  return compiled.supportLevel === "unsupported" ? false : compiled.normalized;
+}
+
+/** Compile one integer-valued expression, including redirect expressions with a top-level comma. */
+function optionalIntegerExpressionParam(controller: MugenStateController, key: string): number | string | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) return true;
+  const value = compileFloatExpressionComponent(raw);
+  if (value === undefined) return false;
+  return typeof value === "number" ? Math.trunc(value) : value;
+}
+
+function optionalHitDefPaletteFxParam(
+  controller: MugenStateController,
+): MugenHitDefPaletteFxOp | true | false {
+  const time = optionalIntegerExpressionParam(controller, "palfx.time");
+  const add = optionalIntegerExpressionTripletParam(controller, "palfx.add");
+  const mul = optionalIntegerExpressionTripletParam(controller, "palfx.mul");
+  const color = optionalIntegerExpressionParam(controller, "palfx.color");
+  const invertAll = optionalIntegerExpressionParam(controller, "palfx.invertall");
+  if (time === false || add === false || mul === false || color === false || invertAll === false) return false;
+  if (time === true && add === true && mul === true && color === true && invertAll === true) return true;
+  return {
+    ...(time === true ? {} : { time }),
+    ...(add === true ? {} : { add }),
+    ...(mul === true ? {} : { mul }),
+    ...(color === true ? {} : { color }),
+    ...(invertAll === true ? {} : { invertAll }),
+  };
+}
+
+function optionalHitDefEnvShakeParam(
+  controller: MugenStateController,
+  prefix = "envshake",
+): MugenHitDefEnvShakeOp | true | false {
+  const time = optionalIntegerExpressionParam(controller, `${prefix}.time`);
+  const freq = optionalFloatExpressionParam(controller, `${prefix}.freq`);
+  const ampl = optionalIntegerExpressionParam(controller, `${prefix}.ampl`);
+  const phase = optionalFloatExpressionParam(controller, `${prefix}.phase`);
+  const mul = optionalFloatExpressionParam(controller, `${prefix}.mul`);
+  const dir = optionalFloatExpressionParam(controller, `${prefix}.dir`);
+  if (time === false || freq === false || ampl === false || phase === false || mul === false || dir === false) return false;
+  if (time === true && freq === true && ampl === true && phase === true && mul === true && dir === true) return true;
+  return {
+    ...(time === true ? {} : { time }),
+    ...(freq === true ? {} : { freq }),
+    ...(ampl === true ? {} : { ampl }),
+    ...(phase === true ? {} : { phase }),
+    ...(mul === true ? {} : { mul }),
+    ...(dir === true ? {} : { dir }),
+  };
+}
+
+function optionalHitDefFallImpactParam(
+  controller: MugenStateController,
+): MugenHitDefFallImpactOp | true | false {
+  const damage = optionalIntegerExpressionParam(controller, "fall.damage");
+  const xVelocity = optionalFloatExpressionParam(controller, "fall.xvelocity");
+  const yVelocity = optionalFloatExpressionParam(controller, "fall.yvelocity");
+  const zVelocity = optionalFloatExpressionParam(controller, "fall.zvelocity");
+  if (damage === false || xVelocity === false || yVelocity === false || zVelocity === false) return false;
+  if (damage === true && xVelocity === true && yVelocity === true && zVelocity === true) return true;
+  return {
+    ...(damage === true ? {} : { damage }),
+    ...(xVelocity === true ? {} : { xVelocity }),
+    ...(yVelocity === true ? {} : { yVelocity }),
+    ...(zVelocity === true ? {} : { zVelocity }),
+  };
+}
+
+function optionalHitDefFallRecoveryParam(
+  controller: MugenStateController,
+): MugenHitDefFallRecoveryOp | true | false {
+  const recover = optionalIntegerExpressionParam(controller, "fall.recover");
+  const recoverTime = optionalIntegerExpressionParam(controller, "fall.recovertime");
+  const downRecover = optionalIntegerExpressionParam(controller, "down.recover");
+  const downRecoverTime = optionalIntegerExpressionParam(controller, "down.recovertime");
+  if (recover === false || recoverTime === false || downRecover === false || downRecoverTime === false) return false;
+  if (recover === true && recoverTime === true && downRecover === true && downRecoverTime === true) return true;
+  return {
+    ...(recover === true ? {} : { recover }),
+    ...(recoverTime === true ? {} : { recoverTime }),
+    ...(downRecover === true ? {} : { downRecover }),
+    ...(downRecoverTime === true ? {} : { downRecoverTime }),
+  };
+}
+
+function optionalHitDefFallFlagsParam(
+  controller: MugenStateController,
+): MugenHitDefFallFlagsOp | true | false {
+  const enabled = optionalIntegerExpressionParam(controller, "fall");
+  const airFall = optionalIntegerExpressionParam(controller, "air.fall");
+  const kill = optionalIntegerExpressionParam(controller, "fall.kill");
+  if (enabled === false || airFall === false || kill === false) return false;
+  const dynamicKill = typeof kill === "string" ? kill : true;
+  if (enabled === true && airFall === true && dynamicKill === true) return true;
+  return {
+    ...(enabled === true ? {} : { enabled }),
+    ...(airFall === true ? {} : { airFall }),
+    ...(dynamicKill === true ? {} : { kill: dynamicKill }),
+  };
+}
+
+function optionalHitDefLethalFlagsParam(
+  controller: MugenStateController,
+): MugenHitDefLethalFlagsOp | true | false {
+  const kill = optionalIntegerExpressionParam(controller, "kill");
+  const guardKill = optionalIntegerExpressionParam(controller, "guard.kill");
+  const hitOnce = optionalIntegerExpressionParam(controller, "hitonce");
+  if (kill === false || guardKill === false || hitOnce === false) return false;
+  const dynamicKill = typeof kill === "string" ? kill : true;
+  const dynamicGuardKill = typeof guardKill === "string" ? guardKill : true;
+  const dynamicHitOnce = typeof hitOnce === "string" ? hitOnce : true;
+  if (dynamicKill === true && dynamicGuardKill === true && dynamicHitOnce === true) return true;
+  return {
+    ...(dynamicKill === true ? {} : { kill: dynamicKill }),
+    ...(dynamicGuardKill === true ? {} : { guardKill: dynamicGuardKill }),
+    ...(dynamicHitOnce === true ? {} : { hitOnce: dynamicHitOnce }),
+  };
+}
+
+function optionalFloatExpressionParam(controller: MugenStateController, key: string): number | string | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) return true;
+  return compileFloatExpressionComponent(raw) ?? false;
+}
+
+function optionalIntegerExpressionTripletParam(
+  controller: MugenStateController,
+  key: string,
+): MugenHitDefExpressionTriplet | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) return true;
+  const triplet = compileFloatExpressionTriplet(raw);
+  if (!triplet) return false;
+  return triplet.map((value) => typeof value === "number" ? Math.trunc(value) : value) as MugenHitDefExpressionTriplet;
+}
+
+/** Compile one or two float expressions while preserving an omitted second component. */
+function optionalFloatExpressionPairParam(
+  controller: MugenStateController,
+  key: string,
+): MugenHitDefExpressionPair | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) return true;
+  return compileFloatExpressionPair(raw) ?? false;
+}
+
+function compileFloatExpressionPair(raw: string): MugenHitDefExpressionPair | undefined {
+  const scalar = compileFloatExpressionComponent(raw);
+  if (scalar !== undefined) return [scalar];
+  const splitIndices = topLevelExpressionCommaIndices(raw);
+  if (!splitIndices) return undefined;
+  for (const index of splitIndices) {
+    const first = compileFloatExpressionComponent(raw.slice(0, index));
+    const second = compileFloatExpressionComponent(raw.slice(index + 1));
+    if (first !== undefined && second !== undefined) return [first, second];
+  }
+  return undefined;
+}
+
+function compileFloatExpressionTriplet(raw: string): MugenHitDefExpressionTriplet | undefined {
+  const splitIndices = topLevelExpressionCommaIndices(raw);
+  if (!splitIndices || splitIndices.length < 2) return undefined;
+  for (let firstIndex = 0; firstIndex < splitIndices.length - 1; firstIndex += 1) {
+    for (let secondIndex = firstIndex + 1; secondIndex < splitIndices.length; secondIndex += 1) {
+      const firstCut = splitIndices[firstIndex]!;
+      const secondCut = splitIndices[secondIndex]!;
+      const first = compileFloatExpressionComponent(raw.slice(0, firstCut));
+      const second = compileFloatExpressionComponent(raw.slice(firstCut + 1, secondCut));
+      const third = compileFloatExpressionComponent(raw.slice(secondCut + 1));
+      if (first !== undefined && second !== undefined && third !== undefined) return [first, second, third];
+    }
+  }
+  return undefined;
+}
+
+function compileFloatExpressionComponent(raw: string): number | string | undefined {
+  const staticValue = strictNumberSingle(raw);
+  if (staticValue !== undefined) return staticValue;
+  if (!hasValidRedirectAwareScalarExpressionStructure(raw)) return undefined;
+  const expression = compileExpression(raw);
+  return expression.supportLevel === "unsupported" ? undefined : expression.normalized;
+}
+
+function hasValidRedirectAwareScalarExpressionStructure(raw: string): boolean {
+  const expression = raw.trim();
+  if (!expression) return false;
+  const commaIndices = topLevelExpressionCommaIndices(expression);
+  if (!commaIndices) return false;
+  let segmentStart = 0;
+  for (const index of commaIndices) {
+    if (!endsWithRedirectSelector(expression.slice(segmentStart, index))) return false;
+    segmentStart = index + 1;
+  }
+  return expression.slice(segmentStart).trim().length > 0;
+}
+
+function endsWithRedirectSelector(raw: string): boolean {
+  const expression = raw.trimEnd();
+  if (!expression) return false;
+  let identifierEnd = expression.length;
+  if (expression[identifierEnd - 1] === ")") {
+    let depth = 0;
+    let openIndex = -1;
+    for (let index = identifierEnd - 1; index >= 0; index -= 1) {
+      const char = expression[index]!;
+      if (char === ")") depth += 1;
+      else if (char === "(") {
+        depth -= 1;
+        if (depth === 0) {
+          openIndex = index;
+          break;
+        }
+      }
+    }
+    if (openIndex < 0) return false;
+    identifierEnd = openIndex;
+    while (identifierEnd > 0 && /\s/.test(expression[identifierEnd - 1]!)) identifierEnd -= 1;
+  }
+  let identifierStart = identifierEnd;
+  while (identifierStart > 0 && /[A-Za-z]/.test(expression[identifierStart - 1]!)) identifierStart -= 1;
+  const identifier = expression.slice(identifierStart, identifierEnd).toLowerCase();
+  return (
+    identifier === "parent" ||
+    identifier === "root" ||
+    identifier === "partner" ||
+    identifier === "enemynear" ||
+    identifier === "enemy" ||
+    identifier === "target" ||
+    identifier === "playerid"
+  );
+}
+
+function topLevelExpressionCommaIndices(raw: string): number[] | undefined {
+  const indices: number[] = [];
+  let depth = 0;
+  let quote: '"' | "'" | undefined;
+  for (let index = 0; index < raw.length; index += 1) {
+    const char = raw[index]!;
+    if (quote) {
+      if (char === quote) quote = undefined;
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      continue;
+    }
+    if (char === "(") depth += 1;
+    else if (char === ")") depth -= 1;
+    else if (char === "," && depth === 0) indices.push(index);
+    if (depth < 0) return undefined;
+  }
+  return quote || depth !== 0 ? undefined : indices;
+}
+
+/** Compile one or two integer-valued expressions without splitting function arguments. */
+function optionalIntegerExpressionPairParam(
+  controller: MugenStateController,
+  key: string,
+): MugenHitDefExpressionPair | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) return true;
+  const pair = compileFloatExpressionPair(raw);
+  if (!pair) return false;
+  const first = typeof pair[0] === "number" ? Math.trunc(pair[0]) : pair[0];
+  if (pair[1] === undefined) return [first];
+  const second = typeof pair[1] === "number" ? Math.trunc(pair[1]) : pair[1];
+  return [first, second];
+}
+
+function staticOptionalStrictHitDefVectorParam(controller: MugenStateController, key: string): MugenHitDefVector | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) {
+    return true;
+  }
+  return strictStaticNumberVector(raw) ?? false;
+}
+
+function staticOptionalStrictVectorZParam(controller: MugenStateController, key: string): number | true | false {
+  const value = staticOptionalStrictHitDefVectorParam(controller, key);
+  if (value === true || value === false) {
+    return value;
+  }
+  return value[2] === undefined ? true : value[2];
+}
+
+function optionalModifyHitDefGroundVelocityParam(
+  controller: MugenStateController,
+): { xy: MugenHitDefExpressionPair; z?: number } | true | false {
+  const raw = findParam(controller, "ground.velocity");
+  if (raw === undefined) return true;
+  const staticVector = strictStaticNumberVector(raw);
+  if (staticVector !== undefined) {
+    return {
+      xy: staticVector[1] === undefined ? [staticVector[0]] : [staticVector[0], staticVector[1]],
+      ...(staticVector[2] === undefined ? {} : { z: staticVector[2] }),
+    };
+  }
+  const dynamicPair = compileFloatExpressionPair(raw);
+  return dynamicPair === undefined ? false : { xy: dynamicPair };
 }
 
 function staticOptionalGuardFlagParam(controller: MugenStateController, key: string): string | true | false {
@@ -2933,20 +4341,29 @@ function staticOptionalReversalSpritePriorityParam(controller: MugenStateControl
   return typeof value === "number" ? Math.trunc(value) : value;
 }
 
-function staticOptionalHitDefPriorityParam(
+function optionalHitDefPriorityParam(
   controller: MugenStateController,
-): { priority: number; priorityType: "hit" | "miss" | "dodge" } | true | false {
+): { priority: number | string; priorityType: "hit" | "miss" | "dodge" } | true | false {
   const raw = findParam(controller, "priority");
   if (raw === undefined) {
     return true;
   }
-  const parts = raw.split(",").map((part) => part.trim());
-  const value = Number(parts[0]);
-  if (parts.length > 2 || parts[0] === "" || !Number.isFinite(value)) {
-    return false;
+  const scalar = compileFloatExpressionComponent(raw);
+  if (scalar !== undefined) {
+    return { priority: typeof scalar === "number" ? Math.trunc(scalar) : scalar, priorityType: "hit" };
   }
-  const priorityType = staticHitDefPriorityType(parts[1]);
-  return priorityType === undefined ? false : { priority: Math.trunc(value), priorityType };
+  const commaIndices = topLevelExpressionCommaIndices(raw);
+  if (!commaIndices) return false;
+  for (let index = commaIndices.length - 1; index >= 0; index -= 1) {
+    const splitIndex = commaIndices[index]!;
+    const priorityType = staticHitDefPriorityType(raw.slice(splitIndex + 1));
+    if (priorityType === undefined) continue;
+    const value = compileFloatExpressionComponent(raw.slice(0, splitIndex));
+    if (value !== undefined) {
+      return { priority: typeof value === "number" ? Math.trunc(value) : value, priorityType };
+    }
+  }
+  return false;
 }
 
 function staticHitDefPriorityType(value: string | undefined): "hit" | "miss" | "dodge" | undefined {
@@ -2964,15 +4381,6 @@ function staticHitDefPriorityType(value: string | undefined): "hit" | "miss" | "
   }
 }
 
-function staticOptionalHitDefBooleanParam(controller: MugenStateController, key: string): boolean | undefined | "invalid" {
-  const raw = findParam(controller, key);
-  if (raw === undefined) {
-    return undefined;
-  }
-  const value = strictNumberSingle(raw);
-  return value === undefined ? "invalid" : value !== 0;
-}
-
 function staticOptionalReversalFacingParam(controller: MugenStateController, key: string): number | true | false {
   const value = staticOptionalStrictNumberParam(controller, key);
   return typeof value === "number" ? Math.trunc(value) : value;
@@ -2981,11 +4389,6 @@ function staticOptionalReversalFacingParam(controller: MugenStateController, key
 function staticOptionalIntegerParam(controller: MugenStateController, key: string): number | true | false {
   const value = staticOptionalStrictNumberParam(controller, key);
   return typeof value === "number" ? Math.trunc(value) : value;
-}
-
-function staticOptionalHitIdParam(controller: MugenStateController, key: string): number | true | false {
-  const value = staticOptionalIntegerParam(controller, key);
-  return typeof value === "number" ? Math.max(0, value) : value;
 }
 
 function staticOptionalHitCountParam(controller: MugenStateController, key: string): number | true | false {
@@ -3035,7 +4438,7 @@ function secondNumber(value: string | undefined): number | undefined {
 }
 
 function hitDefPriorityType(value: string | undefined): "hit" | "miss" | "dodge" | undefined {
-  const normalized = value?.split(",")[1]?.trim().replace(/^"|"$/g, "").toLowerCase();
+  const normalized = /,\s*"?(hit|miss|dodge)"?\s*$/i.exec(value ?? "")?.[1]?.toLowerCase();
   return normalized === "hit" || normalized === "miss" || normalized === "dodge" ? normalized : undefined;
 }
 
@@ -3058,11 +4461,73 @@ function normalizedNumberPair(value: string | undefined): [number, number] | und
   return pair ? [pair[0], pair[1] ?? pair[0]] : undefined;
 }
 
+function projectilePaletteRemap(value: string | undefined): [number, number] | undefined {
+  if (!value) return undefined;
+  const values = value.split(",").map((part) => Number(part.trim()));
+  if (values.length !== 2 || !Number.isFinite(values[0]) || !Number.isFinite(values[1])) return undefined;
+  return [Math.trunc(values[0]!), Math.trunc(values[1]!)];
+}
+
 function numberTriple(value: string | undefined): [number, number, number?] | undefined {
   if (!value) return undefined;
   const values = value.split(",").map((part) => Number(part.trim()));
   if (!Number.isFinite(values[0]) || !Number.isFinite(values[1])) return undefined;
   return Number.isFinite(values[2]) ? [values[0]!, values[1]!, values[2]!] : [values[0]!, values[1]!];
+}
+
+function numberPartialTriple(value: string | undefined): [number, number?, number?] | undefined {
+  if (!value) return undefined;
+  const values = value.split(",").map((part) => Number(part.trim()));
+  if (values.length > 3) return undefined;
+  if (!Number.isFinite(values[0])) return undefined;
+  if (values.length > 1 && !Number.isFinite(values[1])) return undefined;
+  if (values.length > 2 && !Number.isFinite(values[2])) return undefined;
+  if (values.length > 2) return [values[0]!, values[1]!, values[2]!];
+  if (values.length > 1) return [values[0]!, values[1]!];
+  return [values[0]!];
+}
+
+function modifyProjectileVelocityVector(value: string | undefined): MugenHitDefVector | undefined {
+  const parts = value?.split(",").map((part) => part.trim()) ?? [];
+  if (parts.length < 1 || parts.length > 3 || parts.some((part) => part.length === 0)) {
+    return undefined;
+  }
+  const vector = parts.map(Number);
+  return vector.every(Number.isFinite)
+    ? [vector[0]!, vector[1] ?? 0, vector[2] ?? 0]
+    : undefined;
+}
+
+function modifyProjectileGroundVelocity(value: string | undefined): MugenPartialHitDefVector | undefined {
+  const parts = value?.split(",").map((part) => part.trim()) ?? [];
+  if (parts.length < 1 || parts.length > 3 || parts.some((part) => part.length === 0)) {
+    return undefined;
+  }
+  const result: MugenPartialHitDefVector = {};
+  const keys = ["x", "y", "z"] as const;
+  for (let index = 0; index < parts.length; index += 1) {
+    const part = parts[index]!;
+    if (/^n$/i.test(part)) continue;
+    const number = Number(part);
+    if (!Number.isFinite(number)) return undefined;
+    result[keys[index]!] = number;
+  }
+  return result;
+}
+
+function numberQuad(value: string | undefined): MugenProjectileWindow | undefined {
+  if (!value) return undefined;
+  const values = value.split(",").map((part) => Number(part.trim()));
+  return values.length === 4 && values.every(Number.isFinite)
+    ? [values[0]!, values[1]!, values[2]!, values[3]!]
+    : undefined;
+}
+
+function projectileProjection(value: string | undefined): MugenProjectileProjection | undefined {
+  const normalized = value?.trim().toLowerCase();
+  return normalized === "orthographic" || normalized === "perspective" || normalized === "perspective2"
+    ? normalized
+    : undefined;
 }
 
 function hitDefVelocity(value: string | undefined): MugenHitDefVector | undefined {
@@ -3118,6 +4583,48 @@ function strictStaticNumberPair(value: string): [number, number?] | undefined {
     return undefined;
   }
   return strictNumberPair(value);
+}
+
+function staticProjectileGuardDistanceBounds(
+  controller: MugenStateController,
+): MugenProjectileGuardDistanceBounds | undefined {
+  const widthRaw = findParam(controller, "guard.dist.width") ?? findParam(controller, "guard.dist");
+  const heightRaw = findParam(controller, "guard.dist.height");
+  const depthRaw = findParam(controller, "guard.dist.depth");
+  const width = widthRaw === undefined ? undefined : strictStaticNumberPair(widthRaw);
+  const height = heightRaw === undefined ? undefined : strictStaticNumberPair(heightRaw);
+  const depth = depthRaw === undefined ? undefined : strictStaticNumberPair(depthRaw);
+  if (width === undefined && height === undefined && depth === undefined) {
+    return undefined;
+  }
+  return {
+    ...(width === undefined ? {} : { width: [width[0], width[1] ?? 0] as [number, number] }),
+    ...(height === undefined ? {} : { height: [height[0], height[1] ?? 0] as [number, number] }),
+    ...(depth === undefined ? {} : { depth: [depth[0], depth[1] ?? 0] as [number, number] }),
+  };
+}
+
+function staticProjectileSparkRef(value: string | undefined): string | undefined {
+  const normalized = stripMugenString(value);
+  return normalized && /^[fs]?-?\d+$/i.test(normalized) ? normalized : undefined;
+}
+
+function staticProjectileZeroDefaultPair(value: string | undefined): [number, number] | undefined {
+  const pair = value === undefined ? undefined : strictStaticNumberPair(value);
+  return pair === undefined ? undefined : [pair[0], pair[1] ?? 0];
+}
+
+function strictStaticNumberVector(value: string): MugenHitDefVector | undefined {
+  const parts = value.split(",").map((part) => part.trim());
+  if (parts.length === 0 || parts.length > 3 || parts.some((part) => part.length === 0)) {
+    return undefined;
+  }
+  const values = parts.map((part) => Number(part));
+  if (values.some((item) => !Number.isFinite(item)) || values[0] === undefined) {
+    return undefined;
+  }
+  if (values.length === 3) return [values[0], values[1], values[2]];
+  return values.length === 2 ? [values[0], values[1]] : [values[0]];
 }
 
 function strictNumberSingle(value: string | undefined): number | undefined {
@@ -3180,8 +4687,34 @@ function projectileHeightBound(value: [number, number?] | undefined): { low: num
   return { low: Math.min(low, high), high: Math.max(low, high) };
 }
 
+function projectileLayerNo(value: number | undefined): -1 | 0 | 1 | undefined {
+  if (value === undefined) return undefined;
+  return value < 0 ? -1 : value > 0 ? 1 : 0;
+}
+
 function scalePairWithDefaultOrUndefined(value: [number, number?] | undefined): [number, number] | undefined {
   return value ? [value[0], value[1] ?? value[0]] : undefined;
+}
+
+function projectileVelocityMultiplierParam(
+  value: string | undefined,
+  trailingDefault: number,
+): MugenProjectileVector | undefined {
+  if (!value) return undefined;
+  const parts = value.split(",").map((part) => Number(part.trim()));
+  if (!Number.isFinite(parts[0])) return undefined;
+  return [
+    parts[0]!,
+    Number.isFinite(parts[1]) ? parts[1]! : trailingDefault,
+    Number.isFinite(parts[2]) ? parts[2]! : trailingDefault,
+  ];
+}
+
+function projectileClsnScaleWithDefaultOrUndefined(
+  value: [number, number?] | undefined,
+  secondDefault: number,
+): [number, number] | undefined {
+  return value ? [value[0], value[1] ?? secondDefault] : undefined;
 }
 
 function stripMugenString(value: string | undefined): string | undefined {

@@ -1,6 +1,6 @@
 import type { MugenSnapshot } from "../mugen/runtime/types";
 
-export type RuntimeA11yMode = "match" | "inspect" | "studio";
+export type RuntimeA11yMode = "match" | "lab" | "inspect" | "studio";
 
 export type RuntimeA11yGamepadStatus = {
   seat: 1 | 2;
@@ -16,7 +16,7 @@ export function buildRuntimeA11ySummary(input: {
   const { snapshot, mode } = input;
   const stage = snapshot.stage.displayName ?? "Stage";
   const playback = snapshot.playing ? "Playing" : "Paused";
-  const surface = mode === "match" ? "Match" : mode === "studio" ? "Studio" : "Inspector";
+  const surface = mode === "match" ? "Match" : mode === "lab" ? "Fighter Lab" : mode === "studio" ? "Studio" : "Inspector";
   const actors = snapshot.actors.slice(0, 2);
 
   if (actors.length === 0) {

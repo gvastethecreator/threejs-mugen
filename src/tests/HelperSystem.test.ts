@@ -224,6 +224,7 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
     frameElapsed: 0,
     age: 0,
     stateTime: 0,
+    hitPause: 0,
     removeTime: 10,
     ignoreHitPause: false,
     pauseMoveTime: 0,
@@ -236,6 +237,106 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
 }
 
 describe("HelperSystem", () => {
+  it("routes opt-in shared resource writes without mutating the helper locally", () => {
+    const active = helper({
+      life: 500,
+      power: 100,
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "LifeAdd", ["1"], { value: "75" }),
+          compiledControllerIr(6000, "PowerAdd", ["1"], { value: "125" }),
+        ])],
+      },
+    });
+    const sharedWrites: string[] = [];
+    advanceRuntimeHelpers([active], stage, {
+      runtimeProfile: "ikemen-go",
+      applySharedResourceWrite: (_helper, operation) => {
+        sharedWrites.push(`${operation.controllerType}:${operation.value}`);
+        return true;
+      },
+    });
+    expect(sharedWrites).toEqual(["lifeadd:75", "poweradd:125"]);
+    expect(active.life).toBe(500);
+    expect(active.power).toBe(100);
+  });
+
+  it("exposes accepted shared resource values to subsequent Helper triggers", () => {
+    const active = helper({
+      life: 500,
+      power: 100,
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "LifeAdd", ["1"], { value: "75" }),
+          compiledControllerIr(6000, "LifeSet", ["Life = 575"], { value: "650" }),
+          compiledControllerIr(6000, "PowerAdd", ["Life = 650"], { value: "125" }),
+          compiledControllerIr(6000, "PowerSet", ["Power = 225"], { value: "900" }),
+        ])],
+      },
+    });
+    const sharedWrites: string[] = [];
+    advanceRuntimeHelpers([active], stage, {
+      runtimeProfile: "ikemen-go",
+      applySharedResourceWrite: (_helper, operation) => {
+        sharedWrites.push(`${operation.controllerType}:${operation.value}`);
+        return true;
+      },
+    });
+    expect(sharedWrites).toEqual(["lifeadd:75", "lifeset:650", "poweradd:125", "powerset:900"]);
+    expect(active.life).toBe(500);
+    expect(active.power).toBe(100);
+  });
+
+  it("exposes accepted shared red-life values while preserving the Helper-local pool", () => {
+    const active = helper({
+      redLife: 25,
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "RedLifeAdd", ["1"], { value: "50", absolute: "1" }),
+          compiledControllerIr(6000, "RedLifeSet", ["RedLife = 75"], { value: "125" }),
+        ])],
+      },
+    });
+    const sharedWrites: string[] = [];
+    advanceRuntimeHelpers([active], stage, {
+      runtimeProfile: "ikemen-go",
+      applySharedResourceWrite: (_helper, operation) => {
+        sharedWrites.push(`${operation.controllerType}:${operation.value}`);
+        return true;
+      },
+    });
+    expect(sharedWrites).toEqual(["redlifeadd:50", "redlifeset:125"]);
+    expect(active.redLife).toBe(25);
+    expect(active.sharedResourceShadow?.redLife).toBe(125);
+  });
+
+  it("fails closed before invoking the shared resource sink when admission is denied", () => {
+    const active = helper({
+      life: 500,
+      power: 100,
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "LifeAdd", ["1"], { value: "75" }),
+          compiledControllerIr(6000, "PowerAdd", ["1"], { value: "125" }),
+        ])],
+      },
+    });
+    let sinkCalls = 0;
+
+    advanceRuntimeHelpers([active], stage, {
+      runtimeProfile: "ikemen-go",
+      admitResourceWrite: () => false,
+      applySharedResourceWrite: () => {
+        sinkCalls += 1;
+        return true;
+      },
+    });
+
+    expect(sinkCalls).toBe(0);
+    expect(active.life).toBe(500);
+    expect(active.power).toBe(100);
+  });
+
   it("continues helper ChangeState destinations in the same tick and bounds cycles", () => {
     const calls: string[] = [];
     const active = helper({
@@ -1665,6 +1766,14 @@ describe("HelperSystem", () => {
     advanceRuntimeHelpers([frozen, superMover], stage, { pauseKind: "SuperPause" });
     expect(superMover).toMatchObject({ age: 2, pos: { x: 12, y: 0 }, superMoveTime: 0 });
     expect(frozen).toMatchObject({ age: 0, pos: { x: 0, y: 0 } });
+
+    const localHitPause = helper({ serialId: "local-hitpause", hitPause: 2, vel: { x: 7, y: 0 } });
+    advanceRuntimeHelpers([localHitPause], stage);
+    expect(localHitPause).toMatchObject({ hitPause: 1, age: 0, pos: { x: 0, y: 0 } });
+    advanceRuntimeHelpers([localHitPause], stage);
+    expect(localHitPause).toMatchObject({ hitPause: 0, age: 0, pos: { x: 0, y: 0 } });
+    advanceRuntimeHelpers([localHitPause], stage);
+    expect(localHitPause).toMatchObject({ hitPause: 0, age: 1, pos: { x: 7, y: 0 } });
   });
 
   it("preserves active helper HitDef moves when destination state declares hitdefpersist", () => {
@@ -1718,6 +1827,235 @@ describe("HelperSystem", () => {
       guardSound: "S6,var(1)",
       guardSoundValue: { rawPrefix: "S", group: 6, index: 7 },
     });
+  });
+
+  it("resolves helper-local dynamic HitDef NoChainID lists into the active move", () => {
+    const active = helper({
+      vars: [3],
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              damage: "20",
+              nochainid: "var(0) + 40,var(0) + 41",
+            }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.currentMove?.noChainIds).toEqual([43, 44]);
+  });
+
+  it("resolves helper-local dynamic HitDef unhittabletime and ticks its own receiver timer", () => {
+    const active = helper({
+      vars: [3, 7],
+      unhittableTime: 2,
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              damage: "var(0) * 10,var(1)",
+              pausetime: "var(0) + 1,var(1) + 2",
+              "guard.pausetime": "var(0),var(1)",
+              id: "var(0) + 40",
+              chainid: "var(1) + 36",
+              unhittabletime: "var(0) + 1,var(1) + 2",
+              "stand.friction": "var(0) * 0.1",
+              "crouch.friction": "var(1) * 0.05",
+              sparkscale: "var(0) * 0.5",
+              "guard.sparkscale": "-var(1) * 0.25,var(0) * 0.1",
+              p1facing: "-var(0)",
+              p1getp2facing: "var(1) - 6",
+              p2facing: "var(0) - 4",
+              getpower: "var(0) * 10,var(1) * 5",
+              givepower: "var(0) * 8,var(1) * 4",
+              "palfx.time": "var(0) + 2",
+              "palfx.add": "var(0),-var(1),2",
+              "palfx.mul": "200,var(1) * 20,240",
+              "palfx.color": "var(1) * 30",
+              "palfx.invertall": "var(0) - 3",
+              "envshake.time": "var(1) + 4",
+              "envshake.freq": "var(0) * 20",
+              "envshake.ampl": "-var(1)",
+              "envshake.phase": "var(0) * 15",
+              "envshake.mul": "1.25",
+              "envshake.dir": "-30",
+              "fall.envshake.time": "var(1) + 8",
+              "fall.envshake.freq": "var(0) * 24",
+              "fall.envshake.ampl": "-var(1) - 2",
+              "fall.envshake.phase": "var(0) * 10",
+              "fall.envshake.mul": ".75",
+              "fall.envshake.dir": "67.5",
+              "fall.damage": "var(1) * 3",
+              "fall.xvelocity": "var(0) + .5",
+              "fall.yvelocity": "-var(1)",
+              "fall.zvelocity": "var(0) - .25",
+              fall: "var(0) - 2",
+              "air.fall": "var(1) - 7",
+              "fall.kill": "var(0) - 3",
+              "fall.recover": "var(0) - 3",
+              "fall.recovertime": "var(1) + 12",
+              "down.recover": "var(0) - 2",
+              "down.recovertime": "var(1) + 38",
+              "down.bounce": "var(0) - 2",
+              "air.juggle": "var(1) - 4",
+              numhits: "var(0) + 2",
+              sprpriority: "var(0) + 3",
+              p2sprpriority: "-var(1)",
+              priority: "var(1) + 2, Dodge",
+              forcenofall: "var(0) - 2",
+              forcestand: "var(0) - 2",
+              forcecrouch: "var(1) - 7",
+              kill: "var(0) - 3",
+              "guard.kill": "var(0) - 2",
+              hitonce: "var(1) - 7",
+            }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage, { runtimeProfile: "ikemen-go" });
+
+    expect(active.currentMove?.unhittableTime).toEqual([4, 9]);
+    expect(active.currentMove?.hitVars?.standFriction).toBeCloseTo(0.3);
+    expect(active.currentMove?.hitVars?.crouchFriction).toBeCloseTo(0.35);
+    expect(active.currentMove?.hitSparkScale).toEqual([1.5, 1]);
+    expect(active.currentMove?.guardSparkScale?.[0]).toBeCloseTo(-1.75);
+    expect(active.currentMove?.guardSparkScale?.[1]).toBeCloseTo(0.3);
+    expect(active.currentMove).toMatchObject({
+      damage: 30,
+      guardDamage: 7,
+      hitPause: 4,
+      hitShakeTime: 9,
+      guardPause: 3,
+      guardShakeTime: 7,
+      p1Facing: -3,
+      p1GetP2Facing: 1,
+      p2Facing: -1,
+      targetId: 43,
+      attackerHitPower: 30,
+      attackerGuardPower: 35,
+      hitPower: 24,
+      guardPower: 28,
+      airJuggle: 3,
+      p1SpritePriority: 6,
+      p2SpritePriority: -7,
+      priority: 9,
+      priorityType: "dodge",
+      forceNoFall: true,
+      forceStand: true,
+      forceCrouch: false,
+      downBounce: true,
+      kill: false,
+      guardKill: true,
+      hitOnce: false,
+      paletteFx: {
+        time: 5,
+        add: [3, -7, 2],
+        mul: [200, 140, 240],
+        color: 210,
+        invert: false,
+      },
+      envShake: {
+        time: 11,
+        freq: 60,
+        ampl: -7,
+        phase: 45,
+        mul: 1.25,
+        dir: -30,
+      },
+      fall: {
+        enabled: true,
+        airFall: false,
+        kill: false,
+        damage: 21,
+        velocity: { x: 3.5, y: -7, z: 2.75 },
+        recover: false,
+        recoverTime: 19,
+        downRecover: true,
+        downRecoverTime: 45,
+        envShake: {
+          time: 15,
+          freq: 72,
+          ampl: -9,
+          phase: 30,
+          mul: 0.75,
+          dir: 67.5,
+        },
+      },
+    });
+    expect(active.currentMove?.hitVars?.hitCount).toBe(5);
+    expect(active.currentMove?.hitVars).toMatchObject({ hitId: 43, chainId: 43 });
+    expect(active.juggle).toBe(3);
+    expect(active.juggleOrigin).toBe("hitdef");
+    expect(active.unhittableTime).toBe(1);
+    advanceRuntimeHelpers([active], stage, { runtimeProfile: "ikemen-go" });
+    expect(active.unhittableTime).toBe(0);
+  });
+
+  it("defaults fresh helper HitDef omitted damage to zero without losing its target id", () => {
+    const active = helper({
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", { attr: "S,NA", id: "77" }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.currentMove).toMatchObject({ damage: 0, guardDamage: 0, targetId: 77 });
+  });
+
+  it("derives omitted helper HitDef getpower from the owner constants profile", () => {
+    const active = helper({
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", { attr: "S,NA", damage: "40" }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage, {
+      constants: { "default.attack.lifetopowermul": 0.8 },
+    });
+
+    expect(active.currentMove).toMatchObject({
+      attackerHitPower: 32,
+      attackerGuardPower: 16,
+      hitPower: 24,
+      guardPower: 12,
+    });
+  });
+
+  it("derives omitted helper throw HitDef unhittabletime from attacker pausetime", () => {
+    const active = helper({
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,HT",
+              damage: "20",
+              pausetime: "7,3",
+            }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.currentMove?.unhittableTime).toEqual([8, 8]);
   });
 
   it("routes dynamic helper SuperPause params through the match callback", () => {

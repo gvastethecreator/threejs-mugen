@@ -107,14 +107,14 @@ export function buildSandboxControllerCoverageMatrix(
   return buildControllerCoverageMatrix({
     packages: [
       {
-        id: "nova-boxer",
-        cnsPath: join(repoRoot, "public/characters/nova-boxer/mugen/nova.cns"),
-        packageDigest: packageDigests["nova-boxer"] ?? "unknown",
+        id: "rocco-vidal",
+        cnsPath: join(repoRoot, "public/characters/rocco-vidal/mugen/rocco.cns"),
+        packageDigest: packageDigests["rocco-vidal"] ?? "unknown",
       },
       {
-        id: "mira-volt",
-        cnsPath: join(repoRoot, "public/characters/mira-volt/mugen/mira.cns"),
-        packageDigest: packageDigests["mira-volt"] ?? "unknown",
+        id: "nadia-arce",
+        cnsPath: join(repoRoot, "public/characters/nadia-arce/mugen/nadia.cns"),
+        packageDigest: packageDigests["nadia-arce"] ?? "unknown",
       },
     ],
   });

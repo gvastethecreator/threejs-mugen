@@ -84,6 +84,63 @@ describe("RuntimeTeamResourceBankWorld", () => {
     });
   });
 
+  it("resolves the effective owner binding without mutating the diagnostic", () => {
+    const world = new RuntimeTeamResourceBankWorld();
+    const diagnostic = world.snapshot({
+      mode: "turns",
+      lifeShare: true,
+      powerShare: true,
+      actors: [
+        { id: "p1", side: 1, memberNo: 0, life: 1000, power: 100, teamState: activeTeamState },
+        { id: "p3", side: 1, memberNo: 1, life: 900, power: 200, teamState: activeTeamState },
+      ],
+    });
+    expect(world.resolveBinding(diagnostic, "p3", "power")).toMatchObject({
+      bankId: "team:1:power",
+      resourceOwnerId: "team:1",
+      shared: true,
+    });
+    expect(world.resolveBinding(diagnostic, "missing", "life")).toBeUndefined();
+  });
+
+  it("keeps Helper sharing explicitly deferred until its own bank contract exists", () => {
+    const world = new RuntimeTeamResourceBankWorld();
+    const rootBinding = {
+      bankId: "team:1:power",
+      resourceOwnerId: "team:1",
+      shared: true,
+      representativeActorId: "p1",
+    };
+    expect(world.resolveHelperBinding({
+      helperId: "helper-p1",
+      kind: "power",
+      teamShareEnabled: true,
+      rootBinding,
+    })).toMatchObject({
+      mode: "deferred",
+      resourceOwnerId: "helper-p1",
+      rootBindingOwnerId: "team:1",
+      reason: "helper-share-contract-pending",
+    });
+    expect(world.resolveHelperBinding({
+      helperId: "helper-p1",
+      kind: "power",
+      teamShareEnabled: false,
+      rootBinding,
+    })).toMatchObject({ mode: "local", resourceOwnerId: "helper-p1" });
+    expect(world.resolveHelperBinding({
+      helperId: "helper-p1",
+      kind: "power",
+      teamShareEnabled: true,
+      contractEnabled: true,
+      rootBinding,
+    })).toMatchObject({
+      mode: "shared",
+      resourceOwnerId: "team:1",
+      reason: "helper-share-contract-enabled",
+    });
+  });
+
   it("keeps the owner stable when Tag changes active and standby roots", () => {
     const world = new RuntimeTeamResourceBankWorld();
     const actors = [

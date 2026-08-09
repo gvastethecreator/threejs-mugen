@@ -4,6 +4,20 @@ export const RUNTIME_ROUND_PHASE_SCHEMA = "mugen-web-sandbox/runtime-round-phase
 
 export type RuntimeRoundPhase = 0 | 1 | 2 | 3 | 4;
 
+/**
+ * Numeric value exposed by the CNS `RoundState` trigger.
+ *
+ * Ikemen keeps the Fight-screen lock in value `1` until control is released;
+ * value `2` starts the main fight. The phase machine already uses those
+ * source values, but this named projection keeps expression reads explicit.
+ */
+export type RuntimeRoundState = RuntimeRoundPhase;
+
+/** Projects a lifecycle phase into the authored `RoundState` value. */
+export function runtimeRoundStateFromPhase(phase: RuntimeRoundPhase | undefined): RuntimeRoundState {
+  return phase ?? 2;
+}
+
 export type RuntimeRoundPhaseName =
   | "pre-intro"
   | "intro"

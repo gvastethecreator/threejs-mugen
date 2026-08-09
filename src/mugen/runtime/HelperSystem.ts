@@ -1,6 +1,8 @@
 import type {
   ControllerOp,
+  ResourceControllerOp,
   HelperControllerOp,
+  MugenHitDefExpressionPair,
   PauseControllerOp,
   TeamStandbyControllerOp,
 } from "../compiler/ControllerOps";
@@ -25,14 +27,20 @@ import {
 } from "./ContactMemorySystem";
 import type { DemoMove } from "./demoFighters";
 import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
+import type { RuntimePaletteFxResolver } from "./SpriteEffectSystem";
+import { tickRuntimeUnhittableTime } from "./RuntimeUnhittableTimeSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { runtimeActorTeamSide } from "./RuntimeExpressionContextSystem";
 import { RuntimeOpponentSelectionWorld, type RuntimeOpponentRosterEntry } from "./RuntimeOpponentSelectionSystem";
 import { resolveRuntimePushSizeBox } from "./RuntimeRootBodyPushSystem";
 import { runtimeCurrentSizeBox, type RuntimeSizeBoxState } from "./RuntimeSizeBoxSystem";
 import type {
+  RuntimeModifyProjectileIntegerListParam,
   RuntimeModifyProjectileNumberParam,
+  RuntimeModifyProjectileGroundVelocity,
   RuntimeModifyProjectilePairParam,
+  RuntimeModifyProjectilePartialTripleParam,
+  RuntimeModifyProjectileTripleParam,
   RuntimeProjectileModifyResolver,
 } from "./ProjectileSystem";
 import type { MatchPauseControllerResult, RuntimePauseControllerParamResolvers } from "./PauseSystem";
@@ -184,6 +192,17 @@ export type RuntimeHelper = {
   superPauseDefenseMultiplier?: number;
   powerMax: number;
   power: number;
+  /**
+   * Ephemeral values exposed to Helper trigger expressions after an opt-in
+   * shared-bank write. The Helper's persisted local resources remain intact;
+   * this shadow lets subsequent controllers in the same state observe the
+   * value that the shared sink accepted.
+   */
+  sharedResourceShadow?: {
+    life?: number;
+    power?: number;
+    redLife?: number;
+  };
   vars: number[];
   sysvars: number[];
   fvars: number[];
@@ -191,12 +210,15 @@ export type RuntimeHelper = {
   frameElapsed: number;
   age: number;
   stateTime: number;
+  /** Helper-local direct-contact pause, independent from root pause state. */
+  hitPause: number;
   removeTime: number;
   ignoreHitPause: boolean;
   pauseMoveTime: number;
   superMoveTime: number;
   spritePriority: number;
   hitDefSpritePriority?: CharacterRuntimeState["hitDefSpritePriority"];
+  unhittableTime?: number;
   assertSpecial?: CharacterRuntimeState["assertSpecial"];
   soundEvents: RuntimeSoundEvent[];
   hitEffectEvents: RuntimeHitEffectEvent[];
@@ -297,6 +319,10 @@ export type RuntimeHelperAdvanceOptions = {
     operation: ControllerOp,
     lifeBefore?: number,
   ) => void;
+  /** Fail-closed admission hook for helper-owned resource writes. */
+  admitResourceWrite?: (helper: RuntimeHelper, operation: ResourceControllerOp) => boolean;
+  /** Optional opt-in sink for resource writes owned by a shared team bank. */
+  applySharedResourceWrite?: (helper: RuntimeHelper, operation: ResourceControllerOp) => boolean;
   onTargetLifeAdd?: (
     helper: RuntimeHelper,
     sourceActor: RuntimeTargetWorldActor,
@@ -481,6 +507,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     frameElapsed: 0,
     age: 0,
     stateTime: 0,
+    hitPause: 0,
     removeTime: clampHelperTime(operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "removetime")) ?? 180),
     ignoreHitPause: operation?.ignoreHitPause ?? booleanNumber(findControllerParam(input.controller, "ignorehitpause")) ?? false,
     pauseMoveTime: clampHelperMoveTime(operation?.pauseMoveTime ?? firstNumber(findControllerParam(input.controller, "pausemovetime")) ?? 0),
@@ -529,7 +556,9 @@ export function advanceRuntimeHelperActor(
   helperActorConstraintWorld.resetFrameSizeConstraints(helper, helper.baseBodyWidth);
   helperActorConstraintWorld.resetFrameDepthConstraints(helper);
   const controllerOptions = runtimeHelperControllerOptions(helper, options);
-  const canAdvance = canAdvanceRuntimeHelper(helper, controllerOptions.pauseKind);
+  const localHitPause = helper.hitPause > 0;
+  if (localHitPause) helper.hitPause -= 1;
+  const canAdvance = (!localHitPause || helper.ignoreHitPause) && canAdvanceRuntimeHelper(helper, controllerOptions.pauseKind);
   if (canAdvance) {
     resetRuntimeHelperPlayerPush(helper, controllerOptions.runtimeProfile);
     if (redirectedPlayerPush) {
@@ -642,6 +671,8 @@ export function runRuntimeHelperStateControllers(
     | "onResourceRedirectBlocked"
     | "onRedirectedController"
     | "onRedirectedOperation"
+    | "admitResourceWrite"
+    | "applySharedResourceWrite"
     | "onTargetLifeAdd"
     | "onRedirectedTargetDispatch"
     | "enterTargetState"
@@ -790,6 +821,39 @@ export function runRuntimeHelperStateControllers(
         continue;
       }
       const applyDispatch = () => {
+        const resourceOperation = redirectedController.operation?.kind === "resource"
+          ? redirectedController.operation
+          : undefined;
+        if (!redirect && resourceOperation && options.admitResourceWrite && !options.admitResourceWrite(helper, resourceOperation)) {
+          return undefined;
+        }
+        if (!redirect && resourceOperation && options.applySharedResourceWrite?.(helper, resourceOperation)) {
+          if (resourceOperation.controllerType === "lifeadd" || resourceOperation.controllerType === "lifeset") {
+            const current = helper.sharedResourceShadow?.life ?? helper.life;
+            const next = resourceOperation.controllerType === "lifeset"
+              ? resourceOperation.value
+              : current + resourceOperation.value;
+            helper.sharedResourceShadow = { ...helper.sharedResourceShadow, life: next };
+          } else if (resourceOperation.controllerType === "poweradd" || resourceOperation.controllerType === "powerset") {
+            const current = helper.sharedResourceShadow?.power ?? helper.power;
+            const next = resourceOperation.controllerType === "powerset"
+              ? resourceOperation.value
+              : current + resourceOperation.value;
+            helper.sharedResourceShadow = { ...helper.sharedResourceShadow, power: next };
+          } else if (resourceOperation.controllerType === "redlifeadd" || resourceOperation.controllerType === "redlifeset") {
+            const current = helper.sharedResourceShadow?.redLife ?? helper.redLife ?? 0;
+            const next = resourceOperation.controllerType === "redlifeset"
+              ? resourceOperation.value
+              : current + resourceOperation.value;
+            helper.sharedResourceShadow = { ...helper.sharedResourceShadow, redLife: next };
+          }
+          // The shared sink owns the mutation, but the imported Helper still
+          // executed the authored controller. Preserve controller/operation
+          // telemetry without applying a second local write.
+          options.onController?.(helper, controller);
+          options.onOperation?.(helper, resourceOperation);
+          return { unsupported: [], recordedController: false, recordedOperation: false };
+        }
         const lifeBefore = actor.runtime.life;
         const result = helperControllerDispatchWorld.apply(actor, redirectedController, {
           context,
@@ -1020,7 +1084,12 @@ function helperModifyProjectileResolver(
 ): RuntimeProjectileModifyResolver {
   return {
     resolveNumber: (key) => resolveHelperModifyProjectileNumberParam(helper, controller, key, options),
+    resolveFloat: (key) => resolveHelperModifyProjectileFloatParam(helper, controller, key, options),
     resolvePair: (key) => resolveHelperModifyProjectilePairParam(helper, controller, key, options),
+    resolveFloatPair: (key) => resolveHelperModifyProjectileFloatPairParam(helper, controller, key, options),
+    resolveFloatTriple: (key) => resolveHelperModifyProjectileFloatTripleParam(helper, controller, key, options),
+    resolveFloatPartialTriple: (key) => resolveHelperModifyProjectileFloatPartialTripleParam(helper, controller, key, options),
+    resolveIntegerList: (key) => resolveHelperModifyProjectileIntegerListParam(helper, controller, key, options),
   };
 }
 
@@ -1037,6 +1106,16 @@ function resolveHelperModifyProjectileNumberParam(
   return resolveHelperNumber(helper, undefined, raw.trim(), options);
 }
 
+function resolveHelperModifyProjectileFloatParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: RuntimeModifyProjectileNumberParam,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  const raw = findHelperModifyProjectileNumberParam(controller, key);
+  return raw === undefined ? undefined : resolveHelperFloat(helper, raw.trim(), options);
+}
+
 function resolveHelperModifyProjectilePairParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
@@ -1047,7 +1126,84 @@ function resolveHelperModifyProjectilePairParam(
   if (raw === undefined) {
     return undefined;
   }
-  return resolveHelperExpressionPair(helper, raw, options);
+  return resolveHelperExpressionPair(
+    helper,
+    raw,
+    options,
+    key === "damage" ||
+      key === "getpower" ||
+      key === "givepower" ||
+      key === "redlife" ||
+      key === "pausetime" ||
+      key === "guard.pausetime" ||
+      key === "guard.dist" ||
+      key === "guard.dist.width" ||
+      key === "guard.dist.height" ||
+      key === "guard.dist.depth"
+      ? 0
+      : undefined,
+  );
+}
+
+function resolveHelperModifyProjectileFloatPairParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: RuntimeModifyProjectilePairParam,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): [number, number] | undefined {
+  const raw = findHelperModifyProjectilePairParam(controller, key);
+  if (raw === undefined) {
+    return undefined;
+  }
+  const pair = resolveHelperFloatExpressionPair(helper, raw, options);
+  return pair === undefined
+    ? undefined
+    : [pair[0], pair[1] ?? (key === "score" || key === "attack.depth" || key === "sparkxy" ? 0 : pair[0])];
+}
+
+function resolveHelperModifyProjectileFloatTripleParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: RuntimeModifyProjectileTripleParam,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): [number, number, number] | undefined {
+  const raw = findControllerParam(controller.source, key);
+  return raw === undefined
+    ? undefined
+    : resolveHelperFloatExpressionTriple(helper, raw, options);
+}
+
+function resolveHelperModifyProjectileFloatPartialTripleParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: RuntimeModifyProjectilePartialTripleParam,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): RuntimeModifyProjectileGroundVelocity | undefined {
+  const raw = findControllerParam(controller.source, key);
+  return raw === undefined
+    ? undefined
+    : resolveHelperFloatExpressionPartialTriple(helper, raw, options);
+}
+
+function resolveHelperModifyProjectileIntegerListParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: RuntimeModifyProjectileIntegerListParam,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number[] | undefined {
+  const raw = findControllerParam(controller.source, key);
+  if (raw === undefined) return undefined;
+  const splitIndices = topLevelCommaIndices(raw);
+  for (let componentCount = Math.min(8, splitIndices.length + 1); componentCount >= 1; componentCount -= 1) {
+    for (const expressions of helperExpressionPartitions(raw, splitIndices, componentCount)) {
+      if (expressions.some(isBareRedirectExpression)) continue;
+      const values = expressions.map((expression) => resolveHelperNumber(helper, undefined, expression, options));
+      if (values.every((value): value is number => value !== undefined)) {
+        return values.map(Math.trunc);
+      }
+    }
+  }
+  return undefined;
 }
 
 function findHelperModifyProjectileNumberParam(
@@ -1056,13 +1212,19 @@ function findHelperModifyProjectileNumberParam(
 ): string | undefined {
   switch (key) {
     case "projid":
-      return findControllerParam(controller.source, "projid") ?? findControllerParam(controller.source, "id");
+      return findControllerParam(controller.source, "projid");
     case "projremovetime":
       return findControllerParam(controller.source, "projremovetime") ?? findControllerParam(controller.source, "removetime");
-    case "sprpriority":
-      return findControllerParam(controller.source, "sprpriority") ?? findControllerParam(controller.source, "projsprpriority");
+    case "projsprpriority":
+      return findControllerParam(controller.source, "projsprpriority");
     case "projpriority":
-      return findControllerParam(controller.source, "projpriority") ?? findControllerParam(controller.source, "priority");
+      return findControllerParam(controller.source, "projpriority");
+    case "priority": {
+      const raw = findControllerParam(controller.source, "priority");
+      if (raw === undefined) return undefined;
+      const suffix = /,\s*"?(?:hit|miss|dodge)"?\s*$/i.exec(raw);
+      return suffix?.index === undefined ? raw : raw.slice(0, suffix.index).trim();
+    }
     default:
       return findControllerParam(controller.source, key);
   }
@@ -1108,11 +1270,12 @@ function resolveHelperExpressionPair(
   helper: RuntimeHelper,
   raw: string,
   options: Parameters<typeof resolveHelperNumber>[3],
+  singleValueSecond?: number,
 ): [number, number] | undefined {
   const splitIndices = topLevelCommaIndices(raw);
   if (splitIndices.length === 0) {
     const value = resolveHelperNumber(helper, undefined, raw.trim(), options);
-    return value === undefined ? undefined : [value, value];
+    return value === undefined ? undefined : [value, singleValueSecond ?? value];
   }
   let best: { pair: [number, number]; maxCommaCount: number; balance: number; index: number } | undefined;
   for (const index of splitIndices) {
@@ -1150,15 +1313,119 @@ function resolveHelperFloatExpressionPair(
   raw: string,
   options: Parameters<typeof resolveHelperNumber>[3],
 ): [number, number?] | undefined {
-  const expressions = splitHelperTopLevelExpressions(raw);
-  if (expressions.length < 1 || expressions.length > 2 || expressions.some((expression) => !expression)) {
-    return undefined;
+  const splitIndices = topLevelCommaIndices(raw);
+  if (splitIndices.length === 0) {
+    const value = resolveHelperFloat(helper, raw.trim(), options);
+    return value === undefined ? undefined : [value];
   }
-  const values = expressions.map((expression) => resolveHelperFloat(helper, expression, options));
-  if (values.some((value) => value === undefined)) return undefined;
-  return values.length === 1
-    ? [values[0]!]
-    : [values[0]!, values[1]!];
+  let best: { pair: [number, number]; maxCommaCount: number; balance: number; index: number } | undefined;
+  for (const index of splitIndices) {
+    const lowExpression = raw.slice(0, index).trim();
+    const highExpression = raw.slice(index + 1).trim();
+    if (!lowExpression || !highExpression) continue;
+    const low = resolveHelperFloat(helper, lowExpression, options);
+    const high = resolveHelperFloat(helper, highExpression, options);
+    if (low !== undefined && high !== undefined) {
+      const leftCommaCount = topLevelCommaIndices(lowExpression).length;
+      const rightCommaCount = topLevelCommaIndices(highExpression).length;
+      const candidate = {
+        pair: [low, high] as [number, number],
+        maxCommaCount: Math.max(leftCommaCount, rightCommaCount),
+        balance: Math.abs(leftCommaCount - rightCommaCount),
+        index,
+      };
+      if (
+        !best ||
+        candidate.maxCommaCount < best.maxCommaCount ||
+        (candidate.maxCommaCount === best.maxCommaCount && candidate.balance < best.balance) ||
+        (candidate.maxCommaCount === best.maxCommaCount && candidate.balance === best.balance && candidate.index > best.index)
+      ) {
+        best = candidate;
+      }
+    }
+  }
+  return best?.pair;
+}
+
+function resolveHelperFloatExpressionTriple(
+  helper: RuntimeHelper,
+  raw: string,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): [number, number, number] | undefined {
+  const splitIndices = topLevelCommaIndices(raw);
+  for (let componentCount = Math.min(3, splitIndices.length + 1); componentCount >= 1; componentCount -= 1) {
+    const candidates = helperExpressionPartitions(raw, splitIndices, componentCount);
+    for (const expressions of candidates) {
+      const values = expressions.map((expression) => resolveHelperFloat(helper, expression, options));
+      if (values.every((value): value is number => value !== undefined)) {
+        return [values[0]!, values[1] ?? 0, values[2] ?? 0];
+      }
+    }
+  }
+  return undefined;
+}
+
+function resolveHelperFloatExpressionPartialTriple(
+  helper: RuntimeHelper,
+  raw: string,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): RuntimeModifyProjectileGroundVelocity | undefined {
+  const splitIndices = topLevelCommaIndices(raw);
+  for (let componentCount = Math.min(3, splitIndices.length + 1); componentCount >= 1; componentCount -= 1) {
+    const candidates = helperExpressionPartitions(raw, splitIndices, componentCount);
+    for (const expressions of candidates) {
+      const values = expressions.map((expression): number | null | undefined =>
+        /^n$/i.test(expression.trim())
+          ? null
+          : hasEmbeddedGroundVelocityPreserveComponent(expression)
+            ? undefined
+            : resolveHelperFloat(helper, expression, options));
+      if (values.every((value) => value !== undefined)) {
+        const result: RuntimeModifyProjectileGroundVelocity = {};
+        if (values[0] !== null) result.x = values[0]!;
+        if (values[1] !== undefined && values[1] !== null) result.y = values[1];
+        if (values[2] !== undefined && values[2] !== null) result.z = values[2];
+        return result;
+      }
+    }
+  }
+  return undefined;
+}
+
+function hasEmbeddedGroundVelocityPreserveComponent(expression: string): boolean {
+  const splitIndices = topLevelCommaIndices(expression);
+  const starts = [0, ...splitIndices.map((index) => index + 1)];
+  const ends = [...splitIndices, expression.length];
+  return starts.some((start, index) => /^n$/i.test(expression.slice(start, ends[index]).trim()));
+}
+
+function helperExpressionPartitions(raw: string, splitIndices: number[], componentCount: number): string[][] {
+  if (componentCount === 1) {
+    const expression = raw.trim();
+    return expression ? [[expression]] : [];
+  }
+  const results: string[][] = [];
+  const visit = (start: number, remaining: number, parts: string[]): void => {
+    if (remaining === 1) {
+      const tail = raw.slice(start).trim();
+      if (tail) results.push([...parts, tail]);
+      return;
+    }
+    for (const index of splitIndices) {
+      if (index < start) continue;
+      const part = raw.slice(start, index).trim();
+      if (!part) continue;
+      visit(index + 1, remaining - 1, [...parts, part]);
+    }
+  };
+  visit(0, componentCount, []);
+  return results.sort((left, right) =>
+    Math.max(...left.map((part) => topLevelCommaIndices(part).length))
+      - Math.max(...right.map((part) => topLevelCommaIndices(part).length)));
+}
+
+function isBareRedirectExpression(expression: string): boolean {
+  return /^(?:parent|root|partner|enemynear|enemy|target|helper|playerid)$/i.test(expression.trim());
 }
 
 function topLevelCommaIndices(raw: string): number[] {
@@ -1232,7 +1499,13 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
         clsn1: scaleRuntimeCollisionBoxes(runtimeHelperCurrentCollisionBoxes(helper, "clsn1"), helper.clsnScaleMultiplier),
         clsn2: scaleRuntimeCollisionBoxes(runtimeHelperCurrentCollisionBoxes(helper, "clsn2"), helper.clsnScaleMultiplier),
         soundEvents: helper.soundEvents.map((event) => ({ ...event })),
-        hitEffectEvents: helper.hitEffectEvents.map((event) => ({ ...event })),
+        hitEffectEvents: helper.hitEffectEvents.map((event) => ({
+          ...event,
+          offset: event.offset ? { ...event.offset } : undefined,
+          scale: event.scale ? { ...event.scale } : undefined,
+          assetFrame: event.assetFrame ? { ...event.assetFrame } : undefined,
+          assetFrames: event.assetFrames?.map((assetFrame) => ({ ...assetFrame })),
+        })),
       };
     })
     .filter((snapshot): snapshot is ActorSnapshot => snapshot !== undefined);
@@ -1318,6 +1591,44 @@ export function activateRuntimeHelperHitDef(
     defaultHitFlag: options?.defaultHitFlag,
     frame: collisionFrame,
     runtimeProfile: options?.runtimeProfile,
+    resolveIntegerList: options
+      ? (key) => resolveHelperModifyProjectileIntegerListParam(helper, controller, key, options)
+      : undefined,
+    resolveIntegerPair: options
+      ? (key) => resolveRuntimeHelperIntegerPairParam(helper, controller, key, options)
+      : undefined,
+    resolveIntegerScalar: options
+      ? (key) => key === "p1stateno" || key === "p2stateno" || key === "p2getp1state"
+        ? undefined
+        : resolveRuntimeHelperIntegerScalarParam(helper, controller, key, options)
+      : undefined,
+    resolveScalar: options
+      ? (key) => resolveRuntimeHelperFloatParam(helper, controller, key, options)
+      : undefined,
+    resolveFloatPair: options
+      ? (key) => resolveRuntimeHelperFloatPairParam(helper, controller, key, options)
+      : undefined,
+    resolvePaletteFx: options
+      ? resolveRuntimeHelperHitDefPaletteFx(helper, controller, options)
+      : undefined,
+    resolveEnvShake: options
+      ? (key) => resolveRuntimeHelperHitDefEnvShakeParam(helper, controller, key, options)
+      : undefined,
+    resolveFallEnvShake: options
+      ? (key) => resolveRuntimeHelperHitDefFallEnvShakeParam(helper, controller, key, options)
+      : undefined,
+    resolveFallImpact: options
+      ? (key) => resolveRuntimeHelperHitDefFallImpactParam(helper, controller, key, options)
+      : undefined,
+    resolveFallRecovery: options
+      ? (key) => resolveRuntimeHelperHitDefFallRecoveryParam(helper, controller, key, options)
+      : undefined,
+    resolveFallFlags: options
+      ? (key) => resolveRuntimeHelperHitDefFallFlagsParam(helper, controller, key, options)
+      : undefined,
+    resolveLethalFlags: options
+      ? (key) => resolveRuntimeHelperHitDefLethalFlagsParam(helper, controller, key, options)
+      : undefined,
     resolveSoundValue: options
       ? (key) => resolveRuntimeHelperSoundValueParam(helper, controller, key, options)
       : undefined,
@@ -1368,6 +1679,288 @@ export function resolveRuntimeHelperSoundValueParam(
     return undefined;
   }
   return { ...(rawPrefix ? { rawPrefix } : {}), group, index };
+}
+
+export function resolveRuntimeHelperIntegerPairParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): [number?, number?] | undefined {
+  const operation = controller.operation;
+  const operationValue: MugenHitDefExpressionPair | undefined =
+    operation?.kind === "hitdef" || operation?.kind === "modifyhitdef" || operation?.kind === "projectile"
+      ? key === "pausetime" && operation.kind === "hitdef"
+        ? operation.pauseTimeExpressions
+        : key === "guard.pausetime" && operation.kind === "hitdef"
+          ? operation.guardPauseTimeExpressions
+          : key === "damage" && (operation.kind === "hitdef" || operation.kind === "modifyhitdef")
+        ? operation.damageExpressions
+        : key === "getpower"
+        ? operation.getPower
+        : key === "givepower"
+          ? operation.givePower
+          : operation.unhittableTime
+      : undefined;
+  if (operationValue !== undefined) {
+    return [
+      resolveRuntimeHelperIntegerExpression(helper, operationValue[0], options),
+      resolveRuntimeHelperIntegerExpression(helper, operationValue[1], options),
+    ];
+  }
+  const raw = findControllerParam(controller.source, key);
+  if (!raw) return undefined;
+  const splits = topLevelCommaIndices(raw);
+  if (splits.length > 1) return undefined;
+  const parts = splits.length === 0
+    ? [raw.trim()]
+    : [raw.slice(0, splits[0]).trim(), raw.slice(splits[0]! + 1).trim()];
+  if (parts.some((part) => !part)) return undefined;
+  const values = parts.map((part) => resolveHelperFloat(helper, part, options));
+  if (values.some((value) => value === undefined) || values[0] === undefined) return undefined;
+  return values.length === 2
+    ? [Math.trunc(values[0]), Math.trunc(values[1]!)]
+    : [Math.trunc(values[0])];
+}
+
+export function resolveRuntimeHelperFloatParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "stand.friction" | "crouch.friction",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  const raw = findControllerParam(controller.source, key);
+  if (!raw) return undefined;
+  return resolveHelperFloat(helper, raw, options);
+}
+
+export function resolveRuntimeHelperHitDefEnvShakeParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "time" | "freq" | "ampl" | "phase" | "mul" | "dir",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  return resolveRuntimeHelperHitDefEnvShakeComponent(helper, controller, key, "envshake", options);
+}
+
+export function resolveRuntimeHelperHitDefFallEnvShakeParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "time" | "freq" | "ampl" | "phase" | "mul" | "dir",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  return resolveRuntimeHelperHitDefEnvShakeComponent(helper, controller, key, "fall.envshake", options);
+}
+
+export function resolveRuntimeHelperHitDefFallImpactParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "damage" | "xVelocity" | "yVelocity" | "zVelocity",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  const operation = controller.operation;
+  const operationValue = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
+    ? operation.fallImpact?.[key]
+    : undefined;
+  if (typeof operationValue === "number") return Number.isFinite(operationValue) ? operationValue : undefined;
+  if (typeof operationValue === "string") return resolveHelperFloat(helper, operationValue, options);
+  const rawKey = key === "damage"
+    ? "fall.damage"
+    : key === "xVelocity"
+      ? "fall.xvelocity"
+      : key === "yVelocity"
+        ? "fall.yvelocity"
+        : "fall.zvelocity";
+  const raw = findControllerParam(controller.source, rawKey);
+  return raw === undefined ? undefined : resolveHelperFloat(helper, raw, options);
+}
+
+export function resolveRuntimeHelperHitDefFallRecoveryParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "recover" | "recoverTime" | "downRecover" | "downRecoverTime",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  const operation = controller.operation;
+  const operationValue = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
+    ? operation.fallRecovery?.[key]
+    : undefined;
+  if (typeof operationValue === "number") return Number.isFinite(operationValue) ? Math.trunc(operationValue) : undefined;
+  if (typeof operationValue === "string") {
+    const value = resolveHelperFloat(helper, operationValue, options);
+    return value === undefined ? undefined : Math.trunc(value);
+  }
+  const rawKey = key === "recover"
+    ? "fall.recover"
+    : key === "recoverTime"
+      ? "fall.recovertime"
+      : key === "downRecover"
+        ? "down.recover"
+        : "down.recovertime";
+  const raw = findControllerParam(controller.source, rawKey);
+  const value = raw === undefined ? undefined : resolveHelperFloat(helper, raw, options);
+  return value === undefined ? undefined : Math.trunc(value);
+}
+
+export function resolveRuntimeHelperHitDefFallFlagsParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "enabled" | "airFall" | "kill",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  const operation = controller.operation;
+  const operationValue = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
+    ? operation.fallFlags?.[key]
+    : undefined;
+  if (typeof operationValue === "number") return Number.isFinite(operationValue) ? Math.trunc(operationValue) : undefined;
+  if (typeof operationValue === "string") {
+    const value = resolveHelperFloat(helper, operationValue, options);
+    return value === undefined ? undefined : Math.trunc(value);
+  }
+  const rawKey = key === "enabled" ? "fall" : key === "airFall" ? "air.fall" : "fall.kill";
+  const raw = findControllerParam(controller.source, rawKey);
+  const value = raw === undefined ? undefined : resolveHelperFloat(helper, raw, options);
+  return value === undefined ? undefined : Math.trunc(value);
+}
+
+export function resolveRuntimeHelperHitDefLethalFlagsParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "kill" | "guardKill" | "hitOnce",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  const operation = controller.operation;
+  const operationValue = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
+    ? operation.lethalFlags?.[key]
+    : undefined;
+  if (typeof operationValue === "number") return Number.isFinite(operationValue) ? Math.trunc(operationValue) : undefined;
+  if (typeof operationValue === "string") {
+    const value = resolveHelperFloat(helper, operationValue, options);
+    return value === undefined ? undefined : Math.trunc(value);
+  }
+  const rawKey = key === "guardKill" ? "guard.kill" : key.toLowerCase();
+  const raw = findControllerParam(controller.source, rawKey);
+  const value = raw === undefined ? undefined : resolveHelperFloat(helper, raw, options);
+  return value === undefined ? undefined : Math.trunc(value);
+}
+
+function resolveRuntimeHelperHitDefEnvShakeComponent(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "time" | "freq" | "ampl" | "phase" | "mul" | "dir",
+  prefix: "envshake" | "fall.envshake",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  const operation = controller.operation;
+  const operationValue = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
+    ? (prefix === "envshake" ? operation.envShake : operation.fallEnvShake)?.[key]
+    : undefined;
+  if (typeof operationValue === "number") return Number.isFinite(operationValue) ? operationValue : undefined;
+  if (typeof operationValue === "string") return resolveHelperFloat(helper, operationValue, options);
+  const raw = findControllerParam(controller.source, `${prefix}.${key}`);
+  return raw === undefined ? undefined : resolveHelperFloat(helper, raw, options);
+}
+
+export function resolveRuntimeHelperIntegerScalarParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  if (key === "priority") {
+    const operation = controller.operation;
+    const value = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
+      ? operation.priorityExpression ?? operation.priority
+      : undefined;
+    if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
+  }
+  const raw = findControllerParam(controller.source, key) ??
+    (key === "p1sprpriority" ? findControllerParam(controller.source, "sprpriority") : undefined);
+  return raw === undefined ? undefined : resolveHelperNumber(helper, undefined, raw, options);
+}
+
+export function resolveRuntimeHelperFloatPairParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "ground.velocity" | "sparkscale" | "guard.sparkscale",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): [number?, number?] | undefined {
+  const operation = controller.operation;
+  const operationValue: MugenHitDefExpressionPair | undefined =
+    operation?.kind === "hitdef" || operation?.kind === "modifyhitdef" || operation?.kind === "projectile"
+      ? key === "ground.velocity"
+        ? operation.kind === "hitdef"
+          ? operation.groundVelocityExpressions
+          : operation.kind === "modifyhitdef"
+            ? operation.groundVelocity
+            : undefined
+        : key === "sparkscale"
+          ? operation.hitSparkScale
+          : operation.guardSparkScale
+      : undefined;
+  if (operationValue !== undefined) {
+    const resolveComponent = (component: number | string | undefined): number | undefined => {
+      if (typeof component === "number") return Number.isFinite(component) ? component : undefined;
+      return resolveHelperFloat(helper, component, options);
+    };
+    const first = resolveComponent(operationValue[0]);
+    const second = resolveComponent(operationValue[1]);
+    if (key === "ground.velocity") {
+      return operationValue.length === 1 ? [first] : [first, second];
+    }
+    return [first ?? 1, second];
+  }
+  const raw = findControllerParam(controller.source, key);
+  if (!raw) return undefined;
+  const splits = topLevelCommaIndices(raw);
+  if (splits.length > 1) return undefined;
+  const parts = splits.length === 0
+    ? [raw.trim()]
+    : [raw.slice(0, splits[0]).trim(), raw.slice(splits[0]! + 1).trim()];
+  if (parts.some((part) => !part)) return undefined;
+  const values = parts.map((part) => resolveHelperFloat(helper, part, options));
+  if (key === "ground.velocity") {
+    return values.length === 2 ? [values[0], values[1]] : [values[0]];
+  }
+  if (values.some((value) => value === undefined) || values[0] === undefined) return undefined;
+  return values.length === 2 ? [values[0], values[1]!] : [values[0]];
+}
+
+export function resolveRuntimeHelperHitDefPaletteFx(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): RuntimePaletteFxResolver {
+  const operation = controller.operation;
+  const paletteFx = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef" || operation?.kind === "projectile"
+    ? operation.paletteFx
+    : undefined;
+  return {
+    resolveNumber: (key) => {
+      const value = key === "time"
+        ? paletteFx?.time
+        : key === "color"
+          ? paletteFx?.color
+          : key === "invertall"
+            ? paletteFx?.invertAll
+            : undefined;
+      if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
+      const raw = findControllerParam(controller.source, `palfx.${key}`);
+      const resolved = resolveHelperFloat(helper, raw, options);
+      return resolved === undefined ? undefined : Math.trunc(resolved);
+    },
+    resolveTriplet: (key) => {
+      const operationValue = key === "add" ? paletteFx?.add : paletteFx?.mul;
+      const raw = findControllerParam(controller.source, `palfx.${key}`);
+      const rawParts = raw?.split(",").map((part) => part.trim());
+      const value = operationValue ?? (rawParts?.length === 3 ? rawParts : undefined);
+      if (!value) return undefined;
+      const resolved = value.map((component) => resolveRuntimeHelperIntegerExpression(helper, component, options));
+      return resolved.some((component) => component === undefined)
+        ? undefined
+        : [resolved[0]!, resolved[1]!, resolved[2]!];
+    },
+  };
 }
 
 function helperPauseControllerParamResolvers(
@@ -2034,6 +2627,17 @@ function resolveHelperNumber(
   return Number.isFinite(result) ? Math.trunc(result) : undefined;
 }
 
+export function resolveRuntimeHelperIntegerExpression(
+  helper: RuntimeHelper,
+  expression: number | string | undefined,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  if (typeof expression === "number") {
+    return Number.isFinite(expression) ? Math.trunc(expression) : undefined;
+  }
+  return resolveHelperNumber(helper, undefined, expression, options);
+}
+
 function resolveHelperFloat(
   helper: RuntimeHelper,
   expression: string | undefined,
@@ -2290,6 +2894,9 @@ function helperExpressionSizeStateType(stateType: CharacterRuntimeState["stateTy
 function helperExpressionRuntimeState(helper: RuntimeHelper): CharacterRuntimeState {
   const runtime = helperRuntimeState(helper);
   runtime.ctrl = runtime.ctrl && runtime.teamState?.standby !== true;
+  if (helper.sharedResourceShadow?.life !== undefined) runtime.life = helper.sharedResourceShadow.life;
+  if (helper.sharedResourceShadow?.power !== undefined) runtime.power = helper.sharedResourceShadow.power;
+  if (helper.sharedResourceShadow?.redLife !== undefined) runtime.redLife = helper.sharedResourceShadow.redLife;
   return runtime;
 }
 
@@ -2306,6 +2913,7 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     facing: helper.facing,
     spritePriority: helper.spritePriority,
     hitDefSpritePriority: helper.hitDefSpritePriority ? { ...helper.hitDefSpritePriority } : undefined,
+    ...(helper.unhittableTime === undefined ? {} : { unhittableTime: helper.unhittableTime }),
     assertSpecial: helper.assertSpecial
       ? { ...helper.assertSpecial, flags: [...helper.assertSpecial.flags], globalFlags: [...helper.assertSpecial.globalFlags] }
       : undefined,
@@ -2412,6 +3020,7 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.animNo = runtime.animNo;
   helper.spritePriority = runtime.spritePriority ?? helper.spritePriority;
   helper.hitDefSpritePriority = runtime.hitDefSpritePriority ? { ...runtime.hitDefSpritePriority } : undefined;
+  helper.unhittableTime = runtime.unhittableTime;
   helper.lifeMax = runtime.lifeMax ?? helper.lifeMax;
   helper.life = runtime.life;
   helper.guardPointsMax = runtime.guardPointsMax ?? helper.guardPointsMax;
@@ -2470,6 +3079,7 @@ function resetRuntimeHelperPlayerPush(
 }
 
 function advanceRuntimeHelper(helper: RuntimeHelper, options: Pick<RuntimeHelperAdvanceOptions, "parentState" | "rootState"> = {}): void {
+  tickRuntimeUnhittableTime(helper);
   advanceRuntimeHelperMove(helper);
   advanceRuntimeContactTimers(helper.contact);
   advanceRuntimeHelperTargetMemory(helper);

@@ -68,7 +68,7 @@ export type NativeExecutionExtensionsReport = {
 };
 
 export function runPaletteExecution(repoRoot = process.cwd()): PaletteExecutionReport[] {
-  return ["nova-boxer", "mira-volt"].map((packageId) => {
+  return ["rocco-vidal", "nadia-arce"].map((packageId) => {
     const root = join(repoRoot, "public/characters", packageId);
     const actPaths = findFiles(root, /\.act$/i);
     const diagnostics: string[] = [];
@@ -285,6 +285,15 @@ function synthProjectile(partial: {
     accel: { x: 0, y: 0 },
     velMul: { x: 1, y: 1 },
     scale: { x: 1, y: 1 },
+    angle: 0,
+    xAngle: 0,
+    yAngle: 0,
+    xShear: 0,
+    shadow: [0, 0, 0],
+    reflection: -1,
+    projection: "orthographic",
+    focalLength: 0,
+    window: [0, 0, 0, 0],
     facing: 1,
     terminalActions: {},
     frameIndex: 0,
@@ -292,6 +301,7 @@ function synthProjectile(partial: {
     age: partial.age,
     removeTime: -1,
     stageBound: 40,
+    layerNo: 0,
     spritePriority: 0,
     priority: partial.priority,
     hitsRemaining: 1,

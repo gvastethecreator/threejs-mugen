@@ -40,4 +40,18 @@ describe("RuntimeA11ySummary", () => {
       "Inspector viewport on Training. Paused. No fighter is loaded.",
     );
   });
+
+  it("names the isolated Fighter Lab surface", () => {
+    const snapshot = {
+      stage: { displayName: "Training" },
+      playing: false,
+      actors: [
+        { label: "Rocco Vidal", runtime: { life: 1000, lifeMax: 1000, stateNo: 0, ctrl: true, guarding: false } },
+      ],
+    } as unknown as MugenSnapshot;
+
+    expect(buildRuntimeA11ySummary({ snapshot, mode: "lab" })).toBe(
+      "Fighter Lab viewport on Training. Paused. Preview state. Rocco Vidal: 1000 of 1000 life, state 0, ready.",
+    );
+  });
 });

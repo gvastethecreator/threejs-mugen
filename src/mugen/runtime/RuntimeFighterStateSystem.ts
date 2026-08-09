@@ -20,6 +20,7 @@ import type {
 } from "./types";
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import { RuntimeTargetWorld, type RuntimeTarget, type RuntimeTargetBinding, type RuntimeTargetWorldActor } from "./TargetSystem";
+import type { RuntimeFightScreenContext } from "./RuntimeFightScreenTriggerSystem";
 
 export type FighterMatchState = {
   id: string;
@@ -27,9 +28,11 @@ export type FighterMatchState = {
   playerNo?: number;
   label: string;
   definition: DemoFighterDefinition;
+  fightScreen?: RuntimeFightScreenContext;
   runtimeProgram?: RuntimeProgramIr;
   runtime: CharacterRuntimeState;
   currentAction: MugenAnimationAction;
+  animationOwnerPlayerNo?: number;
   stateOwner?: FighterMatchState;
   commandBuffer: CommandBuffer;
   frameElapsed: number;
@@ -41,6 +44,7 @@ export type FighterMatchState = {
   hitStun: number;
   hitPause: number;
   hasHit: boolean;
+  pendingDirectHitFacing?: 1 | -1;
   hitDefTargets: string[];
   pendingHitDefTargets: string[];
   targets: RuntimeTarget[];
@@ -120,6 +124,7 @@ export class RuntimeFighterStateWorld {
       label: input.definition.displayName,
       definition: input.definition,
       runtimeProgram,
+      animationOwnerPlayerNo: input.playerNo,
       stateOwner: undefined,
       runtime: {
         teamState: {

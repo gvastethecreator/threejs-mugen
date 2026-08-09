@@ -56,6 +56,45 @@ describe("RuntimeKinematicsWorld", () => {
     expect(fighter.runtime.combatDepth?.velocity).toBeCloseTo(-0.2);
   });
 
+  it("uses HitDef standing and crouching friction only while grounded in get-hit state", () => {
+    const world = new RuntimeKinematicsWorld();
+    const standingHit = actor({
+      velX: 4,
+      velZ: -2,
+      physics: "S",
+      moveType: "H",
+      hitVars: { standFriction: 0.5, crouchFriction: 0.25 },
+    });
+    const crouchingHit = actor({
+      velX: 4,
+      velZ: -2,
+      stateType: "C",
+      physics: "C",
+      moveType: "H",
+      hitVars: { standFriction: 0.5, crouchFriction: 0.25 },
+    });
+    const idle = actor({
+      velX: 4,
+      physics: "S",
+      moveType: "I",
+      hitVars: { standFriction: 0.1 },
+    });
+    const groundFriction = runtimeGroundFrictionOptions({
+      "movement.stand.friction": 0.8,
+      "movement.crouch.friction": 0.7,
+    });
+
+    world.advance(standingHit, { groundFriction });
+    world.advance(crouchingHit, { groundFriction });
+    world.advance(idle, { groundFriction });
+
+    expect(standingHit.runtime.vel.x).toBeCloseTo(2);
+    expect(standingHit.runtime.combatDepth?.velocity).toBeCloseTo(-1);
+    expect(crouchingHit.runtime.vel.x).toBeCloseTo(1);
+    expect(crouchingHit.runtime.combatDepth?.velocity).toBeCloseTo(-0.5);
+    expect(idle.runtime.vel.x).toBeCloseTo(3.2);
+  });
+
   it("applies current sandbox gravity to airborne actors after velocity integration", () => {
     const world = new RuntimeKinematicsWorld();
     const fighter = actor({ posY: -12, velY: -4, stateType: "A", physics: "A" });
@@ -119,6 +158,8 @@ function actor(
     velX?: number;
     velY?: number;
     velZ?: number;
+    moveType?: "I" | "A" | "H";
+    hitVars?: RuntimeKinematicsActor["runtime"]["hitVars"];
   } = {},
 ): RuntimeKinematicsActor {
   const stateType = overrides.stateType ?? "S";
@@ -136,6 +177,8 @@ function actor(
       },
       stateType,
       physics,
+      ...(overrides.moveType === undefined ? {} : { moveType: overrides.moveType }),
+      ...(overrides.hitVars === undefined ? {} : { hitVars: overrides.hitVars }),
     },
   };
 }

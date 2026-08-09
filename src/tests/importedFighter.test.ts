@@ -320,6 +320,8 @@ describe("createImportedFighterDefinition", () => {
         damage: "30",
         "fall": "1",
         "fall.zvelocity": "2.5",
+        "fall.envshake.mul": "0.75",
+        "fall.envshake.dir": "67.5",
         "air.velocity": "-6,-8",
         "down.velocity": "-2,0",
       })]),
@@ -330,7 +332,77 @@ describe("createImportedFighterDefinition", () => {
     expect(fighter?.stateMoves?.get(200)).toMatchObject({
       downVelocityX: -2,
       downVelocityY: 0,
-      fall: { enabled: true, velocity: { z: 2.5 } },
+      fall: { enabled: true, velocity: { z: 2.5 }, envShake: { mul: 0.75, dir: 67.5 } },
+    });
+  });
+
+  it("preserves imported HitDef acceleration metadata for GetHitVar", () => {
+    const animations = new Map<number, MugenAnimationAction>([
+      [0, action(0, [[0, 0, 0]])],
+      [200, action(200, [[200, 0, 0], [200, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+    ]);
+    const character = fakeCharacter(animations, true, [
+      state(200, 200, [controller(200, "HitDef", {
+        damage: "30",
+        xaccel: "-.14",
+        yaccel: ".38",
+        zaccel: ".21",
+      })]),
+    ]);
+
+    const fighter = createImportedFighterDefinition(character);
+
+    expect(fighter?.stateMoves?.get(200)?.hitVars).toMatchObject({ xAccel: -0.14, yAccel: 0.38, zAccel: 0.21 });
+  });
+
+  it("preserves imported HitDef velocity vectors for Ikemen GetHitVar", () => {
+    const animations = new Map<number, MugenAnimationAction>([
+      [0, action(0, [[0, 0, 0]])],
+      [200, action(200, [[200, 0, 0], [200, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+    ]);
+    const character = fakeCharacter(animations, true, [
+      state(200, 200, [controller(200, "HitDef", {
+        damage: "30",
+        "ground.velocity": "3,-2,1.5",
+        "air.velocity": "4,-6,2.25",
+        "down.velocity": "5,-7,3.5",
+        "guard.velocity": "2,-1,.75",
+        "airguard.velocity": "1,-3,1.25",
+      })]),
+    ]);
+
+    const fighter = createImportedFighterDefinition(character);
+
+    expect(fighter?.stateMoves?.get(200)?.hitVelocities).toEqual({
+      ground: { x: 3, y: -2, z: 1.5 },
+      air: { x: 4, y: -6, z: 2.25 },
+      down: { x: 5, y: -7, z: 3.5 },
+      guard: { x: 2, y: -1, z: 0.75 },
+      airGuard: { x: 1, y: -3, z: 1.25 },
+    });
+  });
+
+  it("preserves imported HitDef ground, air, and fall anim types for Ikemen GetHitVar", () => {
+    const animations = new Map<number, MugenAnimationAction>([
+      [0, action(0, [[0, 0, 0]])],
+      [200, action(200, [[200, 0, 0], [200, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+    ]);
+    const character = fakeCharacter(animations, true, [
+      state(200, 200, [controller(200, "HitDef", {
+        damage: "30",
+        animtype: "medium",
+        "air.animtype": "up",
+        "fall.animtype": "diagup",
+      })]),
+    ]);
+
+    const fighter = createImportedFighterDefinition(character);
+
+    expect(fighter?.stateMoves?.get(200)?.hitVars).toMatchObject({
+      groundAnimType: 1,
+      airAnimType: 4,
+      fallAnimType: 5,
+      animType: 5,
     });
   });
 

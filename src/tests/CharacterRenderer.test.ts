@@ -1,6 +1,11 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
-import { CharacterRenderer, resolveActorShadowPresentation, resolveCharacterRenderDepth } from "../game/render/CharacterRenderer";
+import {
+  CharacterRenderer,
+  resolveActorShadowPresentation,
+  resolveCharacterRenderDepth,
+  shouldRenderActorReflection,
+} from "../game/render/CharacterRenderer";
 import type { TextureStore } from "../game/render/TextureStore";
 import type { MugenSprite, SpriteLookupContext, SpriteProvider } from "../mugen/model/MugenSprite";
 import type { ActorSnapshot } from "../mugen/runtime/types";
@@ -109,6 +114,112 @@ describe("CharacterRenderer", () => {
     expect(resolveCharacterRenderDepth(3, 0.01)).toBeGreaterThan(resolveCharacterRenderDepth(2, 0.02));
   });
 
+  it("applies Projectile render angles to the live sprite mesh", async () => {
+    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
+
+    await renderer.update([
+      actor({ renderAngle: 30, renderAngleX: 20, renderAngleY: -15 }, { actorKind: "projectile" }),
+    ]);
+
+    const mesh = renderer.group.children.find((child) => child instanceof THREE.Mesh) as THREE.Mesh | undefined;
+    expect(mesh?.rotation.x).toBeCloseTo(-Math.PI / 9);
+    expect(mesh?.rotation.y).toBeCloseTo(-Math.PI / 12);
+    expect(mesh?.rotation.z).toBeCloseTo(-Math.PI / 6);
+
+    await renderer.update([actor({}, { actorKind: "projectile" })]);
+    expect(mesh?.rotation.x).toBeCloseTo(0);
+    expect(mesh?.rotation.y).toBeCloseTo(0);
+    expect(mesh?.rotation.z).toBeCloseTo(0);
+    renderer.dispose();
+  });
+
+  it("applies Projectile X shear before rotation and resets the quad", async () => {
+    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
+    await renderer.update([actor({}, { actorKind: "projectile" })]);
+    const mesh = renderer.group.children.find((child) => child instanceof THREE.Mesh) as
+      | THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>
+      | undefined;
+    const position = mesh?.geometry.getAttribute("position");
+    const baseX = position ? Array.from({ length: position.count }, (_, index) => position.getX(index)) : [];
+    const baseY = position ? Array.from({ length: position.count }, (_, index) => position.getY(index)) : [];
+
+    await renderer.update([actor({ renderShearX: 0.5, renderAngle: 20 }, { actorKind: "projectile" })]);
+    for (let index = 0; index < baseX.length; index += 1) {
+      expect(position?.getX(index)).toBeCloseTo((baseX[index] ?? 0) - 0.5 * (baseY[index] ?? 0));
+    }
+    expect(mesh?.rotation.z).toBeCloseTo(-THREE.MathUtils.degToRad(20));
+
+    await renderer.update([actor({}, { actorKind: "projectile" })]);
+    for (let index = 0; index < baseX.length; index += 1) {
+      expect(position?.getX(index)).toBeCloseTo(baseX[index] ?? 0);
+    }
+    renderer.dispose();
+  });
+
+  it("applies bounded Projectile perspective and resets or culls named projection modes", async () => {
+    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
+    await renderer.update([
+      actor({
+        renderProjection: "perspective",
+        renderFocalLength: 64,
+        renderAngleX: 35,
+        renderAngleY: 20,
+      }, { actorKind: "projectile" }),
+    ]);
+    const mesh = renderer.group.children.find((child) => child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry) as
+      | THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>
+      | undefined;
+    const position = mesh?.geometry.getAttribute("position");
+    const projected = position ? Array.from({ length: position.count }, (_, index) => [position.getX(index), position.getY(index)]) : [];
+    expect(mesh?.visible).toBe(true);
+    expect(mesh?.rotation.toArray().slice(0, 3)).toEqual([0, 0, 0]);
+    expect(projected).not.toEqual([
+      [-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5],
+    ]);
+
+    await renderer.update([actor({}, { actorKind: "projectile" })]);
+    const reset = position ? Array.from({ length: position.count }, (_, index) => [position.getX(index), position.getY(index)]) : [];
+    expect(mesh?.visible).toBe(true);
+    expect(reset).toEqual([
+      [-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5],
+    ]);
+
+    await renderer.update([actor({ renderProjection: "perspective2" }, { actorKind: "projectile" })]);
+    expect(mesh?.visible).toBe(false);
+    renderer.dispose();
+  });
+
+  it("clips the live Projectile quad and UVs to projwindow, then resets or culls it", async () => {
+    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
+    await renderer.update([
+      actor({ renderWindow: [-3, -4, 3, 4] }, { actorKind: "projectile" }),
+    ]);
+    const mesh = renderer.group.children.find((child) => child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry) as
+      | THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>
+      | undefined;
+    const position = mesh?.geometry.getAttribute("position");
+    const uv = mesh?.geometry.getAttribute("uv");
+    expect(mesh?.visible).toBe(true);
+    expect(position ? Array.from({ length: position.count }, (_, index) => [position.getX(index), position.getY(index)]) : []).toEqual([
+      [-0.25, -0.125], [0.25, -0.125], [-0.25, -0.5], [0.25, -0.5],
+    ]);
+    expect(uv ? Array.from({ length: uv.count }, (_, index) => [uv.getX(index), uv.getY(index)]) : []).toEqual([
+      [0.25, 0.375], [0.75, 0.375], [0.25, 0], [0.75, 0],
+    ]);
+
+    await renderer.update([actor({}, { actorKind: "projectile" })]);
+    expect(mesh?.visible).toBe(true);
+    expect(position ? Array.from({ length: position.count }, (_, index) => [position.getX(index), position.getY(index)]) : []).toEqual([
+      [-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5],
+    ]);
+
+    await renderer.update([
+      actor({ renderWindow: [100, -4, 110, 4] }, { actorKind: "projectile" }),
+    ]);
+    expect(mesh?.visible).toBe(false);
+    renderer.dispose();
+  });
+
   it("renders supported actor shadows and removes them when suppressed", async () => {
     const provider = new RecordingSpriteProvider();
     const renderer = new CharacterRenderer(provider, fakeTextureStore());
@@ -130,6 +241,56 @@ describe("CharacterRenderer", () => {
     renderer.dispose();
   });
 
+  it("renders authored Projectile shadow color and removes the live shadow when cleared", async () => {
+    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
+
+    await renderer.update([
+      actor({ shadowColor: [64, 128, 192] }, { actorKind: "projectile" }),
+    ]);
+
+    const shadow = renderer.group.children.find((child) => child instanceof THREE.Mesh && child.geometry instanceof THREE.CircleGeometry) as
+      | THREE.Mesh<THREE.CircleGeometry, THREE.MeshBasicMaterial>
+      | undefined;
+    expect(shadow).toBeDefined();
+    expect(shadow?.scale.x).toBe(24);
+    expect(shadow?.material.color.r).toBeCloseTo(64 / 255);
+    expect(shadow?.material.color.g).toBeCloseTo(128 / 255);
+    expect(shadow?.material.color.b).toBeCloseTo(192 / 255);
+
+    await renderer.update([actor({}, { actorKind: "projectile" })]);
+    expect(renderer.group.children.some((child) => child instanceof THREE.Mesh && child.geometry instanceof THREE.CircleGeometry)).toBe(false);
+    renderer.dispose();
+  });
+
+  it("renders Projectile reflection auto/on modes and removes the off mode", async () => {
+    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
+    const auto = actor({ shadowColor: [32, 64, 96] }, { actorKind: "projectile" });
+    expect(shouldRenderActorReflection(auto)).toBe(true);
+    expect(shouldRenderActorReflection(actor({}, { actorKind: "projectile" }))).toBe(false);
+    expect(shouldRenderActorReflection(actor({ reflectionMode: 1 }, { actorKind: "projectile" }))).toBe(true);
+
+    await renderer.update([auto]);
+    let reflection = renderer.group.getObjectByName("mugen-reflection:p1") as
+      | THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>
+      | undefined;
+    expect(reflection).toBeDefined();
+    expect(reflection?.position).toMatchObject({ x: 0, y: -6, z: 0.07 });
+    expect(reflection?.scale).toMatchObject({ x: 12, y: -16 });
+    expect(reflection?.material.opacity).toBeCloseTo(0.32);
+
+    await renderer.update([
+      actor({ shadowColor: [32, 64, 96], reflectionMode: 0 }, { actorKind: "projectile" }),
+    ]);
+    expect(renderer.group.getObjectByName("mugen-reflection:p1")).toBeUndefined();
+
+    await renderer.update([actor({ reflectionMode: 1 }, { actorKind: "projectile" })]);
+    reflection = renderer.group.getObjectByName("mugen-reflection:p1") as
+      | THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>
+      | undefined;
+    expect(reflection).toBeDefined();
+    renderer.dispose();
+  });
+
   it("resolves bounded shadow presentation only for player, helper, and explod actors", () => {
     const playerShadow = resolveActorShadowPresentation(actor({}, { actorKind: "player" }));
     const helperShadow = resolveActorShadowPresentation(actor({}, { actorKind: "helper" }));
@@ -139,6 +300,11 @@ describe("CharacterRenderer", () => {
     expect(helperShadow?.height).toBeCloseTo(6.48);
     expect(resolveActorShadowPresentation(actor({}, { actorKind: "explod" }))).toMatchObject({ width: 24, height: 6 });
     expect(resolveActorShadowPresentation(actor({}, { actorKind: "projectile" }))).toBeUndefined();
+    expect(resolveActorShadowPresentation(actor({ shadowColor: [64, 128, 192] }, { actorKind: "projectile" }))).toMatchObject({
+      width: 24,
+      height: 6,
+      color: [64, 128, 192],
+    });
     expect(resolveActorShadowPresentation(actor({}, { shadowVisible: false }))).toBeUndefined();
   });
 });

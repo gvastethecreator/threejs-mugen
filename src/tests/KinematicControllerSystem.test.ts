@@ -84,17 +84,19 @@ describe("RuntimeKinematicControllerWorld", () => {
 
   it("applies HitVelSet flags only when hit velocity exists", () => {
     const world = new RuntimeKinematicControllerWorld();
-    const state = runtimeState({ hitVelocity: { x: -4, y: -8 }, vel: { x: 1, y: 2 } });
+    const state = runtimeState({ hitVelocity: { x: -4, y: -8, z: 2.5 }, vel: { x: 1, y: 2 } });
 
-    world.applyController(state, source("HitVelSet", { x: "1", y: "0" }));
+    world.applyController(state, source("HitVelSet", { x: "1", y: "0", z: "1" }));
     expect(state.vel).toEqual({ x: -4, y: 2 });
+    expect(state.combatDepth?.velocity).toBe(2.5);
 
     world.applyController(state, source("HitVelSet", { y: "1" }));
     expect(state.vel).toEqual({ x: -4, y: -8 });
 
     const untouched = runtimeState({ vel: { x: 3, y: 4 } });
-    world.applyController(untouched, source("HitVelSet", { x: "1", y: "1" }));
+    world.applyController(untouched, source("HitVelSet", { x: "1", y: "1", z: "1" }));
     expect(untouched.vel).toEqual({ x: 3, y: 4 });
+    expect(untouched.combatDepth).toBeUndefined();
   });
 
   it("applies PosSet, PosAdd, and Gravity through the controller world", () => {

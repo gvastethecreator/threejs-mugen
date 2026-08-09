@@ -3,11 +3,11 @@ const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 
 const root = process.cwd();
-const runsRoot = path.resolve(root, ".scratch/content-pack/regeneration-v2/runs");
+const runsRoot = path.resolve(root, ".scratch/content-pack/karate-reset/runs");
 const publicCharactersRoot = path.resolve(root, "public/characters");
 const validator = path.resolve("X:/skills/spritesheet-expert-skill/SKILLS/spritesheet-expert/scripts/validate_run.py");
 const runs = fs.readdirSync(runsRoot, { withFileTypes: true })
-  .filter((entry) => entry.isDirectory() && entry.name.endsWith("-v2"))
+  .filter((entry) => entry.isDirectory() && entry.name.endsWith("-v1"))
   .map((entry) => entry.name)
   .sort();
 
@@ -22,12 +22,31 @@ function readJson(filePath) {
 function summarizeSourceCoverage(runDir) {
   const request = readJson(path.join(runDir, "sprite-request.json"));
   const regenerationMap = readJson(path.join(runDir, "regeneration-map.json"));
+  const frameManifest = readJson(path.join(runDir, "frames", "frames-manifest.json"));
+  const provenance = readJson(path.join(runDir, "source-provenance.json"));
   const requestedStates = Object.keys(request?.states ?? {});
   const stateFrames = regenerationMap?.state_frames ?? {};
+  const directRows = new Map((frameManifest?.rows ?? []).map((row) => [row.state, row]));
+  const sourcedStates = new Set(
+    (provenance?.accepted_sources ?? []).flatMap((source) => Array.isArray(source.states) ? source.states : []),
+  );
+  const usesRegenerationMap = Object.keys(stateFrames).length > 0;
   const rows = requestedStates.map((state) => {
+    const expectedFrames = Number(request?.states?.[state]?.frames ?? 0);
+    if (!usesRegenerationMap) {
+      const extractedFrames = Number(directRows.get(state)?.frames ?? 0);
+      return {
+        state,
+        expectedFrames,
+        sourceFrames: extractedFrames,
+        uniqueSourceCells: extractedFrames,
+        duplicateFrames: 0,
+        duplicateRatio: 0,
+        complete: extractedFrames === expectedFrames && sourcedStates.has(state),
+      };
+    }
     const frames = Array.isArray(stateFrames[state]) ? stateFrames[state] : [];
     const uniqueCells = [...new Set(frames)];
-    const expectedFrames = Number(request?.states?.[state]?.frames ?? 0);
     return {
       state,
       expectedFrames,
@@ -45,9 +64,14 @@ function summarizeSourceCoverage(runDir) {
     duplicateRatio: row.duplicateRatio,
   }));
   return {
-    sourceGridCells: Object.keys(regenerationMap?.cells ?? {}).length,
+    coverageMode: usesRegenerationMap ? "regeneration-map" : "direct-state-sources",
+    sourceGridCells: usesRegenerationMap
+      ? Object.keys(regenerationMap?.cells ?? {}).length
+      : (provenance?.accepted_sources ?? []).length,
     requestedStateCount: requestedStates.length,
-    mappedStateCount: Object.keys(stateFrames).length,
+    mappedStateCount: usesRegenerationMap
+      ? Object.keys(stateFrames).length
+      : rows.filter((row) => row.complete).length,
     complete: incompleteRows.length === 0 && requestedStates.length > 0,
     incompleteRows,
     duplicateRows,
@@ -129,8 +153,8 @@ const result = {
   kind: "content-pack-spritesheet-qa",
   validator,
   stage: "pre-package",
-  expectedProductionRuns: 8,
-  ok: runs.length === 8 && results.every((entry) => entry.ok) && publicCharacterInventory.ok,
+  expectedProductionRuns: 2,
+  ok: runs.length === 2 && results.every((entry) => entry.ok) && publicCharacterInventory.ok,
   promotionPolicy: "blocked_until_animation_identity_runtime_preview_and_visual_review_are_green",
   runs: results,
   publicCharacterInventory,

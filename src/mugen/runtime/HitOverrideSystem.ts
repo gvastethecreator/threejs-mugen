@@ -1,4 +1,5 @@
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
+import type { DemoMove } from "./demoFighters";
 import { markRuntimeEffectActorGotHit } from "./EffectLifecycleSystem";
 import type { CharacterRuntimeState, RuntimeHitOverrideSlot } from "./types";
 
@@ -18,8 +19,8 @@ export type RuntimeHitOverrideRedirect = {
   message: string;
 };
 
-export type RuntimeHitOverrideHooks<TActor extends RuntimeHitOverrideActor = RuntimeHitOverrideActor> = {
-  tryEnterState: (defender: TActor, stateNo: number) => boolean;
+export type RuntimeHitOverrideHooks<TDefender extends RuntimeHitOverrideActor = RuntimeHitOverrideActor> = {
+  tryEnterState: (defender: TDefender, stateNo: number) => boolean;
 };
 
 export class RuntimeHitOverrideWorld {
@@ -33,12 +34,15 @@ export class RuntimeHitOverrideWorld {
     state.hitOverrides = next.length > 0 ? next : undefined;
   }
 
-  applyRedirect<TActor extends RuntimeHitOverrideActor>(
-    attacker: TActor,
-    defender: TActor,
+  applyRedirect<
+    TAttacker extends RuntimeHitOverrideActor,
+    TDefender extends RuntimeHitOverrideActor,
+  >(
+    attacker: TAttacker,
+    defender: TDefender,
     override: RuntimeHitOverrideSlot,
     hitPause: number,
-    hooks: RuntimeHitOverrideHooks<TActor>,
+    hooks: RuntimeHitOverrideHooks<TDefender>,
   ): RuntimeHitOverrideRedirect {
     attacker.hitPause = hitPause;
     defender.hitPause = hitPause;
@@ -67,6 +71,15 @@ export class RuntimeHitOverrideWorld {
       message: `${defender.label} HitOverride slot ${override.slot} redirected ${attacker.label}${targetState}`,
     };
   }
+}
+
+export function shouldRuntimeHitOverrideMissDirect(
+  move: Pick<DemoMove, "missOnOverride" | "p1StateNo" | "p2StateNo">,
+): boolean {
+  if (move.missOnOverride !== undefined) {
+    return move.missOnOverride;
+  }
+  return move.p1StateNo !== undefined || move.p2StateNo !== undefined;
 }
 
 function tickHitOverrideSlot(slot: RuntimeHitOverrideSlot | undefined): RuntimeHitOverrideSlot | undefined {

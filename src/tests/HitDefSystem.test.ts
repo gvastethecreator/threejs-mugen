@@ -24,8 +24,10 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         p2clsncheck: "Size",
         p2clsnrequire: "Clsn1",
         damage: "30,5",
+        keepstate: "1",
         guardpoints: "-12",
         dizzypoints: "18",
+        nochainid: "40,41,42,43,44,45,46,47,48,49",
         priority: "5, Dodge",
         pausetime: "12,8",
         p1sprpriority: "3",
@@ -49,6 +51,9 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         "down.cornerpush.veloff": "5",
         "guard.cornerpush.veloff": "6",
         "airguard.cornerpush.veloff": "7",
+        xaccel: "-.16",
+        yaccel: ".62",
+        zaccel: ".24",
         sparkno: "S7000",
         "guard.sparkno": "F7004",
         sparkxy: "12,-40",
@@ -64,6 +69,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         "fall.yvelocity": "-4.5",
         "fall.recover": "1",
         "fall.recovertime": "20",
+        "fall.envshake.dir": "67.5",
       }),
     );
     const recordedControllers: string[] = [];
@@ -99,6 +105,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       activeEnd: 6,
       recovery: 18,
       damage: 30,
+      keepState: true,
       hitFlag: "H,L,A,F,P",
       affectTeam: -1,
       teamSide: 2,
@@ -109,7 +116,9 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       guardDamage: 5,
       guardPoints: -12,
       dizzyPoints: 18,
+      noChainIds: [40, 41, 42, 43, 44, 45, 46, 47],
       hitPause: 12,
+      hitShakeTime: 8,
       hitStun: 15,
       airHitTime: 17,
       downHitTime: 19,
@@ -126,6 +135,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       airVelocityZ: 1.25,
       guardFlag: "MA",
       guardPause: 6,
+      guardShakeTime: 6,
       guardStun: 9,
       airGuardControlTime: 11,
       guardPush: 2,
@@ -134,6 +144,11 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       airGuardPush: 6,
       airGuardVelocityY: -2,
       airGuardVelocityZ: 2.25,
+      hitVars: {
+        xAccel: -0.16,
+        yAccel: 0.62,
+        zAccel: 0.24,
+      },
       cornerPush: 3,
       airCornerPush: 4,
       downCornerPush: 5,
@@ -155,6 +170,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         velocity: { y: -4.5 },
         recover: true,
         recoverTime: 20,
+        envShake: { time: 0, freq: 60, ampl: -4, phase: 0, dir: 67.5 },
       },
       hitbox: { x1: 10, y1: -50, x2: 45, y2: -20 },
     });
@@ -173,6 +189,1979 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
 
     expect(result.activated).toBe(true);
     expect(actor.currentMove?.targetId).toBe(0);
+  });
+
+  it("uses official fresh HitDef damage defaults without changing ModifyHitDef preservation", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.constants = {
+      "default.attack.lifetopowermul": 0.25,
+      "default.gethit.lifetopowermul": 0.4,
+    };
+    actor.currentMove = {
+      ...actor.currentMove!,
+      damage: 99,
+      guardDamage: 88,
+      attackerHitPower: 77,
+      attackerGuardPower: 66,
+      hitPower: 55,
+      guardPower: 44,
+    };
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      damage: 0,
+      guardDamage: 0,
+      attackerHitPower: 0,
+      attackerGuardPower: 0,
+      hitPower: 0,
+      guardPower: 0,
+    });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", damage: "40" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ damage: 40, guardDamage: 0 });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", damage: "41,7" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ damage: 41, guardDamage: 7 });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { forcenofall: "1", redirectid: "57" })),
+    });
+    expect(actor.currentMove).toMatchObject({ damage: 41, guardDamage: 7 });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { damage: "50", redirectid: "57" })),
+    });
+    expect(actor.currentMove).toMatchObject({ damage: 50, guardDamage: 7 });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { damage: "60,9", redirectid: "57" })),
+    });
+    expect(actor.currentMove).toMatchObject({ damage: 60, guardDamage: 9 });
+  });
+
+  it("resolves fresh HitDef pause pairs and guard inheritance in caller context", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 99;
+    actor.currentMove = {
+      ...actor.currentMove!,
+      hitPause: 99,
+      hitShakeTime: 88,
+      guardPause: 77,
+      guardShakeTime: 66,
+    };
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      hitPause: 0,
+      hitShakeTime: 0,
+      guardPause: 0,
+      guardShakeTime: 0,
+    });
+
+    const caller = runtimeState();
+    caller.vars[1] = 8.9;
+    caller.vars[2] = 11.9;
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        pausetime: "var(1),var(2)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      hitPause: 8,
+      hitShakeTime: 11,
+      guardPause: 8,
+      guardShakeTime: 11,
+    });
+
+    caller.vars[3] = 5.9;
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        pausetime: "var(1),var(2)",
+        "guard.pausetime": "var(3)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      hitPause: 8,
+      hitShakeTime: 11,
+      guardPause: 5,
+      guardShakeTime: 11,
+    });
+
+    caller.vars[4] = 6.9;
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        pausetime: "var(1),var(2)",
+        "guard.pausetime": "var(3),var(4)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      hitPause: 8,
+      hitShakeTime: 11,
+      guardPause: 5,
+      guardShakeTime: 6,
+    });
+  });
+
+  it("resolves fresh and modified ground.hittime in caller or helper context", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.currentMove = { ...actor.currentMove!, hitStun: 99 };
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.hitStun).toBe(0);
+
+    const caller = runtimeState();
+    caller.vars[1] = 13.9;
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.hittime": "var(1)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.hitStun).toBe(13);
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.hittime": "var(1)",
+      })),
+      context: { self: caller },
+      resolveIntegerScalar: (key) => key === "ground.hittime" ? 17 : undefined,
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.hitStun).toBe(17);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        forcenofall: "1",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.hitStun).toBe(17);
+
+    caller.vars[2] = 24.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "ground.hittime": "var(2)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.hitStun).toBe(24);
+  });
+
+  it("resolves fresh and modified ground.slidetime in caller or helper context", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.currentMove = {
+      ...actor.currentMove!,
+      hitVars: { ...actor.currentMove?.hitVars, slideTime: 99 },
+    };
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.hitVars?.slideTime).toBe(0);
+
+    const caller = runtimeState();
+    caller.vars[1] = 13.9;
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.slidetime": "var(1)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.hitVars?.slideTime).toBe(13);
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.slidetime": "var(1)",
+      })),
+      context: { self: caller },
+      resolveIntegerScalar: (key) => key === "ground.slidetime" ? 17 : undefined,
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.hitVars?.slideTime).toBe(17);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        forcenofall: "1",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.hitVars?.slideTime).toBe(17);
+
+    caller.vars[2] = 24.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "ground.slidetime": "var(2)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.hitVars?.slideTime).toBe(24);
+  });
+
+  it("resolves guard.hittime by profile and replaces only guard stun on ModifyHitDef", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const fallback = (runtimeProfile: "mugen-1.1" | "ikemen-go" | "unknown") => {
+      const actor = hitDefActor();
+      world.apply({
+        actor,
+        controller: compileControllerIr(controller("HitDef", {
+          attr: "S,NA",
+          "ground.hittime": "12",
+          "ground.slidetime": "7",
+        })),
+        runtimeProfile,
+        frame: activeFrame(),
+      });
+      return actor.currentMove?.guardStun;
+    };
+
+    expect(fallback("mugen-1.1")).toBe(7);
+    expect(fallback("ikemen-go")).toBe(12);
+    expect(fallback("unknown")).toBe(12);
+
+    const actor = hitDefActor();
+    const caller = runtimeState();
+    caller.vars[1] = 13.9;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "guard.hittime": "var(1)",
+      })),
+      context: { self: caller },
+      runtimeProfile: "ikemen-go",
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.guardStun).toBe(13);
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "guard.hittime": "var(1)",
+      })),
+      context: { self: caller },
+      resolveIntegerScalar: (key) => key === "guard.hittime" ? 17 : undefined,
+      runtimeProfile: "ikemen-go",
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.guardStun).toBe(17);
+    actor.currentMove!.guardSlideTime = 31;
+    actor.currentMove!.guardControlTime = 32;
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        forcenofall: "1",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ guardStun: 17, guardSlideTime: 31, guardControlTime: 32 });
+
+    caller.vars[2] = 24.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "guard.hittime": "var(2)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ guardStun: 24, guardSlideTime: 31, guardControlTime: 32 });
+  });
+
+  it("resolves guard.slidetime in caller context and modifies only guard slide time", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+    caller.vars[1] = 13.9;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "guard.hittime": "var(1)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ guardStun: 13, guardSlideTime: 13, guardControlTime: 13 });
+
+    actor.firedHitDefs.clear();
+    caller.vars[2] = 17.9;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "guard.hittime": "9",
+        "guard.slidetime": "var(2)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ guardStun: 9, guardSlideTime: 17, guardControlTime: 17 });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "guard.hittime": "9",
+        "guard.slidetime": "var(2)",
+      })),
+      context: { self: caller },
+      resolveIntegerScalar: (key) => key === "guard.slidetime" ? 21 : undefined,
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ guardStun: 9, guardSlideTime: 21, guardControlTime: 21 });
+    actor.currentMove!.guardControlTime = 32;
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        forcenofall: "1",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ guardStun: 9, guardSlideTime: 21, guardControlTime: 32 });
+
+    caller.vars[3] = 24.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "guard.slidetime": "var(3)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ guardStun: 9, guardSlideTime: 24, guardControlTime: 32 });
+  });
+
+  it("resolves guard.ctrltime in caller context and modifies only guard control time", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+    caller.vars[1] = 13.9;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "guard.slidetime": "var(1)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ guardSlideTime: 13, guardControlTime: 13 });
+
+    actor.firedHitDefs.clear();
+    caller.vars[2] = 17.9;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "guard.slidetime": "9",
+        "guard.ctrltime": "var(2)",
+        "airguard.ctrltime": "31",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ guardSlideTime: 9, guardControlTime: 17, airGuardControlTime: 31 });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "guard.slidetime": "9",
+        "guard.ctrltime": "var(2)",
+        "airguard.ctrltime": "31",
+      })),
+      context: { self: caller },
+      resolveIntegerScalar: (key) => key === "guard.ctrltime" ? 21 : undefined,
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ guardSlideTime: 9, guardControlTime: 21, airGuardControlTime: 31 });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        forcenofall: "1",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ guardSlideTime: 9, guardControlTime: 21, airGuardControlTime: 31 });
+
+    caller.vars[3] = 24.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "guard.ctrltime": "var(3)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ guardSlideTime: 9, guardControlTime: 24, airGuardControlTime: 31 });
+  });
+
+  it("resolves airguard.ctrltime in caller context and modifies only air guard control time", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+    caller.vars[1] = 13.9;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "guard.ctrltime": "var(1)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ guardControlTime: 13, airGuardControlTime: 13 });
+
+    actor.firedHitDefs.clear();
+    caller.vars[2] = 17.9;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "guard.ctrltime": "9",
+        "airguard.ctrltime": "var(2)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ guardControlTime: 9, airGuardControlTime: 17 });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "guard.ctrltime": "9",
+        "airguard.ctrltime": "var(2)",
+      })),
+      context: { self: caller },
+      resolveIntegerScalar: (key) => key === "airguard.ctrltime" ? 21 : undefined,
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ guardControlTime: 9, airGuardControlTime: 21 });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        forcenofall: "1",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ guardControlTime: 9, airGuardControlTime: 21 });
+
+    caller.vars[3] = 24.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "airguard.ctrltime": "var(3)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ guardControlTime: 9, airGuardControlTime: 24 });
+  });
+
+  it("resolves air.hittime in caller context with a fresh default of 20", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", "air.hittime": "77" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.airHitTime).toBe(77);
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.airHitTime).toBe(20);
+
+    actor.firedHitDefs.clear();
+    caller.vars[1] = 17.9;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", "air.hittime": "var(1)" })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.airHitTime).toBe(17);
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", "air.hittime": "var(1)" })),
+      context: { self: caller },
+      resolveIntegerScalar: (key) => key === "air.hittime" ? 21 : undefined,
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.airHitTime).toBe(21);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { forcenofall: "1", redirectid: "57" })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.airHitTime).toBe(21);
+
+    caller.vars[2] = 24.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "air.hittime": "var(2)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.airHitTime).toBe(24);
+  });
+
+  it("resolves nonnegative guard.dist and preserves the live or default value for negatives", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.guardDistance).toBe(96);
+
+    actor.firedHitDefs.clear();
+    caller.vars[1] = 72.9;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", "guard.dist": "var(1)" })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.guardDistance).toBe(72);
+
+    actor.firedHitDefs.clear();
+    caller.vars[1] = -9;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", "guard.dist": "var(1)" })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.guardDistance).toBe(72);
+
+    const defaultActor = hitDefActor();
+    world.apply({
+      actor: defaultActor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", "guard.dist": "-1" })),
+      frame: activeFrame(),
+    });
+    expect(defaultActor.currentMove?.guardDistance).toBe(96);
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", "guard.dist": "var(1)" })),
+      context: { self: caller },
+      resolveIntegerScalar: (key) => key === "guard.dist" ? 64 : undefined,
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.guardDistance).toBe(64);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { forcenofall: "1", redirectid: "57" })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.guardDistance).toBe(64);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { "guard.dist": "-1", redirectid: "57" })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.guardDistance).toBe(64);
+
+    caller.vars[2] = 48.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "guard.dist": "var(2)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.guardDistance).toBe(48);
+  });
+
+  it("resolves ground.velocity X/Y independently and preserves live siblings on ModifyHitDef", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.velocity": "-2,-3,4",
+      })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      push: 2,
+      hitVelocityY: -3,
+      hitVelocityZ: 4,
+      hitVelocities: { ground: { x: -2, y: -3, z: 4 } },
+    });
+
+    actor.firedHitDefs.clear();
+    caller.vars[1] = -6.25;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.velocity": "var(1)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      push: 6.25,
+      hitVelocityY: 0,
+      hitVelocityZ: 4,
+      hitVelocities: { ground: { x: -6.25, y: 0, z: 4 } },
+    });
+
+    actor.firedHitDefs.clear();
+    caller.vars[2] = -2.25;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.velocity": "-5.5,var(2)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      push: 5.5,
+      hitVelocityY: -2.25,
+      hitVelocities: { ground: { x: -5.5, y: -2.25, z: 4 } },
+    });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.velocity": "var(1),var(2)",
+      })),
+      context: { self: caller },
+      resolveFloatPair: (key) => key === "ground.velocity" ? [undefined, -3.5] : undefined,
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      push: 5.5,
+      hitVelocityY: -3.5,
+      hitVelocities: { ground: { x: -5.5, y: -3.5, z: 4 } },
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { forcenofall: "1", redirectid: "57" })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.hitVelocities?.ground).toEqual({ x: -5.5, y: -3.5, z: 4 });
+
+    caller.vars[3] = -8.5;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "ground.velocity": "var(3)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({
+      push: 8.5,
+      hitVelocityY: -3.5,
+      hitVelocityZ: 4,
+      hitVelocities: { ground: { x: -8.5, y: -3.5, z: 4 } },
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "ground.velocity": "var(1),var(2)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+      resolveFloatPair: (key) => key === "ground.velocity" ? [undefined, -6.5] : undefined,
+    });
+    expect(actor.currentMove).toMatchObject({
+      push: 8.5,
+      hitVelocityY: -6.5,
+      hitVelocityZ: 4,
+      hitVelocities: { ground: { x: -8.5, y: -6.5, z: 4 } },
+    });
+  });
+
+  it("resolves fresh and modified HitDef id and chainid in caller context", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 99;
+    actor.runtime.vars[2] = 99;
+    const caller = runtimeState();
+    caller.vars[1] = -7.9;
+    caller.vars[2] = 13.9;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        id: "var(1)",
+        chainid: "var(2)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ targetId: 0, hitVars: { hitId: 0, chainId: 13 } });
+
+    caller.vars[1] = 9.9;
+    caller.vars[2] = -1.9;
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        id: "var(1)",
+        chainid: "var(2)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ targetId: 9, hitVars: { hitId: 9 } });
+    expect(actor.currentMove?.hitVars).not.toHaveProperty("chainId");
+
+    caller.vars[3] = -5.9;
+    caller.vars[4] = 17.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        id: "var(3)",
+        chainid: "var(4)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ targetId: 0, hitVars: { hitId: 0, chainId: 17 } });
+
+    caller.vars[5] = 8.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        id: "var(5)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ targetId: 8, hitVars: { hitId: 8, chainId: 17 } });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { chainid: "-1", redirectid: "57" })),
+    });
+    expect(actor.currentMove).toMatchObject({ targetId: 8, hitVars: { hitId: 8 } });
+    expect(actor.currentMove?.hitVars).not.toHaveProperty("chainId");
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ targetId: 0, hitVars: { hitId: 0 } });
+    expect(actor.currentMove?.hitVars).not.toHaveProperty("chainId");
+  });
+
+  it("resolves dynamic HitDef damage before fresh defaults and mutates it without recomputing metadata", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 99;
+    actor.constants = {
+      "default.attack.lifetopowermul": 0.25,
+      "default.gethit.lifetopowermul": 0.4,
+      "default.lifetodizzypointsmul": 1.25,
+    };
+    const caller = runtimeState();
+    caller.vars[1] = 40.9;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", damage: "var(1)" })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      damage: 40,
+      guardDamage: 0,
+      dizzyPoints: -50,
+      attackerHitPower: 10,
+      attackerGuardPower: 5,
+      hitPower: 16,
+      guardPower: 8,
+    });
+
+    caller.vars[1] = 41.9;
+    caller.vars[2] = 7.9;
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        damage: "var(1),var(2)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ damage: 41, guardDamage: 7 });
+    const derivedMetadata = {
+      dizzyPoints: actor.currentMove?.dizzyPoints,
+      attackerHitPower: actor.currentMove?.attackerHitPower,
+      attackerGuardPower: actor.currentMove?.attackerGuardPower,
+      hitPower: actor.currentMove?.hitPower,
+      guardPower: actor.currentMove?.guardPower,
+    };
+
+    caller.vars[3] = 50.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        damage: "var(3)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ damage: 50, guardDamage: 7, ...derivedMetadata });
+
+    caller.vars[4] = 60.9;
+    caller.vars[5] = 9.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        damage: "var(4),var(5)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ damage: 60, guardDamage: 9, ...derivedMetadata });
+  });
+
+  it("evaluates dynamic HitDef and ModifyHitDef acceleration, friction, and spark-scale metadata", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 0.25;
+    actor.runtime.vars[2] = 0.5;
+    actor.runtime.vars[3] = -0.75;
+    actor.runtime.vars[4] = 0.35;
+    actor.runtime.vars[5] = 0.45;
+    actor.runtime.vars[6] = 0.5;
+    actor.runtime.vars[7] = 0.8;
+    actor.runtime.vars[8] = -1.5;
+
+    const hitDef = compileControllerIr(
+      controller("HitDef", {
+        xaccel: "var(1) + 0.1",
+        yaccel: "var(2)",
+        zaccel: "var(3)",
+        "stand.friction": "var(4)",
+        "crouch.friction": "var(5)",
+        sparkscale: "var(6),var(7)",
+        "guard.sparkscale": "var(8)",
+      }),
+    );
+    expect(hitDef.operation).toMatchObject({
+      kind: "hitdef",
+      xAccel: "var(1) + 0.1",
+      yAccel: "var(2)",
+      zAccel: "var(3)",
+      standFriction: "var(4)",
+      crouchFriction: "var(5)",
+      hitSparkScale: ["var(6)", "var(7)"],
+      guardSparkScale: ["var(8)"],
+    });
+
+    world.apply({ actor, controller: hitDef, frame: activeFrame() });
+    expect(actor.currentMove?.hitVars).toMatchObject({
+      xAccel: 0.35,
+      yAccel: 0.5,
+      zAccel: -0.75,
+      standFriction: 0.35,
+      crouchFriction: 0.45,
+    });
+    expect(actor.currentMove).toMatchObject({
+      hitSparkScale: [0.5, 0.8],
+      guardSparkScale: [-1.5, 1],
+    });
+
+    actor.runtime.vars[1] = -0.2;
+    actor.runtime.vars[2] = 0.4;
+    actor.runtime.vars[3] = 0.15;
+    actor.runtime.vars[4] = 0.62;
+    actor.runtime.vars[5] = 0.72;
+    actor.runtime.vars[9] = 2;
+    const modified = world.modify({
+      actor,
+      controller: compileControllerIr(
+        controller("ModifyHitDef", {
+          xaccel: "var(1)",
+          yaccel: "var(2)",
+          zaccel: "var(3)",
+          "stand.friction": "var(4)",
+          "crouch.friction": "var(5)",
+          sparkscale: "var(9)",
+          "guard.sparkscale": "var(8),var(7)",
+          redirectid: "57",
+        }),
+      ),
+    });
+
+    expect(modified.modified).toBe(true);
+    expect(modified.operation).toMatchObject({
+      kind: "modifyhitdef",
+      xAccel: "var(1)",
+      yAccel: "var(2)",
+      zAccel: "var(3)",
+      standFriction: "var(4)",
+      crouchFriction: "var(5)",
+      hitSparkScale: ["var(9)"],
+      guardSparkScale: ["var(8)", "var(7)"],
+    });
+    expect(actor.currentMove?.hitVars).toMatchObject({
+      xAccel: -0.2,
+      yAccel: 0.4,
+      zAccel: 0.15,
+      standFriction: 0.62,
+      crouchFriction: 0.72,
+    });
+    expect(actor.currentMove).toMatchObject({
+      hitSparkScale: [2, 0.8],
+      guardSparkScale: [-1.5, 0.8],
+    });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { sparkscale: "0" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      hitSparkScale: [0, 1],
+      guardSparkScale: [1, 1],
+    });
+  });
+
+  it("resolves fresh contact PalFX and preserves omitted ModifyHitDef components", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 8;
+    actor.runtime.vars[2] = 12;
+    actor.runtime.vars[3] = -6;
+    actor.runtime.vars[4] = 4;
+    actor.runtime.vars[5] = 220;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "palfx.time": "var(1)",
+        "palfx.add": "var(2),var(3),var(4)",
+        "palfx.mul": "200,var(5),240",
+        "palfx.color": "192",
+        "palfx.invertall": "1",
+      })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.paletteFx).toEqual({
+      time: 8,
+      add: [12, -6, 4],
+      mul: [200, 220, 240],
+      color: 192,
+      invert: true,
+    });
+
+    actor.runtime.vars[1] = 13;
+    actor.runtime.vars[2] = 7;
+    const modified = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        "palfx.time": "var(1)",
+        "palfx.add": "var(2),2,3",
+      })),
+    });
+    expect(modified.modified).toBe(true);
+    expect(actor.currentMove?.paletteFx).toEqual({
+      time: 13,
+      add: [7, 2, 3],
+      mul: [200, 220, 240],
+      color: 192,
+      invert: true,
+    });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.paletteFx).toBeUndefined();
+  });
+
+  it("resolves fresh contact EnvShake and preserves omitted ModifyHitDef fields", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 12.8;
+    actor.runtime.vars[2] = 75;
+    actor.runtime.vars[3] = -9.9;
+    actor.runtime.vars[4] = 45;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "envshake.time": "var(1)",
+        "envshake.freq": "var(2)",
+        "envshake.ampl": "var(3)",
+        "envshake.phase": "var(4)",
+        "envshake.mul": "1.5",
+        "envshake.dir": "-20",
+      })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.envShake).toEqual({
+      time: 12,
+      freq: 75,
+      ampl: -9,
+      phase: 45,
+      mul: 1.5,
+      dir: -20,
+    });
+
+    actor.runtime.vars[1] = 7;
+    const modified = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        "envshake.time": "var(1)",
+        "envshake.dir": "30",
+      })),
+    });
+    expect(modified.modified).toBe(true);
+    expect(actor.currentMove?.envShake).toEqual({
+      time: 7,
+      freq: 75,
+      ampl: -9,
+      phase: 45,
+      mul: 1.5,
+      dir: 30,
+    });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.envShake).toBeUndefined();
+  });
+
+  it("resolves fall EnvShake in the caller context and mutates live fields independently", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 999;
+    const caller = runtimeState();
+    caller.vars[1] = 12.8;
+    caller.vars[2] = 75.5;
+    caller.vars[3] = -9.9;
+    caller.vars[4] = 45.5;
+
+    const hitDef = compileControllerIr(controller("HitDef", {
+      attr: "S,NA",
+      "fall.envshake.time": "var(1)",
+      "fall.envshake.freq": "var(2)",
+      "fall.envshake.ampl": "var(3)",
+      "fall.envshake.phase": "var(4)",
+      "fall.envshake.mul": "1.5",
+      "fall.envshake.dir": "-20",
+    }));
+    expect(hitDef.operation).toMatchObject({
+      kind: "hitdef",
+      fallEnvShake: {
+        time: "var(1)",
+        freq: "var(2)",
+        ampl: "var(3)",
+        phase: "var(4)",
+        mul: 1.5,
+        dir: -20,
+      },
+    });
+    world.apply({ actor, controller: hitDef, context: { self: caller }, frame: activeFrame() });
+    expect(actor.currentMove?.fall?.envShake).toEqual({
+      time: 12,
+      freq: 75.5,
+      ampl: -9,
+      phase: 45.5,
+      mul: 1.5,
+      dir: -20,
+    });
+
+    caller.vars[1] = 7.9;
+    const modified = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        "fall.envshake.time": "var(1)",
+        "fall.envshake.dir": "30",
+      })),
+      context: { self: caller },
+    });
+    expect(modified.modified).toBe(true);
+    expect(actor.currentMove?.fall?.envShake).toEqual({
+      time: 7,
+      freq: 75.5,
+      ampl: -9,
+      phase: 45.5,
+      mul: 1.5,
+      dir: 30,
+    });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.fall?.envShake).toBeUndefined();
+  });
+
+  it("resolves fall impact metadata in the caller context and mutates live fields independently", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 999;
+    const caller = runtimeState();
+    caller.vars[1] = 17.9;
+    caller.vars[2] = 3.5;
+    caller.vars[3] = -6.25;
+    caller.vars[4] = 2.75;
+
+    const hitDef = compileControllerIr(controller("HitDef", {
+      attr: "S,NA",
+      fall: "1",
+      "fall.damage": "var(1)",
+      "fall.xvelocity": "var(2)",
+      "fall.yvelocity": "var(3)",
+      "fall.zvelocity": "var(4)",
+    }));
+    world.apply({ actor, controller: hitDef, context: { self: caller }, frame: activeFrame() });
+    expect(actor.currentMove?.fall).toMatchObject({
+      enabled: true,
+      damage: 17,
+      velocity: { x: 3.5, y: -6.25, z: 2.75 },
+    });
+
+    caller.vars[1] = 9.8;
+    caller.vars[2] = 4.25;
+    const modified = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        "fall.damage": "var(1)",
+        "fall.xvelocity": "var(2)",
+      })),
+      context: { self: caller },
+    });
+    expect(modified.modified).toBe(true);
+    expect(actor.currentMove?.fall).toMatchObject({
+      enabled: true,
+      damage: 9,
+      velocity: { x: 4.25, y: -6.25, z: 2.75 },
+    });
+  });
+
+  it("resolves fall recovery metadata in the caller context and mutates live fields independently", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 999;
+    const caller = runtimeState();
+    caller.vars[1] = 0.9;
+    caller.vars[2] = 19.8;
+    caller.vars[3] = 1.9;
+    caller.vars[4] = 45.8;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        fall: "1",
+        "fall.recover": "var(1)",
+        "fall.recovertime": "var(2)",
+        "down.recover": "var(3)",
+        "down.recovertime": "var(4)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.fall).toMatchObject({
+      enabled: true,
+      recover: false,
+      recoverTime: 19,
+      downRecover: true,
+      downRecoverTime: 45,
+    });
+
+    caller.vars[1] = 1.9;
+    caller.vars[4] = 12.9;
+    const modified = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        "fall.recover": "var(1)",
+        "down.recovertime": "var(4)",
+      })),
+      context: { self: caller },
+    });
+    expect(modified.modified).toBe(true);
+    expect(actor.currentMove?.fall).toMatchObject({
+      enabled: true,
+      recover: true,
+      recoverTime: 19,
+      downRecover: true,
+      downRecoverTime: 12,
+    });
+  });
+
+  it("resolves fall flags in the caller context and mutates live fields independently", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 999;
+    const caller = runtimeState();
+    caller.vars[1] = 1.9;
+    caller.vars[2] = 0.9;
+    caller.vars[3] = 0.9;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        fall: "var(1)",
+        "air.fall": "var(2)",
+        "fall.kill": "var(3)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.fall).toMatchObject({ enabled: true, airFall: false, kill: false });
+
+    caller.vars[2] = 1.9;
+    caller.vars[3] = 1.9;
+    const modified = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        "air.fall": "var(2)",
+        "fall.kill": "var(3)",
+      })),
+      context: { self: caller },
+    });
+    expect(modified.modified).toBe(true);
+    expect(actor.currentMove?.fall).toMatchObject({ enabled: true, airFall: true, kill: true });
+  });
+
+  it("resolves down.bounce in caller context and mutates it live", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 0;
+    const caller = runtimeState();
+    caller.vars[1] = 1.9;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "down.bounce": "var(1)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.downBounce).toBe(true);
+
+    caller.vars[1] = 0.9;
+    const modified = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        "down.bounce": "var(1)",
+      })),
+      context: { self: caller },
+    });
+    expect(modified.modified).toBe(true);
+    expect(actor.currentMove?.downBounce).toBe(false);
+
+  });
+
+  it("resolves lethal flags in caller context and mutates live fields independently", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 999;
+    const caller = runtimeState();
+    caller.vars[1] = 0.9;
+    caller.vars[2] = 1.9;
+    caller.vars[3] = 0.9;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        kill: "var(1)",
+        "guard.kill": "var(2)",
+        hitonce: "var(3)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ kill: false, guardKill: true, hitOnce: false });
+
+    caller.vars[1] = 1.9;
+    caller.vars[3] = 1.9;
+    const modified = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        kill: "var(1)",
+        hitonce: "var(3)",
+      })),
+      context: { self: caller },
+    });
+    expect(modified.modified).toBe(true);
+    expect(actor.currentMove).toMatchObject({ kill: true, guardKill: true, hitOnce: true });
+  });
+
+  it("resolves and independently mutates direct-HitDef facing metadata", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 99;
+    const caller = runtimeState();
+    caller.vars[1] = -1.8;
+    caller.vars[2] = 2.9;
+    caller.vars[5] = -3.9;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        p1facing: "var(1)",
+        p1getp2facing: "var(2)",
+        p2facing: "var(5)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ p1Facing: -1, p1GetP2Facing: 2, p2Facing: -3 });
+
+    caller.vars[3] = 3.7;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        p1facing: "var(3)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ p1Facing: 3, p1GetP2Facing: 2, p2Facing: -3 });
+
+    caller.vars[4] = Number.POSITIVE_INFINITY;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        p1getp2facing: "var(4)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ p1Facing: 3, p1GetP2Facing: 2, p2Facing: -3 });
+
+    caller.vars[6] = 0.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        p2facing: "var(6)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ p1Facing: 3, p1GetP2Facing: 2, p2Facing: 0 });
+
+    caller.vars[7] = 4.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        p2facing: "var(7)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ p1Facing: 3, p1GetP2Facing: 2, p2Facing: 4 });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ p1Facing: 0, p1GetP2Facing: 0, p2Facing: 0 });
+  });
+
+  it("derives fresh direct-HitDef posture and preserves omitted ModifyHitDef fields", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+    caller.vars[1] = 1.9;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.velocity": "-5,-2",
+        forcecrouch: "var(1)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ forceStand: true, forceCrouch: true });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.velocity": "-5,-2",
+        forcestand: "0",
+        forcecrouch: "0",
+      })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ forceStand: false, forceCrouch: false });
+
+    caller.vars[2] = 1.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        forcestand: "var(2)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ forceStand: true, forceCrouch: false });
+
+    caller.vars[3] = 1.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        forcecrouch: "var(3)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ forceStand: true, forceCrouch: true });
+  });
+
+  it("resolves fresh and modified direct-HitDef forceNoFall without inheriting omitted values", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 99;
+    const caller = runtimeState();
+    caller.vars[1] = 1.9;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", forcenofall: "var(1)" })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.forceNoFall).toBe(true);
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.forceNoFall).toBe(false);
+
+    caller.vars[2] = 1.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        forcenofall: "var(2)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.forceNoFall).toBe(true);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        forcecrouch: "1",
+        redirectid: "57",
+      })),
+    });
+    expect(actor.currentMove).toMatchObject({ forceNoFall: true, forceCrouch: true });
+
+    caller.vars[3] = 0.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        forcenofall: "var(3)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({ forceNoFall: false, forceCrouch: true });
+  });
+
+  it("resolves fresh root HitDef states once and defaults p2 ownership only for a valid target state", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const calls: string[] = [];
+    const values: Record<string, number> = {
+      p1stateno: 777.9,
+      p2stateno: 888.8,
+      p2getp1state: 0.9,
+    };
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        p1stateno: "var(1)",
+        p2stateno: "var(2)",
+        p2getp1state: "var(3)",
+      })),
+      resolveIntegerScalar: (key) => {
+        calls.push(key);
+        return values[key];
+      },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ p1StateNo: 777, p2StateNo: 888, p2GetP1State: false });
+    expect(calls.filter((key) => key.endsWith("stateno") || key === "p2getp1state")).toEqual([
+      "p1stateno",
+      "p2stateno",
+      "p2getp1state",
+    ]);
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", p2stateno: "889" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ p2StateNo: 889, p2GetP1State: true });
+
+    actor.firedHitDefs.clear();
+    const invalidCalls: string[] = [];
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        p2stateno: "var(2)",
+        p2getp1state: "var(3)",
+      })),
+      resolveIntegerScalar: (key) => {
+        invalidCalls.push(key);
+        return key === "p2stateno" ? Number.POSITIVE_INFINITY : 1;
+      },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.p2StateNo).toBeUndefined();
+    expect(actor.currentMove?.p2GetP1State).toBe(false);
+    expect(invalidCalls).not.toContain("p2getp1state");
+  });
+
+  it("resolves fresh and modified direct-HitDef getpower component semantics", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 9.8;
+    actor.runtime.vars[2] = -4.9;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        getpower: "var(1),var(2)",
+      })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ attackerHitPower: 9, attackerGuardPower: -4 });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", getpower: "9" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ attackerHitPower: 9, attackerGuardPower: 4 });
+
+    actor.runtime.vars[3] = 7.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        getpower: "var(3)",
+        redirectid: "57",
+      })),
+    });
+    expect(actor.currentMove).toMatchObject({ attackerHitPower: 7, attackerGuardPower: 4 });
+
+    actor.runtime.vars[4] = Number.POSITIVE_INFINITY;
+    actor.runtime.vars[5] = 11.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        getpower: "var(4),var(5)",
+        redirectid: "57",
+      })),
+    });
+    expect(actor.currentMove).toMatchObject({ attackerHitPower: 7, attackerGuardPower: 11 });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ attackerHitPower: 0, attackerGuardPower: 0 });
+  });
+
+  it("derives omitted direct-HitDef getpower from normal and exact hyper attack constants", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const normal = hitDefActor();
+    normal.constants = {
+      "default.attack.lifetopowermul": 0.8,
+      "super.attack.lifetopowermul": 0.25,
+    };
+
+    world.apply({
+      actor: normal,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", damage: "41" })),
+      frame: activeFrame(),
+    });
+    expect(normal.currentMove).toMatchObject({ attackerHitPower: 32, attackerGuardPower: 16 });
+
+    for (const attackType of ["HA", "HT", "HP"]) {
+      const hyper = hitDefActor();
+      hyper.constants = normal.constants;
+      world.apply({
+        actor: hyper,
+        controller: compileControllerIr(controller("HitDef", { attr: `S,${attackType}`, damage: "41" })),
+        frame: activeFrame(),
+      });
+      expect(hyper.currentMove).toMatchObject({ attackerHitPower: 10, attackerGuardPower: 5 });
+    }
+  });
+
+  it("applies configured fresh HitDef power defaults unless explicit values are authored", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.constants = {
+      "default.attack.lifetopowermul": 0.25,
+      "default.gethit.lifetopowermul": 0.4,
+    };
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", damage: "40" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      attackerHitPower: 10,
+      attackerGuardPower: 5,
+      hitPower: 16,
+      guardPower: 8,
+    });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        damage: "40",
+        getpower: "13,7",
+        givepower: "19,11",
+      })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      attackerHitPower: 13,
+      attackerGuardPower: 7,
+      hitPower: 19,
+      guardPower: 11,
+    });
+  });
+
+  it("derives fresh direct-HitDef givepower without inheriting the previous move", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.constants = {
+      "default.gethit.lifetopowermul": 0.8,
+      "super.gethit.lifetopowermul": 0.25,
+    };
+    actor.currentMove = { ...actor.currentMove!, hitPower: 99, guardPower: 88 };
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", damage: "10" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ hitPower: 8, guardPower: 4 });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,HA", damage: "10", givepower: "9" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ hitPower: 9, guardPower: 4 });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,HP", damage: "10" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ hitPower: 2, guardPower: 1 });
+  });
+
+  it("resolves dynamic fresh and modified direct-HitDef givepower components", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 9.8;
+    actor.runtime.vars[2] = -4.9;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        givepower: "var(1),var(2)",
+      })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ hitPower: 9, guardPower: -4 });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", givepower: "9" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ hitPower: 9, guardPower: 4 });
+
+    actor.runtime.vars[3] = 7.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        givepower: "var(3)",
+        redirectid: "57",
+      })),
+    });
+    expect(actor.currentMove).toMatchObject({ hitPower: 7, guardPower: 4 });
+
+    actor.runtime.vars[4] = Number.POSITIVE_INFINITY;
+    actor.runtime.vars[5] = 11.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        givepower: "var(4),var(5)",
+        redirectid: "57",
+      })),
+    });
+    expect(actor.currentMove).toMatchObject({ hitPower: 7, guardPower: 11 });
+  });
+
+  it("resolves and replaces two-value HitDef unhittabletime in caller context", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const staticActor = hitDefActor();
+    const staticHitDef = compileControllerIr(controller("HitDef", { attr: "S,NA", unhittabletime: "2,8" }));
+
+    expect(staticHitDef.operation).toMatchObject({ kind: "hitdef", unhittableTime: [2, 8] });
+    world.apply({ actor: staticActor, controller: staticHitDef, frame: activeFrame() });
+    expect(staticActor.currentMove?.unhittableTime).toEqual([2, 8]);
+
+    const dynamicActor = hitDefActor();
+    dynamicActor.runtime.vars[1] = 3;
+    dynamicActor.runtime.vars[2] = 4;
+    const dynamicHitDef = compileControllerIr(controller("HitDef", {
+      attr: "S,NA",
+      unhittabletime: "var(1) + 2,var(2) + 5",
+    }));
+
+    expect(dynamicHitDef.operation).toMatchObject({
+      kind: "hitdef",
+      unhittableTime: ["var(1) + 2", "var(2) + 5"],
+    });
+    world.apply({ actor: dynamicActor, controller: dynamicHitDef, frame: activeFrame() });
+    expect(dynamicActor.currentMove?.unhittableTime).toEqual([5, 9]);
+
+    dynamicActor.runtime.vars[1] = 7;
+    const modified = world.modify({
+      actor: dynamicActor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        unhittabletime: "var(1) + 10",
+      })),
+    });
+    expect(modified).toMatchObject({
+      modified: true,
+      operation: { kind: "modifyhitdef", unhittableTime: ["var(1) + 10"] },
+    });
+    expect(dynamicActor.currentMove?.unhittableTime).toEqual([17, 9]);
+
+    const omittedActor = hitDefActor();
+    world.apply({
+      actor: omittedActor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(omittedActor.currentMove?.unhittableTime).toEqual([-1, -1]);
+
+    const throwActor = hitDefActor();
+    world.apply({
+      actor: throwActor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NT", pausetime: "5,3" })),
+      frame: activeFrame(),
+    });
+    expect(throwActor.currentMove?.unhittableTime).toEqual([6, 6]);
+
+    const explicitThrowActor = hitDefActor();
+    world.apply({
+      actor: explicitThrowActor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,ST",
+        pausetime: "9,4",
+        unhittabletime: "0,-1",
+      })),
+      frame: activeFrame(),
+    });
+    expect(explicitThrowActor.currentMove?.unhittableTime).toEqual([0, -1]);
+  });
+
+  it("resolves dynamic HitDef and ModifyHitDef NoChainID lists into the active move", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const hitDef = compileControllerIr(
+      controller("HitDef", { attr: "S,NA", nochainid: "var(1) + 40,var(1) + 41" }),
+    );
+
+    world.apply({
+      actor,
+      controller: hitDef,
+      frame: activeFrame(),
+      resolveIntegerList: () => [43, 44],
+    });
+    expect(actor.currentMove?.noChainIds).toEqual([43, 44]);
+
+    const modified = world.modify({
+      actor,
+      controller: compileControllerIr(
+        controller("ModifyHitDef", { nochainid: "var(1) + 50,var(1) + 51", redirectid: "57" }),
+      ),
+      resolveIntegerList: () => [53, 54],
+    });
+    expect(modified).toMatchObject({ modified: true, operation: { kind: "modifyhitdef" } });
+    expect(actor.currentMove?.noChainIds).toEqual([53, 54]);
   });
 
   it("keeps air.fall separate from the ground fall flag", () => {
@@ -255,6 +2244,114 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.airJuggle).toBe(3);
     expect(actor.runtime.juggle).toBe(3);
     expect(actor.runtime.juggleOrigin).toBe("hitdef");
+  });
+
+  it("resolves dynamic HitDef air.juggle in caller context before arming the IKEMEN cost", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 99;
+    const caller = runtimeState();
+    caller.vars[1] = 5.9;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { damage: "30", "air.juggle": "var(1) - 2" })),
+      context: { self: caller },
+      runtimeProfile: "ikemen-go",
+      frame: activeFrame(),
+    });
+
+    expect(actor.currentMove?.airJuggle).toBe(3);
+    expect(actor.runtime.juggle).toBe(3);
+    expect(actor.runtime.juggleOrigin).toBe("hitdef");
+  });
+
+  it("resolves dynamic HitDef numhits in caller context and mutates the live count", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 99;
+    const caller = runtimeState();
+    caller.vars[1] = 2.9;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { damage: "30", numhits: "var(1) + 1" })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.hitVars?.hitCount).toBe(3);
+
+    caller.vars[1] = 5.9;
+    const modified = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { redirectid: "57", numhits: "var(1)" })),
+      context: { self: caller },
+    });
+    expect(modified.modified).toBe(true);
+    expect(actor.currentMove?.hitVars?.hitCount).toBe(5);
+  });
+
+  it("resolves dynamic HitDef sprite priorities and the legacy alias in caller context", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 99;
+    const caller = runtimeState();
+    caller.vars[1] = 4.9;
+    caller.vars[2] = -3.2;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        damage: "30",
+        sprpriority: "var(1) + 1",
+        p2sprpriority: "var(2)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ p1SpritePriority: 5, p2SpritePriority: -3 });
+
+    caller.vars[1] = 8.7;
+    caller.vars[2] = -6.1;
+    const modified = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        p1sprpriority: "var(2)",
+        p2sprpriority: "var(1)",
+      })),
+      context: { self: caller },
+    });
+    expect(modified.modified).toBe(true);
+    expect(actor.currentMove).toMatchObject({ p1SpritePriority: -6, p2SpritePriority: 8 });
+  });
+
+  it("resolves dynamic HitDef priority in caller context and mutates its static class", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 99;
+    const caller = runtimeState();
+    caller.vars[1] = 4.9;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { damage: "30", priority: "var(1) + 2, Dodge" })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({ priority: 6, priorityType: "dodge" });
+
+    caller.vars[1] = 8.7;
+    const modified = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        priority: "var(1) - 3, Miss",
+      })),
+      context: { self: caller },
+    });
+    expect(modified.modified).toBe(true);
+    expect(actor.currentMove).toMatchObject({ priority: 5, priorityType: "miss" });
   });
 
   it("arms explicit air.juggle 0 while treating omitted as non-update", () => {
@@ -620,11 +2717,19 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         damage: "61",
         "air.hittime": "18",
         "down.hittime": "22",
-        "down.velocity": "-2,0",
+        "ground.velocity": "-3,-4,1.25",
+        "air.velocity": "-5,-6,1.5",
+        "down.velocity": "-2,0,1.75",
         "down.bounce": "0",
         "airguard.ctrltime": "17",
+        "guard.velocity": "-1,0,2",
+        "airguard.velocity": "-2,-1,2.5",
+        xaccel: "-.2",
+        yaccel: ".4",
+        zaccel: ".15",
         id: "91",
         chainid: "13",
+        nochainid: "40,41,42,43,44,45,46,47,48,49",
         numhits: "3",
         attr: "C,HP",
         guardflag: "H",
@@ -652,11 +2757,20 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         damage: 61,
         airHitTime: 18,
         downHitTime: 22,
-        downVelocity: [-2, 0],
+        groundVelocity: [-3, -4],
+        groundVelocityZ: 1.25,
+        airVelocityZ: 1.5,
+        downVelocity: [-2, 0, 1.75],
         downBounce: false,
         airGuardControlTime: 17,
+        guardVelocityZ: 2,
+        airGuardVelocityZ: 2.5,
+        xAccel: -0.2,
+        yAccel: 0.4,
+        zAccel: 0.15,
         id: 91,
         chainId: 13,
+        noChainIds: [40, 41, 42, 43, 44, 45, 46, 47],
         hitCount: 3,
         attr: "C,HP",
         guardFlag: "H",
@@ -681,14 +2795,20 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       downHitTime: 22,
       downVelocityX: -2,
       downVelocityY: 0,
+      downVelocityZ: 1.75,
       downBounce: false,
+      hitVelocityZ: 1.25,
+      airVelocityZ: 1.5,
+      guardVelocityZ: 2,
+      airGuardVelocityZ: 2.5,
       airGuardControlTime: 17,
       guardDamage: 6,
       attr: "C,HP",
       guardFlag: "H",
       hitFlag: "LAF",
       targetId: 91,
-      hitVars: { hitId: 91, chainId: 13, hitCount: 3 },
+      noChainIds: [40, 41, 42, 43, 44, 45, 46, 47],
+      hitVars: { hitId: 91, chainId: 13, hitCount: 3, xAccel: -0.2, yAccel: 0.4, zAccel: 0.15 },
       p1StateNo: 777,
       p2StateNo: 888,
       p2GetP1State: false,
