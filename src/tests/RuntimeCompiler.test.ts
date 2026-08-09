@@ -4503,7 +4503,10 @@ value = 1
       hitShakeTime: 7,
       guardPauseTime: 3,
     });
-    expect(projectile?.guardShakeTime).toBeUndefined();
+    expect(projectile?.kind).toBe("projectile");
+    if (projectile?.kind === "projectile") {
+      expect(projectile.guardShakeTime).toBeUndefined();
+    }
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       pausetime: "var(0),fvar(1)",
       "guard.pausetime": "var(2)",

@@ -1526,6 +1526,16 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjectileDynamicAirHitTimeTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-dynamic-pausetime",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileDynamicPauseTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-dynamic-pausetime",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileDynamicPauseTimeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-modifyhitdef-dynamic-down-velocity",
       required: true,
       artifact: presets.createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact(),

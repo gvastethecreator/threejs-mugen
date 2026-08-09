@@ -424,6 +424,8 @@ import {
   createSyntheticImportedHelperProjectileDynamicGroundSlideTimeTraceArtifact,
   createSyntheticImportedProjectileDynamicAirHitTimeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicAirHitTimeTraceArtifact,
+  createSyntheticImportedProjectileDynamicPauseTimeTraceArtifact,
+  createSyntheticImportedHelperProjectileDynamicPauseTimeTraceArtifact,
   createSyntheticImportedProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact,
@@ -22650,6 +22652,50 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.targetLinks).toContainEqual(expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 7790 }));
     expect(evidence?.combatReasons).toContain("guard");
     expect(evidence?.combatReasons).not.toContain("hit");
+  });
+
+  it("creates required imported Projectile pause-pair artifacts", () => {
+    const hitArtifact = createSyntheticImportedProjectileDynamicPauseTimeTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(hitArtifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-pausetime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-projectile-dynamic-pausetime-golden", passed: true, failures: [] }],
+    });
+    const hitEvidence = hitArtifact.gates[0]?.evidence;
+    expect(hitEvidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5115]));
+    expect(hitEvidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(hitEvidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(hitEvidence?.targetLinks).toContainEqual(expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 7793 }));
+    expect(hitEvidence?.combatReasons).toContain("hit");
+    expect(hitEvidence?.effectPayloads).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p1-projectile-0",
+        effect: expect.objectContaining({ hitPause: 4, guardPause: 3, hasHit: true }),
+      }),
+    ]));
+
+    const guardArtifact = createSyntheticImportedHelperProjectileDynamicPauseTimeTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(guardArtifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-projectile-dynamic-pausetime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-helper-projectile-dynamic-pausetime-golden", passed: true, failures: [] }],
+    });
+    const guardEvidence = guardArtifact.gates[0]?.evidence;
+    expect(guardEvidence?.executedStates).toEqual(expect.arrayContaining([200, 150, 151, 5116]));
+    expect(guardEvidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(guardEvidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(guardEvidence?.targetLinks).toContainEqual(expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8901 }));
+    expect(guardEvidence?.combatReasons).toContain("guard");
+    expect(guardEvidence?.effectPayloads).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p1-projectile-0",
+        effect: expect.objectContaining({ hitPause: 3, guardPause: 4, hasHit: true }),
+      }),
+    ]));
   });
 
   it("creates a required imported Helper Projectile dynamic guard.hittime artifact", () => {
