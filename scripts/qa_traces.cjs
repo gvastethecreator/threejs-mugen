@@ -3137,6 +3137,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyProjectileDynamicGetPowerTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyprojectile-dynamic-down-velocity",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyProjectileDynamicDownVelocityTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-modifyprojectile-dynamic-bounds",
       required: true,
       artifact: presets.createSyntheticImportedModifyProjectileDynamicBoundsTraceArtifact(),
@@ -4969,6 +4974,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-guard-distance-latch",
     "synthetic-imported-projectile-velmul",
     "synthetic-imported-modifyprojectile",
+    "synthetic-imported-modifyprojectile-dynamic-down-velocity",
     "synthetic-imported-modifyprojectile-dynamic-bounds",
     "synthetic-imported-projectile-multihit",
     "synthetic-imported-projectile-priority-cancel",

@@ -27080,6 +27080,156 @@ export function createSyntheticImportedProjectileDynamicDownVelocityTraceArtifac
   });
 }
 
+export function createSyntheticImportedModifyProjectileDynamicDownVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5080;
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "modifyprojectile-dynamic-down-velocity-defender-liedown", frames: 2, p1: [], p2: ["x"] },
+    { label: "modifyprojectile-dynamic-down-velocity-contact", frames: 12, p1: ["x"], p2: [] },
+    { label: "modifyprojectile-dynamic-down-velocity-settle", frames: 18, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-dynamic-down-velocity-attacker",
+    displayName: "ModifyProjectile Dynamic Down Velocity Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileHitDefHitCount: 1,
+    projectileVarSeeds: [],
+    projectileDownVelocity: [-1, -1, 9],
+    projectileAirVelocity: [-6, -8, 2],
+    projectileDamage: [37, 2],
+    projectileRemoveOnHit: false,
+    projectileOffset: [62, -45],
+    projectileGroundVelocity: [-1, 1],
+    hitDefHitFlag: "D",
+    withModifyProjectile: true,
+    modifyProjectileTriggerTime: 3,
+    modifyProjectileId: 77,
+    modifyProjectileVarSeeds: [
+      { index: 0, value: -3 },
+      { index: 1, value: -5 },
+    ],
+    modifyProjectileDownVelocity: ["var(0)", "var(1)"],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-dynamic-down-velocity-defender",
+    displayName: "ModifyProjectile Dynamic Down Velocity Defender",
+    withHitDef: false,
+    withStateTypeSet: { stateType: "L", moveType: "I", physics: "N" },
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5021,
+      shakeStateType: "A",
+      slideStateType: "A",
+      shakePhysics: "N",
+      slidePhysics: "N",
+      slideHitVelSet: { x: true, y: true, z: true },
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchStateType: "A",
+      hitTimeBranchPhysics: "N",
+      hitTimeBranchExpression:
+        "GetHitVar(xvel) = 3 && GetHitVar(yvel) = -5 && GetHitVar(zvel) = 0 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "ModifyProjectile Dynamic Down Velocity GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-modifyprojectile-dynamic-down-velocity-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyprojectile-dynamic-down-velocity-golden",
+      label: "Synthetic imported ModifyProjectile dynamic down.velocity route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves root-owned ModifyProjectile evaluates down.velocity expressions once in the caller context, writes the selected live Projectile vector with official zero defaults for omitted components, and later lying contact exposes 3/-5/0 through physics/GetHitVar. Helper-owned ModifyProjectile, dynamic n, fresh defaults, RedirectID, exact tick/landing order, teams, rollback, and full Projectile parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyprojectile-dynamic-down-velocity-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5021, branchStateNo],
+      forbiddenExecutedStates: [130, 150, 151, 152, 153, 154, 155, 5001, 5010, 5011, 5020, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "StateTypeSet", "VarSet", "Projectile", "ModifyProjectile", "HitVelSet"],
+      requiredExecutedOperations: ["metadata:statetypeset", "variable:varset", "projectile", "modifyprojectile", "kinematic:hitvelset"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredControllerEventSequences: [
+        {
+          label: "ModifyProjectile dynamic down.velocity caller evaluation order",
+          actorId: "p1",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 200, controller: "VarSet" },
+            { stateNo: 200, controller: "VarSet" },
+            { stateNo: 200, controller: "Projectile" },
+            { stateNo: 200, controller: "ModifyProjectile" },
+          ],
+        },
+        {
+          label: "lying target consumes live ModifyProjectile down.velocity",
+          actorId: "p2",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 200, controller: "StateTypeSet", name: "StateTypeSet Probe" },
+            { stateNo: 5000, controller: "ChangeState", name: "Hit Shake Over" },
+            { stateNo: 5021, controller: "HitVelSet", name: "Apply Hit Velocity" },
+            { stateNo: 5021, operation: "kinematic:hitvelset" },
+            { stateNo: 5021, controller: "ChangeState", name: "ModifyProjectile Dynamic Down Velocity GetHitVar Branch" },
+          ],
+        },
+      ],
+      requiredActorFrameSequences: [{
+        label: "ModifyProjectile dynamic down.velocity lying-hit physical order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 200, stateType: "L", moveType: "I", physics: "N", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, stateType: "A", moveType: "H", physics: "N", minFrames: 1 },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5021,
+            stateType: "A",
+            moveType: "H",
+            physics: "N",
+            observedVelXAtLeast: 3,
+            observedVelXAtMost: 3,
+            observedVelYAtLeast: -5,
+            observedVelYAtMost: -5,
+            observedVelZAtLeast: 0,
+            observedVelZAtMost: 0,
+            minFrames: 1,
+          },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, stateType: "A", moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [{ actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1", effectId: 77, minAge: 1, hasHit: true }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedProjectileAirGuardCornerPushTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -58752,6 +58902,8 @@ export type SyntheticImportedTraceFighterOptions = {
   modifyProjectileStageBound?: SyntheticNumberExpression;
   modifyProjectileHeightBound?: SyntheticPairExpression;
   modifyProjectileGetPower?: SyntheticPairExpression;
+  /** Synthetic fixture-only dynamic/mixed ModifyProjectile down.velocity vector. */
+  modifyProjectileDownVelocity?: SyntheticPartialTripleExpression;
   modifyProjectileVarSeeds?: Array<{ index: number; value: number; trigger?: string }>;
   modifyProjectileRemoveTime?: SyntheticNumberExpression;
   modifyProjectileSpritePriority?: SyntheticNumberExpression;
@@ -60214,6 +60366,7 @@ ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   stageBound: options.modifyProjectileStageBound,
   heightBound: options.modifyProjectileHeightBound,
   getPower: options.modifyProjectileGetPower,
+  downVelocity: options.modifyProjectileDownVelocity,
   varSeeds: options.modifyProjectileVarSeeds,
   removeTime: options.modifyProjectileRemoveTime,
   spritePriority: options.modifyProjectileSpritePriority,
@@ -64307,6 +64460,7 @@ function modifyProjectileControllerBlock(input: {
   stageBound?: SyntheticNumberExpression;
   heightBound?: SyntheticPairExpression;
   getPower?: SyntheticPairExpression;
+  downVelocity?: SyntheticPartialTripleExpression;
   varSeeds?: Array<{ index: number; value: number; trigger?: string }>;
   removeTime?: SyntheticNumberExpression;
   spritePriority?: SyntheticNumberExpression;
@@ -64336,6 +64490,7 @@ value = ${seed.value}
   const stageBoundLine = input.stageBound === undefined ? "" : `projstagebound = ${input.stageBound}`;
   const heightBoundLine = input.heightBound === undefined ? "" : `projheightbound = ${input.heightBound[0]},${input.heightBound[1]}`;
   const getPowerLine = input.getPower === undefined ? "" : `getpower = ${input.getPower[0]},${input.getPower[1]}`;
+  const downVelocityLine = input.downVelocity === undefined ? "" : `down.velocity = ${input.downVelocity.join(",")}`;
   const removeTimeLine = input.removeTime === undefined ? "" : `projremovetime = ${input.removeTime}`;
   const spritePriorityLine = input.spritePriority === undefined ? "" : `projsprpriority = ${input.spritePriority}`;
   const priorityLine = input.priority === undefined ? "" : `projpriority = ${input.priority}`;
@@ -64355,6 +64510,7 @@ ${edgeBoundLine}
 ${stageBoundLine}
 ${heightBoundLine}
 ${getPowerLine}
+${downVelocityLine}
 ${removeTimeLine}
 ${spritePriorityLine}
 ${priorityLine}

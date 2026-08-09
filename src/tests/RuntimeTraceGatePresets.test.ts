@@ -671,6 +671,7 @@ import {
   createSyntheticImportedProjectileDynamicAirGuardVelocityTraceArtifact,
   createSyntheticImportedProjectileDynamicAirVelocityTraceArtifact,
   createSyntheticImportedProjectileDynamicDownVelocityTraceArtifact,
+  createSyntheticImportedModifyProjectileDynamicDownVelocityTraceArtifact,
   createSyntheticImportedProjectileAirGuardVelocityTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardKillTraceArtifact,
@@ -20969,6 +20970,31 @@ describe("RuntimeTraceGatePresets", () => {
     expect(physicalFrame?.maxVel.y).toBe(-5);
     expect(physicalFrame?.minVelZ).toBe(2);
     expect(physicalFrame?.maxVelZ).toBe(2);
+    expect(gate?.evidence.combatReasons).toContain("hit");
+    expect(gate?.evidence.combatReasons).not.toContain("guard");
+  });
+
+  it("creates a required imported ModifyProjectile dynamic down.velocity artifact", () => {
+    const artifact = createSyntheticImportedModifyProjectileDynamicDownVelocityTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-modifyprojectile-dynamic-down-velocity-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-modifyprojectile-dynamic-down-velocity-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    const physicalFrame = gate?.evidence.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 5021);
+    expect(gate?.evidence.executedControllers.ModifyProjectile).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.modifyprojectile).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }));
+    expect(physicalFrame?.minVel.x).toBe(3);
+    expect(physicalFrame?.maxVel.x).toBe(3);
+    expect(physicalFrame?.minVel.y).toBe(-5);
+    expect(physicalFrame?.maxVel.y).toBe(-5);
+    expect(physicalFrame?.minVelZ).toBe(0);
+    expect(physicalFrame?.maxVelZ).toBe(0);
     expect(gate?.evidence.combatReasons).toContain("hit");
     expect(gate?.evidence.combatReasons).not.toContain("guard");
   });
