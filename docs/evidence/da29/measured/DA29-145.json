@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-145",
   "kind": "G",
-  "generatedAt": "2026-08-09T08:54:42.024Z",
+  "generatedAt": "2026-08-09T09:16:58.902Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-145",
@@ -20,11 +20,11 @@
   ],
   "functionResults": {
     "assetCount": 2,
-    "totalBytes": 2533452,
+    "totalBytes": 2533762,
     "top": [
       {
-        "path": "dist/assets/index-BoHaioz4.js",
-        "bytes": 2466983
+        "path": "dist/assets/index-B3A-52CF.js",
+        "bytes": 2467293
       },
       {
         "path": "dist/assets/index-B-WVOJx_.css",
