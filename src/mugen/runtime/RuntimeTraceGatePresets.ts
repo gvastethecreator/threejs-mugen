@@ -24958,6 +24958,103 @@ export function createSyntheticImportedHitDefDynamicAirGuardVelocityTraceArtifac
   });
 }
 
+export function createSyntheticImportedHitDefDynamicAirGuardVelocityZTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5074;
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-airguard-velocity-z-defender",
+    displayName: "Dynamic HitDef Air Guard Velocity Z Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+      airGuardedBranchStateNo: branchStateNo,
+      airGuardedBranchAnimNo: branchStateNo,
+      airGuardedBranchTrigger: "Time >= 1",
+      airGuardedBranchExpression:
+        "GetHitVar(xvel) = 7 && GetHitVar(yvel) = -5 && GetHitVar(zvel) = 6 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+      airGuardHitVelSetZ: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-airguard-velocity-z-attacker",
+    displayName: "Dynamic HitDef Air Guard Velocity Z Attacker",
+    guardDamage: 5,
+    guardFlag: "A",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+    airVelocity: [-6, -8, 2],
+    airGuardVelocity: [-1, -1, 1],
+    hitDefAirGuardVelocity: ["var(0)", "var(1)", "var(2)"],
+    hitDefVarSeeds: [
+      { index: 0, value: -7 },
+      { index: 1, value: -5 },
+      { index: 2, value: 6 },
+    ],
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    targetId: "synthetic-imported-hitdef-dynamic-airguard-velocity-z-golden",
+    targetLabel: "Synthetic imported dynamic direct HitDef airguard velocity Z route",
+    requiredExecutedStates: [200, 154, 155, branchStateNo],
+    forbiddenExecutedStates: [150, 151, 152, 153, 5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+    requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "HitVelSet", "VelAdd"],
+    requiredExecutedOperations: ["variable:varset", "hitdef", "kinematic:hitvelset", "kinematic:veladd"],
+    requiredControllerEventSequences: [{
+      label: "dynamic airguard velocity XYZ accepted-contact GetHitVar order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 154, controller: "ChangeState", name: "Air Guard Shake Over" },
+        { stateNo: 155, controller: "HitVelSet", name: "Apply Air Guard Velocity" },
+        { stateNo: 155, operation: "kinematic:hitvelset" },
+        { stateNo: 155, controller: "ChangeState", name: "Air Guarded HitVar Branch" },
+      ],
+    }],
+    requiredActorFrames: [
+      ...syntheticAirGuardVelocityPhysicsFrames(7, -4.5),
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 155,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        observedVelZAtLeast: 6,
+        observedVelZAtMost: 6,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: branchStateNo,
+        animNo: branchStateNo,
+        stateType: "A",
+        minFrames: 1,
+      },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    forbiddenCombatReasons: ["hit", "override", "reversal"],
+    requiredFinalActors: [
+      { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+      { actorId: "p2", source: "imported", actorKind: "player", life: 995 },
+    ],
+    notes: [
+      "Pinned Ikemen GO trace proves caller-context var(0..2) resolve direct HitDef airguard.velocity X/Y/Z independently into an accepted airborne guard. GetHitVar(xvel/yvel/zvel)=7/-5/6 and Common1-style HitVelSet expose the authored depth component physically. M.U.G.E.N 1.1 documents only X/Y airguard.velocity; this is an Ikemen dynamic-Z compatibility claim. Fresh defaults, live ModifyHitDef, Helpers, Projectile/ModifyProjectile, n syntax, exact gravity/landing timing, teams, rollback, and full air-guard parity remain excluded.",
+    ],
+  });
+}
+
 export function createSyntheticImportedModifyHitDefDynamicAirGuardVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
