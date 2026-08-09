@@ -1,6 +1,6 @@
 # Issue 254 — Projectile airguard.velocity dynamic Z
 
-- Status: `source-mapped`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -29,3 +29,24 @@ Sources:
 - Helper-owned Projectile, ModifyProjectile, dynamic `n` syntax, exact landing
   timing, and rollback remain out of scope until separately gated.
 
+## Closure evidence
+
+- Compiler/Projectile focused coverage: `181/181` tests.
+- Required trace:
+  `synthetic-imported-projectile-dynamic-airguard-velocity`.
+- Required trace checksum: `8cae22a1`; final checksum: `32fb962c`.
+- Aggregate trace gate passes `753/753` artifacts (`719` required,
+  `34` optional); the full suite passes `3744/3744` tests across `328` files;
+  typecheck and the `363`-module build pass.
+
+## Claim ceiling
+
+Do not claim Helper-authored Projectile caller/parent breadth, live
+ModifyProjectile dynamic-Z support, dynamic `n` syntax, exact landing/gravity
+timing, localcoord or facing equivalence, teams, rollback, or full engine
+parity.
+
+## Next bounded slice
+
+T681 is source-mapped for Helper-authored/root-owned fresh Projectile
+`airguard.velocity` dynamic XYZ and parent/lifecycle evidence.
