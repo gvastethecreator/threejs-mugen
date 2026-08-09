@@ -63,6 +63,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveProjectileUnhittableTime?: RuntimeProjectileSpawnInput["resolveUnhittableTime"];
   resolveProjectileGroundFriction?: RuntimeProjectileSpawnInput["resolveGroundFriction"];
   resolveProjectileSparkScale?: RuntimeProjectileSpawnInput["resolveSparkScale"];
+  resolveProjectileGroundVelocity?: RuntimeProjectileSpawnInput["resolveGroundVelocity"];
   resolveProjectileAirVelocity?: RuntimeProjectileSpawnInput["resolveAirVelocity"];
   resolveProjectileDownVelocity?: RuntimeProjectileSpawnInput["resolveDownVelocity"];
   resolveProjectileAirGuardVelocity?: RuntimeProjectileSpawnInput["resolveAirGuardVelocity"];
@@ -237,6 +238,7 @@ export class RuntimeEffectSpawnWorld {
     resolveUnhittableTime?: RuntimeProjectileSpawnInput["resolveUnhittableTime"],
     resolveGroundFriction?: RuntimeProjectileSpawnInput["resolveGroundFriction"],
     resolveSparkScale?: RuntimeProjectileSpawnInput["resolveSparkScale"],
+    resolveGroundVelocity?: RuntimeProjectileSpawnInput["resolveGroundVelocity"],
     resolveAirVelocity?: RuntimeProjectileSpawnInput["resolveAirVelocity"],
     resolveDownVelocity?: RuntimeProjectileSpawnInput["resolveDownVelocity"],
     resolveAirGuardVelocity?: RuntimeProjectileSpawnInput["resolveAirGuardVelocity"],
@@ -280,6 +282,7 @@ export class RuntimeEffectSpawnWorld {
       resolveUnhittableTime,
       resolveGroundFriction,
       resolveSparkScale,
+      resolveGroundVelocity,
       resolveAirVelocity,
       resolveDownVelocity,
       resolveAirGuardVelocity,
@@ -571,6 +574,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveProjectileUnhittableTime,
         options.resolveProjectileGroundFriction,
         options.resolveProjectileSparkScale,
+        options.resolveProjectileGroundVelocity,
         options.resolveProjectileAirVelocity,
         options.resolveProjectileDownVelocity,
         options.resolveProjectileAirGuardVelocity,

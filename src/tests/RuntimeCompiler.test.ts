@@ -3747,6 +3747,34 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles dynamic Projectile ground.velocity components", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "ground.velocity": "var(0),fvar(1),var(2)",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      groundVelocityExpressions: ["var(0)", "fvar(1)"],
+      groundVelocityZExpression: "var(2)",
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "ground.velocity": "var(0),fvar(1)",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      groundVelocityExpressions: ["var(0)", "fvar(1)"],
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "ground.velocity": "var(0)",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      groundVelocityExpressions: ["var(0)"],
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "ground.velocity": "var(0),fvar(1),var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "ground.velocity": "var(0),fvar(1),var(2),4",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles dynamic Projectile down.velocity components", () => {
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       "down.velocity": "var(0),fvar(1),var(2)",

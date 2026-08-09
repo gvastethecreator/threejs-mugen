@@ -322,6 +322,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveUnhittableTime?: () => [number, number?] | undefined;
   resolveGroundFriction?: () => { stand?: number; crouch?: number } | undefined;
   resolveSparkScale?: () => { hit?: [number?, number?]; guard?: [number?, number?] } | undefined;
+  /** Resolves Projectile ground.velocity authored expressions in the original caller context. */
+  resolveGroundVelocity?: () => [number?, number?, number?] | undefined;
   /** Resolves Projectile air.velocity authored expressions in the original caller context. */
   resolveAirVelocity?: () => [number?, number?, number?] | undefined;
   /** Resolves Projectile down.velocity authored expressions in the original caller context. */
@@ -532,7 +534,10 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   );
   const rawClsnScale = operation?.clsnScale ?? projectileClsnScalePair(findControllerParam(input.controller, "projclsnscale"), 1);
   const clsnAngle = operation?.clsnAngle ?? firstNumber(findControllerParam(input.controller, "projclsnangle"));
-  const groundVelocity = normalizeOptionalVelocityVector(operation?.groundVelocity) ?? velocityPair(findControllerParam(input.controller, "ground.velocity"));
+  const hasDynamicGroundVelocity = operation?.groundVelocityExpressions !== undefined || operation?.groundVelocityZExpression !== undefined;
+  const groundVelocity: [number, number?, number?] | undefined = hasDynamicGroundVelocity
+    ? completeFreshProjectileGroundVelocity(input.resolveGroundVelocity?.())
+    : normalizeOptionalVelocityVector(operation?.groundVelocity) ?? velocityPair(findControllerParam(input.controller, "ground.velocity"));
   const frame = input.action.frames[0];
   const projectileId = operation?.projectileId ?? firstNumber(findControllerParam(input.controller, "projid") ?? findControllerParam(input.controller, "id")) ?? 0;
   const targetId = operation?.targetId ?? firstNumber(findControllerParam(input.controller, "id")) ?? projectileId;
@@ -2893,6 +2898,12 @@ function completeFreshProjectileAirGuardVelocity(
 }
 
 function completeFreshProjectileAirVelocity(
+  authored: [number?, number?, number?] | undefined,
+): [number, number, number] {
+  return [authored?.[0] ?? 0, authored?.[1] ?? 0, authored?.[2] ?? 0];
+}
+
+function completeFreshProjectileGroundVelocity(
   authored: [number?, number?, number?] | undefined,
 ): [number, number, number] {
   return [authored?.[0] ?? 0, authored?.[1] ?? 0, authored?.[2] ?? 0];
