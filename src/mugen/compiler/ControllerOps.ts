@@ -155,6 +155,8 @@ export type HitDefControllerOp = {
   /** Dynamic direct HitDef ground.velocity X/Y pair evaluated in caller context. */
   groundVelocityExpressions?: MugenHitDefExpressionPair;
   airVelocity?: MugenHitDefVector;
+  /** Dynamic direct HitDef air.velocity X/Y pair evaluated in caller context. */
+  airVelocityExpressions?: MugenHitDefExpressionPair;
   downVelocity?: MugenHitDefVector;
   /** Direct guard.dist scalar evaluated in the HitDef caller context. */
   guardDistance?: number | string;
@@ -2312,7 +2314,14 @@ function compileHitDefControllerOp(
   const groundVelocityExpressions = Array.isArray(groundVelocityExpressionValue)
     ? groundVelocityExpressionValue
     : undefined;
-  const airVelocity = hitDefVelocity(findParam(controller, "air.velocity"));
+  const airVelocityRaw = findParam(controller, "air.velocity");
+  const airVelocity = airVelocityRaw === undefined ? undefined : strictStaticNumberVector(airVelocityRaw);
+  const airVelocityExpressionValue = airVelocityRaw === undefined || airVelocity !== undefined
+    ? true
+    : optionalFloatExpressionPairParam(controller, "air.velocity");
+  const airVelocityExpressions = Array.isArray(airVelocityExpressionValue)
+    ? airVelocityExpressionValue
+    : undefined;
   const downVelocity = hitDefVelocity(findParam(controller, "down.velocity"));
   const guardVelocityRaw = findParam(controller, "guard.velocity");
   const guardVelocity = hitDefVelocity(guardVelocityRaw);
@@ -2388,6 +2397,7 @@ function compileHitDefControllerOp(
     noChainIds === false ||
     damageValue === false ||
     groundVelocityExpressionValue === false ||
+    airVelocityExpressionValue === false ||
     guardVelocityExpression === false ||
     airGuardVelocityExpressionValue === false ||
     (Array.isArray(airGuardVelocityExpressionValue) && airGuardVelocityExpressions === undefined) ||
@@ -2489,6 +2499,7 @@ function compileHitDefControllerOp(
     groundVelocity,
     ...(groundVelocityExpressions === undefined ? {} : { groundVelocityExpressions }),
     airVelocity,
+    ...(airVelocityExpressions === undefined ? {} : { airVelocityExpressions }),
     downVelocity,
     ...(guardDistance === true ? {} : { guardDistance }),
     guardFlag: stripMugenString(findParam(controller, "guardflag")),

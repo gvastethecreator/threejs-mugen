@@ -1,6 +1,6 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-09 T651-T670 direct contact timing, admission, and velocity addendum — no score movement
+## 2026-08-09 T651-T671 direct contact timing, admission, and velocity addendum — no score movement
 
 Direct HitDef pause pairs now preserve independent attacker pause and receiver
 hit-shake time for root and Helper contacts. Dynamic direct `ground.hittime`
@@ -28,8 +28,9 @@ default. T667 adds the same missing-Z default for fresh root-owned Projectiles.
 T668 adds Helper-created Projectile root/parent ownership and accepted-contact
 evidence for that shared default. T669 completes the same missing-component
 defaults in static imported HitDef metadata. T670 selects the existing static
-air vector for accepted root/Helper direct airborne hits. The 363-module build
-and 743/743 traces pass. The full suite passes 3719/3719. These are
+air vector for accepted root/Helper direct airborne hits. T671 adds root/Helper
+caller-resolved X/Y expressions. The 363-module build and 744/744 traces pass.
+The full suite passes 3722/3722. These are
 bounded timing, admission, and
 velocity seams, not full HitDef or tick-order parity. Compatibility scores
 remain unchanged.

@@ -1,6 +1,6 @@
 ﻿# Roadmap Execution Board
 
-## Current official-parity queue — T424-T492 and T506-T670 closed-bounded; T671 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
+## Current official-parity queue — T424-T492 and T506-T671 closed-bounded; T672 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
 
 ### Active runtime checkpoint — live ModifyHitDef air-guard velocity
 
@@ -732,8 +732,15 @@ vector, while grounded/down/guard selection remains unchanged. The full suite
 passes 3719/3719; required trace checksum is `1fe99cdb`; aggregate traces pass
 743/743 with 709 required; typecheck and the 363-module build pass.
 
-T671 / issue 245 is active-research: resolve direct-HitDef `air.velocity` X/Y
-expressions in root/Helper caller context.
+T671 / issue 245 is closed-bounded: direct-HitDef `air.velocity` X/Y
+expressions resolve in root/Helper caller context, single values materialize Y
+zero, and accepted airborne hits expose the result through physics/GetHitVar.
+The full suite passes 3722/3722; required trace checksum is `18588507`;
+aggregate traces pass 744/744 with 710 required; typecheck and the 363-module
+build pass.
+
+T672 / issue 246 is active-research: resolve live root-owned
+`ModifyHitDef air.velocity` X/Y expressions with component-wise preservation.
 
 ### Latest visual checkpoint — Character Compare
 

@@ -1,6 +1,6 @@
 # Issue 245 — Direct HitDef air.velocity expressions
 
-- Status: `active-research`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -37,3 +37,15 @@ Limit support to X/Y fresh direct HitDef root/Helper. Do not claim dynamic Z,
 `n` syntax, live ModifyHitDef, Projectile/ModifyProjectile, lying targets,
 exact localcoord/facing or landing timing, teams, rollback, or full air-hit
 physics.
+
+## Closure evidence
+
+- Root/Helper caller expressions resolve one/two-component X/Y values; a
+  single component materializes Y zero and fresh Z remains zero.
+- Static one/two/three-component forms and omission remain unchanged; dynamic
+  triples and malformed expressions fail closed.
+- Accepted airborne hit exposes the resolved vector through physical velocity
+  and GetHitVar without leaking the adversarial ground vector.
+- Required trace checksum: `18588507`; final-state checksum: `c6965fea`.
+- Full suite: 3722/3722. Aggregate traces: 744/744, with 710 required and 34
+  optional. Typecheck and the 363-module production build pass.

@@ -50,7 +50,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
-  resolveFloatPair?: (key: "ground.velocity" | "sparkscale" | "guard.sparkscale") => [number?, number?] | undefined;
+  resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "sparkscale" | "guard.sparkscale") => [number?, number?] | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
   resolveFallEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -421,7 +421,23 @@ export class RuntimeHitDefControllerDispatchWorld {
     const effectiveGuardVelocity: [number, number?, number?] | undefined = operation?.guardVelocityExpression === undefined
       ? guardVelocity
       : [guardVelocityX];
-    const airVelocity = operation?.airVelocity ?? velocityPair(findParam(source, "air.velocity"));
+    const staticAirVelocity = operation?.airVelocity ?? velocityPair(findParam(source, "air.velocity"));
+    const resolvedAirVelocity = operation?.airVelocityExpressions === undefined && staticAirVelocity !== undefined
+      ? undefined
+      : resolveRuntimeHitDefFloatExpressionPair(
+          operation?.airVelocityExpressions,
+          findParam(source, "air.velocity"),
+          actor.runtime,
+          context ?? {},
+          resolveFloatPair?.("air.velocity"),
+        );
+    const airVelocity: [number, number?, number?] | undefined = resolvedAirVelocity === undefined
+      ? staticAirVelocity
+      : [
+          resolvedAirVelocity.first ?? 0,
+          resolvedAirVelocity.componentCount === 1 ? 0 : resolvedAirVelocity.second ?? 0,
+          0,
+        ];
     const downVelocity = operation?.downVelocity ?? velocityPair(findParam(source, "down.velocity"));
     const downVelocityX = downVelocity?.[0] ?? airVelocity?.[0] ?? existing?.downVelocityX;
     const downVelocityY = downVelocity?.[1] ?? airVelocity?.[1] ?? existing?.downVelocityY ?? 0;

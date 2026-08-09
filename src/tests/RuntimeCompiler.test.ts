@@ -2230,6 +2230,33 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles direct HitDef air.velocity X/Y expressions", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "air.velocity": "-6,-10,4",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      airVelocity: [-6, -10, 4],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "air.velocity": "var(1)",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      airVelocityExpressions: ["var(1)"],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "air.velocity": "-6.5,fvar(2)",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      airVelocityExpressions: [-6.5, "fvar(2)"],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "air.velocity": "var(1),var(2),var(3)",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "air.velocity": "var(1),var(",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles one- and two-component direct HitDef airguard.velocity expressions", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "airguard.velocity": "-4.25",

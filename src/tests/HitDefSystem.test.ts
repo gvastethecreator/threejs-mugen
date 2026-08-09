@@ -987,6 +987,54 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("resolves fresh direct air.velocity X/Y expressions without inheriting prior metadata", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "air.velocity": "30,-20,13",
+      })),
+      frame: activeFrame(),
+    });
+
+    caller.vars[1] = -6.25;
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "air.velocity": "var(1)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      airVelocityZ: 0,
+      hitVelocities: { air: { x: -6.25, y: 0, z: 0 } },
+    });
+
+    caller.vars[2] = -10.5;
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "air.velocity": "var(1),var(2)",
+      })),
+      context: { self: caller },
+      resolveFloatPair: (key) => key === "air.velocity" ? [undefined, -9.5] : undefined,
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      airVelocityZ: 0,
+      hitVelocities: { air: { x: 0, y: -9.5, z: 0 } },
+    });
+  });
+
   it("resets omitted fresh ground.velocity without changing ModifyHitDef omission preservation", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

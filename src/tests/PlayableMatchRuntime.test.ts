@@ -6879,18 +6879,40 @@ value = 7
     expect(runtimeHitVar(snapshot.actors[1]!.runtime, "yvel")).toBe(0);
   });
 
-  it("selects distinct air velocity for accepted root and Helper direct hits", () => {
-    const resolve = (source: "root" | "helper", airborne: boolean) => {
+  it("selects distinct static and dynamic air velocity for accepted root and Helper direct hits", () => {
+    const resolve = (source: "root" | "helper", airborne: boolean, dynamicComponents?: 1 | 2) => {
       const helperSource = source === "helper";
+      const airVelocityExpression = dynamicComponents === 1
+        ? "var(10)"
+        : dynamicComponents === 2
+          ? "var(10),var(11)"
+          : "-6,-10,4";
+      const dynamicVars = dynamicComponents === undefined
+        ? ""
+        : `
+[State ${helperSource ? 1200 : 0}, Dynamic air X]
+type = VarSet
+trigger1 = 1
+v = 10
+value = -6
+
+[State ${helperSource ? 1200 : 0}, Dynamic air Y]
+type = VarSet
+trigger1 = 1
+v = 11
+value = -10
+`;
       const attacker = createImportedFixture({
-        id: `${source}-direct-hit-air-velocity`,
+        id: `${source}-direct-hit-air-velocity-${dynamicComponents ?? "static"}`,
         withStateMove: false,
         groundVelocityExpression: "-30,-20,13",
-        airVelocityExpression: "-6,-10,4",
+        airVelocityExpression,
+        ...(helperSource || dynamicComponents === undefined ? {} : { passiveResourceController: dynamicVars }),
         ...(helperSource
           ? {
               withHelper: true,
               helperStateControllers: `
+${dynamicVars}
 [State 1200, Contact position]
 type = PosSet
 trigger1 = Time = 0
@@ -6899,13 +6921,13 @@ y = 0
 
 [State 1200, Distinct air velocity]
 type = HitDef
-trigger1 = Time = 0
+trigger1 = Time = 1
 attr = S,NA
 damage = 5
 pausetime = 0,0
 ground.hittime = 9
 ground.velocity = -30,-20,13
-air.velocity = -6,-10,4
+air.velocity = ${airVelocityExpression}
 `,
             }
           : {}),
@@ -6922,9 +6944,18 @@ air.velocity = -6,-10,4
       if (airborne) {
         runtime.step({ p1: new Set(), p2: new Set(["U"]) });
       }
-      const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+      let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+      if (helperSource) {
+        snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+      }
       if (helperSource) {
         expect(effectActorWorld.helpers("p1")[0]?.hasHit).toBe(true);
+      }
+      if (dynamicComponents !== undefined) {
+        const callerVars = helperSource
+          ? effectActorWorld.helpers("p1")[0]?.vars
+          : snapshot.actors[0]?.runtime.vars;
+        expect(callerVars?.slice(10, 12)).toEqual([-6, -10]);
       }
       return snapshot;
     };
@@ -6948,6 +6979,8 @@ air.velocity = -6,-10,4
     for (const source of ["root", "helper"] as const) {
       expectHitVelocity(resolve(source, true), [6, -10, 4], "A");
       expectHitVelocity(resolve(source, false), [30, -20, 13], "S");
+      expectHitVelocity(resolve(source, true, 2), [6, -10, 0], "A");
+      expectHitVelocity(resolve(source, true, 1), [6, 0, 0], "A");
     }
   });
 
