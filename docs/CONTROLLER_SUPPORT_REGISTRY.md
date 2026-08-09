@@ -1,16 +1,17 @@
 # Controller Support Registry
 
-Authoritative cursor: T697 is closed-bounded for fresh root and Helper
-Projectile `ground.slidetime` caller-context resolution, accepted grounded
-GetHitVar evidence, Projectile payload/lifecycle, target links, and
-Helper/root/parent ownership. Root trace checksum is `08b376db`, final
-`856bcded`; Helper checksum is `30f9d1f7`, final `e4a0be12`; `pnpm qa:trace`
-passes `775/775` artifacts (`741` required, `34` optional). Fresh default
-recalculation, live `ModifyProjectile`, guard/air/down timing, exact slide
-countdown/tick phase, negative/overflow values, teams, rollback, and full
-Projectile timing parity remain excluded. The full `3806/3806` Vitest suite
-across `328` files, typecheck, the `363`-module build, and diff hygiene also
-pass. T698 is the next source-mapping queue item.
+Authoritative cursor: T698 is closed-bounded for fresh root and Helper
+Projectile `air.hittime` caller-context resolution, accepted airborne
+GetHitVar evidence, authored air velocity, Projectile payload/lifecycle,
+target links, and Helper/root/parent ownership. Root trace checksum is
+`d95c52d1`, final `cf7a06ba`; Helper checksum is `c153c511`, final
+`0e089466`; `pnpm qa:trace` passes `777/777` artifacts (`743` required,
+`34` optional). Fresh default recalculation beyond the local seam, live
+`ModifyProjectile`, ground/down/guard timing, exact countdown/landing/physics,
+negative/overflow values, teams, rollback, and full Projectile timing parity
+remain excluded. The full `3810/3810` Vitest suite across `328` files,
+typecheck, the `363`-module build, and diff hygiene also pass. T699 is the
+next source-mapping queue item.
 
 T696 remains closed-bounded for fresh root and Helper Projectile
 `guard.hittime` caller-context resolution and accepted guard GetHitVar

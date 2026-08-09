@@ -1,20 +1,21 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T697 (2026-08-09)
+## Latest implementation checkpoint — T698 (2026-08-09)
 
-Authoritative cursor: T697 is closed-bounded for fresh root and Helper
-Projectiles with dynamic `ground.slidetime`. Caller expressions resolve once,
-and accepted grounded contact exposes `GetHitVar(slidetime)=17` with
-Projectile payload, lifecycle, target links, and Helper/root/parent ownership.
-Root trace checksums are `08b376db` / `856bcded`; Helper checksums are
-`30f9d1f7` / `e4a0be12`. Aggregate QA is `775/775` (`741` required, `34`
-optional), the full `3806/3806` Vitest suite across `328` files, typecheck,
-and the `363`-module production build pass. Fresh default recalculation, live
-`ModifyProjectile`, guard/air/down timing, exact slide countdown/tick phase,
-negative/overflow values, teams, rollback, and full Projectile timing parity
-remain explicitly unclaimed. See [issue 271](../.scratch/roadmap/issues/271-projectile-ground-slidetime-dynamic.md).
+Authoritative cursor: T698 is closed-bounded for fresh root and Helper
+Projectiles with dynamic `air.hittime`. Caller expressions resolve once, and
+accepted airborne non-falling contact exposes `GetHitVar(hittime)=16` with
+authored air velocity, Projectile payload, lifecycle, target links, and
+Helper/root/parent ownership. Root trace checksums are `d95c52d1` /
+`cf7a06ba`; Helper checksums are `c153c511` / `0e089466`. Aggregate QA is
+`777/777` (`743` required, `34` optional), the full `3810/3810` Vitest suite
+across `328` files, typecheck, and the `363`-module production build pass.
+Fresh default recalculation beyond the local seam, live `ModifyProjectile`,
+ground/down/guard timing, exact countdown/landing/physics, negative/overflow
+values, teams, rollback, and full Projectile timing parity remain explicitly
+unclaimed. See [issue 272](../.scratch/roadmap/issues/272-projectile-air-hittime-dynamic.md).
 
-Next proposed cut: T698 maps the next unclaimed Projectile timing or mutation
+Next proposed cut: T699 maps the next unclaimed Projectile timing or mutation
 parameter against pinned Ikemen source before implementation.
 
 ## Previous implementation checkpoint — T608-T694 (2026-08-09)

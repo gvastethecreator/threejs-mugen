@@ -1,23 +1,23 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-09 T697 Projectile ground.slidetime addendum - no score movement
+## 2026-08-09 T698 Projectile air.hittime addendum - no score movement
 
-Final T697 verification: `775/775` trace artifacts (`741` required, `34`
-optional), the full `3806/3806` Vitest suite across `328` files, typecheck,
+Final T698 verification: `777/777` trace artifacts (`743` required, `34`
+optional), the full `3810/3810` Vitest suite across `328` files, typecheck,
 the `363`-module production build, and diff hygiene pass. Required root
-Projectile trace `synthetic-imported-projectile-dynamic-ground-slidetime`
-has checksum `08b376db` and final checksum `856bcded`; the Helper trace has
-`30f9d1f7` and `e4a0be12`.
+Projectile trace `synthetic-imported-projectile-dynamic-air-hittime` has
+checksum `d95c52d1` and final checksum `cf7a06ba`; the Helper trace has
+`c153c511` and `0e089466`.
 
-Fresh root and Helper-authored Projectiles now resolve dynamic
-`ground.slidetime` once in the original caller context. Accepted grounded
-contact exposes `GetHitVar(slidetime)=17` with Projectile payload, lifecycle,
-target links, and Helper/root/parent ownership. This remains a bounded
-compatibility seam with no score movement: fresh default recalculation, live
-`ModifyProjectile`, guard/air/down timing, exact slide countdown/tick phase,
-negative/overflow values, teams, rollback, and full Projectile timing parity
-remain blocked. See [issue
-271](../.scratch/roadmap/issues/271-projectile-ground-slidetime-dynamic.md).
+Fresh root and Helper-authored Projectiles now resolve dynamic `air.hittime`
+once in the original caller context. Accepted airborne non-falling contact
+exposes `GetHitVar(hittime)=16` with authored air velocity, Projectile payload,
+lifecycle, target links, and Helper/root/parent ownership. This remains a
+bounded compatibility seam with no score movement: fresh default recalculation
+beyond the local seam, live `ModifyProjectile`, ground/down/guard timing,
+exact countdown/landing/physics, negative/overflow values, teams, rollback,
+and full Projectile timing parity remain blocked. See [issue
+272](../.scratch/roadmap/issues/272-projectile-air-hittime-dynamic.md).
 
 ## 2026-08-09 T696 Projectile guard.hittime addendum - no score movement
 

@@ -1,21 +1,22 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T697 closed-bounded
+## Authoritative runtime cursor — T698 closed-bounded
 
-Final T697 verification: `775/775` trace artifacts (`741` required, `34`
-optional), with required root Projectile `ground.slidetime` trace checksum
-`08b376db` / final `856bcded` and Helper Projectile checksum `30f9d1f7` /
-final `e4a0be12`. The full `3806/3806` Vitest suite across `328` files,
-typecheck, the `363`-module production build, and the diff gate pass.
+Final T698 verification: `777/777` trace artifacts (`743` required, `34`
+optional), with required root Projectile `air.hittime` checksum `d95c52d1` /
+final `cf7a06ba` and Helper Projectile checksum `c153c511` / final
+`0e089466`. The full `3810/3810` Vitest suite across `328` files, typecheck,
+the `363`-module production build, and the diff gate pass.
 
-T697 / issue 271 is closed-bounded: fresh root and Helper-authored Projectiles
-resolve dynamic `ground.slidetime` once in the original caller context.
-Accepted grounded contact exposes `GetHitVar(slidetime)=17` with Projectile
-payload, lifecycle, target links, and Helper/root/parent ownership evidence.
-Fresh default recalculation, live `ModifyProjectile`, guard/air/down timing,
-exact slide countdown/tick phase, negative/overflow values, teams, rollback,
-and full Projectile timing parity remain excluded. See [issue
-271](../.scratch/roadmap/issues/271-projectile-ground-slidetime-dynamic.md).
+T698 / issue 272 is closed-bounded: fresh root and Helper-authored Projectiles
+resolve dynamic `air.hittime` once in the original caller context. Accepted
+airborne non-falling contact exposes `GetHitVar(hittime)=16` with authored air
+velocity, Projectile payload/lifecycle, target links, and Helper/root/parent
+ownership evidence. Fresh default recalculation beyond the local seam, live
+`ModifyProjectile`, ground/down/guard timing, exact countdown/landing/physics,
+negative/overflow values, teams, rollback, and full Projectile timing parity
+remain excluded. See [issue
+272](../.scratch/roadmap/issues/272-projectile-air-hittime-dynamic.md).
 
 ## Previous runtime cursor — T696 closed-bounded
 
@@ -24,7 +25,7 @@ dynamic `guard.hittime` caller-context resolution and accepted guard
 `GetHitVar(hittime)` evidence. See [issue
 270](../.scratch/roadmap/issues/270-projectile-guard-hittime-dynamic.md).
 
-## Next parity cut — T698 proposed
+## Next parity cut — T699 proposed
 
 Map the next unclaimed Projectile timing or mutation parameter against the
 pinned Ikemen source before implementation. Live mutation remains unsupported

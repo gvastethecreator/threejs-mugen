@@ -1,23 +1,24 @@
 ﻿# Roadmap Package Milestones
 
-## Latest runtime cursor — T697
+## Latest runtime cursor — T698
 
-T697 closes the fresh root and Helper-authored Projectile `ground.slidetime`
-caller-context seam: dynamic values resolve once, accepted grounded contact
-exposes `GetHitVar(slidetime)=17`, and Projectile payload, lifecycle, target
-links, and Helper/root/parent ownership are required. Verification is
-`775/775` traces (`741` required, `34` optional), the full `3806/3806`
-Vitest suite across `328` files, typecheck, the `363`-module build, and diff
-hygiene. Root checksums are
-`08b376db/856bcded`; Helper checksums are `30f9d1f7/e4a0be12`. Fresh default
-recalculation, live `ModifyProjectile`, guard/air/down timing, exact slide
-countdown/tick phase, negative/overflow values, teams, rollback, and full
-Projectile timing parity remain excluded. See [issue 271](../.scratch/roadmap/issues/271-projectile-ground-slidetime-dynamic.md).
+T698 closes the fresh root and Helper-authored Projectile `air.hittime`
+caller-context seam: dynamic values resolve once, accepted airborne non-falling
+contact exposes `GetHitVar(hittime)=16` with authored air velocity, and
+Projectile payload, lifecycle, target links, and Helper/root/parent ownership
+are required. Verification is `777/777` traces (`743` required, `34` optional),
+the full `3810/3810` Vitest suite across `328` files, typecheck, the
+`363`-module build, and diff hygiene. Root checksums are
+`d95c52d1/cf7a06ba`; Helper checksums are `c153c511/0e089466`. Fresh default
+recalculation beyond the local seam, live `ModifyProjectile`, ground/down/guard
+timing, exact countdown/landing/physics, negative/overflow values, teams,
+rollback, and full Projectile timing parity remain excluded. See [issue
+272](../.scratch/roadmap/issues/272-projectile-air-hittime-dynamic.md).
 
 Previous cursor: T696 closed-bounded fresh root and Helper Projectile
 `guard.hittime` caller-context resolution. See [issue 270](../.scratch/roadmap/issues/270-projectile-guard-hittime-dynamic.md).
 
-Next queue: T698 maps the next unclaimed Projectile timing or mutation
+Next queue: T699 maps the next unclaimed Projectile timing or mutation
 parameter against pinned Ikemen source before implementation; live mutation is
 not assumed supported without source and seam evidence.
 
