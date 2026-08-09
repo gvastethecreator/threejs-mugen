@@ -5,24 +5,24 @@
     {
       "depthFrames": 8,
       "snapshotBytes": 574,
-      "restoreMs": 0.0964000000001306,
-      "resimMs": 0.23440000000005057,
+      "restoreMs": 0.11369999999988067,
+      "resimMs": 0.3003999999998541,
       "resimFrames": 8,
       "checksumMatch": true
     },
     {
       "depthFrames": 32,
       "snapshotBytes": 576,
-      "restoreMs": 0.01389999999992142,
-      "resimMs": 1.0593000000001211,
+      "restoreMs": 0.013100000000122236,
+      "resimMs": 1.088399999999865,
       "resimFrames": 32,
       "checksumMatch": true
     },
     {
       "depthFrames": 64,
       "snapshotBytes": 576,
-      "restoreMs": 0.013900000000148793,
-      "resimMs": 1.7032000000001517,
+      "restoreMs": 0.016100000000051296,
+      "resimMs": 2.491800000000012,
       "resimFrames": 64,
       "checksumMatch": true
     }
