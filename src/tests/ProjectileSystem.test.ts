@@ -2415,6 +2415,33 @@ describe("ProjectileSystem", () => {
     expect(matching.hitVelocities?.airGuard).toEqual({ x: -3.5, y: -8.25, z: 0 });
   });
 
+  it("resolves dynamic ModifyProjectile air.velocity for selected live projectiles", () => {
+    const matching = projectile({ projectileId: 77, airVelocityX: 1, airVelocityY: 2, airVelocityZ: 3 });
+    const other = projectile({ serialId: "dynamic-air-other", projectileId: 88, airVelocityX: 4, airVelocityY: 5, airVelocityZ: 6 });
+    const controllerValue = controller({ id: "77", "air.velocity": "var(0),fvar(1)" });
+    const operation = compileControllerIr(controller({
+      id: "77",
+      "air.velocity": "var(0),fvar(1)",
+    }, "ModifyProjectile")).operation as ModifyProjectileControllerOp;
+    const resolvedKeys: string[] = [];
+
+    expect(modifyRuntimeProjectiles([matching, other], {
+      controller: controllerValue,
+      operation,
+      resolveModifyProjectile: {
+        resolveFloatTriple: (key) => {
+          resolvedKeys.push(key);
+          return key === "air.velocity" ? [-7.5, -5.25, 0] : undefined;
+        },
+      },
+    })).toBe(1);
+
+    expect(resolvedKeys).toEqual(["air.velocity"]);
+    expect([matching.airVelocityX, matching.airVelocityY, matching.airVelocityZ]).toEqual([-7.5, -5.25, 0]);
+    expect([other.airVelocityX, other.airVelocityY, other.airVelocityZ]).toEqual([4, 5, 6]);
+    expect(matching.hitVelocities?.air).toEqual({ x: -7.5, y: -5.25, z: 0 });
+  });
+
   it("replaces static ModifyProjectile target-distance bounds and zeros omitted components", () => {
     const matching = projectile({
       projectileId: 77,

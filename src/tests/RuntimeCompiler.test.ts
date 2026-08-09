@@ -4163,6 +4163,37 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("retains dynamic ModifyProjectile air.velocity expressions", () => {
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "air.velocity": "var(0),fvar(1),var(2)",
+    })).operation).toMatchObject({
+      kind: "modifyprojectile",
+      airVelocityExpressions: ["var(0)", "fvar(1)"],
+      airVelocityZExpression: "var(2)",
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "air.velocity": "var(0),fvar(1)",
+    })).operation).toMatchObject({
+      kind: "modifyprojectile",
+      airVelocityExpressions: ["var(0)", "fvar(1)"],
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "air.velocity": "var(0)",
+    })).operation).toMatchObject({
+      kind: "modifyprojectile",
+      airVelocityExpressions: ["var(0)"],
+    });
+  });
+
+  it("rejects malformed dynamic ModifyProjectile air.velocity expressions", () => {
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "air.velocity": "var(0),",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      "air.velocity": "var(0),fvar(1),var(2),4",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles ModifyProjectile guard velocities with official zero defaults", () => {
     expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
       "guard.velocity": "-4.5,-1.25,1.5",
