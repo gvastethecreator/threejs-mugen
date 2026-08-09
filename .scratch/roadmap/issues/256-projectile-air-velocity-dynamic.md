@@ -1,6 +1,6 @@
 # Issue 256 — fresh Projectile air.velocity dynamic XYZ
 
-- Status: `source-mapped`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -48,6 +48,32 @@ nested/team topology, rollback, and full M.U.G.E.N/Ikemen Projectile parity.
 
 ## Next implementation step
 
-Add typed Projectile `air.velocity` expression fields and caller-context
-resolvers for root and Helper spawn, then add the smallest root/Helper tests
-and one required airborne-hit trace.
+Implemented in `68580d34` (`feat(mugen): resolve dynamic projectile air
+velocity`) and `9011a38d` (`test(evidence): gate dynamic projectile air
+velocity`). Typed compiler fields and root/Helper caller-context resolvers now
+support one-, two-, and three-component dynamic/mixed vectors; fresh omitted
+components default to zero while static behavior remains unchanged.
+
+Evidence closed-bounded:
+
+- focused compiler/Projectile/Helper tests pass;
+- full Vitest suite passes `3751/3751` across `328` files;
+- `pnpm typecheck`, `pnpm build`, and `git diff --check` pass;
+- `pnpm qa:trace` passes `756/756` artifacts (`722` required, `34`
+  optional, `0` failed);
+- required root trace
+  `synthetic-imported-projectile-dynamic-air-velocity` passes with trace
+  checksum `02d2aec0` and final checksum `fb8dd4a0`;
+- required Helper trace
+  `synthetic-imported-helper-projectile-dynamic-air-velocity` passes with
+  trace checksum `306e3c87` and final checksum `0de9b71b`.
+
+The bounded claim covers fresh root/Helper Projectile `air.velocity` XYZ
+caller evaluation, zero defaults for omitted dynamic siblings, accepted
+airborne hit physics, GetHitVar readback, and root/Helper ownership evidence.
+Live ModifyProjectile, dynamic `n`, down/airguard derivation, lying/ground
+selection, exact landing/tick parity, nested/team topology, rollback, and full
+M.U.G.E.N/Ikemen Projectile parity remain excluded.
+
+Next source-mapped cut: T683 / issue 257, fresh Projectile `down.velocity`
+dynamic XYZ and air-velocity inheritance.

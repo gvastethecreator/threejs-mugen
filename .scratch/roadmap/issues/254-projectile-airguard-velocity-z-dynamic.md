@@ -48,6 +48,8 @@ parity.
 
 ## Next bounded slice
 
-T681 closes the Helper-authored/root-owned fresh Projectile `airguard.velocity`
-dynamic XYZ and parent/lifecycle evidence. T682 is source-mapped for fresh
-Projectile `air.velocity` dynamic XYZ.
+T681 closed the Helper-authored/root-owned fresh Projectile
+`airguard.velocity` dynamic XYZ and parent/lifecycle evidence. T682 closed the
+fresh Projectile `air.velocity` dynamic XYZ source gate. T683 is now
+source-mapped for fresh Projectile `down.velocity` dynamic XYZ with pinned
+air-vector inheritance.

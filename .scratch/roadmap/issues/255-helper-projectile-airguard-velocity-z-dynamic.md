@@ -70,6 +70,7 @@ parity remain excluded.
 
 ## Next bounded slice
 
-Source-map T682 for fresh Projectile `air.velocity` dynamic X/Y/Z in root and
-Helper caller contexts. Keep live ModifyProjectile, dynamic `n`, and full
-Projectile/Helper parity outside that cut.
+T682 closed fresh Projectile `air.velocity` dynamic X/Y/Z in root and Helper
+caller contexts. T683 is source-mapped for fresh Projectile `down.velocity`
+dynamic XYZ with pinned air-vector inheritance. Keep live ModifyProjectile,
+dynamic `n`, and full Projectile/Helper parity outside that cut.
