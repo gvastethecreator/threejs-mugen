@@ -1191,6 +1191,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefDynamicGroundVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-omitted-ground-velocity",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefOmittedGroundVelocityTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-dynamic-state-transition",
       required: true,
       artifact: presets.createSyntheticImportedHitDefDynamicStateTransitionTraceArtifact(),

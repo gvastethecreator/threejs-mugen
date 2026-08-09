@@ -138,10 +138,24 @@ describe("RuntimeHelperCombatSystem", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const contactWorld = new RuntimeContactMemoryWorld();
     const helper = effectActorWorld.spawnHelper("p1", helperInput({ id: "42", name: '"Zero Tap"' }));
-    helper.currentMove = move({ damage: 0, guardDamage: 0, targetId: 77 });
+    helper.currentMove = move({
+      damage: 0,
+      guardDamage: 0,
+      targetId: 77,
+      push: 0,
+      hitVelocityY: 0,
+      hitVelocityZ: 0,
+      hitVelocities: { ground: { x: 0, y: 0, z: 0 } },
+    });
     helper.moveTick = 1;
     const defender = defenderActor("p2", "P2", contactWorld, {
-      runtime: runtimeState({ pos: { x: 18, y: 0 }, life: 100 }),
+      runtime: runtimeState({
+        pos: { x: 18, y: 0 },
+        vel: { x: 13, y: -11 },
+        hitVelocity: { x: 9, y: -7, z: 5 },
+        hitVars: { hitVelocities: { ground: { x: 9, y: -7, z: 5 } } },
+        life: 100,
+      }),
     });
 
     new RuntimeHelperCombatWorld().resolveDirect({
@@ -158,12 +172,24 @@ describe("RuntimeHelperCombatSystem", () => {
       stateHooks: stateHooks([], [5000]),
     });
 
-    expect(defender.runtime).toMatchObject({ life: 100, moveType: "H" });
+    expect(defender.runtime).toMatchObject({
+      life: 100,
+      moveType: "H",
+      vel: { x: 0, y: 0 },
+      hitVelocity: { x: 0, y: 0, z: 0 },
+    });
     expect(helper.targets).toEqual([{ actorId: "p2", targetId: 77, age: 0 }]);
-    expect(defender.runtime.hitVars).toMatchObject({ damage: 0, hitDamage: 0, guardDamage: 0 });
+    expect(defender.runtime.hitVars).toMatchObject({
+      damage: 0,
+      hitDamage: 0,
+      guardDamage: 0,
+      hitVelocities: { ground: { x: 0, y: 0, z: 0 } },
+    });
     expect(runtimeHitVar(defender.runtime, "damage")).toBe(0);
     expect(runtimeHitVar(defender.runtime, "hitdamage")).toBe(0);
     expect(runtimeHitVar(defender.runtime, "guarddamage")).toBe(0);
+    expect(runtimeHitVar(defender.runtime, "xvel")).toBe(0);
+    expect(runtimeHitVar(defender.runtime, "yvel")).toBe(0);
   });
 
   it("uses Helper direct HitDef forced posture only for accepted default get-hit selection", () => {

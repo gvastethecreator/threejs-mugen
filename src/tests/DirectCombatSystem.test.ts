@@ -482,6 +482,38 @@ describe("DirectCombatSystem", () => {
     expect(runtimeHitVar(defender.runtime, "yvel")).toBe(-5);
   });
 
+  it("replaces stale direct-hit velocity with fresh omitted ground.velocity zero defaults", () => {
+    const world = new RuntimeDirectCombatWorld();
+    const attacker = actor("p1", "Attacker", { facing: 1 });
+    const defender = actor("p2", "Ground defender", {
+      stateType: "S",
+      vel: { x: 13, y: -11 },
+      hitVelocity: { x: 9, y: -7, z: 5 },
+      hitVars: { hitVelocities: { ground: { x: 9, y: -7, z: 5 } } },
+    });
+    const freshOmitted = move({
+      push: 0,
+      hitVelocityY: 0,
+      hitVelocityZ: 0,
+      hitVelocities: { ground: { x: 0, y: 0, z: 0 } },
+    });
+    const result = resolveRuntimeCombatHit({
+      attacker: attacker.runtime,
+      defender: defender.runtime,
+      attack: freshOmitted,
+      holdingBack: false,
+    });
+
+    expect(result).toMatchObject({ kind: "hit", push: 0, hitVelocityY: 0, hitVelocityZ: 0 });
+    world.applyResolvedHit(attacker, defender, freshOmitted, result, hooks());
+
+    expect(defender.runtime.vel).toEqual({ x: 0, y: 0 });
+    expect(defender.runtime.hitVelocity).toEqual({ x: 0, y: 0, z: 0 });
+    expect(defender.runtime.hitVars?.hitVelocities?.ground).toEqual({ x: 0, y: 0, z: 0 });
+    expect(runtimeHitVar(defender.runtime, "xvel")).toBe(0);
+    expect(runtimeHitVar(defender.runtime, "yvel")).toBe(0);
+  });
+
   it("applies contact PalFX and emits EnvShake only on accepted unguarded direct hits", () => {
     const world = new RuntimeDirectCombatWorld();
     const attacker = actor("p1", "Attacker");

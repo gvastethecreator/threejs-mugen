@@ -13863,6 +13863,93 @@ export function createSyntheticImportedHitDefDynamicGroundVelocityTraceArtifact(
   });
 }
 
+export function createSyntheticImportedHitDefOmittedGroundVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-omitted-ground-velocity-attacker",
+    displayName: "Omitted HitDef Ground Velocity Attacker",
+    omitHitDefGroundVelocity: true,
+    groundVelocity: [9, -4],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-omitted-ground-velocity-defender",
+    displayName: "Omitted HitDef Ground Velocity Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 5085,
+      hitTimeBranchAnimNo: 5085,
+      hitTimeBranchExpression: "GetHitVar(xvel) = 0 && GetHitVar(yvel) = 0 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "Omitted Ground Velocity GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-omitted-ground-velocity-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-omitted-ground-velocity-golden",
+      label: "Synthetic imported omitted direct HitDef ground velocity route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves a fresh direct HitDef that fully omits ground.velocity resolves both components to 0 instead of inheriting adversarial fixture metadata 9,-4. Accepted grounded contact creates target 77, preserves physical velocity 0,0, and routes imported Common1 through GetHitVar(xvel)=0 and GetHitVar(yvel)=0 without guard or fall. Explicit values, partial replacement, ModifyHitDef, Helper caller context, legacy n syntax, Ikemen Z, Projectile, ModifyProjectile, teams, rollback, and full velocity parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-omitted-ground-velocity-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5085],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: ["Omitted HitDef Ground Velocity Attacker hit Omitted HitDef Ground Velocity Defender for 37"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredControllerEventSequences: [{
+        label: "omitted ground velocity accepted-contact GetHitVar order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [{ stateNo: 5000, controller: "ChangeState", name: "Omitted Ground Velocity GetHitVar Branch" }],
+      }],
+      requiredActorFrames: [
+        {
+          ...defaultGetHitProgressionPhysicsFrames()[0],
+          observedVelXAtLeast: 0,
+          observedVelXAtMost: 0,
+          observedVelYAtLeast: 0,
+          observedVelYAtMost: 0,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 5085,
+          animNo: 5085,
+          stateType: "S",
+          moveType: "H",
+          physics: "S",
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5085, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHitDefDynamicStateTransitionTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -55266,6 +55353,8 @@ export type SyntheticImportedTraceFighterOptions = {
   omitGuardVelocity?: boolean;
   /** Synthetic fixture-only dynamic ground velocity pair emitted into HitDef. */
   hitDefGroundVelocity?: SyntheticPairExpression;
+  /** Synthetic fixture-only omission of ground.velocity from the primary HitDef. */
+  omitHitDefGroundVelocity?: boolean;
   groundVelocity?: [number, number?];
   airVelocity?: [number, number?];
   airGuardVelocity?: [number, number?];
@@ -56474,9 +56563,11 @@ ${options.fallAnimType === undefined ? "" : `fall.animtype = ${options.fallAnimT
     ? ""
     : `ko.velocity.add = ${options.hitDefKoVelocityAdd.join(",")}`;
   const groundVelocity = options.groundVelocity ?? [-3];
-  const hitDefGroundVelocityLine = options.hitDefGroundVelocity === undefined
-    ? groundVelocity.join(",")
-    : options.hitDefGroundVelocity.join(",");
+  const hitDefGroundVelocityLine = options.omitHitDefGroundVelocity
+    ? ""
+    : `ground.velocity = ${options.hitDefGroundVelocity === undefined
+      ? groundVelocity.join(",")
+      : options.hitDefGroundVelocity.join(",")}`;
   const cornerPushLines = `
 ${options.groundCornerPush === undefined ? "" : `ground.cornerpush.veloff = ${options.groundCornerPush}`}
 ${options.airCornerPush === undefined ? "" : `air.cornerpush.veloff = ${options.airCornerPush}`}
@@ -56584,7 +56675,7 @@ pausetime = ${pauseTimeLine}
 ground.hittime = ${options.hitDefGroundHitTime ?? 9}
 ${options.hitDefGroundSlideTime === undefined ? "" : `ground.slidetime = ${options.hitDefGroundSlideTime}`}
 ${hitDefAirTimeLine}
-ground.velocity = ${hitDefGroundVelocityLine}
+${hitDefGroundVelocityLine}
 ${airVelocityLine}
 ${options.hitSound === undefined ? "" : `hitsound = ${options.hitSound}`}
 ${options.guardSound === undefined ? "" : `guardsound = ${options.guardSound}`}

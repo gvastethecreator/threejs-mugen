@@ -1,6 +1,6 @@
 # Issue 235 — Fresh direct HitDef ground.velocity defaults
 
-- Status: `active-research`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -37,3 +37,16 @@ Source symbols:
 Do not claim legacy `n`, exact localcoord or facing transforms, launch timing,
 friction, corner push, non-CNS native move defaults, Projectile or
 ModifyProjectile, teams, rollback, or full velocity parity.
+
+## Evidence
+
+- Fresh root and Helper HitDef activation resets X/Y/Z and stored ground
+  velocity metadata to zero when `ground.velocity` is absent.
+- Live `ModifyHitDef` omission preserves the current vector.
+- Accepted grounded contact exposes zero through `GetHitVar(xvel)` and
+  `GetHitVar(yvel)`.
+- Focused root/Helper/direct coverage passes; the full suite passes 3693/3693.
+- Required trace `synthetic-imported-hitdef-omitted-ground-velocity` passes
+  with checksum `15babb9c` and final checksum `350fd87e`.
+- Aggregate traces pass 733/733 with 699 required; typecheck and the 363-module
+  production build pass.

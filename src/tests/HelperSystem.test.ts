@@ -2001,6 +2001,12 @@ describe("HelperSystem", () => {
 
   it("defaults fresh helper HitDef omitted damage to zero without losing its target id", () => {
     const active = helper({
+      currentMove: activeMove({
+        push: 9,
+        hitVelocityY: -7,
+        hitVelocityZ: 5,
+        hitVelocities: { ground: { x: 9, y: -7, z: 5 } },
+      }),
       runtimeProgram: {
         states: [
           stateProgram(stateDef(6000, { moveType: "A" }), [
@@ -2012,7 +2018,15 @@ describe("HelperSystem", () => {
 
     advanceRuntimeHelpers([active], stage);
 
-    expect(active.currentMove).toMatchObject({ damage: 0, guardDamage: 0, targetId: 77 });
+    expect(active.currentMove).toMatchObject({
+      damage: 0,
+      guardDamage: 0,
+      targetId: 77,
+      push: 0,
+      hitVelocityY: 0,
+      hitVelocityZ: 0,
+      hitVelocities: { ground: { x: 0, y: 0, z: 0 } },
+    });
   });
 
   it("derives omitted helper HitDef getpower from the owner constants profile", () => {

@@ -310,8 +310,8 @@ export class RuntimeHitDefControllerDispatchWorld {
       context ?? {},
       resolveFloatPair?.("ground.velocity"),
     );
-    const groundVelocity: [number, number?, number?] | undefined = resolvedGroundVelocity === undefined
-      ? staticGroundVelocity
+    const groundVelocity: [number, number?, number?] = resolvedGroundVelocity === undefined
+      ? staticGroundVelocity ?? [0, 0, 0]
       : [
           resolvedGroundVelocity.first
             ?? staticGroundVelocity?.[0]
@@ -354,7 +354,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     );
     const forceNoFall = forceNoFallValue !== undefined && forceNoFallValue !== 0;
     const koVelocityAdd = operation?.koVelocityAdd ?? velocityPair(findParam(source, "ko.velocity.add"));
-    const push = Math.abs(groundVelocity?.[0] ?? existing?.push ?? (damage >= 60 ? 30 : 20));
+    const push = Math.abs(groundVelocity[0]);
     const guardPauseTime = resolveRuntimeHitDefPowerPair(
       operation?.guardPauseTimeExpressions,
       findParam(source, "guard.pausetime"),
@@ -427,13 +427,13 @@ export class RuntimeHitDefControllerDispatchWorld {
     const airGuardVelocity =
       operation?.airGuardVelocity ?? velocityPair(findParam(source, "airguard.velocity")) ?? deriveDefaultAirGuardVelocity(airVelocity);
     const hitVelocities: RuntimeHitVelocityMetadata = {
-      ...(groundVelocity === undefined ? {} : { ground: runtimeHitVelocityVector(groundVelocity) }),
+      ground: runtimeHitVelocityVector(groundVelocity),
       ...(airVelocity === undefined ? {} : { air: runtimeHitVelocityVector(airVelocity) }),
       ...(downVelocity === undefined ? {} : { down: runtimeHitVelocityVector(downVelocity) }),
       ...(guardVelocity === undefined ? {} : { guard: runtimeHitVelocityVector(guardVelocity) }),
       ...(airGuardVelocity === undefined ? {} : { airGuard: runtimeHitVelocityVector(airGuardVelocity) }),
     };
-    const guardVelocityX = guardVelocity?.[0] ?? groundVelocity?.[0];
+    const guardVelocityX = guardVelocity?.[0] ?? groundVelocity[0];
     const resolvedGuardDistance = resolveRuntimeHitDefIntegerScalar(
       operation?.guardDistance,
       findParam(source, "guard.dist"),
@@ -679,8 +679,8 @@ export class RuntimeHitDefControllerDispatchWorld {
       downVelocityY,
       ...(downBounce === undefined ? {} : { downBounce }),
       push,
-      hitVelocityY: groundVelocity?.[1] ?? existing?.hitVelocityY,
-      hitVelocityZ: groundVelocity?.[2] ?? existing?.hitVelocityZ,
+      hitVelocityY: groundVelocity[1] ?? 0,
+      hitVelocityZ: groundVelocity[2] ?? 0,
       airVelocityZ: airVelocity?.[2] ?? existing?.airVelocityZ,
       hitVelocities: Object.keys(hitVelocities).length > 0 ? hitVelocities : existing?.hitVelocities,
       ...(koVelocityAdd === undefined ? {} : { koVelocityAdd: { x: koVelocityAdd[0], y: koVelocityAdd[1] ?? 0 } }),

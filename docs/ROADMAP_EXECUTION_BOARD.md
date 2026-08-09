@@ -1,8 +1,8 @@
 ﻿# Roadmap Execution Board
 
-## Current official-parity queue — T424-T492 and T506-T660 closed-bounded; T661 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-08)
+## Current official-parity queue — T424-T492 and T506-T661 closed-bounded; T662 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-08)
 
-### Active runtime checkpoint — dynamic direct HitDef ground velocity
+### Active runtime checkpoint — direct HitDef guard velocity
 
 T589 / issue 163 is closed-bounded: static and bounded dynamic root/helper
 `attack.depth` pairs replace the selected live Projectile HitDef depth bounds.
@@ -665,9 +665,16 @@ with 698 required. Typecheck, the 363-module build, boundaries, and redirect
 boundaries pass. After migrating the retired roster expectations to Rocco and
 Nadia, the full suite passes 3690/3690.
 
-T661 / issue 235 is active-research: reset a fresh direct HitDef with omitted
-`ground.velocity` to `0,0` in root and Helper paths without changing live
-ModifyHitDef omission.
+T661 / issue 235 is closed-bounded: fresh direct HitDef omission resets
+`ground.velocity` X/Y/Z to zero in root and Helper paths. Accepted grounded
+contact exposes zero through GetHitVar, while live ModifyHitDef omission
+preserves the vector. The full suite passes 3693/3693; required trace checksum
+is `15babb9c`; aggregate traces pass 733/733 with 699 required; typecheck and
+the 363-module build pass.
+
+T662 / issue 236 is active-research: resolve direct HitDef and root-owned live
+ModifyHitDef `guard.velocity` X expressions, including fresh inheritance,
+accepted ground-guard consumption, and omission preservation.
 
 ### Latest visual checkpoint — Character Compare
 

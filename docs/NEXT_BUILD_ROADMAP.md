@@ -55,10 +55,11 @@ fresh default 20, and airborne non-fall GetHitVar consumption. T659 closes
 dynamic legacy scalar `guard.dist` and the horizontal precontact `InGuardDist`
 latch. T660 closes dynamic and mixed direct `ground.velocity` X/Y through
 root/Helper callers, live partial mutation, grounded hit velocity, and
-GetHitVar readback. T661 is active for the official fresh omitted `0,0`
-default. Latest evidence: 3690/3690 tests after migrating the retired roster
-expectations to Rocco and Nadia. The 363-module build and 732/732
-traces pass (698 required, 34 optional).
+GetHitVar readback. T661 closes the official fresh omitted `0,0,0` reset,
+root/Helper consumption, and live ModifyHitDef omission preservation. T662 is
+active for direct and live root-owned `guard.velocity` X expressions. Latest
+evidence: 3693/3693 tests, the 363-module build, and 733/733 traces pass (699
+required, 34 optional).
 Projectile facing, exact deferred facing/power order, broader
 `data/mugen.cfg`, rollback, and full HitDef parity remain outside these slices.
 

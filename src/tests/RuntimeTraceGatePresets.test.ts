@@ -97,6 +97,7 @@ import {
   createSyntheticImportedHitDefDynamicAirHitTimeTraceArtifact,
   createSyntheticImportedHitDefDynamicGuardDistanceTraceArtifact,
   createSyntheticImportedHitDefDynamicGroundVelocityTraceArtifact,
+  createSyntheticImportedHitDefOmittedGroundVelocityTraceArtifact,
   createSyntheticImportedHitDefDynamicStateTransitionTraceArtifact,
   createSyntheticImportedHitDefDynamicPriorityTraceArtifact,
   createSyntheticImportedHitDefDynamicSpritePriorityTraceArtifact,
@@ -24189,6 +24190,42 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       source: "imported",
       stateNo: 5086,
+      life: 963,
+    });
+  });
+
+  it("creates a required imported fresh HitDef omitted ground velocity artifact", () => {
+    const artifact = createSyntheticImportedHitDefOmittedGroundVelocityTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-omitted-ground-velocity-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-omitted-ground-velocity-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p2",
+        source: "imported",
+        stateNo: 5000,
+        minVel: expect.objectContaining({ x: 0, y: 0 }),
+        maxVel: expect.objectContaining({ x: 0, y: 0 }),
+      }),
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5085, moveType: "H" }),
+    ]));
+    expect(gate?.evidence.combatReasons).toContain("hit");
+    expect(gate?.evidence.combatReasons).not.toContain("guard");
+    expect(gate?.evidence.executedStates).not.toEqual(expect.arrayContaining([150, 154, 5030, 5050]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5085,
       life: 963,
     });
   });

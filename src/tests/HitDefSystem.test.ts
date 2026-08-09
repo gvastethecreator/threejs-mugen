@@ -987,6 +987,50 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("resets omitted fresh ground.velocity without changing ModifyHitDef omission preservation", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.velocity": "9,-4,3",
+      })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      push: 9,
+      hitVelocityY: -4,
+      hitVelocityZ: 3,
+      hitVelocities: { ground: { x: 9, y: -4, z: 3 } },
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { forcenofall: "1" })),
+    });
+    expect(actor.currentMove).toMatchObject({
+      push: 9,
+      hitVelocityY: -4,
+      hitVelocityZ: 3,
+      hitVelocities: { ground: { x: 9, y: -4, z: 3 } },
+    });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      push: 0,
+      hitVelocityY: 0,
+      hitVelocityZ: 0,
+      hitVelocities: { ground: { x: 0, y: 0, z: 0 } },
+    });
+  });
+
   it("resolves fresh and modified HitDef id and chainid in caller context", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

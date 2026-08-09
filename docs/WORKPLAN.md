@@ -2,7 +2,8 @@
 
 ## Current parity queue
 
-- **T661 active-research** — reset fresh direct HitDef omission of `ground.velocity` to official `0,0` in root/Helper paths while preserving live ModifyHitDef omission. See [issue 235](../.scratch/roadmap/issues/235-hitdef-ground-velocity-defaults.md).
+- **T662 active-research** — resolve direct HitDef and root-owned ModifyHitDef `guard.velocity` X expressions, fresh inheritance, and live omission preservation. See [issue 236](../.scratch/roadmap/issues/236-hitdef-guard-velocity-dynamic.md).
+- **T661 closed-bounded** — fresh direct HitDef omission resets `ground.velocity` X/Y/Z to zero in root/Helper paths, accepted contact exposes zero through GetHitVar, and live ModifyHitDef omission preserves the vector. See [issue 235](../.scratch/roadmap/issues/235-hitdef-ground-velocity-defaults.md).
 - **T660 closed-bounded** — dynamic and mixed direct HitDef/ModifyHitDef `ground.velocity` X/Y resolves through root/Helper callers, preserves live partial siblings/Z, and feeds grounded velocity plus GetHitVar readback. See [issue 234](../.scratch/roadmap/issues/234-hitdef-ground-velocity-dynamic.md).
 - **T659 closed-bounded** — dynamic direct HitDef/ModifyHitDef legacy scalar `guard.dist` resolves through root/Helper callers and feeds the horizontal `InGuardDist` latch before contact. See [issue 233](../.scratch/roadmap/issues/233-hitdef-guard-dist-dynamic.md).
 - **T658 closed-bounded** — dynamic direct HitDef/ModifyHitDef `air.hittime` resolves through root/Helper callers, uses the official fresh default 20, and reaches airborne non-fall stun plus `GetHitVar(hittime)`. See [issue 232](../.scratch/roadmap/issues/232-hitdef-air-hittime-dynamic.md).
