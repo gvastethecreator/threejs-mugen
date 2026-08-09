@@ -1,6 +1,6 @@
 # Issue 251 — Helper-owned ModifyHitDef air.velocity
 
-- Status: `queued`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -39,3 +39,24 @@ Sources to pin before implementation:
 Do not claim M.U.G.E.N live `ModifyHitDef`, fresh inheritance, dynamic Z,
 partial `n` syntax, Projectile or ModifyProjectile, exact landing/Common1
 timing, localcoord/facing equivalence, teams, rollback, or full Helper parity.
+
+## Closure evidence
+
+- Helper-owned runtime coverage proves caller-local dynamic X/Y resolution;
+  one-component mutation replaces X while preserving Y/Z, a pair replaces
+  X/Y while preserving Z, and omission is a no-op.
+- Accepted airborne contact exposes `GetHitVar(xvel/yvel/zvel)=7/-5/4` and
+  applies the same vector through the physical HitVelSet path while preserving
+  Helper/root/parent target ownership.
+- Required trace:
+  `synthetic-imported-helper-modifyhitdef-dynamic-air-velocity`.
+- Required trace checksum: `6e91818d`; final checksum: `93efa92a`.
+- Aggregate trace gate passes `750/750` artifacts (`716` required,
+  `34` optional); the full suite passes `3737/3737` tests across `328` files,
+  typecheck passes, and the `363`-module build passes.
+
+## Next bounded slice
+
+T678 is queued for Helper-owned live `ModifyHitDef airguard.velocity` X/Y
+component-preserving mutation; see
+[issue 252](252-helper-modifyhitdef-airguard-velocity.md).

@@ -1,12 +1,12 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-09 T651-T676 direct contact timing, admission, and velocity addendum — no score movement
+## 2026-08-09 T651-T677 direct contact timing, admission, and velocity addendum — no score movement
 
-Final T676 verification: `749/749` trace artifacts (`715` required, `34`
-optional), `3735/3735` Vitest tests across `328` files, typecheck, and the
-`363`-module build pass. The T676 required
-`synthetic-imported-helper-modifyhitdef-dynamic-down-velocity` trace checksum
-is `d2a053cf`; final checksum is `1e67b5c3`.
+Final T677 verification: `750/750` trace artifacts (`716` required, `34`
+optional), `3737/3737` Vitest tests across `328` files, typecheck, and the
+`363`-module build pass. The T677 required
+`synthetic-imported-helper-modifyhitdef-dynamic-air-velocity` trace checksum
+is `6e91818d`; final checksum is `93efa92a`.
 
 Direct HitDef pause pairs now preserve independent attacker pause and receiver
 hit-shake time for root and Helper contacts. Dynamic direct `ground.hittime`
@@ -43,9 +43,11 @@ component-wise preservation and a required lying-hit trace. T675 adds the
 pinned-Ikemen-only live dynamic Z component, preserving active X/Y and proving
 the resulting vector through the lying-hit trace. T676 adds the same live
 dispatch for Helper-owned callers with X/Y/Z component preservation and
-required lying-hit evidence. T677 is queued for Helper-owned live
-`air.velocity` X/Y mutation. The global totals are refreshed after the T676
-gate. These are
+required lying-hit evidence. T677 adds Helper-owned live `ModifyHitDef
+air.velocity` X/Y mutation with omitted-component preservation and accepted
+airborne physics/GetHitVar evidence. T678 is queued for Helper-owned live
+`airguard.velocity` X/Y mutation. The global totals are refreshed after the
+T677 gate. These are
 bounded timing, admission, and
 velocity seams, not full HitDef or tick-order parity. Compatibility scores
 remain unchanged.

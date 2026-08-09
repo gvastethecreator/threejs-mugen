@@ -1,11 +1,13 @@
 ﻿# Supported Features
 ## 2026-08-09 HitDef friction, spark-scale, facing, power, PalFX, EnvShake, and velocity checkpoint
 
-Authoritative cursor: T676 is closed-bounded for pinned-Ikemen-only
+Authoritative cursor: T677 is closed-bounded for pinned-Ikemen-only
 Helper-owned live `ModifyHitDef down.velocity` dynamic X/Y/Z mutation with
-active-component preservation and a required lying-hit trace. T677 is queued
-for Helper-owned live `ModifyHitDef air.velocity` X/Y. M.U.G.E.N live
-ModifyHitDef support is not claimed.
+active-component preservation and a required lying-hit trace, plus live
+Helper-owned `ModifyHitDef air.velocity` X/Y mutation with airborne
+physics/GetHitVar evidence. T678 is queued for Helper-owned live
+`ModifyHitDef airguard.velocity` X/Y. M.U.G.E.N live ModifyHitDef support is
+not claimed.
 
 - T608-T638 are closed-bounded. Root/Helper direct HitDef, ReversalDef, and
   Projectile paths support the verified `unhittabletime` slices through
@@ -81,13 +83,14 @@ ModifyHitDef support is not claimed.
   expressions. T672 closes live root-owned ModifyHitDef mutation. T673 is
   T673 closes fresh down-velocity expressions and air-vector inheritance. T674
   and T675 close live root-owned ModifyHitDef down-velocity X/Y/Z mutation;
-  T676 closes Helper-owned live dispatch and lying-hit evidence. T677 is queued
-  for Helper-owned live air-velocity mutation.
+  T676 closes Helper-owned live dispatch and lying-hit evidence. T677 closes
+  Helper-owned live air-velocity mutation. T678 is queued for the
+  Helper-owned live air-guard velocity follow-up.
   Projectile facing, exact deferred
   facing/power order, broader `data/mugen.cfg`, rollback, and full HitDef
   behavior are not supported claims.
-- Latest evidence: 3729/3729 tests, the 363-module build, and 746/746 traces
-  pass (712 required, 34 optional).
+- Latest evidence: 3737/3737 tests, the 363-module build, and 750/750 traces
+  pass (716 required, 34 optional).
 
 ## 2026-08-08 ModifyProjectile selection and live HitDef mutation
 

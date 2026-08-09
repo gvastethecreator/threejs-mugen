@@ -1,24 +1,26 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T676 closed, T677 queued
+## Authoritative runtime cursor — T677 closed, T678 queued
 
-Final T676 verification: `749/749` trace artifacts (`715` required, `34`
-optional), with the T676 required trace checksum `d2a053cf` and final checksum
-`1e67b5c3`. Helper/telemetry coverage passes `62/62`; the full `3735/3735`
-Vitest suite, typecheck, and `363`-module build remain green from the same
-integration boundary.
+Final T677 verification: `750/750` trace artifacts (`716` required, `34`
+optional), with the T677 required trace checksum `6e91818d` and final checksum
+`93efa92a`. The full `3737/3737` Vitest suite across `328` files, typecheck,
+and the `363`-module build pass.
 
 T675 / issue 249 is closed-bounded: live root-owned `ModifyHitDef
 down.velocity` dynamic Z resolves in caller context, preserves active X/Y,
 and is consumed by the required lying-hit trace. T676 / issue 250 is
 closed-bounded: Helper-owned `ModifyHitDef down.velocity` resolves caller
 context X/Y/Z, preserves omitted live components, and reaches accepted lying
-physics/GetHitVar. T677 / issue 251 is queued for Helper-owned live
-`ModifyHitDef air.velocity` X/Y preservation.
+physics/GetHitVar. T677 / issue 251 is closed-bounded: Helper-owned live
+`ModifyHitDef air.velocity` resolves caller-context X/Y, preserves omitted
+live Y/Z, and reaches accepted airborne-hit physics/GetHitVar with Helper/root
+ownership evidence. T678 / issue 252 is queued for Helper-owned live
+`ModifyHitDef airguard.velocity` X/Y preservation.
 M.U.G.E.N Z/live-ModifyHitDef claims, Projectile/ModifyProjectile, and full
 down-hit/Helper parity remain outside the closed claims.
 
-## Current official-parity queue — T424-T492 and T506-T676 closed-bounded; T677 queued; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
+## Current official-parity queue — T424-T492 and T506-T677 closed-bounded; T678 queued; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
 
 ### Active runtime checkpoint — live ModifyHitDef air-guard velocity
 
@@ -773,7 +775,10 @@ physics/GetHitVar. The full suite passes 3729/3729; required trace checksum is
 T674 / issue 248 is closed-bounded: live root-owned `ModifyHitDef
 down.velocity` X/Y expressions resolve in caller context, preserve omitted
 live components, and feed accepted lying-hit physics/GetHitVar. T675 / issue
-249 is queued for the pinned-Ikemen-only dynamic Z follow-up.
+249 closes the pinned-Ikemen-only dynamic Z follow-up. T676 / issue 250 closes
+the Helper-owned down-velocity dispatch. T677 / issue 251 closes the
+Helper-owned air-velocity dispatch. T678 / issue 252 is queued for the
+Helper-owned air-guard velocity follow-up.
 
 ### Latest visual checkpoint — Character Compare
 

@@ -2,7 +2,8 @@
 
 ## Current parity queue
 
-- **T677 queued** — extend Helper-owned live `ModifyHitDef air.velocity` to caller-context X/Y replacement with omitted-component preservation and accepted airborne-hit evidence. See [issue 251](../.scratch/roadmap/issues/251-helper-modifyhitdef-air-velocity.md).
+- **T678 queued** — extend Helper-owned live `ModifyHitDef airguard.velocity` to caller-context X/Y replacement with omitted-component preservation and accepted airborne-guard evidence. See [issue 252](../.scratch/roadmap/issues/252-helper-modifyhitdef-airguard-velocity.md).
+- **T677 closed-bounded** — Helper-owned live `ModifyHitDef air.velocity` now resolves caller-context X/Y, preserves omitted live Y/Z, and reaches accepted airborne-hit physics/GetHitVar. See [issue 251](../.scratch/roadmap/issues/251-helper-modifyhitdef-air-velocity.md).
 - **T676 closed-bounded** — Helper-owned `ModifyHitDef down.velocity` now resolves caller-context X/Y/Z, preserves omitted live components, and reaches accepted lying-hit physics/GetHitVar. See [issue 250](../.scratch/roadmap/issues/250-helper-modifyhitdef-down-velocity.md).
 - **T675 closed-bounded** — live root-owned `ModifyHitDef down.velocity` now resolves a pinned-Ikemen dynamic Z component in caller context, preserves active X/Y, and reaches accepted lying-hit physics/GetHitVar. See [issue 249](../.scratch/roadmap/issues/249-modifyhitdef-down-velocity-z-dynamic.md).
 - **T674 closed-bounded** — live root-owned `ModifyHitDef down.velocity` X/Y expressions now resolve in caller context with component-wise preservation. See [issue 248](../.scratch/roadmap/issues/248-modifyhitdef-down-velocity-dynamic.md).
