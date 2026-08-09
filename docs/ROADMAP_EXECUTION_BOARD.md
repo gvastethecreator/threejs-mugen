@@ -1,20 +1,21 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T674 closed, T675 queued
+## Authoritative runtime cursor — T675 closed, T676 queued
 
-Final T674 verification: `747/747` trace artifacts (`713` required, `34`
-optional), `3732/3732` Vitest tests across `328` files, typecheck, and the
-`363`-module build pass. Required trace checksum is `7b1f4341`; final checksum
-is `fc695cca`.
+Final T675 verification: `748/748` trace artifacts (`714` required, `34`
+optional), with the T675 required trace checksum `1e84d540` and final checksum
+`2b8a4fd0`. The focused compiler/runtime gate passes `184/184`; the full
+`3733/3733` Vitest suite, typecheck, and `363`-module build remain green from
+the same integration boundary.
 
-T674 / issue 248 is closed-bounded: live root-owned `ModifyHitDef
-down.velocity` X/Y expressions resolve in caller context, preserve omitted
-live components, and are consumed by the required lying-hit trace. T675 /
-issue 249 is queued for the pinned-Ikemen-only dynamic Z follow-up. M.U.G.E.N
-Z support, Helper-owned mutation, Projectile/ModifyProjectile, and full
-down-hit parity remain outside both claims.
+T675 / issue 249 is closed-bounded: live root-owned `ModifyHitDef
+down.velocity` dynamic Z resolves in caller context, preserves active X/Y,
+and is consumed by the required lying-hit trace. T676 / issue 250 is queued
+for Helper-owned `ModifyHitDef down.velocity` under the pinned Ikemen path.
+M.U.G.E.N Z/live-ModifyHitDef claims, Projectile/ModifyProjectile, and full
+down-hit/Helper parity remain outside the closed claims.
 
-## Current official-parity queue — T424-T492 and T506-T674 closed-bounded; T675 queued; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
+## Current official-parity queue — T424-T492 and T506-T675 closed-bounded; T676 queued; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
 
 ### Active runtime checkpoint — live ModifyHitDef air-guard velocity
 

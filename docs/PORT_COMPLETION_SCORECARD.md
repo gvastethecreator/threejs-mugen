@@ -1,12 +1,12 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-09 T651-T674 direct contact timing, admission, and velocity addendum — no score movement
+## 2026-08-09 T651-T675 direct contact timing, admission, and velocity addendum — no score movement
 
-Final T674 verification: `747/747` trace artifacts (`713` required, `34`
-optional), `3732/3732` Vitest tests across `328` files, typecheck, and the
-`363`-module build pass. Required
-`synthetic-imported-modifyhitdef-dynamic-down-velocity` checksum is
-`7b1f4341`; final checksum is `fc695cca`.
+Final T675 verification: `748/748` trace artifacts (`714` required, `34`
+optional), `3733/3733` Vitest tests across `328` files, typecheck, and the
+`363`-module build pass. The T675 required
+`synthetic-imported-modifyhitdef-dynamic-down-velocity-z` trace checksum is
+`1e84d540`; final checksum is `2b8a4fd0`.
 
 Direct HitDef pause pairs now preserve independent attacker pause and receiver
 hit-shake time for root and Helper contacts. Dynamic direct `ground.hittime`
@@ -39,9 +39,11 @@ caller-resolved X/Y expressions. T672 adds live root-owned ModifyHitDef X/Y
 mutation with component preservation. T673 adds fresh root/Helper
 `down.velocity` X/Y expressions with air-vector inheritance and lying-hit
 consumption. T674 adds live root-owned ModifyHitDef X/Y mutation with
-component-wise preservation and a required lying-hit trace. T675 is queued
-for the pinned-Ikemen-only dynamic Z follow-up. The global totals are
-refreshed after the T674 gate. These are
+component-wise preservation and a required lying-hit trace. T675 adds the
+pinned-Ikemen-only live dynamic Z component, preserving active X/Y and proving
+the resulting vector through the lying-hit trace. T676 is queued for the
+Helper-owned live dispatch. The global totals are refreshed after the T675
+gate. These are
 bounded timing, admission, and
 velocity seams, not full HitDef or tick-order parity. Compatibility scores
 remain unchanged.

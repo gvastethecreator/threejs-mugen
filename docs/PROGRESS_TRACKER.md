@@ -1,11 +1,11 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T608-T674 (2026-08-09)
+## Latest implementation checkpoint — T608-T675 (2026-08-09)
 
-Authoritative cursor: T674 is closed-bounded for live root-owned
-`ModifyHitDef down.velocity` X/Y component preservation. T675 is queued for
-the pinned-Ikemen-only dynamic Z follow-up; the older active wording below is
-historical and superseded.
+Authoritative cursor: T675 is closed-bounded for live root-owned
+`ModifyHitDef down.velocity` dynamic Z with active X/Y preservation. T676 is
+queued for the pinned-Ikemen Helper-owned follow-up; the older active wording
+below is historical and superseded.
 
 - T608-T637 are closed-bounded. T616-T621 add typed HitDef/Projectile
   `unhittabletime`, actor-role contact/admission/default/HitOverride slices,
@@ -77,9 +77,11 @@ historical and superseded.
   consumption of the existing static air vector. T671 closes X/Y caller
   expressions. T672 closes live root-owned ModifyHitDef mutation. T673 is
   T673 closes fresh down-velocity expressions and air-vector inheritance. T674
-  is active for live root-owned ModifyHitDef down-velocity mutation.
-- Latest full suite passes 3729/3729. Typecheck, 363-module build,
-  746/746 traces (712 required, 34 optional),
+  closes live root-owned ModifyHitDef down-velocity X/Y mutation. T675 closes
+  the pinned-Ikemen dynamic Z component and required lying-hit evidence. T676
+  is queued for Helper-owned ModifyHitDef down-velocity dispatch.
+- Latest full suite passes 3733/3733. Typecheck, 363-module build,
+  748/748 traces (714 required, 34 optional),
   boundaries, redirect boundaries, and differential checks pass.
 
 ## Historical implementation checkpoint — T522-T552 and Fighter Lab (2026-08-08)

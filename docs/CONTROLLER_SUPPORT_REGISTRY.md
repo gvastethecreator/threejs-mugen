@@ -1,9 +1,9 @@
 # Controller Support Registry
 
-Authoritative cursor: T674 is closed-bounded for live root-owned
-`ModifyHitDef down.velocity` X/Y component-preserving expressions. T675 is
-queued for the pinned-Ikemen-only dynamic Z follow-up; M.U.G.E.N Z support,
-Helper-owned mutation, and Projectile/ModifyProjectile remain excluded.
+Authoritative cursor: T675 is closed-bounded for live root-owned
+`ModifyHitDef down.velocity` dynamic Z with active X/Y preservation. T676 is
+queued for the pinned-Ikemen-only Helper-owned mutation; M.U.G.E.N live Z
+support and Projectile/ModifyProjectile remain excluded.
 
 This is the registry contract for CNS controller work. It prevents the runtime from growing controller behavior through invisible ad hoc paths.
 

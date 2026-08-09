@@ -1,17 +1,18 @@
 ﻿# Next Build Roadmap
 
-## Authoritative runtime cursor — T674 closed, T675 queued
+## Authoritative runtime cursor — T675 closed, T676 queued
 
-Final T674 verification: `747/747` trace artifacts (`713` required, `34`
-optional), `3732/3732` Vitest tests across `328` files, typecheck, and the
-`363`-module build pass. Required trace checksum is `7b1f4341`; final checksum
-is `fc695cca`.
+Final T675 verification: `748/748` trace artifacts (`714` required, `34`
+optional), with T675 required trace checksum `1e84d540` and final checksum
+`2b8a4fd0`. Focused compiler/runtime coverage passes `184/184`; the full
+`3733/3733` Vitest suite, typecheck, and `363`-module build remain green.
 
-T674 / issue 248 is closed-bounded: live root-owned `ModifyHitDef
-down.velocity` X/Y expressions resolve in caller context, preserve omitted
-live components, and are consumed by the required lying-hit trace. T675 /
-issue 249 is queued for the pinned-Ikemen-only dynamic Z follow-up. The older
-active wording in this historical summary is superseded by this cursor.
+T675 / issue 249 is closed-bounded: live root-owned `ModifyHitDef
+down.velocity` dynamic Z resolves in caller context, preserves active X/Y,
+and is consumed by the required lying-hit trace. T676 / issue 250 is queued
+for Helper-owned `ModifyHitDef down.velocity` under the pinned Ikemen path.
+The older active wording in this historical summary is superseded by this
+cursor.
 
 ## Current next-build — official M.U.G.E.N / Ikemen queue (2026-08-09)
 
@@ -83,10 +84,11 @@ the imported static-HitDef mirror. T670 closes direct airborne-hit consumption
 of the existing static `air.velocity` vector. T671 closes X/Y caller
 expressions. T672 closes live root-owned ModifyHitDef X/Y mutation. T673 is
 active for fresh `down.velocity` X/Y expressions and air-vector inheritance.
-T673 closes that fresh path. T674 is active for live root-owned ModifyHitDef
-down-velocity mutation. Latest evidence: 3729/3729 tests, the 363-module build,
-and 746/746 traces pass (712
-required, 34 optional).
+T673 closes that fresh path. T674 closes live root-owned ModifyHitDef
+down-velocity X/Y mutation. T675 closes its pinned-Ikemen dynamic Z component
+and required lying-hit evidence; T676 is queued for Helper-owned dispatch.
+Latest evidence: 3733/3733 tests, the 363-module build, and 748/748 traces
+pass (714 required, 34 optional).
 Projectile facing, exact deferred facing/power order, broader
 `data/mugen.cfg`, rollback, and full HitDef parity remain outside these slices.
 
