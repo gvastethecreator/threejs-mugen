@@ -1064,6 +1064,54 @@ damage = 5
     });
   });
 
+  it("derives missing air-guard Z for a root-owned Helper Projectile", () => {
+    const fighter = createImportedFixture({
+      id: "helper-projectile-derived-air-guard-depth",
+      withStateMove: false,
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Helper Projectile air guard depth]
+type = Projectile
+trigger1 = Time = 0
+projid = 94
+projanim = 910
+offset = 0,-20
+velocity = 0,0
+projremovetime = 20
+damage = 5
+air.velocity = -6,-10,4
+airguard.velocity = -9,-4
+`,
+    });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(fighter, demoFighters[1]!, trainingStage, {
+      effectActorWorld,
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const helper = effectActorWorld.helpers("p1")[0];
+    const projectile = effectActorWorld.projectiles("p1").find(({ parentId }) => parentId === helper?.serialId);
+
+    expect(projectile).toMatchObject({
+      projectileId: 94,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: "p1-helper-0",
+      airVelocityX: -6,
+      airVelocityY: -10,
+      airVelocityZ: 4,
+      airGuardPush: 9,
+      airGuardVelocityY: -4,
+      airGuardVelocityZ: 6,
+      hitVelocities: { airGuard: { x: -9, y: -4, z: 6 } },
+    });
+    expect(snapshot.effects?.find(({ id }) => id === projectile?.serialId)).toMatchObject({
+      actorKind: "projectile",
+      ownerId: "p1",
+      parentId: "p1-helper-0",
+    });
+  });
+
   it("routes imported helper negative states through the owner profile when keyctrl is enabled", () => {
     const fighter = createImportedFixture({
       id: "ikemen-helper-keyctrl-state-entry",

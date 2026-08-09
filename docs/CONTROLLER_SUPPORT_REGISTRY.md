@@ -79,8 +79,9 @@ defaults. T664 closes exact X/Y live ModifyHitDef replacement, Z/omission
 preservation, and accepted airborne-guard consumption. T665 closes the
 pinned-Ikemen one-component form with fresh Y derivation and live Y/Z
 preservation. T666 closes the missing-Z fresh direct-HitDef default. T667
-closes the same default for fresh root-owned Projectiles. T668 is active for
-Helper-created Projectile ownership and evidence.
+closes the same default for fresh root-owned Projectiles. T668 closes
+Helper-created Projectile root/parent ownership and contact evidence. T669 is
+active for the imported static-HitDef mirror.
 Projectile facing, exact deferred facing/power order,
 broader `data/mugen.cfg`, rollback, and full HitDef parity remain unsupported.
 

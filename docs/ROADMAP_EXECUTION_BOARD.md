@@ -1,6 +1,6 @@
 ﻿# Roadmap Execution Board
 
-## Current official-parity queue — T424-T492 and T506-T667 closed-bounded; T668 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
+## Current official-parity queue — T424-T492 and T506-T668 closed-bounded; T669 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
 
 ### Active runtime checkpoint — live ModifyHitDef air-guard velocity
 
@@ -711,8 +711,15 @@ and GetHitVar. The full suite passes 3712/3712; required trace checksum is
 `f2c12237`; aggregate traces pass 740/740 with 706 required; typecheck and the
 363-module build pass.
 
-T668 / issue 242 is active-research: prove the same pinned-Ikemen missing-Z
-default and root ownership for a Projectile created by a Helper.
+T668 / issue 242 is closed-bounded: a Helper-created Projectile derives the
+same pinned-Ikemen missing-Z default while retaining root ownership and Helper
+parentage. Required evidence covers Helper/Projectile execution, lifecycle,
+payload, dual target links, airborne guard, physical depth, and GetHitVar. The
+full suite passes 3714/3714; required trace checksum is `fc0bf424`; aggregate
+traces pass 741/741 with 707 required; typecheck and the 363-module build pass.
+
+T669 / issue 243 is active-research: complete the same missing-component
+defaults for the first static HitDef projected into imported move metadata.
 
 ### Latest visual checkpoint — Character Compare
 

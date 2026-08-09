@@ -2,7 +2,8 @@
 
 ## Current parity queue
 
-- **T668 active-research** — prove Helper-created Projectile missing-Z `airguard.velocity` derivation and root ownership through durable contact evidence. See [issue 242](../.scratch/roadmap/issues/242-helper-projectile-airguard-velocity-z-default.md).
+- **T669 active-research** — complete missing imported static-HitDef `airguard.velocity` components, including pinned-Ikemen Z derivation. See [issue 243](../.scratch/roadmap/issues/243-imported-hitdef-airguard-velocity-z-default.md).
+- **T668 closed-bounded** — Helper-created Projectile missing-Z `airguard.velocity` derivation retains root/parent ownership and reaches airborne guard through durable lifecycle/contact evidence. See [issue 242](../.scratch/roadmap/issues/242-helper-projectile-airguard-velocity-z-default.md).
 - **T667 closed-bounded** — fresh root Projectile omission/partial `airguard.velocity` derives missing Z from effective air Z while explicit Z wins and airborne guard exposes the value. See [issue 241](../.scratch/roadmap/issues/241-projectile-airguard-velocity-z-default.md).
 - **T666 closed-bounded** — fresh direct HitDef omission/partial `airguard.velocity` derives missing Z from effective air Z while explicit Z and live Modify preservation remain intact. See [issue 240](../.scratch/roadmap/issues/240-hitdef-airguard-velocity-z-default.md).
 - **T665 closed-bounded** — pinned-Ikemen one-component `airguard.velocity` replaces fresh/live X, derives fresh Y, preserves live Y/Z, and feeds accepted airborne guard. See [issue 239](../.scratch/roadmap/issues/239-hitdef-airguard-velocity-single-component.md).

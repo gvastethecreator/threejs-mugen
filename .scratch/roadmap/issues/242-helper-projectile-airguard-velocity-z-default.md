@@ -1,6 +1,6 @@
 # Issue 242 — Helper Projectile airguard.velocity missing-Z evidence
 
-- Status: `active-research`
+- Status: `closed-bounded`
 - Lane: `R1 projectile contact physics`
 - Priority: `P1`
 
@@ -36,3 +36,16 @@ Source symbols:
 Describe Z as pinned-Ikemen compatibility. Do not claim M.U.G.E.N Z syntax,
 dynamic Z, ModifyProjectile recomputation, team ownership, rollback,
 localcoord equivalence, or full three-dimensional physics.
+
+## Closure evidence
+
+- A Helper-created Projectile derives missing Z as `air.velocity.z * 1.5`
+  while retaining authored X/Y.
+- Runtime and snapshot evidence retain owner/root `p1` and parent
+  `p1-helper-0`.
+- The required trace proves Helper/Projectile execution, lifecycle, payload,
+  root and Helper target links, accepted airborne guard, and effective
+  `GetHitVar(xvel/yvel/zvel)` values `5/-4/9`.
+- Required trace checksum: `fc0bf424`; final-state checksum: `b6ddb779`.
+- Full suite: 3714/3714. Aggregate traces: 741/741, with 707 required and 34
+  optional. Typecheck and the 363-module production build pass.
