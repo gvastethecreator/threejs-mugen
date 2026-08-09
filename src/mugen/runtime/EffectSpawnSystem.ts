@@ -73,6 +73,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveProjectileAirHitTime?: RuntimeProjectileSpawnInput["resolveAirHitTime"];
   resolveProjectilePauseTime?: RuntimeProjectileSpawnInput["resolvePauseTime"];
   resolveProjectileGuardPauseTime?: RuntimeProjectileSpawnInput["resolveGuardPauseTime"];
+  resolveProjectileRemoveTime?: RuntimeProjectileSpawnInput["resolveRemoveTime"];
   resolveProjectileGuardHitTime?: RuntimeProjectileSpawnInput["resolveGuardHitTime"];
   resolveProjectileAirGuardVelocity?: RuntimeProjectileSpawnInput["resolveAirGuardVelocity"];
   resolveProjectilePaletteFx?: RuntimeProjectileSpawnInput["resolvePaletteFx"];
@@ -256,6 +257,7 @@ export class RuntimeEffectSpawnWorld {
     resolveAirHitTime?: RuntimeProjectileSpawnInput["resolveAirHitTime"],
     resolvePauseTime?: RuntimeProjectileSpawnInput["resolvePauseTime"],
     resolveGuardPauseTime?: RuntimeProjectileSpawnInput["resolveGuardPauseTime"],
+    resolveRemoveTime?: RuntimeProjectileSpawnInput["resolveRemoveTime"],
     resolveGuardHitTime?: RuntimeProjectileSpawnInput["resolveGuardHitTime"],
     resolveAirGuardVelocity?: RuntimeProjectileSpawnInput["resolveAirGuardVelocity"],
     resolvePaletteFx?: RuntimeProjectileSpawnInput["resolvePaletteFx"],
@@ -308,6 +310,7 @@ export class RuntimeEffectSpawnWorld {
       resolveAirHitTime,
       resolvePauseTime,
       resolveGuardPauseTime,
+      resolveRemoveTime,
       resolveGuardHitTime,
       resolveAirGuardVelocity,
       resolvePaletteFx,
@@ -608,6 +611,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveProjectileAirHitTime,
         options.resolveProjectilePauseTime,
         options.resolveProjectileGuardPauseTime,
+        options.resolveProjectileRemoveTime,
         options.resolveProjectileGuardHitTime,
         options.resolveProjectileAirGuardVelocity,
         options.resolveProjectilePaletteFx,

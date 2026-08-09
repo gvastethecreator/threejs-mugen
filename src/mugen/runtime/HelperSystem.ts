@@ -1974,7 +1974,7 @@ function resolveRuntimeHelperHitDefEnvShakeComponent(
 export function resolveRuntimeHelperIntegerScalarParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall",
+  key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "projremovetime",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
   if (key === "priority") {
@@ -2021,8 +2021,19 @@ export function resolveRuntimeHelperIntegerScalarParam(
       : undefined;
     if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
   }
+  if (key === "projremovetime") {
+    const operation = controller.operation;
+    const value = operation?.kind === "projectile"
+      ? operation.removeTimeExpression
+      : undefined;
+    if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
+  }
   const raw = findControllerParam(controller.source, key) ??
-    (key === "p1sprpriority" ? findControllerParam(controller.source, "sprpriority") : undefined);
+    (key === "p1sprpriority"
+      ? findControllerParam(controller.source, "sprpriority")
+      : key === "projremovetime"
+        ? findControllerParam(controller.source, "removetime")
+        : undefined);
   return raw === undefined ? undefined : resolveHelperNumber(helper, undefined, raw, options);
 }
 

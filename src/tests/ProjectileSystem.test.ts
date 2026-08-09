@@ -1195,6 +1195,27 @@ describe("ProjectileSystem", () => {
     expect(dynamicSingle).toMatchObject({ hitVelocities: { air: { x: -5, y: 0, z: 0 } } });
   });
 
+  it("resolves fresh Projectile projremovetime in the caller context", () => {
+    const operation = compileControllerIr(controller({ projremovetime: "var(0) + 3" })).operation as ProjectileControllerOp;
+    const create = (serialId: string, resolveRemoveTime?: () => number | undefined): RuntimeProjectile => createRuntimeProjectile({
+      serialId,
+      controller: controller({ projanim: "1005", projremovetime: "var(0) + 3" }),
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveRemoveTime,
+    });
+
+    expect(operation.removeTimeExpression).toBe("var(0) + 3");
+    expect(create("dynamic", () => 7).removeTime).toBe(7);
+    expect(create("unresolved", () => undefined).removeTime).toBe(-1);
+  });
+
   it("resolves fresh Projectile down.hittime in the caller context", () => {
     const dynamicOperation = compileControllerIr(controller({ "down.hittime": "var(0) + 3" })).operation as ProjectileControllerOp;
     const dynamic = createRuntimeProjectile({

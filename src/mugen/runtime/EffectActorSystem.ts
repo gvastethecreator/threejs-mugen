@@ -757,6 +757,7 @@ export function spawnRuntimeHelperProjectileActor(
       const value = resolveRuntimeHelperIntegerPairParam(helper, controller, "guard.pausetime", options);
       return value?.[0] === undefined ? undefined : [value[0], value[1]];
     },
+    resolveRemoveTime: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "projremovetime", options),
     resolveGuardHitTime: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "guard.hittime", options),
     resolveAirGuardVelocity: () => resolveRuntimeHelperProjectileAirGuardVelocity(helper, controller, options),
     resolvePaletteFx: resolveRuntimeHelperHitDefPaletteFx(helper, controller, options),

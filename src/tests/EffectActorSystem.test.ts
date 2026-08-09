@@ -1864,7 +1864,7 @@ describe("EffectActorSystem", () => {
                   projpriority: "2",
                   projhits: "1",
                   projmisstime: "0",
-                  projremovetime: "24",
+                  projremovetime: "Var(13)",
                   projremove: "1",
                 },
                 ["Time = 0"],
@@ -1907,10 +1907,14 @@ describe("EffectActorSystem", () => {
         [930, action(930, 4)],
       ]),
     });
+    helper.vars[13] = 44;
     const executed: string[] = [];
 
     advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
       onController: (_helper, item) => executed.push(item.type),
+    });
+    expect(store.projectiles.find((projectile) => projectile.parentId === "p1-helper-0")).toMatchObject({
+      removeTime: 44,
     });
     advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
       onController: (_helper, item) => executed.push(item.type),

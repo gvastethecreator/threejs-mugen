@@ -342,6 +342,8 @@ export type RuntimeProjectileSpawnInput = {
   resolvePauseTime?: () => [number?, number?] | undefined;
   /** Resolves fresh Projectile guard.pausetime authored expressions in the original caller context. */
   resolveGuardPauseTime?: () => [number?, number?] | undefined;
+  /** Resolves fresh Projectile projremovetime authored expressions in the original caller context. */
+  resolveRemoveTime?: () => number | undefined;
   /** Resolves fresh Projectile guard.hittime authored expressions in the original caller context. */
   resolveGuardHitTime?: () => number | undefined;
   /** Resolves Projectile airguard.velocity authored expressions in the original caller context. */
@@ -822,6 +824,12 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     normalizedNumberPair(findControllerParam(input.controller, "attack.depth")) ??
     input.attackDepth ??
     [...DEFAULT_RUNTIME_ATTACK_DEPTH] as [number, number];
+  const dynamicRemoveTime = operation?.removeTimeExpression === undefined
+    ? undefined
+    : input.resolveRemoveTime?.();
+  const finiteDynamicRemoveTime = dynamicRemoveTime !== undefined && Number.isFinite(dynamicRemoveTime)
+    ? Math.trunc(dynamicRemoveTime)
+    : undefined;
   const identity = resolveActorIdentity(input);
   return {
     serialId: input.serialId,
@@ -872,7 +880,12 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     frameIndex: 0,
     frameElapsed: 0,
     age: 0,
-    removeTime: clampProjectileTime(operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "projremovetime") ?? findControllerParam(input.controller, "removetime")) ?? -1),
+    removeTime: clampProjectileTime(
+      finiteDynamicRemoveTime ??
+      operation?.removeTime ??
+      firstNumber(findControllerParam(input.controller, "projremovetime") ?? findControllerParam(input.controller, "removetime")) ??
+      -1,
+    ),
     edgeBound: clampProjectileStageBound(edgeBound ?? scaledDefaultProjectileBound(DEFAULT_PROJECTILE_EDGE_BOUND, defaultBoundScale)),
     stageBound: clampProjectileStageBound(stageBound ?? scaledDefaultProjectileBound(DEFAULT_PROJECTILE_STAGE_BOUND, defaultBoundScale)),
     ...(depthBound === undefined ? {} : { depthBound }),

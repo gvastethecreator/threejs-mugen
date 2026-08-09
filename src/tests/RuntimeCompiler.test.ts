@@ -3715,6 +3715,25 @@ value = 1
     });
   });
 
+  it("compiles fresh Projectile projremovetime expressions and rejects malformed values", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      projremovetime: "var(0) + 3",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      removeTime: -1,
+      removeTimeExpression: "var(0) + 3",
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      removetime: "7",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      removeTime: 7,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      projremovetime: "var(",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles dynamic Projectile airguard.velocity components", () => {
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       "airguard.velocity": "var(0),fvar(1),var(2)",

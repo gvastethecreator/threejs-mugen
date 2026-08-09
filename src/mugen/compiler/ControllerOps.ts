@@ -529,6 +529,8 @@ export type ProjectileControllerOp = {
   depthBound?: number;
   heightBound?: { low: number; high: number };
   removeTime: number;
+  /** Fresh Projectile `projremovetime` expression evaluated in the original caller context. */
+  removeTimeExpression?: number | string;
   layerNo?: -1 | 0 | 1;
   spritePriority: number;
   /** Nested HitDef priority, separate from Projectile `projpriority`. */
@@ -3482,6 +3484,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (downHitTime === false) return undefined;
   const guardHitTime = optionalIntegerExpressionParam(controller, "guard.hittime");
   if (guardHitTime === false) return undefined;
+  const removeTimeValue = optionalIntegerExpressionParamFromKeys(controller, "projremovetime", "removetime");
+  if (removeTimeValue === false) return undefined;
   const standFriction = optionalScalarNumberOrExpression(controller, "stand.friction");
   const crouchFriction = optionalScalarNumberOrExpression(controller, "crouch.friction");
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
@@ -3638,7 +3642,10 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     stageBound: firstNumber(findParam(controller, "projstagebound")),
     depthBound: firstNumber(findParam(controller, "projdepthbound")),
     heightBound: projectileHeightBound(numberPair(findParam(controller, "projheightbound"))),
-    removeTime: firstNumber(findParam(controller, "projremovetime") ?? findParam(controller, "removetime")) ?? -1,
+    removeTime: typeof removeTimeValue === "number"
+      ? removeTimeValue
+      : firstNumber(findParam(controller, "projremovetime") ?? findParam(controller, "removetime")) ?? -1,
+    ...(typeof removeTimeValue === "string" ? { removeTimeExpression: removeTimeValue } : {}),
     layerNo: projectileLayerNo(firstNumber(findParam(controller, "projlayerno"))),
     spritePriority: firstNumber(findParam(controller, "projsprpriority")) ?? 4,
     hitPriority: firstNumber(findParam(controller, "priority")),
@@ -4386,6 +4393,14 @@ function optionalIntegerExpressionParam(controller: MugenStateController, key: s
   const value = compileFloatExpressionComponent(raw);
   if (value === undefined) return false;
   return typeof value === "number" ? Math.trunc(value) : value;
+}
+
+function optionalIntegerExpressionParamFromKeys(
+  controller: MugenStateController,
+  ...keys: string[]
+): number | string | true | false {
+  const key = keys.find((candidate) => findParam(controller, candidate) !== undefined);
+  return key === undefined ? true : optionalIntegerExpressionParam(controller, key);
 }
 
 function optionalHitDefPaletteFxParam(
