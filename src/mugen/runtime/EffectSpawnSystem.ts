@@ -63,6 +63,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveProjectileUnhittableTime?: RuntimeProjectileSpawnInput["resolveUnhittableTime"];
   resolveProjectileGroundFriction?: RuntimeProjectileSpawnInput["resolveGroundFriction"];
   resolveProjectileSparkScale?: RuntimeProjectileSpawnInput["resolveSparkScale"];
+  resolveProjectileAirGuardVelocity?: RuntimeProjectileSpawnInput["resolveAirGuardVelocity"];
   resolveProjectilePaletteFx?: RuntimeProjectileSpawnInput["resolvePaletteFx"];
   resolveProjectileGetPower?: RuntimeProjectileSpawnInput["resolveProjectileGetPower"];
   resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"];
@@ -234,6 +235,7 @@ export class RuntimeEffectSpawnWorld {
     resolveUnhittableTime?: RuntimeProjectileSpawnInput["resolveUnhittableTime"],
     resolveGroundFriction?: RuntimeProjectileSpawnInput["resolveGroundFriction"],
     resolveSparkScale?: RuntimeProjectileSpawnInput["resolveSparkScale"],
+    resolveAirGuardVelocity?: RuntimeProjectileSpawnInput["resolveAirGuardVelocity"],
     resolvePaletteFx?: RuntimeProjectileSpawnInput["resolvePaletteFx"],
     resolveProjectileGetPower?: RuntimeProjectileSpawnInput["resolveProjectileGetPower"],
     resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"],
@@ -274,6 +276,7 @@ export class RuntimeEffectSpawnWorld {
       resolveUnhittableTime,
       resolveGroundFriction,
       resolveSparkScale,
+      resolveAirGuardVelocity,
       resolvePaletteFx,
       resolveProjectileGetPower,
       resolveProjectileGivePower,
@@ -562,6 +565,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveProjectileUnhittableTime,
         options.resolveProjectileGroundFriction,
         options.resolveProjectileSparkScale,
+        options.resolveProjectileAirGuardVelocity,
         options.resolveProjectilePaletteFx,
         options.resolveProjectileGetPower,
         options.resolveProjectileGivePower,

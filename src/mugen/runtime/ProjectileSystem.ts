@@ -322,6 +322,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveUnhittableTime?: () => [number, number?] | undefined;
   resolveGroundFriction?: () => { stand?: number; crouch?: number } | undefined;
   resolveSparkScale?: () => { hit?: [number?, number?]; guard?: [number?, number?] } | undefined;
+  /** Resolves Projectile airguard.velocity authored expressions in the original caller context. */
+  resolveAirGuardVelocity?: () => [number?, number?, number?] | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveProjectileGetPower?: () => { hit?: number; guard?: number } | undefined;
   resolveProjectileGivePower?: () => { hit?: number; guard?: number } | undefined;
@@ -617,9 +619,11 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const downVelocityX = downVelocity?.[0] ?? airVelocity?.[0] ?? 0;
   const downVelocityY = downVelocity?.[1] ?? airVelocity?.[1] ?? 0;
   const downVelocityZ = downVelocity?.[2] ?? airVelocity?.[2];
-  const authoredAirGuardVelocity =
-    normalizeOptionalVelocityVector(operation?.airGuardVelocity) ??
-    partialNumberTriple(findControllerParam(input.controller, "airguard.velocity"));
+  const hasDynamicAirGuardVelocity = operation?.airGuardVelocityExpressions !== undefined || operation?.airGuardVelocityZExpression !== undefined;
+  const authoredAirGuardVelocity = hasDynamicAirGuardVelocity
+    ? input.resolveAirGuardVelocity?.()
+    : normalizeOptionalVelocityVector(operation?.airGuardVelocity) ??
+      partialNumberTriple(findControllerParam(input.controller, "airguard.velocity"));
   const airGuardVelocity = completeFreshProjectileAirGuardVelocity(
     authoredAirGuardVelocity,
     derivePinnedIkemenFreshAirGuardVelocity(airVelocity),
@@ -2861,13 +2865,15 @@ function normalizeOptionalVelocityVector(value: [number, number, number?] | [num
 }
 
 function completeFreshProjectileAirGuardVelocity(
-  authored: [number, number?, number?] | undefined,
+  authored: [number?, number?, number?] | undefined,
   defaults: [number, number?, number?] | undefined,
 ): [number, number?, number?] | undefined {
   if (authored === undefined) return defaults;
+  const x = authored[0] ?? defaults?.[0];
+  if (x === undefined) return defaults;
   const y = authored[1] ?? defaults?.[1] ?? 0;
   const z = authored[2] ?? defaults?.[2];
-  return z === undefined ? [authored[0], y] : [authored[0], y, z];
+  return z === undefined ? [x, y] : [x, y, z];
 }
 
 function runtimeProjectileHasExplicitDepth(projectile: RuntimeProjectile): boolean {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ProjectileControllerOp } from "../mugen/compiler/ControllerOps";
+import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenStateController } from "../mugen/model/MugenState";
 import type { MugenStageDefinition } from "../mugen/model/MugenStage";
@@ -1109,6 +1110,57 @@ describe("ProjectileSystem", () => {
       airGuardVelocityY: -6,
       airGuardVelocityZ: 7,
       hitVelocities: { airGuard: { x: -12, y: -6, z: 7 } },
+    });
+  });
+
+  it("resolves fresh Projectile airguard.velocity expressions in caller context", () => {
+    const create = (serialId: string, airGuardVelocity: string, resolved: [number?, number?, number?]): RuntimeProjectile => {
+      const compiled = compileControllerIr(controller({
+        projanim: "1005",
+        "air.velocity": "-6,-8,2",
+        "airguard.velocity": airGuardVelocity,
+      }));
+      const operation = compiled.operation as ProjectileControllerOp;
+      return createRuntimeProjectile({
+        serialId,
+        controller: controller({
+          projanim: "1005",
+          "air.velocity": "-6,-8,2",
+          "airguard.velocity": airGuardVelocity,
+        }),
+        operation,
+        spriteOwnerId: "p1",
+        spriteOwnerDefinitionId: "kfm",
+        spriteOwnerLabel: "Kung Fu Man",
+        action,
+        animNo: 1005,
+        pos: { x: 0, y: 0 },
+        fallbackFacing: 1,
+        resolveAirGuardVelocity: () => resolved,
+      });
+    };
+
+    const dynamicTriplet = create("p1-projectile-air-dynamic-triplet", "var(0),fvar(1),var(2)", [-5, -4, 6]);
+    const dynamicPair = create("p1-projectile-air-dynamic-pair", "var(0),fvar(1)", [-5, -4]);
+    const dynamicSingle = create("p1-projectile-air-dynamic-single", "var(0)", [-5]);
+
+    expect(dynamicTriplet).toMatchObject({
+      airGuardPush: 5,
+      airGuardVelocityY: -4,
+      airGuardVelocityZ: 6,
+      hitVelocities: { airGuard: { x: -5, y: -4, z: 6 } },
+    });
+    expect(dynamicPair).toMatchObject({
+      airGuardPush: 5,
+      airGuardVelocityY: -4,
+      airGuardVelocityZ: 3,
+      hitVelocities: { airGuard: { x: -5, y: -4, z: 3 } },
+    });
+    expect(dynamicSingle).toMatchObject({
+      airGuardPush: 5,
+      airGuardVelocityY: -4,
+      airGuardVelocityZ: 3,
+      hitVelocities: { airGuard: { x: -5, y: -4, z: 3 } },
     });
   });
 

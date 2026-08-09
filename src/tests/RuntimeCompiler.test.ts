@@ -3691,6 +3691,34 @@ value = 1
     });
   });
 
+  it("compiles dynamic Projectile airguard.velocity components", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "airguard.velocity": "var(0),fvar(1),var(2)",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      airGuardVelocityExpressions: ["var(0)", "fvar(1)"],
+      airGuardVelocityZExpression: "var(2)",
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "airguard.velocity": "var(0),fvar(1)",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      airGuardVelocityExpressions: ["var(0)", "fvar(1)"],
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "airguard.velocity": "var(0)",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      airGuardVelocityExpressions: ["var(0)"],
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "airguard.velocity": "var(0),fvar(1),var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "airguard.velocity": "var(0),fvar(1),var(2),4",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles ModifyProjectile controllers into typed projectile mutation operations", () => {
     const modifyProjectile = compileControllerIr(
       controller(1000, "ModifyProjectile", [], {
