@@ -1,6 +1,6 @@
 # Issue 248 — Live ModifyHitDef down.velocity expressions
 
-- Status: `active-research`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -37,3 +37,18 @@ Describe ModifyHitDef as pinned-Ikemen compatibility. Do not claim Helper-owned
 ModifyHitDef, fresh inheritance, dynamic Z, `n` syntax,
 Projectile/ModifyProjectile, exact lie-down/Common1 or landing timing,
 localcoord/facing equivalence, teams, rollback, or full down-hit physics.
+
+## Closure evidence
+
+- Static, one-component, and dynamic X/Y forms compile; malformed and dynamic
+  three-component forms fail closed.
+- Root RedirectID mutation evaluates caller expressions, replaces X or X/Y,
+  and preserves omitted live Y/Z components.
+- The required imported trace records VarSet, HitDef, ModifyHitDef, accepted
+  lying contact, physical HitVelSet, GetHitVar X/Y/Z, and the final state.
+- Focused compiler/runtime coverage is `184/184`, the ModifyHitDef trace focus
+  is `12/12`, and the required trace is `7b1f4341` with final checksum
+  `fc695cca`. The final global corpus is `747/747` artifacts (`713` required,
+  `34` optional), with `0` failures; the full Vitest suite is `3732/3732`
+  tests across `328` files, typecheck passes, and the `363`-module build
+  passes.

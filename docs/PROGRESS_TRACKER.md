@@ -1,6 +1,11 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T608-T673 (2026-08-09)
+## Latest implementation checkpoint — T608-T674 (2026-08-09)
+
+Authoritative cursor: T674 is closed-bounded for live root-owned
+`ModifyHitDef down.velocity` X/Y component preservation. T675 is queued for
+the pinned-Ikemen-only dynamic Z follow-up; the older active wording below is
+historical and superseded.
 
 - T608-T637 are closed-bounded. T616-T621 add typed HitDef/Projectile
   `unhittabletime`, actor-role contact/admission/default/HitOverride slices,

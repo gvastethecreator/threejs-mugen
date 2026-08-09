@@ -1,5 +1,18 @@
 ﻿# Next Build Roadmap
 
+## Authoritative runtime cursor — T674 closed, T675 queued
+
+Final T674 verification: `747/747` trace artifacts (`713` required, `34`
+optional), `3732/3732` Vitest tests across `328` files, typecheck, and the
+`363`-module build pass. Required trace checksum is `7b1f4341`; final checksum
+is `fc695cca`.
+
+T674 / issue 248 is closed-bounded: live root-owned `ModifyHitDef
+down.velocity` X/Y expressions resolve in caller context, preserve omitted
+live components, and are consumed by the required lying-hit trace. T675 /
+issue 249 is queued for the pinned-Ikemen-only dynamic Z follow-up. The older
+active wording in this historical summary is superseded by this cursor.
+
 ## Current next-build — official M.U.G.E.N / Ikemen queue (2026-08-09)
 
 T608-T638 are closed-bounded. T622-T623 close independent HitDef/Projectile

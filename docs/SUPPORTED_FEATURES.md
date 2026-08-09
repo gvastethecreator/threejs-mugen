@@ -1,6 +1,11 @@
 ﻿# Supported Features
 ## 2026-08-09 HitDef friction, spark-scale, facing, power, PalFX, and EnvShake checkpoint
 
+Authoritative cursor: T674 is closed-bounded for live root-owned
+`ModifyHitDef down.velocity` X/Y expression mutation with omitted-component
+preservation and a required lying-hit trace. T675 is queued for the
+pinned-Ikemen-only dynamic Z follow-up; M.U.G.E.N Z support is not claimed.
+
 - T608-T638 are closed-bounded. Root/Helper direct HitDef, ReversalDef, and
   Projectile paths support the verified `unhittabletime` slices through
   contact/admission. Root/Helper HitDef and Projectile also support independent
