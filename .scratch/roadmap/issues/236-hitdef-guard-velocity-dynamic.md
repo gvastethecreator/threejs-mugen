@@ -1,6 +1,6 @@
 # Issue 236 — Direct HitDef guard.velocity X expressions
 
-- Status: `active-research`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -39,3 +39,16 @@ Source symbols:
 Limit the claim to root-owned X. Do not claim Helper/redirect ownership,
 Ikemen Y/Z extensions, Projectile/ModifyProjectile, `airguard.velocity`, exact
 localcoord/sign transforms, corner push, rollback, or full guard physics.
+
+## Evidence
+
+- Compiler and runtime coverage passes for literal, dynamic, omitted, and
+  malformed direct HitDef/ModifyHitDef X values.
+- Fresh dynamic X resolves in root caller context and accepted ground guard
+  exposes the effective value through `GetHitVar(xvel)`.
+- Root-owned live ModifyHitDef changes X while preserving Y/Z; omission keeps
+  the complete vector.
+- Required direct and ModifyHitDef traces pass with checksums `fa6f8aa1` and
+  `1621b9be`.
+- Aggregate traces pass 735/735 with 701 required; the full suite passes
+  3698/3698; typecheck and the 363-module production build pass.

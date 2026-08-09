@@ -409,6 +409,18 @@ export class RuntimeHitDefControllerDispatchWorld {
     const guardSlideTime = guardTiming.guardSlideTime ?? existing?.guardSlideTime;
     const guardControlTime = guardTiming.guardControlTime ?? existing?.guardControlTime;
     const guardVelocity = operation?.guardVelocity ?? velocityPair(findParam(source, "guard.velocity"));
+    const resolvedGuardVelocityX = resolveHitDefScalar(
+      operation?.guardVelocityExpression,
+      findParam(source, "guard.velocity"),
+      actor.runtime,
+      context ?? {},
+    );
+    const guardVelocityX = Number.isFinite(resolvedGuardVelocityX)
+      ? resolvedGuardVelocityX!
+      : guardVelocity?.[0] ?? groundVelocity[0];
+    const effectiveGuardVelocity: [number, number?, number?] | undefined = operation?.guardVelocityExpression === undefined
+      ? guardVelocity
+      : [guardVelocityX];
     const airVelocity = operation?.airVelocity ?? velocityPair(findParam(source, "air.velocity"));
     const downVelocity = operation?.downVelocity ?? velocityPair(findParam(source, "down.velocity"));
     const downVelocityX = downVelocity?.[0] ?? airVelocity?.[0] ?? existing?.downVelocityX;
@@ -430,10 +442,9 @@ export class RuntimeHitDefControllerDispatchWorld {
       ground: runtimeHitVelocityVector(groundVelocity),
       ...(airVelocity === undefined ? {} : { air: runtimeHitVelocityVector(airVelocity) }),
       ...(downVelocity === undefined ? {} : { down: runtimeHitVelocityVector(downVelocity) }),
-      ...(guardVelocity === undefined ? {} : { guard: runtimeHitVelocityVector(guardVelocity) }),
+      ...(effectiveGuardVelocity === undefined ? {} : { guard: runtimeHitVelocityVector(effectiveGuardVelocity) }),
       ...(airGuardVelocity === undefined ? {} : { airGuard: runtimeHitVelocityVector(airGuardVelocity) }),
     };
-    const guardVelocityX = guardVelocity?.[0] ?? groundVelocity[0];
     const resolvedGuardDistance = resolveRuntimeHitDefIntegerScalar(
       operation?.guardDistance,
       findParam(source, "guard.dist"),
@@ -1032,6 +1043,26 @@ export class RuntimeHitDefControllerDispatchWorld {
         resolveIntegerScalar?.("airguard.ctrltime"),
       );
       if (airGuardControlTime !== undefined) existing.airGuardControlTime = airGuardControlTime;
+    }
+    if (operation.guardVelocityExpression !== undefined) {
+      const guardVelocityX = resolveHitDefScalar(
+        operation.guardVelocityExpression,
+        findParam(controller.source, "guard.velocity"),
+        actor.runtime,
+        context ?? {},
+      );
+      if (guardVelocityX !== undefined && Number.isFinite(guardVelocityX)) {
+        const currentGuardVelocity = existing.hitVelocities?.guard ?? {
+          x: existing.guardPush ?? 0,
+          y: existing.guardVelocityY ?? 0,
+          z: existing.guardVelocityZ ?? 0,
+        };
+        existing.guardPush = Math.abs(guardVelocityX);
+        existing.hitVelocities = {
+          ...existing.hitVelocities,
+          guard: { ...currentGuardVelocity, x: guardVelocityX },
+        };
+      }
     }
     if (operation.guardVelocityZ !== undefined) {
       existing.guardVelocityZ = operation.guardVelocityZ;

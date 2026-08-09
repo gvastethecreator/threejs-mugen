@@ -174,6 +174,8 @@ export type HitDefControllerOp = {
   /** Direct airguard.ctrltime scalar evaluated in the HitDef caller context. */
   airGuardControlTime?: number | string;
   guardVelocity?: MugenHitDefVector;
+  /** Direct guard.velocity X expression evaluated in the HitDef caller context. */
+  guardVelocityExpression?: number | string;
   airGuardVelocity?: MugenHitDefVector;
   groundCornerPush?: number;
   airCornerPush?: number;
@@ -265,6 +267,8 @@ export type ModifyHitDefControllerOp = {
   groundVelocityZ?: number;
   airVelocityZ?: number;
   downVelocity?: MugenHitDefVector;
+  /** Root-owned live guard.velocity X replacement evaluated in caller context. */
+  guardVelocityExpression?: number | string;
   guardVelocityZ?: number;
   airGuardVelocityZ?: number;
   /** HitDef acceleration metadata mutation; dynamic scalar expressions are retained for runtime evaluation. */
@@ -2306,7 +2310,11 @@ function compileHitDefControllerOp(
     : undefined;
   const airVelocity = hitDefVelocity(findParam(controller, "air.velocity"));
   const downVelocity = hitDefVelocity(findParam(controller, "down.velocity"));
-  const guardVelocity = hitDefVelocity(findParam(controller, "guard.velocity"));
+  const guardVelocityRaw = findParam(controller, "guard.velocity");
+  const guardVelocity = hitDefVelocity(guardVelocityRaw);
+  const guardVelocityExpression = guardVelocityRaw === undefined || guardVelocity !== undefined
+    ? true
+    : optionalScalarNumberOrExpression(controller, "guard.velocity");
   const airGuardVelocity = hitDefVelocity(findParam(controller, "airguard.velocity"));
   const p1StateNo = optionalIntegerExpressionParam(controller, "p1stateno");
   const p2StateNo = optionalIntegerExpressionParam(controller, "p2stateno");
@@ -2369,6 +2377,7 @@ function compileHitDefControllerOp(
     noChainIds === false ||
     damageValue === false ||
     groundVelocityExpressionValue === false ||
+    guardVelocityExpression === false ||
     hitSparkScale === false ||
     guardSparkScale === false ||
     paletteFx === false ||
@@ -2478,6 +2487,7 @@ function compileHitDefControllerOp(
     ...(guardControlTime === true ? {} : { guardControlTime }),
     ...(airGuardControlTime === true ? {} : { airGuardControlTime }),
     guardVelocity,
+    ...(guardVelocityExpression === true ? {} : { guardVelocityExpression }),
     airGuardVelocity,
     groundCornerPush: firstNumber(findParam(controller, "ground.cornerpush.veloff")),
     airCornerPush: firstNumber(findParam(controller, "air.cornerpush.veloff")),
@@ -2634,7 +2644,14 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const forceCrouch = optionalIntegerExpressionParam(controller, "forcecrouch");
   const forceNoFall = optionalIntegerExpressionParam(controller, "forcenofall");
   const airGuardControlTime = optionalIntegerExpressionParam(controller, "airguard.ctrltime");
-  const guardVelocityZ = staticOptionalStrictVectorZParam(controller, "guard.velocity");
+  const guardVelocityRaw = findParam(controller, "guard.velocity");
+  const staticGuardVelocity = guardVelocityRaw === undefined ? undefined : strictStaticNumberVector(guardVelocityRaw);
+  const guardVelocityExpression = guardVelocityRaw === undefined
+    ? true
+    : staticGuardVelocity !== undefined
+      ? staticGuardVelocity[0]
+      : optionalScalarNumberOrExpression(controller, "guard.velocity");
+  const guardVelocityZ = staticGuardVelocity?.[2] ?? true;
   const airGuardVelocityZ = staticOptionalStrictVectorZParam(controller, "airguard.velocity");
   const xAccel = optionalScalarNumberOrExpression(controller, "xaccel");
   const yAccel = optionalScalarNumberOrExpression(controller, "yaccel");
@@ -2704,6 +2721,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     forceCrouch !== true ||
     forceNoFall !== true ||
     airGuardControlTime !== true ||
+    guardVelocityExpression !== true ||
     guardVelocityZ !== true ||
     airGuardVelocityZ !== true ||
     xAccel !== true ||
@@ -2762,7 +2780,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     forceCrouch === false ||
     forceNoFall === false ||
     airGuardControlTime === false ||
-    guardVelocityZ === false ||
+    guardVelocityExpression === false ||
     airGuardVelocityZ === false ||
     xAccel === false ||
     yAccel === false ||
@@ -2829,6 +2847,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(forceCrouch === true ? {} : { forceCrouch }),
     ...(forceNoFall === true ? {} : { forceNoFall }),
     ...(airGuardControlTime === true ? {} : { airGuardControlTime }),
+    ...(guardVelocityExpression === true ? {} : { guardVelocityExpression }),
     ...(guardVelocityZ === true ? {} : { guardVelocityZ }),
     ...(airGuardVelocityZ === true ? {} : { airGuardVelocityZ }),
     ...(xAccel === true ? {} : { xAccel }),

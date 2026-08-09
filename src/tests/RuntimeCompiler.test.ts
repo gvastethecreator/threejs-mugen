@@ -2192,6 +2192,44 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles direct HitDef and root ModifyHitDef guard.velocity X expressions", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "guard.velocity": "-4.5",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      guardVelocity: [-4.5],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "guard.velocity": "var(1) + 2",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      guardVelocityExpression: "var(1) + 2",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.velocity": "-3.5",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardVelocityExpression: -3.5,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.velocity": "fvar(2) - 1",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardVelocityExpression: "fvar(2) - 1",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "guard.velocity": "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.velocity": "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles typed HitDef givepower expressions and rejects malformed pairs", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], { givepower: "9.8" })).operation).toMatchObject({
       kind: "hitdef",

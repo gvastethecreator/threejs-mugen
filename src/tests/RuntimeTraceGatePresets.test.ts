@@ -97,6 +97,8 @@ import {
   createSyntheticImportedHitDefDynamicAirHitTimeTraceArtifact,
   createSyntheticImportedHitDefDynamicGuardDistanceTraceArtifact,
   createSyntheticImportedHitDefDynamicGroundVelocityTraceArtifact,
+  createSyntheticImportedHitDefDynamicGuardVelocityTraceArtifact,
+  createSyntheticImportedModifyHitDefDynamicGuardVelocityTraceArtifact,
   createSyntheticImportedHitDefOmittedGroundVelocityTraceArtifact,
   createSyntheticImportedHitDefDynamicStateTransitionTraceArtifact,
   createSyntheticImportedHitDefDynamicPriorityTraceArtifact,
@@ -24228,6 +24230,78 @@ describe("RuntimeTraceGatePresets", () => {
       stateNo: 5085,
       life: 963,
     });
+  });
+
+  it("creates a required imported dynamic direct HitDef guard velocity artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicGuardVelocityTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-guard-velocity-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-guard-velocity-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p2",
+        source: "imported",
+        stateNo: 151,
+        minVel: expect.objectContaining({ x: 7 }),
+        maxVel: expect.objectContaining({ x: 7 }),
+      }),
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5084 }),
+    ]));
+    expect(gate?.evidence.combatReasons).toContain("guard");
+    expect(gate?.evidence.combatReasons).not.toContain("hit");
+    expect(gate?.evidence.executedStates).not.toEqual(expect.arrayContaining([5000, 5030, 5050, 5100]));
+  });
+
+  it("creates a required imported dynamic live ModifyHitDef guard velocity artifact", () => {
+    const artifact = createSyntheticImportedModifyHitDefDynamicGuardVelocityTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-modifyhitdef-dynamic-guard-velocity-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-modifyhitdef-dynamic-guard-velocity-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.ModifyHitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.modifyhitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 78 }),
+    );
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p1",
+        source: "imported",
+        stateNo: 151,
+        minVel: expect.objectContaining({ x: -9 }),
+        maxVel: expect.objectContaining({ x: -9 }),
+      }),
+      expect.objectContaining({ actorId: "p1", source: "imported", stateNo: 5083 }),
+    ]));
+    expect(gate?.evidence.combatReasons).toContain("guard");
+    expect(gate?.evidence.combatReasons).not.toContain("hit");
+    expect(gate?.evidence.executedStates).not.toEqual(expect.arrayContaining([200, 5000, 5030, 5050, 5100]));
   });
 
   it("creates a required imported dynamic HitDef state-transition artifact", () => {

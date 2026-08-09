@@ -1,6 +1,6 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-08 T651-T661 direct contact timing, admission, and velocity addendum — no score movement
+## 2026-08-08 T651-T662 direct contact timing, admission, and velocity addendum — no score movement
 
 Direct HitDef pause pairs now preserve independent attacker pause and receiver
 hit-shake time for root and Helper contacts. Dynamic direct `ground.hittime`
@@ -17,8 +17,10 @@ precontact horizontal latch. T660 adds dynamic and mixed direct
 `ground.velocity` X/Y with live component-wise mutation, accepted grounded
 velocity, and GetHitVar readback. T661 adds the official fresh omitted
 `0,0,0` reset through root/Helper activation and preserves live ModifyHitDef
-omission. The 363-module build and 733/733 traces pass. The full suite passes
-3693/3693. These are bounded timing, admission, and
+omission. T662 adds caller-resolved direct and root-owned live
+`guard.velocity` X, fresh inheritance, accepted ground guard, and live
+omission preservation. The 363-module build and 735/735 traces pass. The full
+suite passes 3698/3698. These are bounded timing, admission, and
 velocity seams, not full HitDef or tick-order parity. Compatibility scores
 remain unchanged.
 

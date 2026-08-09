@@ -56,10 +56,12 @@ dynamic legacy scalar `guard.dist` and the horizontal precontact `InGuardDist`
 latch. T660 closes dynamic and mixed direct `ground.velocity` X/Y through
 root/Helper callers, live partial mutation, grounded hit velocity, and
 GetHitVar readback. T661 closes the official fresh omitted `0,0,0` reset,
-root/Helper consumption, and live ModifyHitDef omission preservation. T662 is
-active for direct and live root-owned `guard.velocity` X expressions. Latest
-evidence: 3693/3693 tests, the 363-module build, and 733/733 traces pass (699
-required, 34 optional).
+root/Helper consumption, and live ModifyHitDef omission preservation. T662
+closes direct and live root-owned `guard.velocity` X expressions, fresh
+inheritance, accepted ground guard, and omission preservation. T663 is active
+for root-owned direct `airguard.velocity` X/Y expressions. Latest evidence:
+3698/3698 tests, the 363-module build, and 735/735 traces pass (701 required,
+34 optional).
 Projectile facing, exact deferred facing/power order, broader
 `data/mugen.cfg`, rollback, and full HitDef parity remain outside these slices.
 

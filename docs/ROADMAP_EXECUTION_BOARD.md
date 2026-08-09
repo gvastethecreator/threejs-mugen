@@ -1,8 +1,8 @@
 ﻿# Roadmap Execution Board
 
-## Current official-parity queue — T424-T492 and T506-T661 closed-bounded; T662 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-08)
+## Current official-parity queue — T424-T492 and T506-T662 closed-bounded; T663 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-08)
 
-### Active runtime checkpoint — direct HitDef guard velocity
+### Active runtime checkpoint — direct HitDef air-guard velocity
 
 T589 / issue 163 is closed-bounded: static and bounded dynamic root/helper
 `attack.depth` pairs replace the selected live Projectile HitDef depth bounds.
@@ -672,9 +672,15 @@ preserves the vector. The full suite passes 3693/3693; required trace checksum
 is `15babb9c`; aggregate traces pass 733/733 with 699 required; typecheck and
 the 363-module build pass.
 
-T662 / issue 236 is active-research: resolve direct HitDef and root-owned live
-ModifyHitDef `guard.velocity` X expressions, including fresh inheritance,
-accepted ground-guard consumption, and omission preservation.
+T662 / issue 236 is closed-bounded: direct HitDef and root-owned live
+ModifyHitDef `guard.velocity` X expressions resolve in caller context. Fresh
+omission inherits ground X; live mutation preserves Y/Z and omission; accepted
+ground guard exposes X through GetHitVar. The full suite passes 3698/3698;
+required trace checksums are `fa6f8aa1` and `1621b9be`; aggregate traces pass
+735/735 with 701 required; typecheck and the 363-module build pass.
+
+T663 / issue 237 is active-research: resolve root-owned direct HitDef
+`airguard.velocity` X/Y expressions and accepted airborne-guard consumption.
 
 ### Latest visual checkpoint — Character Compare
 

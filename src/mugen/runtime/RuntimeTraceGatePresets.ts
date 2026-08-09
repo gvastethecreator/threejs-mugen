@@ -13950,6 +13950,214 @@ export function createSyntheticImportedHitDefOmittedGroundVelocityTraceArtifact(
   });
 }
 
+export function createSyntheticImportedHitDefDynamicGuardVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5084;
+  const stage = options.stage ?? closeCombatStage();
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-velocity-defender",
+    displayName: "Dynamic HitDef Guard Velocity Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      guardStateNo: 130,
+      guardedBranchStateNo: branchStateNo,
+      guardedBranchAnimNo: branchStateNo,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression: "GetHitVar(xvel) = 7 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-velocity-attacker",
+    displayName: "Dynamic HitDef Guard Velocity Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+    guardVelocity: [-1],
+    hitDefGuardVelocity: ["var(0)"],
+    hitDefVarSeeds: [{ index: 0, value: -7 }],
+  });
+  const [guardShakeFrame, guardSlideFrame] = syntheticStandGuardHitPhysicsFrames();
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultGuardStateScript(),
+    targetId: "synthetic-imported-hitdef-dynamic-guard-velocity-golden",
+    targetLabel: "Synthetic imported dynamic direct HitDef guard velocity route",
+    requiredExecutedStates: [200, 150, 151, branchStateNo],
+    forbiddenExecutedStates: [5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+    requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "HitVelSet"],
+    requiredExecutedOperations: ["variable:varset", "hitdef", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [{
+      label: "dynamic direct guard velocity accepted-contact GetHitVar order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+        { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+        { stateNo: 151, operation: "kinematic:hitvelset" },
+        { stateNo: 151, controller: "ChangeState", name: "Guarded HitVar Branch" },
+      ],
+    }],
+    requiredActorFrames: [
+      { ...guardShakeFrame!, minFrames: 1 },
+      {
+        ...guardSlideFrame!,
+        minFrames: 1,
+        observedVelXAtLeast: 7,
+        observedVelXAtMost: 7,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: branchStateNo,
+        animNo: branchStateNo,
+        stateType: "S",
+        minFrames: 1,
+      },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    forbiddenCombatReasons: ["hit", "override", "reversal"],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 995 }],
+    notes: [
+      "Official M.U.G.E.N trace proves caller-context var(0)=-7 resolves direct HitDef guard.velocity X independently of adversarial fixture metadata -1. A real grounded guard creates target 77, exposes GetHitVar(xvel)=7, and applies physical guard slide velocity before a dedicated imported branch. ModifyHitDef, Helpers, RedirectID, Y/Z, localcoord scaling, exact sign/facing breadth, Projectile, ModifyProjectile, teams, rollback, and full guard parity remain excluded.",
+    ],
+  });
+}
+
+export function createSyntheticImportedModifyHitDefDynamicGuardVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5083;
+  const targetId = 78;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "caller seeds and redirects live guard velocity", frames: 2, p1: [], p2: [] },
+    { label: "receiver reaches grounded guarding caller", frames: 14, p1: ["B"], p2: [] },
+    { label: "modified guard velocity settles", frames: 36, p1: ["B"], p2: [] },
+  ]);
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-guard-velocity-caller",
+    displayName: "Dynamic ModifyHitDef Guard Velocity Caller",
+    withHitDef: false,
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      guardStateNo: 130,
+      guardedBranchStateNo: branchStateNo,
+      guardedBranchAnimNo: branchStateNo,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression: "GetHitVar(xvel) = -9 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+    },
+    rootModifyHitDefRedirectRoute: {
+      redirectId: 57,
+      trigger: "Time = 1",
+      guardVelocity: ["var(0)"],
+      varSeeds: [{ index: 0, value: -9 }],
+    },
+  });
+  const receiver = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-guard-velocity-receiver",
+    displayName: "Dynamic ModifyHitDef Guard Velocity Receiver",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 37,
+      guardDamage: 5,
+      targetId,
+      guardFlag: "MA",
+      guardVelocity: [-2],
+      hitDefTrigger: "Time = 0",
+      posX: 200,
+      delayedPosX: { x: 35, trigger: "Time >= 2" },
+      clsn1Extent: 64,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: caller, p2: receiver, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-modifyhitdef-dynamic-guard-velocity-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyhitdef-dynamic-guard-velocity-golden",
+      label: "Synthetic imported dynamic live ModifyHitDef guard velocity route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root caller resolves var(0)=-9 and redirects guard.velocity X into another root's already active normal HitDef before contact. The later grounded guard creates target 78, exposes GetHitVar(xvel)=-9, and applies physical slide velocity instead of the seeded -2 value. Direct HitDef expression resolution is proved by a separate artifact; omitted ModifyHitDef, Helpers, Y/Z, localcoord scaling, exact sign/facing breadth, Projectile, ModifyProjectile, teams, rollback, and full guard parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyhitdef-dynamic-guard-velocity-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [0, 150, 151, branchStateNo],
+      forbiddenExecutedStates: [200, 5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["VarSet", "HitDef", "ModifyHitDef", "ChangeState", "HitVelSet"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "modifyhitdef", "kinematic:hitvelset"],
+      requiredActiveCommands: ["holdback"],
+      requiredEventCategories: ["guard"],
+      requiredCombatReasons: ["guard"],
+      forbiddenCombatReasons: ["hit", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+      requiredControllerEventSequences: [{
+        label: "dynamic ModifyHitDef guard velocity precedes accepted guard GetHitVar order",
+        allowSameTick: true,
+        steps: [
+          { actorId: "p2", stateNo: 0, controller: "ModifyHitDef", name: "Root ModifyHitDef Redirect" },
+          { actorId: "p1", stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+          { actorId: "p1", stateNo: 151, operation: "kinematic:hitvelset" },
+          { actorId: "p1", stateNo: 151, controller: "ChangeState", name: "Guarded HitVar Branch" },
+        ],
+      }],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 150,
+          animNo: 150,
+          stateType: "S",
+          moveType: "H",
+          physics: "N",
+          minFrames: 1,
+        },
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 151,
+          animNo: 150,
+          stateType: "S",
+          moveType: "H",
+          physics: "S",
+          observedVelXAtLeast: -9,
+          observedVelXAtMost: -9,
+          minFrames: 1,
+        },
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: branchStateNo,
+          animNo: branchStateNo,
+          stateType: "S",
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 995 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 1000 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHitDefDynamicStateTransitionTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -37799,6 +38007,7 @@ export function createImportedDefaultGuardStateTraceArtifact(
     requiredEffectPayloads?: RuntimeTraceEffectPayloadRequirement[];
     requiredTargetLinks?: RuntimeTraceTargetLinkRequirement[];
     forbiddenExecutedStates?: number[];
+    forbiddenCombatReasons?: RuntimeTraceGate["forbiddenCombatReasons"];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -37842,6 +38051,7 @@ export function createImportedDefaultGuardStateTraceArtifact(
         requiredActiveCommands: options.requiredActiveCommands ?? ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],
+        forbiddenCombatReasons: options.forbiddenCombatReasons,
         requiredFinalActors: options.requiredFinalActors,
         requiredWorldLifecycleEvents: options.requiredWorldLifecycleEvents,
         requiredEffectStores: options.requiredEffectStores,
@@ -55164,6 +55374,7 @@ type SyntheticImportedPassiveHitOverride = {
 
 type SyntheticNumberExpression = number | string;
 type SyntheticPairExpression = [SyntheticNumberExpression, SyntheticNumberExpression];
+type SyntheticPartialPairExpression = [SyntheticNumberExpression, SyntheticNumberExpression?];
 type SyntheticRuntimeVarSeed = { index: number; value: number };
 type SyntheticDynamicDamageScale = {
   value: string;
@@ -55351,6 +55562,8 @@ export type SyntheticImportedTraceFighterOptions = {
   guardControlTime?: number;
   guardVelocity?: [number, number?];
   omitGuardVelocity?: boolean;
+  /** Synthetic fixture-only dynamic ground-guard velocity emitted into HitDef. */
+  hitDefGuardVelocity?: SyntheticPartialPairExpression;
   /** Synthetic fixture-only dynamic ground velocity pair emitted into HitDef. */
   hitDefGroundVelocity?: SyntheticPairExpression;
   /** Synthetic fixture-only omission of ground.velocity from the primary HitDef. */
@@ -55795,6 +56008,7 @@ export type SyntheticImportedTraceFighterOptions = {
     redirectId?: SyntheticNumberExpression;
     guardDistance?: number;
     guardFlag?: string;
+    guardVelocity?: SyntheticPartialPairExpression;
     pauseTime?: number;
     guardPause?: number;
     priority?: number;
@@ -55823,6 +56037,8 @@ export type SyntheticImportedTraceFighterOptions = {
     guardKill?: boolean;
     fallKill?: boolean;
     hitOnce?: boolean;
+    guardVelocity?: SyntheticPartialPairExpression;
+    varSeeds?: Array<{ index: number; value: number; trigger?: string }>;
     redirectId: SyntheticNumberExpression;
     trigger?: string;
   };
@@ -56581,7 +56797,9 @@ ${options.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = 
     options.downCornerPush !== undefined ||
     options.guardCornerPush !== undefined ||
     options.airGuardCornerPush !== undefined;
-  const guardVelocityLine = options.omitGuardVelocity ? "" : `guard.velocity = ${(options.guardVelocity ?? [-2]).join(",")}`;
+  const guardVelocityLine = options.omitGuardVelocity
+    ? ""
+    : `guard.velocity = ${(options.hitDefGuardVelocity ?? options.guardVelocity ?? [-2]).join(",")}`;
   const guardHitTimeLine = options.omitGuardHitTime ? "" : `guard.hittime = ${options.guardHitTime ?? 9}`;
   const guardSlideTimeLine = options.hitDefGuardSlideTime === undefined
     ? options.guardSlideTime === undefined ? "" : `guard.slidetime = ${options.guardSlideTime}`
@@ -56605,6 +56823,7 @@ ${options.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = 
     options.guardControlTime === undefined &&
     options.hitDefAirGuardControlTime === undefined &&
     options.guardVelocity === undefined &&
+    options.hitDefGuardVelocity === undefined &&
     !options.omitGuardVelocity &&
     options.airGuardVelocity === undefined &&
     !hasCornerPushLine
@@ -62934,6 +63153,7 @@ pausetime = 0, 0
 ground.hittime = 8
 ground.velocity = 0, 0
 guardflag = ${route.guardFlag ?? "MA"}
+${route.guardVelocity === undefined ? "" : `guard.velocity = ${route.guardVelocity.join(", ")}\n`}
 ${route.pauseTime === undefined ? "" : `pausetime = ${route.pauseTime},${route.pauseTime}\n`}
 ${route.guardPause === undefined ? "" : `guard.pausetime = ${route.guardPause},${route.guardPause}\n`}
 ${route.guardDistance === undefined ? "" : `guard.dist = ${route.guardDistance}\n`}
@@ -62949,7 +63169,16 @@ function rootModifyHitDefRedirectControllerBlock(
   const damageValue = route.damage === undefined
     ? undefined
     : route.damage[1] === undefined ? String(route.damage[0]) : `${route.damage[0]}, ${route.damage[1]}`;
+  const varSeedBlock = route.varSeeds
+    ?.map((seed) => `[State 0, Root ModifyHitDef Var ${seed.index}]
+type = VarSet
+trigger1 = ${seed.trigger ?? "Time = 0"}
+v = ${seed.index}
+value = ${seed.value}
+`)
+    .join("") ?? "";
   return `
+${varSeedBlock}
 [State 0, Root ModifyHitDef Redirect]
 type = ModifyHitDef
 trigger1 = ${route.trigger ?? "Time >= 1"}
@@ -62961,6 +63190,7 @@ ${route.kill === undefined ? "" : `kill = ${route.kill ? 1 : 0}`}
 ${route.guardKill === undefined ? "" : `guard.kill = ${route.guardKill ? 1 : 0}`}
 ${route.fallKill === undefined ? "" : `fall.kill = ${route.fallKill ? 1 : 0}`}
 ${route.hitOnce === undefined ? "" : `hitonce = ${route.hitOnce ? 1 : 0}`}
+${route.guardVelocity === undefined ? "" : `guard.velocity = ${route.guardVelocity.join(", ")}`}
 redirectid = ${route.redirectId}
 `;
 }

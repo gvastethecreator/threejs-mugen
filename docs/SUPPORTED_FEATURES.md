@@ -61,12 +61,14 @@
   mutation, grounded hit velocity, and GetHitVar readback. T661 closes the
   official fresh omitted `0,0,0` reset through root/Helper activation,
   accepted GetHitVar consumption, and live ModifyHitDef omission preservation.
-  T662 is active for direct and root-owned live `guard.velocity` X expressions.
+  T662 closes direct and root-owned live `guard.velocity` X expressions,
+  fresh inheritance, accepted ground guard, and omission preservation. T663
+  is active for root-owned direct `airguard.velocity` X/Y expressions.
   Projectile facing, exact deferred
   facing/power order, broader `data/mugen.cfg`, rollback, and full HitDef
   behavior are not supported claims.
-- Latest evidence: 3693/3693 tests, the 363-module build, and 733/733 traces
-  pass (699 required, 34 optional).
+- Latest evidence: 3698/3698 tests, the 363-module build, and 735/735 traces
+  pass (701 required, 34 optional).
 
 ## 2026-08-08 ModifyProjectile selection and live HitDef mutation
 

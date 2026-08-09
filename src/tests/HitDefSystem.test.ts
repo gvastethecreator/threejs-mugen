@@ -2576,6 +2576,78 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.guardVelocityY).toBeUndefined();
   });
 
+  it("resolves fresh and root-owned modified guard.velocity X in caller context", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.velocity": "-9,-2",
+        "guard.velocity": "-5,-3,4",
+      })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      guardPush: 5,
+      guardVelocityY: -3,
+      guardVelocityZ: 4,
+      hitVelocities: { guard: { x: -5, y: -3, z: 4 } },
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { forcenofall: "1", redirectid: "57" })),
+    });
+    expect(actor.currentMove?.hitVelocities?.guard).toEqual({ x: -5, y: -3, z: 4 });
+
+    caller.vars[1] = -6.25;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "guard.velocity": "var(1)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({
+      guardPush: 6.25,
+      guardVelocityY: -3,
+      guardVelocityZ: 4,
+      hitVelocities: { guard: { x: -6.25, y: -3, z: 4 } },
+    });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.velocity": "-8,-2",
+      })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.guardPush).toBe(8);
+
+    caller.vars[2] = -7.5;
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.velocity": "-8,-2",
+        "guard.velocity": "var(2)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove).toMatchObject({
+      guardPush: 7.5,
+      hitVelocities: { guard: { x: -7.5, y: 0, z: 0 } },
+    });
+  });
+
   it("derives missing guard timing from ground hittime", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

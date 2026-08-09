@@ -6885,6 +6885,37 @@ value = 7
     expect(runtimeHitVar(guard.actors[1]!.runtime, "hitshaketime", { hitPause: guard.actors[1]!.hitPause })).toBe(7);
   });
 
+  it("resolves root-caller guard.velocity X into accepted ground guard velocity and GetHitVar", () => {
+    const attacker = createImportedFixture({
+      withStateMove: false,
+      guardFlag: "MA",
+      guardVelocityExpression: "var(10)",
+      passiveResourceController: `
+[State 0, Dynamic guard velocity]
+type = VarSet
+trigger1 = 1
+v = 10
+value = -7
+`,
+    });
+    const runtime = new PlayableMatchRuntime(attacker, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["B"]) });
+
+    expect(snapshot.actors[1]?.runtime).toMatchObject({
+      guarding: true,
+      vel: { x: 7 },
+      hitVelocity: { x: 7, y: 0 },
+    });
+    expect(runtimeHitVar(snapshot.actors[1]!.runtime, "xvel")).toBe(7);
+  });
+
   it("uses the defender's own dynamic HitDef state when p2getp1state resolves to 0", () => {
     const attacker = createImportedFixture({
       withStateMove: false,
@@ -11058,6 +11089,7 @@ p1getp2facing = var(25)
 p2facing = var(24)
 getpower = var(26),var(27)
 givepower = var(28),var(29)
+guard.velocity = var(29) - 13
 palfx.time = var(27)
 palfx.add = var(28),-var(29),3
 palfx.mul = 200,var(26),240
@@ -11141,6 +11173,7 @@ id = 91
 pausetime = 0,0
 ground.hittime = 8
 ground.velocity = -6,-2
+guard.velocity = -2,-3,4
 sparkscale = .8,.9
 guard.sparkscale = .7,.6
 getpower = 4,2
@@ -11208,6 +11241,13 @@ down.bounce = 0
           p1Facing?: number;
           p1GetP2Facing?: number;
           p2Facing?: number;
+          push?: number;
+          hitVelocityY?: number;
+          hitVelocityZ?: number;
+          hitVelocities?: DemoMove["hitVelocities"];
+          guardPush?: number;
+          guardVelocityY?: number;
+          guardVelocityZ?: number;
           attackerHitPower?: number;
           attackerGuardPower?: number;
           hitPower?: number;
@@ -11291,7 +11331,13 @@ down.bounce = 0
       push: 6,
       hitVelocityY: -2,
       hitVelocityZ: 0,
-      hitVelocities: { ground: { x: -6, y: -2, z: 0 } },
+      guardPush: 6,
+      guardVelocityY: -3,
+      guardVelocityZ: 4,
+      hitVelocities: expect.objectContaining({
+        ground: { x: -6, y: -2, z: 0 },
+        guard: { x: -6, y: -3, z: 4 },
+      }),
       attackerHitPower: 110,
       attackerGuardPower: 44,
       hitPower: 18,
@@ -11340,7 +11386,13 @@ down.bounce = 0
       push: 6,
       hitVelocityY: -2,
       hitVelocityZ: 0,
-      hitVelocities: { ground: { x: -6, y: -2, z: 0 } },
+      hitVelocities: expect.objectContaining({
+        ground: { x: -6, y: -2, z: 0 },
+        guard: { x: -6, y: -3, z: 4 },
+      }),
+      guardPush: 6,
+      guardVelocityY: -3,
+      guardVelocityZ: 4,
       attackerHitPower: 9,
       attackerGuardPower: 44,
       hitPower: 5,
@@ -11374,7 +11426,13 @@ down.bounce = 0
       push: 6,
       hitVelocityY: -2,
       hitVelocityZ: 0,
-      hitVelocities: { ground: { x: -6, y: -2, z: 0 } },
+      hitVelocities: expect.objectContaining({
+        ground: { x: -6, y: -2, z: 0 },
+        guard: { x: -6, y: -3, z: 4 },
+      }),
+      guardPush: 6,
+      guardVelocityY: -3,
+      guardVelocityZ: 4,
       hitVars: { hitCount: 4 },
     });
     expect(preserved.compatibilitySession?.actors[1]?.executedControllers.ModifyHitDef).toBe(3);
@@ -12638,6 +12696,7 @@ function createImportedFixture(
     guardDistance?: number;
     guardSlideTime?: number;
     guardControlTime?: number;
+    guardVelocityExpression?: string;
     passiveNotHitBy?: string;
     passiveHitBy?: string;
     passiveHitOverride?: { attr: string; stateNo: number; forceAir?: boolean };
@@ -12786,7 +12845,7 @@ guard.pausetime = ${options.guardPauseExpression ?? "4,4"}
 guard.hittime = 9
 ${options.guardSlideTime === undefined ? "" : `guard.slidetime = ${options.guardSlideTime}`}
 ${options.guardControlTime === undefined ? "" : `guard.ctrltime = ${options.guardControlTime}`}
-guard.velocity = -2
+guard.velocity = ${options.guardVelocityExpression ?? "-2"}
 `
       : "";
   const hitDefP2ChangeStateLines =
