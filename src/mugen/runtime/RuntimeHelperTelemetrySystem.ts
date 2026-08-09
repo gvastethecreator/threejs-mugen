@@ -49,6 +49,7 @@ export class RuntimeHelperTelemetryWorld {
 
 const helperKinematicControllers = new Set(["velset", "veladd", "velmul", "posset", "posadd", "gravity", "hitvelset"]);
 const helperResourceControllers = new Set(["ctrlset", "lifeadd", "lifeset", "guardpointsadd", "guardpointsset", "dizzypointsadd", "dizzypointsset", "redlifeadd", "redlifeset", "poweradd", "powerset"]);
+const helperHitDefControllers = new Set(["hitdef", "modifyhitdef", "varset", "varadd", "varrandom", "varrangeset"]);
 
 function recordsHelperController(controller: ControllerIr): boolean {
   return (
@@ -56,12 +57,16 @@ function recordsHelperController(controller: ControllerIr): boolean {
     controller.operation?.kind === "pause" ||
     controller.operation?.kind === "team-standby" ||
     helperKinematicControllers.has(controller.normalizedType) ||
-    helperResourceControllers.has(controller.normalizedType)
+    helperResourceControllers.has(controller.normalizedType) ||
+    helperHitDefControllers.has(controller.normalizedType)
   );
 }
 
 function recordsHelperOperation(operation: ControllerOp): boolean {
   return operation.kind === "projectile" ||
+    operation.kind === "hitdef" ||
+    operation.kind === "modifyhitdef" ||
+    operation.kind === "variable" ||
     operation.kind === "kinematic" ||
     operation.kind === "pause" ||
     operation.kind === "team-standby" ||

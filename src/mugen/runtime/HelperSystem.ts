@@ -896,8 +896,17 @@ export function runRuntimeHelperStateControllers(
       continue;
     }
     if (dispatch.kind === "side-effect" && dispatch.effect === "hitdef") {
-      if (activateRuntimeHelperHitDef(helper, controller, helperHitDefWorld, options)) {
+      const activated = activateRuntimeHelperHitDef(helper, controller, helperHitDefWorld, options);
+      if (activated) {
         options.onController?.(helper, controller);
+        continue;
+      }
+      options.onUnsupportedController?.(helper, controller);
+      continue;
+    }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "modifyhitdef") {
+      const modified = modifyRuntimeHelperHitDef(helper, controller, helperHitDefWorld, options);
+      if (modified) {
         continue;
       }
       options.onUnsupportedController?.(helper, controller);
@@ -1641,6 +1650,84 @@ export function activateRuntimeHelperHitDef(
   return result.activated || result.duplicate;
 }
 
+/**
+ * Applies a live ModifyHitDef authored by a Helper to that Helper's active
+ * normal HitDef.  The helper remains the caller/owner, while the active move
+ * is mutated in place so the existing Helper combat path consumes the updated
+ * down.velocity metadata on the next accepted contact.
+ */
+export function modifyRuntimeHelperHitDef(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  hitDefWorld: RuntimeHitDefControllerDispatchWorld = helperHitDefWorld,
+  options?: Parameters<typeof resolveHelperNumber>[3] &
+    Pick<RuntimeHelperAdvanceOptions, "constants" | "runtimeProfile" | "onController" | "onOperation">,
+): boolean {
+  const runtime = helperRuntimeState(helper);
+  const actor = {
+    runtime,
+    currentMove: helper.currentMove,
+    currentMoveLabel: helper.currentMoveLabel,
+    moveTick: helper.moveTick,
+    frameElapsed: helper.frameElapsed,
+    hasHit: helper.hasHit,
+    firedHitDefs: helper.firedHitDefs,
+    constants: options?.constants,
+  };
+  const result = hitDefWorld.modify({
+    actor,
+    controller,
+    resolveIntegerList: options
+      ? (key) => resolveHelperModifyProjectileIntegerListParam(helper, controller, key, options)
+      : undefined,
+    resolveIntegerPair: options
+      ? (key) => resolveRuntimeHelperIntegerPairParam(helper, controller, key, options)
+      : undefined,
+    resolveIntegerScalar: options
+      ? (key) => resolveRuntimeHelperIntegerScalarParam(helper, controller, key, options)
+      : undefined,
+    resolveFloatPair: options
+      ? (key) => resolveRuntimeHelperFloatPairParam(helper, controller, key, options)
+      : undefined,
+    resolveFloatScalar: options
+      ? (key) => resolveRuntimeHelperFloatScalarParam(helper, controller, key, options)
+      : undefined,
+    resolvePaletteFx: options
+      ? resolveRuntimeHelperHitDefPaletteFx(helper, controller, options)
+      : undefined,
+    resolveEnvShake: options
+      ? (key) => resolveRuntimeHelperHitDefEnvShakeParam(helper, controller, key, options)
+      : undefined,
+    resolveFallEnvShake: options
+      ? (key) => resolveRuntimeHelperHitDefFallEnvShakeParam(helper, controller, key, options)
+      : undefined,
+    resolveFallImpact: options
+      ? (key) => resolveRuntimeHelperHitDefFallImpactParam(helper, controller, key, options)
+      : undefined,
+    resolveFallRecovery: options
+      ? (key) => resolveRuntimeHelperHitDefFallRecoveryParam(helper, controller, key, options)
+      : undefined,
+    resolveFallFlags: options
+      ? (key) => resolveRuntimeHelperHitDefFallFlagsParam(helper, controller, key, options)
+      : undefined,
+    resolveLethalFlags: options
+      ? (key) => resolveRuntimeHelperHitDefLethalFlagsParam(helper, controller, key, options)
+      : undefined,
+    recordController: options?.onController
+      ? () => options.onController?.(helper, controller)
+      : undefined,
+    recordOperation: options?.onOperation
+      ? (_actor, operation) => options.onOperation?.(helper, operation)
+      : undefined,
+  });
+  helper.currentMove = actor.currentMove;
+  helper.currentMoveLabel = actor.currentMoveLabel;
+  helper.moveTick = actor.moveTick;
+  helper.hasHit = actor.hasHit;
+  applyRuntimeStateToHelper(helper, runtime);
+  return result.modified;
+}
+
 export function rememberRuntimeHelperTarget(
   helper: RuntimeHelper,
   targetActorId: string,
@@ -1732,6 +1819,23 @@ export function resolveRuntimeHelperFloatParam(
   const raw = findControllerParam(controller.source, key);
   if (!raw) return undefined;
   return resolveHelperFloat(helper, raw, options);
+}
+
+/** Resolves the optional live Z component of a Helper-owned ModifyHitDef. */
+export function resolveRuntimeHelperFloatScalarParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "down.velocity",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  void key;
+  const operation = controller.operation;
+  const value = operation?.kind === "modifyhitdef"
+    ? operation.downVelocityZExpression ?? operation.downVelocityZ
+    : undefined;
+  if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+  if (typeof value === "string") return resolveHelperFloat(helper, value, options);
+  return undefined;
 }
 
 export function resolveRuntimeHelperHitDefEnvShakeParam(

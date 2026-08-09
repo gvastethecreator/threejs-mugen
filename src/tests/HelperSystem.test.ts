@@ -2029,6 +2029,46 @@ describe("HelperSystem", () => {
     });
   });
 
+  it("applies Helper-owned ModifyHitDef down.velocity in caller context and preserves omitted components", () => {
+    const active = helper({
+      vars: [3, -5, 7.25],
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              damage: "20",
+              "down.velocity": "-2,-8,2",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              "down.velocity": "var(0),var(1),var(2)",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              "down.velocity": "-11",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], { redirectid: "0", damage: "21" }),
+          ]),
+        ],
+      },
+    });
+    const operations: string[] = [];
+
+    advanceRuntimeHelpers([active], stage, {
+      onOperation: (_helper, operation) => operations.push(operation.kind),
+    });
+
+    expect(active.currentMove).toMatchObject({
+      downVelocityX: -11,
+      downVelocityY: -5,
+      downVelocityZ: 7.25,
+      damage: 21,
+      hitVelocities: { down: { x: -11, y: -5, z: 7.25 } },
+    });
+    expect(operations).toEqual(["modifyhitdef", "modifyhitdef", "modifyhitdef"]);
+  });
+
   it("derives omitted helper HitDef getpower from the owner constants profile", () => {
     const active = helper({
       runtimeProgram: {
