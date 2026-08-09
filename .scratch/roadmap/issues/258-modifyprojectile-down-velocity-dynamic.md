@@ -1,6 +1,6 @@
 # Issue 258 — live ModifyProjectile down.velocity dynamic replacement
 
-- Status: `source-mapped`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -17,8 +17,9 @@ The pinned Ikemen `ModifyProjectile` path reuses the Projectile HitDef
 parameter set, evaluates the selected `down.velocity` components in the
 controller caller, and writes the result to every selected Projectile. The
 fresh Projectile inheritance/default chain from T683 does not rerun during
-mutation; omitted components therefore preserve the live vector, while the
-one-component form follows the pinned ModifyProjectile write semantics.
+mutation. `ModifyProjectile.Run` initializes omitted components to zero before
+broadcasting, so one component writes `[x, 0, 0]` and a pair writes
+`[x, y, 0]`; only a full triple preserves a non-zero Z.
 
 Sources:
 
@@ -32,10 +33,11 @@ Sources:
 ## Bounded acceptance proposal
 
 - Root-owned live Projectiles selected by `ModifyProjectile` accept finite
-  static/dynamic `down.velocity` components in caller context.
-- A one-component mutation replaces X and preserves live Y/Z; a pair replaces
-  X/Y and preserves Z; a full triple replaces all three components. Omission is
-  a no-op for the live vector.
+  static/dynamic `down.velocity` components evaluated once in caller context.
+- A one-component mutation writes `[x, 0, 0]`; a pair writes `[x, y, 0]`; a
+  full triple writes all three components. Omission is a no-op for the live
+  vector. This matches the pinned Ikemen broadcast path and differs from
+  component-preserving `ModifyHitDef` semantics.
 - A later accepted lying hit exposes the mutated vector through Projectile
   physics, contact metadata, `GetHitVar`, target memory, and Projectile
   lifecycle evidence.
@@ -50,7 +52,11 @@ M.U.G.E.N/Ikemen Projectile parity.
 
 ## Next implementation step
 
-Add typed `ModifyProjectile down.velocity` expression fields and a caller
-resolver that mutates the selected live Projectile component-wise. Add focused
-compiler/runtime coverage, one root-owner lying-hit trace, then reassess the
-Helper-owned breadth as a separate cut.
+Closed in T684. Typed compiler fields preserve static, mixed, and dynamic
+components; the existing root caller resolver broadcasts the selected live
+Projectile vector with the pinned zero-filled one/two/three-component rules.
+Focused compiler/runtime coverage and the required trace pass. The trace
+checksum is `f0bd0d1a` and the final checksum is `0664ee31`; aggregate QA is
+`759/759` (`725` required, `34` optional). Helper-owned ModifyProjectile,
+dynamic `n`, fresh default/inheritance recalculation, and full Projectile
+parity remain separate work.

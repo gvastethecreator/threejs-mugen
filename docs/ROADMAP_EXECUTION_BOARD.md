@@ -1,6 +1,6 @@
 ﻿# Roadmap Execution Board
 
-## Authoritative runtime cursor — T683 closed, T684 source-mapped
+## Authoritative runtime cursor — T684 closed-bounded
 
 Final T682 verification: `756/756` trace artifacts (`722` required, `34`
 optional), with required root Projectile `air.velocity` checksums
@@ -13,6 +13,11 @@ optional), with root Projectile `down.velocity` checksums
 `869ee367/95984159` and Helper Projectile checksums `3d0f88d0/9aaf44ce`.
 The full `3756/3756` Vitest suite across `328` files, typecheck, the
 `363`-module build, and the diff gate pass.
+
+Final T684 verification: `759/759` trace artifacts (`725` required, `34`
+optional), with required root-owned `ModifyProjectile down.velocity`
+checksum `f0bd0d1a` and final checksum `0664ee31`. The full suite, typecheck,
+the `363`-module build, and the diff gate pass.
 
 T675 / issue 249 is closed-bounded: live root-owned `ModifyHitDef
 down.velocity` dynamic Z resolves in caller context, preserves active X/Y,
@@ -45,19 +50,24 @@ evidence. T683 / issue 257 is closed-bounded: fresh root/Helper Projectiles
 resolve dynamic/mixed `down.velocity` X/Y/Z in caller context, inherit omitted
 components from effective `air.velocity`, and reach accepted lying-hit
 physics/GetHitVar with lifecycle and ownership evidence. T684 / issue 258 is
-source-mapped for live root-owned `ModifyProjectile down.velocity` mutation.
+closed-bounded for live root-owned `ModifyProjectile down.velocity` mutation:
+caller-context dynamic/mixed values broadcast to the selected Projectiles with
+Ikemen's zero-filled one-, two-, and three-component semantics, and the
+accepted lying-hit trace exposes the resulting vector.
 M.U.G.E.N dynamic-Z/live-ModifyHitDef claims beyond these bounded vectors,
-remaining Helper-authored Projectile breadth, ModifyProjectile, and full
-down-hit/Helper parity remain outside the closed claims.
+remaining Helper-authored Projectile breadth, fresh/default recalculation, and
+full down-hit/Helper parity remain outside the closed claims.
 
-## Current official-parity queue — T424-T492 and T506-T683 closed-bounded; T684 source-mapped; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
+## Current official-parity queue — T424-T492 and T506-T684 closed-bounded; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
 
-### Active runtime checkpoint — live ModifyProjectile down.velocity dynamic replacement
+### Latest runtime checkpoint — live ModifyProjectile down.velocity dynamic replacement
 
-T684 / issue 258 is source-mapped: live root-owned Projectiles still need
+T684 / issue 258 is closed-bounded: live root-owned Projectiles accept
 caller-context dynamic `ModifyProjectile down.velocity` replacement with
-component-wise live preservation and accepted lying-hit physics/GetHitVar.
-See [issue 258](../.scratch/roadmap/issues/258-modifyprojectile-down-velocity-dynamic.md).
+Ikemen's zero-filled one/two-component broadcast semantics and accepted
+lying-hit physics/GetHitVar. The required trace checksum is `f0bd0d1a` and
+final checksum `0664ee31`. Helper-owned mutation, dynamic `n`, and fresh
+default/inheritance recalculation remain blocked. See [issue 258](../.scratch/roadmap/issues/258-modifyprojectile-down-velocity-dynamic.md).
 
 T682 / issue 256 is closed-bounded: fresh root/Helper Projectiles resolve
 caller-context dynamic/mixed `air.velocity` X/Y/Z, use zero defaults for

@@ -1,5 +1,25 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-09 T684 live ModifyProjectile down.velocity addendum — no score movement
+
+Final T684 verification: `759/759` trace artifacts (`725` required, `34`
+optional), `3760/3760` Vitest tests across `328` files, typecheck, the
+`363`-module build, and diff hygiene pass. Required trace
+`synthetic-imported-modifyprojectile-dynamic-down-velocity` checksum is
+`f0bd0d1a`; final checksum is `0664ee31`.
+
+Root-owned live `ModifyProjectile down.velocity` now preserves dynamic/mixed
+expression fields through typed compilation, evaluates supplied values once
+in the original caller context, and broadcasts the pinned Ikemen replacement
+vector to selected Projectiles. One and two authored components intentionally
+zero-fill omitted siblings (`[x,0,0]` / `[x,y,0]`); a full triple writes all
+three components, while omission is a no-op. The required lying-hit trace
+proves the resulting physics/GetHitVar vector, target link, and Projectile
+payload lifecycle. This is a bounded owner-side compatibility seam, not a
+score movement: Helper-owned ModifyProjectile, dynamic `n`, fresh
+default/inheritance recalculation during mutation, exact tick/landing order,
+team/rollback topology, and full Projectile parity remain blocked.
+
 ## 2026-08-09 T651-T678 direct contact timing, admission, and velocity addendum — no score movement
 
 Final T678 verification: `751/751` trace artifacts (`717` required, `34`

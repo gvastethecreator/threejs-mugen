@@ -1,15 +1,15 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T608-T678 (2026-08-09)
+## Latest implementation checkpoint — T608-T684 (2026-08-09)
 
-Authoritative cursor: T678 is closed-bounded for pinned-Ikemen Helper-owned
-live `ModifyHitDef down.velocity` dynamic X/Y/Z with active-component
-preservation and a required lying-hit trace, followed by Helper-owned live
-`ModifyHitDef air.velocity` X/Y with airborne physics/GetHitVar evidence.
-T678 also closes Helper-owned live `ModifyHitDef airguard.velocity` X/Y with
-accepted airborne-guard physics/GetHitVar and ownership evidence. T679 is
-source-mapped pending the next official-reference selection; the older active
-wording below is historical and superseded.
+Authoritative cursor: T684 is closed-bounded for pinned-Ikemen root-owned live
+`ModifyProjectile down.velocity`: dynamic/mixed components resolve once in the
+original caller context, broadcast with zero-filled one-, two-, or
+three-component semantics, and reach accepted lying-hit physics/GetHitVar.
+T680-T683 close the preceding fresh Projectile airguard/air/down vector
+seams, including Helper ownership. Helper-owned `ModifyProjectile`, dynamic
+`n`, fresh default recalculation during mutation, and full Projectile parity
+remain explicitly unclaimed.
 
 - T608-T637 are closed-bounded. T616-T621 add typed HitDef/Projectile
   `unhittabletime`, actor-role contact/admission/default/HitOverride slices,
@@ -87,11 +87,15 @@ wording below is historical and superseded.
   X/Y/Z and component preservation. T677 closes Helper-owned live air-velocity
   mutation with caller-context X/Y and airborne-hit evidence. T678 closes
   Helper-owned live air-guard velocity mutation with caller-context X/Y,
-  component preservation, and airborne-guard evidence. T679 remains
-  source-mapped and unclaimed.
-- Latest full suite passes 3737/3737. Typecheck, 363-module build,
-  750/750 traces (716 required, 34 optional),
-  boundaries, redirect boundaries, and differential checks pass.
+  component preservation, and airborne-guard evidence. T679-T683 close the
+  remaining pinned fresh/imported Projectile airguard/air/down vector seams,
+  including lifecycle and ownership evidence. T684 closes root-owned live
+  `ModifyProjectile down.velocity` replacement with the pinned zero-filled
+  broadcast semantics and required lying-hit trace.
+- Latest full suite passes 3760/3760 across 328 files. Typecheck, the
+  363-module build, `git diff --check`, and aggregate QA pass 759/759 traces
+  (725 required, 34 optional). T684 required trace checksum is `f0bd0d1a`;
+  final checksum is `0664ee31`.
 
 ## Historical implementation checkpoint — T522-T552 and Fighter Lab (2026-08-08)
 

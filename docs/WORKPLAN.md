@@ -2,8 +2,10 @@
 
 ## Current parity queue
 
+- **T684 closed-bounded** — root-owned live `ModifyProjectile down.velocity` resolves caller-context dynamic/mixed values and broadcasts Ikemen's zero-filled one-, two-, and three-component replacement vector to selected Projectiles; accepted lying-hit physics/GetHitVar and required trace evidence pass. Helper-owned mutation, dynamic `n`, fresh mutation defaults, and full Projectile parity remain separate. See [issue 258](../.scratch/roadmap/issues/258-modifyprojectile-down-velocity-dynamic.md).
+- **T680-T683 closed-bounded** — fresh root/Helper Projectile airguard/air/down vector seams, including missing-component defaults, caller-context expressions, lifecycle, and ownership evidence, are closed. See [issues 254-257](../.scratch/roadmap/issues/254-projectile-airguard-velocity-z-dynamic.md).
 - **T678 closed-bounded** — Helper-owned live `ModifyHitDef airguard.velocity` now resolves caller-context X/Y, preserves omitted live components and Z, and reaches accepted airborne-guard physics/GetHitVar with Helper/root/parent ownership evidence. See [issue 252](../.scratch/roadmap/issues/252-helper-modifyhitdef-airguard-velocity.md).
-- **T679 source-mapped** — choose the next bounded official-reference slice only after its source gate, ownership boundary, and required trace are written.
+- **T679 closed-bounded** — direct and Helper fresh/live `airguard.velocity` Z defaults and preservation are covered by the pinned-Ikemen trace gates; no score movement.
 - **T677 closed-bounded** — Helper-owned live `ModifyHitDef air.velocity` now resolves caller-context X/Y, preserves omitted live Y/Z, and reaches accepted airborne-hit physics/GetHitVar. See [issue 251](../.scratch/roadmap/issues/251-helper-modifyhitdef-air-velocity.md).
 - **T676 closed-bounded** — Helper-owned `ModifyHitDef down.velocity` now resolves caller-context X/Y/Z, preserves omitted live components, and reaches accepted lying-hit physics/GetHitVar. See [issue 250](../.scratch/roadmap/issues/250-helper-modifyhitdef-down-velocity.md).
 - **T675 closed-bounded** — live root-owned `ModifyHitDef down.velocity` now resolves a pinned-Ikemen dynamic Z component in caller context, preserves active X/Y, and reaches accepted lying-hit physics/GetHitVar. See [issue 249](../.scratch/roadmap/issues/249-modifyhitdef-down-velocity-z-dynamic.md).

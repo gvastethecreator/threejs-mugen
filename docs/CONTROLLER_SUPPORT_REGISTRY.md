@@ -1,12 +1,15 @@
 # Controller Support Registry
 
-Authoritative cursor: T678 is closed-bounded for Helper-owned live
+Authoritative cursor: T684 is closed-bounded for root-owned live
 `ModifyHitDef down.velocity` dynamic X/Y/Z with active-component preservation.
 T677 also closes Helper-owned live `ModifyHitDef air.velocity` X/Y with
 component preservation and airborne-hit evidence. T678 also closes
 Helper-owned live `ModifyHitDef airguard.velocity` X/Y with component/Z
-preservation and airborne-guard evidence. T679 is source-mapped. M.U.G.E.N
-live ModifyHitDef claims and Projectile/ModifyProjectile remain excluded.
+preservation and airborne-guard evidence. T680-T683 close the
+fresh/imported Projectile vector seams. T684 closes root-owned live
+`ModifyProjectile down.velocity` dynamic replacement with pinned zero-filled
+one/two/three-component broadcast semantics. Helper-owned mutation, dynamic
+`n`, and full Projectile parity remain excluded.
 
 This is the registry contract for CNS controller work. It prevents the runtime from growing controller behavior through invisible ad hoc paths.
 
