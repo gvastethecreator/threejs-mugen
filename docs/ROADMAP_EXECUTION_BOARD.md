@@ -13,8 +13,17 @@ Projectiles resolve dynamic `projpriority` once in caller context, normalize
 through the local bounded `0..10` domain, and feed the existing
 clash/cancel/decrement path. `ModifyProjectile`, exact Ikemen priority
 classes/overflow, fine tick ordering, nested teams, rollback, and full
-Projectile parity remain excluded. T703 is unselected pending the next
-upstream ledger review. See [issue 276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
+Projectile parity remain excluded. See [issue 276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
+
+## Current next parity cut — T703 selected
+
+T703 / issue 277 maps fresh root- and Helper-authored Projectile `projhits`.
+MUGEN documents default `1`; Ikemen evaluates the VT_Int expression in the
+caller when spawning. Local `hitsRemaining`/`hitsMax` and `ProjVar` consumers
+already exist; implementation must add only typed expression preservation and
+root/Helper caller callbacks. `ModifyProjectile`, VM overflow/negative parity,
+fine tick timing, rollback, and full Projectile parity remain blocked. See
+[issue 277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
 
 ## Previous runtime cursor — T701 closed-bounded
 

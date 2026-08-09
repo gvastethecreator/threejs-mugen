@@ -13,8 +13,11 @@ Helper checksum is `6ac655e1` / final `2667efd6`. Aggregate QA is `785/785`
 nested teams, rollback, and full Projectile parity remain explicitly unclaimed.
 See [issue 276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
 
-T703 is not selected until the next fresh Projectile parameter is mapped
-against the pinned upstream ledger.
+T703 is selected: fresh root/Helper `projhits` must preserve a typed VT_Int
+expression, resolve once in caller context, initialize `hitsRemaining` and
+`hitsMax`, and prove multi-hit contact plus `ProjVar` evidence. `ModifyProjectile`,
+VM overflow/negative parity, fine timing, and full Projectile parity remain
+unclaimed. See [issue 277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
 
 ## Previous implementation checkpoint — T701 (2026-08-09)
 

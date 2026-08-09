@@ -13,10 +13,14 @@ priority classes/overflow, fine timing, nested teams, rollback, and full
 Projectile parity remain excluded. See [issue
 276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
 
-## Next cursor — T703 unselected
+## Next cursor — T703 selected
 
-The next fresh Projectile parameter will be selected only after the pinned
-upstream ledger and local seam are reviewed.
+T703 selects fresh Projectile `projhits`: MUGEN default `1`, Ikemen caller
+expression, local `hitsRemaining`/`hitsMax` initialization, `ProjVar`, and
+two-contact lifecycle evidence for root and Helper sources. `ModifyProjectile`,
+VM exact overflow/negative behavior, fine timing, and full Projectile parity
+remain blocked. See [issue
+277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
 
 ## Previous runtime cursor — T701
 

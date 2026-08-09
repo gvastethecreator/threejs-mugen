@@ -48,11 +48,14 @@ Projectile `air.hittime` caller-context resolution and accepted airborne
 non-falling contact. See [issue
 272](../.scratch/roadmap/issues/272-projectile-air-hittime-dynamic.md).
 
-## Next parity cut — T703 unselected
+## Next parity cut — T703 selected
 
-Map the next unclaimed Projectile/effect lifecycle seam against the pinned
-Ikemen source. Treat live mutation as unsupported until its controller switch
-and local seam are explicitly proven.
+T703 / issue 277 targets fresh root/Helper `projhits`: preserve the typed
+VT_Int expression, resolve once in caller context, seed `hitsRemaining` and
+`hitsMax`, and prove two accepted contacts plus `ProjVar`/lifecycle evidence.
+`ModifyProjectile`, exact VM overflow/negative behavior, fine timing, nested
+teams, rollback, and full Projectile parity remain blocked. See [issue
+277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
 
 ## Previous runtime cursor — T692 closed-bounded
 

@@ -1,4 +1,15 @@
 ﻿# Supported Features
+## 2026-08-09 T703 Projectile `projhits` mapping
+
+T703 is selected, not yet closed: fresh root/Helper Projectile `projhits` is
+mapped to MUGEN default `1` and Ikemen caller-context VT_Int evaluation. The
+local store already exposes `hitsRemaining`, `hitsMax`, `ProjVar(projhits)`,
+and `ProjVar(projhitsmax)`; the next implementation adds typed expression
+preservation plus two-contact/lifecycle evidence. `ModifyProjectile`, exact VM
+overflow/negative behavior, fine timing, and full Projectile parity remain
+unsupported. See [issue
+277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
+
 ## 2026-08-09 T702 Projectile `projpriority` checkpoint
 
 T702 is closed-bounded: fresh root- and Helper-authored Projectiles resolve

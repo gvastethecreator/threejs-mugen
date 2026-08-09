@@ -2,6 +2,13 @@
 
 ## Current parity queue
 
+- **T703 selected** — map and implement fresh root/Helper Projectile
+  `projhits` caller-context expressions. Preserve typed VT_Int IR, initialize
+  `hitsRemaining`/`hitsMax`, and prove two accepted contacts, `ProjVar`,
+  lifecycle, and ownership. `ModifyProjectile`, VM overflow/negative parity,
+  fine timing, and full Projectile parity remain excluded. See [issue
+  277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
+
 - **T702 closed-bounded** — fresh root- and Helper-authored Projectiles resolve
   dynamic `projpriority` once in caller context, normalize through the local
   bounded `0..10` priority domain, and prove existing clash/cancel/decrement

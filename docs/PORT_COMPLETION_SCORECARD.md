@@ -1,5 +1,14 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-09 T703 Projectile `projhits` mapping - no score movement
+
+T703 is selected for fresh root/Helper Projectile `projhits`: typed VT_Int
+preservation, caller-context resolution, initial `hitsRemaining`/`hitsMax`,
+`ProjVar`, and two-contact lifecycle evidence. This mapping does not move the
+score. `ModifyProjectile`, exact VM overflow/negative semantics, fine timing,
+rollback, and full Projectile parity remain blocked. See [issue
+277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
+
 ## 2026-08-09 T702 Projectile priority addendum - no score movement
 
 Final T702 verification: `785/785` trace artifacts (`751` required, `34`

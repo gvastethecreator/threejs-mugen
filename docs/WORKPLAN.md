@@ -13,8 +13,12 @@
   Projectile parity remain excluded. See [issue
   276](../.scratch/roadmap/issues/276-projectile-priority-dynamic.md).
 
-- **T703 unselected** — map the next fresh Projectile parameter against the
-  pinned upstream ledger before implementation.
+- **T703 selected** — fresh root/Helper Projectile `projhits` resolves once in
+  caller context, initializes `hitsRemaining`/`hitsMax`, and must prove two
+  accepted contacts plus `ProjVar`, lifecycle, and ownership. `ModifyProjectile`,
+  VM overflow/negative behavior, fine timing, and full Projectile parity remain
+  excluded. See [issue
+  277](../.scratch/roadmap/issues/277-projectile-hits-dynamic.md).
 
 - **T701 closed-bounded** — fresh root- and Helper-authored Projectiles resolve dynamic `projmisstime` once in caller context, truncate/clamp through the bounded Projectile-time domain, and enforce multi-hit cooldown eligibility before the next accepted contact. Aggregate traces pass `783/783` (`749` required, `34` optional); root checksum `90c039b1` / final `6868ca24`, Helper checksum `24a8156a` / final `ce715b91`; full Vitest passes `3819/3819` across `328` files, typecheck/build pass. Live `ModifyProjectile`, exact hitpause/tick ordering, negative/overflow values, nested helper/team topology, rollback, and full Projectile timing parity remain excluded. See [issue 275](../.scratch/roadmap/issues/275-projectile-misstime-dynamic.md).
 
