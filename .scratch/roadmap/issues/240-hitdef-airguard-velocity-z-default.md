@@ -1,6 +1,6 @@
 # Issue 240 — HitDef airguard.velocity missing-Z default
 
-- Status: `active-research`
+- Status: `closed-bounded`
 - Lane: `R1 direct contact physics`
 - Priority: `P1`
 
@@ -39,3 +39,15 @@ Describe Z as pinned-Ikemen compatibility, not M.U.G.E.N 1.1 syntax. Do not
 claim imported static-move or Projectile breadth, dynamic Z expressions,
 exact localcoord/facing or landing timing, teams, rollback, or full depth
 physics.
+
+## Closure evidence
+
+- Fresh direct HitDef omission, one-component, and two-component forms derive
+  missing Z from effective `air.velocity.z * 1.5`; explicit Z wins.
+- The direct-only helper leaves imported static moves and Projectile behavior
+  unchanged, preserving the claim boundary.
+- Accepted airborne guard exposes the derived Z through physical depth and
+  GetHitVar; live ModifyHitDef partial/omitted forms preserve current Z.
+- Required trace checksum: `80703443`; final-state checksum: `7af22d95`.
+- Full suite: 3710/3710. Aggregate traces: 739/739, with 705 required and 34
+  optional. Typecheck and the 363-module production build pass.

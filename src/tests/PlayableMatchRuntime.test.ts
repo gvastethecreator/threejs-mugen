@@ -6916,16 +6916,16 @@ value = -7
     expect(runtimeHitVar(snapshot.actors[1]!.runtime, "xvel")).toBe(7);
   });
 
-  it("uses root-caller airguard.velocity X/Y only for accepted airborne guards", () => {
+  it("resolves fresh airguard.velocity forms only for accepted airborne guards", () => {
     const resolve = (
       airborne: boolean,
-      airGuardVelocityExpression = "var(10),var(11)",
+      airGuardVelocityExpression: string | null = "var(10),var(11)",
       airVelocityExpression?: string,
     ) => {
       const attacker = createImportedFixture({
         withStateMove: false,
         guardFlag: "MA",
-        airGuardVelocityExpression,
+        ...(airGuardVelocityExpression === null ? {} : { airGuardVelocityExpression }),
         airVelocityExpression,
         passiveResourceController: `
 [State 0, Dynamic air guard X]
@@ -6952,6 +6952,21 @@ value = -4
       runtime.step({ p1: new Set(), p2: airborne ? new Set(["U"]) : new Set() });
       return runtime.step({ p1: new Set(["x"]), p2: new Set(["B"]) });
     };
+    const expectAirGuardVelocity = (
+      snapshot: ReturnType<typeof resolve>,
+      expected: readonly [x: number, y: number, z: number],
+    ) => {
+      expect(snapshot.actors[1]?.runtime).toMatchObject({
+        guarding: true,
+        stateType: "A",
+        vel: { x: expected[0], y: expected[1] },
+        hitVelocity: { x: expected[0], y: expected[1], z: expected[2] },
+        combatDepth: { velocity: expected[2] },
+      });
+      expect(runtimeHitVar(snapshot.actors[1]!.runtime, "xvel")).toBe(expected[0]);
+      expect(runtimeHitVar(snapshot.actors[1]!.runtime, "yvel")).toBe(expected[1]);
+      expect(runtimeHitVar(snapshot.actors[1]!.runtime, "zvel")).toBe(expected[2]);
+    };
 
     const airGuard = resolve(true);
     expect(airGuard.actors[1]?.runtime).toMatchObject({
@@ -6973,25 +6988,22 @@ value = -4
     expect(runtimeHitVar(groundGuard.actors[1]!.runtime, "xvel")).toBe(2);
     expect(runtimeHitVar(groundGuard.actors[1]!.runtime, "yvel")).toBe(0);
 
-    const singleAirGuard = resolve(true, "var(10)", "-6,-10");
-    expect(singleAirGuard.actors[1]?.runtime).toMatchObject({
-      guarding: true,
-      stateType: "A",
-      vel: { x: 9, y: -5 },
-      hitVelocity: { x: 9, y: -5 },
-    });
-    expect(runtimeHitVar(singleAirGuard.actors[1]!.runtime, "xvel")).toBe(9);
-    expect(runtimeHitVar(singleAirGuard.actors[1]!.runtime, "yvel")).toBe(-5);
+    const airVelocity = "-6,-10,4";
+    expectAirGuardVelocity(resolve(true, null, airVelocity), [9, -5, 6]);
+    expectAirGuardVelocity(resolve(true, "var(10)", airVelocity), [9, -5, 6]);
+    expectAirGuardVelocity(resolve(true, "var(10),var(11)", airVelocity), [9, -4, 6]);
+    expectAirGuardVelocity(resolve(true, "-12,-6,7", airVelocity), [12, -6, 7]);
 
-    const singleGroundGuard = resolve(false, "var(10)", "-6,-10");
-    expect(singleGroundGuard.actors[1]?.runtime).toMatchObject({
+    const tripleGroundGuard = resolve(false, "-12,-6,7", airVelocity);
+    expect(tripleGroundGuard.actors[1]?.runtime).toMatchObject({
       guarding: true,
       stateType: "S",
       vel: { x: 2, y: 0 },
       hitVelocity: { x: 2, y: 0 },
     });
-    expect(runtimeHitVar(singleGroundGuard.actors[1]!.runtime, "xvel")).toBe(2);
-    expect(runtimeHitVar(singleGroundGuard.actors[1]!.runtime, "yvel")).toBe(0);
+    expect(runtimeHitVar(tripleGroundGuard.actors[1]!.runtime, "xvel")).toBe(2);
+    expect(runtimeHitVar(tripleGroundGuard.actors[1]!.runtime, "yvel")).toBe(0);
+    expect(runtimeHitVar(tripleGroundGuard.actors[1]!.runtime, "zvel")).toBe(0);
   });
 
   it("preserves seeded airguard.velocity Z through RedirectID dynamic X/Y and later omissions", () => {
@@ -7126,6 +7138,7 @@ airguard.velocity = -3,-2,5
     });
     expect(runtimeHitVar(guarded.actors[0]!.runtime, "xvel")).toBe(-11);
     expect(runtimeHitVar(guarded.actors[0]!.runtime, "yvel")).toBe(-4);
+    expect(runtimeHitVar(guarded.actors[0]!.runtime, "zvel")).toBe(5);
     expect(
       guarded.compatibilitySession?.actors.find(({ actorId }) => actorId === "p2")?.executedOperations.modifyhitdef,
     ).toBe(4);

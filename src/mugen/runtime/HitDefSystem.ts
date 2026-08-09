@@ -10,7 +10,7 @@ import type { DemoMove } from "./demoFighters";
 import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { normalizeRuntimeHitDefPriority } from "./HitDefContactPriority";
 import { resolveHitDefGuardTiming } from "./HitDefTiming";
-import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
+import { deriveDefaultDirectHitDefAirGuardVelocity } from "./HitDefVelocity";
 import { runtimeDizzyPointsFromHitDef } from "./DizzyPointsDefaults";
 import { runtimeHitDefGetPowerDefaults, runtimeHitDefGivePowerDefaults } from "./HitDefGetPowerDefaults";
 import { resolveRuntimeHitDefPaletteFx } from "./HitDefPaletteFx";
@@ -447,16 +447,16 @@ export class RuntimeHitDefControllerDispatchWorld {
           context ?? {},
           undefined,
         );
-    const defaultAirGuardVelocity = deriveDefaultAirGuardVelocity(airVelocity);
-    const airGuardVelocity: [number, number?, number?] | undefined = resolvedAirGuardVelocity === undefined
-      ? staticAirGuardVelocity === undefined
-        ? defaultAirGuardVelocity
-        : staticAirGuardVelocity[1] === undefined
-          ? [staticAirGuardVelocity[0], defaultAirGuardVelocity?.[1] ?? 0]
-          : staticAirGuardVelocity
+    const defaultAirGuardVelocity = deriveDefaultDirectHitDefAirGuardVelocity(airVelocity);
+    const resolvedAirGuardVelocityVector: [number, number?] | undefined = resolvedAirGuardVelocity === undefined
+      ? undefined
       : resolvedAirGuardVelocity.componentCount === 1
-        ? [resolvedAirGuardVelocity.first ?? 0, defaultAirGuardVelocity?.[1] ?? 0]
+        ? [resolvedAirGuardVelocity.first ?? 0]
         : [resolvedAirGuardVelocity.first ?? 0, resolvedAirGuardVelocity.second ?? 0];
+    const airGuardVelocity = completeFreshAirGuardVelocity(
+      resolvedAirGuardVelocityVector ?? staticAirGuardVelocity,
+      defaultAirGuardVelocity,
+    );
     const hitVelocities: RuntimeHitVelocityMetadata = {
       ground: runtimeHitVelocityVector(groundVelocity),
       ...(airVelocity === undefined ? {} : { air: runtimeHitVelocityVector(airVelocity) }),
@@ -1998,6 +1998,16 @@ function normalizeSparkOffset(value: [number, number?]): [number, number] {
 
 function runtimeHitVelocityVector(value: [number, number?, number?]): { x: number; y: number; z: number } {
   return { x: value[0] ?? 0, y: value[1] ?? 0, z: value[2] ?? 0 };
+}
+
+function completeFreshAirGuardVelocity(
+  authored: [number, number?, number?] | undefined,
+  defaults: [number, number?, number?] | undefined,
+): [number, number?, number?] | undefined {
+  if (authored === undefined) return defaults;
+  const y = authored[1] ?? defaults?.[1] ?? 0;
+  const z = authored[2] ?? defaults?.[2];
+  return z === undefined ? [authored[0], y] : [authored[0], y, z];
 }
 
 function velocityPair(value: string | undefined): [number, number, number?] | undefined {

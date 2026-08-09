@@ -1,6 +1,6 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-09 T651-T665 direct contact timing, admission, and velocity addendum — no score movement
+## 2026-08-09 T651-T666 direct contact timing, admission, and velocity addendum — no score movement
 
 Direct HitDef pause pairs now preserve independent attacker pause and receiver
 hit-shake time for root and Helper contacts. Dynamic direct `ground.hittime`
@@ -23,8 +23,9 @@ omission preservation. T663 adds caller-resolved direct `airguard.velocity`
 X/Y and official omission defaults. T664 adds exact X/Y live ModifyHitDef
 replacement with Z/omission preservation and accepted airborne guard. T665
 adds the pinned-Ikemen one-component form with fresh Y derivation and live Y/Z
-preservation. The 363-module build and 738/738 traces pass. The full suite
-passes 3709/3709. These are
+preservation. T666 adds the pinned-Ikemen missing-Z fresh direct-HitDef
+default. The 363-module build and 739/739 traces pass. The full suite passes
+3710/3710. These are
 bounded timing, admission, and
 velocity seams, not full HitDef or tick-order parity. Compatibility scores
 remain unchanged.

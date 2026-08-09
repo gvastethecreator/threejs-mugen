@@ -2266,6 +2266,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefSingleAirGuardVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-airguard-velocity-derived-z",
+      required: true,
+      artifact: presets.createSyntheticImportedAirGuardVelocityDerivedZTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-air-guard-velocity-default",
       required: true,
       artifact: presets.createSyntheticImportedAirGuardVelocityDefaultTraceArtifact(),

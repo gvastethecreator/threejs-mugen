@@ -63,9 +63,10 @@ root-owned direct `airguard.velocity` X/Y expressions and official omission
 defaults. T664 closes exact X/Y live ModifyHitDef replacement with Z/omission
 preservation and accepted airborne-guard consumption. T665 closes the
 pinned-Ikemen one-component form with fresh Y derivation and live Y/Z
-preservation. T666 is active for the pinned-Ikemen missing-Z fresh default.
-Latest evidence: 3709/3709 tests, the 363-module build, and 738/738 traces pass
-(704 required, 34 optional).
+preservation. T666 closes the pinned-Ikemen missing-Z fresh direct-HitDef
+default. T667 is active for the same fresh root-Projectile default. Latest
+evidence: 3710/3710 tests, the 363-module build, and 739/739 traces pass (705
+required, 34 optional).
 Projectile facing, exact deferred facing/power order, broader
 `data/mugen.cfg`, rollback, and full HitDef parity remain outside these slices.
 

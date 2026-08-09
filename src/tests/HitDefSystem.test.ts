@@ -2531,7 +2531,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         damage: "20,3",
         guardflag: "A",
         "ground.velocity": "-3",
-        "air.velocity": "-6,-8",
+        "air.velocity": "-6,-8,4",
       }),
     );
 
@@ -2547,7 +2547,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       guardFlag: "A",
       airGuardPush: 9,
       airGuardVelocityY: -4,
-      hitVelocities: { airGuard: { x: -9, y: -4, z: 0 } },
+      airGuardVelocityZ: 6,
+      hitVelocities: { airGuard: { x: -9, y: -4, z: 6 } },
     });
   });
 
@@ -2573,6 +2574,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       actor,
       controller: compileControllerIr(controller("HitDef", {
         attr: "S,NA",
+        "air.velocity": "-6,-8,4",
         "airguard.velocity": "var(1),fvar(2)",
       })),
       context: { self: caller },
@@ -2581,7 +2583,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove).toMatchObject({
       airGuardPush: 9.25,
       airGuardVelocityY: -4.5,
-      hitVelocities: { airGuard: { x: -9.25, y: -4.5, z: 0 } },
+      airGuardVelocityZ: 6,
+      hitVelocities: { airGuard: { x: -9.25, y: -4.5, z: 6 } },
     });
 
     caller.vars[3] = -3.75;
@@ -2590,6 +2593,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       actor,
       controller: compileControllerIr(controller("HitDef", {
         attr: "S,NA",
+        "air.velocity": "-6,-8,5",
         "airguard.velocity": "-7.5,var(3)",
       })),
       context: { self: caller },
@@ -2598,7 +2602,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove).toMatchObject({
       airGuardPush: 7.5,
       airGuardVelocityY: -3.75,
-      hitVelocities: { airGuard: { x: -7.5, y: -3.75, z: 0 } },
+      airGuardVelocityZ: 7.5,
+      hitVelocities: { airGuard: { x: -7.5, y: -3.75, z: 7.5 } },
     });
   });
 
@@ -2622,16 +2627,17 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       actor,
       controller: compileControllerIr(controller("HitDef", {
         attr: "S,NA",
-        "air.velocity": "-6,-8",
+        "air.velocity": "-6,-8,6",
         "airguard.velocity": "-7.5",
       })),
       frame: activeFrame(),
     });
-    expect(actor.currentMove?.hitVelocities?.air).toEqual({ x: -6, y: -8, z: 0 });
+    expect(actor.currentMove?.hitVelocities?.air).toEqual({ x: -6, y: -8, z: 6 });
     expect(actor.currentMove).toMatchObject({
       airGuardPush: 7.5,
       airGuardVelocityY: -4,
-      hitVelocities: { airGuard: { x: -7.5, y: -4 } },
+      airGuardVelocityZ: 9,
+      hitVelocities: { airGuard: { x: -7.5, y: -4, z: 9 } },
     });
 
     caller.vars[1] = -9.25;
@@ -2640,7 +2646,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       actor,
       controller: compileControllerIr(controller("HitDef", {
         attr: "S,NA",
-        "air.velocity": "-10,-6",
+        "air.velocity": "-10,-6,2",
         "airguard.velocity": "var(1)",
       })),
       context: { self: caller },
@@ -2649,7 +2655,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove).toMatchObject({
       airGuardPush: 9.25,
       airGuardVelocityY: -3,
-      hitVelocities: { airGuard: { x: -9.25, y: -3 } },
+      airGuardVelocityZ: 3,
+      hitVelocities: { airGuard: { x: -9.25, y: -3, z: 3 } },
     });
   });
 
@@ -2662,7 +2669,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       actor,
       controller: compileControllerIr(controller("HitDef", {
         attr: "S,NA",
-        "airguard.velocity": "-5,-3,4",
+        "air.velocity": "-6,-8,6",
+        "airguard.velocity": "-5,-3",
       })),
       frame: activeFrame(),
     });
@@ -2674,8 +2682,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove).toMatchObject({
       airGuardPush: 5,
       airGuardVelocityY: -3,
-      airGuardVelocityZ: 4,
-      hitVelocities: { airGuard: { x: -5, y: -3, z: 4 } },
+      airGuardVelocityZ: 9,
+      hitVelocities: { airGuard: { x: -5, y: -3, z: 9 } },
     });
 
     caller.vars[1] = -9.25;
@@ -2691,8 +2699,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove).toMatchObject({
       airGuardPush: 9.25,
       airGuardVelocityY: -6.5,
-      airGuardVelocityZ: 4,
-      hitVelocities: { airGuard: { x: -9.25, y: -6.5, z: 4 } },
+      airGuardVelocityZ: 9,
+      hitVelocities: { airGuard: { x: -9.25, y: -6.5, z: 9 } },
     });
 
     world.modify({
@@ -2719,7 +2727,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       actor,
       controller: compileControllerIr(controller("HitDef", {
         attr: "S,NA",
-        "airguard.velocity": "-5,-3,4",
+        "air.velocity": "-6,-8,6",
+        "airguard.velocity": "-5,-3",
       })),
       frame: activeFrame(),
     });
@@ -2736,8 +2745,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove).toMatchObject({
       airGuardPush: 9.25,
       airGuardVelocityY: -3,
-      airGuardVelocityZ: 4,
-      hitVelocities: { airGuard: { x: -9.25, y: -3, z: 4 } },
+      airGuardVelocityZ: 9,
+      hitVelocities: { airGuard: { x: -9.25, y: -3, z: 9 } },
     });
 
     world.modify({
@@ -2750,8 +2759,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove).toMatchObject({
       airGuardPush: 7,
       airGuardVelocityY: -3,
-      airGuardVelocityZ: 4,
-      hitVelocities: { airGuard: { x: -7, y: -3, z: 4 } },
+      airGuardVelocityZ: 9,
+      hitVelocities: { airGuard: { x: -7, y: -3, z: 9 } },
     });
   });
 

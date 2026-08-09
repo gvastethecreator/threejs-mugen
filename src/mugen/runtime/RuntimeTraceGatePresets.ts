@@ -25154,7 +25154,7 @@ export function createSyntheticImportedHitDefSingleAirGuardVelocityTraceArtifact
       guardDamage: 5,
       targetId,
       guardFlag: "A",
-      airVelocity: [-6, -8, 6],
+      airVelocity: [-6, -8],
       airGuardVelocity: [-5],
       hitDefTrigger: "Time = 0",
       posX: 200,
@@ -25250,6 +25250,112 @@ export function createSyntheticImportedHitDefSingleAirGuardVelocityTraceArtifact
         { actorId: "p2", source: "imported", actorKind: "player", life: 1000 },
       ],
     }],
+  });
+}
+
+export function createSyntheticImportedAirGuardVelocityDerivedZTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5079;
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-airguard-velocity-derived-z-defender",
+    displayName: "Derived Air Guard Velocity Z Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+      airGuardedBranchStateNo: branchStateNo,
+      airGuardedBranchAnimNo: branchStateNo,
+      airGuardedBranchTrigger: "Time >= 1",
+      airGuardedBranchExpression:
+        "GetHitVar(xvel) = 5 && GetHitVar(yvel) = -4 && GetHitVar(zvel) = 9 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+      airGuardHitVelSetZ: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-airguard-velocity-derived-z-attacker",
+    displayName: "Derived Air Guard Velocity Z Attacker",
+    guardDamage: 5,
+    guardFlag: "A",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+    airVelocity: [-6, -8, 6],
+    airGuardVelocity: [-5, -4],
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    targetId: "synthetic-imported-airguard-velocity-derived-z-golden",
+    targetLabel: "Synthetic imported direct HitDef derived airguard velocity Z route",
+    requiredExecutedStates: [200, 154, 155, branchStateNo],
+    forbiddenExecutedStates: [150, 151, 152, 153, 5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+    requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelAdd"],
+    requiredExecutedOperations: ["hitdef", "kinematic:hitvelset", "kinematic:veladd"],
+    requiredControllerEventSequences: [{
+      label: "derived airguard velocity Z accepted-contact GetHitVar order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 154, controller: "ChangeState", name: "Air Guard Shake Over" },
+        { stateNo: 155, controller: "HitVelSet", name: "Apply Air Guard Velocity" },
+        { stateNo: 155, operation: "kinematic:hitvelset" },
+        { stateNo: 155, controller: "ChangeState", name: "Air Guarded HitVar Branch" },
+      ],
+    }],
+    requiredActorFrames: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 154,
+        animNo: 40,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        observedPosYAtMost: -30,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 155,
+        animNo: 150,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        observedVelXAtLeast: 5,
+        observedVelXAtMost: 5,
+        observedVelYAtMost: -3.5,
+        observedVelZAtLeast: 9,
+        observedVelZAtMost: 9,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: branchStateNo,
+        animNo: branchStateNo,
+        stateType: "A",
+        minFrames: 1,
+      },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    forbiddenCombatReasons: ["hit", "override", "reversal"],
+    requiredFinalActors: [
+      { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+      { actorId: "p2", source: "imported", actorKind: "player", life: 995 },
+    ],
+    notes: [
+      "Pinned Ikemen GO compatibility trace proves a fresh direct HitDef with air.velocity Z=6 and an explicit two-component airguard.velocity X/Y pair derives the missing air-guard Z as 9. A real airborne guard creates target 77, exposes GetHitVar(xvel/yvel/zvel)=5/-4/9, and applies the physical Z velocity through Common1-style HitVelSet. M.U.G.E.N 1.1 documents only X/Y airguard.velocity and its X/Y defaults, so this trace makes no dynamic-Z or M.U.G.E.N-Z claim. ModifyHitDef, Helpers, Projectile/ModifyProjectile, exact 3D/localcoord/facing and gravity/landing timing, teams, rollback, and full air-guard parity remain excluded.",
+    ],
   });
 }
 
@@ -56011,6 +56117,7 @@ export type SyntheticImportedTraceFighterOptions = {
     airGuardedBranchAnimNo?: number;
     airGuardedBranchTrigger?: string;
     airGuardedBranchExpression?: string;
+    airGuardHitVelSetZ?: boolean;
   };
   defaultGetHitFall?: {
     shakeStateNo?: number;
@@ -60503,6 +60610,7 @@ function defaultGuardHitBlock(state: {
   airGuardedBranchAnimNo?: number;
   airGuardedBranchTrigger?: string;
   airGuardedBranchExpression?: string;
+  airGuardHitVelSetZ?: boolean;
 }): string {
   const shakeStateNo = state.shakeStateNo ?? 150;
   const slideStateNo = state.slideStateNo ?? 151;
@@ -60529,6 +60637,7 @@ function defaultGuardHitBlock(state: {
   const airGuardedBranchAnimNo = state.airGuardedBranchAnimNo ?? airGuardedBranchStateNo;
   const airGuardedBranchTrigger = state.airGuardedBranchTrigger ?? "Time >= GetHitVar(ctrltime)";
   const airGuardedBranchExpression = state.airGuardedBranchExpression ?? "GetHitVar(guarded) = 1";
+  const airGuardHitVelSetZ = state.airGuardHitVelSetZ === true;
   const guardedBranchController =
     guardedBranchStateNo === undefined
       ? ""
@@ -60770,6 +60879,7 @@ type = HitVelSet
 trigger1 = Time = 0
 x = 1
 y = 1
+${airGuardHitVelSetZ ? "z = 1" : ""}
 
 [State ${airSlideStateNo}, Apply Air Guard Gravity]
 type = VelAdd

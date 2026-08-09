@@ -1,6 +1,6 @@
 ﻿# Roadmap Execution Board
 
-## Current official-parity queue — T424-T492 and T506-T665 closed-bounded; T666 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
+## Current official-parity queue — T424-T492 and T506-T666 closed-bounded; T667 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
 
 ### Active runtime checkpoint — live ModifyHitDef air-guard velocity
 
@@ -698,7 +698,13 @@ and omission, and feeds accepted airborne guard plus GetHitVar. The full suite
 passes 3709/3709; required trace checksum is `bbe20e82`; aggregate traces pass
 738/738 with 704 required; typecheck and the 363-module build pass.
 
-T666 / issue 240 is active-research: derive missing fresh
+T666 / issue 240 is closed-bounded: fresh direct HitDef omission/partial
+`airguard.velocity` derives missing Z from effective air Z, explicit Z wins,
+and accepted airborne guard exposes depth through GetHitVar. The full suite
+passes 3710/3710; required trace checksum is `80703443`; aggregate traces pass
+739/739 with 705 required; typecheck and the 363-module build pass.
+
+T667 / issue 241 is active-research: derive missing fresh root-Projectile
 `airguard.velocity` Z from effective `air.velocity.z * 1.5`.
 
 ### Latest visual checkpoint — Character Compare

@@ -78,7 +78,8 @@ root-owned direct `airguard.velocity` X/Y expressions and official omission
 defaults. T664 closes exact X/Y live ModifyHitDef replacement, Z/omission
 preservation, and accepted airborne-guard consumption. T665 closes the
 pinned-Ikemen one-component form with fresh Y derivation and live Y/Z
-preservation. T666 is active for the missing-Z fresh default.
+preservation. T666 closes the missing-Z fresh direct-HitDef default. T667 is
+active for the same root-Projectile default.
 Projectile facing, exact deferred facing/power order,
 broader `data/mugen.cfg`, rollback, and full HitDef parity remain unsupported.
 
