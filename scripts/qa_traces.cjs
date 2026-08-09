@@ -1306,6 +1306,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileAirGuardVelocityDerivedZTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-dynamic-airguard-velocity",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileDynamicAirGuardVelocityTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-guard-velocity-default",
       required: true,
       artifact: presets.createSyntheticImportedProjectileGuardVelocityDefaultTraceArtifact(),

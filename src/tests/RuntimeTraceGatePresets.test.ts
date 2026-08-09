@@ -665,6 +665,7 @@ import {
   createSyntheticImportedProjectileAirGuardCornerPushTraceArtifact,
   createSyntheticImportedProjectileAirGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedProjectileAirGuardVelocityDerivedZTraceArtifact,
+  createSyntheticImportedProjectileDynamicAirGuardVelocityTraceArtifact,
   createSyntheticImportedProjectileAirGuardVelocityTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardKillTraceArtifact,
@@ -20881,6 +20882,34 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.evidence.executedStates).not.toEqual(
       expect.arrayContaining([150, 151, 152, 153, 5000, 5030, 5050, 5100]),
     );
+  });
+
+  it("creates a required imported Projectile dynamic airguard.velocity artifact", () => {
+    const artifact = createSyntheticImportedProjectileDynamicAirGuardVelocityTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-airguard-velocity-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-projectile-dynamic-airguard-velocity-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    const airGuardFrame = gate?.evidence.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 155);
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(3);
+    expect(gate?.evidence.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.worldLifecycleEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1" }),
+      expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", parentId: "p1" }),
+    ]));
+    expect(gate?.evidence.targetLinks).toContainEqual(expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }));
+    expect(airGuardFrame?.minVel.x).toBe(5);
+    expect(airGuardFrame?.maxVel.x).toBe(5);
+    expect(airGuardFrame?.minVel.y).toBeLessThanOrEqual(-3.5);
+    expect(airGuardFrame?.minVelZ).toBe(6);
+    expect(airGuardFrame?.maxVelZ).toBe(6);
+    expect(gate?.evidence.combatReasons).toContain("guard");
+    expect(gate?.evidence.combatReasons).not.toContain("hit");
   });
 
   it("creates a synthetic imported Projectile airguard.cornerpush.veloff artifact", () => {

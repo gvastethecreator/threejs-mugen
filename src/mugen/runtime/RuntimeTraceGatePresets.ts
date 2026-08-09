@@ -26682,6 +26682,141 @@ export function createSyntheticImportedProjectileAirGuardVelocityDerivedZTraceAr
   });
 }
 
+export function createSyntheticImportedProjectileDynamicAirGuardVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5079;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...projectileCombatStage(),
+    id: "trace-projectile-dynamic-airguard-velocity-grid",
+    displayName: "Trace Projectile Dynamic Air Guard Velocity Grid",
+    playerStart: {
+      p1: { x: -160, y: 0, facing: 1 },
+      p2: { x: 120, y: 0, facing: -1 },
+    },
+  };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-dynamic-airguard-velocity-defender",
+    displayName: "Projectile Dynamic Air Guard Velocity Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+      airGuardedBranchStateNo: branchStateNo,
+      airGuardedBranchAnimNo: branchStateNo,
+      airGuardedBranchTrigger: "Time >= 1",
+      airGuardedBranchExpression:
+        "GetHitVar(xvel) = 5 && GetHitVar(yvel) = -4 && GetHitVar(zvel) = 6 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+      airGuardHitVelSetZ: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-dynamic-airguard-velocity-attacker",
+    displayName: "Projectile Dynamic Air Guard Velocity Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileVarSeeds: [
+      { index: 0, value: -5 },
+      { index: 1, value: -4 },
+      { index: 2, value: 6 },
+    ],
+    projectileAirVelocity: [-6, -8, 2],
+    projectileAirGuardVelocityExpression: ["var(0)", "var(1)", "var(2)"],
+    projectileGuardHitTime: 18,
+    projectileOffset: [62, -120],
+    guardFlag: "A",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    targetId: "synthetic-imported-projectile-dynamic-airguard-velocity-golden",
+    targetLabel: "Synthetic imported Projectile dynamic airguard.velocity route",
+    requiredExecutedStates: [200, 154, 155, branchStateNo],
+    forbiddenExecutedStates: [150, 151, 152, 153, 5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+    requiredExecutedControllers: ["ChangeState", "VarSet", "Projectile", "HitVelSet", "VelAdd"],
+    requiredExecutedOperations: ["variable:varset", "projectile", "kinematic:hitvelset", "kinematic:veladd"],
+    requiredControllerEventSequences: [
+      {
+        label: "dynamic Projectile airguard velocity spawn order",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "VarSet", name: "Projectile Var 0" },
+          { stateNo: 200, controller: "Projectile", name: "Fast Projectile" },
+          { stateNo: 200, operation: "projectile" },
+        ],
+      },
+      {
+        label: "dynamic Projectile airguard velocity accepted-contact GetHitVar order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 154, controller: "ChangeState", name: "Air Guard Shake Over" },
+          { stateNo: 155, controller: "HitVelSet", name: "Apply Air Guard Velocity" },
+          { stateNo: 155, operation: "kinematic:hitvelset" },
+        ],
+      },
+    ],
+    requiredActorFrames: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 154,
+        animNo: 40,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        observedPosYAtMost: -30,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 155,
+        animNo: 150,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        observedVelXAtLeast: 5,
+        observedVelXAtMost: 5,
+        observedVelYAtMost: -3.5,
+        observedVelZAtLeast: 6,
+        observedVelZAtMost: 6,
+        minFrames: 1,
+      },
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, animNo: branchStateNo, stateType: "A", minFrames: 1 },
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+    requiredEffectPayloads: [{ actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1", effectId: 77, minAge: 1 }],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    forbiddenCombatReasons: ["hit", "override", "reversal"],
+    requiredFinalActors: [
+      { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+      { actorId: "p2", source: "imported", actorKind: "player", life: 996 },
+    ],
+    notes: [
+      "Pinned Ikemen GO compatibility trace proves a root-owned fresh Projectile evaluates airguard.velocity X/Y/Z expressions in the original caller context. VarSet values -5,-4,6 reach an accepted airborne guard, complete the Projectile lifecycle, expose GetHitVar(xvel/yvel/zvel)=5/-4/6, and apply physical Z velocity through Common1-style HitVelSet. M.U.G.E.N 1.1 documents Projectile inheritance and X/Y airguard.velocity, while dynamic Z is pinned Ikemen behavior. Helper Projectiles, ModifyProjectile, dynamic n, exact 3D/localcoord/facing/landing timing, teams, rollback, and full Projectile parity remain excluded.",
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileAirGuardCornerPushTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -57848,6 +57983,8 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileUnhittableTime?: SyntheticPairExpression;
   projectileGroundFriction?: { stand?: SyntheticNumberExpression; crouch?: SyntheticNumberExpression };
   projectileSparkScale?: { hit?: SyntheticPairExpression; guard?: SyntheticPairExpression };
+  /** Synthetic fixture-only VarSet values used by dynamic Projectile params. */
+  projectileVarSeeds?: SyntheticRuntimeVarSeed[];
   /** Synthetic fixture-only KO velocity delta metadata for player-owned Projectile. */
   projectileKoVelocityAdd?: [number, number];
   projectileAirJuggle?: number;
@@ -57889,6 +58026,8 @@ export type SyntheticImportedTraceFighterOptions = {
   omitProjectileGuardVelocity?: boolean;
   projectileAirVelocity?: [number, number?, number?];
   projectileAirGuardVelocity?: [number, number?, number?];
+  /** Synthetic fixture-only dynamic/mixed Projectile airguard.velocity expression vector. */
+  projectileAirGuardVelocityExpression?: SyntheticPartialTripleExpression;
   projectileGroundCornerPush?: number;
   projectileAirCornerPush?: number;
   projectileDownCornerPush?: number;
@@ -58889,6 +59028,14 @@ v = ${seed.index}
 value = ${seed.value}
 `)
     .join("") ?? "";
+  const projectileVarSeedBlock = options.projectileVarSeeds
+    ?.map((seed) => `[State 200, Projectile Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`)
+    .join("") ?? "";
   const hitDefHitCountLine = options.hitDefHitCount === undefined ? "" : `numhits = ${options.hitDefHitCount}`;
   const airVelocityLine = options.hitDefAirVelocity === undefined && options.airVelocity === undefined
     ? ""
@@ -59295,7 +59442,8 @@ ${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, op
 ${options.extraSuperPauseP2DefMul === undefined ? "" : extraSuperPauseP2DefMulBlock(options.extraSuperPauseP2DefMul)}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale) : ""}
+${projectileVarSeedBlock}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale) : ""}
 ${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secondaryProjectile) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
@@ -63191,6 +63339,7 @@ function projectileControllerBlock(
   missOnOverride?: boolean,
   airVelocity?: [number, number?, number?],
   airGuardVelocity?: [number, number?, number?],
+  airGuardVelocityExpression?: SyntheticPartialTripleExpression,
   groundCornerPush?: number,
   airCornerPush?: number,
   downCornerPush?: number,
@@ -63242,7 +63391,9 @@ function projectileControllerBlock(
   const p2GetP1StateLine = p2StateNo === undefined ? "" : `p2getp1state = ${p2GetP1State === false ? 0 : 1}`;
   const missOnOverrideLine = missOnOverride === undefined ? "" : `missonoverride = ${missOnOverride ? 1 : 0}`;
   const airVelocityLine = airVelocity === undefined ? "" : `air.velocity = ${airVelocity.join(",")}`;
-  const airGuardVelocityLine = airGuardVelocity === undefined ? "" : `airguard.velocity = ${airGuardVelocity.join(",")}`;
+  const airGuardVelocityLine = airGuardVelocityExpression === undefined
+    ? airGuardVelocity === undefined ? "" : `airguard.velocity = ${airGuardVelocity.join(",")}`
+    : `airguard.velocity = ${airGuardVelocityExpression.join(",")}`;
   const edgeBoundLine = edgeBound === undefined ? "" : `projedgebound = ${edgeBound}`;
   const stageBoundLine = stageBound === undefined ? "" : `projstagebound = ${stageBound}`;
   const heightBoundLine = heightBound === undefined ? "" : `projheightbound = ${heightBound[0]},${heightBound[1]}`;
