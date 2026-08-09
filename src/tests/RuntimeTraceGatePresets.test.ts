@@ -432,6 +432,8 @@ import {
   createSyntheticImportedHelperProjectileDynamicMissTimeTraceArtifact,
   createSyntheticImportedProjectileDynamicPriorityTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicPriorityTraceArtifact,
+  createSyntheticImportedProjectileDynamicHitsTraceArtifact,
+  createSyntheticImportedHelperProjectileDynamicHitsTraceArtifact,
   createSyntheticImportedProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact,
@@ -22841,6 +22843,47 @@ describe("RuntimeTraceGatePresets", () => {
     expect(helperEvidence?.worldLifecycleEvents).toEqual(expect.arrayContaining([
       expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
       expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p2", parentId: "p2" }),
+    ]));
+  });
+
+  it("creates required imported Projectile projhits caller-context artifacts", () => {
+    const rootArtifact = createSyntheticImportedProjectileDynamicHitsTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(rootArtifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-hits-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-projectile-dynamic-hits-golden", passed: true, failures: [] }],
+    });
+    const rootEvidence = rootArtifact.gates[0]?.evidence;
+    expect(rootEvidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(rootEvidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(rootEvidence?.executedStates).toEqual(expect.arrayContaining([200, 1265]));
+    expect(rootEvidence?.eventLines.join("\n")).toEqual(expect.stringContaining("hits remaining 1"));
+    expect(rootEvidence?.eventLines.join("\n")).toEqual(expect.stringContaining("hits remaining 0"));
+
+    const helperArtifact = createSyntheticImportedHelperProjectileDynamicHitsTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(helperArtifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-projectile-dynamic-hits-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-helper-projectile-dynamic-hits-golden", passed: true, failures: [] }],
+    });
+    const helperEvidence = helperArtifact.gates[0]?.evidence;
+    expect(helperEvidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(helperEvidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(helperEvidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(helperEvidence?.eventLines.join("\n")).toEqual(expect.stringContaining("hits remaining 1"));
+    expect(helperEvidence?.eventLines.join("\n")).toEqual(expect.stringContaining("hits remaining 0"));
+    expect(helperEvidence?.effectPayloads).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        effect: expect.objectContaining({ kind: "helper", stateNo: 1295 }),
+      }),
+    ]));
+    expect(helperEvidence?.targetLinks).toEqual(expect.arrayContaining([
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8905 }),
+      expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8905 }),
     ]));
   });
 

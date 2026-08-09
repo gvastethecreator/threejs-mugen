@@ -1566,6 +1566,16 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjectileDynamicPriorityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-dynamic-hits",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileDynamicHitsTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-dynamic-hits",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileDynamicHitsTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-modifyhitdef-dynamic-down-velocity",
       required: true,
       artifact: presets.createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact(),
@@ -5115,6 +5125,8 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projectile-dynamic-misstime",
     "synthetic-imported-projectile-dynamic-priority",
     "synthetic-imported-helper-projectile-dynamic-priority",
+    "synthetic-imported-projectile-dynamic-hits",
+    "synthetic-imported-helper-projectile-dynamic-hits",
     "synthetic-imported-projectile-priority-cancel",
     "synthetic-imported-projectile-cancel-remove-fallback-terminal",
     "synthetic-imported-projectile-canceltime",
