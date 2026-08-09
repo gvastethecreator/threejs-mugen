@@ -1,5 +1,24 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-09 T699 Projectile pause-pair addendum - no score movement
+
+Final T699 verification: `779/779` trace artifacts (`745` required, `34`
+optional), full `3812/3812` Vitest across `328` files, typecheck, the
+`363`-module production build, and diff hygiene pass. Required root Projectile
+pause-pair trace is `1380caf8` / final `54d26b60`; the Helper trace is
+`f342d3ad` / final `a7e23112`.
+
+Fresh root and Helper-authored Projectiles now resolve dynamic/mixed
+`pausetime` and `guard.pausetime` pairs once in caller context. Accepted hit or
+guard contact preserves Projectile-local pause payload and defender
+`GetHitVar(hitshaketime)`, plus lifecycle, target, and Helper/root/parent
+ownership. The first component is local `hitPauseRemaining`, not owner-player
+HitPause. This is a bounded compatibility seam with no score movement: live
+`ModifyProjectile`, exact stacking/preemption/tick order, negative/overflow
+values, nested helper/team topology, rollback, and full Projectile timing
+parity remain blocked. See [issue
+273](../.scratch/roadmap/issues/273-projectile-pause-pairs-dynamic.md).
+
 ## 2026-08-09 T698 Projectile air.hittime addendum - no score movement
 
 Final T698 verification: `777/777` trace artifacts (`743` required, `34`

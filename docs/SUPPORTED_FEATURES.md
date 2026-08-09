@@ -1,4 +1,21 @@
 ﻿# Supported Features
+## 2026-08-09 T699 Projectile pause-pair checkpoint
+
+T699 is closed-bounded: fresh root and Helper-authored Projectiles resolve
+dynamic/mixed `pausetime` and `guard.pausetime` pairs once in the original
+caller context. Accepted hit/guard contact preserves Projectile-local pause
+payload and defender `GetHitVar(hitshaketime)`, plus Projectile lifecycle,
+target links, and Helper/root/parent ownership. Required root checksums are
+`1380caf8` / `54d26b60`; Helper checksums are `f342d3ad` / `a7e23112`;
+aggregate QA passes `779/779` artifacts (`745` required, `34` optional); the
+full `3812/3812` Vitest suite across `328` files, typecheck, and the
+`363`-module build pass. The first component is Projectile-local
+`hitPauseRemaining`, not owner-player HitPause. Live `ModifyProjectile`, exact
+pause stacking/tick order, negative/overflow values, nested helper/team
+topology, rollback, and full Projectile timing parity remain outside the
+supported claim. See [issue
+273](../.scratch/roadmap/issues/273-projectile-pause-pairs-dynamic.md).
+
 ## 2026-08-09 T698 Projectile air hit timing checkpoint
 
 T698 is closed-bounded: fresh root and Helper-authored Projectiles resolve

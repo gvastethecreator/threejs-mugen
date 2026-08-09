@@ -1,21 +1,22 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T698 (2026-08-09)
+## Latest implementation checkpoint — T699 (2026-08-09)
 
-Authoritative cursor: T698 is closed-bounded for fresh root and Helper
-Projectiles with dynamic `air.hittime`. Caller expressions resolve once, and
-accepted airborne non-falling contact exposes `GetHitVar(hittime)=16` with
-authored air velocity, Projectile payload, lifecycle, target links, and
-Helper/root/parent ownership. Root trace checksums are `d95c52d1` /
-`cf7a06ba`; Helper checksums are `c153c511` / `0e089466`. Aggregate QA is
-`777/777` (`743` required, `34` optional), the full `3810/3810` Vitest suite
+Authoritative cursor: T699 is closed-bounded for fresh root and Helper
+Projectiles with dynamic/mixed `pausetime` and `guard.pausetime` pairs. Caller
+expressions resolve once; accepted hit/guard contact exposes Projectile-local
+pause payload and defender `GetHitVar(hitshaketime)`, with lifecycle, target,
+and Helper/root/parent ownership. Root trace checksums are `1380caf8` /
+`54d26b60`; Helper checksums are `f342d3ad` / `a7e23112`. Aggregate QA is
+`779/779` (`745` required, `34` optional), the full `3812/3812` Vitest suite
 across `328` files, typecheck, and the `363`-module production build pass.
-Fresh default recalculation beyond the local seam, live `ModifyProjectile`,
-ground/down/guard timing, exact countdown/landing/physics, negative/overflow
-values, teams, rollback, and full Projectile timing parity remain explicitly
-unclaimed. See [issue 272](../.scratch/roadmap/issues/272-projectile-air-hittime-dynamic.md).
+The first component is Projectile-local `hitPauseRemaining`, not owner-player
+HitPause. Live `ModifyProjectile`, exact pause stacking/tick order,
+negative/overflow values, nested helper/team topology, rollback, and full
+Projectile timing parity remain explicitly unclaimed. See [issue
+273](../.scratch/roadmap/issues/273-projectile-pause-pairs-dynamic.md).
 
-Next proposed cut: T699 maps the next unclaimed Projectile timing or mutation
+Next proposed cut: T700 maps the next unclaimed Projectile timing or mutation
 parameter against pinned Ikemen source before implementation.
 
 ## Previous implementation checkpoint — T608-T694 (2026-08-09)
