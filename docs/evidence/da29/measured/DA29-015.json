@@ -2,15 +2,15 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-015",
   "kind": "G",
-  "generatedAt": "2026-08-09T04:52:30.077Z",
+  "generatedAt": "2026-08-09T05:09:46.236Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-015",
   "anchors": [
     {
       "path": "docs/CONTROLLER_SUPPORT_REGISTRY.md",
-      "bytes": 371129,
-      "sha256": "731d44f224ff05123903e800d64b399c32ed16233dc303bcfe0c2be3a9f6e564"
+      "bytes": 371201,
+      "sha256": "c0f42fbe447bbd55b60efcb385b34798b08e65368bd1b2b4b4ff682e2e1c7a6f"
     },
     {
       "path": "src/mugen/da29/CnsControllerCensus.ts",
