@@ -3894,6 +3894,27 @@ value = 1
     expect(omitted).not.toHaveProperty("guardHitTimeExpression");
   });
 
+  it("compiles dynamic Projectile ground.slidetime and preserves the fresh omission", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "ground.slidetime": "var(0) + 3",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      groundSlideTimeExpression: "var(0) + 3",
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "ground.slidetime": "16",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      groundSlideTime: 16,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "ground.slidetime": "var(",
+    })).operation).toBeUndefined();
+    const omitted = compileControllerIr(controller(1000, "Projectile", [], {})).operation;
+    expect(omitted).toMatchObject({ kind: "projectile" });
+    expect(omitted).not.toHaveProperty("groundSlideTimeExpression");
+  });
+
   it("compiles dynamic Projectile guard.velocity components", () => {
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       "guard.velocity": "var(0),fvar(1),var(2)",
