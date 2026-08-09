@@ -1,22 +1,25 @@
 ﻿# Roadmap Package Milestones
 
-## Latest runtime cursor — T696
+## Latest runtime cursor — T697
 
-T696 closes the fresh root and Helper-authored Projectile `guard.hittime`
-caller-context seam: dynamic values resolve once, accepted guard contact
-exposes `GetHitVar(hittime)=17`, and Projectile payload, lifecycle, target
+T697 closes the fresh root and Helper-authored Projectile `ground.slidetime`
+caller-context seam: dynamic values resolve once, accepted grounded contact
+exposes `GetHitVar(slidetime)=17`, and Projectile payload, lifecycle, target
 links, and Helper/root/parent ownership are required. Verification is
-`773/773` traces (`739` required, `34` optional), the full `3802/3802`
+`775/775` traces (`741` required, `34` optional), the full `3806/3806`
 Vitest suite across `328` files, typecheck, the `363`-module build, and diff
 hygiene. Root checksums are
-`8fcfa764/1217ab52`; Helper checksums are `aa2462b7/a94faad0`. Fresh default
-policy changes, live `ModifyProjectile`, guard slide/control and air/down
-timing, exact countdown/tick phase, negative/overflow values, teams, rollback,
-and full Projectile timing parity remain excluded. See [issue 270](../.scratch/roadmap/issues/270-projectile-guard-hittime-dynamic.md).
+`08b376db/856bcded`; Helper checksums are `30f9d1f7/e4a0be12`. Fresh default
+recalculation, live `ModifyProjectile`, guard/air/down timing, exact slide
+countdown/tick phase, negative/overflow values, teams, rollback, and full
+Projectile timing parity remain excluded. See [issue 271](../.scratch/roadmap/issues/271-projectile-ground-slidetime-dynamic.md).
 
-Next queue: T697 maps the next unclaimed Projectile timing parameter against
-pinned Ikemen source before implementation; live mutation is not assumed
-supported without source and seam evidence.
+Previous cursor: T696 closed-bounded fresh root and Helper Projectile
+`guard.hittime` caller-context resolution. See [issue 270](../.scratch/roadmap/issues/270-projectile-guard-hittime-dynamic.md).
+
+Next queue: T698 maps the next unclaimed Projectile timing or mutation
+parameter against pinned Ikemen source before implementation; live mutation is
+not assumed supported without source and seam evidence.
 
 ## Previous runtime cursor — T693
 

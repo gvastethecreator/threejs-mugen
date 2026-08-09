@@ -1,4 +1,18 @@
 ﻿# Supported Features
+## 2026-08-09 T697 Projectile ground slide timing checkpoint
+
+T697 is closed-bounded: fresh root and Helper-authored Projectiles resolve
+dynamic `ground.slidetime` once in the original caller context and feed
+accepted grounded `GetHitVar(slidetime)=17` with Projectile payload, lifecycle,
+target links, and Helper/root/parent ownership. Required root checksums are
+`08b376db` / `856bcded`; Helper checksums are `30f9d1f7` / `e4a0be12`;
+aggregate QA passes `775/775` artifacts (`741` required, `34` optional); the
+full `3806/3806` Vitest suite across `328` files, typecheck, and the
+`363`-module build pass. Fresh default recalculation, live `ModifyProjectile`,
+guard/air/down timing, exact slide countdown/tick phase, negative/overflow
+values, teams, rollback, and full Projectile timing parity remain outside the
+supported claim. See [issue 271](../.scratch/roadmap/issues/271-projectile-ground-slidetime-dynamic.md).
+
 ## 2026-08-09 T696 Projectile guard timing checkpoint
 
 T696 is closed-bounded: fresh root and Helper-authored Projectiles resolve

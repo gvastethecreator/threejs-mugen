@@ -1,5 +1,24 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-09 T697 Projectile ground.slidetime addendum - no score movement
+
+Final T697 verification: `775/775` trace artifacts (`741` required, `34`
+optional), the full `3806/3806` Vitest suite across `328` files, typecheck,
+the `363`-module production build, and diff hygiene pass. Required root
+Projectile trace `synthetic-imported-projectile-dynamic-ground-slidetime`
+has checksum `08b376db` and final checksum `856bcded`; the Helper trace has
+`30f9d1f7` and `e4a0be12`.
+
+Fresh root and Helper-authored Projectiles now resolve dynamic
+`ground.slidetime` once in the original caller context. Accepted grounded
+contact exposes `GetHitVar(slidetime)=17` with Projectile payload, lifecycle,
+target links, and Helper/root/parent ownership. This remains a bounded
+compatibility seam with no score movement: fresh default recalculation, live
+`ModifyProjectile`, guard/air/down timing, exact slide countdown/tick phase,
+negative/overflow values, teams, rollback, and full Projectile timing parity
+remain blocked. See [issue
+271](../.scratch/roadmap/issues/271-projectile-ground-slidetime-dynamic.md).
+
 ## 2026-08-09 T696 Projectile guard.hittime addendum - no score movement
 
 Final T696 verification: `773/773` trace artifacts (`739` required, `34`
