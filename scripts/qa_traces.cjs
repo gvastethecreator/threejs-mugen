@@ -1471,6 +1471,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDynamicDirectDownVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-dynamic-direct-down-hittime",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicDirectDownHitTimeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-modifyhitdef-dynamic-down-velocity",
       required: true,
       artifact: presets.createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact(),

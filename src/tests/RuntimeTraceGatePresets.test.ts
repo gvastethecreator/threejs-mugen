@@ -415,6 +415,7 @@ import {
   createSyntheticImportedDynamicDirectAirVelocityTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicAirVelocityTraceArtifact,
   createSyntheticImportedDynamicDirectDownVelocityTraceArtifact,
+  createSyntheticImportedDynamicDirectDownHitTimeTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicDownVelocityZTraceArtifact,
   createSyntheticImportedStaticHitDefAirGuardVelocityDerivedZTraceArtifact,
@@ -22368,6 +22369,38 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.actorFrames).toEqual(expect.arrayContaining([
       expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 200, stateType: "L", moveType: "I" }),
       expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5072, stateType: "A", moveType: "H" }),
+    ]));
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.combatReasons).not.toContain("guard");
+    expect(evidence?.executedStates).not.toEqual(
+      expect.arrayContaining([130, 150, 151, 152, 153, 154, 155, 5001, 5010, 5011, 5020, 5030, 5050, 5100]),
+    );
+  });
+
+  it("creates a required imported dynamic direct down.hittime artifact", () => {
+    const artifact = createSyntheticImportedDynamicDirectDownHitTimeTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-dynamic-direct-down-hittime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-dynamic-direct-down-hittime-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.StateTypeSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["metadata:statetypeset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(evidence?.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 200, stateType: "L", moveType: "I" }),
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5073, stateType: "A", moveType: "H" }),
     ]));
     expect(evidence?.combatReasons).toContain("hit");
     expect(evidence?.combatReasons).not.toContain("guard");

@@ -29250,6 +29250,121 @@ export function createSyntheticImportedDynamicDirectDownVelocityTraceArtifact(
   });
 }
 
+export function createSyntheticImportedDynamicDirectDownHitTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5073;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "dynamic-down-hittime-defender-liedown", frames: 2, p1: [], p2: ["x"] },
+    { label: "dynamic-down-hittime-contact", frames: 12, p1: ["x"], p2: [] },
+    { label: "dynamic-down-hittime-settle", frames: 18, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-dynamic-direct-down-hittime-attacker",
+    displayName: "Dynamic Direct Down HitTime Attacker",
+    hitDefHitFlag: "D",
+    groundVelocity: [-1, 1],
+    airVelocity: [-6, -8, 2],
+    hitDefDownVelocity: [0, 0],
+    hitDefDownHitTime: "var(0)",
+    hitDefAirTime: 9,
+    hitDefGroundHitTime: 3,
+    hitDefVarSeeds: [{ index: 0, value: 17 }],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-dynamic-direct-down-hittime-defender",
+    displayName: "Dynamic Direct Down HitTime Defender",
+    withHitDef: false,
+    withStateTypeSet: { stateType: "L", moveType: "I", physics: "N" },
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5021,
+      shakeStateType: "A",
+      slideStateType: "A",
+      shakePhysics: "N",
+      slidePhysics: "N",
+      slideHitVelSet: { x: true, y: true, z: true },
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchStateType: "A",
+      hitTimeBranchPhysics: "N",
+      hitTimeBranchExpression: "GetHitVar(hittime) = 17 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "Dynamic Down HitTime Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-dynamic-direct-down-hittime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-dynamic-direct-down-hittime-golden",
+      label: "Synthetic imported dynamic direct down.hittime route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO trace proves a fresh direct HitDef resolves caller var(0)=17 as down.hittime for a lying defender when down.velocity.y is zero. Accepted contact creates target 77 and routes through the lying-hit timing path with hittime=17 instead of adversarial ground/air values, exposing the authored timer to Common1-style GetHitVar(hittime). Fresh omission, live ModifyHitDef, Helper, Projectile, ModifyProjectile, nonzero down.velocity.y, exact countdown/landing timing, teams, rollback, and full timing parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-dynamic-direct-down-hittime-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5021, branchStateNo],
+      forbiddenExecutedStates: [130, 150, 151, 152, 153, 154, 155, 5001, 5010, 5011, 5020, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "StateTypeSet", "VarSet", "HitDef", "HitVelSet"],
+      requiredExecutedOperations: ["metadata:statetypeset", "variable:varset", "hitdef", "kinematic:hitvelset"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: ["Dynamic Direct Down HitTime Attacker hit Dynamic Direct Down HitTime Defender for 37"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredControllerEventSequences: [
+        {
+          label: "dynamic direct down hittime caller evaluation order",
+          actorId: "p1",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 200, controller: "VarSet", name: "HitDef Var 0" },
+            { stateNo: 200, controller: "HitDef", name: "HitDef" },
+          ],
+        },
+        {
+          label: "lying target exposes authored down hittime",
+          actorId: "p2",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 200, controller: "StateTypeSet", name: "StateTypeSet Probe" },
+            { stateNo: 5000, controller: "ChangeState", name: "Hit Shake Over" },
+            { stateNo: 5021, controller: "HitVelSet", name: "Apply Hit Velocity" },
+            { stateNo: 5021, operation: "kinematic:hitvelset" },
+            { stateNo: 5021, controller: "ChangeState", name: "Dynamic Down HitTime Branch" },
+          ],
+        },
+      ],
+      requiredActorFrameSequences: [{
+        label: "dynamic direct down hittime lying-hit timing order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 200, stateType: "L", moveType: "I", physics: "N", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, stateType: "A", moveType: "H", physics: "N", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5021, stateType: "A", moveType: "H", physics: "N", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, stateType: "A", moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -59311,6 +59426,8 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefPauseTimeExpression?: SyntheticPairExpression;
   /** Synthetic fixture-only ground HitTime expression emitted into HitDef. */
   hitDefGroundHitTime?: SyntheticNumberExpression;
+  /** Synthetic fixture-only down HitTime expression emitted into HitDef. */
+  hitDefDownHitTime?: SyntheticNumberExpression;
   /** Synthetic fixture-only ground SlideTime expression emitted into HitDef. */
   hitDefGroundSlideTime?: SyntheticNumberExpression;
   /** Synthetic fixture-only guard SlideTime expression emitted into HitDef. */
@@ -60896,6 +61013,7 @@ ${hitDefKillLine}
 ${hitVarLines}
 pausetime = ${pauseTimeLine}
 ground.hittime = ${options.hitDefGroundHitTime ?? 9}
+${options.hitDefDownHitTime === undefined ? "" : `down.hittime = ${options.hitDefDownHitTime}`}
 ${options.hitDefGroundSlideTime === undefined ? "" : `ground.slidetime = ${options.hitDefGroundSlideTime}`}
 ${hitDefAirTimeLine}
 ${hitDefGroundVelocityLine}
