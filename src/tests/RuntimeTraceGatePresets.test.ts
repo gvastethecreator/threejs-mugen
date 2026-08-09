@@ -430,6 +430,8 @@ import {
   createSyntheticImportedHelperProjectileDynamicRemoveTimeTraceArtifact,
   createSyntheticImportedProjectileDynamicMissTimeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicMissTimeTraceArtifact,
+  createSyntheticImportedProjectileDynamicPriorityTraceArtifact,
+  createSyntheticImportedHelperProjectileDynamicPriorityTraceArtifact,
   createSyntheticImportedProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact,
@@ -22804,6 +22806,41 @@ describe("RuntimeTraceGatePresets", () => {
     expect(helperEvidence?.targetLinks).toEqual(expect.arrayContaining([
       expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8903 }),
       expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8903 }),
+    ]));
+  });
+
+  it("creates required imported Projectile projpriority caller-context artifacts", () => {
+    const rootArtifact = createSyntheticImportedProjectileDynamicPriorityTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(rootArtifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-priority-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-projectile-dynamic-priority-golden", passed: true, failures: [] }],
+    });
+    const rootEvidence = rootArtifact.gates[0]?.evidence;
+    expect(rootEvidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(rootEvidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(rootEvidence?.eventLines.join("\n")).toEqual(expect.stringContaining("3 > 1"));
+    expect(rootEvidence?.eventLines.join("\n")).toEqual(expect.stringContaining("winner priority 3 -> 2"));
+
+    const helperArtifact = createSyntheticImportedHelperProjectileDynamicPriorityTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(helperArtifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-projectile-dynamic-priority-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-helper-projectile-dynamic-priority-golden", passed: true, failures: [] }],
+    });
+    const helperEvidence = helperArtifact.gates[0]?.evidence;
+    expect(helperEvidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(helperEvidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(helperEvidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(helperEvidence?.eventLines.join("\n")).toEqual(expect.stringContaining("3 > 1"));
+    expect(helperEvidence?.eventLines.join("\n")).toEqual(expect.stringContaining("winner priority 3 -> 2"));
+    expect(helperEvidence?.worldLifecycleEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+      expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p2", parentId: "p2" }),
     ]));
   });
 
