@@ -7,7 +7,7 @@ import type { MugenSystemHitSparkLibrary } from "../model/MugenSystemAssets";
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { resolveHitDefGuardTiming } from "./HitDefTiming";
-import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
+import { derivePinnedIkemenFreshAirGuardVelocity } from "./HitDefVelocity";
 import { runtimeDizzyPointsFromHitDef } from "./DizzyPointsDefaults";
 import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
 import { parseRuntimeSocdResolution, type RuntimeSocdResolution } from "./RuntimeInput";
@@ -178,8 +178,11 @@ function buildStateMoves(
     const koVelocityAdd = numberTriple(hitDef.params["ko.velocity.add"]);
     const guardVelocity = numberTriple(hitDef.params["guard.velocity"]);
     const guardVelocityX = guardVelocity?.[0] ?? groundVelocity?.[0];
-    const airGuardVelocity = numberTriple(hitDef.params["airguard.velocity"]) ?? deriveDefaultAirGuardVelocity(numberTriple(hitDef.params["air.velocity"]));
     const airVelocity = numberTriple(hitDef.params["air.velocity"]);
+    const airGuardVelocity = completeImportedAirGuardVelocity(
+      numberTriple(hitDef.params["airguard.velocity"]),
+      derivePinnedIkemenFreshAirGuardVelocity(airVelocity),
+    );
     const downVelocity = numberTriple(hitDef.params["down.velocity"]);
     const groundHitTime = firstNumber(hitDef.params["ground.hittime"]);
     const guardTiming = resolveHitDefGuardTiming({
@@ -702,6 +705,16 @@ function runtimeHitVelocityMetadata(input: {
     ...(input.airGuardVelocity === undefined ? {} : { airGuard: vector(input.airGuardVelocity) }),
   };
   return Object.keys(result).length > 0 ? result : undefined;
+}
+
+function completeImportedAirGuardVelocity(
+  authored: [number, number?, number?] | undefined,
+  defaults: [number, number?, number?] | undefined,
+): [number, number?, number?] | undefined {
+  if (authored === undefined) return defaults;
+  const y = authored[1] ?? defaults?.[1] ?? 0;
+  const z = authored[2] ?? defaults?.[2];
+  return z === undefined ? [authored[0], y] : [authored[0], y, z];
 }
 
 function numberPair(value: string | undefined): [number, number] | undefined {

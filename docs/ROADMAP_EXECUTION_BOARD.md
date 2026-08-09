@@ -1,6 +1,6 @@
 ﻿# Roadmap Execution Board
 
-## Current official-parity queue — T424-T492 and T506-T668 closed-bounded; T669 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
+## Current official-parity queue — T424-T492 and T506-T669 closed-bounded; T670 runtime active; Wayfinder 127 closed-bounded; T504 content active (2026-08-09)
 
 ### Active runtime checkpoint — live ModifyHitDef air-guard velocity
 
@@ -718,8 +718,16 @@ payload, dual target links, airborne guard, physical depth, and GetHitVar. The
 full suite passes 3714/3714; required trace checksum is `fc0bf424`; aggregate
 traces pass 741/741 with 707 required; typecheck and the 363-module build pass.
 
-T669 / issue 243 is active-research: complete the same missing-component
-defaults for the first static HitDef projected into imported move metadata.
+T669 / issue 243 is closed-bounded: the first static HitDef projected into
+imported move metadata completes omitted/partial `airguard.velocity` from the
+effective air vector. Required evidence disables live HitDef dispatch and
+proves accepted airborne guard, physical depth, and GetHitVar from the static
+move. The full suite passes 3716/3716; required trace checksum is `aefa667a`;
+aggregate traces pass 742/742 with 708 required; typecheck and the 363-module
+build pass.
+
+T670 / issue 244 is active-research: select the existing static direct-HitDef
+`air.velocity` X/Y/Z vector on accepted airborne hits.
 
 ### Latest visual checkpoint — Character Compare
 

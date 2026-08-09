@@ -7040,6 +7040,7 @@ value = -4
     expectAirGuardVelocity(resolve(true, null, airVelocity), [9, -5, 6]);
     expectAirGuardVelocity(resolve(true, "var(10)", airVelocity), [9, -5, 6]);
     expectAirGuardVelocity(resolve(true, "var(10),var(11)", airVelocity), [9, -4, 6]);
+    expectAirGuardVelocity(resolve(true, "-9,-4", airVelocity), [9, -4, 6]);
     expectAirGuardVelocity(resolve(true, "-12,-6,7", airVelocity), [12, -6, 7]);
 
     const tripleGroundGuard = resolve(false, "-12,-6,7", airVelocity);

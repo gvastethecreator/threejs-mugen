@@ -1,6 +1,6 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-09 T651-T668 direct contact timing, admission, and velocity addendum — no score movement
+## 2026-08-09 T651-T669 direct contact timing, admission, and velocity addendum — no score movement
 
 Direct HitDef pause pairs now preserve independent attacker pause and receiver
 hit-shake time for root and Helper contacts. Dynamic direct `ground.hittime`
@@ -26,8 +26,9 @@ adds the pinned-Ikemen one-component form with fresh Y derivation and live Y/Z
 preservation. T666 adds the pinned-Ikemen missing-Z fresh direct-HitDef
 default. T667 adds the same missing-Z default for fresh root-owned Projectiles.
 T668 adds Helper-created Projectile root/parent ownership and accepted-contact
-evidence for that shared default. The 363-module build and 741/741 traces pass.
-The full suite passes 3714/3714. These are
+evidence for that shared default. T669 completes the same missing-component
+defaults in static imported HitDef metadata. The 363-module build and 742/742
+traces pass. The full suite passes 3716/3716. These are
 bounded timing, admission, and
 velocity seams, not full HitDef or tick-order parity. Compatibility scores
 remain unchanged.

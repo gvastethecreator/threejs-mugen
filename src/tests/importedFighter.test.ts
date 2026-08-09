@@ -382,6 +382,51 @@ describe("createImportedFighterDefinition", () => {
     });
   });
 
+  it("completes imported static HitDef airguard.velocity components from air.velocity", () => {
+    const animations = new Map<number, MugenAnimationAction>([
+      [0, action(0, [[0, 0, 0]])],
+      [200, action(200, [[200, 0, 0], [200, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+    ]);
+    const params = (airGuardVelocity?: string): Record<string, string> => ({
+      damage: "30",
+      "air.velocity": "4,-6,4",
+      ...(airGuardVelocity === undefined ? {} : { "airguard.velocity": airGuardVelocity }),
+    });
+    const character = fakeCharacter(animations, true, [
+      state(200, 200, [controller(200, "HitDef", params())]),
+      state(201, 200, [controller(201, "HitDef", params("1"))]),
+      state(202, 200, [controller(202, "HitDef", params("1,-2"))]),
+      state(203, 200, [controller(203, "HitDef", params("1,-2,7"))]),
+    ]);
+
+    const fighter = createImportedFighterDefinition(character);
+
+    expect(fighter?.stateMoves?.get(200)).toMatchObject({
+      airGuardPush: 6,
+      airGuardVelocityY: -3,
+      airGuardVelocityZ: 6,
+      hitVelocities: { airGuard: { x: 6, y: -3, z: 6 } },
+    });
+    expect(fighter?.stateMoves?.get(201)).toMatchObject({
+      airGuardPush: 1,
+      airGuardVelocityY: -3,
+      airGuardVelocityZ: 6,
+      hitVelocities: { airGuard: { x: 1, y: -3, z: 6 } },
+    });
+    expect(fighter?.stateMoves?.get(202)).toMatchObject({
+      airGuardPush: 1,
+      airGuardVelocityY: -2,
+      airGuardVelocityZ: 6,
+      hitVelocities: { airGuard: { x: 1, y: -2, z: 6 } },
+    });
+    expect(fighter?.stateMoves?.get(203)).toMatchObject({
+      airGuardPush: 1,
+      airGuardVelocityY: -2,
+      airGuardVelocityZ: 7,
+      hitVelocities: { airGuard: { x: 1, y: -2, z: 7 } },
+    });
+  });
+
   it("preserves imported HitDef ground, air, and fall anim types for Ikemen GetHitVar", () => {
     const animations = new Map<number, MugenAnimationAction>([
       [0, action(0, [[0, 0, 0]])],

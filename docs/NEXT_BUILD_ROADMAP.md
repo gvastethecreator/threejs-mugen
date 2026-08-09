@@ -65,9 +65,10 @@ preservation and accepted airborne-guard consumption. T665 closes the
 pinned-Ikemen one-component form with fresh Y derivation and live Y/Z
 preservation. T666 closes the pinned-Ikemen missing-Z fresh direct-HitDef
 default. T667 closes the same default for fresh root-owned Projectiles. T668
-closes Helper-created Projectile ownership and contact evidence. T669 is
-active for the imported static-HitDef mirror. Latest evidence: 3714/3714
-tests, the 363-module build, and 741/741 traces pass (707
+closes Helper-created Projectile ownership and contact evidence. T669 closes
+the imported static-HitDef mirror. T670 is active for direct airborne-hit
+consumption of the existing static `air.velocity` vector. Latest evidence:
+3716/3716 tests, the 363-module build, and 742/742 traces pass (708
 required, 34 optional).
 Projectile facing, exact deferred facing/power order, broader
 `data/mugen.cfg`, rollback, and full HitDef parity remain outside these slices.

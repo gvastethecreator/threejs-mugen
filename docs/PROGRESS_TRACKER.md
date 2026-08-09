@@ -1,6 +1,6 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T608-T668 (2026-08-09)
+## Latest implementation checkpoint — T608-T669 (2026-08-09)
 
 - T608-T637 are closed-bounded. T616-T621 add typed HitDef/Projectile
   `unhittabletime`, actor-role contact/admission/default/HitOverride slices,
@@ -68,9 +68,10 @@
   preservation. T666 closes the missing-Z fresh direct-HitDef default. T667
   closes the same default for fresh root-owned Projectiles. T668 closes
   Helper-created Projectile root/parent ownership and contact evidence. T669
-  is active for the imported static-HitDef mirror.
-- Latest full suite passes 3714/3714. Typecheck, 363-module build,
-  741/741 traces (707 required, 34 optional),
+  closes the imported static-HitDef mirror. T670 is active for direct
+  airborne-hit consumption of the existing static air vector.
+- Latest full suite passes 3716/3716. Typecheck, 363-module build,
+  742/742 traces (708 required, 34 optional),
   boundaries, redirect boundaries, and differential checks pass.
 
 ## Historical implementation checkpoint — T522-T552 and Fighter Lab (2026-08-08)

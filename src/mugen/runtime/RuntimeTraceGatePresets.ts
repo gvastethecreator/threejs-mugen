@@ -4,7 +4,7 @@ import { fingerprintMugenStateSource, resolveMugenStateSources } from "../compil
 import { parseCmd } from "../parsers/CmdParser";
 import { parseCns } from "../parsers/CnsParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
-import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
+import { derivePinnedIkemenFreshAirGuardVelocity } from "./HitDefVelocity";
 import type { RuntimeHitDefPriorityProfile } from "./HitDefPriorityPolicy";
 import { MatchWorld } from "./MatchWorld";
 import type {
@@ -27054,6 +27054,116 @@ export function createSyntheticImportedHelperProjectileAirGuardVelocityDerivedZT
     ],
     notes: [
       "Pinned Ikemen GO compatibility trace proves a fresh Projectile spawned by a Helper with air.velocity Z=6 and an explicit two-component airguard.velocity X/Y pair derives the missing air-guard Z as 9. A real airborne guard creates root and Helper target links for ID 8856, preserves root effect ownership with Helper parentage, exposes GetHitVar(xvel/yvel/zvel)=5/-4/9, and applies physical Z velocity through Common1-style HitVelSet. M.U.G.E.N 1.1 documents Helper-created Projectile root ownership and only X/Y airguard.velocity. Dynamic Z, ModifyProjectile, imported static-move metadata, exact 3D/localcoord/facing and landing timing, teams, rollback, and full Helper Projectile parity remain excluded.",
+    ],
+  });
+}
+
+export function createSyntheticImportedStaticHitDefAirGuardVelocityDerivedZTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5076;
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-static-hitdef-airguard-velocity-derived-z-defender",
+    displayName: "Static HitDef Derived Air Guard Velocity Z Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+      airGuardedBranchStateNo: branchStateNo,
+      airGuardedBranchAnimNo: branchStateNo,
+      airGuardedBranchTrigger: "Time >= 1",
+      airGuardedBranchExpression:
+        "GetHitVar(xvel) = 5 && GetHitVar(yvel) = -4 && GetHitVar(zvel) = 9 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+      airGuardHitVelSetZ: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-static-hitdef-airguard-velocity-derived-z-attacker",
+    displayName: "Static HitDef Derived Air Guard Velocity Z Attacker",
+    withHitDef: false,
+    staticMoveRequiresHitDef: false,
+    guardDamage: 4,
+    guardFlag: "A",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+    airVelocity: [-6, -8, 6],
+    airGuardVelocity: [-5, -4],
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage: options.stage ?? closeCombatStage(),
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    targetId: "synthetic-imported-static-hitdef-airguard-velocity-derived-z-golden",
+    targetLabel: "Synthetic imported static HitDef derived airguard velocity Z route",
+    requiredExecutedStates: [200, 154, 155, branchStateNo],
+    forbiddenExecutedStates: [150, 151, 152, 153, 5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+    requiredExecutedControllers: ["ChangeState", "HitVelSet", "VelAdd"],
+    requiredExecutedOperations: ["kinematic:hitvelset", "kinematic:veladd"],
+    requiredControllerEventSequences: [
+      {
+        label: "static stateMove derived airguard velocity Z accepted-contact GetHitVar order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 154, controller: "ChangeState", name: "Air Guard Shake Over" },
+          { stateNo: 155, controller: "HitVelSet", name: "Apply Air Guard Velocity" },
+          { stateNo: 155, operation: "kinematic:hitvelset" },
+          { stateNo: 155, controller: "ChangeState", name: "Air Guarded HitVar Branch" },
+        ],
+      },
+    ],
+    requiredActorFrames: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 154,
+        animNo: 40,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 155,
+        animNo: 150,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        observedVelXAtLeast: 5,
+        observedVelXAtMost: 5,
+        observedVelYAtMost: -3.5,
+        observedVelZAtLeast: 9,
+        observedVelZAtMost: 9,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: branchStateNo,
+        animNo: branchStateNo,
+        stateType: "A",
+        minFrames: 1,
+      },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    forbiddenCombatReasons: ["hit", "override", "reversal"],
+    requiredFinalActors: [
+      { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+      { actorId: "p2", source: "imported", actorKind: "player", life: 996 },
+    ],
+    notes: [
+      "Pinned Ikemen GO compatibility trace proves imported static stateMoves metadata with air.velocity Z=6 and an authored two-component airguard.velocity X/Y pair carries the derived missing air-guard Z=9 into a real airborne guard while runtime HitDef controller execution is disabled. Accepted contact creates target 77, exposes GetHitVar(xvel/yvel/zvel)=5/-4/9, and applies physical Z velocity through Common1-style HitVelSet. The required focal test separately asserts that no HitDef controller or hitdef operation executed. M.U.G.E.N 1.1 documents only X/Y airguard.velocity. Live HitDef/ModifyHitDef, Helper, Projectile, dynamic Z, exact 3D/localcoord/facing and landing timing, teams, rollback, and full static-move parity remain excluded.",
     ],
   });
 }
@@ -56203,6 +56313,8 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefRedLife?: number;
   guardRedLife?: number;
   withHitDef?: boolean;
+  /** Allows a fixture stateMove to drive contact without a live HitDef controller. */
+  staticMoveRequiresHitDef?: boolean;
   hitDefKill?: boolean;
   hitDefKillExpression?: SyntheticNumberExpression;
   hitDefTargetId?: number;
@@ -57550,7 +57662,14 @@ value = ${seed.value}
     .join("") ?? "";
   const hitDefHitCountLine = options.hitDefHitCount === undefined ? "" : `numhits = ${options.hitDefHitCount}`;
   const airVelocityLine = options.airVelocity === undefined ? "" : `air.velocity = ${options.airVelocity.join(",")}`;
-  const resolvedAirGuardVelocity = options.airGuardVelocity ?? deriveDefaultAirGuardVelocity(options.airVelocity);
+  const defaultAirGuardVelocity = derivePinnedIkemenFreshAirGuardVelocity(options.airVelocity);
+  const resolvedAirGuardVelocity: [number, number?, number?] | undefined = options.airGuardVelocity === undefined
+    ? defaultAirGuardVelocity
+    : [
+        options.airGuardVelocity[0],
+        options.airGuardVelocity[1] ?? defaultAirGuardVelocity?.[1],
+        options.airGuardVelocity[2] ?? defaultAirGuardVelocity?.[2],
+      ];
   const numTargetId = options.numTargetId ?? targetMemoryId;
   const targetRedirectId = options.targetRedirectId ?? targetMemoryId;
   const targetRedirectExpression = options.targetRedirectExpression ?? `Target(${targetRedirectId}), Life < 1000`;
@@ -58179,7 +58298,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
     priority: typeof options.hitDefPriority === "number" ? options.hitDefPriority : 4,
     attr: hitDefAttr,
     targetId: targetMemoryId,
-    requiresHitDef: true,
+    requiresHitDef: options.staticMoveRequiresHitDef ?? true,
     hitPause: 4,
     hitStun: 9,
     push: Math.abs(groundVelocity[0] ?? 3),
