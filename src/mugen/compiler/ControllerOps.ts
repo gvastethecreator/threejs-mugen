@@ -543,6 +543,8 @@ export type ProjectileControllerOp = {
   /** Fresh Projectile `projpriority` expression evaluated in the original caller context. */
   priorityExpression?: number | string;
   hitCount: number;
+  /** Fresh Projectile `projhits` expression evaluated in the original caller context. */
+  hitCountExpression?: number | string;
   missTime: number;
   /** Fresh Projectile `projmisstime` expression evaluated in the original caller context. */
   missTimeExpression?: number | string;
@@ -3494,6 +3496,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (missTimeValue === false) return undefined;
   const priorityValue = optionalIntegerExpressionParam(controller, "projpriority");
   if (priorityValue === false) return undefined;
+  const hitCountValue = optionalIntegerExpressionParam(controller, "projhits");
+  if (hitCountValue === false) return undefined;
   const standFriction = optionalScalarNumberOrExpression(controller, "stand.friction");
   const crouchFriction = optionalScalarNumberOrExpression(controller, "crouch.friction");
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
@@ -3664,7 +3668,10 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
       ? priorityValue
       : firstNumber(findParam(controller, "projpriority")) ?? 1,
     ...(typeof priorityValue === "string" ? { priorityExpression: priorityValue } : {}),
-    hitCount: firstNumber(findParam(controller, "projhits")) ?? 1,
+    hitCount: typeof hitCountValue === "number"
+      ? hitCountValue
+      : firstNumber(findParam(controller, "projhits")) ?? 1,
+    ...(typeof hitCountValue === "string" ? { hitCountExpression: hitCountValue } : {}),
     missTime: typeof missTimeValue === "number"
       ? missTimeValue
       : firstNumber(findParam(controller, "projmisstime")) ?? 0,

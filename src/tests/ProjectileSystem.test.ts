@@ -1261,6 +1261,30 @@ describe("ProjectileSystem", () => {
     expect(create("unresolved", () => undefined).priority).toBe(1);
   });
 
+  it("resolves fresh Projectile projhits in the caller context", () => {
+    const operation = compileControllerIr(controller({ projhits: "var(0) + 1" })).operation as ProjectileControllerOp;
+    const create = (serialId: string, resolveHitCount?: () => number | undefined): RuntimeProjectile => createRuntimeProjectile({
+      serialId,
+      controller: controller({ projanim: "1005", projhits: "var(0) + 1" }),
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveHitCount,
+    });
+
+    expect(operation.hitCountExpression).toBe("var(0) + 1");
+    expect(create("dynamic", () => 7.9).hitsRemaining).toBe(7);
+    expect(create("dynamic", () => 7.9).hitsMax).toBe(7);
+    expect(create("clamped", () => 99).hitsRemaining).toBe(16);
+    expect(create("negative", () => -4).hitsRemaining).toBe(1);
+    expect(create("unresolved", () => undefined).hitsRemaining).toBe(1);
+  });
+
   it("resolves fresh Projectile down.hittime in the caller context", () => {
     const dynamicOperation = compileControllerIr(controller({ "down.hittime": "var(0) + 3" })).operation as ProjectileControllerOp;
     const dynamic = createRuntimeProjectile({

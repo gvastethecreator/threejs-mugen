@@ -953,6 +953,19 @@ value = 1
     expect(malformed.operation).toBeUndefined();
   });
 
+  it("compiles fresh Projectile projhits expressions and rejects malformed values", () => {
+    const authored = compileControllerIr(controller(200, "Projectile", [], { projhits: "4" }));
+    const dynamic = compileControllerIr(controller(200, "Projectile", [], { projhits: "var(0) + 1" }));
+    const redirected = compileControllerIr(controller(200, "Projectile", [], { projhits: "Parent,var(1)" }));
+    const malformed = compileControllerIr(controller(200, "Projectile", [], { projhits: "var(" }));
+
+    expect(authored.operation).toMatchObject({ kind: "projectile", hitCount: 4 });
+    expect(authored.operation).not.toHaveProperty("hitCountExpression");
+    expect(dynamic.operation).toMatchObject({ kind: "projectile", hitCount: 1, hitCountExpression: "var(0) + 1" });
+    expect(redirected.operation).toMatchObject({ kind: "projectile", hitCount: 1, hitCountExpression: "Parent,var(1)" });
+    expect(malformed.operation).toBeUndefined();
+  });
+
   it("compiles Target controllers into typed target operations", () => {
     const life = compileControllerIr(controller(200, "TargetLifeAdd", [], { id: "3", value: "-20", absolute: "1", kill: "0", redirectid: "57" }));
     const redirectedRedLife = compileControllerIr(

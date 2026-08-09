@@ -348,6 +348,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveMissTime?: () => number | undefined;
   /** Resolves fresh Projectile projpriority authored expressions in the original caller context. */
   resolvePriority?: () => number | undefined;
+  /** Resolves fresh Projectile projhits authored expressions in the original caller context. */
+  resolveHitCount?: () => number | undefined;
   /** Resolves fresh Projectile guard.hittime authored expressions in the original caller context. */
   resolveGuardHitTime?: () => number | undefined;
   /** Resolves Projectile airguard.velocity authored expressions in the original caller context. */
@@ -846,6 +848,18 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const finiteDynamicPriority = dynamicPriority !== undefined && Number.isFinite(dynamicPriority)
     ? Math.trunc(dynamicPriority)
     : undefined;
+  const dynamicHitCount = operation?.hitCountExpression === undefined
+    ? undefined
+    : input.resolveHitCount?.();
+  const finiteDynamicHitCount = dynamicHitCount !== undefined && Number.isFinite(dynamicHitCount)
+    ? Math.trunc(dynamicHitCount)
+    : undefined;
+  const initialHitCount = clampProjectileHits(
+    finiteDynamicHitCount ??
+    operation?.hitCount ??
+    firstNumber(findControllerParam(input.controller, "projhits")) ??
+    1,
+  );
   const identity = resolveActorIdentity(input);
   return {
     serialId: input.serialId,
@@ -930,8 +944,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
       firstNumber(findControllerParam(input.controller, "projpriority")) ??
       1,
     ),
-    hitsRemaining: clampProjectileHits(operation?.hitCount ?? firstNumber(findControllerParam(input.controller, "projhits")) ?? 1),
-    hitsMax: clampProjectileHits(operation?.hitCount ?? firstNumber(findControllerParam(input.controller, "projhits")) ?? 1),
+    hitsRemaining: initialHitCount,
+    hitsMax: initialHitCount,
     missTime: clampProjectileMissTime(
       finiteDynamicMissTime ??
       operation?.missTime ??
