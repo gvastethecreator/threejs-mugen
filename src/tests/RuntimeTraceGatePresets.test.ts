@@ -435,6 +435,7 @@ import {
   createSyntheticImportedHelperProjCancelTimeDynamicTraceArtifact,
   createSyntheticImportedHelperHitDefTraceArtifact,
   createSyntheticImportedHelperModifyHitDefDynamicDownVelocityTraceArtifact,
+  createSyntheticImportedHelperModifyHitDefDynamicDownHitTimeTraceArtifact,
   createSyntheticImportedHelperModifyHitDefDynamicAirVelocityTraceArtifact,
   createSyntheticImportedHelperModifyHitDefDynamicAirGuardVelocityTraceArtifact,
   createSyntheticImportedHelperHitDefSpritePriorityTraceArtifact,
@@ -8160,6 +8161,39 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({ id: "p2", actorKind: "player", stateNo: 5077, life: 963 }),
       ]),
     );
+  });
+
+  it("creates a required Helper-owned ModifyHitDef down.hittime artifact", () => {
+    const artifact = createSyntheticImportedHelperModifyHitDefDynamicDownHitTimeTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-modifyhitdef-dynamic-down-hittime-golden",
+        source: "mixed",
+      },
+      gates: [{
+        label: "synthetic-imported-helper-modifyhitdef-dynamic-down-hittime-golden",
+        passed: true,
+        failures: [],
+      }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ModifyHitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.modifyhitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 77 }),
+    );
+    expect(evidence?.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1-helper-0", actorKind: "helper", ownerId: "p1", stateNo: 1200 }),
+      expect.objectContaining({ actorId: "p2", stateNo: 5078, stateType: "A", moveType: "H" }),
+    ]));
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.combatReasons).not.toContain("guard");
   });
 
   it("creates a required Helper-owned ModifyHitDef air.velocity artifact", () => {

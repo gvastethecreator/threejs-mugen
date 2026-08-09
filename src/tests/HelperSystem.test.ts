@@ -2091,6 +2091,35 @@ describe("HelperSystem", () => {
     expect(operations).toEqual(["modifyhitdef", "modifyhitdef", "modifyhitdef"]);
   });
 
+  it("applies Helper-owned ModifyHitDef down.hittime in caller context", () => {
+    const active = helper({
+      vars: [17.9],
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              damage: "20",
+              "down.velocity": "0,0",
+              "down.hittime": "8",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              "down.hittime": "var(0)",
+            }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.currentMove).toMatchObject({
+      downHitTime: 17,
+      downVelocityY: 0,
+    });
+  });
+
   it("applies Helper-owned ModifyHitDef air.velocity in caller context and preserves omitted components", () => {
     const active = helper({
       vars: [-7, -5],
