@@ -2308,6 +2308,40 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles root ModifyHitDef down.velocity with live component-preserving expressions", () => {
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "down.velocity": "-2,-8,2",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      downVelocity: [-2, -8, 2],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "down.velocity": "var(1)",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      downVelocityExpressions: ["var(1)"],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "down.velocity": "-3.5,fvar(2)",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      downVelocityExpressions: [-3.5, "fvar(2)"],
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "down.velocity": "var(1),var(2),var(3)",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "down.velocity": "var(1),var(",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles one- and two-component direct HitDef airguard.velocity expressions", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "airguard.velocity": "-4.25",

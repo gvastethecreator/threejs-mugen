@@ -275,6 +275,8 @@ export type ModifyHitDefControllerOp = {
   airVelocity?: MugenHitDefExpressionPair;
   airVelocityZ?: number;
   downVelocity?: MugenHitDefVector;
+  /** Component-wise live down.velocity X/Y replacement evaluated in caller context. */
+  downVelocityExpressions?: MugenHitDefExpressionPair;
   /** Root-owned live guard.velocity X replacement evaluated in caller context. */
   guardVelocityExpression?: number | string;
   guardVelocityZ?: number;
@@ -2678,7 +2680,15 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const airVelocityZ = typeof airVelocityValue === "object" && airVelocityValue.z !== undefined
     ? airVelocityValue.z
     : true;
-  const downVelocity = staticOptionalStrictHitDefVectorParam(controller, "down.velocity");
+  const downVelocityRaw = findParam(controller, "down.velocity");
+  const staticDownVelocity = downVelocityRaw === undefined ? undefined : strictStaticNumberVector(downVelocityRaw);
+  const downVelocityValue = optionalModifyHitDefVelocityParam(controller, "down.velocity");
+  const downVelocity = downVelocityRaw === undefined
+    ? true
+    : staticDownVelocity ?? (downVelocityValue === false ? false : undefined);
+  const downVelocityExpressions = staticDownVelocity === undefined && typeof downVelocityValue === "object"
+    ? downVelocityValue.xy
+    : undefined;
   const downBounceValue = optionalIntegerExpressionParam(controller, "down.bounce");
   const downBounce = typeof downBounceValue === "number" ? downBounceValue !== 0 : undefined;
   const downBounceExpression = typeof downBounceValue === "string" ? downBounceValue : undefined;
@@ -2764,7 +2774,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     groundVelocityZ !== true ||
     airVelocityValue !== true ||
     airVelocityZ !== true ||
-    downVelocity !== true ||
+    downVelocityValue !== true ||
     downBounceValue !== true ||
     forceStand !== true ||
     forceCrouch !== true ||
@@ -2823,7 +2833,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     downHitTime === false ||
     groundVelocityValue === false ||
     airVelocityValue === false ||
-    downVelocity === false ||
+    downVelocityValue === false ||
     downBounceValue === false ||
     forceStand === false ||
     forceCrouch === false ||
@@ -2890,7 +2900,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(groundVelocityZ === true ? {} : { groundVelocityZ }),
     ...(airVelocity === undefined ? {} : { airVelocity }),
     ...(airVelocityZ === true ? {} : { airVelocityZ }),
-    ...(downVelocity === true ? {} : { downVelocity }),
+    ...(downVelocity === true || downVelocity === false || downVelocity === undefined ? {} : { downVelocity }),
+    ...(downVelocityExpressions === undefined ? {} : { downVelocityExpressions }),
     ...(downBounce === undefined ? {} : { downBounce }),
     ...(downBounceExpression === undefined ? {} : { downBounceExpression }),
     ...(forceStand === true ? {} : { forceStand }),
@@ -4349,17 +4360,9 @@ function optionalIntegerExpressionPairParam(
   return [first, second];
 }
 
-function staticOptionalStrictHitDefVectorParam(controller: MugenStateController, key: string): MugenHitDefVector | true | false {
-  const raw = findParam(controller, key);
-  if (raw === undefined) {
-    return true;
-  }
-  return strictStaticNumberVector(raw) ?? false;
-}
-
 function optionalModifyHitDefVelocityParam(
   controller: MugenStateController,
-  key: "ground.velocity" | "air.velocity",
+  key: "ground.velocity" | "air.velocity" | "down.velocity",
 ): { xy: MugenHitDefExpressionPair; z?: number } | true | false {
   const raw = findParam(controller, key);
   if (raw === undefined) return true;

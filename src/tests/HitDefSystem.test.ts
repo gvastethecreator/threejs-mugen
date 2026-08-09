@@ -1086,6 +1086,76 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("resolves live ModifyHitDef down.velocity X/Y independently and preserves omitted siblings", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "down.velocity": "-2,-8,2",
+      })),
+      frame: activeFrame(),
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "down.velocity": "-4",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({
+      downVelocityX: -4,
+      downVelocityY: -8,
+      downVelocityZ: 2,
+      hitVelocities: { down: { x: -4, y: -8, z: 2 } },
+    });
+
+    caller.vars[1] = -7;
+    caller.vars[2] = -5;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "down.velocity": "var(1),var(2)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({
+      downVelocityX: -7,
+      downVelocityY: -5,
+      downVelocityZ: 2,
+      hitVelocities: { down: { x: -7, y: -5, z: 2 } },
+    });
+
+    caller.vars[3] = -11;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "down.velocity": "var(3)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({
+      downVelocityX: -11,
+      downVelocityY: -5,
+      downVelocityZ: 2,
+      hitVelocities: { down: { x: -11, y: -5, z: 2 } },
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { forcenofall: "1", redirectid: "57" })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.hitVelocities?.down).toEqual({ x: -11, y: -5, z: 2 });
+  });
+
   it("resolves fresh direct down.velocity X/Y and inherits every omitted component from air.velocity", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

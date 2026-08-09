@@ -1898,7 +1898,9 @@ export function resolveRuntimeHelperFloatPairParam(
           : operation.kind === "modifyhitdef"
             ? key === "ground.velocity"
               ? operation.groundVelocity
-              : undefined
+              : key === "air.velocity"
+                ? operation.airVelocity
+                : operation.downVelocityExpressions
             : undefined
         : key === "sparkscale"
           ? operation.hitSparkScale

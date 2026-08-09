@@ -82,7 +82,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   resolveIntegerList?: (key: "nochainid") => number[] | undefined;
   resolveIntegerPair?: (key: "damage" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall") => number | undefined;
-  resolveFloatPair?: (key: "ground.velocity" | "air.velocity") => [number?, number?] | undefined;
+  resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity") => [number?, number?] | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
   resolveFallEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -1067,20 +1067,60 @@ export class RuntimeHitDefControllerDispatchWorld {
       };
     }
     if (operation.downVelocity !== undefined) {
-      existing.downVelocityX = operation.downVelocity[0] ?? 0;
-      existing.downVelocityY = operation.downVelocity[1] ?? 0;
+      const currentDownVelocity = existing.hitVelocities?.down ?? {
+        x: existing.downVelocityX ?? 0,
+        y: existing.downVelocityY ?? 0,
+        z: existing.downVelocityZ ?? 0,
+      };
+      if (operation.downVelocity[0] !== undefined) {
+        existing.downVelocityX = operation.downVelocity[0];
+      }
+      if (operation.downVelocity[1] !== undefined) {
+        existing.downVelocityY = operation.downVelocity[1];
+      }
       if (operation.downVelocity[2] !== undefined) {
         existing.downVelocityZ = operation.downVelocity[2];
       }
       existing.hitVelocities = {
         ...existing.hitVelocities,
         down: {
-          ...(existing.hitVelocities?.down ?? { x: 0, y: 0, z: 0 }),
-          x: operation.downVelocity[0] ?? existing.hitVelocities?.down?.x ?? 0,
-          y: operation.downVelocity[1] ?? existing.hitVelocities?.down?.y ?? 0,
-          z: operation.downVelocity[2] ?? existing.hitVelocities?.down?.z ?? 0,
+          ...currentDownVelocity,
+          ...(operation.downVelocity[0] === undefined ? {} : { x: operation.downVelocity[0] }),
+          ...(operation.downVelocity[1] === undefined ? {} : { y: operation.downVelocity[1] }),
+          ...(operation.downVelocity[2] === undefined ? {} : { z: operation.downVelocity[2] }),
         },
       };
+    }
+    if (operation.downVelocityExpressions !== undefined) {
+      const downVelocity = resolveRuntimeHitDefFloatExpressionPair(
+        operation.downVelocityExpressions,
+        findParam(controller.source, "down.velocity"),
+        actor.runtime,
+        context ?? {},
+        resolveFloatPair?.("down.velocity"),
+      );
+      const currentDownVelocity = existing.hitVelocities?.down ?? {
+        x: existing.downVelocityX ?? 0,
+        y: existing.downVelocityY ?? 0,
+        z: existing.downVelocityZ ?? 0,
+      };
+      if (downVelocity?.first !== undefined) {
+        existing.downVelocityX = downVelocity.first;
+        existing.hitVelocities = {
+          ...existing.hitVelocities,
+          down: { ...currentDownVelocity, x: downVelocity.first },
+        };
+      }
+      if (downVelocity?.componentCount === 2 && downVelocity.second !== undefined) {
+        existing.downVelocityY = downVelocity.second;
+        existing.hitVelocities = {
+          ...existing.hitVelocities,
+          down: {
+            ...(existing.hitVelocities?.down ?? currentDownVelocity),
+            y: downVelocity.second,
+          },
+        };
+      }
     }
     if (operation.downBounce !== undefined) {
       existing.downBounce = operation.downBounce;
