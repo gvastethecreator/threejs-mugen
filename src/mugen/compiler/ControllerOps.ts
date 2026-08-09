@@ -772,6 +772,10 @@ export type ModifyProjectileControllerOp = {
   downHitTime?: number;
   /** Ikemen ModifyProjectile component-wise grounded velocity replacement; omitted components preserve live values. */
   groundVelocity?: MugenPartialHitDefVector;
+  /** Dynamic/mixed ModifyProjectile ground.velocity expressions evaluated in the root caller context. */
+  groundVelocityExpressions?: MugenHitDefExpressionPair;
+  /** Dynamic/mixed ModifyProjectile ground.velocity Z component. */
+  groundVelocityZExpression?: number | string;
   /** Ikemen ModifyProjectile replacement for the selected HitDef down velocity. */
   downVelocity?: MugenHitDefVector;
   /** Dynamic/mixed ModifyProjectile down.velocity expressions evaluated in the root caller context. */
@@ -3735,6 +3739,20 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
   const guardVelocityZExpression = guardVelocity === undefined && typeof guardVelocityValue === "object"
     ? guardVelocityValue.z
     : undefined;
+  const groundVelocityRaw = findParam(controller, "ground.velocity");
+  const groundVelocity = modifyProjectileGroundVelocity(groundVelocityRaw);
+  const groundVelocityValue = optionalModifyHitDefVelocityParam(controller, "ground.velocity", true);
+  if (
+    groundVelocityRaw !== undefined &&
+    groundVelocity === undefined &&
+    groundVelocityValue === false
+  ) return undefined;
+  const groundVelocityExpressions = groundVelocity === undefined && typeof groundVelocityValue === "object"
+    ? groundVelocityValue.xy
+    : undefined;
+  const groundVelocityZExpression = groundVelocity === undefined && typeof groundVelocityValue === "object"
+    ? groundVelocityValue.z
+    : undefined;
   return definedObject({
     kind: "modifyprojectile" as const,
     ...(redirectPlayerIdExpression === undefined ? {} : { redirectPlayerIdExpression }),
@@ -3816,7 +3834,9 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     guardControlTime: firstNumber(findParam(controller, "guard.ctrltime")),
     airGuardControlTime: firstNumber(findParam(controller, "airguard.ctrltime")),
     downHitTime: firstNumber(findParam(controller, "down.hittime")),
-    groundVelocity: modifyProjectileGroundVelocity(findParam(controller, "ground.velocity")),
+    groundVelocity,
+    ...(groundVelocityExpressions === undefined ? {} : { groundVelocityExpressions }),
+    ...(groundVelocityZExpression === undefined ? {} : { groundVelocityZExpression }),
     downVelocity,
     ...(downVelocityExpressions === undefined ? {} : { downVelocityExpressions }),
     ...(downVelocityZExpression === undefined ? {} : { downVelocityZExpression }),
