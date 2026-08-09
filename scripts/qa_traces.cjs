@@ -1316,6 +1316,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileDynamicAirVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-dynamic-down-velocity",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileDynamicDownVelocityTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-guard-velocity-default",
       required: true,
       artifact: presets.createSyntheticImportedProjectileGuardVelocityDefaultTraceArtifact(),
@@ -1424,6 +1429,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-dynamic-air-velocity",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileDynamicAirVelocityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-dynamic-down-velocity",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileDynamicDownVelocityTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-static-hitdef-airguard-velocity-derived-z",
@@ -5077,6 +5087,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-air-guard-velocity",
     "synthetic-imported-projectile-air-guard-velocity-default",
     "synthetic-imported-projectile-dynamic-air-velocity",
+    "synthetic-imported-projectile-dynamic-down-velocity",
     "synthetic-imported-projectile-guard-velocity-default",
     "synthetic-imported-projectile-guard-timing-default",
     "synthetic-imported-projectile-guard-slide-stop",
@@ -5105,6 +5116,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projectile-air-guard-velocity",
     "synthetic-imported-helper-projectile-air-guard-velocity-default",
     "synthetic-imported-helper-projectile-dynamic-air-velocity",
+    "synthetic-imported-helper-projectile-dynamic-down-velocity",
     "synthetic-imported-helper-projectile-guard-velocity-default",
     "synthetic-imported-helper-projectile-guard-timing-default",
     "synthetic-imported-helper-projectile-guard-slide-stop",
