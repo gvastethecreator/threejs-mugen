@@ -1,5 +1,22 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-09 T691 direct HitDef down.hittime addendum - no score movement
+
+Final T691 verification: `766/766` trace artifacts (`732` required, `34`
+optional), `3788/3788` Vitest tests across `328` files, typecheck, the
+`363`-module build, and diff hygiene pass. Required trace
+`synthetic-imported-dynamic-direct-down-hittime` has checksum `e3cfd800` and
+final checksum `6401d0a9`.
+
+Fresh direct HitDefs now retain typed dynamic `down.hittime` in root/Helper
+caller context, reset omission to the pinned fresh `20` default, and avoid
+inheriting previous move metadata. Root-owned `ModifyHitDef` replaces or
+preserves the live scalar, and an accepted lying hit exposes
+`GetHitVar(hittime)=17` through imported Common1-style progression. This is a
+bounded timing seam only; no score movement: Projectile breadth, nonzero down
+launch, Helper-owned live mutation, exact countdown/landing timing, and full
+M.U.G.E.N/Ikemen timing parity remain blocked.
+
 ## 2026-08-09 T690 fresh Projectile guard.velocity addendum - no score movement
 
 Final T690 verification: `765/765` trace artifacts (`731` required, `34`

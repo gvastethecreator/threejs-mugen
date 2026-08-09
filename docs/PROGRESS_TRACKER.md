@@ -1,6 +1,17 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T608-T690 (2026-08-09)
+## Latest implementation checkpoint — T608-T691 (2026-08-09)
+
+Authoritative cursor: T691 is closed-bounded for direct HitDef
+`down.hittime`. Fresh root/Helper caller expressions resolve once, omission
+resets to the pinned `20` default without prior-move leakage, and root-owned
+ModifyHitDef replaces or preserves the live value. Accepted lying contact with
+zero vertical down velocity exposes `GetHitVar(hittime)=17` through imported
+Common1-style progression. Aggregate QA is `766/766` (`732` required,
+`34` optional), full Vitest is `3788/3788` across `328` files, and the
+`363`-module build/typecheck pass. Projectile, nonzero down launch, exact
+countdown/landing timing, Helper-owned live mutation, and full timing parity
+remain explicitly unclaimed. See [issue 265](../.scratch/roadmap/issues/265-hitdef-down-hittime-dynamic.md).
 
 Authoritative cursor: T690 is closed-bounded for pinned-Ikemen fresh
 root/Helper Projectiles and dynamic/mixed `guard.velocity` X/Y/Z. Caller-context

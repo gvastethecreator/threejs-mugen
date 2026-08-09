@@ -1,6 +1,20 @@
 ﻿# Next Build Roadmap
 
-## Authoritative runtime cursor — T690 closed-bounded
+## Authoritative runtime cursor — T691 closed-bounded
+
+Final T691 verification: `766/766` trace artifacts (`732` required, `34`
+optional), with required direct HitDef `down.hittime` checksum `e3cfd800` and
+final checksum `6401d0a9`. The full `3788/3788` Vitest suite across `328`
+files, typecheck, and the `363`-module build pass.
+
+T691 / issue 265 is closed-bounded for fresh direct HitDefs in root/Helper
+caller context plus root-owned live ModifyHitDef. Dynamic `down.hittime`
+resolves once, fresh omission is `20` without prior-move leakage, live omission
+preserves, and accepted lying contact exposes `GetHitVar(hittime)`. Projectile,
+nonzero down launch, Helper-owned live mutation, exact countdown/landing timing,
+and full timing parity remain excluded. See [issue 265](../.scratch/roadmap/issues/265-hitdef-down-hittime-dynamic.md).
+
+## Previous runtime cursor — T690 closed-bounded
 
 Final T690 verification: `765/765` trace artifacts (`731` required, `34`
 optional), with required fresh root Projectile `guard.velocity` trace

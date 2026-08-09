@@ -1,6 +1,9 @@
 # Controller Support Registry
 
-Authoritative cursor: T690 is closed-bounded for fresh root/Helper Projectiles
+Authoritative cursor: T691 is closed-bounded for direct HitDef `down.hittime`
+caller-context resolution, fresh reset, root-owned ModifyHitDef replacement/
+preservation, and accepted lying-hit GetHitVar evidence. T690 remains
+closed-bounded for fresh root/Helper Projectiles
 with dynamic/mixed `guard.velocity` X/Y/Z caller resolution, pinned fresh
 missing-component defaults, and accepted ground-guard evidence. T689 remains
 closed-bounded for fresh root/Helper Projectiles
@@ -52,6 +55,14 @@ caller-context resolution and accepted ground-guard GetHitVar/physics, target,
 and lifecycle evidence. Missing fresh X/Z derive from effective ground
 velocity while Y defaults to zero. Live mutation, other vector defaults,
 dynamic `n`, and full Projectile parity remain excluded.
+
+T691 adds direct HitDef `down.hittime` typed dynamic caller-context resolution
+for fresh root/Helper activation plus root-owned live ModifyHitDef replacement
+and omission preservation. Fresh omission resets to the pinned `20`, and the
+required lying-hit trace exposes the value through GetHitVar/Common1
+progression. Projectile breadth, nonzero down launch, Helper-owned live
+mutation, exact countdown/landing timing, and full timing parity remain
+excluded.
 
 This is the registry contract for CNS controller work. It prevents the runtime from growing controller behavior through invisible ad hoc paths.
 
