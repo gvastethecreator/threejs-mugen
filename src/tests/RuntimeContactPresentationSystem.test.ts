@@ -92,6 +92,29 @@ describe("RuntimeContactPresentationSystem", () => {
     });
   });
 
+  it("publishes the guarded HitDef spark angle on guard contact", () => {
+    const world = new RuntimeContactPresentationWorld();
+    const attacker = actor("p1", 200, 6);
+
+    const result = world.emitHitDefContact({
+      attacker,
+      defender: { id: "p2" },
+      kind: "guard",
+      runtimeTick: 141,
+      move: {
+        guardSpark: "S7000",
+        guardSparkAngle: -19.25,
+      },
+    });
+
+    expect(result.effect).toMatchObject({
+      kind: "guard",
+      sparkNo: 7000,
+      angle: -19.25,
+      contactKind: "guard",
+    });
+  });
+
   it("owns projectile contact package metadata across guard sound and spark telemetry", () => {
     const world = new RuntimeContactPresentationWorld();
     const attacker = actor("p1", 1000, 3);

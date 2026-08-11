@@ -2630,21 +2630,29 @@ value = 1
   it("compiles Ikemen sparkangle for fresh and live ModifyHitDef callers", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       sparkangle: "-12.5",
+      "guard.sparkangle": "18.25",
     })).operation).toMatchObject({
       kind: "hitdef",
       hitSparkAngle: -12.5,
+      guardSparkAngle: 18.25,
     });
     expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
       redirectid: "57",
       sparkangle: "var(1) + .5",
+      "guard.sparkangle": "var(2) - .25",
     })).operation).toMatchObject({
       kind: "modifyhitdef",
       hitSparkAngle: "var(1) + .5",
+      guardSparkAngle: "var(2) - .25",
       redirectPlayerIdExpression: "57",
     });
     expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
       redirectid: "57",
       sparkangle: "var(1),var(2)",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "guard.sparkangle": "var(1),var(2)",
     })).operation).toBeUndefined();
   });
 

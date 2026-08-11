@@ -5326,6 +5326,8 @@ function runActiveStateControllers(
             ? operation?.airGuardVelocityZExpression
             : key === "sparkangle"
               ? operation?.hitSparkAngle
+              : key === "guard.sparkangle"
+                ? operation?.guardSparkAngle
               : undefined;
           if (value === undefined) return undefined;
           const resolved = resolveDispatchFloat(
@@ -5405,7 +5407,11 @@ function runActiveStateControllers(
             ? operation?.downVelocityZExpression ?? operation?.downVelocityZ
             : key === "airguard.velocity"
               ? operation?.airGuardVelocityZExpression
-              : operation?.hitSparkAngle;
+              : key === "sparkangle"
+                ? operation?.hitSparkAngle
+                : key === "guard.sparkangle"
+                  ? operation?.guardSparkAngle
+                  : undefined;
           if (value === undefined) return undefined;
           const resolved = resolveDispatchFloat(
             typeof value === "number" ? value : undefined,

@@ -168,6 +168,8 @@ export type DemoMove = {
   guardSparkScale?: [number, number];
   /** Ikemen-only normal hit-spark angle in degrees. */
   hitSparkAngle?: number;
+  /** Ikemen-only guarded hit-spark angle in degrees. */
+  guardSparkAngle?: number;
   /** PalFX copied to the receiver by an accepted, unguarded contact. */
   paletteFx?: RuntimePaletteFxPayload;
   /** Camera shake emitted by an accepted, unguarded direct contact. */

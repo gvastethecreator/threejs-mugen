@@ -256,6 +256,7 @@ function buildStateMoves(
         hitSpark: hitDefSparkParam(hitDef.params, constants, "sparkno"),
         guardSpark: hitDefSparkParam(hitDef.params, constants, "guard.sparkno"),
         hitSparkAngle: firstNumber(hitDef.params.sparkangle),
+        guardSparkAngle: firstNumber(hitDef.params["guard.sparkangle"]),
         sparkXy: numberPair(hitDef.params.sparkxy),
          attackDepth: normalizedNumberPair(hitDef.params["attack.depth"]) ?? runtimeCombatDepthFromConstants(constants).attack,
          hitVars: buildHitVars(hitDef.params),
@@ -384,6 +385,7 @@ function buildMove(
       | "hitSpark"
       | "guardSpark"
       | "hitSparkAngle"
+      | "guardSparkAngle"
       | "sparkXy"
       | "attackDepth"
       | "hitVars"
@@ -456,6 +458,7 @@ function buildMove(
     hitSpark: overrides.hitSpark,
     guardSpark: overrides.guardSpark,
     hitSparkAngle: overrides.hitSparkAngle,
+    guardSparkAngle: overrides.guardSparkAngle,
     sparkXy: overrides.sparkXy,
     attackDepth: overrides.attackDepth,
     hitVars: overrides.hitVars,

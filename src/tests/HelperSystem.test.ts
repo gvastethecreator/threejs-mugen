@@ -2133,10 +2133,13 @@ describe("HelperSystem", () => {
               damage: "20",
               sparkno: "S7001",
               sparkangle: "-5",
+              "guard.sparkno": "S7000",
+              "guard.sparkangle": "-7",
             }),
             compiledControllerIr(6000, "ModifyHitDef", [], {
               redirectid: "0",
               sparkangle: "var(0)",
+              "guard.sparkangle": "var(0) + 2",
             }),
           ]),
         ],
@@ -2146,6 +2149,7 @@ describe("HelperSystem", () => {
     advanceRuntimeHelpers([active], stage);
 
     expect(active.currentMove?.hitSparkAngle).toBe(31.25);
+    expect(active.currentMove?.guardSparkAngle).toBe(33.25);
   });
 
   it("applies Helper-owned ModifyHitDef down.hittime in caller context", () => {

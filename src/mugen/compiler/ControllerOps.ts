@@ -224,6 +224,8 @@ export type HitDefControllerOp = {
   guardSparkScale?: MugenHitDefExpressionPair;
   /** Ikemen-only normal hit-spark angle evaluated in the HitDef caller context. */
   hitSparkAngle?: number | string;
+  /** Ikemen-only guard hit-spark angle evaluated in the HitDef caller context. */
+  guardSparkAngle?: number | string;
   /** PalFX copied to the receiver by an accepted, unguarded contact. */
   paletteFx?: MugenHitDefPaletteFxOp;
   /** Camera shake emitted by an accepted, unguarded direct contact. */
@@ -309,6 +311,8 @@ export type ModifyHitDefControllerOp = {
   sparkXy?: MugenHitDefExpressionPair;
   /** Ikemen-only live normal hit-spark angle replacement evaluated in caller context. */
   hitSparkAngle?: number | string;
+  /** Ikemen-only live guard hit-spark angle replacement evaluated in caller context. */
+  guardSparkAngle?: number | string;
   /** Component-wise live replacement for the contact PalFX payload. */
   paletteFx?: MugenHitDefPaletteFxOp;
   /** Component-wise live replacement for direct-contact camera shake. */
@@ -2591,6 +2595,7 @@ function compileHitDefControllerOp(
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
   const guardSparkScale = optionalFloatExpressionPairParam(controller, "guard.sparkscale");
   const hitSparkAngle = optionalScalarNumberOrExpression(controller, "sparkangle");
+  const guardSparkAngle = optionalScalarNumberOrExpression(controller, "guard.sparkangle");
   const paletteFx = optionalHitDefPaletteFxParam(controller);
   const envShake = optionalHitDefEnvShakeParam(controller);
   const fallEnvShake = optionalHitDefEnvShakeParam(controller, "fall.envshake");
@@ -2647,6 +2652,7 @@ function compileHitDefControllerOp(
     hitSparkScale === false ||
     guardSparkScale === false ||
     hitSparkAngle === false ||
+    guardSparkAngle === false ||
     paletteFx === false ||
     envShake === false ||
     fallEnvShake === false ||
@@ -2787,6 +2793,7 @@ function compileHitDefControllerOp(
     ...(hitSparkScale === true ? {} : { hitSparkScale }),
     ...(guardSparkScale === true ? {} : { guardSparkScale }),
     ...(hitSparkAngle === true ? {} : { hitSparkAngle }),
+    ...(guardSparkAngle === true ? {} : { guardSparkAngle }),
     ...(paletteFx === true ? {} : { paletteFx }),
     ...(envShake === true ? {} : { envShake }),
     ...(fallEnvShake === true ? {} : { fallEnvShake }),
@@ -2837,6 +2844,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "guard.sparkscale",
     "sparkxy",
     "sparkangle",
+    "guard.sparkangle",
     "palfx.time",
     "palfx.add",
     "palfx.mul",
@@ -2967,6 +2975,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const guardSparkScale = optionalFloatExpressionPairParam(controller, "guard.sparkscale");
   const sparkXy = optionalFloatExpressionPairParam(controller, "sparkxy");
   const hitSparkAngle = optionalScalarNumberOrExpression(controller, "sparkangle");
+  const guardSparkAngle = optionalScalarNumberOrExpression(controller, "guard.sparkangle");
   const paletteFx = optionalHitDefPaletteFxParam(controller);
   const envShake = optionalHitDefEnvShakeParam(controller);
   const fallEnvShake = optionalHitDefEnvShakeParam(controller, "fall.envshake");
@@ -3041,6 +3050,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     guardSparkScale !== true ||
     sparkXy !== true ||
     hitSparkAngle !== true ||
+    guardSparkAngle !== true ||
     paletteFx !== true ||
     envShake !== true ||
     fallEnvShake !== true ||
@@ -3101,6 +3111,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     guardSparkScale === false ||
     sparkXy === false ||
     hitSparkAngle === false ||
+    guardSparkAngle === false ||
     paletteFx === false ||
     envShake === false ||
     fallEnvShake === false ||
@@ -3177,6 +3188,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(guardSparkScale === true ? {} : { guardSparkScale }),
     ...(sparkXy === true ? {} : { sparkXy }),
     ...(hitSparkAngle === true ? {} : { hitSparkAngle }),
+    ...(guardSparkAngle === true ? {} : { guardSparkAngle }),
     ...(paletteFx === true ? {} : { paletteFx }),
     ...(envShake === true ? {} : { envShake }),
     ...(fallEnvShake === true ? {} : { fallEnvShake }),
