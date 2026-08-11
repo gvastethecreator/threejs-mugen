@@ -26913,6 +26913,93 @@ export function createSyntheticImportedProjectileP2FacingTraceArtifact(
   });
 }
 
+export function createSyntheticImportedProjectileDynamicP2FacingTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5080;
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "projectile-dynamic-p2facing-setup", frames: 2, p1: [], p2: [] },
+    { label: "projectile-dynamic-p2facing-contact", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-dynamic-p2facing-settle", frames: 4, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-dynamic-p2facing-attacker",
+    displayName: "Dynamic Projectile P2Facing Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileVarSeeds: [{ index: 0, value: 1 }],
+    projectileP2Facing: "var(0)",
+    projectileDamage: [37, 2],
+    projectileRemoveOnHit: false,
+    projectileOffset: [62, -45],
+    projectileGroundVelocity: [-1, 1],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-dynamic-p2facing-defender",
+    displayName: "Dynamic Projectile P2Facing Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      shakePhysics: "N",
+      slidePhysics: "S",
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchExpression: "GetHitVar(facing) = 1 && !GetHitVar(guarded)",
+      hitTimeBranchName: "Dynamic Projectile P2Facing GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-projectile-dynamic-p2facing-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-dynamic-p2facing-golden",
+      label: "Synthetic imported dynamic Projectile p2facing caller route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO compatibility trace proves a root-owned fresh Projectile evaluates p2facing=var(0) in the original caller context before an accepted unguarded hit. VarSet(0)=1 reaches GetHitVar(facing)=1, defers the target facing update, and enters normal get-hit processing. Static values, guards, Helper ownership, ModifyProjectile, ReversalDef, noautoturn, custom states, teams, rollback, and exact engine tick parity remain outside this slice.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-projectile-dynamic-p2facing-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5001, branchStateNo],
+      forbiddenExecutedStates: [40, 130, 150, 151, 152, 153, 154, 155, 5020, 5021, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Projectile"],
+      requiredExecutedOperations: ["variable:varset", "projectile"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredActorFrames: [
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, facing: -1 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, facing: -1, moveType: "H" },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, facing: 1, moveType: "H" },
+      ],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [{ actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1", effectId: 77, minAge: 1 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedProjectileDynamicAirVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

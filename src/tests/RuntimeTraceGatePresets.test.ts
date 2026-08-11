@@ -700,6 +700,7 @@ import {
   createSyntheticImportedProjectileAirGuardVelocityDerivedZTraceArtifact,
   createSyntheticImportedProjectileDynamicAirGuardVelocityTraceArtifact,
   createSyntheticImportedProjectileP2FacingTraceArtifact,
+  createSyntheticImportedProjectileDynamicP2FacingTraceArtifact,
   createSyntheticImportedProjectileDynamicAirVelocityTraceArtifact,
   createSyntheticImportedProjectileDynamicGroundVelocityTraceArtifact,
   createSyntheticImportedProjectileDynamicGuardVelocityTraceArtifact,
@@ -21187,6 +21188,30 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.evidence.combatReasons).not.toContain("guard");
     expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       stateNo: 5079,
+      moveType: "H",
+      life: 963,
+    });
+  });
+
+  it("creates a required imported dynamic Projectile p2facing artifact", () => {
+    const artifact = createSyntheticImportedProjectileDynamicP2FacingTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-p2facing-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-projectile-dynamic-p2facing-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }));
+    expect(gate?.evidence.combatReasons).toContain("hit");
+    expect(gate?.evidence.combatReasons).not.toContain("guard");
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 5080,
       moveType: "H",
       life: 963,
     });

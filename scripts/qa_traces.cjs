@@ -1341,6 +1341,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileP2FacingTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-dynamic-p2facing",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileDynamicP2FacingTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-dynamic-ground-velocity",
       required: true,
       artifact: presets.createSyntheticImportedProjectileDynamicGroundVelocityTraceArtifact(),
