@@ -570,6 +570,8 @@ export type RuntimeTraceActorFrameRequirement = {
   observedGuardPointsAtMost?: number;
   observedDizzyPointsAtLeast?: number;
   observedDizzyPointsAtMost?: number;
+  observedHitPauseAtLeast?: number;
+  observedHitPauseAtMost?: number;
   observedRedLifeAtLeast?: number;
   observedRedLifeAtMost?: number;
   observedSuperPauseDefenseMultiplierAtLeast?: number;
@@ -682,6 +684,8 @@ export type RuntimeTraceGateActorFrameEvidence = {
   maxGuardPoints: number;
   minDizzyPoints: number;
   maxDizzyPoints: number;
+  minHitPause: number;
+  maxHitPause: number;
   minRedLife: number;
   maxRedLife: number;
   minSuperPauseDefenseMultiplier?: number;
@@ -1898,6 +1902,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxGuardPoints: Math.max(existing.maxGuardPoints, actor.guardPoints ?? 0),
               minDizzyPoints: Math.min(existing.minDizzyPoints, actor.dizzyPoints ?? 0),
               maxDizzyPoints: Math.max(existing.maxDizzyPoints, actor.dizzyPoints ?? 0),
+              minHitPause: Math.min(existing.minHitPause, actor.hitPause),
+              maxHitPause: Math.max(existing.maxHitPause, actor.hitPause),
               minRedLife: Math.min(existing.minRedLife, actor.redLife ?? 0),
               maxRedLife: Math.max(existing.maxRedLife, actor.redLife ?? 0),
               minSuperPauseDefenseMultiplier: minOptionalTraceNumber(
@@ -2030,6 +2036,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxGuardPoints: actor.guardPoints ?? 0,
               minDizzyPoints: actor.dizzyPoints ?? 0,
               maxDizzyPoints: actor.dizzyPoints ?? 0,
+              minHitPause: actor.hitPause,
+              maxHitPause: actor.hitPause,
               minRedLife: actor.redLife ?? 0,
               maxRedLife: actor.redLife ?? 0,
               minSuperPauseDefenseMultiplier: actor.superPauseDefenseMultiplier,
@@ -3544,6 +3552,7 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     `power${actor.minPower}:${actor.maxPower}`,
     `guardpoints${actor.minGuardPoints}:${actor.maxGuardPoints}`,
     `dizzypoints${actor.minDizzyPoints}:${actor.maxDizzyPoints}`,
+    `hitpause${actor.minHitPause}:${actor.maxHitPause}`,
     `redlife${actor.minRedLife}:${actor.maxRedLife}`,
     actor.bodyWidthFront === undefined ? "wf*" : `wf${actor.bodyWidthFront}`,
     actor.bodyWidthBack === undefined ? "wb*" : `wb${actor.bodyWidthBack}`,
@@ -3628,6 +3637,8 @@ function matchesActorFrameRequirement(
     (requirement.observedGuardPointsAtMost === undefined || actor.minGuardPoints <= requirement.observedGuardPointsAtMost) &&
     (requirement.observedDizzyPointsAtLeast === undefined || actor.maxDizzyPoints >= requirement.observedDizzyPointsAtLeast) &&
     (requirement.observedDizzyPointsAtMost === undefined || actor.minDizzyPoints <= requirement.observedDizzyPointsAtMost) &&
+    (requirement.observedHitPauseAtLeast === undefined || actor.maxHitPause >= requirement.observedHitPauseAtLeast) &&
+    (requirement.observedHitPauseAtMost === undefined || actor.minHitPause <= requirement.observedHitPauseAtMost) &&
     (requirement.observedRedLifeAtLeast === undefined || actor.maxRedLife >= requirement.observedRedLifeAtLeast) &&
     (requirement.observedRedLifeAtMost === undefined || actor.minRedLife <= requirement.observedRedLifeAtMost) &&
     (requirement.observedSuperPauseDefenseMultiplierAtLeast === undefined ||

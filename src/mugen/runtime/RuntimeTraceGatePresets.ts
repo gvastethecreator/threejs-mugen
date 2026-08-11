@@ -16852,6 +16852,102 @@ export function createSyntheticImportedIkemenRootModifyReversalDefDynamicStateTr
   });
 }
 
+export function createSyntheticImportedIkemenRootModifyReversalDefPauseTimePairTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 98;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms a ReversalDef before the pause mutation", frames: 1, p1: [], p2: [] },
+    { label: "caller resolves the dynamic ReversalDef pausetime pair before counter contact", frames: 1, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-pausetime-caller",
+    displayName: "Synthetic Imported IKEMEN ReversalDef Pausetime Caller",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 0,
+      targetId,
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      delayedPosX: { x: 0, trigger: "Time >= 1" },
+    },
+    rootModifyReversalDefRedirectRoute: {
+      attr: "S,NA",
+      pauseTimeExpression: ["var(4)", "var(5)"],
+      vars: [
+        { index: 4, value: 9 },
+        { index: 5, value: 13 },
+      ],
+      targetId,
+      redirectId: 57,
+      trigger: "Time >= 1",
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-pausetime-receiver",
+    displayName: "Synthetic Imported IKEMEN ReversalDef Pausetime Receiver",
+    withHitDef: false,
+    passiveReversalDef: {
+      attr: "S,SP",
+      p1StateNo: 777,
+      hitPause: 3,
+      targetId,
+      trigger: "Time = 0",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-modifyreversaldef-pausetime-pair-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-modifyreversaldef-pausetime-pair-golden",
+      label: "Synthetic imported IKEMEN ReversalDef Modify pausetime pair",
+      source: "mixed",
+      notes: [
+        "Official M.U.G.E.N and pinned Ikemen GO semantics are exercised through a root RedirectID: caller var(4)=9 and var(5)=13 resolve the live ModifyReversalDef pausetime pair, assigning the reverser pause to the receiver and the attacker shake component to the caller. Fresh defaults, one-component preservation, Helper-owned ModifyReversalDef, exact pause tick order, stacking, teams, rollback, and full reversal parity remain outside this fixture.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-modifyreversaldef-pausetime-pair-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitDef", "ReversalDef", "ModifyReversalDef", "VarSet"],
+        requiredExecutedOperations: ["hitdef", "reversaldef", "modifyreversaldef", "variable:varset"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            observedHitPauseAtLeast: 13,
+            observedHitPauseAtMost: 13,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            observedHitPauseAtLeast: 9,
+            observedHitPauseAtMost: 9,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000, moveType: "H" },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, life: 1000, moveType: "H" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -62825,6 +62921,8 @@ export type SyntheticImportedTraceFighterOptions = {
     p2FacingExpression?: SyntheticNumberExpression;
     vars?: SyntheticRuntimeVarSeed[];
     hitPause?: number;
+    /** Synthetic fixture-only dynamic ReversalDef P1 pause/P2 shake pair. */
+    pauseTimeExpression?: SyntheticPairExpression;
     p1SpritePriority?: number;
     p2SpritePriority?: number;
     targetId?: number;
@@ -63455,6 +63553,8 @@ export type SyntheticImportedTraceFighterOptions = {
     guardFlag?: string;
     missOnOverride?: boolean;
     hitPause?: number;
+    /** Synthetic fixture-only dynamic live ModifyReversalDef P1 pause/P2 shake pair. */
+    pauseTimeExpression?: SyntheticPartialPairExpression;
     p1SpritePriority?: number;
     p2SpritePriority?: number;
     p1StateNo?: number;
@@ -65952,6 +66052,9 @@ function passiveReversalDefController(
   suffix = "",
 ): string {
   const hitPause = config.hitPause ?? 0;
+  const pauseTime = config.pauseTimeExpression === undefined
+    ? `${hitPause},${hitPause}`
+    : config.pauseTimeExpression.join(",");
   const vars = config.vars
     ?.map(
       (seed) => `
@@ -65976,7 +66079,7 @@ ${config.reversalGuardFlagNot === undefined ? "" : `reversal.guardflag.not = ${c
 ${config.hitDefAttr === undefined ? "" : `attr = ${config.hitDefAttr}`}
 ${config.guardFlag === undefined ? "" : `guardflag = ${config.guardFlag}`}
 ${config.missOnOverride === undefined ? "" : `missonoverride = ${config.missOnOverride ? 1 : 0}`}
-pausetime = ${hitPause},${hitPause}
+pausetime = ${pauseTime}
 ${config.p1SpritePriority === undefined ? "" : `p1sprpriority = ${config.p1SpritePriority}`}
 ${config.p2SpritePriority === undefined ? "" : `p2sprpriority = ${config.p2SpritePriority}`}
 p1stateno = ${p1StateNo}
@@ -70930,6 +71033,11 @@ value = ${seed.value}
   const p2StateNo = route.p2StateNoExpression ?? route.p2StateNo;
   const p2GetP1State = route.p2GetP1StateExpression ?? (route.p2GetP1State === undefined ? undefined : route.p2GetP1State ? 1 : 0);
   const p2Facing = route.p2FacingExpression ?? route.p2Facing;
+  const pauseTime = route.pauseTimeExpression === undefined
+    ? route.hitPause === undefined
+      ? undefined
+      : `${route.hitPause},${route.hitPause}`
+    : route.pauseTimeExpression.join(",");
   return `
 ${vars}
 [State 0, Root ModifyReversalDef Redirect]
@@ -70941,7 +71049,7 @@ ${route.reversalGuardFlagNot === undefined ? "" : `reversal.guardflag.not = ${ro
 ${route.hitDefAttr === undefined ? "" : `attr = ${route.hitDefAttr}`}
 ${route.guardFlag === undefined ? "" : `guardflag = ${route.guardFlag}`}
 ${route.missOnOverride === undefined ? "" : `missonoverride = ${route.missOnOverride ? 1 : 0}`}
-${route.hitPause === undefined ? "" : `pausetime = ${route.hitPause},${route.hitPause}`}
+${pauseTime === undefined ? "" : `pausetime = ${pauseTime}`}
 ${route.p1SpritePriority === undefined ? "" : `p1sprpriority = ${route.p1SpritePriority}`}
 ${route.p2SpritePriority === undefined ? "" : `p2sprpriority = ${route.p2SpritePriority}`}
 ${p1StateNo === undefined ? "" : `p1stateno = ${p1StateNo}`}
