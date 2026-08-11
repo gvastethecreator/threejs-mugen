@@ -245,6 +245,8 @@ export type RuntimeReversalDef = {
   hitDefAttr?: string;
   guardFlag?: string;
   missOnOverride?: boolean;
+  /** Active ReversalDef one-contact policy; omitted means the bounded default is false. */
+  hitOnce?: boolean;
   p1SpritePriority?: number;
   p2SpritePriority?: number;
   p1StateNo?: number;

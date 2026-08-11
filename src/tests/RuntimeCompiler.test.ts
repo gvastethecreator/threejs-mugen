@@ -2073,6 +2073,39 @@ value = 1
     expect(malformed.operation).toBeUndefined();
   });
 
+  it("compiles ReversalDef hitonce as static or caller-context boolean and rejects malformed values", () => {
+    const freshStatic = compileControllerIr(controller(200, "ReversalDef", [], {
+      "reversal.attr": "S,NA",
+      hitonce: "1",
+    }));
+    const freshDisabled = compileControllerIr(controller(200, "ReversalDef", [], {
+      "reversal.attr": "S,NA",
+      hitonce: "0",
+    }));
+    const freshDynamic = compileControllerIr(controller(200, "ReversalDef", [], {
+      "reversal.attr": "S,NA",
+      hitonce: "var(0)",
+    }));
+    const modifiedDynamic = compileControllerIr(controller(200, "ModifyReversalDef", [], {
+      hitonce: "var(1)",
+      redirectid: "57",
+    }));
+    const malformed = compileControllerIr(controller(200, "ReversalDef", [], {
+      "reversal.attr": "S,NA",
+      hitonce: "var(",
+    }));
+
+    expect(freshStatic.operation).toMatchObject({ kind: "reversaldef", hitOnce: true });
+    expect(freshDisabled.operation).toMatchObject({ kind: "reversaldef", hitOnce: false });
+    expect(freshDynamic.operation).toMatchObject({ kind: "reversaldef", hitOnce: "var(0)" });
+    expect(modifiedDynamic.operation).toMatchObject({
+      kind: "modifyreversaldef",
+      hitOnce: "var(1)",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(malformed.operation).toBeUndefined();
+  });
+
   it("compiles typed direct-HitDef getpower expressions and rejects malformed pairs", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], { getpower: "9.8" })).operation).toMatchObject({
       kind: "hitdef",

@@ -135,7 +135,10 @@ export class RuntimeHelperCombatWorld {
         worldBox: runtimeWorldBox,
         boxesIntersect: collisionBoxesIntersect,
         attrMatches: hitAttributeMatches,
-      }, { incomingUnguardable: attacker.runtime.assertSpecial?.unguardable });
+      }, {
+        incomingUnguardable: attacker.runtime.assertSpecial?.unguardable,
+        incomingActorId: attacker.id,
+      });
       if (reversal && hasRuntimeUnhittableTime(input.defender.runtime)) {
         input.log?.(`${input.defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via HitDef unhittabletime`);
         continue;

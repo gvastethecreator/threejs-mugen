@@ -573,6 +573,111 @@ describe("ReversalSystem", () => {
     expect(reversalWorld.findActive(reverser, move({ hitVars: { hitId: 41 } }), box(), findHooks())).toBeDefined();
   });
 
+  it("resolves fresh/live ReversalDef hitonce in the caller and preserves omitted Modify values", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const reverser = actor("p2", "Reverser");
+    const caller = actor("p1", "Caller", { vars: [1, 0] });
+
+    const activated = dispatchWorld.apply({
+      actor: reverser,
+      controller: compileControllerIr(controller("ReversalDef", {
+        "reversal.attr": "SA,AA",
+        hitonce: "var(0)",
+      })),
+      context: { self: caller.runtime },
+      hitbox: box(),
+      reversalWorld,
+    });
+    expect(activated.activated).toBe(true);
+    expect(reverser.currentMove?.hitOnce).toBe(true);
+    expect(reverser.runtime.reversal?.hitOnce).toBe(true);
+
+    const replaced = dispatchWorld.modify({
+      actor: reverser,
+      controller: compileControllerIr(controller("ModifyReversalDef", {
+        hitonce: "var(1)",
+        numhits: "2",
+        redirectid: "57",
+      })),
+      context: { self: caller.runtime },
+    });
+    expect(replaced.modified).toBe(true);
+    expect(reverser.currentMove?.hitOnce).toBe(false);
+    expect(reverser.runtime.reversal?.hitOnce).toBe(false);
+
+    const preserved = dispatchWorld.modify({
+      actor: reverser,
+      controller: compileControllerIr(controller("ModifyReversalDef", {
+        numhits: "3",
+        redirectid: "57",
+      })),
+      context: { self: caller.runtime },
+    });
+    expect(preserved.modified).toBe(true);
+    expect(reverser.currentMove?.hitOnce).toBe(false);
+    expect(reverser.runtime.reversal?.hitOnce).toBe(false);
+  });
+
+  it("consumes ReversalDef hitonce after one accepted contact while allowing a distinct target when disabled", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const oneShot = actor("p2", "OneShot");
+    reversalWorld.activate(oneShot, {
+      attr: "SA,AA",
+      hitbox: box(),
+      hitPause: 3,
+      hitOnce: true,
+      p1StateNo: 777,
+    });
+    const first = actor("p1", "First", { currentMove: move() });
+    const second = actor("p3", "Second", { currentMove: move() });
+    expect(reversalWorld.findActive(
+      oneShot,
+      first.currentMove!,
+      first.currentMove!.hitbox,
+      findHooks(),
+      { incomingActorId: first.id },
+    )).toBeDefined();
+    reversalWorld.apply(oneShot, first, oneShot.currentMove!, hooks());
+    oneShot.hitDefTargets = [first.id];
+    oneShot.pendingHitDefTargets = [];
+    expect(reversalWorld.findActive(
+      oneShot,
+      second.currentMove!,
+      second.currentMove!.hitbox,
+      findHooks(),
+      { incomingActorId: second.id },
+    )).toBeUndefined();
+
+    const repeatable = actor("p4", "Repeatable");
+    reversalWorld.activate(repeatable, {
+      attr: "SA,AA",
+      hitbox: box(),
+      hitPause: 3,
+      hitOnce: false,
+      p1StateNo: 777,
+    });
+    const repeatFirst = actor("p5", "RepeatFirst", { currentMove: move() });
+    const repeatSecond = actor("p6", "RepeatSecond", { currentMove: move() });
+    expect(reversalWorld.findActive(
+      repeatable,
+      repeatFirst.currentMove!,
+      repeatFirst.currentMove!.hitbox,
+      findHooks(),
+      { incomingActorId: repeatFirst.id },
+    )).toBeDefined();
+    reversalWorld.apply(repeatable, repeatFirst, repeatable.currentMove!, hooks());
+    repeatable.hitDefTargets = [repeatFirst.id];
+    repeatable.pendingHitDefTargets = [];
+    expect(reversalWorld.findActive(
+      repeatable,
+      repeatSecond.currentMove!,
+      repeatSecond.currentMove!.hitbox,
+      findHooks(),
+      { incomingActorId: repeatSecond.id },
+    )).toBeDefined();
+  });
+
   it("resolves dynamic ReversalDef sprite priorities in the caller and preserves omitted Modify components", () => {
     const reversalWorld = new RuntimeReversalWorld();
     const dispatchWorld = new RuntimeReversalControllerDispatchWorld();

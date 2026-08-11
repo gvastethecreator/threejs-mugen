@@ -259,9 +259,10 @@ export class RuntimeCombatResolutionWorld {
     if (!reversal?.isReversal) return { kind: "skipped", reason: "missing-reversal" };
     const getterMove = input.getter.currentMove;
     if (!getterMove?.isReversal) return { kind: "skipped", reason: "stale-getter" };
-    if (hasExplicitHitDefContactMemory(input.reverser)
+    const alreadyContacted = hasExplicitHitDefContactMemory(input.reverser)
       ? hasRuntimeHitDefTarget(input.reverser, input.getter.id)
-      : input.reverser.hasHit) {
+      : input.reverser.hasHit;
+    if (alreadyContacted || (reversal.hitOnce === true && input.reverser.hasHit)) {
       return { kind: "skipped", reason: "already-hit" };
     }
     const getterAttackBoxes = resolveRuntimeAttackBoxes(input.getter, getterMove, input.getCollisionBoxes)
@@ -276,7 +277,10 @@ export class RuntimeCombatResolutionWorld {
         boxesIntersect: collisionBoxesIntersect,
         attrMatches: hitAttributeMatches,
       },
-      { incomingUnguardable: input.getter.runtime.assertSpecial?.unguardable },
+      {
+        incomingUnguardable: input.getter.runtime.assertSpecial?.unguardable,
+        incomingActorId: input.getter.id,
+      },
     );
     if (active !== reversal) return { kind: "skipped", reason: "no-match" };
     if (!hasRuntimeCombatDepthContact({
@@ -357,7 +361,10 @@ export class RuntimeCombatResolutionWorld {
         worldBox: runtimeWorldBox,
         boxesIntersect: collisionBoxesIntersect,
         attrMatches: hitAttributeMatches,
-      }, { incomingUnguardable: attacker.runtime.assertSpecial?.unguardable })
+      }, {
+        incomingUnguardable: attacker.runtime.assertSpecial?.unguardable,
+        incomingActorId: attacker.id,
+      })
       : undefined;
     if (reversal && hasRuntimeUnhittableTime(defender.runtime)) {
       const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via HitDef unhittabletime`;
@@ -663,7 +670,10 @@ export class RuntimeCombatResolutionWorld {
       worldBox: runtimeWorldBox,
       boxesIntersect: collisionBoxesIntersect,
       attrMatches: hitAttributeMatches,
-    }, { incomingUnguardable: attacker.runtime.assertSpecial?.unguardable })) return undefined;
+    }, {
+      incomingUnguardable: attacker.runtime.assertSpecial?.unguardable,
+      incomingActorId: attacker.id,
+    })) return undefined;
     const hurtBoxes = input.getHurtBoxes?.(defender) ?? defaultHurtBoxes;
     const targetBoxes = resolveRuntimeMoveTargetBoxes(
       defender,
@@ -835,7 +845,10 @@ export class RuntimeCombatResolutionWorld {
           worldBox: runtimeWorldBox,
           boxesIntersect: collisionBoxesIntersect,
           attrMatches: hitAttributeMatches,
-        }, { incomingUnguardable: source.runtime.assertSpecial?.unguardable });
+        }, {
+          incomingUnguardable: source.runtime.assertSpecial?.unguardable,
+          incomingActorId: source.id,
+        });
         if (!reversal) {
           return false;
         }

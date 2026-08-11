@@ -14,7 +14,11 @@ import { RuntimeContactMemoryWorld, type RuntimeContactMemory } from "./ContactM
 import { runtimeGuardFlagOverlaps } from "./CombatResolver";
 import { applyRuntimeHitDefSpritePriorityContact } from "./HitDefSpritePrioritySystem";
 import { applyRuntimePowerDelta } from "./RuntimeResourceSystem";
-import { resetRuntimeHitDefContactMemory, type RuntimeHitDefContactMemoryActor } from "./RuntimeHitDefContactMemorySystem";
+import {
+  hasRuntimeHitDefTarget,
+  resetRuntimeHitDefContactMemory,
+  type RuntimeHitDefContactMemoryActor,
+} from "./RuntimeHitDefContactMemorySystem";
 import { findControllerParam } from "./StateProgramExecutor";
 import { markRuntimeHitTmpReversal } from "./RuntimeHitTmpSystem";
 import { evaluateRuntimeControllerNumber, type RuntimeControllerEvaluationContext } from "./RuntimeControllerExpressionContextSystem";
@@ -48,6 +52,7 @@ export type RuntimeReversalActivation = {
   hitDefAttr?: string;
   guardFlag?: string;
   missOnOverride?: boolean;
+  hitOnce?: boolean;
   hitbox?: CollisionBox;
   label?: string;
   hitPause: number;
@@ -100,6 +105,8 @@ export type RuntimeReversalOutcome = {
 
 export type RuntimeReversalIncomingOptions = {
   incomingUnguardable?: boolean;
+  /** Actor id lets a non-hitonce ReversalDef deduplicate only an already-contacted target. */
+  incomingActorId?: string;
 };
 
 export type RuntimeReversalControllerDispatchOptions<TActor extends RuntimeReversalActor> = {
@@ -192,6 +199,12 @@ export class RuntimeReversalControllerDispatchWorld {
       hitDefAttr: operation?.hitDefAttr,
       guardFlag: operation?.guardFlag,
       missOnOverride: operation?.missOnOverride,
+      hitOnce: resolveRuntimeReversalBoolean(
+        operation?.hitOnce,
+        findParam(source, "hitonce"),
+        actor.runtime,
+        context,
+      ),
       hitbox,
       label: source.name ?? "ReversalDef",
       hitPause,
@@ -329,6 +342,13 @@ export class RuntimeReversalControllerDispatchWorld {
     if (operation.missOnOverride !== undefined) {
       existing.missOnOverride = operation.missOnOverride;
       runtimeReversal.missOnOverride = operation.missOnOverride;
+    }
+    if (operation.hitOnce !== undefined) {
+      const hitOnce = resolveRuntimeReversalBoolean(operation.hitOnce, undefined, actor.runtime, context);
+      if (hitOnce !== undefined) {
+        existing.hitOnce = hitOnce;
+        runtimeReversal.hitOnce = hitOnce;
+      }
     }
     const pauseTimeRaw = findParam(controller.source, "pausetime");
     const pauseOperationValue = operation.pauseTimeExpressions
@@ -503,6 +523,7 @@ export class RuntimeReversalWorld {
       reversalGuardFlagNot: activation.reversalGuardFlagNot,
       guardFlag: activation.guardFlag,
       missOnOverride: activation.missOnOverride,
+      ...(activation.hitOnce === undefined ? {} : { hitOnce: activation.hitOnce }),
       p1SpritePriority: activation.p1SpritePriority,
       p2SpritePriority: activation.p2SpritePriority,
       p1StateNo: activation.p1StateNo,
@@ -534,6 +555,7 @@ export class RuntimeReversalWorld {
       ...(activation.hitDefAttr === undefined ? {} : { hitDefAttr }),
       ...(activation.guardFlag === undefined ? {} : { guardFlag: activation.guardFlag }),
       ...(activation.missOnOverride === undefined ? {} : { missOnOverride: activation.missOnOverride }),
+      ...(activation.hitOnce === undefined ? {} : { hitOnce: activation.hitOnce }),
       ...(activation.p1SpritePriority === undefined ? {} : { p1SpritePriority: activation.p1SpritePriority }),
       ...(activation.p2SpritePriority === undefined ? {} : { p2SpritePriority: activation.p2SpritePriority }),
       ...(activation.attackDepth ? { attackDepth: [...activation.attackDepth] as [number, number] } : {}),
@@ -561,7 +583,17 @@ export class RuntimeReversalWorld {
     incoming: RuntimeReversalIncomingOptions = {},
   ): DemoMove | undefined {
     const reversal = defender.currentMove;
-    if (!reversal?.isReversal || defender.hasHit || !reversal.reversalAttr) {
+    const hasExplicitContactMemory = defender.hitDefTargets !== undefined || defender.pendingHitDefTargets !== undefined;
+    const alreadyContacted = !reversal
+      ? false
+      : reversal.hitOnce === true
+        ? defender.hasHit
+        : incoming.incomingActorId === undefined
+          ? defender.hasHit
+          : hasExplicitContactMemory
+            ? hasRuntimeHitDefTarget(defender, incoming.incomingActorId)
+            : defender.hasHit;
+    if (!reversal?.isReversal || alreadyContacted || !reversal.reversalAttr) {
       return undefined;
     }
     if (!hooks.isMoveActive(reversal, defender.moveTick)) {

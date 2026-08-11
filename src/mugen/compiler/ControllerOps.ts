@@ -375,6 +375,8 @@ export type ModifyReversalDefControllerOp = {
   hitDefAttr?: string;
   guardFlag?: string;
   missOnOverride?: boolean;
+  /** Live ReversalDef one-contact flag evaluated in the caller context. */
+  hitOnce?: boolean | string;
   hitPause?: number;
   /** Dynamic or mixed live ReversalDef pausetime pair evaluated in caller context. */
   pauseTimeExpressions?: MugenHitDefExpressionPair;
@@ -1302,6 +1304,8 @@ export type ReversalDefControllerOp = {
   hitDefAttr?: string;
   guardFlag?: string;
   missOnOverride?: boolean;
+  /** ReversalDef one-contact flag; dynamic values resolve in the caller context. */
+  hitOnce?: boolean | string;
   hitPause: number;
   /** Dynamic or mixed ReversalDef pausetime pair evaluated in caller context. */
   pauseTimeExpressions?: MugenHitDefExpressionPair;
@@ -2379,6 +2383,10 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   const hitDefAttr = staticOptionalHitAttributeParam(controller, "attr");
   const guardFlag = staticOptionalGuardFlagParam(controller, "guardflag");
   const missOnOverride = staticOptionalReversalBooleanParam(controller, "missonoverride");
+  const hitOnceValue = optionalIntegerExpressionParam(controller, "hitonce");
+  const hitOnce = typeof hitOnceValue === "number"
+    ? hitOnceValue !== 0
+    : typeof hitOnceValue === "string" ? hitOnceValue : undefined;
   const pauseTimeValue = optionalIntegerExpressionPairParam(controller, "pausetime");
   const pauseTimeExpressions = Array.isArray(pauseTimeValue) && pauseTimeValue.some((value) => typeof value === "string")
     ? pauseTimeValue
@@ -2431,6 +2439,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     hitDefAttr === false ||
     guardFlag === false ||
     missOnOverride === "invalid" ||
+    hitOnceValue === false ||
     hitCountValue === false ||
     p1SpritePriorityValue === false ||
     p2SpritePriorityValue === false ||
@@ -2457,6 +2466,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     hitDefAttr: hitDefAttr === true ? undefined : hitDefAttr,
     guardFlag: guardFlag === true ? undefined : guardFlag,
     missOnOverride,
+    ...(hitOnce === undefined ? {} : { hitOnce }),
     hitPause,
     ...(pauseTimeExpressions === undefined ? {} : { pauseTimeExpressions }),
     ...(hitCount === undefined ? {} : { hitCount }),
@@ -3196,6 +3206,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     "attr",
     "guardflag",
     "missonoverride",
+    "hitonce",
     "pausetime",
     "numhits",
     "p1sprpriority",
@@ -3220,6 +3231,10 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   const hitDefAttr = staticOptionalHitAttributeParam(controller, "attr");
   const guardFlag = staticOptionalGuardFlagParam(controller, "guardflag");
   const missOnOverride = staticOptionalReversalBooleanParam(controller, "missonoverride");
+  const hitOnceValue = optionalIntegerExpressionParam(controller, "hitonce");
+  const hitOnce = typeof hitOnceValue === "number"
+    ? hitOnceValue !== 0
+    : typeof hitOnceValue === "string" ? hitOnceValue : undefined;
   const pauseTimeValue = optionalIntegerExpressionPairParam(controller, "pausetime");
   const pauseTimeExpressions = Array.isArray(pauseTimeValue) && pauseTimeValue.some((value) => typeof value === "string")
     ? pauseTimeValue
@@ -3268,6 +3283,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     hitDefAttr === false ||
     guardFlag === false ||
     missOnOverride === "invalid" ||
+    hitOnceValue === false ||
     pauseTimeValue === false ||
     hitCountValue === false ||
     p1SpritePriorityValue === false ||
@@ -3310,6 +3326,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     hitDefAttr === true &&
     guardFlag === true &&
     missOnOverride === undefined &&
+    hitOnce === undefined &&
     hitPause === undefined &&
     pauseTimeExpressions === undefined &&
     normalizedHitCount === undefined &&
@@ -3341,6 +3358,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     ...(hitDefAttr === true ? {} : { hitDefAttr }),
     ...(guardFlag === true ? {} : { guardFlag }),
     ...(missOnOverride === undefined ? {} : { missOnOverride }),
+    ...(hitOnce === undefined ? {} : { hitOnce }),
     ...(hitPause === undefined ? {} : { hitPause }),
     ...(pauseTimeExpressions === undefined ? {} : { pauseTimeExpressions }),
     ...(normalizedHitCount === undefined ? {} : { hitCount: normalizedHitCount }),
