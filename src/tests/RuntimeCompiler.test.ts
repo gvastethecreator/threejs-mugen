@@ -2678,6 +2678,40 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles root ModifyHitDef snap with live component-preserving expressions", () => {
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      snap: "16,-24",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      snap: [16, -24],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      snap: "var(1)",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      snap: ["var(1)"],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      snap: "var(1),fvar(2)",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      snap: ["var(1)", "fvar(2)"],
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      snap: "var(1),fvar(2),var(3)",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      snap: "var(1),var(",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles Ikemen sparkangle for fresh and live ModifyHitDef callers", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       sparkangle: "-12.5",

@@ -2237,7 +2237,9 @@ export function resolveRuntimeHelperFloatPairParam(
         : key === "snap"
           ? operation.kind === "hitdef"
             ? operation.snapExpressions
-            : undefined
+            : operation.kind === "modifyhitdef"
+              ? operation.snap
+              : undefined
         : key === "sparkxy"
           ? operation.kind === "modifyhitdef"
             ? operation.sparkXy

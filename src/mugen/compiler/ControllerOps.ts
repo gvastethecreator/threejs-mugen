@@ -348,6 +348,8 @@ export type ModifyHitDefControllerOp = {
   guardSoundChannel?: number | string;
   /** Component-wise live replacement for the contact PalFX payload. */
   paletteFx?: MugenHitDefPaletteFxOp;
+  /** Component-wise live snap X/Y replacement evaluated in caller context. */
+  snap?: MugenHitDefExpressionPair;
   /** Component-wise live replacement for direct-contact camera shake. */
   envShake?: MugenHitDefEnvShakeOp;
   /** Component-wise live replacement for fall-impact camera shake. */
@@ -2891,6 +2893,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "sparkxy",
     "sparkangle",
     "guard.sparkangle",
+    "snap",
     "guard.sparkno",
     "hitsound",
     "hitsound.channel",
@@ -3038,6 +3041,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
   const guardSparkScale = optionalFloatExpressionPairParam(controller, "guard.sparkscale");
   const sparkXy = optionalFloatExpressionPairParam(controller, "sparkxy");
+  const snap = optionalFloatExpressionPairParam(controller, "snap");
   const hitSparkAngle = optionalScalarNumberOrExpression(controller, "sparkangle");
   const guardSparkAngle = optionalScalarNumberOrExpression(controller, "guard.sparkangle");
   const guardSparkValue = optionalModifyHitDefSparkParam(controller, "guard.sparkno");
@@ -3134,6 +3138,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     hitSparkScale !== true ||
     guardSparkScale !== true ||
     sparkXy !== true ||
+    snap !== true ||
     hitSparkAngle !== true ||
     guardSparkAngle !== true ||
     guardSparkValue !== true ||
@@ -3206,6 +3211,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     hitSparkScale === false ||
     guardSparkScale === false ||
     sparkXy === false ||
+    snap === false ||
     hitSparkAngle === false ||
     guardSparkAngle === false ||
     guardSparkValue === false ||
@@ -3300,6 +3306,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(hitSparkScale === true ? {} : { hitSparkScale }),
     ...(guardSparkScale === true ? {} : { guardSparkScale }),
     ...(sparkXy === true ? {} : { sparkXy }),
+    ...(snap === true ? {} : { snap }),
     ...(hitSparkAngle === true ? {} : { hitSparkAngle }),
     ...(guardSparkAngle === true ? {} : { guardSparkAngle }),
     ...(guardSpark === undefined ? {} : { guardSpark }),

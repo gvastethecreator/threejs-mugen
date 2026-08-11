@@ -5480,9 +5480,11 @@ function runActiveStateControllers(
                 ? operation?.downVelocityExpressions
                 : key === "guard.velocity"
                   ? operation?.guardVelocityExpressions
-                : key === "airguard.velocity"
+                  : key === "airguard.velocity"
                   ? operation?.airGuardVelocityExpressions
-                  : operation?.sparkXy;
+                  : key === "sparkxy"
+                    ? operation?.sparkXy
+                    : operation?.snap;
           if (pair === undefined) return undefined;
           const resolveComponent = (value: number | string | undefined): number | undefined => {
             if (typeof value === "number") return Number.isFinite(value) ? value : undefined;

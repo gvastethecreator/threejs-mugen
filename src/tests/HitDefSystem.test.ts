@@ -1318,6 +1318,58 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.sparkXy).toEqual([24.5, -72.25]);
   });
 
+  it("resolves live ModifyHitDef snap per component and preserves omitted axes", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        damage: "20",
+        snap: "10,-40",
+      })),
+      frame: activeFrame(),
+    });
+    actor.currentMove!.hitVars = {
+      ...actor.currentMove!.hitVars,
+      hitOffset: { x: 10, y: -40, z: 3 },
+    };
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        snap: "var(0)",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.hitVars?.hitOffset).toEqual({ x: 0, y: -40, z: 3 });
+
+    caller.vars[0] = 24.5;
+    caller.fvars[1] = -72.25;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        snap: "var(0),fvar(1)",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.hitVars?.hitOffset).toEqual({ x: 24.5, y: -72.25, z: 3 });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        forcenofall: "1",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.hitVars?.hitOffset).toEqual({ x: 24.5, y: -72.25, z: 3 });
+  });
+
   it("resolves live ModifyHitDef sparkangle in caller context and preserves omission", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

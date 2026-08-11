@@ -2113,6 +2113,41 @@ describe("HelperSystem", () => {
     expect(operations).toEqual(["modifyhitdef", "modifyhitdef", "modifyhitdef"]);
   });
 
+  it("applies Helper-owned ModifyHitDef snap in caller context and preserves omitted axes", () => {
+    const active = helper({
+      vars: [24.5],
+      fvars: [-72.25],
+      currentMove: activeMove({ hitVars: { hitOffset: { x: 10, y: -40, z: 3 } } }),
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            compiledControllerIr(6000, "HitDef", [], {
+              attr: "S,NA",
+              damage: "20",
+              snap: "10,-40",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              snap: "var(0)",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              snap: "var(0),fvar(0)",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], { redirectid: "0", damage: "21" }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.currentMove).toMatchObject({
+      damage: 21,
+      hitVars: { hitOffset: { x: 24.5, y: -72.25 } },
+    });
+  });
+
   it("applies Helper-owned ModifyHitDef sparkxy in caller context and preserves omitted axes", () => {
     const active = helper({
       vars: [24.5],

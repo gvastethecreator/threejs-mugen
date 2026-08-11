@@ -11800,6 +11800,18 @@ trigger1 = Time = 0
 v = 30
 value = 3.25
 
+[State 0, Redirected ModifyHitDef snap X]
+type = VarSet
+trigger1 = Time = 0
+v = 31
+value = 16
+
+[State 0, Redirected ModifyHitDef snap Y]
+type = VarSet
+trigger1 = Time = 0
+v = 32
+value = -24
+
 [State 0, Redirected ModifyHitDef]
 type = ModifyHitDef
 trigger1 = Time = 1
@@ -11831,6 +11843,7 @@ p2facing = var(24)
 getpower = var(26),var(27)
 givepower = var(28),var(29)
 down.velocity = -6,-2,var(30)
+snap = var(31),var(32)
 guard.velocity = var(29) - 13
 palfx.time = var(27)
 palfx.add = var(28),-var(29),3
@@ -11916,6 +11929,7 @@ pausetime = 0,0
 ground.hittime = 8
 ground.velocity = -6,-2
 guard.velocity = -2,-3,4
+snap = 1,2
 sparkscale = .8,.9
 guard.sparkscale = .7,.6
 getpower = 4,2
@@ -12106,7 +12120,14 @@ down.bounce = 0
         downRecoverTime: 45,
         envShake: { time: 44, freq: 110, ampl: -18, phase: 35, mul: 1.5, dir: -30 },
       },
-      hitVars: { hitId: 92, chainId: 13, hitCount: 3, standFriction: 0.62, crouchFriction: 0.72 },
+      hitVars: {
+        hitId: 92,
+        chainId: 13,
+        hitCount: 3,
+        standFriction: 0.62,
+        crouchFriction: 0.72,
+        hitOffset: { x: 16, y: -24 },
+      },
     });
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.HitDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyHitDef).toBe(1);

@@ -83,7 +83,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   resolveIntegerList?: (key: "nochainid") => number[] | undefined;
   resolveIntegerPair?: (key: "damage" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "hitsound.channel" | "guardsound.channel") => number | undefined;
-  resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkxy") => [number?, number?] | undefined;
+  resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkxy" | "snap") => [number?, number?] | undefined;
   /** Resolves live dynamic float scalars in the caller context. */
   resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
   /** Resolves a live spark identity's numeric suffix in the caller context. */
@@ -1434,6 +1434,28 @@ export class RuntimeHitDefControllerDispatchWorld {
           sparkXy.first ?? currentSparkXy[0],
           sparkXy.componentCount === 2 ? sparkXy.second ?? currentSparkXy[1] : currentSparkXy[1],
         ];
+      }
+    }
+    if (operation.snap !== undefined) {
+      const snap = resolveRuntimeHitDefFloatExpressionPair(
+        operation.snap,
+        findParam(controller.source, "snap"),
+        actor.runtime,
+        context ?? {},
+        resolveFloatPair?.("snap"),
+      );
+      if (snap !== undefined && (snap.first !== undefined || (snap.componentCount === 2 && snap.second !== undefined))) {
+        const currentSnap = existing.hitVars?.hitOffset ?? { x: 0 };
+        existing.hitVars = {
+          ...existing.hitVars,
+          hitOffset: {
+            x: snap.first ?? currentSnap.x,
+            ...(snap.componentCount === 2
+              ? { y: snap.second ?? currentSnap.y }
+              : currentSnap.y === undefined ? {} : { y: currentSnap.y }),
+            ...(currentSnap.z === undefined ? {} : { z: currentSnap.z }),
+          },
+        };
       }
     }
     if (operation.hitSparkAngle !== undefined) {
