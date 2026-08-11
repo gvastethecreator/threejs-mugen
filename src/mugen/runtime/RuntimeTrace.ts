@@ -128,6 +128,8 @@ export type RuntimeTraceActor = {
   juggle?: number;
   /** Provenance of the active juggle cost. */
   juggleOrigin?: "statedef" | "hitdef" | "reset" | "default";
+  /** Last authored hit id exposed through GetHitVar after contact. */
+  hitId?: number;
   targetCount: number;
   effect?: RuntimeTraceEffectSummary;
   soundEvents?: NonNullable<ActorSnapshot["soundEvents"]>;
@@ -537,6 +539,7 @@ export type RuntimeTraceFinalActorRequirement = {
   airJugglePoints?: Record<string, number>;
   juggle?: number;
   juggleOrigin?: "statedef" | "hitdef" | "reset" | "default";
+  hitId?: number;
   targetCount?: number;
 };
 
@@ -864,6 +867,7 @@ export type RuntimeTraceGateFinalActorEvidence = Pick<
   | "airJugglePoints"
   | "juggle"
   | "juggleOrigin"
+  | "hitId"
   | "targetCount"
 >;
 
@@ -3101,6 +3105,7 @@ function summarizeFinalActorEvidence(actor: RuntimeTraceActor): RuntimeTraceGate
     airJugglePoints: actor.airJugglePoints ? { ...actor.airJugglePoints } : undefined,
     ...(actor.juggle === undefined ? {} : { juggle: actor.juggle }),
     ...(actor.juggleOrigin === undefined ? {} : { juggleOrigin: actor.juggleOrigin }),
+    ...(actor.hitId === undefined ? {} : { hitId: actor.hitId }),
     targetCount: actor.targetCount,
   };
 }
@@ -4156,6 +4161,7 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     airJugglePoints: actor.runtime.airJugglePoints ? { ...actor.runtime.airJugglePoints } : undefined,
     ...(actor.runtime.juggle !== undefined ? { juggle: actor.runtime.juggle } : {}),
     ...(actor.runtime.juggleOrigin !== undefined ? { juggleOrigin: actor.runtime.juggleOrigin } : {}),
+    ...(actor.runtime.hitVars?.hitId === undefined ? {} : { hitId: actor.runtime.hitVars.hitId }),
     targetCount: actor.runtime.targetCount ?? actor.runtime.targetRefs?.length ?? 0,
     effect: actor.effect ? cloneTraceEffect(actor.effect) : undefined,
     soundEvents: actor.soundEvents?.map((event) => ({ ...event })),
@@ -4216,6 +4222,7 @@ function summarizeActorForChecksum(
   | "screenBound"
   | "assertSpecialFlags"
   | "assertSpecialGlobalFlags"
+  | "hitId"
   | "soundEvents"
   | "hitEffectEvents"
   | "envShakeEvents"
@@ -4247,6 +4254,7 @@ function summarizeActorForChecksum(
     screenBound: _screenBound,
     assertSpecialFlags: _assertSpecialFlags,
     assertSpecialGlobalFlags: _assertSpecialGlobalFlags,
+    hitId: _hitId,
     soundEvents: _soundEvents,
     hitEffectEvents: _hitEffectEvents,
     envShakeEvents: _envShakeEvents,

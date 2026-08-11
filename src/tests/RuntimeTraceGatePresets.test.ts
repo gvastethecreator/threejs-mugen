@@ -236,6 +236,7 @@ import {
   createSyntheticImportedIkemenProjectileSameFrameApContactTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefDynamicAttackDepthTraceArtifact,
+  createSyntheticImportedIkemenRootModifyReversalDefDynamicIdTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefDynamicStateTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefPauseTimePairTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefSpritePriorityPairTraceArtifact,
@@ -18377,6 +18378,37 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.finalActors).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: "p1", moveType: "H" }),
+        expect.objectContaining({ id: "p2", stateNo: 778 }),
+      ]),
+    );
+  });
+
+  it("creates a required IKEMEN root dynamic ModifyReversalDef id artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootModifyReversalDefDynamicIdTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-id-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-id-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.ModifyReversalDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.modifyreversaldef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("reversal");
+    expect(evidence?.combatReasons).toContain("reversal");
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", moveType: "H", hitId: 43 }),
         expect.objectContaining({ id: "p2", stateNo: 778 }),
       ]),
     );

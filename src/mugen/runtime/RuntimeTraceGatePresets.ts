@@ -16846,6 +16846,90 @@ export function createSyntheticImportedIkemenRootModifyReversalDefDynamicAttackD
   });
 }
 
+export function createSyntheticImportedIkemenRootModifyReversalDefDynamicIdTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 43;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms a ReversalDef with an adversarial target id", frames: 1, p1: [], p2: [] },
+    { label: "caller resolves dynamic ModifyReversalDef id through RedirectID", frames: 1, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-id-caller",
+    displayName: "Synthetic Imported IKEMEN Dynamic ReversalDef ID Caller",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 0,
+      targetId,
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      posZ: 7,
+      delayedPosX: { x: 0, trigger: "Time >= 1" },
+    },
+    rootModifyReversalDefRedirectRoute: {
+      hitPause: 6,
+      p1StateNo: 778,
+      targetIdExpression: "var(4)",
+      attackDepthExpression: ["var(5) + 1", "var(6) + 1"],
+      vars: [
+        { index: 4, value: targetId },
+        { index: 5, value: 7 },
+        { index: 6, value: 8 },
+      ],
+      redirectId: 57,
+      trigger: "Time >= 1",
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-id-receiver",
+    displayName: "Synthetic Imported IKEMEN Dynamic ReversalDef ID Receiver",
+    withHitDef: false,
+    passiveReversalDef: {
+      attr: "S,NA",
+      p1StateNo: 777,
+      hitPause: 3,
+      targetId: 105,
+      attackDepth: [1, 1],
+      trigger: "Time = 0",
+    },
+    passiveControllerStates: [{ stateNo: 778 }],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-id-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-id-golden",
+      label: "Synthetic imported IKEMEN dynamic ModifyReversalDef id",
+      source: "mixed",
+      notes: [
+        "Pinned Ikemen GO evaluates live ModifyReversalDef id in the original caller, clamps the resolved value, mutates the redirected ReversalDef, and exposes the accepted reversal target id through the attacker's GetHitVar(hitid) metadata. ChainID, Helper-owned mutation, Projectile reflection, priority/hitonce, exact scheduling, teams, rollback, and full ReversalDef parity remain outside this bounded trace.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-id-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedStates: [778],
+        requiredExecutedControllers: ["HitDef", "ReversalDef", "ModifyReversalDef", "VarSet"],
+        requiredExecutedOperations: ["hitdef", "reversaldef", "modifyreversaldef", "variable:varset"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", moveType: "H", life: 1000, hitId: targetId },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 778, life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenRootModifyReversalDefDynamicStateTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -63937,6 +64021,8 @@ export type SyntheticImportedTraceFighterOptions = {
     p2FacingExpression?: SyntheticNumberExpression;
     vars?: Array<{ index: number; value: number }>;
     targetId?: number;
+    /** Synthetic fixture-only caller expression for live ModifyReversalDef id. */
+    targetIdExpression?: SyntheticNumberExpression;
     attackDepth?: [number, number?];
     /** Synthetic fixture-only caller expression for live ModifyReversalDef attack depth. */
     attackDepthExpression?: SyntheticPartialPairExpression;
@@ -71435,7 +71521,7 @@ ${p2GetP1State === undefined ? "" : `p2getp1state = ${p2GetP1State}`}
 ${(route.p1FacingExpression ?? route.p1Facing) === undefined ? "" : `p1facing = ${route.p1FacingExpression ?? route.p1Facing}`}
 ${(route.p1GetP2FacingExpression ?? route.p1GetP2Facing) === undefined ? "" : `p1getp2facing = ${route.p1GetP2FacingExpression ?? route.p1GetP2Facing}`}
 ${p2Facing === undefined ? "" : `p2facing = ${p2Facing}`}
-${route.targetId === undefined ? "" : `id = ${route.targetId}`}
+${(route.targetIdExpression ?? route.targetId) === undefined ? "" : `id = ${route.targetIdExpression ?? route.targetId}`}
 ${attackDepth === undefined ? "" : `attack.depth = ${attackDepth.join(",")}`}
 redirectid = ${route.redirectId}
 `;
