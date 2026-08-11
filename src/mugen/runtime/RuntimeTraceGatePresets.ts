@@ -31265,6 +31265,86 @@ export function createSyntheticImportedModifyProjectileDynamicTerminalAnimTraceA
   });
 }
 
+export function createSyntheticImportedModifyProjectileDynamicMoveTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? effectPauseStage();
+  const script = importedProjectileRemoveTerminalScript();
+  const projectileId = 8922;
+  const readbackStateNo = 916;
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-dynamic-movetime-attacker",
+    displayName: "Dynamic ModifyProjectile MoveTime Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileId,
+    projectileAnimNo: 910,
+    projectileHitAnim: 911,
+    projectileRemoveAnim: 912,
+    projectileCancelAnim: 913,
+    projectileOffset: [80, -45],
+    projectileVelocity: [0, 0],
+    projectileRemoveTime: 8,
+    projectileRemoveOnHit: false,
+    withModifyProjectile: true,
+    modifyProjectileTriggerTime: 3,
+    modifyProjectileId: projectileId,
+    modifyProjectilePauseMoveTime: "var(0)",
+    modifyProjectileSuperMoveTime: "var(1)",
+    modifyProjectileMoveTimeReadbackStateNo: readbackStateNo,
+    modifyProjectilePauseMoveTimeExpected: 5,
+    modifyProjectileSuperMoveTimeExpected: 6,
+    modifyProjectileVarSeeds: [
+      { index: 0, value: 4 },
+      { index: 1, value: 5 },
+    ],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-modifyprojectile-dynamic-movetime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyprojectile-dynamic-movetime-golden",
+      label: "Synthetic imported dynamic ModifyProjectile pause/super movetime route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves root caller-context ModifyProjectile pausemovetime and supermovetime expressions resolve once, normalize non-negative budgets with the existing +1 contract, update the selected Projectile, and remain visible through ProjVar and effect snapshots. Exact Pause/SuperPause layering, invalid/overflow conversion, teams, rollback, and full Projectile parity remain outside the claim.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyprojectile-dynamic-movetime-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, readbackStateNo],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Projectile", "ModifyProjectile"],
+      requiredExecutedOperations: ["variable:varset", "projectile", "modifyprojectile"],
+      requiredActiveCommands: ["x"],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [{
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        parentId: "p1",
+        effectId: projectileId,
+        minAge: 1,
+        minPauseMoveTime: 4,
+        minSuperMoveTime: 5,
+      }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: readbackStateNo, life: 1000 }],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileDynamicAnimTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -52760,6 +52840,90 @@ export function createSyntheticImportedHelperModifyProjectileDynamicAnimTraceArt
   });
 }
 
+export function createSyntheticImportedHelperModifyProjectileDynamicMoveTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? effectPauseStage();
+  const script = importedHelperProjectileRemoveTerminalScript();
+  const projectileId = 8923;
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-dynamic-movetime-attacker",
+    displayName: "Synthetic Imported Helper Dynamic ModifyProjectile MoveTime Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperModifyProjectileRoute: {
+      modifyStateNo: 1214,
+      modifyAnimNo: 934,
+      finalStateNo: 1215,
+      finalAnimNo: 935,
+      projectileAnimNo: 945,
+      projectileId,
+      pauseMoveTime: "Var(30)",
+      superMoveTime: "Var(31)",
+      helperVarSeeds: [
+        { index: 30, value: 4 },
+        { index: 31, value: 5 },
+      ],
+      removeTime: 12,
+      spritePriority: 8,
+      priority: 4,
+      hits: 1,
+      missTime: 0,
+      removeOnHit: false,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-modifyprojectile-dynamic-movetime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-modifyprojectile-dynamic-movetime-golden",
+      label: "Synthetic imported Helper dynamic ModifyProjectile pause/super movetime route",
+      source: "mixed",
+      notes: [
+        "Pinned Ikemen GO trace proves a Helper-local ModifyProjectile resolves pausemovetime and supermovetime once in the Helper caller context, normalizes non-negative budgets through the existing +1 contract, and updates only the helper-parented Projectile. Exact Pause/SuperPause layering, invalid/overflow conversion, namespace broadcast, teams, rollback, and full Helper/Projectile parity remain outside the claim.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-modifyprojectile-dynamic-movetime-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper", "projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Helper", "Projectile", "ModifyProjectile"],
+      requiredExecutedOperations: ["variable:varset", "helper", "projectile", "modifyprojectile"],
+      requiredActiveCommands: ["x"],
+      requiredActorFrames: [
+        { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1214, animNo: 934, minFrames: 1 },
+        { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1215, animNo: 935, minFrames: 1 },
+        { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 945, minFrames: 1 },
+      ],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minHelpers: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [{
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        parentId: "p1-helper-0",
+        effectId: projectileId,
+        minAge: 1,
+        minPauseMoveTime: 4,
+        minSuperMoveTime: 5,
+      }],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperModifyProjectileOmittedBoundsTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -62131,6 +62295,14 @@ export type SyntheticImportedTraceFighterOptions = {
   modifyProjectileRemoveAnim?: SyntheticNumberExpression;
   /** Synthetic fixture-only live ModifyProjectile projcancelanim expression. */
   modifyProjectileCancelAnim?: SyntheticNumberExpression;
+  /** Synthetic fixture-only live ModifyProjectile pausemovetime expression. */
+  modifyProjectilePauseMoveTime?: SyntheticNumberExpression;
+  /** Synthetic fixture-only live ModifyProjectile supermovetime expression. */
+  modifyProjectileSuperMoveTime?: SyntheticNumberExpression;
+  /** State reached when ProjVar observes both live ModifyProjectile pause budgets. */
+  modifyProjectileMoveTimeReadbackStateNo?: number;
+  modifyProjectilePauseMoveTimeExpected?: SyntheticNumberExpression;
+  modifyProjectileSuperMoveTimeExpected?: SyntheticNumberExpression;
   /** AIR action made available for a synthetic live ModifyProjectile projanim target. */
   modifyProjectileAnimActionNo?: number;
   /** State reached only when ProjVar(anim) observes the selected live Projectile action. */
@@ -62605,6 +62777,10 @@ export type SyntheticImportedTraceFighterOptions = {
     projectileAnimNo: number;
     /** Synthetic Helper-local dynamic live ModifyProjectile projanim expression. */
     modifyAnimExpression?: SyntheticNumberExpression;
+    /** Synthetic Helper-local dynamic live ModifyProjectile pausemovetime expression. */
+    pauseMoveTime?: SyntheticNumberExpression;
+    /** Synthetic Helper-local dynamic live ModifyProjectile supermovetime expression. */
+    superMoveTime?: SyntheticNumberExpression;
     /** AIR action made available for a dynamic live ModifyProjectile projanim. */
     modifyAnimExpected?: number;
     projectileId?: number;
@@ -63676,6 +63852,8 @@ ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   hitAnim: options.modifyProjectileHitAnim,
   removeAnim: options.modifyProjectileRemoveAnim,
   cancelAnim: options.modifyProjectileCancelAnim,
+  pauseMoveTime: options.modifyProjectilePauseMoveTime,
+  superMoveTime: options.modifyProjectileSuperMoveTime,
   velocity: options.modifyProjectileVelocity,
   accel: options.modifyProjectileAccel,
   velocityMultiplier: options.modifyProjectileVelocityMultiplier,
@@ -63701,6 +63879,11 @@ ${options.modifyProjectileAnimReadbackStateNo === undefined ? "" : contactBranch
   `ProjVar(${options.modifyProjectileId ?? 77}, 0, anim) = ${options.modifyProjectileAnimExpected ?? 0}`,
   options.modifyProjectileAnimReadbackStateNo,
   "ModifyProjectile ProjVar Animation Branch",
+)}
+${options.modifyProjectileMoveTimeReadbackStateNo === undefined ? "" : contactBranchBlock(
+  `ProjVar(${options.modifyProjectileId ?? 77}, 0, pausemovetime) = ${options.modifyProjectilePauseMoveTimeExpected ?? 0} && ProjVar(${options.modifyProjectileId ?? 77}, 0, supermovetime) = ${options.modifyProjectileSuperMoveTimeExpected ?? 0}`,
+  options.modifyProjectileMoveTimeReadbackStateNo,
+  "ModifyProjectile ProjVar MoveTime Branch",
 )}
 ${options.withHitAdd === undefined ? "" : hitAddControllerBlock(options.withHitAdd)}
 ${options.projCancelTimeVarSeed === undefined ? "" : projectileCancelTimeVarSeedBlock(options.projCancelTimeVarSeed)}
@@ -64006,6 +64189,9 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.modifyProjectileAnimReadbackStateNo === undefined
         ? []
         : ([[options.modifyProjectileAnimReadbackStateNo, traceAction(options.modifyProjectileAnimReadbackStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.modifyProjectileMoveTimeReadbackStateNo === undefined
+        ? []
+        : ([[options.modifyProjectileMoveTimeReadbackStateNo, traceAction(options.modifyProjectileMoveTimeReadbackStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.projHitStateNo === undefined ? [] : ([[options.projHitStateNo, traceAction(options.projHitStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.projHitTimeStateNo === undefined ? [] : ([[options.projHitTimeStateNo, traceAction(options.projHitTimeStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.projContactTimeStateNo === undefined
@@ -67838,6 +68024,8 @@ function modifyProjectileControllerBlock(input: {
   hitAnim?: SyntheticNumberExpression;
   removeAnim?: SyntheticNumberExpression;
   cancelAnim?: SyntheticNumberExpression;
+  pauseMoveTime?: SyntheticNumberExpression;
+  superMoveTime?: SyntheticNumberExpression;
   velocity?: SyntheticPairExpression;
   accel?: SyntheticPairExpression;
   velocityMultiplier?: SyntheticPairExpression;
@@ -67884,6 +68072,8 @@ value = ${seed.value}
   const hitAnimLine = input.hitAnim === undefined ? "" : `projhitanim = ${input.hitAnim}`;
   const removeAnimLine = input.removeAnim === undefined ? "" : `projremanim = ${input.removeAnim}`;
   const cancelAnimLine = input.cancelAnim === undefined ? "" : `projcancelanim = ${input.cancelAnim}`;
+  const pauseMoveTimeLine = input.pauseMoveTime === undefined ? "" : `pausemovetime = ${input.pauseMoveTime}`;
+  const superMoveTimeLine = input.superMoveTime === undefined ? "" : `supermovetime = ${input.superMoveTime}`;
   const downVelocityLine = input.downVelocity === undefined ? "" : `down.velocity = ${input.downVelocity.join(",")}`;
   const groundVelocityLine = input.groundVelocity === undefined ? "" : `ground.velocity = ${input.groundVelocity.join(",")}`;
   const airGuardVelocityLine = input.airGuardVelocity === undefined ? "" : `airguard.velocity = ${input.airGuardVelocity.join(",")}`;
@@ -67912,6 +68102,8 @@ ${projAnimLine}
 ${hitAnimLine}
 ${removeAnimLine}
 ${cancelAnimLine}
+${pauseMoveTimeLine}
+${superMoveTimeLine}
 ${downVelocityLine}
 ${groundVelocityLine}
 ${airGuardVelocityLine}
@@ -70955,6 +71147,8 @@ function helperModifyProjectileRouteBlock(route: NonNullable<SyntheticImportedTr
   const stageBoundLine = route.omitModifyBounds ? "" : `projstagebound = ${stageBound}`;
   const heightBoundLine = route.omitModifyBounds ? "" : `projheightbound = ${heightBound[0]},${heightBound[1]}`;
   const modifyAnimLine = route.modifyAnimExpression === undefined ? "" : `projanim = ${route.modifyAnimExpression}`;
+  const pauseMoveTimeLine = route.pauseMoveTime === undefined ? "" : `pausemovetime = ${route.pauseMoveTime}`;
+  const superMoveTimeLine = route.superMoveTime === undefined ? "" : `supermovetime = ${route.superMoveTime}`;
   const helperVarSeedLines = route.helperVarSeeds === undefined
     ? ""
     : route.helperVarSeeds
@@ -71011,6 +71205,8 @@ type = ModifyProjectile
 trigger1 = Time = ${modifyTriggerTime}
 id = ${modifyProjectileId}
 ${modifyAnimLine}
+${pauseMoveTimeLine}
+${superMoveTimeLine}
 velocity = ${velocity[0]},${velocity[1]}
 accel = ${accel[0]},${accel[1]}
 velmul = ${velocityMultiplier[0]},${velocityMultiplier[1]}

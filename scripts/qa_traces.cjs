@@ -1591,6 +1591,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyProjectileDynamicTerminalAnimTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyprojectile-dynamic-movetime",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyProjectileDynamicMoveTimeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projectile-dynamic-anim",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileDynamicAnimTraceArtifact(),
@@ -3522,6 +3527,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperModifyProjectileDynamicAnimTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-modifyprojectile-dynamic-movetime",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperModifyProjectileDynamicMoveTimeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projhit",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjHitTraceArtifact(),
@@ -5146,6 +5156,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-modifyprojectile-dynamic-air-velocity",
     "synthetic-imported-modifyprojectile-dynamic-bounds",
     "synthetic-imported-modifyprojectile-dynamic-terminal-anim",
+    "synthetic-imported-modifyprojectile-dynamic-movetime",
     "synthetic-imported-projectile-multihit",
     "synthetic-imported-projectile-dynamic-misstime",
     "synthetic-imported-helper-projectile-dynamic-misstime",
@@ -5175,6 +5186,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-modifyprojectile-dynamic-bounds",
     "synthetic-imported-helper-modifyprojectile-dynamic-params",
     "synthetic-imported-helper-modifyprojectile-dynamic-anim",
+    "synthetic-imported-helper-modifyprojectile-dynamic-movetime",
     "synthetic-imported-helper-projhit",
     "synthetic-imported-helper-projhittime-any",
     "synthetic-imported-helper-projectile-hitcount",

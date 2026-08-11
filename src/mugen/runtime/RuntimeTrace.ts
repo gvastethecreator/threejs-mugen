@@ -2401,11 +2401,11 @@ function matchesEffectPausePayloadRequirement(
   if (!hasPauseRequirement) {
     return true;
   }
-  if (!("ignoreHitPause" in effect) || !("pauseMoveTime" in effect) || !("superMoveTime" in effect)) {
+  if (effect.pauseMoveTime === undefined || effect.superMoveTime === undefined) {
     return false;
   }
   return (
-    (requirement.ignoreHitPause === undefined || effect.ignoreHitPause === requirement.ignoreHitPause) &&
+    (requirement.ignoreHitPause === undefined || ("ignoreHitPause" in effect && effect.ignoreHitPause === requirement.ignoreHitPause)) &&
     (requirement.minPauseMoveTime === undefined || effect.pauseMoveTime >= requirement.minPauseMoveTime) &&
     (requirement.minSuperMoveTime === undefined || effect.superMoveTime >= requirement.minSuperMoveTime)
   );

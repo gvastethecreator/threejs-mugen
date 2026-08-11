@@ -438,7 +438,9 @@ import {
   createSyntheticImportedProjectileDynamicAnimTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicAnimTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicTerminalAnimTraceArtifact,
+  createSyntheticImportedModifyProjectileDynamicMoveTimeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicAnimTraceArtifact,
+  createSyntheticImportedHelperModifyProjectileDynamicMoveTimeTraceArtifact,
   createSyntheticImportedProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact,
@@ -22966,6 +22968,50 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(3);
     expect(evidence?.actorFrames).toEqual(expect.arrayContaining([
       expect.objectContaining({ actorKind: "projectile", ownerId: "p1", animNo: 915 }),
+    ]));
+  });
+
+  it("creates required imported ModifyProjectile dynamic pause budgets artifact", () => {
+    const artifact = createSyntheticImportedModifyProjectileDynamicMoveTimeTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-modifyprojectile-dynamic-movetime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-modifyprojectile-dynamic-movetime-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.ModifyProjectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 916]));
+    expect(evidence?.effectPayloads).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        effect: expect.objectContaining({
+          kind: "projectile",
+          pauseMoveTime: 4,
+          superMoveTime: 5,
+        }),
+      }),
+    ]));
+  });
+
+  it("creates required imported Helper ModifyProjectile dynamic pause budgets artifact", () => {
+    const artifact = createSyntheticImportedHelperModifyProjectileDynamicMoveTimeTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-modifyprojectile-dynamic-movetime-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-helper-modifyprojectile-dynamic-movetime-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ModifyProjectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.effectPayloads).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorKind: "projectile",
+        parentId: "p1-helper-0",
+      }),
     ]));
   });
 
