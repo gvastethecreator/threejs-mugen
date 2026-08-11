@@ -1841,6 +1841,15 @@ value = 1
     const dynamicPause = compileControllerIr(
       controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", pausetime: "var(0),fvar(1)" }),
     );
+    const dynamicAttackDepth = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", "attack.depth": "var(0),fvar(1)" }),
+    );
+    const singleDynamicAttackDepth = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", "attack.depth": "var(0)" }),
+    );
+    const malformedAttackDepth = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", "attack.depth": "var(0),fvar(1),1" }),
+    );
 
     expect(reversal.operation).toEqual({
       kind: "reversaldef",
@@ -1876,6 +1885,15 @@ value = 1
       hitPause: 0,
       pauseTimeExpressions: ["var(0)", "fvar(1)"],
     });
+    expect(dynamicAttackDepth.operation).toMatchObject({
+      kind: "reversaldef",
+      attackDepthExpressions: ["var(0)", "fvar(1)"],
+    });
+    expect(singleDynamicAttackDepth.operation).toMatchObject({
+      kind: "reversaldef",
+      attackDepthExpressions: ["var(0)"],
+    });
+    expect(malformedAttackDepth.operation).toBeUndefined();
   });
 
   it("duplicates a single attack.depth value in typed HitDef operations", () => {
@@ -3323,6 +3341,29 @@ value = 1
       p2Facing: "var(1)",
       redirectPlayerIdExpression: "57",
     });
+  });
+
+  it("compiles dynamic ReversalDef attack.depth values for fresh and redirected forms", () => {
+    const fresh = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", "attack.depth": "var(0),fvar(1)" }),
+    );
+    const modified = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { "attack.depth": "var(1)", redirectid: "57" }),
+    );
+    const malformed = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { "attack.depth": "var(0),fvar(1),1", redirectid: "57" }),
+    );
+
+    expect(fresh.operation).toEqual(expect.objectContaining({
+      kind: "reversaldef",
+      attackDepthExpressions: ["var(0)", "fvar(1)"],
+    }));
+    expect(modified.operation).toEqual({
+      kind: "modifyreversaldef",
+      attackDepthExpressions: ["var(1)"],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(malformed.operation).toBeUndefined();
   });
 
   it("compiles ReversalDef p1facing and p1getp2facing in fresh and redirected forms", () => {

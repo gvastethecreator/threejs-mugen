@@ -148,6 +148,43 @@ describe("ReversalSystem", () => {
     });
   });
 
+  it("resolves dynamic ReversalDef attack.depth in the caller and duplicates a single live component", () => {
+    const world = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const receiver = actor("p2", "Reverser", { stateNo: 300, vars: [99], fvars: [99] });
+    const caller = actor("p1", "Caller", { vars: [4], fvars: [0, 8] });
+    const ir = compileControllerIr(controller("ReversalDef", {
+      "reversal.attr": "SA,AA",
+      "attack.depth": "var(0),fvar(1)",
+    }));
+
+    const activated = dispatchWorld.apply({
+      actor: receiver,
+      controller: ir,
+      context: { self: caller.runtime },
+      hitbox: box(),
+      reversalWorld: world,
+    });
+
+    expect(activated.activated).toBe(true);
+    expect(receiver.currentMove?.attackDepth).toEqual([4, 8]);
+    expect(receiver.runtime.reversal?.attackDepth).toEqual([4, 8]);
+
+    caller.runtime.vars[0] = 7;
+    const modified = dispatchWorld.modify({
+      actor: receiver,
+      controller: compileControllerIr(controller("ModifyReversalDef", {
+        "attack.depth": "var(0) - 1",
+        redirectid: "57",
+      })),
+      context: { self: caller.runtime },
+    });
+
+    expect(modified.modified).toBe(true);
+    expect(receiver.currentMove?.attackDepth).toEqual([6, 6]);
+    expect(receiver.runtime.reversal?.attackDepth).toEqual([6, 6]);
+  });
+
   it("resolves dynamic ReversalDef numhits in the caller and consumes the live replacement", () => {
     const reversalWorld = new RuntimeReversalWorld();
     const dispatchWorld = new RuntimeReversalControllerDispatchWorld();

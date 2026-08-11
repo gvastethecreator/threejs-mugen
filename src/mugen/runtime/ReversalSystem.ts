@@ -223,7 +223,14 @@ export class RuntimeReversalControllerDispatchWorld {
       ),
       targetId: operation?.targetId ?? firstNumber(findParam(source, "id")),
       attackDepth:
-        operation?.attackDepth ?? normalizedNumberPair(findParam(source, "attack.depth")) ?? actor.runtime.combatDepth?.attack,
+        operation?.attackDepth ??
+        resolveRuntimeReversalFloatPair(
+          operation?.attackDepthExpressions,
+          findParam(source, "attack.depth"),
+          actor.runtime,
+          context,
+          actor.runtime.combatDepth?.attack,
+        ) ?? actor.runtime.combatDepth?.attack,
       unhittableTime: resolveRuntimeReversalIntegerPair(
         operation?.unhittableTime,
         findParam(source, "unhittabletime"),
@@ -374,9 +381,17 @@ export class RuntimeReversalControllerDispatchWorld {
     if (operation.targetId !== undefined) {
       existing.targetId = operation.targetId;
     }
-    if (operation.attackDepth !== undefined) {
-      existing.attackDepth = [...operation.attackDepth] as [number, number];
-      runtimeReversal.attackDepth = [...operation.attackDepth] as [number, number];
+    const attackDepth = operation.attackDepth ?? resolveRuntimeReversalFloatPair(
+      operation.attackDepthExpressions,
+      findParam(controller.source, "attack.depth"),
+      actor.runtime,
+      context,
+      existing.attackDepth ?? runtimeReversal.attackDepth,
+      true,
+    );
+    if (attackDepth !== undefined) {
+      existing.attackDepth = [...attackDepth] as [number, number];
+      runtimeReversal.attackDepth = [...attackDepth] as [number, number];
     }
     recordController?.(actor, controller.source);
     recordOperation?.(actor, operation);
@@ -572,14 +587,6 @@ function incomingCollisionBoxes(value: CollisionBox | readonly CollisionBox[]): 
   return Array.isArray(value) ? value as readonly CollisionBox[] : [value as CollisionBox];
 }
 
-function normalizedNumberPair(value: string | undefined): [number, number] | undefined {
-  const values = value?.split(",").map((entry) => Number(entry.trim()));
-  if (!values?.length || !Number.isFinite(values[0]) || (values[1] !== undefined && !Number.isFinite(values[1]))) {
-    return undefined;
-  }
-  return [values[0], values[1] ?? values[0]];
-}
-
 function resolveRuntimeReversalPausePair(
   operationValue: MugenHitDefExpressionPair | undefined,
   rawValue: string | undefined,
@@ -619,6 +626,30 @@ function resolveRuntimeReversalIntegerPair(
     return Number.isFinite(result) ? Math.trunc(result!) : fallback;
   };
   return [resolve(source[0], -1), resolve(source[1], -1)];
+}
+
+function resolveRuntimeReversalFloatPair(
+  operationValue: MugenHitDefExpressionPair | undefined,
+  rawValue: string | undefined,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+  fallback?: [number, number],
+  preserveMissing = false,
+): [number, number] | undefined {
+  const source = operationValue ?? splitRuntimeReversalExpressionPair(rawValue);
+  if (!source) return preserveMissing ? undefined : fallback ? [...fallback] as [number, number] : undefined;
+  const resolve = (value: number | string | undefined, fallbackValue: number | undefined): number | undefined => {
+    if (value === undefined) return fallbackValue;
+    const result = typeof value === "number" ? value : evaluateRuntimeControllerNumber(value, state, context);
+    return Number.isFinite(result) ? result : fallbackValue;
+  };
+  const first = resolve(source[0], preserveMissing ? undefined : fallback?.[0]);
+  if (first === undefined) return preserveMissing ? undefined : fallback ? [...fallback] as [number, number] : undefined;
+  const second = source.length > 1
+    ? resolve(source[1], preserveMissing ? undefined : fallback?.[1])
+    : first;
+  if (second === undefined) return preserveMissing ? undefined : fallback ? [...fallback] as [number, number] : undefined;
+  return [first, second];
 }
 
 function resolveRuntimeReversalInteger(
