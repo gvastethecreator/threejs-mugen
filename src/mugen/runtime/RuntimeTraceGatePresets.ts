@@ -95,6 +95,8 @@ export type RuntimeTraceGatePresetOptions = {
   runtimeProfile?: RuntimeCompatibilityProfile;
   teamMode?: RuntimeTeamRoundMode;
   reserveFighters?: readonly DemoFighterDefinition[];
+  /** Synthetic fixture-only live ModifyProjectile damage pair. */
+  modifyProjectileDamage?: SyntheticPairExpression;
 };
 
 export async function createMugenLiteJourneyTraceArtifact(
@@ -33640,8 +33642,27 @@ export function createSyntheticImportedProjectileGetHitVarAirGuardHitShakeTimeTr
 export function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
+  return createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInternal(options);
+}
+
+export function createSyntheticImportedProjectileDynamicDamageTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInternal(
+    options,
+    ["Time - Time + 31", "Time - Time + 4"],
+    "-dynamic-damage",
+  );
+}
+
+function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInternal(
+  options: RuntimeTraceGatePresetOptions,
+  damageExpression?: SyntheticPairExpression,
+  variantSuffix = "",
+): RuntimeTraceArtifact {
+  const traceId = `synthetic-imported-projectile-gethitvar-hit-metadata${variantSuffix}`;
   const defender = createSyntheticImportedTraceFighter({
-    id: "synthetic-imported-projectile-gethitvar-hit-metadata",
+    id: traceId,
     displayName: "Synthetic Imported Projectile GetHitVar Hit Metadata",
     defaultGetHitProgression: {
       shakeStateNo: 5000,
@@ -33653,7 +33674,7 @@ export function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifa
     },
   });
   const attacker = createSyntheticImportedTraceFighter({
-    id: "synthetic-imported-projectile-gethitvar-hit-metadata-attacker",
+    id: `${traceId}-attacker`,
     displayName: "Synthetic Imported Projectile GetHitVar Hit Metadata Attacker",
     withHitDef: false,
     withProjectile: true,
@@ -33662,6 +33683,7 @@ export function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifa
     projectileHitSound: "S5,45",
     projectileHitSpark: "F7002",
     projectileSparkXy: [18, -68],
+    projectileDamageExpression: damageExpression,
     hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
   });
   const stage = options.stage ?? projectileCombatStage();
@@ -33670,14 +33692,14 @@ export function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifa
     { label: "projectile-gethitvar-hit-metadata-settle", frames: 24, p1: [], p2: [] },
   ]);
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
-    label: "synthetic-imported-projectile-gethitvar-hit-metadata-golden",
+    label: `${traceId}-golden`,
   });
   return createRuntimeTraceArtifact({
     trace,
     script,
     generatedAt: options.generatedAt,
     target: {
-      id: "synthetic-imported-projectile-gethitvar-hit-metadata-golden",
+      id: `${traceId}-golden`,
       label: "Synthetic imported Projectile GetHitVar hit metadata route",
       source: "imported",
       notes: [
@@ -33686,7 +33708,7 @@ export function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifa
     },
     gates: [
       {
-        label: "synthetic-imported-projectile-gethitvar-hit-metadata-golden",
+        label: `${traceId}-golden`,
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
         requiredEffectKinds: ["projectile"],
@@ -34836,8 +34858,27 @@ export function createSyntheticImportedHelperProjectileGetHitVarAirGuardHitShake
 export function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
+  return createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifactInternal(options);
+}
+
+export function createSyntheticImportedHelperProjectileDynamicDamageTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifactInternal(
+    options,
+    ["Time - Time + 37", "Time - Time + 2"],
+    "-dynamic-damage",
+  );
+}
+
+function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifactInternal(
+  options: RuntimeTraceGatePresetOptions,
+  damageExpression?: SyntheticPairExpression,
+  variantSuffix = "",
+): RuntimeTraceArtifact {
+  const traceId = `synthetic-imported-helper-projectile-gethitvar-hit-metadata${variantSuffix}`;
   const defender = createSyntheticImportedTraceFighter({
-    id: "synthetic-imported-helper-projectile-gethitvar-hit-metadata",
+    id: traceId,
     displayName: "Synthetic Imported Helper Projectile GetHitVar Hit Metadata",
     defaultGetHitProgression: {
       shakeStateNo: 5000,
@@ -34849,7 +34890,7 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTrace
     },
   });
   const attacker = createSyntheticImportedTraceFighter({
-    id: "synthetic-imported-helper-projectile-gethitvar-hit-metadata-attacker",
+    id: `${traceId}-attacker`,
     displayName: "Synthetic Imported Helper Projectile GetHitVar Hit Metadata Attacker",
     withHitDef: false,
     withHelper: true,
@@ -34862,6 +34903,7 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTrace
       projectileId: 8890,
       pos: [360, -34],
       damage: [37, 2],
+      damageExpression,
       hitPause: 4,
       hitTime: 14,
       groundVelocity: [4, -2],
@@ -34877,14 +34919,14 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTrace
     { label: "helper-projectile-gethitvar-hit-metadata-settle", frames: 28, p1: [], p2: [] },
   ]);
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
-    label: "synthetic-imported-helper-projectile-gethitvar-hit-metadata-golden",
+    label: `${traceId}-golden`,
   });
   return createRuntimeTraceArtifact({
     trace,
     script,
     generatedAt: options.generatedAt,
     target: {
-      id: "synthetic-imported-helper-projectile-gethitvar-hit-metadata-golden",
+      id: `${traceId}-golden`,
       label: "Synthetic imported Helper Projectile GetHitVar hit metadata route",
       source: "imported",
       notes: [
@@ -34893,7 +34935,7 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTrace
     },
     gates: [
       {
-        label: "synthetic-imported-helper-projectile-gethitvar-hit-metadata-golden",
+        label: `${traceId}-golden`,
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
         requiredEffectKinds: ["helper", "projectile"],
@@ -48921,10 +48963,12 @@ export function createSyntheticImportedModifyProjectileTraceArtifact(options: Ru
 export function createSyntheticImportedModifyProjectileDynamicGetPowerTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
+  const dynamicDamage = options.modifyProjectileDamage !== undefined;
+  const traceId = `synthetic-imported-modifyprojectile-dynamic-getpower${dynamicDamage ? "-damage" : ""}`;
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileScript();
   const attacker = createSyntheticImportedTraceFighter({
-    id: "synthetic-imported-modifyprojectile-dynamic-getpower-attacker",
+    id: `${traceId}-attacker`,
     displayName: "Dynamic ModifyProjectile GetPower Attacker",
     withHitDef: false,
     withProjectile: true,
@@ -48934,31 +48978,34 @@ export function createSyntheticImportedModifyProjectileDynamicGetPowerTraceArtif
     modifyProjectileTriggerTime: 3,
     modifyProjectileVarSeeds: [{ index: 0, value: 11 }],
     modifyProjectileGetPower: ["var(0) * 4", "var(0) - 3"],
+    modifyProjectileDamage: options.modifyProjectileDamage,
   });
   const defender = createSyntheticImportedTraceFighter({
-    id: "synthetic-imported-modifyprojectile-dynamic-getpower-defender",
+    id: `${traceId}-defender`,
     displayName: "Dynamic ModifyProjectile GetPower Defender",
     withHitDef: false,
   });
   const trace = runRuntimeTrace(
     new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }),
     script,
-    { label: "synthetic-imported-modifyprojectile-dynamic-getpower-golden" },
+    { label: `${traceId}-golden` },
   );
   return createRuntimeTraceArtifact({
     trace,
     script,
     generatedAt: options.generatedAt,
     target: {
-      id: "synthetic-imported-modifyprojectile-dynamic-getpower-golden",
+      id: `${traceId}-golden`,
       label: "Synthetic imported dynamic ModifyProjectile getpower",
       source: "imported",
       notes: [
-        "Pinned Ikemen GO trace proves root owner-side ModifyProjectile evaluates two getpower expressions in caller context, replaces the selected live Projectile attacker reward, and contributes 44 power after accepted hit contact. Guard selection, one-component zeroing, RedirectID, Helper ownership, teams, multi-selection, exact tick order, and int32 overflow remain covered by focused tests or excluded.",
+        dynamicDamage
+          ? "Pinned Ikemen GO trace proves root owner-side ModifyProjectile evaluates a typed damage pair in caller context, replaces the selected live Projectile damage before accepted contact, and preserves the adjacent getpower assertion. Guard selection, one-component zeroing, RedirectID, Helper ownership, teams, multi-selection, exact tick order, and int32 overflow remain covered by focused tests or excluded."
+          : "Pinned Ikemen GO trace proves root owner-side ModifyProjectile evaluates two getpower expressions in caller context, replaces the selected live Projectile attacker reward, and contributes 44 power after accepted hit contact. Guard selection, one-component zeroing, RedirectID, Helper ownership, teams, multi-selection, exact tick order, and int32 overflow remain covered by focused tests or excluded.",
       ],
     },
     gates: [{
-      label: "synthetic-imported-modifyprojectile-dynamic-getpower-golden",
+      label: `${traceId}-golden`,
       requiredActorSources: ["imported"],
       requiredActorKinds: ["player"],
       requiredEffectKinds: ["projectile"],
@@ -48981,9 +49028,18 @@ export function createSyntheticImportedModifyProjectileDynamicGetPowerTraceArtif
       requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
       requiredFinalActors: [
         { actorId: "p1", source: "imported", actorKind: "player", life: 1000, power: 44 },
-        { actorId: "p2", source: "imported", actorKind: "player", life: 969 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: dynamicDamage ? 967 : 969 },
       ],
     }],
+  });
+}
+
+export function createSyntheticImportedModifyProjectileDynamicDamageTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedModifyProjectileDynamicGetPowerTraceArtifact({
+    ...options,
+    modifyProjectileDamage: ["var(0) * 3", "var(0) - 1"],
   });
 }
 
@@ -62257,6 +62313,8 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileChainId?: number;
   projectileHitDefHitCount?: number;
   projectileDamage?: [number, number?];
+  /** Synthetic fixture-only dynamic/mixed fresh Projectile damage pair. */
+  projectileDamageExpression?: SyntheticPairExpression;
   /** Synthetic fixture-only fresh Projectile projanim action selected by the CNS line. */
   projectileAnimNo?: number;
   /** Synthetic fixture-only dynamic fresh Projectile projanim expression. */
@@ -62316,6 +62374,8 @@ export type SyntheticImportedTraceFighterOptions = {
   modifyProjectileStageBound?: SyntheticNumberExpression;
   modifyProjectileHeightBound?: SyntheticPairExpression;
   modifyProjectileGetPower?: SyntheticPairExpression;
+  /** Synthetic fixture-only live ModifyProjectile damage pair. */
+  modifyProjectileDamage?: SyntheticPairExpression;
   /** Synthetic fixture-only dynamic/mixed ModifyProjectile down.velocity vector. */
   modifyProjectileDownVelocity?: SyntheticPartialTripleExpression;
   /** Synthetic fixture-only dynamic/mixed ModifyProjectile ground.velocity vector. */
@@ -62837,6 +62897,8 @@ export type SyntheticImportedTraceFighterOptions = {
     pos?: [number, number];
     velocity?: [number, number];
     damage?: [number, number?];
+    /** Synthetic Helper-local dynamic/mixed fresh Projectile damage pair. */
+    damageExpression?: SyntheticPairExpression;
     hitPause?: number;
     hitTime?: number;
     groundHitTime?: SyntheticNumberExpression;
@@ -63843,7 +63905,7 @@ ${options.extraSuperPauseP2DefMul === undefined ? "" : extraSuperPauseP2DefMulBl
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${projectileVarSeedBlock}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileMissTimeExpression, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale, options.projectileGroundVelocityExpression, options.projectileGuardVelocityExpression, options.projectileDownHitTime, options.projectileGroundHitTime, options.projectileGroundSlideTime, options.projectileAirHitTime, options.projectileGuardHitTimeExpression, options.projectilePauseTime, options.projectileGuardPauseTime, "Fast Projectile", options.projectilePriorityExpression, options.projectileHitsExpression, options.projectileAnimNo, options.projectileAnimExpression) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileMissTimeExpression, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileDamageExpression, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale, options.projectileGroundVelocityExpression, options.projectileGuardVelocityExpression, options.projectileDownHitTime, options.projectileGroundHitTime, options.projectileGroundSlideTime, options.projectileAirHitTime, options.projectileGuardHitTimeExpression, options.projectilePauseTime, options.projectileGuardPauseTime, "Fast Projectile", options.projectilePriorityExpression, options.projectileHitsExpression, options.projectileAnimNo, options.projectileAnimExpression) : ""}
 ${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secondaryProjectile) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
@@ -63862,6 +63924,7 @@ ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   stageBound: options.modifyProjectileStageBound,
   heightBound: options.modifyProjectileHeightBound,
   getPower: options.modifyProjectileGetPower,
+  damage: options.modifyProjectileDamage,
   downVelocity: options.modifyProjectileDownVelocity,
   groundVelocity: options.modifyProjectileGroundVelocity,
   airGuardVelocity: options.modifyProjectileAirGuardVelocity,
@@ -67800,6 +67863,7 @@ function projectileControllerBlock(
   hitDefHitCount?: number,
   triggerTime = 2,
   damage: [number, number?] = [31, 4],
+  damageExpression?: SyntheticPairExpression,
   removeTime: SyntheticNumberExpression = 24,
   edgeBound?: number,
   stageBound?: number,
@@ -67872,6 +67936,7 @@ function projectileControllerBlock(
   const edgeBoundLine = edgeBound === undefined ? "" : `projedgebound = ${edgeBound}`;
   const stageBoundLine = stageBound === undefined ? "" : `projstagebound = ${stageBound}`;
   const heightBoundLine = heightBound === undefined ? "" : `projheightbound = ${heightBound[0]},${heightBound[1]}`;
+  const damageLine = damageExpression === undefined ? `damage = ${damage.join(",")}` : `damage = ${damageExpression.join(",")}`;
   const airJuggleLine = airJuggle === undefined ? "" : `air.juggle = ${airJuggle}`;
   const koVelocityAddLine = koVelocityAdd === undefined ? "" : `ko.velocity.add = ${koVelocityAdd.join(",")}`;
   const pauseMoveTimeLine = pauseMoveTime === undefined ? "" : `pausemovetime = ${pauseMoveTime}`;
@@ -67928,7 +67993,7 @@ ${superMoveTimeLine}
 ${edgeBoundLine}
 ${stageBoundLine}
 ${heightBoundLine}
-damage = ${damage.join(",")}
+${damageLine}
 ${airJuggleLine}
 ${koVelocityAddLine}
 ${hitFlagLine}
@@ -68034,6 +68099,7 @@ function modifyProjectileControllerBlock(input: {
   stageBound?: SyntheticNumberExpression;
   heightBound?: SyntheticPairExpression;
   getPower?: SyntheticPairExpression;
+  damage?: SyntheticPairExpression;
   downVelocity?: SyntheticPartialTripleExpression;
   groundVelocity?: SyntheticPartialTripleExpression;
   airGuardVelocity?: SyntheticPartialTripleExpression;
@@ -68068,6 +68134,7 @@ value = ${seed.value}
   const stageBoundLine = input.stageBound === undefined ? "" : `projstagebound = ${input.stageBound}`;
   const heightBoundLine = input.heightBound === undefined ? "" : `projheightbound = ${input.heightBound[0]},${input.heightBound[1]}`;
   const getPowerLine = input.getPower === undefined ? "" : `getpower = ${input.getPower[0]},${input.getPower[1]}`;
+  const damageLine = input.damage === undefined ? "" : `damage = ${input.damage[0]},${input.damage[1]}`;
   const projAnimLine = input.projAnim === undefined ? "" : `projanim = ${input.projAnim}`;
   const hitAnimLine = input.hitAnim === undefined ? "" : `projhitanim = ${input.hitAnim}`;
   const removeAnimLine = input.removeAnim === undefined ? "" : `projremanim = ${input.removeAnim}`;
@@ -68098,6 +68165,7 @@ ${edgeBoundLine}
 ${stageBoundLine}
 ${heightBoundLine}
 ${getPowerLine}
+${damageLine}
 ${projAnimLine}
 ${hitAnimLine}
 ${removeAnimLine}
@@ -71249,6 +71317,9 @@ function helperProjHitRouteBlock(route: NonNullable<SyntheticImportedTraceFighte
   const pos = route.pos ?? [360, -34];
   const velocity = route.velocity ?? [0, 0];
   const damage = route.damage ?? [18, 2];
+  const damageLine = route.damageExpression === undefined
+    ? `damage = ${damage.join(",")}`
+    : `damage = ${route.damageExpression.join(",")}`;
   const projectileHits = route.projectileHits ?? 1;
   const projectileHitsLine = route.projectileHitsExpression === undefined
     ? `projhits = ${projectileHits}`
@@ -71368,7 +71439,7 @@ ${secondaryGuardSoundLine}
 ${secondaryHitSparkLine}
 ${secondaryGuardSparkLine}
 ${secondarySparkXyLine}
-damage = ${damage.join(",")}
+${damageLine}
 ${pauseTimeLine}
 ground.hittime = ${hitTime}
 ground.velocity = ${groundVelocity.join(",")}
@@ -71438,7 +71509,7 @@ ${guardSoundLine}
 ${hitSparkLine}
 ${guardSparkLine}
 ${sparkXyLine}
-damage = ${damage.join(",")}
+${damageLine}
 pausetime = ${hitPause},${hitPause}
 ${groundHitTimeLine}
 ${groundSlideTimeLine}

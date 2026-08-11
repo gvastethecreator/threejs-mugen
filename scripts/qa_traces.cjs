@@ -1251,6 +1251,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-dynamic-damage",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileDynamicDamageTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-gethitvar-hitid-chainid",
       required: true,
       artifact: presets.createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtifact(),
@@ -1404,6 +1409,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-gethitvar-hit-metadata",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-dynamic-damage",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileDynamicDamageTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-projectile-gethitvar-hitid-chainid",
@@ -3275,6 +3285,11 @@ async function main() {
       name: "synthetic-imported-modifyprojectile-dynamic-getpower",
       required: true,
       artifact: presets.createSyntheticImportedModifyProjectileDynamicGetPowerTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-modifyprojectile-dynamic-damage",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyProjectileDynamicDamageTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-modifyprojectile-dynamic-down-velocity",
@@ -5149,6 +5164,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-guard-distance-latch",
     "synthetic-imported-projectile-velmul",
     "synthetic-imported-modifyprojectile",
+    "synthetic-imported-modifyprojectile-dynamic-damage",
     "synthetic-imported-modifyprojectile-dynamic-down-velocity",
     "synthetic-imported-modifyprojectile-dynamic-airguard-velocity",
     "synthetic-imported-modifyprojectile-dynamic-guard-velocity",
@@ -5273,6 +5289,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-default-guard-hold-walk-return",
     "synthetic-imported-crouch-guard-hold-crouch-return",
     "synthetic-imported-projectile-gethitvar-hit-metadata",
+    "synthetic-imported-projectile-dynamic-damage",
     "synthetic-imported-projectile-gethitvar-hitid-chainid",
     "synthetic-imported-projectile-nochainid",
     "synthetic-imported-projectile-gethitvar-guarded",
@@ -5305,6 +5322,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-down-hit-cornerpush",
     "synthetic-imported-projectile-down-hit-cornerpush-default",
     "synthetic-imported-helper-projectile-gethitvar-hit-metadata",
+    "synthetic-imported-helper-projectile-dynamic-damage",
     "synthetic-imported-helper-projectile-gethitvar-hitid-chainid",
     "synthetic-imported-helper-projectile-gethitvar-guarded",
     "synthetic-imported-helper-projectile-gethitvar-guard-kill",
