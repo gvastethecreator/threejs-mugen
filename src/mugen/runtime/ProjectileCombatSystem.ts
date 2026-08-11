@@ -68,7 +68,23 @@ export type RuntimeProjectileCombatActor = {
   definition?: Pick<DemoFighterDefinition, "constants">;
   hitPause: number;
   hitStun: number;
+  pendingProjectileHitFacing?: 1 | -1;
 };
+
+/**
+ * Ikemen applies Projectile p2facing after the contact frame has completed.
+ * Keep the latch one-shot so the normal auto-facing pass cannot overwrite the
+ * authored result before it becomes observable.
+ */
+export function consumeRuntimeProjectileHitFacing(
+  actor: Pick<RuntimeProjectileCombatActor, "runtime" | "pendingProjectileHitFacing">,
+): boolean {
+  const facing = actor.pendingProjectileHitFacing;
+  if (facing === undefined) return false;
+  actor.runtime.facing = facing;
+  delete actor.pendingProjectileHitFacing;
+  return true;
+}
 
 export type RuntimeProjectileReversalResult = boolean | "state-change-pending";
 
@@ -414,6 +430,7 @@ export class RuntimeProjectileCombatWorld {
       }
       input.recordProjectileContact?.(attacker, defender, projectile, "hit");
       input.emitProjectileContactEffects?.(attacker, defender, projectile, "hit");
+      latchRuntimeProjectileDefenderFacing(projectile, defender);
       defender.hitStun = result.stun;
       defender.runtime.guardStun = 0;
       defender.runtime.guardSlideTime = 0;
@@ -766,6 +783,17 @@ function runtimeProjectileNoChainIdRejection(
   const activeHitShake = defender.hitPause > 0;
   const sameLastTargetingActor = previous.sourceActorId === source.id;
   return activeHitShake || sameLastTargetingActor ? blockedId : undefined;
+}
+
+function latchRuntimeProjectileDefenderFacing<TActor extends RuntimeProjectileCombatActor>(
+  projectile: RuntimeProjectile,
+  defender: TActor,
+): void {
+  const authored = Math.trunc(projectile.p2Facing ?? 0);
+  if (!Number.isFinite(authored) || authored === 0) return;
+  defender.pendingProjectileHitFacing = authored > 0
+    ? projectile.facing
+    : projectile.facing === 1 ? -1 : 1;
 }
 
 function resolveRuntimeProjectileHitSource<TActor extends RuntimeProjectileCombatActor>(

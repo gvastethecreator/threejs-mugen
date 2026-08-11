@@ -52,6 +52,7 @@ import {
 import { scaleRuntimeIncomingDamage } from "./CombatResolver";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { consumeRuntimeDirectHitFacing, RuntimeDirectCombatWorld } from "./DirectCombatSystem";
+import { consumeRuntimeProjectileHitFacing } from "./ProjectileCombatSystem";
 import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
 import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
 import { RuntimeHitEffectWorld } from "./HitEffectSystem";
@@ -1843,6 +1844,8 @@ export class PlayableMatchRuntime {
     });
     consumeRuntimeDirectHitFacing(activeP1);
     consumeRuntimeDirectHitFacing(activeP2);
+    consumeRuntimeProjectileHitFacing(activeP1);
+    consumeRuntimeProjectileHitFacing(activeP2);
     this.captureFramePosFreezeStarts();
     for (const root of this.characterRoots()) collisionOverrideWorld.resetFrame(root.runtime);
 

@@ -84,6 +84,7 @@ export type RuntimeCombatResolutionActor = RuntimeHitStateTransitionActor &
     hitStun: number;
     hitPause: number;
     hasHit: boolean;
+    pendingProjectileHitFacing?: 1 | -1;
     hitDefTargets?: RuntimeHitDefContactMemoryActor["hitDefTargets"];
     pendingHitDefTargets?: RuntimeHitDefContactMemoryActor["pendingHitDefTargets"];
     contact: RuntimeContactMemory;

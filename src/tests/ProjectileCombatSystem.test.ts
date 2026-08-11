@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import {
+  consumeRuntimeProjectileHitFacing,
   resolveRuntimeProjectileClashes,
   resolveRuntimeProjectileCombat,
   RuntimeProjectileCombatWorld,
@@ -1335,6 +1336,41 @@ describe("ProjectileCombatSystem", () => {
     });
     expect(guardDefender.runtime.hitVars?.guarded).toBe(true);
     expect(guardDefender.runtime.hitVars?.sourceFacing).toBeUndefined();
+  });
+
+  it("applies Projectile p2facing as a one-shot deferred facing on accepted hits", () => {
+    const resolve = (p2Facing: number, defenderFacing: 1 | -1, holdingBack = false) => {
+      let projectiles = [projectile({ p2Facing, facing: 1 })];
+      const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+      const defender = actor("p2", "P2", runtimeState({
+        pos: { x: 12, y: 0 },
+        facing: defenderFacing,
+        life: 1000,
+      }));
+
+      new RuntimeProjectileCombatWorld().resolveCombat({
+        attacker,
+        defender,
+        projectiles,
+        hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+        holdingBack,
+        log: () => undefined,
+        rememberTarget: () => undefined,
+        applyHitOverride: () => undefined,
+        removeProjectilesMarkedForRemoval: () => {
+          projectiles = projectiles.filter((entry) => !entry.removalReason);
+        },
+      });
+
+      const pending = (defender as typeof defender & { pendingProjectileHitFacing?: 1 | -1 }).pendingProjectileHitFacing;
+      const before = defender.runtime.facing;
+      const consumed = consumeRuntimeProjectileHitFacing(defender);
+      return { before, consumed, facing: defender.runtime.facing, pending };
+    };
+
+    expect(resolve(1, -1)).toEqual({ before: -1, consumed: true, facing: 1, pending: 1 });
+    expect(resolve(-1, 1)).toEqual({ before: 1, consumed: true, facing: -1, pending: -1 });
+    expect(resolve(1, -1, true)).toEqual({ before: -1, consumed: false, facing: -1, pending: undefined });
   });
 
   it("exposes Projectile keepstate through GetHitVar on hit and guard contacts", () => {

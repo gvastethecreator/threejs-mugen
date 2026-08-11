@@ -45,6 +45,7 @@ export type FighterMatchState = {
   hitPause: number;
   hasHit: boolean;
   pendingDirectHitFacing?: 1 | -1;
+  pendingProjectileHitFacing?: 1 | -1;
   hitDefTargets: string[];
   pendingHitDefTargets: string[];
   targets: RuntimeTarget[];
