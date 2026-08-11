@@ -2,6 +2,17 @@
 
 ## Current parity queue
 
+- **T716 closed-bounded** — Ikemen-only live `ModifyProjectile` state
+  expressions (`p1stateno`, `p2stateno`, `p2getp1state`) now resolve once in
+  the original root caller context and mutate only the selected Projectile.
+  The existing state-transition ownership path is preserved, including the
+  official `p2getp1state` default when `p2stateno` is authored. Required trace
+  checksum `16fdce2c/8ed5f8c8`; `pnpm qa:trace` passes `807/807` artifacts
+  (`773` required, `34` optional). `p1facing`/`p1getp2facing`, reversals,
+  guards, exact tick parity, teams, rollback and full Projectile parity remain
+  blocked. See [issue
+  290](../.scratch/roadmap/issues/290-modifyprojectile-state-expressions.md).
+
 - **T715 closed-bounded** — Ikemen-only live `ModifyProjectile p2facing`
   now retains typed static/dynamic values, resolves once in root or Helper
   caller context, mutates selected Projectiles, and feeds deferred target

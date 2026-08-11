@@ -1,6 +1,18 @@
 # Workplan
 
-## Active slice — T715 closed-bounded (2026-08-11)
+## Active slice — T716 closed-bounded (2026-08-11)
+
+Issue 290 closes live Ikemen `ModifyProjectile` state expressions for
+`p1stateno`, `p2stateno`, and `p2getp1state` in the root caller context.
+Values resolve once, selected Projectiles mutate in place, and the existing
+state-transition ownership path remains authoritative, including the default
+`p2getp1state=true` when `p2stateno` is authored. Required trace
+`16fdce2c/8ed5f8c8`; aggregate QA passes `807/807` artifacts (`773` required,
+`34` optional). p1facing/p1getp2facing, reversals, guards, exact tick parity,
+teams, rollback and full parity stay deferred. See [issue
+290](../.scratch/roadmap/issues/290-modifyprojectile-state-expressions.md).
+
+## Previous slice — T715 closed-bounded (2026-08-11)
 
 Issue 289 closes live Ikemen `ModifyProjectile p2facing` for root and Helper
 caller contexts. Typed values resolve once, selected Projectiles mutate in

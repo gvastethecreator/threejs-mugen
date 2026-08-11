@@ -1,6 +1,19 @@
 ﻿# Next Build Roadmap
 
-## Next bounded slice — T715 closed-bounded (2026-08-11)
+## Next bounded slice — T716 closed-bounded (2026-08-11)
+
+Issue 290 closes the Ikemen-only live `ModifyProjectile` state-expression
+path for `p1stateno`, `p2stateno`, and `p2getp1state`. Root caller-context
+resolution is applied once to the selected Projectile, including the official
+`p2getp1state` default when `p2stateno` is authored; static, malformed,
+single-component, and explicit-zero cases are covered. Required trace
+checksum is `16fdce2c/8ed5f8c8`; `pnpm qa:trace` passes `807/807` artifacts
+(`773` required, `34` optional). `p1facing`/`p1getp2facing`, reversals,
+guards, exact tick parity, teams, rollback and full Projectile parity remain
+blocked. See [issue
+290](../.scratch/roadmap/issues/290-modifyprojectile-state-expressions.md).
+
+## Previous bounded slice — T715 closed-bounded (2026-08-11)
 
 Issue 289 closes Ikemen-only live `ModifyProjectile p2facing` for root and
 Helper caller contexts. Typed expressions resolve once, mutate only selected

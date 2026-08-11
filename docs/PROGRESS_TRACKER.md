@@ -1,6 +1,18 @@
 ﻿# Progress Tracker
 
-## Active implementation checkpoint — T715 closed-bounded (2026-08-11)
+## Active implementation checkpoint — T716 closed-bounded (2026-08-11)
+
+Typed live `ModifyProjectile` state expressions for `p1stateno`, `p2stateno`,
+and `p2getp1state` now resolve once in the original root caller context and
+mutate only selected Projectiles. The existing state-transition ownership path
+is preserved, including the authored-`p2stateno` default for `p2getp1state`.
+Required trace `16fdce2c/8ed5f8c8`; `pnpm qa:trace` passes `807/807`
+artifacts (`773` required, `34` optional). `p1facing`/`p1getp2facing`,
+reversals, guards, exact tick parity, teams, rollback and full parity remain
+open. See [issue
+290](../.scratch/roadmap/issues/290-modifyprojectile-state-expressions.md).
+
+## Previous implementation checkpoint — T715 closed-bounded (2026-08-11)
 
 Typed live `ModifyProjectile p2facing` is now resolved once in root and Helper
 caller contexts and applied to selected Projectiles. Accepted unguarded hits

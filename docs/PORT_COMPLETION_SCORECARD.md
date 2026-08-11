@@ -1,5 +1,18 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T716 Dynamic `ModifyProjectile` state expressions — closed-bounded, no score movement
+
+Issue 290 closes the Ikemen-only typed caller-context path for live
+`ModifyProjectile p1stateno`, `p2stateno`, and `p2getp1state`. Root execution
+resolves finite expressions once and applies them to the selected Projectile,
+preserving the existing state-transition ownership path and authored-state
+default for `p2getp1state`. Required trace passes with
+`16fdce2c/8ed5f8c8`; aggregate QA passes `807/807` artifacts (`773` required,
+`34` optional). No score movement: p1facing/p1getp2facing, reversals, guards,
+exact tick parity, teams, rollback and full Projectile parity remain blocked.
+See [issue
+290](../.scratch/roadmap/issues/290-modifyprojectile-state-expressions.md).
+
 ## 2026-08-11 T715 Dynamic `ModifyProjectile p2facing` — closed-bounded, no score movement
 
 Issue 289 closes the Ikemen-only typed caller-context path for live

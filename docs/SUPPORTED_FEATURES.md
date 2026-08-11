@@ -1,4 +1,16 @@
 ﻿# Supported Features
+## 2026-08-11 T716 `ModifyProjectile` state expressions — closed-bounded
+
+Ikemen-only live `ModifyProjectile p1stateno`, `p2stateno`, and
+`p2getp1state` now support typed static and finite caller expressions in the
+root route. Values resolve once for the selected Projectile, preserve the
+existing state-transition ownership path, and default `p2getp1state` to true
+when `p2stateno` is authored. Required trace `16fdce2c/8ed5f8c8`; aggregate QA
+passes `807/807` artifacts (`773` required, `34` optional). p1facing,
+p1getp2facing, reversals, guards, exact tick parity, teams, rollback and full
+Projectile parity remain unsupported. See [issue
+290](../.scratch/roadmap/issues/290-modifyprojectile-state-expressions.md).
+
 ## 2026-08-11 T715 `ModifyProjectile p2facing` — closed-bounded
 
 Ikemen-only live `ModifyProjectile p2facing` now supports typed static and

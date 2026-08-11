@@ -1,6 +1,15 @@
 # Controller Support Registry
 
-Active cursor: T715 / issue 289 is closed-bounded for Ikemen-only live
+Active cursor: T716 / issue 290 is closed-bounded for Ikemen-only live
+`ModifyProjectile` state expressions (`p1stateno`, `p2stateno`, and
+`p2getp1state`). Typed static/dynamic values resolve once in root caller
+context, mutate only selected Projectiles, and preserve the existing
+state-transition ownership/default path. Required trace
+`16fdce2c/8ed5f8c8`; aggregate QA passes `807/807` artifacts (`773` required,
+`34` optional). p1facing/p1getp2facing, reversals, guards, exact tick parity,
+teams, rollback and full Projectile parity remain blocked.
+
+Previous cursor: T715 / issue 289 is closed-bounded for Ikemen-only live
 `ModifyProjectile p2facing`. Typed static/dynamic values resolve once in root
 or Helper caller context, mutate only selected Projectiles, and feed the
 accepted unguarded-hit deferred-facing latch plus `GetHitVar(facing)`. Required
