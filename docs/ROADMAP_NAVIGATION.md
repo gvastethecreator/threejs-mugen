@@ -2,16 +2,17 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T745 implementation-bounded (2026-08-11)
+## Current implementation route — T746 closed-bounded (2026-08-11)
 
-T745 / [issue 319](../.scratch/roadmap/issues/319-hitdef-snap-depth.md)
-carries fresh direct `HitDef snap` X/Y/Z through typed IR, root/Helper
-caller-context resolution, `GetHitVar(zoff)`, imported static metadata, and
-accepted direct-hit combat depth. Product commit `d96b8241`; focused coverage
-is `390/390` and typecheck passes. The durable imported trace gate is pending,
-so this route is not yet a full compatibility closeout. `snaptime`, deferred
-bind/tick, live ModifyHitDef/Projectile snap Z and full positioning parity remain
-blocked.
+T746 / [issue 320](../.scratch/roadmap/issues/320-hitdef-snaptime-bind.md)
+extends the closed T745 fresh direct `HitDef snap` X/Y/Z slice with the fourth
+`snaptime` component. Root and Helper caller-context resolution now carries
+`GetHitVar(xoff/yoff/zoff)`, `snapTime`, and the accepted-hit binding through
+the existing target-memory/tick path. Product commit `d8363efa`; evidence
+commit `11623ca3`; focused coverage is `391/391` and typecheck passes. The
+required imported trace is now present; aggregate `pnpm qa:trace` remains the
+final gate before broader roadmap promotion. M.U.G.E.N 1.1 documents only
+X/Y; Z and the fourth component are bounded Ikemen compatibility.
 
 ## Historical implementation route — T742 closed-bounded (2026-08-11)
 
@@ -21,8 +22,9 @@ Helper caller contexts. Caller `var(0)=7,var(1)=-5` reaches accepted contact
 `GetHitVar(xoff/yoff/zoff)=7/-5/0`, with the defender's snapped Y position
 observed in the owner-backed get-hit route. Trace/final checksums are
 `3d153556` / `fe79d540`; aggregate QA is `828/828` (`794` required, `34`
-optional). Snap Z, `snaptime`, Projectiles, exact
-bind/tick/localcoord/facing and full positioning parity remain blocked.
+optional). T745 is retained as historical evidence; Projectiles, live
+ModifyHitDef snap Z, exact localcoord/facing parity and full positioning parity
+remain blocked.
 
 ## Historical implementation route — T741 closed-bounded (2026-08-11)
 
@@ -80,12 +82,13 @@ preservation is required; the accepted hit-audio event carries typed `F6,4`
 telemetry from raw `Fvar(0),var(1)` with no guard route. Trace/final checksums
 are `8d56e467` / `d2d70840`.
 
-## Next implementation route — T746 `snaptime` / bind duration
+## Next implementation route — T747 upstream seam selection
 
 Issue 317 / T743 is superseded by the already closed T728 / issue 302, and T739
-/ issue 313 is also superseded. T746 must provide a dedicated `snaptime`/bind
-owner, tick-order evidence and a required imported trace before claiming
-deferred positioning parity.
+/ issue 313 is also superseded. T746 now owns the bounded `snaptime`/bind
+slice; select T747 only after the aggregate trace gate is green. Keep the next
+seam bounded to one official/Ikemen source contract and do not claim full
+positioning parity from this slice.
 
 ## Historical implementation route — T733 closed-bounded (2026-08-11)
 

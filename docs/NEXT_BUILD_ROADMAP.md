@@ -1,15 +1,15 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T745 implementation-bounded (2026-08-11)
+## Latest bounded slice — T746 closed-bounded (2026-08-11)
 
-Issue 319 carries fresh direct `HitDef snap` X/Y/Z through typed IR, root/Helper
-caller-context evaluation, `GetHitVar(zoff)`, imported metadata and accepted
-direct-hit combat depth. Static, mixed, single, pair and triple vectors are
-covered; malformed four-component vectors fail closed. Product commit is
-`d96b8241`; focused coverage is `390/390` and typecheck passes. The durable
-imported trace gate is pending, so this is not a full closeout. `snaptime`,
-deferred bind/tick, live ModifyHitDef/Projectile snap Z and exact positioning
-parity remain blocked.
+Issue 320 closes the bounded T746 extension: fresh direct `HitDef snap` X/Y/Z
+plus `snaptime` now resolve in root/Helper caller context, expose `GetHitVar`
+offsets, and drive the existing target-memory binding on accepted direct hits.
+Product commit is `d8363efa`; evidence commit is `11623ca3`; focused coverage
+is `391/391` and typecheck passes. The required imported trace is landed;
+aggregate `pnpm qa:trace` is still the final gate. M.U.G.E.N 1.1 documents only
+X/Y, so Z/fourth-component binding is bounded Ikemen support. Live
+ModifyHitDef/Projectile snap Z and exact positioning parity remain blocked.
 
 ## Historical bounded slice — T742 closed-bounded (2026-08-11)
 
@@ -103,12 +103,12 @@ required, `34` optional). Fresh defaults, channels, exact playback/mixing,
 Projectiles and full audio parity remain blocked. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next bounded slice — T746 `snaptime` / bind duration
+## Next bounded slice — T747 upstream seam selection
 
-Issue 317 / T743 is superseded by the already closed T728 / issue 302. T746
-must own deferred `snaptime`/bind duration, tick-order evidence and a required
-imported trace. Keep live ModifyHitDef/Projectile snap Z separate and do not
-claim full positioning parity from T745 focused tests.
+Issue 317 / T743 is superseded by the already closed T728 / issue 302. Select
+the next single bounded official/Ikemen seam only after the aggregate T746 trace
+gate is green. Keep live ModifyHitDef/Projectile snap Z separate and do not
+claim full positioning parity from T746 focused tests.
 
 ## Historical bounded slice — T733 closed-bounded (2026-08-11)
 

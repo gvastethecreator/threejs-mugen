@@ -1,15 +1,16 @@
 # Workplan
 
-## Latest slice — T745 implementation-bounded (2026-08-11)
+## Latest slice — T746 closed-bounded (2026-08-11)
 
-Issue 319 carries fresh direct `HitDef snap` X/Y/Z through typed IR, root and
-Helper caller-context resolution, `GetHitVar(zoff)`, imported static metadata,
-and accepted direct-hit combat depth. Static, mixed, single, pair and triple
-vectors are covered; malformed four-component vectors fail closed. Product
-commit is `d96b8241`; focused coverage is `390/390` and typecheck passes.
-The durable imported trace gate is still pending, so this is not yet a full
-compatibility closeout. `snaptime`, deferred bind/tick maintenance,
-ModifyHitDef/Projectile snap Z and exact positioning parity remain blocked.
+Issue 320 closes the bounded T746 extension: fresh direct `HitDef snap` accepts
+one through four caller-context components, carries `GetHitVar` offsets and
+`snapTime`, and creates/clears the existing target binding on accepted direct
+hits. Root and Helper paths are covered. Product commit is `d8363efa`, evidence
+commit `11623ca3`; focused coverage is `391/391` and typecheck passes. The
+required imported trace is landed; aggregate QA remains the final promotion
+gate. M.U.G.E.N 1.1 documents only X/Y, so Z/fourth-component binding stays a
+bounded Ikemen claim. Projectiles, live ModifyHitDef snap Z and full positioning
+parity remain blocked.
 
 ## Historical slice — T742 closed-bounded (2026-08-11)
 
@@ -70,12 +71,12 @@ final `d5bc517f`; aggregate QA passes `823/823` artifacts (`789` required,
 `34` optional). Fresh defaults, exact playback/mixing/priority, Projectiles
 and full audio parity remain blocked.
 
-## Next slice — T746 `snaptime` / bind duration
+## Next slice — T747 upstream seam selection
 
-Issue 317 / T743 is superseded by the already closed T728 / issue 302. T746
-must add a dedicated `snaptime`/bind owner, tick-order evidence and a required
-imported trace. Do not fold Projectiles or live `ModifyHitDef` snap Z into that
-slice, and do not claim full positioning parity from T745 focused tests alone.
+Issue 317 / T743 is superseded by the already closed T728 / issue 302. After the
+aggregate T746 trace gate, select one bounded official/Ikemen seam for T747.
+Keep Projectiles and live `ModifyHitDef` snap Z separate, and do not claim full
+positioning parity from focused tests alone.
 
 ## Historical slice — T735 closed-bounded (2026-08-11)
 

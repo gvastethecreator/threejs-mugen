@@ -1,15 +1,16 @@
 ﻿# Supported Features
-## 2026-08-11 T745 fresh `HitDef snap` X/Y/Z - implementation-bounded
+## 2026-08-11 T746 fresh `HitDef snap` X/Y/Z/`snaptime` - closed-bounded
 
-Fresh direct `HitDef snap` now carries static, mixed and caller-context
-dynamic X/Y/Z through typed IR, root/Helper dispatch, imported static metadata,
-`GetHitVar(zoff)` and accepted direct-hit combat depth. Focused coverage is
-`390/390`, typecheck passes, and product commit is `d96b8241`. M.U.G.E.N 1.1
-documents only X/Y; Z is bounded Ikemen support. The durable imported trace is
-still pending, so this is not a full compatibility claim. `snaptime`, deferred
-bind/tick, live ModifyHitDef/Projectile snap Z and full positioning parity
-remain outside the claim. See [issue
-319](../.scratch/roadmap/issues/319-hitdef-snap-depth.md).
+Fresh direct `HitDef snap` now carries one through four static/mixed/
+caller-context dynamic components through typed IR and root/Helper dispatch,
+including imported metadata, `GetHitVar(xoff/yoff/zoff)`, `snapTime` and the
+existing accepted-hit target binding. Focused coverage is `391/391`, typecheck
+passes, and product/evidence commits are `d8363efa` / `11623ca3`. The required
+imported trace is landed; aggregate QA remains the final promotion gate.
+M.U.G.E.N 1.1 documents only X/Y; Z and the fourth component are bounded Ikemen
+support. Live ModifyHitDef/Projectile snap Z and full positioning parity remain
+outside the claim. See [issue
+320](../.scratch/roadmap/issues/320-hitdef-snaptime-bind.md).
 
 ## 2026-08-11 T744 live `ModifyHitDef snap` X/Y — closed-bounded
 
@@ -95,11 +96,11 @@ defaults, guardsound channel, exact playback/mixing/priority, Projectiles and
 full audio parity remain outside the claim. See [issue
 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
 
-## Next selection — T746 `snaptime` / bind duration
+## Next selection — T747 upstream seam selection
 
 Issue 317 / T743 is superseded by the already closed T728 / issue 302. Keep the
-T678/T739 duplicate out of the queue. T746 must provide a dedicated
-`snaptime`/bind owner and evidence before claiming deferred positioning parity.
+T678/T739 duplicate out of the queue. Select T747 after the aggregate T746
+trace gate; keep the next seam bounded and do not infer full positioning parity.
 
 ## Historical — T734 `ModifyHitDef hitsound` — closed-bounded
 

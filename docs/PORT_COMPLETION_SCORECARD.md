@@ -1,15 +1,16 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T745 fresh `HitDef snap` X/Y/Z — implementation-bounded, no score movement
+## 2026-08-11 T746 fresh `HitDef snap` X/Y/Z/`snaptime` — closed-bounded, no score movement
 
-Issue 319 carries fresh direct `HitDef snap` X/Y/Z through typed IR, root/Helper
-caller-context evaluation, `GetHitVar(zoff)`, imported metadata and accepted
-direct-hit combat depth. Focused coverage is `390/390`, typecheck passes, and
-product commit is `d96b8241`. No score movement: the durable imported trace
-gate is pending; M.U.G.E.N 1.1 only documents X/Y, while Z is bounded Ikemen
-support. `snaptime`, deferred bind/tick, live ModifyHitDef/Projectile snap Z
-and exact positioning parity remain blocked. See [issue
-319](../.scratch/roadmap/issues/319-hitdef-snap-depth.md).
+Issue 320 carries fresh direct `HitDef snap` X/Y/Z plus `snaptime` through typed
+IR, root/Helper caller-context evaluation, `GetHitVar` offsets, imported
+metadata and accepted-hit target binding. Focused coverage is `391/391`,
+typecheck passes, and product/evidence commits are `d8363efa` / `11623ca3`.
+No score movement: the required trace is landed but aggregate QA remains the
+promotion gate; M.U.G.E.N 1.1 only documents X/Y, while Z/fourth-component
+binding are bounded Ikemen support. Live ModifyHitDef/Projectile snap Z and
+exact positioning parity remain blocked. See [issue
+320](../.scratch/roadmap/issues/320-hitdef-snaptime-bind.md).
 
 ## 2026-08-11 T744 live `ModifyHitDef snap` X/Y — closed-bounded, no score movement
 
@@ -105,12 +106,11 @@ channels, exact SND lookup/playback/mixing/priority, Projectiles and full audio
 parity remain blocked. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next selection — T746 `snaptime` / bind duration
+## Next selection — T747 upstream seam selection
 
 Issue 317 / T743 is superseded by the already closed T728 / issue 302. T742,
-T744 and T745 remain no-score movement; T746 must close deferred
-`snaptime`/bind duration with a required trace before any positioning score
-movement, and superseded issue 313 is not a pending scorecard target.
+T744, T745 and T746 remain no-score movement; select T747 after the aggregate
+trace gate, and keep superseded issue 313 out of scorecard targets.
 
 ## Historical checkpoint — 2026-08-11 T733 `ModifyHitDef guardsound` expressions — closed-bounded, no score movement
 

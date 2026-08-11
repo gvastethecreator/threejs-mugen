@@ -1,13 +1,14 @@
 # Controller Support Registry
 
-Latest cursor: T745 / issue 319 is implementation-bounded for fresh direct
-`HitDef snap` X/Y/Z. Static, mixed and caller-context dynamic vectors reach
-typed IR, root/Helper dispatch, `GetHitVar(zoff)`, imported metadata and
-accepted direct-hit combat depth. Focused coverage is `390/390`, typecheck
-passes, and product commit is `d96b8241`; the durable imported trace gate is
-still pending. M.U.G.E.N 1.1 only documents X/Y; Z is bounded Ikemen support.
-`snaptime`, deferred bind/tick, live ModifyHitDef/Projectile snap Z and exact
-positioning parity remain unsupported.
+Latest cursor: T746 / issue 320 is closed-bounded for fresh direct `HitDef snap`
+X/Y/Z plus `snaptime`. Static, mixed and caller-context dynamic components
+reach typed IR, root/Helper dispatch, `GetHitVar` offsets, imported metadata and
+the accepted-hit target binding. Focused coverage is `391/391`, typecheck
+passes, and product/evidence commits are `d8363efa` / `11623ca3`; the required
+imported trace is landed and aggregate QA is the remaining promotion gate.
+M.U.G.E.N 1.1 only documents X/Y; Z/fourth-component binding are bounded
+Ikemen support. Live ModifyHitDef/Projectile snap Z and exact positioning parity
+remain unsupported.
 
 Previous cursor: T744 / issue 318 is closed-bounded for live `ModifyHitDef snap`
 X/Y replacement through root/RedirectID and Helper callers. Single values
@@ -20,8 +21,8 @@ snap` X/Y expressions through root and Helper caller contexts. Caller
 and the defender's snapped Y position. Required trace
 `synthetic-imported-hitdef-dynamic-snap.json` has trace/final checksums
 `3d153556` / `fe79d540`; aggregate QA is `828/828` artifacts (`794` required,
-`34` optional). Snap Z, `snaptime`, Projectiles, exact
-bind/tick/localcoord/facing and full positioning parity remain excluded.
+`34` optional). T745 remains historical; Projectiles, live ModifyHitDef snap Z,
+exact localcoord/facing and full positioning parity remain excluded.
 
 Previous cursor: T741 / issue 315 is closed-bounded for Ikemen-only live
 `ModifyHitDef` corner-push offsets through root/RedirectID and Helper caller
@@ -53,10 +54,9 @@ typed IR and resolved once in root/Helper caller context. The required
 `synthetic-imported-hitdef-dynamic-snap.json` trace records
 `GetHitVar(xoff/yoff/zoff)=7/-5/0`, accepted target `p1 -> p2 / 77`, and the
 defender's snapped Y position; its trace/final checksums are
-`3d153556` / `fe79d540`. T745 now carries fresh snap Z through focused runtime
-and combat-depth coverage; the durable imported trace is pending. `snaptime`,
-live `ModifyHitDef`, Projectiles, exact bind/tick/localcoord/facing and full
-positioning parity remain unsupported.
+`3d153556` / `fe79d540`. T745/T746 now carry fresh snap Z and bounded
+`snaptime` binding through runtime evidence; live `ModifyHitDef`, Projectiles,
+exact localcoord/facing and full positioning parity remain unsupported.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root
 `ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth` static,

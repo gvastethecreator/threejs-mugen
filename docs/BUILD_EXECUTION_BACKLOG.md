@@ -2,19 +2,20 @@
 
 ## Current parity queue
 
-- **T745 implementation-bounded** — issue 319 carries fresh direct `HitDef
-  snap` X/Y/Z through typed IR, root/Helper caller-context evaluation,
-  `GetHitVar(zoff)`, imported static metadata and accepted direct-hit combat
-  depth. Focused coverage is `390/390`, typecheck passes, and product commit
-  `d96b8241`; the durable imported trace gate is pending. M.U.G.E.N 1.1 only
-  documents X/Y, while Z is bounded Ikemen support. `snaptime`, deferred
-  bind/tick, live ModifyHitDef/Projectile snap Z and exact positioning parity
-  remain outside the claim. See [issue
-  319](../.scratch/roadmap/issues/319-hitdef-snap-depth.md).
+- **T746 closed-bounded** — issue 320 carries fresh direct `HitDef snap` X/Y/Z
+  plus `snaptime` through typed IR, root/Helper caller-context evaluation,
+  `GetHitVar` offsets, imported metadata and accepted-hit target binding.
+  Focused coverage is `391/391`, typecheck passes, and product/evidence commits
+  are `d8363efa` / `11623ca3`; the required imported trace is landed and
+  aggregate QA is the remaining gate. M.U.G.E.N 1.1 only documents X/Y, while
+  Z/fourth-component binding are bounded Ikemen support. Live
+  ModifyHitDef/Projectile snap Z and exact positioning parity remain outside
+  the claim. See [issue
+  320](../.scratch/roadmap/issues/320-hitdef-snaptime-bind.md).
 
-- **T746 queued** — implement fresh `snaptime`/bind duration with a dedicated
-  runtime owner, tick-order evidence and a required imported trace. Keep live
-  ModifyHitDef and Projectile snap Z as separate seams.
+- **T747 queued** — select the next single bounded official/Ikemen seam after
+  the aggregate T746 trace gate. Keep live ModifyHitDef and Projectile snap Z
+  as separate seams until their own contracts are closed.
 
 - **T744 closed-bounded** — Ikemen-only live `ModifyHitDef snap` X/Y
   replacement through root/RedirectID and Helper callers. Single values

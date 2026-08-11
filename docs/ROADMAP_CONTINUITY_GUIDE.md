@@ -2,17 +2,18 @@
 
 Last updated: 2026-08-11
 
-## Current T745 implementation / T746 selection
+## Current T746 closeout / T747 selection
 
-T745 / issue 319 carries fresh direct `HitDef snap` X/Y/Z through typed IR,
-root/Helper caller-context evaluation, `GetHitVar(zoff)`, imported metadata and
-accepted direct-hit combat depth. Product commit `d96b8241`; focused coverage
-is `390/390` and typecheck passes. The durable imported trace gate remains
-pending, so this is implementation-bounded rather than a full closeout.
-M.U.G.E.N 1.1 documents only X/Y; Z is bounded Ikemen support. `snaptime`,
-deferred bind/tick, live ModifyHitDef/Projectile snap Z and full positioning
-parity remain blocked. T743 / issue 317 is superseded by the already closed
-T728 / issue 302; T746 owns the next distinct `snaptime` source seam.
+T746 / issue 320 carries fresh direct `HitDef snap` X/Y/Z plus the fourth
+`snaptime` component through typed IR, root/Helper caller-context evaluation,
+`GetHitVar(xoff/yoff/zoff)`, imported metadata and the existing target-memory
+binding tick. Product commit `d8363efa`; evidence commit `11623ca3`; focused
+coverage is `391/391` and typecheck passes. The required imported trace is
+landed; aggregate `pnpm qa:trace` is the remaining promotion gate. M.U.G.E.N
+1.1 documents only X/Y; Z, `snaptime` and binding are bounded Ikemen support.
+Live ModifyHitDef/Projectile snap Z and full positioning parity remain blocked.
+T743 / issue 317 is superseded by the already closed T728 / issue 302; T747
+must be selected as the next distinct source seam after the aggregate gate.
 
 ## Historical T742 closeout
 

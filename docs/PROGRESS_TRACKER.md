@@ -1,15 +1,15 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T745 implementation-bounded (2026-08-11)
+## Latest implementation checkpoint — T746 closed-bounded (2026-08-11)
 
-Issue 319 carries fresh direct `HitDef snap` X/Y/Z through typed IR, root/Helper
-caller-context evaluation, `GetHitVar(zoff)`, imported static metadata and
-accepted direct-hit combat depth. Static, mixed, single, pair and triple
-vectors are covered; malformed four-component vectors fail closed. Focused
-coverage is `390/390`, typecheck passes, and product commit is `d96b8241`.
-The durable imported trace gate is still pending. `snaptime`, deferred
-bind/tick, live ModifyHitDef/Projectile snap Z and full positioning parity
-remain blocked.
+Issue 320 closes fresh direct `HitDef snap` X/Y/Z plus `snaptime` through typed
+IR, root/Helper caller-context evaluation, `GetHitVar` offsets, and the existing
+target-memory binding tick. Focused coverage is `391/391`, typecheck passes,
+and product/evidence commits are `d8363efa` / `11623ca3`. The required
+imported trace is landed; aggregate QA remains the promotion gate. M.U.G.E.N
+1.1 documents only X/Y, so Z/fourth-component binding is bounded Ikemen
+support. Live ModifyHitDef/Projectile snap Z and full positioning parity remain
+blocked.
 
 ## Historical implementation checkpoint — T742 closed-bounded (2026-08-11)
 
@@ -81,12 +81,11 @@ typecheck passes and `pnpm qa:trace` passes `822/822` artifacts (`788`
 required, `34` optional). Fresh defaults, guardsound channel, exact lookup,
 playback/mixing/priority, Projectiles and full audio parity remain blocked.
 
-## Next implementation checkpoint — T746 `snaptime` / bind duration
+## Next implementation checkpoint — T747 upstream seam selection
 
-Issue 317 / T743 is superseded by the already closed T728 / issue 302. T746
-must add a dedicated `snaptime`/bind owner, tick-order evidence and a required
-imported trace; do not reactivate issue 313 or infer full positioning parity
-from T745 focused tests.
+Issue 317 / T743 is superseded by the already closed T728 / issue 302. Select
+T747 after the aggregate T746 trace gate; do not reactivate issue 313 or infer
+full positioning parity from focused tests.
 
 ## Historical implementation checkpoint — T734 closed-bounded (2026-08-11)
 
