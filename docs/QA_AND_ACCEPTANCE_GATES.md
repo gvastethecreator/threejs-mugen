@@ -1,6 +1,26 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-11 T733 `ModifyHitDef guardsound` — passed / closed-bounded
+## 2026-08-11 T734 `ModifyHitDef hitsound` — passed / closed-bounded
+
+Required `synthetic-imported-modifyhitdef-dynamic-hitsound.json` proves
+VarSet + HitDef + RedirectID ModifyHitDef caller evaluation, a real hit
+contact and target link `p1 -> p2 / 77`, plus typed `audio:playsnd` group `6`,
+index `4`, raw `Fvar(0),var(1)`, prefix `F`, and `contactKind = hit`.
+Trace checksum is `8d56e467`, final checksum `d2d70840`; focused compiler,
+runtime and Helper coverage is `301/301`, typecheck passes, and
+`pnpm qa:trace` passes `821/821` artifacts (`787` required, `34` optional).
+Exact SND lookup/playback/mixing/channel priority, fresh defaults, Projectiles,
+renderer timing, teams, rollback and full audio parity remain outside this
+gate. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
+
+## Next queued — T735 `ModifyHitDef hitsound.channel`
+
+The next gate covers caller-context live channel replacement and accepted-hit
+audio evidence; group/index mutation, guardsound channel, Projectiles and exact
+playback remain deferred. See [issue
+309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
+
+## Historical — 2026-08-11 T733 `ModifyHitDef guardsound` — passed / closed-bounded
 
 Required `synthetic-imported-modifyhitdef-dynamic-guardsound.json` proves
 VarSet + HitDef + RedirectID ModifyHitDef caller evaluation, a real guard
@@ -12,12 +32,6 @@ runtime and Helper coverage is `298/298`, typecheck passes, and
 Exact SND lookup/playback/mixing/channel priority, fresh defaults, Projectiles,
 renderer timing, teams, rollback and full audio parity remain outside this
 gate. See [issue 307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md).
-
-## Next queued — T734 `ModifyHitDef hitsound`
-
-The next gate will cover caller-context live hit-sound replacement and accepted
-hit audio evidence; guard sound, channels, Projectiles and exact playback stay
-deferred. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
 ## Historical — T712 Projectile `keepstate` release gates — focused passed / aggregate inconclusive
 

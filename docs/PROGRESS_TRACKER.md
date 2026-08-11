@@ -1,6 +1,25 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T733 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T734 closed-bounded (2026-08-11)
+
+Issue 308 closes Ikemen-only live `ModifyHitDef hitsound` through
+root/RedirectID and Helper callers. Static and dynamic/mixed caller-context
+refs preserve their `F`/`S` prefix; omission/unresolved mutation preserves the
+active sound. Required artifact
+`synthetic-imported-modifyhitdef-dynamic-hitsound.json` proves a real hit
+contact, target `77`, raw `Fvar(0),var(1)`, resolved `F6,4`, and typed
+`audio:playsnd`; trace/final checksums are `8d56e467` / `d2d70840`.
+Focused compiler/runtime/Helper coverage is `301/301`; typecheck passes and
+`pnpm qa:trace` passes `821/821` artifacts (`787` required, `34` optional).
+Fresh defaults, channels, exact lookup/playback/mixing/priority, Projectiles
+and full audio parity remain blocked.
+
+## Next implementation checkpoint — T735 queued
+
+Issue 309 queues live `ModifyHitDef hitsound.channel` replacement with
+caller-context resolution and omission preservation.
+
+## Historical implementation checkpoint — T733 closed-bounded (2026-08-11)
 
 Issue 307 closes Ikemen-only live `ModifyHitDef guardsound` through
 root/RedirectID and Helper callers. Static and dynamic caller-context refs
@@ -13,12 +32,6 @@ Focused compiler/runtime/Helper coverage is `298/298`; typecheck passes and
 `pnpm qa:trace` passes `820/820` artifacts (`786` required, `34` optional).
 Fresh defaults, channels, exact playback/mixing, Projectiles and full audio
 parity remain blocked.
-
-## Next implementation checkpoint — T734 queued
-
-Issue 308 queues live `ModifyHitDef hitsound` group/number/prefix replacement
-for the accepted hit-audio path, with caller-context resolution and omission
-preservation.
 
 ## Historical implementation checkpoint — T732 closed-bounded (2026-08-11)
 

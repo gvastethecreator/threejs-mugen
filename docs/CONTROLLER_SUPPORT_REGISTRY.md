@@ -1,18 +1,18 @@
 # Controller Support Registry
 
-Latest cursor: T733 / issue 307 is closed-bounded for Ikemen-only live
-root/RedirectID and Helper `ModifyHitDef guardsound`. Static and caller-context
-dynamic group/number refs retain their `F`/`S` prefix; omission or unresolved
-expressions preserve the live ref. Required trace
-`synthetic-imported-modifyhitdef-dynamic-guardsound.json` proves `F6,4`, raw
-`Fvar(0),var(1)`, typed `audio:playsnd`, target link and guard-only contact;
-trace/final checksums are `2ade8da5` / `f88990bd`.
+Latest cursor: T734 / issue 308 is closed-bounded for Ikemen-only live
+root/RedirectID and Helper `ModifyHitDef hitsound`. Static and caller-context
+dynamic/mixed group/number refs retain their `F`/`S` prefix; omission or
+unresolved expressions preserve the live ref. Required trace
+`synthetic-imported-modifyhitdef-dynamic-hitsound.json` proves `F6,4`, raw
+`Fvar(0),var(1)`, typed `audio:playsnd`, target link and hit-only contact;
+trace/final checksums are `8d56e467` / `d2d70840`; aggregate QA is `821/821`
+artifacts (`787` required, `34` optional).
 
-Next cursor: T734 / issue 308 is queued for Ikemen-only live
-`ModifyHitDef hitsound` through the accepted hit audio path. Caller-context
-resolution and omission preservation are next; guard-sound mutation, channel
-semantics, exact playback/mixing, Projectiles, teams, rollback and full audio
-parity remain deferred.
+Next cursor: T735 / issue 309 is queued for Ikemen-only live
+`ModifyHitDef hitsound.channel` through root/RedirectID and Helper callers.
+Omission preservation, exact playback/mixing, guardsound channel, Projectiles,
+teams, rollback and full audio parity remain deferred.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root
 `ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth` static,

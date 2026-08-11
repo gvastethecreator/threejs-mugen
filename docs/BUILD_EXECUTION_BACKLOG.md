@@ -2,6 +2,18 @@
 
 ## Current parity queue
 
+- **T734 closed-bounded** — Ikemen-only live `ModifyHitDef hitsound`
+  group/number/prefix replacement through root/RedirectID and Helper callers.
+  Static and caller-context dynamic/mixed refs retain their `F`/`S` prefix;
+  omission or unresolved values preserve the active ref. Required hit trace
+  checksum `8d56e467` / final `d2d70840`; aggregate QA passes `821/821`
+  artifacts (`787` required, `34` optional). See [issue
+  308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
+
+- **T735 queued** — Ikemen-only live `ModifyHitDef hitsound.channel`
+  replacement through root/RedirectID and Helper callers. See [issue
+  309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
+
 - **T733 closed-bounded** — Ikemen-only live `ModifyHitDef guardsound`
   group/number/prefix replacement through root/RedirectID and Helper callers.
   Static and caller-context dynamic refs retain their prefix, omission or
@@ -10,11 +22,6 @@
   `2ade8da5` / final `f88990bd`; aggregate QA passes `820/820` artifacts
   (`786` required, `34` optional). See [issue
   307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md).
-
-- **T734 queued** — Ikemen-only live `ModifyHitDef hitsound` group/number/
-  prefix replacement through the accepted hit audio path, with caller-context
-  resolution and omission preservation. See [issue
-  308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
 - **T727 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
   `ModifyReversalDef` now retain static and caller-context `hitonce`. Zero

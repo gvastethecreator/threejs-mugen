@@ -2,7 +2,20 @@
 
 Last updated: 2026-08-11
 
-## Current T733-T734 audio checkpoint
+## Current T734-T735 audio checkpoint
+
+T734 closes bounded Ikemen-only live `ModifyHitDef hitsound` through
+root/RedirectID and Helper callers. Static and caller-context dynamic/mixed
+refs retain their prefix, omission/unresolved values preserve the active sound,
+and required `synthetic-imported-modifyhitdef-dynamic-hitsound.json` records
+typed `audio:playsnd` `F6,4` on a real hit contact. Trace/final checksums are
+`8d56e467` / `d2d70840`; `pnpm qa:trace` passes `821/821` artifacts (`787`
+required, `34` optional). T735 queues the live `ModifyHitDef hitsound.channel`
+cut. Exact SND lookup/playback/mixing/channel priority, fresh defaults,
+Projectiles, renderer timing, teams, rollback and full audio parity remain
+blocked.
+
+## Historical T733 audio checkpoint
 
 T733 closes bounded Ikemen-only live `ModifyHitDef guardsound` through
 root/RedirectID and Helper callers. Static and caller-context dynamic refs
@@ -10,10 +23,10 @@ retain their prefix, omission/unresolved values preserve the active sound, and
 required `synthetic-imported-modifyhitdef-dynamic-guardsound.json` records
 typed `audio:playsnd` `F6,4` on a real guard contact. Trace/final checksums are
 `2ade8da5` / `f88990bd`; `pnpm qa:trace` passes `820/820` artifacts (`786`
-required, `34` optional). T734 queues the symmetric live `ModifyHitDef
-hitsound` cut. Exact SND lookup/playback/mixing/channel priority, fresh
-defaults, Projectiles, renderer timing, teams, rollback and full audio parity
-remain blocked.
+required, `34` optional). T734 is now closed above and T735 queues the live
+`ModifyHitDef hitsound.channel` cut. Exact SND lookup/playback/mixing/channel
+priority, fresh defaults, Projectiles, renderer timing, teams, rollback and
+full audio parity remain blocked.
 
 ## Current T608-T638 runtime checkpoint
 

@@ -1,5 +1,24 @@
 ﻿# Supported Features
-## 2026-08-11 T733 `ModifyHitDef guardsound` — closed-bounded
+## 2026-08-11 T734 `ModifyHitDef hitsound` — closed-bounded
+
+Ikemen-only live `ModifyHitDef hitsound` group/number/prefix replacement is
+supported through root/RedirectID and Helper callers. Static and caller-context
+dynamic/mixed refs retain their `F`/`S` prefix; omission or unresolved
+expressions preserve the active sound. Required trace
+`synthetic-imported-modifyhitdef-dynamic-hitsound.json` proves typed
+`audio:playsnd` `F6,4` on a real hit contact; trace/final checksums are
+`8d56e467` / `d2d70840`, and aggregate QA passes `821/821` artifacts. Fresh
+defaults, channel semantics, exact playback/mixing/priority, Projectiles and
+full audio parity remain outside the claim. See [issue
+308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
+
+## Next queued — T735 `ModifyHitDef hitsound.channel`
+
+The bounded live channel replacement is queued for root/RedirectID and Helper
+callers. See [issue
+309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
+
+## Historical — T733 `ModifyHitDef guardsound` — closed-bounded
 
 Ikemen-only live `ModifyHitDef guardsound` group/number/prefix replacement is
 supported through root/RedirectID and Helper callers. Static and caller-context
@@ -11,12 +30,6 @@ preserve the active sound. Required trace
 defaults, channel semantics, exact playback/mixing, Projectiles and full audio
 parity remain outside the claim. See [issue
 307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md).
-
-## Next queued — T734 `ModifyHitDef hitsound`
-
-The symmetric live hit-sound group/number/prefix replacement is queued for
-root/RedirectID and Helper callers. See [issue
-308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
 ## Historical — T727 ReversalDef `hitonce` expressions — closed-bounded
 

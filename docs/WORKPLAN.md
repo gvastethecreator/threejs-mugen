@@ -1,6 +1,24 @@
 # Workplan
 
-## Latest slice — T733 closed-bounded (2026-08-11)
+## Latest slice — T734 closed-bounded (2026-08-11)
+
+Issue 308 closes Ikemen-only live `ModifyHitDef hitsound` through
+root/RedirectID and Helper callers. Static and caller-context dynamic/mixed refs
+retain their prefix; omission or unresolved values preserve the active sound.
+Required hit-audio trace checksum `8d56e467` / final `d2d70840` proves typed
+`audio:playsnd` `F6,4` from raw `Fvar(0),var(1)` with target link `p1 -> p2 / 77`.
+Focused compiler/runtime/Helper coverage is `301/301`; typecheck and aggregate
+QA (`821/821`, `787` required, `34` optional) pass. Fresh defaults, channels,
+exact playback/mixing/priority, Projectiles and full audio parity remain
+blocked.
+
+## Next slice — T735 queued
+
+Issue 309 queues the bounded Ikemen-only live `ModifyHitDef hitsound.channel`
+replacement through root/RedirectID and Helper callers. See [issue
+309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
+
+## Historical slice — T733 closed-bounded (2026-08-11)
 
 Issue 307 closes Ikemen-only live `ModifyHitDef guardsound` through
 root/RedirectID and Helper callers. Static and caller-context dynamic refs
@@ -10,12 +28,6 @@ Required guard-audio trace checksum `2ade8da5` / final `f88990bd` proves typed
 Focused compiler/runtime/Helper coverage is `298/298`; typecheck and aggregate
 QA (`820/820`, `786` required, `34` optional) pass. Fresh defaults, channels,
 exact playback/mixing, Projectiles and full audio parity remain blocked.
-
-## Next slice — T734 queued
-
-Issue 308 queues the symmetric Ikemen-only live `ModifyHitDef hitsound`
-group/number/prefix replacement through root/RedirectID and Helper callers.
-See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
 ## Historical slice — T728 closed-bounded (2026-08-11)
 

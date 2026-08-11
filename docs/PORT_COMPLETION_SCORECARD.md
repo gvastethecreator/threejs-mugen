@@ -1,6 +1,25 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T733 `ModifyHitDef guardsound` expressions — closed-bounded, no score movement
+## 2026-08-11 T734 `ModifyHitDef hitsound` expressions — closed-bounded, no score movement
+
+Issue 308 closes Ikemen-only live `ModifyHitDef hitsound` through root,
+RedirectID and Helper callers. Static/dynamic caller-context refs retain their
+`F`/`S` prefix, omission preserves the active sound, and the accepted hit
+event records typed `audio:playsnd` `F6,4` from raw `Fvar(0),var(1)`. Required
+trace checksum is `8d56e467` / final `d2d70840`; aggregate QA passes `821/821`
+artifacts (`787` required, `34` optional). No score movement: fresh defaults,
+channels, exact SND lookup/playback/mixing/priority, Projectiles and full audio
+parity remain blocked. See [issue
+308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
+
+## Next queued — T735 `ModifyHitDef hitsound.channel`
+
+Issue 309 queues the bounded Ikemen-only live channel replacement through
+root/RedirectID and Helper callers. Group/index mutation, guardsound channel,
+exact playback/mixing, Projectiles and full audio parity remain deferred. See
+[issue 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
+
+## Historical checkpoint — 2026-08-11 T733 `ModifyHitDef guardsound` expressions — closed-bounded, no score movement
 
 Issue 307 closes Ikemen-only live `ModifyHitDef guardsound` through root,
 RedirectID and Helper callers. Static/dynamic caller-context refs retain their
@@ -11,14 +30,6 @@ artifacts (`786` required, `34` optional). No score movement: fresh defaults,
 channels, exact SND lookup/playback/mixing, Projectiles and full audio parity
 remain blocked. See [issue
 307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md).
-
-## Next queued — T734 `ModifyHitDef hitsound` expressions
-
-Issue 308 queues the symmetric bounded Ikemen-only live hit-sound
-group/number/prefix mutation through the accepted hit audio path, preserving
-omission and caller context. Guard-sound mutation, channels, exact playback/
-mixing, Projectiles and full audio parity remain deferred. See [issue
-308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
 ## Historical checkpoint — 2026-08-11 T732 `ModifyHitDef guard.sparkno` expressions — closed-bounded, no score movement
 

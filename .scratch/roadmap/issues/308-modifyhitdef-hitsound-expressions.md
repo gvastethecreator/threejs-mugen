@@ -1,6 +1,6 @@
 # Issue 308 — `ModifyHitDef` `hitsound` expressions
 
-Status: **queued** (T734, 2026-08-11)
+Status: **closed-bounded** (T734, 2026-08-11)
 
 ## Objective
 
@@ -40,3 +40,18 @@ Extend the existing sound compiler/runtime/Helper tests and add one required
 trace with `VarSet` + `HitDef` + `ModifyHitDef`, a real unguarded hit contact,
 preserved channel metadata, and a typed `audio:playsnd` event proving the
 caller-resolved hit sound without entering a guard route.
+
+## Result
+
+Implemented in `6dc1dd35` and gated in `3b892b63`. `ModifyHitDef` now accepts
+static and caller-context dynamic/mixed `hitsound` refs through root/RedirectID
+and Helper dispatch. A failed or omitted live mutation preserves the active
+sound ref. Focused compiler/runtime/Helper coverage is `301/301`; typecheck and
+diff hygiene pass. Required artifact
+`synthetic-imported-modifyhitdef-dynamic-hitsound.json` proves VarSet + HitDef +
+RedirectID ModifyHitDef, accepted hit contact, target `77`, raw
+`Fvar(0),var(1)`, resolved `F6,4`, and typed `audio:playsnd` with
+`contactKind = hit`; trace/final checksums are `8d56e467` / `d2d70840`.
+Aggregate `pnpm qa:trace` passes `821/821` artifacts (`787` required,
+`34` optional). Channels, exact SND lookup/playback/mixing/priority, fresh
+defaults, Projectiles, teams, rollback and full audio parity remain excluded.

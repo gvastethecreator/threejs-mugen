@@ -1,6 +1,27 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T733 closed-bounded (2026-08-11)
+## Latest bounded slice — T734 closed-bounded (2026-08-11)
+
+Issue 308 closes the symmetric Ikemen-only live `ModifyHitDef hitsound`
+reference replacement through root/RedirectID and Helper callers. Static and
+caller-context dynamic/mixed group/index values preserve their `F`/`S` prefix;
+omission or unresolved values preserve the active ref. Required trace
+`synthetic-imported-modifyhitdef-dynamic-hitsound.json` proves raw
+`Fvar(0),var(1)` -> `F6,4`, typed `audio:playsnd`, target link `p1 -> p2 / 77`
+and a hit-only contact; checksums are `8d56e467` / `d2d70840`. Focused
+compiler/runtime/Helper coverage is `301/301`; aggregate QA passes `821/821`
+artifacts (`787` required, `34` optional). Fresh defaults, channels, exact
+lookup/playback/mixing/priority, Projectiles and full audio parity remain
+blocked. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
+
+## Next bounded slice — T735 queued
+
+Issue 309 queues Ikemen-only live `ModifyHitDef hitsound.channel` replacement
+with caller-context resolution and omission preservation. Sound group/index,
+guardsound channel, exact playback/mixing and full audio parity remain
+excluded. See [issue 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
+
+## Historical bounded slice — T733 closed-bounded (2026-08-11)
 
 Issue 307 closes the Ikemen-only live `ModifyHitDef guardsound` reference
 replacement through root/RedirectID and Helper callers. Static and
@@ -11,15 +32,6 @@ with target link `p1 -> p2 / 77` and no hit route. Fresh defaults,
 `guardsound.channel`, exact playback/mixing, Projectiles and full audio parity
 remain blocked. See [issue
 307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md).
-
-## Next bounded slice — T734 queued
-
-Issue 308 queues the symmetric Ikemen-only live `ModifyHitDef hitsound`
-group/number/prefix replacement through the accepted hit audio path, with
-caller-context resolution and omission preservation. Guard sound mutation,
-channel semantics, Projectiles, exact playback/mixing and full audio parity
-remain excluded. See [issue
-308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
 ## Historical bounded slice — T732 closed-bounded (2026-08-11)
 
