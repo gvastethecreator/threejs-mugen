@@ -6566,6 +6566,8 @@ function runActiveStateControllers(
               ? {
                   resolveAnimation: () =>
                     resolveModifyProjectileNumberParam(controller, "projanim", actor, targetOpponent, stateOwner, stageBounds, activeTick),
+                  resolveTerminalAnimation: (key) =>
+                    resolveModifyProjectileTerminalAnimationParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
                   resolveNumber: (key) =>
                     resolveModifyProjectileNumberParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
                   resolveFloat: (key) =>
@@ -8366,6 +8368,30 @@ function resolveModifyProjectileNumberParam(
     return undefined;
   }
   return resolveDispatchNumber(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolveModifyProjectileTerminalAnimationParam(
+  controller: ControllerIr,
+  key: "projhitanim" | "projremanim" | "projcancelanim",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const operation = controller.operation?.kind === "modifyprojectile" ? controller.operation : undefined;
+  const expression = key === "projhitanim"
+    ? operation?.hitAnimExpression
+    : key === "projremanim"
+      ? operation?.removeAnimExpression
+      : operation?.cancelAnimExpression;
+  if (expression !== undefined) {
+    const resolved = typeof expression === "number"
+      ? expression
+      : resolveDispatchNumber(undefined, expression, fighter, opponent, owner, stageBounds, stageTime);
+    return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
+  }
+  return resolveModifyProjectileNumberParam(controller, key, fighter, opponent, owner, stageBounds, stageTime);
 }
 
 function resolveModifyProjectileFloatParam(

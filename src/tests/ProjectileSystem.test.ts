@@ -2752,6 +2752,51 @@ describe("ProjectileSystem", () => {
     expect([hit.animNo, remove.animNo, cancel.animNo]).toEqual([1010, 1400, 1005]);
   });
 
+  it("resolves typed dynamic ModifyProjectile terminal animations once in caller context", () => {
+    const selected = projectile({ projectileId: 77 });
+    const other = projectile({ serialId: "typed-terminal-other", projectileId: 88 });
+    const operation = compileControllerIr(controller({
+      id: "77",
+      projhitanim: "var(0) + 1",
+      projremanim: "var(1) + 2",
+      projcancelanim: "var(2) + 3",
+    }, "ModifyProjectile")).operation as ModifyProjectileControllerOp;
+    const resolved: string[] = [];
+    const actions = new Map<number, MugenAnimationAction>([
+      [101, replacementAction],
+      [202, terminalAction],
+      [303, action],
+    ]);
+
+    expect(modifyRuntimeProjectiles([selected, other], {
+      controller: controller({
+        id: "77",
+        projhitanim: "var(0) + 1",
+        projremanim: "var(1) + 2",
+        projcancelanim: "var(2) + 3",
+      }),
+      operation,
+      resolveModifyProjectile: {
+        resolveTerminalAnimation: (key) => {
+          resolved.push(key);
+          return key === "projhitanim" ? 101 : key === "projremanim" ? 202 : 303;
+        },
+      },
+      resolveAction: (animNo) => actions.get(animNo),
+    })).toBe(1);
+    expect(resolved).toEqual(["projhitanim", "projremanim", "projcancelanim"]);
+    expect(selected).toMatchObject({
+      hitAnimNo: 101,
+      removeAnimNo: 202,
+      cancelAnimNo: 303,
+      terminalActions: { hit: replacementAction, remove: terminalAction, cancel: action },
+    });
+    expect(other.terminalActions).toEqual({});
+    expect(other.hitAnimNo).toBeUndefined();
+    expect(other.removeAnimNo).toBeUndefined();
+    expect(other.cancelAnimNo).toBeUndefined();
+  });
+
   it("normalizes negative ModifyProjectile depth bounds to zero", () => {
     const matching = projectile({ projectileId: 77, depthBound: 12 });
 

@@ -1096,6 +1096,7 @@ function helperModifyProjectileResolver(
 ): RuntimeProjectileModifyResolver {
   return {
     resolveAnimation: () => resolveHelperModifyProjectileAnimationParam(helper, controller, options),
+    resolveTerminalAnimation: (key) => resolveHelperModifyProjectileTerminalAnimationParam(helper, controller, key, options),
     resolveNumber: (key) => resolveHelperModifyProjectileNumberParam(helper, controller, key, options),
     resolveFloat: (key) => resolveHelperModifyProjectileFloatParam(helper, controller, key, options),
     resolvePair: (key) => resolveHelperModifyProjectilePairParam(helper, controller, key, options),
@@ -1120,6 +1121,29 @@ function resolveHelperModifyProjectileAnimationParam(
     return resolveRuntimeHelperIntegerExpression(helper, expression, options);
   }
   return resolveHelperModifyProjectileNumberParam(helper, controller, "projanim", options);
+}
+
+function resolveHelperModifyProjectileTerminalAnimationParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "projhitanim" | "projremanim" | "projcancelanim",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  const operation = controller.operation;
+  const expression = operation?.kind === "modifyprojectile"
+    ? key === "projhitanim"
+      ? operation.hitAnimExpression
+      : key === "projremanim"
+        ? operation.removeAnimExpression
+        : operation.cancelAnimExpression
+    : undefined;
+  if (expression !== undefined) {
+    const resolved = typeof expression === "number"
+      ? expression
+      : resolveRuntimeHelperIntegerExpression(helper, expression, options);
+    return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
+  }
+  return resolveHelperModifyProjectileNumberParam(helper, controller, key, options);
 }
 
 function resolveHelperModifyProjectileNumberParam(

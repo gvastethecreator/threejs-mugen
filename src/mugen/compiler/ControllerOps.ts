@@ -714,8 +714,14 @@ export type ModifyProjectileControllerOp = {
   /** Dynamic Ikemen `ModifyProjectile projanim` expression evaluated in caller context. */
   projAnimExpression?: number | string;
   hitAnim?: number;
+  /** Dynamic Ikemen `ModifyProjectile projhitanim` expression evaluated in caller context. */
+  hitAnimExpression?: number | string;
   removeAnim?: number;
+  /** Dynamic Ikemen `ModifyProjectile projremanim` expression evaluated in caller context. */
+  removeAnimExpression?: number | string;
   cancelAnim?: number;
+  /** Dynamic Ikemen `ModifyProjectile projcancelanim` expression evaluated in caller context. */
+  cancelAnimExpression?: number | string;
   teamSide?: 1 | 2;
   affectTeam?: MugenAffectTeam;
   animType?: number;
@@ -3801,6 +3807,12 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
   }
   const projAnimValue = optionalIntegerExpressionParam(controller, "projanim");
   if (projAnimValue === false) return undefined;
+  const hitAnimValue = optionalIntegerExpressionParam(controller, "projhitanim");
+  if (hitAnimValue === false) return undefined;
+  const removeAnimValue = optionalIntegerExpressionParam(controller, "projremanim");
+  if (removeAnimValue === false) return undefined;
+  const cancelAnimValue = optionalIntegerExpressionParam(controller, "projcancelanim");
+  if (cancelAnimValue === false) return undefined;
   const damageRaw = findParam(controller, "damage");
   const damage = damageRaw === undefined ? undefined : strictStaticNumberPair(damageRaw);
   const getPower = optionalIntegerExpressionPairParam(controller, "getpower");
@@ -3899,9 +3911,12 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     projectileId: firstNumber(findParam(controller, "projid")),
     projAnim: typeof projAnimValue === "number" ? projAnimValue : undefined,
     ...(typeof projAnimValue === "string" ? { projAnimExpression: projAnimValue } : {}),
-    hitAnim: firstNumber(findParam(controller, "projhitanim")),
-    removeAnim: firstNumber(findParam(controller, "projremanim")),
-    cancelAnim: firstNumber(findParam(controller, "projcancelanim")),
+    hitAnim: typeof hitAnimValue === "number" ? hitAnimValue : undefined,
+    ...(typeof hitAnimValue === "string" ? { hitAnimExpression: hitAnimValue } : {}),
+    removeAnim: typeof removeAnimValue === "number" ? removeAnimValue : undefined,
+    ...(typeof removeAnimValue === "string" ? { removeAnimExpression: removeAnimValue } : {}),
+    cancelAnim: typeof cancelAnimValue === "number" ? cancelAnimValue : undefined,
+    ...(typeof cancelAnimValue === "string" ? { cancelAnimExpression: cancelAnimValue } : {}),
     teamSide: normalizeMugenTeamSide(firstNumber(findParam(controller, "teamside"))),
     affectTeam: normalizeMugenAffectTeam(findParam(controller, "affectteam")),
     animType: hitAnimType(findParam(controller, "animtype")),

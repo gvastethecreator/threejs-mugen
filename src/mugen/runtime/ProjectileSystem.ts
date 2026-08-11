@@ -447,6 +447,7 @@ export type RuntimeModifyProjectileNumberParam =
   | "teamside"
   | "projremove";
 export type RuntimeModifyProjectilePairParam = "damage" | "getpower" | "givepower" | "redlife" | "score" | "attack.depth" | "pausetime" | "guard.pausetime" | "guard.dist" | "guard.dist.width" | "guard.dist.height" | "guard.dist.depth" | "sparkxy" | "velocity" | "remvelocity" | "accel" | "velmul" | "projscale" | "projclsnscale" | "projheightbound";
+export type RuntimeModifyProjectileTerminalAnimationParam = "projhitanim" | "projremanim" | "projcancelanim";
 export type RuntimeModifyProjectileTripleParam = "down.velocity" | "air.velocity" | "guard.velocity" | "airguard.velocity" | "mindist" | "maxdist";
 export type RuntimeModifyProjectilePartialTripleParam = "ground.velocity";
 export type RuntimeModifyProjectileIntegerListParam = "nochainid";
@@ -456,6 +457,8 @@ export type RuntimeProjectileModifyResolver = {
   resolveNumber?: (key: RuntimeModifyProjectileNumberParam) => number | undefined;
   /** Resolves a typed ModifyProjectile `projanim` expression in caller context. */
   resolveAnimation?: () => number | undefined;
+  /** Resolves a typed terminal animation expression in caller context. */
+  resolveTerminalAnimation?: (key: RuntimeModifyProjectileTerminalAnimationParam) => number | undefined;
   resolveFloat?: (key: RuntimeModifyProjectileNumberParam) => number | undefined;
   resolvePair?: (key: RuntimeModifyProjectilePairParam) => [number, number, number?] | undefined;
   resolveFloatPair?: (key: RuntimeModifyProjectilePairParam) => [number, number, number?] | undefined;
@@ -1183,12 +1186,12 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
       : undefined);
   const normalizedProjAnim = projAnim === undefined ? undefined : Math.trunc(projAnim);
   const replacementAction = normalizedProjAnim === undefined ? undefined : input.resolveAction?.(normalizedProjAnim);
-  const hasHitAnim = operation?.hitAnim !== undefined || findControllerParam(input.controller, "projhitanim") !== undefined;
-  const hasRemoveAnim = operation?.removeAnim !== undefined || findControllerParam(input.controller, "projremanim") !== undefined;
-  const hasCancelAnim = operation?.cancelAnim !== undefined || findControllerParam(input.controller, "projcancelanim") !== undefined;
-  const hitAnim = operation?.hitAnim ?? resolveModifyProjectileNumberParam(input, "projhitanim");
-  const removeAnim = operation?.removeAnim ?? resolveModifyProjectileNumberParam(input, "projremanim");
-  const cancelAnim = operation?.cancelAnim ?? resolveModifyProjectileNumberParam(input, "projcancelanim");
+  const hasHitAnim = operation?.hitAnim !== undefined || operation?.hitAnimExpression !== undefined || findControllerParam(input.controller, "projhitanim") !== undefined;
+  const hasRemoveAnim = operation?.removeAnim !== undefined || operation?.removeAnimExpression !== undefined || findControllerParam(input.controller, "projremanim") !== undefined;
+  const hasCancelAnim = operation?.cancelAnim !== undefined || operation?.cancelAnimExpression !== undefined || findControllerParam(input.controller, "projcancelanim") !== undefined;
+  const hitAnim = operation?.hitAnim ?? resolveModifyProjectileTerminalAnimationParam(input, "projhitanim", operation?.hitAnimExpression);
+  const removeAnim = operation?.removeAnim ?? resolveModifyProjectileTerminalAnimationParam(input, "projremanim", operation?.removeAnimExpression);
+  const cancelAnim = operation?.cancelAnim ?? resolveModifyProjectileTerminalAnimationParam(input, "projcancelanim", operation?.cancelAnimExpression);
   const normalizedHitAnim = normalizeProjectileAnim(hitAnim);
   const normalizedRemoveAnim = normalizeProjectileAnim(removeAnim);
   const normalizedCancelAnim = normalizeProjectileAnim(cancelAnim);
@@ -1868,6 +1871,22 @@ function resolveModifyProjectileNumberParam(
   }
   const staticValue = firstNumber(raw);
   return staticValue ?? input.resolveModifyProjectile?.resolveNumber?.(key);
+}
+
+function resolveModifyProjectileTerminalAnimationParam(
+  input: RuntimeProjectileModifyInput,
+  key: RuntimeModifyProjectileTerminalAnimationParam,
+  expression: number | string | undefined,
+): number | undefined {
+  if (expression !== undefined) {
+    if (typeof expression === "number") {
+      return Number.isFinite(expression) ? Math.trunc(expression) : undefined;
+    }
+    return input.resolveModifyProjectile?.resolveTerminalAnimation?.(key)
+      ?? input.resolveModifyProjectile?.resolveNumber?.(key)
+      ?? resolveModifyProjectileNumberParam(input, key);
+  }
+  return resolveModifyProjectileNumberParam(input, key);
 }
 
 function resolveModifyProjectileFloatParam(

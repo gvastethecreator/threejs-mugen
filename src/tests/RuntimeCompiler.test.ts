@@ -4339,6 +4339,31 @@ value = 1
     });
   });
 
+  it("retains dynamic ModifyProjectile terminal animation expressions", () => {
+    const compiled = compileControllerIr(
+      controller(1000, "ModifyProjectile", [], {
+        projhitanim: "Parent,Var(0) + 1",
+        projremanim: "Root,Var(1) + 2",
+        projcancelanim: "var(2) + 3",
+      }),
+    );
+
+    expect(compiled.operation).toMatchObject({
+      kind: "modifyprojectile",
+      hitAnimExpression: "Parent,Var(0) + 1",
+      removeAnimExpression: "Root,Var(1) + 2",
+      cancelAnimExpression: "var(2) + 3",
+    });
+    expect(compiled.operation).not.toHaveProperty("hitAnim");
+    expect(compiled.operation).not.toHaveProperty("removeAnim");
+    expect(compiled.operation).not.toHaveProperty("cancelAnim");
+
+    const malformed = compileControllerIr(
+      controller(1000, "ModifyProjectile", [], { projhitanim: "Parent," }),
+    );
+    expect(malformed.operation).toBeUndefined();
+  });
+
   it("preserves Projectile depth offset, velocity, acceleration, and attack depth", () => {
     const projectile = compileControllerIr(
       controller(1000, "Projectile", [], {
