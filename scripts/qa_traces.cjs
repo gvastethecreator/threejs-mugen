@@ -2211,6 +2211,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenRootModifyReversalDefDynamicStateTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-attack-depth",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenRootModifyReversalDefDynamicAttackDepthTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-root-modifyreversaldef-pausetime-pair",
       required: true,
       artifact: presets.createSyntheticImportedIkemenRootModifyReversalDefPauseTimePairTraceArtifact(),
