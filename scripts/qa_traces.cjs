@@ -3332,6 +3332,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyProjectileDynamicP2FacingTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyprojectile-dynamic-state",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyProjectileDynamicStateTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-modifyprojectile-dynamic-damage",
       required: true,
       artifact: presets.createSyntheticImportedModifyProjectileDynamicDamageTraceArtifact(),

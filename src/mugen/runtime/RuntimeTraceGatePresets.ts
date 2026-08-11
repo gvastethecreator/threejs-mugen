@@ -27092,6 +27092,90 @@ export function createSyntheticImportedModifyProjectileDynamicP2FacingTraceArtif
   });
 }
 
+export function createSyntheticImportedModifyProjectileDynamicStateTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedCustomStateScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-dynamic-state-attacker",
+    displayName: "Dynamic ModifyProjectile State Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileTargetId: 77,
+    projectileP2StateNo: 888,
+    projectileP2GetP1State: true,
+    projectileDamage: [37, 2],
+    projectileRemoveOnHit: false,
+    projectileOffset: [62, -45],
+    projectileGroundVelocity: [-1, 1],
+    withModifyProjectile: true,
+    modifyProjectileTriggerTime: 3,
+    modifyProjectileVarSeeds: [
+      { index: 0, value: 889 },
+      { index: 1, value: 1 },
+      { index: 2, value: 200 },
+    ],
+    modifyProjectileP1StateNo: "var(2)",
+    modifyProjectileP2StateNo: "var(0)",
+    modifyProjectileP2GetP1State: "var(1)",
+    customStateRoute: { startStateNo: 889, selfStateAfter: 100 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-dynamic-state-defender",
+    displayName: "Dynamic ModifyProjectile State Defender",
+    customStateRoute: { startStateNo: 889, selfStateAfter: 100 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-modifyprojectile-dynamic-state-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyprojectile-dynamic-state-golden",
+      label: "Synthetic imported dynamic ModifyProjectile state ownership route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root-owned ModifyProjectile evaluates p1stateno, p2stateno, and p2getp1state once in the original caller context. VarSet values route the selected Projectile to defender state 889 with attacker-owned state memory enabled, and the custom get-hit route confirms an accepted unguarded contact. Static defaults, p1facing/p1getp2facing (unsupported by the pin), Helper ownership, ReversalDef, teams, rollback, and exact engine tick parity remain outside this slice; live ModifyProjectile is Ikemen-only here.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyprojectile-dynamic-state-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 889],
+      forbiddenExecutedStates: [40, 130, 150, 151, 152, 153, 154, 155, 5000, 5001, 5010, 5011, 5020, 5021, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Projectile", "ModifyProjectile"],
+      requiredExecutedOperations: ["variable:varset", "projectile", "modifyprojectile"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredActorFrameSequences: [{
+        label: "dynamic ModifyProjectile state ownership frames",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", stateNo: 889, animNo: 889, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [{ actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1", effectId: 77, minAge: 1, hasHit: true }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", stateNo: 889, ctrl: false, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedProjectileDynamicAirVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -62870,6 +62954,12 @@ export type SyntheticImportedTraceFighterOptions = {
   modifyProjectileDamage?: SyntheticPairExpression;
   /** Synthetic fixture-only live ModifyProjectile p2facing expression. */
   modifyProjectileP2Facing?: SyntheticNumberExpression;
+  /** Synthetic fixture-only live ModifyProjectile p1stateno expression. */
+  modifyProjectileP1StateNo?: SyntheticNumberExpression;
+  /** Synthetic fixture-only live ModifyProjectile p2stateno expression. */
+  modifyProjectileP2StateNo?: SyntheticNumberExpression;
+  /** Synthetic fixture-only live ModifyProjectile p2getp1state expression. */
+  modifyProjectileP2GetP1State?: SyntheticNumberExpression;
   /** Synthetic fixture-only dynamic/mixed ModifyProjectile down.velocity vector. */
   modifyProjectileDownVelocity?: SyntheticPartialTripleExpression;
   /** Synthetic fixture-only dynamic/mixed ModifyProjectile ground.velocity vector. */
@@ -64429,6 +64519,9 @@ ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   getPower: options.modifyProjectileGetPower,
   damage: options.modifyProjectileDamage,
   p2Facing: options.modifyProjectileP2Facing,
+  p1StateNo: options.modifyProjectileP1StateNo,
+  p2StateNo: options.modifyProjectileP2StateNo,
+  p2GetP1State: options.modifyProjectileP2GetP1State,
   downVelocity: options.modifyProjectileDownVelocity,
   groundVelocity: options.modifyProjectileGroundVelocity,
   airGuardVelocity: options.modifyProjectileAirGuardVelocity,
@@ -68612,6 +68705,9 @@ function modifyProjectileControllerBlock(input: {
   getPower?: SyntheticPairExpression;
   damage?: SyntheticPairExpression;
   p2Facing?: SyntheticNumberExpression;
+  p1StateNo?: SyntheticNumberExpression;
+  p2StateNo?: SyntheticNumberExpression;
+  p2GetP1State?: SyntheticNumberExpression;
   downVelocity?: SyntheticPartialTripleExpression;
   groundVelocity?: SyntheticPartialTripleExpression;
   airGuardVelocity?: SyntheticPartialTripleExpression;
@@ -68648,6 +68744,9 @@ value = ${seed.value}
   const getPowerLine = input.getPower === undefined ? "" : `getpower = ${input.getPower[0]},${input.getPower[1]}`;
   const damageLine = input.damage === undefined ? "" : `damage = ${input.damage[0]},${input.damage[1]}`;
   const p2FacingLine = input.p2Facing === undefined ? "" : `p2facing = ${input.p2Facing}`;
+  const p1StateNoLine = input.p1StateNo === undefined ? "" : `p1stateno = ${input.p1StateNo}`;
+  const p2StateNoLine = input.p2StateNo === undefined ? "" : `p2stateno = ${input.p2StateNo}`;
+  const p2GetP1StateLine = input.p2GetP1State === undefined ? "" : `p2getp1state = ${input.p2GetP1State}`;
   const projAnimLine = input.projAnim === undefined ? "" : `projanim = ${input.projAnim}`;
   const hitAnimLine = input.hitAnim === undefined ? "" : `projhitanim = ${input.hitAnim}`;
   const removeAnimLine = input.removeAnim === undefined ? "" : `projremanim = ${input.removeAnim}`;
@@ -68680,6 +68779,9 @@ ${heightBoundLine}
 ${getPowerLine}
 ${damageLine}
 ${p2FacingLine}
+${p1StateNoLine}
+${p2StateNoLine}
+${p2GetP1StateLine}
 ${projAnimLine}
 ${hitAnimLine}
 ${removeAnimLine}
