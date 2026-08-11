@@ -16852,6 +16852,78 @@ export function createSyntheticImportedIkemenRootModifyReversalDefDynamicStateTr
   });
 }
 
+export function createSyntheticImportedIkemenReversalDefP1FacingTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 104;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms dynamic ReversalDef facing", frames: 1, p1: [], p2: [] },
+    { label: "caller reaches reversal contact", frames: 1, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-reversaldef-p1facing-caller",
+    displayName: "Synthetic Imported ReversalDef P1 Facing Caller",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 0,
+      targetId,
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      delayedPosX: { x: 0, trigger: "Time >= 1" },
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-reversaldef-p1facing-receiver",
+    displayName: "Synthetic Imported ReversalDef P1 Facing Receiver",
+    withHitDef: false,
+    passiveReversalDef: {
+      attr: "S,NA",
+      p1StateNo: 777,
+      p1GetP2FacingExpression: "var(0)",
+      vars: [{ index: 0, value: 1 }],
+      targetId,
+      hitPause: 3,
+      trigger: "Time = 0",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-reversaldef-p1facing-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-reversaldef-p1facing-golden",
+      label: "Synthetic imported dynamic ReversalDef p1facing",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a fresh ReversalDef resolves p1getp2facing=var(0) in its caller context and applies the incoming attacker's facing to the reverser after accepted contact. Root RedirectID ModifyReversalDef replacement, p1facing precedence, Helper ownership, Projectile, deferred tick parity, teams, rollback, and full reversal parity remain covered only by focused tests or outside this bounded slice.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-reversaldef-p1facing-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [777],
+      requiredExecutedControllers: ["HitDef", "ReversalDef", "VarSet"],
+      requiredExecutedOperations: ["hitdef", "reversaldef", "variable:varset"],
+      requiredEventCategories: ["reversal"],
+      requiredCombatReasons: ["reversal"],
+      requiredActorFrames: [
+        { actorId: "p2", source: "imported", actorKind: "player", facing: -1, minFrames: 1 },
+        { actorId: "p2", source: "imported", actorKind: "player", facing: 1, moveType: "H", minFrames: 1 },
+      ],
+      requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000, moveType: "H" },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedIkemenRootModifyReversalDefPauseTimePairTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -63109,6 +63181,11 @@ export type SyntheticImportedTraceFighterOptions = {
     p1StateNoExpression?: SyntheticNumberExpression;
     p2StateNoExpression?: SyntheticNumberExpression;
     p2GetP1StateExpression?: SyntheticNumberExpression;
+    p1Facing?: number;
+    p1GetP2Facing?: number;
+    /** Synthetic fixture-only caller expressions for ReversalDef attacker-facing fields. */
+    p1FacingExpression?: SyntheticNumberExpression;
+    p1GetP2FacingExpression?: SyntheticNumberExpression;
     p2FacingExpression?: SyntheticNumberExpression;
     vars?: SyntheticRuntimeVarSeed[];
     hitPause?: number;
@@ -63763,11 +63840,15 @@ export type SyntheticImportedTraceFighterOptions = {
     p1StateNo?: number;
     p2StateNo?: number;
     p2GetP1State?: boolean;
+    p1Facing?: number;
+    p1GetP2Facing?: number;
     p2Facing?: number;
     /** Synthetic fixture-only caller expressions for live ModifyReversalDef. */
     p1StateNoExpression?: SyntheticNumberExpression;
     p2StateNoExpression?: SyntheticNumberExpression;
     p2GetP1StateExpression?: SyntheticNumberExpression;
+    p1FacingExpression?: SyntheticNumberExpression;
+    p1GetP2FacingExpression?: SyntheticNumberExpression;
     p2FacingExpression?: SyntheticNumberExpression;
     vars?: Array<{ index: number; value: number }>;
     targetId?: number;
@@ -66289,6 +66370,8 @@ ${config.hitCountExpression === undefined ? "" : `numhits = ${config.hitCountExp
 p1stateno = ${p1StateNo}
 ${p2StateNo === undefined ? "" : `p2stateno = ${p2StateNo}`}
 ${config.p2GetP1StateExpression === undefined ? "" : `p2getp1state = ${config.p2GetP1StateExpression}`}
+${(config.p1FacingExpression ?? config.p1Facing) === undefined ? "" : `p1facing = ${config.p1FacingExpression ?? config.p1Facing}`}
+${(config.p1GetP2FacingExpression ?? config.p1GetP2Facing) === undefined ? "" : `p1getp2facing = ${config.p1GetP2FacingExpression ?? config.p1GetP2Facing}`}
 ${config.p2FacingExpression === undefined ? "" : `p2facing = ${config.p2FacingExpression}`}
 ${config.targetId === undefined ? "" : `id = ${config.targetId}`}
 ${config.attackDepth === undefined ? "" : `attack.depth = ${config.attackDepth.join(",")}`}
@@ -71260,6 +71343,8 @@ ${route.hitCountExpression === undefined ? "" : `numhits = ${route.hitCountExpre
 ${p1StateNo === undefined ? "" : `p1stateno = ${p1StateNo}`}
 ${p2StateNo === undefined ? "" : `p2stateno = ${p2StateNo}`}
 ${p2GetP1State === undefined ? "" : `p2getp1state = ${p2GetP1State}`}
+${(route.p1FacingExpression ?? route.p1Facing) === undefined ? "" : `p1facing = ${route.p1FacingExpression ?? route.p1Facing}`}
+${(route.p1GetP2FacingExpression ?? route.p1GetP2Facing) === undefined ? "" : `p1getp2facing = ${route.p1GetP2FacingExpression ?? route.p1GetP2Facing}`}
 ${p2Facing === undefined ? "" : `p2facing = ${p2Facing}`}
 ${route.targetId === undefined ? "" : `id = ${route.targetId}`}
 ${route.attackDepth === undefined ? "" : `attack.depth = ${route.attackDepth.join(",")}`}

@@ -220,6 +220,7 @@ import {
   createSyntheticImportedIkemenRootNotHitByRedirectTraceArtifact,
   createSyntheticImportedIkemenRootHitOverrideRedirectTraceArtifact,
   createSyntheticImportedIkemenRootReversalDefRedirectTraceArtifact,
+  createSyntheticImportedIkemenReversalDefP1FacingTraceArtifact,
   createSyntheticImportedIkemenRootHitDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyHitDefRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyHitDefSpritePriorityRedirectTraceArtifact,
@@ -18415,6 +18416,38 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({ actorId: "p1", spritePriority: -4, hitDefSpritePriorityRole: "p2" }),
         expect.objectContaining({ actorId: "p2", spritePriority: 5, hitDefSpritePriorityRole: "p1" }),
       ]),
+    );
+  });
+
+  it("creates a required IKEMEN ReversalDef p1facing artifact", () => {
+    const artifact = createSyntheticImportedIkemenReversalDefP1FacingTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-reversaldef-p1facing-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-reversaldef-p1facing-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      HitDef: 1,
+      ReversalDef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      hitdef: 1,
+      reversaldef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(2);
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", facing: -1 }),
+        expect.objectContaining({ actorId: "p2", facing: 1, moveType: "H" }),
+      ]),
+    );
+    expect(artifact.trace.finalActors).toContainEqual(
+      expect.objectContaining({ id: "p2", stateNo: 777, facing: 1 }),
     );
   });
 
