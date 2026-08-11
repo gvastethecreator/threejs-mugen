@@ -19,6 +19,7 @@ import {
 } from "../mugen/runtime/DirectCombatSystem";
 import { resolveRuntimeCombatHit } from "../mugen/runtime/CombatResolver";
 import { runtimeHitVar } from "../mugen/runtime/RuntimeExpressionContextSystem";
+import { RuntimeTargetWorld, type RuntimeTargetWorldActor } from "../mugen/runtime/TargetSystem";
 import type { CharacterRuntimeState, RuntimePaletteFxPayload, RuntimePaletteFxState } from "../mugen/runtime/types";
 
 describe("DirectCombatSystem", () => {
@@ -734,6 +735,47 @@ describe("DirectCombatSystem", () => {
 
     expect(defender.runtime.combatDepth?.position).toBe(10);
     expect(runtimeHitVar(defender.runtime, "zoff")).toBe(4);
+  });
+
+  it("binds a snapped receiver for the authored snaptime and follows the attacker next tick", () => {
+    const attacker = actor("p1", "Attacker", { pos: { x: 40, y: 12 } });
+    const defender = actor("p2", "Defender", { pos: { x: 0, y: 0 } });
+    const targetWorld = new RuntimeTargetWorld();
+
+    new RuntimeDirectCombatWorld().applyResolvedHit(attacker, defender, move({
+      hitVars: { hitOffset: { x: 4, y: -2 }, snapTime: 2 },
+    }), {
+      kind: "hit",
+      damage: 0,
+      kill: true,
+      pause: 0,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+    }, hooks());
+
+    expect(defender.bindToTarget).toMatchObject({
+      actorId: "p1",
+      remaining: 3,
+      offset: { x: 4, y: -2 },
+    });
+    targetWorld.applyBindToTarget(
+      defender as RuntimeDirectCombatActor & RuntimeTargetWorldActor,
+      [attacker as RuntimeDirectCombatActor & RuntimeTargetWorldActor],
+    );
+    expect(defender.runtime.pos).toMatchObject({ x: 44, y: 10 });
+
+    defender.currentMove = move({ hitVars: { hitOffset: { x: 4 }, snapTime: 0 } });
+    new RuntimeDirectCombatWorld().applyResolvedHit(attacker, defender, defender.currentMove, {
+      kind: "hit",
+      damage: 0,
+      kill: true,
+      pause: 0,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+    }, hooks());
+    expect(defender.bindToTarget).toBeUndefined();
   });
 
   it("inverts the current attacker facing for negative p1facing on direct hits", () => {

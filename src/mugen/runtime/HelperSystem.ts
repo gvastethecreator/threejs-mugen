@@ -2108,7 +2108,7 @@ function resolveRuntimeHelperHitDefEnvShakeComponent(
 export function resolveRuntimeHelperIntegerScalarParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "hitsound.channel" | "guardsound.channel" | "keepstate" | "projremovetime" | "projmisstime" | "projpriority" | "projhits" | "projanim",
+  key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "snaptime" | "hitsound.channel" | "guardsound.channel" | "keepstate" | "projremovetime" | "projmisstime" | "projpriority" | "projhits" | "projanim",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
   if (key === "priority") {
@@ -2117,6 +2117,18 @@ export function resolveRuntimeHelperIntegerScalarParam(
       ? operation.priorityExpression ?? operation.priority
       : undefined;
     if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
+  }
+  if (key === "snaptime") {
+    const operation = controller.operation;
+    const value = operation?.kind === "hitdef" ? operation.snapTime : undefined;
+    if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
+    const raw = findControllerParam(controller.source, "snap");
+    const parts = topLevelCommaIndices(raw ?? "");
+    if (raw !== undefined && parts.length === 3) {
+      const expression = raw.slice(parts[2]! + 1).trim();
+      const resolved = expression ? resolveHelperFloat(helper, expression, options) : undefined;
+      return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
+    }
   }
   if (key === "down.hittime") {
     const operation = controller.operation;

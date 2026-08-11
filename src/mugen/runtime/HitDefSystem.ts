@@ -48,7 +48,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   context?: RuntimeControllerEvaluationContext;
   resolveIntegerList?: (key: "nochainid") => number[] | undefined;
   resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
-  resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state" | "hitsound.channel" | "guardsound.channel") => number | undefined;
+  resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state" | "snaptime" | "hitsound.channel" | "guardsound.channel") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy" | "snap") => [number?, number?] | undefined;
   resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
@@ -700,6 +700,13 @@ export class RuntimeHitDefControllerDispatchWorld {
             resolvedSnap.componentCount === 2 ? resolvedSnap.second : undefined,
             resolvedSnapZ,
           ];
+    const snapTime = resolveRuntimeHitDefIntegerScalar(
+      operation?.snapTime,
+      snapTimeExpression(findParam(source, "snap")),
+      actor.runtime,
+      context ?? {},
+      resolveIntegerScalar?.("snaptime"),
+    ) ?? 0;
     const resolveFreshStateScalar = (
       key: "p1stateno" | "p2stateno" | "p2getp1state",
       operationValue: number | string | undefined,
@@ -837,6 +844,7 @@ export class RuntimeHitDefControllerDispatchWorld {
               },
             }
           : {}),
+        snapTime,
         animType,
         groundAnimType,
         airAnimType,
@@ -2440,8 +2448,8 @@ function numberPair(value: string | undefined): [number, number] | undefined {
 
 function snapVector(value: string | undefined): [number, number?, number?] | undefined {
   if (!value) return undefined;
-  const parts = value.split(",").map((part) => part.trim());
-  if (parts.length < 1 || parts.length > 3 || parts.some((part) => part.length === 0)) return undefined;
+  const parts = runtimeHitDefCommaParts(value);
+  if (parts.length < 1 || parts.length > 4 || parts.some((part) => part.length === 0)) return undefined;
   const values = parts.map(Number);
   if (values.some((part) => !Number.isFinite(part)) || values[0] === undefined) return undefined;
   return values.length === 3
@@ -2449,6 +2457,39 @@ function snapVector(value: string | undefined): [number, number?, number?] | und
     : values.length === 2
       ? [values[0]!, values[1]!]
       : [values[0]!];
+}
+
+function snapTimeExpression(value: string | undefined): string | undefined {
+  const parts = runtimeHitDefCommaParts(value);
+  return parts.length === 4 ? parts[3] : undefined;
+}
+
+function runtimeHitDefCommaParts(value: string | undefined): string[] {
+  if (value === undefined) return [];
+  const parts: string[] = [];
+  let start = 0;
+  let depth = 0;
+  let quote: string | undefined;
+  for (let index = 0; index < value.length; index += 1) {
+    const char = value[index]!;
+    if (quote !== undefined) {
+      if (char === quote) quote = undefined;
+      continue;
+    }
+    if (char === "\"" || char === "'") {
+      quote = char;
+      continue;
+    }
+    if (char === "(") depth += 1;
+    else if (char === ")") depth -= 1;
+    else if (char === "," && depth === 0) {
+      parts.push(value.slice(start, index).trim());
+      start = index + 1;
+    }
+  }
+  if (quote !== undefined || depth !== 0) return [];
+  parts.push(value.slice(start).trim());
+  return parts;
 }
 
 function normalizeSparkOffset(value: [number, number?]): [number, number] {

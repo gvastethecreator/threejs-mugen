@@ -7,6 +7,7 @@ export type MugenProjectileVector = [number, number, number?];
 export type MugenHitDefVector = [number, number?, number?];
 export type MugenHitDefExpressionPair = [number | string, (number | string)?];
 export type MugenHitDefExpressionTriplet = [number | string, number | string, number | string];
+export type MugenHitDefExpressionQuad = [number | string, number | string, number | string, number | string];
 export type MugenIntegerExpressionList = Array<number | string>;
 export type MugenHitDefPaletteFxOp = {
   time?: number | string;
@@ -211,6 +212,8 @@ export type HitDefControllerOp = {
   snapExpressions?: MugenHitDefExpressionPair;
   /** Ikemen-only direct fresh HitDef snap Z expression evaluated in caller context. */
   snapZExpression?: number | string;
+  /** Ikemen-only direct fresh HitDef snap bind duration (fourth snap component). */
+  snapTime?: number | string;
   animType?: number;
   /** Ikemen GetHitVar ground/air reaction metadata. */
   airAnimType?: number;
@@ -2634,17 +2637,20 @@ function compileHitDefControllerOp(
   const hitSparkAngle = optionalScalarNumberOrExpression(controller, "sparkangle");
   const guardSparkAngle = optionalScalarNumberOrExpression(controller, "guard.sparkangle");
   const snapRaw = findParam(controller, "snap");
-  const snapStatic = snapRaw === undefined ? undefined : strictStaticNumberVector(snapRaw);
-  const snapExpressionValue = snapRaw === undefined || snapStatic !== undefined
-    ? true
-    : optionalFloatExpressionVectorParam(controller, "snap");
-  const snapExpressions = Array.isArray(snapExpressionValue)
+  const snapExpressionValue = snapRaw === undefined ? true : optionalFloatExpressionSnapParam(controller, "snap");
+  const snapStatic = Array.isArray(snapExpressionValue) && snapExpressionValue.every((value) => typeof value === "number")
+    ? [snapExpressionValue[0], snapExpressionValue[1], snapExpressionValue[2]].filter((value): value is number => value !== undefined) as MugenHitDefVector
+    : undefined;
+  const snapExpressions = Array.isArray(snapExpressionValue) && snapExpressionValue.some((value) => typeof value === "string")
     ? snapExpressionValue.length === 1
       ? [snapExpressionValue[0]] as MugenHitDefExpressionPair
       : [snapExpressionValue[0], snapExpressionValue[1]] as MugenHitDefExpressionPair
     : undefined;
-  const snapZExpression = Array.isArray(snapExpressionValue) && snapExpressionValue.length === 3
+  const snapZExpression = Array.isArray(snapExpressionValue) && snapExpressionValue.length >= 3
     ? snapExpressionValue[2]
+    : undefined;
+  const snapTime = Array.isArray(snapExpressionValue) && snapExpressionValue.length === 4
+    ? snapExpressionValue[3]
     : undefined;
   const paletteFx = optionalHitDefPaletteFxParam(controller);
   const envShake = optionalHitDefEnvShakeParam(controller);
@@ -2834,6 +2840,7 @@ function compileHitDefControllerOp(
     snap: snapStatic,
     ...(snapExpressions === undefined ? {} : { snapExpressions }),
     ...(snapZExpression === undefined ? {} : { snapZExpression }),
+    ...(snapTime === undefined ? {} : { snapTime }),
     animType: hitAnimType(findParam(controller, "animtype")),
     airAnimType: hitAnimType(findParam(controller, "air.animtype")),
     groundType: hitType(findParam(controller, "ground.type") ?? findParam(controller, "type")),
@@ -5046,6 +5053,16 @@ function optionalFloatExpressionVectorParam(
   return compileFloatExpressionVector(raw) ?? false;
 }
 
+/** Compile the Ikemen snap vector, retaining the optional fourth snaptime component. */
+function optionalFloatExpressionSnapParam(
+  controller: MugenStateController,
+  key: string,
+): MugenHitDefExpressionPair | MugenHitDefExpressionTriplet | MugenHitDefExpressionQuad | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) return true;
+  return compileFloatExpressionSnap(raw) ?? false;
+}
+
 function compileFloatExpressionPair(raw: string): MugenHitDefExpressionPair | undefined {
   const scalar = compileFloatExpressionComponent(raw);
   if (scalar !== undefined) return [scalar];
@@ -5063,6 +5080,27 @@ function compileFloatExpressionVector(raw: string): MugenHitDefExpressionPair | 
   // Try the full vector first. A pair parser can otherwise accept the first
   // two components of a three-component expression and silently drop Z.
   return compileFloatExpressionTriplet(raw) ?? compileFloatExpressionPair(raw);
+}
+
+function compileFloatExpressionSnap(
+  raw: string,
+): MugenHitDefExpressionPair | MugenHitDefExpressionTriplet | MugenHitDefExpressionQuad | undefined {
+  const scalar = compileFloatExpressionComponent(raw);
+  if (scalar !== undefined) return [scalar];
+  const splitIndices = topLevelExpressionCommaIndices(raw);
+  if (!splitIndices || splitIndices.length < 1 || splitIndices.length > 3) return undefined;
+  const cuts = [-1, ...splitIndices, raw.length];
+  const values: Array<number | string> = [];
+  for (let index = 0; index < cuts.length - 1; index += 1) {
+    const value = compileFloatExpressionComponent(raw.slice(cuts[index]! + 1, cuts[index + 1]!));
+    if (value === undefined) return undefined;
+    values.push(value);
+  }
+  return values.length === 4
+    ? values as MugenHitDefExpressionQuad
+    : values.length === 3
+      ? values as MugenHitDefExpressionTriplet
+      : values as MugenHitDefExpressionPair;
 }
 
 function compileFloatExpressionTriplet(raw: string): MugenHitDefExpressionTriplet | undefined {

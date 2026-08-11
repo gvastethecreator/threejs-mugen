@@ -345,6 +345,8 @@ export type RuntimeGetHitVars = {
   chainId?: number;
   hitCount?: number;
   hitOffset?: { x: number; y?: number; z?: number };
+  /** Ikemen-only snap bind duration from the fourth fresh HitDef snap component. */
+  snapTime?: number;
   animType?: number;
   /** Literal ground/air/fall HitDef animation types for Ikemen aliases. */
   groundAnimType?: number;

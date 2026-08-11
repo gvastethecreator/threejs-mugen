@@ -1110,6 +1110,22 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
     expect(actor.currentMove?.hitVars?.hitOffset).toEqual({ x: 7, y: -5, z: 13 });
 
+    caller.vars[4] = 3;
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        snap: "var(1),fvar(1),var(3),var(4)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.hitVars).toMatchObject({
+      hitOffset: { x: 7, y: -5, z: 13 },
+      snapTime: 3,
+    });
+
     caller.vars[2] = 11;
     actor.firedHitDefs.clear();
     world.apply({
@@ -1121,7 +1137,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       context: { self: caller },
       frame: activeFrame(),
     });
-    expect(actor.currentMove?.hitVars?.hitOffset).toEqual({ x: 11 });
+    expect(actor.currentMove?.hitVars).toMatchObject({ hitOffset: { x: 11 }, snapTime: 0 });
 
     actor.firedHitDefs.clear();
     world.apply({
@@ -1130,6 +1146,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       frame: activeFrame(),
     });
     expect(actor.currentMove?.hitVars?.hitOffset).toBeUndefined();
+    expect(actor.currentMove?.hitVars?.snapTime).toBe(0);
   });
 
   it("resolves live ModifyHitDef air.velocity X/Y independently and preserves omitted siblings", () => {

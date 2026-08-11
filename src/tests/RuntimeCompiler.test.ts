@@ -2453,7 +2453,18 @@ value = 1
       snapZExpression: "var(3)",
     });
     expect(compileControllerIr(controller(200, "HitDef", [], { snap: "var(" })).operation).toBeUndefined();
-    expect(compileControllerIr(controller(200, "HitDef", [], { snap: "var(1),fvar(2),var(3),4" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "HitDef", [], { snap: "16,-24,9,5" })).operation).toMatchObject({
+      kind: "hitdef",
+      snap: [16, -24, 9],
+      snapTime: 5,
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { snap: "var(1),fvar(2),var(3),var(4)" })).operation).toMatchObject({
+      kind: "hitdef",
+      snapExpressions: ["var(1)", "fvar(2)"],
+      snapZExpression: "var(3)",
+      snapTime: "var(4)",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { snap: "var(1),fvar(2),var(3),4,5" })).operation).toBeUndefined();
   });
 
   it("compiles direct HitDef and root ModifyHitDef guard.velocity X expressions", () => {

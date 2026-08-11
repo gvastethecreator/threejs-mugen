@@ -33,6 +33,13 @@ import { runtimeCombatDepthFromConstants, runtimeCombatLocalScale } from "./Runt
 import { runtimeTeamSideFromId } from "./RuntimeTeamTopologySystem";
 import { RUNTIME_DEFAULT_HIT_FLAG } from "./RuntimeHitFlagDefaults";
 import {
+  createRuntimeTargetBinding,
+  findRuntimeTargetId,
+  rememberRuntimeTarget,
+  type RuntimeTarget,
+  type RuntimeTargetBinding,
+} from "./TargetSystem";
+import {
   bufferRuntimeHitDefTarget,
   type RuntimeHitDefContactMemoryActor,
 } from "./RuntimeHitDefContactMemorySystem";
@@ -55,6 +62,10 @@ export type RuntimeDirectCombatActor = {
   hasHit: boolean;
   /** One-shot target-facing override consumed after the next auto-facing pass. */
   pendingDirectHitFacing?: 1 | -1;
+  /** Runtime target memory used by fresh HitDef snap bindings. */
+  targets?: RuntimeTarget[];
+  targetBindings?: RuntimeTargetBinding[];
+  bindToTarget?: RuntimeTargetBinding;
   hitDefTargets?: RuntimeHitDefContactMemoryActor["hitDefTargets"];
   pendingHitDefTargets?: RuntimeHitDefContactMemoryActor["pendingHitDefTargets"];
   contact: RuntimeContactMemory;
@@ -353,6 +364,7 @@ export class RuntimeDirectCombatWorld {
       defender.runtime.hitFall = undefined;
     }
     applyHitSnap(attacker, defender, move);
+    applyHitSnapBinding(attacker, defender, move);
     if (result.hitVelocityY !== undefined) {
       defender.runtime.vel.y = result.hitVelocityY;
     }
@@ -534,6 +546,7 @@ function runtimeGetHitVarsFromMove(
           },
         }
       : {}),
+    ...(move.hitVars?.snapTime === undefined ? {} : { snapTime: Math.trunc(move.hitVars.snapTime) }),
     animType: move.hitVars?.animType ?? 0,
     groundAnimType: move.hitVars?.groundAnimType ?? move.hitVars?.animType ?? 0,
     airAnimType: move.hitVars?.airAnimType ?? move.hitVars?.groundAnimType ?? move.hitVars?.animType ?? 0,
@@ -592,6 +605,31 @@ function applyHitSnap<TActor extends RuntimeDirectCombatActor>(attacker: TActor,
         snap.z,
     };
   }
+}
+
+function applyHitSnapBinding<TActor extends RuntimeDirectCombatActor>(attacker: TActor, defender: TActor, move: DemoMove): void {
+  const snapTime = move.hitVars?.snapTime;
+  const snap = move.hitVars?.hitOffset;
+  if (snapTime === undefined || !Number.isFinite(snapTime) || snapTime === 0 || snap === undefined) {
+    if (snapTime === 0 && defender.bindToTarget?.actorId === attacker.id) {
+      delete defender.bindToTarget;
+    }
+    return;
+  }
+  defender.targets = rememberRuntimeTarget(defender.targets ?? [], attacker.id, undefined);
+  const targetId = findRuntimeTargetId(defender.targets, attacker.id);
+  const duration = Math.trunc(snapTime);
+  const pauseExtension = duration > 0 && attacker.hitPause <= 0 ? 1 : 0;
+  defender.bindToTarget = createRuntimeTargetBinding({
+    actorId: attacker.id,
+    targetId,
+    remaining: duration + pauseExtension,
+    offset: {
+      x: snap.x,
+      y: snap.y ?? 0,
+      ...(snap.z === undefined ? {} : { z: snap.z }),
+    },
+  });
 }
 
 function runtimeHitFallFromMove(
