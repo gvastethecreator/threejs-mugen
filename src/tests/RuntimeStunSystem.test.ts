@@ -116,6 +116,17 @@ describe("RuntimeStunSystem", () => {
     expect(fighter.runtime.moveType).toBe("A");
   });
 
+  it("releases keepstate after the stun window while retaining other hit metadata", () => {
+    const world = new RuntimeStunWorld();
+    const fighter = actor({ hitStun: 1, guardStun: 0, velX: 6, moveType: "A", keepState: true, hitTime: 9 });
+
+    world.advance(fighter);
+
+    expect(fighter.runtime.hitVars?.keepState).toBeUndefined();
+    expect(fighter.runtime.hitVars?.hitTime).toBe(9);
+    expect(fighter.runtime.moveType).toBe("I");
+  });
+
   it("keeps current attacks from being restored to idle moveType", () => {
     const world = new RuntimeStunWorld();
     const fighter = actor({ hitStun: 1, guardStun: 0, velX: -4, moveType: "A" });
@@ -206,6 +217,7 @@ function actor(options: {
   guardControlTimeRemaining?: number;
   guardCount?: number;
   keepState?: boolean;
+  hitTime?: number;
 }): RuntimeStunActor {
   return {
     hitStun: options.hitStun,
@@ -220,7 +232,13 @@ function actor(options: {
       ...(options.guardCount === undefined ? {} : { hitVars: { guardCount: options.guardCount } }),
       ...(options.keepState === undefined
         ? {}
-        : { hitVars: { ...(options.guardCount === undefined ? {} : { guardCount: options.guardCount }), keepState: options.keepState } }),
+        : {
+            hitVars: {
+              ...(options.guardCount === undefined ? {} : { guardCount: options.guardCount }),
+              ...(options.hitTime === undefined ? {} : { hitTime: options.hitTime }),
+              keepState: options.keepState,
+            },
+          }),
     },
   };
 }

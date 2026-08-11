@@ -31,6 +31,23 @@ export function hasRuntimeStun(actor: RuntimeStunActor): boolean {
   return actor.hitStun > 0 || (actor.runtime.guardStun ?? 0) > 0;
 }
 
+/**
+ * Ikemen exposes keepstate while the contact is being processed, then clears
+ * the transient GetHitVar flag from actionRun.  Keep the rest of the hit
+ * metadata intact so authored GetHitVar reads remain available after the
+ * contact without letting keepstate suppress later state presentation.
+ */
+export function resetRuntimeKeepState(
+  state: Pick<CharacterRuntimeState, "moveType"> & Partial<Pick<CharacterRuntimeState, "hitVars">>,
+): void {
+  if (state.hitVars?.keepState === undefined) {
+    return;
+  }
+  const next = { ...state.hitVars };
+  delete next.keepState;
+  state.hitVars = Object.keys(next).length > 0 ? next : undefined;
+}
+
 export function tickRuntimeGuardStun(actor: RuntimeGuardStunActor): boolean {
   actor.runtime.guarding = false;
   const guardActive = (actor.runtime.guardStun ?? 0) > 0;
@@ -120,6 +137,12 @@ export class RuntimeStunWorld {
       actor.runtime.moveType = "I";
       resetRuntimeGuardCount(actor.runtime);
       result.restoredIdleMoveType = true;
+    }
+
+    // The contact flag is transient: preserve it through the stun tick above,
+    // then release it before active state controllers run on the next frame.
+    if (!hasRuntimeStun(actor)) {
+      resetRuntimeKeepState(actor.runtime);
     }
 
     return result;
