@@ -17140,6 +17140,83 @@ export function createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTr
   });
 }
 
+export function createSyntheticImportedIkemenRootModifyReversalDefNumHitsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 101;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms dynamic ReversalDef numhits", frames: 1, p1: [], p2: [] },
+    { label: "caller replaces numhits before reversal contact", frames: 1, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-numhits-caller",
+    displayName: "Synthetic Imported IKEMEN ReversalDef NumHits Caller",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 0,
+      targetId,
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      delayedPosX: { x: 0, trigger: "Time >= 1" },
+    },
+    rootModifyReversalDefRedirectRoute: {
+      hitCountExpression: "var(4) + 1",
+      vars: [{ index: 4, value: 6 }],
+      targetId,
+      redirectId: 57,
+      trigger: "Time >= 1",
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-numhits-receiver",
+    displayName: "Synthetic Imported IKEMEN ReversalDef NumHits Receiver",
+    withHitDef: false,
+    passiveReversalDef: {
+      attr: "S,NA",
+      p1StateNo: 777,
+      hitPause: 3,
+      hitCountExpression: "var(2)",
+      vars: [{ index: 2, value: 4 }],
+      targetId,
+      trigger: "Time = 0",
+    },
+    hitCountStateNo: 264,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-modifyreversaldef-numhits-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-modifyreversaldef-numhits-golden",
+      label: "Synthetic imported IKEMEN ReversalDef dynamic numhits",
+      source: "mixed",
+      notes: [
+        "The receiver resolves fresh numhits=var(2)=4 and the root caller replaces the active ReversalDef with var(4)+1=7 through RedirectID before accepted reversal contact. The bounded trace proves the typed operation, caller ownership, target link, and HitCount consumer route; exact combo accumulation, Helper-owned ModifyReversalDef, Projectile breadth, negative/overflow int32 parity, teams, rollback, and full ReversalDef parity remain outside.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-modifyreversaldef-numhits-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["HitDef", "ReversalDef", "ModifyReversalDef", "VarSet"],
+        requiredExecutedOperations: ["hitdef", "reversaldef", "modifyreversaldef", "variable:varset"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", moveType: "H", life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenRootModifyReversalDefP2StateRedirectTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -63043,6 +63120,8 @@ export type SyntheticImportedTraceFighterOptions = {
     p1SpritePriorityExpression?: SyntheticNumberExpression;
     /** Synthetic fixture-only caller expression for ReversalDef P2 sprite priority. */
     p2SpritePriorityExpression?: SyntheticNumberExpression;
+    /** Synthetic fixture-only caller expression for ReversalDef numhits. */
+    hitCountExpression?: SyntheticNumberExpression;
     targetId?: number;
     attackDepth?: [number, number?];
     clsn1Extent?: number;
@@ -63679,6 +63758,8 @@ export type SyntheticImportedTraceFighterOptions = {
     p1SpritePriorityExpression?: SyntheticNumberExpression;
     /** Synthetic fixture-only caller expression for live ModifyReversalDef P2 sprite priority. */
     p2SpritePriorityExpression?: SyntheticNumberExpression;
+    /** Synthetic fixture-only caller expression for live ModifyReversalDef numhits. */
+    hitCountExpression?: SyntheticNumberExpression;
     p1StateNo?: number;
     p2StateNo?: number;
     p2GetP1State?: boolean;
@@ -66204,6 +66285,7 @@ ${config.missOnOverride === undefined ? "" : `missonoverride = ${config.missOnOv
 pausetime = ${pauseTime}
 ${(config.p1SpritePriorityExpression ?? config.p1SpritePriority) === undefined ? "" : `p1sprpriority = ${config.p1SpritePriorityExpression ?? config.p1SpritePriority}`}
 ${(config.p2SpritePriorityExpression ?? config.p2SpritePriority) === undefined ? "" : `p2sprpriority = ${config.p2SpritePriorityExpression ?? config.p2SpritePriority}`}
+${config.hitCountExpression === undefined ? "" : `numhits = ${config.hitCountExpression}`}
 p1stateno = ${p1StateNo}
 ${p2StateNo === undefined ? "" : `p2stateno = ${p2StateNo}`}
 ${config.p2GetP1StateExpression === undefined ? "" : `p2getp1state = ${config.p2GetP1StateExpression}`}
@@ -71174,6 +71256,7 @@ ${route.missOnOverride === undefined ? "" : `missonoverride = ${route.missOnOver
 ${pauseTime === undefined ? "" : `pausetime = ${pauseTime}`}
 ${(route.p1SpritePriorityExpression ?? route.p1SpritePriority) === undefined ? "" : `p1sprpriority = ${route.p1SpritePriorityExpression ?? route.p1SpritePriority}`}
 ${(route.p2SpritePriorityExpression ?? route.p2SpritePriority) === undefined ? "" : `p2sprpriority = ${route.p2SpritePriorityExpression ?? route.p2SpritePriority}`}
+${route.hitCountExpression === undefined ? "" : `numhits = ${route.hitCountExpression}`}
 ${p1StateNo === undefined ? "" : `p1stateno = ${p1StateNo}`}
 ${p2StateNo === undefined ? "" : `p2stateno = ${p2StateNo}`}
 ${p2GetP1State === undefined ? "" : `p2getp1state = ${p2GetP1State}`}

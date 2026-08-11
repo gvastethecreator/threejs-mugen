@@ -237,6 +237,7 @@ import {
   createSyntheticImportedIkemenRootModifyReversalDefDynamicStateTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefPauseTimePairTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefSpritePriorityPairTraceArtifact,
+  createSyntheticImportedIkemenRootModifyReversalDefNumHitsTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefP2StateRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefP2OwnerRedirectTraceArtifact,
@@ -18413,6 +18414,51 @@ describe("RuntimeTraceGatePresets", () => {
       expect.arrayContaining([
         expect.objectContaining({ actorId: "p1", spritePriority: -4, hitDefSpritePriorityRole: "p2" }),
         expect.objectContaining({ actorId: "p2", spritePriority: 5, hitDefSpritePriorityRole: "p1" }),
+      ]),
+    );
+  });
+
+  it("creates a required IKEMEN root dynamic ReversalDef numhits artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootModifyReversalDefNumHitsTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-ikemen-root-modifyreversaldef-numhits-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-ikemen-root-modifyreversaldef-numhits-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      HitDef: 1,
+      ReversalDef: 1,
+      ModifyReversalDef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      hitdef: 1,
+      reversaldef: 1,
+      modifyreversaldef: 1,
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(2);
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 101 }),
+      ]),
+    );
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", moveType: "H" }),
+        expect.objectContaining({ id: "p2", stateNo: 777, moveType: "H" }),
       ]),
     );
   });
