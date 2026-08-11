@@ -470,6 +470,70 @@ describe("ReversalSystem", () => {
     });
   });
 
+  it("resolves ReversalDef chainid in the caller and admits only the matching previous HitDef id", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const reverser = actor("p2", "Reverser", { vars: [43], hitVars: { hitId: 43 } });
+    const caller = actor("p1", "Caller", { vars: [43] });
+
+    const activated = dispatchWorld.apply({
+      actor: reverser,
+      controller: compileControllerIr(controller("ReversalDef", {
+        "reversal.attr": "SA,AA",
+        chainid: "var(0)",
+      })),
+      context: { self: caller.runtime },
+      hitbox: box(),
+      reversalWorld,
+    });
+
+    expect(activated.activated).toBe(true);
+    expect(reverser.currentMove).toMatchObject({ chainId: 43 });
+    expect(reverser.runtime.reversal).toMatchObject({ chainId: 43 });
+    const incoming = move({ attr: "SA,AA" });
+    expect(reversalWorld.findActive(reverser, incoming, incoming.hitbox, findHooks())).toBeDefined();
+
+    reverser.runtime.hitVars = { hitId: 42 };
+    expect(reversalWorld.findActive(reverser, incoming, incoming.hitbox, findHooks())).toBeUndefined();
+  });
+
+  it("mutates or clears live ReversalDef chainid from the RedirectID caller context", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const reverser = actor("p2", "Reverser", { hitVars: { hitId: 43 } });
+    const caller = actor("p1", "Caller", { vars: [41] });
+    reversalWorld.activate(reverser, { attr: "SA,AA", chainId: 43, hitbox: box(), hitPause: 3 });
+
+    const modified = dispatchWorld.modify({
+      actor: reverser,
+      controller: compileControllerIr(controller("ModifyReversalDef", {
+        chainid: "var(0)",
+        redirectid: "57",
+      })),
+      context: { self: caller.runtime },
+    });
+
+    expect(modified.modified).toBe(true);
+    expect(reverser.currentMove).toMatchObject({ chainId: 41 });
+    expect(reverser.runtime.reversal).toMatchObject({ chainId: 41 });
+    const incoming = move({ attr: "SA,AA" });
+    expect(reversalWorld.findActive(reverser, incoming, incoming.hitbox, findHooks())).toBeUndefined();
+
+    const cleared = dispatchWorld.modify({
+      actor: reverser,
+      controller: compileControllerIr(controller("ModifyReversalDef", {
+        chainid: "-1",
+        redirectid: "57",
+      })),
+      context: { self: caller.runtime },
+    });
+
+    expect(cleared.modified).toBe(true);
+    expect(reverser.currentMove?.chainId).toBeUndefined();
+    expect(reverser.runtime.reversal?.chainId).toBeUndefined();
+    expect(reversalWorld.findActive(reverser, incoming, incoming.hitbox, findHooks())).toBeDefined();
+  });
+
   it("resolves dynamic ReversalDef sprite priorities in the caller and preserves omitted Modify components", () => {
     const reversalWorld = new RuntimeReversalWorld();
     const dispatchWorld = new RuntimeReversalControllerDispatchWorld();

@@ -261,6 +261,8 @@ export type RuntimeReversalDef = {
   hitShakeTime?: number;
   /** Active ReversalDef hit id exposed after accepted reversal contact. */
   targetId?: number;
+  /** Active ReversalDef chain-id requirement; omitted means no chain restriction. */
+  chainId?: number;
   attackDepth?: [number, number];
   unhittableTime?: [number, number];
 };

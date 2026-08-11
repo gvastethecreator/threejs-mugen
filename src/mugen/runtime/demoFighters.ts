@@ -82,6 +82,8 @@ export type DemoMove = {
   unhittableTime?: [number, number];
   /** Resolved nonnegative direct HitDef ID. */
   targetId?: number;
+  /** Resolved ReversalDef chain-id requirement; omitted means no chain restriction. */
+  chainId?: number;
   requiresHitDef?: boolean;
   isReversal?: boolean;
   reversalAttr?: string;

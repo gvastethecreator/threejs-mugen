@@ -398,6 +398,8 @@ export type ModifyReversalDefControllerOp = {
   targetId?: number;
   /** Dynamic or mixed ReversalDef id expression evaluated in caller context. */
   targetIdExpression?: number | string;
+  /** Dynamic or mixed live ReversalDef chain-id requirement evaluated in caller context. */
+  chainId?: number | string;
   attackDepth?: [number, number];
   /** Dynamic or mixed live ReversalDef attack-depth replacement evaluated in caller context. */
   attackDepthExpressions?: MugenHitDefExpressionPair;
@@ -1321,6 +1323,8 @@ export type ReversalDefControllerOp = {
   targetId?: number;
   /** Dynamic or mixed ReversalDef id expression evaluated in caller context. */
   targetIdExpression?: number | string;
+  /** Dynamic or mixed ReversalDef chain-id requirement evaluated in caller context. */
+  chainId?: number | string;
   attackDepth?: [number, number];
   /** Dynamic or mixed ReversalDef attack-depth pair evaluated in caller context. */
   attackDepthExpressions?: MugenHitDefExpressionPair;
@@ -2394,6 +2398,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   const targetIdValue = optionalIntegerExpressionParam(controller, "id");
   const targetId = typeof targetIdValue === "number" ? Math.max(0, targetIdValue) : undefined;
   const targetIdExpression = typeof targetIdValue === "string" ? targetIdValue : undefined;
+  const chainId = optionalIntegerExpressionParam(controller, "chainid");
   const attackDepthValue = optionalFloatExpressionPairParam(controller, "attack.depth");
   const attackDepthExpressions = Array.isArray(attackDepthValue) && attackDepthValue.some((value) => typeof value === "string")
     ? attackDepthValue
@@ -2420,6 +2425,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     p1GetP2Facing === false ||
     p2Facing === false ||
     targetIdValue === false ||
+    chainId === false ||
     attackDepthValue === false ||
     unhittableTime === false ||
     redirectPlayerIdExpression === "invalid"
@@ -2456,6 +2462,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     p2Facing: p2Facing === true ? undefined : p2Facing,
     targetId,
     ...(targetIdExpression === undefined ? {} : { targetIdExpression }),
+    ...(chainId === true ? {} : { chainId }),
     ...(attackDepth === undefined ? {} : { attackDepth }),
     ...(attackDepthExpressions === undefined ? {} : { attackDepthExpressions }),
     unhittableTime: unhittableTime === true ? undefined : unhittableTime,
@@ -3181,6 +3188,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     "p1getp2facing",
     "p2facing",
     "id",
+    "chainid",
     "attack.depth",
   ]);
   if (Object.keys(controller.params).some((key) => !allowedParams.has(key.toLowerCase()))) {
@@ -3217,6 +3225,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   const targetIdValue = optionalIntegerExpressionParam(controller, "id");
   const normalizedTargetId = typeof targetIdValue === "number" ? Math.max(0, targetIdValue) : undefined;
   const targetIdExpression = typeof targetIdValue === "string" ? targetIdValue : undefined;
+  const chainId = optionalIntegerExpressionParam(controller, "chainid");
   const attackDepthValue = optionalFloatExpressionPairParam(controller, "attack.depth");
   const attackDepthExpressions = Array.isArray(attackDepthValue) && attackDepthValue.some((value) => typeof value === "string")
     ? attackDepthValue
@@ -3243,6 +3252,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     p1GetP2Facing === false ||
     p2Facing === false ||
     targetIdValue === false ||
+    chainId === false ||
     attackDepthValue === false ||
     redirectPlayerIdExpression === undefined ||
     redirectPlayerIdExpression === "invalid"
@@ -3286,6 +3296,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     normalizedP2Facing === undefined &&
     normalizedTargetId === undefined &&
     targetIdExpression === undefined &&
+    chainId === true &&
     attackDepth === undefined &&
     attackDepthExpressions === undefined
   ) {
@@ -3316,6 +3327,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     ...(normalizedP2Facing === undefined ? {} : { p2Facing: normalizedP2Facing }),
     ...(normalizedTargetId === undefined ? {} : { targetId: normalizedTargetId }),
     ...(targetIdExpression === undefined ? {} : { targetIdExpression }),
+    ...(chainId === true ? {} : { chainId }),
     ...(attackDepth === undefined ? {} : { attackDepth }),
     ...(attackDepthExpressions === undefined ? {} : { attackDepthExpressions }),
   };

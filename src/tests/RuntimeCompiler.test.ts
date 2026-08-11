@@ -1847,8 +1847,17 @@ value = 1
     const dynamicId = compileControllerIr(
       controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", id: "var(0)" }),
     );
+    const dynamicChainId = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", chainid: "var(1)" }),
+    );
+    const disabledChainId = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", chainid: "-1" }),
+    );
     const malformedId = compileControllerIr(
       controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", id: "var(" }),
+    );
+    const malformedChainId = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", chainid: "var(" }),
     );
     const singleDynamicAttackDepth = compileControllerIr(
       controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", "attack.depth": "var(0)" }),
@@ -1899,7 +1908,16 @@ value = 1
       kind: "reversaldef",
       targetIdExpression: "var(0)",
     });
+    expect(dynamicChainId.operation).toMatchObject({
+      kind: "reversaldef",
+      chainId: "var(1)",
+    });
+    expect(disabledChainId.operation).toMatchObject({
+      kind: "reversaldef",
+      chainId: -1,
+    });
     expect(malformedId.operation).toBeUndefined();
+    expect(malformedChainId.operation).toBeUndefined();
     expect(singleDynamicAttackDepth.operation).toMatchObject({
       kind: "reversaldef",
       attackDepthExpressions: ["var(0)"],
@@ -3251,8 +3269,17 @@ value = 1
     const dynamicId = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { id: "var(2)", redirectid: "57" }),
     );
+    const dynamicChainId = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { chainid: "var(3)", redirectid: "57" }),
+    );
+    const disabledChainId = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { chainid: "-1", redirectid: "57" }),
+    );
     const malformedId = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { id: "var(", redirectid: "57" }),
+    );
+    const malformedChainId = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { chainid: "var(", redirectid: "57" }),
     );
     const missingRedirect = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { "reversal.attr": "S,NA" }),
@@ -3298,7 +3325,18 @@ value = 1
       targetIdExpression: "var(2)",
       redirectPlayerIdExpression: "57",
     });
+    expect(dynamicChainId.operation).toEqual({
+      kind: "modifyreversaldef",
+      chainId: "var(3)",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(disabledChainId.operation).toEqual({
+      kind: "modifyreversaldef",
+      chainId: -1,
+      redirectPlayerIdExpression: "57",
+    });
     expect(malformedId.operation).toBeUndefined();
+    expect(malformedChainId.operation).toBeUndefined();
     expect(unsupportedPayload.operation).toBeUndefined();
     expect(missingRedirect.operation).toBeUndefined();
     expect(emptyPayload.operation).toBeUndefined();

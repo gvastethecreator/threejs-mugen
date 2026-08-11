@@ -57,6 +57,8 @@ export type RuntimeReversalActivation = {
   p1GetP2Facing?: number;
   p2Facing?: number;
   targetId?: number;
+  /** Resolved ReversalDef chain-id requirement; negative values disable the requirement. */
+  chainId?: number;
   attackDepth?: [number, number];
   unhittableTime?: [number, number];
 };
@@ -162,6 +164,12 @@ export class RuntimeReversalControllerDispatchWorld {
       actor.runtime,
       context,
     );
+    const resolvedChainId = resolveRuntimeReversalInteger(
+      operation?.chainId,
+      findParam(source, "chainid"),
+      actor.runtime,
+      context,
+    );
     const activated = reversalWorld.activate(actor, {
       attr: (operation?.attr ?? stripMugenString(findParam(source, "reversal.attr")))?.trim() ?? "",
       reversalGuardFlag: operation?.reversalGuardFlag,
@@ -228,6 +236,7 @@ export class RuntimeReversalControllerDispatchWorld {
         context,
       ),
       targetId: resolvedTargetId === undefined ? undefined : Math.max(0, resolvedTargetId),
+      chainId: resolvedChainId !== undefined && resolvedChainId >= 0 ? resolvedChainId : undefined,
       attackDepth:
         operation?.attackDepth ??
         resolveRuntimeReversalFloatPair(
@@ -397,6 +406,19 @@ export class RuntimeReversalControllerDispatchWorld {
         runtimeReversal.targetId = existing.targetId;
       }
     }
+    if (operation.chainId !== undefined) {
+      const chainId = resolveRuntimeReversalInteger(
+        operation.chainId,
+        findParam(controller.source, "chainid"),
+        actor.runtime,
+        context,
+      );
+      if (chainId !== undefined) {
+        const normalizedChainId = chainId >= 0 ? chainId : undefined;
+        existing.chainId = normalizedChainId;
+        runtimeReversal.chainId = normalizedChainId;
+      }
+    }
     const attackDepth = operation.attackDepth ?? resolveRuntimeReversalFloatPair(
       operation.attackDepthExpressions,
       findParam(controller.source, "attack.depth"),
@@ -435,6 +457,9 @@ export class RuntimeReversalWorld {
     }
     const hitDefAttr = activation.hitDefAttr?.trim() || "S,NA";
     const hitCount = normalizedReversalHitCount(activation.hitCount);
+    const chainId = activation.chainId !== undefined && Number.isFinite(activation.chainId) && activation.chainId >= 0
+      ? Math.trunc(activation.chainId)
+      : undefined;
     fighter.currentMove = {
       actionId: fighter.runtime.stateNo,
       startup: 0,
@@ -444,6 +469,7 @@ export class RuntimeReversalWorld {
       damage: 0,
       attr: hitDefAttr,
       targetId: activation.targetId,
+      ...(chainId === undefined ? {} : { chainId }),
       isReversal: true,
       reversalAttr: attr,
       reversalGuardFlag: activation.reversalGuardFlag,
@@ -494,6 +520,7 @@ export class RuntimeReversalWorld {
       ...(activation.hitShakeTime === undefined ? {} : { hitShakeTime: activation.hitShakeTime }),
       ...(activation.hitCount === undefined ? {} : { hitCount }),
       ...(activation.targetId === undefined ? {} : { targetId: Math.max(0, activation.targetId) }),
+      ...(chainId === undefined ? {} : { chainId }),
     };
     return true;
   }
@@ -513,6 +540,12 @@ export class RuntimeReversalWorld {
       return undefined;
     }
     if (!hooks.attrMatches(reversal.reversalAttr, incomingMove.attr ?? "S,NA")) {
+      return undefined;
+    }
+    if (
+      reversal.chainId !== undefined
+      && defender.runtime.hitVars?.hitId !== Math.trunc(reversal.chainId)
+    ) {
       return undefined;
     }
     if (
