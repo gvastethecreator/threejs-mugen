@@ -1080,6 +1080,57 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("resolves fresh direct snap X/Y expressions in caller context without stale offsets", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        snap: "99,-99",
+      })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.hitVars?.hitOffset).toEqual({ x: 99, y: -99 });
+
+    caller.vars[1] = 7;
+    caller.fvars[1] = -5;
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        snap: "var(1),fvar(1)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.hitVars?.hitOffset).toEqual({ x: 7, y: -5 });
+
+    caller.vars[2] = 11;
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        snap: "var(2)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.hitVars?.hitOffset).toEqual({ x: 11 });
+
+    actor.firedHitDefs.clear();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA" })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.hitVars?.hitOffset).toBeUndefined();
+  });
+
   it("resolves live ModifyHitDef air.velocity X/Y independently and preserves omitted siblings", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
@@ -1365,7 +1416,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
     const caller = runtimeState();
-    const apply = (downVelocity?: string, resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy") => [number?, number?] | undefined) => {
+    const apply = (downVelocity?: string, resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy" | "snap") => [number?, number?] | undefined) => {
       actor.firedHitDefs.clear();
       world.apply({
         actor,

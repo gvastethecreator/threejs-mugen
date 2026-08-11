@@ -2430,6 +2430,23 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles direct HitDef snap X/Y expressions and rejects triples", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], { snap: "16,-24" })).operation).toMatchObject({
+      kind: "hitdef",
+      snap: [16, -24],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { snap: "var(1)" })).operation).toMatchObject({
+      kind: "hitdef",
+      snapExpressions: ["var(1)"],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { snap: "var(1),fvar(2)" })).operation).toMatchObject({
+      kind: "hitdef",
+      snapExpressions: ["var(1)", "fvar(2)"],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { snap: "var(" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "HitDef", [], { snap: "var(1),fvar(2),var(3)" })).operation).toBeUndefined();
+  });
+
   it("compiles direct HitDef and root ModifyHitDef guard.velocity X expressions", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "guard.velocity": "-4.5",
