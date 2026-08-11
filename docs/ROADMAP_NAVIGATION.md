@@ -2,7 +2,15 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T734 closed-bounded (2026-08-11)
+## Current implementation route — T735 closed-bounded (2026-08-11)
+
+T735 / [issue 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md)
+closes live `ModifyHitDef hitsound.channel` through root/RedirectID and Helper
+callers. Caller-context finite values reach typed hit-audio channel `7`, with
+omission/unresolved preservation; trace/final checksums are `b5f4c11e` /
+`421be8fe`.
+
+## Historical implementation route — T734 closed-bounded (2026-08-11)
 
 T734 / [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md)
 closes live `ModifyHitDef hitsound` through root/RedirectID and Helper callers.
@@ -11,10 +19,10 @@ preservation is required; the accepted hit-audio event carries typed `F6,4`
 telemetry from raw `Fvar(0),var(1)` with no guard route. Trace/final checksums
 are `8d56e467` / `d2d70840`.
 
-## Next implementation route — T735 queued
+## Next implementation route — T736 queued
 
-T735 / [issue 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md)
-queues live `ModifyHitDef hitsound.channel` replacement with caller-context
+T736 / [issue 310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md)
+queues live `ModifyHitDef guardsound.channel` replacement with caller-context
 resolution and omission preservation.
 
 ## Historical implementation route — T733 closed-bounded (2026-08-11)

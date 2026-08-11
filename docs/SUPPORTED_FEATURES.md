@@ -1,5 +1,22 @@
 ﻿# Supported Features
-## 2026-08-11 T734 `ModifyHitDef hitsound` — closed-bounded
+## 2026-08-11 T735 `ModifyHitDef hitsound.channel` — closed-bounded
+
+Ikemen-only live `ModifyHitDef hitsound.channel` replacement is supported
+through root/RedirectID and Helper callers. Static and caller-context dynamic
+finite values reach typed hit `audio:playsnd` channel `7`; omission or
+unresolved expressions preserve the active channel. Required trace checksum is
+`b5f4c11e` / `421be8fe`; aggregate QA passes `822/822` artifacts. Fresh
+defaults, guardsound channel, exact playback/mixing/priority, Projectiles and
+full audio parity remain outside the claim. See [issue
+309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
+
+## Next queued — T736 `ModifyHitDef guardsound.channel`
+
+The bounded live guard-channel replacement is queued for root/RedirectID and
+Helper callers. See [issue
+310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md).
+
+## Historical — T734 `ModifyHitDef hitsound` — closed-bounded
 
 Ikemen-only live `ModifyHitDef hitsound` group/number/prefix replacement is
 supported through root/RedirectID and Helper callers. Static and caller-context
@@ -11,12 +28,6 @@ expressions preserve the active sound. Required trace
 defaults, channel semantics, exact playback/mixing/priority, Projectiles and
 full audio parity remain outside the claim. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
-
-## Next queued — T735 `ModifyHitDef hitsound.channel`
-
-The bounded live channel replacement is queued for root/RedirectID and Helper
-callers. See [issue
-309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
 
 ## Historical — T733 `ModifyHitDef guardsound` — closed-bounded
 

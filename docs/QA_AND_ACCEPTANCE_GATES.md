@@ -1,6 +1,19 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-11 T734 `ModifyHitDef hitsound` — passed / closed-bounded
+## 2026-08-11 T735 `ModifyHitDef hitsound.channel` — passed / closed-bounded
+
+Required `synthetic-imported-modifyhitdef-dynamic-hitsound-channel.json` proves
+VarSet + HitDef + RedirectID ModifyHitDef caller evaluation, a real hit contact
+and target link `p1 -> p2 / 77`, plus typed `audio:playsnd` group `6`, index `4`,
+channel `7`, raw `Fvar(0),var(1)`, and `contactKind = hit`. Trace checksum is
+`b5f4c11e`, final checksum `421be8fe`; focused compiler/runtime/Helper/audio
+coverage is `335/335`, typecheck passes, and `pnpm qa:trace` passes `822/822`
+artifacts (`788` required, `34` optional). Fresh defaults, guardsound channel,
+exact lookup/playback/mixing/priority, Projectiles, renderer timing, teams,
+rollback and full audio parity remain outside this gate. See [issue
+309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
+
+## Historical — 2026-08-11 T734 `ModifyHitDef hitsound` — passed / closed-bounded
 
 Required `synthetic-imported-modifyhitdef-dynamic-hitsound.json` proves
 VarSet + HitDef + RedirectID ModifyHitDef caller evaluation, a real hit
@@ -13,12 +26,12 @@ Exact SND lookup/playback/mixing/channel priority, fresh defaults, Projectiles,
 renderer timing, teams, rollback and full audio parity remain outside this
 gate. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next queued — T735 `ModifyHitDef hitsound.channel`
+## Next queued — T736 `ModifyHitDef guardsound.channel`
 
-The next gate covers caller-context live channel replacement and accepted-hit
-audio evidence; group/index mutation, guardsound channel, Projectiles and exact
-playback remain deferred. See [issue
-309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
+The next gate covers caller-context live guard-channel replacement and accepted
+guard audio evidence; hitsound channel, Projectiles and exact playback remain
+deferred. See [issue
+310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md).
 
 ## Historical — 2026-08-11 T733 `ModifyHitDef guardsound` — passed / closed-bounded
 

@@ -1,6 +1,22 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T734 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T735 closed-bounded (2026-08-11)
+
+Issue 309 closes Ikemen-only live `ModifyHitDef hitsound.channel` through
+root/RedirectID and Helper callers. Static and dynamic caller-context finite
+values preserve the active channel on omission/unresolved input and reach typed
+hit-audio channel `7`. Required artifact checksum is `b5f4c11e` /
+`421be8fe`; focused compiler/runtime/Helper/audio coverage is `335/335`,
+typecheck passes and `pnpm qa:trace` passes `822/822` artifacts (`788`
+required, `34` optional). Fresh defaults, guardsound channel, exact lookup,
+playback/mixing/priority, Projectiles and full audio parity remain blocked.
+
+## Next implementation checkpoint — T736 queued
+
+Issue 310 queues live `ModifyHitDef guardsound.channel` replacement with
+caller-context resolution and omission preservation.
+
+## Historical implementation checkpoint — T734 closed-bounded (2026-08-11)
 
 Issue 308 closes Ikemen-only live `ModifyHitDef hitsound` through
 root/RedirectID and Helper callers. Static and dynamic/mixed caller-context
@@ -13,11 +29,6 @@ Focused compiler/runtime/Helper coverage is `301/301`; typecheck passes and
 `pnpm qa:trace` passes `821/821` artifacts (`787` required, `34` optional).
 Fresh defaults, channels, exact lookup/playback/mixing/priority, Projectiles
 and full audio parity remain blocked.
-
-## Next implementation checkpoint — T735 queued
-
-Issue 309 queues live `ModifyHitDef hitsound.channel` replacement with
-caller-context resolution and omission preservation.
 
 ## Historical implementation checkpoint — T733 closed-bounded (2026-08-11)
 

@@ -1,6 +1,19 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T734 closed-bounded (2026-08-11)
+## Latest bounded slice — T735 closed-bounded (2026-08-11)
+
+Issue 309 closes the bounded Ikemen-only live `ModifyHitDef hitsound.channel`
+replacement through root/RedirectID and Helper callers. Static and
+caller-context dynamic finite values reach typed hit `PlaySnd` channel `7`;
+omission or unresolved values preserve the active channel. Required trace
+`synthetic-imported-modifyhitdef-dynamic-hitsound-channel.json` proves
+`VarSet -> HitDef -> ModifyHitDef -> hit`, with checksums `b5f4c11e` /
+`421be8fe`; aggregate QA passes `822/822` artifacts (`788` required, `34`
+optional). Fresh defaults, guardsound channel, exact playback/mixing/priority,
+Projectiles and full audio parity remain excluded. See [issue
+309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
+
+## Historical bounded slice — T734 closed-bounded (2026-08-11)
 
 Issue 308 closes the symmetric Ikemen-only live `ModifyHitDef hitsound`
 reference replacement through root/RedirectID and Helper callers. Static and
@@ -14,12 +27,12 @@ artifacts (`787` required, `34` optional). Fresh defaults, channels, exact
 lookup/playback/mixing/priority, Projectiles and full audio parity remain
 blocked. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next bounded slice — T735 queued
+## Next bounded slice — T736 queued
 
-Issue 309 queues Ikemen-only live `ModifyHitDef hitsound.channel` replacement
-with caller-context resolution and omission preservation. Sound group/index,
-guardsound channel, exact playback/mixing and full audio parity remain
-excluded. See [issue 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
+Issue 310 queues Ikemen-only live `ModifyHitDef guardsound.channel` replacement
+with caller-context resolution and omission preservation. Hitsound channel,
+exact playback/mixing and full audio parity remain excluded. See [issue
+310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md).
 
 ## Historical bounded slice — T733 closed-bounded (2026-08-11)
 

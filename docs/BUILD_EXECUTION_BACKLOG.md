@@ -10,9 +10,17 @@
   artifacts (`787` required, `34` optional). See [issue
   308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-- **T735 queued** — Ikemen-only live `ModifyHitDef hitsound.channel`
-  replacement through root/RedirectID and Helper callers. See [issue
+- **T735 closed-bounded** — Ikemen-only live `ModifyHitDef hitsound.channel`
+  replacement through root/RedirectID and Helper callers. Finite static and
+  caller-context dynamic values reach typed hit `PlaySnd` channel metadata;
+  omission or unresolved values preserve the active channel. Required trace
+  checksum `b5f4c11e` / final `421be8fe`; aggregate QA passes `822/822`
+  artifacts (`788` required, `34` optional). See [issue
   309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
+
+- **T736 queued** — Ikemen-only live `ModifyHitDef guardsound.channel`
+  replacement through root/RedirectID and Helper callers. See [issue
+  310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md).
 
 - **T733 closed-bounded** — Ikemen-only live `ModifyHitDef guardsound`
   group/number/prefix replacement through root/RedirectID and Helper callers.
