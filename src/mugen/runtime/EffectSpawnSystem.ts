@@ -82,6 +82,8 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveProjectilePaletteFx?: RuntimeProjectileSpawnInput["resolvePaletteFx"];
   resolveProjectileGetPower?: RuntimeProjectileSpawnInput["resolveProjectileGetPower"];
   resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"];
+  /** Resolves fresh Projectile projanim in the original caller context. */
+  resolveProjectileAnimation?: () => number | undefined;
   resolveModifyProjectile?: RuntimeProjectileModifyResolver;
   runtimeProfile?: RuntimeCompatibilityProfile;
   resolveHelperStandby?: (operation: HelperControllerOp) => boolean | undefined;
@@ -269,9 +271,13 @@ export class RuntimeEffectSpawnWorld {
     resolvePaletteFx?: RuntimeProjectileSpawnInput["resolvePaletteFx"],
     resolveProjectileGetPower?: RuntimeProjectileSpawnInput["resolveProjectileGetPower"],
     resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"],
+    resolveProjectileAnimation?: () => number | undefined,
   ): boolean {
     const owner = effectSpriteOwner(fighter);
-    const animNo = operation?.projAnim ?? firstNumber(findParam(controller, "projanim") ?? findParam(controller, "anim")) ?? 0;
+    const animNo = operation?.projAnim
+      ?? resolveProjectileAnimation?.()
+      ?? firstNumber(findParam(controller, "projanim") ?? findParam(controller, "anim"))
+      ?? 0;
     const action = owner.definition.animations.get(animNo);
     if (!isPlayableAction(action)) {
       return false;
@@ -629,6 +635,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveProjectilePaletteFx,
         options.resolveProjectileGetPower,
         options.resolveProjectileGivePower,
+        options.resolveProjectileAnimation,
       )
         ? 1
         : 0;

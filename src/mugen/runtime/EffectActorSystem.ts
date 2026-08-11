@@ -695,7 +695,13 @@ export function spawnRuntimeHelperProjectileActor(
   options: RuntimeHelperAdvanceOptions = {},
 ): RuntimeProjectile | undefined {
   const operation = projectileOperation(controller);
-  const animNo = operation?.projAnim ?? firstNumber(findControllerParam(controller, "projanim") ?? findControllerParam(controller, "anim")) ?? 0;
+  const resolvedAnimNo = operation?.projAnimExpression === undefined
+    ? undefined
+    : resolveRuntimeHelperIntegerScalarParam(helper, controller, "projanim", options);
+  const animNo = operation?.projAnim
+    ?? resolvedAnimNo
+    ?? firstNumber(findControllerParam(controller, "projanim") ?? findControllerParam(controller, "anim"))
+    ?? 0;
   const action = helper.animations?.get(animNo);
   if (!isPlayableAction(action)) {
     return undefined;

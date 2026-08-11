@@ -282,6 +282,29 @@ describe("EffectSpawnSystem", () => {
     });
   });
 
+  it("resolves fresh root Projectile projanim before AIR action lookup", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const dispatchWorld = new RuntimeEffectSpawnControllerDispatchWorld();
+    const fighter = actor("p1", effectActorWorld, {}, definition("p1", [baseAction, helperAction, terminalAction]));
+    const opponent = actor("p2", effectActorWorld);
+
+    const result = dispatchWorld.apply({
+      actor: fighter,
+      opponent,
+      controller: compileControllerIr(controller("Projectile", { projanim: "var(0)" })),
+      effect: "projectile",
+      effectSpawnWorld: spawnWorld,
+      resolveProjectileAnimation: () => 920,
+    });
+
+    expect(result).toMatchObject({ changed: true, changedCount: 1 });
+    expect(effectActorWorld.getStore("p1").projectiles[0]).toMatchObject({
+      animNo: 920,
+      action: helperAction,
+    });
+  });
+
   it("resolves initial Helper standby only for IKEMEN and preserves StateDef ctrl precedence", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const spawnWorld = new RuntimeEffectSpawnWorld();

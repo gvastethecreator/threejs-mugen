@@ -24,6 +24,7 @@ import {
   runtimeProjectileActorsToSnapshots,
   spawnRuntimeExplodActor,
   spawnRuntimeHelperActor,
+  spawnRuntimeHelperProjectileActor,
   spawnRuntimeProjectileActor,
   summarizeRuntimeEffectActorStore,
 } from "../mugen/runtime/EffectActorSystem";
@@ -1781,6 +1782,31 @@ describe("EffectActorSystem", () => {
       ownerId: "p1",
       rootId: "p1",
       parentId: helper.serialId,
+    });
+  });
+
+  it("resolves fresh Helper Projectile projanim in the helper caller context", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "43", anim: "900" }),
+      animations: new Map([
+        [900, action(900)],
+        [920, action(920)],
+      ]),
+    });
+    helper.vars[0] = 920;
+
+    const projectile = spawnRuntimeHelperProjectileActor(
+      store,
+      helper,
+      compileControllerIr(controller("Projectile", { projanim: "var(0)", projid: "8862" })),
+    );
+
+    expect(projectile).toMatchObject({
+      animNo: 920,
+      action: action(920),
+      parentId: helper.serialId,
+      rootId: "p1",
     });
   });
 

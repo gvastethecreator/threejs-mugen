@@ -493,6 +493,8 @@ export type ProjectileControllerOp = {
   affectTeam?: MugenAffectTeam;
   teamSide?: 1 | 2;
   projAnim?: number;
+  /** Fresh Projectile `projanim` expression evaluated in the original caller context. */
+  projAnimExpression?: number | string;
   offset?: MugenProjectileVector;
   pos?: MugenProjectileVector;
   postype?: string;
@@ -3498,6 +3500,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (priorityValue === false) return undefined;
   const hitCountValue = optionalIntegerExpressionParam(controller, "projhits");
   if (hitCountValue === false) return undefined;
+  const projAnimValue = optionalIntegerExpressionParam(controller, "projanim");
+  if (projAnimValue === false) return undefined;
   const standFriction = optionalScalarNumberOrExpression(controller, "stand.friction");
   const crouchFriction = optionalScalarNumberOrExpression(controller, "crouch.friction");
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
@@ -3621,7 +3625,10 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     p1StateNo: firstNumber(findParam(controller, "p1stateno")),
     affectTeam: normalizeMugenAffectTeam(findParam(controller, "affectteam")),
     teamSide: normalizeMugenTeamSide(firstNumber(findParam(controller, "teamside"))),
-    projAnim: firstNumber(findParam(controller, "projanim") ?? findParam(controller, "anim")),
+    projAnim: typeof projAnimValue === "number"
+      ? projAnimValue
+      : firstNumber(findParam(controller, "projanim") ?? findParam(controller, "anim")),
+    ...(typeof projAnimValue === "string" ? { projAnimExpression: projAnimValue } : {}),
     offset: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "offset"))),
     pos: tripleWithDefaultOrUndefined(numberTriple(findParam(controller, "pos"))),
     postype: stripMugenString(findParam(controller, "postype")),

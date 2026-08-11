@@ -4001,6 +4001,27 @@ value = 1
     expect(omitted).not.toHaveProperty("airHitTimeExpression");
   });
 
+  it("compiles fresh Projectile projanim as a caller-context integer expression", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      projanim: "var(0) + 2",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      projAnimExpression: "var(0) + 2",
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      projanim: "910",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      projAnim: 910,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      projanim: "var(",
+    })).operation).toBeUndefined();
+    const omitted = compileControllerIr(controller(1000, "Projectile", [], {})).operation;
+    expect(omitted).toMatchObject({ kind: "projectile" });
+    expect(omitted).not.toHaveProperty("projAnimExpression");
+  });
+
   it("compiles dynamic Projectile guard.velocity components", () => {
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       "guard.velocity": "var(0),fvar(1),var(2)",
