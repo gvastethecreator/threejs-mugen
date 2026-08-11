@@ -1,5 +1,23 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T725 ReversalDef `chainid` expressions — closed-bounded, no score movement
+
+Issue 299 closes the bounded direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `chainid` path. Fresh/live values resolve once in caller
+context, finite values truncate, explicit negatives disable the requirement,
+and incompatible latest `HitDef` ids are rejected. Focused compiler/runtime
+coverage passes `179/179`; no causal end-to-end trace is claimed. No score
+movement: `nochainid`, Helper-owned mutation, Projectile/ModifyProjectile,
+priority/hitonce, exact tick parity, overflow/int32, teams, rollback and full
+ReversalDef parity remain blocked. See [issue
+299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
+
+## Next queued — T726 ReversalDef `nochainid` expressions
+
+Issue 300 queues caller-context lists up to eight entries on the same bounded
+root/RedirectID route. See [issue
+300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
+
 ## 2026-08-11 T724 ReversalDef `id` expressions — closed-bounded, no score movement
 
 Issue 298 closes the bounded direct/root `ReversalDef` and root/RedirectID

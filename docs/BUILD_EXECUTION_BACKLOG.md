@@ -2,6 +2,17 @@
 
 ## Current parity queue
 
+- **T725 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
+  `ModifyReversalDef` now retain caller-context `chainid` expressions. Fresh
+  and live values truncate finite inputs, explicit negatives disable the
+  requirement, and incompatible latest `HitDef` ids are rejected. Focused
+  compiler/runtime coverage is `179/179`; no causal end-to-end trace is
+  claimed. See [issue 299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
+
+- **T726 queued** — dynamic `nochainid` lists, capped at eight entries, for
+  the same root/RedirectID route. See [issue
+  300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
+
 - **T724 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
   `ModifyReversalDef` now retain static and caller-context `id` expressions.
   Fresh/live values clamp to a non-negative target id; accepted reversal

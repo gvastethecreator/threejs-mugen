@@ -1,8 +1,17 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T724 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T725 closed-bounded (2026-08-11)
 
-Issue 298 adds typed static/dynamic `id` to direct/root `ReversalDef` and root
+Issue 299 adds typed static/dynamic `chainid` to direct/root `ReversalDef` and
+root/RedirectID `ModifyReversalDef`. Fresh/live paths resolve once in caller
+context; finite values truncate, explicit negatives disable the requirement,
+and accepted reversal admission rejects an incompatible latest `HitDef` id.
+Focused compiler/runtime tests pass `179/179`; typecheck and diff hygiene pass.
+The exploratory root/RedirectID trace is intentionally not promoted because
+its contact ordering was not causal. See [issue
+299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
+
+Issue 298 added typed static/dynamic `id` to direct/root `ReversalDef` and root
 /RedirectID `ModifyReversalDef`. Fresh and live paths resolve once in caller
 context, clamp to a non-negative target id, and accepted reversal contact
 publishes the value to target memory and `GetHitVar(hitid)`. Required trace
@@ -13,11 +22,11 @@ Projectile/ModifyProjectile, priority/hitonce, exact id/tick ordering,
 overflow/int32, teams, rollback and full parity remain open. See [issue
 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md).
 
-## Next implementation checkpoint — T725 queued
+## Next implementation checkpoint — T726 queued
 
-Issue 299 is queued for caller-context `chainid` matching and rejection on
-incompatible reversal chains. See [issue
-299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
+Issue 300 is queued for caller-context `nochainid` lists (up to eight entries)
+and blocked-chain rejection. See [issue
+300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
 
 ## Previous implementation checkpoint — T723 closed-bounded (2026-08-11)
 

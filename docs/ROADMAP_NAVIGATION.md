@@ -2,7 +2,23 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T724 closed-bounded (2026-08-11)
+## Current implementation route — T725 closed-bounded (2026-08-11)
+
+T725 / [issue 299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md)
+closes typed caller-context `chainid` for direct/root `ReversalDef` and
+root/RedirectID `ModifyReversalDef`. Fresh/live values truncate finite inputs,
+explicit negatives disable the requirement, and admission rejects a mismatched
+latest `HitDef` id. Focused compiler/runtime coverage is `179/179`; typecheck
+and diff hygiene pass. No end-to-end trace is promoted because scheduling was
+not isolated.
+
+## Next implementation route — T726 queued
+
+T726 / [issue 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md)
+queues dynamic `nochainid` lists (maximum eight entries) on the same bounded
+root/RedirectID route.
+
+## Previous implementation route — T724 closed-bounded (2026-08-11)
 
 T724 / [issue 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md)
 closes typed `id` for direct/root `ReversalDef` and root/RedirectID

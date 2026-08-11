@@ -1,8 +1,16 @@
 # Workplan
 
-## Latest slice — T724 closed-bounded (2026-08-11)
+## Latest slice — T725 closed-bounded (2026-08-11)
 
-Issue 298 closes direct/root `ReversalDef` and root/RedirectID
+Issue 299 closes direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `chainid` expressions. Fresh/live values resolve once in
+caller context, truncate finite values, disable the requirement for explicit
+negatives, and reject incompatible latest `HitDef` ids. Focused coverage is
+`179/179`; typecheck and diff hygiene pass. The exploratory end-to-end trace
+was not promoted because scheduling was not causal. See [issue
+299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
+
+Issue 298 closed direct/root `ReversalDef` and root/RedirectID
 `ModifyReversalDef` `id` expressions. Fresh and live values resolve once in
 caller context, clamp to a non-negative target id, and accepted reversal
 contact carries the id through target memory and `GetHitVar(hitid)`. Required
@@ -12,11 +20,11 @@ Helper-owned ModifyReversalDef, Projectile/ModifyProjectile, priority/hitonce,
 exact id/tick parity, overflow/int32, teams, rollback and full parity stay
 deferred. See [issue 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md).
 
-## Next slice — T725 queued
+## Next slice — T726 queued
 
-Issue 299 is queued for dynamic `chainid` matching and incompatible-chain
-rejection in the same bounded root/RedirectID route. See [issue
-299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
+Issue 300 is queued for dynamic `nochainid` lists (up to eight entries) and
+blocked-chain rejection in the same bounded root/RedirectID route. See [issue
+300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
 
 ## Previous slice — T723 closed-bounded (2026-08-11)
 

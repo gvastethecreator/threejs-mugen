@@ -1,4 +1,20 @@
 ﻿# Supported Features
+## 2026-08-11 T725 ReversalDef `chainid` expressions — closed-bounded
+
+Direct/root `ReversalDef` and root/RedirectID `ModifyReversalDef` now retain
+typed static and caller-context `chainid` expressions. Fresh/live values
+truncate finite inputs; explicit negatives disable the requirement; accepted
+admission rejects a mismatched latest `HitDef` id. Focused compiler/runtime
+coverage passes `179/179`; no causal end-to-end trace is claimed. `nochainid`,
+Helper-owned mutation, Projectile/ModifyProjectile, priority/hitonce, exact
+tick ordering, overflow/int32, teams, rollback and full ReversalDef parity
+remain outside the claim. See [issue 299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
+
+## Next queued — T726 ReversalDef `nochainid` expressions
+
+Caller-context `nochainid` lists (up to eight entries) are queued for the same
+root/RedirectID route. See [issue 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
+
 ## 2026-08-11 T724 ReversalDef `id` expressions — closed-bounded
 
 Direct/root `ReversalDef` and root/RedirectID `ModifyReversalDef` now retain

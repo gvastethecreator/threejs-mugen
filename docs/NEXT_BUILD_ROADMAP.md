@@ -1,6 +1,22 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T724 closed-bounded (2026-08-11)
+## Latest bounded slice — T725 closed-bounded (2026-08-11)
+
+Issue 299 closes caller-context `chainid` for direct/root `ReversalDef` and
+root/RedirectID `ModifyReversalDef`. Fresh and live paths resolve once,
+truncate finite values, disable the requirement for explicit negatives, and
+reject incompatible latest `HitDef` ids. Focused compiler/runtime tests pass
+`179/179`; typecheck and diff hygiene pass. The attempted end-to-end trace is
+not promoted because its contact ordering was not causal. See [issue
+299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
+
+## Next bounded slice — T726 queued
+
+Issue 300 queues dynamic `nochainid` lists (up to eight entries) for the same
+root/RedirectID route. See [issue
+300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
+
+## Previous bounded slice — T724 closed-bounded (2026-08-11)
 
 Issue 298 closes direct/root `ReversalDef` and root/RedirectID
 `ModifyReversalDef` `id` expressions. Fresh activation and live replacement
