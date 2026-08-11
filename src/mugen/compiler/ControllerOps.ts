@@ -711,6 +711,8 @@ export type ModifyProjectileControllerOp = {
   projectileId?: number;
   /** Numeric owner AIR action selected by Ikemen `projanim`. */
   projAnim?: number;
+  /** Dynamic Ikemen `ModifyProjectile projanim` expression evaluated in caller context. */
+  projAnimExpression?: number | string;
   hitAnim?: number;
   removeAnim?: number;
   cancelAnim?: number;
@@ -3797,6 +3799,8 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
   if (redirectPlayerIdExpression === "invalid") {
     return undefined;
   }
+  const projAnimValue = optionalIntegerExpressionParam(controller, "projanim");
+  if (projAnimValue === false) return undefined;
   const damageRaw = findParam(controller, "damage");
   const damage = damageRaw === undefined ? undefined : strictStaticNumberPair(damageRaw);
   const getPower = optionalIntegerExpressionPairParam(controller, "getpower");
@@ -3893,7 +3897,8 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     noChainIds: staticIntegerList(findParam(controller, "nochainid"), 8),
     selectionIndex: firstNumber(findParam(controller, "index")),
     projectileId: firstNumber(findParam(controller, "projid")),
-    projAnim: firstNumber(findParam(controller, "projanim")),
+    projAnim: typeof projAnimValue === "number" ? projAnimValue : undefined,
+    ...(typeof projAnimValue === "string" ? { projAnimExpression: projAnimValue } : {}),
     hitAnim: firstNumber(findParam(controller, "projhitanim")),
     removeAnim: firstNumber(findParam(controller, "projremanim")),
     cancelAnim: firstNumber(findParam(controller, "projcancelanim")),

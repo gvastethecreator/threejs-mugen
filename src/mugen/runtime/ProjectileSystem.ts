@@ -454,6 +454,8 @@ export type RuntimeModifyProjectileGroundVelocity = MugenPartialHitDefVector;
 
 export type RuntimeProjectileModifyResolver = {
   resolveNumber?: (key: RuntimeModifyProjectileNumberParam) => number | undefined;
+  /** Resolves a typed ModifyProjectile `projanim` expression in caller context. */
+  resolveAnimation?: () => number | undefined;
   resolveFloat?: (key: RuntimeModifyProjectileNumberParam) => number | undefined;
   resolvePair?: (key: RuntimeModifyProjectilePairParam) => [number, number, number?] | undefined;
   resolveFloatPair?: (key: RuntimeModifyProjectilePairParam) => [number, number, number?] | undefined;
@@ -1169,7 +1171,16 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
     ?? staticRuntimeIntegerList(findControllerParam(input.controller, "nochainid"), 8);
   const selectionIndex = operation?.selectionIndex ?? resolveModifyProjectileNumberParam(input, "index");
   const projectileId = operation?.projectileId ?? resolveModifyProjectileNumberParam(input, "projid");
-  const projAnim = operation?.projAnim ?? resolveModifyProjectileNumberParam(input, "projanim");
+  const resolvedProjAnimExpression = operation?.projAnimExpression === undefined
+    ? undefined
+    : typeof operation.projAnimExpression === "number"
+      ? Number.isFinite(operation.projAnimExpression) ? Math.trunc(operation.projAnimExpression) : undefined
+      : input.resolveModifyProjectile?.resolveAnimation?.()
+        ?? resolveModifyProjectileNumberParam(input, "projanim");
+  const projAnim = operation?.projAnim ?? resolvedProjAnimExpression
+    ?? (operation?.projAnimExpression === undefined
+      ? resolveModifyProjectileNumberParam(input, "projanim")
+      : undefined);
   const normalizedProjAnim = projAnim === undefined ? undefined : Math.trunc(projAnim);
   const replacementAction = normalizedProjAnim === undefined ? undefined : input.resolveAction?.(normalizedProjAnim);
   const hasHitAnim = operation?.hitAnim !== undefined || findControllerParam(input.controller, "projhitanim") !== undefined;

@@ -726,6 +726,38 @@ describe("EffectSpawnSystem", () => {
     expect(resolveEffectSpawnBind("back", [12, -3])).toEqual({ localOffset: { x: -36, y: -3 } });
   });
 
+  it("resolves typed dynamic ModifyProjectile projanim once before resetting action playback", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const fighter = actor("p1", effectActorWorld);
+    const opponent = actor("p2", effectActorWorld, { pos: { x: 200, y: 0 }, facing: -1 });
+
+    spawnWorld.spawnProjectile(fighter, opponent, controller("Projectile", {
+      projanim: "910",
+      projid: "7",
+      velocity: "1,0",
+    }));
+    const source = controller("ModifyProjectile", { id: "7", projanim: "var(0) + 2" });
+    const compiled = compileControllerIr(source);
+    const operation = compiled.operation?.kind === "modifyprojectile" ? compiled.operation : undefined;
+    expect(operation).toMatchObject({ projAnimExpression: "var(0) + 2" });
+
+    const projectile = effectActorWorld.getStore("p1").projectiles[0];
+    projectile.frameIndex = 1;
+    projectile.frameElapsed = 2;
+    const changed = spawnWorld.modifyProjectiles(fighter, source, operation, {
+      resolveAnimation: () => 930,
+    });
+
+    expect(changed).toBe(1);
+    expect(projectile).toMatchObject({
+      animNo: 930,
+      action: terminalAction,
+      frameIndex: 0,
+      frameElapsed: 0,
+    });
+  });
+
   it("propagates root projectile Z spawn data into the effect actor", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const spawnWorld = new RuntimeEffectSpawnWorld();

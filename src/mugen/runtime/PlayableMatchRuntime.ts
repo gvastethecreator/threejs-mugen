@@ -6564,6 +6564,8 @@ function runActiveStateControllers(
           resolveModifyProjectile:
             effect === "modifyprojectile"
               ? {
+                  resolveAnimation: () =>
+                    resolveModifyProjectileNumberParam(controller, "projanim", actor, targetOpponent, stateOwner, stageBounds, activeTick),
                   resolveNumber: (key) =>
                     resolveModifyProjectileNumberParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
                   resolveFloat: (key) =>

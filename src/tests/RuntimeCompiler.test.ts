@@ -2782,6 +2782,19 @@ value = 1
     expect(compileControllerIr(controller(200, "ModifyProjectile", [], { getpower: "var(" })).operation).toBeUndefined();
   });
 
+  it("compiles typed ModifyProjectile projanim expressions and rejects non-scalar input", () => {
+    expect(compileControllerIr(controller(200, "ModifyProjectile", [], { projanim: "930" })).operation).toMatchObject({
+      kind: "modifyprojectile",
+      projAnim: 930,
+    });
+    expect(compileControllerIr(controller(200, "ModifyProjectile", [], { projanim: "var(0) + 2" })).operation).toMatchObject({
+      kind: "modifyprojectile",
+      projAnimExpression: "var(0) + 2",
+    });
+    expect(compileControllerIr(controller(200, "ModifyProjectile", [], { projanim: "var(" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyProjectile", [], { projanim: "var(0),930" })).operation).toBeUndefined();
+  });
+
   it("compiles static root ModifyHitDef RedirectID payloads and rejects unsupported values", () => {
     const modified = compileControllerIr(
       controller(200, "ModifyHitDef", [], {
