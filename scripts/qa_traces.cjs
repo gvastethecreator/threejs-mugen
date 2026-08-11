@@ -1696,6 +1696,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyHitDefDynamicHitSoundTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyhitdef-dynamic-hitsound-channel",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyHitDefDynamicHitSoundChannelTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projectile-guard-velocity-default",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileGuardVelocityDefaultTraceArtifact(),
