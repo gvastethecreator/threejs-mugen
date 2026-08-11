@@ -18,9 +18,17 @@
   artifacts (`788` required, `34` optional). See [issue
   309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
 
-- **T736 queued** — Ikemen-only live `ModifyHitDef guardsound.channel`
-  replacement through root/RedirectID and Helper callers. See [issue
+- **T736 closed-bounded** — Ikemen-only live `ModifyHitDef guardsound.channel`
+  replacement through root/RedirectID and Helper callers. Finite static and
+  caller-context dynamic values reach typed guarded `PlaySnd` channel `8`;
+  omission or unresolved values preserve the active guard channel. Required
+  trace checksum `a689adf2` / final `d5bc517f`; aggregate QA passes `823/823`
+  artifacts (`789` required, `34` optional). See [issue
   310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md).
+
+- **T737 queued** — Ikemen-only live `ModifyHitDef guard.velocity` Y/Z
+  component replacement with omission preservation. See [issue
+  311](../.scratch/roadmap/issues/311-modifyhitdef-guard-velocity-yz.md).
 
 - **T733 closed-bounded** — Ikemen-only live `ModifyHitDef guardsound`
   group/number/prefix replacement through root/RedirectID and Helper callers.

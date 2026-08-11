@@ -1,6 +1,17 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T735 `ModifyHitDef hitsound.channel` — closed-bounded, no score movement
+## 2026-08-11 T736 `ModifyHitDef guardsound.channel` — closed-bounded, no score movement
+
+Issue 310 closes Ikemen-only live `ModifyHitDef guardsound.channel` through
+root, RedirectID and Helper callers. Static/dynamic caller-context finite
+values reach typed guarded `audio:playsnd` channel `8`, omission preserves the
+active guard channel, and the required trace checksum is `a689adf2` /
+`d5bc517f`; aggregate QA passes `823/823` artifacts (`789` required, `34`
+optional). No score movement: fresh defaults, exact SND lookup/playback/
+mixing/priority, Projectiles and full audio parity remain blocked. See [issue
+310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md).
+
+## Historical checkpoint — 2026-08-11 T735 `ModifyHitDef hitsound.channel` — closed-bounded, no score movement
 
 Issue 309 closes Ikemen-only live `ModifyHitDef hitsound.channel` through root,
 RedirectID and Helper callers. Static/dynamic caller-context finite values reach
@@ -23,12 +34,12 @@ channels, exact SND lookup/playback/mixing/priority, Projectiles and full audio
 parity remain blocked. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next queued — T736 `ModifyHitDef guardsound.channel`
+## Next queued — T737 `ModifyHitDef guard.velocity` Y/Z
 
-Issue 310 queues the bounded Ikemen-only live guard-channel replacement through
-root/RedirectID and Helper callers. Hitsound channel, exact playback/mixing,
-Projectiles and full audio parity remain deferred. See [issue
-310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md).
+Issue 311 queues the bounded Ikemen-only live Y/Z guard-velocity replacement
+through root/RedirectID with omission preservation. Air guard, exact physics
+timing, Projectiles and full parity remain deferred. See [issue
+311](../.scratch/roadmap/issues/311-modifyhitdef-guard-velocity-yz.md).
 
 ## Historical checkpoint — 2026-08-11 T733 `ModifyHitDef guardsound` expressions — closed-bounded, no score movement
 

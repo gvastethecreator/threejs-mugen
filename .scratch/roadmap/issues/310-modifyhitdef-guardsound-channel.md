@@ -1,6 +1,6 @@
 # Issue 310 — `ModifyHitDef` `guardsound.channel`
 
-Status: **queued** (T736, 2026-08-11)
+Status: **closed-bounded** (T736, 2026-08-11)
 
 ## Objective
 
@@ -22,6 +22,24 @@ full audio parity must remain separate claims.
 - root/RedirectID and Helper caller evaluation;
 - omission/unresolved preservation of the active guard channel;
 - typed guard-contact audio metadata and one required accepted-guard trace.
+
+## Evidence
+
+- `src/mugen/compiler/ControllerOps.ts` now preserves static and dynamic
+  `guardsound.channel` in the typed ModifyHitDef IR and rejects malformed
+  expressions.
+- `HitDefSystem`, root/RedirectID, and Helper caller paths resolve finite
+  values once in caller context; omission or unresolved values preserve the
+  active channel.
+- Guard contact presentation emits the resolved channel in typed
+  `audio:playsnd` telemetry without changing hit-only channel selection.
+- Focused compiler/runtime/contact coverage passes `338/338`; typecheck and
+  diff hygiene pass.
+- Required artifact
+  `synthetic-imported-modifyhitdef-dynamic-guardsound-channel.json` passes
+  with trace checksum `a689adf2`, final checksum `d5bc517f`, channel `8`, and
+  guard-only combat evidence. Aggregate QA passes `823/823` artifacts (`789`
+  required, `34` optional).
 
 ## Excluded
 

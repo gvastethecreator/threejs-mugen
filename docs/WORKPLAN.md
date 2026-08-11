@@ -1,6 +1,22 @@
 # Workplan
 
-## Latest slice — T735 closed-bounded (2026-08-11)
+## Latest slice — T736 closed-bounded (2026-08-11)
+
+Issue 310 closes Ikemen-only live `ModifyHitDef guardsound.channel` through
+root/RedirectID and Helper callers. Finite static and caller-context dynamic
+values reach typed guarded `audio:playsnd` channel `8`; omission or unresolved
+values preserve the active guard channel. Required trace checksum `a689adf2` /
+final `d5bc517f`; aggregate QA passes `823/823` artifacts (`789` required,
+`34` optional). Fresh defaults, exact playback/mixing/priority, Projectiles
+and full audio parity remain blocked.
+
+## Next slice — T737 queued
+
+Issue 311 queues Ikemen-only live `ModifyHitDef guard.velocity` Y/Z component
+replacement through root/RedirectID with omission preservation. See [issue
+311](../.scratch/roadmap/issues/311-modifyhitdef-guard-velocity-yz.md).
+
+## Historical slice — T735 closed-bounded (2026-08-11)
 
 Issue 309 closes Ikemen-only live `ModifyHitDef hitsound.channel` through
 root/RedirectID and Helper callers. Finite static and caller-context dynamic
@@ -10,9 +26,9 @@ values preserve the active channel. Required trace checksum `b5f4c11e` /
 optional). Fresh defaults, guardsound channel, exact playback/mixing/priority,
 Projectiles and full audio parity remain blocked.
 
-## Next slice — T736 queued
+## Historical slice — T736 closed-bounded
 
-Issue 310 queues live `ModifyHitDef guardsound.channel` replacement with
+Issue 310 closes live `ModifyHitDef guardsound.channel` replacement with
 caller-context resolution and omission preservation. See [issue
 310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md).
 

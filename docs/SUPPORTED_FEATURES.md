@@ -1,5 +1,16 @@
 ﻿# Supported Features
-## 2026-08-11 T735 `ModifyHitDef hitsound.channel` — closed-bounded
+## 2026-08-11 T736 `ModifyHitDef guardsound.channel` — closed-bounded
+
+Ikemen-only live `ModifyHitDef guardsound.channel` replacement is supported
+through root/RedirectID and Helper callers. Static and caller-context dynamic
+finite values reach typed guarded `audio:playsnd` channel `8`; omission or
+unresolved expressions preserve the active guard channel. Required trace/final
+checksums are `a689adf2` / `d5bc517f`; aggregate QA passes `823/823` artifacts
+(`789` required, `34` optional). Fresh defaults, exact playback/mixing/
+priority, Projectiles and full audio parity remain outside the claim. See
+[issue 310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md).
+
+## Historical — 2026-08-11 T735 `ModifyHitDef hitsound.channel` — closed-bounded
 
 Ikemen-only live `ModifyHitDef hitsound.channel` replacement is supported
 through root/RedirectID and Helper callers. Static and caller-context dynamic
@@ -10,11 +21,11 @@ defaults, guardsound channel, exact playback/mixing/priority, Projectiles and
 full audio parity remain outside the claim. See [issue
 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
 
-## Next queued — T736 `ModifyHitDef guardsound.channel`
+## Next queued — T737 `ModifyHitDef guard.velocity` Y/Z
 
-The bounded live guard-channel replacement is queued for root/RedirectID and
-Helper callers. See [issue
-310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md).
+The bounded Ikemen-only live Y/Z guard-velocity replacement is queued for
+root/RedirectID with omission preservation. See [issue
+311](../.scratch/roadmap/issues/311-modifyhitdef-guard-velocity-yz.md).
 
 ## Historical — T734 `ModifyHitDef hitsound` — closed-bounded
 

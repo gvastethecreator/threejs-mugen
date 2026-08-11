@@ -2,16 +2,28 @@
 
 Last updated: 2026-08-11
 
-## Current T735-T736 audio checkpoint
+## Current T736-T737 audio/guard checkpoint
 
-T735 closes bounded Ikemen-only live `ModifyHitDef hitsound.channel` through
+T736 closes bounded Ikemen-only live `ModifyHitDef guardsound.channel` through
+root/RedirectID and Helper callers. Static and caller-context dynamic finite
+values reach typed guarded `audio:playsnd` channel `8`; omission/unresolved
+values preserve the active channel. Required
+`synthetic-imported-modifyhitdef-dynamic-guardsound-channel.json` has
+trace/final checksums `a689adf2` / `d5bc517f`; `pnpm qa:trace` passes `823/823`
+artifacts (`789` required, `34` optional). T737 queues Ikemen-only live
+`ModifyHitDef guard.velocity` Y/Z component replacement with omission
+preservation. Exact playback/mixing, air guard, Projectiles, timing, teams,
+rollback and full parity remain blocked.
+
+## Historical T735-T736 audio checkpoint
+
+T735 closed bounded Ikemen-only live `ModifyHitDef hitsound.channel` through
 root/RedirectID and Helper callers. Static and caller-context dynamic finite
 values reach typed hit `audio:playsnd` channel `7`; omission/unresolved values
 preserve the active channel. Required
 `synthetic-imported-modifyhitdef-dynamic-hitsound-channel.json` has trace/final
 checksums `b5f4c11e` / `421be8fe`; `pnpm qa:trace` passes `822/822` artifacts
-(`788` required, `34` optional). T736 queues the guard-side
-`ModifyHitDef guardsound.channel` counterpart. Fresh defaults, exact SND
+(`788` required, `34` optional). T736 is now closed above. Fresh defaults, exact SND
 lookup/playback/mixing/priority, Projectiles, renderer timing, teams, rollback
 and full audio parity remain blocked.
 
@@ -24,7 +36,7 @@ required `synthetic-imported-modifyhitdef-dynamic-guardsound.json` records
 typed `audio:playsnd` `F6,4` on a real guard contact. Trace/final checksums are
 `2ade8da5` / `f88990bd`; `pnpm qa:trace` passes `820/820` artifacts (`786`
 required, `34` optional). T734 is now historical above; T735 closed the live
-hit-channel cut and T736 queues the guard-channel counterpart. Exact SND
+hit-channel cut and T736 closed the guard-channel counterpart above. Exact SND
 lookup/playback/mixing/channel priority, fresh defaults, Projectiles, renderer
 timing, teams, rollback and full audio parity remain blocked.
 

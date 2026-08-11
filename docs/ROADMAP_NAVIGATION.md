@@ -2,7 +2,15 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T735 closed-bounded (2026-08-11)
+## Current implementation route — T736 closed-bounded (2026-08-11)
+
+T736 / [issue 310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md)
+closes live `ModifyHitDef guardsound.channel` through root/RedirectID and
+Helper callers. Caller-context finite values reach typed guarded audio channel
+`8`, omission/unresolved input preserves the active channel; trace/final
+checksums are `a689adf2` / `d5bc517f`.
+
+## Historical implementation route — T735 closed-bounded (2026-08-11)
 
 T735 / [issue 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md)
 closes live `ModifyHitDef hitsound.channel` through root/RedirectID and Helper
@@ -19,11 +27,11 @@ preservation is required; the accepted hit-audio event carries typed `F6,4`
 telemetry from raw `Fvar(0),var(1)` with no guard route. Trace/final checksums
 are `8d56e467` / `d2d70840`.
 
-## Next implementation route — T736 queued
+## Next implementation route — T737 queued
 
-T736 / [issue 310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md)
-queues live `ModifyHitDef guardsound.channel` replacement with caller-context
-resolution and omission preservation.
+T737 / [issue 311](../.scratch/roadmap/issues/311-modifyhitdef-guard-velocity-yz.md)
+queues Ikemen-only live `ModifyHitDef guard.velocity` Y/Z replacement through
+root/RedirectID with omission preservation.
 
 ## Historical implementation route — T733 closed-bounded (2026-08-11)
 
