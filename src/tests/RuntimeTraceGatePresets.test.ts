@@ -88,6 +88,7 @@ import {
   createSyntheticImportedHitDefDynamicDamageTraceArtifact,
   createSyntheticImportedHitDefOmittedDamageTraceArtifact,
   createSyntheticImportedHitDefDynamicPauseTimeTraceArtifact,
+  createSyntheticImportedModifyHitDefDynamicPauseTimeTraceArtifact,
   createSyntheticImportedHitDefDynamicGroundHitTimeTraceArtifact,
   createSyntheticImportedHitDefDynamicGroundSlideTimeTraceArtifact,
   createSyntheticImportedHitDefDynamicGuardHitTimeTraceArtifact,
@@ -26558,6 +26559,39 @@ describe("RuntimeTraceGatePresets", () => {
     ]));
     expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
       expect.objectContaining({ actorId: "p1", source: "imported", stateNo: 5099 }),
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5098, moveType: "H" }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5098,
+      moveType: "H",
+      life: 963,
+    });
+  });
+
+  it("creates a required imported dynamic live ModifyHitDef PauseTime pair artifact", () => {
+    const artifact = createSyntheticImportedModifyHitDefDynamicPauseTimeTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-modifyhitdef-dynamic-pausetime-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-modifyhitdef-dynamic-pausetime-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.ModifyHitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(2);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.modifyhitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.executedStates).toEqual(expect.arrayContaining([5000, 5098]));
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1", source: "imported", stateNo: 0, moveType: "A" }),
       expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 5098, moveType: "H" }),
     ]));
     expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({

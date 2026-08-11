@@ -1151,6 +1151,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefDynamicPauseTimeTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyhitdef-dynamic-pausetime",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyHitDefDynamicPauseTimeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-dynamic-ground-hittime",
       required: true,
       artifact: presets.createSyntheticImportedHitDefDynamicGroundHitTimeTraceArtifact(),

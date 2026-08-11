@@ -13302,6 +13302,105 @@ export function createSyntheticImportedHitDefDynamicPauseTimeTraceArtifact(
   });
 }
 
+export function createSyntheticImportedModifyHitDefDynamicPauseTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "seed live ModifyHitDef pause target", frames: 2, p1: [], p2: [] },
+    { label: "redirect then hit with modified pause", frames: 14, p1: ["x"], p2: [] },
+    { label: "modified pause settles", frames: 8, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-pausetime-attacker",
+    displayName: "Dynamic ModifyHitDef Pause Attacker",
+    withHitDef: false,
+    withPlayerPush: false,
+    activeRootHitDefRoute: {
+      damage: 37,
+      targetId: 77,
+      hitFlag: "M",
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      delayedPosX: { x: -35, trigger: "Time >= 2" },
+      clsn1Extent: 64,
+    },
+  });
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-pausetime-caller",
+    displayName: "Dynamic ModifyHitDef Pause Caller",
+    withHitDef: false,
+    withPlayerPush: false,
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 5098,
+      hitTimeBranchAnimNo: 5098,
+      hitTimeBranchExpression: "GetHitVar(hitshaketime) = 7",
+      hitTimeBranchName: "Dynamic ModifyHitDef Pause GetHitVar Branch",
+    },
+    rootModifyHitDefRedirectRoute: {
+      redirectId: 56,
+      trigger: "Time = 1",
+      pauseTime: ["var(0)", "var(1)"],
+      guardPauseTime: ["var(0)", "var(1)"],
+      varSeeds: [
+        { index: 0, value: 3 },
+        { index: 1, value: 7 },
+      ],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: caller, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-modifyhitdef-dynamic-pausetime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyhitdef-dynamic-pausetime-golden",
+      label: "Synthetic imported dynamic live ModifyHitDef PauseTime pair route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root caller resolves var(0)=3 and var(1)=7 in caller context, redirects live ModifyHitDef pausetime and guard.pausetime pairs into an active receiver HitDef, and accepts contact with P1 pause 3 and P2 shake 7. Fresh direct/Helper pause defaults, one-component preservation, ReversalDef, Projectile, ModifyProjectile, exact hitpause tick scheduling, ignorehitpause ordering, negative values, stacking, teams, rollback, and full pause parity remain excluded; live ModifyHitDef is an Ikemen source-compatibility slice, not an official M.U.G.E.N controller claim.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyhitdef-dynamic-pausetime-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [5000, 5098],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "ModifyHitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "modifyhitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: ["Dynamic ModifyHitDef Pause Attacker hit Dynamic ModifyHitDef Pause Caller for 37"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredControllerEventSequences: [{
+        label: "live ModifyHitDef pause pair precedes accepted contact",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [{ stateNo: 0, controller: "ModifyHitDef", name: "Root ModifyHitDef Redirect" }],
+      }],
+      requiredActorFrameSequences: [{
+        label: "live ModifyHitDef PauseTime accepted-contact GetHitVar order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, moveType: "I", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5098, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 0, life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5098, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHitDefDynamicGroundHitTimeTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -65317,6 +65416,10 @@ export type SyntheticImportedTraceFighterOptions = {
   };
   rootModifyHitDefRedirectRoute?: {
     damage?: [number, number?];
+    /** Synthetic fixture-only live ModifyHitDef pausetime pair. */
+    pauseTime?: SyntheticPartialPairExpression;
+    /** Synthetic fixture-only live ModifyHitDef guard.pausetime pair. */
+    guardPauseTime?: SyntheticPartialPairExpression;
     p1SpritePriority?: number;
     p2SpritePriority?: number;
     priority?: number;
@@ -72848,6 +72951,8 @@ ${varSeedBlock}
 type = ModifyHitDef
 trigger1 = ${route.trigger ?? "Time >= 1"}
 ${damageValue === undefined ? "" : `damage = ${damageValue}`}
+${route.pauseTime === undefined ? "" : `pausetime = ${route.pauseTime.join(", ")}`}
+${route.guardPauseTime === undefined ? "" : `guard.pausetime = ${route.guardPauseTime.join(", ")}`}
 ${route.p1SpritePriority === undefined ? "" : `p1sprpriority = ${route.p1SpritePriority}`}
 ${route.p2SpritePriority === undefined ? "" : `p2sprpriority = ${route.p2SpritePriority}`}
 ${route.priority === undefined ? "" : `priority = ${route.priority}, ${route.priorityType ?? "Hit"}`}
