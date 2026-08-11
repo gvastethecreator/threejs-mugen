@@ -2654,6 +2654,69 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.noChainIds).toEqual([53, 54]);
   });
 
+  it("mutates live ModifyHitDef guardsound and preserves it on omission or unresolved caller values", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        guardsound: "S6,0",
+      })),
+      frame: activeFrame(),
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        guardsound: "F7,2",
+      })),
+    });
+    expect(actor.currentMove).toMatchObject({
+      guardSound: "F7,2",
+      guardSoundValue: { rawPrefix: "F", group: 7, index: 2 },
+    });
+
+    const dynamic = compileControllerIr(controller("ModifyHitDef", {
+      redirectid: "57",
+      guardsound: "Fvar(0),var(1)",
+    }));
+    world.modify({
+      actor,
+      controller: dynamic,
+      resolveSoundValue: (_key, expression) => expression === "Fvar(0),var(1)"
+        ? { rawPrefix: "F", group: 9, index: 4 }
+        : undefined,
+    });
+    expect(actor.currentMove).toMatchObject({
+      guardSound: "Fvar(0),var(1)",
+      guardSoundValue: { rawPrefix: "F", group: 9, index: 4 },
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        guardsound: "Fvar(2),var(3)",
+      })),
+      resolveSoundValue: () => undefined,
+    });
+    expect(actor.currentMove).toMatchObject({
+      guardSound: "Fvar(0),var(1)",
+      guardSoundValue: { rawPrefix: "F", group: 9, index: 4 },
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { redirectid: "57" })),
+    });
+    expect(actor.currentMove).toMatchObject({
+      guardSound: "Fvar(0),var(1)",
+      guardSoundValue: { rawPrefix: "F", group: 9, index: 4 },
+    });
+  });
+
   it("keeps air.fall separate from the ground fall flag", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

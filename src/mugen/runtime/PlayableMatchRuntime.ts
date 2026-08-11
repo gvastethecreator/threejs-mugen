@@ -5447,6 +5447,17 @@ function runActiveStateControllers(
           );
           return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
         },
+        resolveSoundValue: (key, expression) =>
+          resolveAudioSoundValueParam(
+            controller,
+            key,
+            actor,
+            targetOpponent,
+            stateOwner,
+            stageBounds,
+            activeTick,
+            expression,
+          ),
         resolveFloatPair: (key) => {
           const operation = controller.operation?.kind === "modifyhitdef" ? controller.operation : undefined;
           const pair = key === "ground.velocity"
@@ -9155,8 +9166,9 @@ function resolveAudioSoundValueParam(
   owner: FighterMatchState,
   stageBounds?: MugenStageDefinition["bounds"],
   stageTime?: number,
+  rawOverride?: string,
 ): RuntimeResolvedSoundValue | undefined {
-  const raw = findParam(controller, key);
+  const raw = rawOverride ?? findParam(controller, key);
   if (!raw) {
     return undefined;
   }

@@ -2991,6 +2991,33 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles live ModifyHitDef guardsound refs and rejects malformed arity", () => {
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      guardsound: "S6,4",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardSound: "S6,4",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      guardsound: "Fvar(0),var(1)",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardSoundExpression: "Fvar(0),var(1)",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      guardsound: "var(0)",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      guardsound: "var(0),var(1),var(2)",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles dynamic direct HitDef air.juggle and rejects malformed expressions", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "air.juggle": "var(0) + 2",

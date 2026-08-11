@@ -1789,6 +1789,9 @@ export function modifyRuntimeHelperHitDef(
           return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
         }
       : undefined,
+    resolveSoundValue: options
+      ? (key, expression) => resolveRuntimeHelperSoundValueParam(helper, controller, key, options, expression)
+      : undefined,
     resolvePaletteFx: options
       ? resolveRuntimeHelperHitDefPaletteFx(helper, controller, options)
       : undefined,
@@ -1841,8 +1844,9 @@ export function resolveRuntimeHelperSoundValueParam(
   controller: ControllerIr,
   key: "sound" | "hitsound" | "guardsound",
   options: Parameters<typeof resolveHelperNumber>[3],
+  rawOverride?: string,
 ): RuntimeResolvedSoundValue | undefined {
-  const raw = findControllerParam(controller.source, key);
+  const raw = rawOverride ?? findControllerParam(controller.source, key);
   if (!raw) {
     return undefined;
   }

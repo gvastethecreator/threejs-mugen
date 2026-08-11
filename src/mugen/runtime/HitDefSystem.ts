@@ -95,6 +95,8 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   resolveFallRecovery?: RuntimeHitDefFallRecoveryResolver;
   resolveFallFlags?: RuntimeHitDefFallFlagsResolver;
   resolveLethalFlags?: RuntimeHitDefLethalFlagsResolver;
+  /** Resolves a live sound reference in the ModifyHitDef caller context. */
+  resolveSoundValue?: (key: "hitsound" | "guardsound", expression?: string) => RuntimeResolvedSoundRef | undefined;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: ModifyHitDefControllerOp) => void;
 };
@@ -909,6 +911,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     resolveFallRecovery,
     resolveFallFlags,
     resolveLethalFlags,
+    resolveSoundValue,
     recordController,
     recordOperation,
   }: RuntimeModifyHitDefControllerDispatchOptions<TActor>): RuntimeModifyHitDefControllerDispatchResult {
@@ -1381,6 +1384,21 @@ export class RuntimeHitDefControllerDispatchWorld {
         );
       if (guardSparkNo !== undefined && Number.isFinite(guardSparkNo)) {
         existing.guardSpark = `${runtimeHitDefSparkPrefix(operation.guardSparkExpression)}${Math.trunc(guardSparkNo)}`;
+      }
+    }
+    if (operation.guardSound !== undefined) {
+      const guardSoundValue = resolveSoundValue?.("guardsound", operation.guardSound)
+        ?? runtimeHitDefStaticSoundRef(operation.guardSound);
+      if (guardSoundValue !== undefined) {
+        existing.guardSound = operation.guardSound;
+        existing.guardSoundValue = guardSoundValue;
+      }
+    }
+    if (operation.guardSoundExpression !== undefined) {
+      const guardSoundValue = resolveSoundValue?.("guardsound", operation.guardSoundExpression);
+      if (guardSoundValue !== undefined) {
+        existing.guardSound = operation.guardSoundExpression;
+        existing.guardSoundValue = guardSoundValue;
       }
     }
     const xAccel = resolveHitDefScalar(operation.xAccel, undefined, actor.runtime, context);
@@ -2300,6 +2318,18 @@ function stripMugenString(value: string | undefined): string | undefined {
     return undefined;
   }
   return trimmed.replace(/^"|"$/g, "");
+}
+
+function runtimeHitDefStaticSoundRef(value: string | undefined): RuntimeResolvedSoundRef | undefined {
+  const normalized = stripMugenString(value);
+  if (!normalized) return undefined;
+  const match = /^\s*([FS])?\s*(-?\d+)\s*,\s*(-?\d+)\s*$/i.exec(normalized);
+  if (!match || match[2] === undefined || match[3] === undefined) return undefined;
+  const group = Number(match[2]);
+  const index = Number(match[3]);
+  if (!Number.isFinite(group) || !Number.isFinite(index)) return undefined;
+  const rawPrefix = match[1]?.toUpperCase() as "F" | "S" | undefined;
+  return { ...(rawPrefix ? { rawPrefix } : {}), group, index };
 }
 
 function hitAnimType(value: string | undefined): number | undefined {

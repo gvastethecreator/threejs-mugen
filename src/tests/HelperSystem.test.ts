@@ -2180,6 +2180,35 @@ describe("HelperSystem", () => {
     expect(active.currentMove?.guardSparkAngle).toBe(-7);
   });
 
+  it("applies Helper-owned ModifyHitDef guardsound in caller context and preserves unresolved values", () => {
+    const active = helper({
+      vars: [9, 4],
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              damage: "20",
+              guardsound: "S6,0",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              guardsound: "Fvar(0),var(1)",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], { redirectid: "0" }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.currentMove).toMatchObject({
+      guardSound: "Fvar(0),var(1)",
+      guardSoundValue: { rawPrefix: "F", group: 9, index: 4 },
+    });
+  });
+
   it("applies Helper-owned ModifyHitDef down.hittime in caller context", () => {
     const active = helper({
       vars: [17.9],
