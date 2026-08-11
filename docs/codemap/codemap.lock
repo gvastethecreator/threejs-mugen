@@ -1,7 +1,7 @@
 {
-  "current_commit": "6eb9fe03a523a08974e8cb54cecef4515de7ded0",
+  "current_commit": "7f28bfd39eb56c683d84d19353acaac22a4748cf",
   "working_tree_dirty": true,
-  "generated_at": "2026-08-11T18:00:00.0000000Z",
+  "generated_at": "2026-08-11T18:10:00.0000000Z",
   "scanned_scope": [
     "."
   ],
@@ -44,7 +44,7 @@
       "id": "docs",
       "path": "docs",
       "file_count": 1905,
-      "fingerprint": "d2c17e3a1f0cdf2bc417222bdcf886146df4fdfc4efad0f94dac2ec20ac3073e"
+      "fingerprint": "c0436b1be8d690b814b006b2bae0a7b01b987fc2a6c111f1980920a15844d2f7"
     },
     {
       "id": "public",
