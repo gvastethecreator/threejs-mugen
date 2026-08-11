@@ -540,9 +540,15 @@ describe("ProjectileSystem", () => {
       controller: controller({ projanim: "1005", p2facing: "var(0)" }),
       resolveP2Facing: () => undefined,
     });
+    const unresolvedRedirect = createRuntimeProjectile({
+      ...base,
+      serialId: "p1-projectile-p2facing-unresolved-redirect",
+      controller: controller({ projanim: "1005", p2facing: "Parent,var(0)" }),
+    });
 
     expect(dynamic.p2Facing).toBe(-1);
     expect(unresolved.p2Facing).toBeUndefined();
+    expect(unresolvedRedirect.p2Facing).toBeUndefined();
   });
 
   it("uses component-wise caller resolution for fresh dynamic Projectile damage", () => {

@@ -659,9 +659,11 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     : typeof operation.p2FacingExpression === "number"
       ? operation.p2FacingExpression
       : input.resolveP2Facing?.();
-  const p2Facing = operation?.p2Facing
-    ?? (dynamicP2Facing === undefined || !Number.isFinite(dynamicP2Facing) ? undefined : Math.trunc(dynamicP2Facing))
-    ?? firstNumber(findControllerParam(input.controller, "p2facing"));
+  const p2Facing = operation?.p2Facing !== undefined
+    ? operation.p2Facing
+    : operation?.p2FacingExpression !== undefined
+      ? (dynamicP2Facing === undefined || !Number.isFinite(dynamicP2Facing) ? undefined : Math.trunc(dynamicP2Facing))
+      : firstNumber(findControllerParam(input.controller, "p2facing"));
   const keepStateExpression = operation?.keepStateExpression;
   const dynamicKeepState = keepStateExpression === undefined
     ? undefined
