@@ -1282,10 +1282,13 @@ export type ReversalDefControllerOp = {
   hitCount?: number;
   p1SpritePriority?: number;
   p2SpritePriority?: number;
-  p1StateNo?: number;
-  p2StateNo?: number;
-  p2GetP1State?: boolean;
-  p2Facing?: number;
+  /** ReversalDef HitDef state numbers may be authored expressions. */
+  p1StateNo?: number | string;
+  p2StateNo?: number | string;
+  /** Explicit boolean or caller-context integer expression. */
+  p2GetP1State?: boolean | string;
+  /** ReversalDef facing replacement evaluated in the caller context. */
+  p2Facing?: number | string;
   targetId?: number;
   attackDepth?: [number, number];
   unhittableTime?: MugenHitDefExpressionPair;
@@ -2334,10 +2337,10 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   const hitCount = staticOptionalHitCountParam(controller, "numhits");
   const p1SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p1sprpriority");
   const p2SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p2sprpriority");
-  const p1StateNo = staticOptionalNumberParam(controller, "p1stateno");
-  const p2StateNo = staticOptionalNumberParam(controller, "p2stateno");
-  const p2GetP1State = staticOptionalStrictNumberParam(controller, "p2getp1state");
-  const p2Facing = staticOptionalReversalFacingParam(controller, "p2facing");
+  const p1StateNo = optionalIntegerExpressionParam(controller, "p1stateno");
+  const p2StateNo = optionalIntegerExpressionParam(controller, "p2stateno");
+  const p2GetP1State = optionalIntegerExpressionParam(controller, "p2getp1state");
+  const p2Facing = optionalIntegerExpressionParam(controller, "p2facing");
   const targetId = staticOptionalNumberParam(controller, "id");
   const attackDepthRaw = findParam(controller, "attack.depth");
   const attackDepth = normalizedNumberPair(attackDepthRaw);
@@ -2376,9 +2379,15 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     hitCount: hitCount === true ? undefined : hitCount,
     p1SpritePriority: p1SpritePriority === true ? undefined : p1SpritePriority,
     p2SpritePriority: p2SpritePriority === true ? undefined : p2SpritePriority,
-    p1StateNo: p1StateNo === true ? undefined : Math.max(0, Math.round(p1StateNo)),
-    p2StateNo: p2StateNo === true ? undefined : Math.max(0, Math.round(p2StateNo)),
-    p2GetP1State: p2GetP1State === true ? undefined : p2GetP1State !== 0,
+    p1StateNo: p1StateNo === true
+      ? undefined
+      : typeof p1StateNo === "number" ? Math.max(0, Math.round(p1StateNo)) : p1StateNo,
+    p2StateNo: p2StateNo === true
+      ? undefined
+      : typeof p2StateNo === "number" ? Math.max(0, Math.round(p2StateNo)) : p2StateNo,
+    p2GetP1State: p2GetP1State === true
+      ? undefined
+      : typeof p2GetP1State === "number" ? p2GetP1State !== 0 : p2GetP1State,
     p2Facing: p2Facing === true ? undefined : p2Facing,
     targetId: targetId === true ? undefined : Math.max(0, Math.round(targetId)),
     attackDepth,

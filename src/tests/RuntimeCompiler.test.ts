@@ -1856,9 +1856,18 @@ value = 1
       p2StateNo: 889,
       p2GetP1State: true,
     });
-    expect(dynamic.operation).toBeUndefined();
-    expect(dynamicP2Get.operation).toBeUndefined();
-    expect(dynamicP2Facing.operation).toBeUndefined();
+    expect(dynamic.operation).toMatchObject({
+      kind: "reversaldef",
+      p1StateNo: "Const(data.life)",
+    });
+    expect(dynamicP2Get.operation).toMatchObject({
+      kind: "reversaldef",
+      p2GetP1State: "var(1)",
+    });
+    expect(dynamicP2Facing.operation).toMatchObject({
+      kind: "reversaldef",
+      p2Facing: "var(1)",
+    });
   });
 
   it("duplicates a single attack.depth value in typed HitDef operations", () => {

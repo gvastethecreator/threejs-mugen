@@ -152,10 +152,30 @@ export class RuntimeReversalControllerDispatchWorld {
       hitCount: operation?.hitCount ?? staticReversalHitCount(findParam(source, "numhits")),
       p1SpritePriority: operation?.p1SpritePriority,
       p2SpritePriority: operation?.p2SpritePriority,
-      p1StateNo: operation?.p1StateNo ?? firstNumber(findParam(source, "p1stateno")),
-      p2StateNo: operation?.p2StateNo ?? firstNumber(findParam(source, "p2stateno")),
-      p2GetP1State: operation?.p2GetP1State,
-      p2Facing: operation?.p2Facing,
+      p1StateNo: resolveRuntimeReversalStateNo(
+        operation?.p1StateNo,
+        findParam(source, "p1stateno"),
+        actor.runtime,
+        context,
+      ),
+      p2StateNo: resolveRuntimeReversalStateNo(
+        operation?.p2StateNo,
+        findParam(source, "p2stateno"),
+        actor.runtime,
+        context,
+      ),
+      p2GetP1State: resolveRuntimeReversalBoolean(
+        operation?.p2GetP1State,
+        findParam(source, "p2getp1state"),
+        actor.runtime,
+        context,
+      ),
+      p2Facing: resolveRuntimeReversalInteger(
+        operation?.p2Facing,
+        findParam(source, "p2facing"),
+        actor.runtime,
+        context,
+      ),
       targetId: operation?.targetId ?? firstNumber(findParam(source, "id")),
       attackDepth:
         operation?.attackDepth ?? normalizedNumberPair(findParam(source, "attack.depth")) ?? actor.runtime.combatDepth?.attack,
@@ -474,6 +494,49 @@ function resolveRuntimeReversalIntegerPair(
     return Number.isFinite(result) ? Math.trunc(result!) : fallback;
   };
   return [resolve(source[0], -1), resolve(source[1], -1)];
+}
+
+function resolveRuntimeReversalInteger(
+  operationValue: number | string | undefined,
+  rawValue: string | undefined,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+): number | undefined {
+  const value = operationValue ?? rawValue;
+  if (value === undefined) {
+    return undefined;
+  }
+  const resolved = typeof value === "number" ? value : evaluateRuntimeControllerNumber(value, state, context);
+  return Number.isFinite(resolved) ? Math.trunc(resolved!) : undefined;
+}
+
+function resolveRuntimeReversalStateNo(
+  operationValue: number | string | undefined,
+  rawValue: string | undefined,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+): number | undefined {
+  const resolved = resolveRuntimeReversalInteger(operationValue, rawValue, state, context);
+  return resolved === undefined ? undefined : Math.max(0, resolved);
+}
+
+function resolveRuntimeReversalBoolean(
+  operationValue: boolean | string | undefined,
+  rawValue: string | undefined,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+): boolean | undefined {
+  if (typeof operationValue === "boolean") {
+    return operationValue;
+  }
+  const value = operationValue ?? rawValue;
+  if (value === undefined) {
+    return undefined;
+  }
+  const resolved = typeof value === "string"
+    ? evaluateRuntimeControllerNumber(value, state, context)
+    : value;
+  return Number.isFinite(resolved) ? resolved !== 0 : undefined;
 }
 
 function splitRuntimeReversalExpressionPair(raw: string | undefined): [string, string?] | undefined {

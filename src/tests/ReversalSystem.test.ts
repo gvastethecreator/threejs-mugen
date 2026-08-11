@@ -98,6 +98,48 @@ describe("ReversalSystem", () => {
     });
   });
 
+  it("resolves dynamic ReversalDef state and facing fields in the caller context", () => {
+    const world = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const receiver = actor("p2", "Reverser", { stateNo: 300, vars: [99, 99, 99, 99] });
+    const caller = actor("p1", "Caller", { vars: [1, 2, 0, -1] });
+    const ir = compileControllerIr(controller("ReversalDef", {
+      "reversal.attr": "SA,AA",
+      p1stateno: "var(0) + 700",
+      p2stateno: "var(1) + 800",
+      p2getp1state: "var(2)",
+      p2facing: "var(3)",
+    }));
+
+    const result = dispatchWorld.apply({
+      actor: receiver,
+      controller: ir,
+      context: { self: caller.runtime },
+      hitbox: box(),
+      reversalWorld: world,
+    });
+
+    expect(result.activated).toBe(true);
+    expect(result.operation).toMatchObject({
+      p1StateNo: "var(0) + 700",
+      p2StateNo: "var(1) + 800",
+      p2GetP1State: "var(2)",
+      p2Facing: "var(3)",
+    });
+    expect(receiver.currentMove).toMatchObject({
+      p1StateNo: 701,
+      p2StateNo: 802,
+      p2GetP1State: false,
+      p2Facing: -1,
+    });
+    expect(receiver.runtime.reversal).toMatchObject({
+      p1StateNo: 701,
+      p2StateNo: 802,
+      p2GetP1State: false,
+      p2Facing: -1,
+    });
+  });
+
   it("derives omitted ReversalDef receiver unhittabletime from attacker pausetime", () => {
     const world = new RuntimeReversalWorld();
     const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
