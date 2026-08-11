@@ -1,5 +1,15 @@
 ﻿# Roadmap Package Milestones
 
+## Active package — T710 closed-bounded (2026-08-11)
+
+Issue 284 closes the Projectile `keepstate` metadata slice for fresh root and
+Helper caller contexts. Static/dynamic values reach hit and guard
+`GetHitVar(keepstate)`; required traces are `a762a832/c0faf9a6` and
+`859ca54f/c5cb237b`, and aggregate QA is `799/799` artifacts (`765` required,
+`34` optional). This is an adapted bounded claim, not full state-transition or
+MUGEN/Ikemen parity. See [issue
+284](../.scratch/roadmap/issues/284-projectile-keepstate-dynamic.md).
+
 ## Active package — T709 closed-bounded (2026-08-11)
 
 Issue 283 is the next Projectile package slice: compiler IR and caller seams

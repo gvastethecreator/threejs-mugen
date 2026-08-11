@@ -1,5 +1,12 @@
 # Controller Support Registry
 
+Active cursor: T710 / issue 284 is closed-bounded for Projectile `keepstate`
+metadata. Fresh root/Helper spawns preserve static or caller-context values;
+accepted hit and guard contacts expose `GetHitVar(keepstate)`. Required traces
+are `a762a832/c0faf9a6` and `859ca54f/c5cb237b`; aggregate QA passes `799/799`
+artifacts (`765` required, `34` optional). Full state suppression, `hitonce`,
+Projectile p1-facing, teams, rollback and full parity remain blocked.
+
 Active cursor: T709 / issue 283 is closed-bounded for typed Projectile `damage`
 pairs. Fresh root/Helper and live Ikemen `ModifyProjectile` paths preserve
 static/dynamic/mixed inputs through IR and caller resolvers. Required traces

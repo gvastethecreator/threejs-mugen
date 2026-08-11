@@ -1,5 +1,15 @@
 ﻿# Progress Tracker
 
+## Active implementation checkpoint — T710 closed-bounded (2026-08-11)
+
+Projectile `keepstate` now preserves static and finite caller expressions in
+fresh root/Helper spawns and exposes the value through hit/guard
+`GetHitVar(keepstate)`. Focused coverage and typecheck are green; required
+trace checksums are `a762a832/c0faf9a6` and `859ca54f/c5cb237b`; aggregate QA
+passes `799/799` artifacts (`765` required, `34` optional). The claim remains
+metadata-only; complete state suppression is still open. See [issue
+284](../.scratch/roadmap/issues/284-projectile-keepstate-dynamic.md).
+
 ## Active implementation checkpoint — T709 closed-bounded (2026-08-11)
 
 Compiler IR, Projectile spawn, root/Helper caller resolution and live

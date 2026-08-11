@@ -2,6 +2,15 @@
 
 ## Current parity queue
 
+- **T710 closed-bounded** — Projectile `keepstate` is typed in fresh root and
+  Helper spawns, resolved once in caller context and copied into hit/guard
+  `GetHitVar(keepstate)`. Focused compiler/runtime/contact coverage is green;
+  required traces are `a762a832/c0faf9a6` (root) and `859ca54f/c5cb237b`
+  (Helper), with aggregate QA at `799/799` (`765` required). Full state
+  suppression, `hitonce`, Projectile p1-facing, teams, rollback and full
+  parity stay blocked. See [issue
+  284](../.scratch/roadmap/issues/284-projectile-keepstate-dynamic.md).
+
 - **T709 closed-bounded** — typed dynamic/mixed Projectile `damage` pairs for
   fresh root/Helper spawns and live Ikemen `ModifyProjectile` are wired through
   compiler IR, caller resolvers and the existing selector/ownership path.

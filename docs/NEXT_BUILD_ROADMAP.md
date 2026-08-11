@@ -1,5 +1,16 @@
 ﻿# Next Build Roadmap
 
+## Next bounded slice — T710 closed-bounded (2026-08-11)
+
+Issue 284 carries Projectile `keepstate` through typed compiler IR and fresh
+root/Helper caller resolution. Accepted hit and guard contacts now expose the
+boolean through `GetHitVar(keepstate)`. Required traces are
+`a762a832/c0faf9a6` (root) and `859ca54f/c5cb237b` (Helper); aggregate QA
+passes `799/799` artifacts (`765` required, `34` optional). This slice is
+metadata-only: state-transition suppression, `hitonce`, Projectile facing and
+full rollback/team parity remain blocked. See [issue
+284](../.scratch/roadmap/issues/284-projectile-keepstate-dynamic.md).
+
 ## Next bounded slice — T709 closed-bounded (2026-08-11)
 
 Issue 283 adds typed caller-context `damage` pairs for fresh Projectile and

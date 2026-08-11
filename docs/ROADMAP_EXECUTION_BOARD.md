@@ -1,5 +1,15 @@
 ﻿# Roadmap Execution Board
 
+## Next bounded slice — T710 closed-bounded (2026-08-11)
+
+Issue 284 closes Projectile `keepstate` metadata for fresh root and Helper
+spawns. Static and caller-context expressions survive IR, contact payload and
+`GetHitVar(keepstate)` for hit and guard routes. Required traces are
+`a762a832/c0faf9a6` and `859ca54f/c5cb237b`; aggregate QA passes `799/799`
+artifacts (`765` required, `34` optional). Full state suppression, `hitonce`,
+Projectile p1-facing and complete MUGEN/Ikemen parity remain outside the
+claim. See [issue 284](../.scratch/roadmap/issues/284-projectile-keepstate-dynamic.md).
+
 ## Next bounded slice — T709 closed-bounded (2026-08-11)
 
 Issue 283 is the active cursor for Projectile `damage`: typed dynamic/mixed

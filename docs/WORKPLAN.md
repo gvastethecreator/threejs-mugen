@@ -1,5 +1,15 @@
 # Workplan
 
+## Active slice — T710 closed-bounded (2026-08-11)
+
+Issue 284 ports Projectile `keepstate` through compiler IR, root/Helper caller
+resolution and contact `GetHitVar` metadata for hit and guard. Required traces
+pass with `a762a832/c0faf9a6` and `859ca54f/c5cb237b`; aggregate QA is
+`799/799` artifacts (`765` required, `34` optional). State-transition
+suppression and the other explicitly blocked Projectile HitDef fields remain
+deferred. See [issue
+284](../.scratch/roadmap/issues/284-projectile-keepstate-dynamic.md).
+
 ## Active slice — T709 closed-bounded (2026-08-11)
 
 Issue 283 ports Projectile `damage` as a typed one/two-component integer pair:

@@ -1,4 +1,13 @@
 ﻿# Supported Features
+## 2026-08-11 T710 Projectile `keepstate` — closed-bounded
+
+Fresh root/Helper Projectiles now retain static or finite caller-context
+`keepstate` and expose it through `GetHitVar(keepstate)` on accepted hit and
+guard contacts. Required traces are `a762a832/c0faf9a6` and
+`859ca54f/c5cb237b`; aggregate QA passes `799/799` artifacts (`765` required,
+`34` optional). Complete state-transition suppression, `hitonce`, Projectile
+facing, teams, rollback and full parity remain unsupported. See [issue
+284](../.scratch/roadmap/issues/284-projectile-keepstate-dynamic.md).
 ## 2026-08-11 T709 Projectile damage — closed-bounded
 
 Fresh root/Helper Projectiles and live Ikemen `ModifyProjectile` now retain

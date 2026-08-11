@@ -1,5 +1,16 @@
 ﻿# QA And Acceptance Gates
 
+## 2026-08-11 T710 Projectile `keepstate` gates — passed / closed-bounded
+
+Issue 284 requires typed static/dynamic `keepstate`, root and Helper caller
+resolution, and hit/guard contact readback through `GetHitVar(keepstate)`.
+Required checksums are `a762a832` / `c0faf9a6` (root) and `859ca54f` /
+`c5cb237b` (Helper). `pnpm qa:trace` passes `799/799` artifacts (`765`
+required, `34` optional); focused compiler/runtime/contact suites and
+typecheck are green. State-transition suppression, `hitonce`, Projectile
+p1-facing, teams, rollback and full parity remain outside this gate. See
+[issue 284](../.scratch/roadmap/issues/284-projectile-keepstate-dynamic.md).
+
 ## 2026-08-11 T709 Projectile damage gates — passed / closed-bounded
 
 Issue 283 requires compiler evidence for static/dynamic/mixed/single/pair
