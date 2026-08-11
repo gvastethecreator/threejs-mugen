@@ -378,10 +378,11 @@ export type ModifyReversalDefControllerOp = {
   hitCount?: number;
   p1SpritePriority?: number;
   p2SpritePriority?: number;
-  p1StateNo?: number;
-  p2StateNo?: number;
-  p2GetP1State?: boolean;
-  p2Facing?: number;
+  /** Ikemen reuses the HitDef parameter evaluator for live state expressions. */
+  p1StateNo?: number | string;
+  p2StateNo?: number | string;
+  p2GetP1State?: boolean | string;
+  p2Facing?: number | string;
   targetId?: number;
   attackDepth?: [number, number];
 };
@@ -3128,10 +3129,10 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   const hitCount = staticOptionalHitCountParam(controller, "numhits");
   const p1SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p1sprpriority");
   const p2SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p2sprpriority");
-  const p1StateNo = staticOptionalStrictNumberParam(controller, "p1stateno");
-  const p2StateNo = staticOptionalStrictNumberParam(controller, "p2stateno");
-  const p2GetP1State = staticOptionalStrictNumberParam(controller, "p2getp1state");
-  const p2Facing = staticOptionalReversalFacingParam(controller, "p2facing");
+  const p1StateNo = optionalIntegerExpressionParam(controller, "p1stateno");
+  const p2StateNo = optionalIntegerExpressionParam(controller, "p2stateno");
+  const p2GetP1State = optionalIntegerExpressionParam(controller, "p2getp1state");
+  const p2Facing = optionalIntegerExpressionParam(controller, "p2facing");
   const targetId = staticOptionalStrictNumberParam(controller, "id");
   const attackDepthRaw = findParam(controller, "attack.depth");
   const attackDepthPair = attackDepthRaw === undefined ? undefined : strictStaticNumberPair(attackDepthRaw);
@@ -3160,9 +3161,15 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   }
   const hitPause = hitPausePair === undefined ? undefined : Math.max(0, Math.round(hitPausePair[0]));
   const normalizedHitCount = hitCount === true ? undefined : hitCount;
-  const normalizedP1StateNo = p1StateNo === true ? undefined : Math.max(0, Math.round(p1StateNo));
-  const normalizedP2StateNo = p2StateNo === true ? undefined : Math.max(0, Math.round(p2StateNo));
-  const normalizedP2GetP1State = p2GetP1State === true ? undefined : p2GetP1State !== 0;
+  const normalizedP1StateNo = p1StateNo === true
+    ? undefined
+    : typeof p1StateNo === "number" ? Math.max(0, Math.round(p1StateNo)) : p1StateNo;
+  const normalizedP2StateNo = p2StateNo === true
+    ? undefined
+    : typeof p2StateNo === "number" ? Math.max(0, Math.round(p2StateNo)) : p2StateNo;
+  const normalizedP2GetP1State = p2GetP1State === true
+    ? undefined
+    : typeof p2GetP1State === "number" ? p2GetP1State !== 0 : p2GetP1State;
   const normalizedP2Facing = p2Facing === true ? undefined : p2Facing;
   const normalizedTargetId = targetId === true ? undefined : Math.max(0, Math.round(targetId));
   const attackDepth = attackDepthPair === undefined
@@ -4910,11 +4917,6 @@ function staticHitDefPriorityType(value: string | undefined): "hit" | "miss" | "
     default:
       return undefined;
   }
-}
-
-function staticOptionalReversalFacingParam(controller: MugenStateController, key: string): number | true | false {
-  const value = staticOptionalStrictNumberParam(controller, key);
-  return typeof value === "number" ? Math.trunc(value) : value;
 }
 
 function staticOptionalIntegerParam(controller: MugenStateController, key: string): number | true | false {

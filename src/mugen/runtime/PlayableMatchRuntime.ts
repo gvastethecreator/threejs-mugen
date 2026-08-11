@@ -5478,6 +5478,7 @@ function runActiveStateControllers(
       const result = reversalControllerDispatchWorld.modify({
         actor: target,
         controller,
+        context,
         ...runtimeActiveControllerTelemetryHooks,
       });
       if (!result.modified) {

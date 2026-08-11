@@ -110,6 +110,8 @@ export type RuntimeReversalControllerDispatchResult = {
 export type RuntimeModifyReversalDefControllerDispatchOptions<TActor extends RuntimeReversalActor> = {
   actor: TActor;
   controller: ControllerIr;
+  /** Original controller caller; redirects mutate a receiver but evaluate expressions here. */
+  context?: RuntimeControllerEvaluationContext;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: ModifyReversalDefControllerOp) => void;
 };
@@ -198,6 +200,7 @@ export class RuntimeReversalControllerDispatchWorld {
   modify<TActor extends RuntimeReversalActor>({
     actor,
     controller,
+    context,
     recordController,
     recordOperation,
   }: RuntimeModifyReversalDefControllerDispatchOptions<TActor>): RuntimeModifyReversalDefControllerDispatchResult {
@@ -262,21 +265,25 @@ export class RuntimeReversalControllerDispatchWorld {
       existing.p2SpritePriority = operation.p2SpritePriority;
       runtimeReversal.p2SpritePriority = operation.p2SpritePriority;
     }
-    if (operation.p1StateNo !== undefined) {
-      existing.p1StateNo = operation.p1StateNo;
-      runtimeReversal.p1StateNo = operation.p1StateNo;
+    const p1StateNo = resolveRuntimeReversalStateNo(operation.p1StateNo, undefined, actor.runtime, context);
+    if (operation.p1StateNo !== undefined && p1StateNo !== undefined) {
+      existing.p1StateNo = p1StateNo;
+      runtimeReversal.p1StateNo = p1StateNo;
     }
-    if (operation.p2StateNo !== undefined) {
-      existing.p2StateNo = operation.p2StateNo;
-      runtimeReversal.p2StateNo = operation.p2StateNo;
+    const p2StateNo = resolveRuntimeReversalStateNo(operation.p2StateNo, undefined, actor.runtime, context);
+    if (operation.p2StateNo !== undefined && p2StateNo !== undefined) {
+      existing.p2StateNo = p2StateNo;
+      runtimeReversal.p2StateNo = p2StateNo;
     }
-    if (operation.p2GetP1State !== undefined) {
-      existing.p2GetP1State = operation.p2GetP1State;
-      runtimeReversal.p2GetP1State = operation.p2GetP1State;
+    const p2GetP1State = resolveRuntimeReversalBoolean(operation.p2GetP1State, undefined, actor.runtime, context);
+    if (operation.p2GetP1State !== undefined && p2GetP1State !== undefined) {
+      existing.p2GetP1State = p2GetP1State;
+      runtimeReversal.p2GetP1State = p2GetP1State;
     }
-    if (operation.p2Facing !== undefined) {
-      existing.p2Facing = operation.p2Facing;
-      runtimeReversal.p2Facing = operation.p2Facing;
+    const p2Facing = resolveRuntimeReversalInteger(operation.p2Facing, undefined, actor.runtime, context);
+    if (operation.p2Facing !== undefined && p2Facing !== undefined) {
+      existing.p2Facing = p2Facing;
+      runtimeReversal.p2Facing = p2Facing;
     }
     if (operation.targetId !== undefined) {
       existing.targetId = operation.targetId;

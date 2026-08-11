@@ -3187,7 +3187,7 @@ value = 1
     expect(negativeId.operation).toEqual({ kind: "modifyhitdef", damage: 41, id: 0, redirectPlayerIdExpression: "57" });
   });
 
-  it("compiles static root ModifyReversalDef RedirectID core fields and rejects unsupported payloads", () => {
+  it("compiles static and dynamic root ModifyReversalDef RedirectID state fields", () => {
     const modified = compileControllerIr(
       controller(200, "ModifyReversalDef", [], {
         "reversal.attr": "S,NA",
@@ -3241,14 +3241,18 @@ value = 1
     });
     expect(unsupportedPayload.supportLevel).toBe("unsupported");
     expect(dynamicPayload.operation).toBeUndefined();
-    expect(dynamicP2State.operation).toBeUndefined();
+    expect(dynamicP2State.operation).toEqual({
+      kind: "modifyreversaldef",
+      p2StateNo: "var(1)",
+      redirectPlayerIdExpression: "57",
+    });
     expect(unsupportedPayload.operation).toBeUndefined();
     expect(missingRedirect.operation).toBeUndefined();
     expect(emptyPayload.operation).toBeUndefined();
     expect(malformedRedirect.operation).toBeUndefined();
   });
 
-  it("compiles static root ModifyReversalDef p2getp1state RedirectID values and rejects dynamic input", () => {
+  it("compiles static and dynamic root ModifyReversalDef p2getp1state RedirectID values", () => {
     const targetOwned = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { p2getp1state: "0", redirectid: "57" }),
     );
@@ -3270,7 +3274,11 @@ value = 1
       p2GetP1State: true,
       redirectPlayerIdExpression: "var(0)",
     });
-    expect(dynamic.operation).toBeUndefined();
+    expect(dynamic.operation).toEqual({
+      kind: "modifyreversaldef",
+      p2GetP1State: "var(1)",
+      redirectPlayerIdExpression: "57",
+    });
   });
 
   it("compiles static ReversalDef and root ModifyReversalDef p2facing values", () => {
@@ -3298,7 +3306,11 @@ value = 1
       p2Facing: 0,
       redirectPlayerIdExpression: "57",
     });
-    expect(dynamic.operation).toBeUndefined();
+    expect(dynamic.operation).toEqual({
+      kind: "modifyreversaldef",
+      p2Facing: "var(1)",
+      redirectPlayerIdExpression: "57",
+    });
   });
 
   it("compiles static ReversalDef and root ModifyReversalDef numhits values", () => {

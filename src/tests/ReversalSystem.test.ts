@@ -255,6 +255,48 @@ describe("ReversalSystem", () => {
     expect(runtimeReceivedHitsValue(attacker.contact, 200)).toBe(4);
   });
 
+  it("resolves dynamic ModifyReversalDef state fields in the original caller context", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const receiver = actor("p2", "Reverser", { stateNo: 300, vars: [99, 99, 99, 99] });
+    const caller = actor("p1", "Caller", { vars: [1, 2, 0, -1] });
+    reversalWorld.activate(receiver, {
+      attr: "SA,AA",
+      hitbox: box(),
+      hitPause: 3,
+      p1StateNo: 700,
+      p2StateNo: 800,
+      p2GetP1State: true,
+      p2Facing: 1,
+    });
+
+    const result = dispatchWorld.modify({
+      actor: receiver,
+      controller: compileControllerIr(controller("ModifyReversalDef", {
+        p1stateno: "var(0) + 700",
+        p2stateno: "var(1) + 800",
+        p2getp1state: "var(2)",
+        p2facing: "var(3)",
+        redirectid: "57",
+      })),
+      context: { self: caller.runtime },
+    });
+
+    expect(result.modified).toBe(true);
+    expect(receiver.currentMove).toMatchObject({
+      p1StateNo: 701,
+      p2StateNo: 802,
+      p2GetP1State: false,
+      p2Facing: -1,
+    });
+    expect(receiver.runtime.reversal).toMatchObject({
+      p1StateNo: 701,
+      p2StateNo: 802,
+      p2GetP1State: false,
+      p2Facing: -1,
+    });
+  });
+
   it("applies static ReversalDef sprite priorities after a ModifyReversalDef mutation", () => {
     const reversalWorld = new RuntimeReversalWorld();
     const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
