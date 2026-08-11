@@ -1,7 +1,7 @@
 {
   "schema": "Da30IkemenMilestoneAdjudication/v1",
   "ok": true,
-  "headSha": "9006c8555e0c34e979077aa824d46662c9bba179",
+  "headSha": "260fe510f5b307187af2aa3deca59c963cd1c9ac",
   "supported": [
     "source-authority-map",
     "zss-subset-ops",
