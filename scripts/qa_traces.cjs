@@ -3512,6 +3512,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperModifyProjectileDynamicParamsTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-modifyprojectile-dynamic-anim",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperModifyProjectileDynamicAnimTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projhit",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjHitTraceArtifact(),
@@ -5163,6 +5168,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-dynamic-posadd",
     "synthetic-imported-helper-modifyprojectile-dynamic-bounds",
     "synthetic-imported-helper-modifyprojectile-dynamic-params",
+    "synthetic-imported-helper-modifyprojectile-dynamic-anim",
     "synthetic-imported-helper-projhit",
     "synthetic-imported-helper-projhittime-any",
     "synthetic-imported-helper-projectile-hitcount",

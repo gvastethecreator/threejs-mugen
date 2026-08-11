@@ -52620,6 +52620,76 @@ export function createSyntheticImportedHelperModifyProjectileTraceArtifact(optio
   });
 }
 
+export function createSyntheticImportedHelperModifyProjectileDynamicAnimTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperProjectileRemoveTerminalScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-dynamic-anim-attacker",
+    displayName: "Synthetic Imported Helper Dynamic ModifyProjectile Animation Attacker",
+    withHelper: true,
+    helperModifyProjectileRoute: {
+      modifyStateNo: 1214,
+      modifyAnimNo: 934,
+      finalStateNo: 1215,
+      finalAnimNo: 935,
+      projectileAnimNo: 945,
+      modifyAnimExpression: "Var(30)",
+      modifyAnimExpected: 931,
+      helperVarSeeds: [{ index: 30, value: 931 }],
+      projectileId: 8852,
+      removeTime: 8,
+      spritePriority: 8,
+      priority: 4,
+      hits: 1,
+      missTime: 0,
+      removeOnHit: false,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-modifyprojectile-dynamic-anim-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-modifyprojectile-dynamic-anim-golden",
+      label: "Synthetic imported Helper dynamic ModifyProjectile animation route",
+      source: "mixed",
+      notes: [
+        "Pinned Ikemen GO trace proves a Helper-local ModifyProjectile evaluates projanim in the Helper caller context, replaces the helper-parented Projectile AIR action, resets playback, and then removes the same actor through the existing lifecycle. It does not claim player-owned cross-namespace mutation, FFX prefixes, exact invalid-action timing, terminal playback parity, nested teams, rollback, or full Helper/Projectile parity.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-modifyprojectile-dynamic-anim-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper", "projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Helper", "Projectile", "ModifyProjectile"],
+      requiredExecutedOperations: ["variable:varset", "helper", "projectile", "modifyprojectile"],
+      requiredActiveCommands: ["x"],
+      requiredActorFrames: [
+        { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1214, animNo: 934, minFrames: 1 },
+        { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1215, animNo: 935, minFrames: 1 },
+        { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 931, moveType: "A", minFrames: 1 },
+      ],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minHelpers: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [{ kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1215, minAge: 2 }],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperModifyProjectileOmittedBoundsTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -62457,6 +62527,10 @@ export type SyntheticImportedTraceFighterOptions = {
     finalStateNo: number;
     finalAnimNo?: number;
     projectileAnimNo: number;
+    /** Synthetic Helper-local dynamic live ModifyProjectile projanim expression. */
+    modifyAnimExpression?: SyntheticNumberExpression;
+    /** AIR action made available for a dynamic live ModifyProjectile projanim. */
+    modifyAnimExpected?: number;
     projectileId?: number;
     projectileEdgeBound?: number;
     projectileStageBound?: number;
@@ -62473,6 +62547,7 @@ export type SyntheticImportedTraceFighterOptions = {
     stageBound?: SyntheticNumberExpression;
     heightBound?: SyntheticPairExpression;
     ownerVarSeeds?: Array<{ index: number; value: number; trigger?: string }>;
+    helperVarSeeds?: Array<{ index: number; value: number; trigger?: string }>;
     removeTime?: SyntheticNumberExpression;
     spritePriority?: SyntheticNumberExpression;
     priority?: SyntheticNumberExpression;
@@ -64255,6 +64330,12 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                     options.helperModifyProjectileRoute.projectileAnimNo,
                     projectileTraceAction(options.helperModifyProjectileRoute.projectileAnimNo),
                   ],
+                  ...(options.helperModifyProjectileRoute.modifyAnimExpected === undefined
+                    ? []
+                    : [[
+                        options.helperModifyProjectileRoute.modifyAnimExpected,
+                        projectileTraceAction(options.helperModifyProjectileRoute.modifyAnimExpected),
+                      ] as [number, MugenAnimationAction]]),
                 ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperProjHitRoute === undefined
               ? []
@@ -70785,6 +70866,18 @@ function helperModifyProjectileRouteBlock(route: NonNullable<SyntheticImportedTr
   const edgeBoundLine = route.omitModifyBounds ? "" : `projedgebound = ${edgeBound}`;
   const stageBoundLine = route.omitModifyBounds ? "" : `projstagebound = ${stageBound}`;
   const heightBoundLine = route.omitModifyBounds ? "" : `projheightbound = ${heightBound[0]},${heightBound[1]}`;
+  const modifyAnimLine = route.modifyAnimExpression === undefined ? "" : `projanim = ${route.modifyAnimExpression}`;
+  const helperVarSeedLines = route.helperVarSeeds === undefined
+    ? ""
+    : route.helperVarSeeds
+      .map((seed) => `
+[State 1200, Helper ModifyProjectile Dynamic Var ${seed.index}]
+type = VarSet
+trigger1 = ${seed.trigger ?? "Time = 0"}
+v = ${seed.index}
+value = ${seed.value}
+`)
+      .join("");
   return `
 [Statedef 1200]
 type = S
@@ -70792,6 +70885,8 @@ movetype = I
 physics = N
 anim = 920
 ctrl = 0
+
+${helperVarSeedLines}
 
 [State 1200, Helper ModifyProjectile Spawn]
 type = Projectile
@@ -70827,6 +70922,7 @@ ctrl = 0
 type = ModifyProjectile
 trigger1 = Time = ${modifyTriggerTime}
 id = ${modifyProjectileId}
+${modifyAnimLine}
 velocity = ${velocity[0]},${velocity[1]}
 accel = ${accel[0]},${accel[1]}
 velmul = ${velocityMultiplier[0]},${velocityMultiplier[1]}

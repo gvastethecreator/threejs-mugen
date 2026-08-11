@@ -364,6 +364,7 @@ import {
   createSyntheticImportedHelperRemoveExplodTraceArtifact,
   createSyntheticImportedHelperModifyExplodTraceArtifact,
   createSyntheticImportedHelperModifyProjectileTraceArtifact,
+  createSyntheticImportedHelperModifyProjectileDynamicAnimTraceArtifact,
   createSyntheticImportedHelperModifyProjectileOmittedBoundsTraceArtifact,
   createSyntheticImportedHelperModifyProjectileDynamicBoundsTraceArtifact,
   createSyntheticImportedHelperModifyProjectileDynamicParamsTraceArtifact,
@@ -5287,6 +5288,43 @@ describe("RuntimeTraceGatePresets", () => {
             heightBound: { low: -120, high: 60 },
           }),
         }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper dynamic ModifyProjectile animation artifact", () => {
+    const artifact = createSyntheticImportedHelperModifyProjectileDynamicAnimTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-modifyprojectile-dynamic-anim-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-modifyprojectile-dynamic-anim-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedControllers.ModifyProjectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.modifyprojectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 931 }),
+      ]),
+    );
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+        expect.objectContaining({ type: "active", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+        expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
       ]),
     );
   });
