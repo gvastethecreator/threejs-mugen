@@ -108,6 +108,8 @@ describe("ReversalSystem", () => {
       p1stateno: "var(0) + 700",
       p2stateno: "var(1) + 800",
       p2getp1state: "var(2)",
+      p1facing: "var(0)",
+      p1getp2facing: "var(3)",
       p2facing: "var(3)",
     }));
 
@@ -124,18 +126,24 @@ describe("ReversalSystem", () => {
       p1StateNo: "var(0) + 700",
       p2StateNo: "var(1) + 800",
       p2GetP1State: "var(2)",
+      p1Facing: "var(0)",
+      p1GetP2Facing: "var(3)",
       p2Facing: "var(3)",
     });
     expect(receiver.currentMove).toMatchObject({
       p1StateNo: 701,
       p2StateNo: 802,
       p2GetP1State: false,
+      p1Facing: 1,
+      p1GetP2Facing: -1,
       p2Facing: -1,
     });
     expect(receiver.runtime.reversal).toMatchObject({
       p1StateNo: 701,
       p2StateNo: 802,
       p2GetP1State: false,
+      p1Facing: 1,
+      p1GetP2Facing: -1,
       p2Facing: -1,
     });
   });
@@ -362,10 +370,12 @@ describe("ReversalSystem", () => {
     const result = dispatchWorld.modify({
       actor: receiver,
       controller: compileControllerIr(controller("ModifyReversalDef", {
-        p1stateno: "var(0) + 700",
-        p2stateno: "var(1) + 800",
-        p2getp1state: "var(2)",
-        p2facing: "var(3)",
+      p1stateno: "var(0) + 700",
+      p2stateno: "var(1) + 800",
+      p2getp1state: "var(2)",
+      p1facing: "var(0) - 2",
+      p1getp2facing: "var(3)",
+      p2facing: "var(3)",
         redirectid: "57",
       })),
       context: { self: caller.runtime },
@@ -376,12 +386,16 @@ describe("ReversalSystem", () => {
       p1StateNo: 701,
       p2StateNo: 802,
       p2GetP1State: false,
+      p1Facing: -1,
+      p1GetP2Facing: -1,
       p2Facing: -1,
     });
     expect(receiver.runtime.reversal).toMatchObject({
       p1StateNo: 701,
       p2StateNo: 802,
       p2GetP1State: false,
+      p1Facing: -1,
+      p1GetP2Facing: -1,
       p2Facing: -1,
     });
   });
@@ -593,6 +607,33 @@ describe("ReversalSystem", () => {
       reversalWorld.apply(reverser, attacker, reverser.currentMove!, hooks());
 
       expect(attacker.runtime.facing).toBe(expectedFacing);
+    }
+  });
+
+  it("applies ReversalDef p1facing with p1getp2facing precedence", () => {
+    const cases = [
+      { p1Facing: -1, p1GetP2Facing: 0, expected: -1 },
+      { p1Facing: 0, p1GetP2Facing: 1, expected: -1 },
+      { p1Facing: -1, p1GetP2Facing: -1, expected: 1 },
+      { p1Facing: 0, p1GetP2Facing: 0, expected: 1 },
+    ] as const;
+
+    for (const { p1Facing, p1GetP2Facing, expected } of cases) {
+      const reversalWorld = new RuntimeReversalWorld();
+      const reverser = actor("p2", "Reverser", { facing: 1 });
+      const attacker = actor("p1", "Attacker", { facing: -1, currentMove: move(), currentMoveLabel: "Punch" });
+      reversalWorld.activate(reverser, {
+        attr: "S,NA",
+        hitbox: box(),
+        hitPause: 3,
+        p1StateNo: 777,
+        p1Facing,
+        p1GetP2Facing,
+      });
+
+      reversalWorld.apply(reverser, attacker, reverser.currentMove!, hooks());
+
+      expect(reverser.runtime.facing).toBe(expected);
     }
   });
 

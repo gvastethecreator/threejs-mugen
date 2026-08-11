@@ -3325,6 +3325,39 @@ value = 1
     });
   });
 
+  it("compiles ReversalDef p1facing and p1getp2facing in fresh and redirected forms", () => {
+    const reversal = compileControllerIr(
+      controller(200, "ReversalDef", [], {
+        "reversal.attr": "S,NA",
+        p1facing: "-1",
+        p1getp2facing: "var(1)",
+      }),
+    );
+    const modified = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], {
+        p1facing: "var(0)",
+        p1getp2facing: "-2.9",
+        redirectid: "57",
+      }),
+    );
+    const malformed = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { p1facing: "var(", redirectid: "57" }),
+    );
+
+    expect(reversal.operation).toMatchObject({
+      kind: "reversaldef",
+      p1Facing: -1,
+      p1GetP2Facing: "var(1)",
+    });
+    expect(modified.operation).toEqual({
+      kind: "modifyreversaldef",
+      p1Facing: "var(0)",
+      p1GetP2Facing: -2,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(malformed.operation).toBeUndefined();
+  });
+
   it("compiles static and dynamic ReversalDef numhits values", () => {
     const reversal = compileControllerIr(
       controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", numhits: "3" }),

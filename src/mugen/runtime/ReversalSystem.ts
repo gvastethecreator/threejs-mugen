@@ -53,6 +53,8 @@ export type RuntimeReversalActivation = {
   p1StateNo?: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;
+  p1Facing?: number;
+  p1GetP2Facing?: number;
   p2Facing?: number;
   targetId?: number;
   attackDepth?: [number, number];
@@ -201,6 +203,18 @@ export class RuntimeReversalControllerDispatchWorld {
         actor.runtime,
         context,
       ),
+      p1Facing: resolveRuntimeReversalInteger(
+        operation?.p1Facing,
+        findParam(source, "p1facing"),
+        actor.runtime,
+        context,
+      ),
+      p1GetP2Facing: resolveRuntimeReversalInteger(
+        operation?.p1GetP2Facing,
+        findParam(source, "p1getp2facing"),
+        actor.runtime,
+        context,
+      ),
       p2Facing: resolveRuntimeReversalInteger(
         operation?.p2Facing,
         findParam(source, "p2facing"),
@@ -342,6 +356,16 @@ export class RuntimeReversalControllerDispatchWorld {
       existing.p2GetP1State = p2GetP1State;
       runtimeReversal.p2GetP1State = p2GetP1State;
     }
+    const p1Facing = resolveRuntimeReversalInteger(operation.p1Facing, undefined, actor.runtime, context);
+    if (operation.p1Facing !== undefined && p1Facing !== undefined) {
+      existing.p1Facing = p1Facing;
+      runtimeReversal.p1Facing = p1Facing;
+    }
+    const p1GetP2Facing = resolveRuntimeReversalInteger(operation.p1GetP2Facing, undefined, actor.runtime, context);
+    if (operation.p1GetP2Facing !== undefined && p1GetP2Facing !== undefined) {
+      existing.p1GetP2Facing = p1GetP2Facing;
+      runtimeReversal.p1GetP2Facing = p1GetP2Facing;
+    }
     const p2Facing = resolveRuntimeReversalInteger(operation.p2Facing, undefined, actor.runtime, context);
     if (operation.p2Facing !== undefined && p2Facing !== undefined) {
       existing.p2Facing = p2Facing;
@@ -400,6 +424,8 @@ export class RuntimeReversalWorld {
       p1StateNo: activation.p1StateNo,
       p2StateNo: activation.p2StateNo,
       p2GetP1State: activation.p2GetP1State,
+      p1Facing: activation.p1Facing,
+      p1GetP2Facing: activation.p1GetP2Facing,
       p2Facing: activation.p2Facing,
       hitPause: activation.hitPause,
       ...(activation.hitShakeTime === undefined ? {} : { hitShakeTime: activation.hitShakeTime }),
@@ -428,6 +454,8 @@ export class RuntimeReversalWorld {
       ...(activation.p1StateNo !== undefined ? { p1StateNo: activation.p1StateNo } : {}),
       ...(activation.p2StateNo !== undefined ? { p2StateNo: activation.p2StateNo } : {}),
       ...(activation.p2GetP1State === undefined ? {} : { p2GetP1State: activation.p2GetP1State }),
+      ...(activation.p1Facing === undefined ? {} : { p1Facing: activation.p1Facing }),
+      ...(activation.p1GetP2Facing === undefined ? {} : { p1GetP2Facing: activation.p1GetP2Facing }),
       ...(activation.p2Facing === undefined ? {} : { p2Facing: activation.p2Facing }),
       ...(activation.hitShakeTime === undefined ? {} : { hitShakeTime: activation.hitShakeTime }),
       ...(activation.hitCount === undefined ? {} : { hitCount }),
@@ -501,6 +529,7 @@ export class RuntimeReversalWorld {
     const p1StateNo = reversal.p1StateNo;
     const p2StateNo = reversal.p2StateNo;
     const reverserFacing = reverser.runtime.facing;
+    const incomingFacing = attacker.runtime.facing;
     if (p1StateNo !== undefined && hooks.canEnterState(reverser, p1StateNo)) {
       hooks.enterState(reverser, p1StateNo);
     } else {
@@ -509,6 +538,7 @@ export class RuntimeReversalWorld {
     if (p2StateNo !== undefined) {
       hooks.enterTargetHitState(attacker, reverser, p2StateNo, reversal.p2GetP1State ?? true);
     }
+    applyRuntimeReversalP1Facing(reverser.runtime, incomingFacing, reversal.p1Facing, reversal.p1GetP2Facing);
     applyRuntimeReversalP2Facing(reverserFacing, attacker.runtime, reversal.p2Facing);
     applyRuntimeHitDefSpritePriorityContact(
       reverser,
@@ -683,6 +713,23 @@ function applyRuntimeReversalP2Facing(
   attacker.facing = p2Facing < 0
     ? reverserFacing
     : reverserFacing === 1 ? -1 : 1;
+}
+
+function applyRuntimeReversalP1Facing(
+  reverser: CharacterRuntimeState,
+  incomingFacing: CharacterRuntimeState["facing"],
+  p1Facing: number | undefined,
+  p1GetP2Facing: number | undefined,
+): void {
+  if (p1GetP2Facing !== undefined && p1GetP2Facing !== 0) {
+    reverser.facing = p1GetP2Facing < 0
+      ? incomingFacing === 1 ? -1 : 1
+      : incomingFacing;
+    return;
+  }
+  if (p1Facing !== undefined && p1Facing < 0) {
+    reverser.facing = reverser.facing === 1 ? -1 : 1;
+  }
 }
 
 function cloneBox(box: CollisionBox): CollisionBox {

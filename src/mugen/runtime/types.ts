@@ -250,6 +250,10 @@ export type RuntimeReversalDef = {
   p1StateNo?: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;
+  /** ReversalDef attacker-facing replacement resolved at activation. */
+  p1Facing?: number;
+  /** ReversalDef attacker-facing replacement from incoming P2 facing. */
+  p1GetP2Facing?: number;
   p2Facing?: number;
   hitCount?: number;
   hitPause: number;
