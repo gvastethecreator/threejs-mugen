@@ -7,7 +7,8 @@ Ikemen `ModifyHitDef` `pausetime` and `guard.pausetime` static, mixed and
 caller-context dynamic pairs. Product `1100d384`; evidence `c6c88173`.
 Required trace `synthetic-imported-modifyhitdef-dynamic-pausetime-golden`
 proves `VarSet -> HitDef -> ModifyHitDef -> hit`, RedirectID target `77`, and
-`GetHitVar(hitshaketime)=7`. Omitted live siblings preserve their active value
+`GetHitVar(hitshaketime)=7`; trace/initial/final checksums are
+`3ac961c7` / `d663c168` / `d0351820`. Omitted live siblings preserve their active value
 and omission is a no-op. M.U.G.E.N 1.1 does not define live ModifyHitDef, so
 this gate is Ikemen-only. Exact tick/ignorehitpause scheduling,
 Projectile/ModifyProjectile, ReversalDef and full timing parity remain outside.

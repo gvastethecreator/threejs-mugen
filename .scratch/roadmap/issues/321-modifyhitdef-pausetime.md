@@ -21,6 +21,7 @@ reimplemented by this issue.
 - Durable trace: `synthetic-imported-modifyhitdef-dynamic-pausetime-golden`
   proves `VarSet -> HitDef -> ModifyHitDef -> hit`, caller `var(0)=3` and
   `var(1)=7`, target memory `77`, and imported `GetHitVar(hitshaketime)=7`.
+  Trace/initial/final checksums are `3ac961c7` / `d663c168` / `d0351820`.
 - Evidence: `c6c88173` (`test(evidence): gate live ModifyHitDef pause pairs`).
 
 ## Source contract
