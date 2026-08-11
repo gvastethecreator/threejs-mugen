@@ -2,7 +2,22 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T732 closed-bounded (2026-08-11)
+## Current implementation route — T733 closed-bounded (2026-08-11)
+
+T733 / [issue 307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md)
+closes live `ModifyHitDef guardsound` through root/RedirectID and Helper
+callers. Caller-context refs retain their prefix and omission preservation
+is required; the accepted guard-audio event carries typed `F6,4` telemetry from
+raw `Fvar(0),var(1)` with no hit route.
+
+## Next implementation route — T734 queued
+
+T734 / [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md)
+queues the symmetric live `ModifyHitDef hitsound` group/number/prefix
+replacement with caller-context resolution, omission preservation and accepted
+hit-audio evidence.
+
+## Historical implementation route — T732 closed-bounded (2026-08-11)
 
 T732 / [issue 306](../.scratch/roadmap/issues/306-modifyhitdef-guard-sparkno-expressions.md)
 closes live `ModifyHitDef guard.sparkno` through root/RedirectID and Helper
@@ -26,13 +41,6 @@ finite non-zero values enable it, live omission preserves the active value,
 and explicit target memory permits distinct targets only while disabled.
 Focused compiler/runtime coverage is `184/184`; resolution/helper coverage is
 `78/78`; no causal end-to-end trace is promoted.
-
-## Next implementation route — T733 queued
-
-T733 / [issue 307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md)
-queues Ikemen-only live `ModifyHitDef guardsound` group/number/prefix
-replacement with caller-context resolution, omission preservation and accepted
-guard-audio evidence.
 
 ## Historical queue — T726 completed
 

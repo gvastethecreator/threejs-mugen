@@ -1,5 +1,24 @@
 ﻿# Supported Features
-## 2026-08-11 T727 ReversalDef `hitonce` expressions — closed-bounded
+## 2026-08-11 T733 `ModifyHitDef guardsound` — closed-bounded
+
+Ikemen-only live `ModifyHitDef guardsound` group/number/prefix replacement is
+supported through root/RedirectID and Helper callers. Static and caller-context
+dynamic refs retain their `F`/`S` prefix; omission or unresolved expressions
+preserve the active sound. Required trace
+`synthetic-imported-modifyhitdef-dynamic-guardsound.json` proves typed
+`audio:playsnd` `F6,4` on a real guard contact; trace/final checksums are
+`2ade8da5` / `f88990bd`, and aggregate QA passes `820/820` artifacts. Fresh
+defaults, channel semantics, exact playback/mixing, Projectiles and full audio
+parity remain outside the claim. See [issue
+307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md).
+
+## Next queued — T734 `ModifyHitDef hitsound`
+
+The symmetric live hit-sound group/number/prefix replacement is queued for
+root/RedirectID and Helper callers. See [issue
+308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
+
+## Historical — T727 ReversalDef `hitonce` expressions — closed-bounded
 
 Direct/root `ReversalDef` and root/RedirectID `ModifyReversalDef` now retain
 typed static and caller-context `hitonce`. Fresh/live values resolve once;

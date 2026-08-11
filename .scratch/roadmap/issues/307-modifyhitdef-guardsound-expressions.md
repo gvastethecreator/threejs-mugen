@@ -1,6 +1,6 @@
 # Issue 307 — `ModifyHitDef` `guardsound` expressions
 
-Status: **queued** (T733, 2026-08-11)
+Status: **closed-bounded** (T733, 2026-08-11)
 
 ## Objective
 
@@ -40,3 +40,22 @@ Extend compiler/runtime/Helper sound tests and add one required trace with
 `VarSet` + `HitDef` + `ModifyHitDef`, a real guard contact, preserved channel,
 and a typed `audio:playsnd` event proving the caller-resolved sound reference
 without entering the hit route.
+
+## Result
+
+Implemented in commits `42ce0b3a` and `c1d6c902`. Static, mixed and caller-
+context dynamic `guardsound` refs now preserve their `F`/`S` prefix, update the
+live root/RedirectID or Helper HitDef, and preserve the active ref when the
+field is omitted or the caller expression is unresolved. Focused compiler,
+runtime and Helper coverage passes `298/298`; `pnpm run typecheck` passes.
+
+Required artifact `synthetic-imported-modifyhitdef-dynamic-guardsound.json`
+proves VarSet + HitDef + RedirectID ModifyHitDef, a real guard contact, target
+link `p1 -> p2 / 77`, and typed `audio:playsnd` group `6`, index `4`, raw
+`Fvar(0),var(1)`, prefix `F`, and `contactKind = guard`; trace checksum is
+`2ade8da5`, final checksum `f88990bd`. Aggregate `pnpm qa:trace` passes
+`820/820` artifacts (`786` required, `34` optional).
+
+This closes only bounded contact-audio metadata. Fresh defaults, hitsound,
+`guardsound.channel`, exact SND lookup/playback/mixing/priority, Projectiles,
+renderer timing, teams, rollback and full audio parity remain blocked.

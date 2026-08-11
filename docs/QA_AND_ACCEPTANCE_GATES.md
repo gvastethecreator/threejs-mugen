@@ -1,6 +1,25 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-11 T712 Projectile `keepstate` release gates — focused passed / aggregate inconclusive
+## 2026-08-11 T733 `ModifyHitDef guardsound` — passed / closed-bounded
+
+Required `synthetic-imported-modifyhitdef-dynamic-guardsound.json` proves
+VarSet + HitDef + RedirectID ModifyHitDef caller evaluation, a real guard
+contact and target link `p1 -> p2 / 77`, plus typed `audio:playsnd` group `6`,
+index `4`, raw `Fvar(0),var(1)`, prefix `F`, and `contactKind = guard`.
+Trace checksum is `2ade8da5`, final checksum `f88990bd`; focused compiler,
+runtime and Helper coverage is `298/298`, typecheck passes, and
+`pnpm qa:trace` passes `820/820` artifacts (`786` required, `34` optional).
+Exact SND lookup/playback/mixing/channel priority, fresh defaults, Projectiles,
+renderer timing, teams, rollback and full audio parity remain outside this
+gate. See [issue 307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md).
+
+## Next queued — T734 `ModifyHitDef hitsound`
+
+The next gate will cover caller-context live hit-sound replacement and accepted
+hit audio evidence; guard sound, channels, Projectiles and exact playback stay
+deferred. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
+
+## Historical — T712 Projectile `keepstate` release gates — focused passed / aggregate inconclusive
 
 Issue 286 gates the transient release after the active stun window. Root and
 Helper required artifacts pass with checksums `05c07804` / `3445d810` and

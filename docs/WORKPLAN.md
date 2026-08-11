@@ -1,18 +1,29 @@
 # Workplan
 
-## Latest slice — T728 closed-bounded (2026-08-11)
+## Latest slice — T733 closed-bounded (2026-08-11)
+
+Issue 307 closes Ikemen-only live `ModifyHitDef guardsound` through
+root/RedirectID and Helper callers. Static and caller-context dynamic refs
+retain their prefix; omission or unresolved values preserve the active sound.
+Required guard-audio trace checksum `2ade8da5` / final `f88990bd` proves typed
+`audio:playsnd` `F6,4` from raw `Fvar(0),var(1)` with target link `p1 -> p2 / 77`.
+Focused compiler/runtime/Helper coverage is `298/298`; typecheck and aggregate
+QA (`820/820`, `786` required, `34` optional) pass. Fresh defaults, channels,
+exact playback/mixing, Projectiles and full audio parity remain blocked.
+
+## Next slice — T734 queued
+
+Issue 308 queues the symmetric Ikemen-only live `ModifyHitDef hitsound`
+group/number/prefix replacement through root/RedirectID and Helper callers.
+See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
+
+## Historical slice — T728 closed-bounded (2026-08-11)
 
 Issue 302 is complete: live `ModifyHitDef down.velocity` X/Y values resolve in
 caller context, preserve omitted Y/Z components, and are consumed by lying
 contact on root/RedirectID and Helper paths. Required traces, focused gates,
 typecheck and QA trace pass; fresh defaults, dynamic Z and exact landing timing
 remain blocked.
-
-## Next slice — T729 queued
-
-Issue 303 queues Ikemen-only live `ModifyHitDef sparkxy` X/Y replacement through
-root/RedirectID and Helper callers. See [issue
-303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
 
 ## Historical slice — T727 closed-bounded (2026-08-11)
 

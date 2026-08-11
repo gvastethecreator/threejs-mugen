@@ -1,6 +1,26 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T732 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T733 closed-bounded (2026-08-11)
+
+Issue 307 closes Ikemen-only live `ModifyHitDef guardsound` through
+root/RedirectID and Helper callers. Static and dynamic caller-context refs
+preserve their `F`/`S` prefix; omission/unresolved mutation preserves the live
+sound. Required artifact
+`synthetic-imported-modifyhitdef-dynamic-guardsound.json` proves a real guard
+contact, target `77`, raw `Fvar(0),var(1)`, resolved `F6,4`, and typed
+`audio:playsnd`; trace/final checksums are `2ade8da5` / `f88990bd`.
+Focused compiler/runtime/Helper coverage is `298/298`; typecheck passes and
+`pnpm qa:trace` passes `820/820` artifacts (`786` required, `34` optional).
+Fresh defaults, channels, exact playback/mixing, Projectiles and full audio
+parity remain blocked.
+
+## Next implementation checkpoint — T734 queued
+
+Issue 308 queues live `ModifyHitDef hitsound` group/number/prefix replacement
+for the accepted hit-audio path, with caller-context resolution and omission
+preservation.
+
+## Historical implementation checkpoint — T732 closed-bounded (2026-08-11)
 
 Issue 306 closes Ikemen-only live `ModifyHitDef guard.sparkno` through
 root/RedirectID and Helper callers. Static and dynamic suffixes retain their
@@ -10,12 +30,6 @@ identity, and the accepted guard event exposes `F19` while retaining angle
 `synthetic-imported-modifyhitdef-dynamic-guard-sparkno.json` proves the
 guard-only route; fresh defaults, normal hit identity, Projectiles and exact
 renderer/audio parity remain blocked.
-
-## Next implementation checkpoint — T733 queued
-
-Issue 307 queues live `ModifyHitDef guardsound` group/number/prefix replacement
-for the guard audio path, with caller-context resolution and omission
-preservation.
 
 ## Historical implementation checkpoint — T729 closed-bounded (2026-08-11)
 

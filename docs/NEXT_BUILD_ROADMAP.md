@@ -1,6 +1,23 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T732 closed-bounded (2026-08-11)
+## Latest bounded slice — T733 closed-bounded (2026-08-11)
+
+Issue 307 closes Ikemen-only live `ModifyHitDef guardsound` through root/
+RedirectID and Helper callers. Static and caller-context dynamic group/number
+refs retain their `F`/`S` prefix, omission preserves the active sound, and the
+required trace observes typed `audio:playsnd` `F6,4` from raw
+`Fvar(0),var(1)` in a guard-only contact. Fresh defaults, channels, exact
+playback/mixing, Projectiles and full audio parity remain blocked. See [issue
+307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md).
+
+## Next bounded slice — T734 queued
+
+Issue 308 queues Ikemen-only live `ModifyHitDef hitsound` group/number/prefix
+through the hit audio path, with caller-context resolution and omission
+preservation. See [issue
+308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
+
+## Historical bounded slice — T732 closed-bounded (2026-08-11)
 
 Issue 306 closes Ikemen-only live `ModifyHitDef guard.sparkno` through root/
 RedirectID and Helper callers. Static and caller-context dynamic suffixes retain
@@ -9,13 +26,6 @@ observes `S7000 -> F19` in a guard-only event with angle/offset preserved.
 Fresh defaults, normal hit identity, scale, palette, Projectiles and exact
 renderer timing remain blocked. See [issue
 306](../.scratch/roadmap/issues/306-modifyhitdef-guard-sparkno-expressions.md).
-
-## Next bounded slice — T733 queued
-
-Issue 307 queues Ikemen-only live `ModifyHitDef guardsound` group/number/prefix
-through the guard audio path, with caller-context resolution and omission
-preservation. See [issue
-307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md).
 
 ## Historical bounded slice — T729 closed-bounded (2026-08-11)
 

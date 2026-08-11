@@ -1,6 +1,27 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T732 closed-bounded (2026-08-11)
+## Latest bounded slice — T733 closed-bounded (2026-08-11)
+
+Issue 307 closes the Ikemen-only live `ModifyHitDef guardsound` reference
+replacement through root/RedirectID and Helper callers. Static and
+caller-context dynamic group/number values preserve their `F`/`S` prefix;
+omission or an unresolved expression preserves the active ref. The required
+guard trace proves `Fvar(0),var(1) -> F6,4` in a typed `audio:playsnd` event,
+with target link `p1 -> p2 / 77` and no hit route. Fresh defaults,
+`guardsound.channel`, exact playback/mixing, Projectiles and full audio parity
+remain blocked. See [issue
+307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md).
+
+## Next bounded slice — T734 queued
+
+Issue 308 queues the symmetric Ikemen-only live `ModifyHitDef hitsound`
+group/number/prefix replacement through the accepted hit audio path, with
+caller-context resolution and omission preservation. Guard sound mutation,
+channel semantics, Projectiles, exact playback/mixing and full audio parity
+remain excluded. See [issue
+308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
+
+## Historical bounded slice — T732 closed-bounded (2026-08-11)
 
 Issue 306 closes the Ikemen-only live `ModifyHitDef guard.sparkno` identity
 replacement through root/RedirectID and Helper callers. Static references and
@@ -10,15 +31,6 @@ proves `S7000 -> F19`, angle `-5`, offset `(-2,-3)`, and no hit route.
 Fresh defaults, normal hit-spark identity, scale, palette, Projectiles, exact
 FightFX/common lookup and full effect parity remain blocked. See [issue
 306](../.scratch/roadmap/issues/306-modifyhitdef-guard-sparkno-expressions.md).
-
-## Next bounded slice — T733 queued
-
-Issue 307 queues the next Ikemen-only live `ModifyHitDef guardsound` reference
-replacement through the accepted guard audio path, preserving the active
-group/number/prefix when omitted or unresolved. Spark presentation,
-`guardsound.channel`, Projectiles, exact playback/mixing and full audio parity
-remain excluded. See [issue
-307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md).
 
 ## Historical bounded slice — T729 closed-bounded (2026-08-11)
 

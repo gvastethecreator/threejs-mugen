@@ -1,17 +1,18 @@
 # Controller Support Registry
 
-Latest cursor: T732 / issue 306 is closed-bounded for Ikemen-only live
-root/RedirectID and Helper `ModifyHitDef guard.sparkno`. Static references and
-caller-context dynamic suffixes retain their `F`/`S`/`M` prefix; omission or
-an unresolved suffix preserves the live identity. Required trace
-`synthetic-imported-modifyhitdef-dynamic-guard-sparkno.json` proves
-`S7000 -> F19` on a guard event with angle/offset preserved and no hit.
+Latest cursor: T733 / issue 307 is closed-bounded for Ikemen-only live
+root/RedirectID and Helper `ModifyHitDef guardsound`. Static and caller-context
+dynamic group/number refs retain their `F`/`S` prefix; omission or unresolved
+expressions preserve the live ref. Required trace
+`synthetic-imported-modifyhitdef-dynamic-guardsound.json` proves `F6,4`, raw
+`Fvar(0),var(1)`, typed `audio:playsnd`, target link and guard-only contact;
+trace/final checksums are `2ade8da5` / `f88990bd`.
 
-Next cursor: T733 / issue 307 is queued for Ikemen-only live
-`ModifyHitDef guardsound` through the accepted guard audio path. Caller-context
-resolution and omission preservation are next; channel mutation, exact
-playback/mixing, Projectiles, teams, rollback and full audio parity remain
-deferred.
+Next cursor: T734 / issue 308 is queued for Ikemen-only live
+`ModifyHitDef hitsound` through the accepted hit audio path. Caller-context
+resolution and omission preservation are next; guard-sound mutation, channel
+semantics, exact playback/mixing, Projectiles, teams, rollback and full audio
+parity remain deferred.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root
 `ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth` static,
