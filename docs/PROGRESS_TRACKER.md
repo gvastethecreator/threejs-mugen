@@ -1,5 +1,20 @@
 ﻿# Progress Tracker
 
+## Active implementation checkpoint — T721 closed-bounded (2026-08-11)
+
+Issue 295 closes direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `numhits` expressions. Typed static/dynamic values resolve
+once in the original caller context for fresh activation and live replacement;
+accepted reversal contact consumes the resulting hit-count metadata. Required
+trace `92c3151e/4cecfee3` passes; `pnpm qa:trace` passes `812/812` artifacts
+(`778` required, `34` optional), with typecheck and diff checks green. This is
+a pinned Ikemen shared-HitDef-parameter slice; the local M.U.G.E.N ReversalDef
+reference does not document a standalone optional `numhits` field.
+Helper-owned ModifyReversalDef, Projectile reflection, negative/overflow
+parity, exact combo/tick ordering, teams, rollback and full ReversalDef parity
+remain open. See [issue
+295](../.scratch/roadmap/issues/295-reversaldef-numhits-expressions.md).
+
 ## Active implementation checkpoint — T720 closed-bounded (2026-08-11)
 
 Issue 294 closes the direct/root `ReversalDef` and root/RedirectID

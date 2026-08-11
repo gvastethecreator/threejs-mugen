@@ -1,5 +1,19 @@
 ﻿# Next Build Roadmap
 
+## Next bounded slice — T721 closed-bounded (2026-08-11)
+
+Issue 295 closes direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `numhits` expressions. Fresh activation and live
+replacement resolve typed static/dynamic values once in caller context, and
+accepted reversal contact consumes the resulting hit-count metadata. Required
+trace `92c3151e/4cecfee3`; `pnpm qa:trace` passes `812/812` artifacts
+(`778` required, `34` optional). This is bounded pinned-Ikemen compatibility
+through the shared HitDef parameter runner; standalone M.U.G.E.N ReversalDef
+`numhits` documentation is absent. Helper-owned ModifyReversalDef, Projectile
+reflection, negative/overflow parity, exact combo/tick ordering, teams,
+rollback, and full ReversalDef parity remain blocked. See [issue
+295](../.scratch/roadmap/issues/295-reversaldef-numhits-expressions.md).
+
 ## Next bounded slice — T720 closed-bounded (2026-08-11)
 
 Issue 294 closes direct/root `ReversalDef` and root/RedirectID

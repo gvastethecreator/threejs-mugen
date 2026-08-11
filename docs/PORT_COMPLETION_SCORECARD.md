@@ -1,5 +1,19 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T721 ReversalDef `numhits` expressions — closed-bounded, no score movement
+
+Issue 295 closes the bounded direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `numhits` path. Typed static/dynamic values resolve once
+in caller context and accepted reversal contact consumes the resulting
+hit-count metadata. Required trace passes with `92c3151e/4cecfee3`; aggregate
+QA passes `812/812` artifacts (`778` required, `34` optional). No score
+movement: this follows pinned Ikemen shared HitDef-parameter behavior rather
+than claiming a standalone M.U.G.E.N ReversalDef `numhits` field. Helper-owned
+ModifyReversalDef, Projectile reflection, negative/overflow parity, exact
+combo/tick ordering, teams, rollback and full ReversalDef parity remain
+blocked. See [issue
+295](../.scratch/roadmap/issues/295-reversaldef-numhits-expressions.md).
+
 ## 2026-08-11 T720 ReversalDef sprite-priority expressions — closed-bounded, no score movement
 
 Issue 294 closes the bounded direct/root `ReversalDef` and root/RedirectID

@@ -2,6 +2,19 @@
 
 ## Current parity queue
 
+- **T721 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
+  `ModifyReversalDef` now retain `numhits` as static or caller-context
+  expressions. Fresh activation and live replacement resolve the value once
+  in the original caller context; accepted reversal contact consumes the
+  resolved hit-count metadata. Required trace `92c3151e/4cecfee3`; aggregate
+  QA passes `812/812` (`778` required, `34` optional). This is a pinned
+  Ikemen shared-HitDef-parameter compatibility slice, not a claim that the
+  local M.U.G.E.N ReversalDef reference documents an optional `numhits` field.
+  Helper-owned ModifyReversalDef, Projectile reflection, negative/overflow
+  int32 parity, exact combo/tick ordering, teams, rollback and full parity
+  remain blocked. See [issue
+  295](../.scratch/roadmap/issues/295-reversaldef-numhits-expressions.md).
+
 - **T720 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
   `ModifyReversalDef` now retain `p1sprpriority`/`p2sprpriority` as static,
   dynamic, or mixed caller-context values. Fresh activation resolves both
