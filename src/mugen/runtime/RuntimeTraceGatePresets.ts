@@ -59580,6 +59580,145 @@ export function createSyntheticImportedHelperModifyHitDefDynamicAirGuardVelocity
   });
 }
 
+export function createSyntheticImportedHelperModifyHitDefDynamicGuardVelocityYZTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5087;
+  const targetId = 77;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "helper-modifyhitdef-guard-velocity-setup", frames: 2, p1: [], p2: [] },
+    { label: "helper-modifyhitdef-ground-guard-contact", frames: 14, p1: ["x"], p2: ["B"] },
+    { label: "helper-modifyhitdef-ground-guard-settle", frames: 24, p1: [], p2: ["B"] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyhitdef-guard-velocity-yz-attacker",
+    displayName: "Helper ModifyHitDef Guard Velocity YZ Attacker",
+    withHitDef: false,
+    withPlayerPush: false,
+    withHelper: true,
+    helperPostype: "p2",
+    helperPos: [0, 0],
+    helperTriggerTime: 2,
+    helperIgnoreHitPause: true,
+    helperSingleInstance: true,
+    helperHitDefRoute: {
+      branchStateNo,
+      damage: 37,
+      hitFlag: "M",
+      branchTrigger: "MoveGuarded >= 1",
+      targetId,
+      guardVelocity: [-2, -8, 2],
+      modifyGuardVelocity: ["var(0)", "var(1)", "var(2)"],
+      modifyVarSeeds: [
+        { index: 0, value: -3 },
+        { index: 1, value: -4 },
+        { index: 2, value: 6 },
+      ],
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyhitdef-guard-velocity-yz-defender",
+    displayName: "Helper ModifyHitDef Guard Velocity YZ Defender",
+    withHitDef: false,
+    withPlayerPush: false,
+    withAutoGuardStartStates: true,
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      guardStateNo: 130,
+      guardedBranchStateNo: branchStateNo,
+      guardedBranchAnimNo: branchStateNo,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression:
+        "GetHitVar(xvel) = 3 && GetHitVar(yvel) = -4 && GetHitVar(zvel) = 6 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-helper-modifyhitdef-dynamic-guard-velocity-yz-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-modifyhitdef-dynamic-guard-velocity-yz-golden",
+      label: "Synthetic imported Helper-owned dynamic ModifyHitDef guard velocity Y/Z route",
+      source: "mixed",
+      notes: [
+        "Pinned Ikemen GO trace proves a Helper caller resolves var(0..2)=-3,-4,6 into its active normal HitDef guard.velocity before a grounded guard. The accepted guard preserves the Helper/root/parent ownership chain and exposes GetHitVar(xvel/yvel/zvel)=3/-4/6 after the runtime-facing push normalization. Root RedirectID, fresh defaults, airguard, Projectile, ModifyProjectile, exact tick/localcoord/facing timing, teams, rollback, and full Helper guard parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-modifyhitdef-dynamic-guard-velocity-yz-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper"],
+      requiredExecutedStates: [200, 150, 151, branchStateNo],
+      forbiddenExecutedStates: [5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "ModifyHitDef", "HitVelSet"],
+      requiredExecutedOperations: ["helper", "variable:varset", "modifyhitdef", "kinematic:hitvelset"],
+      requiredActiveCommands: ["holdback", "x"],
+      requiredEventCategories: ["guard"],
+      requiredCombatReasons: ["guard"],
+      forbiddenCombatReasons: ["hit", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p1-helper-0", actorId: "p2", targetId }],
+      requiredControllerEventSequences: [{
+        label: "Helper-owned ModifyHitDef guard velocity Y/Z precedes accepted ground guard",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 1200, controller: "HitDef", name: "Helper HitDef" },
+          { stateNo: 1200, controller: "VarSet", name: "Helper ModifyHitDef Var 0" },
+          { stateNo: 1200, controller: "VarSet", name: "Helper ModifyHitDef Var 1" },
+          { stateNo: 1200, controller: "VarSet", name: "Helper ModifyHitDef Var 2" },
+          { stateNo: 1200, controller: "ModifyHitDef", name: "Helper ModifyHitDef Guard Velocity" },
+        ],
+      }, {
+        label: "ground target consumes Helper-modified guard velocity",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+          { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+          { stateNo: 151, operation: "kinematic:hitvelset" },
+          { stateNo: 151, controller: "ChangeState", name: "Guarded HitVar Branch" },
+        ],
+      }],
+      requiredActorFrameSequences: [{
+        label: "Helper ModifyHitDef guard velocity Y/Z ground physical order",
+        steps: [
+          { actorId: "p1-helper-0", source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1200, moveType: "A", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 150, stateType: "S", moveType: "H", physics: "N", minFrames: 1 },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 151,
+            stateType: "S",
+            moveType: "H",
+            physics: "S",
+            observedVelXAtLeast: 3,
+            observedVelXAtMost: 3,
+            minFrames: 1,
+          },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, stateType: "S", moveType: "I", minFrames: 1 },
+        ],
+      }],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+      requiredEffectPayloads: [{ actorId: "p1-helper-0", kind: "helper", ownerId: "p1", parentId: "p1", helperStateNo: branchStateNo, minAge: 1 }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 20, moveType: "I", life: 1000 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperHitDefSpritePriorityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -65128,6 +65267,8 @@ export type SyntheticImportedTraceFighterOptions = {
     branchAnimNo?: number;
     damage?: number;
     hitFlag?: string;
+    /** Synthetic Helper-owned fresh guard.velocity vector. */
+    guardVelocity?: SyntheticPartialTripleExpression;
     airVelocity?: SyntheticPartialTripleExpression;
     /** Synthetic Helper-owned fresh airguard.velocity vector. */
     airGuardVelocity?: SyntheticPartialTripleExpression;
@@ -65140,6 +65281,8 @@ export type SyntheticImportedTraceFighterOptions = {
     modifyAirVelocity?: SyntheticPartialTripleExpression;
     /** Synthetic Helper-owned live ModifyHitDef airguard.velocity expression. */
     modifyAirGuardVelocity?: SyntheticPartialTripleExpression;
+    /** Synthetic Helper-owned live ModifyHitDef guard.velocity expression. */
+    modifyGuardVelocity?: SyntheticPartialTripleExpression;
     modifyVarSeeds?: SyntheticRuntimeVarSeed[];
     p1SpritePriority?: number;
     p2SpritePriority?: number;
@@ -74061,6 +74204,7 @@ function helperHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFighter
   const branchAnimNo = route.branchAnimNo ?? route.branchStateNo;
   const damage = route.damage ?? 29;
   const hitFlagLine = route.hitFlag === undefined ? "" : `hitflag = ${route.hitFlag}`;
+  const guardVelocityLine = route.guardVelocity === undefined ? "" : `guard.velocity = ${route.guardVelocity.join(",")}`;
   const airVelocityLine = route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.join(",")}`;
   const airGuardVelocityLine = route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGuardVelocity.join(",")}`;
   const downVelocityLine = route.downVelocity === undefined ? "" : `down.velocity = ${route.downVelocity.join(",")}`;
@@ -74110,6 +74254,16 @@ type = ModifyHitDef
 trigger1 = Time = 0
 redirectid = 0
 airguard.velocity = ${route.modifyAirGuardVelocity.join(",")}
+`;
+  const modifyGuardVelocity = route.modifyGuardVelocity === undefined
+    ? ""
+    : `
+${modifyVarSeeds}
+[State 1200, Helper ModifyHitDef Guard Velocity]
+type = ModifyHitDef
+trigger1 = Time = 0
+redirectid = 0
+guard.velocity = ${route.modifyGuardVelocity.join(",")}
 `;
   const targetIdLine = route.targetId === undefined ? "" : `id = ${route.targetId}`;
   const p1SpritePriorityLine = route.p1SpritePriority === undefined ? "" : `p1sprpriority = ${route.p1SpritePriority}`;
@@ -74175,6 +74329,7 @@ damage = ${damage},0
 pausetime = 3,3
 ground.hittime = 8
 ground.velocity = -2
+${guardVelocityLine}
 guardflag = MA
 ${targetIdLine}
 ${hitSoundLine}
@@ -74193,6 +74348,7 @@ ${modifyDownVelocity}
 ${modifyDownHitTime}
 ${modifyAirVelocity}
 ${modifyAirGuardVelocity}
+${modifyGuardVelocity}
 ${branchLines}
 `;
 }

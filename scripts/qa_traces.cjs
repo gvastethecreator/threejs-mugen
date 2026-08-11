@@ -3912,6 +3912,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperModifyHitDefDynamicAirGuardVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-modifyhitdef-dynamic-guard-velocity-yz",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperModifyHitDefDynamicGuardVelocityYZTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-hitdef-sprite-priority",
       required: true,
       artifact: presets.createSyntheticImportedHelperHitDefSpritePriorityTraceArtifact(),

@@ -2345,6 +2345,45 @@ describe("HelperSystem", () => {
     expect(operations).toEqual(["modifyhitdef", "modifyhitdef", "modifyhitdef"]);
   });
 
+  it("applies Helper-owned ModifyHitDef guard.velocity Y/Z in caller context and preserves omitted components", () => {
+    const active = helper({
+      vars: [-8, -4, 6],
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              damage: "20",
+              "guard.velocity": "-2,-1,2.5",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              "guard.velocity": "var(0),var(1),var(2)",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              "guard.velocity": "-11",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], { redirectid: "0", forcenofall: "1" }),
+          ]),
+        ],
+      },
+    });
+    const operations: string[] = [];
+
+    advanceRuntimeHelpers([active], stage, {
+      onOperation: (_helper, operation) => operations.push(operation.kind),
+    });
+
+    expect(active.currentMove).toMatchObject({
+      guardPush: 11,
+      guardVelocityY: -4,
+      guardVelocityZ: 6,
+      hitVelocities: { guard: { x: -11, y: -4, z: 6 } },
+    });
+    expect(operations).toEqual(["modifyhitdef", "modifyhitdef", "modifyhitdef"]);
+  });
+
   it("derives omitted helper HitDef getpower from the owner constants profile", () => {
     const active = helper({
       runtimeProgram: {
