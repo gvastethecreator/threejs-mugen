@@ -1,6 +1,20 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T746 fresh `HitDef snap` X/Y/Z/`snaptime` — closed-bounded, no score movement
+## 2026-08-11 T747 live `ModifyHitDef` pause pairs — closed-bounded, no score movement
+
+Issue 321 closes live Ikemen `ModifyHitDef` `pausetime` and
+`guard.pausetime` pair mutation through root/RedirectID and Helper callers.
+Product `1100d384` and evidence `c6c88173` are committed; focused tests,
+typecheck and the required imported trace are green. No score movement: exact
+pause scheduling, fresh/Projectile breadth, ModifyProjectile, ReversalDef,
+teams, rollback and full M.U.G.E.N/Ikemen timing parity remain blocked. See
+[issue 321](../.scratch/roadmap/issues/321-modifyhitdef-pausetime.md).
+
+## Next selection — T748 upstream seam selection
+
+Choose one bounded source contract after the aggregate T747 trace gate.
+
+## Historical checkpoint — T746 fresh `HitDef snap` X/Y/Z/`snaptime` — closed-bounded, no score movement
 
 Issue 320 carries fresh direct `HitDef snap` X/Y/Z plus `snaptime` through typed
 IR, root/Helper caller-context evaluation, `GetHitVar` offsets, imported
@@ -106,11 +120,10 @@ channels, exact SND lookup/playback/mixing/priority, Projectiles and full audio
 parity remain blocked. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next selection — T747 upstream seam selection
+## Historical selection — T747 closed-bounded
 
-Issue 317 / T743 is superseded by the already closed T728 / issue 302. T742,
-T744, T745 and T746 remain no-score movement; select T747 after the aggregate
-trace gate, and keep superseded issue 313 out of scorecard targets.
+Issue 321 closed the live Ikemen ModifyHitDef pause-pair seam without score
+movement. T748 is the next bounded selection after the aggregate T747 gate.
 
 ## Historical checkpoint — 2026-08-11 T733 `ModifyHitDef guardsound` expressions — closed-bounded, no score movement
 

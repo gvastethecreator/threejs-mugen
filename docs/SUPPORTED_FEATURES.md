@@ -1,5 +1,22 @@
 ﻿# Supported Features
-## 2026-08-11 T746 fresh `HitDef snap` X/Y/Z/`snaptime` - closed-bounded
+## 2026-08-11 T747 live `ModifyHitDef` `pausetime`/`guard.pausetime` - closed-bounded
+
+Live Ikemen `ModifyHitDef` pause pairs now resolve static, mixed and
+caller-context dynamic values through root/RedirectID and Helper callers.
+Single values preserve the active sibling, pairs replace both components, and
+omission is a no-op. Product `1100d384`; evidence `c6c88173`; focused
+compiler/runtime/Helper/Playable coverage and typecheck pass, with a required
+imported trace registered. This is Ikemen source compatibility: M.U.G.E.N 1.1
+documents fresh HitDef pause parameters but no official live ModifyHitDef
+controller. Exact tick scheduling, Projectile/ModifyProjectile, ReversalDef,
+teams, rollback and full pause parity remain outside the claim. See [issue
+321](../.scratch/roadmap/issues/321-modifyhitdef-pausetime.md).
+
+## Next selection — T748 upstream seam selection
+
+Select one bounded source contract after the aggregate T747 trace gate.
+
+## Historical — T746 fresh `HitDef snap` X/Y/Z/`snaptime` - closed-bounded
 
 Fresh direct `HitDef snap` now carries one through four static/mixed/
 caller-context dynamic components through typed IR and root/Helper dispatch,
@@ -96,11 +113,10 @@ defaults, guardsound channel, exact playback/mixing/priority, Projectiles and
 full audio parity remain outside the claim. See [issue
 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
 
-## Next selection — T747 upstream seam selection
+## Historical selection — T747 closed-bounded
 
-Issue 317 / T743 is superseded by the already closed T728 / issue 302. Keep the
-T678/T739 duplicate out of the queue. Select T747 after the aggregate T746
-trace gate; keep the next seam bounded and do not infer full positioning parity.
+Issue 321 closed the live Ikemen ModifyHitDef pause-pair seam. T748 is the next
+bounded source selection after the aggregate T747 trace gate.
 
 ## Historical — T734 `ModifyHitDef hitsound` — closed-bounded
 

@@ -1,6 +1,25 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T746 closed-bounded (2026-08-11)
+## Latest bounded slice — T747 closed-bounded (2026-08-11)
+
+Issue 321 closes live Ikemen `ModifyHitDef` `pausetime` and
+`guard.pausetime` pairs through typed IR, root/RedirectID caller evaluation
+and Helper runtime coverage. Static, mixed and dynamic pairs preserve omitted
+live siblings; omission is a no-op. Product `1100d384`; focused
+compiler/runtime/Helper/Playable coverage and typecheck pass; evidence commit
+`c6c88173` registers the required imported trace. Fresh HitDef defaults,
+Projectile, ModifyProjectile, ReversalDef, exact hitpause scheduling and full
+parity remain blocked. Live ModifyHitDef is an Ikemen source-compatibility
+claim; M.U.G.E.N 1.1 documents fresh HitDef pause parameters, not this
+controller.
+
+## Next bounded slice — T748 upstream seam selection
+
+Select the next single official/Ikemen seam only after the T747 aggregate trace
+gate. Keep pause scheduling, Projectiles, ModifyProjectile, ReversalDef,
+teams, rollback and full parity as separate claims.
+
+## Historical bounded slice — T746 closed-bounded (2026-08-11)
 
 Issue 320 carries fresh direct `HitDef snap` X/Y/Z plus `snaptime` through typed
 IR, root/Helper caller-context resolution, imported metadata, `GetHitVar`
@@ -118,11 +137,10 @@ artifacts (`787` required, `34` optional). Fresh defaults, channels, exact
 lookup/playback/mixing/priority, Projectiles and full audio parity remain
 blocked. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next bounded slice — T747 upstream seam selection
+## Historical bounded slice — T747 closed-bounded
 
-Issue 317 / T743 is superseded by the already closed T728 / issue 302. Select
-T747 after the aggregate T746 trace gate; keep Projectiles and live ModifyHitDef
-snap Z separate, and do not claim full positioning parity from focused tests.
+Issue 321 is now the closed-bounded live ModifyHitDef pause-pair slice; the
+current queue is T748 after the aggregate T747 trace gate.
 
 ## Historical bounded slice — T733 closed-bounded (2026-08-11)
 

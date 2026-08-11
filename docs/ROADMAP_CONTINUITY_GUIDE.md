@@ -2,7 +2,20 @@
 
 Last updated: 2026-08-11
 
-## Current T746 closeout / T747 selection
+## Current T747 closeout / T748 selection
+
+T747 / [issue 321](../.scratch/roadmap/issues/321-modifyhitdef-pausetime.md)
+adds live Ikemen `ModifyHitDef` `pausetime` and `guard.pausetime` pair mutation
+for root/RedirectID and Helper callers. Caller-context static, mixed and
+dynamic components are typed; omitted live siblings survive and omission is a
+no-op. Product `1100d384`, evidence `c6c88173`, focused tests and typecheck
+pass; the required imported trace is registered. M.U.G.E.N 1.1 supports fresh
+HitDef pause parameters, but not an official ModifyHitDef controller, so keep
+this live claim Ikemen-only. Exact tick scheduling, Projectile,
+ModifyProjectile, ReversalDef, teams, rollback and full timing parity remain
+blocked. T748 is the next source-selection checkpoint.
+
+## Historical T746 closeout / T747 selection
 
 T746 / issue 320 carries fresh direct `HitDef snap` X/Y/Z plus the fourth
 `snaptime` component through typed IR, root/Helper caller-context evaluation,

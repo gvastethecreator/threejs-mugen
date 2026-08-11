@@ -2,6 +2,19 @@
 
 ## Current parity queue
 
+- **T747 closed-bounded** — issue 321 carries live Ikemen `ModifyHitDef`
+  `pausetime` and `guard.pausetime` static, mixed and caller-context dynamic
+  pairs through root/RedirectID and Helper callers. Omitted live siblings are
+  preserved and omission is a no-op. Product `1100d384`; evidence `c6c88173`;
+  focused tests/typecheck pass and the required imported trace is registered.
+  Fresh defaults, Projectile/ModifyProjectile, ReversalDef, exact pause
+  scheduling, teams, rollback and full parity remain outside the claim. See
+  [issue 321](../.scratch/roadmap/issues/321-modifyhitdef-pausetime.md).
+
+- **T748 queued** — select the next single bounded official/Ikemen seam after
+  the aggregate T747 trace gate; do not widen this queue into complete pause
+  or timing parity.
+
 - **T746 closed-bounded** — issue 320 carries fresh direct `HitDef snap` X/Y/Z
   plus `snaptime` through typed IR, root/Helper caller-context evaluation,
   `GetHitVar` offsets, imported metadata and accepted-hit target binding.
@@ -12,10 +25,6 @@
   ModifyHitDef/Projectile snap Z and exact positioning parity remain outside
   the claim. See [issue
   320](../.scratch/roadmap/issues/320-hitdef-snaptime-bind.md).
-
-- **T747 queued** — select the next single bounded official/Ikemen seam after
-  the aggregate T746 trace gate. Keep live ModifyHitDef and Projectile snap Z
-  as separate seams until their own contracts are closed.
 
 - **T744 closed-bounded** — Ikemen-only live `ModifyHitDef snap` X/Y
   replacement through root/RedirectID and Helper callers. Single values

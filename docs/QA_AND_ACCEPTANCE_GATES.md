@@ -1,6 +1,23 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-11 T746 fresh `HitDef snap` X/Y/Z/`snaptime` — closed-bounded
+## 2026-08-11 T747 live `ModifyHitDef` pause pairs — closed-bounded
+
+Focused compiler/runtime/Helper/Playable coverage and typecheck pass for live
+Ikemen `ModifyHitDef` `pausetime` and `guard.pausetime` static, mixed and
+caller-context dynamic pairs. Product `1100d384`; evidence `c6c88173`.
+Required trace `synthetic-imported-modifyhitdef-dynamic-pausetime-golden`
+proves `VarSet -> HitDef -> ModifyHitDef -> hit`, RedirectID target `77`, and
+`GetHitVar(hitshaketime)=7`. Omitted live siblings preserve their active value
+and omission is a no-op. M.U.G.E.N 1.1 does not define live ModifyHitDef, so
+this gate is Ikemen-only. Exact tick/ignorehitpause scheduling,
+Projectile/ModifyProjectile, ReversalDef and full timing parity remain outside.
+See [issue 321](../.scratch/roadmap/issues/321-modifyhitdef-pausetime.md).
+
+## Next gate — T748 upstream seam selection
+
+Select one bounded official/Ikemen seam after the aggregate T747 run.
+
+## Historical — T746 fresh `HitDef snap` X/Y/Z/`snaptime` — closed-bounded
 
 Issue 320 carries fresh direct `HitDef snap` X/Y/Z plus `snaptime` through typed
 IR, root/Helper caller-context dispatch, imported metadata, `GetHitVar` offsets
@@ -119,12 +136,11 @@ Exact SND lookup/playback/mixing/channel priority, fresh defaults, Projectiles,
 renderer timing, teams, rollback and full audio parity remain outside this
 gate. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next gate — T747 upstream seam selection
+## Historical gate — T747 closed-bounded
 
-Issue 317 / T743 is superseded by the already closed T728 / issue 302. After
-the aggregate T746 run, the next gate must own one bounded official/Ikemen
-seam; issue 313 is not a pending acceptance target. Focused tests are not
-evidence of full positioning parity.
+Issue 321 closed the live Ikemen ModifyHitDef pause-pair gate. T748 is the next
+bounded official/Ikemen seam after the aggregate T747 run; focused tests do not
+prove full pause/timing parity.
 
 ## Historical — 2026-08-11 T733 `ModifyHitDef guardsound` — passed / closed-bounded
 

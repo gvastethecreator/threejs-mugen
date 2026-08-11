@@ -1,6 +1,22 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T746 closed-bounded (2026-08-11)
+## Latest bounded slice — T747 closed-bounded (2026-08-11)
+
+Issue 321 carries live Ikemen `ModifyHitDef` `pausetime` and
+`guard.pausetime` pairs through typed IR and root/RedirectID plus Helper
+caller evaluation. Static, mixed and dynamic components preserve omitted live
+siblings; omission is a no-op. Product `1100d384`; evidence `c6c88173`; the
+required imported trace is registered and focused tests/typecheck pass. Fresh
+defaults, Projectile/ModifyProjectile, ReversalDef, exact tick scheduling and
+full parity remain blocked. See [issue
+321](../.scratch/roadmap/issues/321-modifyhitdef-pausetime.md).
+
+## Next bounded slice — T748 upstream seam selection
+
+Choose one distinct official/Ikemen source contract after the T747 aggregate
+trace gate. Do not broaden this into complete pause or timing parity.
+
+## Historical bounded slice — T746 closed-bounded (2026-08-11)
 
 Issue 320 closes the bounded T746 extension: fresh direct `HitDef snap` X/Y/Z
 plus `snaptime` now resolve in root/Helper caller context, expose `GetHitVar`
@@ -103,12 +119,10 @@ required, `34` optional). Fresh defaults, channels, exact playback/mixing,
 Projectiles and full audio parity remain blocked. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next bounded slice — T747 upstream seam selection
+## Historical bounded slice — T747 closed-bounded
 
-Issue 317 / T743 is superseded by the already closed T728 / issue 302. Select
-the next single bounded official/Ikemen seam only after the aggregate T746 trace
-gate is green. Keep live ModifyHitDef/Projectile snap Z separate and do not
-claim full positioning parity from T746 focused tests.
+Issue 321 closed the live Ikemen ModifyHitDef pause-pair seam. T748 is the next
+single bounded official/Ikemen seam after the aggregate T747 trace gate.
 
 ## Historical bounded slice — T733 closed-bounded (2026-08-11)
 

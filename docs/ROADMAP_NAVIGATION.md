@@ -2,7 +2,24 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T746 closed-bounded (2026-08-11)
+## Current implementation route — T747 closed-bounded (2026-08-11)
+
+T747 / [issue 321](../.scratch/roadmap/issues/321-modifyhitdef-pausetime.md)
+closes live Ikemen `ModifyHitDef` `pausetime` and `guard.pausetime` pair
+mutation through root/RedirectID and Helper caller paths. Static, mixed and
+dynamic values preserve omitted live siblings; omission is a no-op. Product
+commit `1100d384`; evidence commit `c6c88173`; focused compiler/runtime/
+Helper/Playable coverage and typecheck pass, with the required imported trace
+registered. Fresh defaults, Projectile/ModifyProjectile, ReversalDef, exact
+hitpause scheduling and full parity remain blocked.
+
+## Next implementation route — T748 upstream seam selection
+
+Select one bounded official/Ikemen source seam after the aggregate T747 trace
+gate. Do not treat this slice as M.U.G.E.N official live ModifyHitDef support
+or as full pause/timing parity.
+
+## Historical implementation route — T746 closed-bounded (2026-08-11)
 
 T746 / [issue 320](../.scratch/roadmap/issues/320-hitdef-snaptime-bind.md)
 extends the closed T745 fresh direct `HitDef snap` X/Y/Z slice with the fourth
@@ -82,13 +99,11 @@ preservation is required; the accepted hit-audio event carries typed `F6,4`
 telemetry from raw `Fvar(0),var(1)` with no guard route. Trace/final checksums
 are `8d56e467` / `d2d70840`.
 
-## Next implementation route — T747 upstream seam selection
+## Historical implementation route — T747 closed-bounded
 
-Issue 317 / T743 is superseded by the already closed T728 / issue 302, and T739
-/ issue 313 is also superseded. T746 now owns the bounded `snaptime`/bind
-slice; select T747 only after the aggregate trace gate is green. Keep the next
-seam bounded to one official/Ikemen source contract and do not claim full
-positioning parity from this slice.
+Issue 321 closed the live Ikemen ModifyHitDef pause-pair seam. T748 is now the
+next bounded source-selection checkpoint; keep the next seam distinct and do
+not claim full pause or positioning parity.
 
 ## Historical implementation route — T733 closed-bounded (2026-08-11)
 

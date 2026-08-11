@@ -1,6 +1,20 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T746 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T747 closed-bounded (2026-08-11)
+
+Issue 321 closes live Ikemen `ModifyHitDef` `pausetime` and
+`guard.pausetime` pair mutation through root/RedirectID and Helper caller
+paths. Static, mixed and dynamic values preserve omitted live siblings;
+omission is a no-op. Product `1100d384`, evidence `c6c88173`, focused tests
+and typecheck pass; the required imported trace is registered. Fresh defaults,
+Projectile/ModifyProjectile, ReversalDef, exact pause scheduling, teams,
+rollback and full parity remain blocked.
+
+## Next implementation checkpoint — T748 upstream seam selection
+
+Select the next bounded source contract after the aggregate T747 trace gate.
+
+## Historical implementation checkpoint — T746 closed-bounded (2026-08-11)
 
 Issue 320 closes fresh direct `HitDef snap` X/Y/Z plus `snaptime` through typed
 IR, root/Helper caller-context evaluation, `GetHitVar` offsets, and the existing
@@ -81,11 +95,10 @@ typecheck passes and `pnpm qa:trace` passes `822/822` artifacts (`788`
 required, `34` optional). Fresh defaults, guardsound channel, exact lookup,
 playback/mixing/priority, Projectiles and full audio parity remain blocked.
 
-## Next implementation checkpoint — T747 upstream seam selection
+## Historical implementation checkpoint — T747 closed-bounded
 
-Issue 317 / T743 is superseded by the already closed T728 / issue 302. Select
-T747 after the aggregate T746 trace gate; do not reactivate issue 313 or infer
-full positioning parity from focused tests.
+Issue 321 closed the live Ikemen ModifyHitDef pause-pair seam. T748 is the next
+bounded source-selection checkpoint after the aggregate T747 trace gate.
 
 ## Historical implementation checkpoint — T734 closed-bounded (2026-08-11)
 

@@ -1,6 +1,17 @@
 # Controller Support Registry
 
-Latest cursor: T746 / issue 320 is closed-bounded for fresh direct `HitDef snap`
+Latest cursor: T747 / issue 321 is closed-bounded for live Ikemen
+`ModifyHitDef` `pausetime` and `guard.pausetime`. Root/RedirectID and Helper
+callers accept static, mixed and caller-context dynamic pairs; single values
+preserve the live sibling and omission is a no-op. Product `1100d384`,
+evidence `c6c88173`, focused tests/typecheck pass, and the required imported
+trace is registered. M.U.G.E.N 1.1 documents fresh HitDef pause parameters but
+no official live ModifyHitDef controller; exact pause scheduling,
+Projectiles, ModifyProjectile, ReversalDef and full parity remain unsupported.
+
+Next cursor: T748 upstream seam selection after the aggregate T747 trace gate.
+
+Previous cursor: T746 / issue 320 is closed-bounded for fresh direct `HitDef snap`
 X/Y/Z plus `snaptime`. Static, mixed and caller-context dynamic components
 reach typed IR, root/Helper dispatch, `GetHitVar` offsets, imported metadata and
 the accepted-hit target binding. Focused coverage is `391/391`, typecheck
