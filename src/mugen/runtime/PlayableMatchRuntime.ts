@@ -5515,7 +5515,11 @@ function runActiveStateControllers(
           const operation = controller.operation?.kind === "modifyhitdef" ? controller.operation : undefined;
           const pair = key === "damage"
             ? operation?.damageExpressions
-            : key === "unhittabletime"
+            : key === "pausetime"
+              ? operation?.pauseTimeExpressions
+              : key === "guard.pausetime"
+                ? operation?.guardPauseTimeExpressions
+                : key === "unhittabletime"
               ? operation?.unhittableTime
               : key === "getpower"
                 ? operation?.getPower

@@ -81,7 +81,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   /** Active controller-expression bindings for dynamic scalar ModifyHitDef fields. */
   context?: RuntimeControllerEvaluationContext;
   resolveIntegerList?: (key: "nochainid") => number[] | undefined;
-  resolveIntegerPair?: (key: "damage" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
+  resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "hitsound.channel" | "guardsound.channel") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkxy" | "snap") => [number?, number?] | undefined;
   /** Resolves live dynamic float scalars in the caller context. */
@@ -998,6 +998,36 @@ export class RuntimeHitDefControllerDispatchWorld {
       );
       if (damage?.hit !== undefined) existing.damage = damage.hit;
       if (damage?.componentCount === 2 && damage.guard !== undefined) existing.guardDamage = damage.guard;
+    }
+    if (operation.pauseTime !== undefined || operation.pauseTimeExpressions !== undefined) {
+      const pauseTime = operation.pauseTimeExpressions === undefined
+        ? undefined
+        : resolveRuntimeHitDefPowerPair(
+            operation.pauseTimeExpressions,
+            findParam(controller.source, "pausetime"),
+            actor.runtime,
+            context ?? {},
+            resolveIntegerPair?.("pausetime"),
+          );
+      if (pauseTime?.hit !== undefined) existing.hitPause = pauseTime.hit;
+      else if (pauseTime === undefined && operation.pauseTime !== undefined) existing.hitPause = operation.pauseTime;
+      if (pauseTime?.componentCount === 2 && pauseTime.guard !== undefined) existing.hitShakeTime = pauseTime.guard;
+      else if (pauseTime === undefined && operation.hitShakeTime !== undefined) existing.hitShakeTime = operation.hitShakeTime;
+    }
+    if (operation.guardPauseTime !== undefined || operation.guardPauseTimeExpressions !== undefined) {
+      const guardPauseTime = operation.guardPauseTimeExpressions === undefined
+        ? undefined
+        : resolveRuntimeHitDefPowerPair(
+            operation.guardPauseTimeExpressions,
+            findParam(controller.source, "guard.pausetime"),
+            actor.runtime,
+            context ?? {},
+            resolveIntegerPair?.("guard.pausetime"),
+          );
+      if (guardPauseTime?.hit !== undefined) existing.guardPause = guardPauseTime.hit;
+      else if (guardPauseTime === undefined && operation.guardPauseTime !== undefined) existing.guardPause = operation.guardPauseTime;
+      if (guardPauseTime?.componentCount === 2 && guardPauseTime.guard !== undefined) existing.guardShakeTime = guardPauseTime.guard;
+      else if (guardPauseTime === undefined && operation.guardShakeTime !== undefined) existing.guardShakeTime = operation.guardShakeTime;
     }
     if (operation.groundHitTime !== undefined) {
       const groundHitTime = resolveRuntimeHitDefIntegerScalar(

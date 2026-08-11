@@ -1878,9 +1878,9 @@ export function resolveRuntimeHelperIntegerPairParam(
   const operation = controller.operation;
   const operationValue: MugenHitDefExpressionPair | undefined =
     operation?.kind === "hitdef" || operation?.kind === "modifyhitdef" || operation?.kind === "projectile"
-      ? key === "pausetime" && (operation.kind === "hitdef" || operation.kind === "projectile")
+      ? key === "pausetime" && (operation.kind === "hitdef" || operation.kind === "modifyhitdef" || operation.kind === "projectile")
         ? operation.pauseTimeExpressions
-        : key === "guard.pausetime" && (operation.kind === "hitdef" || operation.kind === "projectile")
+        : key === "guard.pausetime" && (operation.kind === "hitdef" || operation.kind === "modifyhitdef" || operation.kind === "projectile")
           ? operation.guardPauseTimeExpressions
           : key === "damage" && (operation.kind === "hitdef" || operation.kind === "modifyhitdef" || operation.kind === "projectile")
             ? operation.damageExpressions

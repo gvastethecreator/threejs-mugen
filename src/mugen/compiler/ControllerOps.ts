@@ -265,6 +265,18 @@ export type ModifyHitDefControllerOp = {
   guardDamage?: number;
   /** Dynamic or mixed live damage pair evaluated in caller context. */
   damageExpressions?: MugenHitDefExpressionPair;
+  /** Live attacker-side pausetime replacement; a missing second component preserves shake time. */
+  pauseTime?: number;
+  /** Live defender-side hit shake replacement when pausetime supplies two components. */
+  hitShakeTime?: number;
+  /** Dynamic or mixed live pausetime pair evaluated in caller context. */
+  pauseTimeExpressions?: MugenHitDefExpressionPair;
+  /** Live attacker-side guard pausetime replacement; a missing second component preserves guard shake time. */
+  guardPauseTime?: number;
+  /** Live defender-side guard shake replacement when guard.pausetime supplies two components. */
+  guardShakeTime?: number;
+  /** Dynamic or mixed live guard.pausetime pair evaluated in caller context. */
+  guardPauseTimeExpressions?: MugenHitDefExpressionPair;
   /** Live ground.hittime replacement evaluated in the ModifyHitDef caller context. */
   groundHitTime?: number | string;
   /** Live ground.slidetime replacement evaluated in the ModifyHitDef caller context. */
@@ -2877,6 +2889,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "type",
     "redirectid",
     "damage",
+    "pausetime",
+    "guard.pausetime",
     "ground.hittime",
     "ground.slidetime",
     "guard.hittime",
@@ -2977,6 +2991,20 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     : undefined;
   const damage = Array.isArray(damageValue) && damageExpressions === undefined
     ? damageValue
+    : undefined;
+  const pauseTimeValue = optionalIntegerExpressionPairParam(controller, "pausetime");
+  const pauseTimeExpressions = Array.isArray(pauseTimeValue) && pauseTimeValue.some((value) => typeof value === "string")
+    ? pauseTimeValue
+    : undefined;
+  const pauseTime = Array.isArray(pauseTimeValue) && pauseTimeExpressions === undefined
+    ? pauseTimeValue
+    : undefined;
+  const guardPauseTimeValue = optionalIntegerExpressionPairParam(controller, "guard.pausetime");
+  const guardPauseTimeExpressions = Array.isArray(guardPauseTimeValue) && guardPauseTimeValue.some((value) => typeof value === "string")
+    ? guardPauseTimeValue
+    : undefined;
+  const guardPauseTime = Array.isArray(guardPauseTimeValue) && guardPauseTimeExpressions === undefined
+    ? guardPauseTimeValue
     : undefined;
   const groundHitTime = optionalIntegerExpressionParam(controller, "ground.hittime");
   const groundSlideTime = optionalIntegerExpressionParam(controller, "ground.slidetime");
@@ -3120,6 +3148,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   const hasPayload =
     damageValue !== true ||
+    pauseTimeValue !== true ||
+    guardPauseTimeValue !== true ||
     groundHitTime !== true ||
     groundSlideTime !== true ||
     guardHitTime !== true ||
@@ -3196,6 +3226,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   if (
     !hasPayload ||
     damageValue === false ||
+    pauseTimeValue === false ||
+    guardPauseTimeValue === false ||
     groundHitTime === false ||
     groundSlideTime === false ||
     guardHitTime === false ||
@@ -3276,6 +3308,9 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(damage === undefined ? {} : { damage: damage[0] as number }),
     ...(damage?.[1] === undefined ? {} : { guardDamage: damage[1] as number }),
     ...(damageExpressions === undefined ? {} : { damageExpressions }),
+    ...(pauseTime === undefined ? {} : { pauseTime: pauseTime[0] as number }),
+    ...(pauseTime === undefined || pauseTime.length < 2 ? {} : { hitShakeTime: pauseTime[1] as number }),
+    ...(pauseTimeExpressions === undefined ? {} : { pauseTimeExpressions }),
     ...(groundHitTime === true ? {} : { groundHitTime }),
     ...(groundSlideTime === true ? {} : { groundSlideTime }),
     ...(guardHitTime === true ? {} : { guardHitTime }),
@@ -3350,6 +3385,9 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(hitCountExpression === undefined ? {} : { hitCountExpression }),
     ...(attr === true ? {} : { attr }),
     ...(guardFlag === true ? {} : { guardFlag }),
+    ...(guardPauseTime === undefined ? {} : { guardPauseTime: guardPauseTime[0] as number }),
+    ...(guardPauseTime === undefined || guardPauseTime.length < 2 ? {} : { guardShakeTime: guardPauseTime[1] as number }),
+    ...(guardPauseTimeExpressions === undefined ? {} : { guardPauseTimeExpressions }),
     ...(hitFlag === true ? {} : { hitFlag }),
     ...(normalizedP1StateNo === undefined ? {} : { p1StateNo: normalizedP1StateNo }),
     ...(normalizedP2StateNo === undefined ? {} : { p2StateNo: normalizedP2StateNo }),
