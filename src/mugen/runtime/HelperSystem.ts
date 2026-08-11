@@ -1926,7 +1926,7 @@ export function resolveRuntimeHelperFloatParam(
 export function resolveRuntimeHelperFloatScalarParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkangle" | "guard.sparkangle",
+  key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
   const operation = controller.operation;
@@ -1942,6 +1942,10 @@ export function resolveRuntimeHelperFloatScalarParam(
       ? operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
         ? operation.airGuardVelocityZExpression
         : undefined
+      : key === "airguard.cornerpush.veloff"
+        ? operation?.kind === "modifyhitdef"
+          ? operation.airGuardCornerPushExpression ?? operation.airGuardCornerPush
+          : undefined
       : key === "sparkangle"
         ? operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
           ? operation.hitSparkAngle

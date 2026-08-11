@@ -3450,6 +3450,44 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("resolves live ModifyHitDef airguard.cornerpush.veloff in caller context and preserves omission", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        guardflag: "MA",
+        "airguard.cornerpush.veloff": "7",
+      })),
+      frame: activeFrame(),
+    });
+
+    caller.vars[0] = 4.75;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "airguard.cornerpush.veloff": "var(0)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.airGuardCornerPush).toBeCloseTo(4.75);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        damage: "20",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.airGuardCornerPush).toBeCloseTo(4.75);
+
+  });
+
   it("derives missing guard.velocity from ground.velocity x", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

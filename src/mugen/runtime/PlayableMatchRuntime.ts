@@ -5412,6 +5412,8 @@ function runActiveStateControllers(
               ? operation?.guardVelocityZExpression ?? operation?.guardVelocityZ
             : key === "airguard.velocity"
               ? operation?.airGuardVelocityZExpression
+            : key === "airguard.cornerpush.veloff"
+              ? operation?.airGuardCornerPushExpression ?? operation?.airGuardCornerPush
               : key === "sparkangle"
                 ? operation?.hitSparkAngle
                 : key === "guard.sparkangle"

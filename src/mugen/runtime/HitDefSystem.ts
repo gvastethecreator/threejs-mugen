@@ -51,7 +51,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state" | "hitsound.channel" | "guardsound.channel") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy") => [number?, number?] | undefined;
-  resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkangle" | "guard.sparkangle") => number | undefined;
+  resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
   resolveFallEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -85,7 +85,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "hitsound.channel" | "guardsound.channel") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkxy") => [number?, number?] | undefined;
   /** Resolves live dynamic float scalars in the caller context. */
-  resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkangle" | "guard.sparkangle") => number | undefined;
+  resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
   /** Resolves a live spark identity's numeric suffix in the caller context. */
   resolveSparkNumber?: (key: "guard.sparkno", expression?: string) => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
@@ -1376,6 +1376,21 @@ export class RuntimeHitDefControllerDispatchWorld {
           z: airGuardVelocityZ,
         },
       };
+    }
+    if (operation.airGuardCornerPush !== undefined) {
+      existing.airGuardCornerPush = operation.airGuardCornerPush;
+    }
+    if (operation.airGuardCornerPushExpression !== undefined) {
+      const airGuardCornerPush = resolveRuntimeHitDefFloatExpressionScalar(
+        operation.airGuardCornerPushExpression,
+        findParam(controller.source, "airguard.cornerpush.veloff"),
+        actor.runtime,
+        context ?? {},
+        resolveFloatScalar?.("airguard.cornerpush.veloff"),
+      );
+      if (airGuardCornerPush !== undefined) {
+        existing.airGuardCornerPush = airGuardCornerPush;
+      }
     }
     if (operation.sparkXy !== undefined) {
       const sparkXy = resolveRuntimeHitDefFloatExpressionPair(

@@ -2826,6 +2826,32 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles live ModifyHitDef airguard.cornerpush.veloff as static or caller expression", () => {
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "airguard.cornerpush.veloff": "4.5",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      airGuardCornerPush: 4.5,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "airguard.cornerpush.veloff": "var(3) + .5",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      airGuardCornerPushExpression: "var(3) + .5",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "airguard.cornerpush.veloff": "var(3),var(4)",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "airguard.cornerpush.veloff": "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles typed HitDef givepower expressions and rejects malformed pairs", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], { givepower: "9.8" })).operation).toMatchObject({
       kind: "hitdef",

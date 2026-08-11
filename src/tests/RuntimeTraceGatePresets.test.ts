@@ -321,6 +321,7 @@ import {
   createSyntheticImportedHitDefDynamicAirGuardVelocityZTraceArtifact,
   createSyntheticImportedHitDefSingleAirGuardVelocityTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicAirGuardVelocityTraceArtifact,
+  createSyntheticImportedModifyHitDefDynamicAirGuardCornerPushTraceArtifact,
   createSyntheticImportedAliveTraceArtifact,
   createSyntheticImportedInGuardDistTraceArtifact,
   createSyntheticImportedInGuardDistFarTraceArtifact,
@@ -16990,6 +16991,34 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.evidence.combatReasons).toContain("guard");
     expect(gate?.evidence.combatReasons).not.toContain("hit");
     expect(gate?.evidence.executedStates).not.toEqual(expect.arrayContaining([150, 151, 152, 153, 200, 5000, 5030, 5050, 5100]));
+  });
+
+  it("creates a required imported live ModifyHitDef airguard.cornerpush.veloff artifact", () => {
+    const artifact = createSyntheticImportedModifyHitDefDynamicAirGuardCornerPushTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-modifyhitdef-dynamic-airguard-cornerpush-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-modifyhitdef-dynamic-airguard-cornerpush-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const airGuardFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p1" && actor.stateNo === 155);
+    const attackerMinVelX = Math.min(...(evidence?.actorFrames.filter((actor) => actor.actorId === "p2").map((actor) => actor.minVel.x) ?? []));
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ModifyHitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.modifyhitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 78 }),
+    );
+    expect(airGuardFrame?.minVel.x).toBeGreaterThanOrEqual(8);
+    expect(attackerMinVelX).toBeLessThanOrEqual(-5.5);
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(evidence?.combatReasons).not.toContain("hit");
+    expect(evidence?.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1", source: "imported", stateNo: 5067 }),
+    ]));
   });
 
   it("creates a required imported single-component HitDef and live ModifyHitDef airguard.velocity artifact", () => {

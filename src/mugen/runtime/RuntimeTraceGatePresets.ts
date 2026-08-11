@@ -26024,6 +26024,167 @@ export function createSyntheticImportedModifyHitDefDynamicAirGuardVelocityTraceA
   });
 }
 
+export function createSyntheticImportedModifyHitDefDynamicAirGuardCornerPushTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5067;
+  const targetId = 78;
+  const stage = options.stage ?? {
+    ...trainingStage,
+    id: "trace-modify-air-guard-cornerpush-grid",
+    displayName: "Trace Modify Air Guard Cornerpush Grid",
+    playerStart: {
+      p1: { x: 286, y: 0, facing: -1 },
+      p2: { x: 200, y: 0, facing: 1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "caller seeds and redirects live airguard cornerpush", frames: 2, p1: [], p2: [] },
+    { label: "caller jumps and guards after live mutation", frames: 2, p1: ["U", "B"], p2: [] },
+    { label: "receiver reaches airborne guarding caller", frames: 14, p1: ["B"], p2: [] },
+    { label: "modified airguard cornerpush settles", frames: 36, p1: ["B"], p2: [] },
+  ]);
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-airguard-cornerpush-caller",
+    displayName: "Dynamic ModifyHitDef Air Guard Cornerpush Caller",
+    withHitDef: false,
+    withPlayerPush: false,
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+      airGuardedBranchStateNo: branchStateNo,
+      airGuardedBranchAnimNo: branchStateNo,
+      airGuardedBranchTrigger: "Time >= 1",
+      airGuardedBranchExpression: "GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+    },
+    rootModifyHitDefRedirectRoute: {
+      redirectId: 57,
+      trigger: "Time = 1",
+      airGuardVelocity: [-8, -4],
+      airGuardCornerPush: "var(2)",
+      varSeeds: [{ index: 2, value: 6 }],
+    },
+  });
+  const receiver = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-airguard-cornerpush-receiver",
+    displayName: "Dynamic ModifyHitDef Air Guard Cornerpush Receiver",
+    withHitDef: false,
+    withPlayerPush: false,
+    activeRootHitDefRoute: {
+      damage: 37,
+      guardDamage: 5,
+      targetId,
+      guardFlag: "A",
+      airGuardVelocity: [-8, -4],
+      airGuardCornerPush: 1,
+      hitDefTrigger: "Time = 0",
+      posX: 200,
+      delayedPosX: { x: 240, trigger: "Time >= 2" },
+      clsn1Extent: 64,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: caller, p2: receiver, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-modifyhitdef-dynamic-airguard-cornerpush-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyhitdef-dynamic-airguard-cornerpush-golden",
+      label: "Synthetic imported dynamic live ModifyHitDef airguard cornerpush route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root caller resolves var(2)=6 in caller context and redirects airguard.cornerpush.veloff into another root's already active HitDef before an airborne guard contact. The accepted guard applies the seeded airguard velocity and pushes the attacking caller at the stage corner. Static direct airguard.cornerpush, omitted defaults, Helpers, Projectile/ModifyProjectile, exact cornerpush decay/timing, wall friction, localcoord/facing breadth, teams, rollback, and full guard parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyhitdef-dynamic-airguard-cornerpush-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [0, 154, 155, branchStateNo],
+      forbiddenExecutedStates: [150, 151, 152, 153, 200, 5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["VarSet", "HitDef", "ModifyHitDef", "ChangeState", "HitVelSet", "VelAdd"],
+      requiredExecutedOperations: [
+        "variable:varset",
+        "hitdef",
+        "modifyhitdef",
+        "kinematic:hitvelset",
+        "kinematic:veladd",
+      ],
+      requiredActiveCommands: ["holdback"],
+      requiredEventCategories: ["guard"],
+      requiredCombatReasons: ["guard"],
+      forbiddenCombatReasons: ["hit", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+      requiredControllerEventSequences: [{
+        label: "dynamic ModifyHitDef airguard cornerpush precedes accepted airborne guard",
+        allowSameTick: true,
+        steps: [
+          { actorId: "p2", stateNo: 0, controller: "ModifyHitDef", name: "Root ModifyHitDef Redirect" },
+          { actorId: "p1", stateNo: 154, controller: "ChangeState", name: "Air Guard Shake Over" },
+          { actorId: "p1", stateNo: 155, controller: "HitVelSet", name: "Apply Air Guard Velocity" },
+          { actorId: "p1", stateNo: 155, operation: "kinematic:hitvelset" },
+          { actorId: "p1", stateNo: 155, controller: "ChangeState", name: "Air Guarded HitVar Branch" },
+        ],
+      }],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 154,
+          animNo: 40,
+          stateType: "A",
+          moveType: "H",
+          physics: "N",
+          observedPosYAtMost: -8,
+          minFrames: 1,
+        },
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 155,
+          animNo: 150,
+          stateType: "A",
+          moveType: "H",
+          physics: "N",
+          observedVelXAtLeast: 8,
+          observedVelXAtMost: 8,
+          observedVelYAtMost: -3.5,
+          minFrames: 1,
+        },
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: branchStateNo,
+          animNo: branchStateNo,
+          stateType: "A",
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          observedVelXAtMost: -5.5,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 995 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 1000 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHitDefSingleAirGuardVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -64824,6 +64985,8 @@ export type SyntheticImportedTraceFighterOptions = {
     airVelocity?: SyntheticPartialTripleExpression;
     downVelocity?: SyntheticPartialTripleExpression;
     airGuardVelocity?: SyntheticPartialTripleExpression;
+    /** Synthetic fixture-only active HitDef airguard.cornerpush.veloff seed. */
+    airGuardCornerPush?: number;
     /** Synthetic fixture-only active HitDef spark identity and offset. */
     hitSpark?: string;
     /** Synthetic fixture-only active HitDef spark angle. */
@@ -64868,6 +65031,8 @@ export type SyntheticImportedTraceFighterOptions = {
     /** Synthetic fixture-only live ModifyHitDef guard.velocity X/Y/Z vector. */
     guardVelocityComponents?: SyntheticPartialTripleExpression;
     airGuardVelocity?: SyntheticPartialTripleExpression;
+    /** Synthetic fixture-only caller expression for live ModifyHitDef airguard.cornerpush.veloff. */
+    airGuardCornerPush?: SyntheticNumberExpression;
     /** Synthetic fixture-only live ModifyHitDef spark offset. */
     sparkXy?: SyntheticPartialPairExpression;
     /** Synthetic fixture-only live ModifyHitDef spark angle. */
@@ -72337,6 +72502,7 @@ ${route.downVelocity === undefined ? "" : `down.velocity = ${route.downVelocity.
 guardflag = ${route.guardFlag ?? "MA"}
 ${guardVelocity === undefined ? "" : `guard.velocity = ${guardVelocity.join(", ")}\n`}
 ${route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGuardVelocity.join(", ")}\n`}
+${route.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = ${route.airGuardCornerPush}\n`}
 ${route.hitSpark === undefined ? "" : `sparkno = ${route.hitSpark}\n`}
 ${route.sparkAngle === undefined ? "" : `sparkangle = ${route.sparkAngle}\n`}
 ${route.guardSpark === undefined ? "" : `guard.sparkno = ${route.guardSpark}\n`}
@@ -72383,6 +72549,7 @@ ${route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.joi
 ${route.downVelocity === undefined ? "" : `down.velocity = ${route.downVelocity.join(", ")}`}
 ${guardVelocity === undefined ? "" : `guard.velocity = ${guardVelocity.join(", ")}`}
 ${route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGuardVelocity.join(", ")}`}
+${route.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = ${route.airGuardCornerPush}`}
 ${route.sparkAngle === undefined ? "" : `sparkangle = ${route.sparkAngle}`}
 ${route.guardSparkAngle === undefined ? "" : `guard.sparkangle = ${route.guardSparkAngle}`}
 ${route.guardSpark === undefined ? "" : `guard.sparkno = ${route.guardSpark}`}

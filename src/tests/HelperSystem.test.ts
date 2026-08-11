@@ -2345,6 +2345,36 @@ describe("HelperSystem", () => {
     expect(operations).toEqual(["modifyhitdef", "modifyhitdef", "modifyhitdef"]);
   });
 
+  it("applies Helper-owned ModifyHitDef airguard.cornerpush.veloff in caller context and preserves omission", () => {
+    const active = helper({
+      vars: [4.75],
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              guardflag: "MA",
+              "airguard.cornerpush.veloff": "7",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              "airguard.cornerpush.veloff": "var(0)",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], { redirectid: "0", damage: "20" }),
+          ]),
+        ],
+      },
+    });
+    const operations: string[] = [];
+
+    advanceRuntimeHelpers([active], stage, {
+      onOperation: (_helper, operation) => operations.push(operation.kind),
+    });
+
+    expect(active.currentMove?.airGuardCornerPush).toBeCloseTo(4.75);
+    expect(operations).toEqual(["modifyhitdef", "modifyhitdef"]);
+  });
+
   it("applies Helper-owned ModifyHitDef guard.velocity Y/Z in caller context and preserves omitted components", () => {
     const active = helper({
       vars: [-8, -4, 6],

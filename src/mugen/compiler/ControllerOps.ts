@@ -301,6 +301,9 @@ export type ModifyHitDefControllerOp = {
   airGuardVelocityZ?: number;
   /** Root-owned live airguard.velocity Z replacement evaluated in caller context. */
   airGuardVelocityZExpression?: number | string;
+  /** Live airguard.cornerpush.veloff replacement evaluated in caller context. */
+  airGuardCornerPush?: number;
+  airGuardCornerPushExpression?: number | string;
   /** HitDef acceleration metadata mutation; dynamic scalar expressions are retained for runtime evaluation. */
   xAccel?: number | string;
   yAccel?: number | string;
@@ -2855,6 +2858,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "airguard.ctrltime",
     "guard.velocity",
     "airguard.velocity",
+    "airguard.cornerpush.veloff",
     "xaccel",
     "yaccel",
     "zaccel",
@@ -2999,6 +3003,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const airGuardVelocityZExpression = typeof airGuardVelocityValue === "object" && typeof airGuardVelocityValue.z === "string"
     ? airGuardVelocityValue.z
     : undefined;
+  const airGuardCornerPushValue = optionalScalarNumberOrExpression(controller, "airguard.cornerpush.veloff");
   const xAccel = optionalScalarNumberOrExpression(controller, "xaccel");
   const yAccel = optionalScalarNumberOrExpression(controller, "yaccel");
   const zAccel = optionalScalarNumberOrExpression(controller, "zaccel");
@@ -3090,6 +3095,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     guardVelocityValue !== true ||
     guardVelocityZ !== true ||
     airGuardVelocityValue !== true ||
+    airGuardCornerPushValue !== true ||
     xAccel !== true ||
     yAccel !== true ||
     zAccel !== true ||
@@ -3157,6 +3163,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     guardVelocityExpression === false ||
     guardVelocityValue === false ||
     airGuardVelocityValue === false ||
+    airGuardCornerPushValue === false ||
     xAccel === false ||
     yAccel === false ||
     zAccel === false ||
@@ -3241,6 +3248,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(airGuardVelocityExpressions === undefined ? {} : { airGuardVelocityExpressions }),
     ...(airGuardVelocityZ === true ? {} : { airGuardVelocityZ }),
     ...(airGuardVelocityZExpression === undefined ? {} : { airGuardVelocityZExpression }),
+    ...(typeof airGuardCornerPushValue === "number" ? { airGuardCornerPush: airGuardCornerPushValue } : {}),
+    ...(typeof airGuardCornerPushValue === "string" ? { airGuardCornerPushExpression: airGuardCornerPushValue } : {}),
     ...(xAccel === true ? {} : { xAccel }),
     ...(yAccel === true ? {} : { yAccel }),
     ...(zAccel === true ? {} : { zAccel }),

@@ -2616,6 +2616,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyHitDefDynamicAirGuardVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyhitdef-dynamic-airguard-cornerpush",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyHitDefDynamicAirGuardCornerPushTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-single-airguard-velocity",
       required: true,
       artifact: presets.createSyntheticImportedHitDefSingleAirGuardVelocityTraceArtifact(),
