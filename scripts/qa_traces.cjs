@@ -2211,6 +2211,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenRootModifyReversalDefPauseTimePairTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-root-modifyreversaldef-sprite-priority-pair",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenRootModifyReversalDefSpritePriorityPairTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-root-modifyreversaldef-core-redirect",
       required: true,
       artifact: presets.createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTraceArtifact(),
