@@ -576,6 +576,55 @@ describe("ProjectileSystem", () => {
     expect(unresolved.p2Facing).toBe(1);
   });
 
+  it("resolves typed ModifyProjectile state ownership once in the caller context", () => {
+    const controllerValue = controller({
+      id: "77",
+      p1stateno: "var(0) + 1",
+      p2stateno: "var(1) + 2",
+      p2getp1state: "var(2)",
+    }, "ModifyProjectile");
+    const operation = compileControllerIr(controllerValue).operation as ModifyProjectileControllerOp;
+    const matching = projectile({
+      p1StateNo: 10,
+      p2StateNo: 20,
+      p2GetP1State: false,
+      projectileId: 77,
+    });
+
+    expect(modifyRuntimeProjectiles([matching], {
+      controller: controllerValue,
+      operation,
+      resolveModifyProjectile: {
+        resolveNumber: (key) => key === "p1stateno"
+          ? 776.9
+          : key === "p2stateno"
+            ? 886.2
+            : key === "p2getp1state"
+              ? 0
+              : undefined,
+      },
+    })).toBe(1);
+    expect(operation).toMatchObject({
+      kind: "modifyprojectile",
+      p1StateNoExpression: "var(0) + 1",
+      p2StateNoExpression: "var(1) + 2",
+      p2GetP1StateExpression: "var(2)",
+    });
+    expect(matching).toMatchObject({ p1StateNo: 776, p2StateNo: 886, p2GetP1State: false });
+
+    const defaultController = controller({ id: "77", p2stateno: "var(1) + 2" }, "ModifyProjectile");
+    const defaultOperation = compileControllerIr(defaultController).operation as ModifyProjectileControllerOp;
+    const defaulted = projectile({ p2StateNo: 20, p2GetP1State: false, projectileId: 77 });
+    expect(modifyRuntimeProjectiles([defaulted], {
+      controller: defaultController,
+      operation: defaultOperation,
+      resolveModifyProjectile: {
+        resolveNumber: (key) => key === "p2stateno" ? 886.2 : undefined,
+      },
+    })).toBe(1);
+    expect(defaulted).toMatchObject({ p2StateNo: 886, p2GetP1State: true });
+  });
+
   it("uses component-wise caller resolution for fresh dynamic Projectile damage", () => {
     const baseOperation: ProjectileControllerOp = {
       kind: "projectile",

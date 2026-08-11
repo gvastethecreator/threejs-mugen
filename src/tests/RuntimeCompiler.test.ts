@@ -992,6 +992,45 @@ value = 1
     expect(malformed.operation).toBeUndefined();
   });
 
+  it("compiles ModifyProjectile state ownership expressions in caller form", () => {
+    const authored = compileControllerIr(
+      controller(200, "ModifyProjectile", [], {
+        id: "77",
+        p1stateno: "777",
+        p2stateno: "888",
+        p2getp1state: "0",
+      }),
+    );
+    const dynamic = compileControllerIr(
+      controller(200, "ModifyProjectile", [], {
+        id: "77",
+        p1stateno: "Parent,var(1) + 1",
+        p2stateno: "var(2) + 2",
+        p2getp1state: "var(3)",
+      }),
+    );
+    const malformed = compileControllerIr(
+      controller(200, "ModifyProjectile", [], { id: "77", p2stateno: "var(" }),
+    );
+
+    expect(authored.operation).toMatchObject({
+      kind: "modifyprojectile",
+      p1StateNo: 777,
+      p2StateNo: 888,
+      p2GetP1State: false,
+    });
+    expect(dynamic.operation).toMatchObject({
+      kind: "modifyprojectile",
+      p1StateNoExpression: "Parent,var(1) + 1",
+      p2StateNoExpression: "var(2) + 2",
+      p2GetP1StateExpression: "var(3)",
+    });
+    expect(dynamic.operation).not.toHaveProperty("p1StateNo");
+    expect(dynamic.operation).not.toHaveProperty("p2StateNo");
+    expect(dynamic.operation).not.toHaveProperty("p2GetP1State");
+    expect(malformed.operation).toBeUndefined();
+  });
+
   it("compiles Target controllers into typed target operations", () => {
     const life = compileControllerIr(controller(200, "TargetLifeAdd", [], { id: "3", value: "-20", absolute: "1", kill: "0", redirectid: "57" }));
     const redirectedRedLife = compileControllerIr(

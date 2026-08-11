@@ -1933,6 +1933,51 @@ describe("EffectActorSystem", () => {
     expect(projectile).toMatchObject({ p2Facing: -2, ownerId: "p1", rootId: "p1", parentId: helper.serialId });
   });
 
+  it("resolves Helper-owned dynamic ModifyProjectile state ownership in caller context", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "44", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(state(6000, 900, [
+            controller("Projectile", {
+              projid: "8867",
+              projanim: "930",
+            }, ["Time = 0"]),
+            controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+          ])),
+          compileStateProgram(state(6001, 901, [
+            controller("ModifyProjectile", {
+              id: "8867",
+              p1stateno: "Var(52) + 1",
+              p2stateno: "Var(53) + 2",
+              p2getp1state: "Var(54)",
+            }, ["Time = 1"]),
+          ])),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+    helper.vars[52] = 776;
+    helper.vars[53] = 886;
+    helper.vars[54] = 0;
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    const projectile = store.projectiles.find((candidate) => candidate.parentId === helper.serialId);
+    expect(projectile).toMatchObject({
+      p1StateNo: 777,
+      p2StateNo: 888,
+      p2GetP1State: false,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+    });
+  });
+
   it("uses Helper ownprojectile identity for ownership queries and mutation", () => {
     const store = createRuntimeEffectActorStore();
     const rootProjectile = spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8852", projanim: "930", projhits: "2" }));

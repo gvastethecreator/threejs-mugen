@@ -8450,6 +8450,20 @@ function resolveModifyProjectileNumberParam(
   stageBounds?: MugenStageDefinition["bounds"],
   stageTime?: number,
 ): number | undefined {
+  const operation = controller.operation?.kind === "modifyprojectile" ? controller.operation : undefined;
+  const expression = key === "p1stateno"
+    ? operation?.p1StateNoExpression
+    : key === "p2stateno"
+      ? operation?.p2StateNoExpression
+      : key === "p2getp1state"
+        ? operation?.p2GetP1StateExpression
+        : undefined;
+  if (expression !== undefined) {
+    const resolved = typeof expression === "number"
+      ? expression
+      : resolveDispatchNumber(undefined, expression, fighter, opponent, owner, stageBounds, stageTime);
+    return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
+  }
   const raw = findModifyProjectileNumberRawParam(controller, key);
   if (raw === undefined) {
     return undefined;

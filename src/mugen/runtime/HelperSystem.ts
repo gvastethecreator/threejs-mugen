@@ -1174,6 +1174,22 @@ function resolveHelperModifyProjectileNumberParam(
   key: RuntimeModifyProjectileNumberParam,
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
+  const operation = controller.operation?.kind === "modifyprojectile" ? controller.operation : undefined;
+  const expression = key === "p1stateno"
+    ? operation?.p1StateNoExpression
+    : key === "p2stateno"
+      ? operation?.p2StateNoExpression
+      : key === "p2getp1state"
+        ? operation?.p2GetP1StateExpression
+        : undefined;
+  if (expression !== undefined) {
+    return resolveHelperNumber(
+      helper,
+      typeof expression === "number" ? expression : undefined,
+      typeof expression === "string" ? expression : undefined,
+      options,
+    );
+  }
   const raw = findHelperModifyProjectileNumberParam(controller, key);
   if (raw === undefined) {
     return undefined;

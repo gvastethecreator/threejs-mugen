@@ -787,6 +787,12 @@ export type ModifyProjectileControllerOp = {
   p1StateNo?: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;
+  /** Dynamic Ikemen ModifyProjectile p1stateno expression evaluated in caller context. */
+  p1StateNoExpression?: number | string;
+  /** Dynamic Ikemen ModifyProjectile p2stateno expression evaluated in caller context. */
+  p2StateNoExpression?: number | string;
+  /** Dynamic Ikemen ModifyProjectile p2getp1state expression evaluated in caller context. */
+  p2GetP1StateExpression?: number | string;
   /** Ikemen ModifyProjectile replacement for accepted-hit target facing. */
   p2Facing?: number;
   /** Dynamic Ikemen ModifyProjectile p2facing expression evaluated once in caller context. */
@@ -3854,6 +3860,12 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
   if (superMoveTimeValue === false) return undefined;
   const p2FacingValue = optionalIntegerExpressionParam(controller, "p2facing");
   if (p2FacingValue === false) return undefined;
+  const p1StateNoValue = optionalIntegerExpressionParam(controller, "p1stateno");
+  if (p1StateNoValue === false) return undefined;
+  const p2StateNoValue = optionalIntegerExpressionParam(controller, "p2stateno");
+  if (p2StateNoValue === false) return undefined;
+  const p2GetP1StateValue = optionalIntegerExpressionParam(controller, "p2getp1state");
+  if (p2GetP1StateValue === false) return undefined;
   const damageValue = optionalIntegerExpressionPairParam(controller, "damage");
   if (damageValue === false) return undefined;
   const damageExpressions = Array.isArray(damageValue) && damageValue.some((value) => typeof value === "string")
@@ -4006,9 +4018,12 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     hitPriority: firstNumber(findParam(controller, "priority")),
     hitPriorityType: hitDefPriorityType(findParam(controller, "priority")),
     p2SpritePriority: firstNumber(findParam(controller, "p2sprpriority")),
-    p1StateNo: firstNumber(findParam(controller, "p1stateno")),
-    p2StateNo: firstNumber(findParam(controller, "p2stateno")),
-    p2GetP1State: booleanNumber(findParam(controller, "p2getp1state")),
+    p1StateNo: typeof p1StateNoValue === "number" ? p1StateNoValue : undefined,
+    ...(typeof p1StateNoValue === "string" ? { p1StateNoExpression: p1StateNoValue } : {}),
+    p2StateNo: typeof p2StateNoValue === "number" ? p2StateNoValue : undefined,
+    ...(typeof p2StateNoValue === "string" ? { p2StateNoExpression: p2StateNoValue } : {}),
+    p2GetP1State: typeof p2GetP1StateValue === "number" ? p2GetP1StateValue !== 0 : undefined,
+    ...(typeof p2GetP1StateValue === "string" ? { p2GetP1StateExpression: p2GetP1StateValue } : {}),
     p2Facing: typeof p2FacingValue === "number" ? p2FacingValue : undefined,
     ...(typeof p2FacingValue === "string" ? { p2FacingExpression: p2FacingValue } : {}),
     minDistance: modifyProjectileVelocityVector(findParam(controller, "mindist")),

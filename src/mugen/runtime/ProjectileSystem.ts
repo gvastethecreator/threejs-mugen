@@ -1321,11 +1321,25 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
   const hitPriority = operation?.hitPriority ?? resolveModifyProjectileNumberParam(input, "priority");
   const hitPriorityType = operation?.hitPriorityType ?? projectileHitDefPriorityType(findControllerParam(input.controller, "priority"));
   const p2SpritePriority = operation?.p2SpritePriority ?? resolveModifyProjectileNumberParam(input, "p2sprpriority");
-  const p1StateNo = operation?.p1StateNo ?? resolveModifyProjectileNumberParam(input, "p1stateno");
-  const hasP2StateNo = operation?.p2StateNo !== undefined || findControllerParam(input.controller, "p2stateno") !== undefined;
-  const p2StateNo = operation?.p2StateNo ?? resolveModifyProjectileNumberParam(input, "p2stateno");
+  const p1StateNo = operation?.p1StateNo ?? resolveModifyProjectileIntegerExpressionParam(
+    input,
+    "p1stateno",
+    operation?.p1StateNoExpression,
+  );
+  const hasP2StateNo = operation?.p2StateNo !== undefined ||
+    operation?.p2StateNoExpression !== undefined ||
+    findControllerParam(input.controller, "p2stateno") !== undefined;
+  const p2StateNo = operation?.p2StateNo ?? resolveModifyProjectileIntegerExpressionParam(
+    input,
+    "p2stateno",
+    operation?.p2StateNoExpression,
+  );
   const p2GetP1StateParam = operation?.p2GetP1State === undefined
-    ? resolveModifyProjectileNumberParam(input, "p2getp1state")
+    ? resolveModifyProjectileIntegerExpressionParam(
+        input,
+        "p2getp1state",
+        operation?.p2GetP1StateExpression,
+      )
     : undefined;
   const p2GetP1State = operation?.p2GetP1State
     ?? (p2GetP1StateParam === undefined ? (hasP2StateNo && p2StateNo !== undefined ? true : undefined) : p2GetP1StateParam !== 0);
