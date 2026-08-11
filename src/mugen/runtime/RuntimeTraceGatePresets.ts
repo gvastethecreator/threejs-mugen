@@ -14233,6 +14233,138 @@ export function createSyntheticImportedModifyHitDefDynamicGuardVelocityTraceArti
   });
 }
 
+export function createSyntheticImportedModifyHitDefDynamicGuardVelocityYZTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5082;
+  const targetId = 79;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "caller seeds and redirects live guard velocity xyz", frames: 2, p1: [], p2: [] },
+    { label: "receiver reaches grounded guarding caller", frames: 14, p1: ["B"], p2: [] },
+    { label: "modified guard velocity xyz settles", frames: 36, p1: ["B"], p2: [] },
+  ]);
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-guard-velocity-yz-caller",
+    displayName: "Dynamic ModifyHitDef Guard Velocity YZ Caller",
+    withHitDef: false,
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      guardStateNo: 130,
+      guardedBranchStateNo: branchStateNo,
+      guardedBranchAnimNo: branchStateNo,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression: "GetHitVar(xvel) = -3 && GetHitVar(yvel) = -4 && GetHitVar(zvel) = 6 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+    },
+    rootModifyHitDefRedirectRoute: {
+      redirectId: 57,
+      trigger: "Time = 1",
+      guardVelocityComponents: ["var(0)", "var(1)", "var(2)"],
+      varSeeds: [
+        { index: 0, value: -3 },
+        { index: 1, value: -4 },
+        { index: 2, value: 6 },
+      ],
+    },
+  });
+  const receiver = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-guard-velocity-yz-receiver",
+    displayName: "Dynamic ModifyHitDef Guard Velocity YZ Receiver",
+    withHitDef: false,
+    activeRootHitDefRoute: {
+      damage: 37,
+      guardDamage: 5,
+      targetId,
+      guardFlag: "MA",
+      guardVelocityComponents: [-2, -8, 2],
+      hitDefTrigger: "Time = 0",
+      posX: 200,
+      delayedPosX: { x: 35, trigger: "Time >= 2" },
+      clsn1Extent: 64,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: caller, p2: receiver, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-modifyhitdef-dynamic-guard-velocity-yz-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyhitdef-dynamic-guard-velocity-yz-golden",
+      label: "Synthetic imported dynamic live ModifyHitDef guard velocity Y/Z route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root caller resolves var(0..2)=-3,-4,6 and redirects a component-wise guard.velocity mutation into another root's active normal HitDef before contact. The accepted grounded guard exposes all three GetHitVar velocity components and keeps the physical guard route; fresh direct defaults, Helpers, airguard, Projectile, ModifyProjectile, teams, rollback, exact tick order, and full guard parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyhitdef-dynamic-guard-velocity-yz-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [0, 150, 151, branchStateNo],
+      forbiddenExecutedStates: [200, 5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["VarSet", "HitDef", "ModifyHitDef", "ChangeState", "HitVelSet"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "modifyhitdef", "kinematic:hitvelset"],
+      requiredActiveCommands: ["holdback"],
+      requiredEventCategories: ["guard"],
+      requiredCombatReasons: ["guard"],
+      forbiddenCombatReasons: ["hit", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+      requiredControllerEventSequences: [{
+        label: "dynamic ModifyHitDef guard velocity Y/Z precedes accepted guard GetHitVar order",
+        allowSameTick: true,
+        steps: [
+          { actorId: "p2", stateNo: 0, controller: "ModifyHitDef", name: "Root ModifyHitDef Redirect" },
+          { actorId: "p1", stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+          { actorId: "p1", stateNo: 151, operation: "kinematic:hitvelset" },
+          { actorId: "p1", stateNo: 151, controller: "ChangeState", name: "Guarded HitVar Branch" },
+        ],
+      }],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 150,
+          animNo: 150,
+          stateType: "S",
+          moveType: "H",
+          physics: "N",
+          minFrames: 1,
+        },
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 151,
+          animNo: 150,
+          stateType: "S",
+          moveType: "H",
+          physics: "S",
+          observedVelXAtLeast: -3,
+          observedVelXAtMost: -3,
+          minFrames: 1,
+        },
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: branchStateNo,
+          animNo: branchStateNo,
+          stateType: "S",
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 995 },
+        { actorId: "p2", source: "imported", actorKind: "player", life: 1000 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHitDefDynamicStateTransitionTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -64548,6 +64680,8 @@ export type SyntheticImportedTraceFighterOptions = {
     guardDistance?: number;
     guardFlag?: string;
     guardVelocity?: SyntheticPartialPairExpression;
+    /** Synthetic fixture-only active HitDef guard.velocity X/Y/Z vector. */
+    guardVelocityComponents?: SyntheticPartialTripleExpression;
     airVelocity?: SyntheticPartialTripleExpression;
     downVelocity?: SyntheticPartialTripleExpression;
     airGuardVelocity?: SyntheticPartialTripleExpression;
@@ -64592,6 +64726,8 @@ export type SyntheticImportedTraceFighterOptions = {
     /** Synthetic fixture-only live ModifyHitDef down.velocity expression. */
     downVelocity?: SyntheticPartialTripleExpression;
     guardVelocity?: SyntheticPartialPairExpression;
+    /** Synthetic fixture-only live ModifyHitDef guard.velocity X/Y/Z vector. */
+    guardVelocityComponents?: SyntheticPartialTripleExpression;
     airGuardVelocity?: SyntheticPartialTripleExpression;
     /** Synthetic fixture-only live ModifyHitDef spark offset. */
     sparkXy?: SyntheticPartialPairExpression;
@@ -72029,6 +72165,7 @@ stateno = 0
 }
 
 function activeRootHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["activeRootHitDefRoute"]>): string {
+  const guardVelocity = route.guardVelocityComponents ?? route.guardVelocity;
   return `
 ${route.posX === undefined
   ? (route.posZ === undefined ? "" : `[State 0, Active Root Pos Z]\ntype = PosSet\ntrigger1 = 1\nz = ${route.posZ}\n`)
@@ -72055,7 +72192,7 @@ ground.velocity = 0, 0
 ${route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.join(", ")}\n`}
 ${route.downVelocity === undefined ? "" : `down.velocity = ${route.downVelocity.join(", ")}\n`}
 guardflag = ${route.guardFlag ?? "MA"}
-${route.guardVelocity === undefined ? "" : `guard.velocity = ${route.guardVelocity.join(", ")}\n`}
+${guardVelocity === undefined ? "" : `guard.velocity = ${guardVelocity.join(", ")}\n`}
 ${route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGuardVelocity.join(", ")}\n`}
 ${route.hitSpark === undefined ? "" : `sparkno = ${route.hitSpark}\n`}
 ${route.sparkAngle === undefined ? "" : `sparkangle = ${route.sparkAngle}\n`}
@@ -72074,6 +72211,7 @@ ${route.p2GetP1State === undefined ? "" : `p2getp1state = ${route.p2GetP1State ?
 function rootModifyHitDefRedirectControllerBlock(
   route: NonNullable<SyntheticImportedTraceFighterOptions["rootModifyHitDefRedirectRoute"]>,
 ): string {
+  const guardVelocity = route.guardVelocityComponents ?? route.guardVelocity;
   const damageValue = route.damage === undefined
     ? undefined
     : route.damage[1] === undefined ? String(route.damage[0]) : `${route.damage[0]}, ${route.damage[1]}`;
@@ -72100,7 +72238,7 @@ ${route.fallKill === undefined ? "" : `fall.kill = ${route.fallKill ? 1 : 0}`}
 ${route.hitOnce === undefined ? "" : `hitonce = ${route.hitOnce ? 1 : 0}`}
 ${route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.join(", ")}`}
 ${route.downVelocity === undefined ? "" : `down.velocity = ${route.downVelocity.join(", ")}`}
-${route.guardVelocity === undefined ? "" : `guard.velocity = ${route.guardVelocity.join(", ")}`}
+${guardVelocity === undefined ? "" : `guard.velocity = ${guardVelocity.join(", ")}`}
 ${route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGuardVelocity.join(", ")}`}
 ${route.sparkAngle === undefined ? "" : `sparkangle = ${route.sparkAngle}`}
 ${route.guardSparkAngle === undefined ? "" : `guard.sparkangle = ${route.guardSparkAngle}`}

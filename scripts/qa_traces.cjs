@@ -1211,6 +1211,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyHitDefDynamicGuardVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyhitdef-dynamic-guard-velocity-yz",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyHitDefDynamicGuardVelocityYZTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-dynamic-state-transition",
       required: true,
       artifact: presets.createSyntheticImportedHitDefDynamicStateTransitionTraceArtifact(),
