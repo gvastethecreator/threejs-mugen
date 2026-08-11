@@ -33686,12 +33686,29 @@ export function createSyntheticImportedProjectileKeepStateStatePreservationTrace
   );
 }
 
+/** T712 proves the transient Projectile keepstate flag is released after the
+ * contact stun window, allowing the defender's next active state controller to
+ * observe GetHitVar(keepstate)=0 without losing the other hit metadata. */
+export function createSyntheticImportedProjectileKeepStateReleaseTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInternal(
+    options,
+    undefined,
+    "-keepstate-release",
+    "var(0)",
+    true,
+    5090,
+  );
+}
+
 function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInternal(
   options: RuntimeTraceGatePresetOptions,
   damageExpression?: SyntheticPairExpression,
   variantSuffix = "",
   keepStateExpression?: SyntheticNumberExpression,
   preserveStateTransitions = false,
+  keepStateReleaseStateNo?: number,
 ): RuntimeTraceArtifact {
   const traceId = `synthetic-imported-projectile-gethitvar-hit-metadata${variantSuffix}`;
   const defender = createSyntheticImportedTraceFighter({
@@ -33711,6 +33728,7 @@ function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInter
               }`,
           },
         }),
+    ...(keepStateReleaseStateNo === undefined ? {} : { keepStateReleaseStateNo }),
   });
   const attacker = createSyntheticImportedTraceFighter({
     id: `${traceId}-attacker`,
@@ -33754,7 +33772,9 @@ function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInter
         requiredActorKinds: ["player"],
         requiredEffectKinds: ["projectile"],
         requiredRoutedStates: [200],
-        requiredExecutedStates: preserveStateTransitions ? [200] : [200, 5000, 335],
+        requiredExecutedStates: preserveStateTransitions
+          ? [200, ...(keepStateReleaseStateNo === undefined ? [] : [keepStateReleaseStateNo])]
+          : [200, 5000, 335],
         ...(preserveStateTransitions
           ? { forbiddenExecutedStates: [335, 5000, 5001, 150, 151, 152, 154] }
           : {}),
@@ -33762,7 +33782,14 @@ function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInter
         requiredExecutedOperations: ["projectile", "audio:playsnd"],
         requiredContactEffectPackages: [syntheticPlayerProjectileHitContactPackage(45)],
         requiredControllerEventSequences: preserveStateTransitions
-          ? []
+          ? keepStateReleaseStateNo === undefined
+            ? []
+            : [{
+                label: "KeepState release after stun window",
+                actorId: "p2",
+                allowSameTick: true,
+                steps: [{ stateNo: 0, controller: "ChangeState", name: "KeepState Release" }],
+              }]
           : [
               {
                 label: "5000 Projectile normal hit GetHitVar metadata branch order",
@@ -33788,6 +33815,18 @@ function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInter
                 observedVelYAtMost: -2,
                 minFrames: 1,
               },
+              ...(keepStateReleaseStateNo === undefined
+                ? []
+                : [{
+                    actorId: "p2" as const,
+                    source: "imported" as const,
+                    actorKind: "player" as const,
+                    stateNo: keepStateReleaseStateNo,
+                    stateType: "S" as const,
+                    moveType: "I" as const,
+                    physics: "S" as const,
+                    minFrames: 1,
+                  }]),
               { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911, moveType: "I", clsn1Count: 0 },
             ]
           : [
@@ -33837,7 +33876,7 @@ function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInter
             actorId: "p2",
             source: "imported",
             actorKind: "player",
-            stateNo: preserveStateTransitions ? 0 : 335,
+            stateNo: preserveStateTransitions ? keepStateReleaseStateNo ?? 0 : 335,
             moveType: preserveStateTransitions ? "I" : "H",
           },
         ],
@@ -34961,12 +35000,27 @@ export function createSyntheticImportedHelperProjectileKeepStateStatePreservatio
   );
 }
 
+/** T712 helper-parented counterpart of the transient keepstate release trace. */
+export function createSyntheticImportedHelperProjectileKeepStateReleaseTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifactInternal(
+    options,
+    undefined,
+    "-keepstate-release",
+    "var(0)",
+    true,
+    5091,
+  );
+}
+
 function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifactInternal(
   options: RuntimeTraceGatePresetOptions,
   damageExpression?: SyntheticPairExpression,
   variantSuffix = "",
   keepStateExpression?: SyntheticNumberExpression,
   preserveStateTransitions = false,
+  keepStateReleaseStateNo?: number,
 ): RuntimeTraceArtifact {
   const traceId = `synthetic-imported-helper-projectile-gethitvar-hit-metadata${variantSuffix}`;
   const defender = createSyntheticImportedTraceFighter({
@@ -34986,6 +35040,7 @@ function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifac
               }`,
           },
         }),
+    ...(keepStateReleaseStateNo === undefined ? {} : { keepStateReleaseStateNo }),
   });
   const attacker = createSyntheticImportedTraceFighter({
     id: `${traceId}-attacker`,
@@ -35040,7 +35095,9 @@ function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifac
         requiredActorKinds: ["player"],
         requiredEffectKinds: ["helper", "projectile"],
         requiredRoutedStates: [200],
-        requiredExecutedStates: preserveStateTransitions ? [200] : [200, 5000, 336],
+        requiredExecutedStates: preserveStateTransitions
+          ? [200, ...(keepStateReleaseStateNo === undefined ? [] : [keepStateReleaseStateNo])]
+          : [200, 5000, 336],
         ...(preserveStateTransitions
           ? { forbiddenExecutedStates: [336, 5000, 5001, 150, 151, 152, 154] }
           : {}),
@@ -35057,6 +35114,14 @@ function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifac
                   { stateNo: 1200, operation: "projectile" },
                 ],
               },
+              ...(keepStateReleaseStateNo === undefined
+                ? []
+                : [{
+                    label: "KeepState release after stun window",
+                    actorId: "p2",
+                    allowSameTick: true,
+                    steps: [{ stateNo: 0, controller: "ChangeState", name: "KeepState Release" }],
+                  }]),
             ]
           : [
               {
@@ -35092,7 +35157,19 @@ function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifac
                 observedVelYAtMost: -2,
                 minFrames: 1,
               },
-              { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1251, animNo: 1002, minFrames: 1 },
+              ...(keepStateReleaseStateNo === undefined
+                ? []
+                : [{
+                    actorId: "p2" as const,
+                    source: "imported" as const,
+                    actorKind: "player" as const,
+                    stateNo: keepStateReleaseStateNo,
+                    stateType: "S" as const,
+                    moveType: "I" as const,
+                    physics: "S" as const,
+                    minFrames: 1,
+                  }]),
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1251, animNo: 1002, minFrames: 1 },
               { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1252, animNo: 1003, minFrames: 1 },
               { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1004, moveType: "A", minFrames: 1 },
             ]
@@ -35188,7 +35265,7 @@ function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifac
             actorId: "p2",
             source: "imported",
             actorKind: "player",
-            stateNo: preserveStateTransitions ? 0 : 336,
+            stateNo: preserveStateTransitions ? keepStateReleaseStateNo ?? 0 : 336,
             moveType: preserveStateTransitions ? "I" : "H",
           },
         ],
@@ -62183,6 +62260,8 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefDownBounce?: SyntheticNumberExpression;
   hitDefForceStand?: SyntheticNumberExpression;
   hitDefForceNoFall?: SyntheticNumberExpression;
+  /** Synthetic fixture-only state entered after transient keepstate release. */
+  keepStateReleaseStateNo?: number;
   hitDefP1StateNo?: SyntheticNumberExpression;
   hitDefP2StateNo?: SyntheticNumberExpression;
   hitDefP2GetP1State?: SyntheticNumberExpression;
@@ -63949,6 +64028,13 @@ ${options.standbyPlayerIdStateEntry === undefined ? "" : playerIdStateEntryBlock
 ${options.passiveCommandRoute ? passiveCommandRouteBlock(options.passiveCommandRoute) : ""}
 ${options.activeRootMotionRoute ? activeRootMotionRouteBlock(options.activeRootMotionRoute) : ""}
 ${options.activeRootHitDefRoute ? activeRootHitDefRouteBlock(options.activeRootHitDefRoute) : ""}
+${options.keepStateReleaseStateNo === undefined ? "" : `
+[State 0, KeepState Release]
+type = ChangeState
+trigger1 = GetHitVar(damage) > 0 && GetHitVar(keepstate) = 0
+value = ${options.keepStateReleaseStateNo}
+ctrl = 0
+`}
 ${options.rootModifyHitDefRedirectRoute ? rootModifyHitDefRedirectControllerBlock(options.rootModifyHitDefRedirectRoute) : ""}
 ${options.rootModifyReversalDefRedirectRoute ? rootModifyReversalDefRedirectControllerBlock(options.rootModifyReversalDefRedirectRoute) : ""}
 ${options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef) : ""}
@@ -64229,6 +64315,7 @@ ${options.edgeDistanceEntry ? simpleStateBlock(options.edgeDistanceEntry.stateNo
 ${options.assertSpecialControlState ? assertSpecialControlStateBlock(options.assertSpecialControlState) : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
+${options.keepStateReleaseStateNo === undefined ? "" : simpleStateBlock(options.keepStateReleaseStateNo)}
 ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartStateBlock() : ""}
 ${options.withAirAutoGuardStartStates

@@ -712,10 +712,12 @@ import {
   createSyntheticImportedProjectileDynamicDamageTraceArtifact,
   createSyntheticImportedProjectileDynamicKeepStateTraceArtifact,
   createSyntheticImportedProjectileKeepStateStatePreservationTraceArtifact,
+  createSyntheticImportedProjectileKeepStateReleaseTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicDamageTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicKeepStateTraceArtifact,
   createSyntheticImportedHelperProjectileKeepStateStatePreservationTraceArtifact,
+  createSyntheticImportedHelperProjectileKeepStateReleaseTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardKillTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardHitShakeTimeTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardedTraceArtifact,
@@ -20608,6 +20610,31 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
+  it("gates transient Projectile keepstate release after the root-owned stun window", () => {
+    const artifact = createSyntheticImportedProjectileKeepStateReleaseTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-gethitvar-hit-metadata-keepstate-release-golden",
+        source: "imported",
+      },
+      gates: [{ passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.requirements.requiredExecutedStates).toEqual([200, 5090]);
+    expect(gate?.requirements.requiredFinalActors).toEqual([
+      expect.objectContaining({ actorId: "p2", stateNo: 5090, moveType: "I" }),
+    ]);
+    expect(gate?.evidence.controllerEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", stateNo: 0, controller: "ChangeState", name: "KeepState Release" }),
+      ]),
+    );
+  });
+
   it("creates a synthetic imported Projectile GetHitVar hitid/chainid artifact with normal get-hit branch evidence", () => {
     const artifact = createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtifact({
       generatedAt: "2026-07-05T00:00:00.000Z",
@@ -21667,6 +21694,31 @@ describe("RuntimeTraceGatePresets", () => {
       expect.arrayContaining([
         expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8890 }),
         expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8890 }),
+      ]),
+    );
+  });
+
+  it("gates transient Helper Projectile keepstate release after the helper-parented stun window", () => {
+    const artifact = createSyntheticImportedHelperProjectileKeepStateReleaseTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-gethitvar-hit-metadata-keepstate-release-golden",
+        source: "imported",
+      },
+      gates: [{ passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.requirements.requiredExecutedStates).toEqual([200, 5091]);
+    expect(gate?.requirements.requiredFinalActors).toEqual([
+      expect.objectContaining({ actorId: "p2", stateNo: 5091, moveType: "I" }),
+    ]);
+    expect(gate?.evidence.controllerEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", stateNo: 0, controller: "ChangeState", name: "KeepState Release" }),
       ]),
     );
   });

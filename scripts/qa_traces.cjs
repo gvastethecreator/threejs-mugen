@@ -1266,6 +1266,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileKeepStateStatePreservationTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-keepstate-release",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileKeepStateReleaseTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-gethitvar-hitid-chainid",
       required: true,
       artifact: presets.createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtifact(),
@@ -1434,6 +1439,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-keepstate-state-preservation",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileKeepStateStatePreservationTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-keepstate-release",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileKeepStateReleaseTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-projectile-gethitvar-hitid-chainid",
@@ -5311,6 +5321,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-gethitvar-hit-metadata",
     "synthetic-imported-projectile-dynamic-damage",
     "synthetic-imported-projectile-keepstate-state-preservation",
+    "synthetic-imported-projectile-keepstate-release",
     "synthetic-imported-projectile-gethitvar-hitid-chainid",
     "synthetic-imported-projectile-nochainid",
     "synthetic-imported-projectile-gethitvar-guarded",
@@ -5345,6 +5356,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projectile-gethitvar-hit-metadata",
     "synthetic-imported-helper-projectile-dynamic-damage",
     "synthetic-imported-helper-projectile-keepstate-state-preservation",
+    "synthetic-imported-helper-projectile-keepstate-release",
     "synthetic-imported-helper-projectile-gethitvar-hitid-chainid",
     "synthetic-imported-helper-projectile-gethitvar-guarded",
     "synthetic-imported-helper-projectile-gethitvar-guard-kill",
