@@ -1,13 +1,23 @@
 ﻿# Progress Tracker
 
-## Active implementation checkpoint — T710 closed-bounded (2026-08-11)
+## Active implementation checkpoint — T711 closed-bounded (2026-08-11)
 
-Projectile `keepstate` now preserves static and finite caller expressions in
-fresh root/Helper spawns and exposes the value through hit/guard
-`GetHitVar(keepstate)`. Focused coverage and typecheck are green; required
-trace checksums are `a762a832/c0faf9a6` and `859ca54f/c5cb237b`; aggregate QA
-passes `799/799` artifacts (`765` required, `34` optional). The claim remains
-metadata-only; complete state suppression is still open. See [issue
+Projectile `keepstate` now preserves accepted contact state in the bounded
+direct/root/Helper routes: static and finite caller expressions retain damage
+and `GetHitVar(keepstate)` while suppressing automatic Common1/custom get-hit
+entry and `moveType H`. Focused coverage and typecheck are green; required
+trace checksums are `79f6c56d/4d3ba455` and `ffa9c089/89be6138`; aggregate QA
+passes `801/801` artifacts (`767` required, `34` optional). Resource cleanup,
+exact timing, `hitonce`, facing, teams, rollback and full parity remain open.
+The full suite is green at 328 files / 3861 tests and the production build is
+green.
+See [issue
+285](../.scratch/roadmap/issues/285-projectile-keepstate-state-preservation.md).
+
+## Previous implementation checkpoint — T710 closed-bounded (2026-08-11)
+
+Issue 284 closed the typed Projectile `keepstate` metadata and
+`GetHitVar(keepstate)` carrier. See [issue
 284](../.scratch/roadmap/issues/284-projectile-keepstate-dynamic.md).
 
 ## Active implementation checkpoint — T709 closed-bounded (2026-08-11)

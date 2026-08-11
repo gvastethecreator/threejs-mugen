@@ -1,13 +1,20 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T710 Projectile `keepstate` — closed-bounded, no score movement
+## 2026-08-11 T711 Projectile `keepstate` — closed-bounded, no score movement
 
-Issue 284 wires static and caller-context Projectile `keepstate` through fresh
-root/Helper spawns and accepted hit/guard GetHitVar metadata. Required traces
-pass with `a762a832/c0faf9a6` and `859ca54f/c5cb237b`; aggregate QA passes
-`799/799` artifacts (`765` required, `34` optional). No score movement:
-state-transition suppression, `hitonce`, Projectile facing, teams, rollback
-and full parity remain blocked. See [issue
+Issue 285 extends static and caller-context Projectile `keepstate` into
+bounded state preservation for direct and fresh root/Helper contacts. Accepted
+hit/guard metadata remains available while automatic Common1/custom get-hit
+entry and `moveType H` are suppressed. Required traces pass with
+`79f6c56d/4d3ba455` and `ffa9c089/89be6138`; aggregate QA passes `801/801`
+artifacts (`767` required, `34` optional). No score movement: resource
+cleanup, `hitonce`, facing, custom-state ownership, exact timing, teams,
+rollback and full parity remain blocked. See [issue
+285](../.scratch/roadmap/issues/285-projectile-keepstate-state-preservation.md).
+
+## 2026-08-11 T710 Projectile `keepstate` — closed-bounded, historical
+
+Issue 284 supplied the typed metadata carrier consumed by T711. See [issue
 284](../.scratch/roadmap/issues/284-projectile-keepstate-dynamic.md).
 
 ## 2026-08-11 T709 Projectile damage — closed-bounded, no score movement

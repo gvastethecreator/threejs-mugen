@@ -1,14 +1,20 @@
 ﻿# Roadmap Package Milestones
 
-## Active package — T710 closed-bounded (2026-08-11)
+## Active package — T711 closed-bounded (2026-08-11)
 
-Issue 284 closes the Projectile `keepstate` metadata slice for fresh root and
-Helper caller contexts. Static/dynamic values reach hit and guard
-`GetHitVar(keepstate)`; required traces are `a762a832/c0faf9a6` and
-`859ca54f/c5cb237b`, and aggregate QA is `799/799` artifacts (`765` required,
-`34` optional). This is an adapted bounded claim, not full state-transition or
-MUGEN/Ikemen parity. See [issue
-284](../.scratch/roadmap/issues/284-projectile-keepstate-dynamic.md).
+Issue 285 closes the bounded Projectile `keepstate` state-preservation slice
+for direct contacts and fresh root/Helper Projectiles. Static/dynamic values
+retain accepted contact metadata while suppressing automatic Common1/custom
+state entry and `moveType H`; required traces are `79f6c56d/4d3ba455` and
+`ffa9c089/89be6138`, and aggregate QA is `801/801` artifacts (`767` required,
+`34` optional). This remains an adapted bounded claim, not full resource,
+timing, team, rollback or MUGEN/Ikemen parity. See [issue
+285](../.scratch/roadmap/issues/285-projectile-keepstate-state-preservation.md).
+
+## Previous package — T710 closed-bounded (2026-08-11)
+
+Issue 284 closed the typed Projectile `keepstate` metadata carrier consumed by
+T711. See [issue 284](../.scratch/roadmap/issues/284-projectile-keepstate-dynamic.md).
 
 ## Active package — T709 closed-bounded (2026-08-11)
 

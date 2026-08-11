@@ -2,13 +2,20 @@
 
 ## Current parity queue
 
-- **T710 closed-bounded** — Projectile `keepstate` is typed in fresh root and
-  Helper spawns, resolved once in caller context and copied into hit/guard
-  `GetHitVar(keepstate)`. Focused compiler/runtime/contact coverage is green;
-  required traces are `a762a832/c0faf9a6` (root) and `859ca54f/c5cb237b`
-  (Helper), with aggregate QA at `799/799` (`765` required). Full state
-  suppression, `hitonce`, Projectile p1-facing, teams, rollback and full
-  parity stay blocked. See [issue
+- **T711 closed-bounded** — direct and fresh root/Helper Projectile
+  `keepstate` contacts retain damage and `GetHitVar(keepstate)` while
+  suppressing automatic Common1/custom get-hit entry and `moveType H`.
+  Focused runtime/contact coverage is green; required traces are
+  `79f6c56d/4d3ba455` (root) and `ffa9c089/89be6138` (Helper), with aggregate
+  QA at `801/801` (`767` required, `34` optional). Resource cleanup,
+  `hitonce`, facing, custom-state ownership, exact timing, teams, rollback and
+  full parity stay blocked; full Vitest is 328 files / 3861 tests and the
+  production build is green. See [issue
+  285](../.scratch/roadmap/issues/285-projectile-keepstate-state-preservation.md).
+
+- **T710 closed-bounded** — typed Projectile `keepstate` metadata for fresh
+  root/Helper spawns and accepted hit/guard `GetHitVar(keepstate)` is the
+  carrier consumed by T711. See [issue
   284](../.scratch/roadmap/issues/284-projectile-keepstate-dynamic.md).
 
 - **T709 closed-bounded** — typed dynamic/mixed Projectile `damage` pairs for
