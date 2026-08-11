@@ -2,15 +2,15 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-196",
   "kind": "G",
-  "generatedAt": "2026-08-11T20:42:07.993Z",
+  "generatedAt": "2026-08-11T21:10:02.816Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-196",
   "anchors": [
     {
       "path": "docs/CONTROLLER_SUPPORT_REGISTRY.md",
-      "bytes": 390710,
-      "sha256": "e66dea5189700f75ce68f004ba6fd90f349b7b1e7cb8ce562874037d73710155"
+      "bytes": 390754,
+      "sha256": "359791f8a4f3db965ba6eca070ec3f6c76cd5ef70feef4672c17e5d3a518d31e"
     },
     {
       "path": "docs/MASTER_REVIEW_ROADMAP.md",
@@ -19,7 +19,7 @@
     }
   ],
   "functionResults": {
-    "bytes": 390706,
+    "bytes": 390750,
     "hasApi": true
   },
   "claimCeiling": "acceptance-executed unit evidence for DA29-196; broader product claims remain blocked"

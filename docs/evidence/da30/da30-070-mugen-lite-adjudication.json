@@ -1,7 +1,7 @@
 {
   "schema": "Da30MugenLiteAdjudication/v1",
   "ok": true,
-  "headSha": "854095fc91b0b589e498604e190c8214d8cc0add",
+  "headSha": "6de48eec1fb4b73706348bc6e930427fa6fa3511",
   "denominators": {
     "corpusRows": 8,
     "heavyFamilies": 12,
