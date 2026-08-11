@@ -12,6 +12,9 @@ proves `VarSet -> HitDef -> ModifyHitDef -> hit`, RedirectID target `77`, and
 and omission is a no-op. M.U.G.E.N 1.1 does not define live ModifyHitDef, so
 this gate is Ikemen-only. Exact tick/ignorehitpause scheduling,
 Projectile/ModifyProjectile, ReversalDef and full timing parity remain outside.
+The aggregate `pnpm qa:trace` run is currently blocked by the existing
+`synthetic-imported-helper-bind-to-target-redirect` missing-target-link gate;
+that failure is separate from this passing T747 artifact.
 See [issue 321](../.scratch/roadmap/issues/321-modifyhitdef-pausetime.md).
 
 ## Next gate — T748 upstream seam selection

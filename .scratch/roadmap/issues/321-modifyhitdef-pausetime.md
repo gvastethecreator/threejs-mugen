@@ -23,6 +23,9 @@ reimplemented by this issue.
   `var(1)=7`, target memory `77`, and imported `GetHitVar(hitshaketime)=7`.
   Trace/initial/final checksums are `3ac961c7` / `d663c168` / `d0351820`.
 - Evidence: `c6c88173` (`test(evidence): gate live ModifyHitDef pause pairs`).
+- Aggregate status: `pnpm qa:trace` was attempted after this slice and is
+  currently blocked by the existing `synthetic-imported-helper-bind-to-target-redirect`
+  missing-target-link gate; this is separate from the passing T747 artifact.
 
 ## Source contract
 
