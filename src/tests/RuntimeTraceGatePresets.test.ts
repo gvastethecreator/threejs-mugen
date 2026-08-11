@@ -597,6 +597,7 @@ import {
   createSyntheticImportedProjectileGuardDistanceLatchTraceArtifact,
   createSyntheticImportedModifyExplodTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicGetPowerTraceArtifact,
+  createSyntheticImportedModifyProjectileDynamicP2FacingTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicDamageTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicBoundsTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicParamsTraceArtifact,
@@ -32085,6 +32086,38 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+  });
+
+  it("creates a required imported dynamic ModifyProjectile p2facing artifact", () => {
+    const artifact = createSyntheticImportedModifyProjectileDynamicP2FacingTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-modifyprojectile-dynamic-p2facing-golden",
+        source: "imported",
+      },
+      gates: [{
+        label: "synthetic-imported-modifyprojectile-dynamic-p2facing-golden",
+        passed: true,
+        failures: [],
+      }],
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 5081,
+      life: 963,
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers).toMatchObject({
+      VarSet: expect.any(Number),
+      Projectile: expect.any(Number),
+      ModifyProjectile: expect.any(Number),
+    });
+    expect(artifact.gates[0]?.evidence.executedOperations).toMatchObject({
+      projectile: expect.any(Number),
+      modifyprojectile: expect.any(Number),
+    });
   });
 
   it("gates dynamic ModifyProjectile damage replacement before accepted contact", () => {
