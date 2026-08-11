@@ -1,14 +1,15 @@
 ﻿# Next Build Roadmap
 
-## Next bounded slice — T706 planned
+## Latest bounded slice — T706 closed-bounded (2026-08-11)
 
-T706 / issue 280 targets Helper-owned live Ikemen `ModifyProjectile projanim`.
-The typed T705 operation already exists; the remaining seam is explicit Helper
-caller-context evaluation plus an ownership proof that a helper-parented
-Projectile changes while a player-owned Projectile with the same id does not.
-The closeout needs a required Helper trace and separate code, evidence, and
-documentation commits. FFX, cross-namespace broadcast, nested teams, terminal
-timing, rollback, and full Helper/Projectile parity stay blocked.
+T706 / issue 280 closes Helper-owned live Ikemen `ModifyProjectile projanim`.
+The Helper caller resolves the typed one-value expression once, replaces and
+resets the helper-parented Projectile AIR action, and preserves a same-id
+player-owned Projectile. Required trace is `705a96e0/f47441cf`; aggregate QA
+passes `791/791` (`757` required, `34` optional), focused Helper/runtime
+coverage is `140/140`, and typecheck/full tests/build/diff hygiene are recorded
+in the closeout commits. FFX, cross-namespace broadcast, nested teams,
+terminal timing, rollback, and full Helper/Projectile parity remain blocked.
 See [issue 280](../.scratch/roadmap/issues/280-helper-modifyprojectile-anim-dynamic.md).
 
 ## Authoritative runtime cursor — T705 closed-bounded

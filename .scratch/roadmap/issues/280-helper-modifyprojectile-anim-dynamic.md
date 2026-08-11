@@ -2,7 +2,7 @@
 
 ## Status
 
-`planned` — siguiente corte bounded después de T705.
+`closed-bounded` — implementado y verificado el 2026-08-11.
 
 ## Goal
 
@@ -60,6 +60,17 @@ Blocked:
 
 ## Acceptance / closeout
 
-Do not close this issue until the required Helper trace has a stable checksum,
-the focused owner-boundary test passes, and every code/document/evidence change
-is committed separately from generated QA refreshes.
+Closed bounded. The Helper-local typed `projanim` expression resolves once in
+the Helper caller context, mutates only the helper-parented Projectile, resets
+its AIR playback, and leaves a same-id player-owned Projectile unchanged.
+Required trace `synthetic-imported-helper-modifyprojectile-dynamic-anim.json`
+passes with trace checksum `705a96e0` / final checksum `f47441cf`; aggregate
+`pnpm qa:trace` passes `791/791` artifacts (`757` required, `34` optional).
+Focused Helper/runtime coverage passes `140/140`; typecheck, full tests,
+build, and diff hygiene are recorded in the closeout commits. The trace
+records Helper/Projectile/ModifyProjectile telemetry, parent/root ownership,
+AIR action replacement, and spawn/active/remove lifecycle.
+
+The bounded claim remains Ikemen-only. FFX prefixes, invalid-action timing,
+cross-namespace broadcast, nested teams, terminal playback parity, rollback,
+and full Helper/Projectile parity remain blocked.

@@ -1,12 +1,15 @@
 ﻿# Port Completion Scorecard
 
-## Next bounded slice — T706 planned
+## 2026-08-11 T706 Helper `ModifyProjectile projanim` closed-bounded - no score movement
 
-T706 will cover Helper-owned live Ikemen `ModifyProjectile projanim` with
-caller-context expression resolution and parent-only mutation evidence. This
-is planned work and does not move the score; FFX, namespace broadcast, nested
-teams, terminal timing, rollback, and full Helper/Projectile parity remain
-blocked. See [issue 280](../.scratch/roadmap/issues/280-helper-modifyprojectile-anim-dynamic.md).
+T706 closes the Helper-owned live Ikemen `ModifyProjectile projanim` seam.
+The typed one-value expression resolves once in Helper caller context, mutates
+only the helper-parented Projectile, resets AIR playback, and preserves a
+same-id player-owned Projectile. Required trace is `705a96e0/f47441cf`;
+aggregate QA is `791/791` (`757` required, `34` optional), with focused
+Helper/runtime coverage `140/140`. No score movement: FFX, namespace broadcast,
+nested teams, terminal timing, rollback, and full Helper/Projectile parity stay
+outside the claim. See [issue 280](../.scratch/roadmap/issues/280-helper-modifyprojectile-anim-dynamic.md).
 
 ## 2026-08-11 T705 `ModifyProjectile projanim` closed-bounded - no score movement
 

@@ -1,12 +1,15 @@
 ﻿# Progress Tracker
 
-## Next bounded slice — T706 planned
+## Latest implementation checkpoint — T706 closed-bounded (2026-08-11)
 
-T706 / issue 280 is queued for the Helper-owned live `ModifyProjectile projanim`
-path. The typed T705 operation is already present; the next implementation
-adds Helper caller-context resolution and an ownership proof for
-helper-parented Projectiles, with a separate required trace and checkpoint
-commits. See [issue 280](../.scratch/roadmap/issues/280-helper-modifyprojectile-anim-dynamic.md).
+T706 / issue 280 closes the Helper-owned live `ModifyProjectile projanim` path.
+The typed operation resolves once in Helper caller context, mutates only the
+helper-parented Projectile, resets AIR playback, and preserves a same-id
+player-owned Projectile. Required trace is `705a96e0/f47441cf`; aggregate QA
+passes `791/791` (`757` required, `34` optional), focused Helper/runtime
+coverage is `140/140`, and closeout commits record the remaining gates. FFX,
+cross-namespace broadcast, nested teams, terminal timing, rollback, and full
+Helper/Projectile parity remain blocked. See [issue 280](../.scratch/roadmap/issues/280-helper-modifyprojectile-anim-dynamic.md).
 
 ## Latest implementation checkpoint — T705 closed-bounded (2026-08-11)
 

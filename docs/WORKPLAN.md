@@ -1,14 +1,15 @@
 # Workplan
 
-## Next bounded slice — T706 planned
+## Latest bounded slice — T706 closed-bounded (2026-08-11)
 
-T706 closes the missing Helper-owned live `ModifyProjectile projanim` seam.
-Wire the typed T705 operation into the Helper caller resolver, keep the current
-helper-parented ownership filter, and prove action replacement/reset without
-touching a player-owned Projectile sharing the same id. Add the required
-Helper trace and commit implementation, evidence refresh, and docs separately.
-FFX, namespace broadcast, nested teams, terminal timing, rollback, and full
-Helper/Projectile parity remain blocked.
+T706 closes the Helper-owned live `ModifyProjectile projanim` seam. The typed
+Helper caller resolver evaluates once, keeps the existing helper-parented
+ownership filter, replaces/resets the selected AIR action, and leaves a
+same-id player-owned Projectile unchanged. Required trace is
+`705a96e0/f47441cf`; aggregate QA is `791/791` (`757` required, `34` optional)
+and focused Helper/runtime coverage is `140/140`. FFX, namespace broadcast,
+nested teams, terminal timing, rollback, and full Helper/Projectile parity
+remain blocked. See [issue 280](../.scratch/roadmap/issues/280-helper-modifyprojectile-anim-dynamic.md).
 
 ## Current parity queue
 

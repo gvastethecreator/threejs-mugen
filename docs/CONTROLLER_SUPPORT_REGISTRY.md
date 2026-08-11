@@ -1,14 +1,15 @@
 # Controller Support Registry
 
-Next bounded cursor: T706 / issue 280 plans explicit Helper caller-context
-resolution for typed live `ModifyProjectile projanim`. The existing Helper
-ownership filter must mutate only helper-parented Projectiles, preserve a
-player-owned same-id Projectile, and prove AIR action reset plus lifecycle in a
-required trace. This is Ikemen-only; FFX, cross-namespace broadcast, nested
-teams, terminal timing, rollback, and full Helper/Projectile parity remain
-excluded.
+Latest bounded cursor: T706 / issue 280 is closed-bounded for explicit Helper
+caller-context resolution of typed live `ModifyProjectile projanim`. The Helper
+ownership filter mutates only helper-parented Projectiles, preserves a
+player-owned same-id Projectile, and proves AIR action reset plus lifecycle in
+required trace `705a96e0/f47441cf`. Aggregate QA passes `791/791` artifacts
+(`757` required, `34` optional); focused Helper/runtime coverage is `140/140`.
+This is Ikemen-only; FFX, cross-namespace broadcast, nested teams, terminal
+timing, rollback, and full Helper/Projectile parity remain excluded.
 
-Authoritative cursor: T705 is closed-bounded for root-owned live Ikemen
+Authoritative previous cursor: T705 is closed-bounded for root-owned live Ikemen
 `ModifyProjectile projanim`; T704 remains closed-bounded for fresh root- and
 Helper-authored Projectiles with typed static/dynamic `projanim` resolution
 once in the original caller context before AIR action lookup. T705 required
@@ -889,6 +890,8 @@ HitDef RedirectID addendum: required `synthetic-imported-ikemen-root-hitdef-redi
 ModifyHitDef RedirectID addendum: required `synthetic-imported-ikemen-root-modifyhitdef-redirect` covers one explicit `ikemen-go` root-to-root mutation path. A caller-evaluated RedirectID can apply static `damage` or `damage,guardDamage` only to a verified receiver's already-active normal HitDef. The receiver retains its move identity, active frame, contact memory, control, and telemetry; compiler and runtime tests cover malformed/dynamic/unsupported payloads, `var(0)` selection, inactive/reversal rejection, and unknown-root blocking. Other ModifyHitDef fields, Helpers, custom states, teams, source-exact scheduling/hitpause, renderer behavior, rollback, and full parity remain blocked.
 
 ModifyReversalDef RedirectID addendum: required `synthetic-imported-ikemen-root-modifyreversaldef-redirect` covers the explicit `ikemen-go` static attr route, and `synthetic-imported-ikemen-root-modifyreversaldef-core-redirect` covers the local core continuation. A caller-evaluated RedirectID can patch a verified receiver's already-active reversal with static `reversal.attr`, first local `pausetime`, `p1stateno`, `id`, and `attack.depth`. The receiver retains move identity, active frame, contact state, control, and telemetry; compiler and runtime tests cover malformed/dynamic/unsupported payloads, `var(0)` selection, pair cloning, missing active-reversal rejection, and unknown-root blocking. `p2stateno`, `p2getp1state`, reversal guard fields, other inherited HitDef fields, Helpers, custom states, teams, source-exact scheduling/hitpause, renderer behavior, rollback, and full parity remain blocked.
+
+T706 registry addendum: required `synthetic-imported-helper-modifyprojectile-dynamic-anim.json` checksum `705a96e0` / final checksum `f47441cf` proves Helper-local `ModifyProjectile projanim = Var(30)` caller-context resolution, helper-parented Projectile AIR replacement/reset, Helper/Projectile/ModifyProjectile operation telemetry, and parent/root spawn/active/remove lifecycle. The same-id player-owned Projectile remains unmodified. This is an Ikemen-only bounded Helper visual route; FFX prefixes, cross-namespace broadcast, nested teams, terminal playback parity, rollback, and full Helper/Projectile parity remain blocked.
 
 | Controller Family | Current Level | Evidence | Notes |
 | --- | --- | --- | --- |
