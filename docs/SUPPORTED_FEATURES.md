@@ -12,11 +12,19 @@ exact combo/tick ordering, overflow/int32, teams, rollback and full ReversalDef
 parity remain outside the claim. See [issue
 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
 
-## Next queued — T728 `ModifyHitDef down.velocity`
+## Latest closed-bounded — T728 `ModifyHitDef down.velocity`
 
-Ikemen-only live X/Y component replacement with Y/Z preservation is queued for
-the caller/RedirectID route. See [issue
+Ikemen-only live X/Y component replacement with Y/Z preservation is complete
+for root/RedirectID and Helper callers. Required lying-contact evidence and
+`GetHitVar` metadata pass; fresh defaults, dynamic Z and exact landing timing
+remain outside the claim. See [issue
 302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
+
+## Next queued — T729 `ModifyHitDef sparkxy`
+
+Ikemen-only live X/Y replacement with omitted-axis preservation and bounded
+hit-effect offset evidence is queued for root/RedirectID and Helper callers.
+See [issue 303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
 
 ## Historical checkpoint — T726 completed
 

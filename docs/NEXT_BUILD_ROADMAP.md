@@ -1,6 +1,23 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T727 closed-bounded (2026-08-11)
+## Latest bounded slice — T728 closed-bounded (2026-08-11)
+
+Issue 302 closes Ikemen-only live `ModifyHitDef down.velocity` X/Y mutation
+through root/RedirectID and Helper callers. Static, mixed and dynamic values
+resolve once in caller context; single-component replacement preserves Y/Z,
+two-component replacement preserves Z, and omission preserves the active vector.
+Required root/Helper traces prove lying contact and hit variables; focused
+coverage, typecheck, diff hygiene and trace QA pass. Fresh defaults, dynamic Z,
+Projectiles and exact landing timing remain blocked. See [issue
+302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
+
+## Next bounded slice — T729 queued
+
+Issue 303 queues Ikemen-only live `ModifyHitDef sparkxy` X/Y replacement through
+root/RedirectID and Helper callers. See [issue
+303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
+
+## Historical bounded slice — T727 closed-bounded (2026-08-11)
 
 Issue 301 closes caller-context `hitonce` for direct/root `ReversalDef` and
 root/RedirectID `ModifyReversalDef`. Zero disables the one-contact gate,
@@ -9,12 +26,6 @@ Explicit target memory permits a distinct target only while disabled. Focused
 compiler/runtime coverage passes `184/184`, resolution/helper regressions pass
 `78/78`, and typecheck/diff hygiene pass. No causal end-to-end trace is
 promoted. See [issue 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
-
-## Next bounded slice — T728 queued
-
-Issue 302 queues Ikemen-only live `ModifyHitDef down.velocity` X/Y component
-replacement with Y/Z preservation through the existing caller/RedirectID
-boundary. See [issue 302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
 
 ## Historical queue — T726 completed
 

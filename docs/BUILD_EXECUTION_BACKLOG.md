@@ -10,9 +10,14 @@
   `184/184`; resolution/helper coverage is `78/78`; no causal trace is
   claimed. See [issue 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
 
-- **T728 queued** — Ikemen-only live `ModifyHitDef down.velocity` X/Y
-  component replacement with Y/Z preservation through caller/RedirectID.
-  See [issue 302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
+- **T728 closed-bounded** — Ikemen-only live `ModifyHitDef down.velocity` X/Y
+  replacement with Y/Z preservation on root/RedirectID and Helper callers;
+  required lying-contact traces pass. See [issue
+  302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
+
+- **T729 queued** — Ikemen-only live `ModifyHitDef sparkxy` X/Y replacement
+  with omitted-axis preservation and bounded hit-effect offset evidence. See
+  [issue 303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
 
 - **T726 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
   `ModifyReversalDef` now retain static, dynamic, and mixed `nochainid` lists

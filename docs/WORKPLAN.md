@@ -1,6 +1,20 @@
 # Workplan
 
-## Latest slice — T727 closed-bounded (2026-08-11)
+## Latest slice — T728 closed-bounded (2026-08-11)
+
+Issue 302 is complete: live `ModifyHitDef down.velocity` X/Y values resolve in
+caller context, preserve omitted Y/Z components, and are consumed by lying
+contact on root/RedirectID and Helper paths. Required traces, focused gates,
+typecheck and QA trace pass; fresh defaults, dynamic Z and exact landing timing
+remain blocked.
+
+## Next slice — T729 queued
+
+Issue 303 queues Ikemen-only live `ModifyHitDef sparkxy` X/Y replacement through
+root/RedirectID and Helper callers. See [issue
+303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
+
+## Historical slice — T727 closed-bounded (2026-08-11)
 
 Issue 301 closes direct/root `ReversalDef` and root/RedirectID
 `ModifyReversalDef` `hitonce`. Static and caller-context values resolve once;
@@ -10,12 +24,6 @@ distinct target only while disabled. Focused compiler/runtime coverage is
 `184/184`; resolution/helper coverage is `78/78`; typecheck and diff hygiene
 pass. No causal end-to-end trace is promoted. See [issue
 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
-
-## Next slice — T728 queued
-
-Issue 302 queues Ikemen-only live `ModifyHitDef down.velocity` X/Y replacement
-with Y/Z preservation through caller/RedirectID. See [issue
-302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
 
 ## Historical slice — T726 completed (2026-08-11)
 

@@ -13,11 +13,18 @@ exact tick/combo parity, overflow/int32, teams, rollback and full ReversalDef
 parity remain blocked. See [issue
 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
 
-## Next queued — T728 `ModifyHitDef down.velocity` expressions
+## Latest closed-bounded — T728 `ModifyHitDef down.velocity` expressions
 
-Issue 302 queues Ikemen-only live X/Y component replacement with Y/Z
-preservation. See [issue
+Issue 302 closes Ikemen-only live X/Y replacement with Y/Z preservation for
+root/RedirectID and Helper callers, with required lying-contact evidence.
+See [issue
 302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
+
+## Next queued — T729 `ModifyHitDef sparkxy` expressions
+
+Issue 303 queues Ikemen-only live X/Y replacement with omitted-axis
+preservation and bounded hit-effect offset evidence. See [issue
+303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
 
 ## Historical checkpoint — T726 completed
 

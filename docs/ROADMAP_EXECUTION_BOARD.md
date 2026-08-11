@@ -1,6 +1,25 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T727 closed-bounded (2026-08-11)
+## Latest bounded slice — T728 closed-bounded (2026-08-11)
+
+Issue 302 closes Ikemen-only live `ModifyHitDef down.velocity` on root,
+RedirectID and Helper caller paths. Static, mixed and dynamic X/Y values
+resolve once in caller context; one component replaces X while preserving Y/Z,
+two components replace X/Y while preserving Z, and omission is a no-op.
+Required root and Helper traces prove lying contact, ownership, target links and
+`GetHitVar(xvel/yvel/zvel)`; focused suites, typecheck, diff hygiene and QA
+traces pass. Fresh defaults, dynamic Z, Projectiles and exact landing timing
+remain blocked. See [issue 302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
+
+## Next bounded slice — T729 queued
+
+Issue 303 queues Ikemen-only live `ModifyHitDef sparkxy` X/Y replacement through
+root/RedirectID and Helper callers, with omitted-axis preservation and bounded
+hit-effect offset evidence. Fresh defaults, sound/spark identity mutation,
+Projectiles, exact renderer timing and full effect parity remain excluded. See
+[issue 303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
+
+## Historical bounded slice — T727 closed-bounded (2026-08-11)
 
 Issue 301 closes direct/root `ReversalDef` and root/RedirectID
 `ModifyReversalDef` `hitonce`. Static and caller-context expressions resolve
@@ -10,14 +29,6 @@ distinct target only when the flag is disabled. Focused compiler/runtime
 coverage passes `184/184`, resolution/helper regressions pass `78/78`, and
 typecheck/diff hygiene pass. No durable end-to-end trace is claimed. See
 [issue 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
-
-## Next bounded slice — T728 queued
-
-Issue 302 queues Ikemen-only live `ModifyHitDef down.velocity` X/Y component
-replacement with Y/Z preservation on the same caller/RedirectID boundary.
-Fresh `down.velocity`, dynamic Z, Helper-owned mutation, Projectiles and exact
-lying/landing timing remain excluded. See [issue
-302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
 
 ## Historical queue — T726 completed
 

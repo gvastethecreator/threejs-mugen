@@ -1,6 +1,18 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T727 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T728 closed-bounded (2026-08-11)
+
+Issue 302 closes live `ModifyHitDef down.velocity` X/Y replacement through
+root/RedirectID and Helper callers. Caller-context resolution, omitted-axis
+preservation, lying-contact consumption and required traces are covered;
+focused gates, typecheck and QA trace pass.
+
+## Next implementation checkpoint — T729 queued
+
+Issue 303 queues live `ModifyHitDef sparkxy` X/Y replacement through
+root/RedirectID and Helper callers, with bounded hit-effect offset evidence.
+
+## Historical checkpoint — T727 closed-bounded (2026-08-11)
 
 Issue 301 adds typed static/dynamic `hitonce` to direct/root `ReversalDef` and
 root/RedirectID `ModifyReversalDef`. Fresh/live values resolve once in caller
@@ -10,12 +22,6 @@ allows a distinct target only while disabled. Focused compiler/runtime tests
 pass `184/184`; resolution/helper tests pass `78/78`; typecheck and diff
 hygiene pass. No durable end-to-end trace is promoted. See [issue
 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
-
-## Next implementation checkpoint — T728 queued
-
-Issue 302 queues Ikemen-only live `ModifyHitDef down.velocity` X/Y replacement
-with Y/Z preservation. See [issue
-302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
 
 ## Historical checkpoint — T726 completed (2026-08-11)
 

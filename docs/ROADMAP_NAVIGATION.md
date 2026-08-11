@@ -2,7 +2,12 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T727 closed-bounded (2026-08-11)
+## Current implementation route — T728 closed-bounded (2026-08-11)
+
+T728 / [issue 302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md)
+closes live `ModifyHitDef down.velocity` X/Y replacement for root/RedirectID
+and Helper callers. Omitted Y/Z components remain active and required lying
+contact traces pass.
 
 T727 / [issue 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md)
 closes caller-context `hitonce` for direct/root `ReversalDef` and
@@ -12,11 +17,11 @@ and explicit target memory permits distinct targets only while disabled.
 Focused compiler/runtime coverage is `184/184`; resolution/helper coverage is
 `78/78`; no causal end-to-end trace is promoted.
 
-## Next implementation route — T728 queued
+## Next implementation route — T729 queued
 
-T728 / [issue 302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md)
-queues Ikemen-only live `ModifyHitDef down.velocity` X/Y replacement with
-Y/Z preservation.
+T729 / [issue 303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md)
+queues Ikemen-only live `ModifyHitDef sparkxy` X/Y replacement with omitted-axis
+preservation and bounded hit-effect offset evidence.
 
 ## Historical queue — T726 completed
 
