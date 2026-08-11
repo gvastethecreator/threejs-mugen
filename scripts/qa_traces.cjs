@@ -1581,6 +1581,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileDynamicAnimTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyprojectile-dynamic-anim",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyProjectileDynamicAnimTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projectile-dynamic-anim",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileDynamicAnimTraceArtifact(),

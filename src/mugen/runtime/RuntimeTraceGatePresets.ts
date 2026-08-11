@@ -31129,6 +31129,72 @@ export function createSyntheticImportedProjectileDynamicAnimTraceArtifact(
   });
 }
 
+export function createSyntheticImportedModifyProjectileDynamicAnimTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? effectPauseStage();
+  const script = importedProjectileRemoveTerminalScript();
+  const projectileId = 8920;
+  const modifiedAnimNo = 915;
+  const readbackStateNo = 1296;
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-dynamic-anim-attacker",
+    displayName: "Dynamic ModifyProjectile Animation Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileId,
+    projectileAnimNo: 910,
+    projectileHitAnim: modifiedAnimNo,
+    projectileOffset: [80, -45],
+    projectileVelocity: [0, 0],
+    projectileRemoveTime: 8,
+    projectileRemoveOnHit: false,
+    withModifyProjectile: true,
+    modifyProjectileTriggerTime: 3,
+    modifyProjectileId: projectileId,
+    modifyProjectileAnim: "var(0)",
+    modifyProjectileAnimActionNo: modifiedAnimNo,
+    modifyProjectileAnimReadbackStateNo: readbackStateNo,
+    modifyProjectileAnimExpected: modifiedAnimNo,
+    modifyProjectileVarSeeds: [{ index: 0, value: modifiedAnimNo }],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-modifyprojectile-dynamic-anim-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyprojectile-dynamic-anim-golden",
+      label: "Synthetic imported dynamic ModifyProjectile projanim route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root-owned ModifyProjectile evaluates projanim var(0) once in the original caller context, broadcasts the resolved AIR action to the selected live Projectile, resets playback, and exposes the result through ProjVar(id, index, anim). The trace intentionally excludes FFX prefixes, negative/overflow/invalid-action parity, Helper-owned mutation, selection order, teams, rollback, and full Projectile parity.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyprojectile-dynamic-anim-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, readbackStateNo],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Projectile", "ModifyProjectile"],
+      requiredExecutedOperations: ["variable:varset", "projectile", "modifyprojectile"],
+      requiredActiveCommands: ["x"],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minNextProjectileSerial: 1 }],
+      requiredActorFrames: [{ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: modifiedAnimNo, minFrames: 1 }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: readbackStateNo, life: 1000 }],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileDynamicAnimTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -61917,6 +61983,13 @@ export type SyntheticImportedTraceFighterOptions = {
   withModifyProjectile?: boolean;
   modifyProjectileTriggerTime?: number;
   modifyProjectileId?: SyntheticNumberExpression;
+  /** Synthetic fixture-only live ModifyProjectile projanim expression. */
+  modifyProjectileAnim?: SyntheticNumberExpression;
+  /** AIR action made available for a synthetic live ModifyProjectile projanim target. */
+  modifyProjectileAnimActionNo?: number;
+  /** State reached only when ProjVar(anim) observes the selected live Projectile action. */
+  modifyProjectileAnimReadbackStateNo?: number;
+  modifyProjectileAnimExpected?: SyntheticNumberExpression;
   modifyProjectileVelocity?: SyntheticPairExpression;
   modifyProjectileAccel?: SyntheticPairExpression;
   modifyProjectileVelocityMultiplier?: SyntheticPairExpression;
@@ -62479,7 +62552,7 @@ export type SyntheticImportedTraceFighterOptions = {
       targetId?: number;
       chainId?: number;
       attr?: string;
-      projectileAnimNo?: number;
+  projectileAnimNo?: number;
       pos?: [number, number];
       velocity?: [number, number];
       hitSound?: string;
@@ -63448,6 +63521,7 @@ ${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secon
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
   projectileId: options.modifyProjectileId,
+  projAnim: options.modifyProjectileAnim,
   velocity: options.modifyProjectileVelocity,
   accel: options.modifyProjectileAccel,
   velocityMultiplier: options.modifyProjectileVelocityMultiplier,
@@ -63469,6 +63543,11 @@ ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   missTime: options.modifyProjectileMissTime,
   removeOnHit: options.modifyProjectileRemoveOnHit,
 }) : ""}
+${options.modifyProjectileAnimReadbackStateNo === undefined ? "" : contactBranchBlock(
+  `ProjVar(${options.modifyProjectileId ?? 77}, 0, anim) = ${options.modifyProjectileAnimExpected ?? 0}`,
+  options.modifyProjectileAnimReadbackStateNo,
+  "ModifyProjectile ProjVar Animation Branch",
+)}
 ${options.withHitAdd === undefined ? "" : hitAddControllerBlock(options.withHitAdd)}
 ${options.projCancelTimeVarSeed === undefined ? "" : projectileCancelTimeVarSeedBlock(options.projCancelTimeVarSeed)}
 ${options.numProjStateNo === undefined ? "" : contactBranchBlock("NumProjID(77) > 0", options.numProjStateNo, "NumProj Branch")}
@@ -63767,6 +63846,12 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.withProjectile
         ? ([[options.projectileAnimNo ?? 910, projectileTraceAction(options.projectileAnimNo ?? 910)], ...projectileTerminalTraceActions(options)] as Array<[number, MugenAnimationAction]>)
         : []),
+      ...(options.modifyProjectileAnimActionNo === undefined
+        ? []
+        : ([[options.modifyProjectileAnimActionNo, projectileTraceAction(options.modifyProjectileAnimActionNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.modifyProjectileAnimReadbackStateNo === undefined
+        ? []
+        : ([[options.modifyProjectileAnimReadbackStateNo, traceAction(options.modifyProjectileAnimReadbackStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.projHitStateNo === undefined ? [] : ([[options.projHitStateNo, traceAction(options.projHitStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.projHitTimeStateNo === undefined ? [] : ([[options.projHitTimeStateNo, traceAction(options.projHitTimeStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.projContactTimeStateNo === undefined
@@ -67589,6 +67674,7 @@ projsprpriority = 7
 function modifyProjectileControllerBlock(input: {
   triggerTime?: number;
   projectileId?: SyntheticNumberExpression;
+  projAnim?: SyntheticNumberExpression;
   velocity?: SyntheticPairExpression;
   accel?: SyntheticPairExpression;
   velocityMultiplier?: SyntheticPairExpression;
@@ -67631,6 +67717,7 @@ value = ${seed.value}
   const stageBoundLine = input.stageBound === undefined ? "" : `projstagebound = ${input.stageBound}`;
   const heightBoundLine = input.heightBound === undefined ? "" : `projheightbound = ${input.heightBound[0]},${input.heightBound[1]}`;
   const getPowerLine = input.getPower === undefined ? "" : `getpower = ${input.getPower[0]},${input.getPower[1]}`;
+  const projAnimLine = input.projAnim === undefined ? "" : `projanim = ${input.projAnim}`;
   const downVelocityLine = input.downVelocity === undefined ? "" : `down.velocity = ${input.downVelocity.join(",")}`;
   const groundVelocityLine = input.groundVelocity === undefined ? "" : `ground.velocity = ${input.groundVelocity.join(",")}`;
   const airGuardVelocityLine = input.airGuardVelocity === undefined ? "" : `airguard.velocity = ${input.airGuardVelocity.join(",")}`;
@@ -67655,6 +67742,7 @@ ${edgeBoundLine}
 ${stageBoundLine}
 ${heightBoundLine}
 ${getPowerLine}
+${projAnimLine}
 ${downVelocityLine}
 ${groundVelocityLine}
 ${airGuardVelocityLine}
