@@ -207,6 +207,8 @@ export type HitDefControllerOp = {
   missOnOverride?: boolean;
   ignoreReversalDef?: boolean;
   snap?: [number, number?];
+  /** Direct fresh HitDef snap X/Y expressions evaluated in the caller context. */
+  snapExpressions?: MugenHitDefExpressionPair;
   animType?: number;
   /** Ikemen GetHitVar ground/air reaction metadata. */
   airAnimType?: number;
@@ -2627,6 +2629,12 @@ function compileHitDefControllerOp(
   const guardSparkScale = optionalFloatExpressionPairParam(controller, "guard.sparkscale");
   const hitSparkAngle = optionalScalarNumberOrExpression(controller, "sparkangle");
   const guardSparkAngle = optionalScalarNumberOrExpression(controller, "guard.sparkangle");
+  const snapRaw = findParam(controller, "snap");
+  const snapStatic = snapRaw === undefined ? undefined : strictStaticNumberPair(snapRaw);
+  const snapExpressionValue = snapRaw === undefined || snapStatic !== undefined
+    ? true
+    : optionalFloatExpressionPairParam(controller, "snap");
+  const snapExpressions = Array.isArray(snapExpressionValue) ? snapExpressionValue : undefined;
   const paletteFx = optionalHitDefPaletteFxParam(controller);
   const envShake = optionalHitDefEnvShakeParam(controller);
   const fallEnvShake = optionalHitDefEnvShakeParam(controller, "fall.envshake");
@@ -2680,6 +2688,7 @@ function compileHitDefControllerOp(
     guardVelocityExpression === false ||
     airGuardVelocityExpressionValue === false ||
     (Array.isArray(airGuardVelocityExpressionValue) && airGuardVelocityExpressions === undefined) ||
+    snapExpressionValue === false ||
     hitSparkScale === false ||
     guardSparkScale === false ||
     hitSparkAngle === false ||
@@ -2811,7 +2820,8 @@ function compileHitDefControllerOp(
     ...(p2Facing === true ? {} : { p2Facing }),
     missOnOverride: booleanNumber(findParam(controller, "missonoverride")),
     ignoreReversalDef: booleanNumber(findParam(controller, "ignorereversaldef")),
-    snap: numberPair(findParam(controller, "snap")),
+    snap: snapStatic,
+    ...(snapExpressions === undefined ? {} : { snapExpressions }),
     animType: hitAnimType(findParam(controller, "animtype")),
     airAnimType: hitAnimType(findParam(controller, "air.animtype")),
     groundType: hitType(findParam(controller, "ground.type") ?? findParam(controller, "type")),

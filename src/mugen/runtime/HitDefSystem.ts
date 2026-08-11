@@ -50,7 +50,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state" | "hitsound.channel" | "guardsound.channel") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
-  resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy") => [number?, number?] | undefined;
+  resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy" | "snap") => [number?, number?] | undefined;
   resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -672,10 +672,24 @@ export class RuntimeHitDefControllerDispatchWorld {
       context ?? {},
       resolveIntegerScalar?.("numhits"),
     ) ?? operation?.hitCount ?? firstNumber(findParam(source, "numhits")) ?? existing?.hitVars?.hitCount ?? 1;
-    const existingSnap = existing?.hitVars?.hitOffset
-      ? ([existing.hitVars.hitOffset.x, existing.hitVars.hitOffset.y] as [number, number?])
-      : undefined;
-    const snap = operation?.snap ?? numberPair(findParam(source, "snap")) ?? existingSnap;
+    const staticSnap = operation?.snap ?? numberPair(findParam(source, "snap"));
+    const resolvedSnap = operation?.snapExpressions === undefined && staticSnap !== undefined
+      ? undefined
+      : resolveRuntimeHitDefFloatExpressionPair(
+          operation?.snapExpressions,
+          findParam(source, "snap"),
+          actor.runtime,
+          context ?? {},
+          resolveFloatPair?.("snap"),
+        );
+    const snap: [number, number?] | undefined = resolvedSnap === undefined
+      ? staticSnap
+      : resolvedSnap.first === undefined
+        ? undefined
+        : [
+            resolvedSnap.first,
+            resolvedSnap.componentCount === 2 ? resolvedSnap.second : undefined,
+          ];
     const resolveFreshStateScalar = (
       key: "p1stateno" | "p2stateno" | "p2getp1state",
       operationValue: number | string | undefined,
