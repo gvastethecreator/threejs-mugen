@@ -263,6 +263,8 @@ export type RuntimeReversalDef = {
   targetId?: number;
   /** Active ReversalDef chain-id requirement; omitted means no chain restriction. */
   chainId?: number;
+  /** Active ReversalDef NoChainID values; omitted means no blocked ids. */
+  noChainIds?: number[];
   attackDepth?: [number, number];
   unhittableTime?: [number, number];
 };

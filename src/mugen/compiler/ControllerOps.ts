@@ -7,6 +7,7 @@ export type MugenProjectileVector = [number, number, number?];
 export type MugenHitDefVector = [number, number?, number?];
 export type MugenHitDefExpressionPair = [number | string, (number | string)?];
 export type MugenHitDefExpressionTriplet = [number | string, number | string, number | string];
+export type MugenIntegerExpressionList = Array<number | string>;
 export type MugenHitDefPaletteFxOp = {
   time?: number | string;
   add?: MugenHitDefExpressionTriplet;
@@ -400,6 +401,10 @@ export type ModifyReversalDefControllerOp = {
   targetIdExpression?: number | string;
   /** Dynamic or mixed live ReversalDef chain-id requirement evaluated in caller context. */
   chainId?: number | string;
+  /** Up to eight static ReversalDef NoChainID values. */
+  noChainIds?: number[];
+  /** Up to eight dynamic or mixed NoChainID values evaluated in caller context. */
+  noChainIdExpressions?: MugenIntegerExpressionList;
   attackDepth?: [number, number];
   /** Dynamic or mixed live ReversalDef attack-depth replacement evaluated in caller context. */
   attackDepthExpressions?: MugenHitDefExpressionPair;
@@ -1325,6 +1330,10 @@ export type ReversalDefControllerOp = {
   targetIdExpression?: number | string;
   /** Dynamic or mixed ReversalDef chain-id requirement evaluated in caller context. */
   chainId?: number | string;
+  /** Up to eight static live NoChainID values. */
+  noChainIds?: number[];
+  /** Up to eight dynamic or mixed live NoChainID values evaluated in caller context. */
+  noChainIdExpressions?: MugenIntegerExpressionList;
   attackDepth?: [number, number];
   /** Dynamic or mixed ReversalDef attack-depth pair evaluated in caller context. */
   attackDepthExpressions?: MugenHitDefExpressionPair;
@@ -2399,6 +2408,13 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   const targetId = typeof targetIdValue === "number" ? Math.max(0, targetIdValue) : undefined;
   const targetIdExpression = typeof targetIdValue === "string" ? targetIdValue : undefined;
   const chainId = optionalIntegerExpressionParam(controller, "chainid");
+  const noChainIdValue = optionalIntegerExpressionListExpressionParam(controller, "nochainid", 8);
+  const noChainIdExpressions = Array.isArray(noChainIdValue) && noChainIdValue.some((value) => typeof value === "string")
+    ? noChainIdValue
+    : undefined;
+  const noChainIds = Array.isArray(noChainIdValue) && noChainIdExpressions === undefined
+    ? noChainIdValue as number[]
+    : undefined;
   const attackDepthValue = optionalFloatExpressionPairParam(controller, "attack.depth");
   const attackDepthExpressions = Array.isArray(attackDepthValue) && attackDepthValue.some((value) => typeof value === "string")
     ? attackDepthValue
@@ -2426,6 +2442,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     p2Facing === false ||
     targetIdValue === false ||
     chainId === false ||
+    noChainIdValue === false ||
     attackDepthValue === false ||
     unhittableTime === false ||
     redirectPlayerIdExpression === "invalid"
@@ -2463,6 +2480,8 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     targetId,
     ...(targetIdExpression === undefined ? {} : { targetIdExpression }),
     ...(chainId === true ? {} : { chainId }),
+    ...(noChainIds === undefined ? {} : { noChainIds }),
+    ...(noChainIdExpressions === undefined ? {} : { noChainIdExpressions }),
     ...(attackDepth === undefined ? {} : { attackDepth }),
     ...(attackDepthExpressions === undefined ? {} : { attackDepthExpressions }),
     unhittableTime: unhittableTime === true ? undefined : unhittableTime,
@@ -3189,6 +3208,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     "p2facing",
     "id",
     "chainid",
+    "nochainid",
     "attack.depth",
   ]);
   if (Object.keys(controller.params).some((key) => !allowedParams.has(key.toLowerCase()))) {
@@ -3226,6 +3246,13 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   const normalizedTargetId = typeof targetIdValue === "number" ? Math.max(0, targetIdValue) : undefined;
   const targetIdExpression = typeof targetIdValue === "string" ? targetIdValue : undefined;
   const chainId = optionalIntegerExpressionParam(controller, "chainid");
+  const noChainIdValue = optionalIntegerExpressionListExpressionParam(controller, "nochainid", 8);
+  const noChainIdExpressions = Array.isArray(noChainIdValue) && noChainIdValue.some((value) => typeof value === "string")
+    ? noChainIdValue
+    : undefined;
+  const noChainIds = Array.isArray(noChainIdValue) && noChainIdExpressions === undefined
+    ? noChainIdValue as number[]
+    : undefined;
   const attackDepthValue = optionalFloatExpressionPairParam(controller, "attack.depth");
   const attackDepthExpressions = Array.isArray(attackDepthValue) && attackDepthValue.some((value) => typeof value === "string")
     ? attackDepthValue
@@ -3253,6 +3280,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     p2Facing === false ||
     targetIdValue === false ||
     chainId === false ||
+    noChainIdValue === false ||
     attackDepthValue === false ||
     redirectPlayerIdExpression === undefined ||
     redirectPlayerIdExpression === "invalid"
@@ -3297,6 +3325,8 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     normalizedTargetId === undefined &&
     targetIdExpression === undefined &&
     chainId === true &&
+    noChainIds === undefined &&
+    noChainIdExpressions === undefined &&
     attackDepth === undefined &&
     attackDepthExpressions === undefined
   ) {
@@ -3328,6 +3358,8 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     ...(normalizedTargetId === undefined ? {} : { targetId: normalizedTargetId }),
     ...(targetIdExpression === undefined ? {} : { targetIdExpression }),
     ...(chainId === true ? {} : { chainId }),
+    ...(noChainIds === undefined ? {} : { noChainIds }),
+    ...(noChainIdExpressions === undefined ? {} : { noChainIdExpressions }),
     ...(attackDepth === undefined ? {} : { attackDepth }),
     ...(attackDepthExpressions === undefined ? {} : { attackDepthExpressions }),
   };
@@ -4573,6 +4605,38 @@ function optionalIntegerExpressionListParam(
     hasValidScalarExpressionStructure(expression) && compileExpression(expression).supportLevel !== "unsupported")
     ? "dynamic"
     : false;
+}
+
+function optionalIntegerExpressionListExpressionParam(
+  controller: MugenStateController,
+  key: string,
+  maxLength: number,
+): MugenIntegerExpressionList | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) return true;
+  const values = compileIntegerExpressionList(raw);
+  return values === undefined ? false : values.slice(0, maxLength);
+}
+
+function compileIntegerExpressionList(raw: string): MugenIntegerExpressionList | undefined {
+  const commaIndices = topLevelExpressionCommaIndices(raw);
+  const cuts = [...(commaIndices ?? []), raw.length];
+  const visit = (start: number, values: MugenIntegerExpressionList): MugenIntegerExpressionList | undefined => {
+    if (start >= raw.length) return values;
+    for (const end of cuts) {
+      if (end <= start) continue;
+      const component = compileFloatExpressionComponent(raw.slice(start, end));
+      if (component === undefined) continue;
+      const nextStart = end < raw.length ? end + 1 : end;
+      const result = visit(nextStart, [
+        ...values,
+        typeof component === "number" ? Math.trunc(component) : component,
+      ]);
+      if (result !== undefined) return result;
+    }
+    return undefined;
+  };
+  return visit(0, []);
 }
 
 function staticNumberParam(controller: MugenStateController, key: string, fallback: number): number | undefined {

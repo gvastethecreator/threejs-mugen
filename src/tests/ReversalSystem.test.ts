@@ -534,6 +534,45 @@ describe("ReversalSystem", () => {
     expect(reversalWorld.findActive(reverser, incoming, incoming.hitbox, findHooks())).toBeDefined();
   });
 
+  it("resolves fresh and live ReversalDef NoChainID lists in the caller context", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const reverser = actor("p2", "Reverser", { vars: [99, 99], hitVars: { hitId: 10 } });
+    const caller = actor("p1", "Caller", { vars: [44, 45, 42, 43] });
+    const activated = dispatchWorld.apply({
+      actor: reverser,
+      controller: compileControllerIr(controller("ReversalDef", {
+        "reversal.attr": "SA,AA",
+        nochainid: "var(0),var(1),40,41,42,43,44,45,46",
+      })),
+      context: { self: caller.runtime },
+      hitbox: box(),
+      reversalWorld,
+    });
+
+    expect(activated.activated).toBe(true);
+    expect(reverser.currentMove?.noChainIds).toEqual([44, 45, 40, 41, 42, 43, 44, 45]);
+    expect(reverser.runtime.reversal?.noChainIds).toEqual([44, 45, 40, 41, 42, 43, 44, 45]);
+    const blocked = move({ hitVars: { hitId: 44 } });
+    const allowed = move({ hitVars: { hitId: 39 } });
+    expect(reversalWorld.findActive(reverser, blocked, blocked.hitbox, findHooks())).toBeUndefined();
+    expect(reversalWorld.findActive(reverser, allowed, allowed.hitbox, findHooks())).toBeDefined();
+
+    const modified = dispatchWorld.modify({
+      actor: reverser,
+      controller: compileControllerIr(controller("ModifyReversalDef", {
+        nochainid: "var(2),var(3)",
+        redirectid: "57",
+      })),
+      context: { self: caller.runtime },
+    });
+    expect(modified.modified).toBe(true);
+    expect(reverser.currentMove?.noChainIds).toEqual([42, 43]);
+    expect(reverser.runtime.reversal?.noChainIds).toEqual([42, 43]);
+    expect(reversalWorld.findActive(reverser, move({ hitVars: { hitId: 42 } }), box(), findHooks())).toBeUndefined();
+    expect(reversalWorld.findActive(reverser, move({ hitVars: { hitId: 41 } }), box(), findHooks())).toBeDefined();
+  });
+
   it("resolves dynamic ReversalDef sprite priorities in the caller and preserves omitted Modify components", () => {
     const reversalWorld = new RuntimeReversalWorld();
     const dispatchWorld = new RuntimeReversalControllerDispatchWorld();

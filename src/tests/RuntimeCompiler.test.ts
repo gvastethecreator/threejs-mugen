@@ -2047,6 +2047,32 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles ReversalDef NoChainID lists with caller expressions and the eight-entry cap", () => {
+    const fresh = compileControllerIr(controller(200, "ReversalDef", [], {
+      "reversal.attr": "S,NA",
+      nochainid: "var(0),Parent,var(1),40,41,42,43,44,45",
+    }));
+    const modified = compileControllerIr(controller(200, "ModifyReversalDef", [], {
+      nochainid: "var(2),var(3)",
+      redirectid: "57",
+    }));
+    const malformed = compileControllerIr(controller(200, "ReversalDef", [], {
+      "reversal.attr": "S,NA",
+      nochainid: "var(",
+    }));
+
+    expect(fresh.operation).toMatchObject({
+      kind: "reversaldef",
+      noChainIdExpressions: ["var(0)", "Parent,var(1)", 40, 41, 42, 43, 44, 45],
+    });
+    expect(modified.operation).toMatchObject({
+      kind: "modifyreversaldef",
+      noChainIdExpressions: ["var(2)", "var(3)"],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(malformed.operation).toBeUndefined();
+  });
+
   it("compiles typed direct-HitDef getpower expressions and rejects malformed pairs", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], { getpower: "9.8" })).operation).toMatchObject({
       kind: "hitdef",

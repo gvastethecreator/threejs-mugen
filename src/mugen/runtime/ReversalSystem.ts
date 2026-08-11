@@ -1,4 +1,9 @@
-import type { ModifyReversalDefControllerOp, ReversalDefControllerOp, MugenHitDefExpressionPair } from "../compiler/ControllerOps";
+import type {
+  ModifyReversalDefControllerOp,
+  ReversalDefControllerOp,
+  MugenHitDefExpressionPair,
+  MugenIntegerExpressionList,
+} from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenStateController } from "../model/MugenState";
@@ -59,6 +64,8 @@ export type RuntimeReversalActivation = {
   targetId?: number;
   /** Resolved ReversalDef chain-id requirement; negative values disable the requirement. */
   chainId?: number;
+  /** Resolved ReversalDef NoChainID values. */
+  noChainIds?: number[];
   attackDepth?: [number, number];
   unhittableTime?: [number, number];
 };
@@ -170,6 +177,14 @@ export class RuntimeReversalControllerDispatchWorld {
       actor.runtime,
       context,
     );
+    const resolvedNoChainIds = resolveRuntimeReversalIntegerList(
+      operation?.noChainIdExpressions ?? operation?.noChainIds,
+      operation?.noChainIdExpressions === undefined && operation?.noChainIds === undefined
+        ? findParam(source, "nochainid")
+        : undefined,
+      actor.runtime,
+      context,
+    );
     const activated = reversalWorld.activate(actor, {
       attr: (operation?.attr ?? stripMugenString(findParam(source, "reversal.attr")))?.trim() ?? "",
       reversalGuardFlag: operation?.reversalGuardFlag,
@@ -237,6 +252,7 @@ export class RuntimeReversalControllerDispatchWorld {
       ),
       targetId: resolvedTargetId === undefined ? undefined : Math.max(0, resolvedTargetId),
       chainId: resolvedChainId !== undefined && resolvedChainId >= 0 ? resolvedChainId : undefined,
+      noChainIds: resolvedNoChainIds,
       attackDepth:
         operation?.attackDepth ??
         resolveRuntimeReversalFloatPair(
@@ -419,6 +435,16 @@ export class RuntimeReversalControllerDispatchWorld {
         runtimeReversal.chainId = normalizedChainId;
       }
     }
+    if (operation.noChainIdExpressions !== undefined || operation.noChainIds !== undefined) {
+      const noChainIds = resolveRuntimeReversalIntegerList(
+        operation.noChainIdExpressions ?? operation.noChainIds,
+        undefined,
+        actor.runtime,
+        context,
+      );
+      existing.noChainIds = noChainIds;
+      runtimeReversal.noChainIds = noChainIds;
+    }
     const attackDepth = operation.attackDepth ?? resolveRuntimeReversalFloatPair(
       operation.attackDepthExpressions,
       findParam(controller.source, "attack.depth"),
@@ -470,6 +496,7 @@ export class RuntimeReversalWorld {
       attr: hitDefAttr,
       targetId: activation.targetId,
       ...(chainId === undefined ? {} : { chainId }),
+      ...(activation.noChainIds === undefined ? {} : { noChainIds: [...activation.noChainIds] }),
       isReversal: true,
       reversalAttr: attr,
       reversalGuardFlag: activation.reversalGuardFlag,
@@ -521,6 +548,7 @@ export class RuntimeReversalWorld {
       ...(activation.hitCount === undefined ? {} : { hitCount }),
       ...(activation.targetId === undefined ? {} : { targetId: Math.max(0, activation.targetId) }),
       ...(chainId === undefined ? {} : { chainId }),
+      ...(activation.noChainIds === undefined ? {} : { noChainIds: [...activation.noChainIds] }),
     };
     return true;
   }
@@ -545,6 +573,11 @@ export class RuntimeReversalWorld {
     if (
       reversal.chainId !== undefined
       && defender.runtime.hitVars?.hitId !== Math.trunc(reversal.chainId)
+    ) {
+      return undefined;
+    }
+    if (
+      reversal.noChainIds?.some((blockedId) => blockedId >= 0 && incomingMove.hitVars?.hitId === Math.trunc(blockedId))
     ) {
       return undefined;
     }
@@ -687,6 +720,24 @@ function resolveRuntimeReversalIntegerPair(
   return [resolve(source[0], -1), resolve(source[1], -1)];
 }
 
+function resolveRuntimeReversalIntegerList(
+  operationValue: MugenIntegerExpressionList | undefined,
+  rawValue: string | undefined,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+  fallback?: number[],
+): number[] | undefined {
+  const source = operationValue ?? splitRuntimeReversalExpressionList(rawValue);
+  if (!source) return fallback === undefined ? undefined : [...fallback];
+  const resolved = source.map((value) => {
+    const result = typeof value === "number" ? value : evaluateRuntimeControllerNumber(value, state, context);
+    return Number.isFinite(result) ? Math.trunc(result!) : undefined;
+  });
+  return resolved.every((value): value is number => value !== undefined)
+    ? resolved
+    : fallback === undefined ? undefined : [...fallback];
+}
+
 function resolveRuntimeReversalFloatPair(
   operationValue: MugenHitDefExpressionPair | undefined,
   rawValue: string | undefined,
@@ -772,6 +823,12 @@ function splitRuntimeReversalExpressionPair(raw: string | undefined): [string, s
   const first = (split < 0 ? raw : raw.slice(0, split)).trim();
   const second = split < 0 ? undefined : raw.slice(split + 1).trim();
   return first && (split < 0 || second) ? [first, second] : undefined;
+}
+
+function splitRuntimeReversalExpressionList(raw: string | undefined): MugenIntegerExpressionList | undefined {
+  if (!raw) return undefined;
+  const values = raw.split(",").map((part) => part.trim());
+  return values.length > 0 && values.every((value) => value.length > 0) ? values : undefined;
 }
 
 function staticReversalHitCount(value: string | undefined): number | undefined {
