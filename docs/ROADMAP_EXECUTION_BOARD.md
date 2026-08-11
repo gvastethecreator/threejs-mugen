@@ -1,6 +1,17 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T707 closed-bounded (2026-08-11)
+## Latest bounded slice — T708 closed-bounded (2026-08-11)
+
+T708 / issue 282 closes typed caller-context expressions for Ikemen-only live
+`ModifyProjectile pausemovetime` and `supermovetime`. Root and Helper resolve
+once, preserve selected ownership, and expose normalized budgets through
+Projectile payload/ProjVar evidence. Required traces are
+`5cd62713/ba3572e4` and `6494c296/39225ffb`; aggregate QA passes `794/794`
+(`760` required, `34` optional). Exact Pause/SuperPause layering,
+overflow/int32 parity, broadcast, teams, rollback and full Projectile/Helper
+parity remain blocked. See [issue 282](../.scratch/roadmap/issues/282-ikemen-modifyprojectile-pause-supermovetime.md).
+
+## Previous bounded slice — T707 closed-bounded (2026-08-11)
 
 T707 / issue 281 closes typed caller-context expressions for Ikemen-only live
 `ModifyProjectile` terminal animations: `projhitanim`, `projremanim` and

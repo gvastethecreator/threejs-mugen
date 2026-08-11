@@ -1,6 +1,17 @@
 # Workplan
 
-## Latest bounded slice — T707 closed-bounded (2026-08-11)
+## Latest bounded slice — T708 closed-bounded (2026-08-11)
+
+T708 closes typed caller-context `ModifyProjectile` pause budgets
+(`pausemovetime`, `supermovetime`) for root and Helper paths. The selected
+Projectile receives the normalized value from one caller-context evaluation;
+required traces pass `5cd62713/ba3572e4` and `6494c296/39225ffb`, while QA
+passes `794/794` artifacts (`760` required, `34` optional). Keep exact
+Pause/SuperPause layering, overflow/int32, broadcast, teams, rollback and
+full Projectile/Helper parity blocked. See [issue
+282](../.scratch/roadmap/issues/282-ikemen-modifyprojectile-pause-supermovetime.md).
+
+## Previous bounded slice — T707 closed-bounded (2026-08-11)
 
 T707 closes typed caller-context `ModifyProjectile` terminal animations for
 `projhitanim`, `projremanim` and `projcancelanim`. Selection, ownership

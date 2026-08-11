@@ -1,6 +1,15 @@
 # Controller Support Registry
 
-Latest bounded cursor: T707 / issue 281 is closed-bounded for typed dynamic
+Latest bounded cursor: T708 / issue 282 is closed-bounded for Ikemen-only
+live `ModifyProjectile pausemovetime` and `supermovetime`. Root and Helper
+caller expressions resolve once and mutate only the selected Projectile;
+required traces are `5cd62713/ba3572e4` and `6494c296/39225ffb`. Aggregate QA
+passes `794/794` artifacts (`760` required, `34` optional), with compiler,
+ProjectileSystem, Helper VM, root integration and payload-gate coverage
+green. Exact Pause/SuperPause layering, overflow/int32 parity, broadcast,
+teams, rollback and full Projectile/Helper parity remain blocked.
+
+Previous bounded cursor: T707 / issue 281 is closed-bounded for typed dynamic
 live `ModifyProjectile` terminal animations (`projhitanim`, `projremanim`,
 `projcancelanim`) in root and Helper caller contexts. Required trace is
 `67162459/96ff2073`; terminal-focused coverage is `25/25` and typecheck is

@@ -1,5 +1,19 @@
 ﻿# QA And Acceptance Gates
 
+## 2026-08-11 T708 `ModifyProjectile` pause-budget gates
+
+T708 requires typed caller-context `pausemovetime` and `supermovetime` for
+Ikemen-only live `ModifyProjectile` in root and Helper paths. Required traces
+are `synthetic-imported-modifyprojectile-dynamic-movetime.json` with trace /
+final checksums `5cd62713/ba3572e4` and
+`synthetic-imported-helper-modifyprojectile-dynamic-movetime.json` with
+`6494c296/39225ffb`. The gate requires VarSet/Projectile/ModifyProjectile
+telemetry, selected ownership, spawn/active/remove lifecycle, and normalized
+pause/super budgets in payload evidence. Aggregate QA passes `794/794`
+artifacts (`760` required, `34` optional). Exact Pause/SuperPause layering,
+overflow/int32 parity, broadcast, teams, rollback and full Projectile/Helper
+parity remain blocked.
+
 ## 2026-08-08 HitDef power gates
 
 T626 requires typed one/two-component `getpower` coverage for root/Helper

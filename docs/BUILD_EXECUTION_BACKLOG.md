@@ -2,6 +2,16 @@
 
 ## Current parity queue
 
+- **T708 closed-bounded** — Ikemen-only live `ModifyProjectile
+  pausemovetime`/`supermovetime` now resolve typed root and Helper caller
+  expressions once, mutate selected Projectiles, and preserve the existing
+  normalized budget path. Required traces are
+  `5cd62713/ba3572e4` (root) and `6494c296/39225ffb` (Helper); QA passes
+  `794/794` artifacts (`760` required, `34` optional). Exact Pause/SuperPause
+  layering, overflow/int32, broadcast, teams, rollback and full
+  Projectile/Helper parity remain blocked. See [issue
+  282](../.scratch/roadmap/issues/282-ikemen-modifyprojectile-pause-supermovetime.md).
+
 - **T707 closed-bounded** — typed root/Helper caller-context expressions for
   live Ikemen `ModifyProjectile projhitanim`, `projremanim` and
   `projcancelanim` now resolve once and reuse selected AIR terminal playback.

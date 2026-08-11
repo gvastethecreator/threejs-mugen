@@ -1,5 +1,17 @@
 ﻿# Supported Features
-## 2026-08-11 T704 Projectile `projanim` checkpoint
+## 2026-08-11 T708 `ModifyProjectile` pause budgets checkpoint
+
+T708 is closed-bounded for Ikemen-only live `ModifyProjectile`
+`pausemovetime` and `supermovetime`: typed root and Helper caller expressions
+resolve once, update the selected Projectile, and preserve the existing
+normalized non-negative budget contract. Required traces are
+`5cd62713/ba3572e4` and `6494c296/39225ffb`; aggregate QA passes `794/794`
+artifacts (`760` required, `34` optional). Exact Pause/SuperPause layering,
+overflow/int32 behavior, broadcast, teams, rollback and full
+Projectile/Helper parity remain outside the supported claim. See [issue
+282](../.scratch/roadmap/issues/282-ikemen-modifyprojectile-pause-supermovetime.md).
+
+## Previous checkpoint — T704 Projectile `projanim`
 
 T704 is closed-bounded: fresh root/Helper Projectile `projanim` preserves
 typed static or dynamic VT_Int expressions, resolves once in the original

@@ -1,6 +1,17 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T707 `ModifyProjectile` terminal animations closed-bounded - no score movement
+## 2026-08-11 T708 `ModifyProjectile` pause/super movetime closed-bounded - no score movement
+
+T708 closes typed caller-context expressions for Ikemen-only live
+`pausemovetime` and `supermovetime` in root and Helper `ModifyProjectile`
+routes. Required traces pass with checksums `5cd62713/ba3572e4` (root) and
+`6494c296/39225ffb` (Helper); aggregate QA is `794/794` artifacts (`760`
+required, `34` optional). No score movement: exact Pause/SuperPause layering,
+overflow/int32 behavior, broadcast, teams, rollback and full
+Projectile/Helper parity remain outside the claim. See [issue
+282](../.scratch/roadmap/issues/282-ikemen-modifyprojectile-pause-supermovetime.md).
+
+## Previous checkpoint — T707 `ModifyProjectile` terminal animations closed-bounded - no score movement
 
 T707 closes typed caller-context expressions for live Ikemen
 `projhitanim`, `projremanim` and `projcancelanim` in root and Helper resolver

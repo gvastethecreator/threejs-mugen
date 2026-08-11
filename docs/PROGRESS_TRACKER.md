@@ -1,6 +1,17 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T707 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T708 closed-bounded (2026-08-11)
+
+T708 / issue 282 closes typed dynamic `ModifyProjectile` pause budgets for
+`pausemovetime` and `supermovetime` in root and Helper caller contexts. The
+required traces are `5cd62713/ba3572e4` and `6494c296/39225ffb`; focused
+compiler/runtime/trace coverage is green, typecheck passes, and aggregate QA
+passes `794/794` artifacts (`760` required, `34` optional). Exact
+Pause/SuperPause layering, overflow/int32 parity, broadcast, teams, rollback
+and full Projectile/Helper parity remain blocked. See [issue
+282](../.scratch/roadmap/issues/282-ikemen-modifyprojectile-pause-supermovetime.md).
+
+## Previous implementation checkpoint — T707 closed-bounded (2026-08-11)
 
 T707 / issue 281 closes typed dynamic `ModifyProjectile` terminal
 animations (`projhitanim`, `projremanim`, `projcancelanim`) with one

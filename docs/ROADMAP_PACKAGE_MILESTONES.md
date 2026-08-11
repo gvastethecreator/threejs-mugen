@@ -1,6 +1,18 @@
 ﻿# Roadmap Package Milestones
 
-## Latest bounded slice — T707 closed-bounded (2026-08-11)
+## Latest bounded slice — T708 closed-bounded (2026-08-11)
+
+Issue 282 closes typed live `ModifyProjectile` `pausemovetime` and
+`supermovetime` for root and Helper caller contexts. Required traces are
+`5cd62713/ba3572e4` and `6494c296/39225ffb`; aggregate QA passes `794/794`
+artifacts (`760` required, `34` optional). This remains an Ikemen-only
+bounded slice; exact Pause/SuperPause layering, overflow/int32 parity,
+broadcast, teams, rollback and full Projectile/Helper parity are blocked.
+
+The implementation resolves each expression once, mutates only the selected
+Projectile and reuses the existing normalized move-time path.
+
+## Previous bounded slice — T707 closed-bounded (2026-08-11)
 
 Issue 281 closes typed live `ModifyProjectile` terminal-action parameters
 (`projhitanim`, `projremanim`, `projcancelanim`) for root and Helper
