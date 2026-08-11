@@ -1,25 +1,24 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T730 closed-bounded (2026-08-11)
+## Latest bounded slice — T731 closed-bounded (2026-08-11)
 
-Issue 304 closes Ikemen-only live `ModifyHitDef sparkangle` through root,
+Issue 305 closes Ikemen-only live `ModifyHitDef guard.sparkangle` through root,
 RedirectID and Helper callers. Static and caller-context dynamic values resolve
-once; omission or an unresolved value preserves the live angle, and accepted
-hit presentation publishes the resolved angle in the `HitSpark` event. The
-required trace proves `var(0)=27` reaches the event without changing the spark
-identity or `sparkxy`; focused coverage passes `298/298` and aggregate QA passes
-`817/817` artifacts (`783` required, `34` optional). Guard spark angle, scale,
+once; omission or an unresolved value preserves the live guard angle, and an
+accepted guard publishes it in the `HitSpark` event while preserving `sparkxy`
+and spark identity. The required trace proves `var(0)=19` reaches the guard
+event without entering the hit route. Hit spark angle, spark identity, scale,
 palette, Projectiles, exact renderer timing and full effect parity remain
 blocked. See [issue
-304](../.scratch/roadmap/issues/304-modifyhitdef-sparkangle-expressions.md).
-
-## Next bounded slice — T731 queued
-
-Issue 305 queues the next Ikemen-only live `ModifyHitDef guard.sparkangle`
-scalar for the accepted guard presentation path. Hit spark angle, spark
-identity, scale, palette, Projectiles, exact renderer timing and full effect
-parity remain excluded. See [issue
 305](../.scratch/roadmap/issues/305-modifyhitdef-guard-sparkangle-expressions.md).
+
+## Next bounded slice — T732 queued
+
+Issue 306 queues the next Ikemen-only live `ModifyHitDef guard.sparkno`
+identity replacement for the accepted guard presentation path. Angle, scale,
+palette, Projectiles, exact renderer timing and full effect parity remain
+excluded. See [issue
+306](../.scratch/roadmap/issues/306-modifyhitdef-guard-sparkno-expressions.md).
 
 ## Historical bounded slice — T729 closed-bounded (2026-08-11)
 

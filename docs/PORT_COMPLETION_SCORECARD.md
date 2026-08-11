@@ -1,21 +1,20 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T730 `ModifyHitDef sparkangle` expressions — closed-bounded, no score movement
+## 2026-08-11 T731 `ModifyHitDef guard.sparkangle` expressions — closed-bounded, no score movement
 
-Issue 304 closes Ikemen-only live `ModifyHitDef sparkangle` through root,
+Issue 305 closes Ikemen-only live `ModifyHitDef guard.sparkangle` through root,
 RedirectID and Helper callers. Static/dynamic caller-context values resolve
-once, omission preserves the active angle, and the accepted hit-effect event
-records the resolved value. Focused coverage passes `298/298`; the required
-spark-angle trace is part of the `817/817` QA aggregate (`783` required, `34`
-optional). No score movement: guard spark angle, spark identity, scale, palette,
-Projectiles, renderer timing and full presentation parity remain blocked. See
-[issue 304](../.scratch/roadmap/issues/304-modifyhitdef-sparkangle-expressions.md).
+once, omission preserves the active guard angle, and the accepted guard-effect
+event records the resolved value without changing spark identity or offset. No
+score movement: hit angle, spark identity, scale, palette, Projectiles,
+renderer timing and full presentation parity remain blocked. See [issue
+305](../.scratch/roadmap/issues/305-modifyhitdef-guard-sparkangle-expressions.md).
 
-## Next queued — T731 `ModifyHitDef guard.sparkangle` expressions
+## Next queued — T732 `ModifyHitDef guard.sparkno` expressions
 
-Issue 305 queues the bounded Ikemen-only guard-spark angle mutation through the
-live guard presentation path, preserving omission and caller context. See
-[issue 305](../.scratch/roadmap/issues/305-modifyhitdef-guard-sparkangle-expressions.md).
+Issue 306 queues the bounded Ikemen-only guard-spark identity mutation through
+the live guard presentation path, preserving omission and caller context. See
+[issue 306](../.scratch/roadmap/issues/306-modifyhitdef-guard-sparkno-expressions.md).
 
 ## Historical checkpoint — 2026-08-11 T727 ReversalDef `hitonce` expressions — closed-bounded, no score movement
 

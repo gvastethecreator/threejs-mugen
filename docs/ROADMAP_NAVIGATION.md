@@ -2,13 +2,13 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T730 closed-bounded (2026-08-11)
+## Current implementation route — T731 closed-bounded (2026-08-11)
 
-T730 / [issue 304](../.scratch/roadmap/issues/304-modifyhitdef-sparkangle-expressions.md)
-closes live `ModifyHitDef sparkangle` through root/RedirectID and Helper
+T731 / [issue 305](../.scratch/roadmap/issues/305-modifyhitdef-guard-sparkangle-expressions.md)
+closes live `ModifyHitDef guard.sparkangle` through root/RedirectID and Helper
 callers. Caller-context values and omission preservation are required, and the
-accepted hit-effect event carries the resolved angle. Focused coverage is
-`298/298`; QA is `817/817` artifacts (`783` required, `34` optional).
+accepted guard-effect event carries the resolved angle without entering the hit
+route.
 
 T729 / [issue 303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md)
 closes live `ModifyHitDef sparkxy` X/Y replacement with omitted-axis
@@ -27,11 +27,12 @@ and explicit target memory permits distinct targets only while disabled.
 Focused compiler/runtime coverage is `184/184`; resolution/helper coverage is
 `78/78`; no causal end-to-end trace is promoted.
 
-## Next implementation route — T731 queued
+## Next implementation route — T732 queued
 
-T731 / [issue 305](../.scratch/roadmap/issues/305-modifyhitdef-guard-sparkangle-expressions.md)
-queues Ikemen-only live `ModifyHitDef guard.sparkangle` with caller-context
-resolution, omission preservation and accepted guard-effect evidence.
+T732 / [issue 306](../.scratch/roadmap/issues/306-modifyhitdef-guard-sparkno-expressions.md)
+queues Ikemen-only live `ModifyHitDef guard.sparkno` identity replacement with
+caller-context resolution, omission preservation and accepted guard-effect
+evidence.
 
 ## Historical queue — T726 completed
 

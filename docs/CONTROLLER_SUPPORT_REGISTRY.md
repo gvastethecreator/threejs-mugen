@@ -1,18 +1,17 @@
 # Controller Support Registry
 
-Latest cursor: T730 / issue 304 is closed-bounded for Ikemen-only live
-root/RedirectID and Helper `ModifyHitDef sparkangle`. Static and caller-context
-dynamic values resolve once; omission preserves the live value and accepted
-hit-effect telemetry carries the resolved angle. Required trace
-`synthetic-imported-modifyhitdef-dynamic-sparkangle.json` carries angle `27`;
-focused coverage passes `298/298`, and `pnpm qa:trace` passes `817/817`
-artifacts (`783` required, `34` optional).
+Latest cursor: T731 / issue 305 is closed-bounded for Ikemen-only live
+root/RedirectID and Helper `ModifyHitDef guard.sparkangle`. Static and
+caller-context dynamic values resolve once; omission preserves the live value
+and accepted guard-effect telemetry carries angle `19` without a hit event.
+Required trace `synthetic-imported-modifyhitdef-dynamic-guard-sparkangle.json`
+proves the route.
 
-Next cursor: T731 / issue 305 is queued for Ikemen-only live
-`ModifyHitDef guard.sparkangle` through the accepted guard presentation path.
-Caller-context resolution, omission preservation, hit spark angle, spark
-identity, scale, palette, Projectiles, exact renderer timing, teams, rollback
-and full effect parity remain deferred.
+Next cursor: T732 / issue 306 is queued for Ikemen-only live
+`ModifyHitDef guard.sparkno` through the accepted guard presentation path.
+Caller-context resolution, omission preservation, angle, scale, palette,
+Projectiles, exact renderer timing, teams, rollback and full effect parity
+remain deferred.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root
 `ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth` static,

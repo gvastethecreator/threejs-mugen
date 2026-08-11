@@ -1,6 +1,6 @@
 # Issue 305 — `ModifyHitDef` `guard.sparkangle` expressions
 
-Status: **queued** (T731, 2026-08-11)
+Status: **closed-bounded** (T731, 2026-08-11)
 
 ## Objetivo
 
@@ -39,3 +39,15 @@ Añadir cobertura `RuntimeCompiler.test.ts`, `HitDefSystem.test.ts`,
 `PlayableMatchRuntime.test.ts` para estático, dinámico, omisión/preservación y
 caller RedirectID. La traza sólo se promocionará si un guard aceptado publica
 el ángulo guardado sin contaminar la ruta de hit.
+
+## Resultado T731
+
+Implementado en `ControllerOps`, `HitDefSystem`, `PlayableMatchRuntime`,
+`HelperSystem`, `RuntimeContactPresentationSystem`, `importedFighter` y
+`DemoMove`. El campo estático/dinámico llega a root, RedirectID y Helper; un
+ModifyHitDef omitido o no resoluble conserva el valor vivo; un guard aceptado
+publica el ángulo en `RuntimeHitEffectEvent` y mantiene identidad/offset.
+La traza requerida
+`synthetic-imported-modifyhitdef-dynamic-guard-sparkangle.json` prueba
+`var(0)=19`, `ModifyHitDef`, contacto `guard` y ausencia de la ruta `hit`.
+Los claims bloqueados originales permanecen fuera de alcance.

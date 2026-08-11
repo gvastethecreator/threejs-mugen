@@ -1,20 +1,19 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T730 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T731 closed-bounded (2026-08-11)
 
-Issue 304 closes Ikemen-only live `ModifyHitDef sparkangle` through
+Issue 305 closes Ikemen-only live `ModifyHitDef guard.sparkangle` through
 root/RedirectID and Helper callers. Static and dynamic caller-context values
-resolve once; omission/unresolved mutation preserves the live value, and the
-accepted hit-effect event exposes the resolved angle. Focused coverage passes
-`298/298`; the required artifact
-`synthetic-imported-modifyhitdef-dynamic-sparkangle.json` is included in the
-`817/817` QA aggregate (`783` required, `34` optional). Guard spark angle,
-Projectiles and exact renderer parity remain blocked.
+resolve once; omission/unresolved mutation preserves the live value, and an
+accepted guard-effect event exposes the resolved angle while retaining spark
+identity and offset. The required artifact
+`synthetic-imported-modifyhitdef-dynamic-guard-sparkangle.json` proves the
+guard-only route; hit, Projectiles and exact renderer parity remain blocked.
 
-## Next implementation checkpoint — T731 queued
+## Next implementation checkpoint — T732 queued
 
-Issue 305 queues live `ModifyHitDef guard.sparkangle` for the guard effect path,
-with caller-context resolution and omission preservation.
+Issue 306 queues live `ModifyHitDef guard.sparkno` identity replacement for the
+guard effect path, with caller-context resolution and omission preservation.
 
 ## Historical implementation checkpoint — T729 closed-bounded (2026-08-11)
 

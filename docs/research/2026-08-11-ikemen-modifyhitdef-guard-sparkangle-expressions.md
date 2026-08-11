@@ -17,7 +17,16 @@ evento porque `RuntimeContactPresentationSystem` sólo selecciona el ángulo
 para contactos `hit`; el siguiente corte debe añadir el campo guardado sin
 reabrir identidad, offset o escala.
 
-## Claim previsto
+## Resultado T731
+
+El runtime ahora transporta `guard.sparkangle` fresco y vivo a través de
+root/RedirectID y Helper. La omisión o una expresión no finita preserva el
+valor activo; el guard aceptado publica el ángulo en `RuntimeHitEffectEvent`
+sin cambiar identidad ni `sparkxy`. La traza requerida
+`synthetic-imported-modifyhitdef-dynamic-guard-sparkangle.json` prueba
+`var(0)=19`, `ModifyHitDef`, evento `guard` y ausencia de evento `hit`.
+
+## Claim cerrado
 
 Root/RedirectID y Helper-owned live `ModifyHitDef guard.sparkangle` estático o
 dinámico, con evaluación caller-context, preservación en omisión y ángulo

@@ -2,17 +2,16 @@
 
 ## Current parity queue
 
-- **T730 closed-bounded** — Ikemen-only live `ModifyHitDef sparkangle` through
-  root/RedirectID and Helper callers. Caller-context static/dynamic values
-  resolve once, omission preserves the active angle, and the required trace
-  observes angle `27` in the accepted hit-effect event. Focused coverage is
-  `298/298`; QA passes `817/817` artifacts (`783` required, `34` optional).
-  See [issue 304](../.scratch/roadmap/issues/304-modifyhitdef-sparkangle-expressions.md).
+- **T731 closed-bounded** — Ikemen-only live `ModifyHitDef guard.sparkangle`
+  through root/RedirectID and Helper callers. Caller-context static/dynamic
+  values resolve once, omission preserves the active angle, and the required
+  trace observes angle `19` in the accepted guard-effect event without a hit.
+  See [issue 305](../.scratch/roadmap/issues/305-modifyhitdef-guard-sparkangle-expressions.md).
 
-- **T731 queued** — Ikemen-only live `ModifyHitDef guard.sparkangle` through
-  the accepted guard presentation path, with caller-context resolution and
-  omission preservation. See [issue
-  305](../.scratch/roadmap/issues/305-modifyhitdef-guard-sparkangle-expressions.md).
+- **T732 queued** — Ikemen-only live `ModifyHitDef guard.sparkno` identity
+  replacement through the accepted guard presentation path, with caller-context
+  resolution and omission preservation. See [issue
+  306](../.scratch/roadmap/issues/306-modifyhitdef-guard-sparkno-expressions.md).
 
 - **T727 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
   `ModifyReversalDef` now retain static and caller-context `hitonce`. Zero
