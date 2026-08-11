@@ -1,4 +1,18 @@
 ﻿# Supported Features
+## 2026-08-11 T704 Projectile `projanim` checkpoint
+
+T704 is closed-bounded: fresh root/Helper Projectile `projanim` preserves
+typed static or dynamic VT_Int expressions, resolves once in the original
+caller context before AIR action lookup, and proves selected action, target,
+ownership, and spawn/active/remove lifecycle evidence. Root trace checksum is
+`0e1c310f` / final `42890c95`; Helper is `4a23726b` / final `93048c4f`;
+aggregate QA passes `789/789` artifacts (`755` required, `34` optional), and
+focused compiler/spawn coverage passes `238/238` with typecheck/diff hygiene.
+Live `ModifyProjectile` animation mutation, FFX prefixes, exact invalid-action
+timing, multi-projectile broadcast order, nested teams, rollback, and full
+Projectile animation parity remain outside the supported claim. See [issue
+278](../.scratch/roadmap/issues/278-projectile-anim-dynamic.md).
+
 ## 2026-08-09 T703 Projectile `projhits` checkpoint
 
 T703 is closed-bounded: fresh root/Helper Projectile `projhits` preserves typed

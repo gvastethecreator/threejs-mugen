@@ -2,11 +2,14 @@
 
 ## Current parity queue
 
-- **T704 active/mapped** — fresh root- and Helper-authored Projectiles will
-  preserve static `projanim`, resolve one dynamic caller-context integer before
-  AIR action lookup, and retain omitted default `0`. Live `ModifyProjectile`
-  animation mutation, FFX prefixes, invalid-action timing, and full Projectile
-  parity remain excluded. See [issue 278](../.scratch/roadmap/issues/278-projectile-anim-dynamic.md).
+- **T704 closed-bounded** — fresh root- and Helper-authored Projectiles
+  preserve typed static/dynamic `projanim`, resolve one caller-context integer
+  before AIR action lookup, and retain omitted default `0`. Required traces
+  pass `789/789` (`755` required, `34` optional); root checksum
+  `0e1c310f/42890c95`, Helper `4a23726b/93048c4f`; focused compiler/spawn
+  coverage `238/238`, typecheck, and diff hygiene pass. Live
+  `ModifyProjectile` mutation, FFX prefixes, invalid-action timing, teams,
+  rollback, and full Projectile parity remain excluded. See [issue 278](../.scratch/roadmap/issues/278-projectile-anim-dynamic.md).
 
 - **T703 closed-bounded** — fresh root- and Helper-authored Projectiles resolve
   dynamic `projhits` once in caller context, initialize `hitsRemaining`/`hitsMax`,

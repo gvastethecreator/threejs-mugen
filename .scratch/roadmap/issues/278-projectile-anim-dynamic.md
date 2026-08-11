@@ -1,6 +1,6 @@
 # T704: fresh Projectile `projanim` in caller context
 
-Status: `active`
+Status: `closed-bounded`
 
 ## Goal
 
@@ -59,6 +59,18 @@ lookup and lifecycle evidence.
 Live `ModifyProjectile` animation mutation, FFX-prefixed animation references,
 exact invalid-action warning/removal timing, multi-projectile broadcast order,
 teams/simul, rollback, and full M.U.G.E.N/Ikemen Projectile animation parity.
+
+## Closeout
+
+T704 is closed-bounded for fresh root- and Helper-authored Projectiles.
+Focused compiler/spawn/Helper coverage passes `238/238`; the required root and
+Helper caller-context traces pass with trace/final checksums
+`0e1c310f/42890c95` and `4a23726b/93048c4f`. Aggregate `pnpm qa:trace` passes
+`789/789` artifacts (`755` required, `34` optional). `pnpm typecheck` and
+`git diff --check` pass. Live `ModifyProjectile` animation mutation, FFX
+prefixes, exact invalid-action timing, multi-projectile broadcast order,
+teams/simul, rollback, and full Projectile animation parity remain outside the
+claim.
 
 ## Closeout commands
 

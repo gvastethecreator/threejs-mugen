@@ -1,13 +1,20 @@
 ﻿# Roadmap Execution Board
 
-## Active runtime cut — T704 mapped
+## Authoritative runtime cursor — T704 closed-bounded
 
-T704 / issue 278 is active. The next bounded slice adds caller-context
-`projanim` resolution for fresh root- and Helper-authored Projectiles before
-the existing AIR action lookup. Static animation selection and omitted default
-`0` remain unchanged. Live `ModifyProjectile` animation mutation, FFX action
-prefixes, exact invalid-action timing, and full Projectile parity remain
-outside the claim. See [issue 278](../.scratch/roadmap/issues/278-projectile-anim-dynamic.md).
+Final T704 verification: `789/789` trace artifacts (`755` required, `34`
+optional), root trace checksum `0e1c310f` / final `42890c95`, Helper checksum
+`4a23726b` / final `93048c4f`, focused compiler/spawn coverage `238/238`,
+typecheck, and diff hygiene pass.
+
+T704 / issue 278 is closed-bounded: fresh root- and Helper-authored
+Projectiles preserve typed static or dynamic `projanim`, resolve it once in the
+original caller context before AIR action lookup, and prove selected action,
+ownership, target payload, and spawn/active/remove lifecycle. Live
+`ModifyProjectile` animation mutation, FFX action prefixes, exact
+invalid-action timing, multi-projectile broadcast order, nested teams,
+rollback, and full Projectile parity remain excluded. See [issue
+278](../.scratch/roadmap/issues/278-projectile-anim-dynamic.md).
 
 ## Authoritative runtime cursor — T703 closed-bounded
 

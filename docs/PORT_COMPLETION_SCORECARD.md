@@ -1,5 +1,17 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T704 Projectile `projanim` checkpoint - no score movement
+
+T704 is closed-bounded for fresh root/Helper Projectile `projanim`: typed
+static/dynamic caller-context resolution, existing AIR action lookup, and
+selected-action/ownership/lifecycle evidence are required and pass. Root trace
+checksum is `0e1c310f` / final `42890c95`; Helper is `4a23726b` / final
+`93048c4f`; aggregate QA is `789/789` (`755` required, `34` optional), and
+focused compiler/spawn coverage is `238/238`. No score movement: live
+`ModifyProjectile` animation mutation, FFX prefixes, exact invalid-action
+timing, teams, rollback, and full Projectile animation parity remain outside
+the bounded claim.
+
 ## 2026-08-09 T703 Projectile `projhits` checkpoint - no score movement
 
 T703 is closed-bounded for fresh root/Helper Projectile `projhits`: typed VT_Int

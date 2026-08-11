@@ -1,14 +1,18 @@
 ﻿# Progress Tracker
 
-## Active implementation — T704 mapped
+## Latest implementation checkpoint — T704 (2026-08-11)
 
-T704 / issue 278 is queued after the T703 closeout. The bounded change is
-caller-context resolution of fresh root/Helper Projectile `projanim`, followed
-by the existing AIR action lookup. Static, omitted-default, ownership, and
-lifecycle behavior remain the compatibility baseline; live `ModifyProjectile`
-animation mutation is not claimed. See [issue 278](../.scratch/roadmap/issues/278-projectile-anim-dynamic.md).
+T704 is closed-bounded for fresh root/Helper Projectiles: typed static or
+dynamic `projanim` resolves once in caller context before the existing AIR
+action lookup, with selected-action, ownership, target, and lifecycle evidence.
+Root trace checksum is `0e1c310f` / final `42890c95`; Helper is `4a23726b` /
+`93048c4f`. Aggregate QA passes `789/789` (`755` required, `34` optional),
+focused compiler/spawn coverage passes `238/238`, and typecheck/diff hygiene
+pass. Live `ModifyProjectile` mutation, FFX prefixes, exact invalid-action
+timing, teams, rollback, and full Projectile parity remain unclaimed. See
+[issue 278](../.scratch/roadmap/issues/278-projectile-anim-dynamic.md).
 
-## Latest implementation checkpoint — T703 (2026-08-09)
+## Previous implementation checkpoint — T703 (2026-08-09)
 
 Authoritative cursor: T703 is closed-bounded for fresh root- and Helper-authored
 Projectiles with dynamic `projhits`. Typed VT_Int expressions resolve once in

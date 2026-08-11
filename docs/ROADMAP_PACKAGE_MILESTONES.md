@@ -1,14 +1,18 @@
 ﻿# Roadmap Package Milestones
 
-## Active package — T704 mapped
+## Latest runtime cursor — T704 closed-bounded
 
-T704 / issue 278 targets the fresh Projectile `projanim` caller-context seam
-for root and Helper owners. The package keeps the existing animation-map,
-ownership, and lifecycle paths, with static and omitted (`0`) behavior
-preserved. Live `ModifyProjectile` animation mutation is intentionally
-deferred. See [issue 278](../.scratch/roadmap/issues/278-projectile-anim-dynamic.md).
+T704 closes the fresh Projectile `projanim` caller-context seam for root and
+Helper owners. Typed static/dynamic values resolve once before existing AIR
+lookup, while omitted (`0`) behavior, ownership, target payload, and lifecycle
+remain preserved. Verification is `789/789` traces (`755` required, `34`
+optional), focused compiler/spawn coverage `238/238`, typecheck, and diff
+hygiene; root checksums are `0e1c310f/42890c95` and Helper checksums are
+`4a23726b/93048c4f`. Live `ModifyProjectile` mutation, FFX prefixes, exact
+invalid-action timing, teams, rollback, and full Projectile parity remain
+excluded. See [issue 278](../.scratch/roadmap/issues/278-projectile-anim-dynamic.md).
 
-## Latest runtime cursor — T703
+## Previous runtime cursor — T703
 
 T703 closes the fresh root- and Helper-authored Projectile `projhits`
 caller-context seam: typed VT_Int expressions resolve once, initialize
