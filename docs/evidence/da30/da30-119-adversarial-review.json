@@ -1,7 +1,7 @@
 {
   "schema": "Da30AdversarialReview/v1",
   "ok": true,
-  "headSha": "64f8e7d292ee9f105453a969fc3195687cbce431",
+  "headSha": "817e88a50b5c77a27152862438a7bf435cda8ffc",
   "sampled": [
     "da30-021-formal-gate.json",
     "da30-060-playable-matrix.json",
