@@ -437,6 +437,7 @@ import {
   createSyntheticImportedHelperProjectileDynamicHitsTraceArtifact,
   createSyntheticImportedProjectileDynamicAnimTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicAnimTraceArtifact,
+  createSyntheticImportedModifyProjectileDynamicTerminalAnimTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicAnimTraceArtifact,
   createSyntheticImportedProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicGuardHitTimeTraceArtifact,
@@ -22948,6 +22949,23 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
       expect.objectContaining({ type: "active", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
       expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+    ]));
+  });
+
+  it("creates required imported ModifyProjectile terminal animation artifact", () => {
+    const artifact = createSyntheticImportedModifyProjectileDynamicTerminalAnimTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-modifyprojectile-dynamic-terminal-anim-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-modifyprojectile-dynamic-terminal-anim-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.ModifyProjectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(3);
+    expect(evidence?.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorKind: "projectile", ownerId: "p1", animNo: 915 }),
     ]));
   });
 

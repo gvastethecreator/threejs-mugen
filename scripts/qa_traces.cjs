@@ -1586,6 +1586,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyProjectileDynamicAnimTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyprojectile-dynamic-terminal-anim",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyProjectileDynamicTerminalAnimTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projectile-dynamic-anim",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileDynamicAnimTraceArtifact(),
@@ -5140,6 +5145,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-modifyprojectile-dynamic-ground-velocity",
     "synthetic-imported-modifyprojectile-dynamic-air-velocity",
     "synthetic-imported-modifyprojectile-dynamic-bounds",
+    "synthetic-imported-modifyprojectile-dynamic-terminal-anim",
     "synthetic-imported-projectile-multihit",
     "synthetic-imported-projectile-dynamic-misstime",
     "synthetic-imported-helper-projectile-dynamic-misstime",

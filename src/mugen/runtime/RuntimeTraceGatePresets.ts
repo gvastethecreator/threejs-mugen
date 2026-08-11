@@ -31195,6 +31195,76 @@ export function createSyntheticImportedModifyProjectileDynamicAnimTraceArtifact(
   });
 }
 
+export function createSyntheticImportedModifyProjectileDynamicTerminalAnimTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? effectPauseStage();
+  const script = importedProjectileRemoveTerminalScript();
+  const projectileId = 8921;
+  const terminalAnimNo = 915;
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-dynamic-terminal-anim-attacker",
+    displayName: "Dynamic ModifyProjectile Terminal Animation Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileId,
+    projectileAnimNo: 910,
+    projectileHitAnim: 911,
+    projectileRemoveAnim: 912,
+    projectileCancelAnim: 913,
+    projectileOffset: [80, -45],
+    projectileVelocity: [0, 0],
+    projectileRemoveTime: 8,
+    projectileRemoveOnHit: false,
+    withModifyProjectile: true,
+    modifyProjectileTriggerTime: 3,
+    modifyProjectileId: projectileId,
+    modifyProjectileHitAnim: "var(0)",
+    modifyProjectileRemoveAnim: "var(1)",
+    modifyProjectileCancelAnim: "var(2)",
+    modifyProjectileAnimActionNo: terminalAnimNo,
+    modifyProjectileVarSeeds: [
+      { index: 0, value: terminalAnimNo },
+      { index: 1, value: terminalAnimNo },
+      { index: 2, value: terminalAnimNo },
+    ],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-modifyprojectile-dynamic-terminal-anim-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyprojectile-dynamic-terminal-anim-golden",
+      label: "Synthetic imported dynamic ModifyProjectile terminal animation route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root-owned ModifyProjectile resolves projhitanim, projremanim, and projcancelanim expressions once in the original caller context and broadcasts the bounded terminal action metadata to the selected live Projectile. The timeout branch observes the replacement action. FFX prefixes, exact negative/overflow warning parity, invalid-action timing, namespace broadcast, teams, rollback, and full Projectile parity remain outside the claim.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyprojectile-dynamic-terminal-anim-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Projectile", "ModifyProjectile"],
+      requiredExecutedOperations: ["variable:varset", "projectile", "modifyprojectile"],
+      requiredActiveCommands: ["x"],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minNextProjectileSerial: 1 }],
+      requiredActorFrames: [{ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: terminalAnimNo, minFrames: 1 }],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileDynamicAnimTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -62055,6 +62125,12 @@ export type SyntheticImportedTraceFighterOptions = {
   modifyProjectileId?: SyntheticNumberExpression;
   /** Synthetic fixture-only live ModifyProjectile projanim expression. */
   modifyProjectileAnim?: SyntheticNumberExpression;
+  /** Synthetic fixture-only live ModifyProjectile projhitanim expression. */
+  modifyProjectileHitAnim?: SyntheticNumberExpression;
+  /** Synthetic fixture-only live ModifyProjectile projremanim expression. */
+  modifyProjectileRemoveAnim?: SyntheticNumberExpression;
+  /** Synthetic fixture-only live ModifyProjectile projcancelanim expression. */
+  modifyProjectileCancelAnim?: SyntheticNumberExpression;
   /** AIR action made available for a synthetic live ModifyProjectile projanim target. */
   modifyProjectileAnimActionNo?: number;
   /** State reached only when ProjVar(anim) observes the selected live Projectile action. */
@@ -63597,6 +63673,9 @@ ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
   projectileId: options.modifyProjectileId,
   projAnim: options.modifyProjectileAnim,
+  hitAnim: options.modifyProjectileHitAnim,
+  removeAnim: options.modifyProjectileRemoveAnim,
+  cancelAnim: options.modifyProjectileCancelAnim,
   velocity: options.modifyProjectileVelocity,
   accel: options.modifyProjectileAccel,
   velocityMultiplier: options.modifyProjectileVelocityMultiplier,
@@ -67756,6 +67835,9 @@ function modifyProjectileControllerBlock(input: {
   triggerTime?: number;
   projectileId?: SyntheticNumberExpression;
   projAnim?: SyntheticNumberExpression;
+  hitAnim?: SyntheticNumberExpression;
+  removeAnim?: SyntheticNumberExpression;
+  cancelAnim?: SyntheticNumberExpression;
   velocity?: SyntheticPairExpression;
   accel?: SyntheticPairExpression;
   velocityMultiplier?: SyntheticPairExpression;
@@ -67799,6 +67881,9 @@ value = ${seed.value}
   const heightBoundLine = input.heightBound === undefined ? "" : `projheightbound = ${input.heightBound[0]},${input.heightBound[1]}`;
   const getPowerLine = input.getPower === undefined ? "" : `getpower = ${input.getPower[0]},${input.getPower[1]}`;
   const projAnimLine = input.projAnim === undefined ? "" : `projanim = ${input.projAnim}`;
+  const hitAnimLine = input.hitAnim === undefined ? "" : `projhitanim = ${input.hitAnim}`;
+  const removeAnimLine = input.removeAnim === undefined ? "" : `projremanim = ${input.removeAnim}`;
+  const cancelAnimLine = input.cancelAnim === undefined ? "" : `projcancelanim = ${input.cancelAnim}`;
   const downVelocityLine = input.downVelocity === undefined ? "" : `down.velocity = ${input.downVelocity.join(",")}`;
   const groundVelocityLine = input.groundVelocity === undefined ? "" : `ground.velocity = ${input.groundVelocity.join(",")}`;
   const airGuardVelocityLine = input.airGuardVelocity === undefined ? "" : `airguard.velocity = ${input.airGuardVelocity.join(",")}`;
@@ -67824,6 +67909,9 @@ ${stageBoundLine}
 ${heightBoundLine}
 ${getPowerLine}
 ${projAnimLine}
+${hitAnimLine}
+${removeAnimLine}
+${cancelAnimLine}
 ${downVelocityLine}
 ${groundVelocityLine}
 ${airGuardVelocityLine}
