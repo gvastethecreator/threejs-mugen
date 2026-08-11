@@ -1,6 +1,16 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T741 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T742 closed-bounded (2026-08-11)
+
+Issue 316 closes fresh direct `HitDef snap` X/Y expression resolution for root
+and Helper callers. Caller `var(0)=7,var(1)=-5` reaches accepted contact
+`GetHitVar(xoff/yoff/zoff)=7/-5/0`, and the trace observes the defender's
+snapped Y position. Trace/final checksums are `3d153556` / `fe79d540`;
+`pnpm qa:trace` passes `828/828` artifacts (`794` required, `34` optional).
+Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles, exact bind/tick and full
+positioning parity remain blocked.
+
+## Historical implementation checkpoint — T741 closed-bounded (2026-08-11)
 
 Issue 315 closes root/RedirectID and Helper caller-context live `ModifyHitDef`
 cornerpush offsets for ground, air, down and guard contacts; T740 already
@@ -60,10 +70,12 @@ typecheck passes and `pnpm qa:trace` passes `822/822` artifacts (`788`
 required, `34` optional). Fresh defaults, guardsound channel, exact lookup,
 playback/mixing/priority, Projectiles and full audio parity remain blocked.
 
-## Next implementation checkpoint — T742 selection
+## Next implementation checkpoint — T743 planned
 
-Select the next distinct uncovered seam after T741 closeout; do not reactivate
-superseded issue 313.
+Continue with [issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md):
+live Ikemen-only `ModifyHitDef down.velocity` X/Y replacement through
+root/RedirectID and Helper callers. Preserve the snap exclusions and do not
+reactivate superseded issue 313.
 
 ## Historical implementation checkpoint — T734 closed-bounded (2026-08-11)
 

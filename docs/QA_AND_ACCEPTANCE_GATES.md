@@ -1,6 +1,19 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-11 T741 `ModifyHitDef` cornerpush offsets — passed / closed-bounded
+## 2026-08-11 T742 fresh dynamic `HitDef snap` X/Y — passed / closed-bounded
+
+Required `synthetic-imported-hitdef-dynamic-snap.json` proves caller-context
+`var(0)=7,var(1)=-5`, fresh direct `HitDef`, accepted target link `p1 -> p2 /
+77`, `GetHitVar(xoff/yoff/zoff)=7/-5/0`, and the defender's snapped Y position
+inside the owner-backed get-hit route. Trace checksum is `3d153556`, final
+checksum `fe79d540`; focused compiler/runtime/Helper coverage is `317/317`,
+typecheck passes, and `pnpm qa:trace` passes `828/828` artifacts (`794`
+required, `34` optional). Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles,
+exact bind/tick/localcoord/facing and full positioning parity remain outside
+this gate. See [issue
+316](../.scratch/roadmap/issues/316-hitdef-snap-dynamic.md).
+
+## Historical — 2026-08-11 T741 `ModifyHitDef` cornerpush offsets — passed / closed-bounded
 
 Required `synthetic-imported-modifyhitdef-dynamic-ground-cornerpush.json`
 proves root/RedirectID caller-context `var(2)=6`, live `ModifyHitDef`, target
@@ -82,10 +95,12 @@ Exact SND lookup/playback/mixing/channel priority, fresh defaults, Projectiles,
 renderer timing, teams, rollback and full audio parity remain outside this
 gate. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next gate — T742 selection
+## Next gate — T743 planned
 
-Select the next distinct gate after T741; superseded issue 313 is not a pending
-acceptance target.
+The next gate is [issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md):
+live Ikemen-only `ModifyHitDef down.velocity` X/Y component replacement with
+omitted-component preservation. Preserve the explicit snap exclusions;
+superseded issue 313 is not a pending acceptance target.
 
 ## Historical — 2026-08-11 T733 `ModifyHitDef guardsound` — passed / closed-bounded
 

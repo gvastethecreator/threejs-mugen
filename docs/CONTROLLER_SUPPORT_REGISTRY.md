@@ -1,6 +1,15 @@
 # Controller Support Registry
 
-Latest cursor: T741 / issue 315 is closed-bounded for Ikemen-only live
+Latest cursor: T742 / issue 316 is closed-bounded for fresh direct `HitDef
+snap` X/Y expressions through root and Helper caller contexts. Caller
+`var(0)=7,var(1)=-5` reaches accepted contact `GetHitVar(xoff/yoff/zoff)=7/-5/0`
+and the defender's snapped Y position. Required trace
+`synthetic-imported-hitdef-dynamic-snap.json` has trace/final checksums
+`3d153556` / `fe79d540`; aggregate QA is `828/828` artifacts (`794` required,
+`34` optional). Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles, exact
+bind/tick/localcoord/facing and full positioning parity remain excluded.
+
+Previous cursor: T741 / issue 315 is closed-bounded for Ikemen-only live
 `ModifyHitDef` corner-push offsets through root/RedirectID and Helper caller
 resolution. `ground`, `air`, `down`, and `guard` now accept finite static or
 caller-context dynamic values while omission/unresolved input preserves the
@@ -21,8 +30,20 @@ retaining Helper/root/parent ownership. Required trace
 trace/final checksums `da73f66a` / `4231487d`; aggregate QA is `825/825`
 artifacts (`791` required, `34` optional).
 
-Next cursor: T742 is selected after closeout. T739 / issue 313 is superseded
+Next cursor: T743 / [issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md)
+is planned for live Ikemen-only `ModifyHitDef down.velocity` X/Y component
+replacement through root/RedirectID and Helper callers. Single values preserve
+Y/Z, pairs preserve Z, and omission is a no-op. T739 / issue 313 is superseded
 by closed T678 / issue 252 and must not be reactivated as a duplicate.
+
+T742 `HitDef` addendum: fresh direct snap X/Y expressions are now retained in
+typed IR and resolved once in root/Helper caller context. The required
+`synthetic-imported-hitdef-dynamic-snap.json` trace records
+`GetHitVar(xoff/yoff/zoff)=7/-5/0`, accepted target `p1 -> p2 / 77`, and the
+defender's snapped Y position; its trace/final checksums are
+`3d153556` / `fe79d540`. Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles,
+exact bind/tick/localcoord/facing and full positioning parity remain
+unsupported.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root
 `ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth` static,

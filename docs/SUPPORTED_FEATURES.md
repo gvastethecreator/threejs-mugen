@@ -1,5 +1,17 @@
 ﻿# Supported Features
-## 2026-08-11 T741 `ModifyHitDef` cornerpush offsets — closed-bounded
+## 2026-08-11 T742 fresh dynamic `HitDef snap` X/Y — closed-bounded
+
+Fresh direct `HitDef snap` now resolves finite X/Y expressions in root and
+Helper caller contexts. The accepted contact stores bounded
+`GetHitVar(xoff/yoff/zoff)=7/-5/0` for caller values `var(0)=7,var(1)=-5` and
+applies the defender's X/Y offset. Required trace/final checksums are
+`3d153556` / `fe79d540`; aggregate QA passes `828/828` artifacts (`794`
+required, `34` optional). Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles,
+exact bind/tick/localcoord/facing and full positioning parity remain outside
+the claim. See [issue
+316](../.scratch/roadmap/issues/316-hitdef-snap-dynamic.md).
+
+## Historical — 2026-08-11 T741 `ModifyHitDef` cornerpush offsets — closed-bounded
 
 Ikemen-only live `ModifyHitDef` cornerpush offsets through root/RedirectID and
 Helper caller resolution now support finite static and caller-context dynamic
@@ -60,10 +72,12 @@ defaults, guardsound channel, exact playback/mixing/priority, Projectiles and
 full audio parity remain outside the claim. See [issue
 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
 
-## Next selection — T742
+## Next selection — T743 planned
 
-T741 is closed-bounded; select the next distinct uncovered seam after the
-T678/T739 duplicate has been removed from the queue.
+T743 / [issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md)
+is queued for live Ikemen-only `ModifyHitDef down.velocity` X/Y replacement
+through root/RedirectID and Helper callers. Keep the T678/T739 duplicate and
+the T742 snap exclusions out of the queue.
 
 ## Historical — T734 `ModifyHitDef hitsound` — closed-bounded
 

@@ -1,6 +1,18 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T741 closed-bounded (2026-08-11)
+## Latest bounded slice — T742 closed-bounded (2026-08-11)
+
+Issue 316 closes fresh direct `HitDef snap` X/Y expression resolution for root
+and Helper callers. Caller `var(0)=7,var(1)=-5` reaches accepted contact
+`GetHitVar(xoff/yoff/zoff)=7/-5/0`, and the required trace observes the
+defender's snapped Y position in the owner-backed get-hit route. Trace/final
+checksums are `3d153556` / `fe79d540`; aggregate QA passes `828/828` artifacts
+(`794` required, `34` optional). Snap Z, `snaptime`, live `ModifyHitDef`,
+Projectiles, exact bind/tick/localcoord/facing and full positioning parity
+remain blocked. See [issue
+316](../.scratch/roadmap/issues/316-hitdef-snap-dynamic.md).
+
+## Historical bounded slice — T741 closed-bounded (2026-08-11)
 
 Issue 315 closes Ikemen-only root/RedirectID and Helper live
 `ModifyHitDef` corner-push offset mutation for ground, air, down and guard
@@ -80,10 +92,14 @@ required, `34` optional). Fresh defaults, channels, exact playback/mixing,
 Projectiles and full audio parity remain blocked. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next bounded slice — T742 selection
+## Next bounded slice — T743 planned
 
-Select the next distinct official/Ikemen seam after T741 closeout; keep issue
-313 superseded and preserve the explicit exclusions above.
+T743 / [issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md)
+is the next bounded Ikemen-only live `ModifyHitDef down.velocity` X/Y seam for
+root/RedirectID and Helper callers. Single values preserve Y/Z, pairs preserve
+Z, and omission is a no-op. Keep snap Z/`snaptime`, fresh defaults, dynamic Z/
+`n`, Projectile/ModifyProjectile, guard/air velocity, exact lying/landing
+timing and issue 313 supersession explicit.
 
 ## Historical bounded slice — T733 closed-bounded (2026-08-11)
 

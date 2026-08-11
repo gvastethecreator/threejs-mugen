@@ -1,6 +1,18 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T741 `ModifyHitDef` cornerpush offsets — closed-bounded, no score movement
+## 2026-08-11 T742 fresh dynamic `HitDef snap` X/Y — closed-bounded, no score movement
+
+Issue 316 closes fresh direct `HitDef snap` X/Y expression resolution for root
+and Helper callers. Caller `var(0)=7,var(1)=-5` reaches accepted contact
+`GetHitVar(xoff/yoff/zoff)=7/-5/0`, and the required trace observes the
+defender's snapped Y position. Trace/final checksums are `3d153556` /
+`fe79d540`; aggregate QA passes `828/828` artifacts (`794` required, `34`
+optional). No score movement: snap Z, `snaptime`, live `ModifyHitDef`,
+Projectiles, exact bind/tick/localcoord/facing and full positioning parity
+remain blocked. See [issue
+316](../.scratch/roadmap/issues/316-hitdef-snap-dynamic.md).
+
+## Historical checkpoint — 2026-08-11 T741 `ModifyHitDef` cornerpush offsets — closed-bounded, no score movement
 
 Issue 315 closes root/RedirectID and Helper caller-context live `ModifyHitDef`
 cornerpush offsets for `ground`, `air`, `down`, and `guard`; T740 already
@@ -72,10 +84,13 @@ channels, exact SND lookup/playback/mixing/priority, Projectiles and full audio
 parity remain blocked. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next selection — T742
+## Next selection — T743 planned
 
-T741 is closed-bounded. Select the next distinct uncovered seam; superseded
-issue 313 is not a pending scorecard target.
+T743 / [issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md)
+is queued for live Ikemen-only `ModifyHitDef down.velocity` X/Y replacement
+with omitted-component preservation. T742 remains no-score movement; snap Z,
+`snaptime`, Projectiles and exact positioning parity stay blocked, and
+superseded issue 313 is not a pending scorecard target.
 
 ## Historical checkpoint — 2026-08-11 T733 `ModifyHitDef guardsound` expressions — closed-bounded, no score movement
 

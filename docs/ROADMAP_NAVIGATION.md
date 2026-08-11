@@ -2,7 +2,18 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T741 closed-bounded (2026-08-11)
+## Current implementation route — T742 closed-bounded (2026-08-11)
+
+T742 / [issue 316](../.scratch/roadmap/issues/316-hitdef-snap-dynamic.md)
+closes fresh direct `HitDef snap` X/Y expression resolution for root and
+Helper caller contexts. Caller `var(0)=7,var(1)=-5` reaches accepted contact
+`GetHitVar(xoff/yoff/zoff)=7/-5/0`, with the defender's snapped Y position
+observed in the owner-backed get-hit route. Trace/final checksums are
+`3d153556` / `fe79d540`; aggregate QA is `828/828` (`794` required, `34`
+optional). Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles, exact
+bind/tick/localcoord/facing and full positioning parity remain blocked.
+
+## Historical implementation route — T741 closed-bounded (2026-08-11)
 
 T741 / [issue 315](../.scratch/roadmap/issues/315-modifyhitdef-cornerpush-dynamic.md)
 closes root/RedirectID and Helper caller-context live `ModifyHitDef` cornerpush
@@ -58,11 +69,14 @@ preservation is required; the accepted hit-audio event carries typed `F6,4`
 telemetry from raw `Fvar(0),var(1)` with no guard route. Trace/final checksums
 are `8d56e467` / `d2d70840`.
 
-## Next implementation route — T742 selection
+## Next implementation route — T743 planned
 
-T741 is closed-bounded. Select the next distinct uncovered official/Ikemen
-seam after closeout; T739 / issue 313 is superseded by closed T678 / issue
-252 and is not a pending implementation route.
+T743 / [issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md)
+is the next distinct uncovered Ikemen-only live `ModifyHitDef down.velocity`
+X/Y seam through root/RedirectID and Helper callers. Single values preserve
+Y/Z, pairs preserve Z, and omission is a no-op. T739 / issue 313 remains
+superseded by closed T678 / issue 252 and is not a pending implementation
+route.
 
 ## Historical implementation route — T733 closed-bounded (2026-08-11)
 

@@ -2,6 +2,20 @@
 
 ## Current parity queue
 
+- **T743 planned** — Ikemen-only live `ModifyHitDef down.velocity` X/Y
+  component replacement through root/RedirectID and Helper callers. Single
+  values preserve Y/Z, pairs preserve Z, and omission is a no-op. See [issue
+  317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md).
+
+- **T742 closed-bounded** — fresh direct `HitDef snap` X/Y expressions for
+  root and Helper callers. Caller-context `var(0)=7,var(1)=-5` resolves into
+  accepted contact `GetHitVar(xoff/yoff/zoff)=7/-5/0` and the defender's
+  snapped Y position. Required trace checksum `3d153556` / final
+  `fe79d540`; aggregate QA passes `828/828` artifacts (`794` required,
+  `34` optional). Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles and
+  exact bind/tick/localcoord/facing parity remain excluded. See [issue
+  316](../.scratch/roadmap/issues/316-hitdef-snap-dynamic.md).
+
 - **T741 closed-bounded** — Ikemen-only live `ModifyHitDef` corner-push
   offsets through root/RedirectID and Helper caller resolution:
   `ground.cornerpush.veloff`, `air.cornerpush.veloff`,

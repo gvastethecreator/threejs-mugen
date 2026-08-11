@@ -2,7 +2,21 @@
 
 Last updated: 2026-08-11
 
-## Current T741 closeout / T742 selection
+## Current T742 closeout / T743 planned
+
+T742 closes fresh direct `HitDef snap` X/Y expressions for root and Helper
+caller contexts. Caller `var(0)=7,var(1)=-5` reaches accepted contact
+`GetHitVar(xoff/yoff/zoff)=7/-5/0`, and the required trace observes the
+defender's snapped Y position. Trace/final checksums are `3d153556` /
+`fe79d540`; `pnpm qa:trace` passes `828/828` artifacts (`794` required,
+`34` optional). Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles, exact
+bind/tick/localcoord/facing and full positioning parity remain blocked. T743 /
+[issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md)
+is the planned next slice for live Ikemen-only `ModifyHitDef down.velocity`
+X/Y component preservation through root/RedirectID and Helper callers. T739 /
+issue 313 remains superseded by closed T678 / issue 252.
+
+## Historical T741 closeout
 
 T741 closes bounded Ikemen-only root/RedirectID and Helper caller-context live
 `ModifyHitDef` corner-push offsets for `ground`, `air`, `down`, and `guard`;
@@ -20,7 +34,7 @@ replacement through root/RedirectID. Single, pair, and triple caller-context
 values preserve omitted live components and reach accepted ground-guard
 `GetHitVar`/velocity metadata. Required trace/final checksums are `a2eb52db` /
 `f0fb19a8`; `pnpm qa:trace` passes `824/824` artifacts (`790` required,
-`34` optional). T738 is now historical above; T742 is the next selection
+`34` optional). T738 is now historical above; T743 is the next selection
 checkpoint. M.U.G.E.N 1.1 only documents ground-guard X; Projectiles,
 exact timing, teams, rollback and full parity remain blocked.
 
