@@ -1,5 +1,18 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T720 ReversalDef sprite-priority expressions — closed-bounded, no score movement
+
+Issue 294 closes the bounded direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` path for `p1sprpriority` and `p2sprpriority`. Static,
+dynamic, and mixed values resolve once in caller context; live omitted
+components preserve their active values; accepted reversal contact applies
+the P1/P2 roles through the existing sprite-priority telemetry. Required
+trace passes with `12eb3cbb/616b336f`; aggregate QA passes `811/811`
+artifacts (`777` required, `34` optional). No score movement: Helper-owned
+ModifyReversalDef, Projectile reflection, default profile negotiation,
+renderer ordering, exact contact timing, teams, rollback and full
+ReversalDef parity remain blocked.
+
 ## 2026-08-11 T716 Dynamic `ModifyProjectile` state expressions — closed-bounded, no score movement
 
 Issue 290 closes the Ikemen-only typed caller-context path for live

@@ -1,16 +1,30 @@
 ﻿# Progress Tracker
 
-## Active implementation checkpoint — T716 closed-bounded (2026-08-11)
+## Active implementation checkpoint — T720 closed-bounded (2026-08-11)
 
-Typed live `ModifyProjectile` state expressions for `p1stateno`, `p2stateno`,
-and `p2getp1state` now resolve once in the original root caller context and
-mutate only selected Projectiles. The existing state-transition ownership path
-is preserved, including the authored-`p2stateno` default for `p2getp1state`.
-Required trace `16fdce2c/8ed5f8c8`; `pnpm qa:trace` passes `807/807`
-artifacts (`773` required, `34` optional). `p1facing`/`p1getp2facing`,
-reversals, guards, exact tick parity, teams, rollback and full parity remain
-open. See [issue
-290](../.scratch/roadmap/issues/290-modifyprojectile-state-expressions.md).
+Issue 294 closes the direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` sprite-priority expression path. `p1sprpriority` and
+`p2sprpriority` retain static, dynamic, and mixed values, resolve once in the
+original caller context, preserve omitted live components, and feed the
+accepted reversal contact roles. Required trace `12eb3cbb/616b336f` passes;
+`pnpm qa:trace` passes `811/811` artifacts (`777` required, `34` optional),
+with typecheck and diff checks green. Helper-owned ModifyReversalDef,
+Projectile reflection, default profile negotiation, renderer ordering, exact
+timing, teams, rollback and full parity remain open. See [issue
+294](../.scratch/roadmap/issues/294-reversaldef-sprite-priority-expressions.md).
+
+## Previous implementation checkpoint — T719 closed-bounded (2026-08-11)
+
+Issue 293 closes the direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `pausetime` pair. Static, dynamic, and mixed one/two
+component values resolve once in the original caller context; fresh
+activation defaults to `[0,0]`; a live one-component mutation preserves the
+active P2 shake component; accepted reversal contact applies the asymmetric
+pause roles. Required trace `e73799ec/9998654b`; `pnpm qa:trace` passes
+`810/810` artifacts (`776` required, `34` optional). Helper-owned
+ModifyReversalDef, other reversal payloads, exact pause tick parity, teams,
+rollback and full parity remain open. See [issue
+293](../.scratch/roadmap/issues/293-reversaldef-pausetime-pair.md).
 
 ## Previous implementation checkpoint — T715 closed-bounded (2026-08-11)
 

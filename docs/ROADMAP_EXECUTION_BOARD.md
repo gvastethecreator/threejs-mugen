@@ -1,6 +1,20 @@
 ﻿# Roadmap Execution Board
 
-## Next bounded slice — T719 closed-bounded (2026-08-11)
+## Next bounded slice — T720 closed-bounded (2026-08-11)
+
+Issue 294 closes direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `p1sprpriority`/`p2sprpriority` expressions. Fresh and
+live paths retain static, dynamic, and mixed values, resolve them once in the
+original caller context, and preserve omitted live components. Accepted
+reversal contact applies the resolved P1 priority to the reverser and P2 to
+the incoming attacker through the existing sprite-priority telemetry path.
+Required trace `12eb3cbb/616b336f`; aggregate QA passes `811/811` artifacts
+(`777` required, `34` optional). Helper-owned ModifyReversalDef, Projectile
+reflection, default profile negotiation, renderer draw-order parity, exact
+contact timing, teams, rollback, and full ReversalDef parity remain blocked.
+See [issue 294](../.scratch/roadmap/issues/294-reversaldef-sprite-priority-expressions.md).
+
+## Previous bounded slice — T719 closed-bounded (2026-08-11)
 
 Issue 293 closes the direct/root `ReversalDef` and root/RedirectID
 `ModifyReversalDef` `pausetime` pair: static, dynamic, and mixed one/two

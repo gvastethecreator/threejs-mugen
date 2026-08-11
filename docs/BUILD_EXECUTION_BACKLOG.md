@@ -2,6 +2,17 @@
 
 ## Current parity queue
 
+- **T720 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
+  `ModifyReversalDef` now retain `p1sprpriority`/`p2sprpriority` as static,
+  dynamic, or mixed caller-context values. Fresh activation resolves both
+  components; live modification preserves omitted components; accepted
+  reversal contact applies P1 to the reverser and P2 to the incoming
+  attacker. Required trace `12eb3cbb/616b336f`; aggregate QA passes
+  `811/811` (`777` required, `34` optional). Helper-owned
+  ModifyReversalDef, Projectile reflection, default profile negotiation,
+  renderer ordering, exact timing, teams, rollback and full parity remain
+  blocked. See [issue 294](../.scratch/roadmap/issues/294-reversaldef-sprite-priority-expressions.md).
+
 - **T719 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
   `ModifyReversalDef` now retain static, dynamic and mixed `pausetime` pairs
   in caller context. Fresh activation defaults to `[0,0]`; live one-component
