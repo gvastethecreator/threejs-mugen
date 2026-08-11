@@ -33,6 +33,7 @@ export class RuntimeContactPresentationWorld {
     move: Pick<
       DemoMove,
       | "guardSound"
+      | "guardSoundChannel"
       | "hitSound"
       | "hitSoundChannel"
       | "guardSoundValue"
@@ -52,7 +53,7 @@ export class RuntimeContactPresentationWorld {
     const contact = this.createHitDefContactMetadata(input.attacker, input.defender, input.kind, input.runtimeTick);
     const sound = input.kind === "guard" ? input.move.guardSound : input.move.hitSound;
     const soundValue = input.kind === "guard" ? input.move.guardSoundValue : input.move.hitSoundValue;
-    const soundChannel = input.kind === "hit" ? input.move.hitSoundChannel : undefined;
+    const soundChannel = input.kind === "hit" ? input.move.hitSoundChannel : input.move.guardSoundChannel;
     const spark = input.kind === "guard" ? input.move.guardSpark : input.move.hitSpark;
     const assetFrames = resolveRuntimeHitSparkAssetFrames(input.attacker, spark);
     const soundOperation = hitDefSoundAudioOperation(soundValue, soundChannel);

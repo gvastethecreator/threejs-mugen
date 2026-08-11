@@ -2194,6 +2194,7 @@ describe("HelperSystem", () => {
             compiledControllerIr(6000, "ModifyHitDef", [], {
               redirectid: "0",
               guardsound: "Fvar(0),var(1)",
+              "guardsound.channel": "var(0)",
             }),
             compiledControllerIr(6000, "ModifyHitDef", [], { redirectid: "0" }),
           ]),
@@ -2206,6 +2207,7 @@ describe("HelperSystem", () => {
     expect(active.currentMove).toMatchObject({
       guardSound: "Fvar(0),var(1)",
       guardSoundValue: { rawPrefix: "F", group: 9, index: 4 },
+      guardSoundChannel: 9,
     });
   });
 

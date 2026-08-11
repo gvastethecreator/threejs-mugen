@@ -161,6 +161,8 @@ export type DemoMove = {
   /** Ikemen-only live ModifyHitDef hitsound.channel metadata. */
   hitSoundChannel?: number;
   guardSound?: string;
+  /** Ikemen-only live ModifyHitDef guardsound.channel metadata. */
+  guardSoundChannel?: number;
   hitSoundValue?: RuntimeResolvedSoundRef;
   guardSoundValue?: RuntimeResolvedSoundRef;
   hitSpark?: string;

@@ -48,7 +48,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   context?: RuntimeControllerEvaluationContext;
   resolveIntegerList?: (key: "nochainid") => number[] | undefined;
   resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
-  resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state" | "hitsound.channel") => number | undefined;
+  resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state" | "hitsound.channel" | "guardsound.channel") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy") => [number?, number?] | undefined;
   resolveFloatScalar?: (key: "down.velocity" | "airguard.velocity" | "sparkangle" | "guard.sparkangle") => number | undefined;
@@ -82,7 +82,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   context?: RuntimeControllerEvaluationContext;
   resolveIntegerList?: (key: "nochainid") => number[] | undefined;
   resolveIntegerPair?: (key: "damage" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
-  resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "hitsound.channel") => number | undefined;
+  resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "hitsound.channel" | "guardsound.channel") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "airguard.velocity" | "sparkxy") => [number?, number?] | undefined;
   /** Resolves live dynamic float scalars in the caller context. */
   resolveFloatScalar?: (key: "down.velocity" | "airguard.velocity" | "sparkangle" | "guard.sparkangle") => number | undefined;
@@ -1430,6 +1430,22 @@ export class RuntimeHitDefControllerDispatchWorld {
       if (guardSoundValue !== undefined) {
         existing.guardSound = operation.guardSoundExpression;
         existing.guardSoundValue = guardSoundValue;
+      }
+    }
+    if (operation.guardSoundChannel !== undefined) {
+      const resolvedGuardSoundChannel = resolveIntegerScalar
+        ? resolveIntegerScalar("guardsound.channel")
+        : resolveRuntimeHitDefIntegerScalar(
+            operation.guardSoundChannel,
+            findParam(controller.source, "guardsound.channel"),
+            actor.runtime,
+            context ?? {},
+          );
+      const guardSoundChannel = resolvedGuardSoundChannel === undefined || !Number.isFinite(resolvedGuardSoundChannel)
+        ? undefined
+        : Math.trunc(resolvedGuardSoundChannel);
+      if (guardSoundChannel !== undefined) {
+        existing.guardSoundChannel = guardSoundChannel;
       }
     }
     const xAccel = resolveHitDefScalar(operation.xAccel, undefined, actor.runtime, context);

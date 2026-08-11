@@ -119,6 +119,34 @@ describe("RuntimeContactPresentationSystem", () => {
     });
   });
 
+  it("routes the live guard-sound channel to guarded contact audio telemetry", () => {
+    const world = new RuntimeContactPresentationWorld();
+    const attacker = actor("p1", 200, 6, { fightFxPrefix: "kfm" });
+    const recordedOperations: AudioControllerOp[] = [];
+
+    world.emitHitDefContact({
+      attacker,
+      defender: { id: "p2" },
+      kind: "guard",
+      runtimeTick: 141,
+      move: {
+        guardSound: "Fvar(0),var(1)",
+        guardSoundValue: { rawPrefix: "F", group: 6, index: 4 },
+        guardSoundChannel: 8,
+      },
+      recordAudioOperation: (_actor, operation) => recordedOperations.push(operation),
+    });
+
+    expect(recordedOperations).toEqual([{ kind: "audio", controllerType: "playsnd", value: "F6,4", channel: 8 }]);
+    expect(attacker.soundEvents[0]).toMatchObject({
+      type: "PlaySnd",
+      group: 6,
+      index: 4,
+      contactKind: "guard",
+      channel: 8,
+    });
+  });
+
   it("owns projectile contact package metadata across guard sound and spark telemetry", () => {
     const world = new RuntimeContactPresentationWorld();
     const attacker = actor("p1", 1000, 3);
