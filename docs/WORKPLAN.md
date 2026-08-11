@@ -2,6 +2,12 @@
 
 ## Current parity queue
 
+T705 is the active implementation slice. Keep the claim bounded to root-owned
+live Ikemen `ModifyProjectile projanim` with typed one-value static/dynamic
+caller-context resolution, selected-action replacement, cursor reset, and
+`ProjVar` evidence. Keep FFX, Helper-owned mutation, exact VM error behavior,
+terminal playback, teams, rollback, and full Projectile parity blocked.
+
 - **T704 closed-bounded** — fresh root- and Helper-authored Projectiles
   preserve typed static/dynamic `projanim`, resolve one caller-context integer
   before AIR action lookup, and retain omitted default `0`. Required traces

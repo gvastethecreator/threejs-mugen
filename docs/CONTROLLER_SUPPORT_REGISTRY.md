@@ -1,6 +1,7 @@
 # Controller Support Registry
 
-Authoritative cursor: T704 is closed-bounded for fresh root- and
+Authoritative cursor: T705 is mapped for root-owned live Ikemen
+`ModifyProjectile projanim`; T704 is closed-bounded for fresh root- and
 Helper-authored Projectiles with typed static/dynamic `projanim` resolution
 once in the original caller context before AIR action lookup. Required root
 and Helper traces prove selected AIR action, ownership, target payload, and

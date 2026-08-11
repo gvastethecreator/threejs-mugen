@@ -1,5 +1,16 @@
 ﻿# Roadmap Package Milestones
 
+## Latest runtime cursor — T705 mapped
+
+T705 selects the live root-owned Ikemen `ModifyProjectile projanim` seam. The
+slice will retain one static or dynamic integer expression, evaluate it once
+in caller context, refresh the selected Projectile action, reset playback,
+and prove `ProjVar(projanim)` plus lifecycle, owner, and target evidence.
+FFX, exact invalid-action and negative/overflow behavior, Helper mutation,
+terminal playback, teams, rollback, and full Projectile parity remain
+excluded. See [issue
+279](../.scratch/roadmap/issues/279-modifyprojectile-anim-dynamic.md).
+
 ## Latest runtime cursor — T704 closed-bounded
 
 T704 closes the fresh Projectile `projanim` caller-context seam for root and

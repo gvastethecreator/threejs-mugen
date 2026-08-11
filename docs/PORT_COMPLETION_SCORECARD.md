@@ -1,5 +1,16 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T705 `ModifyProjectile projanim` mapped - no score movement
+
+T705 is mapped for the root-owned live Ikemen `ModifyProjectile projanim`
+seam. Implementation and required trace are pending. The planned claim covers
+typed one-value static/dynamic caller-context resolution, selected AIR action
+replacement, cursor reset, and `ProjVar` readback. No score movement occurs
+before runtime evidence passes. FFX, exact invalid-action and negative/overflow
+behavior, Helper mutation, terminal playback, teams, rollback, and full
+Projectile parity remain outside the claim. See [issue
+279](../.scratch/roadmap/issues/279-modifyprojectile-anim-dynamic.md).
+
 ## 2026-08-11 T704 Projectile `projanim` checkpoint - no score movement
 
 T704 is closed-bounded for fresh root/Helper Projectile `projanim`: typed

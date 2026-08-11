@@ -1,5 +1,15 @@
 ﻿# Progress Tracker
 
+## Latest implementation checkpoint — T705 mapped (2026-08-11)
+
+T705 is mapped as the next runtime cut. It targets root-owned live Ikemen
+`ModifyProjectile projanim`: typed static/dynamic input, one caller-context
+resolution, selected AIR action replacement, cursor reset, and `ProjVar`
+readback. No completion evidence exists yet. FFX, exact invalid-action and
+negative/overflow behavior, Helper mutation, terminal playback, teams,
+rollback, and full Projectile parity remain blocked. See [issue
+279](../.scratch/roadmap/issues/279-modifyprojectile-anim-dynamic.md).
+
 ## Latest implementation checkpoint — T704 (2026-08-11)
 
 T704 is closed-bounded for fresh root/Helper Projectiles: typed static or

@@ -2,6 +2,14 @@
 
 ## Current parity queue
 
+- **T705 mapped** — root-owned live Ikemen `ModifyProjectile projanim`.
+  Preserve one static or dynamic expression, resolve it once in caller context,
+  replace the selected AIR action, reset playback, and prove `ProjVar` plus
+  lifecycle/owner/target evidence. FFX, exact invalid-action and
+  negative/overflow behavior, Helper mutation, terminal playback, teams,
+  rollback, and full Projectile parity remain excluded. See [issue
+  279](../.scratch/roadmap/issues/279-modifyprojectile-anim-dynamic.md).
+
 - **T704 closed-bounded** — fresh root/Helper Projectile spawn preserves typed
   static/dynamic `projanim`, resolves it once in caller context, and reuses the
   existing AIR action lookup and lifecycle telemetry. Required traces pass

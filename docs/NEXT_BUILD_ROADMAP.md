@@ -1,5 +1,17 @@
 ﻿# Next Build Roadmap
 
+## Authoritative runtime cursor — T705 mapped
+
+T705 / issue 279 selects the next compatibility cut: root-owned live
+`ModifyProjectile projanim`. The typed operation must retain static or dynamic
+one-value input. The runtime must evaluate the value once in caller context,
+replace the selected AIR action, reset its cursor, and expose the result through
+`ProjVar(projanim)`. This is an Ikemen-only bounded claim. FFX prefixes,
+negative/overflow warning parity, invalid-action timing, Helper-owned mutation,
+terminal playback, broadcast order, teams, rollback, and full Projectile
+parity remain blocked. See [issue
+279](../.scratch/roadmap/issues/279-modifyprojectile-anim-dynamic.md).
+
 ## Authoritative runtime cursor — T704 closed-bounded
 
 Final T704 verification: `789/789` trace artifacts (`755` required, `34`
