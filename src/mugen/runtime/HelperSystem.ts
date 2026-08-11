@@ -1910,7 +1910,7 @@ export function resolveRuntimeHelperFloatParam(
 export function resolveRuntimeHelperFloatScalarParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "down.velocity" | "airguard.velocity",
+  key: "down.velocity" | "airguard.velocity" | "sparkangle",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
   const operation = controller.operation;
@@ -1918,9 +1918,13 @@ export function resolveRuntimeHelperFloatScalarParam(
     ? operation?.kind === "modifyhitdef"
       ? operation.downVelocityZExpression ?? operation.downVelocityZ
       : undefined
-    : operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
-      ? operation.airGuardVelocityZExpression
-      : undefined;
+    : key === "airguard.velocity"
+      ? operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
+        ? operation.airGuardVelocityZExpression
+        : undefined
+      : operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
+        ? operation.hitSparkAngle
+        : undefined;
   if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
   if (typeof value === "string") return resolveHelperFloat(helper, value, options);
   return undefined;

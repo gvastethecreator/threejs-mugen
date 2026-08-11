@@ -222,6 +222,8 @@ export type HitDefControllerOp = {
   /** Independent X/Y scales for normal and guarded hit sparks. */
   hitSparkScale?: MugenHitDefExpressionPair;
   guardSparkScale?: MugenHitDefExpressionPair;
+  /** Ikemen-only normal hit-spark angle evaluated in the HitDef caller context. */
+  hitSparkAngle?: number | string;
   /** PalFX copied to the receiver by an accepted, unguarded contact. */
   paletteFx?: MugenHitDefPaletteFxOp;
   /** Camera shake emitted by an accepted, unguarded direct contact. */
@@ -305,6 +307,8 @@ export type ModifyHitDefControllerOp = {
   guardSparkScale?: MugenHitDefExpressionPair;
   /** Component-wise live sparkxy replacement evaluated in caller context. */
   sparkXy?: MugenHitDefExpressionPair;
+  /** Ikemen-only live normal hit-spark angle replacement evaluated in caller context. */
+  hitSparkAngle?: number | string;
   /** Component-wise live replacement for the contact PalFX payload. */
   paletteFx?: MugenHitDefPaletteFxOp;
   /** Component-wise live replacement for direct-contact camera shake. */
@@ -2586,6 +2590,7 @@ function compileHitDefControllerOp(
   const crouchFriction = optionalScalarNumberOrExpression(controller, "crouch.friction");
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
   const guardSparkScale = optionalFloatExpressionPairParam(controller, "guard.sparkscale");
+  const hitSparkAngle = optionalScalarNumberOrExpression(controller, "sparkangle");
   const paletteFx = optionalHitDefPaletteFxParam(controller);
   const envShake = optionalHitDefEnvShakeParam(controller);
   const fallEnvShake = optionalHitDefEnvShakeParam(controller, "fall.envshake");
@@ -2641,6 +2646,7 @@ function compileHitDefControllerOp(
     (Array.isArray(airGuardVelocityExpressionValue) && airGuardVelocityExpressions === undefined) ||
     hitSparkScale === false ||
     guardSparkScale === false ||
+    hitSparkAngle === false ||
     paletteFx === false ||
     envShake === false ||
     fallEnvShake === false ||
@@ -2780,6 +2786,7 @@ function compileHitDefControllerOp(
     ...(crouchFriction === true || crouchFriction === false ? {} : { crouchFriction }),
     ...(hitSparkScale === true ? {} : { hitSparkScale }),
     ...(guardSparkScale === true ? {} : { guardSparkScale }),
+    ...(hitSparkAngle === true ? {} : { hitSparkAngle }),
     ...(paletteFx === true ? {} : { paletteFx }),
     ...(envShake === true ? {} : { envShake }),
     ...(fallEnvShake === true ? {} : { fallEnvShake }),
@@ -2829,6 +2836,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "sparkscale",
     "guard.sparkscale",
     "sparkxy",
+    "sparkangle",
     "palfx.time",
     "palfx.add",
     "palfx.mul",
@@ -2958,6 +2966,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
   const guardSparkScale = optionalFloatExpressionPairParam(controller, "guard.sparkscale");
   const sparkXy = optionalFloatExpressionPairParam(controller, "sparkxy");
+  const hitSparkAngle = optionalScalarNumberOrExpression(controller, "sparkangle");
   const paletteFx = optionalHitDefPaletteFxParam(controller);
   const envShake = optionalHitDefEnvShakeParam(controller);
   const fallEnvShake = optionalHitDefEnvShakeParam(controller, "fall.envshake");
@@ -3031,6 +3040,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     hitSparkScale !== true ||
     guardSparkScale !== true ||
     sparkXy !== true ||
+    hitSparkAngle !== true ||
     paletteFx !== true ||
     envShake !== true ||
     fallEnvShake !== true ||
@@ -3090,6 +3100,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     hitSparkScale === false ||
     guardSparkScale === false ||
     sparkXy === false ||
+    hitSparkAngle === false ||
     paletteFx === false ||
     envShake === false ||
     fallEnvShake === false ||
@@ -3165,6 +3176,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(hitSparkScale === true ? {} : { hitSparkScale }),
     ...(guardSparkScale === true ? {} : { guardSparkScale }),
     ...(sparkXy === true ? {} : { sparkXy }),
+    ...(hitSparkAngle === true ? {} : { hitSparkAngle }),
     ...(paletteFx === true ? {} : { paletteFx }),
     ...(envShake === true ? {} : { envShake }),
     ...(fallEnvShake === true ? {} : { fallEnvShake }),

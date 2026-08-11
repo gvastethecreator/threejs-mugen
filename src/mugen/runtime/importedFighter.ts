@@ -255,6 +255,7 @@ function buildStateMoves(
         guardSound: stripMugenString(hitDef.params.guardsound),
         hitSpark: hitDefSparkParam(hitDef.params, constants, "sparkno"),
         guardSpark: hitDefSparkParam(hitDef.params, constants, "guard.sparkno"),
+        hitSparkAngle: firstNumber(hitDef.params.sparkangle),
         sparkXy: numberPair(hitDef.params.sparkxy),
          attackDepth: normalizedNumberPair(hitDef.params["attack.depth"]) ?? runtimeCombatDepthFromConstants(constants).attack,
          hitVars: buildHitVars(hitDef.params),
@@ -382,6 +383,7 @@ function buildMove(
       | "guardSound"
       | "hitSpark"
       | "guardSpark"
+      | "hitSparkAngle"
       | "sparkXy"
       | "attackDepth"
       | "hitVars"
@@ -453,6 +455,7 @@ function buildMove(
     guardSound: overrides.guardSound,
     hitSpark: overrides.hitSpark,
     guardSpark: overrides.guardSpark,
+    hitSparkAngle: overrides.hitSparkAngle,
     sparkXy: overrides.sparkXy,
     attackDepth: overrides.attackDepth,
     hitVars: overrides.hitVars,

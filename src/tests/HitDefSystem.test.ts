@@ -1267,6 +1267,45 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.sparkXy).toEqual([24.5, -72.25]);
   });
 
+  it("resolves live ModifyHitDef sparkangle in caller context and preserves omission", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        damage: "20",
+        sparkno: "S7001",
+        sparkangle: "-10",
+      })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.hitSparkAngle).toBe(-10);
+
+    caller.vars[0] = 27.5;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        sparkangle: "var(0)",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.hitSparkAngle).toBe(27.5);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        forcenofall: "1",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.hitSparkAngle).toBe(27.5);
+  });
+
   it("resolves fresh direct down.velocity X/Y and inherits every omitted component from air.velocity", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

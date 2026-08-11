@@ -2122,6 +2122,32 @@ describe("HelperSystem", () => {
     expect(active.currentMove?.sparkXy).toEqual([24.5, -72.25]);
   });
 
+  it("applies Helper-owned ModifyHitDef sparkangle in caller context", () => {
+    const active = helper({
+      vars: [31.25],
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              damage: "20",
+              sparkno: "S7001",
+              sparkangle: "-5",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              sparkangle: "var(0)",
+            }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.currentMove?.hitSparkAngle).toBe(31.25);
+  });
+
   it("applies Helper-owned ModifyHitDef down.hittime in caller context", () => {
     const active = helper({
       vars: [17.9],

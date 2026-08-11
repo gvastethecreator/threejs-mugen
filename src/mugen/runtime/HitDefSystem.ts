@@ -51,7 +51,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy") => [number?, number?] | undefined;
-  resolveFloatScalar?: (key: "down.velocity" | "airguard.velocity") => number | undefined;
+  resolveFloatScalar?: (key: "down.velocity" | "airguard.velocity" | "sparkangle") => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
   resolveFallEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -85,7 +85,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "airguard.velocity" | "sparkxy") => [number?, number?] | undefined;
   /** Resolves live dynamic float scalars in the caller context. */
-  resolveFloatScalar?: (key: "down.velocity" | "airguard.velocity") => number | undefined;
+  resolveFloatScalar?: (key: "down.velocity" | "airguard.velocity" | "sparkangle") => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
   resolveFallEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -596,6 +596,16 @@ export class RuntimeHitDefControllerDispatchWorld {
       resolveFloatPair?.("guard.sparkscale"),
       [1, 1],
     );
+    const authoredHitSparkAngle = operation?.hitSparkAngle ?? firstNumber(findParam(source, "sparkangle"));
+    const hitSparkAngle = authoredHitSparkAngle === undefined
+      ? existing?.hitSparkAngle
+      : resolveRuntimeHitDefFloatExpressionScalar(
+          authoredHitSparkAngle,
+          findParam(source, "sparkangle"),
+          actor.runtime,
+          context ?? {},
+          resolveFloatScalar?.("sparkangle"),
+        ) ?? existing?.hitSparkAngle;
     const paletteFx = resolveRuntimeHitDefPaletteFx({
       operation: operation?.paletteFx,
       controller: source,
@@ -823,6 +833,7 @@ export class RuntimeHitDefControllerDispatchWorld {
       guardSpark: operation?.guardSpark ?? stripMugenString(findParam(source, "guard.sparkno")) ?? existing?.guardSpark,
       hitSparkScale,
       guardSparkScale,
+      ...(hitSparkAngle === undefined ? {} : { hitSparkAngle }),
       ...(paletteFx === undefined ? {} : { paletteFx }),
       ...(envShake === undefined ? {} : { envShake }),
       sparkXy: operation?.sparkXy ? normalizeSparkOffset(operation.sparkXy) : numberPair(findParam(source, "sparkxy")) ?? existing?.sparkXy,
@@ -1318,6 +1329,18 @@ export class RuntimeHitDefControllerDispatchWorld {
           sparkXy.first ?? currentSparkXy[0],
           sparkXy.componentCount === 2 ? sparkXy.second ?? currentSparkXy[1] : currentSparkXy[1],
         ];
+      }
+    }
+    if (operation.hitSparkAngle !== undefined) {
+      const hitSparkAngle = resolveRuntimeHitDefFloatExpressionScalar(
+        operation.hitSparkAngle,
+        findParam(controller.source, "sparkangle"),
+        actor.runtime,
+        context ?? {},
+        resolveFloatScalar?.("sparkangle"),
+      );
+      if (hitSparkAngle !== undefined) {
+        existing.hitSparkAngle = hitSparkAngle;
       }
     }
     const xAccel = resolveHitDefScalar(operation.xAccel, undefined, actor.runtime, context);

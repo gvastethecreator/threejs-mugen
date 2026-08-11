@@ -27,6 +27,7 @@ describe("RuntimeContactPresentationSystem", () => {
         guardSpark: "S7000",
         hitSparkScale: [1.5, 0.75],
         guardSparkScale: [0.5, -1],
+        hitSparkAngle: 27.5,
         sparkXy: [42, -58],
       },
     });
@@ -47,6 +48,7 @@ describe("RuntimeContactPresentationSystem", () => {
       sparkNo: 7001,
       offset: { x: 42, y: -58 },
       scale: { x: 1.5, y: 0.75 },
+      angle: 27.5,
       contactId: "direct:p1:p2:140:200:6:hit",
       contactTick: 140,
       contactKind: "hit",

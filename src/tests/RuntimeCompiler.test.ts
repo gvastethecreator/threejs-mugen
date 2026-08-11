@@ -2627,6 +2627,27 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles Ikemen sparkangle for fresh and live ModifyHitDef callers", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      sparkangle: "-12.5",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      hitSparkAngle: -12.5,
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      sparkangle: "var(1) + .5",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      hitSparkAngle: "var(1) + .5",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      sparkangle: "var(1),var(2)",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles one-, two-, and three-component direct HitDef airguard.velocity expressions", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "airguard.velocity": "-4.25",

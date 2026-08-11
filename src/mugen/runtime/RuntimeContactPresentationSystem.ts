@@ -40,6 +40,7 @@ export class RuntimeContactPresentationWorld {
       | "hitSpark"
       | "guardSparkScale"
       | "hitSparkScale"
+      | "hitSparkAngle"
       | "sparkXy"
     >;
     kind: RuntimeHitDefContactKind;
@@ -67,7 +68,7 @@ export class RuntimeContactPresentationWorld {
         assetFrames[0],
         assetFrames,
         contact,
-        undefined,
+        input.kind === "hit" ? input.move.hitSparkAngle : undefined,
         input.kind === "guard" ? input.move.guardSparkScale : input.move.hitSparkScale,
       ),
     };

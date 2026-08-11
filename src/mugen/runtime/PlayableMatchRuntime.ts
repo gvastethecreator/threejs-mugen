@@ -5322,7 +5322,11 @@ function runActiveStateControllers(
         },
         resolveFloatScalar: (key) => {
           const operation = controller.operation?.kind === "hitdef" ? controller.operation : undefined;
-          const value = key === "airguard.velocity" ? operation?.airGuardVelocityZExpression : undefined;
+          const value = key === "airguard.velocity"
+            ? operation?.airGuardVelocityZExpression
+            : key === "sparkangle"
+              ? operation?.hitSparkAngle
+              : undefined;
           if (value === undefined) return undefined;
           const resolved = resolveDispatchFloat(
             typeof value === "number" ? value : undefined,
@@ -5399,7 +5403,9 @@ function runActiveStateControllers(
           const operation = controller.operation?.kind === "modifyhitdef" ? controller.operation : undefined;
           const value = key === "down.velocity"
             ? operation?.downVelocityZExpression ?? operation?.downVelocityZ
-            : operation?.airGuardVelocityZExpression;
+            : key === "airguard.velocity"
+              ? operation?.airGuardVelocityZExpression
+              : operation?.hitSparkAngle;
           if (value === undefined) return undefined;
           const resolved = resolveDispatchFloat(
             typeof value === "number" ? value : undefined,

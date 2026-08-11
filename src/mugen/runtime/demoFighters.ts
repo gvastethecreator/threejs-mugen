@@ -166,6 +166,8 @@ export type DemoMove = {
   /** Independent X/Y draw scales for normal and guarded hit sparks. */
   hitSparkScale?: [number, number];
   guardSparkScale?: [number, number];
+  /** Ikemen-only normal hit-spark angle in degrees. */
+  hitSparkAngle?: number;
   /** PalFX copied to the receiver by an accepted, unguarded contact. */
   paletteFx?: RuntimePaletteFxPayload;
   /** Camera shake emitted by an accepted, unguarded direct contact. */
