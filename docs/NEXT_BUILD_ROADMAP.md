@@ -1,6 +1,18 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T728 closed-bounded (2026-08-11)
+## Latest bounded slice — T729 closed-bounded (2026-08-11)
+
+Issue 303 closes Ikemen-only live `ModifyHitDef sparkxy` X/Y mutation
+through root/RedirectID and Helper callers. Static, mixed and dynamic values
+resolve once in caller context; single-component replacement preserves Y,
+pairs replace both axes, and omission preserves the active offset. The
+required trace observes offset `24,-72` in the hit-effect event; focused
+coverage passes `289/289`, and aggregate QA passes `816/816` artifacts
+(`782` required, `34` optional). Fresh defaults, spark identity, angle, scale,
+palette, Projectiles and exact renderer timing remain blocked. See [issue
+303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
+
+## Historical bounded slice — T728 closed-bounded (2026-08-11)
 
 Issue 302 closes Ikemen-only live `ModifyHitDef down.velocity` X/Y mutation
 through root/RedirectID and Helper callers. Static, mixed and dynamic values
@@ -11,11 +23,12 @@ coverage, typecheck, diff hygiene and trace QA pass. Fresh defaults, dynamic Z,
 Projectiles and exact landing timing remain blocked. See [issue
 302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
 
-## Next bounded slice — T729 queued
+## Next bounded slice — T730 queued
 
-Issue 303 queues Ikemen-only live `ModifyHitDef sparkxy` X/Y replacement through
-root/RedirectID and Helper callers. See [issue
-303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
+Issue 304 queues Ikemen-only live `ModifyHitDef sparkangle` scalar replacement
+through root/RedirectID and Helper callers, preserving omission and exposing
+the resolved angle in the existing hit-effect event. See [issue
+304](../.scratch/roadmap/issues/304-modifyhitdef-sparkangle-expressions.md).
 
 ## Historical bounded slice — T727 closed-bounded (2026-08-11)
 

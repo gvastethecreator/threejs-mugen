@@ -13,18 +13,32 @@ exact tick/combo parity, overflow/int32, teams, rollback and full ReversalDef
 parity remain blocked. See [issue
 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
 
-## Latest closed-bounded — T728 `ModifyHitDef down.velocity` expressions
+## Latest closed-bounded — T729 `ModifyHitDef sparkxy` expressions
+
+Issue 303 closes Ikemen-only live X/Y replacement for `ModifyHitDef sparkxy`
+through root/RedirectID and Helper caller paths. Single-component values
+preserve Y, pairs replace both axes, and omission preserves the active offset.
+The required trace observes `sparkxy = 24,-72` in the hit-effect event;
+focused coverage passes `289/289`, and `pnpm qa:trace` passes `816/816`
+artifacts (`782` required, `34` optional). Fresh defaults, spark identity,
+scale, angle, palette, Projectiles and exact renderer timing remain blocked.
+See [issue
+303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
+
+## Next queued — T730 `ModifyHitDef sparkangle` expressions
+
+Issue 304 queues the bounded Ikemen-only live hit-spark angle scalar through
+root/RedirectID and Helper caller paths. `guard.sparkangle`, identity,
+`sparkxy`, scale, palette, Projectiles and full presentation parity remain
+excluded. See [issue
+304](../.scratch/roadmap/issues/304-modifyhitdef-sparkangle-expressions.md).
+
+## Historical checkpoint — T728 `ModifyHitDef down.velocity` expressions
 
 Issue 302 closes Ikemen-only live X/Y replacement with Y/Z preservation for
 root/RedirectID and Helper callers, with required lying-contact evidence.
 See [issue
 302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
-
-## Next queued — T729 `ModifyHitDef sparkxy` expressions
-
-Issue 303 queues Ikemen-only live X/Y replacement with omitted-axis
-preservation and bounded hit-effect offset evidence. See [issue
-303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
 
 ## Historical checkpoint — T726 completed
 

@@ -1,23 +1,25 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T728 closed-bounded (2026-08-11)
+## Latest bounded slice — T729 closed-bounded (2026-08-11)
 
-Issue 302 closes Ikemen-only live `ModifyHitDef down.velocity` on root,
-RedirectID and Helper caller paths. Static, mixed and dynamic X/Y values
-resolve once in caller context; one component replaces X while preserving Y/Z,
-two components replace X/Y while preserving Z, and omission is a no-op.
-Required root and Helper traces prove lying contact, ownership, target links and
-`GetHitVar(xvel/yvel/zvel)`; focused suites, typecheck, diff hygiene and QA
-traces pass. Fresh defaults, dynamic Z, Projectiles and exact landing timing
-remain blocked. See [issue 302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
+Issue 303 closes Ikemen-only live `ModifyHitDef sparkxy` X/Y replacement on
+root, RedirectID and Helper caller paths. Static, mixed and dynamic values
+resolve once in caller context; one component preserves Y, pairs replace both
+axes, and omission is a no-op. The required trace proves a hit-effect event
+with final offset `24,-72`; focused coverage passes `289/289` and aggregate QA
+passes `816/816` artifacts (`782` required, `34` optional). Fresh defaults,
+spark identity, angle, scale, palette, Projectiles and exact renderer timing
+remain blocked. See [issue
+303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
 
-## Next bounded slice — T729 queued
+## Next bounded slice — T730 queued
 
-Issue 303 queues Ikemen-only live `ModifyHitDef sparkxy` X/Y replacement through
-root/RedirectID and Helper callers, with omitted-axis preservation and bounded
-hit-effect offset evidence. Fresh defaults, sound/spark identity mutation,
-Projectiles, exact renderer timing and full effect parity remain excluded. See
-[issue 303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
+Issue 304 queues the next Ikemen-only live `ModifyHitDef sparkangle` scalar
+through root/RedirectID and Helper callers, with omission preservation and
+bounded hit-effect angle evidence. Guard spark angle, spark identity, `sparkxy`,
+scale, palette, Projectiles, exact renderer timing and full effect parity remain
+excluded. See [issue
+304](../.scratch/roadmap/issues/304-modifyhitdef-sparkangle-expressions.md).
 
 ## Historical bounded slice — T727 closed-bounded (2026-08-11)
 

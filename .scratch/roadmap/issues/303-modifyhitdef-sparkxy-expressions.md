@@ -1,6 +1,6 @@
 # Issue 303 — `ModifyHitDef` `sparkxy` expressions
 
-Status: **queued** (T729, 2026-08-11)
+Status: **closed-bounded** (T729, 2026-08-11)
 
 ## Objetivo
 
@@ -40,3 +40,24 @@ Añadir cobertura `RuntimeCompiler.test.ts`, `HitDefSystem.test.ts`,
 preservación del eje omitido y RedirectID caller context. La traza sólo se
 promocionará si el `ModifyHitDef` ocurre antes del contacto aceptado y el evento
 `HitEffect` expone el offset final.
+
+## Resultado
+
+La IR conserva `sparkxy` como par estático, mixto o dinámico. `HitDefSystem`
+evalúa una vez en el caller original; un componente reemplaza X y preserva Y,
+dos reemplazan X/Y y la omisión no muta el offset vivo. Root/RedirectID y
+Helper consumen el valor en el evento `HitSpark` existente. La cobertura
+enfocada de compilador, runtime y Helper pasa `289/289`; typecheck y diff
+hygiene pasan.
+
+Evidencia requerida:
+
+- `synthetic-imported-modifyhitdef-dynamic-sparkxy.json`, trace checksum
+  `11851197`, con `sparkxy = 24,-72`, contacto hit, target link y final P2
+  life `963`.
+- `pnpm qa:trace`: `816/816` artifacts (`782` required, `34` optional),
+  `0` failed y `0` skipped.
+
+Commits: `523b34c6` (runtime/compiler) y `13cbf49d` (tests/evidence). El
+claim queda limitado a la mutación live y al offset de evento; la lista de
+bloqueos propuesta arriba permanece vigente.

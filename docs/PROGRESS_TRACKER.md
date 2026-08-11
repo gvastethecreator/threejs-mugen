@@ -1,16 +1,29 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T728 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T729 closed-bounded (2026-08-11)
+
+Issue 303 closes Ikemen-only live `ModifyHitDef sparkxy` X/Y replacement
+through root/RedirectID and Helper callers. Caller-context resolution,
+component preservation and hit-effect offset telemetry are covered by
+focused compiler/runtime/Helper tests (`289/289`) and the required trace
+`synthetic-imported-modifyhitdef-dynamic-sparkxy.json` (`11851197`). The
+aggregate `pnpm qa:trace` gate passes `816/816` artifacts (`782` required,
+`34` optional) with no failures or skipped fixtures. Fresh defaults, spark
+identity, angle, scale, palette, Projectiles and exact renderer timing remain
+blocked.
+
+## Next implementation checkpoint — T730 queued
+
+Issue 304 queues Ikemen-only live `ModifyHitDef sparkangle` scalar replacement
+through root/RedirectID and Helper callers, preserving omission and exposing
+the resolved angle in the existing hit-effect event.
+
+## Historical checkpoint — T728 closed-bounded (2026-08-11)
 
 Issue 302 closes live `ModifyHitDef down.velocity` X/Y replacement through
 root/RedirectID and Helper callers. Caller-context resolution, omitted-axis
 preservation, lying-contact consumption and required traces are covered;
 focused gates, typecheck and QA trace pass.
-
-## Next implementation checkpoint — T729 queued
-
-Issue 303 queues live `ModifyHitDef sparkxy` X/Y replacement through
-root/RedirectID and Helper callers, with bounded hit-effect offset evidence.
 
 ## Historical checkpoint — T727 closed-bounded (2026-08-11)
 

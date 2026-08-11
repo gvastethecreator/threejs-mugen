@@ -1,17 +1,18 @@
 # Controller Support Registry
 
-Latest cursor: T728 / issue 302 is closed-bounded for live root/RedirectID and
-Helper `ModifyHitDef down.velocity` X/Y replacement. Static, mixed and
-caller-context dynamic values resolve once; one component preserves Y/Z, pairs
-preserve Z, and omission is a no-op. Required root/Helper traces prove lying
-contact, ownership, target links and `GetHitVar(xvel/yvel/zvel)`; focused
-suites, typecheck, diff hygiene and QA traces pass.
+Latest cursor: T729 / issue 303 is closed-bounded for Ikemen-only live
+root/RedirectID and Helper `ModifyHitDef sparkxy` X/Y replacement. Static,
+mixed and caller-context dynamic values resolve once; one component preserves
+Y, pairs replace both axes, and omission is a no-op. Required hit-effect trace
+`synthetic-imported-modifyhitdef-dynamic-sparkxy.json` carries offset `24,-72`;
+focused coverage passes `289/289`, and `pnpm qa:trace` passes `816/816`
+artifacts (`782` required, `34` optional).
 
-Next cursor: T729 / issue 303 is queued for Ikemen-only live
-`ModifyHitDef sparkxy` X/Y replacement with omitted-axis preservation and
-bounded hit-effect offset evidence. Fresh defaults, sound/spark identity
-mutation, Projectiles, exact renderer timing, teams, rollback and full effect
-parity remain deferred.
+Next cursor: T730 / issue 304 is queued for Ikemen-only live
+`ModifyHitDef sparkangle` scalar replacement through root/RedirectID and
+Helper callers. Omission preservation, `guard.sparkangle`, spark identity,
+`sparkxy`, scale, palette, Projectiles, exact renderer timing, teams, rollback
+and full effect parity remain deferred.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root
 `ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth` static,
