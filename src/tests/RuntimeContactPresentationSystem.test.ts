@@ -102,14 +102,16 @@ describe("RuntimeContactPresentationSystem", () => {
       kind: "guard",
       runtimeTick: 141,
       move: {
-        guardSpark: "S7000",
+        guardSpark: "F19",
         guardSparkAngle: -19.25,
       },
     });
 
     expect(result.effect).toMatchObject({
       kind: "guard",
-      sparkNo: 7000,
+      sparkNo: 19,
+      raw: "F19",
+      rawPrefix: "F",
       angle: -19.25,
       contactKind: "guard",
     });

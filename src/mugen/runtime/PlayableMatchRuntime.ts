@@ -54,7 +54,10 @@ import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoF
 import { consumeRuntimeDirectHitFacing, RuntimeDirectCombatWorld } from "./DirectCombatSystem";
 import { consumeRuntimeProjectileHitFacing } from "./ProjectileCombatSystem";
 import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
-import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
+import {
+  RuntimeHitDefControllerDispatchWorld,
+  runtimeHitDefSparkNumericExpression,
+} from "./HitDefSystem";
 import { RuntimeHitEffectWorld } from "./HitEffectSystem";
 import { runtimeDefaultHitFlagForSource } from "./RuntimeHitFlagDefaults";
 import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
@@ -5426,6 +5429,23 @@ function runActiveStateControllers(
             createPlayerIdTarget(actor),
           );
           return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
+        },
+        resolveSparkNumber: (_key, expression) => {
+          const numericExpression = runtimeHitDefSparkNumericExpression(expression);
+          if (numericExpression === undefined) return undefined;
+          const resolved = resolveDispatchNumber(
+            undefined,
+            numericExpression,
+            actor,
+            targetOpponent,
+            stateOwner,
+            stageBounds,
+            activeTick,
+            gameSpace,
+            options.characters,
+            createPlayerIdTarget(actor),
+          );
+          return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
         },
         resolveFloatPair: (key) => {
           const operation = controller.operation?.kind === "modifyhitdef" ? controller.operation : undefined;

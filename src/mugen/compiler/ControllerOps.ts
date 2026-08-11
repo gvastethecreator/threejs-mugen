@@ -313,6 +313,10 @@ export type ModifyHitDefControllerOp = {
   hitSparkAngle?: number | string;
   /** Ikemen-only live guard hit-spark angle replacement evaluated in caller context. */
   guardSparkAngle?: number | string;
+  /** Static live guard hit-spark identity replacement. */
+  guardSpark?: string;
+  /** Dynamic live guard hit-spark identity; prefix is retained and the numeric suffix resolves in caller context. */
+  guardSparkExpression?: string;
   /** Component-wise live replacement for the contact PalFX payload. */
   paletteFx?: MugenHitDefPaletteFxOp;
   /** Component-wise live replacement for direct-contact camera shake. */
@@ -2845,6 +2849,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "sparkxy",
     "sparkangle",
     "guard.sparkangle",
+    "guard.sparkno",
     "palfx.time",
     "palfx.add",
     "palfx.mul",
@@ -2976,6 +2981,13 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const sparkXy = optionalFloatExpressionPairParam(controller, "sparkxy");
   const hitSparkAngle = optionalScalarNumberOrExpression(controller, "sparkangle");
   const guardSparkAngle = optionalScalarNumberOrExpression(controller, "guard.sparkangle");
+  const guardSparkValue = optionalModifyHitDefSparkParam(controller, "guard.sparkno");
+  const guardSpark = typeof guardSparkValue === "string" && staticProjectileSparkRef(guardSparkValue) !== undefined
+    ? guardSparkValue
+    : undefined;
+  const guardSparkExpression = typeof guardSparkValue === "string" && guardSpark === undefined
+    ? guardSparkValue
+    : undefined;
   const paletteFx = optionalHitDefPaletteFxParam(controller);
   const envShake = optionalHitDefEnvShakeParam(controller);
   const fallEnvShake = optionalHitDefEnvShakeParam(controller, "fall.envshake");
@@ -3051,6 +3063,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     sparkXy !== true ||
     hitSparkAngle !== true ||
     guardSparkAngle !== true ||
+    guardSparkValue !== true ||
     paletteFx !== true ||
     envShake !== true ||
     fallEnvShake !== true ||
@@ -3112,6 +3125,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     sparkXy === false ||
     hitSparkAngle === false ||
     guardSparkAngle === false ||
+    guardSparkValue === false ||
     paletteFx === false ||
     envShake === false ||
     fallEnvShake === false ||
@@ -3189,6 +3203,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(sparkXy === true ? {} : { sparkXy }),
     ...(hitSparkAngle === true ? {} : { hitSparkAngle }),
     ...(guardSparkAngle === true ? {} : { guardSparkAngle }),
+    ...(guardSpark === undefined ? {} : { guardSpark }),
+    ...(guardSparkExpression === undefined ? {} : { guardSparkExpression }),
     ...(paletteFx === true ? {} : { paletteFx }),
     ...(envShake === true ? {} : { envShake }),
     ...(fallEnvShake === true ? {} : { fallEnvShake }),
@@ -5355,6 +5371,29 @@ function staticProjectileGuardDistanceBounds(
 function staticProjectileSparkRef(value: string | undefined): string | undefined {
   const normalized = stripMugenString(value);
   return normalized && /^[fs]?-?\d+$/i.test(normalized) ? normalized : undefined;
+}
+
+/**
+ * Keep a live ModifyHitDef spark reference typed without confusing its
+ * optional FightFX/player prefix with the numeric expression suffix.
+ * The runtime owns caller-context evaluation of the suffix.
+ */
+function optionalModifyHitDefSparkParam(
+  controller: MugenStateController,
+  key: "guard.sparkno",
+): string | true | false {
+  const raw = findParam(controller, key);
+  if (raw === undefined) return true;
+  const normalized = stripMugenString(raw);
+  if (!normalized) return false;
+  const staticValue = staticProjectileSparkRef(normalized);
+  if (staticValue !== undefined) return staticValue;
+  const prefixMatch = /^([FSM])\s*(.+)$/i.exec(normalized);
+  const prefix = prefixMatch?.[1]?.toUpperCase() ?? "";
+  const expression = (prefixMatch?.[2] ?? normalized).trim();
+  const compiled = compileFloatExpressionComponent(expression);
+  if (compiled === undefined) return false;
+  return `${prefix}${compiled}`;
 }
 
 function staticProjectileZeroDefaultPair(value: string | undefined): [number, number] | undefined {

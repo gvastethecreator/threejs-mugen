@@ -2656,6 +2656,39 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles live ModifyHitDef guard.sparkno with static and caller expressions", () => {
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "guard.sparkno": "S7100",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardSpark: "S7100",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "guard.sparkno": "Fvar(3)",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardSparkExpression: "Fvar(3)",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "guard.sparkno": "var(3)",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardSparkExpression: "var(3)",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "guard.sparkno": "Fvar(3),var(4)",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "guard.sparkno": "Fbogus",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles one-, two-, and three-component direct HitDef airguard.velocity expressions", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "airguard.velocity": "-4.25",

@@ -26,7 +26,10 @@ import {
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
 import type { DemoMove } from "./demoFighters";
-import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
+import {
+  RuntimeHitDefControllerDispatchWorld,
+  runtimeHitDefSparkNumericExpression,
+} from "./HitDefSystem";
 import type { RuntimePaletteFxResolver } from "./SpriteEffectSystem";
 import { tickRuntimeUnhittableTime } from "./RuntimeUnhittableTimeSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
@@ -1777,6 +1780,14 @@ export function modifyRuntimeHelperHitDef(
       : undefined,
     resolveFloatScalar: options
       ? (key) => resolveRuntimeHelperFloatScalarParam(helper, controller, key, options)
+      : undefined,
+    resolveSparkNumber: options
+      ? (_key, expression) => {
+          const numericExpression = runtimeHitDefSparkNumericExpression(expression);
+          if (numericExpression === undefined) return undefined;
+          const resolved = resolveHelperNumber(helper, undefined, numericExpression, options);
+          return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
+        }
       : undefined,
     resolvePaletteFx: options
       ? resolveRuntimeHelperHitDefPaletteFx(helper, controller, options)

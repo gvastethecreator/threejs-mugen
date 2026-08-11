@@ -2152,6 +2152,34 @@ describe("HelperSystem", () => {
     expect(active.currentMove?.guardSparkAngle).toBe(33.25);
   });
 
+  it("applies Helper-owned ModifyHitDef guard.sparkno in caller context and preserves omission", () => {
+    const active = helper({
+      vars: [19],
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              damage: "20",
+              "guard.sparkno": "S7000",
+              "guard.sparkangle": "-7",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              "guard.sparkno": "Fvar(0)",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], { redirectid: "0", forcenofall: "1" }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.currentMove?.guardSpark).toBe("F19");
+    expect(active.currentMove?.guardSparkAngle).toBe(-7);
+  });
+
   it("applies Helper-owned ModifyHitDef down.hittime in caller context", () => {
     const active = helper({
       vars: [17.9],

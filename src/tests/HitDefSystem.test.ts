@@ -1312,6 +1312,55 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.guardSparkAngle).toBe(29);
   });
 
+  it("replaces live ModifyHitDef guard.sparkno identity and preserves omission", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        damage: "20",
+        "guard.sparkno": "S7000",
+        "guard.sparkangle": "-8",
+      })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.guardSpark).toBe("S7000");
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        "guard.sparkno": "F7100",
+      })),
+    });
+    expect(actor.currentMove?.guardSpark).toBe("F7100");
+
+    caller.vars[0] = 19;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        "guard.sparkno": "Fvar(0)",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.guardSpark).toBe("F19");
+    expect(actor.currentMove?.guardSparkAngle).toBe(-8);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        forcenofall: "1",
+      })),
+    });
+    expect(actor.currentMove?.guardSpark).toBe("F19");
+    expect(actor.currentMove?.guardSparkAngle).toBe(-8);
+  });
+
   it("resolves fresh direct down.velocity X/Y and inherits every omitted component from air.velocity", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

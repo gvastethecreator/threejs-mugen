@@ -86,6 +86,8 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "airguard.velocity" | "sparkxy") => [number?, number?] | undefined;
   /** Resolves live dynamic float scalars in the caller context. */
   resolveFloatScalar?: (key: "down.velocity" | "airguard.velocity" | "sparkangle" | "guard.sparkangle") => number | undefined;
+  /** Resolves a live spark identity's numeric suffix in the caller context. */
+  resolveSparkNumber?: (key: "guard.sparkno", expression?: string) => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
   resolveFallEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -899,6 +901,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     resolveIntegerScalar,
     resolveFloatPair,
     resolveFloatScalar,
+    resolveSparkNumber,
     resolvePaletteFx,
     resolveEnvShake,
     resolveFallEnvShake,
@@ -1364,6 +1367,20 @@ export class RuntimeHitDefControllerDispatchWorld {
       );
       if (guardSparkAngle !== undefined) {
         existing.guardSparkAngle = guardSparkAngle;
+      }
+    }
+    if (operation.guardSpark !== undefined) {
+      existing.guardSpark = operation.guardSpark;
+    }
+    if (operation.guardSparkExpression !== undefined) {
+      const guardSparkNo = resolveSparkNumber?.("guard.sparkno", operation.guardSparkExpression)
+        ?? resolveRuntimeHitDefInteger(
+          runtimeHitDefSparkNumericExpression(operation.guardSparkExpression) ?? operation.guardSparkExpression,
+          actor.runtime,
+          context ?? {},
+        );
+      if (guardSparkNo !== undefined && Number.isFinite(guardSparkNo)) {
+        existing.guardSpark = `${runtimeHitDefSparkPrefix(operation.guardSparkExpression)}${Math.trunc(guardSparkNo)}`;
       }
     }
     const xAccel = resolveHitDefScalar(operation.xAccel, undefined, actor.runtime, context);
@@ -2230,6 +2247,21 @@ function numberPair(value: string | undefined): [number, number] | undefined {
 
 function normalizeSparkOffset(value: [number, number?]): [number, number] {
   return [value[0], value[1] ?? value[0]];
+}
+
+/** Removes the supported MUGEN/Ikemen spark prefix before caller evaluation. */
+export function runtimeHitDefSparkNumericExpression(value: string | undefined): string | undefined {
+  const normalized = stripMugenString(value);
+  if (!normalized) return undefined;
+  const prefixed = /^([FSM])\s*(.+)$/i.exec(normalized);
+  return (prefixed?.[2] ?? normalized).trim() || undefined;
+}
+
+/** Resolves the prefix used by a dynamic spark expression; omitted prefixes use FightFX. */
+export function runtimeHitDefSparkPrefix(value: string | undefined): string {
+  const normalized = stripMugenString(value);
+  const prefixed = normalized ? /^([FSM])\s*(.+)$/i.exec(normalized) : undefined;
+  return prefixed?.[1]?.toUpperCase() ?? "F";
 }
 
 function runtimeHitVelocityVector(value: [number, number?, number?]): { x: number; y: number; z: number } {
