@@ -1,7 +1,7 @@
 {
-  "current_commit": "b2263748e09864f388489931acd59958de42a01d",
+  "current_commit": "63df9b5b30a54d3db9c6928c6439264d0a93b186",
   "working_tree_dirty": true,
-  "generated_at": "2026-08-11T03:35:27Z",
+  "generated_at": "2026-08-11T04:22:59Z",
   "scanned_scope": [
     "."
   ],
@@ -37,14 +37,14 @@
     {
       "id": ".scratch",
       "path": ".scratch",
-      "file_count": 783,
-      "fingerprint": "2986709f3eb692194290cdf9354fefc1616be56d0c7f4a383acee59af0316d4a"
+      "file_count": 784,
+      "fingerprint": "df825cac59954c7b8cc0a98d074f7b717461435937b2fd3f8fa2f4af5704fdea"
     },
     {
       "id": "docs",
       "path": "docs",
       "file_count": 1896,
-      "fingerprint": "1d41c2d62fe19a807a5f930f2ab5f58e67a840d7a3b85d72c816a7a7632be03a"
+      "fingerprint": "0fa4726e7ea35fb6d6aff3369b6d97196d82be210bd48a6714b44e037d66f244"
     },
     {
       "id": "public",
@@ -62,13 +62,13 @@
       "id": "scripts",
       "path": "scripts",
       "file_count": 88,
-      "fingerprint": "d2bf198c7a61238db314583b6c20757d491f9615445f8efa2546e60f92d6c549"
+      "fingerprint": "f9b05ec4dfbfadba532806f139f6a4c062ea5ceddcf686437e451f25dbdfe219"
     },
     {
       "id": "src",
       "path": "src",
       "file_count": 850,
-      "fingerprint": "21f8b18e1922e6f369c823b57af0c498eff6c93e8281bf725987fec9eb4a8d3b"
+      "fingerprint": "1b57ee2bc96e4183cd9073f1a5918f27ad7d15e11d66ee5199aeeb99345aca23"
     }
   ]
 }
