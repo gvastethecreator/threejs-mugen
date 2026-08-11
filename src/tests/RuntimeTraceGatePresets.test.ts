@@ -699,6 +699,7 @@ import {
   createSyntheticImportedProjectileAirGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedProjectileAirGuardVelocityDerivedZTraceArtifact,
   createSyntheticImportedProjectileDynamicAirGuardVelocityTraceArtifact,
+  createSyntheticImportedProjectileP2FacingTraceArtifact,
   createSyntheticImportedProjectileDynamicAirVelocityTraceArtifact,
   createSyntheticImportedProjectileDynamicGroundVelocityTraceArtifact,
   createSyntheticImportedProjectileDynamicGuardVelocityTraceArtifact,
@@ -21162,6 +21163,33 @@ describe("RuntimeTraceGatePresets", () => {
     expect(physicalFrame?.maxVelZ).toBe(3);
     expect(gate?.evidence.combatReasons).toContain("hit");
     expect(gate?.evidence.combatReasons).not.toContain("guard");
+  });
+
+  it("creates a required imported Projectile p2facing artifact", () => {
+    const artifact = createSyntheticImportedProjectileP2FacingTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-p2facing-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-projectile-p2facing-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }));
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", stateNo: 0, facing: -1 }),
+      expect.objectContaining({ actorId: "p2", stateNo: 5000, facing: 1, moveType: "H" }),
+      expect.objectContaining({ actorId: "p2", stateNo: 5079, moveType: "H" }),
+    ]));
+    expect(gate?.evidence.combatReasons).toContain("hit");
+    expect(gate?.evidence.combatReasons).not.toContain("guard");
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 5079,
+      moveType: "H",
+      life: 963,
+    });
   });
 
   it("creates a required imported Projectile dynamic ground.velocity artifact", () => {

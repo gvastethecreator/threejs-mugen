@@ -1336,6 +1336,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileDynamicAirVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-p2facing",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileP2FacingTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-dynamic-ground-velocity",
       required: true,
       artifact: presets.createSyntheticImportedProjectileDynamicGroundVelocityTraceArtifact(),
@@ -5331,6 +5336,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-air-guard-velocity",
     "synthetic-imported-projectile-air-guard-velocity-default",
     "synthetic-imported-projectile-dynamic-air-velocity",
+    "synthetic-imported-projectile-p2facing",
     "synthetic-imported-projectile-dynamic-down-velocity",
     "synthetic-imported-projectile-dynamic-guard-hittime",
     "synthetic-imported-projectile-dynamic-guard-velocity",
