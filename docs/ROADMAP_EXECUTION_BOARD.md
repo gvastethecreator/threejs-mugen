@@ -1,6 +1,24 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T738 closed-bounded (2026-08-11)
+## Latest bounded slice — T740 closed-bounded (2026-08-11)
+
+Issue 314 closes the bounded Ikemen-only live `ModifyHitDef
+airguard.cornerpush.veloff` seam through root/RedirectID with caller-context
+dynamic evaluation and omission preservation. The required trace
+`synthetic-imported-modifyhitdef-dynamic-airguard-cornerpush.json` proves
+`VarSet -> HitDef -> ModifyHitDef -> airborne guard`, caller `var(2)=6`, target
+`78`, and the resulting corner-push displacement; trace/final checksums are
+`ce2f48e5` / `09df4342`. Aggregate QA passes `826/826` artifacts (`792`
+required, `34` optional). Fresh/direct defaults, Helper causal trace,
+Projectiles, other corner-push components and exact physics parity remain
+excluded. See [issue
+314](../.scratch/roadmap/issues/314-modifyhitdef-airguard-cornerpush-dynamic.md).
+
+T739 / issue 313 is superseded: it duplicated the already closed T678 / issue
+252 Helper-owned `ModifyHitDef airguard.velocity` X/Y seam and is not a live
+queue item.
+
+## Historical bounded slice — T738 closed-bounded (2026-08-11)
 
 Issue 312 closes the bounded Ikemen-only Helper-owned live `ModifyHitDef
 guard.velocity` Y/Z component replacement. Caller-context single, pair, and
@@ -66,13 +84,11 @@ artifacts (`787` required, `34` optional). Fresh defaults, channels, exact
 lookup/playback/mixing/priority, Projectiles and full audio parity remain
 blocked. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next bounded slice — T739 queued
+## Next bounded slice — T741 selection
 
-Issue 313 queues Helper-owned live `ModifyHitDef airguard.velocity` X/Y
-component replacement with root/parent ownership evidence and Z/omission
-preservation. Exact physics timing, Projectiles and full parity remain
-excluded. See [issue
-313](../.scratch/roadmap/issues/313-helper-modifyhitdef-airguard-velocity-xy.md).
+T740 is closed-bounded. Select the next uncovered official/Ikemen seam only
+after reconciling the existing T678/T739 duplicate; issue 313 must remain
+superseded.
 
 ## Historical bounded slice — T733 closed-bounded (2026-08-11)
 

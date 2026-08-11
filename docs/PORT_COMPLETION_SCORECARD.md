@@ -1,6 +1,18 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T738 Helper `ModifyHitDef guard.velocity` Y/Z — closed-bounded, no score movement
+## 2026-08-11 T740 `ModifyHitDef airguard.cornerpush.veloff` — closed-bounded, no score movement
+
+Issue 314 closes root/RedirectID live `ModifyHitDef airguard.cornerpush.veloff`
+with caller-context dynamic evaluation and omission preservation. Required
+trace/final checksums are `ce2f48e5` / `09df4342`; aggregate QA passes `826/826`
+artifacts (`792` required, `34` optional). No score movement: fresh/direct
+defaults, Helper causal trace, Projectiles, other corner-push fields and exact
+physics parity remain blocked. See [issue
+314](../.scratch/roadmap/issues/314-modifyhitdef-airguard-cornerpush-dynamic.md).
+
+T739 / issue 313 is superseded by closed T678 / issue 252.
+
+## Historical checkpoint — 2026-08-11 T738 Helper `ModifyHitDef guard.velocity` Y/Z — closed-bounded, no score movement
 
 Issue 312 closes Ikemen-only Helper-owned live `ModifyHitDef guard.velocity`
 Y/Z component replacement. Caller-context single, pair, and triple values
@@ -56,12 +68,10 @@ channels, exact SND lookup/playback/mixing/priority, Projectiles and full audio
 parity remain blocked. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next queued — T739 Helper `ModifyHitDef airguard.velocity` X/Y
+## Next selection — T741
 
-Issue 313 queues the bounded Ikemen-only Helper-owned live X/Y airborne
-guard-velocity replacement with root/parent ownership evidence and Z/omission
-preservation. Exact physics timing, Projectiles and full parity remain deferred.
-See [issue 313](../.scratch/roadmap/issues/313-helper-modifyhitdef-airguard-velocity-xy.md).
+T740 is closed-bounded. Select the next distinct uncovered seam; superseded
+issue 313 is not a pending scorecard target.
 
 ## Historical checkpoint — 2026-08-11 T733 `ModifyHitDef guardsound` expressions — closed-bounded, no score movement
 

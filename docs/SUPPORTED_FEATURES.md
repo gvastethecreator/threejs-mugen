@@ -1,5 +1,17 @@
 ﻿# Supported Features
-## 2026-08-11 T738 Helper `ModifyHitDef guard.velocity` Y/Z — closed-bounded
+## 2026-08-11 T740 `ModifyHitDef airguard.cornerpush.veloff` — closed-bounded
+
+Ikemen-only root/RedirectID live `ModifyHitDef airguard.cornerpush.veloff`
+supports finite static and caller-context dynamic values. Omission or an
+unresolved expression preserves the active live value. Required trace/final
+checksums are `ce2f48e5` / `09df4342`; aggregate QA passes `826/826` artifacts.
+Fresh/direct defaults, Helper causal trace, Projectiles, other corner-push
+components and exact physics remain outside the claim. See [issue
+314](../.scratch/roadmap/issues/314-modifyhitdef-airguard-cornerpush-dynamic.md).
+
+T739 / issue 313 is superseded by closed T678 / issue 252.
+
+## Historical — 2026-08-11 T738 Helper `ModifyHitDef guard.velocity` Y/Z — closed-bounded
 
 Ikemen-only Helper-owned live `ModifyHitDef guard.velocity` Y/Z replacement is
 supported through caller-context static, mixed, and dynamic single/pair/triple
@@ -43,12 +55,10 @@ defaults, guardsound channel, exact playback/mixing/priority, Projectiles and
 full audio parity remain outside the claim. See [issue
 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
 
-## Next queued — T739 Helper `ModifyHitDef airguard.velocity` X/Y
+## Next selection — T741
 
-The bounded Ikemen-only Helper-owned live airborne guard-velocity X/Y
-replacement is queued with root/parent ownership evidence and Z/omission
-preservation. See [issue
-313](../.scratch/roadmap/issues/313-helper-modifyhitdef-airguard-velocity-xy.md).
+T740 is closed-bounded; select the next distinct uncovered seam after the
+T678/T739 duplicate has been removed from the queue.
 
 ## Historical — T734 `ModifyHitDef hitsound` — closed-bounded
 

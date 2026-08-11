@@ -1,6 +1,17 @@
 # Workplan
 
-## Latest slice — T738 closed-bounded (2026-08-11)
+## Latest slice — T740 closed-bounded (2026-08-11)
+
+Issue 314 closes root/RedirectID live `ModifyHitDef
+airguard.cornerpush.veloff` with caller-context dynamic resolution and active
+value preservation on omission. Required trace/final checksums are
+`ce2f48e5` / `09df4342`; aggregate QA passes `826/826` artifacts (`792`
+required, `34` optional). Fresh/direct defaults, Helper causal trace,
+Projectiles, other corner-push components and exact physics parity remain
+blocked.
+
+T739 / issue 313 is superseded by closed T678 / issue 252 and is not a new
+implementation task.
 
 Issue 312 closes Ikemen-only Helper-owned live `ModifyHitDef guard.velocity` Y/Z
 component replacement. Finite static, mixed, and caller-context dynamic
@@ -30,12 +41,9 @@ final `d5bc517f`; aggregate QA passes `823/823` artifacts (`789` required,
 `34` optional). Fresh defaults, exact playback/mixing/priority, Projectiles
 and full audio parity remain blocked.
 
-## Next slice — T739 queued
+## Next slice — T741 selection
 
-Issue 313 queues Helper-owned live `ModifyHitDef airguard.velocity` X/Y
-component replacement with root/parent ownership evidence and omission/Z
-preservation. See [issue
-313](../.scratch/roadmap/issues/313-helper-modifyhitdef-airguard-velocity-xy.md).
+Choose the next uncovered official/Ikemen seam after the T740 closeout.
 
 ## Historical slice — T735 closed-bounded (2026-08-11)
 

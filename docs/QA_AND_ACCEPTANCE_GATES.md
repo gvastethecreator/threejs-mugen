@@ -1,6 +1,20 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-11 T738 Helper `ModifyHitDef guard.velocity` Y/Z — passed / closed-bounded
+## 2026-08-11 T740 `ModifyHitDef airguard.cornerpush.veloff` — passed / closed-bounded
+
+Required `synthetic-imported-modifyhitdef-dynamic-airguard-cornerpush.json`
+proves root/RedirectID caller-context `var(2)=6`, live `ModifyHitDef`, target
+`78`, accepted airborne guard and the resulting corner-push displacement.
+Trace checksum is `ce2f48e5`, final checksum `09df4342`; focused compiler,
+runtime, Helper and trace coverage passes, typecheck passes, and
+`pnpm qa:trace` passes `826/826` artifacts (`792` required, `34` optional).
+Fresh/direct defaults, Helper causal trace, Projectiles, other corner-push
+components and exact physics remain outside this gate. See [issue
+314](../.scratch/roadmap/issues/314-modifyhitdef-airguard-cornerpush-dynamic.md).
+
+T739 / issue 313 is superseded by closed T678 / issue 252.
+
+## Historical — 2026-08-11 T738 Helper `ModifyHitDef guard.velocity` Y/Z — passed / closed-bounded
 
 Required `synthetic-imported-helper-modifyhitdef-dynamic-guard-velocity-yz.json`
 proves Helper VarSet + Helper HitDef + live ModifyHitDef caller evaluation, a
@@ -64,12 +78,10 @@ Exact SND lookup/playback/mixing/channel priority, fresh defaults, Projectiles,
 renderer timing, teams, rollback and full audio parity remain outside this
 gate. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next queued — T739 Helper `ModifyHitDef airguard.velocity` X/Y
+## Next gate — T741 selection
 
-The next gate covers bounded Ikemen-only Helper-owned live X/Y airborne
-guard-velocity replacement with root/parent ownership and Z/omission
-preservation; Projectiles and exact physics timing remain deferred. See [issue
-313](../.scratch/roadmap/issues/313-helper-modifyhitdef-airguard-velocity-xy.md).
+Select the next distinct gate after T740; superseded issue 313 is not a pending
+acceptance target.
 
 ## Historical — 2026-08-11 T733 `ModifyHitDef guardsound` — passed / closed-bounded
 

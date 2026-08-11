@@ -2,7 +2,17 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T738 closed-bounded (2026-08-11)
+## Current implementation route — T740 closed-bounded (2026-08-11)
+
+T740 / [issue 314](../.scratch/roadmap/issues/314-modifyhitdef-airguard-cornerpush-dynamic.md)
+closes root/RedirectID live `ModifyHitDef airguard.cornerpush.veloff` with
+caller-context dynamic resolution and omission preservation. The required
+trace/final checksums are `ce2f48e5` / `09df4342`; aggregate QA is `826/826`.
+
+T739 / issue 313 is superseded by closed T678 / issue 252; it is not a second
+Helper `airguard.velocity` implementation route.
+
+## Historical implementation route — T738 closed-bounded (2026-08-11)
 
 T738 / [issue 312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md)
 closes Helper-owned live `ModifyHitDef guard.velocity` Y/Z replacement. Single,
@@ -43,11 +53,11 @@ preservation is required; the accepted hit-audio event carries typed `F6,4`
 telemetry from raw `Fvar(0),var(1)` with no guard route. Trace/final checksums
 are `8d56e467` / `d2d70840`.
 
-## Next implementation route — T739 queued
+## Next implementation route — T741 selection
 
-T739 / [issue 313](../.scratch/roadmap/issues/313-helper-modifyhitdef-airguard-velocity-xy.md)
-queues Helper-owned live `ModifyHitDef airguard.velocity` X/Y replacement with
-root/parent ownership evidence and Z/omission preservation.
+T740 is closed-bounded. Select the next distinct uncovered official/Ikemen
+seam after closeout; T739 / issue 313 is superseded by closed T678 / issue
+252 and is not a pending implementation route.
 
 ## Historical implementation route — T733 closed-bounded (2026-08-11)
 

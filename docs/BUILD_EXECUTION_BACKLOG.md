@@ -42,9 +42,16 @@
   `825/825` artifacts (`791` required, `34` optional). See [issue
   312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md).
 
-- **T739 queued** — Helper-owned live `ModifyHitDef airguard.velocity` X/Y
-  component replacement with omitted/Z preservation. See [issue
-  313](../.scratch/roadmap/issues/313-helper-modifyhitdef-airguard-velocity-xy.md).
+- **T740 closed-bounded** — Ikemen-only root/RedirectID live
+  `ModifyHitDef airguard.cornerpush.veloff` with caller-context dynamic
+  evaluation and omission preservation. Required trace checksum `ce2f48e5` /
+  final `09df4342`; aggregate QA passes `826/826` artifacts (`792` required,
+  `34` optional). See [issue
+  314](../.scratch/roadmap/issues/314-modifyhitdef-airguard-cornerpush-dynamic.md).
+
+- **T739 superseded** — issue 313 duplicated the already closed T678 / issue
+  252 Helper-owned live `ModifyHitDef airguard.velocity` X/Y seam. Do not
+  reactivate it as a new task.
 
 - **T733 closed-bounded** — Ikemen-only live `ModifyHitDef guardsound`
   group/number/prefix replacement through root/RedirectID and Helper callers.

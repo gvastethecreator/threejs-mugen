@@ -1,6 +1,20 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T738 closed-bounded (2026-08-11)
+## Latest bounded slice — T740 closed-bounded (2026-08-11)
+
+Issue 314 closes Ikemen-only root/RedirectID live `ModifyHitDef
+airguard.cornerpush.veloff`. Caller `var(2)=6` resolves before the airborne
+guard contact, omission preserves the active value, and the required trace
+proves the target link and corner-push displacement. Trace/final checksums are
+`ce2f48e5` / `09df4342`; aggregate QA passes `826/826` artifacts (`792`
+required, `34` optional). Fresh/direct defaults, Helper causal trace,
+Projectiles, dynamic Z/other corner-push fields and exact physics parity remain
+blocked. See [issue
+314](../.scratch/roadmap/issues/314-modifyhitdef-airguard-cornerpush-dynamic.md).
+
+T739 / issue 313 is superseded because it duplicated closed T678 / issue 252.
+
+## Historical bounded slice — T738 closed-bounded (2026-08-11)
 
 Issue 312 closes Ikemen-only Helper-owned live `ModifyHitDef guard.velocity`
 Y/Z component replacement. Caller-context single, pair, and triple values
@@ -57,12 +71,10 @@ required, `34` optional). Fresh defaults, channels, exact playback/mixing,
 Projectiles and full audio parity remain blocked. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next bounded slice — T739 queued
+## Next bounded slice — T741 selection
 
-Issue 313 queues Helper-owned live `ModifyHitDef airguard.velocity` X/Y
-component replacement with root/parent ownership evidence and omitted/Z
-preservation. See [issue
-313](../.scratch/roadmap/issues/313-helper-modifyhitdef-airguard-velocity-xy.md).
+Select the next distinct official/Ikemen seam after T740 closeout; keep issue
+313 superseded and preserve the explicit exclusions above.
 
 ## Historical bounded slice — T733 closed-bounded (2026-08-11)
 

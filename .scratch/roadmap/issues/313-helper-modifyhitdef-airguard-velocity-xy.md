@@ -1,6 +1,11 @@
 # Issue 313 — Helper-owned live `ModifyHitDef airguard.velocity` X/Y
 
-Status: **queued** (T739, 2026-08-11)
+Status: **superseded** (T739, 2026-08-11)
+
+> This queue item duplicated the already closed T678 / issue 252 Helper-owned
+> `ModifyHitDef airguard.velocity` X/Y implementation. No new implementation
+> claim is attached to T739; the next distinct seam is tracked as T740 / issue
+> 314.
 
 ## Objective
 

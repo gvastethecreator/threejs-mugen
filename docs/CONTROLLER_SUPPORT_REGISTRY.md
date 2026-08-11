@@ -1,6 +1,14 @@
 # Controller Support Registry
 
-Latest cursor: T738 / issue 312 is closed-bounded for Ikemen-only live
+Latest cursor: T740 / issue 314 is closed-bounded for Ikemen-only live
+root/RedirectID `ModifyHitDef airguard.cornerpush.veloff`. Caller-context
+finite static/dynamic values preserve the active value on omission and reach
+the accepted airborne-guard corner-push path. Required trace
+`synthetic-imported-modifyhitdef-dynamic-airguard-cornerpush.json` has
+trace/final checksums `ce2f48e5` / `09df4342`; aggregate QA is `826/826`
+artifacts (`792` required, `34` optional).
+
+Previous cursor: T738 / issue 312 is closed-bounded for Ikemen-only live
 Helper-owned `ModifyHitDef guard.velocity` Y/Z component replacement.
 Caller-context single, pair, and triple values preserve omitted live
 components and reach accepted ground-guard `GetHitVar`/velocity metadata while
@@ -9,10 +17,8 @@ retaining Helper/root/parent ownership. Required trace
 trace/final checksums `da73f66a` / `4231487d`; aggregate QA is `825/825`
 artifacts (`791` required, `34` optional).
 
-Next cursor: T739 / issue 313 is queued for Helper-owned live
-`ModifyHitDef airguard.velocity` X/Y component replacement. Fresh defaults,
-dynamic Z, Projectiles, exact physics timing, teams, rollback and full guard
-parity remain deferred.
+Next cursor: T741 is selected after closeout. T739 / issue 313 is superseded
+by closed T678 / issue 252 and must not be reactivated as a duplicate.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root
 `ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth` static,

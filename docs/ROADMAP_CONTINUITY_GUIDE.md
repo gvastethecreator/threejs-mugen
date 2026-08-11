@@ -2,17 +2,16 @@
 
 Last updated: 2026-08-11
 
-## Current T738-T739 guard-velocity checkpoint
+## Current T740 closeout / T741 selection
 
-T738 closes bounded Ikemen-only Helper-owned live `ModifyHitDef guard.velocity`
-Y/Z replacement. Single, pair, and triple caller-context values preserve
-omitted live components and reach accepted ground-guard `GetHitVar`/velocity
-metadata with Helper/root/parent ownership. Required trace/final checksums are
-`da73f66a` / `4231487d`; `pnpm qa:trace` passes `825/825` artifacts (`791`
-required, `34` optional). T739 queues the Helper-owned airborne counterpart
-for `airguard.velocity` X/Y with Z/omission preservation. M.U.G.E.N 1.1 only
-documents the base airborne pair; fresh defaults, dynamic Z, Projectiles,
-exact timing, teams, rollback and full parity remain blocked.
+T740 closes bounded Ikemen-only root/RedirectID live `ModifyHitDef
+airguard.cornerpush.veloff` with caller-context dynamic evaluation and
+omission preservation. Required trace/final checksums are `ce2f48e5` /
+`09df4342`; `pnpm qa:trace` passes `826/826` artifacts (`792` required,
+`34` optional). Fresh/direct defaults, Helper causal trace, Projectiles,
+other corner-push fields, exact timing, teams, rollback and full parity remain
+blocked. T739 / issue 313 is superseded by closed T678 / issue 252 and must
+not be reactivated as a duplicate.
 
 ## Historical T737 guard-velocity checkpoint
 
@@ -21,8 +20,8 @@ replacement through root/RedirectID. Single, pair, and triple caller-context
 values preserve omitted live components and reach accepted ground-guard
 `GetHitVar`/velocity metadata. Required trace/final checksums are `a2eb52db` /
 `f0fb19a8`; `pnpm qa:trace` passes `824/824` artifacts (`790` required,
-`34` optional). T738 is now closed above; T739 is the next bounded Helper
-airguard slice. M.U.G.E.N 1.1 only documents ground-guard X; Projectiles,
+`34` optional). T738 is now historical above; T741 is the next selection
+checkpoint. M.U.G.E.N 1.1 only documents ground-guard X; Projectiles,
 exact timing, teams, rollback and full parity remain blocked.
 
 ## Historical T736-T737 audio/guard checkpoint
