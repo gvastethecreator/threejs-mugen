@@ -1,19 +1,21 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T731 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T732 closed-bounded (2026-08-11)
 
-Issue 305 closes Ikemen-only live `ModifyHitDef guard.sparkangle` through
-root/RedirectID and Helper callers. Static and dynamic caller-context values
-resolve once; omission/unresolved mutation preserves the live value, and an
-accepted guard-effect event exposes the resolved angle while retaining spark
-identity and offset. The required artifact
-`synthetic-imported-modifyhitdef-dynamic-guard-sparkangle.json` proves the
-guard-only route; hit, Projectiles and exact renderer parity remain blocked.
+Issue 306 closes Ikemen-only live `ModifyHitDef guard.sparkno` through
+root/RedirectID and Helper callers. Static and dynamic suffixes retain their
+`F`/`S`/`M` prefix; omission/unresolved mutation preserves the live
+identity, and the accepted guard event exposes `F19` while retaining angle
+`-5` and offset `(-2,-3)`. Required artifact
+`synthetic-imported-modifyhitdef-dynamic-guard-sparkno.json` proves the
+guard-only route; fresh defaults, normal hit identity, Projectiles and exact
+renderer/audio parity remain blocked.
 
-## Next implementation checkpoint — T732 queued
+## Next implementation checkpoint — T733 queued
 
-Issue 306 queues live `ModifyHitDef guard.sparkno` identity replacement for the
-guard effect path, with caller-context resolution and omission preservation.
+Issue 307 queues live `ModifyHitDef guardsound` group/number/prefix replacement
+for the guard audio path, with caller-context resolution and omission
+preservation.
 
 ## Historical implementation checkpoint — T729 closed-bounded (2026-08-11)
 

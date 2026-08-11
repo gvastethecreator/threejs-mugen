@@ -1,6 +1,6 @@
 # Issue 306 — `ModifyHitDef` `guard.sparkno` expressions
 
-Status: **queued** (T732, 2026-08-11)
+Status: **closed-bounded** (T732, 2026-08-11)
 
 ## Objective
 
@@ -28,7 +28,7 @@ Ikemen-only.
 
 ## Excluded
 
-Fresh defaults, `sparkangle`, `sparkxy`, scale, palette, sound, hit-spark
+Fresh defaults, `sparkangle`, `sparkxy`, scale, palette, sound, normal hit-spark
 identity, Projectiles/ModifyProjectile, exact FightFX/common lookup, renderer
 timing, localcoord, teams, rollback and full M.U.G.E.N/Ikemen parity remain
 out of scope.
@@ -39,3 +39,13 @@ Extend compiler/runtime/Helper presentation tests and add one required trace
 with `VarSet` + `HitDef` + `ModifyHitDef`, a real guard contact and preserved
 angle/offset. Promote only when the guard event proves the replacement without
 entering the hit route.
+
+## Result
+
+Implemented in `cbd226af` with focused compiler/runtime/Helper coverage and
+promoted in `e883f7a7`. Static references and caller-context dynamic suffixes
+now replace the live guard identity while retaining `F`/`S`/`M` prefixes;
+omitted or unresolved values preserve the active identity. Required trace
+`synthetic-imported-modifyhitdef-dynamic-guard-sparkno.json` passes with trace
+checksum `e0f60aa3` and final checksum `00a1b557`, proving `S7000 -> F19`,
+preserved angle `-5`, offset `(-2,-3)`, and a guard-only contact.

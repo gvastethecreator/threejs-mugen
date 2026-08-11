@@ -1,4 +1,4 @@
-# Ikemen `ModifyHitDef guard.sparkno` — T732
+# Ikemen `ModifyHitDef guard.sparkno` — T732 closed-bounded
 
 ## Reference fixed
 
@@ -20,6 +20,17 @@ references, but live `ModifyHitDef` does not replace the active guard identity.
 Root/RedirectID and Helper-owned live `ModifyHitDef guard.sparkno` with static
 or caller-context dynamic values, omission preservation and guard-event
 telemetry. The claim is Ikemen-only for the live controller path.
+
+## Result
+
+Implemented in `cbd226af` and promoted with `e883f7a7`. Static refs and
+caller-context dynamic suffixes now replace the active guard identity while
+retaining their `F`/`S`/`M` prefix; omitted or unresolved values preserve
+the live ref. Focused compiler/runtime/Helper coverage passes, and required
+trace `synthetic-imported-modifyhitdef-dynamic-guard-sparkno.json` passes with
+trace checksum `e0f60aa3` and final checksum `00a1b557`, proving
+`S7000 -> F19` with angle `-5`, offset `(-2,-3)`, and a guard-only
+contact.
 
 ## Deferred
 

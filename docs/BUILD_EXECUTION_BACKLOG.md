@@ -2,16 +2,17 @@
 
 ## Current parity queue
 
-- **T731 closed-bounded** — Ikemen-only live `ModifyHitDef guard.sparkangle`
-  through root/RedirectID and Helper callers. Caller-context static/dynamic
-  values resolve once, omission preserves the active angle, and the required
-  trace observes angle `19` in the accepted guard-effect event without a hit.
-  See [issue 305](../.scratch/roadmap/issues/305-modifyhitdef-guard-sparkangle-expressions.md).
-
-- **T732 queued** — Ikemen-only live `ModifyHitDef guard.sparkno` identity
-  replacement through the accepted guard presentation path, with caller-context
-  resolution and omission preservation. See [issue
+- **T732 closed-bounded** — Ikemen-only live `ModifyHitDef guard.sparkno`
+  identity replacement through root/RedirectID and Helper callers. Static and
+  caller-context dynamic suffixes retain their prefix, omission preserves the
+  active identity, and the required guard trace proves `S7000 -> F19` with
+  angle/offset preserved. See [issue
   306](../.scratch/roadmap/issues/306-modifyhitdef-guard-sparkno-expressions.md).
+
+- **T733 queued** — Ikemen-only live `ModifyHitDef guardsound` group/number/
+  prefix replacement through the accepted guard audio path, with caller-context
+  resolution and omission preservation. See [issue
+  307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md).
 
 - **T727 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
   `ModifyReversalDef` now retain static and caller-context `hitonce`. Zero

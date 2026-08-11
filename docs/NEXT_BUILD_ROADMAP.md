@@ -1,20 +1,21 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T731 closed-bounded (2026-08-11)
+## Latest bounded slice — T732 closed-bounded (2026-08-11)
 
-Issue 305 closes Ikemen-only live `ModifyHitDef guard.sparkangle` through
-root/RedirectID and Helper callers. Static and dynamic values resolve once in
-caller context, omission preserves the active guard angle, and the required
-trace observes it in an accepted guard-effect event. Spark identity, scale,
-palette, Projectiles and exact renderer timing remain blocked. See [issue
-305](../.scratch/roadmap/issues/305-modifyhitdef-guard-sparkangle-expressions.md).
-
-## Next bounded slice — T732 queued
-
-Issue 306 queues Ikemen-only live `ModifyHitDef guard.sparkno` identity through
-the guard presentation path, with caller-context resolution and omission
-preservation. See [issue
+Issue 306 closes Ikemen-only live `ModifyHitDef guard.sparkno` through root/
+RedirectID and Helper callers. Static and caller-context dynamic suffixes retain
+their prefix, omission preserves the active identity, and the required trace
+observes `S7000 -> F19` in a guard-only event with angle/offset preserved.
+Fresh defaults, normal hit identity, scale, palette, Projectiles and exact
+renderer timing remain blocked. See [issue
 306](../.scratch/roadmap/issues/306-modifyhitdef-guard-sparkno-expressions.md).
+
+## Next bounded slice — T733 queued
+
+Issue 307 queues Ikemen-only live `ModifyHitDef guardsound` group/number/prefix
+through the guard audio path, with caller-context resolution and omission
+preservation. See [issue
+307](../.scratch/roadmap/issues/307-modifyhitdef-guardsound-expressions.md).
 
 ## Historical bounded slice — T729 closed-bounded (2026-08-11)
 

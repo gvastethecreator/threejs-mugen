@@ -1,17 +1,17 @@
 # Controller Support Registry
 
-Latest cursor: T731 / issue 305 is closed-bounded for Ikemen-only live
-root/RedirectID and Helper `ModifyHitDef guard.sparkangle`. Static and
-caller-context dynamic values resolve once; omission preserves the live value
-and accepted guard-effect telemetry carries angle `19` without a hit event.
-Required trace `synthetic-imported-modifyhitdef-dynamic-guard-sparkangle.json`
-proves the route.
+Latest cursor: T732 / issue 306 is closed-bounded for Ikemen-only live
+root/RedirectID and Helper `ModifyHitDef guard.sparkno`. Static references and
+caller-context dynamic suffixes retain their `F`/`S`/`M` prefix; omission or
+an unresolved suffix preserves the live identity. Required trace
+`synthetic-imported-modifyhitdef-dynamic-guard-sparkno.json` proves
+`S7000 -> F19` on a guard event with angle/offset preserved and no hit.
 
-Next cursor: T732 / issue 306 is queued for Ikemen-only live
-`ModifyHitDef guard.sparkno` through the accepted guard presentation path.
-Caller-context resolution, omission preservation, angle, scale, palette,
-Projectiles, exact renderer timing, teams, rollback and full effect parity
-remain deferred.
+Next cursor: T733 / issue 307 is queued for Ikemen-only live
+`ModifyHitDef guardsound` through the accepted guard audio path. Caller-context
+resolution and omission preservation are next; channel mutation, exact
+playback/mixing, Projectiles, teams, rollback and full audio parity remain
+deferred.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root
 `ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth` static,
