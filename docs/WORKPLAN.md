@@ -1,5 +1,15 @@
 # Workplan
 
+## Active slice — T709 in progress (2026-08-11)
+
+Issue 283 ports Projectile `damage` as a typed one/two-component integer pair:
+fresh root/Helper expressions resolve in caller context, and live
+`ModifyProjectile` preserves the existing selector while applying Ikemen's
+single-component guard=0 behavior. Focused coverage is green; root/Helper
+required traces, full Vitest, build and QA aggregation are still open. Keep
+omitted local Projectile damage=30 and the documented exclusions. See [issue
+283](../.scratch/roadmap/issues/283-projectile-damage-dynamic.md).
+
 ## Latest bounded slice — T708 closed-bounded (2026-08-11)
 
 T708 closes typed caller-context `ModifyProjectile` pause budgets

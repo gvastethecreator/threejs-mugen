@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Active implementation checkpoint — T709 in progress (2026-08-11)
+
+Compiler IR, Projectile spawn, root/Helper caller resolution and live
+`ModifyProjectile` damage replacement are implemented for finite static,
+dynamic, mixed and single/pair inputs. Focused compiler/Projectile/Helper/root
+tests pass. Required trace artifacts and broad Vitest/build/QA checks have not
+yet been run; issue 283 remains open-bounded. See [issue
+283](../.scratch/roadmap/issues/283-projectile-damage-dynamic.md).
+
 ## Latest implementation checkpoint — T708 closed-bounded (2026-08-11)
 
 T708 / issue 282 closes typed dynamic `ModifyProjectile` pause budgets for

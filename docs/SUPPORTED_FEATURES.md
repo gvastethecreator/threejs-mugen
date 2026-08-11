@@ -1,4 +1,14 @@
 ﻿# Supported Features
+## 2026-08-11 T709 Projectile damage checkpoint — bounded, pending closure
+
+Fresh root/Helper Projectiles and live Ikemen `ModifyProjectile` now retain
+typed one/two-component `damage` expressions and resolve finite caller values;
+one-component live mutation writes guard damage zero. Focused tests are green,
+but required trace and broad QA evidence are still pending, so this is not a
+closed-bounded support claim yet. Negative/healing, exact VM overflow/int32,
+teams, rollback and full Projectile parity remain unsupported. See [issue
+283](../.scratch/roadmap/issues/283-projectile-damage-dynamic.md).
+
 ## 2026-08-11 T708 `ModifyProjectile` pause budgets checkpoint
 
 T708 is closed-bounded for Ikemen-only live `ModifyProjectile`

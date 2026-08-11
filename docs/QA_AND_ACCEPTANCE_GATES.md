@@ -1,5 +1,16 @@
 ﻿# QA And Acceptance Gates
 
+## 2026-08-11 T709 Projectile damage gates — pending
+
+Issue 283 requires compiler evidence for static/dynamic/mixed/single/pair
+Projectile `damage`, focused fresh root/Helper runtime checks, live
+`ModifyProjectile` selector replacement, and required root+Helper traces that
+observe `GetHitVar(damage/hitdamage/guarddamage)` after contact. Typecheck and
+focused suites are green; `pnpm qa:trace`, full Vitest, build and diff
+hygiene still gate closure. Keep omitted local damage=30 and exclude negative
+damage/healing, exact VM overflow/int32, teams, rollback and full parity. See
+[issue 283](../.scratch/roadmap/issues/283-projectile-damage-dynamic.md).
+
 ## 2026-08-11 T708 `ModifyProjectile` pause-budget gates
 
 T708 requires typed caller-context `pausemovetime` and `supermovetime` for

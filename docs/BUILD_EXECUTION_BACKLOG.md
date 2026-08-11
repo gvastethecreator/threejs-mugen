@@ -2,6 +2,14 @@
 
 ## Current parity queue
 
+- **T709 in progress** — typed dynamic/mixed Projectile `damage` pairs for
+  fresh root/Helper spawns and live Ikemen `ModifyProjectile` are wired through
+  compiler IR, caller resolvers and the existing selector/ownership path.
+  Focused tests pass; add required root/Helper trace evidence before closing
+  issue 283. Preserve omitted local Projectile damage=30 and keep negative
+  damage/healing, VM overflow/int32, teams, rollback and full parity blocked.
+  See [issue 283](../.scratch/roadmap/issues/283-projectile-damage-dynamic.md).
+
 - **T708 closed-bounded** — Ikemen-only live `ModifyProjectile
   pausemovetime`/`supermovetime` now resolve typed root and Helper caller
   expressions once, mutate selected Projectiles, and preserve the existing
