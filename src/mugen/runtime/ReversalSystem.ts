@@ -156,6 +156,12 @@ export class RuntimeReversalControllerDispatchWorld {
     );
     const hitPause = pauseTime[0] ?? 0;
     const hitShakeTime = pauseTime[1] ?? 0;
+    const resolvedTargetId = resolveRuntimeReversalInteger(
+      operation?.targetIdExpression ?? operation?.targetId,
+      findParam(source, "id"),
+      actor.runtime,
+      context,
+    );
     const activated = reversalWorld.activate(actor, {
       attr: (operation?.attr ?? stripMugenString(findParam(source, "reversal.attr")))?.trim() ?? "",
       reversalGuardFlag: operation?.reversalGuardFlag,
@@ -221,7 +227,7 @@ export class RuntimeReversalControllerDispatchWorld {
         actor.runtime,
         context,
       ),
-      targetId: operation?.targetId ?? firstNumber(findParam(source, "id")),
+      targetId: resolvedTargetId === undefined ? undefined : Math.max(0, resolvedTargetId),
       attackDepth:
         operation?.attackDepth ??
         resolveRuntimeReversalFloatPair(
@@ -378,8 +384,18 @@ export class RuntimeReversalControllerDispatchWorld {
       existing.p2Facing = p2Facing;
       runtimeReversal.p2Facing = p2Facing;
     }
-    if (operation.targetId !== undefined) {
-      existing.targetId = operation.targetId;
+    if (operation.targetId !== undefined || operation.targetIdExpression !== undefined) {
+      const targetId = resolveRuntimeReversalInteger(
+        operation.targetIdExpression ?? operation.targetId,
+        findParam(controller.source, "id"),
+        actor.runtime,
+        context,
+      );
+      if (targetId !== undefined) {
+        existing.targetId = Math.max(0, targetId);
+        existing.hitVars = { ...(existing.hitVars ?? {}), hitId: existing.targetId };
+        runtimeReversal.targetId = existing.targetId;
+      }
     }
     const attackDepth = operation.attackDepth ?? resolveRuntimeReversalFloatPair(
       operation.attackDepthExpressions,
@@ -444,7 +460,10 @@ export class RuntimeReversalWorld {
       p2Facing: activation.p2Facing,
       hitPause: activation.hitPause,
       ...(activation.hitShakeTime === undefined ? {} : { hitShakeTime: activation.hitShakeTime }),
-      hitVars: { hitCount },
+      hitVars: {
+        hitCount,
+        ...(activation.targetId === undefined ? {} : { hitId: Math.max(0, activation.targetId) }),
+      },
       ...(activation.attackDepth ? { attackDepth: [...activation.attackDepth] as [number, number] } : {}),
       ...(activation.unhittableTime ? { unhittableTime: [...activation.unhittableTime] as [number, number] } : {}),
       hitStun: 0,
@@ -474,6 +493,7 @@ export class RuntimeReversalWorld {
       ...(activation.p2Facing === undefined ? {} : { p2Facing: activation.p2Facing }),
       ...(activation.hitShakeTime === undefined ? {} : { hitShakeTime: activation.hitShakeTime }),
       ...(activation.hitCount === undefined ? {} : { hitCount }),
+      ...(activation.targetId === undefined ? {} : { targetId: Math.max(0, activation.targetId) }),
     };
     return true;
   }
@@ -525,6 +545,12 @@ export class RuntimeReversalWorld {
     markRuntimeHitTmpReversal(attacker.runtime);
     this.contactWorld.markMoveReversed(attacker.contact, attacker.runtime.stateNo);
     this.contactWorld.markReceivedHits(attacker.contact, attacker.runtime.stateNo, reversal.hitVars?.hitCount ?? 1);
+    if (reversal.targetId !== undefined || reversal.hitVars?.hitId !== undefined) {
+      attacker.runtime.hitVars = {
+        ...(attacker.runtime.hitVars ?? {}),
+        hitId: reversal.hitVars?.hitId ?? reversal.targetId ?? 0,
+      };
+    }
     hooks.rememberTarget(reverser, attacker, reversal.targetId);
     reverser.hitPause = reversal.hitPause;
     attacker.hitPause = reversal.hitShakeTime ?? reversal.hitPause;
@@ -769,15 +795,6 @@ function cloneBox(box: CollisionBox): CollisionBox {
 
 function findParam(controller: { params: Record<string, string> }, key: string): string | undefined {
   return findControllerParam(controller, key);
-}
-
-function firstNumber(value: string | undefined): number | undefined {
-  const raw = value?.split(",")[0]?.trim();
-  if (!raw) {
-    return undefined;
-  }
-  const numberValue = Number(raw);
-  return Number.isFinite(numberValue) ? numberValue : undefined;
 }
 
 function stripMugenString(value: string | undefined): string | undefined {

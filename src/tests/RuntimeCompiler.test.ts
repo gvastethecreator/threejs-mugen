@@ -1844,6 +1844,12 @@ value = 1
     const dynamicAttackDepth = compileControllerIr(
       controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", "attack.depth": "var(0),fvar(1)" }),
     );
+    const dynamicId = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", id: "var(0)" }),
+    );
+    const malformedId = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", id: "var(" }),
+    );
     const singleDynamicAttackDepth = compileControllerIr(
       controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", "attack.depth": "var(0)" }),
     );
@@ -1889,6 +1895,11 @@ value = 1
       kind: "reversaldef",
       attackDepthExpressions: ["var(0)", "fvar(1)"],
     });
+    expect(dynamicId.operation).toMatchObject({
+      kind: "reversaldef",
+      targetIdExpression: "var(0)",
+    });
+    expect(malformedId.operation).toBeUndefined();
     expect(singleDynamicAttackDepth.operation).toMatchObject({
       kind: "reversaldef",
       attackDepthExpressions: ["var(0)"],
@@ -3237,6 +3248,12 @@ value = 1
     const dynamicP2State = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { p2stateno: "var(1)", redirectid: "57" }),
     );
+    const dynamicId = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { id: "var(2)", redirectid: "57" }),
+    );
+    const malformedId = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { id: "var(", redirectid: "57" }),
+    );
     const missingRedirect = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { "reversal.attr": "S,NA" }),
     );
@@ -3276,6 +3293,12 @@ value = 1
       p2StateNo: "var(1)",
       redirectPlayerIdExpression: "57",
     });
+    expect(dynamicId.operation).toEqual({
+      kind: "modifyreversaldef",
+      targetIdExpression: "var(2)",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(malformedId.operation).toBeUndefined();
     expect(unsupportedPayload.operation).toBeUndefined();
     expect(missingRedirect.operation).toBeUndefined();
     expect(emptyPayload.operation).toBeUndefined();

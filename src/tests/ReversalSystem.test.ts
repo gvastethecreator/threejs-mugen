@@ -148,6 +148,39 @@ describe("ReversalSystem", () => {
     });
   });
 
+  it("resolves dynamic ReversalDef id in caller context and publishes it on reversal contact", () => {
+    const world = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const receiver = actor("p2", "Reverser", { stateNo: 300, vars: [99, 99] });
+    const caller = actor("p1", "Caller", { vars: [43, 77] });
+
+    const activated = dispatchWorld.apply({
+      actor: receiver,
+      controller: compileControllerIr(controller("ReversalDef", { "reversal.attr": "SA,AA", id: "var(0)" })),
+      context: { self: caller.runtime },
+      hitbox: box(),
+      reversalWorld: world,
+    });
+
+    expect(activated.activated).toBe(true);
+    expect(receiver.currentMove).toMatchObject({ targetId: 43, hitVars: { hitId: 43 } });
+    expect(receiver.runtime.reversal).toMatchObject({ targetId: 43 });
+
+    const modified = dispatchWorld.modify({
+      actor: receiver,
+      controller: compileControllerIr(controller("ModifyReversalDef", { id: "var(1)", redirectid: "57" })),
+      context: { self: caller.runtime },
+    });
+
+    expect(modified.modified).toBe(true);
+    expect(receiver.currentMove).toMatchObject({ targetId: 77, hitVars: { hitId: 77 } });
+    expect(receiver.runtime.reversal).toMatchObject({ targetId: 77 });
+
+    const attacker = actor("p1", "Attacker", { stateNo: 200, currentMove: move(), currentMoveLabel: "Punch" });
+    world.apply(receiver, attacker, receiver.currentMove!, hooks());
+    expect(attacker.runtime.hitVars?.hitId).toBe(77);
+  });
+
   it("resolves dynamic ReversalDef attack.depth in the caller and duplicates a single live component", () => {
     const world = new RuntimeReversalWorld();
     const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
@@ -822,7 +855,7 @@ describe("ReversalSystem", () => {
       hitbox: { x1: 1, y1: -40, x2: 32, y2: -8 },
     });
     expect(fighter.currentMoveLabel).toBe("Counter");
-    expect(fighter.runtime.reversal).toEqual({ attr: "SA,AA", hitPause: 3, p1StateNo: 777, p2StateNo: 778 });
+    expect(fighter.runtime.reversal).toEqual({ attr: "SA,AA", hitPause: 3, p1StateNo: 777, p2StateNo: 778, targetId: 9 });
 
     expect(world.activate(fighter, { attr: "", hitPause: 0 })).toBe(false);
     expect(fighter.currentMove).toBeUndefined();

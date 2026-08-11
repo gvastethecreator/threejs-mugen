@@ -259,6 +259,8 @@ export type RuntimeReversalDef = {
   hitPause: number;
   /** Defender-side shake component of the ReversalDef pausetime pair. */
   hitShakeTime?: number;
+  /** Active ReversalDef hit id exposed after accepted reversal contact. */
+  targetId?: number;
   attackDepth?: [number, number];
   unhittableTime?: [number, number];
 };

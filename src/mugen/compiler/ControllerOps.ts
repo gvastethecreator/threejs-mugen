@@ -396,6 +396,8 @@ export type ModifyReversalDefControllerOp = {
   p1GetP2Facing?: number | string;
   p2Facing?: number | string;
   targetId?: number;
+  /** Dynamic or mixed ReversalDef id expression evaluated in caller context. */
+  targetIdExpression?: number | string;
   attackDepth?: [number, number];
   /** Dynamic or mixed live ReversalDef attack-depth replacement evaluated in caller context. */
   attackDepthExpressions?: MugenHitDefExpressionPair;
@@ -1317,6 +1319,8 @@ export type ReversalDefControllerOp = {
   /** ReversalDef facing replacement evaluated in the caller context. */
   p2Facing?: number | string;
   targetId?: number;
+  /** Dynamic or mixed ReversalDef id expression evaluated in caller context. */
+  targetIdExpression?: number | string;
   attackDepth?: [number, number];
   /** Dynamic or mixed ReversalDef attack-depth pair evaluated in caller context. */
   attackDepthExpressions?: MugenHitDefExpressionPair;
@@ -2387,7 +2391,9 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   const p1Facing = optionalIntegerExpressionParam(controller, "p1facing");
   const p1GetP2Facing = optionalIntegerExpressionParam(controller, "p1getp2facing");
   const p2Facing = optionalIntegerExpressionParam(controller, "p2facing");
-  const targetId = staticOptionalNumberParam(controller, "id");
+  const targetIdValue = optionalIntegerExpressionParam(controller, "id");
+  const targetId = typeof targetIdValue === "number" ? Math.max(0, targetIdValue) : undefined;
+  const targetIdExpression = typeof targetIdValue === "string" ? targetIdValue : undefined;
   const attackDepthValue = optionalFloatExpressionPairParam(controller, "attack.depth");
   const attackDepthExpressions = Array.isArray(attackDepthValue) && attackDepthValue.some((value) => typeof value === "string")
     ? attackDepthValue
@@ -2413,7 +2419,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     p1Facing === false ||
     p1GetP2Facing === false ||
     p2Facing === false ||
-    targetId === false ||
+    targetIdValue === false ||
     attackDepthValue === false ||
     unhittableTime === false ||
     redirectPlayerIdExpression === "invalid"
@@ -2448,7 +2454,8 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     p1Facing: p1Facing === true ? undefined : p1Facing,
     p1GetP2Facing: p1GetP2Facing === true ? undefined : p1GetP2Facing,
     p2Facing: p2Facing === true ? undefined : p2Facing,
-    targetId: targetId === true ? undefined : Math.max(0, Math.round(targetId)),
+    targetId,
+    ...(targetIdExpression === undefined ? {} : { targetIdExpression }),
     ...(attackDepth === undefined ? {} : { attackDepth }),
     ...(attackDepthExpressions === undefined ? {} : { attackDepthExpressions }),
     unhittableTime: unhittableTime === true ? undefined : unhittableTime,
@@ -3207,7 +3214,9 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   const p1Facing = optionalIntegerExpressionParam(controller, "p1facing");
   const p1GetP2Facing = optionalIntegerExpressionParam(controller, "p1getp2facing");
   const p2Facing = optionalIntegerExpressionParam(controller, "p2facing");
-  const targetId = staticOptionalStrictNumberParam(controller, "id");
+  const targetIdValue = optionalIntegerExpressionParam(controller, "id");
+  const normalizedTargetId = typeof targetIdValue === "number" ? Math.max(0, targetIdValue) : undefined;
+  const targetIdExpression = typeof targetIdValue === "string" ? targetIdValue : undefined;
   const attackDepthValue = optionalFloatExpressionPairParam(controller, "attack.depth");
   const attackDepthExpressions = Array.isArray(attackDepthValue) && attackDepthValue.some((value) => typeof value === "string")
     ? attackDepthValue
@@ -3233,7 +3242,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     p1Facing === false ||
     p1GetP2Facing === false ||
     p2Facing === false ||
-    targetId === false ||
+    targetIdValue === false ||
     attackDepthValue === false ||
     redirectPlayerIdExpression === undefined ||
     redirectPlayerIdExpression === "invalid"
@@ -3256,7 +3265,6 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   const normalizedP1Facing = p1Facing === true ? undefined : p1Facing;
   const normalizedP1GetP2Facing = p1GetP2Facing === true ? undefined : p1GetP2Facing;
   const normalizedP2Facing = p2Facing === true ? undefined : p2Facing;
-  const normalizedTargetId = targetId === true ? undefined : Math.max(0, Math.round(targetId));
   if (
     reversalAttr === undefined &&
     reversalGuardFlag === true &&
@@ -3277,6 +3285,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     normalizedP1GetP2Facing === undefined &&
     normalizedP2Facing === undefined &&
     normalizedTargetId === undefined &&
+    targetIdExpression === undefined &&
     attackDepth === undefined &&
     attackDepthExpressions === undefined
   ) {
@@ -3306,6 +3315,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     ...(normalizedP1GetP2Facing === undefined ? {} : { p1GetP2Facing: normalizedP1GetP2Facing }),
     ...(normalizedP2Facing === undefined ? {} : { p2Facing: normalizedP2Facing }),
     ...(normalizedTargetId === undefined ? {} : { targetId: normalizedTargetId }),
+    ...(targetIdExpression === undefined ? {} : { targetIdExpression }),
     ...(attackDepth === undefined ? {} : { attackDepth }),
     ...(attackDepthExpressions === undefined ? {} : { attackDepthExpressions }),
   };
