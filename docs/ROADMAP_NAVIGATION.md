@@ -2,12 +2,17 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T740 closed-bounded (2026-08-11)
+## Current implementation route — T741 closed-bounded (2026-08-11)
+
+T741 / [issue 315](../.scratch/roadmap/issues/315-modifyhitdef-cornerpush-dynamic.md)
+closes root/RedirectID and Helper caller-context live `ModifyHitDef` cornerpush
+offsets for ground, air, down and guard contacts, with T740's air-guard offset
+already closed. The required trace/final checksums are `27dae2dd` /
+`a571323c`; aggregate QA is `827/827` (`793` required, `34` optional).
 
 T740 / [issue 314](../.scratch/roadmap/issues/314-modifyhitdef-airguard-cornerpush-dynamic.md)
-closes root/RedirectID live `ModifyHitDef airguard.cornerpush.veloff` with
-caller-context dynamic resolution and omission preservation. The required
-trace/final checksums are `ce2f48e5` / `09df4342`; aggregate QA is `826/826`.
+is historical and closed-bounded with trace/final checksums `ce2f48e5` /
+`09df4342`.
 
 T739 / issue 313 is superseded by closed T678 / issue 252; it is not a second
 Helper `airguard.velocity` implementation route.
@@ -53,9 +58,9 @@ preservation is required; the accepted hit-audio event carries typed `F6,4`
 telemetry from raw `Fvar(0),var(1)` with no guard route. Trace/final checksums
 are `8d56e467` / `d2d70840`.
 
-## Next implementation route — T741 selection
+## Next implementation route — T742 selection
 
-T740 is closed-bounded. Select the next distinct uncovered official/Ikemen
+T741 is closed-bounded. Select the next distinct uncovered official/Ikemen
 seam after closeout; T739 / issue 313 is superseded by closed T678 / issue
 252 and is not a pending implementation route.
 

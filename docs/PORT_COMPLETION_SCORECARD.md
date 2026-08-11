@@ -1,14 +1,18 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T740 `ModifyHitDef airguard.cornerpush.veloff` — closed-bounded, no score movement
+## 2026-08-11 T741 `ModifyHitDef` cornerpush offsets — closed-bounded, no score movement
 
-Issue 314 closes root/RedirectID live `ModifyHitDef airguard.cornerpush.veloff`
-with caller-context dynamic evaluation and omission preservation. Required
-trace/final checksums are `ce2f48e5` / `09df4342`; aggregate QA passes `826/826`
-artifacts (`792` required, `34` optional). No score movement: fresh/direct
-defaults, Helper causal trace, Projectiles, other corner-push fields and exact
-physics parity remain blocked. See [issue
-314](../.scratch/roadmap/issues/314-modifyhitdef-airguard-cornerpush-dynamic.md).
+Issue 315 closes root/RedirectID and Helper caller-context live `ModifyHitDef`
+cornerpush offsets for `ground`, `air`, `down`, and `guard`; T740 already
+closed `airguard.cornerpush.veloff`. Required trace/final checksums are
+`27dae2dd` / `a571323c`; aggregate QA passes `827/827` artifacts (`793`
+required, `34` optional). No score movement: fresh/direct defaults,
+airborne/down timing, Projectiles, ModifyProjectile, exact decay and physics
+parity remain blocked. See [issue
+315](../.scratch/roadmap/issues/315-modifyhitdef-cornerpush-dynamic.md).
+
+T740 / issue 314 is historical and remains closed-bounded with trace/final
+checksums `ce2f48e5` / `09df4342`.
 
 T739 / issue 313 is superseded by closed T678 / issue 252.
 
@@ -68,9 +72,9 @@ channels, exact SND lookup/playback/mixing/priority, Projectiles and full audio
 parity remain blocked. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next selection — T741
+## Next selection — T742
 
-T740 is closed-bounded. Select the next distinct uncovered seam; superseded
+T741 is closed-bounded. Select the next distinct uncovered seam; superseded
 issue 313 is not a pending scorecard target.
 
 ## Historical checkpoint — 2026-08-11 T733 `ModifyHitDef guardsound` expressions — closed-bounded, no score movement

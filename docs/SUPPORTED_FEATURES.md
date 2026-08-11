@@ -1,13 +1,18 @@
 ﻿# Supported Features
-## 2026-08-11 T740 `ModifyHitDef airguard.cornerpush.veloff` — closed-bounded
+## 2026-08-11 T741 `ModifyHitDef` cornerpush offsets — closed-bounded
 
-Ikemen-only root/RedirectID live `ModifyHitDef airguard.cornerpush.veloff`
-supports finite static and caller-context dynamic values. Omission or an
-unresolved expression preserves the active live value. Required trace/final
-checksums are `ce2f48e5` / `09df4342`; aggregate QA passes `826/826` artifacts.
-Fresh/direct defaults, Helper causal trace, Projectiles, other corner-push
-components and exact physics remain outside the claim. See [issue
-314](../.scratch/roadmap/issues/314-modifyhitdef-airguard-cornerpush-dynamic.md).
+Ikemen-only live `ModifyHitDef` cornerpush offsets through root/RedirectID and
+Helper caller resolution now support finite static and caller-context dynamic
+values for `ground`, `air`, `down`, and `guard`; T740 already closed the
+air-guard component. Omission or an unresolved expression preserves the active
+live component. Required trace/final checksums are `27dae2dd` / `a571323c`;
+aggregate QA passes `827/827` artifacts (`793` required, `34` optional).
+Fresh/direct defaults, airborne/down timing, Projectiles, ModifyProjectile and
+exact physics remain outside the claim. See [issue
+315](../.scratch/roadmap/issues/315-modifyhitdef-cornerpush-dynamic.md).
+
+T740 / issue 314 is historical and remains closed-bounded with trace/final
+checksums `ce2f48e5` / `09df4342`.
 
 T739 / issue 313 is superseded by closed T678 / issue 252.
 
@@ -55,9 +60,9 @@ defaults, guardsound channel, exact playback/mixing/priority, Projectiles and
 full audio parity remain outside the claim. See [issue
 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
 
-## Next selection — T741
+## Next selection — T742
 
-T740 is closed-bounded; select the next distinct uncovered seam after the
+T741 is closed-bounded; select the next distinct uncovered seam after the
 T678/T739 duplicate has been removed from the queue.
 
 ## Historical — T734 `ModifyHitDef hitsound` — closed-bounded

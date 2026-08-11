@@ -1,16 +1,20 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-11 T740 `ModifyHitDef airguard.cornerpush.veloff` — passed / closed-bounded
+## 2026-08-11 T741 `ModifyHitDef` cornerpush offsets — passed / closed-bounded
 
-Required `synthetic-imported-modifyhitdef-dynamic-airguard-cornerpush.json`
+Required `synthetic-imported-modifyhitdef-dynamic-ground-cornerpush.json`
 proves root/RedirectID caller-context `var(2)=6`, live `ModifyHitDef`, target
-`78`, accepted airborne guard and the resulting corner-push displacement.
-Trace checksum is `ce2f48e5`, final checksum `09df4342`; focused compiler,
-runtime, Helper and trace coverage passes, typecheck passes, and
-`pnpm qa:trace` passes `826/826` artifacts (`792` required, `34` optional).
-Fresh/direct defaults, Helper causal trace, Projectiles, other corner-push
-components and exact physics remain outside this gate. See [issue
-314](../.scratch/roadmap/issues/314-modifyhitdef-airguard-cornerpush-dynamic.md).
+`81`, accepted grounded guard and attacker corner-push displacement. The four
+remaining offsets (`ground`, `air`, `down`, `guard`) are covered by focused
+compiler/runtime/Helper tests; T740 covers `airguard`. Trace checksum is
+`27dae2dd`, final checksum `a571323c`; typecheck passes and `pnpm qa:trace`
+passes `827/827` artifacts (`793` required, `34` optional). Fresh/direct
+defaults, airborne/down timing, Projectiles, ModifyProjectile, exact decay and
+full physics remain outside this gate. See [issue
+315](../.scratch/roadmap/issues/315-modifyhitdef-cornerpush-dynamic.md).
+
+T740 / issue 314 remains historical with trace/final checksums `ce2f48e5` /
+`09df4342`.
 
 T739 / issue 313 is superseded by closed T678 / issue 252.
 
@@ -78,9 +82,9 @@ Exact SND lookup/playback/mixing/channel priority, fresh defaults, Projectiles,
 renderer timing, teams, rollback and full audio parity remain outside this
 gate. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next gate — T741 selection
+## Next gate — T742 selection
 
-Select the next distinct gate after T740; superseded issue 313 is not a pending
+Select the next distinct gate after T741; superseded issue 313 is not a pending
 acceptance target.
 
 ## Historical — 2026-08-11 T733 `ModifyHitDef guardsound` — passed / closed-bounded

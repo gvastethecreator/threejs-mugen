@@ -1,17 +1,29 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T740 closed-bounded (2026-08-11)
+## Latest bounded slice — T741 closed-bounded (2026-08-11)
 
-Issue 314 closes the bounded Ikemen-only live `ModifyHitDef
+Issue 315 closes the bounded Ikemen-only live `ModifyHitDef` corner-push
+offset family for root/RedirectID and Helper caller resolution. Static and
+caller-context dynamic values now cover `ground.cornerpush.veloff`,
+`air.cornerpush.veloff`, `down.cornerpush.veloff`, `guard.cornerpush.veloff`,
+and the previously closed `airguard.cornerpush.veloff`; omission or an
+unresolved expression preserves each active live component. The required
+trace `synthetic-imported-modifyhitdef-dynamic-ground-cornerpush.json` proves
+`VarSet -> HitDef -> ModifyHitDef -> grounded guard`, caller `var(2)=6`, target
+`81`, and attacker corner-push displacement; trace/final checksums are
+`27dae2dd` / `a571323c`. Aggregate QA passes `827/827` artifacts (`793`
+required, `34` optional). Fresh/direct defaults, airborne/down physical
+timing, Helper causal trace, Projectiles, ModifyProjectile, exact decay and
+full physics parity remain excluded. See [issue
+315](../.scratch/roadmap/issues/315-modifyhitdef-cornerpush-dynamic.md).
+
+## Historical bounded slice — T740 closed-bounded (2026-08-11)
+
+Issue 314 closed the bounded Ikemen-only live `ModifyHitDef
 airguard.cornerpush.veloff` seam through root/RedirectID with caller-context
-dynamic evaluation and omission preservation. The required trace
-`synthetic-imported-modifyhitdef-dynamic-airguard-cornerpush.json` proves
-`VarSet -> HitDef -> ModifyHitDef -> airborne guard`, caller `var(2)=6`, target
-`78`, and the resulting corner-push displacement; trace/final checksums are
-`ce2f48e5` / `09df4342`. Aggregate QA passes `826/826` artifacts (`792`
-required, `34` optional). Fresh/direct defaults, Helper causal trace,
-Projectiles, other corner-push components and exact physics parity remain
-excluded. See [issue
+dynamic evaluation and omission preservation. Required trace/final checksums
+were `ce2f48e5` / `09df4342`; aggregate QA passed `826/826` artifacts (`792`
+required, `34` optional). See [issue
 314](../.scratch/roadmap/issues/314-modifyhitdef-airguard-cornerpush-dynamic.md).
 
 T739 / issue 313 is superseded: it duplicated the already closed T678 / issue
@@ -84,10 +96,10 @@ artifacts (`787` required, `34` optional). Fresh defaults, channels, exact
 lookup/playback/mixing/priority, Projectiles and full audio parity remain
 blocked. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next bounded slice — T741 selection
+## Next bounded slice — T742 selection
 
-T740 is closed-bounded. Select the next uncovered official/Ikemen seam only
-after reconciling the existing T678/T739 duplicate; issue 313 must remain
+T741 is closed-bounded. Select the next distinct official/Ikemen seam only
+after preserving the explicit corner-push exclusions; issue 313 remains
 superseded.
 
 ## Historical bounded slice — T733 closed-bounded (2026-08-11)

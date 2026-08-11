@@ -1,14 +1,19 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T740 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T741 closed-bounded (2026-08-11)
 
-Issue 314 closes root/RedirectID live `ModifyHitDef
-airguard.cornerpush.veloff`. Caller-context `var(2)=6` reaches the active
-HitDef, omission preserves the live value, and the required trace proves the
-accepted airborne guard and corner-push displacement. Trace/final checksums are
-`ce2f48e5` / `09df4342`; `pnpm qa:trace` passes `826/826` artifacts (`792`
-required, `34` optional). Fresh/direct defaults, Helper causal trace,
-Projectiles and exact physics parity remain blocked.
+Issue 315 closes root/RedirectID and Helper caller-context live `ModifyHitDef`
+cornerpush offsets for ground, air, down and guard contacts; T740 already
+closed the airguard component. Caller `var(2)=6` reaches the active HitDef,
+omission preserves each live component, and the required trace proves the
+accepted grounded guard and attacker corner-push displacement. Trace/final
+checksums are `27dae2dd` / `a571323c`; `pnpm qa:trace` passes `827/827`
+artifacts (`793` required, `34` optional). Fresh/direct defaults,
+airborne/down timing, Projectiles, ModifyProjectile and exact physics parity
+remain blocked.
+
+T740 / issue 314 is historical with trace/final checksums `ce2f48e5` /
+`09df4342`.
 
 T739 / issue 313 is superseded by closed T678 / issue 252.
 
@@ -55,9 +60,9 @@ typecheck passes and `pnpm qa:trace` passes `822/822` artifacts (`788`
 required, `34` optional). Fresh defaults, guardsound channel, exact lookup,
 playback/mixing/priority, Projectiles and full audio parity remain blocked.
 
-## Next implementation checkpoint — T741 selection
+## Next implementation checkpoint — T742 selection
 
-Select the next distinct uncovered seam after T740 closeout; do not reactivate
+Select the next distinct uncovered seam after T741 closeout; do not reactivate
 superseded issue 313.
 
 ## Historical implementation checkpoint — T734 closed-bounded (2026-08-11)

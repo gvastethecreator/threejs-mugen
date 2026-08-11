@@ -1,15 +1,24 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T740 closed-bounded (2026-08-11)
+## Latest bounded slice — T741 closed-bounded (2026-08-11)
 
-Issue 314 closes Ikemen-only root/RedirectID live `ModifyHitDef
-airguard.cornerpush.veloff`. Caller `var(2)=6` resolves before the airborne
-guard contact, omission preserves the active value, and the required trace
-proves the target link and corner-push displacement. Trace/final checksums are
-`ce2f48e5` / `09df4342`; aggregate QA passes `826/826` artifacts (`792`
-required, `34` optional). Fresh/direct defaults, Helper causal trace,
-Projectiles, dynamic Z/other corner-push fields and exact physics parity remain
-blocked. See [issue
+Issue 315 closes Ikemen-only root/RedirectID and Helper live
+`ModifyHitDef` corner-push offset mutation for ground, air, down and guard
+contacts. Caller `var(2)=6` resolves before the grounded guard contact;
+omission or unresolved values preserve each active component, and the
+required trace proves the target link and attacker displacement. Trace/final
+checksums are `27dae2dd` / `a571323c`; aggregate QA passes `827/827` artifacts
+(`793` required, `34` optional). Fresh/direct defaults, airborne/down physical
+timing, Projectiles, ModifyProjectile, exact decay and full physics parity
+remain blocked. See [issue
+315](../.scratch/roadmap/issues/315-modifyhitdef-cornerpush-dynamic.md).
+
+## Historical bounded slice — T740 closed-bounded (2026-08-11)
+
+Issue 314 closed Ikemen-only root/RedirectID live
+`ModifyHitDef airguard.cornerpush.veloff`; trace/final checksums were
+`ce2f48e5` / `09df4342` and aggregate QA passed `826/826` artifacts (`792`
+required, `34` optional). See [issue
 314](../.scratch/roadmap/issues/314-modifyhitdef-airguard-cornerpush-dynamic.md).
 
 T739 / issue 313 is superseded because it duplicated closed T678 / issue 252.
@@ -71,9 +80,9 @@ required, `34` optional). Fresh defaults, channels, exact playback/mixing,
 Projectiles and full audio parity remain blocked. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next bounded slice — T741 selection
+## Next bounded slice — T742 selection
 
-Select the next distinct official/Ikemen seam after T740 closeout; keep issue
+Select the next distinct official/Ikemen seam after T741 closeout; keep issue
 313 superseded and preserve the explicit exclusions above.
 
 ## Historical bounded slice — T733 closed-bounded (2026-08-11)

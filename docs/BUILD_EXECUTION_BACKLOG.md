@@ -2,6 +2,16 @@
 
 ## Current parity queue
 
+- **T741 closed-bounded** — Ikemen-only live `ModifyHitDef` corner-push
+  offsets through root/RedirectID and Helper caller resolution:
+  `ground.cornerpush.veloff`, `air.cornerpush.veloff`,
+  `down.cornerpush.veloff`, and `guard.cornerpush.veloff`, alongside the
+  already closed air-guard component. Static and caller-context dynamic
+  values preserve omitted or unresolved live components. Required grounded
+  guard trace checksum `27dae2dd` / final `a571323c`; aggregate QA passes
+  `827/827` artifacts (`793` required, `34` optional). See [issue
+  315](../.scratch/roadmap/issues/315-modifyhitdef-cornerpush-dynamic.md).
+
 - **T734 closed-bounded** — Ikemen-only live `ModifyHitDef hitsound`
   group/number/prefix replacement through root/RedirectID and Helper callers.
   Static and caller-context dynamic/mixed refs retain their `F`/`S` prefix;

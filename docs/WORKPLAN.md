@@ -1,14 +1,22 @@
 # Workplan
 
-## Latest slice — T740 closed-bounded (2026-08-11)
+## Latest slice — T741 closed-bounded (2026-08-11)
 
-Issue 314 closes root/RedirectID live `ModifyHitDef
-airguard.cornerpush.veloff` with caller-context dynamic resolution and active
-value preservation on omission. Required trace/final checksums are
-`ce2f48e5` / `09df4342`; aggregate QA passes `826/826` artifacts (`792`
-required, `34` optional). Fresh/direct defaults, Helper causal trace,
-Projectiles, other corner-push components and exact physics parity remain
+Issue 315 closes root/RedirectID and Helper caller-context live `ModifyHitDef`
+corner-push offsets for `ground`, `air`, `down`, and `guard`; the existing
+air-guard offset remains closed from T740. Static and dynamic finite values
+preserve omitted/unresolved active components. Required trace/final checksums
+are `27dae2dd` / `a571323c`; aggregate QA passes `827/827` artifacts (`793`
+required, `34` optional). Fresh/direct defaults, airborne/down timing,
+Projectiles, ModifyProjectile, exact decay and full physics parity remain
 blocked.
+
+## Historical slice — T740 closed-bounded (2026-08-11)
+
+Issue 314 closed root/RedirectID live `ModifyHitDef
+airguard.cornerpush.veloff`; required trace/final checksums were `ce2f48e5` /
+`09df4342`, with aggregate QA `826/826` artifacts (`792` required, `34`
+optional).
 
 T739 / issue 313 is superseded by closed T678 / issue 252 and is not a new
 implementation task.
@@ -41,9 +49,9 @@ final `d5bc517f`; aggregate QA passes `823/823` artifacts (`789` required,
 `34` optional). Fresh defaults, exact playback/mixing/priority, Projectiles
 and full audio parity remain blocked.
 
-## Next slice — T741 selection
+## Next slice — T742 selection
 
-Choose the next uncovered official/Ikemen seam after the T740 closeout.
+Choose the next uncovered official/Ikemen seam after the T741 closeout.
 
 ## Historical slice — T735 closed-bounded (2026-08-11)
 

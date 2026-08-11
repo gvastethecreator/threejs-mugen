@@ -2,16 +2,16 @@
 
 Last updated: 2026-08-11
 
-## Current T740 closeout / T741 selection
+## Current T741 closeout / T742 selection
 
-T740 closes bounded Ikemen-only root/RedirectID live `ModifyHitDef
-airguard.cornerpush.veloff` with caller-context dynamic evaluation and
-omission preservation. Required trace/final checksums are `ce2f48e5` /
-`09df4342`; `pnpm qa:trace` passes `826/826` artifacts (`792` required,
-`34` optional). Fresh/direct defaults, Helper causal trace, Projectiles,
-other corner-push fields, exact timing, teams, rollback and full parity remain
-blocked. T739 / issue 313 is superseded by closed T678 / issue 252 and must
-not be reactivated as a duplicate.
+T741 closes bounded Ikemen-only root/RedirectID and Helper caller-context live
+`ModifyHitDef` corner-push offsets for `ground`, `air`, `down`, and `guard`;
+T740 already closed `airguard.cornerpush.veloff`. Required trace/final
+checksums are `27dae2dd` / `a571323c`; `pnpm qa:trace` passes `827/827`
+artifacts (`793` required, `34` optional). Fresh/direct defaults,
+airborne/down timing, Projectiles, ModifyProjectile, exact decay, teams,
+rollback and full parity remain blocked. T739 / issue 313 is superseded by
+closed T678 / issue 252 and must not be reactivated as a duplicate.
 
 ## Historical T737 guard-velocity checkpoint
 
@@ -20,7 +20,7 @@ replacement through root/RedirectID. Single, pair, and triple caller-context
 values preserve omitted live components and reach accepted ground-guard
 `GetHitVar`/velocity metadata. Required trace/final checksums are `a2eb52db` /
 `f0fb19a8`; `pnpm qa:trace` passes `824/824` artifacts (`790` required,
-`34` optional). T738 is now historical above; T741 is the next selection
+`34` optional). T738 is now historical above; T742 is the next selection
 checkpoint. M.U.G.E.N 1.1 only documents ground-guard X; Projectiles,
 exact timing, teams, rollback and full parity remain blocked.
 

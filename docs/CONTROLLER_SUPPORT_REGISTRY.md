@@ -1,12 +1,16 @@
 # Controller Support Registry
 
-Latest cursor: T740 / issue 314 is closed-bounded for Ikemen-only live
-root/RedirectID `ModifyHitDef airguard.cornerpush.veloff`. Caller-context
-finite static/dynamic values preserve the active value on omission and reach
-the accepted airborne-guard corner-push path. Required trace
-`synthetic-imported-modifyhitdef-dynamic-airguard-cornerpush.json` has
-trace/final checksums `ce2f48e5` / `09df4342`; aggregate QA is `826/826`
-artifacts (`792` required, `34` optional).
+Latest cursor: T741 / issue 315 is closed-bounded for Ikemen-only live
+`ModifyHitDef` corner-push offsets through root/RedirectID and Helper caller
+resolution. `ground`, `air`, `down`, and `guard` now accept finite static or
+caller-context dynamic values while omission/unresolved input preserves the
+active component; T740 already closed `airguard.cornerpush.veloff`. Required
+trace `synthetic-imported-modifyhitdef-dynamic-ground-cornerpush.json` has
+trace/final checksums `27dae2dd` / `a571323c`; aggregate QA is `827/827`
+artifacts (`793` required, `34` optional).
+
+T740 / issue 314 is historical with trace/final checksums `ce2f48e5` /
+`09df4342`.
 
 Previous cursor: T738 / issue 312 is closed-bounded for Ikemen-only live
 Helper-owned `ModifyHitDef guard.velocity` Y/Z component replacement.
@@ -17,7 +21,7 @@ retaining Helper/root/parent ownership. Required trace
 trace/final checksums `da73f66a` / `4231487d`; aggregate QA is `825/825`
 artifacts (`791` required, `34` optional).
 
-Next cursor: T741 is selected after closeout. T739 / issue 313 is superseded
+Next cursor: T742 is selected after closeout. T739 / issue 313 is superseded
 by closed T678 / issue 252 and must not be reactivated as a duplicate.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root
