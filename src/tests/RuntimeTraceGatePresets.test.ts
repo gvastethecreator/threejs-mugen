@@ -710,8 +710,10 @@ import {
   createSyntheticImportedModifyProjectileDynamicAirVelocityTraceArtifact,
   createSyntheticImportedProjectileAirGuardVelocityTraceArtifact,
   createSyntheticImportedProjectileDynamicDamageTraceArtifact,
+  createSyntheticImportedProjectileDynamicKeepStateTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicDamageTraceArtifact,
+  createSyntheticImportedHelperProjectileDynamicKeepStateTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardKillTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardHitShakeTimeTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardedTraceArtifact,
@@ -20552,6 +20554,33 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
+  it("gates dynamic fresh Projectile keepstate through the root-owned hit route", () => {
+    const artifact = createSyntheticImportedProjectileDynamicKeepStateTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-gethitvar-hit-metadata-dynamic-keepstate-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-gethitvar-hit-metadata-dynamic-keepstate-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+  });
+
   it("creates a synthetic imported Projectile GetHitVar hitid/chainid artifact with normal get-hit branch evidence", () => {
     const artifact = createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtifact({
       generatedAt: "2026-07-05T00:00:00.000Z",
@@ -21538,6 +21567,37 @@ describe("RuntimeTraceGatePresets", () => {
       gates: [
         {
           label: "synthetic-imported-helper-projectile-gethitvar-hit-metadata-dynamic-damage-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8890 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8890 }),
+      ]),
+    );
+  });
+
+  it("gates dynamic fresh Helper Projectile keepstate through the helper-parented hit route", () => {
+    const artifact = createSyntheticImportedHelperProjectileDynamicKeepStateTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-gethitvar-hit-metadata-dynamic-keepstate-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-projectile-gethitvar-hit-metadata-dynamic-keepstate-golden",
           passed: true,
           failures: [],
         },

@@ -1256,6 +1256,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileDynamicDamageTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-dynamic-keepstate",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileDynamicKeepStateTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-gethitvar-hitid-chainid",
       required: true,
       artifact: presets.createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtifact(),
@@ -1414,6 +1419,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-dynamic-damage",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileDynamicDamageTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-dynamic-keepstate",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileDynamicKeepStateTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-projectile-gethitvar-hitid-chainid",

@@ -33655,10 +33655,22 @@ export function createSyntheticImportedProjectileDynamicDamageTraceArtifact(
   );
 }
 
+export function createSyntheticImportedProjectileDynamicKeepStateTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInternal(
+    options,
+    undefined,
+    "-dynamic-keepstate",
+    "var(0)",
+  );
+}
+
 function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInternal(
   options: RuntimeTraceGatePresetOptions,
   damageExpression?: SyntheticPairExpression,
   variantSuffix = "",
+  keepStateExpression?: SyntheticNumberExpression,
 ): RuntimeTraceArtifact {
   const traceId = `synthetic-imported-projectile-gethitvar-hit-metadata${variantSuffix}`;
   const defender = createSyntheticImportedTraceFighter({
@@ -33670,7 +33682,9 @@ function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInter
       hitTimeBranchStateNo: 335,
       hitTimeBranchAnimNo: 335,
       hitTimeBranchExpression:
-        "GetHitVar(damage) = 31 && GetHitVar(hittime) = 13 && GetHitVar(xvel) = 4 && GetHitVar(yvel) = -2 && !GetHitVar(guarded)",
+        `GetHitVar(damage) = 31 && GetHitVar(hittime) = 13 && GetHitVar(xvel) = 4 && GetHitVar(yvel) = -2 && !GetHitVar(guarded)${
+          keepStateExpression === undefined ? "" : " && GetHitVar(keepstate) = 1"
+        }`,
     },
   });
   const attacker = createSyntheticImportedTraceFighter({
@@ -33684,6 +33698,8 @@ function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInter
     projectileHitSpark: "F7002",
     projectileSparkXy: [18, -68],
     projectileDamageExpression: damageExpression,
+    projectileKeepStateExpression: keepStateExpression,
+    projectileVarSeeds: keepStateExpression === undefined ? undefined : [{ index: 0, value: 1 }],
     hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
   });
   const stage = options.stage ?? projectileCombatStage();
@@ -34871,10 +34887,22 @@ export function createSyntheticImportedHelperProjectileDynamicDamageTraceArtifac
   );
 }
 
+export function createSyntheticImportedHelperProjectileDynamicKeepStateTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifactInternal(
+    options,
+    undefined,
+    "-dynamic-keepstate",
+    "var(0)",
+  );
+}
+
 function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifactInternal(
   options: RuntimeTraceGatePresetOptions,
   damageExpression?: SyntheticPairExpression,
   variantSuffix = "",
+  keepStateExpression?: SyntheticNumberExpression,
 ): RuntimeTraceArtifact {
   const traceId = `synthetic-imported-helper-projectile-gethitvar-hit-metadata${variantSuffix}`;
   const defender = createSyntheticImportedTraceFighter({
@@ -34886,7 +34914,9 @@ function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifac
       hitTimeBranchStateNo: 336,
       hitTimeBranchAnimNo: 336,
       hitTimeBranchExpression:
-        "GetHitVar(damage) = 37 && GetHitVar(hittime) = 14 && GetHitVar(xvel) = 4 && GetHitVar(yvel) = -2 && !GetHitVar(guarded)",
+        `GetHitVar(damage) = 37 && GetHitVar(hittime) = 14 && GetHitVar(xvel) = 4 && GetHitVar(yvel) = -2 && !GetHitVar(guarded)${
+          keepStateExpression === undefined ? "" : " && GetHitVar(keepstate) = 1"
+        }`,
     },
   });
   const attacker = createSyntheticImportedTraceFighter({
@@ -34904,6 +34934,8 @@ function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifac
       pos: [360, -34],
       damage: [37, 2],
       damageExpression,
+      keepStateExpression,
+      varSeeds: keepStateExpression === undefined ? undefined : [{ index: 0, value: 1 }],
       hitPause: 4,
       hitTime: 14,
       groundVelocity: [4, -2],
@@ -62315,6 +62347,8 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileDamage?: [number, number?];
   /** Synthetic fixture-only dynamic/mixed fresh Projectile damage pair. */
   projectileDamageExpression?: SyntheticPairExpression;
+  /** Synthetic fixture-only fresh Projectile keepstate expression. */
+  projectileKeepStateExpression?: SyntheticNumberExpression;
   /** Synthetic fixture-only fresh Projectile projanim action selected by the CNS line. */
   projectileAnimNo?: number;
   /** Synthetic fixture-only dynamic fresh Projectile projanim expression. */
@@ -62899,6 +62933,8 @@ export type SyntheticImportedTraceFighterOptions = {
     damage?: [number, number?];
     /** Synthetic Helper-local dynamic/mixed fresh Projectile damage pair. */
     damageExpression?: SyntheticPairExpression;
+    /** Synthetic Helper-local fresh Projectile keepstate expression. */
+    keepStateExpression?: SyntheticNumberExpression;
     hitPause?: number;
     hitTime?: number;
     groundHitTime?: SyntheticNumberExpression;
@@ -63905,7 +63941,7 @@ ${options.extraSuperPauseP2DefMul === undefined ? "" : extraSuperPauseP2DefMulBl
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${projectileVarSeedBlock}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileMissTimeExpression, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileDamageExpression, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale, options.projectileGroundVelocityExpression, options.projectileGuardVelocityExpression, options.projectileDownHitTime, options.projectileGroundHitTime, options.projectileGroundSlideTime, options.projectileAirHitTime, options.projectileGuardHitTimeExpression, options.projectilePauseTime, options.projectileGuardPauseTime, "Fast Projectile", options.projectilePriorityExpression, options.projectileHitsExpression, options.projectileAnimNo, options.projectileAnimExpression) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileMissTimeExpression, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileDamageExpression, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale, options.projectileGroundVelocityExpression, options.projectileGuardVelocityExpression, options.projectileDownHitTime, options.projectileGroundHitTime, options.projectileGroundSlideTime, options.projectileAirHitTime, options.projectileGuardHitTimeExpression, options.projectilePauseTime, options.projectileGuardPauseTime, "Fast Projectile", options.projectilePriorityExpression, options.projectileHitsExpression, options.projectileAnimNo, options.projectileAnimExpression, options.projectileKeepStateExpression) : ""}
 ${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secondaryProjectile) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
@@ -67889,6 +67925,7 @@ function projectileControllerBlock(
   hitsExpression?: SyntheticNumberExpression,
   animNo = 910,
   animExpression?: SyntheticNumberExpression,
+  keepStateExpression?: SyntheticNumberExpression,
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
   const missTimeLine = missTimeExpression === undefined ? `projmisstime = ${missTime}` : `projmisstime = ${missTimeExpression}`;
@@ -67937,6 +67974,7 @@ function projectileControllerBlock(
   const stageBoundLine = stageBound === undefined ? "" : `projstagebound = ${stageBound}`;
   const heightBoundLine = heightBound === undefined ? "" : `projheightbound = ${heightBound[0]},${heightBound[1]}`;
   const damageLine = damageExpression === undefined ? `damage = ${damage.join(",")}` : `damage = ${damageExpression.join(",")}`;
+  const keepStateLine = keepStateExpression === undefined ? "" : `keepstate = ${keepStateExpression}`;
   const airJuggleLine = airJuggle === undefined ? "" : `air.juggle = ${airJuggle}`;
   const koVelocityAddLine = koVelocityAdd === undefined ? "" : `ko.velocity.add = ${koVelocityAdd.join(",")}`;
   const pauseMoveTimeLine = pauseMoveTime === undefined ? "" : `pausemovetime = ${pauseMoveTime}`;
@@ -67994,6 +68032,7 @@ ${edgeBoundLine}
 ${stageBoundLine}
 ${heightBoundLine}
 ${damageLine}
+${keepStateLine}
 ${airJuggleLine}
 ${koVelocityAddLine}
 ${hitFlagLine}
@@ -71320,6 +71359,7 @@ function helperProjHitRouteBlock(route: NonNullable<SyntheticImportedTraceFighte
   const damageLine = route.damageExpression === undefined
     ? `damage = ${damage.join(",")}`
     : `damage = ${route.damageExpression.join(",")}`;
+  const keepStateLine = route.keepStateExpression === undefined ? "" : `keepstate = ${route.keepStateExpression}`;
   const projectileHits = route.projectileHits ?? 1;
   const projectileHitsLine = route.projectileHitsExpression === undefined
     ? `projhits = ${projectileHits}`
@@ -71510,6 +71550,7 @@ ${hitSparkLine}
 ${guardSparkLine}
 ${sparkXyLine}
 ${damageLine}
+${keepStateLine}
 pausetime = ${hitPause},${hitPause}
 ${groundHitTimeLine}
 ${groundSlideTimeLine}
