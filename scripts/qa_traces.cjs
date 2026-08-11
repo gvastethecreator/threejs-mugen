@@ -1771,6 +1771,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefDynamicSnapTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-snaptime",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefSnapTimeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-bounds",
       required: true,
       artifact: presets.createSyntheticImportedBoundsTraceArtifact(),

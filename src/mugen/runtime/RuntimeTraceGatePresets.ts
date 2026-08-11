@@ -38064,6 +38064,83 @@ export function createSyntheticImportedHitDefDynamicSnapTraceArtifact(options: R
   });
 }
 
+export function createSyntheticImportedHitDefSnapTimeTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-snaptime-attacker",
+    displayName: "Synthetic Imported HitDef SnapTime Attacker",
+    fall: { ...commonGetHitFallData(), damage: 0 },
+    hitDefVarSeeds: [
+      { index: 0, value: 7 },
+      { index: 1, value: -5 },
+      { index: 2, value: 3 },
+      { index: 3, value: 2 },
+    ],
+    hitDefSnapExpression: ["var(0)", "var(1)", "var(2)", "var(3)"],
+    getHitState: { stateNo: 5100, animNo: 500 },
+    getHitVarBranch: {
+      stateNo: 906,
+      expression: "GetHitVar(xoff) = 7 && GetHitVar(yoff) = -5 && GetHitVar(zoff) = 3 && !GetHitVar(guarded)",
+    },
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCommonGetHitScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-hitdef-snaptime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-snaptime-golden",
+      label: "Synthetic imported HitDef snap bind duration",
+      source: "mixed",
+      notes: [
+        "Synthetic imported dynamic HitDef snap trace proves caller-context X/Y/Z plus Ikemen snaptime bind metadata on an accepted direct hit. Target-link evidence checks the receiver binding owner, offset, and finite duration. It does not claim MUGEN snaptime, guard/projectile inheritance, negative-duration infinity, helper-owned receivers, or exact Common1 bind tick parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitdef-snaptime-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 5100, 906],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "HitFallVel"],
+        requiredExecutedOperations: ["hitdef", "hitfall:hitfallvel"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 77 },
+          { ownerId: "p2", actorId: "p1", hasBinding: true, bindingOffsetX: 7, bindingOffsetY: -5, bindingOffsetZ: 3, minBindingRemaining: 1 },
+        ],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "demo",
+            actorKind: "player",
+            stateNo: 5100,
+            moveType: "H",
+            observedPosYAtMost: -5,
+            observedPosYAtLeast: -5,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            actorKind: "player",
+            source: "demo",
+            stateNo: 906,
+            customOwnerId: "p1",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedCustomStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedCustomStateScript();
@@ -64436,6 +64513,7 @@ type SyntheticNumberExpression = number | string;
 type SyntheticPairExpression = [SyntheticNumberExpression, SyntheticNumberExpression];
 type SyntheticPartialPairExpression = [SyntheticNumberExpression, SyntheticNumberExpression?];
 type SyntheticPartialTripleExpression = [SyntheticNumberExpression, SyntheticNumberExpression?, SyntheticNumberExpression?];
+type SyntheticSnapExpression = [SyntheticNumberExpression, SyntheticNumberExpression?, SyntheticNumberExpression?, SyntheticNumberExpression?];
 type SyntheticRuntimeVarSeed = { index: number; value: number };
 type SyntheticDynamicDamageScale = {
   value: string;
@@ -64574,7 +64652,7 @@ export type SyntheticImportedTraceFighterOptions = {
   hitYAccel?: number;
   hitSnap?: [number, number?];
   /** Synthetic fixture-only dynamic fresh HitDef snap X/Y expression pair. */
-  hitDefSnapExpression?: SyntheticPartialPairExpression;
+  hitDefSnapExpression?: SyntheticSnapExpression;
   fallAnimType?: string;
   passiveNotHitBy?: string;
   passiveHitBy?: string;
