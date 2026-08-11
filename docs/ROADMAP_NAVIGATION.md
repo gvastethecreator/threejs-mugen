@@ -2,7 +2,17 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T742 closed-bounded (2026-08-11)
+## Current implementation route — T744 closed-bounded (2026-08-11)
+
+T744 / [issue 318](../.scratch/roadmap/issues/318-modifyhitdef-snap-expressions.md)
+closes live Ikemen `ModifyHitDef snap` X/Y replacement through root/RedirectID
+and Helper callers. Single values preserve active Y/Z, pairs preserve Z, and
+omission is a no-op. Product commit `f9ae0eca`; focused compiler/runtime/Helper
+and Playable integration coverage passes. Fresh defaults, snap Z/`snaptime`,
+Projectiles, exact bind/tick/localcoord/facing and full positioning parity remain
+blocked.
+
+## Historical implementation route — T742 closed-bounded (2026-08-11)
 
 T742 / [issue 316](../.scratch/roadmap/issues/316-hitdef-snap-dynamic.md)
 closes fresh direct `HitDef snap` X/Y expression resolution for root and
@@ -10,7 +20,7 @@ Helper caller contexts. Caller `var(0)=7,var(1)=-5` reaches accepted contact
 `GetHitVar(xoff/yoff/zoff)=7/-5/0`, with the defender's snapped Y position
 observed in the owner-backed get-hit route. Trace/final checksums are
 `3d153556` / `fe79d540`; aggregate QA is `828/828` (`794` required, `34`
-optional). Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles, exact
+optional). Snap Z, `snaptime`, Projectiles, exact
 bind/tick/localcoord/facing and full positioning parity remain blocked.
 
 ## Historical implementation route — T741 closed-bounded (2026-08-11)
@@ -69,14 +79,11 @@ preservation is required; the accepted hit-audio event carries typed `F6,4`
 telemetry from raw `Fvar(0),var(1)` with no guard route. Trace/final checksums
 are `8d56e467` / `d2d70840`.
 
-## Next implementation route — T743 planned
+## Next implementation route — select T745 after T744
 
-T743 / [issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md)
-is the next distinct uncovered Ikemen-only live `ModifyHitDef down.velocity`
-X/Y seam through root/RedirectID and Helper callers. Single values preserve
-Y/Z, pairs preserve Z, and omission is a no-op. T739 / issue 313 remains
-superseded by closed T678 / issue 252 and is not a pending implementation
-route.
+Issue 317 / T743 is superseded by the already closed T728 / issue 302. Select a
+distinct source-backed seam next; T739 / issue 313 is also superseded and is not
+a pending implementation route.
 
 ## Historical implementation route — T733 closed-bounded (2026-08-11)
 

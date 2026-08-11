@@ -1,12 +1,17 @@
 # Controller Support Registry
 
-Latest cursor: T742 / issue 316 is closed-bounded for fresh direct `HitDef
+Latest cursor: T744 / issue 318 is closed-bounded for live `ModifyHitDef snap`
+X/Y replacement through root/RedirectID and Helper callers. Single values
+preserve active Y/Z, pairs preserve Z, and omission is a no-op. Product commit
+`f9ae0eca`; focused compiler/runtime/Helper/Playable coverage passes.
+
+Previous cursor: T742 / issue 316 is closed-bounded for fresh direct `HitDef
 snap` X/Y expressions through root and Helper caller contexts. Caller
 `var(0)=7,var(1)=-5` reaches accepted contact `GetHitVar(xoff/yoff/zoff)=7/-5/0`
 and the defender's snapped Y position. Required trace
 `synthetic-imported-hitdef-dynamic-snap.json` has trace/final checksums
 `3d153556` / `fe79d540`; aggregate QA is `828/828` artifacts (`794` required,
-`34` optional). Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles, exact
+`34` optional). Snap Z, `snaptime`, Projectiles, exact
 bind/tick/localcoord/facing and full positioning parity remain excluded.
 
 Previous cursor: T741 / issue 315 is closed-bounded for Ikemen-only live
@@ -30,11 +35,9 @@ retaining Helper/root/parent ownership. Required trace
 trace/final checksums `da73f66a` / `4231487d`; aggregate QA is `825/825`
 artifacts (`791` required, `34` optional).
 
-Next cursor: T743 / [issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md)
-is planned for live Ikemen-only `ModifyHitDef down.velocity` X/Y component
-replacement through root/RedirectID and Helper callers. Single values preserve
-Y/Z, pairs preserve Z, and omission is a no-op. T739 / issue 313 is superseded
-by closed T678 / issue 252 and must not be reactivated as a duplicate.
+Issue 317 / T743 is superseded by closed T728 / issue 302 and must not be
+reactivated as a duplicate. T739 / issue 313 is likewise superseded by closed
+T678 / issue 252.
 
 T742 `HitDef` addendum: fresh direct snap X/Y expressions are now retained in
 typed IR and resolved once in root/Helper caller context. The required

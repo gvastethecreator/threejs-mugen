@@ -1,6 +1,6 @@
 # Issue 317 — Live `ModifyHitDef down.velocity` X/Y expressions
 
-Status: planned (T743 selection, 2026-08-11)
+Status: superseded (duplicate of closed T728 / issue 302, 2026-08-11)
 
 ## Objective
 
@@ -21,7 +21,14 @@ are not reopened here.
 - M.U.G.E.N 1.1 documents `down.velocity=x,y` and fresh inheritance from
   `air.velocity`; the live `ModifyHitDef` claim is Ikemen-only.
 
-## Planned acceptance
+## Historical result
+
+This issue was selected again after T742, but the requested seam was already
+closed-bounded by T728 / issue 302. The implementation and required traces are
+tracked there; this file remains only as an audit trail so the duplicate is not
+reopened.
+
+## Original planned acceptance
 
 - Static, mixed, and caller-context dynamic single/pair X/Y values compile and
   resolve finite components; malformed or unsupported triples fail closed.

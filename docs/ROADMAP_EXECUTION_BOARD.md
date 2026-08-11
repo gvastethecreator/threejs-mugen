@@ -1,13 +1,22 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T742 closed-bounded (2026-08-11)
+## Latest bounded slice — T744 closed-bounded (2026-08-11)
+
+Issue 318 closes live Ikemen `ModifyHitDef snap` X/Y replacement through
+root/RedirectID and Helper callers. Single values preserve active Y/Z, pairs
+preserve Z, and omission is a no-op. Focused compiler/runtime/Helper coverage
+and the Playable RedirectID integration pass; product commit is `f9ae0eca`.
+Fresh defaults, snap Z/`snaptime`, Projectiles, exact bind/tick/localcoord/
+facing and full positioning parity remain blocked.
+
+## Historical bounded slice — T742 closed-bounded (2026-08-11)
 
 Issue 316 closes fresh direct `HitDef snap` X/Y expression resolution for root
 and Helper callers. Caller `var(0)=7,var(1)=-5` resolves into accepted contact
 `GetHitVar(xoff/yoff/zoff)=7/-5/0`; the required trace also observes the
 defender at Y `-5` during the owner-backed get-hit route. Trace/final checksums
 are `3d153556` / `fe79d540`. Aggregate QA passes `828/828` artifacts (`794`
-required, `34` optional). Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles,
+required, `34` optional). Snap Z, `snaptime`, Projectiles,
 exact bind/tick/localcoord/facing and full positioning parity remain excluded.
 See [issue 316](../.scratch/roadmap/issues/316-hitdef-snap-dynamic.md).
 
@@ -107,14 +116,11 @@ artifacts (`787` required, `34` optional). Fresh defaults, channels, exact
 lookup/playback/mixing/priority, Projectiles and full audio parity remain
 blocked. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next bounded slice — T743 planned
+## Next bounded slice — select T745 after T744
 
-T743 / [issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md)
-is queued for live Ikemen-only `ModifyHitDef down.velocity` X/Y component
-replacement through root/RedirectID and Helper callers. Single values preserve
-Y/Z, pairs preserve Z, and omission is a no-op. Fresh/default, dynamic Z/
-`n`, Projectile/ModifyProjectile, guard/air velocity, and exact lying/landing
-timing remain excluded; issue 313 remains superseded.
+Issue 317 / T743 is superseded by the already closed T728 / issue 302. Select a
+distinct source-backed seam next; do not reopen the `down.velocity` duplicate or
+claim snap Z/`snaptime` without its own implementation and evidence.
 
 ## Historical bounded slice — T733 closed-bounded (2026-08-11)
 

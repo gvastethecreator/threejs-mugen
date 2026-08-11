@@ -1,13 +1,23 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T742 fresh dynamic `HitDef snap` X/Y — closed-bounded, no score movement
+## 2026-08-11 T744 live `ModifyHitDef snap` X/Y — closed-bounded, no score movement
+
+Issue 318 closes live Ikemen `ModifyHitDef snap` X/Y replacement through
+root/RedirectID and Helper callers. Single values preserve active Y/Z, pairs
+preserve Z, and omission is a no-op. Focused compiler/runtime/Helper coverage
+and Playable integration pass; product commit is `f9ae0eca`. No score movement:
+fresh snap defaults, snap Z/`snaptime`, Projectiles, exact bind/tick and full
+positioning parity remain blocked. See [issue
+318](../.scratch/roadmap/issues/318-modifyhitdef-snap-expressions.md).
+
+## Historical checkpoint — 2026-08-11 T742 fresh dynamic `HitDef snap` X/Y — closed-bounded, no score movement
 
 Issue 316 closes fresh direct `HitDef snap` X/Y expression resolution for root
 and Helper callers. Caller `var(0)=7,var(1)=-5` reaches accepted contact
 `GetHitVar(xoff/yoff/zoff)=7/-5/0`, and the required trace observes the
 defender's snapped Y position. Trace/final checksums are `3d153556` /
 `fe79d540`; aggregate QA passes `828/828` artifacts (`794` required, `34`
-optional). No score movement: snap Z, `snaptime`, live `ModifyHitDef`,
+optional). No score movement: snap Z, `snaptime`,
 Projectiles, exact bind/tick/localcoord/facing and full positioning parity
 remain blocked. See [issue
 316](../.scratch/roadmap/issues/316-hitdef-snap-dynamic.md).
@@ -84,13 +94,12 @@ channels, exact SND lookup/playback/mixing/priority, Projectiles and full audio
 parity remain blocked. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next selection — T743 planned
+## Next selection — select T745 after T744
 
-T743 / [issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md)
-is queued for live Ikemen-only `ModifyHitDef down.velocity` X/Y replacement
-with omitted-component preservation. T742 remains no-score movement; snap Z,
-`snaptime`, Projectiles and exact positioning parity stay blocked, and
-superseded issue 313 is not a pending scorecard target.
+Issue 317 / T743 is superseded by the already closed T728 / issue 302. T742 and
+T744 remain no-score movement; snap Z/`snaptime`, Projectiles and exact
+positioning parity stay blocked, and superseded issue 313 is not a pending
+scorecard target.
 
 ## Historical checkpoint — 2026-08-11 T733 `ModifyHitDef guardsound` expressions — closed-bounded, no score movement
 

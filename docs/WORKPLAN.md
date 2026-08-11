@@ -1,6 +1,15 @@
 # Workplan
 
-## Latest slice — T742 closed-bounded (2026-08-11)
+## Latest slice — T744 closed-bounded (2026-08-11)
+
+Issue 318 closes live Ikemen `ModifyHitDef snap` X/Y replacement through
+root/RedirectID and Helper callers. Single values preserve active Y/Z, pairs
+preserve Z, and omission is a no-op. Focused compiler/runtime/Helper coverage
+and the Playable RedirectID integration pass; product commit is `f9ae0eca`.
+Fresh snap defaults, snap Z/`snaptime`, Projectiles, exact bind/tick and full
+positioning parity remain blocked.
+
+## Historical slice — T742 closed-bounded (2026-08-11)
 
 Issue 316 closes fresh direct `HitDef snap` X/Y expressions for root and
 Helper caller contexts. `var(0)=7,var(1)=-5` resolves to accepted contact
@@ -8,7 +17,7 @@ Helper caller contexts. `var(0)=7,var(1)=-5` resolves to accepted contact
 defender's Y snap during the owner-backed get-hit route. Trace/final checksums
 are `3d153556` / `fe79d540`; aggregate QA passes `828/828` artifacts (`794`
 required, `34` optional). Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles,
-exact bind/tick/localcoord/facing and full positioning parity remain blocked.
+  exact bind/tick/localcoord/facing and full positioning parity remain blocked.
 
 ## Historical slice — T741 closed-bounded (2026-08-11)
 
@@ -59,13 +68,11 @@ final `d5bc517f`; aggregate QA passes `823/823` artifacts (`789` required,
 `34` optional). Fresh defaults, exact playback/mixing/priority, Projectiles
 and full audio parity remain blocked.
 
-## Next slice — T743 planned
+## Next slice — select T745 after T744
 
-Continue with [issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md):
-live Ikemen-only `ModifyHitDef down.velocity` X/Y replacement through
-root/RedirectID and Helper callers. Preserve omitted Y/Z components and keep
-fresh defaults, dynamic Z/`n`, Projectile/ModifyProjectile, guard/air velocity,
-and exact lying/landing timing outside the slice.
+Issue 317 / T743 is superseded by the already closed T728 / issue 302. The
+next selection must be a distinct source-backed seam; do not reopen the
+`down.velocity` duplicate or claim snap Z/`snaptime` before their own evidence.
 
 ## Historical slice — T735 closed-bounded (2026-08-11)
 

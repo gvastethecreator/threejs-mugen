@@ -1,6 +1,16 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-11 T742 fresh dynamic `HitDef snap` X/Y — passed / closed-bounded
+## 2026-08-11 T744 live `ModifyHitDef snap` X/Y — passed / closed-bounded
+
+Focused compiler/runtime/Helper coverage and the Playable RedirectID
+integration prove static, mixed and caller-context dynamic `snap` X/Y values.
+Single values replace X while preserving active Y/Z; pairs replace X/Y while
+preserving Z; omission is a no-op. Product commit is `f9ae0eca`. Fresh snap,
+snap Z/`snaptime`, Projectiles, exact bind/tick/localcoord/facing and full
+positioning parity remain outside this gate. See [issue
+318](../.scratch/roadmap/issues/318-modifyhitdef-snap-expressions.md).
+
+## Historical — 2026-08-11 T742 fresh dynamic `HitDef snap` X/Y — passed / closed-bounded
 
 Required `synthetic-imported-hitdef-dynamic-snap.json` proves caller-context
 `var(0)=7,var(1)=-5`, fresh direct `HitDef`, accepted target link `p1 -> p2 /
@@ -8,7 +18,7 @@ Required `synthetic-imported-hitdef-dynamic-snap.json` proves caller-context
 inside the owner-backed get-hit route. Trace checksum is `3d153556`, final
 checksum `fe79d540`; focused compiler/runtime/Helper coverage is `317/317`,
 typecheck passes, and `pnpm qa:trace` passes `828/828` artifacts (`794`
-required, `34` optional). Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles,
+required, `34` optional). Snap Z, `snaptime`, Projectiles,
 exact bind/tick/localcoord/facing and full positioning parity remain outside
 this gate. See [issue
 316](../.scratch/roadmap/issues/316-hitdef-snap-dynamic.md).
@@ -95,12 +105,11 @@ Exact SND lookup/playback/mixing/channel priority, fresh defaults, Projectiles,
 renderer timing, teams, rollback and full audio parity remain outside this
 gate. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next gate — T743 planned
+## Next gate — select T745 after T744
 
-The next gate is [issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md):
-live Ikemen-only `ModifyHitDef down.velocity` X/Y component replacement with
-omitted-component preservation. Preserve the explicit snap exclusions;
-superseded issue 313 is not a pending acceptance target.
+Issue 317 / T743 is superseded by the already closed T728 / issue 302. The next
+gate must target a distinct source-backed seam; issue 313 is not a pending
+acceptance target either.
 
 ## Historical — 2026-08-11 T733 `ModifyHitDef guardsound` — passed / closed-bounded
 

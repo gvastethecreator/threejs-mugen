@@ -1,12 +1,23 @@
 ﻿# Supported Features
-## 2026-08-11 T742 fresh dynamic `HitDef snap` X/Y — closed-bounded
+## 2026-08-11 T744 live `ModifyHitDef snap` X/Y — closed-bounded
+
+Live Ikemen `ModifyHitDef snap` now resolves static, mixed and caller-context
+dynamic X/Y through root/RedirectID and Helper callers. Single values replace X
+while preserving active Y/Z; pairs replace X/Y while preserving Z; omission is
+a no-op. Focused compiler/runtime/Helper coverage and Playable integration pass;
+product commit is `f9ae0eca`. Fresh snap defaults, snap Z/`snaptime`,
+Projectiles, exact bind/tick/localcoord/facing and full positioning parity remain
+outside the claim. See [issue
+318](../.scratch/roadmap/issues/318-modifyhitdef-snap-expressions.md).
+
+## Historical — 2026-08-11 T742 fresh dynamic `HitDef snap` X/Y — closed-bounded
 
 Fresh direct `HitDef snap` now resolves finite X/Y expressions in root and
 Helper caller contexts. The accepted contact stores bounded
 `GetHitVar(xoff/yoff/zoff)=7/-5/0` for caller values `var(0)=7,var(1)=-5` and
 applies the defender's X/Y offset. Required trace/final checksums are
 `3d153556` / `fe79d540`; aggregate QA passes `828/828` artifacts (`794`
-required, `34` optional). Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles,
+required, `34` optional). Snap Z, `snaptime`, Projectiles,
 exact bind/tick/localcoord/facing and full positioning parity remain outside
 the claim. See [issue
 316](../.scratch/roadmap/issues/316-hitdef-snap-dynamic.md).
@@ -72,12 +83,11 @@ defaults, guardsound channel, exact playback/mixing/priority, Projectiles and
 full audio parity remain outside the claim. See [issue
 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
 
-## Next selection — T743 planned
+## Next selection — select T745 after T744
 
-T743 / [issue 317](../.scratch/roadmap/issues/317-modifyhitdef-down-velocity-expressions.md)
-is queued for live Ikemen-only `ModifyHitDef down.velocity` X/Y replacement
-through root/RedirectID and Helper callers. Keep the T678/T739 duplicate and
-the T742 snap exclusions out of the queue.
+Issue 317 / T743 is superseded by the already closed T728 / issue 302. Keep the
+T678/T739 duplicate out of the queue, and do not claim snap Z/`snaptime` without
+separate implementation and evidence.
 
 ## Historical — T734 `ModifyHitDef hitsound` — closed-bounded
 
