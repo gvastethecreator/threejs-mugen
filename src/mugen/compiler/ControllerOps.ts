@@ -375,6 +375,8 @@ export type ModifyReversalDefControllerOp = {
   guardFlag?: string;
   missOnOverride?: boolean;
   hitPause?: number;
+  /** Dynamic or mixed live ReversalDef pausetime pair evaluated in caller context. */
+  pauseTimeExpressions?: MugenHitDefExpressionPair;
   hitCount?: number;
   p1SpritePriority?: number;
   p2SpritePriority?: number;
@@ -1280,6 +1282,8 @@ export type ReversalDefControllerOp = {
   guardFlag?: string;
   missOnOverride?: boolean;
   hitPause: number;
+  /** Dynamic or mixed ReversalDef pausetime pair evaluated in caller context. */
+  pauseTimeExpressions?: MugenHitDefExpressionPair;
   hitCount?: number;
   p1SpritePriority?: number;
   p2SpritePriority?: number;
@@ -2334,7 +2338,16 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   const hitDefAttr = staticOptionalHitAttributeParam(controller, "attr");
   const guardFlag = staticOptionalGuardFlagParam(controller, "guardflag");
   const missOnOverride = staticOptionalReversalBooleanParam(controller, "missonoverride");
-  const hitPause = staticNumberParam(controller, "pausetime", 0);
+  const pauseTimeValue = optionalIntegerExpressionPairParam(controller, "pausetime");
+  const pauseTimeExpressions = Array.isArray(pauseTimeValue) && pauseTimeValue.some((value) => typeof value === "string")
+    ? pauseTimeValue
+    : undefined;
+  const pauseTime = Array.isArray(pauseTimeValue) && pauseTimeExpressions === undefined
+    ? pauseTimeValue
+    : undefined;
+  const hitPause = pauseTime === undefined || typeof pauseTime[0] !== "number"
+    ? 0
+    : Math.max(0, Math.trunc(pauseTime[0]));
   const hitCount = staticOptionalHitCountParam(controller, "numhits");
   const p1SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p1sprpriority");
   const p2SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p2sprpriority");
@@ -2348,7 +2361,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   const unhittableTime = optionalIntegerExpressionPairParam(controller, "unhittabletime");
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   if (
-    hitPause === undefined ||
+    pauseTimeValue === false ||
     reversalGuardFlag === false ||
     reversalGuardFlagNot === false ||
     hitDefAttr === false ||
@@ -2376,7 +2389,8 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     hitDefAttr: hitDefAttr === true ? undefined : hitDefAttr,
     guardFlag: guardFlag === true ? undefined : guardFlag,
     missOnOverride,
-    hitPause: Math.max(0, Math.round(hitPause)),
+    hitPause,
+    ...(pauseTimeExpressions === undefined ? {} : { pauseTimeExpressions }),
     hitCount: hitCount === true ? undefined : hitCount,
     p1SpritePriority: p1SpritePriority === true ? undefined : p1SpritePriority,
     p2SpritePriority: p2SpritePriority === true ? undefined : p2SpritePriority,
@@ -3124,8 +3138,13 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   const hitDefAttr = staticOptionalHitAttributeParam(controller, "attr");
   const guardFlag = staticOptionalGuardFlagParam(controller, "guardflag");
   const missOnOverride = staticOptionalReversalBooleanParam(controller, "missonoverride");
-  const hitPauseRaw = findParam(controller, "pausetime");
-  const hitPausePair = hitPauseRaw === undefined ? undefined : strictStaticNumberPair(hitPauseRaw);
+  const pauseTimeValue = optionalIntegerExpressionPairParam(controller, "pausetime");
+  const pauseTimeExpressions = Array.isArray(pauseTimeValue) && pauseTimeValue.some((value) => typeof value === "string")
+    ? pauseTimeValue
+    : undefined;
+  const pauseTime = Array.isArray(pauseTimeValue) && pauseTimeExpressions === undefined
+    ? pauseTimeValue
+    : undefined;
   const hitCount = staticOptionalHitCountParam(controller, "numhits");
   const p1SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p1sprpriority");
   const p2SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p2sprpriority");
@@ -3144,7 +3163,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     hitDefAttr === false ||
     guardFlag === false ||
     missOnOverride === "invalid" ||
-    (hitPauseRaw !== undefined && !hitPausePair) ||
+    pauseTimeValue === false ||
     hitCount === false ||
     p1SpritePriority === false ||
     p2SpritePriority === false ||
@@ -3159,7 +3178,9 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   ) {
     return undefined;
   }
-  const hitPause = hitPausePair === undefined ? undefined : Math.max(0, Math.round(hitPausePair[0]));
+  const hitPause = pauseTime === undefined || typeof pauseTime[0] !== "number"
+    ? undefined
+    : Math.max(0, Math.trunc(pauseTime[0]));
   const normalizedHitCount = hitCount === true ? undefined : hitCount;
   const normalizedP1StateNo = p1StateNo === true
     ? undefined
@@ -3183,6 +3204,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     guardFlag === true &&
     missOnOverride === undefined &&
     hitPause === undefined &&
+    pauseTimeExpressions === undefined &&
     normalizedHitCount === undefined &&
     p1SpritePriority === true &&
     p2SpritePriority === true &&
@@ -3205,6 +3227,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     ...(guardFlag === true ? {} : { guardFlag }),
     ...(missOnOverride === undefined ? {} : { missOnOverride }),
     ...(hitPause === undefined ? {} : { hitPause }),
+    ...(pauseTimeExpressions === undefined ? {} : { pauseTimeExpressions }),
     ...(normalizedHitCount === undefined ? {} : { hitCount: normalizedHitCount }),
     ...(p1SpritePriority === true ? {} : { p1SpritePriority }),
     ...(p2SpritePriority === true ? {} : { p2SpritePriority }),

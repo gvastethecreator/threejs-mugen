@@ -140,6 +140,29 @@ describe("ReversalSystem", () => {
     });
   });
 
+  it("resolves ReversalDef pausetime pairs in the caller context", () => {
+    const world = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const receiver = actor("p2", "Reverser", { stateNo: 300, vars: [99, 99], fvars: [99, 99] });
+    const caller = actor("p1", "Caller", { vars: [4, 99], fvars: [0, 7] });
+    const ir = compileControllerIr(controller("ReversalDef", {
+      "reversal.attr": "SA,AA",
+      pausetime: "var(0),fvar(1)",
+    }));
+
+    const result = dispatchWorld.apply({
+      actor: receiver,
+      controller: ir,
+      context: { self: caller.runtime },
+      hitbox: box(),
+      reversalWorld: world,
+    });
+
+    expect(result.activated).toBe(true);
+    expect(receiver.currentMove).toMatchObject({ hitPause: 4, hitShakeTime: 7 });
+    expect(receiver.runtime.reversal).toMatchObject({ hitPause: 4, hitShakeTime: 7 });
+  });
+
   it("derives omitted ReversalDef receiver unhittabletime from attacker pausetime", () => {
     const world = new RuntimeReversalWorld();
     const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
@@ -253,6 +276,32 @@ describe("ReversalSystem", () => {
 
     expect(runtimeReceivedDamageValue(attacker.contact, 200)).toBe(0);
     expect(runtimeReceivedHitsValue(attacker.contact, 200)).toBe(4);
+  });
+
+  it("preserves the live ReversalDef shake component when ModifyReversalDef authors one pause value", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const fighter = actor("p1", "Reverser", { stateNo: 300, vars: [11] });
+    reversalWorld.activate(fighter, {
+      attr: "S,SP",
+      hitbox: box(),
+      hitPause: 3,
+      hitShakeTime: 5,
+      p1StateNo: 777,
+    });
+
+    const result = dispatchWorld.modify({
+      actor: fighter,
+      controller: compileControllerIr(controller("ModifyReversalDef", {
+        pausetime: "var(0)",
+        redirectid: "57",
+      })),
+      context: { self: actor("p2", "Caller", { vars: [11] }).runtime },
+    });
+
+    expect(result.modified).toBe(true);
+    expect(fighter.currentMove).toMatchObject({ hitPause: 11, hitShakeTime: 5 });
+    expect(fighter.runtime.reversal).toMatchObject({ hitPause: 11, hitShakeTime: 5 });
   });
 
   it("resolves dynamic ModifyReversalDef state fields in the original caller context", () => {
@@ -734,6 +783,22 @@ describe("ReversalSystem", () => {
     expect(reverser.currentMove).toBeUndefined();
     expect(reverser.runtime.reversal).toBeUndefined();
     expect(reverser.hasHit).toBe(true);
+  });
+
+  it("applies ReversalDef pausetime components to reverser and attacker independently", () => {
+    const world = new RuntimeReversalWorld();
+    const reverser = actor("p2", "Reverser");
+    const attacker = actor("p1", "Attacker");
+
+    world.apply(
+      reverser,
+      attacker,
+      move({ isReversal: true, reversalAttr: "SA,AA", hitPause: 6, hitShakeTime: 9 }),
+      hooks(),
+    );
+
+    expect(reverser.hitPause).toBe(6);
+    expect(attacker.hitPause).toBe(9);
   });
 });
 

@@ -1838,6 +1838,9 @@ value = 1
     const dynamicP2Facing = compileControllerIr(
       controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", p2facing: "var(1)" }),
     );
+    const dynamicPause = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", pausetime: "var(0),fvar(1)" }),
+    );
 
     expect(reversal.operation).toEqual({
       kind: "reversaldef",
@@ -1867,6 +1870,11 @@ value = 1
     expect(dynamicP2Facing.operation).toMatchObject({
       kind: "reversaldef",
       p2Facing: "var(1)",
+    });
+    expect(dynamicPause.operation).toMatchObject({
+      kind: "reversaldef",
+      hitPause: 0,
+      pauseTimeExpressions: ["var(0)", "fvar(1)"],
     });
   });
 
@@ -3240,7 +3248,11 @@ value = 1
       redirectPlayerIdExpression: "57",
     });
     expect(unsupportedPayload.supportLevel).toBe("unsupported");
-    expect(dynamicPayload.operation).toBeUndefined();
+    expect(dynamicPayload.operation).toEqual({
+      kind: "modifyreversaldef",
+      pauseTimeExpressions: ["var(1)", 7],
+      redirectPlayerIdExpression: "57",
+    });
     expect(dynamicP2State.operation).toEqual({
       kind: "modifyreversaldef",
       p2StateNo: "var(1)",

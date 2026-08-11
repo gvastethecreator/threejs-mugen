@@ -46,6 +46,7 @@ export type RuntimeReversalActivation = {
   hitbox?: CollisionBox;
   label?: string;
   hitPause: number;
+  hitShakeTime?: number;
   hitCount?: number;
   p1SpritePriority?: number;
   p2SpritePriority?: number;
@@ -140,7 +141,19 @@ export class RuntimeReversalControllerDispatchWorld {
     if (operation) {
       recordOperation?.(actor, operation);
     }
-    const hitPause = operation?.hitPause ?? Math.max(0, Math.round(firstNumber(findParam(source, "pausetime")) ?? 0));
+    const pauseTimeRaw = findParam(source, "pausetime");
+    const pauseOperationValue = operation?.pauseTimeExpressions
+      ?? (pauseTimeRaw === undefined && operation?.hitPause !== undefined ? [operation.hitPause] : undefined);
+    const pauseTime = resolveRuntimeReversalPausePair(
+      pauseOperationValue,
+      pauseTimeRaw,
+      actor.runtime,
+      context,
+      [0, 0],
+      false,
+    );
+    const hitPause = pauseTime[0] ?? 0;
+    const hitShakeTime = pauseTime[1] ?? 0;
     const activated = reversalWorld.activate(actor, {
       attr: (operation?.attr ?? stripMugenString(findParam(source, "reversal.attr")))?.trim() ?? "",
       reversalGuardFlag: operation?.reversalGuardFlag,
@@ -151,6 +164,7 @@ export class RuntimeReversalControllerDispatchWorld {
       hitbox,
       label: source.name ?? "ReversalDef",
       hitPause,
+      hitShakeTime,
       hitCount: operation?.hitCount ?? staticReversalHitCount(findParam(source, "numhits")),
       p1SpritePriority: operation?.p1SpritePriority,
       p2SpritePriority: operation?.p2SpritePriority,
@@ -249,9 +263,24 @@ export class RuntimeReversalControllerDispatchWorld {
       existing.missOnOverride = operation.missOnOverride;
       runtimeReversal.missOnOverride = operation.missOnOverride;
     }
-    if (operation.hitPause !== undefined) {
-      existing.hitPause = operation.hitPause;
-      runtimeReversal.hitPause = operation.hitPause;
+    const pauseTimeRaw = findParam(controller.source, "pausetime");
+    const pauseOperationValue = operation.pauseTimeExpressions
+      ?? (pauseTimeRaw === undefined && operation.hitPause !== undefined ? [operation.hitPause] : undefined);
+    const pauseTime = resolveRuntimeReversalPausePair(
+      pauseOperationValue,
+      pauseTimeRaw,
+      actor.runtime,
+      context,
+      [existing.hitPause, existing.hitShakeTime ?? 0],
+      true,
+    );
+    if (pauseTime[0] !== undefined) {
+      existing.hitPause = pauseTime[0];
+      runtimeReversal.hitPause = pauseTime[0];
+    }
+    if (pauseTime[1] !== undefined) {
+      existing.hitShakeTime = pauseTime[1];
+      runtimeReversal.hitShakeTime = pauseTime[1];
     }
     if (operation.hitCount !== undefined) {
       existing.hitVars = { ...existing.hitVars, hitCount: operation.hitCount };
@@ -340,6 +369,7 @@ export class RuntimeReversalWorld {
       p2GetP1State: activation.p2GetP1State,
       p2Facing: activation.p2Facing,
       hitPause: activation.hitPause,
+      ...(activation.hitShakeTime === undefined ? {} : { hitShakeTime: activation.hitShakeTime }),
       hitVars: { hitCount },
       ...(activation.attackDepth ? { attackDepth: [...activation.attackDepth] as [number, number] } : {}),
       ...(activation.unhittableTime ? { unhittableTime: [...activation.unhittableTime] as [number, number] } : {}),
@@ -366,6 +396,7 @@ export class RuntimeReversalWorld {
       ...(activation.p2StateNo !== undefined ? { p2StateNo: activation.p2StateNo } : {}),
       ...(activation.p2GetP1State === undefined ? {} : { p2GetP1State: activation.p2GetP1State }),
       ...(activation.p2Facing === undefined ? {} : { p2Facing: activation.p2Facing }),
+      ...(activation.hitShakeTime === undefined ? {} : { hitShakeTime: activation.hitShakeTime }),
       ...(activation.hitCount === undefined ? {} : { hitCount }),
     };
     return true;
@@ -420,7 +451,7 @@ export class RuntimeReversalWorld {
     this.contactWorld.markReceivedHits(attacker.contact, attacker.runtime.stateNo, reversal.hitVars?.hitCount ?? 1);
     hooks.rememberTarget(reverser, attacker, reversal.targetId);
     reverser.hitPause = reversal.hitPause;
-    attacker.hitPause = reversal.hitPause;
+    attacker.hitPause = reversal.hitShakeTime ?? reversal.hitPause;
     attacker.hitStun = 0;
     interruptCurrentMove(attacker);
     attacker.runtime.guardStun = 0;
@@ -484,6 +515,30 @@ function normalizedNumberPair(value: string | undefined): [number, number] | und
     return undefined;
   }
   return [values[0], values[1] ?? values[0]];
+}
+
+function resolveRuntimeReversalPausePair(
+  operationValue: MugenHitDefExpressionPair | undefined,
+  rawValue: string | undefined,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext = {},
+  fallback: [number, number] = [0, 0],
+  preserveMissing = false,
+): [number?, number?] {
+  const source = operationValue ?? splitRuntimeReversalExpressionPair(rawValue);
+  if (!source) {
+    return preserveMissing ? [undefined, undefined] : [...fallback];
+  }
+  const resolve = (value: number | string | undefined, fallbackValue: number | undefined): number | undefined => {
+    if (value === undefined) return fallbackValue;
+    const result = typeof value === "number" ? value : evaluateRuntimeControllerNumber(value, state, context);
+    return Number.isFinite(result) ? Math.max(0, Math.trunc(result!)) : fallbackValue;
+  };
+  const first = resolve(source[0], preserveMissing ? undefined : fallback[0]);
+  const second = source.length > 1
+    ? resolve(source[1], preserveMissing ? undefined : fallback[1])
+    : preserveMissing ? undefined : fallback[1];
+  return [first, second];
 }
 
 function resolveRuntimeReversalIntegerPair(

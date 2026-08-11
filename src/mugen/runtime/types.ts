@@ -253,6 +253,8 @@ export type RuntimeReversalDef = {
   p2Facing?: number;
   hitCount?: number;
   hitPause: number;
+  /** Defender-side shake component of the ReversalDef pausetime pair. */
+  hitShakeTime?: number;
   attackDepth?: [number, number];
   unhittableTime?: [number, number];
 };

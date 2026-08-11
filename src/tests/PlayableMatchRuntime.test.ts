@@ -12242,6 +12242,7 @@ RedirectID = var(0)
         currentMove?: {
           reversalAttr?: string;
           hitPause?: number;
+          hitShakeTime?: number;
           p1SpritePriority?: number;
           p2SpritePriority?: number;
           p1StateNo?: number;
@@ -12253,6 +12254,7 @@ RedirectID = var(0)
           reversal?: {
             attr?: string;
             hitPause?: number;
+            hitShakeTime?: number;
             p1SpritePriority?: number;
             p2SpritePriority?: number;
             p1StateNo?: number;
@@ -12271,6 +12273,7 @@ RedirectID = var(0)
     expect(internals.p2.currentMove).toMatchObject({
       reversalAttr: "S,NA",
       hitPause: 7,
+      hitShakeTime: 11,
       p1SpritePriority: 5,
       p2SpritePriority: -4,
       p1StateNo: 778,
@@ -12281,6 +12284,7 @@ RedirectID = var(0)
     expect(internals.p2.runtime.reversal).toMatchObject({
       attr: "S,NA",
       hitPause: 7,
+      hitShakeTime: 11,
       p1SpritePriority: 5,
       p2SpritePriority: -4,
       p1StateNo: 778,
@@ -12291,6 +12295,53 @@ RedirectID = var(0)
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyReversalDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedOperations.reversaldef).toBe(1);
+    expect(modified.compatibilitySession?.actors[1]?.executedOperations.modifyreversaldef).toBe(1);
+    expect(modified.logs.some((line) => line.includes("Blocked ModifyReversalDef RedirectID"))).toBe(false);
+  });
+
+  it("routes dynamic ModifyReversalDef pausetime through the original caller context", () => {
+    const caller = createImportedFixture({
+      withStateMove: false,
+      passiveResourceController: `
+[State 0, Dynamic Reversal Pause Seed]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 9
+
+[State 0, Dynamic Reversal Pause Redirect]
+type = ModifyReversalDef
+trigger1 = Time = 1
+pausetime = var(0),var(0) + 4
+RedirectID = 57
+`,
+    });
+    const destination = createImportedFixture({
+      id: "dynamic-root-modifyreversaldef-pause-destination",
+      withStateMove: false,
+      passiveReversalDef: {
+        attr: "S,SP",
+        p1StateNo: 777,
+        hitPause: 3,
+      },
+      passiveReversalTrigger: "Time = 0",
+    });
+    const runtime = new PlayableMatchRuntime(caller, destination, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    runtime.step({ p1: new Set(), p2: new Set() });
+    const modified = runtime.step({ p1: new Set(), p2: new Set() });
+    const internals = runtime as unknown as {
+      p2: {
+        currentMove?: { hitPause?: number; hitShakeTime?: number };
+        runtime: { reversal?: { hitPause?: number; hitShakeTime?: number } };
+      };
+    };
+
+    expect(internals.p2.currentMove).toMatchObject({ hitPause: 9, hitShakeTime: 13 });
+    expect(internals.p2.runtime.reversal).toMatchObject({ hitPause: 9, hitShakeTime: 13 });
+    expect(modified.compatibilitySession?.actors[1]?.executedControllers.ModifyReversalDef).toBe(1);
     expect(modified.compatibilitySession?.actors[1]?.executedOperations.modifyreversaldef).toBe(1);
     expect(modified.logs.some((line) => line.includes("Blocked ModifyReversalDef RedirectID"))).toBe(false);
   });
@@ -12752,7 +12803,7 @@ ground.velocity = 0,0
 type = ReversalDef
 trigger1 = Time = 0
 reversal.attr = SA,AA
-p1stateno = var(0)
+p1sprpriority = var(0)
 RedirectID = 57
 `,
     });
