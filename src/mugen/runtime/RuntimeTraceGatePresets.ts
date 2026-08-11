@@ -30448,6 +30448,96 @@ export function createSyntheticImportedModifyHitDefDynamicGuardSparkAngleTraceAr
   });
 }
 
+export function createSyntheticImportedModifyHitDefDynamicGuardSparkNoTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 77;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "seed live guard sparkno", frames: 2, p1: [], p2: [] },
+    { label: "redirect then guard", frames: 14, p1: ["x"], p2: ["B"] },
+    { label: "guard sparkno settles", frames: 8, p1: [], p2: ["B"] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-guard-sparkno-attacker",
+    displayName: "Dynamic ModifyHitDef Guard SparkNo Attacker",
+    withHitDef: false,
+    withPlayerPush: false,
+    activeRootHitDefRoute: {
+      damage: 37,
+      guardDamage: 5,
+      targetId,
+      hitFlag: "M",
+      guardFlag: "MA",
+      guardSpark: "S7000",
+      guardSparkAngle: -5,
+      sparkXy: [-2, -3],
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      delayedPosX: { x: -35, trigger: "Time >= 2" },
+      clsn1Extent: 64,
+    },
+  });
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-guard-sparkno-caller",
+    displayName: "Dynamic ModifyHitDef Guard SparkNo Caller",
+    withHitDef: false,
+    withPlayerPush: false,
+    rootModifyHitDefRedirectRoute: {
+      redirectId: 56,
+      trigger: "Time = 0",
+      guardSpark: "Fvar(0)",
+      varSeeds: [{ index: 0, value: 19 }],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: caller, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-modifyhitdef-dynamic-guard-sparkno-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyhitdef-dynamic-guard-sparkno-golden",
+      label: "Synthetic imported dynamic live ModifyHitDef guard.sparkno route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root caller resolves var(0)=19 in caller context and redirects guard.sparkno from S7000 to F19 on an active HitDef before accepted guard contact. Existing guard spark angle and sparkxy remain observable. Fresh defaults, normal hit spark identity, scale, palette, sound, Projectile, ModifyProjectile, exact FightFX lookup/timing, teams, rollback, and full effect parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyhitdef-dynamic-guard-sparkno-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [],
+      requiredExecutedControllers: ["VarSet", "HitDef", "ModifyHitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "modifyhitdef"],
+      requiredActiveCommands: ["holdback", "x"],
+      requiredEventCategories: ["guard"],
+      requiredCombatReasons: ["guard"],
+      forbiddenCombatReasons: ["hit", "override", "reversal"],
+      requiredHitEffectEvents: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        kind: "guard",
+        sparkNo: 19,
+        raw: "F19",
+        rawPrefix: "F",
+        angle: -5,
+        offsetX: -2,
+        offsetY: -3,
+        stateNo: 0,
+      }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player" },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedDynamicDirectDownVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -64286,6 +64376,8 @@ export type SyntheticImportedTraceFighterOptions = {
     sparkAngle?: SyntheticNumberExpression;
     /** Synthetic fixture-only live ModifyHitDef guard spark angle. */
     guardSparkAngle?: SyntheticNumberExpression;
+    /** Synthetic fixture-only live ModifyHitDef guard spark identity expression. */
+    guardSpark?: string;
     varSeeds?: Array<{ index: number; value: number; trigger?: string }>;
     redirectId: SyntheticNumberExpression;
     trigger?: string;
@@ -71781,6 +71873,7 @@ ${route.guardVelocity === undefined ? "" : `guard.velocity = ${route.guardVeloci
 ${route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGuardVelocity.join(", ")}`}
 ${route.sparkAngle === undefined ? "" : `sparkangle = ${route.sparkAngle}`}
 ${route.guardSparkAngle === undefined ? "" : `guard.sparkangle = ${route.guardSparkAngle}`}
+${route.guardSpark === undefined ? "" : `guard.sparkno = ${route.guardSpark}`}
 ${route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy.join(", ")}`}
 redirectid = ${route.redirectId}
 `;
