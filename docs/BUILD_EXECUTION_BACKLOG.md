@@ -2,6 +2,16 @@
 
 ## Current parity queue
 
+- **T719 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
+  `ModifyReversalDef` now retain static, dynamic and mixed `pausetime` pairs
+  in caller context. Fresh activation defaults to `[0,0]`; live one-component
+  mutation preserves the second component; accepted reversal contact applies
+  reverser pause and attacker shake independently. Required trace checksum
+  `e73799ec/9998654b`; aggregate QA passes `810/810` (`776` required, `34`
+  optional). Helper-owned ModifyReversalDef, other reversal payloads, exact
+  pause tick parity, teams, rollback and full parity stay blocked. See [issue
+  293](../.scratch/roadmap/issues/293-reversaldef-pausetime-pair.md).
+
 - **T716 closed-bounded** — Ikemen-only live `ModifyProjectile` state
   expressions (`p1stateno`, `p2stateno`, `p2getp1state`) now resolve once in
   the original root caller context and mutate only the selected Projectile.

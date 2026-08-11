@@ -1,6 +1,19 @@
 ﻿# Next Build Roadmap
 
-## Next bounded slice — T716 closed-bounded (2026-08-11)
+## Next bounded slice — T719 closed-bounded (2026-08-11)
+
+Issue 293 closes the direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `pausetime` pair. Static, dynamic, and mixed one/two
+component values resolve in caller context; fresh activation defaults to
+`[0,0]`; live one-component modification preserves the second component.
+Accepted reversal contact applies P1 pause and P2 shake asymmetrically.
+Required trace checksum is `e73799ec/9998654b`; `pnpm qa:trace` passes
+`810/810` artifacts (`776` required, `34` optional). Helper-owned
+ModifyReversalDef, other reversal payloads, exact pause tick parity, teams,
+rollback and full parity remain blocked. See [issue
+293](../.scratch/roadmap/issues/293-reversaldef-pausetime-pair.md).
+
+## Previous bounded slice — T716 closed-bounded (2026-08-11)
 
 Issue 290 closes the Ikemen-only live `ModifyProjectile` state-expression
 path for `p1stateno`, `p2stateno`, and `p2getp1state`. Root caller-context

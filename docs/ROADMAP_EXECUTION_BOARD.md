@@ -1,6 +1,20 @@
 ﻿# Roadmap Execution Board
 
-## Next bounded slice — T718 closed-bounded (2026-08-11)
+## Next bounded slice — T719 closed-bounded (2026-08-11)
+
+Issue 293 closes the direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `pausetime` pair: static, dynamic, and mixed one/two
+component values now resolve in the original caller context. Fresh
+ReversalDef activation defaults to `[0,0]`; a one-component live modification
+updates P1 pause while preserving the active P2 shake component. Accepted
+reversal contact applies the first component to the reverser and the second
+to the attacker. Required trace `e73799ec/9998654b`; aggregate QA passes
+`810/810` artifacts (`776` required, `34` optional). Helper-owned
+ModifyReversalDef, other reversal payloads, exact pause tick parity, teams,
+rollback, and full M.U.G.E.N/Ikemen parity remain blocked. See [issue
+293](../.scratch/roadmap/issues/293-reversaldef-pausetime-pair.md).
+
+## Previous bounded slice — T718 closed-bounded (2026-08-11)
 
 Issue 292 closes the bounded root/RedirectID `ModifyReversalDef` state-field
 slice: `p1stateno`, `p2stateno`, `p2getp1state`, and `p2facing` now retain typed
