@@ -1,5 +1,13 @@
 ﻿# Roadmap Package Milestones
 
+## Active package — T704 mapped
+
+T704 / issue 278 targets the fresh Projectile `projanim` caller-context seam
+for root and Helper owners. The package keeps the existing animation-map,
+ownership, and lifecycle paths, with static and omitted (`0`) behavior
+preserved. Live `ModifyProjectile` animation mutation is intentionally
+deferred. See [issue 278](../.scratch/roadmap/issues/278-projectile-anim-dynamic.md).
+
 ## Latest runtime cursor — T703
 
 T703 closes the fresh root- and Helper-authored Projectile `projhits`

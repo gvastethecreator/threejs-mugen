@@ -1,5 +1,13 @@
 ﻿# Next Build Roadmap
 
+## Active next slice — T704 mapped
+
+T704 / issue 278 is the selected next implementation slice: preserve one
+static or dynamic `projanim` value, resolve dynamic values once in the original
+root or Helper caller context, then use the existing AIR action lookup and
+Projectile lifecycle. `ModifyProjectile` animation mutation and exact
+Ikemen/M.U.G.E.N invalid-action semantics stay excluded. See [issue 278](../.scratch/roadmap/issues/278-projectile-anim-dynamic.md).
+
 ## Authoritative runtime cursor — T703 closed-bounded
 
 Final T703 verification: `787/787` trace artifacts (`753` required, `34`

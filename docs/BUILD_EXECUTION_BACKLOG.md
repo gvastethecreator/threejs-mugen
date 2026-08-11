@@ -2,6 +2,12 @@
 
 ## Current parity queue
 
+- **T704 active/mapped** — add typed caller-context `projanim` resolution to
+  fresh root/Helper Projectile spawn while preserving static and omitted `0`
+  behavior. Reuse existing AIR action lookup and lifecycle telemetry; defer
+  live `ModifyProjectile` animation mutation and exact invalid-action parity.
+  See [issue 278](../.scratch/roadmap/issues/278-projectile-anim-dynamic.md).
+
 - **T703 closed-bounded** — fresh root/Helper Projectiles preserve typed
   `projhits` caller-context expressions, initialize `hitsRemaining`/`hitsMax`,
   and prove two accepted contacts, `ProjVar`, lifecycle, target, and

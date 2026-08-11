@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Active implementation — T704 mapped
+
+T704 / issue 278 is queued after the T703 closeout. The bounded change is
+caller-context resolution of fresh root/Helper Projectile `projanim`, followed
+by the existing AIR action lookup. Static, omitted-default, ownership, and
+lifecycle behavior remain the compatibility baseline; live `ModifyProjectile`
+animation mutation is not claimed. See [issue 278](../.scratch/roadmap/issues/278-projectile-anim-dynamic.md).
+
 ## Latest implementation checkpoint — T703 (2026-08-09)
 
 Authoritative cursor: T703 is closed-bounded for fresh root- and Helper-authored
