@@ -1666,6 +1666,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyHitDefDynamicDownVelocityZTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyhitdef-dynamic-sparkxy",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyHitDefDynamicSparkXyTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projectile-guard-velocity-default",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileGuardVelocityDefaultTraceArtifact(),
