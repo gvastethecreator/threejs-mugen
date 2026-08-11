@@ -1,6 +1,6 @@
 # Issue 300 — ReversalDef `nochainid` expressions
 
-Status: **queued** (T726, 2026-08-11)
+Status: **closed-bounded** (T726, 2026-08-11)
 
 ## Objetivo
 
@@ -36,3 +36,16 @@ listas de uno/ocho valores, expresiones del caller, límite y rechazo por id
 bloqueado. La traza root/RedirectID sólo se promocionará si el fixture aísla
 la modificación antes del contacto; de lo contrario el claim quedará en
 IR/runtime y dispatch directo, como en T725.
+
+## Resultado
+
+El IR tipado conserva listas `nochainid` estáticas, dinámicas y mixtas de
+hasta ocho entradas para `ReversalDef` y `ModifyReversalDef`. Fresh y live
+RedirectID evalúan cada expresión una vez en el caller; los valores finitos se
+truncan y la admisión rechaza el `HitDef` id entrante cuando coincide con una
+entrada no negativa de la lista. La omisión live preserva la lista activa.
+
+`RuntimeCompiler.test.ts` y `ReversalSystem.test.ts` pasan `181/181`;
+`pnpm exec tsc --noEmit --pretty false` y `git diff --check` pasan. No se
+promociona una traza end-to-end: el claim queda acotado a IR/runtime,
+dispatch directo y la seam de admisión aislada.

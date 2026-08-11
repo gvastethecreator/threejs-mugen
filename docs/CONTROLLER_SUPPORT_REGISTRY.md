@@ -1,17 +1,17 @@
 # Controller Support Registry
 
-Latest cursor: T725 / issue 299 is closed-bounded for direct/root
-`ReversalDef` and root/RedirectID `ModifyReversalDef` `chainid` expressions.
-Fresh and live values resolve once in caller context; finite values truncate,
-explicit negatives disable the requirement, and admission rejects a mismatched
-latest `HitDef` id. Focused compiler/runtime coverage passes `179/179`;
+Latest cursor: T726 / issue 300 is closed-bounded for direct/root
+`ReversalDef` and root/RedirectID `ModifyReversalDef` `nochainid` lists.
+Static, dynamic, and mixed lists up to eight entries resolve once in caller
+context; finite values truncate and admission rejects a matching non-negative
+latest `HitDef` id. Focused compiler/runtime coverage passes `181/181`;
 typecheck and diff hygiene pass. No end-to-end trace is claimed because the
-exploratory fixture did not isolate contact ordering.
+evidence is scheduling-isolated.
 
-Next cursor: T726 / issue 300 is queued for caller-context `nochainid` lists
-(up to eight entries) and blocked-chain rejection. Helper-owned mutation,
-Projectile/ModifyProjectile, priority/hitonce, exact tick behavior, teams,
-rollback and full ReversalDef parity remain deferred.
+Next cursor: T727 / issue 301 is queued for caller-context `hitonce` and
+one-contact ReversalDef consumption. Helper-owned mutation,
+Projectile/ModifyProjectile, priority, exact tick behavior, teams, rollback
+and full ReversalDef parity remain deferred.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root
 `ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth` static,

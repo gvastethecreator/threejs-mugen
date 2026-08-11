@@ -1,8 +1,16 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T725 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T726 closed-bounded (2026-08-11)
 
-Issue 299 adds typed static/dynamic `chainid` to direct/root `ReversalDef` and
+Issue 300 adds typed static, dynamic, and mixed `nochainid` lists (up to eight
+entries) to direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef`. Fresh/live values resolve once in caller context, finite
+values truncate, and matching non-negative incoming `HitDef` ids are rejected.
+Focused compiler/runtime tests pass `181/181`; typecheck and diff hygiene pass.
+No durable end-to-end trace is promoted; the evidence is scheduling-isolated.
+See [issue 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
+
+Issue 299 added typed static/dynamic `chainid` to direct/root `ReversalDef` and
 root/RedirectID `ModifyReversalDef`. Fresh/live paths resolve once in caller
 context; finite values truncate, explicit negatives disable the requirement,
 and accepted reversal admission rejects an incompatible latest `HitDef` id.
@@ -22,11 +30,11 @@ Projectile/ModifyProjectile, priority/hitonce, exact id/tick ordering,
 overflow/int32, teams, rollback and full parity remain open. See [issue
 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md).
 
-## Next implementation checkpoint — T726 queued
+## Next implementation checkpoint — T727 queued
 
-Issue 300 is queued for caller-context `nochainid` lists (up to eight entries)
-and blocked-chain rejection. See [issue
-300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
+Issue 301 is queued for caller-context `hitonce` and one-contact ReversalDef
+consumption. See [issue
+301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
 
 ## Previous implementation checkpoint — T723 closed-bounded (2026-08-11)
 

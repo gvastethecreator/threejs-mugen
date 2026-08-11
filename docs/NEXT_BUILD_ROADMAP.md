@@ -1,6 +1,21 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T725 closed-bounded (2026-08-11)
+## Latest bounded slice — T726 closed-bounded (2026-08-11)
+
+Issue 300 closes caller-context `nochainid` lists for direct/root
+`ReversalDef` and root/RedirectID `ModifyReversalDef`. Static, dynamic, and
+mixed lists up to eight entries resolve once, truncate finite values, and
+reject an incoming `HitDef` id matching a non-negative blocked entry. Focused
+compiler/runtime coverage passes `181/181`; no causal end-to-end trace is
+promoted. See [issue 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
+
+## Next bounded slice — T727 queued
+
+Issue 301 queues caller-context `hitonce` and one-contact consumption on the
+same bounded root/RedirectID route. See [issue
+301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
+
+## Previous bounded slice — T725 closed-bounded (2026-08-11)
 
 Issue 299 closes caller-context `chainid` for direct/root `ReversalDef` and
 root/RedirectID `ModifyReversalDef`. Fresh and live paths resolve once,
@@ -9,12 +24,6 @@ reject incompatible latest `HitDef` ids. Focused compiler/runtime tests pass
 `179/179`; typecheck and diff hygiene pass. The attempted end-to-end trace is
 not promoted because its contact ordering was not causal. See [issue
 299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
-
-## Next bounded slice — T726 queued
-
-Issue 300 queues dynamic `nochainid` lists (up to eight entries) for the same
-root/RedirectID route. See [issue
-300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
 
 ## Previous bounded slice — T724 closed-bounded (2026-08-11)
 
@@ -28,7 +37,7 @@ ModifyReversalDef, Projectile/ModifyProjectile, priority/hitonce, exact
 id/tick ordering, overflow/int32, teams, rollback and full ReversalDef parity
 remain blocked. See [issue 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md).
 
-## Next bounded slice — T725 queued
+## Historical queue — T725 completed
 
 Issue 299 proposes `chainid` expressions for direct/root `ReversalDef` and
 root/RedirectID `ModifyReversalDef`, including accepted matching chains and

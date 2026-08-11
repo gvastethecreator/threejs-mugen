@@ -2,6 +2,17 @@
 
 ## Current parity queue
 
+- **T726 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
+  `ModifyReversalDef` now retain static, dynamic, and mixed `nochainid` lists
+  up to eight entries. Fresh/live values resolve once in caller context,
+  truncate finite values, and reject matching non-negative incoming `HitDef`
+  ids. Focused compiler/runtime coverage is `181/181`; no causal trace is
+  claimed. See [issue 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
+
+- **T727 queued** — caller-context `hitonce` and one-contact ReversalDef
+  consumption on the same root/RedirectID route. See [issue
+  301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
+
 - **T725 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
   `ModifyReversalDef` now retain caller-context `chainid` expressions. Fresh
   and live values truncate finite inputs, explicit negatives disable the
@@ -9,7 +20,7 @@
   compiler/runtime coverage is `179/179`; no causal end-to-end trace is
   claimed. See [issue 299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
 
-- **T726 queued** — dynamic `nochainid` lists, capped at eight entries, for
+- **T726 historical queue entry — now closed-bounded** — dynamic `nochainid` lists, capped at eight entries, for
   the same root/RedirectID route. See [issue
   300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
 
@@ -23,7 +34,7 @@
   overflow/int32, teams, rollback and full ReversalDef parity remain blocked.
   See [issue 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md).
 
-- **T725 queued** — dynamic `chainid` matching and incompatible-chain
+- **T725 historical queue entry — now closed-bounded** — dynamic `chainid` matching and incompatible-chain
   rejection for the same direct/root and root/RedirectID route. See [issue
   299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
 

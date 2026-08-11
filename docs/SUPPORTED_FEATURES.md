@@ -1,4 +1,21 @@
 ﻿# Supported Features
+## 2026-08-11 T726 ReversalDef `nochainid` expressions — closed-bounded
+
+Direct/root `ReversalDef` and root/RedirectID `ModifyReversalDef` now retain
+typed static, dynamic, and mixed `nochainid` lists up to eight entries.
+Fresh/live values resolve once in caller context, truncate finite inputs, and
+accepted admission rejects matching non-negative incoming `HitDef` ids.
+Focused compiler/runtime coverage passes `181/181`; no causal end-to-end
+trace is claimed. `hitonce`, Helper-owned mutation, Projectile,
+priority/hitonce parity, exact tick ordering, overflow/int32, teams, rollback
+and full ReversalDef parity remain outside the claim. See [issue
+300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
+
+## Next queued — T727 ReversalDef `hitonce` expressions
+
+Caller-context `hitonce` and one-contact consumption are queued for the same
+root/RedirectID route. See [issue 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
+
 ## 2026-08-11 T725 ReversalDef `chainid` expressions — closed-bounded
 
 Direct/root `ReversalDef` and root/RedirectID `ModifyReversalDef` now retain
@@ -10,7 +27,7 @@ Helper-owned mutation, Projectile/ModifyProjectile, priority/hitonce, exact
 tick ordering, overflow/int32, teams, rollback and full ReversalDef parity
 remain outside the claim. See [issue 299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
 
-## Next queued — T726 ReversalDef `nochainid` expressions
+## Historical queue — T726 ReversalDef `nochainid` expressions completed
 
 Caller-context `nochainid` lists (up to eight entries) are queued for the same
 root/RedirectID route. See [issue 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).

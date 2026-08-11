@@ -1,5 +1,23 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T726 ReversalDef `nochainid` expressions — closed-bounded, no score movement
+
+Issue 300 closes the bounded direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `nochainid` path. Static, dynamic, and mixed lists up to
+eight entries resolve once in caller context; finite values truncate and
+matching non-negative incoming `HitDef` ids are rejected. Focused
+compiler/runtime coverage passes `181/181`; no causal end-to-end trace is
+claimed. No score movement: `hitonce`, Helper-owned mutation, Projectile,
+priority, exact tick parity, overflow/int32, teams, rollback and full
+ReversalDef parity remain blocked. See [issue
+300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
+
+## Next queued — T727 ReversalDef `hitonce` expressions
+
+Issue 301 queues caller-context `hitonce` and one-contact consumption on the
+same bounded root/RedirectID route. See [issue
+301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
+
 ## 2026-08-11 T725 ReversalDef `chainid` expressions — closed-bounded, no score movement
 
 Issue 299 closes the bounded direct/root `ReversalDef` and root/RedirectID
@@ -12,7 +30,7 @@ priority/hitonce, exact tick parity, overflow/int32, teams, rollback and full
 ReversalDef parity remain blocked. See [issue
 299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
 
-## Next queued — T726 ReversalDef `nochainid` expressions
+## Historical queue — T726 ReversalDef `nochainid` expressions completed
 
 Issue 300 queues caller-context lists up to eight entries on the same bounded
 root/RedirectID route. See [issue

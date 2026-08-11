@@ -2,7 +2,21 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T725 closed-bounded (2026-08-11)
+## Current implementation route — T726 closed-bounded (2026-08-11)
+
+T726 / [issue 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md)
+closes typed caller-context `nochainid` lists for direct/root `ReversalDef`
+and root/RedirectID `ModifyReversalDef`. Lists up to eight entries resolve
+once, truncate finite values, and reject a matching non-negative incoming
+`HitDef` id. Focused compiler/runtime coverage is `181/181`; no end-to-end
+trace is promoted because the evidence is scheduling-isolated.
+
+## Next implementation route — T727 queued
+
+T727 / [issue 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md)
+queues caller-context `hitonce` and one-contact ReversalDef consumption.
+
+## Previous implementation route — T725 closed-bounded (2026-08-11)
 
 T725 / [issue 299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md)
 closes typed caller-context `chainid` for direct/root `ReversalDef` and
@@ -11,12 +25,6 @@ explicit negatives disable the requirement, and admission rejects a mismatched
 latest `HitDef` id. Focused compiler/runtime coverage is `179/179`; typecheck
 and diff hygiene pass. No end-to-end trace is promoted because scheduling was
 not isolated.
-
-## Next implementation route — T726 queued
-
-T726 / [issue 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md)
-queues dynamic `nochainid` lists (maximum eight entries) on the same bounded
-root/RedirectID route.
 
 ## Previous implementation route — T724 closed-bounded (2026-08-11)
 
@@ -30,7 +38,7 @@ Helper-owned mutation, Projectile/ModifyProjectile, priority/hitonce, exact
 id/tick timing, overflow/int32, teams, rollback and full parity remain
 blocked.
 
-## Next implementation route — T725 queued
+## Historical queue — T725 completed
 
 T725 / [issue 299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md)
 is queued for caller-context `chainid` matching plus incompatible-chain

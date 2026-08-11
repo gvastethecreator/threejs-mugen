@@ -1,6 +1,23 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T725 closed-bounded (2026-08-11)
+## Latest bounded slice — T726 closed-bounded (2026-08-11)
+
+Issue 300 closes direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `nochainid` lists. Static, dynamic, and mixed lists up to
+eight entries resolve once in caller context; finite values truncate and an
+incoming `HitDef` id matching a non-negative entry is rejected. Focused
+compiler/runtime coverage passes `181/181`; typecheck and diff hygiene pass.
+No durable end-to-end trace is claimed; the evidence is scheduling-isolated
+IR/runtime and dispatch admission. See [issue 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
+
+## Next bounded slice — T727 queued
+
+Issue 301 proposes caller-context `hitonce` for the same direct/root and
+root/RedirectID ReversalDef route. Helper-owned mutation, Projectile,
+priority, exact combo/tick behavior, teams, rollback and full ReversalDef
+parity remain excluded. See [issue 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
+
+## Previous bounded slice — T725 closed-bounded (2026-08-11)
 
 Issue 299 closes direct/root `ReversalDef` and root/RedirectID
 `ModifyReversalDef` `chainid` expressions. Fresh and live values resolve once
@@ -9,14 +26,6 @@ requirement, and reversal admission rejects a mismatched latest `HitDef` id.
 Focused compiler/runtime coverage passes `179/179`; typecheck and diff hygiene
 pass. No durable end-to-end trace is claimed because the exploratory fixture
 did not isolate contact ordering. See [issue 299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
-
-## Next bounded slice — T726 queued
-
-Issue 300 proposes caller-context `nochainid` lists for the same direct/root
-and root/RedirectID route, capped at eight entries and enforced during chain
-admission. Helper-owned mutation, Projectile/ModifyProjectile, priority,
-`hitonce`, exact tick ordering, teams, rollback and full ReversalDef parity
-remain excluded. See [issue 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
 
 ## Previous bounded slice — T724 closed-bounded (2026-08-11)
 
@@ -31,7 +40,7 @@ Projectile/ModifyProjectile, priority/hitonce, exact id/tick parity,
 overflow/int32, teams, rollback and full ReversalDef parity remain blocked.
 See [issue 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md).
 
-## Next bounded slice — T725 queued
+## Historical queue — T725 completed
 
 Issue 299 proposes caller-context `chainid` matching and incompatible-chain
 rejection for direct/root `ReversalDef` and root/RedirectID
