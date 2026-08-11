@@ -1,5 +1,15 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T715 Dynamic `ModifyProjectile p2facing` — closed-bounded, no score movement
+
+Issue 289 closes the Ikemen-only typed caller-context path for live
+`ModifyProjectile p2facing` in root and Helper ownership routes. Required trace
+passes with `00ed1b03/b0693d99`; aggregate QA passes `806/806` artifacts
+(`772` required, `34` optional). No score movement: guards, p1facing,
+reversals, noautoturn, exact tick parity, teams, rollback and full Projectile
+parity remain blocked. See [issue
+289](../.scratch/roadmap/issues/289-modifyprojectile-p2facing-dynamic.md).
+
 ## 2026-08-11 T714 Dynamic Projectile `p2facing` — closed-bounded, no score movement
 
 Issue 288 adds finite dynamic `p2facing` for root and Helper fresh

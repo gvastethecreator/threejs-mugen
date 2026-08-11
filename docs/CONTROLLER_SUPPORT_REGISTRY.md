@@ -1,6 +1,18 @@
 # Controller Support Registry
 
-Active cursor: T712 / issue 286 is closed-bounded for transient Projectile
+Active cursor: T715 / issue 289 is closed-bounded for Ikemen-only live
+`ModifyProjectile p2facing`. Typed static/dynamic values resolve once in root
+or Helper caller context, mutate only selected Projectiles, and feed the
+accepted unguarded-hit deferred-facing latch plus `GetHitVar(facing)`. Required
+trace `00ed1b03/b0693d99`; aggregate QA passes `806/806` artifacts (`772`
+required, `34` optional). Guards, p1facing, reversals, noautoturn, exact tick
+parity, teams, rollback and full Projectile parity remain blocked.
+
+Previous cursor: T714 / issue 288 closed dynamic fresh Projectile `p2facing`
+for root and Helper spawns. See [issue
+289](../.scratch/roadmap/issues/289-modifyprojectile-p2facing-dynamic.md).
+
+Previous cursor: T712 / issue 286 is closed-bounded for transient Projectile
 `keepstate` release. Root and Helper Projectile contacts keep the flag through
 the active stun tick, then release only that field before the next active
 state-controller pass while retaining the remaining hit metadata. Required

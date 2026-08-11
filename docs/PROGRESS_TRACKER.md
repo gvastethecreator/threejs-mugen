@@ -1,6 +1,16 @@
 ﻿# Progress Tracker
 
-## Active implementation checkpoint — T714 closed-bounded (2026-08-11)
+## Active implementation checkpoint — T715 closed-bounded (2026-08-11)
+
+Typed live `ModifyProjectile p2facing` is now resolved once in root and Helper
+caller contexts and applied to selected Projectiles. Accepted unguarded hits
+reuse the deferred-facing latch and preserve `GetHitVar(facing)`. Required
+trace `00ed1b03/b0693d99`; `pnpm qa:trace` passes `806/806` artifacts (`772`
+required, `34` optional). Guards, p1facing, reversals, noautoturn, exact tick
+parity, teams, rollback and full parity remain open. See [issue
+289](../.scratch/roadmap/issues/289-modifyprojectile-p2facing-dynamic.md).
+
+## Previous implementation checkpoint — T714 closed-bounded (2026-08-11)
 
 Dynamic Projectile `p2facing` now resolves once in root caller context and in
 Helper-owned Projectile context, then reuses the accepted-hit deferred-facing

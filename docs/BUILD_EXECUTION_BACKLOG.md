@@ -2,6 +2,15 @@
 
 ## Current parity queue
 
+- **T715 closed-bounded** — Ikemen-only live `ModifyProjectile p2facing`
+  now retains typed static/dynamic values, resolves once in root or Helper
+  caller context, mutates selected Projectiles, and feeds deferred target
+  facing plus `GetHitVar(facing)`. Required trace checksum
+  `00ed1b03/b0693d99`; aggregate QA passes `806/806` (`772` required,
+  `34` optional). Guards, `p1facing`, reversals, noautoturn, exact tick
+  parity, teams, rollback and full parity remain blocked. See [issue
+  289](../.scratch/roadmap/issues/289-modifyprojectile-p2facing-dynamic.md).
+
 - **T714 closed-bounded** — dynamic Projectile `p2facing` now resolves in
   root caller context and Helper-owned Projectile context, then feeds the
   accepted-hit deferred-facing latch and `GetHitVar(facing)`. Required trace

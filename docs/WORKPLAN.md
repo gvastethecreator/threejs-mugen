@@ -1,6 +1,17 @@
 # Workplan
 
-## Active slice — T714 closed-bounded (2026-08-11)
+## Active slice — T715 closed-bounded (2026-08-11)
+
+Issue 289 closes live Ikemen `ModifyProjectile p2facing` for root and Helper
+caller contexts. Typed values resolve once, selected Projectiles mutate in
+place, and accepted unguarded contacts reuse the deferred-facing latch and
+`GetHitVar(facing)`. Required trace `00ed1b03/b0693d99`; aggregate QA passes
+`806/806` artifacts (`772` required, `34` optional). Guards, p1facing,
+reversals, noautoturn, exact tick parity, teams, rollback and full parity stay
+deferred. See [issue
+289](../.scratch/roadmap/issues/289-modifyprojectile-p2facing-dynamic.md).
+
+## Previous slice — T714 closed-bounded (2026-08-11)
 
 Issue 288 closes dynamic Projectile `p2facing` for fresh root and
 Helper-owned Projectiles. Caller-context evaluation is typed separately from

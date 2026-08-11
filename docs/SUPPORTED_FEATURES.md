@@ -1,4 +1,15 @@
 ﻿# Supported Features
+## 2026-08-11 T715 `ModifyProjectile p2facing` — closed-bounded
+
+Ikemen-only live `ModifyProjectile p2facing` now supports typed static and
+finite caller expressions in root and Helper ownership routes. The selected
+Projectile is mutated once per controller execution; accepted unguarded hits
+reuse deferred target facing and `GetHitVar(facing)`. Required trace
+`00ed1b03/b0693d99`; aggregate QA passes `806/806` artifacts (`772` required,
+`34` optional). Guards, p1facing, reversals, noautoturn, exact tick parity,
+teams, rollback and full parity remain unsupported. See [issue
+289](../.scratch/roadmap/issues/289-modifyprojectile-p2facing-dynamic.md).
+
 ## 2026-08-11 T714 Projectile `p2facing` expressions — closed-bounded
 
 Fresh root Projectiles resolve finite dynamic `p2facing` in the original

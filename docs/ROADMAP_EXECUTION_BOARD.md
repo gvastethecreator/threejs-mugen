@@ -1,6 +1,17 @@
 ﻿# Roadmap Execution Board
 
-## Next bounded slice — T714 closed-bounded (2026-08-11)
+## Next bounded slice — T715 closed-bounded (2026-08-11)
+
+Issue 289 closes Ikemen-only live `ModifyProjectile p2facing` in root and
+Helper caller contexts. The selected Projectile receives one finite caller
+resolution, then the existing accepted-hit facing latch and
+`GetHitVar(facing)` path. Required trace `00ed1b03/b0693d99`; aggregate QA
+passes `806/806` (`772` required, `34` optional). Guards, `p1facing`,
+reversals, noautoturn, exact tick parity, teams, rollback and full parity
+remain blocked. See [issue
+289](../.scratch/roadmap/issues/289-modifyprojectile-p2facing-dynamic.md).
+
+## Previous bounded slice — T714 closed-bounded (2026-08-11)
 
 Issue 288 adds finite dynamic Projectile `p2facing` in the original root
 caller context and the Helper-owned spawn context. The stored result feeds
