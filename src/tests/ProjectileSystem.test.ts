@@ -551,6 +551,31 @@ describe("ProjectileSystem", () => {
     expect(unresolvedRedirect.p2Facing).toBeUndefined();
   });
 
+  it("resolves typed ModifyProjectile p2facing once in the caller context", () => {
+    const controllerValue = controller({ id: "77", p2facing: "var(0)" }, "ModifyProjectile");
+    const operation = compileControllerIr(controllerValue).operation as ModifyProjectileControllerOp;
+    const matching = projectile({ p2Facing: 1, projectileId: 77 });
+    const changed = modifyRuntimeProjectiles([matching], {
+      controller: controllerValue,
+      operation,
+      resolveModifyProjectile: {
+        resolveNumber: (key) => key === "p2facing" ? -2.9 : undefined,
+      },
+    });
+    const unresolved = projectile({ p2Facing: 1, projectileId: 77 });
+    const unchanged = modifyRuntimeProjectiles([unresolved], {
+      controller: controllerValue,
+      operation,
+      resolveModifyProjectile: { resolveNumber: () => undefined },
+    });
+
+    expect(operation).toMatchObject({ kind: "modifyprojectile", p2FacingExpression: "var(0)" });
+    expect(changed).toBe(1);
+    expect(matching.p2Facing).toBe(-2);
+    expect(unchanged).toBe(1);
+    expect(unresolved.p2Facing).toBe(1);
+  });
+
   it("uses component-wise caller resolution for fresh dynamic Projectile damage", () => {
     const baseOperation: ProjectileControllerOp = {
       kind: "projectile",

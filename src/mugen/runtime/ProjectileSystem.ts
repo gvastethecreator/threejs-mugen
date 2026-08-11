@@ -1329,7 +1329,11 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
     : undefined;
   const p2GetP1State = operation?.p2GetP1State
     ?? (p2GetP1StateParam === undefined ? (hasP2StateNo && p2StateNo !== undefined ? true : undefined) : p2GetP1StateParam !== 0);
-  const p2Facing = operation?.p2Facing ?? resolveModifyProjectileNumberParam(input, "p2facing");
+  const p2Facing = operation?.p2Facing ?? resolveModifyProjectileIntegerExpressionParam(
+    input,
+    "p2facing",
+    operation?.p2FacingExpression,
+  );
   const minDistance = normalizeModifyProjectileVelocity(operation?.minDistance
     ?? resolveModifyProjectileFloatTripleParam(input, "mindist", projectileZeroDefaultTriple));
   const maxDistance = normalizeModifyProjectileVelocity(operation?.maxDistance
@@ -1931,6 +1935,19 @@ function resolveModifyProjectileNumberParam(
   }
   const staticValue = firstNumber(raw);
   return staticValue ?? input.resolveModifyProjectile?.resolveNumber?.(key);
+}
+
+function resolveModifyProjectileIntegerExpressionParam(
+  input: RuntimeProjectileModifyInput,
+  key: RuntimeModifyProjectileNumberParam,
+  expression: number | string | undefined,
+): number | undefined {
+  if (expression === undefined) return resolveModifyProjectileNumberParam(input, key);
+  if (typeof expression === "number") {
+    return Number.isFinite(expression) ? Math.trunc(expression) : undefined;
+  }
+  const resolved = input.resolveModifyProjectile?.resolveNumber?.(key);
+  return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
 }
 
 function resolveModifyProjectileTerminalAnimationParam(

@@ -1903,6 +1903,36 @@ describe("EffectActorSystem", () => {
     expect(projectile).toMatchObject({ pauseMoveTime: 4, superMoveTime: 5 });
   });
 
+  it("resolves Helper-owned dynamic ModifyProjectile p2facing in caller context", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "43", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(state(6000, 900, [
+            controller("Projectile", { projid: "8866", projanim: "930", p2facing: "1" }, ["Time = 0"]),
+            controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+          ])),
+          compileStateProgram(state(6001, 901, [
+            controller("ModifyProjectile", { id: "8866", p2facing: "Var(50)" }, ["Time = 1"]),
+          ])),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+    helper.vars[50] = -2.9;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    const projectile = store.projectiles.find((candidate) => candidate.parentId === helper.serialId);
+    expect(projectile).toMatchObject({ p2Facing: -2, ownerId: "p1", rootId: "p1", parentId: helper.serialId });
+  });
+
   it("uses Helper ownprojectile identity for ownership queries and mutation", () => {
     const store = createRuntimeEffectActorStore();
     const rootProjectile = spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8852", projanim: "930", projhits: "2" }));

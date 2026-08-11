@@ -789,6 +789,8 @@ export type ModifyProjectileControllerOp = {
   p2GetP1State?: boolean;
   /** Ikemen ModifyProjectile replacement for accepted-hit target facing. */
   p2Facing?: number;
+  /** Dynamic Ikemen ModifyProjectile p2facing expression evaluated once in caller context. */
+  p2FacingExpression?: number | string;
   /** Ikemen target-distance replacement; omitted components become zero. */
   minDistance?: MugenHitDefVector;
   maxDistance?: MugenHitDefVector;
@@ -3850,6 +3852,8 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
   if (pauseMoveTimeValue === false) return undefined;
   const superMoveTimeValue = optionalIntegerExpressionParam(controller, "supermovetime");
   if (superMoveTimeValue === false) return undefined;
+  const p2FacingValue = optionalIntegerExpressionParam(controller, "p2facing");
+  if (p2FacingValue === false) return undefined;
   const damageValue = optionalIntegerExpressionPairParam(controller, "damage");
   if (damageValue === false) return undefined;
   const damageExpressions = Array.isArray(damageValue) && damageValue.some((value) => typeof value === "string")
@@ -4005,7 +4009,8 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     p1StateNo: firstNumber(findParam(controller, "p1stateno")),
     p2StateNo: firstNumber(findParam(controller, "p2stateno")),
     p2GetP1State: booleanNumber(findParam(controller, "p2getp1state")),
-    p2Facing: firstNumber(findParam(controller, "p2facing")),
+    p2Facing: typeof p2FacingValue === "number" ? p2FacingValue : undefined,
+    ...(typeof p2FacingValue === "string" ? { p2FacingExpression: p2FacingValue } : {}),
     minDistance: modifyProjectileVelocityVector(findParam(controller, "mindist")),
     maxDistance: modifyProjectileVelocityVector(findParam(controller, "maxdist")),
     airHitTime: firstNumber(findParam(controller, "air.hittime")),
