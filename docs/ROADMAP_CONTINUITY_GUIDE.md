@@ -2,7 +2,18 @@
 
 Last updated: 2026-08-11
 
-## Current T736-T737 audio/guard checkpoint
+## Current T737-T738 guard-velocity checkpoint
+
+T737 closes bounded Ikemen-only live `ModifyHitDef guard.velocity` Y/Z
+replacement through root/RedirectID. Single, pair, and triple caller-context
+values preserve omitted live components and reach accepted ground-guard
+`GetHitVar`/velocity metadata. Required trace/final checksums are `a2eb52db` /
+`f0fb19a8`; `pnpm qa:trace` passes `824/824` artifacts (`790` required,
+`34` optional). T738 queues the Helper-owned counterpart with root/parent
+ownership evidence. M.U.G.E.N 1.1 only documents ground-guard X; air guard,
+Projectiles, exact timing, teams, rollback and full parity remain blocked.
+
+## Historical T736-T737 audio/guard checkpoint
 
 T736 closes bounded Ikemen-only live `ModifyHitDef guardsound.channel` through
 root/RedirectID and Helper callers. Static and caller-context dynamic finite
@@ -10,10 +21,9 @@ values reach typed guarded `audio:playsnd` channel `8`; omission/unresolved
 values preserve the active channel. Required
 `synthetic-imported-modifyhitdef-dynamic-guardsound-channel.json` has
 trace/final checksums `a689adf2` / `d5bc517f`; `pnpm qa:trace` passes `823/823`
-artifacts (`789` required, `34` optional). T737 queues Ikemen-only live
-`ModifyHitDef guard.velocity` Y/Z component replacement with omission
-preservation. Exact playback/mixing, air guard, Projectiles, timing, teams,
-rollback and full parity remain blocked.
+artifacts (`789` required, `34` optional). T736 is now historical above; T737
+closed the live ground guard-velocity Y/Z counterpart. Exact playback/mixing,
+air guard, Projectiles, timing, teams, rollback and full parity remain blocked.
 
 ## Historical T735-T736 audio checkpoint
 

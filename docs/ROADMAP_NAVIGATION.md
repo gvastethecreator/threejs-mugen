@@ -2,7 +2,15 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T736 closed-bounded (2026-08-11)
+## Current implementation route — T737 closed-bounded (2026-08-11)
+
+T737 / [issue 311](../.scratch/roadmap/issues/311-modifyhitdef-guard-velocity-yz.md)
+closes live `ModifyHitDef guard.velocity` Y/Z replacement through root/RedirectID.
+Single, pair, and triple caller-context values preserve omitted components and
+reach accepted ground-guard `GetHitVar`/velocity metadata. Trace/final checksums
+are `a2eb52db` / `f0fb19a8`.
+
+## Historical implementation route — T736 closed-bounded (2026-08-11)
 
 T736 / [issue 310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md)
 closes live `ModifyHitDef guardsound.channel` through root/RedirectID and
@@ -27,11 +35,11 @@ preservation is required; the accepted hit-audio event carries typed `F6,4`
 telemetry from raw `Fvar(0),var(1)` with no guard route. Trace/final checksums
 are `8d56e467` / `d2d70840`.
 
-## Next implementation route — T737 queued
+## Next implementation route — T738 queued
 
-T737 / [issue 311](../.scratch/roadmap/issues/311-modifyhitdef-guard-velocity-yz.md)
-queues Ikemen-only live `ModifyHitDef guard.velocity` Y/Z replacement through
-root/RedirectID with omission preservation.
+T738 / [issue 312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md)
+queues Helper-owned live `ModifyHitDef guard.velocity` Y/Z replacement with
+root/parent ownership evidence and omission preservation.
 
 ## Historical implementation route — T733 closed-bounded (2026-08-11)
 

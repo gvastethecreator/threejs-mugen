@@ -1,6 +1,18 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T736 closed-bounded (2026-08-11)
+## Latest bounded slice — T737 closed-bounded (2026-08-11)
+
+Issue 311 closes Ikemen-only live `ModifyHitDef guard.velocity` Y/Z component
+replacement through root/RedirectID. Single, pair, and triple caller-context
+values preserve omitted live components and reach accepted ground-guard
+`GetHitVar`/velocity metadata. Trace/final checksums are `a2eb52db` /
+`f0fb19a8`; aggregate QA passes `824/824` artifacts (`790` required, `34`
+optional). M.U.G.E.N 1.1 documents only ground-guard X; Y/Z are an Ikemen
+extension. Fresh defaults, air guard, Projectiles and exact physics parity
+remain blocked. See [issue
+311](../.scratch/roadmap/issues/311-modifyhitdef-guard-velocity-yz.md).
+
+## Historical bounded slice — T736 closed-bounded (2026-08-11)
 
 Issue 310 closes Ikemen-only live `ModifyHitDef guardsound.channel` through
 root/RedirectID and Helper callers. Static and caller-context dynamic finite
@@ -34,11 +46,12 @@ required, `34` optional). Fresh defaults, channels, exact playback/mixing,
 Projectiles and full audio parity remain blocked. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next bounded slice — T737 queued
+## Next bounded slice — T738 queued
 
-Issue 311 queues Ikemen-only live `ModifyHitDef guard.velocity` Y/Z component
-replacement through root/RedirectID, preserving omitted live components.
-See [issue 311](../.scratch/roadmap/issues/311-modifyhitdef-guard-velocity-yz.md).
+Issue 312 queues Helper-owned live `ModifyHitDef guard.velocity` Y/Z component
+replacement with root/parent ownership evidence and omitted-component
+preservation. See [issue
+312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md).
 
 ## Historical bounded slice — T733 closed-bounded (2026-08-11)
 

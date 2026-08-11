@@ -1,17 +1,17 @@
 # Controller Support Registry
 
-Latest cursor: T736 / issue 310 is closed-bounded for Ikemen-only live
-root/RedirectID and Helper `ModifyHitDef guardsound.channel`. Static and
-caller-context dynamic finite values reach typed guarded `PlaySnd` channel
-`8`; omission or unresolved expressions preserve the live guard channel.
-Required trace `synthetic-imported-modifyhitdef-dynamic-guardsound-channel.json`
-proves the guard-only route; trace/final checksums are `a689adf2` /
-`d5bc517f`; aggregate QA is `823/823` artifacts (`789` required, `34`
+Latest cursor: T737 / issue 311 is closed-bounded for Ikemen-only live
+root/RedirectID `ModifyHitDef guard.velocity` Y/Z component replacement.
+Single, pair, and triple caller-context values preserve omitted live
+components and reach accepted ground-guard `GetHitVar`/velocity metadata.
+Required trace `synthetic-imported-modifyhitdef-dynamic-guard-velocity-yz.json`
+proves the redirected guard route; trace/final checksums are `a2eb52db` /
+`f0fb19a8`; aggregate QA is `824/824` artifacts (`790` required, `34`
 optional).
 
-Next cursor: T737 / issue 311 is queued for Ikemen-only live
-`ModifyHitDef guard.velocity` Y/Z component replacement through root/RedirectID.
-Omission preservation, exact physics timing, Projectiles, teams, rollback and
+Next cursor: T738 / issue 312 is queued for Helper-owned live
+`ModifyHitDef guard.velocity` Y/Z component replacement. Root/parent ownership,
+omission preservation, exact physics timing, Projectiles, teams, rollback and
 full guard parity remain deferred.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root

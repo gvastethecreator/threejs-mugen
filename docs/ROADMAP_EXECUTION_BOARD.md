@@ -1,6 +1,19 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T736 closed-bounded (2026-08-11)
+## Latest bounded slice — T737 closed-bounded (2026-08-11)
+
+Issue 311 closes the bounded Ikemen-only live `ModifyHitDef guard.velocity`
+Y/Z component replacement through root/RedirectID. Single, pair, and triple
+caller-context values preserve omitted live components and reach accepted
+ground-guard `GetHitVar`/velocity metadata. Required trace
+`synthetic-imported-modifyhitdef-dynamic-guard-velocity-yz.json` proves
+`VarSet -> HitDef -> ModifyHitDef -> guard`, with checksums `a2eb52db` /
+`f0fb19a8`; aggregate QA passes `824/824` artifacts (`790` required, `34`
+optional). M.U.G.E.N 1.1 only documents ground-guard X; air guard, Projectiles
+and exact physics parity remain excluded. See [issue
+311](../.scratch/roadmap/issues/311-modifyhitdef-guard-velocity-yz.md).
+
+## Historical bounded slice — T736 closed-bounded (2026-08-11)
 
 Issue 310 closes the bounded Ikemen-only live `ModifyHitDef guardsound.channel`
 replacement through root/RedirectID and Helper callers. Static and
@@ -40,12 +53,12 @@ artifacts (`787` required, `34` optional). Fresh defaults, channels, exact
 lookup/playback/mixing/priority, Projectiles and full audio parity remain
 blocked. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next bounded slice — T737 queued
+## Next bounded slice — T738 queued
 
-Issue 311 queues Ikemen-only live `ModifyHitDef guard.velocity` Y/Z component
-replacement through root/RedirectID with omission preservation. Air guard,
-exact physics timing, Projectiles and full parity remain excluded. See [issue
-311](../.scratch/roadmap/issues/311-modifyhitdef-guard-velocity-yz.md).
+Issue 312 queues Helper-owned live `ModifyHitDef guard.velocity` Y/Z component
+replacement with root/parent ownership evidence and omission preservation. Air
+guard, exact physics timing, Projectiles and full parity remain excluded. See
+[issue 312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md).
 
 ## Historical bounded slice — T733 closed-bounded (2026-08-11)
 

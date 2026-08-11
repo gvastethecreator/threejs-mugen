@@ -1,6 +1,17 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T736 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T737 closed-bounded (2026-08-11)
+
+Issue 311 closes Ikemen-only live `ModifyHitDef guard.velocity` Y/Z component
+replacement through root/RedirectID. Single, pair, and triple caller-context
+values preserve omitted live components and reach accepted ground-guard
+`GetHitVar`/velocity metadata. Required artifact checksum is `a2eb52db` /
+`f0fb19a8`; focused compiler/runtime coverage is `240/240`, typecheck passes,
+and `pnpm qa:trace` passes `824/824` artifacts (`790` required, `34` optional).
+M.U.G.E.N 1.1 only documents ground-guard X; Y/Z, air guard, Projectiles and
+exact physics parity remain blocked.
+
+## Historical implementation checkpoint — T736 closed-bounded (2026-08-11)
 
 Issue 310 closes Ikemen-only live `ModifyHitDef guardsound.channel` through
 root/RedirectID and Helper callers. Static and dynamic caller-context finite
@@ -22,10 +33,10 @@ typecheck passes and `pnpm qa:trace` passes `822/822` artifacts (`788`
 required, `34` optional). Fresh defaults, guardsound channel, exact lookup,
 playback/mixing/priority, Projectiles and full audio parity remain blocked.
 
-## Next implementation checkpoint — T737 queued
+## Next implementation checkpoint — T738 queued
 
-Issue 311 queues Ikemen-only live `ModifyHitDef guard.velocity` Y/Z component
-replacement through root/RedirectID with omission preservation.
+Issue 312 queues Helper-owned live `ModifyHitDef guard.velocity` Y/Z component
+replacement with root/parent ownership evidence and omission preservation.
 
 ## Historical implementation checkpoint — T734 closed-bounded (2026-08-11)
 

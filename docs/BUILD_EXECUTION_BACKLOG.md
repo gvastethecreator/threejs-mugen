@@ -26,9 +26,17 @@
   artifacts (`789` required, `34` optional). See [issue
   310](../.scratch/roadmap/issues/310-modifyhitdef-guardsound-channel.md).
 
-- **T737 queued** — Ikemen-only live `ModifyHitDef guard.velocity` Y/Z
-  component replacement with omission preservation. See [issue
+- **T737 closed-bounded** — Ikemen-only live `ModifyHitDef guard.velocity`
+  Y/Z component replacement through root/RedirectID. Single, pair, and
+  triple caller-context values preserve omitted live components and reach
+  accepted ground-guard `GetHitVar`/velocity metadata. Required trace checksum
+  `a2eb52db` / final `f0fb19a8`; aggregate QA passes `824/824` artifacts
+  (`790` required, `34` optional). See [issue
   311](../.scratch/roadmap/issues/311-modifyhitdef-guard-velocity-yz.md).
+
+- **T738 queued** — Helper-owned live `ModifyHitDef guard.velocity` Y/Z
+  component replacement with root/parent ownership evidence. See [issue
+  312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md).
 
 - **T733 closed-bounded** — Ikemen-only live `ModifyHitDef guardsound`
   group/number/prefix replacement through root/RedirectID and Helper callers.
