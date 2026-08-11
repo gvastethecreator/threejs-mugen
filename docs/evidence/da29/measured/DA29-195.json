@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-195",
   "kind": "G",
-  "generatedAt": "2026-08-11T16:50:23.710Z",
+  "generatedAt": "2026-08-11T17:26:55.553Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-195",
@@ -19,8 +19,8 @@
     },
     {
       "path": "docs/QA_AND_ACCEPTANCE_GATES.md",
-      "bytes": 429125,
-      "sha256": "63d25e66cff596e980e77b044968ef1311758205d01cd124fb14ed8666f0a59d"
+      "bytes": 429978,
+      "sha256": "2b2dc2b9f82886a8bfa76b0cebcdbab04991713cc86dc01205597411436632cb"
     }
   ],
   "functionResults": {
@@ -35,7 +35,7 @@
       },
       {
         "path": "docs/QA_AND_ACCEPTANCE_GATES.md",
-        "sha256": "63d25e66cff5"
+        "sha256": "2b2dc2b9f828"
       }
     ]
   },
