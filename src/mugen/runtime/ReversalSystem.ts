@@ -166,8 +166,18 @@ export class RuntimeReversalControllerDispatchWorld {
       hitPause,
       hitShakeTime,
       hitCount: operation?.hitCount ?? staticReversalHitCount(findParam(source, "numhits")),
-      p1SpritePriority: operation?.p1SpritePriority,
-      p2SpritePriority: operation?.p2SpritePriority,
+      p1SpritePriority: resolveRuntimeReversalInteger(
+        operation?.p1SpritePriorityExpression ?? operation?.p1SpritePriority,
+        findParam(source, "p1sprpriority"),
+        actor.runtime,
+        context,
+      ),
+      p2SpritePriority: resolveRuntimeReversalInteger(
+        operation?.p2SpritePriorityExpression ?? operation?.p2SpritePriority,
+        findParam(source, "p2sprpriority"),
+        actor.runtime,
+        context,
+      ),
       p1StateNo: resolveRuntimeReversalStateNo(
         operation?.p1StateNo,
         findParam(source, "p1stateno"),
@@ -286,13 +296,25 @@ export class RuntimeReversalControllerDispatchWorld {
       existing.hitVars = { ...existing.hitVars, hitCount: operation.hitCount };
       runtimeReversal.hitCount = operation.hitCount;
     }
-    if (operation.p1SpritePriority !== undefined) {
-      existing.p1SpritePriority = operation.p1SpritePriority;
-      runtimeReversal.p1SpritePriority = operation.p1SpritePriority;
+    const p1SpritePriority = resolveRuntimeReversalInteger(
+      operation.p1SpritePriorityExpression ?? operation.p1SpritePriority,
+      undefined,
+      actor.runtime,
+      context,
+    );
+    if ((operation.p1SpritePriorityExpression !== undefined || operation.p1SpritePriority !== undefined) && p1SpritePriority !== undefined) {
+      existing.p1SpritePriority = p1SpritePriority;
+      runtimeReversal.p1SpritePriority = p1SpritePriority;
     }
-    if (operation.p2SpritePriority !== undefined) {
-      existing.p2SpritePriority = operation.p2SpritePriority;
-      runtimeReversal.p2SpritePriority = operation.p2SpritePriority;
+    const p2SpritePriority = resolveRuntimeReversalInteger(
+      operation.p2SpritePriorityExpression ?? operation.p2SpritePriority,
+      undefined,
+      actor.runtime,
+      context,
+    );
+    if ((operation.p2SpritePriorityExpression !== undefined || operation.p2SpritePriority !== undefined) && p2SpritePriority !== undefined) {
+      existing.p2SpritePriority = p2SpritePriority;
+      runtimeReversal.p2SpritePriority = p2SpritePriority;
     }
     const p1StateNo = resolveRuntimeReversalStateNo(operation.p1StateNo, undefined, actor.runtime, context);
     if (operation.p1StateNo !== undefined && p1StateNo !== undefined) {

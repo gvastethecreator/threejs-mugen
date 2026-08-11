@@ -380,6 +380,10 @@ export type ModifyReversalDefControllerOp = {
   hitCount?: number;
   p1SpritePriority?: number;
   p2SpritePriority?: number;
+  /** Dynamic live P1 sprite-priority replacement. */
+  p1SpritePriorityExpression?: number | string;
+  /** Dynamic live P2 sprite-priority replacement. */
+  p2SpritePriorityExpression?: number | string;
   /** Ikemen reuses the HitDef parameter evaluator for live state expressions. */
   p1StateNo?: number | string;
   p2StateNo?: number | string;
@@ -1287,6 +1291,10 @@ export type ReversalDefControllerOp = {
   hitCount?: number;
   p1SpritePriority?: number;
   p2SpritePriority?: number;
+  /** Dynamic ReversalDef P1 sprite-priority expression. */
+  p1SpritePriorityExpression?: number | string;
+  /** Dynamic ReversalDef P2 sprite-priority expression. */
+  p2SpritePriorityExpression?: number | string;
   /** ReversalDef HitDef state numbers may be authored expressions. */
   p1StateNo?: number | string;
   p2StateNo?: number | string;
@@ -2349,8 +2357,12 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     ? 0
     : Math.max(0, Math.trunc(pauseTime[0]));
   const hitCount = staticOptionalHitCountParam(controller, "numhits");
-  const p1SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p1sprpriority");
-  const p2SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p2sprpriority");
+  const p1SpritePriorityValue = optionalIntegerExpressionParam(controller, "p1sprpriority");
+  const p2SpritePriorityValue = optionalIntegerExpressionParam(controller, "p2sprpriority");
+  const p1SpritePriority = typeof p1SpritePriorityValue === "number" ? p1SpritePriorityValue : undefined;
+  const p2SpritePriority = typeof p2SpritePriorityValue === "number" ? p2SpritePriorityValue : undefined;
+  const p1SpritePriorityExpression = typeof p1SpritePriorityValue === "string" ? p1SpritePriorityValue : undefined;
+  const p2SpritePriorityExpression = typeof p2SpritePriorityValue === "string" ? p2SpritePriorityValue : undefined;
   const p1StateNo = optionalIntegerExpressionParam(controller, "p1stateno");
   const p2StateNo = optionalIntegerExpressionParam(controller, "p2stateno");
   const p2GetP1State = optionalIntegerExpressionParam(controller, "p2getp1state");
@@ -2368,8 +2380,8 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     guardFlag === false ||
     missOnOverride === "invalid" ||
     hitCount === false ||
-    p1SpritePriority === false ||
-    p2SpritePriority === false ||
+    p1SpritePriorityValue === false ||
+    p2SpritePriorityValue === false ||
     p1StateNo === false ||
     p2StateNo === false ||
     p2GetP1State === false ||
@@ -2392,8 +2404,10 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     hitPause,
     ...(pauseTimeExpressions === undefined ? {} : { pauseTimeExpressions }),
     hitCount: hitCount === true ? undefined : hitCount,
-    p1SpritePriority: p1SpritePriority === true ? undefined : p1SpritePriority,
-    p2SpritePriority: p2SpritePriority === true ? undefined : p2SpritePriority,
+    ...(p1SpritePriority === undefined ? {} : { p1SpritePriority }),
+    ...(p2SpritePriority === undefined ? {} : { p2SpritePriority }),
+    ...(p1SpritePriorityExpression === undefined ? {} : { p1SpritePriorityExpression }),
+    ...(p2SpritePriorityExpression === undefined ? {} : { p2SpritePriorityExpression }),
     p1StateNo: p1StateNo === true
       ? undefined
       : typeof p1StateNo === "number" ? Math.max(0, Math.round(p1StateNo)) : p1StateNo,
@@ -3146,8 +3160,12 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     ? pauseTimeValue
     : undefined;
   const hitCount = staticOptionalHitCountParam(controller, "numhits");
-  const p1SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p1sprpriority");
-  const p2SpritePriority = staticOptionalReversalSpritePriorityParam(controller, "p2sprpriority");
+  const p1SpritePriorityValue = optionalIntegerExpressionParam(controller, "p1sprpriority");
+  const p2SpritePriorityValue = optionalIntegerExpressionParam(controller, "p2sprpriority");
+  const p1SpritePriority = typeof p1SpritePriorityValue === "number" ? p1SpritePriorityValue : undefined;
+  const p2SpritePriority = typeof p2SpritePriorityValue === "number" ? p2SpritePriorityValue : undefined;
+  const p1SpritePriorityExpression = typeof p1SpritePriorityValue === "string" ? p1SpritePriorityValue : undefined;
+  const p2SpritePriorityExpression = typeof p2SpritePriorityValue === "string" ? p2SpritePriorityValue : undefined;
   const p1StateNo = optionalIntegerExpressionParam(controller, "p1stateno");
   const p2StateNo = optionalIntegerExpressionParam(controller, "p2stateno");
   const p2GetP1State = optionalIntegerExpressionParam(controller, "p2getp1state");
@@ -3165,8 +3183,8 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     missOnOverride === "invalid" ||
     pauseTimeValue === false ||
     hitCount === false ||
-    p1SpritePriority === false ||
-    p2SpritePriority === false ||
+    p1SpritePriorityValue === false ||
+    p2SpritePriorityValue === false ||
     p1StateNo === false ||
     p2StateNo === false ||
     p2GetP1State === false ||
@@ -3206,8 +3224,8 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     hitPause === undefined &&
     pauseTimeExpressions === undefined &&
     normalizedHitCount === undefined &&
-    p1SpritePriority === true &&
-    p2SpritePriority === true &&
+    p1SpritePriorityValue === true &&
+    p2SpritePriorityValue === true &&
     normalizedP1StateNo === undefined &&
     normalizedP2StateNo === undefined &&
     normalizedP2GetP1State === undefined &&
@@ -3229,8 +3247,10 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     ...(hitPause === undefined ? {} : { hitPause }),
     ...(pauseTimeExpressions === undefined ? {} : { pauseTimeExpressions }),
     ...(normalizedHitCount === undefined ? {} : { hitCount: normalizedHitCount }),
-    ...(p1SpritePriority === true ? {} : { p1SpritePriority }),
-    ...(p2SpritePriority === true ? {} : { p2SpritePriority }),
+    ...(p1SpritePriority === undefined ? {} : { p1SpritePriority }),
+    ...(p2SpritePriority === undefined ? {} : { p2SpritePriority }),
+    ...(p1SpritePriorityExpression === undefined ? {} : { p1SpritePriorityExpression }),
+    ...(p2SpritePriorityExpression === undefined ? {} : { p2SpritePriorityExpression }),
     ...(normalizedP1StateNo === undefined ? {} : { p1StateNo: normalizedP1StateNo }),
     ...(normalizedP2StateNo === undefined ? {} : { p2StateNo: normalizedP2StateNo }),
     ...(normalizedP2GetP1State === undefined ? {} : { p2GetP1State: normalizedP2GetP1State }),
@@ -4895,11 +4915,6 @@ function staticOptionalHitAttributeParam(controller: MugenStateController, key: 
     return false;
   }
   return parts.join(",");
-}
-
-function staticOptionalReversalSpritePriorityParam(controller: MugenStateController, key: string): number | true | false {
-  const value = staticOptionalStrictNumberParam(controller, key);
-  return typeof value === "number" ? Math.trunc(value) : value;
 }
 
 function optionalHitDefPriorityParam(

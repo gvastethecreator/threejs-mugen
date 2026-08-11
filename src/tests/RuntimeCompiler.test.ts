@@ -3394,7 +3394,7 @@ value = 1
     });
   });
 
-  it("compiles static ReversalDef and root ModifyReversalDef sprite priorities", () => {
+  it("compiles static and dynamic ReversalDef sprite priorities", () => {
     const reversal = compileControllerIr(
       controller(200, "ReversalDef", [], {
         "reversal.attr": "S,NA",
@@ -3415,6 +3415,12 @@ value = 1
     const dynamicNegative = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { p2sprpriority: "fvar(1)", redirectid: "57" }),
     );
+    const dynamicFresh = compileControllerIr(
+      controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", p1sprpriority: "var(0)", p2sprpriority: "fvar(1)" }),
+    );
+    const malformed = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { p1sprpriority: "var(", redirectid: "57" }),
+    );
 
     expect(reversal.operation).toMatchObject({
       kind: "reversaldef",
@@ -3428,8 +3434,23 @@ value = 1
       p2SpritePriority: -4,
       redirectPlayerIdExpression: "57",
     });
-    expect(dynamic.operation).toBeUndefined();
-    expect(dynamicNegative.operation).toBeUndefined();
+    expect(dynamic.operation).toEqual({
+      kind: "modifyreversaldef",
+      p1SpritePriorityExpression: "var(1)",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(dynamicNegative.operation).toEqual({
+      kind: "modifyreversaldef",
+      p2SpritePriorityExpression: "fvar(1)",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(dynamicFresh.operation).toMatchObject({
+      kind: "reversaldef",
+      attr: "S,NA",
+      p1SpritePriorityExpression: "var(0)",
+      p2SpritePriorityExpression: "fvar(1)",
+    });
+    expect(malformed.operation).toBeUndefined();
   });
 
   it("compiles static ReversalDef and root ModifyReversalDef missonoverride values", () => {

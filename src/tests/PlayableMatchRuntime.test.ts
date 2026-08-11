@@ -12795,7 +12795,7 @@ ground.velocity = 0,0
     expect(snapshot.logs.some((line) => line.includes("Blocked modifyhitdef RedirectID 999"))).toBe(true);
   });
 
-  it("blocks redirected ReversalDef with dynamic payload fields", () => {
+  it("blocks redirected ReversalDef with malformed sprite-priority payload", () => {
     const caller = createImportedFixture({
       withStateMove: false,
       passiveResourceController: `
@@ -12803,7 +12803,7 @@ ground.velocity = 0,0
 type = ReversalDef
 trigger1 = Time = 0
 reversal.attr = SA,AA
-p1sprpriority = var(0)
+p1sprpriority = var(
 RedirectID = 57
 `,
     });

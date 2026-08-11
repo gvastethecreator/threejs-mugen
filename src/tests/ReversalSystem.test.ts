@@ -346,6 +346,51 @@ describe("ReversalSystem", () => {
     });
   });
 
+  it("resolves dynamic ReversalDef sprite priorities in the caller and preserves omitted Modify components", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const reverser = actor("p2", "Reverser", { vars: [6, -4], spritePriority: 1 });
+    const caller = actor("p1", "Caller", { vars: [6], fvars: [0, -4], spritePriority: 2 });
+    reverser.definition = { constants: {}, hitDefPriorityProfile: "mugen-1.1" };
+
+    const activated = dispatchWorld.apply({
+      actor: reverser,
+      controller: compileControllerIr(controller("ReversalDef", {
+        "reversal.attr": "S,NA",
+        p1sprpriority: "var(0)",
+        p2sprpriority: "fvar(1)",
+      })),
+      context: { self: caller.runtime },
+      hitbox: box(),
+      reversalWorld,
+    });
+
+    expect(activated.activated).toBe(true);
+    expect(reverser.currentMove).toMatchObject({ p1SpritePriority: 6, p2SpritePriority: -4 });
+    expect(reverser.runtime.reversal).toMatchObject({ p1SpritePriority: 6, p2SpritePriority: -4 });
+
+    caller.runtime.vars[0] = 9;
+
+    const modified = dispatchWorld.modify({
+      actor: reverser,
+      controller: compileControllerIr(controller("ModifyReversalDef", {
+        p1sprpriority: "var(0)",
+        redirectid: "57",
+      })),
+      context: { self: caller.runtime },
+    });
+
+    expect(modified.modified).toBe(true);
+    expect(reverser.currentMove).toMatchObject({ p1SpritePriority: 9, p2SpritePriority: -4 });
+    expect(reverser.runtime.reversal).toMatchObject({ p1SpritePriority: 9, p2SpritePriority: -4 });
+
+    const attacker = actor("p1", "Attacker", { spritePriority: 2, currentMove: move(), currentMoveLabel: "Punch" });
+    reversalWorld.apply(reverser, attacker, reverser.currentMove!, hooks());
+
+    expect(reverser.runtime.spritePriority).toBe(9);
+    expect(attacker.runtime.spritePriority).toBe(-4);
+  });
+
   it("applies static ReversalDef sprite priorities after a ModifyReversalDef mutation", () => {
     const reversalWorld = new RuntimeReversalWorld();
     const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
