@@ -3790,6 +3790,24 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles Projectile keepstate as a static flag or caller expression", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      keepstate: "1",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      keepState: true,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      keepstate: "var(0)",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      keepStateExpression: "var(0)",
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      keepstate: "var(0),1",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles fresh Projectile projmisstime expressions and rejects malformed values", () => {
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       projmisstime: "var(0) + 2",

@@ -629,6 +629,9 @@ export type ProjectileControllerOp = {
   downVelocityZExpression?: number | string;
   /** M.U.G.E.N down.bounce toggle carried by projectile HitDef data. */
   downBounce?: boolean;
+  /** Projectile HitDef keepstate flag; dynamic expressions are resolved by the caller at spawn. */
+  keepState?: boolean;
+  keepStateExpression?: number | string;
   /** Ikemen HitDef flag that clears the target fall flag on contact. */
   forceNoFall?: boolean;
   /** Ikemen HitDef posture overrides used before default get-hit selection. */
@@ -3535,12 +3538,14 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
   const guardSparkScale = optionalFloatExpressionPairParam(controller, "guard.sparkscale");
   const paletteFx = optionalHitDefPaletteFxParam(controller);
+  const keepStateValue = optionalIntegerExpressionParam(controller, "keepstate");
   if (
     standFriction === false ||
     crouchFriction === false ||
     hitSparkScale === false ||
     guardSparkScale === false ||
-    paletteFx === false
+    paletteFx === false ||
+    keepStateValue === false
   ) return undefined;
   const fall = compileHitDefFallOp(controller);
   const redLifeRaw = findParam(controller, "redlife");
@@ -3764,6 +3769,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     forceNoFall: booleanNumber(findParam(controller, "forcenofall")),
     forceStand: booleanNumber(findParam(controller, "forcestand")),
     forceCrouch: booleanNumber(findParam(controller, "forcecrouch")),
+    keepState: typeof keepStateValue === "number" ? keepStateValue !== 0 : undefined,
+    ...(typeof keepStateValue === "string" ? { keepStateExpression: keepStateValue } : {}),
     ...(Object.keys(fall).length === 0 ? {} : { fall }),
     attackDepth: normalizedNumberPair(findParam(controller, "attack.depth")),
     p2StateNo: firstNumber(findParam(controller, "p2stateno")),

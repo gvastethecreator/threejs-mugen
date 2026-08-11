@@ -449,6 +449,72 @@ describe("ProjectileSystem", () => {
     expect(singleDynamic).toMatchObject({ attackerHitPower: 21, attackerGuardPower: 10 });
   });
 
+  it("carries fresh Projectile keepstate from static and caller-resolved values", () => {
+    const base = {
+      serialId: "p1-projectile-keepstate",
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1 as const,
+    };
+
+    expect(createRuntimeProjectile({
+      ...base,
+      controller: controller({ projanim: "1005", keepstate: "1" }),
+    })).toMatchObject({ keepState: true });
+    expect(createRuntimeProjectile({
+      ...base,
+      serialId: "p1-projectile-keepstate-false",
+      controller: controller({ projanim: "1005", keepstate: "0" }),
+    })).toMatchObject({ keepState: false });
+
+    const dynamic = createRuntimeProjectile({
+      ...base,
+      serialId: "p1-projectile-keepstate-dynamic",
+      controller: controller({ projanim: "1005", keepstate: "var(0)" }),
+      operation: {
+        kind: "projectile",
+        velocity: [0, 0],
+        removeTime: 60,
+        spritePriority: 1,
+        priority: 1,
+        hitCount: 1,
+        missTime: 0,
+        damage: 20,
+        hitPause: 0,
+        hitStun: 10,
+        removeOnHit: true,
+        keepStateExpression: "var(0)",
+      },
+      resolveKeepState: () => 1,
+    });
+    expect(dynamic.keepState).toBe(true);
+
+    const unresolved = createRuntimeProjectile({
+      ...base,
+      serialId: "p1-projectile-keepstate-unresolved",
+      controller: controller({ projanim: "1005", keepstate: "var(0)" }),
+      operation: {
+        kind: "projectile",
+        velocity: [0, 0],
+        removeTime: 60,
+        spritePriority: 1,
+        priority: 1,
+        hitCount: 1,
+        missTime: 0,
+        damage: 20,
+        hitPause: 0,
+        hitStun: 10,
+        removeOnHit: true,
+        keepStateExpression: "var(0)",
+      },
+    });
+    expect(unresolved.keepState).toBeUndefined();
+  });
+
   it("uses component-wise caller resolution for fresh dynamic Projectile damage", () => {
     const baseOperation: ProjectileControllerOp = {
       kind: "projectile",

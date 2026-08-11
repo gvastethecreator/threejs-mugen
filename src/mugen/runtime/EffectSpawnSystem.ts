@@ -83,6 +83,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveProjectileDamage?: RuntimeProjectileSpawnInput["resolveProjectileDamage"];
   resolveProjectileGetPower?: RuntimeProjectileSpawnInput["resolveProjectileGetPower"];
   resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"];
+  resolveProjectileKeepState?: RuntimeProjectileSpawnInput["resolveKeepState"];
   /** Resolves fresh Projectile projanim in the original caller context. */
   resolveProjectileAnimation?: () => number | undefined;
   resolveModifyProjectile?: RuntimeProjectileModifyResolver;
@@ -274,6 +275,7 @@ export class RuntimeEffectSpawnWorld {
     resolveProjectileGetPower?: RuntimeProjectileSpawnInput["resolveProjectileGetPower"],
     resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"],
     resolveProjectileAnimation?: () => number | undefined,
+    resolveProjectileKeepState?: RuntimeProjectileSpawnInput["resolveKeepState"],
   ): boolean {
     const owner = effectSpriteOwner(fighter);
     const animNo = operation?.projAnim
@@ -334,6 +336,7 @@ export class RuntimeEffectSpawnWorld {
       resolveProjectileDamage,
       resolveProjectileGetPower,
       resolveProjectileGivePower,
+      resolveKeepState: resolveProjectileKeepState,
     });
     return true;
   }
@@ -640,6 +643,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveProjectileGetPower,
         options.resolveProjectileGivePower,
         options.resolveProjectileAnimation,
+        options.resolveProjectileKeepState,
       )
         ? 1
         : 0;

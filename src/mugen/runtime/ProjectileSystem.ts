@@ -180,6 +180,8 @@ export type RuntimeProjectile = {
   paletteFx?: RuntimePaletteFxPayload;
   /** Authored Projectile HitDef p2facing exposed by GetHitVar(facing). */
   p2Facing?: number;
+  /** Authored Projectile HitDef keepstate exposed by GetHitVar(keepstate). */
+  keepState?: boolean;
   /** Projectile-origin target-distance bounds applied after accepted contact. */
   minDistance?: [number, number?, number?];
   maxDistance?: [number, number?, number?];
@@ -359,6 +361,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveProjectileDamage?: () => { hit?: number; guard?: number } | undefined;
   resolveProjectileGetPower?: () => { hit?: number; guard?: number } | undefined;
   resolveProjectileGivePower?: () => { hit?: number; guard?: number } | undefined;
+  /** Resolves fresh Projectile keepstate in the original caller context. */
+  resolveKeepState?: () => number | undefined;
 };
 
 export type RuntimeProjectileModifyInput = {
@@ -649,6 +653,17 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     resolver: input.resolvePaletteFx,
   });
   const p2Facing = operation?.p2Facing ?? firstNumber(findControllerParam(input.controller, "p2facing"));
+  const keepStateExpression = operation?.keepStateExpression;
+  const dynamicKeepState = keepStateExpression === undefined
+    ? undefined
+    : typeof keepStateExpression === "number"
+      ? keepStateExpression
+      : input.resolveKeepState?.();
+  const keepState = keepStateExpression === undefined
+    ? operation?.keepState ?? booleanNumber(findControllerParam(input.controller, "keepstate"))
+    : dynamicKeepState === undefined || !Number.isFinite(dynamicKeepState)
+      ? undefined
+      : dynamicKeepState !== 0;
   const airJuggle = operation?.airJuggle ?? firstNumber(findControllerParam(input.controller, "air.juggle"));
   const normalizedAirJuggle = airJuggle === undefined || !Number.isFinite(airJuggle) ? undefined : Math.trunc(airJuggle);
   const pauseTimeRaw = findControllerParam(input.controller, "pausetime");
@@ -1003,6 +1018,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     guardSparkScale,
     ...(paletteFx === undefined ? {} : { paletteFx }),
     ...(p2Facing === undefined ? {} : { p2Facing: Math.trunc(p2Facing) }),
+    ...(keepState === undefined ? {} : { keepState }),
     ...(minDistance === undefined ? {} : { minDistance: [...minDistance] as [number, number?, number?] }),
     ...(maxDistance === undefined ? {} : { maxDistance: [...maxDistance] as [number, number?, number?] }),
     ...(normalizedAirJuggle === undefined ? {} : { airJuggle: normalizedAirJuggle }),

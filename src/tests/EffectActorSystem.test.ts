@@ -1810,6 +1810,35 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("resolves Helper Projectile keepstate in the helper caller context", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "43", anim: "900" }),
+      animations: new Map([
+        [900, action(900)],
+        [920, action(920)],
+      ]),
+    });
+    helper.vars[0] = 1;
+
+    const projectile = spawnRuntimeHelperProjectileActor(
+      store,
+      helper,
+      compileControllerIr(controller("Projectile", {
+        projanim: "920",
+        projid: "8864",
+        keepstate: "var(0)",
+      })),
+    );
+
+    expect(projectile).toMatchObject({
+      keepState: true,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+    });
+  });
+
   it("resolves Helper-owned dynamic ModifyProjectile pause budgets in caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {

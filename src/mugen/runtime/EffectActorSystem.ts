@@ -773,6 +773,7 @@ export function spawnRuntimeHelperProjectileActor(
     resolveProjectileDamage: () => resolveHelperProjectilePowerPair(helper, controller, "damage", options),
     resolveProjectileGetPower: () => resolveHelperProjectilePowerPair(helper, controller, "getpower", options),
     resolveProjectileGivePower: () => resolveHelperProjectilePowerPair(helper, controller, "givepower", options),
+    resolveKeepState: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "keepstate", options),
   });
 }
 

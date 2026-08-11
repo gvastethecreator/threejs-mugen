@@ -824,6 +824,7 @@ function runtimeGetHitVarsFromProjectileResult(
     ...(guarded || projectile.p2Facing === undefined
       ? {}
       : { sourceFacing: Math.trunc(projectile.p2Facing) }),
+    ...(projectile.keepState === undefined ? {} : { keepState: projectile.keepState }),
     ...((guarded ? projectile.guardScore ?? projectile.score : projectile.score) === undefined
       ? {}
       : { sourceScore: (guarded ? projectile.guardScore ?? projectile.score : projectile.score) as number }),

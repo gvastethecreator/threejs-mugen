@@ -1337,6 +1337,31 @@ describe("ProjectileCombatSystem", () => {
     expect(guardDefender.runtime.hitVars?.sourceFacing).toBeUndefined();
   });
 
+  it("exposes Projectile keepstate through GetHitVar on hit and guard contacts", () => {
+    for (const holdingBack of [false, true]) {
+      let projectiles = [projectile({ keepState: true, damage: 12 })];
+      const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+      const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, life: 1000 }));
+
+      new RuntimeProjectileCombatWorld().resolveCombat({
+        attacker,
+        defender,
+        projectiles,
+        hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+        holdingBack,
+        log: () => undefined,
+        rememberTarget: () => undefined,
+        applyHitOverride: () => undefined,
+        removeProjectilesMarkedForRemoval: () => {
+          projectiles = projectiles.filter((entry) => !entry.removalReason);
+        },
+      });
+
+      expect(defender.runtime.hitVars?.keepState).toBe(true);
+      expect(runtimeHitVar(defender.runtime, "keepstate")).toBe(1);
+    }
+  });
+
   it("exposes Projectile HitDef score without moving score adjudication", () => {
     let projectiles = [projectile({ score: 7.25, damage: 12 })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
