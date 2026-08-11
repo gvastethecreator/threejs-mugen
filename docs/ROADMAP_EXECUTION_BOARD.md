@@ -1,6 +1,17 @@
 ﻿# Roadmap Execution Board
 
-## Next bounded slice — T717 closed-bounded (2026-08-11)
+## Next bounded slice — T718 closed-bounded (2026-08-11)
+
+Issue 292 closes the bounded root/RedirectID `ModifyReversalDef` state-field
+slice: `p1stateno`, `p2stateno`, `p2getp1state`, and `p2facing` now retain typed
+caller-context expressions and resolve once while mutating the redirected
+receiver's active ReversalDef. Required trace `50173bf7/05110cc8`; aggregate
+QA passes `809/809` artifacts (`775` required, `34` optional). Helper-owned
+ModifyReversalDef, other reversal payloads, guards, projectiles, exact tick
+parity, teams, rollback and full parity remain blocked. See [issue
+292](../.scratch/roadmap/issues/292-modifyreversaldef-state-expressions.md).
+
+## Previous bounded slice — T717 closed-bounded (2026-08-11)
 
 Issue 291 closes the bounded direct/root `ReversalDef` state-field slice:
 `p1stateno`, `p2stateno`, `p2getp1state`, and `p2facing` retain typed
