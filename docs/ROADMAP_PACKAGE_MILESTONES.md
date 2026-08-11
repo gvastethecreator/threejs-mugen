@@ -1,6 +1,15 @@
 ﻿# Roadmap Package Milestones
 
-## Active package — T712 closed-bounded (2026-08-11)
+## Active package — T714 closed-bounded (2026-08-11)
+
+Issue 288 closes finite dynamic Projectile `p2facing` for root and Helper
+fresh spawns. Required trace `0aceed69/2d5de80d` and aggregate QA `805/805`
+(`771` required, `34` optional) pass. The result reuses T713's bounded
+deferred-facing contact path; ModifyProjectile, guards, reversals, teams,
+rollback and full parity remain blocked. See [issue
+288](../.scratch/roadmap/issues/288-projectile-p2facing-dynamic.md).
+
+## Previous package — T713 closed-bounded (2026-08-11)
 
 Issue 286 closes transient Projectile `keepstate` release after the active
 stun window. Root and Helper contacts clear only the flag before the next

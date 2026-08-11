@@ -1,6 +1,16 @@
 # Workplan
 
-## Active slice — T713 closed-bounded (2026-08-11)
+## Active slice — T714 closed-bounded (2026-08-11)
+
+Issue 288 closes dynamic Projectile `p2facing` for fresh root and
+Helper-owned Projectiles. Caller-context evaluation is typed separately from
+static metadata and feeds the T713 deferred-facing latch. Required trace
+`0aceed69/2d5de80d`, focused tests, typecheck, and aggregate QA `805/805`
+pass. ModifyProjectile, guards, p1facing, reversals, noautoturn, exact tick
+parity, teams, rollback and full parity remain deferred. See [issue
+288](../.scratch/roadmap/issues/288-projectile-p2facing-dynamic.md).
+
+## Previous slice — T713 closed-bounded (2026-08-11)
 
 Issue 287 ports root-owned fresh Projectile `p2facing` for accepted
 unguarded contacts. The local latch uses the Projectile's facing, preserves

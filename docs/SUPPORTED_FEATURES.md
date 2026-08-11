@@ -1,4 +1,15 @@
 ﻿# Supported Features
+## 2026-08-11 T714 Projectile `p2facing` expressions — closed-bounded
+
+Fresh root Projectiles resolve finite dynamic `p2facing` in the original
+caller context; Helper-owned Projectiles resolve their Helper context. The
+resolved value reuses the accepted-unguarded-hit deferred-facing latch and
+`GetHitVar(facing)`. Required trace `0aceed69/2d5de80d` and aggregate QA
+`805/805` artifacts (`771` required, `34` optional) pass. ModifyProjectile,
+guards, p1facing, reversals, noautoturn, exact tick parity, teams, rollback
+and full parity remain unsupported. See [issue
+288](../.scratch/roadmap/issues/288-projectile-p2facing-dynamic.md).
+
 ## 2026-08-11 T713 Projectile `p2facing` — closed-bounded
 
 Root-owned fresh Projectiles now apply static `p2facing` after an accepted

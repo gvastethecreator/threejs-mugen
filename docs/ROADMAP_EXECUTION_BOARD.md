@@ -1,6 +1,16 @@
 ﻿# Roadmap Execution Board
 
-## Next bounded slice — T713 closed-bounded (2026-08-11)
+## Next bounded slice — T714 closed-bounded (2026-08-11)
+
+Issue 288 adds finite dynamic Projectile `p2facing` in the original root
+caller context and the Helper-owned spawn context. The stored result feeds
+the existing accepted-hit deferred-facing latch and `GetHitVar(facing)`.
+Required trace `0aceed69/2d5de80d` and aggregate QA `805/805` (771 required,
+34 optional) pass. ModifyProjectile, guards, p1facing, reversals, noautoturn,
+exact tick parity, teams, rollback and full parity remain blocked. See [issue
+288](../.scratch/roadmap/issues/288-projectile-p2facing-dynamic.md).
+
+## Previous bounded slice — T713 closed-bounded (2026-08-11)
 
 Issue 287 closes root-owned fresh Projectile `p2facing` after an accepted
 unguarded hit. The Projectile facing supplies the signed target-facing result,

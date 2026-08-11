@@ -205,6 +205,18 @@ Every controller family should have:
 - fixture or synthetic trace evidence
 - UI/report wording
 
+## 2026-08-11 T714 Projectile `p2facing` caller expressions — closed-bounded
+
+Projectile `p2facing` now has a typed dynamic expression field. Fresh
+root-owned Projectiles resolve finite values in the original caller context;
+Helper-owned Projectiles resolve their Helper context. The stored integer
+shares the T713 accepted-unguarded-hit deferred-facing latch and
+`GetHitVar(facing)`. Focused compiler/Projectile/Helper coverage, typecheck,
+required trace `0aceed69/2d5de80d`, and aggregate QA `805/805` artifacts
+(`771` required, `34` optional) pass. `ModifyProjectile`, guard/reversal and
+`p1facing` interaction, noautoturn, exact tick parity, teams, rollback and
+full parity remain unclaimed. See [issue 288](../.scratch/roadmap/issues/288-projectile-p2facing-dynamic.md).
+
 ## 2026-08-09 HitDef friction, spark-scale, facing, power, PalFX, and EnvShake checkpoint
 
 T612-T638 close ChainID/NoChainID admission, typed HitDef/Projectile
@@ -281,7 +293,8 @@ and T675 close live root-owned ModifyHitDef down-velocity X/Y/Z mutation; T676
 closes the Helper-owned dispatch and required lying-hit evidence. T677 closes
 the Helper-owned live air-velocity mutation. T678 closes the Helper-owned live
 air-guard velocity follow-up. T679 remains source-mapped and unclaimed.
-Projectile facing, exact deferred facing/power order,
+T713/T714 close static and caller-context Projectile facing; exact deferred
+facing/power order,
 broader `data/mugen.cfg`, rollback, and full HitDef parity remain unsupported.
 
 ## 2026-08-08 ModifyProjectile source-parity checkpoint

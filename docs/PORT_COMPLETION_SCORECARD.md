@@ -1,5 +1,14 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T714 Dynamic Projectile `p2facing` — closed-bounded, no score movement
+
+Issue 288 adds finite dynamic `p2facing` for root and Helper fresh
+Projectiles. Required trace passes with `0aceed69/2d5de80d`; aggregate QA is
+`805/805` artifacts (`771` required, `34` optional). No score movement:
+ModifyProjectile, guards, p1facing, reversals, noautoturn, exact tick parity,
+teams, rollback and full parity remain blocked. See [issue
+288](../.scratch/roadmap/issues/288-projectile-p2facing-dynamic.md).
+
 ## 2026-08-11 T713 Projectile `p2facing` — closed-bounded, no score movement
 
 Issue 287 closes root-owned fresh Projectile `p2facing` for accepted

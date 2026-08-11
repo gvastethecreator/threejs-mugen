@@ -1,6 +1,18 @@
 ﻿# Next Build Roadmap
 
-## Next bounded slice — T713 closed-bounded (2026-08-11)
+## Next bounded slice — T714 closed-bounded (2026-08-11)
+
+Issue 288 extends Projectile `p2facing` from static metadata to finite caller
+expressions. Root fresh Projectiles resolve `p2facing=var(...)` in the
+original caller context; Helper-created Projectiles resolve the Helper
+context. Both reuse the T713 deferred-facing latch and `GetHitVar(facing)`
+carrier. Required trace `0aceed69/2d5de80d` passes; aggregate QA passes
+`805/805` artifacts (`771` required, `34` optional). ModifyProjectile,
+guards, p1facing, reversals, noautoturn, exact tick parity, teams, rollback
+and full parity remain blocked. See [issue
+288](../.scratch/roadmap/issues/288-projectile-p2facing-dynamic.md).
+
+## Previous bounded slice — T713 closed-bounded (2026-08-11)
 
 Issue 287 closes root-owned fresh Projectile `p2facing` after an accepted
 unguarded hit. The runtime derives the target-facing result from the actual

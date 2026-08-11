@@ -1,6 +1,16 @@
 ﻿# Progress Tracker
 
-## Active implementation checkpoint — T712 closed-bounded (2026-08-11)
+## Active implementation checkpoint — T714 closed-bounded (2026-08-11)
+
+Dynamic Projectile `p2facing` now resolves once in root caller context and in
+Helper-owned Projectile context, then reuses the accepted-hit deferred-facing
+and `GetHitVar(facing)` path. Required trace `0aceed69/2d5de80d`; aggregate QA
+`805/805` artifacts (`771` required, `34` optional); typecheck and focused
+tests pass. ModifyProjectile, guards, p1facing, reversals, noautoturn, exact
+tick parity, teams, rollback and full parity remain open. See [issue
+288](../.scratch/roadmap/issues/288-projectile-p2facing-dynamic.md).
+
+## Previous implementation checkpoint — T713 closed-bounded (2026-08-11)
 
 Issue 286 releases transient Projectile `keepstate` after the active stun
 window and before the next active state-controller pass, while retaining the

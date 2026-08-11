@@ -2,6 +2,18 @@
 
 ## Current parity queue
 
+- **T714 closed-bounded** — dynamic Projectile `p2facing` now resolves in
+  root caller context and Helper-owned Projectile context, then feeds the
+  accepted-hit deferred-facing latch and `GetHitVar(facing)`. Required trace
+  `0aceed69/2d5de80d`; aggregate QA `805/805` (`771` required, `34` optional)
+  passes. ModifyProjectile, guards, p1facing, reversals, noautoturn, exact
+  tick parity, teams, rollback and full parity remain blocked. See [issue
+  288](../.scratch/roadmap/issues/288-projectile-p2facing-dynamic.md).
+
+- **T713 closed-bounded** — static root-owned Projectile `p2facing` now
+  applies through the deferred-facing contact path. See [issue
+  287](../.scratch/roadmap/issues/287-projectile-p2facing.md).
+
 - **T712 closed-bounded** — transient Projectile `keepstate` release now
   survives the active stun tick and is cleared before the next active
   state-controller pass, preserving the remaining hit metadata. Required root
