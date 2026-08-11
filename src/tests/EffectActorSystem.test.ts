@@ -2023,6 +2023,7 @@ describe("EffectActorSystem", () => {
                 "ModifyProjectile",
                 {
                   id: "8860",
+                  projanim: "Var(30)",
                   velocity: "6,-1",
                   accel: ".5,.25",
                   velmul: "1.25,.5",
@@ -2050,27 +2051,49 @@ describe("EffectActorSystem", () => {
         [901, action(901, 4)],
         [902, action(902, 4)],
         [930, action(930, 4)],
+        [931, action(931, 4)],
       ]),
     });
     helper.vars[13] = 44;
+    helper.vars[30] = 931;
     const executed: string[] = [];
+    let modifyAnimationExpression: string | undefined;
 
     advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
-      onController: (_helper, item) => executed.push(item.type),
+      onController: (_helper, item) => {
+        executed.push(item.type);
+        if (item.type === "ModifyProjectile") {
+          const expression = item.operation?.kind === "modifyprojectile"
+            ? item.operation.projAnimExpression
+            : undefined;
+          modifyAnimationExpression = typeof expression === "string" ? expression : undefined;
+        }
+      },
     });
     expect(store.projectiles.find((projectile) => projectile.parentId === "p1-helper-0")).toMatchObject({
       removeTime: 44,
     });
     advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
-      onController: (_helper, item) => executed.push(item.type),
+      onController: (_helper, item) => {
+        executed.push(item.type);
+        if (item.type === "ModifyProjectile") {
+          const expression = item.operation?.kind === "modifyprojectile"
+            ? item.operation.projAnimExpression
+            : undefined;
+          modifyAnimationExpression = typeof expression === "string" ? expression : undefined;
+        }
+      },
     });
 
     const playerProjectile = store.projectiles.find((projectile) => projectile.parentId === "p1");
     const helperProjectile = store.projectiles.find((projectile) => projectile.parentId === "p1-helper-0");
     expect(executed).toEqual(["Projectile", "ChangeState", "ModifyProjectile", "ChangeState"]);
+    expect(modifyAnimationExpression).toBe("Var(30)");
     expect(playerProjectile).toMatchObject({
       projectileId: 8860,
       parentId: "p1",
+      animNo: 900,
+      action: expect.objectContaining({ id: 900 }),
       vel: { x: 1, y: 0 },
       scale: { x: 1, y: 1 },
       edgeBound: 40,
@@ -2086,6 +2109,10 @@ describe("EffectActorSystem", () => {
     expect(helperProjectile).toMatchObject({
       projectileId: 8860,
       parentId: "p1-helper-0",
+      animNo: 931,
+      action: expect.objectContaining({ id: 931 }),
+      frameIndex: 0,
+      frameElapsed: 0,
       vel: { x: 6, y: -1 },
       accel: { x: 0.5, y: 0.25 },
       velMul: { x: 1.25, y: 0.5 },

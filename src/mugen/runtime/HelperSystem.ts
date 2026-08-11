@@ -1092,6 +1092,7 @@ function helperModifyProjectileResolver(
   options: Parameters<typeof resolveHelperNumber>[3],
 ): RuntimeProjectileModifyResolver {
   return {
+    resolveAnimation: () => resolveHelperModifyProjectileAnimationParam(helper, controller, options),
     resolveNumber: (key) => resolveHelperModifyProjectileNumberParam(helper, controller, key, options),
     resolveFloat: (key) => resolveHelperModifyProjectileFloatParam(helper, controller, key, options),
     resolvePair: (key) => resolveHelperModifyProjectilePairParam(helper, controller, key, options),
@@ -1100,6 +1101,22 @@ function helperModifyProjectileResolver(
     resolveFloatPartialTriple: (key) => resolveHelperModifyProjectileFloatPartialTripleParam(helper, controller, key, options),
     resolveIntegerList: (key) => resolveHelperModifyProjectileIntegerListParam(helper, controller, key, options),
   };
+}
+
+/** Resolves a typed live ModifyProjectile projanim in the Helper caller context. */
+function resolveHelperModifyProjectileAnimationParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  const operation = controller.operation;
+  const expression = operation?.kind === "modifyprojectile"
+    ? operation.projAnimExpression
+    : undefined;
+  if (expression !== undefined) {
+    return resolveRuntimeHelperIntegerExpression(helper, expression, options);
+  }
+  return resolveHelperModifyProjectileNumberParam(helper, controller, "projanim", options);
 }
 
 function resolveHelperModifyProjectileNumberParam(
