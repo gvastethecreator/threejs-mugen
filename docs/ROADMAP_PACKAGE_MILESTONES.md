@@ -1,12 +1,14 @@
 ﻿# Roadmap Package Milestones
 
-## Active package — T709 in progress (2026-08-11)
+## Active package — T709 closed-bounded (2026-08-11)
 
 Issue 283 is the next Projectile package slice: compiler IR and caller seams
 now carry dynamic/mixed `damage` pairs for fresh root/Helper Projectiles and
-typed live `ModifyProjectile` replacement. Focused gates are green; required
-trace artifacts and broad package gates are pending. This is an adapted,
-bounded Ikemen-compatible claim, not full MUGEN/Ikemen parity. See [issue
+typed live `ModifyProjectile` replacement. Required traces are
+`a00bf194`, `a2c03112` and `6bb8fe78`; aggregate QA is `797/797` artifacts
+(`763` required, `34` optional), full Vitest is `328/3849`, and the build is
+green. This is an adapted, bounded Ikemen-compatible claim, not full
+MUGEN/Ikemen parity. See [issue
 283](../.scratch/roadmap/issues/283-projectile-damage-dynamic.md).
 
 ## Latest bounded slice — T708 closed-bounded (2026-08-11)

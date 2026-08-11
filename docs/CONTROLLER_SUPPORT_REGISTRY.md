@@ -1,11 +1,13 @@
 # Controller Support Registry
 
-Active cursor: T709 / issue 283 is in progress for typed Projectile `damage`
-pairs. Fresh root/Helper and live Ikemen `ModifyProjectile` paths now preserve
-static/dynamic/mixed inputs through IR and caller resolvers; focused tests are
-green, while required traces and broad QA remain pending. Omitted local
-Projectile damage=30, negative/healing, exact VM overflow/int32, teams,
-rollback and full parity stay outside the claim.
+Active cursor: T709 / issue 283 is closed-bounded for typed Projectile `damage`
+pairs. Fresh root/Helper and live Ikemen `ModifyProjectile` paths preserve
+static/dynamic/mixed inputs through IR and caller resolvers. Required traces
+are `a00bf194`, `a2c03112` and `6bb8fe78`; aggregate QA passes `797/797`
+artifacts (`763` required, `34` optional), full Vitest passes `328/3849`, and
+the build is green. Omitted local Projectile damage=30, negative/healing,
+exact VM overflow/int32, teams, rollback and full parity stay outside the
+claim.
 
 Latest bounded cursor: T708 / issue 282 is closed-bounded for Ikemen-only
 live `ModifyProjectile pausemovetime` and `supermovetime`. Root and Helper

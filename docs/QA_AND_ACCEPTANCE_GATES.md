@@ -1,13 +1,16 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-11 T709 Projectile damage gates — pending
+## 2026-08-11 T709 Projectile damage gates — passed / closed-bounded
 
 Issue 283 requires compiler evidence for static/dynamic/mixed/single/pair
 Projectile `damage`, focused fresh root/Helper runtime checks, live
 `ModifyProjectile` selector replacement, and required root+Helper traces that
-observe `GetHitVar(damage/hitdamage/guarddamage)` after contact. Typecheck and
-focused suites are green; `pnpm qa:trace`, full Vitest, build and diff
-hygiene still gate closure. Keep omitted local damage=30 and exclude negative
+observe `GetHitVar(damage/hitdamage/guarddamage)` after contact. Required
+checksums are `a00bf194` (root fresh), `a2c03112` (Helper fresh) and
+`6bb8fe78` (ModifyProjectile root). `pnpm qa:trace` passes `797/797`
+artifacts (`763` required, `34` optional); full Vitest passes `328/3849`,
+the build and typecheck pass, and diff hygiene is clean apart from inherited
+CRLF warnings. Keep omitted local damage=30 and exclude negative
 damage/healing, exact VM overflow/int32, teams, rollback and full parity. See
 [issue 283](../.scratch/roadmap/issues/283-projectile-damage-dynamic.md).
 

@@ -1,13 +1,15 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T709 Projectile damage — in progress, no score movement
+## 2026-08-11 T709 Projectile damage — closed-bounded, no score movement
 
 Issue 283 wires finite typed `damage` pairs through fresh Projectile root/
 Helper spawns and live Ikemen `ModifyProjectile`, with focused compiler,
-runtime and caller tests green. No score movement yet: required traces, full
-Vitest, build and aggregate QA remain open. Negative/healing, exact VM
-overflow/int32, teams, rollback and full Projectile parity stay blocked. See
-[issue 283](../.scratch/roadmap/issues/283-projectile-damage-dynamic.md).
+runtime and caller tests green. Required traces are `a00bf194`, `a2c03112`
+and `6bb8fe78`; full Vitest is `328/3849`, build is green, and aggregate QA
+is `797/797` artifacts (`763` required, `34` optional). No score movement:
+negative/healing, exact VM overflow/int32, teams, rollback and full Projectile
+parity stay blocked. See [issue
+283](../.scratch/roadmap/issues/283-projectile-damage-dynamic.md).
 
 ## 2026-08-11 T708 `ModifyProjectile` pause/super movetime closed-bounded - no score movement
 

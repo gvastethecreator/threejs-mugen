@@ -1,12 +1,14 @@
 ﻿# Roadmap Execution Board
 
-## Next bounded slice — T709 in progress (2026-08-11)
+## Next bounded slice — T709 closed-bounded (2026-08-11)
 
 Issue 283 is the active cursor for Projectile `damage`: typed dynamic/mixed
 fresh root and Helper damage pairs, plus typed live `ModifyProjectile` damage,
-are implemented and covered by focused tests. Required root/Helper trace
-artifacts and the broad gates are still pending, so this slice is not yet
-closed-bounded. Keep local omitted Projectile damage=30 and exclude negative
+are implemented and covered by focused tests. Required traces are
+`a00bf194` (root fresh), `a2c03112` (Helper fresh) and `6bb8fe78`
+(`ModifyProjectile` root). Aggregate QA passes `797/797` artifacts (`763`
+required, `34` optional), full Vitest passes `328/3849`, and the production
+build is green. Keep local omitted Projectile damage=30 and exclude negative
 damage/healing, VM overflow/int32, teams, rollback and full parity. See [issue
 283](../.scratch/roadmap/issues/283-projectile-damage-dynamic.md).
 

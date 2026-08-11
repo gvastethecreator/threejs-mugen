@@ -1,15 +1,18 @@
 ﻿# Next Build Roadmap
 
-## Next bounded slice — T709 in progress (2026-08-11)
+## Next bounded slice — T709 closed-bounded (2026-08-11)
 
 Issue 283 adds typed caller-context `damage` pairs for fresh Projectile and
 live `ModifyProjectile`: static, single, mixed and two-component forms now
 survive compiler IR and resolve finite integer components in root/Helper
-contexts. Focused compiler/Projectile/Helper/root coverage is green; required
-root+Helper trace evidence, full Vitest, build and aggregate QA remain pending.
-The local fresh Projectile default (30) is preserved when `damage` is omitted;
-negative/healing, exact VM overflow/int32, teams, rollback and full
-ModifyProjectile parity remain outside this slice. See [issue
+contexts. Focused compiler/Projectile/Helper/root coverage is green. Required
+traces are `a00bf194` (root fresh), `a2c03112` (Helper fresh) and `6bb8fe78`
+(`ModifyProjectile` root); `pnpm qa:trace` passes `797/797` artefacts (`763`
+required, `34` optional). Full Vitest passes `328` files / `3849` tests and
+the production build is green. The local fresh Projectile default (30) is
+preserved when `damage` is omitted; negative/healing, exact VM overflow/int32,
+teams, rollback and full `ModifyProjectile` parity remain outside this slice.
+See [issue
 283](../.scratch/roadmap/issues/283-projectile-damage-dynamic.md).
 
 ## Latest bounded slice — T708 closed-bounded (2026-08-11)
