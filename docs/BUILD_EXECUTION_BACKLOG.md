@@ -2,10 +2,14 @@
 
 ## Current parity queue
 
-- **T707 planned** — typed root/Helper caller-context expressions for live
-  Ikemen `ModifyProjectile projhitanim`, `projremanim` and `projcancelanim`.
-  Reuse selected ownership/AIR reset; keep FFX, warning/overflow, invalid
-  timing, teams, rollback and full Projectile parity blocked. See [issue
+- **T707 closed-bounded** — typed root/Helper caller-context expressions for
+  live Ikemen `ModifyProjectile projhitanim`, `projremanim` and
+  `projcancelanim` now resolve once and reuse selected AIR terminal playback.
+  Required trace `67162459/96ff2073`; terminal-focused tests `25/25` and
+  typecheck pass. Aggregate QA passes `792/792` artifacts (`758` required,
+  `34` optional); FFX,
+  warning/overflow, invalid timing, teams, rollback and full Projectile parity
+  stay blocked. See [issue
   281](../.scratch/roadmap/issues/281-modifyprojectile-terminal-anim-dynamic.md).
 
 - **T706 closed-bounded** — Helper-owned live Ikemen `ModifyProjectile

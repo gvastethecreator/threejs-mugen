@@ -1,8 +1,17 @@
 ﻿# Progress Tracker
 
-## Next implementation checkpoint — T707 planned (2026-08-11)
+## Latest implementation checkpoint — T707 closed-bounded (2026-08-11)
 
-T707 is planned for typed dynamic `ModifyProjectile` terminal animations
+T707 / issue 281 closes typed dynamic `ModifyProjectile` terminal
+animations (`projhitanim`, `projremanim`, `projcancelanim`) with one
+caller-context resolution and the existing selected-Projectile AIR terminal
+path. Required trace is `67162459/96ff2073`; terminal-focused tests pass
+`25/25`, and typecheck is green. Aggregate QA passes `792/792` artifacts
+(`758` required, `34` optional). FFX, exact warning/overflow behavior, invalid-action timing, teams, rollback
+and full Projectile parity are blocked. See [issue
+281](../.scratch/roadmap/issues/281-modifyprojectile-terminal-anim-dynamic.md).
+
+The closed-bounded T707 implementation covers typed dynamic `ModifyProjectile` terminal animations
 (`projhitanim`, `projremanim`, `projcancelanim`) with one caller-context
 resolution and the existing selected-Projectile AIR reset. The bounded claim
 will remain Ikemen-only; FFX, exact warning/overflow behavior, invalid-action

@@ -2,7 +2,7 @@
 
 ## Status
 
-`planned` — siguiente corte bounded después de T706.
+`closed-bounded` — implementado y verificado el 2026-08-11.
 
 ## Goal
 
@@ -53,9 +53,16 @@ Blocked:
 4. Closeout gates: focused tests, `pnpm typecheck`, `pnpm qa:trace`, full
    `pnpm test`, `pnpm build` y `git diff --check`.
 
-## Acceptance
+## Acceptance / closeout
 
-El corte sólo podrá cerrarse como bounded cuando los tres parámetros
-terminales acepten expresiones typed, se resuelvan una vez en el caller y
-alimenten el reemplazo AIR existente sin mutaciones fuera de selección. La
-claim seguirá siendo Ikemen-only y conservará los bloqueos declarados.
+Los tres parámetros terminales aceptan expresiones typed, se resuelven una vez
+en caller root/Helper y alimentan el reemplazo AIR existente sin mutaciones
+fuera de selección. El gate dedicado
+`synthetic-imported-modifyprojectile-dynamic-terminal-anim.json` pasa con
+trace `67162459` y final `96ff2073`; la cobertura focal del corte y el
+typecheck pasan. La ejecución completa de `pnpm qa:trace` también pasa:
+`792/792` artefactos, `758` requeridos y `34` opcionales, sin fallos.
+
+La claim sigue siendo Ikemen-only. FFX, warning/clamp exacto de negativos y
+overflow, timing de acción inválida, broadcast entre namespaces, teams,
+rollback y paridad completa de Projectile permanecen bloqueados.

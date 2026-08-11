@@ -1,8 +1,19 @@
 ﻿# Roadmap Execution Board
 
-## Next bounded slice — T707 planned (2026-08-11)
+## Latest bounded slice — T707 closed-bounded (2026-08-11)
 
-T707 / issue 281 is queued to type and resolve Ikemen-only live
+T707 / issue 281 closes typed caller-context expressions for Ikemen-only live
+`ModifyProjectile` terminal animations: `projhitanim`, `projremanim` and
+`projcancelanim`. Root and Helper resolvers evaluate each expression once,
+preserve the existing selection/ownership filter, and reuse the AIR terminal
+action path. Required trace checksum is `67162459` / final `96ff2073`;
+the dedicated terminal tests pass `25/25` and typecheck is green. Aggregate QA
+passes `792/792` artifacts (`758` required, `34` optional). FFX prefixes, exact negative or
+overflow warnings, invalid-action timing, namespace broadcast, teams, rollback
+and full Projectile parity remain blocked. See [issue
+281](../.scratch/roadmap/issues/281-modifyprojectile-terminal-anim-dynamic.md).
+
+The closed-bounded T707 implementation types and resolves Ikemen-only live
 `ModifyProjectile` terminal animations: `projhitanim`, `projremanim` and
 `projcancelanim`. It reuses the existing selection, caller-context resolution
 and AIR reset seams from T705/T706. FFX prefixes, exact negative or overflow

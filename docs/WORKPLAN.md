@@ -1,6 +1,15 @@
 # Workplan
 
-## Next bounded slice — T707 planned (2026-08-11)
+## Latest bounded slice — T707 closed-bounded (2026-08-11)
+
+T707 closes typed caller-context `ModifyProjectile` terminal animations for
+`projhitanim`, `projremanim` and `projcancelanim`. Selection, ownership
+and AIR terminal playback reuse the existing seams. Required trace is
+`67162459/96ff2073`; terminal-focused tests pass `25/25`, typecheck is
+green, and aggregate QA passes `792/792` artifacts (`758` required,
+`34` optional). Keep FFX, exact warning/overflow, invalid-action timing,
+teams, rollback and full Projectile parity blocked. See [issue
+281](../.scratch/roadmap/issues/281-modifyprojectile-terminal-anim-dynamic.md).
 
 Implement typed caller-context `ModifyProjectile` terminal animations for
 `projhitanim`, `projremanim` and `projcancelanim`. Preserve selection,

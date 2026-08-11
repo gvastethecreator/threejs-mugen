@@ -1,11 +1,13 @@
 # Controller Support Registry
 
-Next planned cursor: T707 / issue 281 covers typed dynamic live
-`ModifyProjectile` terminal animations (`projhitanim`, `projremanim`,
-`projcancelanim`) in root and Helper caller contexts. It will reuse existing
-selection, ownership and AIR reset seams; FFX, warning/overflow parity,
-invalid-action timing, teams, rollback and full Projectile parity remain
-blocked.
+Latest bounded cursor: T707 / issue 281 is closed-bounded for typed dynamic
+live `ModifyProjectile` terminal animations (`projhitanim`, `projremanim`,
+`projcancelanim`) in root and Helper caller contexts. Required trace is
+`67162459/96ff2073`; terminal-focused coverage is `25/25` and typecheck is
+green. Aggregate QA passes `792/792` artifacts (`758` required, `34` optional).
+FFX, warning/overflow
+parity, invalid-action timing, teams, rollback and full Projectile parity
+remain blocked.
 
 Latest bounded cursor: T706 / issue 280 is closed-bounded for explicit Helper
 caller-context resolution of typed live `ModifyProjectile projanim`. The Helper

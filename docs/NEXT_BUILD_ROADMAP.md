@@ -1,8 +1,18 @@
 ﻿# Next Build Roadmap
 
-## Next bounded slice — T707 planned (2026-08-11)
+## Latest bounded slice — T707 closed-bounded (2026-08-11)
 
-T707 / issue 281 will close typed caller-context expressions for live
+T707 / issue 281 closes typed caller-context expressions for live Ikemen
+`ModifyProjectile` terminal animations (`projhitanim`, `projremanim`,
+`projcancelanim`). The selected root/Helper path resolves each expression
+once and reuses terminal AIR playback. Required trace is
+`67162459/96ff2073`; terminal-focused tests pass `25/25`, with typecheck
+green. Aggregate QA passes `792/792` artifacts (`758` required, `34` optional).
+FFX, exact warning/overflow
+parity, invalid-action timing, teams, rollback and full Projectile parity stay
+outside the claim. See [issue 281](../.scratch/roadmap/issues/281-modifyprojectile-terminal-anim-dynamic.md).
+
+The closed-bounded T707 implementation covers typed caller-context expressions for live
 `ModifyProjectile` terminal animations (`projhitanim`, `projremanim`,
 `projcancelanim`) while preserving the existing selector/ownership and AIR
 reset behavior. FFX, exact warning/overflow parity, invalid-action timing,

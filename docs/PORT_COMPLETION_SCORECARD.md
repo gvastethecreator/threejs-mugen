@@ -1,5 +1,16 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T707 `ModifyProjectile` terminal animations closed-bounded - no score movement
+
+T707 closes typed caller-context expressions for live Ikemen
+`projhitanim`, `projremanim` and `projcancelanim` in root and Helper resolver
+paths. Required trace `synthetic-imported-modifyprojectile-dynamic-terminal-anim`
+passes with checksum `67162459` / final `96ff2073`; terminal-focused coverage
+passes `25/25`. Aggregate QA passes `792/792` artifacts (`758` required,
+`34` optional). No score movement: FFX, exact warning/overflow behavior,
+invalid-action timing, namespace broadcast, teams, rollback and full Projectile
+parity remain blocked.
+
 ## 2026-08-11 T706 Helper `ModifyProjectile projanim` closed-bounded - no score movement
 
 T706 closes the Helper-owned live Ikemen `ModifyProjectile projanim` seam.
