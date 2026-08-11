@@ -140,6 +140,46 @@ describe("ReversalSystem", () => {
     });
   });
 
+  it("resolves dynamic ReversalDef numhits in the caller and consumes the live replacement", () => {
+    const reversalWorld = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const receiver = actor("p2", "Reverser", { vars: [4] });
+    const caller = actor("p1", "Caller", { vars: [4] });
+
+    const activated = dispatchWorld.apply({
+      actor: receiver,
+      controller: compileControllerIr(controller("ReversalDef", {
+        "reversal.attr": "S,NA",
+        numhits: "var(0) + 2",
+      })),
+      context: { self: caller.runtime },
+      hitbox: box(),
+      reversalWorld,
+    });
+
+    expect(activated.activated).toBe(true);
+    expect(receiver.currentMove?.hitVars?.hitCount).toBe(6);
+    expect(receiver.runtime.reversal?.hitCount).toBe(6);
+
+    caller.runtime.vars[0] = 9;
+    const modified = dispatchWorld.modify({
+      actor: receiver,
+      controller: compileControllerIr(controller("ModifyReversalDef", {
+        numhits: "var(0) - 1",
+        redirectid: "57",
+      })),
+      context: { self: caller.runtime },
+    });
+
+    expect(modified.modified).toBe(true);
+    expect(receiver.currentMove?.hitVars?.hitCount).toBe(8);
+    expect(receiver.runtime.reversal?.hitCount).toBe(8);
+
+    const attacker = actor("p1", "Attacker", { stateNo: 200, currentMove: move(), currentMoveLabel: "Punch" });
+    reversalWorld.apply(receiver, attacker, receiver.currentMove!, hooks());
+    expect(runtimeReceivedHitsValue(attacker.contact, 200)).toBe(8);
+  });
+
   it("resolves ReversalDef pausetime pairs in the caller context", () => {
     const world = new RuntimeReversalWorld();
     const dispatchWorld = new RuntimeReversalControllerDispatchWorld();

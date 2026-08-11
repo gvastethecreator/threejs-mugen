@@ -384,6 +384,8 @@ export type ModifyReversalDefControllerOp = {
   p1SpritePriorityExpression?: number | string;
   /** Dynamic live P2 sprite-priority replacement. */
   p2SpritePriorityExpression?: number | string;
+  /** Dynamic live numhits replacement. */
+  hitCountExpression?: number | string;
   /** Ikemen reuses the HitDef parameter evaluator for live state expressions. */
   p1StateNo?: number | string;
   p2StateNo?: number | string;
@@ -1295,6 +1297,8 @@ export type ReversalDefControllerOp = {
   p1SpritePriorityExpression?: number | string;
   /** Dynamic ReversalDef P2 sprite-priority expression. */
   p2SpritePriorityExpression?: number | string;
+  /** Dynamic ReversalDef numhits expression. */
+  hitCountExpression?: number | string;
   /** ReversalDef HitDef state numbers may be authored expressions. */
   p1StateNo?: number | string;
   p2StateNo?: number | string;
@@ -2356,7 +2360,9 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
   const hitPause = pauseTime === undefined || typeof pauseTime[0] !== "number"
     ? 0
     : Math.max(0, Math.trunc(pauseTime[0]));
-  const hitCount = staticOptionalHitCountParam(controller, "numhits");
+  const hitCountValue = optionalIntegerExpressionParam(controller, "numhits");
+  const hitCount = typeof hitCountValue === "number" ? hitCountValue : undefined;
+  const hitCountExpression = typeof hitCountValue === "string" ? hitCountValue : undefined;
   const p1SpritePriorityValue = optionalIntegerExpressionParam(controller, "p1sprpriority");
   const p2SpritePriorityValue = optionalIntegerExpressionParam(controller, "p2sprpriority");
   const p1SpritePriority = typeof p1SpritePriorityValue === "number" ? p1SpritePriorityValue : undefined;
@@ -2379,7 +2385,7 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     hitDefAttr === false ||
     guardFlag === false ||
     missOnOverride === "invalid" ||
-    hitCount === false ||
+    hitCountValue === false ||
     p1SpritePriorityValue === false ||
     p2SpritePriorityValue === false ||
     p1StateNo === false ||
@@ -2403,7 +2409,8 @@ function compileReversalDefControllerOp(controller: MugenStateController): Rever
     missOnOverride,
     hitPause,
     ...(pauseTimeExpressions === undefined ? {} : { pauseTimeExpressions }),
-    hitCount: hitCount === true ? undefined : hitCount,
+    ...(hitCount === undefined ? {} : { hitCount }),
+    ...(hitCountExpression === undefined ? {} : { hitCountExpression }),
     ...(p1SpritePriority === undefined ? {} : { p1SpritePriority }),
     ...(p2SpritePriority === undefined ? {} : { p2SpritePriority }),
     ...(p1SpritePriorityExpression === undefined ? {} : { p1SpritePriorityExpression }),
@@ -3159,7 +3166,9 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   const pauseTime = Array.isArray(pauseTimeValue) && pauseTimeExpressions === undefined
     ? pauseTimeValue
     : undefined;
-  const hitCount = staticOptionalHitCountParam(controller, "numhits");
+  const hitCountValue = optionalIntegerExpressionParam(controller, "numhits");
+  const hitCount = typeof hitCountValue === "number" ? hitCountValue : undefined;
+  const hitCountExpression = typeof hitCountValue === "string" ? hitCountValue : undefined;
   const p1SpritePriorityValue = optionalIntegerExpressionParam(controller, "p1sprpriority");
   const p2SpritePriorityValue = optionalIntegerExpressionParam(controller, "p2sprpriority");
   const p1SpritePriority = typeof p1SpritePriorityValue === "number" ? p1SpritePriorityValue : undefined;
@@ -3182,7 +3191,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     guardFlag === false ||
     missOnOverride === "invalid" ||
     pauseTimeValue === false ||
-    hitCount === false ||
+    hitCountValue === false ||
     p1SpritePriorityValue === false ||
     p2SpritePriorityValue === false ||
     p1StateNo === false ||
@@ -3199,7 +3208,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
   const hitPause = pauseTime === undefined || typeof pauseTime[0] !== "number"
     ? undefined
     : Math.max(0, Math.trunc(pauseTime[0]));
-  const normalizedHitCount = hitCount === true ? undefined : hitCount;
+  const normalizedHitCount = hitCount;
   const normalizedP1StateNo = p1StateNo === true
     ? undefined
     : typeof p1StateNo === "number" ? Math.max(0, Math.round(p1StateNo)) : p1StateNo;
@@ -3224,6 +3233,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     hitPause === undefined &&
     pauseTimeExpressions === undefined &&
     normalizedHitCount === undefined &&
+    hitCountExpression === undefined &&
     p1SpritePriorityValue === true &&
     p2SpritePriorityValue === true &&
     normalizedP1StateNo === undefined &&
@@ -3247,6 +3257,7 @@ function compileModifyReversalDefControllerOp(controller: MugenStateController):
     ...(hitPause === undefined ? {} : { hitPause }),
     ...(pauseTimeExpressions === undefined ? {} : { pauseTimeExpressions }),
     ...(normalizedHitCount === undefined ? {} : { hitCount: normalizedHitCount }),
+    ...(hitCountExpression === undefined ? {} : { hitCountExpression }),
     ...(p1SpritePriority === undefined ? {} : { p1SpritePriority }),
     ...(p2SpritePriority === undefined ? {} : { p2SpritePriority }),
     ...(p1SpritePriorityExpression === undefined ? {} : { p1SpritePriorityExpression }),
@@ -4955,15 +4966,6 @@ function staticHitDefPriorityType(value: string | undefined): "hit" | "miss" | "
     default:
       return undefined;
   }
-}
-
-function staticOptionalIntegerParam(controller: MugenStateController, key: string): number | true | false {
-  const value = staticOptionalStrictNumberParam(controller, key);
-  return typeof value === "number" ? Math.trunc(value) : value;
-}
-
-function staticOptionalHitCountParam(controller: MugenStateController, key: string): number | true | false {
-  return staticOptionalIntegerParam(controller, key);
 }
 
 function staticOptionalHitFlagParam(controller: MugenStateController, key: string): string | true | false {

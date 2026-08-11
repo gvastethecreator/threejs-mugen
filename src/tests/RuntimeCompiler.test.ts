@@ -3325,7 +3325,7 @@ value = 1
     });
   });
 
-  it("compiles static ReversalDef and root ModifyReversalDef numhits values", () => {
+  it("compiles static and dynamic ReversalDef numhits values", () => {
     const reversal = compileControllerIr(
       controller(200, "ReversalDef", [], { "reversal.attr": "S,NA", numhits: "3" }),
     );
@@ -3338,6 +3338,9 @@ value = 1
     const dynamicModified = compileControllerIr(
       controller(200, "ModifyReversalDef", [], { numhits: "var(1)", redirectid: "57" }),
     );
+    const malformed = compileControllerIr(
+      controller(200, "ModifyReversalDef", [], { numhits: "var(", redirectid: "57" }),
+    );
 
     expect(reversal.operation).toMatchObject({ kind: "reversaldef", hitCount: 3 });
     expect(modified.operation).toEqual({
@@ -3345,8 +3348,13 @@ value = 1
       hitCount: 4,
       redirectPlayerIdExpression: "57",
     });
-    expect(dynamicReversal.operation).toBeUndefined();
-    expect(dynamicModified.operation).toBeUndefined();
+    expect(dynamicReversal.operation).toMatchObject({ kind: "reversaldef", hitCountExpression: "var(1)" });
+    expect(dynamicModified.operation).toEqual({
+      kind: "modifyreversaldef",
+      hitCountExpression: "var(1)",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(malformed.operation).toBeUndefined();
   });
 
   it("compiles static ReversalDef and root ModifyReversalDef reversal guard filters", () => {

@@ -165,7 +165,12 @@ export class RuntimeReversalControllerDispatchWorld {
       label: source.name ?? "ReversalDef",
       hitPause,
       hitShakeTime,
-      hitCount: operation?.hitCount ?? staticReversalHitCount(findParam(source, "numhits")),
+      hitCount: resolveRuntimeReversalInteger(
+        operation?.hitCountExpression ?? operation?.hitCount,
+        findParam(source, "numhits"),
+        actor.runtime,
+        context,
+      ) ?? staticReversalHitCount(findParam(source, "numhits")),
       p1SpritePriority: resolveRuntimeReversalInteger(
         operation?.p1SpritePriorityExpression ?? operation?.p1SpritePriority,
         findParam(source, "p1sprpriority"),
@@ -292,9 +297,15 @@ export class RuntimeReversalControllerDispatchWorld {
       existing.hitShakeTime = pauseTime[1];
       runtimeReversal.hitShakeTime = pauseTime[1];
     }
-    if (operation.hitCount !== undefined) {
-      existing.hitVars = { ...existing.hitVars, hitCount: operation.hitCount };
-      runtimeReversal.hitCount = operation.hitCount;
+    const hitCount = resolveRuntimeReversalInteger(
+      operation.hitCountExpression ?? operation.hitCount,
+      undefined,
+      actor.runtime,
+      context,
+    );
+    if ((operation.hitCountExpression !== undefined || operation.hitCount !== undefined) && hitCount !== undefined) {
+      existing.hitVars = { ...existing.hitVars, hitCount };
+      runtimeReversal.hitCount = hitCount;
     }
     const p1SpritePriority = resolveRuntimeReversalInteger(
       operation.p1SpritePriorityExpression ?? operation.p1SpritePriority,
