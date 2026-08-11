@@ -886,6 +886,11 @@ async function main() {
       artifact: presets.createSyntheticImportedReversalTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-dynamic-reversal",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicReversalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-damage-scale",
       required: true,
       artifact: presets.createSyntheticImportedDamageScaleTraceArtifact(),

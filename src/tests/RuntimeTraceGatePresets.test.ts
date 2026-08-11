@@ -537,6 +537,7 @@ import {
   createSyntheticImportedHitByRejectTraceArtifact,
   createSyntheticImportedRejectTraceArtifact,
   createSyntheticImportedReversalTraceArtifact,
+  createSyntheticImportedDynamicReversalTraceArtifact,
   createSyntheticImportedDamageScaleTraceArtifact,
   createSyntheticImportedDynamicDamageScaleTraceArtifact,
   createSyntheticImportedDataDamageScaleTraceArtifact,
@@ -11351,6 +11352,39 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.eventCategories).toContain("reversal");
     expect(artifact.gates[0]?.evidence.combatReasons).toContain("reversal");
     expect(artifact.trace.events.some((event) => event.category === "reversal" && event.line.includes("reversed"))).toBe(true);
+  });
+
+  it("creates a required imported dynamic ReversalDef state-field artifact", () => {
+    const artifact = createSyntheticImportedDynamicReversalTraceArtifact({ generatedAt: "2026-08-11T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-dynamic-reversal-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-dynamic-reversal-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.actorSources).toEqual(["imported"]);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 777, 888]));
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(4);
+    expect(evidence?.executedControllers.ReversalDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(4);
+    expect(evidence?.executedOperations.reversaldef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("reversal");
+    expect(evidence?.combatReasons).toContain("reversal");
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", stateNo: 888, moveType: "H" }),
+        expect.objectContaining({ id: "p2", stateNo: 777, moveType: "H" }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported custom-state ReversalDef artifact before p2stateno entry", () => {

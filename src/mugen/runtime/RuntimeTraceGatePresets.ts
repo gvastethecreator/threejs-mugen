@@ -9839,6 +9839,73 @@ export function createSyntheticImportedReversalTraceArtifact(options: RuntimeTra
   });
 }
 
+export function createSyntheticImportedDynamicReversalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-dynamic-reversal-attacker",
+    displayName: "Synthetic Imported Dynamic Reversal Attacker",
+    hitDefAttr: "S,NA",
+    customStateRoute: { startStateNo: 888, selfStateAfter: 4 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-dynamic-reversal-defender",
+    displayName: "Synthetic Imported Dynamic Reversal Defender",
+    passiveReversalDef: {
+      attr: "SA,AA",
+      p1StateNo: 777,
+      p2StateNo: 888,
+      p1StateNoExpression: "var(0) + 776",
+      p2StateNoExpression: "var(1) + 887",
+      p2GetP1StateExpression: "var(2) + 1",
+      p2FacingExpression: "var(3)",
+      vars: [
+        { index: 0, value: 1 },
+        { index: 1, value: 1 },
+        { index: 2, value: 0 },
+        { index: 3, value: -1 },
+      ],
+      hitPause: 3,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-dynamic-reversal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-dynamic-reversal-golden",
+      label: "Synthetic imported dynamic ReversalDef state route",
+      source: "imported",
+      notes: [
+        "Official M.U.G.E.N ReversalDef HitDef state fields and pinned Ikemen GO caller evaluation are covered for p1stateno, p2stateno, p2getp1state, and p2facing. The fixture proves VarSet values are evaluated in the active ReversalDef caller before the accepted counter contact. ModifyReversalDef expressions, Helper-owned ReversalDef dispatch, guard/projectile breadth, exact tick ordering, and full parity remain outside this bounded slice.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-dynamic-reversal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 777, 888],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "ReversalDef", "VarSet"],
+        requiredExecutedOperations: ["hitdef", "reversaldef", "variable:varset"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 888, animNo: 888, life: 1000, moveType: "H" },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000, moveType: "H" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedCustomStateReversalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -62662,6 +62729,12 @@ export type SyntheticImportedTraceFighterOptions = {
     missOnOverride?: boolean;
     p1StateNo: number;
     p2StateNo?: number;
+    /** Synthetic fixture-only caller expressions for ReversalDef state routing. */
+    p1StateNoExpression?: SyntheticNumberExpression;
+    p2StateNoExpression?: SyntheticNumberExpression;
+    p2GetP1StateExpression?: SyntheticNumberExpression;
+    p2FacingExpression?: SyntheticNumberExpression;
+    vars?: SyntheticRuntimeVarSeed[];
     hitPause?: number;
     p1SpritePriority?: number;
     p2SpritePriority?: number;
@@ -65783,7 +65856,21 @@ function passiveReversalDefController(
   suffix = "",
 ): string {
   const hitPause = config.hitPause ?? 0;
+  const vars = config.vars
+    ?.map(
+      (seed) => `
+[State ${stateNo}, Passive ReversalDef Var ${seed.index}${suffix}]
+type = VarSet
+trigger1 = 1
+v = ${seed.index}
+value = ${seed.value}
+`,
+    )
+    .join("") ?? "";
+  const p1StateNo = config.p1StateNoExpression ?? config.p1StateNo;
+  const p2StateNo = config.p2StateNoExpression ?? config.p2StateNo;
   return `
+${vars}
 [State ${stateNo}, Passive ReversalDef${suffix}]
 type = ReversalDef
 trigger1 = ${config.trigger ?? "1"}
@@ -65796,8 +65883,10 @@ ${config.missOnOverride === undefined ? "" : `missonoverride = ${config.missOnOv
 pausetime = ${hitPause},${hitPause}
 ${config.p1SpritePriority === undefined ? "" : `p1sprpriority = ${config.p1SpritePriority}`}
 ${config.p2SpritePriority === undefined ? "" : `p2sprpriority = ${config.p2SpritePriority}`}
-p1stateno = ${config.p1StateNo}
-${config.p2StateNo === undefined ? "" : `p2stateno = ${config.p2StateNo}`}
+p1stateno = ${p1StateNo}
+${p2StateNo === undefined ? "" : `p2stateno = ${p2StateNo}`}
+${config.p2GetP1StateExpression === undefined ? "" : `p2getp1state = ${config.p2GetP1StateExpression}`}
+${config.p2FacingExpression === undefined ? "" : `p2facing = ${config.p2FacingExpression}`}
 ${config.targetId === undefined ? "" : `id = ${config.targetId}`}
 ${config.attackDepth === undefined ? "" : `attack.depth = ${config.attackDepth.join(",")}`}
 `;
