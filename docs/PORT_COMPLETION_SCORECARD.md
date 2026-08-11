@@ -1,6 +1,17 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T737 `ModifyHitDef guard.velocity` Y/Z — closed-bounded, no score movement
+## 2026-08-11 T738 Helper `ModifyHitDef guard.velocity` Y/Z — closed-bounded, no score movement
+
+Issue 312 closes Ikemen-only Helper-owned live `ModifyHitDef guard.velocity`
+Y/Z component replacement. Caller-context single, pair, and triple values
+preserve omitted live components and reach accepted ground-guard
+`GetHitVar`/velocity metadata with Helper/root/parent ownership. Required trace
+checksum is `da73f66a` / `4231487d`; aggregate QA passes `825/825` artifacts
+(`791` required, `34` optional). No score movement: fresh defaults, air guard,
+Projectiles and exact physics parity remain blocked. See [issue
+312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md).
+
+## Historical checkpoint — 2026-08-11 T737 `ModifyHitDef guard.velocity` Y/Z — closed-bounded, no score movement
 
 Issue 311 closes Ikemen-only live `ModifyHitDef guard.velocity` Y/Z component
 replacement through root/RedirectID. Single, pair, and triple caller-context
@@ -45,12 +56,12 @@ channels, exact SND lookup/playback/mixing/priority, Projectiles and full audio
 parity remain blocked. See [issue
 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next queued — T738 Helper `ModifyHitDef guard.velocity` Y/Z
+## Next queued — T739 Helper `ModifyHitDef airguard.velocity` X/Y
 
-Issue 312 queues the bounded Ikemen-only Helper-owned live Y/Z guard-velocity
-replacement with root/parent ownership evidence and omission preservation.
-Air guard, exact physics timing, Projectiles and full parity remain deferred.
-See [issue 312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md).
+Issue 313 queues the bounded Ikemen-only Helper-owned live X/Y airborne
+guard-velocity replacement with root/parent ownership evidence and Z/omission
+preservation. Exact physics timing, Projectiles and full parity remain deferred.
+See [issue 313](../.scratch/roadmap/issues/313-helper-modifyhitdef-airguard-velocity-xy.md).
 
 ## Historical checkpoint — 2026-08-11 T733 `ModifyHitDef guardsound` expressions — closed-bounded, no score movement
 

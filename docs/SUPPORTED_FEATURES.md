@@ -1,5 +1,16 @@
 ﻿# Supported Features
-## 2026-08-11 T737 `ModifyHitDef guard.velocity` Y/Z — closed-bounded
+## 2026-08-11 T738 Helper `ModifyHitDef guard.velocity` Y/Z — closed-bounded
+
+Ikemen-only Helper-owned live `ModifyHitDef guard.velocity` Y/Z replacement is
+supported through caller-context static, mixed, and dynamic single/pair/triple
+values. Omitted live components are preserved and accepted ground guards expose
+the normalized `GetHitVar`/velocity metadata with Helper/root/parent ownership.
+Required trace/final checksums are `da73f66a` / `4231487d`; aggregate QA passes
+`825/825` artifacts (`791` required, `34` optional). Fresh defaults, air guard,
+Projectiles and exact guard physics remain outside the claim. See [issue
+312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md).
+
+## Historical — 2026-08-11 T737 `ModifyHitDef guard.velocity` Y/Z — closed-bounded
 
 Ikemen-only live `ModifyHitDef guard.velocity` Y/Z component replacement is
 supported through root/RedirectID. Single, pair, and triple caller-context
@@ -32,11 +43,12 @@ defaults, guardsound channel, exact playback/mixing/priority, Projectiles and
 full audio parity remain outside the claim. See [issue
 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
 
-## Next queued — T738 Helper `ModifyHitDef guard.velocity` Y/Z
+## Next queued — T739 Helper `ModifyHitDef airguard.velocity` X/Y
 
-The bounded Ikemen-only Helper-owned live Y/Z guard-velocity replacement is
-queued with root/parent ownership evidence and omission preservation. See
-[issue 312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md).
+The bounded Ikemen-only Helper-owned live airborne guard-velocity X/Y
+replacement is queued with root/parent ownership evidence and Z/omission
+preservation. See [issue
+313](../.scratch/roadmap/issues/313-helper-modifyhitdef-airguard-velocity-xy.md).
 
 ## Historical — T734 `ModifyHitDef hitsound` — closed-bounded
 

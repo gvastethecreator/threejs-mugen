@@ -1,6 +1,16 @@
 # Workplan
 
-## Latest slice — T737 closed-bounded (2026-08-11)
+## Latest slice — T738 closed-bounded (2026-08-11)
+
+Issue 312 closes Ikemen-only Helper-owned live `ModifyHitDef guard.velocity` Y/Z
+component replacement. Finite static, mixed, and caller-context dynamic
+single/pair/triple values preserve omitted live components and reach accepted
+ground-guard `GetHitVar`/velocity metadata with Helper/root/parent ownership.
+Required trace checksum `da73f66a` / final `4231487d`; aggregate QA passes
+`825/825` artifacts (`791` required, `34` optional). Fresh defaults, air guard,
+Projectiles and exact physics parity remain blocked.
+
+## Historical slice — T737 closed-bounded (2026-08-11)
 
 Issue 311 closes Ikemen-only live `ModifyHitDef guard.velocity` Y/Z component
 replacement through root/RedirectID. Finite static, mixed, and caller-context
@@ -20,11 +30,12 @@ final `d5bc517f`; aggregate QA passes `823/823` artifacts (`789` required,
 `34` optional). Fresh defaults, exact playback/mixing/priority, Projectiles
 and full audio parity remain blocked.
 
-## Next slice — T738 queued
+## Next slice — T739 queued
 
-Issue 312 queues Helper-owned live `ModifyHitDef guard.velocity` Y/Z component
-replacement with root/parent ownership evidence and omission preservation. See
-[issue 312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md).
+Issue 313 queues Helper-owned live `ModifyHitDef airguard.velocity` X/Y
+component replacement with root/parent ownership evidence and omission/Z
+preservation. See [issue
+313](../.scratch/roadmap/issues/313-helper-modifyhitdef-airguard-velocity-xy.md).
 
 ## Historical slice — T735 closed-bounded (2026-08-11)
 

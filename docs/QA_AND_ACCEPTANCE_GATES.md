@@ -1,6 +1,19 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-11 T737 `ModifyHitDef guard.velocity` Y/Z — passed / closed-bounded
+## 2026-08-11 T738 Helper `ModifyHitDef guard.velocity` Y/Z — passed / closed-bounded
+
+Required `synthetic-imported-helper-modifyhitdef-dynamic-guard-velocity-yz.json`
+proves Helper VarSet + Helper HitDef + live ModifyHitDef caller evaluation, a
+real grounded guard and target link, Helper/root/parent ownership, and typed
+`GetHitVar(xvel/yvel/zvel)=3/-4/6` after runtime-facing normalization. Trace
+checksum is `da73f66a`, final checksum `4231487d`; focused Helper/trace coverage
+passes, typecheck passes, and `pnpm qa:trace` passes `825/825` artifacts (`791`
+required, `34` optional). M.U.G.E.N 1.1 only documents ground-guard X; fresh
+defaults, air guard, Projectiles and exact physics timing remain outside this
+gate. See [issue
+312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md).
+
+## Historical — 2026-08-11 T737 `ModifyHitDef guard.velocity` Y/Z — passed / closed-bounded
 
 Required `synthetic-imported-modifyhitdef-dynamic-guard-velocity-yz.json`
 proves VarSet + HitDef + RedirectID ModifyHitDef caller evaluation, a real
@@ -51,12 +64,12 @@ Exact SND lookup/playback/mixing/channel priority, fresh defaults, Projectiles,
 renderer timing, teams, rollback and full audio parity remain outside this
 gate. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next queued — T738 Helper `ModifyHitDef guard.velocity` Y/Z
+## Next queued — T739 Helper `ModifyHitDef airguard.velocity` X/Y
 
-The next gate covers bounded Ikemen-only Helper-owned live Y/Z guard-velocity
-replacement with root/parent ownership and omission preservation; air guard,
-Projectiles and exact physics timing remain deferred. See [issue
-312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md).
+The next gate covers bounded Ikemen-only Helper-owned live X/Y airborne
+guard-velocity replacement with root/parent ownership and Z/omission
+preservation; Projectiles and exact physics timing remain deferred. See [issue
+313](../.scratch/roadmap/issues/313-helper-modifyhitdef-airguard-velocity-xy.md).
 
 ## Historical — 2026-08-11 T733 `ModifyHitDef guardsound` — passed / closed-bounded
 

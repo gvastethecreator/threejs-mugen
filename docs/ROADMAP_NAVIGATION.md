@@ -2,7 +2,15 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T737 closed-bounded (2026-08-11)
+## Current implementation route — T738 closed-bounded (2026-08-11)
+
+T738 / [issue 312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md)
+closes Helper-owned live `ModifyHitDef guard.velocity` Y/Z replacement. Single,
+pair, and triple caller-context values preserve omitted components and reach
+accepted ground-guard `GetHitVar`/velocity metadata with Helper/root/parent
+ownership. Trace/final checksums are `da73f66a` / `4231487d`.
+
+## Historical implementation route — T737 closed-bounded (2026-08-11)
 
 T737 / [issue 311](../.scratch/roadmap/issues/311-modifyhitdef-guard-velocity-yz.md)
 closes live `ModifyHitDef guard.velocity` Y/Z replacement through root/RedirectID.
@@ -35,11 +43,11 @@ preservation is required; the accepted hit-audio event carries typed `F6,4`
 telemetry from raw `Fvar(0),var(1)` with no guard route. Trace/final checksums
 are `8d56e467` / `d2d70840`.
 
-## Next implementation route — T738 queued
+## Next implementation route — T739 queued
 
-T738 / [issue 312](../.scratch/roadmap/issues/312-helper-modifyhitdef-guard-velocity-yz.md)
-queues Helper-owned live `ModifyHitDef guard.velocity` Y/Z replacement with
-root/parent ownership evidence and omission preservation.
+T739 / [issue 313](../.scratch/roadmap/issues/313-helper-modifyhitdef-airguard-velocity-xy.md)
+queues Helper-owned live `ModifyHitDef airguard.velocity` X/Y replacement with
+root/parent ownership evidence and Z/omission preservation.
 
 ## Historical implementation route — T733 closed-bounded (2026-08-11)
 

@@ -2,16 +2,28 @@
 
 Last updated: 2026-08-11
 
-## Current T737-T738 guard-velocity checkpoint
+## Current T738-T739 guard-velocity checkpoint
+
+T738 closes bounded Ikemen-only Helper-owned live `ModifyHitDef guard.velocity`
+Y/Z replacement. Single, pair, and triple caller-context values preserve
+omitted live components and reach accepted ground-guard `GetHitVar`/velocity
+metadata with Helper/root/parent ownership. Required trace/final checksums are
+`da73f66a` / `4231487d`; `pnpm qa:trace` passes `825/825` artifacts (`791`
+required, `34` optional). T739 queues the Helper-owned airborne counterpart
+for `airguard.velocity` X/Y with Z/omission preservation. M.U.G.E.N 1.1 only
+documents the base airborne pair; fresh defaults, dynamic Z, Projectiles,
+exact timing, teams, rollback and full parity remain blocked.
+
+## Historical T737 guard-velocity checkpoint
 
 T737 closes bounded Ikemen-only live `ModifyHitDef guard.velocity` Y/Z
 replacement through root/RedirectID. Single, pair, and triple caller-context
 values preserve omitted live components and reach accepted ground-guard
 `GetHitVar`/velocity metadata. Required trace/final checksums are `a2eb52db` /
 `f0fb19a8`; `pnpm qa:trace` passes `824/824` artifacts (`790` required,
-`34` optional). T738 queues the Helper-owned counterpart with root/parent
-ownership evidence. M.U.G.E.N 1.1 only documents ground-guard X; air guard,
-Projectiles, exact timing, teams, rollback and full parity remain blocked.
+`34` optional). T738 is now closed above; T739 is the next bounded Helper
+airguard slice. M.U.G.E.N 1.1 only documents ground-guard X; Projectiles,
+exact timing, teams, rollback and full parity remain blocked.
 
 ## Historical T736-T737 audio/guard checkpoint
 

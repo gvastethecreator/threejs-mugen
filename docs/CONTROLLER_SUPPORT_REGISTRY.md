@@ -1,18 +1,18 @@
 # Controller Support Registry
 
-Latest cursor: T737 / issue 311 is closed-bounded for Ikemen-only live
-root/RedirectID `ModifyHitDef guard.velocity` Y/Z component replacement.
-Single, pair, and triple caller-context values preserve omitted live
-components and reach accepted ground-guard `GetHitVar`/velocity metadata.
-Required trace `synthetic-imported-modifyhitdef-dynamic-guard-velocity-yz.json`
-proves the redirected guard route; trace/final checksums are `a2eb52db` /
-`f0fb19a8`; aggregate QA is `824/824` artifacts (`790` required, `34`
-optional).
+Latest cursor: T738 / issue 312 is closed-bounded for Ikemen-only live
+Helper-owned `ModifyHitDef guard.velocity` Y/Z component replacement.
+Caller-context single, pair, and triple values preserve omitted live
+components and reach accepted ground-guard `GetHitVar`/velocity metadata while
+retaining Helper/root/parent ownership. Required trace
+`synthetic-imported-helper-modifyhitdef-dynamic-guard-velocity-yz.json` has
+trace/final checksums `da73f66a` / `4231487d`; aggregate QA is `825/825`
+artifacts (`791` required, `34` optional).
 
-Next cursor: T738 / issue 312 is queued for Helper-owned live
-`ModifyHitDef guard.velocity` Y/Z component replacement. Root/parent ownership,
-omission preservation, exact physics timing, Projectiles, teams, rollback and
-full guard parity remain deferred.
+Next cursor: T739 / issue 313 is queued for Helper-owned live
+`ModifyHitDef airguard.velocity` X/Y component replacement. Fresh defaults,
+dynamic Z, Projectiles, exact physics timing, teams, rollback and full guard
+parity remain deferred.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root
 `ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth` static,
