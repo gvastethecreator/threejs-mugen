@@ -49,7 +49,7 @@ export class RuntimeHelperTelemetryWorld {
 
 const helperKinematicControllers = new Set(["velset", "veladd", "velmul", "posset", "posadd", "gravity", "hitvelset"]);
 const helperResourceControllers = new Set(["ctrlset", "lifeadd", "lifeset", "guardpointsadd", "guardpointsset", "dizzypointsadd", "dizzypointsset", "redlifeadd", "redlifeset", "poweradd", "powerset"]);
-const helperHitDefControllers = new Set(["hitdef", "modifyhitdef", "varset", "varadd", "varrandom", "varrangeset"]);
+const helperHitDefControllers = new Set(["hitdef", "modifyhitdef", "modifyprojectile", "varset", "varadd", "varrandom", "varrangeset"]);
 
 function recordsHelperController(controller: ControllerIr): boolean {
   return (
@@ -64,6 +64,7 @@ function recordsHelperController(controller: ControllerIr): boolean {
 
 function recordsHelperOperation(operation: ControllerOp): boolean {
   return operation.kind === "projectile" ||
+    operation.kind === "modifyprojectile" ||
     operation.kind === "hitdef" ||
     operation.kind === "modifyhitdef" ||
     operation.kind === "variable" ||

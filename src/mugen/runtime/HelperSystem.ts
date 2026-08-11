@@ -1039,6 +1039,9 @@ export function runRuntimeHelperStateControllers(
     if (dispatch.kind === "side-effect" && dispatch.effect === "modifyprojectile") {
       if (options.onModifyProjectile?.(helper, controller, helperModifyProjectileResolver(helper, controller, options))) {
         options.onController?.(helper, controller);
+        if (controller.operation?.kind === "modifyprojectile") {
+          options.onOperation?.(helper, controller.operation);
+        }
         continue;
       }
       options.onUnsupportedController?.(helper, controller);
