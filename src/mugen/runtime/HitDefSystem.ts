@@ -1386,6 +1386,21 @@ export class RuntimeHitDefControllerDispatchWorld {
         existing.guardSpark = `${runtimeHitDefSparkPrefix(operation.guardSparkExpression)}${Math.trunc(guardSparkNo)}`;
       }
     }
+    if (operation.hitSound !== undefined) {
+      const hitSoundValue = resolveSoundValue?.("hitsound", operation.hitSound)
+        ?? runtimeHitDefStaticSoundRef(operation.hitSound);
+      if (hitSoundValue !== undefined) {
+        existing.hitSound = operation.hitSound;
+        existing.hitSoundValue = hitSoundValue;
+      }
+    }
+    if (operation.hitSoundExpression !== undefined) {
+      const hitSoundValue = resolveSoundValue?.("hitsound", operation.hitSoundExpression);
+      if (hitSoundValue !== undefined) {
+        existing.hitSound = operation.hitSoundExpression;
+        existing.hitSoundValue = hitSoundValue;
+      }
+    }
     if (operation.guardSound !== undefined) {
       const guardSoundValue = resolveSoundValue?.("guardsound", operation.guardSound)
         ?? runtimeHitDefStaticSoundRef(operation.guardSound);

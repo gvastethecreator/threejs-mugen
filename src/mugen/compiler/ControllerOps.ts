@@ -317,6 +317,10 @@ export type ModifyHitDefControllerOp = {
   guardSpark?: string;
   /** Dynamic live guard hit-spark identity; prefix is retained and the numeric suffix resolves in caller context. */
   guardSparkExpression?: string;
+  /** Static live hit-sound reference replacement. */
+  hitSound?: string;
+  /** Dynamic or mixed live hit-sound reference; prefix/group/index resolve in caller context. */
+  hitSoundExpression?: string;
   /** Static live guard-sound reference replacement. */
   guardSound?: string;
   /** Dynamic or mixed live guard-sound reference; prefix/group/index resolve in caller context. */
@@ -2854,6 +2858,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "sparkangle",
     "guard.sparkangle",
     "guard.sparkno",
+    "hitsound",
     "guardsound",
     "palfx.time",
     "palfx.add",
@@ -2993,6 +2998,9 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const guardSparkExpression = typeof guardSparkValue === "string" && guardSpark === undefined
     ? guardSparkValue
     : undefined;
+  const hitSoundValue = optionalModifyHitDefSoundParam(controller, "hitsound");
+  const hitSound = typeof hitSoundValue === "object" ? hitSoundValue.staticValue : undefined;
+  const hitSoundExpression = typeof hitSoundValue === "object" ? hitSoundValue.expression : undefined;
   const guardSoundValue = optionalModifyHitDefSoundParam(controller, "guardsound");
   const guardSound = typeof guardSoundValue === "object" ? guardSoundValue.staticValue : undefined;
   const guardSoundExpression = typeof guardSoundValue === "object" ? guardSoundValue.expression : undefined;
@@ -3072,6 +3080,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     hitSparkAngle !== true ||
     guardSparkAngle !== true ||
     guardSparkValue !== true ||
+    hitSoundValue !== true ||
     guardSoundValue !== true ||
     paletteFx !== true ||
     envShake !== true ||
@@ -3135,6 +3144,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     hitSparkAngle === false ||
     guardSparkAngle === false ||
     guardSparkValue === false ||
+    hitSoundValue === false ||
     guardSoundValue === false ||
     paletteFx === false ||
     envShake === false ||
@@ -3215,6 +3225,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(guardSparkAngle === true ? {} : { guardSparkAngle }),
     ...(guardSpark === undefined ? {} : { guardSpark }),
     ...(guardSparkExpression === undefined ? {} : { guardSparkExpression }),
+    ...(hitSound === undefined ? {} : { hitSound }),
+    ...(hitSoundExpression === undefined ? {} : { hitSoundExpression }),
     ...(guardSound === undefined ? {} : { guardSound }),
     ...(guardSoundExpression === undefined ? {} : { guardSoundExpression }),
     ...(paletteFx === true ? {} : { paletteFx }),
@@ -5414,13 +5426,13 @@ type ModifyHitDefSoundParam = {
 };
 
 /**
- * Keep a live ModifyHitDef guardsound reference typed without evaluating the
+ * Keep a live ModifyHitDef sound reference typed without evaluating the
  * group/index against the target being modified. Prefix, group, and index
  * remain caller-owned at runtime; static numeric refs stay as authored refs.
  */
 function optionalModifyHitDefSoundParam(
   controller: MugenStateController,
-  key: "guardsound",
+  key: "hitsound" | "guardsound",
 ): ModifyHitDefSoundParam | true | false {
   const raw = findParam(controller, key);
   if (raw === undefined) return true;

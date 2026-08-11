@@ -2717,6 +2717,68 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("mutates live ModifyHitDef hitsound and preserves it on omission or unresolved caller values", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        hitsound: "S5,0",
+      })),
+      frame: activeFrame(),
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        hitsound: "F7,2",
+      })),
+    });
+    expect(actor.currentMove).toMatchObject({
+      hitSound: "F7,2",
+      hitSoundValue: { rawPrefix: "F", group: 7, index: 2 },
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        hitsound: "Fvar(0),var(1)",
+      })),
+      resolveSoundValue: (_key, expression) => expression === "Fvar(0),var(1)"
+        ? { rawPrefix: "F", group: 9, index: 4 }
+        : undefined,
+    });
+    expect(actor.currentMove).toMatchObject({
+      hitSound: "Fvar(0),var(1)",
+      hitSoundValue: { rawPrefix: "F", group: 9, index: 4 },
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        hitsound: "Fvar(2),var(3)",
+      })),
+      resolveSoundValue: () => undefined,
+    });
+    expect(actor.currentMove).toMatchObject({
+      hitSound: "Fvar(0),var(1)",
+      hitSoundValue: { rawPrefix: "F", group: 9, index: 4 },
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { redirectid: "57" })),
+    });
+    expect(actor.currentMove).toMatchObject({
+      hitSound: "Fvar(0),var(1)",
+      hitSoundValue: { rawPrefix: "F", group: 9, index: 4 },
+    });
+  });
+
   it("keeps air.fall separate from the ground fall flag", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
