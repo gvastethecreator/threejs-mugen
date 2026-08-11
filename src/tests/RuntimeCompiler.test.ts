@@ -2852,6 +2852,29 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles the remaining live ModifyHitDef cornerpush offsets as scalar expressions", () => {
+    const fields = [
+      ["ground.cornerpush.veloff", "groundCornerPush", "groundCornerPushExpression"],
+      ["air.cornerpush.veloff", "airCornerPush", "airCornerPushExpression"],
+      ["down.cornerpush.veloff", "downCornerPush", "downCornerPushExpression"],
+      ["guard.cornerpush.veloff", "guardCornerPush", "guardCornerPushExpression"],
+    ] as const;
+    for (const [param, staticKey, expressionKey] of fields) {
+      expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+        [param]: "4.5",
+        redirectid: "57",
+      })).operation).toMatchObject({ kind: "modifyhitdef", [staticKey]: 4.5 });
+      expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+        [param]: "var(3) + .5",
+        redirectid: "57",
+      })).operation).toMatchObject({ kind: "modifyhitdef", [expressionKey]: "var(3) + .5" });
+      expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+        [param]: "var(3),var(4)",
+        redirectid: "57",
+      })).operation).toBeUndefined();
+    }
+  });
+
   it("compiles typed HitDef givepower expressions and rejects malformed pairs", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], { givepower: "9.8" })).operation).toMatchObject({
       kind: "hitdef",

@@ -2375,6 +2375,41 @@ describe("HelperSystem", () => {
     expect(operations).toEqual(["modifyhitdef", "modifyhitdef"]);
   });
 
+  it("applies Helper-owned remaining ModifyHitDef cornerpush offsets in caller context", () => {
+    const active = helper({
+      vars: [4.75, 5.5, 6.25, 7.125],
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              guardflag: "MA",
+              "ground.cornerpush.veloff": "1",
+              "air.cornerpush.veloff": "2",
+              "down.cornerpush.veloff": "3",
+              "guard.cornerpush.veloff": "4",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              "ground.cornerpush.veloff": "var(0)",
+              "air.cornerpush.veloff": "var(1)",
+              "down.cornerpush.veloff": "var(2)",
+              "guard.cornerpush.veloff": "var(3)",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], { redirectid: "0", damage: "20" }),
+          ]),
+        ],
+      },
+    });
+    advanceRuntimeHelpers([active], stage);
+    expect(active.currentMove).toMatchObject({
+      cornerPush: 4.75,
+      airCornerPush: 5.5,
+      downCornerPush: 6.25,
+      guardCornerPush: 7.125,
+    });
+  });
+
   it("applies Helper-owned ModifyHitDef guard.velocity Y/Z in caller context and preserves omitted components", () => {
     const active = helper({
       vars: [-8, -4, 6],

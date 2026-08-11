@@ -302,6 +302,14 @@ export type ModifyHitDefControllerOp = {
   /** Root-owned live airguard.velocity Z replacement evaluated in caller context. */
   airGuardVelocityZExpression?: number | string;
   /** Live airguard.cornerpush.veloff replacement evaluated in caller context. */
+  groundCornerPush?: number;
+  groundCornerPushExpression?: number | string;
+  airCornerPush?: number;
+  airCornerPushExpression?: number | string;
+  downCornerPush?: number;
+  downCornerPushExpression?: number | string;
+  guardCornerPush?: number;
+  guardCornerPushExpression?: number | string;
   airGuardCornerPush?: number;
   airGuardCornerPushExpression?: number | string;
   /** HitDef acceleration metadata mutation; dynamic scalar expressions are retained for runtime evaluation. */
@@ -2858,6 +2866,10 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "airguard.ctrltime",
     "guard.velocity",
     "airguard.velocity",
+    "ground.cornerpush.veloff",
+    "air.cornerpush.veloff",
+    "down.cornerpush.veloff",
+    "guard.cornerpush.veloff",
     "airguard.cornerpush.veloff",
     "xaccel",
     "yaccel",
@@ -3003,6 +3015,10 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const airGuardVelocityZExpression = typeof airGuardVelocityValue === "object" && typeof airGuardVelocityValue.z === "string"
     ? airGuardVelocityValue.z
     : undefined;
+  const groundCornerPushValue = optionalScalarNumberOrExpression(controller, "ground.cornerpush.veloff");
+  const airCornerPushValue = optionalScalarNumberOrExpression(controller, "air.cornerpush.veloff");
+  const downCornerPushValue = optionalScalarNumberOrExpression(controller, "down.cornerpush.veloff");
+  const guardCornerPushValue = optionalScalarNumberOrExpression(controller, "guard.cornerpush.veloff");
   const airGuardCornerPushValue = optionalScalarNumberOrExpression(controller, "airguard.cornerpush.veloff");
   const xAccel = optionalScalarNumberOrExpression(controller, "xaccel");
   const yAccel = optionalScalarNumberOrExpression(controller, "yaccel");
@@ -3095,6 +3111,10 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     guardVelocityValue !== true ||
     guardVelocityZ !== true ||
     airGuardVelocityValue !== true ||
+    groundCornerPushValue !== true ||
+    airCornerPushValue !== true ||
+    downCornerPushValue !== true ||
+    guardCornerPushValue !== true ||
     airGuardCornerPushValue !== true ||
     xAccel !== true ||
     yAccel !== true ||
@@ -3163,6 +3183,10 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     guardVelocityExpression === false ||
     guardVelocityValue === false ||
     airGuardVelocityValue === false ||
+    groundCornerPushValue === false ||
+    airCornerPushValue === false ||
+    downCornerPushValue === false ||
+    guardCornerPushValue === false ||
     airGuardCornerPushValue === false ||
     xAccel === false ||
     yAccel === false ||
@@ -3248,6 +3272,14 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(airGuardVelocityExpressions === undefined ? {} : { airGuardVelocityExpressions }),
     ...(airGuardVelocityZ === true ? {} : { airGuardVelocityZ }),
     ...(airGuardVelocityZExpression === undefined ? {} : { airGuardVelocityZExpression }),
+    ...(typeof groundCornerPushValue === "number" ? { groundCornerPush: groundCornerPushValue } : {}),
+    ...(typeof groundCornerPushValue === "string" ? { groundCornerPushExpression: groundCornerPushValue } : {}),
+    ...(typeof airCornerPushValue === "number" ? { airCornerPush: airCornerPushValue } : {}),
+    ...(typeof airCornerPushValue === "string" ? { airCornerPushExpression: airCornerPushValue } : {}),
+    ...(typeof downCornerPushValue === "number" ? { downCornerPush: downCornerPushValue } : {}),
+    ...(typeof downCornerPushValue === "string" ? { downCornerPushExpression: downCornerPushValue } : {}),
+    ...(typeof guardCornerPushValue === "number" ? { guardCornerPush: guardCornerPushValue } : {}),
+    ...(typeof guardCornerPushValue === "string" ? { guardCornerPushExpression: guardCornerPushValue } : {}),
     ...(typeof airGuardCornerPushValue === "number" ? { airGuardCornerPush: airGuardCornerPushValue } : {}),
     ...(typeof airGuardCornerPushValue === "string" ? { airGuardCornerPushExpression: airGuardCornerPushValue } : {}),
     ...(xAccel === true ? {} : { xAccel }),

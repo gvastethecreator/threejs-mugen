@@ -5412,6 +5412,14 @@ function runActiveStateControllers(
               ? operation?.guardVelocityZExpression ?? operation?.guardVelocityZ
             : key === "airguard.velocity"
               ? operation?.airGuardVelocityZExpression
+            : key === "ground.cornerpush.veloff"
+              ? operation?.groundCornerPushExpression ?? operation?.groundCornerPush
+            : key === "air.cornerpush.veloff"
+              ? operation?.airCornerPushExpression ?? operation?.airCornerPush
+            : key === "down.cornerpush.veloff"
+              ? operation?.downCornerPushExpression ?? operation?.downCornerPush
+            : key === "guard.cornerpush.veloff"
+              ? operation?.guardCornerPushExpression ?? operation?.guardCornerPush
             : key === "airguard.cornerpush.veloff"
               ? operation?.airGuardCornerPushExpression ?? operation?.airGuardCornerPush
               : key === "sparkangle"

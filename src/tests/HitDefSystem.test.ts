@@ -3488,6 +3488,56 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
 
   });
 
+  it("resolves remaining live ModifyHitDef cornerpush offsets in caller context", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        guardflag: "MA",
+        "ground.cornerpush.veloff": "1",
+        "air.cornerpush.veloff": "2",
+        "down.cornerpush.veloff": "3",
+        "guard.cornerpush.veloff": "4",
+      })),
+      frame: activeFrame(),
+    });
+    caller.vars[0] = 4.75;
+    caller.vars[1] = 5.5;
+    caller.vars[2] = 6.25;
+    caller.vars[3] = 7.125;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "ground.cornerpush.veloff": "var(0)",
+        "air.cornerpush.veloff": "var(1)",
+        "down.cornerpush.veloff": "var(2)",
+        "guard.cornerpush.veloff": "var(3)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({
+      cornerPush: 4.75,
+      airCornerPush: 5.5,
+      downCornerPush: 6.25,
+      guardCornerPush: 7.125,
+    });
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { redirectid: "57", damage: "20" })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove).toMatchObject({
+      cornerPush: 4.75,
+      airCornerPush: 5.5,
+      downCornerPush: 6.25,
+      guardCornerPush: 7.125,
+    });
+  });
+
   it("derives missing guard.velocity from ground.velocity x", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

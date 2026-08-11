@@ -1926,7 +1926,7 @@ export function resolveRuntimeHelperFloatParam(
 export function resolveRuntimeHelperFloatScalarParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle",
+  key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
   const operation = controller.operation;
@@ -1942,6 +1942,22 @@ export function resolveRuntimeHelperFloatScalarParam(
       ? operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
         ? operation.airGuardVelocityZExpression
         : undefined
+      : key === "ground.cornerpush.veloff"
+        ? operation?.kind === "modifyhitdef"
+          ? operation.groundCornerPushExpression ?? operation.groundCornerPush
+          : undefined
+      : key === "air.cornerpush.veloff"
+        ? operation?.kind === "modifyhitdef"
+          ? operation.airCornerPushExpression ?? operation.airCornerPush
+          : undefined
+      : key === "down.cornerpush.veloff"
+        ? operation?.kind === "modifyhitdef"
+          ? operation.downCornerPushExpression ?? operation.downCornerPush
+          : undefined
+      : key === "guard.cornerpush.veloff"
+        ? operation?.kind === "modifyhitdef"
+          ? operation.guardCornerPushExpression ?? operation.guardCornerPush
+          : undefined
       : key === "airguard.cornerpush.veloff"
         ? operation?.kind === "modifyhitdef"
           ? operation.airGuardCornerPushExpression ?? operation.airGuardCornerPush
