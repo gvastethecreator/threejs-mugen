@@ -2,6 +2,15 @@
 
 ## Current parity queue
 
+- **T706 planned** — Helper-owned live Ikemen `ModifyProjectile projanim`.
+  Reuse the typed T705 operation, add explicit Helper caller-context
+  resolution, and gate ownership so only helper-parented Projectiles are
+  mutated. Required evidence must include Helper/Projectile/ModifyProjectile
+  operations, AIR action replacement/reset, parent/root ownership, and
+  spawn/active/remove lifecycle. FFX, cross-namespace broadcast, nested teams,
+  terminal timing, rollback, and full Helper/Projectile parity remain blocked.
+  See [issue 280](../.scratch/roadmap/issues/280-helper-modifyprojectile-anim-dynamic.md).
+
 - **T705 closed-bounded** — root-owned live Ikemen `ModifyProjectile
   projanim` preserves one static or dynamic expression, resolves it once in
   caller context, replaces the selected AIR action, resets playback, and

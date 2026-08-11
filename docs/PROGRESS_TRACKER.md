@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Next bounded slice — T706 planned
+
+T706 / issue 280 is queued for the Helper-owned live `ModifyProjectile projanim`
+path. The typed T705 operation is already present; the next implementation
+adds Helper caller-context resolution and an ownership proof for
+helper-parented Projectiles, with a separate required trace and checkpoint
+commits. See [issue 280](../.scratch/roadmap/issues/280-helper-modifyprojectile-anim-dynamic.md).
+
 ## Latest implementation checkpoint — T705 closed-bounded (2026-08-11)
 
 T705 is closed-bounded for root-owned live Ikemen `ModifyProjectile projanim`:

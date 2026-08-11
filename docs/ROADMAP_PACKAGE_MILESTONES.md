@@ -1,5 +1,14 @@
 ﻿# Roadmap Package Milestones
 
+## Next bounded slice — T706 planned
+
+T706 / issue 280 will close the Helper-owned live Ikemen `ModifyProjectile
+projanim` seam. It reuses T705's typed one-value operation, adds explicit
+Helper caller-context resolution, and requires an ownership trace proving that
+only helper-parented Projectiles change while a player-owned same-id Projectile
+does not. FFX, namespace broadcast, nested teams, terminal timing, rollback,
+and full Helper/Projectile parity remain excluded.
+
 ## Latest runtime cursor — T705 closed-bounded
 
 T705 closes the live root-owned Ikemen `ModifyProjectile projanim` seam. One

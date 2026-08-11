@@ -1,5 +1,17 @@
 ﻿# Roadmap Execution Board
 
+## Next bounded slice — T706 planned
+
+T706 / issue 280 is the next bounded cut: Helper-owned live Ikemen
+`ModifyProjectile projanim`. It will reuse the typed one-value operation from
+T705 but wire explicit Helper caller-context resolution and prove that only
+helper-parented Projectiles change; a player-owned Projectile with the same id
+must remain untouched. The required trace must cover Helper/Projectile/
+ModifyProjectile operations, parent/root ownership, AIR action replacement, and
+spawn/active/remove lifecycle. FFX, cross-namespace broadcast, nested teams,
+terminal timing, rollback, and full Helper/Projectile parity remain blocked.
+See [issue 280](../.scratch/roadmap/issues/280-helper-modifyprojectile-anim-dynamic.md).
+
 ## Authoritative runtime cursor — T705 closed-bounded
 
 T705 / issue 279 is closed-bounded for root-owned live Ikemen

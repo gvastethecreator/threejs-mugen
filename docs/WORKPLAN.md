@@ -1,5 +1,15 @@
 # Workplan
 
+## Next bounded slice — T706 planned
+
+T706 closes the missing Helper-owned live `ModifyProjectile projanim` seam.
+Wire the typed T705 operation into the Helper caller resolver, keep the current
+helper-parented ownership filter, and prove action replacement/reset without
+touching a player-owned Projectile sharing the same id. Add the required
+Helper trace and commit implementation, evidence refresh, and docs separately.
+FFX, namespace broadcast, nested teams, terminal timing, rollback, and full
+Helper/Projectile parity remain blocked.
+
 ## Current parity queue
 
 T705 is closed-bounded. Root-owned live Ikemen `ModifyProjectile projanim`

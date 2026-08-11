@@ -1,5 +1,13 @@
 # Controller Support Registry
 
+Next bounded cursor: T706 / issue 280 plans explicit Helper caller-context
+resolution for typed live `ModifyProjectile projanim`. The existing Helper
+ownership filter must mutate only helper-parented Projectiles, preserve a
+player-owned same-id Projectile, and prove AIR action reset plus lifecycle in a
+required trace. This is Ikemen-only; FFX, cross-namespace broadcast, nested
+teams, terminal timing, rollback, and full Helper/Projectile parity remain
+excluded.
+
 Authoritative cursor: T705 is closed-bounded for root-owned live Ikemen
 `ModifyProjectile projanim`; T704 remains closed-bounded for fresh root- and
 Helper-authored Projectiles with typed static/dynamic `projanim` resolution
