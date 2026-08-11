@@ -889,7 +889,11 @@ export type ModifyProjectileControllerOp = {
   hitCount?: number;
   missTime?: number;
   pauseMoveTime?: number;
+  /** Dynamic Ikemen `ModifyProjectile pausemovetime` expression evaluated in caller context. */
+  pauseMoveTimeExpression?: number | string;
   superMoveTime?: number;
+  /** Dynamic Ikemen `ModifyProjectile supermovetime` expression evaluated in caller context. */
+  superMoveTimeExpression?: number | string;
   removeOnHit?: boolean;
 };
 
@@ -3813,6 +3817,10 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
   if (removeAnimValue === false) return undefined;
   const cancelAnimValue = optionalIntegerExpressionParam(controller, "projcancelanim");
   if (cancelAnimValue === false) return undefined;
+  const pauseMoveTimeValue = optionalIntegerExpressionParam(controller, "pausemovetime");
+  if (pauseMoveTimeValue === false) return undefined;
+  const superMoveTimeValue = optionalIntegerExpressionParam(controller, "supermovetime");
+  if (superMoveTimeValue === false) return undefined;
   const damageRaw = findParam(controller, "damage");
   const damage = damageRaw === undefined ? undefined : strictStaticNumberPair(damageRaw);
   const getPower = optionalIntegerExpressionPairParam(controller, "getpower");
@@ -4044,8 +4052,10 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     priority: firstNumber(findParam(controller, "projpriority")),
     hitCount: firstNumber(findParam(controller, "projhits")),
     missTime: firstNumber(findParam(controller, "projmisstime")),
-    pauseMoveTime: firstNumber(findParam(controller, "pausemovetime")),
-    superMoveTime: firstNumber(findParam(controller, "supermovetime")),
+    pauseMoveTime: typeof pauseMoveTimeValue === "number" ? pauseMoveTimeValue : undefined,
+    ...(typeof pauseMoveTimeValue === "string" ? { pauseMoveTimeExpression: pauseMoveTimeValue } : {}),
+    superMoveTime: typeof superMoveTimeValue === "number" ? superMoveTimeValue : undefined,
+    ...(typeof superMoveTimeValue === "string" ? { superMoveTimeExpression: superMoveTimeValue } : {}),
     removeOnHit: booleanNumber(findParam(controller, "projremove")),
   });
 }

@@ -1097,6 +1097,7 @@ function helperModifyProjectileResolver(
   return {
     resolveAnimation: () => resolveHelperModifyProjectileAnimationParam(helper, controller, options),
     resolveTerminalAnimation: (key) => resolveHelperModifyProjectileTerminalAnimationParam(helper, controller, key, options),
+    resolveMoveTime: (key) => resolveHelperModifyProjectileMoveTimeParam(helper, controller, key, options),
     resolveNumber: (key) => resolveHelperModifyProjectileNumberParam(helper, controller, key, options),
     resolveFloat: (key) => resolveHelperModifyProjectileFloatParam(helper, controller, key, options),
     resolvePair: (key) => resolveHelperModifyProjectilePairParam(helper, controller, key, options),
@@ -1136,6 +1137,27 @@ function resolveHelperModifyProjectileTerminalAnimationParam(
       : key === "projremanim"
         ? operation.removeAnimExpression
         : operation.cancelAnimExpression
+    : undefined;
+  if (expression !== undefined) {
+    const resolved = typeof expression === "number"
+      ? expression
+      : resolveRuntimeHelperIntegerExpression(helper, expression, options);
+    return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
+  }
+  return resolveHelperModifyProjectileNumberParam(helper, controller, key, options);
+}
+
+function resolveHelperModifyProjectileMoveTimeParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "pausemovetime" | "supermovetime",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): number | undefined {
+  const operation = controller.operation;
+  const expression = operation?.kind === "modifyprojectile"
+    ? key === "pausemovetime"
+      ? operation.pauseMoveTimeExpression
+      : operation.superMoveTimeExpression
     : undefined;
   if (expression !== undefined) {
     const resolved = typeof expression === "number"

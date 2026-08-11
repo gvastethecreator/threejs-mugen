@@ -3068,6 +3068,8 @@ projanim = var(0) + 923
 projhitanim = var(0) + 823
 projremanim = var(0) + 843
 projcancelanim = var(0) + 923
+pausemovetime = var(0) - 70
+supermovetime = var(0) - 68
 attr = A,NP
 guardflag = A
 affectteam = B
@@ -3252,6 +3254,8 @@ projpriority = 8
       push: 5.5,
       hitVelocityY: 0,
       hitVelocityZ: 1.75,
+      pauseMoveTime: 6,
+      superMoveTime: 8,
       hitVelocities: expect.objectContaining({ ground: { x: -5.5, y: 0, z: 1.75 } }),
       downVelocityX: -3.5,
       downVelocityY: -8.25,

@@ -4364,6 +4364,31 @@ value = 1
     expect(malformed.operation).toBeUndefined();
   });
 
+  it("retains dynamic ModifyProjectile pause budgets and rejects malformed scalars", () => {
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      pausemovetime: "var(0) + 1",
+      supermovetime: "fvar(1) - 2",
+    })).operation).toMatchObject({
+      kind: "modifyprojectile",
+      pauseMoveTimeExpression: "var(0) + 1",
+      superMoveTimeExpression: "fvar(1) - 2",
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      pausemovetime: "6",
+      supermovetime: "8",
+    })).operation).toMatchObject({
+      kind: "modifyprojectile",
+      pauseMoveTime: 6,
+      superMoveTime: 8,
+    });
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      pausemovetime: "var(0),1",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(1000, "ModifyProjectile", [], {
+      supermovetime: "var(",
+    })).operation).toBeUndefined();
+  });
+
   it("preserves Projectile depth offset, velocity, acceleration, and attack depth", () => {
     const projectile = compileControllerIr(
       controller(1000, "Projectile", [], {

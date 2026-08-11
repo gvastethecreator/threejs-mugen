@@ -2797,6 +2797,37 @@ describe("ProjectileSystem", () => {
     expect(other.cancelAnimNo).toBeUndefined();
   });
 
+  it("resolves dynamic ModifyProjectile pause budgets once for the selected projectile", () => {
+    const selected = projectile({ projectileId: 77, pauseMoveTime: 0, superMoveTime: 0 });
+    const other = projectile({ serialId: "dynamic-movetime-other", projectileId: 88, pauseMoveTime: 4, superMoveTime: 5 });
+    const controllerValue = controller({
+      id: "77",
+      pausemovetime: "var(0) + 1",
+      supermovetime: "fvar(1) - 2",
+    });
+    const operation = compileControllerIr(controller({
+      id: "77",
+      pausemovetime: "var(0) + 1",
+      supermovetime: "fvar(1) - 2",
+    }, "ModifyProjectile")).operation as ModifyProjectileControllerOp;
+    const resolvedKeys: string[] = [];
+
+    expect(modifyRuntimeProjectiles([selected, other], {
+      controller: controllerValue,
+      operation,
+      resolveModifyProjectile: {
+        resolveMoveTime: (key) => {
+          resolvedKeys.push(key);
+          return key === "pausemovetime" ? 5 : 6;
+        },
+      },
+    })).toBe(1);
+
+    expect(resolvedKeys).toEqual(["pausemovetime", "supermovetime"]);
+    expect(selected).toMatchObject({ pauseMoveTime: 6, superMoveTime: 7 });
+    expect(other).toMatchObject({ pauseMoveTime: 4, superMoveTime: 5 });
+  });
+
   it("normalizes negative ModifyProjectile depth bounds to zero", () => {
     const matching = projectile({ projectileId: 77, depthBound: 12 });
 

@@ -443,6 +443,8 @@ export type RuntimeModifyProjectileNumberParam =
   | "projpriority"
   | "projhits"
   | "projmisstime"
+  | "pausemovetime"
+  | "supermovetime"
   | "projclsnangle"
   | "teamside"
   | "projremove";
@@ -459,6 +461,8 @@ export type RuntimeProjectileModifyResolver = {
   resolveAnimation?: () => number | undefined;
   /** Resolves a typed terminal animation expression in caller context. */
   resolveTerminalAnimation?: (key: RuntimeModifyProjectileTerminalAnimationParam) => number | undefined;
+  /** Resolves typed live ModifyProjectile pause budgets in caller context. */
+  resolveMoveTime?: (key: "pausemovetime" | "supermovetime") => number | undefined;
   resolveFloat?: (key: RuntimeModifyProjectileNumberParam) => number | undefined;
   resolvePair?: (key: RuntimeModifyProjectilePairParam) => [number, number, number?] | undefined;
   resolveFloatPair?: (key: RuntimeModifyProjectilePairParam) => [number, number, number?] | undefined;
@@ -1376,8 +1380,10 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
   const priority = operation?.priority ?? resolveModifyProjectileNumberParam(input, "projpriority");
   const hitCount = operation?.hitCount ?? resolveModifyProjectileNumberParam(input, "projhits");
   const missTime = operation?.missTime ?? resolveModifyProjectileNumberParam(input, "projmisstime");
-  const pauseMoveTime = operation?.pauseMoveTime ?? firstNumber(findControllerParam(input.controller, "pausemovetime"));
-  const superMoveTime = operation?.superMoveTime ?? firstNumber(findControllerParam(input.controller, "supermovetime"));
+  const pauseMoveTime = operation?.pauseMoveTime
+    ?? resolveModifyProjectileMoveTimeParam(input, "pausemovetime", operation?.pauseMoveTimeExpression);
+  const superMoveTime = operation?.superMoveTime
+    ?? resolveModifyProjectileMoveTimeParam(input, "supermovetime", operation?.superMoveTimeExpression);
   const attr = operation?.attr ?? staticHitFlag(findControllerParam(input.controller, "attr"));
   const guardFlag = operation?.guardFlag ?? staticHitFlag(findControllerParam(input.controller, "guardflag"));
   const hitFlag = operation?.hitFlag ?? staticHitFlag(findControllerParam(input.controller, "hitflag"));
@@ -1883,6 +1889,22 @@ function resolveModifyProjectileTerminalAnimationParam(
       return Number.isFinite(expression) ? Math.trunc(expression) : undefined;
     }
     return input.resolveModifyProjectile?.resolveTerminalAnimation?.(key)
+      ?? input.resolveModifyProjectile?.resolveNumber?.(key)
+      ?? resolveModifyProjectileNumberParam(input, key);
+  }
+  return resolveModifyProjectileNumberParam(input, key);
+}
+
+function resolveModifyProjectileMoveTimeParam(
+  input: RuntimeProjectileModifyInput,
+  key: "pausemovetime" | "supermovetime",
+  expression: number | string | undefined,
+): number | undefined {
+  if (expression !== undefined) {
+    if (typeof expression === "number") {
+      return Number.isFinite(expression) ? Math.trunc(expression) : undefined;
+    }
+    return input.resolveModifyProjectile?.resolveMoveTime?.(key)
       ?? input.resolveModifyProjectile?.resolveNumber?.(key)
       ?? resolveModifyProjectileNumberParam(input, key);
   }
