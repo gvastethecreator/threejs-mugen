@@ -101,6 +101,8 @@ export type RuntimeTraceGatePresetOptions = {
   modifyProjectileP2Facing?: SyntheticNumberExpression;
   /** Synthetic fixture-only live ModifyHitDef hitsound.channel expression. */
   modifyHitDefHitSoundChannel?: SyntheticNumberExpression;
+  /** Synthetic fixture-only live ModifyHitDef guardsound.channel expression. */
+  modifyHitDefGuardSoundChannel?: SyntheticNumberExpression;
 };
 
 export async function createMugenLiteJourneyTraceArtifact(
@@ -30543,6 +30545,10 @@ export function createSyntheticImportedModifyHitDefDynamicGuardSparkNoTraceArtif
 export function createSyntheticImportedModifyHitDefDynamicGuardSoundTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
+  const channelVariant = options.modifyHitDefGuardSoundChannel !== undefined;
+  const artifactId = channelVariant
+    ? "synthetic-imported-modifyhitdef-dynamic-guard-sound-channel-golden"
+    : "synthetic-imported-modifyhitdef-dynamic-guard-sound-golden";
   const targetId = 77;
   const stage = options.stage ?? closeCombatStage();
   const script = expandRuntimeTraceScript([
@@ -30578,29 +30584,35 @@ export function createSyntheticImportedModifyHitDefDynamicGuardSoundTraceArtifac
       redirectId: 56,
       trigger: "Time = 0",
       guardSound: "Fvar(0),var(1)",
+      guardSoundChannel: options.modifyHitDefGuardSoundChannel,
       varSeeds: [
         { index: 0, value: 6 },
         { index: 1, value: 4 },
+        ...(channelVariant ? [{ index: 2, value: 8 }] : []),
       ],
     },
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: caller, stage, runtimeProfile: "ikemen-go" }), script, {
-    label: "synthetic-imported-modifyhitdef-dynamic-guard-sound-golden",
+    label: artifactId,
   });
   return createRuntimeTraceArtifact({
     trace,
     script,
     generatedAt: options.generatedAt,
     target: {
-      id: "synthetic-imported-modifyhitdef-dynamic-guard-sound-golden",
-      label: "Synthetic imported dynamic live ModifyHitDef guardsound route",
+      id: artifactId,
+      label: channelVariant
+        ? "Synthetic imported dynamic live ModifyHitDef guardsound.channel route"
+        : "Synthetic imported dynamic live ModifyHitDef guardsound route",
       source: "imported",
       notes: [
-        "Pinned Ikemen GO trace proves a root caller resolves Fvar(0)=6 and var(1)=4 in caller context, replacing an active guard sound before accepted guard contact. Fresh sound defaults, hitsound, guardsound.channel, lookup, mixing, priority, Projectiles, ModifyProjectile, teams, rollback, and full audio parity remain excluded.",
+        channelVariant
+          ? "Pinned Ikemen GO trace proves a root caller resolves Fvar(0)=6, var(1)=4, and var(2)=8 in caller context, replacing an active guardsound and guardsound.channel before accepted guard contact. Fresh sound defaults, hitsound.channel, lookup, mixing, priority, Projectiles, ModifyProjectile, teams, rollback, and full audio parity remain excluded."
+          : "Pinned Ikemen GO trace proves a root caller resolves Fvar(0)=6 and var(1)=4 in caller context, replacing an active guard sound before accepted guard contact. Fresh sound defaults, hitsound, guardsound.channel, lookup, mixing, priority, Projectiles, ModifyProjectile, teams, rollback, and full audio parity remain excluded.",
       ],
     },
     gates: [{
-      label: "synthetic-imported-modifyhitdef-dynamic-guard-sound-golden",
+      label: artifactId,
       requiredActorSources: ["imported"],
       requiredActorKinds: ["player"],
       requiredExecutedStates: [],
@@ -30620,6 +30632,7 @@ export function createSyntheticImportedModifyHitDefDynamicGuardSoundTraceArtifac
         raw: "Fvar(0),var(1)",
         contactKind: "guard",
         requireContactId: true,
+        ...(channelVariant ? { channel: 8 } : {}),
       }],
       requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId }],
       requiredFinalActors: [
@@ -30627,6 +30640,15 @@ export function createSyntheticImportedModifyHitDefDynamicGuardSoundTraceArtifac
         { actorId: "p2", source: "imported", actorKind: "player" },
       ],
     }],
+  });
+}
+
+export function createSyntheticImportedModifyHitDefDynamicGuardSoundChannelTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedModifyHitDefDynamicGuardSoundTraceArtifact({
+    ...options,
+    modifyHitDefGuardSoundChannel: "var(2)",
   });
 }
 
@@ -64585,6 +64607,8 @@ export type SyntheticImportedTraceFighterOptions = {
     hitSoundChannel?: SyntheticNumberExpression;
     /** Synthetic fixture-only caller expression for live ModifyHitDef guard sound. */
     guardSound?: string;
+    /** Synthetic fixture-only caller expression for live ModifyHitDef guardsound.channel. */
+    guardSoundChannel?: SyntheticNumberExpression;
     varSeeds?: Array<{ index: number; value: number; trigger?: string }>;
     redirectId: SyntheticNumberExpression;
     trigger?: string;
@@ -72084,6 +72108,7 @@ ${route.guardSpark === undefined ? "" : `guard.sparkno = ${route.guardSpark}`}
 ${route.hitSound === undefined ? "" : `hitsound = ${route.hitSound}`}
 ${route.hitSoundChannel === undefined ? "" : `hitsound.channel = ${route.hitSoundChannel}`}
 ${route.guardSound === undefined ? "" : `guardsound = ${route.guardSound}`}
+${route.guardSoundChannel === undefined ? "" : `guardsound.channel = ${route.guardSoundChannel}`}
 ${route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy.join(", ")}`}
 redirectid = ${route.redirectId}
 `;
