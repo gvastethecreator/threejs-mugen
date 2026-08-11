@@ -31075,6 +31075,128 @@ function createSyntheticImportedModifyHitDefDynamicDownVelocityArtifact(
   });
 }
 
+export function createSyntheticImportedProjectileDynamicAnimTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedProjectileScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-dynamic-anim-attacker",
+    displayName: "Projectile Dynamic Animation Attacker",
+    withProjectile: true,
+    projectileAnimNo: 912,
+    projectileAnimExpression: "var(0)",
+    projectileVarSeeds: [{ index: 0, value: 912 }],
+    projectileId: 8918,
+    projectileOffset: [360, -45],
+    projectileVelocity: [0, 0],
+    projectileRemoveTime: 8,
+    projectileRemoveOnHit: false,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-dynamic-anim-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-dynamic-anim-golden",
+      label: "Synthetic imported Projectile dynamic projanim route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a fresh root Projectile evaluates projanim var(0) once in the original caller context before AIR action lookup, then preserves the existing lifecycle path. Live ModifyProjectile animation mutation, FFX prefixes, exact invalid-action timing, and full Projectile parity remain outside the claim.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-projectile-dynamic-anim-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Projectile"],
+      requiredExecutedOperations: ["variable:varset", "projectile"],
+      requiredActiveCommands: ["x"],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minNextProjectileSerial: 1 }],
+      requiredActorFrames: [{ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 912, minFrames: 1 }],
+    }],
+  });
+}
+
+export function createSyntheticImportedHelperProjectileDynamicAnimTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "helper-projectile-dynamic-anim-x", frames: 10, p1: ["x"], p2: [] },
+    { label: "helper-projectile-dynamic-anim-settle", frames: 12, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-dynamic-anim-attacker",
+    displayName: "Helper Projectile Dynamic Animation Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1298,
+      waitAnimNo: 1061,
+      branchStateNo: 1299,
+      branchAnimNo: 1062,
+      branchTrigger: "Time >= 99",
+      projectileAnimNo: 914,
+      projectileAnimExpression: "var(0)",
+      projectileId: 8919,
+      projectileRemoveTime: 8,
+      projectileRemoveOnHit: false,
+      varSeeds: [{ index: 0, value: 914 }],
+      pos: [360, -45],
+      velocity: [0, 0],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-projectile-dynamic-anim-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-dynamic-anim-golden",
+      label: "Synthetic imported Helper Projectile dynamic projanim route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a Helper-authored fresh Projectile evaluates projanim var(0) in Helper caller context, remains root-owned with Helper parentage, and uses the existing action/lifecycle path. Live ModifyProjectile animation mutation, FFX prefixes, exact invalid-action timing, and full Helper Projectile parity remain outside the claim.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-projectile-dynamic-anim-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper", "projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Helper", "Projectile"],
+      requiredExecutedOperations: ["variable:varset", "helper", "projectile"],
+      requiredActiveCommands: ["x"],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [{ kind: "helper", ownerId: "p1", helperStateNo: 1298, minAge: 1 }],
+      requiredActorFrames: [{ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 914, minFrames: 1 }],
+    }],
+  });
+}
+
 export function createSyntheticImportedProjectileDynamicHitsTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -61765,6 +61887,10 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileChainId?: number;
   projectileHitDefHitCount?: number;
   projectileDamage?: [number, number?];
+  /** Synthetic fixture-only fresh Projectile projanim action selected by the CNS line. */
+  projectileAnimNo?: number;
+  /** Synthetic fixture-only dynamic fresh Projectile projanim expression. */
+  projectileAnimExpression?: SyntheticNumberExpression;
   projectileUnhittableTime?: SyntheticPairExpression;
   projectileGroundFriction?: { stand?: SyntheticNumberExpression; crouch?: SyntheticNumberExpression };
   projectileSparkScale?: { hit?: SyntheticPairExpression; guard?: SyntheticPairExpression };
@@ -62288,6 +62414,8 @@ export type SyntheticImportedTraceFighterOptions = {
     branchAnimNo?: number;
     branchTrigger?: string;
     projectileAnimNo: number;
+    /** Synthetic Helper-local dynamic fresh Projectile projanim expression. */
+    projectileAnimExpression?: SyntheticNumberExpression;
     projectileId?: number;
     omitProjectileId?: boolean;
     targetId?: number;
@@ -62303,6 +62431,8 @@ export type SyntheticImportedTraceFighterOptions = {
     /** Synthetic Helper-local dynamic Projectile projhits expression. */
     projectileHitsExpression?: SyntheticNumberExpression;
     projectileRemoveOnHit?: boolean;
+    /** Synthetic Helper-local fresh Projectile removal time used by lifecycle gates. */
+    projectileRemoveTime?: number;
     projectileAirJuggle?: number;
     pos?: [number, number];
     velocity?: [number, number];
@@ -63313,7 +63443,7 @@ ${options.extraSuperPauseP2DefMul === undefined ? "" : extraSuperPauseP2DefMulBl
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${projectileVarSeedBlock}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileMissTimeExpression, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale, options.projectileGroundVelocityExpression, options.projectileGuardVelocityExpression, options.projectileDownHitTime, options.projectileGroundHitTime, options.projectileGroundSlideTime, options.projectileAirHitTime, options.projectileGuardHitTimeExpression, options.projectilePauseTime, options.projectileGuardPauseTime, "Fast Projectile", options.projectilePriorityExpression, options.projectileHitsExpression) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileMissTimeExpression, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale, options.projectileGroundVelocityExpression, options.projectileGuardVelocityExpression, options.projectileDownHitTime, options.projectileGroundHitTime, options.projectileGroundSlideTime, options.projectileAirHitTime, options.projectileGuardHitTimeExpression, options.projectilePauseTime, options.projectileGuardPauseTime, "Fast Projectile", options.projectilePriorityExpression, options.projectileHitsExpression, options.projectileAnimNo, options.projectileAnimExpression) : ""}
 ${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secondaryProjectile) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
@@ -63635,7 +63765,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
           ? ([[120, traceAction(120)], [130, traceAction(130)], [140, traceAction(140)]] as Array<[number, MugenAnimationAction]>)
           : []),
       ...(options.withProjectile
-        ? ([[910, projectileTraceAction(910)], ...projectileTerminalTraceActions(options)] as Array<[number, MugenAnimationAction]>)
+        ? ([[options.projectileAnimNo ?? 910, projectileTraceAction(options.projectileAnimNo ?? 910)], ...projectileTerminalTraceActions(options)] as Array<[number, MugenAnimationAction]>)
         : []),
       ...(options.projHitStateNo === undefined ? [] : ([[options.projHitStateNo, traceAction(options.projHitStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.projHitTimeStateNo === undefined ? [] : ([[options.projHitTimeStateNo, traceAction(options.projHitTimeStateNo)]] as Array<[number, MugenAnimationAction]>)),
@@ -67262,11 +67392,14 @@ function projectileControllerBlock(
   label = "Fast Projectile",
   priorityExpression?: SyntheticNumberExpression,
   hitsExpression?: SyntheticNumberExpression,
+  animNo = 910,
+  animExpression?: SyntheticNumberExpression,
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
   const missTimeLine = missTimeExpression === undefined ? `projmisstime = ${missTime}` : `projmisstime = ${missTimeExpression}`;
   const priorityLine = priorityExpression === undefined ? `projpriority = ${priority}` : `projpriority = ${priorityExpression}`;
   const hitsLine = hitsExpression === undefined ? `projhits = ${hits}` : `projhits = ${hitsExpression}`;
+  const animLine = animExpression === undefined ? `projanim = ${animNo}` : `projanim = ${animExpression}`;
   const removeAnimLine = removeAnim === undefined ? "" : `projremanim = ${removeAnim}`;
   const cancelAnimLine = cancelAnim === undefined ? "" : `projcancelanim = ${cancelAnim}`;
   const removeOnHitLine = removeOnHit === undefined ? "" : `projremove = ${removeOnHit ? 1 : 0}`;
@@ -67349,7 +67482,7 @@ ${priorityLine}
 ${hitsLine}
 ${missTimeLine}
 ${removeOnHitLine}
-projanim = 910
+${animLine}
 ${hitAnimLine}
 ${removeAnimLine}
 ${cancelAnimLine}
@@ -70659,6 +70792,9 @@ function helperProjHitRouteBlock(route: NonNullable<SyntheticImportedTraceFighte
   const projectilePriorityLine = route.projectilePriorityExpression === undefined
     ? `projpriority = ${route.projectilePriority ?? 2}`
     : `projpriority = ${route.projectilePriorityExpression}`;
+  const projectileAnimLine = route.projectileAnimExpression === undefined
+    ? `projanim = ${route.projectileAnimNo}`
+    : `projanim = ${route.projectileAnimExpression}`;
   const projectileRemoveLine = `projremove = ${route.projectileRemoveOnHit === undefined ? 0 : route.projectileRemoveOnHit ? 1 : 0}`;
   const projectileAirJuggleLine = route.projectileAirJuggle === undefined ? "" : `air.juggle = ${route.projectileAirJuggle}`;
   const hitPause = route.hitPause ?? 3;
@@ -70757,7 +70893,7 @@ projmisstime = 0
 projanim = ${secondaryProjectileAnimNo}
 offset = ${secondaryPos[0]},${secondaryPos[1]}
 velocity = ${secondaryVelocity[0]},${secondaryVelocity[1]}
-projremovetime = 48
+  projremovetime = ${route.projectileRemoveTime ?? 48}
 projremove = 0
 ${secondaryHitSoundLine}
 ${secondaryGuardSoundLine}
@@ -70824,10 +70960,10 @@ ${hitCountLine}
 ${projectilePriorityLine}
 ${projectileHitsLine}
 ${projectileMissTimeLine}
-projanim = ${route.projectileAnimNo}
+${projectileAnimLine}
 offset = ${pos[0]},${pos[1]}
 velocity = ${velocity[0]},${velocity[1]}
-projremovetime = 48
+projremovetime = ${route.projectileRemoveTime ?? 48}
 ${projectileRemoveLine}
 ${hitSoundLine}
 ${guardSoundLine}

@@ -434,6 +434,8 @@ import {
   createSyntheticImportedHelperProjectileDynamicPriorityTraceArtifact,
   createSyntheticImportedProjectileDynamicHitsTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicHitsTraceArtifact,
+  createSyntheticImportedProjectileDynamicAnimTraceArtifact,
+  createSyntheticImportedHelperProjectileDynamicAnimTraceArtifact,
   createSyntheticImportedProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicGuardHitTimeTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicDownVelocityTraceArtifact,
@@ -22843,6 +22845,49 @@ describe("RuntimeTraceGatePresets", () => {
     expect(helperEvidence?.worldLifecycleEvents).toEqual(expect.arrayContaining([
       expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
       expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p2", parentId: "p2" }),
+    ]));
+  });
+
+  it("creates required imported Projectile projanim caller-context artifacts", () => {
+    const rootArtifact = createSyntheticImportedProjectileDynamicAnimTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(rootArtifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-anim-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-projectile-dynamic-anim-golden", passed: true, failures: [] }],
+    });
+    const rootEvidence = rootArtifact.gates[0]?.evidence;
+    expect(rootEvidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(rootEvidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(rootEvidence?.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorKind: "projectile", ownerId: "p1", animNo: 912 }),
+    ]));
+    expect(rootEvidence?.worldLifecycleEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1" }),
+      expect.objectContaining({ type: "active", kind: "projectile", ownerId: "p1", parentId: "p1" }),
+      expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", parentId: "p1" }),
+    ]));
+
+    const helperArtifact = createSyntheticImportedHelperProjectileDynamicAnimTraceArtifact({
+      generatedAt: "2026-08-09T00:00:00.000Z",
+    });
+    expect(helperArtifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-projectile-dynamic-anim-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-helper-projectile-dynamic-anim-golden", passed: true, failures: [] }],
+    });
+    const helperEvidence = helperArtifact.gates[0]?.evidence;
+    expect(helperEvidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(helperEvidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(helperEvidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(helperEvidence?.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorKind: "projectile", ownerId: "p1", animNo: 914 }),
+    ]));
+    expect(helperEvidence?.worldLifecycleEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+      expect.objectContaining({ type: "active", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+      expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
     ]));
   });
 
