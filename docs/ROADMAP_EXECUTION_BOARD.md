@@ -1,5 +1,17 @@
 ﻿# Roadmap Execution Board
 
+## Latest bounded slice — T722 closed-bounded (2026-08-11)
+
+Issue 296 closes direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `p1facing` / `p1getp2facing`. Typed static and dynamic
+values resolve once in the original caller context; accepted reversal contact
+applies `p1getp2facing` with precedence over negative `p1facing` and preserves
+the existing state-entry path. Required trace `ef3cc6e6/807d5ba2`; aggregate
+QA passes `813/813` artifacts (`779` required, `34` optional). Helper-owned
+ModifyReversalDef, Projectile/ModifyProjectile, deferred tick parity,
+overflow/int32 exactness, teams, rollback and full reversal parity remain
+blocked. See [issue 296](../.scratch/roadmap/issues/296-reversaldef-p1facing-expressions.md).
+
 ## Next bounded slice — T721 closed-bounded (2026-08-11)
 
 Issue 295 closes direct/root `ReversalDef` and root/RedirectID

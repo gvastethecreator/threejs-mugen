@@ -1,5 +1,16 @@
 ﻿# Progress Tracker
 
+## Latest implementation checkpoint — T722 closed-bounded (2026-08-11)
+
+Issue 296 adds typed `ReversalDef` and `ModifyReversalDef` `p1facing` /
+`p1getp2facing` values. Fresh and RedirectID-mutated reversals evaluate in
+caller context, and accepted reversal contact applies the signed facing with
+the official precedence. Required trace `ef3cc6e6/807d5ba2`; aggregate QA is
+`813/813` artifacts (`779` required, `34` optional), with typecheck and
+focused compiler/runtime tests green. Helper-owned ModifyReversalDef,
+Projectile reflection, exact deferred timing, overflow/int32, teams, rollback
+and full parity remain open. See [issue 296](../.scratch/roadmap/issues/296-reversaldef-p1facing-expressions.md).
+
 ## Active implementation checkpoint — T721 closed-bounded (2026-08-11)
 
 Issue 295 closes direct/root `ReversalDef` and root/RedirectID

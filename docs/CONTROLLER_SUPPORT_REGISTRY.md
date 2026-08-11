@@ -1,5 +1,14 @@
 # Controller Support Registry
 
+Latest cursor: T722 / issue 296 is closed-bounded for direct/root
+`ReversalDef` and root/RedirectID `ModifyReversalDef` `p1facing` and
+`p1getp2facing`. Static and caller-context expressions resolve once, and
+accepted reversal contact applies the signed reverser-facing precedence.
+Required trace `ef3cc6e6/807d5ba2`; aggregate QA passes `813/813` artifacts
+(`779` required, `34` optional). Helper-owned ModifyReversalDef,
+Projectile/ModifyProjectile, exact deferred timing, overflow/int32, teams,
+rollback and full ReversalDef parity remain blocked.
+
 Active cursor: T716 / issue 290 is closed-bounded for Ikemen-only live
 `ModifyProjectile` state expressions (`p1stateno`, `p2stateno`, and
 `p2getp1state`). Typed static/dynamic values resolve once in root caller

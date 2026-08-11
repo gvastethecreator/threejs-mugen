@@ -1,5 +1,16 @@
 ﻿# Next Build Roadmap
 
+## Latest bounded slice — T722 closed-bounded (2026-08-11)
+
+Issue 296 closes `ReversalDef` / `ModifyReversalDef` `p1facing` and
+`p1getp2facing` for the direct/root and root RedirectID paths. Static and
+caller expressions resolve once; accepted reversal contact honors
+`p1getp2facing` precedence and applies the resulting reverser facing. Required
+trace `ef3cc6e6/807d5ba2`; `pnpm qa:trace` passes `813/813` artifacts
+(`779` required, `34` optional). Helper-owned ModifyReversalDef,
+Projectile/ModifyProjectile, exact deferred tick ordering, overflow/int32,
+teams, rollback and full ReversalDef parity remain blocked. See [issue 296](../.scratch/roadmap/issues/296-reversaldef-p1facing-expressions.md).
+
 ## Next bounded slice — T721 closed-bounded (2026-08-11)
 
 Issue 295 closes direct/root `ReversalDef` and root/RedirectID

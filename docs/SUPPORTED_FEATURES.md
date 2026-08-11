@@ -1,4 +1,15 @@
 ﻿# Supported Features
+## 2026-08-11 T722 ReversalDef facing expressions — closed-bounded
+
+Direct/root `ReversalDef` and root/RedirectID `ModifyReversalDef` now support
+typed static and caller-context `p1facing` / `p1getp2facing`. Accepted
+reversal contact applies the signed precedence rule to the reverser. Required
+trace `ef3cc6e6/807d5ba2`; aggregate QA passes `813/813` artifacts (`779`
+required, `34` optional). Helper-owned ModifyReversalDef,
+Projectile/ModifyProjectile, exact deferred timing, overflow/int32, teams,
+rollback and full ReversalDef parity remain outside the claim. See [issue
+296](../.scratch/roadmap/issues/296-reversaldef-p1facing-expressions.md).
+
 ## 2026-08-11 T716 `ModifyProjectile` state expressions — closed-bounded
 
 Ikemen-only live `ModifyProjectile p1stateno`, `p2stateno`, and

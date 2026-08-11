@@ -2,6 +2,16 @@
 
 Last updated: 2026-08-08
 
+## Current implementation route — T722 closed-bounded (2026-08-11)
+
+T722 / [issue 296](../.scratch/roadmap/issues/296-reversaldef-p1facing-expressions.md)
+closes typed `ReversalDef` and `ModifyReversalDef` `p1facing` /
+`p1getp2facing` for direct/root and root RedirectID paths. Required trace
+`ef3cc6e6/807d5ba2`; aggregate QA passes `813/813` artifacts (`779` required,
+`34` optional). Helper-owned ModifyReversalDef, Projectile reflection, exact
+deferred tick timing, overflow/int32, teams, rollback and full parity remain
+blocked.
+
 ## Current implementation route — official parity queue (2026-08-08)
 
 Latest runtime cursor: T522 through T637 are closed-bounded; T638 is active.

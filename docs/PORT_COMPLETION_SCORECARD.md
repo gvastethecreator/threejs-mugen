@@ -1,5 +1,16 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T722 ReversalDef `p1facing` expressions — closed-bounded, no score movement
+
+Issue 296 closes the bounded direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `p1facing` / `p1getp2facing` path. Caller-context values
+resolve once and accepted reversal contact applies `p1getp2facing` before
+negative `p1facing`. Required trace passes with `ef3cc6e6/807d5ba2`; aggregate
+QA passes `813/813` artifacts (`779` required, `34` optional). No score
+movement: Helper-owned ModifyReversalDef, Projectile reflection, exact tick
+parity, overflow/int32, teams, rollback and full ReversalDef parity remain
+blocked. See [issue 296](../.scratch/roadmap/issues/296-reversaldef-p1facing-expressions.md).
+
 ## 2026-08-11 T721 ReversalDef `numhits` expressions — closed-bounded, no score movement
 
 Issue 295 closes the bounded direct/root `ReversalDef` and root/RedirectID

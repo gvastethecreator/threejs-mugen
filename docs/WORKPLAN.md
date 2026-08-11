@@ -1,5 +1,16 @@
 # Workplan
 
+## Latest slice — T722 closed-bounded (2026-08-11)
+
+Issue 296 ports direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `p1facing` / `p1getp2facing`. Static and caller-context
+expressions are typed and resolved once; accepted reversal contact applies
+the precedence rule to the reverser. Trace `ef3cc6e6/807d5ba2`, aggregate QA
+`813/813` (`779` required, `34` optional), typecheck and focused tests pass.
+Helper-owned ModifyReversalDef, Projectile reflection, exact deferred tick
+parity, overflow/int32, teams, rollback and full parity stay deferred. See
+[issue 296](../.scratch/roadmap/issues/296-reversaldef-p1facing-expressions.md).
+
 ## Active slice — T716 closed-bounded (2026-08-11)
 
 Issue 290 closes live Ikemen `ModifyProjectile` state expressions for
