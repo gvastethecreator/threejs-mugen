@@ -1,6 +1,17 @@
 ﻿# Roadmap Execution Board
 
-## Next bounded slice — T716 closed-bounded (2026-08-11)
+## Next bounded slice — T717 closed-bounded (2026-08-11)
+
+Issue 291 closes the bounded direct/root `ReversalDef` state-field slice:
+`p1stateno`, `p2stateno`, `p2getp1state`, and `p2facing` retain typed
+caller-context expressions and resolve once at activation. Required trace
+`a4c41604/c2969b0f`; aggregate QA passes `808/808` artifacts (`774` required,
+`34` optional). `ModifyReversalDef` expressions, Helper-owned ReversalDef,
+guards, projectile breadth, exact tick parity, teams, rollback and full parity
+remain blocked. See [issue
+291](../.scratch/roadmap/issues/291-dynamic-reversaldef-state-expressions.md).
+
+## Previous bounded slice — T716 closed-bounded (2026-08-11)
 
 Issue 290 closes Ikemen-only live `ModifyProjectile` state expressions for
 `p1stateno`, `p2stateno`, and `p2getp1state`. Root caller-context values are
