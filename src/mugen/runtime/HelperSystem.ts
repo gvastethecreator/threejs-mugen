@@ -1850,13 +1850,13 @@ export function resolveRuntimeHelperIntegerPairParam(
         ? operation.pauseTimeExpressions
         : key === "guard.pausetime" && (operation.kind === "hitdef" || operation.kind === "projectile")
           ? operation.guardPauseTimeExpressions
-          : key === "damage" && (operation.kind === "hitdef" || operation.kind === "modifyhitdef")
-        ? operation.damageExpressions
-        : key === "getpower"
-        ? operation.getPower
-        : key === "givepower"
-          ? operation.givePower
-          : operation.unhittableTime
+          : key === "damage" && (operation.kind === "hitdef" || operation.kind === "modifyhitdef" || operation.kind === "projectile")
+            ? operation.damageExpressions
+            : key === "getpower"
+              ? operation.getPower
+              : key === "givepower"
+                ? operation.givePower
+                : operation.unhittableTime
       : undefined;
   if (operationValue !== undefined) {
     return [

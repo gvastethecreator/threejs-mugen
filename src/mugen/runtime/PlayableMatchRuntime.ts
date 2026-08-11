@@ -6475,6 +6475,36 @@ function runActiveStateControllers(
                   },
                 }
               : undefined,
+          resolveProjectileDamage:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  const value = operation?.damageExpressions;
+                  if (value === undefined) return undefined;
+                  const resolveComponent = (component: number | string | undefined): number | undefined => {
+                    if (typeof component === "number") {
+                      return Number.isFinite(component) ? Math.trunc(component) : undefined;
+                    }
+                    if (component === undefined) return undefined;
+                    const resolved = resolveDispatchNumber(
+                      undefined,
+                      component,
+                      actor,
+                      targetOpponent,
+                      stateOwner,
+                      stageBounds,
+                      activeTick,
+                      gameSpace,
+                      options.characters,
+                      createPlayerIdTarget(actor),
+                    );
+                    return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
+                  };
+                  return { hit: resolveComponent(value[0]), guard: resolveComponent(value[1]) };
+                }
+              : undefined,
           resolveProjectileGetPower:
             effect === "projectile"
               ? () => {

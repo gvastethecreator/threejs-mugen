@@ -80,6 +80,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveProjectileGuardHitTime?: RuntimeProjectileSpawnInput["resolveGuardHitTime"];
   resolveProjectileAirGuardVelocity?: RuntimeProjectileSpawnInput["resolveAirGuardVelocity"];
   resolveProjectilePaletteFx?: RuntimeProjectileSpawnInput["resolvePaletteFx"];
+  resolveProjectileDamage?: RuntimeProjectileSpawnInput["resolveProjectileDamage"];
   resolveProjectileGetPower?: RuntimeProjectileSpawnInput["resolveProjectileGetPower"];
   resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"];
   /** Resolves fresh Projectile projanim in the original caller context. */
@@ -269,6 +270,7 @@ export class RuntimeEffectSpawnWorld {
     resolveGuardHitTime?: RuntimeProjectileSpawnInput["resolveGuardHitTime"],
     resolveAirGuardVelocity?: RuntimeProjectileSpawnInput["resolveAirGuardVelocity"],
     resolvePaletteFx?: RuntimeProjectileSpawnInput["resolvePaletteFx"],
+    resolveProjectileDamage?: RuntimeProjectileSpawnInput["resolveProjectileDamage"],
     resolveProjectileGetPower?: RuntimeProjectileSpawnInput["resolveProjectileGetPower"],
     resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"],
     resolveProjectileAnimation?: () => number | undefined,
@@ -329,6 +331,7 @@ export class RuntimeEffectSpawnWorld {
       resolveGuardHitTime,
       resolveAirGuardVelocity,
       resolvePaletteFx,
+      resolveProjectileDamage,
       resolveProjectileGetPower,
       resolveProjectileGivePower,
     });
@@ -633,6 +636,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveProjectileGuardHitTime,
         options.resolveProjectileAirGuardVelocity,
         options.resolveProjectilePaletteFx,
+        options.resolveProjectileDamage,
         options.resolveProjectileGetPower,
         options.resolveProjectileGivePower,
         options.resolveProjectileAnimation,

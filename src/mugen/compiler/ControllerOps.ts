@@ -554,6 +554,8 @@ export type ProjectileControllerOp = {
   superMoveTime?: number;
   trans?: string;
   damage: number;
+  /** Dynamic or mixed Projectile HitDef damage pair evaluated in caller context. */
+  damageExpressions?: MugenHitDefExpressionPair;
   /** Authored Projectile HitDef dizzypoints exposed by GetHitVar. */
   dizzyPoints?: number;
   /** Authored Projectile HitDef guardpoints exposed by GetHitVar. */
@@ -755,6 +757,8 @@ export type ModifyProjectileControllerOp = {
   airJuggle?: number;
   damage?: number;
   guardDamage?: number;
+  /** Dynamic or mixed live Projectile damage pair evaluated in caller context. */
+  damageExpressions?: MugenHitDefExpressionPair;
   /** Authored point metadata exposed by the later contact GetHitVar payload. */
   dizzyPoints?: number;
   guardPoints?: number;
@@ -2396,7 +2400,9 @@ function compileHitDefControllerOp(
   const damageExpressions = Array.isArray(damageValue) && damageValue.some((value) => typeof value === "string")
     ? damageValue
     : undefined;
-  const damage = Array.isArray(damageValue) && damageExpressions === undefined ? damageValue : undefined;
+  const damage = Array.isArray(damageValue) && damageExpressions === undefined
+    ? damageValue
+    : undefined;
   const groundVelocityRaw = findParam(controller, "ground.velocity");
   const groundVelocity = groundVelocityRaw === undefined ? undefined : strictStaticNumberVector(groundVelocityRaw);
   const groundVelocityExpressionValue = groundVelocityRaw === undefined || groundVelocity !== undefined
@@ -2754,7 +2760,9 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const damageExpressions = Array.isArray(damageValue) && damageValue.some((value) => typeof value === "string")
     ? damageValue
     : undefined;
-  const damage = Array.isArray(damageValue) && damageExpressions === undefined ? damageValue : undefined;
+  const damage = Array.isArray(damageValue) && damageExpressions === undefined
+    ? damageValue
+    : undefined;
   const groundHitTime = optionalIntegerExpressionParam(controller, "ground.hittime");
   const groundSlideTime = optionalIntegerExpressionParam(controller, "ground.slidetime");
   const guardHitTime = optionalIntegerExpressionParam(controller, "guard.hittime");
@@ -3494,6 +3502,14 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (getPower === false) return undefined;
   const givePower = optionalIntegerExpressionPairParam(controller, "givepower");
   if (givePower === false) return undefined;
+  const damageValue = optionalIntegerExpressionPairParam(controller, "damage");
+  if (damageValue === false) return undefined;
+  const damageExpressions = Array.isArray(damageValue) && damageValue.some((value) => typeof value === "string")
+    ? damageValue
+    : undefined;
+  const damage = Array.isArray(damageValue) && damageExpressions === undefined
+    ? [Number(damageValue[0]), damageValue[1] === undefined ? undefined : Number(damageValue[1])] as [number, number?]
+    : undefined;
   const groundHitTime = optionalIntegerExpressionParam(controller, "ground.hittime");
   if (groundHitTime === false) return undefined;
   const groundSlideTime = optionalIntegerExpressionParam(controller, "ground.slidetime");
@@ -3698,7 +3714,9 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     pauseMoveTime: firstNumber(findParam(controller, "pausemovetime")),
     superMoveTime: firstNumber(findParam(controller, "supermovetime")),
     trans: stripMugenString(findParam(controller, "trans")),
-    damage: firstNumber(findParam(controller, "damage")) ?? 30,
+    damage: damage?.[0] ?? firstNumber(findParam(controller, "damage")) ?? 30,
+    guardDamage: damage?.[1] ?? secondNumber(findParam(controller, "damage")),
+    ...(damageExpressions === undefined ? {} : { damageExpressions }),
     dizzyPoints: firstNumber(findParam(controller, "dizzypoints")),
     guardPoints: firstNumber(findParam(controller, "guardpoints")),
     redLife: redLife?.[0],
@@ -3759,7 +3777,6 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     p2ClsnCheck: normalizeMugenCollisionBoxType(findParam(controller, "p2clsncheck")),
     p2ClsnRequire: normalizeMugenCollisionBoxType(findParam(controller, "p2clsnrequire")),
     missOnOverride: booleanNumber(findParam(controller, "missonoverride")),
-    guardDamage: secondNumber(findParam(controller, "damage")),
     guardDistanceBounds,
     guardFlag: stripMugenString(findParam(controller, "guardflag")),
     guardPauseTime: (typeof guardPauseTime?.[0] === "number" ? guardPauseTime[0] : undefined) ?? firstNumber(guardPauseTimeRaw),
@@ -3821,8 +3838,14 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
   if (pauseMoveTimeValue === false) return undefined;
   const superMoveTimeValue = optionalIntegerExpressionParam(controller, "supermovetime");
   if (superMoveTimeValue === false) return undefined;
-  const damageRaw = findParam(controller, "damage");
-  const damage = damageRaw === undefined ? undefined : strictStaticNumberPair(damageRaw);
+  const damageValue = optionalIntegerExpressionPairParam(controller, "damage");
+  if (damageValue === false) return undefined;
+  const damageExpressions = Array.isArray(damageValue) && damageValue.some((value) => typeof value === "string")
+    ? damageValue
+    : undefined;
+  const damage = Array.isArray(damageValue) && damageExpressions === undefined
+    ? [Number(damageValue[0]), damageValue[1] === undefined ? undefined : Number(damageValue[1])] as [number, number?]
+    : undefined;
   const getPower = optionalIntegerExpressionPairParam(controller, "getpower");
   if (getPower === false) return undefined;
   const givePowerRaw = findParam(controller, "givepower");
@@ -3953,6 +3976,7 @@ function compileModifyProjectileControllerOp(controller: MugenStateController): 
     airJuggle: firstNumber(findParam(controller, "air.juggle")),
     damage: damage?.[0],
     guardDamage: damage === undefined ? undefined : damage[1] ?? 0,
+    ...(damageExpressions === undefined ? {} : { damageExpressions }),
     dizzyPoints: firstNumber(findParam(controller, "dizzypoints")),
     guardPoints: firstNumber(findParam(controller, "guardpoints")),
     hitPower: givePower?.[0],

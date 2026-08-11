@@ -355,6 +355,8 @@ export type RuntimeProjectileSpawnInput = {
   /** Resolves Projectile airguard.velocity authored expressions in the original caller context. */
   resolveAirGuardVelocity?: () => [number?, number?, number?] | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
+  /** Resolves fresh Projectile damage/guard damage expressions in caller context. */
+  resolveProjectileDamage?: () => { hit?: number; guard?: number } | undefined;
   resolveProjectileGetPower?: () => { hit?: number; guard?: number } | undefined;
   resolveProjectileGivePower?: () => { hit?: number; guard?: number } | undefined;
 };
@@ -579,7 +581,20 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const hitDefHitCount = operation?.hitDefHitCount ?? firstNumber(findControllerParam(input.controller, "numhits")) ?? 1;
   const affectTeam = operation?.affectTeam ?? normalizeMugenAffectTeam(findControllerParam(input.controller, "affectteam"));
   const teamSide = operation?.teamSide ?? normalizeMugenTeamSide(firstNumber(findControllerParam(input.controller, "teamside")));
-  const baseDamage = Math.max(0, operation?.damage ?? firstNumber(findControllerParam(input.controller, "damage")) ?? 30);
+  const damageRaw = findControllerParam(input.controller, "damage");
+  const resolvedDamage = resolveRuntimeProjectileFreshDamagePair(
+    operation?.damageExpressions,
+    operation === undefined || operation.damageExpressions !== undefined ? damageRaw : undefined,
+    input.resolveProjectileDamage?.(),
+  );
+  const hasAuthoredDamage = operation?.damageExpressions !== undefined || damageRaw !== undefined;
+  const hasDynamicDamage = operation?.damageExpressions !== undefined;
+  const baseDamage = Math.max(
+    0,
+    resolvedDamage?.hit
+      ?? (hasDynamicDamage ? undefined : operation?.damage)
+      ?? (hasAuthoredDamage ? firstNumber(damageRaw) ?? 0 : 30),
+  );
   const dizzyPoints = operation?.dizzyPoints ?? firstNumber(findControllerParam(input.controller, "dizzypoints"));
   const guardPoints = operation?.guardPoints ?? firstNumber(findControllerParam(input.controller, "guardpoints"));
   const redLifeRaw = findControllerParam(input.controller, "redlife");
@@ -758,7 +773,12 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     dir: operation?.envShakeDirection ?? firstNumber(findControllerParam(input.controller, "envshake.dir")),
   });
   const koVelocityAdd = operation?.koVelocityAdd ?? velocityPair(findControllerParam(input.controller, "ko.velocity.add"));
-  const guardDamage = Math.max(0, operation?.guardDamage ?? secondNumber(findControllerParam(input.controller, "damage")) ?? 0);
+  const guardDamage = Math.max(
+    0,
+    resolvedDamage?.guard
+      ?? (hasDynamicDamage ? undefined : operation?.guardDamage)
+      ?? (hasAuthoredDamage ? secondNumber(damageRaw) ?? 0 : 0),
+  );
   const defaultBoundScale = projectileDefaultBoundScale(input.localCoord);
   const edgeBound = operation?.edgeBound ?? firstNumber(findControllerParam(input.controller, "projedgebound"));
   const stageBound = operation?.stageBound ?? firstNumber(findControllerParam(input.controller, "projstagebound"));
@@ -1233,9 +1253,16 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
   const fallEnvShakeMultiplier = operation?.fallEnvShakeMultiplier ?? resolveModifyProjectileFloatParam(input, "fall.envshake.mul");
   const fallEnvShakeDirection = operation?.fallEnvShakeDirection ?? resolveModifyProjectileFloatParam(input, "fall.envshake.dir");
   const airJuggle = operation?.airJuggle ?? resolveModifyProjectileNumberParam(input, "air.juggle");
-  const damagePair = operation?.damage === undefined && operation?.guardDamage === undefined
-    ? resolveModifyProjectilePairParam(input, "damage", projectileZeroDefaultPair)
-    : undefined;
+  const typedDamagePair = operation?.damageExpressions === undefined
+    ? undefined
+    : resolveRuntimeProjectileModifyDamagePair(
+        operation.damageExpressions,
+        resolveModifyProjectilePairParam(input, "damage", projectileZeroDefaultPair),
+      );
+  const damagePair = typedDamagePair
+    ?? (operation?.damage === undefined && operation?.guardDamage === undefined
+      ? resolveModifyProjectilePairParam(input, "damage", projectileZeroDefaultPair)
+      : undefined);
   const damage = operation?.damage ?? damagePair?.[0];
   const guardDamage = operation?.guardDamage ?? damagePair?.[1];
   const dizzyPoints = operation?.dizzyPoints ?? resolveModifyProjectileNumberParam(input, "dizzypoints");
@@ -2802,6 +2829,24 @@ function resolveRuntimeProjectileFreshPowerPair(
   };
 }
 
+function resolveRuntimeProjectileFreshDamagePair(
+  operationValue: ProjectileControllerOp["damageExpressions"],
+  rawValue: string | undefined,
+  resolvedValue: { hit?: number; guard?: number } | undefined,
+): { hit?: number; guard?: number } | undefined {
+  const staticRaw = operationValue === undefined ? runtimeProjectileStaticIntegerPair(rawValue) : undefined;
+  const authored = operationValue ?? staticRaw;
+  if (authored === undefined && resolvedValue === undefined) return undefined;
+  const component = (value: number | string | undefined): number | undefined =>
+    typeof value === "number" && Number.isFinite(value) ? Math.trunc(value) : undefined;
+  const hit = component(resolvedValue?.hit) ?? component(authored?.[0]);
+  const guard = component(resolvedValue?.guard) ?? component(authored?.[1]);
+  return {
+    ...(hit === undefined ? {} : { hit }),
+    ...(guard === undefined ? {} : { guard }),
+  };
+}
+
 function resolveRuntimeProjectileModifyPowerPair(
   operationValue: ModifyProjectileControllerOp["getPower"],
   rawValue: string | undefined,
@@ -2817,6 +2862,21 @@ function resolveRuntimeProjectileModifyPowerPair(
   if (authored[1] === undefined) return { hit, guard: 0 };
   const guard = component(resolvedValue?.[1]) ?? component(authored[1]);
   return { hit, ...(guard === undefined ? {} : { guard }) };
+}
+
+function resolveRuntimeProjectileModifyDamagePair(
+  operationValue: ModifyProjectileControllerOp["damageExpressions"],
+  resolvedValue: [number, number, number?] | undefined,
+): [number, number] | undefined {
+  if (operationValue === undefined) return undefined;
+  const component = (value: number | string | undefined): number | undefined =>
+    typeof value === "number" && Number.isFinite(value) ? Math.trunc(value) : undefined;
+  const hit = component(resolvedValue?.[0]) ?? component(operationValue[0]);
+  if (hit === undefined) return undefined;
+  const guard = operationValue[1] === undefined
+    ? 0
+    : component(resolvedValue?.[1]) ?? component(operationValue[1]) ?? 0;
+  return [hit, guard];
 }
 
 function runtimeProjectileStaticIntegerPair(value: string | undefined): [number, number?] | undefined {

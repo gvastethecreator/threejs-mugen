@@ -770,6 +770,7 @@ export function spawnRuntimeHelperProjectileActor(
     resolveGuardHitTime: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "guard.hittime", options),
     resolveAirGuardVelocity: () => resolveRuntimeHelperProjectileAirGuardVelocity(helper, controller, options),
     resolvePaletteFx: resolveRuntimeHelperHitDefPaletteFx(helper, controller, options),
+    resolveProjectileDamage: () => resolveHelperProjectilePowerPair(helper, controller, "damage", options),
     resolveProjectileGetPower: () => resolveHelperProjectilePowerPair(helper, controller, "getpower", options),
     resolveProjectileGivePower: () => resolveHelperProjectilePowerPair(helper, controller, "givepower", options),
   });
@@ -778,7 +779,7 @@ export function spawnRuntimeHelperProjectileActor(
 function resolveHelperProjectilePowerPair(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "getpower" | "givepower",
+  key: "damage" | "getpower" | "givepower",
   options: RuntimeHelperAdvanceOptions,
 ): { hit?: number; guard?: number } | undefined {
   const value = resolveRuntimeHelperIntegerPairParam(helper, controller, key, options);

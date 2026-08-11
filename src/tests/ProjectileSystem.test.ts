@@ -449,6 +449,49 @@ describe("ProjectileSystem", () => {
     expect(singleDynamic).toMatchObject({ attackerHitPower: 21, attackerGuardPower: 10 });
   });
 
+  it("uses component-wise caller resolution for fresh dynamic Projectile damage", () => {
+    const baseOperation: ProjectileControllerOp = {
+      kind: "projectile",
+      velocity: [0, 0],
+      removeTime: 60,
+      spritePriority: 1,
+      priority: 1,
+      hitCount: 1,
+      missTime: 0,
+      damage: 30,
+      hitPause: 0,
+      hitStun: 10,
+      removeOnHit: true,
+      damageExpressions: ["var(0) * 2", "var(1) + 1"],
+    };
+    const create = (
+      serialId: string,
+      damageExpressions: ProjectileControllerOp["damageExpressions"],
+      resolved: { hit?: number; guard?: number } | undefined,
+    ) => createRuntimeProjectile({
+      serialId,
+      controller: controller({ projanim: "1005", damage: damageExpressions?.join(",") ?? "" }),
+      operation: { ...baseOperation, damageExpressions },
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveProjectileDamage: resolved === undefined ? undefined : () => resolved,
+    });
+
+    expect(create("p1-projectile-damage-dynamic-pair", ["var(0) * 2", "var(1) + 1"], {
+      hit: 41.9,
+      guard: 7.8,
+    })).toMatchObject({ damage: 41, guardDamage: 7 });
+    expect(create("p1-projectile-damage-dynamic-single", ["var(0) * 2"], { hit: 19.9 }))
+      .toMatchObject({ damage: 19, guardDamage: 0 });
+    expect(create("p1-projectile-damage-dynamic-unresolved", ["var(0)"], undefined))
+      .toMatchObject({ damage: 0, guardDamage: 0 });
+  });
+
   it("derives fresh Projectile givepower from authored pre-scale damage", () => {
     const spawn = (
       serialId: string,
@@ -2639,6 +2682,36 @@ describe("ProjectileSystem", () => {
       operation: { kind: "modifyprojectile", selectionId: 77 },
     })).toBe(1);
     expect(matching).toMatchObject({ attackerHitPower: 12, attackerGuardPower: -5 });
+  });
+
+  it("replaces ModifyProjectile damage from typed dynamic pairs and uses zero guard for one value", () => {
+    const matching = projectile({ projectileId: 77, damage: 30, guardDamage: 9 });
+
+    expect(modifyRuntimeProjectiles([matching], {
+      controller: controller({ id: "77", damage: "var(0),var(1)" }, "ModifyProjectile"),
+      operation: {
+        kind: "modifyprojectile",
+        selectionId: 77,
+        damageExpressions: ["var(0)", "var(1)"],
+      },
+      resolveModifyProjectile: {
+        resolvePair: (key) => key === "damage" ? [41.9, 7.8] : undefined,
+      },
+    })).toBe(1);
+    expect(matching).toMatchObject({ damage: 41, guardDamage: 7 });
+
+    expect(modifyRuntimeProjectiles([matching], {
+      controller: controller({ id: "77", damage: "var(0)" }, "ModifyProjectile"),
+      operation: {
+        kind: "modifyprojectile",
+        selectionId: 77,
+        damageExpressions: ["var(0)"],
+      },
+      resolveModifyProjectile: {
+        resolvePair: (key) => key === "damage" ? [13.9, 99] : undefined,
+      },
+    })).toBe(1);
+    expect(matching).toMatchObject({ damage: 13, guardDamage: 0 });
   });
 
   it("selects ModifyProjectile matches oldest-first and keeps projid as a mutation", () => {

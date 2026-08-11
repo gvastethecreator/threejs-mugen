@@ -2782,6 +2782,23 @@ value = 1
     expect(compileControllerIr(controller(200, "ModifyProjectile", [], { getpower: "var(" })).operation).toBeUndefined();
   });
 
+  it("compiles fresh and live Projectile damage expressions as typed pairs", () => {
+    expect(compileControllerIr(controller(200, "Projectile", [], {
+      damage: "var(1),Parent,var(2)",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      damageExpressions: ["var(1)", "Parent,var(2)"],
+    });
+    expect(compileControllerIr(controller(200, "ModifyProjectile", [], {
+      damage: "var(3)",
+    })).operation).toMatchObject({
+      kind: "modifyprojectile",
+      damageExpressions: ["var(3)"],
+    });
+    expect(compileControllerIr(controller(200, "Projectile", [], { damage: "1,2,3" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyProjectile", [], { damage: "var(" })).operation).toBeUndefined();
+  });
+
   it("compiles typed ModifyProjectile projanim expressions and rejects non-scalar input", () => {
     expect(compileControllerIr(controller(200, "ModifyProjectile", [], { projanim: "930" })).operation).toMatchObject({
       kind: "modifyprojectile",
