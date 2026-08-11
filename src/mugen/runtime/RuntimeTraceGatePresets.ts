@@ -37990,6 +37990,80 @@ export function createSyntheticImportedGetHitVarSnapTraceArtifact(options: Runti
   });
 }
 
+export function createSyntheticImportedHitDefDynamicSnapTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-snap-attacker",
+    displayName: "Synthetic Imported Dynamic HitDef Snap Attacker",
+    fall: { ...commonGetHitFallData(), damage: 0 },
+    hitDefVarSeeds: [
+      { index: 0, value: 7 },
+      { index: 1, value: -5 },
+    ],
+    hitDefSnapExpression: ["var(0)", "var(1)"],
+    getHitState: { stateNo: 5100, animNo: 500 },
+    getHitVarBranch: {
+      stateNo: 905,
+      expression: "GetHitVar(xoff) = 7 && GetHitVar(yoff) = -5 && GetHitVar(zoff) = 0",
+    },
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCommonGetHitScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-snap-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-snap-golden",
+      label: "Synthetic imported dynamic HitDef snap offsets",
+      source: "mixed",
+      notes: [
+        "Synthetic imported dynamic HitDef snap trace proves fresh caller-context X/Y expressions resolve into GetHitVar xoff/yoff and move the accepted defender relative to the attacker. It does not claim snap Z, snaptime/bind timing, live ModifyHitDef, guard/projectile inheritance, localcoord/facing parity, or full Common1 positioning parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitdef-dynamic-snap-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 5100, 905],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "HitFallVel"],
+        requiredExecutedOperations: ["hitdef", "hitfall:hitfallvel"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "demo",
+            actorKind: "player",
+            stateNo: 5100,
+            moveType: "H",
+            observedPosXAtLeast: -24.5,
+            observedPosXAtMost: 12.32,
+            observedPosYAtLeast: -5,
+            observedPosYAtMost: -5,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            actorKind: "player",
+            source: "demo",
+            stateNo: 905,
+            customOwnerId: "p1",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedCustomStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedCustomStateScript();
@@ -64499,6 +64573,8 @@ export type SyntheticImportedTraceFighterOptions = {
   hitAirType?: string;
   hitYAccel?: number;
   hitSnap?: [number, number?];
+  /** Synthetic fixture-only dynamic fresh HitDef snap X/Y expression pair. */
+  hitDefSnapExpression?: SyntheticPartialPairExpression;
   fallAnimType?: string;
   passiveNotHitBy?: string;
   passiveHitBy?: string;
@@ -66053,6 +66129,7 @@ ${options.hitGroundType === undefined ? "" : `ground.type = ${options.hitGroundT
 ${options.hitAirType === undefined ? "" : `air.type = ${options.hitAirType}`}
 ${options.hitYAccel === undefined ? "" : `yaccel = ${options.hitYAccel}`}
 ${options.hitSnap === undefined ? "" : `snap = ${options.hitSnap.join(",")}`}
+${options.hitDefSnapExpression === undefined ? "" : `snap = ${options.hitDefSnapExpression.join(",")}`}
 ${options.fallAnimType === undefined ? "" : `fall.animtype = ${options.fallAnimType}`}
 `;
   const hitDefKoVelocityAddLine = options.hitDefKoVelocityAdd === undefined

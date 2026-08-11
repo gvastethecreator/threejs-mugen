@@ -1766,6 +1766,11 @@ async function main() {
       artifact: presets.createSyntheticImportedGetHitVarSnapTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-snap",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicSnapTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-bounds",
       required: true,
       artifact: presets.createSyntheticImportedBoundsTraceArtifact(),
@@ -5507,6 +5512,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projectile-down-hit-cornerpush-default",
     "synthetic-imported-gethitvar-animtype",
     "synthetic-imported-gethitvar-snap",
+    "synthetic-imported-hitdef-dynamic-snap",
     "synthetic-imported-default-crouch-gethit",
     "synthetic-imported-default-crouch-gethit-progression",
     "synthetic-imported-default-air-gethit",

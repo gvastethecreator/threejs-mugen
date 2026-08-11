@@ -109,6 +109,7 @@ import {
   createSyntheticImportedGetHitVarHitCountTraceArtifact,
   createSyntheticImportedHitCountPersistTraceArtifact,
   createSyntheticImportedGetHitVarSnapTraceArtifact,
+  createSyntheticImportedHitDefDynamicSnapTraceArtifact,
   createSyntheticImportedGetHitVarHitShakeTimeTraceArtifact,
   createSyntheticImportedGetHitVarHitTimeTraceArtifact,
   createSyntheticImportedGetHitVarVelocityTraceArtifact,
@@ -24134,6 +24135,37 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       source: "demo",
       stateNo: 288,
+      customOwnerId: "p1",
+    });
+  });
+
+  it("creates a synthetic imported dynamic HitDef snap offset artifact with route evidence", () => {
+    const artifact = createSyntheticImportedHitDefDynamicSnapTraceArtifact({ generatedAt: "2026-08-11T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-dynamic-snap-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-hitdef-dynamic-snap-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5100, 905]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "demo",
+      stateNo: 905,
       customOwnerId: "p1",
     });
   });
