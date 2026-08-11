@@ -2,6 +2,20 @@
 
 ## Current parity queue
 
+- **T724 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
+  `ModifyReversalDef` now retain static and caller-context `id` expressions.
+  Fresh/live values clamp to a non-negative target id; accepted reversal
+  contact exposes `GetHitVar(hitid)` and target memory. Required trace
+  `27b44d26/c0adb366`; aggregate QA passes `815/815` (`781` required,
+  `34` optional). `chainid`/`nochainid`, Helper-owned mutation,
+  Projectile/ModifyProjectile, priority/hitonce, exact id/tick ordering,
+  overflow/int32, teams, rollback and full ReversalDef parity remain blocked.
+  See [issue 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md).
+
+- **T725 queued** — dynamic `chainid` matching and incompatible-chain
+  rejection for the same direct/root and root/RedirectID route. See [issue
+  299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
+
 - **T723 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
   `ModifyReversalDef` now retain static, dynamic, and mixed `attack.depth`
   pairs. Fresh single-component activation duplicates the pair; live

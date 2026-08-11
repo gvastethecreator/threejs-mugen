@@ -1,6 +1,26 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T723 closed-bounded (2026-08-11)
+## Latest bounded slice — T724 closed-bounded (2026-08-11)
+
+Issue 298 closes direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `id` expressions. Fresh activation and live replacement
+resolve once in caller context and clamp to a non-negative target id; accepted
+reversal contact carries the value through target memory and `GetHitVar(hitid)`.
+Required trace `27b44d26/c0adb366`; `pnpm qa:trace` passes `815/815` artifacts
+(`781` required, `34` optional). `chainid`/`nochainid`, Helper-owned
+ModifyReversalDef, Projectile/ModifyProjectile, priority/hitonce, exact
+id/tick ordering, overflow/int32, teams, rollback and full ReversalDef parity
+remain blocked. See [issue 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md).
+
+## Next bounded slice — T725 queued
+
+Issue 299 proposes `chainid` expressions for direct/root `ReversalDef` and
+root/RedirectID `ModifyReversalDef`, including accepted matching chains and
+incompatible-chain rejection. `nochainid`, Helper-owned mutation,
+Projectile/ModifyProjectile, exact priority/tick behavior, teams, rollback and
+full ReversalDef parity remain excluded. See [issue 299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
+
+## Previous bounded slice — T723 closed-bounded (2026-08-11)
 
 Issue 297 closes direct/root `ReversalDef` and root/RedirectID
 `ModifyReversalDef` `attack.depth` as static, dynamic, and mixed one/two

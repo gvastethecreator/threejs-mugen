@@ -1,6 +1,20 @@
 # Controller Support Registry
 
-Latest cursor: T723 / issue 297 is closed-bounded for direct/root
+Latest cursor: T724 / issue 298 is closed-bounded for direct/root
+`ReversalDef` and root/RedirectID `ModifyReversalDef` `id` expressions. Fresh
+and live values resolve once in caller context, clamp to a non-negative target
+id, and accepted reversal contact exposes `GetHitVar(hitid)` plus target
+memory. Required trace `27b44d26/c0adb366`; aggregate QA passes `815/815`
+artifacts (`781` required, `34` optional). `chainid`/`nochainid`, Helper-owned
+ModifyReversalDef, Projectile/ModifyProjectile, priority/hitonce, exact
+id/tick ordering, overflow/int32, teams, rollback and full ReversalDef parity
+remain blocked.
+
+Next cursor: T725 / issue 299 is queued for caller-context `chainid` matching
+and incompatible-chain rejection. `nochainid`, Helper-owned mutation,
+Projectile/ModifyProjectile and full ReversalDef parity remain deferred.
+
+Previous cursor: T723 / issue 297 is closed-bounded for direct/root
 `ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth` static,
 dynamic, and mixed pairs. Fresh single-component activation duplicates the
 pair; live caller-context replacement preserves omitted components. Accepted
@@ -19,9 +33,9 @@ Required trace `ef3cc6e6/807d5ba2`; aggregate QA passes `813/813` artifacts
 Projectile/ModifyProjectile, exact deferred timing, overflow/int32, teams,
 rollback and full ReversalDef parity remain blocked.
 
-Active cursor: T723 / issue 297 is closed-bounded for direct/root
-`ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth`.
-See [issue 297](../.scratch/roadmap/issues/297-reversaldef-attack-depth-expressions.md).
+Active cursor: T724 / issue 298 is closed-bounded for direct/root
+`ReversalDef` and root/RedirectID `ModifyReversalDef` `id`.
+See [issue 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md).
 
 Previous active cursor: T716 / issue 290 is closed-bounded for Ikemen-only live
 `ModifyProjectile` state expressions (`p1stateno`, `p2stateno`, and

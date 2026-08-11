@@ -1,6 +1,25 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T723 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T724 closed-bounded (2026-08-11)
+
+Issue 298 adds typed static/dynamic `id` to direct/root `ReversalDef` and root
+/RedirectID `ModifyReversalDef`. Fresh and live paths resolve once in caller
+context, clamp to a non-negative target id, and accepted reversal contact
+publishes the value to target memory and `GetHitVar(hitid)`. Required trace
+`27b44d26/c0adb366` passes; `pnpm qa:trace` passes `815/815` artifacts
+(`781` required, `34` optional), with typecheck and focused compiler/runtime
+tests green. `chainid`/`nochainid`, Helper-owned ModifyReversalDef,
+Projectile/ModifyProjectile, priority/hitonce, exact id/tick ordering,
+overflow/int32, teams, rollback and full parity remain open. See [issue
+298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md).
+
+## Next implementation checkpoint — T725 queued
+
+Issue 299 is queued for caller-context `chainid` matching and rejection on
+incompatible reversal chains. See [issue
+299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md).
+
+## Previous implementation checkpoint — T723 closed-bounded (2026-08-11)
 
 Issue 297 adds typed static, dynamic, and mixed `attack.depth` pairs to direct
 root `ReversalDef` and root/RedirectID `ModifyReversalDef`. Fresh and live

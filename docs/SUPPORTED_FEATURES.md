@@ -1,4 +1,16 @@
 ﻿# Supported Features
+## 2026-08-11 T724 ReversalDef `id` expressions — closed-bounded
+
+Direct/root `ReversalDef` and root/RedirectID `ModifyReversalDef` now retain
+typed static and caller-context `id` expressions. Fresh and live values clamp
+to a non-negative target id; accepted reversal contact exposes the id through
+target memory and `GetHitVar(hitid)`. Required trace `27b44d26/c0adb366`;
+aggregate QA passes `815/815` artifacts (`781` required, `34` optional).
+`chainid`/`nochainid`, Helper-owned ModifyReversalDef,
+Projectile/ModifyProjectile, priority/hitonce, exact id/tick ordering,
+overflow/int32, teams, rollback and full ReversalDef parity remain outside
+the claim. See [issue 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md).
+
 ## 2026-08-11 T723 ReversalDef `attack.depth` expressions — closed-bounded
 
 Direct/root `ReversalDef` and root/RedirectID `ModifyReversalDef` now retain

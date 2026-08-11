@@ -2,7 +2,25 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T723 closed-bounded (2026-08-11)
+## Current implementation route — T724 closed-bounded (2026-08-11)
+
+T724 / [issue 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md)
+closes typed `id` for direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef`. Fresh/live values resolve once in caller context, clamp to
+a non-negative target id, and accepted reversal contact exposes target memory
+plus `GetHitVar(hitid)`. Required trace `27b44d26/c0adb366`; aggregate QA passes
+`815/815` artifacts (`781` required, `34` optional). `chainid`/`nochainid`,
+Helper-owned mutation, Projectile/ModifyProjectile, priority/hitonce, exact
+id/tick timing, overflow/int32, teams, rollback and full parity remain
+blocked.
+
+## Next implementation route — T725 queued
+
+T725 / [issue 299](../.scratch/roadmap/issues/299-reversaldef-chainid-expressions.md)
+is queued for caller-context `chainid` matching plus incompatible-chain
+rejection on the same root/RedirectID route.
+
+## Previous implementation route — T723 closed-bounded (2026-08-11)
 
 T723 / [issue 297](../.scratch/roadmap/issues/297-reversaldef-attack-depth-expressions.md)
 closes typed `attack.depth` for direct/root `ReversalDef` and root/RedirectID

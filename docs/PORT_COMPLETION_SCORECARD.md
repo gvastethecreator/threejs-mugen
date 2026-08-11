@@ -1,5 +1,17 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T724 ReversalDef `id` expressions — closed-bounded, no score movement
+
+Issue 298 closes the bounded direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `id` path. Fresh and live values resolve once in caller
+context, clamp to a non-negative target id, and accepted reversal contact
+publishes `GetHitVar(hitid)` plus target memory. Required trace passes with
+`27b44d26/c0adb366`; aggregate QA passes `815/815` artifacts (`781` required,
+`34` optional). No score movement: `chainid`/`nochainid`, Helper-owned
+ModifyReversalDef, Projectile/ModifyProjectile, priority/hitonce, exact
+id/tick parity, overflow/int32, teams, rollback and full ReversalDef parity
+remain blocked. See [issue 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md).
+
 ## 2026-08-11 T723 ReversalDef `attack.depth` expressions — closed-bounded, no score movement
 
 Issue 297 closes the bounded direct/root `ReversalDef` and root/RedirectID
