@@ -456,6 +456,7 @@ import {
   createSyntheticImportedModifyHitDefDynamicSparkAngleTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicGuardSparkAngleTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicGuardSparkNoTraceArtifact,
+  createSyntheticImportedModifyHitDefDynamicGuardSoundTraceArtifact,
   createSyntheticImportedStaticHitDefAirGuardVelocityDerivedZTraceArtifact,
   createSyntheticImportedHelperProjContactTraceArtifact,
   createSyntheticImportedHelperProjContactTimeAnyTraceArtifact,
@@ -23785,6 +23786,30 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.ModifyHitDef).toBeGreaterThanOrEqual(1);
     expect(evidence?.hitEffectEvents).toEqual(expect.arrayContaining([
       expect.objectContaining({ actorId: "p1", sparkNo: 19, angle: -5, offset: { x: -2, y: -3 }, raw: "F19" }),
+    ]));
+    expect(evidence?.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(evidence?.combatReasons).not.toContain("hit");
+  });
+
+  it("creates a required imported dynamic live ModifyHitDef guardsound artifact", () => {
+    const artifact = createSyntheticImportedModifyHitDefDynamicGuardSoundTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-modifyhitdef-dynamic-guard-sound-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-modifyhitdef-dynamic-guard-sound-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ModifyHitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.soundEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1", type: "PlaySnd", group: 6, index: 4, raw: "Fvar(0),var(1)", contactKind: "guard" }),
     ]));
     expect(evidence?.targetLinks).toContainEqual(
       expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),

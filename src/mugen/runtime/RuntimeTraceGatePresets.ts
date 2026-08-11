@@ -30538,6 +30538,96 @@ export function createSyntheticImportedModifyHitDefDynamicGuardSparkNoTraceArtif
   });
 }
 
+export function createSyntheticImportedModifyHitDefDynamicGuardSoundTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 77;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "seed live guard sound", frames: 2, p1: [], p2: [] },
+    { label: "redirect then guard sound", frames: 14, p1: ["x"], p2: ["B"] },
+    { label: "guard sound settles", frames: 8, p1: [], p2: ["B"] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-guard-sound-attacker",
+    displayName: "Dynamic ModifyHitDef Guard Sound Attacker",
+    withHitDef: false,
+    withPlayerPush: false,
+    guardSound: "S6,0",
+    activeRootHitDefRoute: {
+      damage: 37,
+      guardDamage: 5,
+      targetId,
+      hitFlag: "M",
+      guardFlag: "MA",
+      guardSpark: "S7000",
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      delayedPosX: { x: -35, trigger: "Time >= 2" },
+      clsn1Extent: 64,
+    },
+  });
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-guard-sound-caller",
+    displayName: "Dynamic ModifyHitDef Guard Sound Caller",
+    withHitDef: false,
+    withPlayerPush: false,
+    rootModifyHitDefRedirectRoute: {
+      redirectId: 56,
+      trigger: "Time = 0",
+      guardSound: "Fvar(0),var(1)",
+      varSeeds: [
+        { index: 0, value: 6 },
+        { index: 1, value: 4 },
+      ],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: caller, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-modifyhitdef-dynamic-guard-sound-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyhitdef-dynamic-guard-sound-golden",
+      label: "Synthetic imported dynamic live ModifyHitDef guardsound route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root caller resolves Fvar(0)=6 and var(1)=4 in caller context, replacing an active guard sound before accepted guard contact. Fresh sound defaults, hitsound, guardsound.channel, lookup, mixing, priority, Projectiles, ModifyProjectile, teams, rollback, and full audio parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyhitdef-dynamic-guard-sound-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [],
+      requiredExecutedControllers: ["VarSet", "HitDef", "ModifyHitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "modifyhitdef", "audio:playsnd"],
+      requiredActiveCommands: ["holdback", "x"],
+      requiredEventCategories: ["guard"],
+      requiredCombatReasons: ["guard"],
+      forbiddenCombatReasons: ["hit", "override", "reversal"],
+      requiredSoundEvents: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        type: "PlaySnd",
+        group: 6,
+        index: 4,
+        raw: "Fvar(0),var(1)",
+        contactKind: "guard",
+        requireContactId: true,
+      }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player" },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedDynamicDirectDownVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -64378,6 +64468,8 @@ export type SyntheticImportedTraceFighterOptions = {
     guardSparkAngle?: SyntheticNumberExpression;
     /** Synthetic fixture-only live ModifyHitDef guard spark identity expression. */
     guardSpark?: string;
+    /** Synthetic fixture-only caller expression for live ModifyHitDef guard sound. */
+    guardSound?: string;
     varSeeds?: Array<{ index: number; value: number; trigger?: string }>;
     redirectId: SyntheticNumberExpression;
     trigger?: string;
@@ -71874,6 +71966,7 @@ ${route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGu
 ${route.sparkAngle === undefined ? "" : `sparkangle = ${route.sparkAngle}`}
 ${route.guardSparkAngle === undefined ? "" : `guard.sparkangle = ${route.guardSparkAngle}`}
 ${route.guardSpark === undefined ? "" : `guard.sparkno = ${route.guardSpark}`}
+${route.guardSound === undefined ? "" : `guardsound = ${route.guardSound}`}
 ${route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy.join(", ")}`}
 redirectid = ${route.redirectId}
 `;
