@@ -1,5 +1,14 @@
 ﻿# Next Build Roadmap
 
+## Next bounded slice — T707 planned (2026-08-11)
+
+T707 / issue 281 will close typed caller-context expressions for live
+`ModifyProjectile` terminal animations (`projhitanim`, `projremanim`,
+`projcancelanim`) while preserving the existing selector/ownership and AIR
+reset behavior. FFX, exact warning/overflow parity, invalid-action timing,
+teams, rollback and full Projectile parity stay outside the claim. See
+[issue 281](../.scratch/roadmap/issues/281-modifyprojectile-terminal-anim-dynamic.md).
+
 ## Latest bounded slice — T706 closed-bounded (2026-08-11)
 
 T706 / issue 280 closes Helper-owned live Ikemen `ModifyProjectile projanim`.

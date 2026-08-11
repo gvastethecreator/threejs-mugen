@@ -1,5 +1,15 @@
 ﻿# Roadmap Execution Board
 
+## Next bounded slice — T707 planned (2026-08-11)
+
+T707 / issue 281 is queued to type and resolve Ikemen-only live
+`ModifyProjectile` terminal animations: `projhitanim`, `projremanim` and
+`projcancelanim`. It reuses the existing selection, caller-context resolution
+and AIR reset seams from T705/T706. FFX prefixes, exact negative or overflow
+warnings, invalid-action timing, namespace broadcast, teams, rollback and full
+Projectile parity remain blocked. See [issue
+281](../.scratch/roadmap/issues/281-modifyprojectile-terminal-anim-dynamic.md).
+
 ## Latest bounded slice — T706 closed-bounded (2026-08-11)
 
 T706 / issue 280 closes Helper-owned live Ikemen `ModifyProjectile projanim`.

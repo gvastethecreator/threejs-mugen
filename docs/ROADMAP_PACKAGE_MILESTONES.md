@@ -1,5 +1,13 @@
 ﻿# Roadmap Package Milestones
 
+## Next bounded slice — T707 planned (2026-08-11)
+
+Issue 281 targets the remaining typed live `ModifyProjectile` terminal-action
+parameters (`projhitanim`, `projremanim`, `projcancelanim`) for root and Helper
+caller contexts. This is an Ikemen-only bounded slice; FFX, warning/overflow
+parity, invalid-action timing, teams, rollback and full Projectile parity are
+blocked.
+
 ## Latest bounded slice — T706 closed-bounded (2026-08-11)
 
 T706 / issue 280 closes the Helper-owned live Ikemen `ModifyProjectile projanim`

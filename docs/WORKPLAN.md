@@ -1,5 +1,13 @@
 # Workplan
 
+## Next bounded slice — T707 planned (2026-08-11)
+
+Implement typed caller-context `ModifyProjectile` terminal animations for
+`projhitanim`, `projremanim` and `projcancelanim`. Preserve selection,
+ownership and AIR reset seams from T705/T706. Keep FFX, exact warning/overflow,
+invalid-action timing, teams, rollback and full Projectile parity blocked.
+See [issue 281](../.scratch/roadmap/issues/281-modifyprojectile-terminal-anim-dynamic.md).
+
 ## Latest bounded slice — T706 closed-bounded (2026-08-11)
 
 T706 closes the Helper-owned live `ModifyProjectile projanim` seam. The typed
