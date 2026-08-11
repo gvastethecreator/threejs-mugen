@@ -933,6 +933,7 @@ export type RuntimeTraceHitEffectEventRequirement = {
   sparkNo?: number;
   raw?: string;
   rawPrefix?: string;
+  angle?: number;
   offsetX?: number;
   offsetY?: number;
   scaleX?: number;
@@ -967,6 +968,7 @@ export type RuntimeTraceGateHitEffectEventEvidence = {
   sparkNo?: number;
   raw?: string;
   rawPrefix?: string;
+  angle?: number;
   offset?: { x: number; y: number };
   scale?: { x: number; y: number };
   assetSource?: NonNullable<NonNullable<ActorSnapshot["hitEffectEvents"]>[number]["assetFrame"]>["source"];
@@ -2824,6 +2826,7 @@ function summarizeHitEffectEventEvidence(
     sparkNo: event.sparkNo,
     raw: event.raw,
     rawPrefix: event.rawPrefix,
+    angle: event.angle,
     offset: event.offset ? { ...event.offset } : undefined,
     scale: event.scale ? { ...event.scale } : undefined,
     assetSource: event.assetFrame?.source,
@@ -2858,6 +2861,7 @@ function hitEffectEventEvidenceKey(event: RuntimeTraceGateHitEffectEventEvidence
     event.sparkNo ?? "",
     event.raw ?? "",
     event.rawPrefix ?? "",
+    event.angle ?? "",
     event.offset?.x ?? "",
     event.offset?.y ?? "",
     event.scale?.x ?? "",
@@ -2895,6 +2899,7 @@ function matchesHitEffectEventRequirement(
     (requirement.sparkNo === undefined || event.sparkNo === requirement.sparkNo) &&
     (requirement.raw === undefined || event.raw === requirement.raw) &&
     (requirement.rawPrefix === undefined || event.rawPrefix === requirement.rawPrefix) &&
+    (requirement.angle === undefined || sameTraceNumber(event.angle ?? NaN, requirement.angle)) &&
     (requirement.offsetX === undefined || sameTraceNumber(event.offset?.x ?? NaN, requirement.offsetX)) &&
     (requirement.offsetY === undefined || sameTraceNumber(event.offset?.y ?? NaN, requirement.offsetY)) &&
     (requirement.scaleX === undefined || sameTraceNumber(event.scale?.x ?? NaN, requirement.scaleX)) &&
@@ -4178,6 +4183,7 @@ function cloneTraceHitEffectEvent(event: NonNullable<ActorSnapshot["hitEffectEve
     type: event.type,
     kind: event.kind,
     sparkNo: event.sparkNo,
+    angle: event.angle,
     raw: event.raw,
     rawPrefix: event.rawPrefix,
     offset: event.offset ? { ...event.offset } : undefined,

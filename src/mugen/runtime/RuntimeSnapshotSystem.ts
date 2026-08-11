@@ -200,6 +200,7 @@ export class RuntimeSnapshotWorld {
       soundEvents: actor.soundEvents.map((event) => ({ ...event })),
       hitEffectEvents: actor.hitEffectEvents.map((event) => ({
         ...event,
+        angle: event.angle,
         offset: event.offset ? { ...event.offset } : undefined,
         scale: event.scale ? { ...event.scale } : undefined,
         assetFrame: event.assetFrame ? { ...event.assetFrame } : undefined,

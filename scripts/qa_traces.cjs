@@ -1671,6 +1671,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyHitDefDynamicSparkXyTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyhitdef-dynamic-sparkangle",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyHitDefDynamicSparkAngleTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projectile-guard-velocity-default",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileGuardVelocityDefaultTraceArtifact(),

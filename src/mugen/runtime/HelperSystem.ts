@@ -1592,6 +1592,7 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
         soundEvents: helper.soundEvents.map((event) => ({ ...event })),
         hitEffectEvents: helper.hitEffectEvents.map((event) => ({
           ...event,
+          angle: event.angle,
           offset: event.offset ? { ...event.offset } : undefined,
           scale: event.scale ? { ...event.scale } : undefined,
           assetFrame: event.assetFrame ? { ...event.assetFrame } : undefined,

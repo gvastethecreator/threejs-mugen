@@ -30260,6 +30260,104 @@ export function createSyntheticImportedModifyHitDefDynamicSparkXyTraceArtifact(
   });
 }
 
+export function createSyntheticImportedModifyHitDefDynamicSparkAngleTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 77;
+  const branchStateNo = 5085;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "seed live sparkangle", frames: 2, p1: [], p2: [] },
+    { label: "redirect then make the hit", frames: 10, p1: ["x"], p2: [] },
+    { label: "sparkangle hit settles", frames: 8, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-sparkangle-attacker",
+    displayName: "Dynamic ModifyHitDef SparkAngle Attacker",
+    withHitDef: false,
+    withPlayerPush: false,
+    activeRootHitDefRoute: {
+      damage: 37,
+      targetId,
+      hitFlag: "M",
+      hitSpark: "S7001",
+      sparkAngle: -5,
+      sparkXy: [-2, -3],
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      delayedPosX: { x: -35, trigger: "Time >= 2" },
+      clsn1Extent: 64,
+    },
+  });
+  const caller = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyhitdef-dynamic-sparkangle-caller",
+    displayName: "Dynamic ModifyHitDef SparkAngle Caller",
+    withHitDef: false,
+    withPlayerPush: false,
+    rootModifyHitDefRedirectRoute: {
+      redirectId: 56,
+      trigger: "Time = 1",
+      sparkAngle: "var(0)",
+      varSeeds: [{ index: 0, value: 27 }],
+    },
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchExpression: "GetHitVar(hittime) > 0",
+      hitTimeBranchName: "Dynamic SparkAngle GetHitVar Branch",
+      hitTimeBranchInSlide: true,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: caller, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-modifyhitdef-dynamic-sparkangle-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyhitdef-dynamic-sparkangle-golden",
+      label: "Synthetic imported dynamic live ModifyHitDef sparkangle route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root caller resolves var(0)=27 in caller context and redirects sparkangle into an already active HitDef before accepted contact. The emitted HitSpark telemetry observes the replacement angle while the authored sparkxy remains unchanged. Fresh angle defaults, guard.sparkangle, spark identity mutation, scale, palette, sound, Projectile, ModifyProjectile, exact renderer timing, teams, rollback, and full effect parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyhitdef-dynamic-sparkangle-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredExecutedStates: [5000, 5001, branchStateNo],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "ModifyHitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "modifyhitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredHitEffectEvents: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        kind: "hit",
+        sparkNo: 7001,
+        raw: "S7001",
+        rawPrefix: "S",
+        angle: 27,
+        offsetX: -2,
+        offsetY: -3,
+        stateNo: 0,
+      }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedDynamicDirectDownVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -64052,6 +64150,8 @@ export type SyntheticImportedTraceFighterOptions = {
     airGuardVelocity?: SyntheticPartialTripleExpression;
     /** Synthetic fixture-only active HitDef spark identity and offset. */
     hitSpark?: string;
+    /** Synthetic fixture-only active HitDef spark angle. */
+    sparkAngle?: SyntheticNumberExpression;
     sparkXy?: [number, number];
     pauseTime?: number;
     guardPause?: number;
@@ -64088,6 +64188,8 @@ export type SyntheticImportedTraceFighterOptions = {
     airGuardVelocity?: SyntheticPartialTripleExpression;
     /** Synthetic fixture-only live ModifyHitDef spark offset. */
     sparkXy?: SyntheticPartialPairExpression;
+    /** Synthetic fixture-only live ModifyHitDef spark angle. */
+    sparkAngle?: SyntheticNumberExpression;
     varSeeds?: Array<{ index: number; value: number; trigger?: string }>;
     redirectId: SyntheticNumberExpression;
     trigger?: string;
@@ -71537,6 +71639,7 @@ guardflag = ${route.guardFlag ?? "MA"}
 ${route.guardVelocity === undefined ? "" : `guard.velocity = ${route.guardVelocity.join(", ")}\n`}
 ${route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGuardVelocity.join(", ")}\n`}
 ${route.hitSpark === undefined ? "" : `sparkno = ${route.hitSpark}\n`}
+${route.sparkAngle === undefined ? "" : `sparkangle = ${route.sparkAngle}\n`}
 ${route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy.join(", ")}\n`}
 ${route.pauseTime === undefined ? "" : `pausetime = ${route.pauseTime},${route.pauseTime}\n`}
 ${route.guardPause === undefined ? "" : `guard.pausetime = ${route.guardPause},${route.guardPause}\n`}
@@ -71578,6 +71681,7 @@ ${route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.joi
 ${route.downVelocity === undefined ? "" : `down.velocity = ${route.downVelocity.join(", ")}`}
 ${route.guardVelocity === undefined ? "" : `guard.velocity = ${route.guardVelocity.join(", ")}`}
 ${route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGuardVelocity.join(", ")}`}
+${route.sparkAngle === undefined ? "" : `sparkangle = ${route.sparkAngle}`}
 ${route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy.join(", ")}`}
 redirectid = ${route.redirectId}
 `;
