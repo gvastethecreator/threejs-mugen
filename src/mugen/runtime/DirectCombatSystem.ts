@@ -29,7 +29,7 @@ import {
   recordRuntimeRoundWinType,
   runtimeRoundHitSourceMetadata,
 } from "./RuntimeRoundWinTypeSystem";
-import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
+import { runtimeCombatDepthFromConstants, runtimeCombatLocalScale } from "./RuntimeCombatDepthSystem";
 import { runtimeTeamSideFromId } from "./RuntimeTeamTopologySystem";
 import { RUNTIME_DEFAULT_HIT_FLAG } from "./RuntimeHitFlagDefaults";
 import {
@@ -580,6 +580,17 @@ function applyHitSnap<TActor extends RuntimeDirectCombatActor>(attacker: TActor,
   defender.runtime.pos.x = attacker.runtime.pos.x + attacker.runtime.facing * snap.x;
   if (snap.y !== undefined) {
     defender.runtime.pos.y = attacker.runtime.pos.y + snap.y;
+  }
+  if (snap.z !== undefined) {
+    const attackerDepth = attacker.runtime.combatDepth ?? runtimeCombatDepthFromConstants(attacker.definition.constants);
+    const defenderDepth = defender.runtime.combatDepth ?? runtimeCombatDepthFromConstants(defender.definition.constants);
+    defender.runtime.combatDepth = {
+      ...defenderDepth,
+      position:
+        attackerDepth.position *
+          (runtimeCombatLocalScale(attacker.definition.localCoord) / runtimeCombatLocalScale(defender.definition.localCoord)) +
+        snap.z,
+    };
   }
 }
 

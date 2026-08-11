@@ -206,9 +206,11 @@ export type HitDefControllerOp = {
   p2Facing?: number | string;
   missOnOverride?: boolean;
   ignoreReversalDef?: boolean;
-  snap?: [number, number?];
+  snap?: MugenHitDefVector;
   /** Direct fresh HitDef snap X/Y expressions evaluated in the caller context. */
   snapExpressions?: MugenHitDefExpressionPair;
+  /** Ikemen-only direct fresh HitDef snap Z expression evaluated in caller context. */
+  snapZExpression?: number | string;
   animType?: number;
   /** Ikemen GetHitVar ground/air reaction metadata. */
   airAnimType?: number;
@@ -2632,11 +2634,18 @@ function compileHitDefControllerOp(
   const hitSparkAngle = optionalScalarNumberOrExpression(controller, "sparkangle");
   const guardSparkAngle = optionalScalarNumberOrExpression(controller, "guard.sparkangle");
   const snapRaw = findParam(controller, "snap");
-  const snapStatic = snapRaw === undefined ? undefined : strictStaticNumberPair(snapRaw);
+  const snapStatic = snapRaw === undefined ? undefined : strictStaticNumberVector(snapRaw);
   const snapExpressionValue = snapRaw === undefined || snapStatic !== undefined
     ? true
-    : optionalFloatExpressionPairParam(controller, "snap");
-  const snapExpressions = Array.isArray(snapExpressionValue) ? snapExpressionValue : undefined;
+    : optionalFloatExpressionVectorParam(controller, "snap");
+  const snapExpressions = Array.isArray(snapExpressionValue)
+    ? snapExpressionValue.length === 1
+      ? [snapExpressionValue[0]] as MugenHitDefExpressionPair
+      : [snapExpressionValue[0], snapExpressionValue[1]] as MugenHitDefExpressionPair
+    : undefined;
+  const snapZExpression = Array.isArray(snapExpressionValue) && snapExpressionValue.length === 3
+    ? snapExpressionValue[2]
+    : undefined;
   const paletteFx = optionalHitDefPaletteFxParam(controller);
   const envShake = optionalHitDefEnvShakeParam(controller);
   const fallEnvShake = optionalHitDefEnvShakeParam(controller, "fall.envshake");
@@ -2824,6 +2833,7 @@ function compileHitDefControllerOp(
     ignoreReversalDef: booleanNumber(findParam(controller, "ignorereversaldef")),
     snap: snapStatic,
     ...(snapExpressions === undefined ? {} : { snapExpressions }),
+    ...(snapZExpression === undefined ? {} : { snapZExpression }),
     animType: hitAnimType(findParam(controller, "animtype")),
     airAnimType: hitAnimType(findParam(controller, "air.animtype")),
     groundType: hitType(findParam(controller, "ground.type") ?? findParam(controller, "type")),
@@ -5050,7 +5060,9 @@ function compileFloatExpressionPair(raw: string): MugenHitDefExpressionPair | un
 }
 
 function compileFloatExpressionVector(raw: string): MugenHitDefExpressionPair | MugenHitDefExpressionTriplet | undefined {
-  return compileFloatExpressionPair(raw) ?? compileFloatExpressionTriplet(raw);
+  // Try the full vector first. A pair parser can otherwise accept the first
+  // two components of a three-component expression and silently drop Z.
+  return compileFloatExpressionTriplet(raw) ?? compileFloatExpressionPair(raw);
 }
 
 function compileFloatExpressionTriplet(raw: string): MugenHitDefExpressionTriplet | undefined {

@@ -712,6 +712,30 @@ describe("DirectCombatSystem", () => {
     expect(defender.runtime.pos.x).toBe(-2);
   });
 
+  it("applies fresh HitDef snap Z to combat depth and exposes zoff", () => {
+    const attacker = actor("p1", "Attacker", {
+      combatDepth: { position: 6, velocity: 0, size: [3, 3], attack: [4, 4] },
+    });
+    const defender = actor("p2", "Defender", {
+      combatDepth: { position: -2, velocity: 0, size: [3, 3], attack: [4, 4] },
+    });
+
+    new RuntimeDirectCombatWorld().applyResolvedHit(attacker, defender, move({
+      hitVars: { hitOffset: { x: 0, y: 0, z: 4 } },
+    }), {
+      kind: "hit",
+      damage: 0,
+      kill: true,
+      pause: 0,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+    }, hooks());
+
+    expect(defender.runtime.combatDepth?.position).toBe(10);
+    expect(runtimeHitVar(defender.runtime, "zoff")).toBe(4);
+  });
+
   it("inverts the current attacker facing for negative p1facing on direct hits", () => {
     const attacker = actor("p1", "Attacker", { facing: 1, pos: { x: 10, y: 0 } });
     const defender = actor("p2", "Defender", { facing: 1 });

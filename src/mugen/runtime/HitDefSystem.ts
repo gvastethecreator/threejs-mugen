@@ -51,7 +51,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state" | "hitsound.channel" | "guardsound.channel") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy" | "snap") => [number?, number?] | undefined;
-  resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
+  resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
   resolveFallEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -85,7 +85,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "hitsound.channel" | "guardsound.channel") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkxy" | "snap") => [number?, number?] | undefined;
   /** Resolves live dynamic float scalars in the caller context. */
-  resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
+  resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
   /** Resolves a live spark identity's numeric suffix in the caller context. */
   resolveSparkNumber?: (key: "guard.sparkno", expression?: string) => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
@@ -672,7 +672,7 @@ export class RuntimeHitDefControllerDispatchWorld {
       context ?? {},
       resolveIntegerScalar?.("numhits"),
     ) ?? operation?.hitCount ?? firstNumber(findParam(source, "numhits")) ?? existing?.hitVars?.hitCount ?? 1;
-    const staticSnap = operation?.snap ?? numberPair(findParam(source, "snap"));
+    const staticSnap = operation?.snap ?? snapVector(findParam(source, "snap"));
     const resolvedSnap = operation?.snapExpressions === undefined && staticSnap !== undefined
       ? undefined
       : resolveRuntimeHitDefFloatExpressionPair(
@@ -682,13 +682,23 @@ export class RuntimeHitDefControllerDispatchWorld {
           context ?? {},
           resolveFloatPair?.("snap"),
         );
-    const snap: [number, number?] | undefined = resolvedSnap === undefined
+    const resolvedSnapZ = operation?.snapZExpression === undefined
+      ? undefined
+      : resolveRuntimeHitDefFloatExpressionScalar(
+          operation.snapZExpression,
+          findParam(source, "snap"),
+          actor.runtime,
+          context ?? {},
+          resolveFloatScalar?.("snap"),
+        );
+    const snap: [number, number?, number?] | undefined = resolvedSnap === undefined
       ? staticSnap
       : resolvedSnap.first === undefined
         ? undefined
         : [
             resolvedSnap.first,
             resolvedSnap.componentCount === 2 ? resolvedSnap.second : undefined,
+            resolvedSnapZ,
           ];
     const resolveFreshStateScalar = (
       key: "p1stateno" | "p2stateno" | "p2getp1state",
@@ -818,7 +828,15 @@ export class RuntimeHitDefControllerDispatchWorld {
         hitId: targetId,
         ...(chainId !== undefined ? { chainId } : {}),
         hitCount,
-        ...(snap ? { hitOffset: { x: snap[0], ...(snap[1] !== undefined ? { y: snap[1] } : {}) } } : {}),
+        ...(snap
+          ? {
+              hitOffset: {
+                x: snap[0],
+                ...(snap[1] !== undefined ? { y: snap[1] } : {}),
+                ...(snap[2] !== undefined ? { z: snap[2] } : {}),
+              },
+            }
+          : {}),
         animType,
         groundAnimType,
         airAnimType,
@@ -2418,6 +2436,19 @@ function numberPair(value: string | undefined): [number, number] | undefined {
     return undefined;
   }
   return [numbers[0], numbers[1] ?? numbers[0]];
+}
+
+function snapVector(value: string | undefined): [number, number?, number?] | undefined {
+  if (!value) return undefined;
+  const parts = value.split(",").map((part) => part.trim());
+  if (parts.length < 1 || parts.length > 3 || parts.some((part) => part.length === 0)) return undefined;
+  const values = parts.map(Number);
+  if (values.some((part) => !Number.isFinite(part)) || values[0] === undefined) return undefined;
+  return values.length === 3
+    ? [values[0]!, values[1]!, values[2]!]
+    : values.length === 2
+      ? [values[0]!, values[1]!]
+      : [values[0]!];
 }
 
 function normalizeSparkOffset(value: [number, number?]): [number, number] {

@@ -481,7 +481,7 @@ function buildHitVars(params: Record<string, string>): DemoMove["hitVars"] | und
   const hitId = firstNumber(params.id);
   const chainId = firstNumber(params.chainid);
   const hitCount = firstNumber(params.numhits);
-  const snap = numberPair(params.snap);
+  const snap = numberTriple(params.snap);
   if (
     animType === undefined &&
     airAnimType === undefined &&
@@ -511,7 +511,11 @@ function buildHitVars(params: Record<string, string>): DemoMove["hitVars"] | und
     hitVars.hitCount = Math.max(0, Math.trunc(hitCount));
   }
   if (snap !== undefined) {
-    hitVars.hitOffset = { x: snap[0], ...(snap[1] !== undefined ? { y: snap[1] } : {}) };
+    hitVars.hitOffset = {
+      x: snap[0],
+      ...(snap[1] !== undefined ? { y: snap[1] } : {}),
+      ...(snap[2] !== undefined ? { z: snap[2] } : {}),
+    };
   }
   const resolvedAnimType = fallAnimType ?? animType;
   if (resolvedAnimType !== undefined) {

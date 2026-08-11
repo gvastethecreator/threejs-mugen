@@ -2430,7 +2430,7 @@ value = 1
     })).operation).toBeUndefined();
   });
 
-  it("compiles direct HitDef snap X/Y expressions and rejects triples", () => {
+  it("compiles direct HitDef snap X/Y/Z expressions and rejects malformed vectors", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], { snap: "16,-24" })).operation).toMatchObject({
       kind: "hitdef",
       snap: [16, -24],
@@ -2443,8 +2443,17 @@ value = 1
       kind: "hitdef",
       snapExpressions: ["var(1)", "fvar(2)"],
     });
+    expect(compileControllerIr(controller(200, "HitDef", [], { snap: "16,-24,9" })).operation).toMatchObject({
+      kind: "hitdef",
+      snap: [16, -24, 9],
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], { snap: "var(1),fvar(2),var(3)" })).operation).toMatchObject({
+      kind: "hitdef",
+      snapExpressions: ["var(1)", "fvar(2)"],
+      snapZExpression: "var(3)",
+    });
     expect(compileControllerIr(controller(200, "HitDef", [], { snap: "var(" })).operation).toBeUndefined();
-    expect(compileControllerIr(controller(200, "HitDef", [], { snap: "var(1),fvar(2),var(3)" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "HitDef", [], { snap: "var(1),fvar(2),var(3),4" })).operation).toBeUndefined();
   });
 
   it("compiles direct HitDef and root ModifyHitDef guard.velocity X expressions", () => {

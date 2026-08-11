@@ -5327,6 +5327,8 @@ function runActiveStateControllers(
           const operation = controller.operation?.kind === "hitdef" ? controller.operation : undefined;
           const value = key === "airguard.velocity"
             ? operation?.airGuardVelocityZExpression
+            : key === "snap"
+              ? operation?.snapZExpression
             : key === "sparkangle"
               ? operation?.hitSparkAngle
               : key === "guard.sparkangle"
@@ -5412,6 +5414,8 @@ function runActiveStateControllers(
               ? operation?.guardVelocityZExpression ?? operation?.guardVelocityZ
             : key === "airguard.velocity"
               ? operation?.airGuardVelocityZExpression
+            : key === "snap"
+              ? undefined
             : key === "ground.cornerpush.veloff"
               ? operation?.groundCornerPushExpression ?? operation?.groundCornerPush
             : key === "air.cornerpush.veloff"

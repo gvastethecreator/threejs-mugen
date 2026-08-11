@@ -2051,17 +2051,17 @@ describe("HelperSystem", () => {
     });
   });
 
-  it("resolves Helper-owned fresh HitDef snap X/Y in the helper caller context", () => {
+  it("resolves Helper-owned fresh HitDef snap X/Y/Z in the helper caller context", () => {
     const active = helper({
       vars: [7, -5, 11],
       currentMove: activeMove({ hitVars: { hitOffset: { x: 99, y: -99 } } }),
       runtimeProgram: {
         states: [
           stateProgram(stateDef(6000, { moveType: "A" }), [
-            controllerIr(6000, "HitDef", {
+            compiledControllerIr(6000, "HitDef", [], {
               attr: "S,NA",
               damage: "20",
-              snap: "var(0),var(1)",
+              snap: "var(0),var(1),var(2)",
             }),
           ]),
         ],
@@ -2070,7 +2070,7 @@ describe("HelperSystem", () => {
 
     advanceRuntimeHelpers([active], stage);
 
-    expect(active.currentMove?.hitVars?.hitOffset).toEqual({ x: 7, y: -5 });
+    expect(active.currentMove?.hitVars?.hitOffset).toEqual({ x: 7, y: -5, z: 11 });
   });
 
   it("applies Helper-owned ModifyHitDef down.velocity in caller context and preserves omitted components", () => {

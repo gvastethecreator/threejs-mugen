@@ -1089,25 +1089,26 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       actor,
       controller: compileControllerIr(controller("HitDef", {
         attr: "S,NA",
-        snap: "99,-99",
+        snap: "99,-99,4",
       })),
       frame: activeFrame(),
     });
-    expect(actor.currentMove?.hitVars?.hitOffset).toEqual({ x: 99, y: -99 });
+    expect(actor.currentMove?.hitVars?.hitOffset).toEqual({ x: 99, y: -99, z: 4 });
 
     caller.vars[1] = 7;
     caller.fvars[1] = -5;
+    caller.vars[3] = 13;
     actor.firedHitDefs.clear();
     world.apply({
       actor,
       controller: compileControllerIr(controller("HitDef", {
         attr: "S,NA",
-        snap: "var(1),fvar(1)",
+        snap: "var(1),fvar(1),var(3)",
       })),
       context: { self: caller },
       frame: activeFrame(),
     });
-    expect(actor.currentMove?.hitVars?.hitOffset).toEqual({ x: 7, y: -5 });
+    expect(actor.currentMove?.hitVars?.hitOffset).toEqual({ x: 7, y: -5, z: 13 });
 
     caller.vars[2] = 11;
     actor.firedHitDefs.clear();
