@@ -33663,6 +33663,26 @@ export function createSyntheticImportedProjectileDynamicKeepStateTraceArtifact(
     undefined,
     "-dynamic-keepstate",
     "var(0)",
+    true,
+  );
+}
+
+/**
+ * T711 proves the bounded state-preservation slice of Projectile keepstate:
+ * the accepted contact and GetHitVar metadata remain observable, while the
+ * defender does not enter authored p2stateno or the default Common1 get-hit
+ * states. Resource cleanup, custom-state ownership, and exact engine timing
+ * remain outside this fixture.
+ */
+export function createSyntheticImportedProjectileKeepStateStatePreservationTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInternal(
+    options,
+    undefined,
+    "-keepstate-state-preservation",
+    "var(0)",
+    true,
   );
 }
 
@@ -33671,21 +33691,26 @@ function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInter
   damageExpression?: SyntheticPairExpression,
   variantSuffix = "",
   keepStateExpression?: SyntheticNumberExpression,
+  preserveStateTransitions = false,
 ): RuntimeTraceArtifact {
   const traceId = `synthetic-imported-projectile-gethitvar-hit-metadata${variantSuffix}`;
   const defender = createSyntheticImportedTraceFighter({
     id: traceId,
     displayName: "Synthetic Imported Projectile GetHitVar Hit Metadata",
-    defaultGetHitProgression: {
-      shakeStateNo: 5000,
-      slideStateNo: 5001,
-      hitTimeBranchStateNo: 335,
-      hitTimeBranchAnimNo: 335,
-      hitTimeBranchExpression:
-        `GetHitVar(damage) = 31 && GetHitVar(hittime) = 13 && GetHitVar(xvel) = 4 && GetHitVar(yvel) = -2 && !GetHitVar(guarded)${
-          keepStateExpression === undefined ? "" : " && GetHitVar(keepstate) = 1"
-        }`,
-    },
+    ...(preserveStateTransitions
+      ? {}
+      : {
+          defaultGetHitProgression: {
+            shakeStateNo: 5000,
+            slideStateNo: 5001,
+            hitTimeBranchStateNo: 335,
+            hitTimeBranchAnimNo: 335,
+            hitTimeBranchExpression:
+              `GetHitVar(damage) = 31 && GetHitVar(hittime) = 13 && GetHitVar(xvel) = 4 && GetHitVar(yvel) = -2 && !GetHitVar(guarded)${
+                keepStateExpression === undefined ? "" : " && GetHitVar(keepstate) = 1"
+              }`,
+          },
+        }),
   });
   const attacker = createSyntheticImportedTraceFighter({
     id: `${traceId}-attacker`,
@@ -33729,39 +33754,63 @@ function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInter
         requiredActorKinds: ["player"],
         requiredEffectKinds: ["projectile"],
         requiredRoutedStates: [200],
-        requiredExecutedStates: [200, 5000, 335],
+        requiredExecutedStates: preserveStateTransitions ? [200] : [200, 5000, 335],
+        ...(preserveStateTransitions
+          ? { forbiddenExecutedStates: [335, 5000, 5001, 150, 151, 152, 154] }
+          : {}),
         requiredExecutedControllers: ["ChangeState", "Projectile"],
         requiredExecutedOperations: ["projectile", "audio:playsnd"],
         requiredContactEffectPackages: [syntheticPlayerProjectileHitContactPackage(45)],
-        requiredControllerEventSequences: [
-          {
-            label: "5000 Projectile normal hit GetHitVar metadata branch order",
-            actorId: "p2",
-            allowSameTick: true,
-            steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitTime Branch" }],
-          },
-        ],
-        requiredActorFrames: [
-          {
-            ...defaultGetHitProgressionPhysicsFrames()[0],
-            observedVelXAtLeast: 4,
-            observedVelXAtMost: 4,
-            observedVelYAtLeast: -2,
-            observedVelYAtMost: -2,
-          },
-          {
-            actorId: "p2",
-            source: "imported",
-            actorKind: "player",
-            stateNo: 335,
-            animNo: 335,
-            stateType: "S",
-            moveType: "H",
-            physics: "S",
-            minFrames: 1,
-          },
-          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911, moveType: "I", clsn1Count: 0 },
-        ],
+        requiredControllerEventSequences: preserveStateTransitions
+          ? []
+          : [
+              {
+                label: "5000 Projectile normal hit GetHitVar metadata branch order",
+                actorId: "p2",
+                allowSameTick: true,
+                steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitTime Branch" }],
+              },
+            ],
+        requiredActorFrames: preserveStateTransitions
+          ? [
+              {
+                actorId: "p2",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 0,
+                animNo: 0,
+                stateType: "S",
+                moveType: "I",
+                physics: "S",
+                observedVelXAtLeast: 4,
+                observedVelXAtMost: 4,
+                observedVelYAtLeast: -2,
+                observedVelYAtMost: -2,
+                minFrames: 1,
+              },
+              { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911, moveType: "I", clsn1Count: 0 },
+            ]
+          : [
+              {
+                ...defaultGetHitProgressionPhysicsFrames()[0],
+                observedVelXAtLeast: 4,
+                observedVelXAtMost: 4,
+                observedVelYAtLeast: -2,
+                observedVelYAtMost: -2,
+              },
+              {
+                actorId: "p2",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 335,
+                animNo: 335,
+                stateType: "S",
+                moveType: "H",
+                physics: "S",
+                minFrames: 1,
+              },
+              { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911, moveType: "I", clsn1Count: 0 },
+            ],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
@@ -33788,8 +33837,8 @@ function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifactInter
             actorId: "p2",
             source: "imported",
             actorKind: "player",
-            stateNo: 335,
-            moveType: "H",
+            stateNo: preserveStateTransitions ? 0 : 335,
+            moveType: preserveStateTransitions ? "I" : "H",
           },
         ],
       },
@@ -34895,6 +34944,20 @@ export function createSyntheticImportedHelperProjectileDynamicKeepStateTraceArti
     undefined,
     "-dynamic-keepstate",
     "var(0)",
+    true,
+  );
+}
+
+/** T711 helper-parented counterpart of the root Projectile state-preservation trace. */
+export function createSyntheticImportedHelperProjectileKeepStateStatePreservationTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifactInternal(
+    options,
+    undefined,
+    "-keepstate-state-preservation",
+    "var(0)",
+    true,
   );
 }
 
@@ -34903,21 +34966,26 @@ function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifac
   damageExpression?: SyntheticPairExpression,
   variantSuffix = "",
   keepStateExpression?: SyntheticNumberExpression,
+  preserveStateTransitions = false,
 ): RuntimeTraceArtifact {
   const traceId = `synthetic-imported-helper-projectile-gethitvar-hit-metadata${variantSuffix}`;
   const defender = createSyntheticImportedTraceFighter({
     id: traceId,
     displayName: "Synthetic Imported Helper Projectile GetHitVar Hit Metadata",
-    defaultGetHitProgression: {
-      shakeStateNo: 5000,
-      slideStateNo: 5001,
-      hitTimeBranchStateNo: 336,
-      hitTimeBranchAnimNo: 336,
-      hitTimeBranchExpression:
-        `GetHitVar(damage) = 37 && GetHitVar(hittime) = 14 && GetHitVar(xvel) = 4 && GetHitVar(yvel) = -2 && !GetHitVar(guarded)${
-          keepStateExpression === undefined ? "" : " && GetHitVar(keepstate) = 1"
-        }`,
-    },
+    ...(preserveStateTransitions
+      ? {}
+      : {
+          defaultGetHitProgression: {
+            shakeStateNo: 5000,
+            slideStateNo: 5001,
+            hitTimeBranchStateNo: 336,
+            hitTimeBranchAnimNo: 336,
+            hitTimeBranchExpression:
+              `GetHitVar(damage) = 37 && GetHitVar(hittime) = 14 && GetHitVar(xvel) = 4 && GetHitVar(yvel) = -2 && !GetHitVar(guarded)${
+                keepStateExpression === undefined ? "" : " && GetHitVar(keepstate) = 1"
+              }`,
+          },
+        }),
   });
   const attacker = createSyntheticImportedTraceFighter({
     id: `${traceId}-attacker`,
@@ -34972,45 +35040,81 @@ function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifac
         requiredActorKinds: ["player"],
         requiredEffectKinds: ["helper", "projectile"],
         requiredRoutedStates: [200],
-        requiredExecutedStates: [200, 5000, 336],
+        requiredExecutedStates: preserveStateTransitions ? [200] : [200, 5000, 336],
+        ...(preserveStateTransitions
+          ? { forbiddenExecutedStates: [336, 5000, 5001, 150, 151, 152, 154] }
+          : {}),
         requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
         requiredExecutedOperations: ["helper", "projectile", "audio:playsnd"],
-        requiredControllerEventSequences: [
-          {
-            label: "helper-local Projectile spawn telemetry",
-            actorId: "p1",
-            allowSameTick: true,
-            steps: [
-              { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
-              { stateNo: 1200, operation: "projectile" },
+        requiredControllerEventSequences: preserveStateTransitions
+          ? [
+              {
+                label: "helper-local Projectile spawn telemetry",
+                actorId: "p1",
+                allowSameTick: true,
+                steps: [
+                  { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
+                  { stateNo: 1200, operation: "projectile" },
+                ],
+              },
+            ]
+          : [
+              {
+                label: "helper-local Projectile spawn telemetry",
+                actorId: "p1",
+                allowSameTick: true,
+                steps: [
+                  { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
+                  { stateNo: 1200, operation: "projectile" },
+                ],
+              },
+              {
+                label: "5000 helper Projectile normal hit GetHitVar metadata branch order",
+                actorId: "p2",
+                allowSameTick: true,
+                steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitTime Branch" }],
+              },
             ],
-          },
-          {
-            label: "5000 helper Projectile normal hit GetHitVar metadata branch order",
-            actorId: "p2",
-            allowSameTick: true,
-            steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitTime Branch" }],
-          },
-        ],
-        requiredActorFrames: [
-          {
-            ...defaultGetHitProgressionPhysicsFrames()[0],
-            observedVelXAtLeast: 4,
-            observedVelXAtMost: 4,
-            observedVelYAtLeast: -2,
-            observedVelYAtMost: -2,
-          },
-          {
-            actorId: "p2",
-            source: "imported",
-            actorKind: "player",
-            stateNo: 336,
-            animNo: 336,
-            stateType: "S",
-            moveType: "H",
-            physics: "S",
-            minFrames: 1,
-          },
+        requiredActorFrames: preserveStateTransitions
+          ? [
+              {
+                actorId: "p2",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 0,
+                animNo: 0,
+                stateType: "S",
+                moveType: "I",
+                physics: "S",
+                observedVelXAtLeast: 4,
+                observedVelXAtMost: 4,
+                observedVelYAtLeast: -2,
+                observedVelYAtMost: -2,
+                minFrames: 1,
+              },
+              { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1251, animNo: 1002, minFrames: 1 },
+              { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1252, animNo: 1003, minFrames: 1 },
+              { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1004, moveType: "A", minFrames: 1 },
+            ]
+          : [
+              {
+                ...defaultGetHitProgressionPhysicsFrames()[0],
+                observedVelXAtLeast: 4,
+                observedVelXAtMost: 4,
+                observedVelYAtLeast: -2,
+                observedVelYAtMost: -2,
+              },
+              {
+                actorId: "p2",
+                source: "imported",
+                actorKind: "player",
+                stateNo: 336,
+                animNo: 336,
+                stateType: "S",
+                moveType: "H",
+                physics: "S",
+                minFrames: 1,
+              },
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1251, animNo: 1002, minFrames: 1 },
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1252, animNo: 1003, minFrames: 1 },
           { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1004, moveType: "A", minFrames: 1 },
@@ -35084,8 +35188,8 @@ function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifac
             actorId: "p2",
             source: "imported",
             actorKind: "player",
-            stateNo: 336,
-            moveType: "H",
+            stateNo: preserveStateTransitions ? 0 : 336,
+            moveType: preserveStateTransitions ? "I" : "H",
           },
         ],
       },

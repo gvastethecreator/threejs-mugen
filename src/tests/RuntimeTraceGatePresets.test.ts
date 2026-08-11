@@ -711,9 +711,11 @@ import {
   createSyntheticImportedProjectileAirGuardVelocityTraceArtifact,
   createSyntheticImportedProjectileDynamicDamageTraceArtifact,
   createSyntheticImportedProjectileDynamicKeepStateTraceArtifact,
+  createSyntheticImportedProjectileKeepStateStatePreservationTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicDamageTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicKeepStateTraceArtifact,
+  createSyntheticImportedHelperProjectileKeepStateStatePreservationTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardKillTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardHitShakeTimeTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardedTraceArtifact,
@@ -20581,6 +20583,31 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
+  it("gates Projectile keepstate state preservation through the root-owned hit route", () => {
+    const artifact = createSyntheticImportedProjectileKeepStateStatePreservationTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-gethitvar-hit-metadata-keepstate-state-preservation-golden",
+        source: "imported",
+      },
+      gates: [{ passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.requirements.forbiddenExecutedStates).toEqual([335, 5000, 5001, 150, 151, 152, 154]);
+    expect(gate?.requirements.requiredFinalActors).toEqual([
+      expect.objectContaining({ actorId: "p2", stateNo: 0, moveType: "I" }),
+    ]);
+    expect(gate?.evidence.eventCategories).toContain("hit");
+    expect(gate?.evidence.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+  });
+
   it("creates a synthetic imported Projectile GetHitVar hitid/chainid artifact with normal get-hit branch evidence", () => {
     const artifact = createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtifact({
       generatedAt: "2026-07-05T00:00:00.000Z",
@@ -21608,6 +21635,35 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8890 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8890 }),
+      ]),
+    );
+  });
+
+  it("gates Helper Projectile keepstate state preservation through the helper-parented hit route", () => {
+    const artifact = createSyntheticImportedHelperProjectileKeepStateStatePreservationTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-gethitvar-hit-metadata-keepstate-state-preservation-golden",
+        source: "imported",
+      },
+      gates: [{ passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.requirements.forbiddenExecutedStates).toEqual([336, 5000, 5001, 150, 151, 152, 154]);
+    expect(gate?.requirements.requiredFinalActors).toEqual([
+      expect.objectContaining({ actorId: "p2", stateNo: 0, moveType: "I" }),
+    ]);
+    expect(gate?.evidence.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.eventCategories).toContain("hit");
+    expect(gate?.evidence.targetLinks).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8890 }),
         expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8890 }),
