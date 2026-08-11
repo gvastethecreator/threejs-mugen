@@ -2,15 +2,17 @@
 
 Last updated: 2026-08-11
 
-## Current T744 closeout / T745 selection
+## Current T745 implementation / T746 selection
 
-T744 closes live Ikemen `ModifyHitDef snap` X/Y replacement through
-root/RedirectID and Helper callers. Single values preserve active Y/Z, pairs
-preserve Z, and omission is a no-op. Product commit `f9ae0eca`; focused
-compiler/runtime/Helper and Playable integration coverage passes. Fresh snap,
-snap Z/`snaptime`, Projectiles, exact bind/tick/localcoord/facing and full
-positioning parity remain blocked. T743 / issue 317 is superseded by the
-already closed T728 / issue 302; select a distinct T745 source seam next.
+T745 / issue 319 carries fresh direct `HitDef snap` X/Y/Z through typed IR,
+root/Helper caller-context evaluation, `GetHitVar(zoff)`, imported metadata and
+accepted direct-hit combat depth. Product commit `d96b8241`; focused coverage
+is `390/390` and typecheck passes. The durable imported trace gate remains
+pending, so this is implementation-bounded rather than a full closeout.
+M.U.G.E.N 1.1 documents only X/Y; Z is bounded Ikemen support. `snaptime`,
+deferred bind/tick, live ModifyHitDef/Projectile snap Z and full positioning
+parity remain blocked. T743 / issue 317 is superseded by the already closed
+T728 / issue 302; T746 owns the next distinct `snaptime` source seam.
 
 ## Historical T742 closeout
 

@@ -1,6 +1,15 @@
 # Controller Support Registry
 
-Latest cursor: T744 / issue 318 is closed-bounded for live `ModifyHitDef snap`
+Latest cursor: T745 / issue 319 is implementation-bounded for fresh direct
+`HitDef snap` X/Y/Z. Static, mixed and caller-context dynamic vectors reach
+typed IR, root/Helper dispatch, `GetHitVar(zoff)`, imported metadata and
+accepted direct-hit combat depth. Focused coverage is `390/390`, typecheck
+passes, and product commit is `d96b8241`; the durable imported trace gate is
+still pending. M.U.G.E.N 1.1 only documents X/Y; Z is bounded Ikemen support.
+`snaptime`, deferred bind/tick, live ModifyHitDef/Projectile snap Z and exact
+positioning parity remain unsupported.
+
+Previous cursor: T744 / issue 318 is closed-bounded for live `ModifyHitDef snap`
 X/Y replacement through root/RedirectID and Helper callers. Single values
 preserve active Y/Z, pairs preserve Z, and omission is a no-op. Product commit
 `f9ae0eca`; focused compiler/runtime/Helper/Playable coverage passes.
@@ -39,14 +48,15 @@ Issue 317 / T743 is superseded by closed T728 / issue 302 and must not be
 reactivated as a duplicate. T739 / issue 313 is likewise superseded by closed
 T678 / issue 252.
 
-T742 `HitDef` addendum: fresh direct snap X/Y expressions are now retained in
+T742 `HitDef` addendum: fresh direct snap X/Y expressions are retained in
 typed IR and resolved once in root/Helper caller context. The required
 `synthetic-imported-hitdef-dynamic-snap.json` trace records
 `GetHitVar(xoff/yoff/zoff)=7/-5/0`, accepted target `p1 -> p2 / 77`, and the
 defender's snapped Y position; its trace/final checksums are
-`3d153556` / `fe79d540`. Snap Z, `snaptime`, live `ModifyHitDef`, Projectiles,
-exact bind/tick/localcoord/facing and full positioning parity remain
-unsupported.
+`3d153556` / `fe79d540`. T745 now carries fresh snap Z through focused runtime
+and combat-depth coverage; the durable imported trace is pending. `snaptime`,
+live `ModifyHitDef`, Projectiles, exact bind/tick/localcoord/facing and full
+positioning parity remain unsupported.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root
 `ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth` static,

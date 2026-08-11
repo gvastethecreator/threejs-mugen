@@ -1,13 +1,15 @@
 # Workplan
 
-## Latest slice — T744 closed-bounded (2026-08-11)
+## Latest slice — T745 implementation-bounded (2026-08-11)
 
-Issue 318 closes live Ikemen `ModifyHitDef snap` X/Y replacement through
-root/RedirectID and Helper callers. Single values preserve active Y/Z, pairs
-preserve Z, and omission is a no-op. Focused compiler/runtime/Helper coverage
-and the Playable RedirectID integration pass; product commit is `f9ae0eca`.
-Fresh snap defaults, snap Z/`snaptime`, Projectiles, exact bind/tick and full
-positioning parity remain blocked.
+Issue 319 carries fresh direct `HitDef snap` X/Y/Z through typed IR, root and
+Helper caller-context resolution, `GetHitVar(zoff)`, imported static metadata,
+and accepted direct-hit combat depth. Static, mixed, single, pair and triple
+vectors are covered; malformed four-component vectors fail closed. Product
+commit is `d96b8241`; focused coverage is `390/390` and typecheck passes.
+The durable imported trace gate is still pending, so this is not yet a full
+compatibility closeout. `snaptime`, deferred bind/tick maintenance,
+ModifyHitDef/Projectile snap Z and exact positioning parity remain blocked.
 
 ## Historical slice — T742 closed-bounded (2026-08-11)
 
@@ -68,11 +70,12 @@ final `d5bc517f`; aggregate QA passes `823/823` artifacts (`789` required,
 `34` optional). Fresh defaults, exact playback/mixing/priority, Projectiles
 and full audio parity remain blocked.
 
-## Next slice — select T745 after T744
+## Next slice — T746 `snaptime` / bind duration
 
-Issue 317 / T743 is superseded by the already closed T728 / issue 302. The
-next selection must be a distinct source-backed seam; do not reopen the
-`down.velocity` duplicate or claim snap Z/`snaptime` before their own evidence.
+Issue 317 / T743 is superseded by the already closed T728 / issue 302. T746
+must add a dedicated `snaptime`/bind owner, tick-order evidence and a required
+imported trace. Do not fold Projectiles or live `ModifyHitDef` snap Z into that
+slice, and do not claim full positioning parity from T745 focused tests alone.
 
 ## Historical slice — T735 closed-bounded (2026-08-11)
 

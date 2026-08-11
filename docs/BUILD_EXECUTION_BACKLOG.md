@@ -2,6 +2,20 @@
 
 ## Current parity queue
 
+- **T745 implementation-bounded** — issue 319 carries fresh direct `HitDef
+  snap` X/Y/Z through typed IR, root/Helper caller-context evaluation,
+  `GetHitVar(zoff)`, imported static metadata and accepted direct-hit combat
+  depth. Focused coverage is `390/390`, typecheck passes, and product commit
+  `d96b8241`; the durable imported trace gate is pending. M.U.G.E.N 1.1 only
+  documents X/Y, while Z is bounded Ikemen support. `snaptime`, deferred
+  bind/tick, live ModifyHitDef/Projectile snap Z and exact positioning parity
+  remain outside the claim. See [issue
+  319](../.scratch/roadmap/issues/319-hitdef-snap-depth.md).
+
+- **T746 queued** — implement fresh `snaptime`/bind duration with a dedicated
+  runtime owner, tick-order evidence and a required imported trace. Keep live
+  ModifyHitDef and Projectile snap Z as separate seams.
+
 - **T744 closed-bounded** — Ikemen-only live `ModifyHitDef snap` X/Y
   replacement through root/RedirectID and Helper callers. Single values
   preserve Y/Z, pairs preserve Z, and omission is a no-op. Focused compiler,

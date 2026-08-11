@@ -1,13 +1,15 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T744 closed-bounded (2026-08-11)
+## Latest bounded slice — T745 implementation-bounded (2026-08-11)
 
-Issue 318 closes live Ikemen `ModifyHitDef snap` X/Y replacement through
-root/RedirectID and Helper callers. Single values preserve active Y/Z, pairs
-preserve Z, and omission is a no-op. Focused compiler/runtime/Helper coverage
-and the Playable RedirectID integration pass; product commit is `f9ae0eca`.
-Fresh defaults, snap Z/`snaptime`, Projectiles, exact bind/tick/localcoord/
-facing and full positioning parity remain blocked.
+Issue 319 carries fresh direct `HitDef snap` X/Y/Z through typed IR, root and
+Helper caller-context resolution, `GetHitVar(zoff)`, imported static metadata,
+and accepted direct-hit combat depth. Static, mixed, single, pair and triple
+vectors are covered; malformed four-component vectors fail closed. Product
+commit is `d96b8241`; focused coverage is `390/390` and typecheck passes.
+The durable imported trace gate is still pending, so this is not a full
+compatibility closeout. `snaptime`, deferred bind/tick, live ModifyHitDef or
+Projectile snap Z and exact positioning parity remain blocked.
 
 ## Historical bounded slice — T742 closed-bounded (2026-08-11)
 
@@ -116,11 +118,12 @@ artifacts (`787` required, `34` optional). Fresh defaults, channels, exact
 lookup/playback/mixing/priority, Projectiles and full audio parity remain
 blocked. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next bounded slice — select T745 after T744
+## Next bounded slice — T746 `snaptime` / bind duration
 
-Issue 317 / T743 is superseded by the already closed T728 / issue 302. Select a
-distinct source-backed seam next; do not reopen the `down.velocity` duplicate or
-claim snap Z/`snaptime` without its own implementation and evidence.
+Issue 317 / T743 is superseded by the already closed T728 / issue 302. T746
+must own `snaptime`/bind duration and its tick-order evidence. Keep Projectiles
+and live ModifyHitDef snap Z separate, and do not claim full positioning parity
+from T745 focused tests alone.
 
 ## Historical bounded slice — T733 closed-bounded (2026-08-11)
 

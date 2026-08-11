@@ -2,14 +2,15 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T744 closed-bounded (2026-08-11)
+## Current implementation route — T745 implementation-bounded (2026-08-11)
 
-T744 / [issue 318](../.scratch/roadmap/issues/318-modifyhitdef-snap-expressions.md)
-closes live Ikemen `ModifyHitDef snap` X/Y replacement through root/RedirectID
-and Helper callers. Single values preserve active Y/Z, pairs preserve Z, and
-omission is a no-op. Product commit `f9ae0eca`; focused compiler/runtime/Helper
-and Playable integration coverage passes. Fresh defaults, snap Z/`snaptime`,
-Projectiles, exact bind/tick/localcoord/facing and full positioning parity remain
+T745 / [issue 319](../.scratch/roadmap/issues/319-hitdef-snap-depth.md)
+carries fresh direct `HitDef snap` X/Y/Z through typed IR, root/Helper
+caller-context resolution, `GetHitVar(zoff)`, imported static metadata, and
+accepted direct-hit combat depth. Product commit `d96b8241`; focused coverage
+is `390/390` and typecheck passes. The durable imported trace gate is pending,
+so this route is not yet a full compatibility closeout. `snaptime`, deferred
+bind/tick, live ModifyHitDef/Projectile snap Z and full positioning parity remain
 blocked.
 
 ## Historical implementation route — T742 closed-bounded (2026-08-11)
@@ -79,11 +80,12 @@ preservation is required; the accepted hit-audio event carries typed `F6,4`
 telemetry from raw `Fvar(0),var(1)` with no guard route. Trace/final checksums
 are `8d56e467` / `d2d70840`.
 
-## Next implementation route — select T745 after T744
+## Next implementation route — T746 `snaptime` / bind duration
 
-Issue 317 / T743 is superseded by the already closed T728 / issue 302. Select a
-distinct source-backed seam next; T739 / issue 313 is also superseded and is not
-a pending implementation route.
+Issue 317 / T743 is superseded by the already closed T728 / issue 302, and T739
+/ issue 313 is also superseded. T746 must provide a dedicated `snaptime`/bind
+owner, tick-order evidence and a required imported trace before claiming
+deferred positioning parity.
 
 ## Historical implementation route — T733 closed-bounded (2026-08-11)
 

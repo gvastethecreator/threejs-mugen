@@ -1,5 +1,19 @@
 ﻿# QA And Acceptance Gates
 
+## 2026-08-11 T745 fresh `HitDef snap` X/Y/Z — implementation-bounded
+
+Issue 319 carries static, mixed and caller-context dynamic fresh direct
+`HitDef snap` X/Y/Z through typed IR, root/Helper dispatch, imported metadata,
+`GetHitVar(zoff)` and accepted direct-hit combat depth. Focused compiler,
+runtime, Helper and direct-combat coverage is `390/390`; `pnpm run typecheck`
+and `git diff --check` pass. Product commit is `d96b8241`.
+
+The durable imported trace gate is pending, so this section does not claim a
+full compatibility closeout. M.U.G.E.N 1.1 documents only X/Y; Z is bounded
+Ikemen compatibility. `snaptime`, deferred bind/tick maintenance, live
+ModifyHitDef/Projectile snap Z and exact positioning parity remain outside the
+gate. See [issue 319](../.scratch/roadmap/issues/319-hitdef-snap-depth.md).
+
 ## 2026-08-11 T744 live `ModifyHitDef snap` X/Y — passed / closed-bounded
 
 Focused compiler/runtime/Helper coverage and the Playable RedirectID
@@ -105,11 +119,12 @@ Exact SND lookup/playback/mixing/channel priority, fresh defaults, Projectiles,
 renderer timing, teams, rollback and full audio parity remain outside this
 gate. See [issue 308](../.scratch/roadmap/issues/308-modifyhitdef-hitsound-expressions.md).
 
-## Next gate — select T745 after T744
+## Next gate — T746 `snaptime` / bind duration
 
 Issue 317 / T743 is superseded by the already closed T728 / issue 302. The next
-gate must target a distinct source-backed seam; issue 313 is not a pending
-acceptance target either.
+gate must own deferred `snaptime`/bind duration and tick-order evidence; issue
+313 is not a pending acceptance target. T745 focused tests are not evidence of
+full positioning parity.
 
 ## Historical — 2026-08-11 T733 `ModifyHitDef guardsound` — passed / closed-bounded
 

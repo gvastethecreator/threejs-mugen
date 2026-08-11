@@ -1,13 +1,15 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T744 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T745 implementation-bounded (2026-08-11)
 
-Issue 318 closes live Ikemen `ModifyHitDef snap` X/Y replacement through
-root/RedirectID and Helper callers. Single values preserve active Y/Z, pairs
-preserve Z, and omission is a no-op. Focused compiler/runtime/Helper coverage
-and Playable integration pass; product commit `f9ae0eca`. Fresh defaults, snap
-Z/`snaptime`, Projectiles, exact bind/tick and full positioning parity remain
-blocked.
+Issue 319 carries fresh direct `HitDef snap` X/Y/Z through typed IR, root/Helper
+caller-context evaluation, `GetHitVar(zoff)`, imported static metadata and
+accepted direct-hit combat depth. Static, mixed, single, pair and triple
+vectors are covered; malformed four-component vectors fail closed. Focused
+coverage is `390/390`, typecheck passes, and product commit is `d96b8241`.
+The durable imported trace gate is still pending. `snaptime`, deferred
+bind/tick, live ModifyHitDef/Projectile snap Z and full positioning parity
+remain blocked.
 
 ## Historical implementation checkpoint — T742 closed-bounded (2026-08-11)
 
@@ -79,10 +81,12 @@ typecheck passes and `pnpm qa:trace` passes `822/822` artifacts (`788`
 required, `34` optional). Fresh defaults, guardsound channel, exact lookup,
 playback/mixing/priority, Projectiles and full audio parity remain blocked.
 
-## Next implementation checkpoint — select T745 after T744
+## Next implementation checkpoint — T746 `snaptime` / bind duration
 
-Issue 317 / T743 is superseded by the already closed T728 / issue 302. Select a
-distinct source-backed seam next and do not reactivate issue 313.
+Issue 317 / T743 is superseded by the already closed T728 / issue 302. T746
+must add a dedicated `snaptime`/bind owner, tick-order evidence and a required
+imported trace; do not reactivate issue 313 or infer full positioning parity
+from T745 focused tests.
 
 ## Historical implementation checkpoint — T734 closed-bounded (2026-08-11)
 

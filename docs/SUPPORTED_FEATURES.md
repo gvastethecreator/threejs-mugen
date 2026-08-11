@@ -1,4 +1,16 @@
 ﻿# Supported Features
+## 2026-08-11 T745 fresh `HitDef snap` X/Y/Z - implementation-bounded
+
+Fresh direct `HitDef snap` now carries static, mixed and caller-context
+dynamic X/Y/Z through typed IR, root/Helper dispatch, imported static metadata,
+`GetHitVar(zoff)` and accepted direct-hit combat depth. Focused coverage is
+`390/390`, typecheck passes, and product commit is `d96b8241`. M.U.G.E.N 1.1
+documents only X/Y; Z is bounded Ikemen support. The durable imported trace is
+still pending, so this is not a full compatibility claim. `snaptime`, deferred
+bind/tick, live ModifyHitDef/Projectile snap Z and full positioning parity
+remain outside the claim. See [issue
+319](../.scratch/roadmap/issues/319-hitdef-snap-depth.md).
+
 ## 2026-08-11 T744 live `ModifyHitDef snap` X/Y — closed-bounded
 
 Live Ikemen `ModifyHitDef snap` now resolves static, mixed and caller-context
@@ -83,11 +95,11 @@ defaults, guardsound channel, exact playback/mixing/priority, Projectiles and
 full audio parity remain outside the claim. See [issue
 309](../.scratch/roadmap/issues/309-modifyhitdef-hitsound-channel.md).
 
-## Next selection — select T745 after T744
+## Next selection — T746 `snaptime` / bind duration
 
 Issue 317 / T743 is superseded by the already closed T728 / issue 302. Keep the
-T678/T739 duplicate out of the queue, and do not claim snap Z/`snaptime` without
-separate implementation and evidence.
+T678/T739 duplicate out of the queue. T746 must provide a dedicated
+`snaptime`/bind owner and evidence before claiming deferred positioning parity.
 
 ## Historical — T734 `ModifyHitDef hitsound` — closed-bounded
 
