@@ -1,15 +1,16 @@
 ﻿# Next Build Roadmap
 
-## Authoritative runtime cursor — T705 mapped
+## Authoritative runtime cursor — T705 closed-bounded
 
-T705 / issue 279 selects the next compatibility cut: root-owned live
-`ModifyProjectile projanim`. The typed operation must retain static or dynamic
-one-value input. The runtime must evaluate the value once in caller context,
-replace the selected AIR action, reset its cursor, and expose the result through
-`ProjVar(projanim)`. This is an Ikemen-only bounded claim. FFX prefixes,
-negative/overflow warning parity, invalid-action timing, Helper-owned mutation,
-terminal playback, broadcast order, teams, rollback, and full Projectile
-parity remain blocked. See [issue
+T705 / issue 279 is closed-bounded for root-owned live `ModifyProjectile
+projanim`: typed static/dynamic one-value input resolves once in caller context,
+replaces the selected AIR action, resets its cursor, and is observable through
+`ProjVar(id, index, anim)`. The required trace is `ed1f6e8a/43956cf2`, focused
+compiler/spawn coverage is `162/162`, and aggregate QA passes `790/790`
+(`756` required, `34` optional), with typecheck and diff hygiene green. This is
+an Ikemen-only bounded claim; FFX prefixes, negative/overflow warning parity,
+invalid-action timing, Helper-owned mutation, terminal playback, broadcast
+order, teams, rollback, and full Projectile parity remain blocked. See [issue
 279](../.scratch/roadmap/issues/279-modifyprojectile-anim-dynamic.md).
 
 ## Authoritative runtime cursor — T704 closed-bounded

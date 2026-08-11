@@ -2,7 +2,7 @@
 
 ## Status
 
-`ready-for-agent` — mapped, implementation pending.
+`closed-bounded` — implementation, required trace, and aggregate QA pass.
 
 ## Goal
 
@@ -55,6 +55,14 @@ Blocked:
 
 ## Closeout
 
-Close only after the required trace and all applicable gates pass. Update the
-runtime cursor, support registry, progress tracker, scorecard, backlog, and
-blocked-scope language. Do not claim full MUGEN or Ikemen parity.
+Required trace `synthetic-imported-modifyprojectile-dynamic-anim.json` passes
+with checksum `ed1f6e8a` / final `43956cf2`; it proves root ownership,
+caller-context `var(0)` evaluation, AIR action replacement/reset, `ProjVar`
+readback, and spawn/active/remove lifecycle. Focused compiler/spawn coverage
+is `162/162`; `pnpm typecheck`, `pnpm qa:trace` (`790/790`, `756` required,
+`34` optional), and `git diff --check` pass. The implementation is
+closed-bounded to root-owned live Projectiles and existing AIR action lookup.
+FFX prefixes, exact invalid-action and negative/overflow behavior,
+Helper-owned mutation, broadcast order, terminal playback, teams, rollback,
+and full Projectile parity remain blocked. Do not claim full MUGEN or Ikemen
+parity.

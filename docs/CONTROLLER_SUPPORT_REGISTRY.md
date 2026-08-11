@@ -1,18 +1,18 @@
 # Controller Support Registry
 
-Authoritative cursor: T705 is mapped for root-owned live Ikemen
-`ModifyProjectile projanim`; T704 is closed-bounded for fresh root- and
+Authoritative cursor: T705 is closed-bounded for root-owned live Ikemen
+`ModifyProjectile projanim`; T704 remains closed-bounded for fresh root- and
 Helper-authored Projectiles with typed static/dynamic `projanim` resolution
-once in the original caller context before AIR action lookup. Required root
-and Helper traces prove selected AIR action, ownership, target payload, and
-spawn/active/remove lifecycle; root checksum is `0e1c310f`, final
-`42890c95`, Helper checksum `4a23726b`, final `93048c4f`; `pnpm qa:trace`
-passes `789/789` artifacts (`755` required, `34` optional). Focused
-compiler/spawn coverage is `238/238`; typecheck and diff hygiene pass. Live
-`ModifyProjectile` animation mutation, FFX prefixes, exact invalid-action
-timing, multi-projectile broadcast order, teams, rollback, and full Projectile
-animation parity remain excluded. See [issue
-278](../.scratch/roadmap/issues/278-projectile-anim-dynamic.md).
+once in the original caller context before AIR action lookup. T705 required
+trace checksum is `ed1f6e8a` / final `43956cf2`; focused compiler/spawn
+coverage is `162/162`; `pnpm qa:trace` passes `790/790` artifacts (`756`
+required, `34` optional), with typecheck and diff hygiene green. The bounded
+T705 claim proves selected AIR action replacement/reset, `ProjVar(id, index,
+anim)` readback, and root ownership/lifecycle. FFX prefixes, exact
+invalid-action timing, multi-projectile broadcast order, Helper-owned
+mutation, teams, rollback, and full Projectile animation parity remain
+excluded. See [issue
+279](../.scratch/roadmap/issues/279-modifyprojectile-anim-dynamic.md).
 
 Previous cursor: T703 is closed-bounded for fresh root- and
 Helper-authored Projectiles with dynamic `projhits` resolution once in the
