@@ -1218,11 +1218,60 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.hitVelocities?.down).toEqual({ x: -11, y: -5, z: 3.75 });
   });
 
+  it("resolves live ModifyHitDef sparkxy per component and preserves omitted axes", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        damage: "20",
+        sparkno: "S7001",
+        sparkxy: "10,-40",
+      })),
+      frame: activeFrame(),
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        sparkxy: "var(0)",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.sparkXy).toEqual([0, -40]);
+
+    caller.vars[0] = 24.5;
+    caller.fvars[1] = -72.25;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        sparkxy: "var(0),fvar(1)",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.sparkXy).toEqual([24.5, -72.25]);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        forcenofall: "1",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.sparkXy).toEqual([24.5, -72.25]);
+  });
+
   it("resolves fresh direct down.velocity X/Y and inherits every omitted component from air.velocity", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
     const caller = runtimeState();
-    const apply = (downVelocity?: string, resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale") => [number?, number?] | undefined) => {
+    const apply = (downVelocity?: string, resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy") => [number?, number?] | undefined) => {
       actor.firedHitDefs.clear();
       world.apply({
         actor,

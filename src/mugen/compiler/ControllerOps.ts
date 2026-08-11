@@ -303,6 +303,8 @@ export type ModifyHitDefControllerOp = {
   /** Component-wise live hit/guard spark scale mutation. */
   hitSparkScale?: MugenHitDefExpressionPair;
   guardSparkScale?: MugenHitDefExpressionPair;
+  /** Component-wise live sparkxy replacement evaluated in caller context. */
+  sparkXy?: MugenHitDefExpressionPair;
   /** Component-wise live replacement for the contact PalFX payload. */
   paletteFx?: MugenHitDefPaletteFxOp;
   /** Component-wise live replacement for direct-contact camera shake. */
@@ -2826,6 +2828,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "crouch.friction",
     "sparkscale",
     "guard.sparkscale",
+    "sparkxy",
     "palfx.time",
     "palfx.add",
     "palfx.mul",
@@ -2954,6 +2957,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const crouchFriction = optionalScalarNumberOrExpression(controller, "crouch.friction");
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
   const guardSparkScale = optionalFloatExpressionPairParam(controller, "guard.sparkscale");
+  const sparkXy = optionalFloatExpressionPairParam(controller, "sparkxy");
   const paletteFx = optionalHitDefPaletteFxParam(controller);
   const envShake = optionalHitDefEnvShakeParam(controller);
   const fallEnvShake = optionalHitDefEnvShakeParam(controller, "fall.envshake");
@@ -3026,6 +3030,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     crouchFriction !== true ||
     hitSparkScale !== true ||
     guardSparkScale !== true ||
+    sparkXy !== true ||
     paletteFx !== true ||
     envShake !== true ||
     fallEnvShake !== true ||
@@ -3084,6 +3089,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     crouchFriction === false ||
     hitSparkScale === false ||
     guardSparkScale === false ||
+    sparkXy === false ||
     paletteFx === false ||
     envShake === false ||
     fallEnvShake === false ||
@@ -3158,6 +3164,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(crouchFriction === true ? {} : { crouchFriction }),
     ...(hitSparkScale === true ? {} : { hitSparkScale }),
     ...(guardSparkScale === true ? {} : { guardSparkScale }),
+    ...(sparkXy === true ? {} : { sparkXy }),
     ...(paletteFx === true ? {} : { paletteFx }),
     ...(envShake === true ? {} : { envShake }),
     ...(fallEnvShake === true ? {} : { fallEnvShake }),

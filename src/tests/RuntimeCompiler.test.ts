@@ -2593,6 +2593,40 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles root ModifyHitDef sparkxy with live component-preserving expressions", () => {
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      sparkxy: "18,-60",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      sparkXy: [18, -60],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      sparkxy: "var(1)",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      sparkXy: ["var(1)"],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      sparkxy: "var(1),fvar(2)",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      sparkXy: ["var(1)", "fvar(2)"],
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      sparkxy: "var(1),var(2),var(3)",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      sparkxy: "var(1),var(",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles one-, two-, and three-component direct HitDef airguard.velocity expressions", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "airguard.velocity": "-4.25",
