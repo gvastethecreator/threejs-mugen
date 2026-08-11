@@ -234,6 +234,7 @@ import {
   createSyntheticImportedIkemenHelperInheritJuggleTraceArtifact,
   createSyntheticImportedIkemenProjectileSameFrameApContactTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact,
+  createSyntheticImportedIkemenRootModifyReversalDefDynamicStateTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefP2StateRedirectTraceArtifact,
   createSyntheticImportedIkemenRootModifyReversalDefP2OwnerRedirectTraceArtifact,
@@ -18309,6 +18310,38 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(artifact.trace.finalActors).toContainEqual(
       expect.objectContaining({ id: "p2", stateNo: 778 }),
+    );
+  });
+
+  it("creates a required IKEMEN root dynamic ModifyReversalDef state-field artifact", () => {
+    const artifact = createSyntheticImportedIkemenRootModifyReversalDefDynamicStateTraceArtifact({
+      generatedAt: "2026-08-11T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-state-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-state-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.ModifyReversalDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.modifyreversaldef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(4);
+    expect(evidence?.eventCategories).toContain("reversal");
+    expect(evidence?.combatReasons).toContain("reversal");
+    expect(artifact.trace.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", stateNo: 889, moveType: "H" }),
+        expect.objectContaining({ id: "p2", stateNo: 778, moveType: "H" }),
+      ]),
     );
   });
 

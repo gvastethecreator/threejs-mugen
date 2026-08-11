@@ -2201,6 +2201,11 @@ async function main() {
       artifact: presets.createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-state",
+      required: true,
+      artifact: presets.createSyntheticImportedIkemenRootModifyReversalDefDynamicStateTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-ikemen-root-modifyreversaldef-core-redirect",
       required: true,
       artifact: presets.createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTraceArtifact(),

@@ -16763,6 +16763,95 @@ export function createSyntheticImportedIkemenRootModifyReversalDefRedirectTraceA
   });
 }
 
+export function createSyntheticImportedIkemenRootModifyReversalDefDynamicStateTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const targetId = 97;
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "receiver arms a ReversalDef before the caller mutation", frames: 1, p1: [], p2: [] },
+    { label: "caller resolves dynamic ModifyReversalDef fields", frames: 1, p1: [], p2: [] },
+  ]);
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-caller",
+    displayName: "Synthetic Imported IKEMEN Dynamic ModifyReversalDef Caller",
+    withHitDef: false,
+    passiveControllerStates: [{ stateNo: 889, stateType: "A", moveType: "H", physics: "N", animNo: 889, ctrl: 0 }],
+    activeRootHitDefRoute: {
+      damage: 0,
+      targetId,
+      hitDefTrigger: "Time = 0",
+      posX: -200,
+      delayedPosX: { x: 0, trigger: "Time >= 1" },
+    },
+    rootModifyReversalDefRedirectRoute: {
+      attr: "S,NA",
+      p1StateNo: 777,
+      p2StateNo: 888,
+      p1StateNoExpression: "var(0) + 776",
+      p2StateNoExpression: "var(1) + 888",
+      p2GetP1StateExpression: "var(2)",
+      p2FacingExpression: "var(3)",
+      vars: [
+        { index: 0, value: 2 },
+        { index: 1, value: 1 },
+        { index: 2, value: 0 },
+        { index: 3, value: -1 },
+      ],
+      targetId,
+      redirectId: 57,
+      trigger: "Time >= 1",
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-receiver",
+    displayName: "Synthetic Imported IKEMEN Dynamic ModifyReversalDef Receiver",
+    withHitDef: false,
+    passiveReversalDef: {
+      attr: "S,SP",
+      p1StateNo: 777,
+      p2StateNo: 888,
+      hitPause: 3,
+      targetId,
+      trigger: "Time = 0",
+    },
+    passiveControllerStates: [{ stateNo: 778, stateType: "A", moveType: "H", physics: "N", animNo: 778, ctrl: 0 }],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage, runtimeProfile: "ikemen-go" }), script, {
+    label: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-state-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-state-golden",
+      label: "Synthetic imported IKEMEN dynamic ModifyReversalDef state fields",
+      source: "mixed",
+      notes: [
+        "Pinned Ikemen GO evaluates live ModifyReversalDef HitDef state fields in the original caller while mutating the redirected active ReversalDef. The fixture proves p1stateno, p2stateno, p2getp1state, and p2facing expressions before accepted reversal contact. ModifyReversalDef Helper dispatch, other HitDef payloads, guard/projectile breadth, exact tick ordering, and full parity remain outside this bounded slice.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-ikemen-root-modifyreversaldef-dynamic-state-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedStates: [778, 889],
+        requiredExecutedControllers: ["HitDef", "ModifyReversalDef", "ReversalDef", "VarSet"],
+        requiredExecutedOperations: ["hitdef", "modifyreversaldef", "reversaldef", "variable:varset"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredTargetLinks: [{ ownerId: "p2", actorId: "p1", targetId }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 889, life: 1000, moveType: "H" },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 778, life: 1000, moveType: "H" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedIkemenRootModifyReversalDefCoreRedirectTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -63371,6 +63460,13 @@ export type SyntheticImportedTraceFighterOptions = {
     p1StateNo?: number;
     p2StateNo?: number;
     p2GetP1State?: boolean;
+    p2Facing?: number;
+    /** Synthetic fixture-only caller expressions for live ModifyReversalDef. */
+    p1StateNoExpression?: SyntheticNumberExpression;
+    p2StateNoExpression?: SyntheticNumberExpression;
+    p2GetP1StateExpression?: SyntheticNumberExpression;
+    p2FacingExpression?: SyntheticNumberExpression;
+    vars?: Array<{ index: number; value: number }>;
     targetId?: number;
     attackDepth?: [number, number?];
     redirectId: SyntheticNumberExpression;
@@ -70819,7 +70915,23 @@ redirectid = ${route.redirectId}
 function rootModifyReversalDefRedirectControllerBlock(
   route: NonNullable<SyntheticImportedTraceFighterOptions["rootModifyReversalDefRedirectRoute"]>,
 ): string {
+  const vars = route.vars
+    ?.map(
+      (seed) => `
+[State 0, Root ModifyReversalDef Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+    )
+    .join("") ?? "";
+  const p1StateNo = route.p1StateNoExpression ?? route.p1StateNo;
+  const p2StateNo = route.p2StateNoExpression ?? route.p2StateNo;
+  const p2GetP1State = route.p2GetP1StateExpression ?? (route.p2GetP1State === undefined ? undefined : route.p2GetP1State ? 1 : 0);
+  const p2Facing = route.p2FacingExpression ?? route.p2Facing;
   return `
+${vars}
 [State 0, Root ModifyReversalDef Redirect]
 type = ModifyReversalDef
 trigger1 = ${route.trigger ?? "Time >= 1"}
@@ -70832,9 +70944,10 @@ ${route.missOnOverride === undefined ? "" : `missonoverride = ${route.missOnOver
 ${route.hitPause === undefined ? "" : `pausetime = ${route.hitPause},${route.hitPause}`}
 ${route.p1SpritePriority === undefined ? "" : `p1sprpriority = ${route.p1SpritePriority}`}
 ${route.p2SpritePriority === undefined ? "" : `p2sprpriority = ${route.p2SpritePriority}`}
-${route.p1StateNo === undefined ? "" : `p1stateno = ${route.p1StateNo}`}
-${route.p2StateNo === undefined ? "" : `p2stateno = ${route.p2StateNo}`}
-${route.p2GetP1State === undefined ? "" : `p2getp1state = ${route.p2GetP1State ? 1 : 0}`}
+${p1StateNo === undefined ? "" : `p1stateno = ${p1StateNo}`}
+${p2StateNo === undefined ? "" : `p2stateno = ${p2StateNo}`}
+${p2GetP1State === undefined ? "" : `p2getp1state = ${p2GetP1State}`}
+${p2Facing === undefined ? "" : `p2facing = ${p2Facing}`}
 ${route.targetId === undefined ? "" : `id = ${route.targetId}`}
 ${route.attackDepth === undefined ? "" : `attack.depth = ${route.attackDepth.join(",")}`}
 redirectid = ${route.redirectId}
