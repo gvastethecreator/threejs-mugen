@@ -1365,7 +1365,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
     const caller = runtimeState();
-    const apply = (downVelocity?: string, resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy") => [number?, number?] | undefined) => {
+    const apply = (downVelocity?: string, resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy") => [number?, number?] | undefined) => {
       actor.firedHitDefs.clear();
       world.apply({
         actor,
@@ -3545,6 +3545,71 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove).toMatchObject({
       guardPush: 7.5,
       hitVelocities: { guard: { x: -7.5, y: 0, z: 0 } },
+    });
+  });
+
+  it("mutates live ModifyHitDef guard.velocity Y/Z by component and preserves omitted siblings", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+    caller.vars[0] = -8;
+    caller.vars[1] = -4;
+    caller.vars[2] = 6.5;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "ground.velocity": "-9,-2",
+        "guard.velocity": "-2,-1,2.5",
+      })),
+      frame: activeFrame(),
+    });
+
+    const pairResult = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "guard.velocity": "var(0),var(1),var(2)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(pairResult.modified).toBe(true);
+    expect(actor.currentMove).toMatchObject({
+      guardPush: 8,
+      guardVelocityY: -4,
+      guardVelocityZ: 6.5,
+      hitVelocities: { guard: { x: -8, y: -4, z: 6.5 } },
+    });
+
+    caller.vars[0] = -11;
+    const singleResult = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "guard.velocity": "var(0)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(singleResult.modified).toBe(true);
+    expect(actor.currentMove).toMatchObject({
+      guardPush: 11,
+      guardVelocityY: -4,
+      guardVelocityZ: 6.5,
+      hitVelocities: { guard: { x: -11, y: -4, z: 6.5 } },
+    });
+
+    const omittedResult = world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { forcenofall: "1", redirectid: "57" })),
+      context: { self: caller },
+    });
+    expect(omittedResult.modified).toBe(true);
+    expect(actor.currentMove).toMatchObject({
+      guardPush: 11,
+      guardVelocityY: -4,
+      guardVelocityZ: 6.5,
+      hitVelocities: { guard: { x: -11, y: -4, z: 6.5 } },
     });
   });
 

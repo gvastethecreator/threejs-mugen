@@ -1926,7 +1926,7 @@ export function resolveRuntimeHelperFloatParam(
 export function resolveRuntimeHelperFloatScalarParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "down.velocity" | "airguard.velocity" | "sparkangle" | "guard.sparkangle",
+  key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkangle" | "guard.sparkangle",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
   const operation = controller.operation;
@@ -1934,6 +1934,10 @@ export function resolveRuntimeHelperFloatScalarParam(
     ? operation?.kind === "modifyhitdef"
       ? operation.downVelocityZExpression ?? operation.downVelocityZ
       : undefined
+    : key === "guard.velocity"
+      ? operation?.kind === "modifyhitdef"
+        ? operation.guardVelocityZExpression ?? operation.guardVelocityZ
+        : undefined
     : key === "airguard.velocity"
       ? operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
         ? operation.airGuardVelocityZExpression
@@ -2182,13 +2186,13 @@ export function resolveRuntimeHelperIntegerScalarParam(
 export function resolveRuntimeHelperFloatPairParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "ground.velocity" | "air.velocity" | "down.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy",
+  key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): [number?, number?] | undefined {
   const operation = controller.operation;
   const operationValue: MugenHitDefExpressionPair | undefined =
     operation?.kind === "hitdef" || operation?.kind === "modifyhitdef" || operation?.kind === "projectile"
-      ? key === "ground.velocity" || key === "air.velocity" || key === "down.velocity" || key === "airguard.velocity"
+      ? key === "ground.velocity" || key === "air.velocity" || key === "down.velocity" || key === "guard.velocity" || key === "airguard.velocity"
         ? operation.kind === "hitdef"
           ? key === "ground.velocity"
             ? operation.groundVelocityExpressions
@@ -2196,6 +2200,8 @@ export function resolveRuntimeHelperFloatPairParam(
               ? operation.airVelocityExpressions
               : key === "down.velocity"
                 ? operation.downVelocityExpressions
+              : key === "guard.velocity"
+                  ? undefined
                 : operation.airGuardVelocityExpressions
           : operation.kind === "modifyhitdef"
             ? key === "ground.velocity"
@@ -2204,6 +2210,8 @@ export function resolveRuntimeHelperFloatPairParam(
                 ? operation.airVelocity
                 : key === "down.velocity"
                   ? operation.downVelocityExpressions
+                  : key === "guard.velocity"
+                    ? operation.guardVelocityExpressions
                   : operation.airGuardVelocityExpressions
             : undefined
         : key === "sparkxy"
@@ -2221,7 +2229,7 @@ export function resolveRuntimeHelperFloatPairParam(
     };
     const first = resolveComponent(operationValue[0]);
     const second = resolveComponent(operationValue[1]);
-    if (key === "ground.velocity" || key === "air.velocity" || key === "down.velocity" || key === "airguard.velocity" || key === "sparkxy") {
+    if (key === "ground.velocity" || key === "air.velocity" || key === "down.velocity" || key === "guard.velocity" || key === "airguard.velocity" || key === "sparkxy") {
       return operationValue.length === 1 ? [first] : [first, second];
     }
     return [first ?? 1, second];
@@ -2235,7 +2243,7 @@ export function resolveRuntimeHelperFloatPairParam(
     : [raw.slice(0, splits[0]).trim(), raw.slice(splits[0]! + 1).trim()];
   if (parts.some((part) => !part)) return undefined;
   const values = parts.map((part) => resolveHelperFloat(helper, part, options));
-  if (key === "ground.velocity" || key === "air.velocity" || key === "down.velocity" || key === "airguard.velocity" || key === "sparkxy") {
+  if (key === "ground.velocity" || key === "air.velocity" || key === "down.velocity" || key === "guard.velocity" || key === "airguard.velocity" || key === "sparkxy") {
     return values.length === 2 ? [values[0], values[1]] : [values[0]];
   }
   if (values.some((value) => value === undefined) || values[0] === undefined) return undefined;

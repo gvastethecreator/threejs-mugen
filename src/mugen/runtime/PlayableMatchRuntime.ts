@@ -5408,6 +5408,8 @@ function runActiveStateControllers(
           const operation = controller.operation?.kind === "modifyhitdef" ? controller.operation : undefined;
           const value = key === "down.velocity"
             ? operation?.downVelocityZExpression ?? operation?.downVelocityZ
+            : key === "guard.velocity"
+              ? operation?.guardVelocityZExpression ?? operation?.guardVelocityZ
             : key === "airguard.velocity"
               ? operation?.airGuardVelocityZExpression
               : key === "sparkangle"
@@ -5466,6 +5468,8 @@ function runActiveStateControllers(
               ? operation?.airVelocity
               : key === "down.velocity"
                 ? operation?.downVelocityExpressions
+                : key === "guard.velocity"
+                  ? operation?.guardVelocityExpressions
                 : key === "airguard.velocity"
                   ? operation?.airGuardVelocityExpressions
                   : operation?.sparkXy;

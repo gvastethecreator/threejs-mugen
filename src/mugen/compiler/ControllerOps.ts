@@ -291,7 +291,11 @@ export type ModifyHitDefControllerOp = {
   downVelocityZExpression?: number | string;
   /** Root-owned live guard.velocity X replacement evaluated in caller context. */
   guardVelocityExpression?: number | string;
+  /** Component-wise live guard.velocity X/Y replacement evaluated in caller context. */
+  guardVelocityExpressions?: MugenHitDefExpressionPair;
   guardVelocityZ?: number;
+  /** Live guard.velocity Z replacement evaluated in caller context. */
+  guardVelocityZExpression?: number | string;
   /** Root-owned live airguard.velocity X, X/Y, or X/Y/Z replacement evaluated in caller context. */
   airGuardVelocityExpressions?: MugenHitDefExpressionPair;
   airGuardVelocityZ?: number;
@@ -2971,12 +2975,20 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const airGuardControlTime = optionalIntegerExpressionParam(controller, "airguard.ctrltime");
   const guardVelocityRaw = findParam(controller, "guard.velocity");
   const staticGuardVelocity = guardVelocityRaw === undefined ? undefined : strictStaticNumberVector(guardVelocityRaw);
+  const guardVelocityValue = optionalModifyHitDefVelocityParam(controller, "guard.velocity", true);
   const guardVelocityExpression = guardVelocityRaw === undefined
     ? true
     : staticGuardVelocity !== undefined
       ? staticGuardVelocity[0]
-      : optionalScalarNumberOrExpression(controller, "guard.velocity");
-  const guardVelocityZ = staticGuardVelocity?.[2] ?? true;
+      : typeof guardVelocityValue === "object"
+        ? guardVelocityValue.xy[0]
+        : optionalScalarNumberOrExpression(controller, "guard.velocity");
+  const guardVelocityExpressions = typeof guardVelocityValue === "object"
+    ? guardVelocityValue.xy
+    : undefined;
+  const guardVelocityZValue = typeof guardVelocityValue === "object" ? guardVelocityValue.z : undefined;
+  const guardVelocityZ = typeof guardVelocityZValue === "number" ? guardVelocityZValue : true;
+  const guardVelocityZExpression = typeof guardVelocityZValue === "string" ? guardVelocityZValue : undefined;
   const airGuardVelocityValue = optionalModifyHitDefAirGuardVelocityParam(controller);
   const airGuardVelocityExpressions = typeof airGuardVelocityValue === "object"
     ? airGuardVelocityValue.xy
@@ -3075,6 +3087,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     forceNoFall !== true ||
     airGuardControlTime !== true ||
     guardVelocityExpression !== true ||
+    guardVelocityValue !== true ||
     guardVelocityZ !== true ||
     airGuardVelocityValue !== true ||
     xAccel !== true ||
@@ -3142,6 +3155,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     forceNoFall === false ||
     airGuardControlTime === false ||
     guardVelocityExpression === false ||
+    guardVelocityValue === false ||
     airGuardVelocityValue === false ||
     xAccel === false ||
     yAccel === false ||
@@ -3221,7 +3235,9 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(forceNoFall === true ? {} : { forceNoFall }),
     ...(airGuardControlTime === true ? {} : { airGuardControlTime }),
     ...(guardVelocityExpression === true ? {} : { guardVelocityExpression }),
+    ...(guardVelocityExpressions === undefined ? {} : { guardVelocityExpressions }),
     ...(guardVelocityZ === true ? {} : { guardVelocityZ }),
+    ...(guardVelocityZExpression === undefined ? {} : { guardVelocityZExpression }),
     ...(airGuardVelocityExpressions === undefined ? {} : { airGuardVelocityExpressions }),
     ...(airGuardVelocityZ === true ? {} : { airGuardVelocityZ }),
     ...(airGuardVelocityZExpression === undefined ? {} : { airGuardVelocityZExpression }),

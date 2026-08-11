@@ -2468,6 +2468,40 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles live ModifyHitDef guard.velocity components and rejects malformed triples", () => {
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.velocity": "-3.5,var(3),fvar(4)",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardVelocityExpressions: [-3.5, "var(3)"],
+      guardVelocityZExpression: "fvar(4)",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.velocity": "var(2)",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardVelocityExpressions: ["var(2)"],
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.velocity": "-8,-4",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardVelocityExpressions: [-8, -4],
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.velocity": "var(1),fvar(2),var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.velocity": "var(1),fvar(2),var(3),4",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles direct HitDef and root ModifyHitDef air.velocity X/Y expressions", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "air.velocity": "-6,-10,4",
