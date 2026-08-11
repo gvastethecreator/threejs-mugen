@@ -2,6 +2,24 @@
 
 ## Current parity queue
 
+- **T723 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
+  `ModifyReversalDef` now retain static, dynamic, and mixed `attack.depth`
+  pairs. Fresh single-component activation duplicates the pair; live
+  caller-context replacement preserves omitted components; accepted reversal
+  contact consumes the bounded combat-depth metadata. Required trace
+  `6de330e0/18f6ef72`; aggregate QA passes `814/814` (`780` required,
+  `34` optional). Helper-owned ModifyReversalDef, Projectile/ModifyProjectile,
+  exact depth/tick ordering, overflow/int32, teams, rollback and full
+  ReversalDef parity remain blocked. See [issue
+  297](../.scratch/roadmap/issues/297-reversaldef-attack-depth-expressions.md).
+
+- **T722 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
+  `ModifyReversalDef` now retain `p1facing`/`p1getp2facing` caller-context
+  values and apply the accepted-contact precedence. Required trace
+  `ef3cc6e6/807d5ba2`; aggregate QA passes `813/813` (`779` required,
+  `34` optional). See [issue
+  296](../.scratch/roadmap/issues/296-reversaldef-p1facing-expressions.md).
+
 - **T721 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
   `ModifyReversalDef` now retain `numhits` as static or caller-context
   expressions. Fresh activation and live replacement resolve the value once

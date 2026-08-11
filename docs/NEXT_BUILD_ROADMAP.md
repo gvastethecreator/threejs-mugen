@@ -1,6 +1,18 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T722 closed-bounded (2026-08-11)
+## Latest bounded slice — T723 closed-bounded (2026-08-11)
+
+Issue 297 closes direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `attack.depth` as static, dynamic, and mixed one/two
+component values. Fresh activation and live replacement resolve once in the
+caller context; a single component duplicates for fresh activation and live
+omission preserves the active pair. Required trace `6de330e0/18f6ef72`;
+`pnpm qa:trace` passes `814/814` artifacts (`780` required, `34` optional).
+Helper-owned ModifyReversalDef, Projectile/ModifyProjectile, exact depth/tick
+ordering, overflow/int32, teams, rollback, and full ReversalDef parity remain
+blocked. See [issue 297](../.scratch/roadmap/issues/297-reversaldef-attack-depth-expressions.md).
+
+## Previous bounded slice — T722 closed-bounded (2026-08-11)
 
 Issue 296 closes `ReversalDef` / `ModifyReversalDef` `p1facing` and
 `p1getp2facing` for the direct/root and root RedirectID paths. Static and

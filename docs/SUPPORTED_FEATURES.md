@@ -1,4 +1,16 @@
 ﻿# Supported Features
+## 2026-08-11 T723 ReversalDef `attack.depth` expressions — closed-bounded
+
+Direct/root `ReversalDef` and root/RedirectID `ModifyReversalDef` now retain
+typed static, dynamic, and mixed `attack.depth` values. Fresh one-component
+activation duplicates the pair; live modification resolves in caller context
+and preserves omitted components. Accepted reversal contact exposes the
+bounded depth metadata. Required trace `6de330e0/18f6ef72`; aggregate QA passes
+`814/814` artifacts (`780` required, `34` optional). Helper-owned
+ModifyReversalDef, Projectile/ModifyProjectile, exact depth/tick ordering,
+overflow/int32, teams, rollback and full ReversalDef parity remain outside the
+claim. See [issue 297](../.scratch/roadmap/issues/297-reversaldef-attack-depth-expressions.md).
+
 ## 2026-08-11 T722 ReversalDef facing expressions — closed-bounded
 
 Direct/root `ReversalDef` and root/RedirectID `ModifyReversalDef` now support

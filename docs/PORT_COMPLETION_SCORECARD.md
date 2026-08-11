@@ -1,5 +1,17 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T723 ReversalDef `attack.depth` expressions — closed-bounded, no score movement
+
+Issue 297 closes the bounded direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `attack.depth` path. Static, dynamic, and mixed one/two
+component values resolve once in caller context; fresh single-component
+activation duplicates and live omitted components preserve the active pair.
+Required trace passes with `6de330e0/18f6ef72`; aggregate QA passes `814/814`
+artifacts (`780` required, `34` optional). No score movement: Helper-owned
+ModifyReversalDef, Projectile/ModifyProjectile, exact depth/tick parity,
+overflow/int32, teams, rollback and full ReversalDef parity remain blocked.
+See [issue 297](../.scratch/roadmap/issues/297-reversaldef-attack-depth-expressions.md).
+
 ## 2026-08-11 T722 ReversalDef `p1facing` expressions — closed-bounded, no score movement
 
 Issue 296 closes the bounded direct/root `ReversalDef` and root/RedirectID

@@ -1,6 +1,18 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T722 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T723 closed-bounded (2026-08-11)
+
+Issue 297 adds typed static, dynamic, and mixed `attack.depth` pairs to direct
+root `ReversalDef` and root/RedirectID `ModifyReversalDef`. Fresh and live
+paths resolve once in caller context; accepted reversal contact consumes the
+resulting `combatDepth` metadata. Required trace `6de330e0/18f6ef72` passes;
+`pnpm qa:trace` passes `814/814` artifacts (`780` required, `34` optional),
+with typecheck and focused compiler/runtime tests green. Helper-owned
+ModifyReversalDef, Projectile/ModifyProjectile, exact depth/tick ordering,
+overflow/int32, teams, rollback and full parity remain open. See [issue
+297](../.scratch/roadmap/issues/297-reversaldef-attack-depth-expressions.md).
+
+## Previous implementation checkpoint — T722 closed-bounded (2026-08-11)
 
 Issue 296 adds typed `ReversalDef` and `ModifyReversalDef` `p1facing` /
 `p1getp2facing` values. Fresh and RedirectID-mutated reversals evaluate in

@@ -1,6 +1,18 @@
 # Workplan
 
-## Latest slice — T722 closed-bounded (2026-08-11)
+## Latest slice — T723 closed-bounded (2026-08-11)
+
+Issue 297 closes direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `attack.depth` expressions. Static, dynamic, and mixed
+values resolve once in caller context; fresh single-component values duplicate
+and live omitted components preserve the active pair. Required trace
+`6de330e0/18f6ef72`, aggregate QA `814/814` (`780` required, `34` optional),
+typecheck and focused tests pass. Helper-owned ModifyReversalDef,
+Projectile/ModifyProjectile, exact depth/tick parity, overflow/int32, teams,
+rollback and full parity stay deferred. See [issue
+297](../.scratch/roadmap/issues/297-reversaldef-attack-depth-expressions.md).
+
+## Previous slice — T722 closed-bounded (2026-08-11)
 
 Issue 296 ports direct/root `ReversalDef` and root/RedirectID
 `ModifyReversalDef` `p1facing` / `p1getp2facing`. Static and caller-context

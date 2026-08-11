@@ -1,6 +1,19 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T722 closed-bounded (2026-08-11)
+## Latest bounded slice — T723 closed-bounded (2026-08-11)
+
+Issue 297 closes direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `attack.depth` expressions. Static, dynamic, and mixed
+one/two component values resolve once in the original caller context; fresh
+single-component activation duplicates the value and live omission preserves
+the active pair. Accepted reversal contact consumes the bounded depth pair.
+Required trace `6de330e0/18f6ef72`; aggregate QA passes `814/814` artifacts
+(`780` required, `34` optional). Helper-owned ModifyReversalDef,
+Projectile/ModifyProjectile, exact depth/tick parity, overflow/int32, teams,
+rollback and full reversal parity remain blocked. See [issue
+297](../.scratch/roadmap/issues/297-reversaldef-attack-depth-expressions.md).
+
+## Previous bounded slice — T722 closed-bounded (2026-08-11)
 
 Issue 296 closes direct/root `ReversalDef` and root/RedirectID
 `ModifyReversalDef` `p1facing` / `p1getp2facing`. Typed static and dynamic

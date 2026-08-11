@@ -1,8 +1,19 @@
 # Roadmap Navigation
 
-Last updated: 2026-08-08
+Last updated: 2026-08-11
 
-## Current implementation route — T722 closed-bounded (2026-08-11)
+## Current implementation route — T723 closed-bounded (2026-08-11)
+
+T723 / [issue 297](../.scratch/roadmap/issues/297-reversaldef-attack-depth-expressions.md)
+closes typed `attack.depth` for direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef`, including static, dynamic, mixed, fresh single-component
+duplication, and live omission preservation. Required trace
+`6de330e0/18f6ef72`; aggregate QA passes `814/814` artifacts (`780` required,
+`34` optional). Helper-owned ModifyReversalDef, Projectile reflection, exact
+depth/tick timing, overflow/int32, teams, rollback and full parity remain
+blocked.
+
+## Previous implementation route — T722 closed-bounded (2026-08-11)
 
 T722 / [issue 296](../.scratch/roadmap/issues/296-reversaldef-p1facing-expressions.md)
 closes typed `ReversalDef` and `ModifyReversalDef` `p1facing` /

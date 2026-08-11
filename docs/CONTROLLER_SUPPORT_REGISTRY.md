@@ -1,6 +1,16 @@
 # Controller Support Registry
 
-Latest cursor: T722 / issue 296 is closed-bounded for direct/root
+Latest cursor: T723 / issue 297 is closed-bounded for direct/root
+`ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth` static,
+dynamic, and mixed pairs. Fresh single-component activation duplicates the
+pair; live caller-context replacement preserves omitted components. Accepted
+reversal contact consumes bounded combat-depth metadata. Required trace
+`6de330e0/18f6ef72`; aggregate QA passes `814/814` artifacts (`780` required,
+`34` optional). Helper-owned ModifyReversalDef, Projectile/ModifyProjectile,
+exact depth/tick ordering, overflow/int32, teams, rollback and full
+ReversalDef parity remain blocked.
+
+Previous cursor: T722 / issue 296 is closed-bounded for direct/root
 `ReversalDef` and root/RedirectID `ModifyReversalDef` `p1facing` and
 `p1getp2facing`. Static and caller-context expressions resolve once, and
 accepted reversal contact applies the signed reverser-facing precedence.
@@ -9,7 +19,11 @@ Required trace `ef3cc6e6/807d5ba2`; aggregate QA passes `813/813` artifacts
 Projectile/ModifyProjectile, exact deferred timing, overflow/int32, teams,
 rollback and full ReversalDef parity remain blocked.
 
-Active cursor: T716 / issue 290 is closed-bounded for Ikemen-only live
+Active cursor: T723 / issue 297 is closed-bounded for direct/root
+`ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth`.
+See [issue 297](../.scratch/roadmap/issues/297-reversaldef-attack-depth-expressions.md).
+
+Previous active cursor: T716 / issue 290 is closed-bounded for Ikemen-only live
 `ModifyProjectile` state expressions (`p1stateno`, `p2stateno`, and
 `p2getp1state`). Typed static/dynamic values resolve once in root caller
 context, mutate only selected Projectiles, and preserve the existing
@@ -980,7 +994,7 @@ HitDef RedirectID addendum: required `synthetic-imported-ikemen-root-hitdef-redi
 
 ModifyHitDef RedirectID addendum: required `synthetic-imported-ikemen-root-modifyhitdef-redirect` covers one explicit `ikemen-go` root-to-root mutation path. A caller-evaluated RedirectID can apply static `damage` or `damage,guardDamage` only to a verified receiver's already-active normal HitDef. The receiver retains its move identity, active frame, contact memory, control, and telemetry; compiler and runtime tests cover malformed/dynamic/unsupported payloads, `var(0)` selection, inactive/reversal rejection, and unknown-root blocking. Other ModifyHitDef fields, Helpers, custom states, teams, source-exact scheduling/hitpause, renderer behavior, rollback, and full parity remain blocked.
 
-ModifyReversalDef RedirectID addendum: required `synthetic-imported-ikemen-root-modifyreversaldef-redirect` covers the explicit `ikemen-go` static attr route, and `synthetic-imported-ikemen-root-modifyreversaldef-core-redirect` covers the local core continuation. A caller-evaluated RedirectID can patch a verified receiver's already-active reversal with static `reversal.attr`, first local `pausetime`, `p1stateno`, `id`, and `attack.depth`. The receiver retains move identity, active frame, contact state, control, and telemetry; compiler and runtime tests cover malformed/dynamic/unsupported payloads, `var(0)` selection, pair cloning, missing active-reversal rejection, and unknown-root blocking. `p2stateno`, `p2getp1state`, reversal guard fields, other inherited HitDef fields, Helpers, custom states, teams, source-exact scheduling/hitpause, renderer behavior, rollback, and full parity remain blocked.
+ModifyReversalDef RedirectID addendum: required `synthetic-imported-ikemen-root-modifyreversaldef-redirect` covers the explicit `ikemen-go` static attr route, `synthetic-imported-ikemen-root-modifyreversaldef-core-redirect` covers the local core continuation, and required `synthetic-imported-ikemen-root-modifyreversaldef-dynamic-attack-depth` checksum `6de330e0` / final checksum `18f6ef72` covers caller-context dynamic and mixed depth replacement. A caller-evaluated RedirectID can patch a verified receiver's already-active reversal with static or dynamic `reversal.attr`, first local `pausetime`, `p1stateno`, `id`, and `attack.depth`; fresh ReversalDef activation is covered by focused runtime tests. The receiver retains move identity, active frame, contact state, control, and telemetry. `p2stateno`, `p2getp1state`, reversal guard fields, other inherited HitDef fields, Helpers, custom states, teams, source-exact scheduling/hitpause, renderer behavior, rollback, and full parity remain blocked.
 
 T706 registry addendum: required `synthetic-imported-helper-modifyprojectile-dynamic-anim.json` checksum `705a96e0` / final checksum `f47441cf` proves Helper-local `ModifyProjectile projanim = Var(30)` caller-context resolution, helper-parented Projectile AIR replacement/reset, Helper/Projectile/ModifyProjectile operation telemetry, and parent/root spawn/active/remove lifecycle. The same-id player-owned Projectile remains unmodified. This is an Ikemen-only bounded Helper visual route; FFX prefixes, cross-namespace broadcast, nested teams, terminal playback parity, rollback, and full Helper/Projectile parity remain blocked.
 
