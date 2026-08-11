@@ -1,6 +1,16 @@
 # Controller Support Registry
 
-Active cursor: T711 / issue 285 is closed-bounded for Projectile `keepstate`
+Active cursor: T712 / issue 286 is closed-bounded for transient Projectile
+`keepstate` release. Root and Helper Projectile contacts keep the flag through
+the active stun tick, then release only that field before the next active
+state-controller pass while retaining the remaining hit metadata. Required
+traces are `05c07804/3445d810` and `46636488/719f5d6e`; both artifacts pass.
+The global runner generated `803/803` artifacts before timing out, so its
+aggregate result is inconclusive. Exact actionRun timing, resource cleanup,
+hitonce, facing, custom-state ownership, teams, rollback and full parity stay
+blocked.
+
+Previous cursor: T711 / issue 285 is closed-bounded for Projectile `keepstate`
 state preservation. Direct and fresh root/Helper contacts retain static or
 caller-context metadata while suppressing automatic Common1/custom get-hit
 entry and `moveType H`. Required traces are `79f6c56d/4d3ba455` and

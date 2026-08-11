@@ -2,6 +2,16 @@
 
 ## Current parity queue
 
+- **T712 closed-bounded** — transient Projectile `keepstate` release now
+  survives the active stun tick and is cleared before the next active
+  state-controller pass, preserving the remaining hit metadata. Required root
+  and Helper traces are `05c07804/3445d810` and `46636488/719f5d6e`; both new
+  artifacts pass. The global runner generated `803/803` artifacts before its
+  wall-clock timeout, so the aggregate result is still inconclusive. Exact
+  actionRun timing, resource cleanup, hitonce, facing, custom-state ownership,
+  teams, rollback and full parity remain blocked. See [issue
+  286](../.scratch/roadmap/issues/286-projectile-keepstate-release.md).
+
 - **T711 closed-bounded** — direct and fresh root/Helper Projectile
   `keepstate` contacts retain damage and `GetHitVar(keepstate)` while
   suppressing automatic Common1/custom get-hit entry and `moveType H`.

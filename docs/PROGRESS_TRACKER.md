@@ -1,6 +1,17 @@
 ﻿# Progress Tracker
 
-## Active implementation checkpoint — T711 closed-bounded (2026-08-11)
+## Active implementation checkpoint — T712 closed-bounded (2026-08-11)
+
+Issue 286 releases transient Projectile `keepstate` after the active stun
+window and before the next active state-controller pass, while retaining the
+remaining hit metadata. Required root and Helper traces are
+`05c07804/3445d810` and `46636488/719f5d6e`; both artifacts pass. The global
+runner generated `803/803` artifacts before timing out, so the aggregate count
+is inconclusive. Exact actionRun timing, resource cleanup, hitonce, facing,
+teams, rollback and full parity remain open. See [issue
+286](../.scratch/roadmap/issues/286-projectile-keepstate-release.md).
+
+## Previous implementation checkpoint — T711 closed-bounded (2026-08-11)
 
 Projectile `keepstate` now preserves accepted contact state in the bounded
 direct/root/Helper routes: static and finite caller expressions retain damage

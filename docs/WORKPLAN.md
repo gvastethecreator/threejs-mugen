@@ -1,6 +1,17 @@
 # Workplan
 
-## Active slice — T711 closed-bounded (2026-08-11)
+## Active slice — T712 closed-bounded (2026-08-11)
+
+Issue 286 releases transient Projectile `keepstate` after the active stun
+window and before the next active state-controller pass, preserving the rest
+of the hit metadata. Required traces pass with `05c07804/3445d810` and
+`46636488/719f5d6e`; the global runner generated `803/803` artifacts before
+timing out, so its aggregate result is inconclusive. Exact actionRun timing,
+resource cleanup, hitonce, facing, teams, rollback and full parity remain
+deferred. See [issue
+286](../.scratch/roadmap/issues/286-projectile-keepstate-release.md).
+
+## Previous slice — T711 closed-bounded (2026-08-11)
 
 Issue 285 extends Projectile `keepstate` from metadata into bounded state
 preservation: direct and fresh root/Helper contacts retain damage and

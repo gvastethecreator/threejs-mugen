@@ -1,5 +1,16 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T712 Projectile `keepstate` release — closed-bounded, no score movement
+
+Issue 286 releases transient Projectile `keepstate` after the active stun
+window, before the next state-controller pass, while preserving the remaining
+hit metadata. Required root and Helper traces pass with
+`05c07804/3445d810` and `46636488/719f5d6e`. The global runner generated
+`803/803` artifacts before timing out, so no aggregate score movement is
+claimed. Exact actionRun timing, resource cleanup, hitonce, facing,
+custom-state ownership, teams, rollback and full parity remain blocked. See
+[issue 286](../.scratch/roadmap/issues/286-projectile-keepstate-release.md).
+
 ## 2026-08-11 T711 Projectile `keepstate` — closed-bounded, no score movement
 
 Issue 285 extends static and caller-context Projectile `keepstate` into

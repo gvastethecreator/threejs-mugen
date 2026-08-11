@@ -1,5 +1,16 @@
 ﻿# QA And Acceptance Gates
 
+## 2026-08-11 T712 Projectile `keepstate` release gates — focused passed / aggregate inconclusive
+
+Issue 286 gates the transient release after the active stun window. Root and
+Helper required artifacts pass with checksums `05c07804` / `3445d810` and
+`46636488` / `719f5d6e`; focused runtime, trace-preset and typecheck gates are
+green. The global runner generated `803/803` artifacts before its wall-clock
+timeout, so no completed aggregate pass is claimed. Exact actionRun timing,
+resource cleanup, hitonce, facing, custom-state ownership, teams, rollback and
+full parity remain outside this gate. See [issue
+286](../.scratch/roadmap/issues/286-projectile-keepstate-release.md).
+
 ## 2026-08-11 T711 Projectile `keepstate` gates — passed / closed-bounded
 
 Issue 285 requires the bounded state-preservation continuation of T710:

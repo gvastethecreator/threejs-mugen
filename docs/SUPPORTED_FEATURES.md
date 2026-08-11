@@ -1,4 +1,14 @@
 ﻿# Supported Features
+## 2026-08-11 T712 Projectile `keepstate` release — closed-bounded
+
+Root and Helper Projectile contacts now release transient `keepstate` after
+the active stun window, before the next state-controller pass, without
+discarding the remaining hit metadata. Required traces pass with
+`05c07804/3445d810` and `46636488/719f5d6e`; the aggregate runner generated
+`803/803` artifacts before timing out, so no global pass is claimed. Exact
+actionRun timing, resource cleanup, hitonce, facing, custom-state ownership,
+teams, rollback and full parity remain unsupported. See [issue
+286](../.scratch/roadmap/issues/286-projectile-keepstate-release.md).
 ## 2026-08-11 T711 Projectile `keepstate` — closed-bounded
 
 Direct and fresh root/Helper Projectile contacts now retain static or finite

@@ -1,6 +1,18 @@
 ﻿# Roadmap Package Milestones
 
-## Active package — T711 closed-bounded (2026-08-11)
+## Active package — T712 closed-bounded (2026-08-11)
+
+Issue 286 closes transient Projectile `keepstate` release after the active
+stun window. Root and Helper contacts clear only the flag before the next
+state-controller pass and retain the remaining hit metadata. Required traces
+are `05c07804/3445d810` and `46636488/719f5d6e`; both artifacts pass. The
+aggregate runner generated `803/803` artifacts before timing out, so no global
+aggregate pass is claimed. Exact actionRun timing, resource cleanup, hitonce,
+facing, custom-state ownership, teams, rollback and full parity remain
+blocked. See [issue
+286](../.scratch/roadmap/issues/286-projectile-keepstate-release.md).
+
+## Previous package — T711 closed-bounded (2026-08-11)
 
 Issue 285 closes the bounded Projectile `keepstate` state-preservation slice
 for direct contacts and fresh root/Helper Projectiles. Static/dynamic values
