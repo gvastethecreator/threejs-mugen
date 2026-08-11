@@ -340,6 +340,67 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("mutates live ModifyHitDef pause pairs without overwriting omitted siblings", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        pausetime: "21,22",
+        "guard.pausetime": "31,32",
+      })),
+      frame: activeFrame(),
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        pausetime: "7",
+        "guard.pausetime": "9,10",
+        redirectid: "57",
+      })),
+    });
+    expect(actor.currentMove).toMatchObject({
+      hitPause: 7,
+      hitShakeTime: 22,
+      guardPause: 9,
+      guardShakeTime: 10,
+    });
+
+    const caller = runtimeState();
+    caller.vars[1] = 12.9;
+    caller.vars[2] = 13.8;
+    caller.vars[3] = 14.7;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        pausetime: "var(1),var(2)",
+        "guard.pausetime": "var(3)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+      resolveIntegerPair: (key) => key === "pausetime" ? [19, 20] : key === "guard.pausetime" ? [21] : undefined,
+    });
+    expect(actor.currentMove).toMatchObject({
+      hitPause: 19,
+      hitShakeTime: 20,
+      guardPause: 21,
+      guardShakeTime: 10,
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { redirectid: "57" })),
+    });
+    expect(actor.currentMove).toMatchObject({
+      hitPause: 19,
+      hitShakeTime: 20,
+      guardPause: 21,
+      guardShakeTime: 10,
+    });
+  });
+
   it("resolves fresh and modified ground.hittime in caller or helper context", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

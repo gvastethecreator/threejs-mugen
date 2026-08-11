@@ -2184,6 +2184,42 @@ value = 1
     expect(compileControllerIr(controller(200, "HitDef", [], { "guard.pausetime": "var(" })).operation).toBeUndefined();
   });
 
+  it("compiles live ModifyHitDef pause pairs with component presence", () => {
+    const staticSingle = compileControllerIr(controller(200, "ModifyHitDef", [], {
+      pausetime: "8",
+      "guard.pausetime": "4,5",
+      redirectid: "57",
+    }));
+    const dynamicPair = compileControllerIr(controller(200, "ModifyHitDef", [], {
+      pausetime: "var(1),fvar(2)",
+      "guard.pausetime": "4,Parent,var(3)",
+      redirectid: "57",
+    }));
+
+    expect(staticSingle.operation).toMatchObject({
+      kind: "modifyhitdef",
+      pauseTime: 8,
+      guardPauseTime: 4,
+      guardShakeTime: 5,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(staticSingle.operation).not.toHaveProperty("hitShakeTime");
+    expect(dynamicPair.operation).toMatchObject({
+      kind: "modifyhitdef",
+      pauseTimeExpressions: ["var(1)", "fvar(2)"],
+      guardPauseTimeExpressions: [4, "Parent,var(3)"],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      pausetime: "1,2,3",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.pausetime": "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles dynamic direct HitDef and ModifyHitDef ground.hittime scalars", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "ground.hittime": "var(1) + 2",

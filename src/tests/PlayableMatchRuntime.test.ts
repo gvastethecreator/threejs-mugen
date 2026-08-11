@@ -11812,6 +11812,30 @@ trigger1 = Time = 0
 v = 32
 value = -24
 
+[State 0, Redirected ModifyHitDef hit pause]
+type = VarSet
+trigger1 = Time = 0
+v = 33
+value = 17
+
+[State 0, Redirected ModifyHitDef hit shake]
+type = VarSet
+trigger1 = Time = 0
+v = 34
+value = 23
+
+[State 0, Redirected ModifyHitDef guard pause]
+type = VarSet
+trigger1 = Time = 0
+v = 35
+value = 19
+
+[State 0, Redirected ModifyHitDef guard shake]
+type = VarSet
+trigger1 = Time = 0
+v = 36
+value = 27
+
 [State 0, Redirected ModifyHitDef]
 type = ModifyHitDef
 trigger1 = Time = 1
@@ -11842,6 +11866,8 @@ p1getp2facing = var(25)
 p2facing = var(24)
 getpower = var(26),var(27)
 givepower = var(28),var(29)
+pausetime = var(33),var(34)
+guard.pausetime = var(35),var(36)
 down.velocity = -6,-2,var(30)
 snap = var(31),var(32)
 guard.velocity = var(29) - 13
@@ -11984,6 +12010,10 @@ down.bounce = 0
           p2SpritePriority?: number;
           priority?: number;
           priorityType?: "hit" | "miss" | "dodge";
+          hitPause?: number;
+          hitShakeTime?: number;
+          guardPause?: number;
+          guardShakeTime?: number;
           forceNoFall?: boolean;
           forceStand?: boolean;
           forceCrouch?: boolean;
@@ -12105,6 +12135,10 @@ down.bounce = 0
       attackerGuardPower: 44,
       hitPower: 18,
       guardPower: 7,
+      hitPause: 17,
+      hitShakeTime: 23,
+      guardPause: 19,
+      guardShakeTime: 27,
       downBounce: true,
       paletteFx: { time: 44, add: [18, -7, 3], mul: [200, 110, 240], color: 176, invert: false },
       envShake: { time: 44, freq: 110, ampl: -18, phase: 35, mul: 1.5, dir: -30 },
@@ -12170,6 +12204,10 @@ down.bounce = 0
       attackerGuardPower: 44,
       hitPower: 5,
       guardPower: 7,
+      hitPause: 17,
+      hitShakeTime: 23,
+      guardPause: 19,
+      guardShakeTime: 27,
       downBounce: false,
       paletteFx: { time: 2, add: [18, -7, 3], mul: [200, 110, 240], color: 176, invert: false },
       envShake: { time: 3, freq: 110, ampl: -18, phase: 35, mul: 1.5, dir: 15 },

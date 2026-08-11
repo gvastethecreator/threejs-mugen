@@ -2113,6 +2113,42 @@ describe("HelperSystem", () => {
     expect(operations).toEqual(["modifyhitdef", "modifyhitdef", "modifyhitdef"]);
   });
 
+  it("applies Helper-owned ModifyHitDef pause pairs in caller context and preserves omitted siblings", () => {
+    const active = helper({
+      vars: [12.9, 13.8, 14.7],
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              damage: "20",
+              pausetime: "21,22",
+              "guard.pausetime": "31,32",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              pausetime: "var(0),var(1)",
+              "guard.pausetime": "var(2)",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              pausetime: "var(0)",
+            }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.currentMove).toMatchObject({
+      hitPause: 12,
+      hitShakeTime: 13,
+      guardPause: 14,
+      guardShakeTime: 32,
+    });
+  });
+
   it("applies Helper-owned ModifyHitDef snap in caller context and preserves omitted axes", () => {
     const active = helper({
       vars: [24.5],
