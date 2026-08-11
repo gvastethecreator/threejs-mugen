@@ -361,6 +361,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveProjectileDamage?: () => { hit?: number; guard?: number } | undefined;
   resolveProjectileGetPower?: () => { hit?: number; guard?: number } | undefined;
   resolveProjectileGivePower?: () => { hit?: number; guard?: number } | undefined;
+  /** Resolves fresh Projectile p2facing in the original caller context. */
+  resolveP2Facing?: () => number | undefined;
   /** Resolves fresh Projectile keepstate in the original caller context. */
   resolveKeepState?: () => number | undefined;
 };
@@ -652,7 +654,14 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     controller: input.controller,
     resolver: input.resolvePaletteFx,
   });
-  const p2Facing = operation?.p2Facing ?? firstNumber(findControllerParam(input.controller, "p2facing"));
+  const dynamicP2Facing = operation?.p2FacingExpression === undefined
+    ? undefined
+    : typeof operation.p2FacingExpression === "number"
+      ? operation.p2FacingExpression
+      : input.resolveP2Facing?.();
+  const p2Facing = operation?.p2Facing
+    ?? (dynamicP2Facing === undefined || !Number.isFinite(dynamicP2Facing) ? undefined : Math.trunc(dynamicP2Facing))
+    ?? firstNumber(findControllerParam(input.controller, "p2facing"));
   const keepStateExpression = operation?.keepStateExpression;
   const dynamicKeepState = keepStateExpression === undefined
     ? undefined

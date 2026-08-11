@@ -2125,6 +2125,11 @@ export function resolveRuntimeHelperIntegerScalarParam(
     const value = operation?.kind === "projectile" ? operation.keepStateExpression : undefined;
     if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
   }
+  if (key === "p2facing") {
+    const operation = controller.operation;
+    const value = operation?.kind === "projectile" ? operation.p2FacingExpression : undefined;
+    if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
+  }
   const raw = findControllerParam(controller.source, key) ??
     (key === "p1sprpriority"
       ? findControllerParam(controller.source, "sprpriority")

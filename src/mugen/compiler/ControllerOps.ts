@@ -643,6 +643,8 @@ export type ProjectileControllerOp = {
   p2GetP1State?: boolean;
   /** Authored Projectile HitDef p2facing exposed by GetHitVar(facing). */
   p2Facing?: number;
+  /** Dynamic Projectile HitDef p2facing evaluated in the original caller context. */
+  p2FacingExpression?: number | string;
   /** Optional Projectile target-distance bounds; omitted spawn components stay unset. */
   minDistance?: MugenHitDefVector;
   maxDistance?: MugenHitDefVector;
@@ -3533,6 +3535,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (hitCountValue === false) return undefined;
   const projAnimValue = optionalIntegerExpressionParam(controller, "projanim");
   if (projAnimValue === false) return undefined;
+  const p2FacingValue = optionalIntegerExpressionParam(controller, "p2facing");
+  if (p2FacingValue === false) return undefined;
   const standFriction = optionalScalarNumberOrExpression(controller, "stand.friction");
   const crouchFriction = optionalScalarNumberOrExpression(controller, "crouch.friction");
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
@@ -3778,7 +3782,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
       firstNumber(findParam(controller, "p2stateno")) !== undefined
         ? (firstNumber(findParam(controller, "p2getp1state")) ?? 1) !== 0
         : undefined,
-    p2Facing: firstNumber(findParam(controller, "p2facing")),
+    p2Facing: typeof p2FacingValue === "number" ? p2FacingValue : undefined,
+    ...(typeof p2FacingValue === "string" ? { p2FacingExpression: p2FacingValue } : {}),
     minDistance: numberPartialTriple(findParam(controller, "mindist")),
     maxDistance: numberPartialTriple(findParam(controller, "maxdist")),
     p2ClsnCheck: normalizeMugenCollisionBoxType(findParam(controller, "p2clsncheck")),

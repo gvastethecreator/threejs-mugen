@@ -966,6 +966,18 @@ value = 1
     expect(malformed.operation).toBeUndefined();
   });
 
+  it("compiles fresh Projectile p2facing in static and caller-expression forms", () => {
+    const authored = compileControllerIr(controller(200, "Projectile", [], { p2facing: "-1" }));
+    const dynamic = compileControllerIr(controller(200, "Projectile", [], { p2facing: "Parent,var(1)" }));
+    const malformed = compileControllerIr(controller(200, "Projectile", [], { p2facing: "var(" }));
+
+    expect(authored.operation).toMatchObject({ kind: "projectile", p2Facing: -1 });
+    expect(authored.operation).not.toHaveProperty("p2FacingExpression");
+    expect(dynamic.operation).toMatchObject({ kind: "projectile", p2FacingExpression: "Parent,var(1)" });
+    expect(dynamic.operation).not.toHaveProperty("p2Facing");
+    expect(malformed.operation).toBeUndefined();
+  });
+
   it("compiles Target controllers into typed target operations", () => {
     const life = compileControllerIr(controller(200, "TargetLifeAdd", [], { id: "3", value: "-20", absolute: "1", kill: "0", redirectid: "57" }));
     const redirectedRedLife = compileControllerIr(

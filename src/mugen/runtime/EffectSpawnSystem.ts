@@ -83,6 +83,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveProjectileDamage?: RuntimeProjectileSpawnInput["resolveProjectileDamage"];
   resolveProjectileGetPower?: RuntimeProjectileSpawnInput["resolveProjectileGetPower"];
   resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"];
+  resolveProjectileP2Facing?: RuntimeProjectileSpawnInput["resolveP2Facing"];
   resolveProjectileKeepState?: RuntimeProjectileSpawnInput["resolveKeepState"];
   /** Resolves fresh Projectile projanim in the original caller context. */
   resolveProjectileAnimation?: () => number | undefined;
@@ -274,6 +275,7 @@ export class RuntimeEffectSpawnWorld {
     resolveProjectileDamage?: RuntimeProjectileSpawnInput["resolveProjectileDamage"],
     resolveProjectileGetPower?: RuntimeProjectileSpawnInput["resolveProjectileGetPower"],
     resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"],
+    resolveProjectileP2Facing?: RuntimeProjectileSpawnInput["resolveP2Facing"],
     resolveProjectileAnimation?: () => number | undefined,
     resolveProjectileKeepState?: RuntimeProjectileSpawnInput["resolveKeepState"],
   ): boolean {
@@ -336,6 +338,7 @@ export class RuntimeEffectSpawnWorld {
       resolveProjectileDamage,
       resolveProjectileGetPower,
       resolveProjectileGivePower,
+      resolveP2Facing: resolveProjectileP2Facing,
       resolveKeepState: resolveProjectileKeepState,
     });
     return true;
@@ -642,6 +645,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveProjectileDamage,
         options.resolveProjectileGetPower,
         options.resolveProjectileGivePower,
+        options.resolveProjectileP2Facing,
         options.resolveProjectileAnimation,
         options.resolveProjectileKeepState,
       )

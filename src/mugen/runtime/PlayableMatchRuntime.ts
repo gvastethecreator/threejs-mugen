@@ -6568,6 +6568,32 @@ function runActiveStateControllers(
                   return { hit: resolveComponent(value[0]), guard: resolveComponent(value[1]) };
                 }
               : undefined,
+          resolveProjectileP2Facing:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  const expression = operation?.p2FacingExpression;
+                  if (expression === undefined) return undefined;
+                  if (typeof expression === "number") {
+                    return Number.isFinite(expression) ? Math.trunc(expression) : undefined;
+                  }
+                  const resolved = resolveDispatchNumber(
+                    undefined,
+                    expression,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                    gameSpace,
+                    options.characters,
+                    createPlayerIdTarget(actor),
+                  );
+                  return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
+                }
+              : undefined,
           resolveProjectileKeepState:
             effect === "projectile"
               ? () => {

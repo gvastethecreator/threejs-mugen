@@ -515,6 +515,36 @@ describe("ProjectileSystem", () => {
     expect(unresolved.keepState).toBeUndefined();
   });
 
+  it("resolves fresh Projectile p2facing once in the caller context", () => {
+    const operation = compileControllerIr(controller({ p2facing: "var(0)" })).operation as ProjectileControllerOp;
+    const base = {
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1 as const,
+      operation,
+    };
+
+    const dynamic = createRuntimeProjectile({
+      ...base,
+      serialId: "p1-projectile-p2facing-dynamic",
+      controller: controller({ projanim: "1005", p2facing: "var(0)" }),
+      resolveP2Facing: () => -1.8,
+    });
+    const unresolved = createRuntimeProjectile({
+      ...base,
+      serialId: "p1-projectile-p2facing-unresolved",
+      controller: controller({ projanim: "1005", p2facing: "var(0)" }),
+      resolveP2Facing: () => undefined,
+    });
+
+    expect(dynamic.p2Facing).toBe(-1);
+    expect(unresolved.p2Facing).toBeUndefined();
+  });
+
   it("uses component-wise caller resolution for fresh dynamic Projectile damage", () => {
     const baseOperation: ProjectileControllerOp = {
       kind: "projectile",
