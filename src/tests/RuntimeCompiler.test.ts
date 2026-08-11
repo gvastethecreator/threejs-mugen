@@ -3045,6 +3045,28 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles live ModifyHitDef hitsound.channel integers and rejects malformed expressions", () => {
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "hitsound.channel": "3.9",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      hitSoundChannel: 3,
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "hitsound.channel": "var(2) + 1",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      hitSoundChannel: "var(2) + 1",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      redirectid: "57",
+      "hitsound.channel": "var(",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles dynamic direct HitDef air.juggle and rejects malformed expressions", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "air.juggle": "var(0) + 2",

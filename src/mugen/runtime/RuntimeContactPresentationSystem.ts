@@ -34,6 +34,7 @@ export class RuntimeContactPresentationWorld {
       DemoMove,
       | "guardSound"
       | "hitSound"
+      | "hitSoundChannel"
       | "guardSoundValue"
       | "hitSoundValue"
       | "guardSpark"
@@ -51,15 +52,16 @@ export class RuntimeContactPresentationWorld {
     const contact = this.createHitDefContactMetadata(input.attacker, input.defender, input.kind, input.runtimeTick);
     const sound = input.kind === "guard" ? input.move.guardSound : input.move.hitSound;
     const soundValue = input.kind === "guard" ? input.move.guardSoundValue : input.move.hitSoundValue;
+    const soundChannel = input.kind === "hit" ? input.move.hitSoundChannel : undefined;
     const spark = input.kind === "guard" ? input.move.guardSpark : input.move.hitSpark;
     const assetFrames = resolveRuntimeHitSparkAssetFrames(input.attacker, spark);
-    const soundOperation = hitDefSoundAudioOperation(soundValue);
+    const soundOperation = hitDefSoundAudioOperation(soundValue, soundChannel);
     if (soundOperation) {
       input.recordAudioOperation?.(input.attacker, soundOperation);
     }
     return {
       contact,
-      sound: input.attacker.audioWorld.emitHitDefSound(input.attacker, sound, input.runtimeTick, contact, soundValue),
+      sound: input.attacker.audioWorld.emitHitDefSound(input.attacker, sound, input.runtimeTick, contact, soundValue, soundChannel),
       effect: input.attacker.hitEffectWorld.emitHitDefEffect(
         input.attacker,
         input.kind,
@@ -136,7 +138,10 @@ export class RuntimeContactPresentationWorld {
   }
 }
 
-function hitDefSoundAudioOperation(resolvedSound: RuntimeResolvedSoundRef | undefined): AudioControllerOp | undefined {
+function hitDefSoundAudioOperation(
+  resolvedSound: RuntimeResolvedSoundRef | undefined,
+  channel?: number,
+): AudioControllerOp | undefined {
   if (!resolvedSound) {
     return undefined;
   }
@@ -144,5 +149,6 @@ function hitDefSoundAudioOperation(resolvedSound: RuntimeResolvedSoundRef | unde
     kind: "audio",
     controllerType: "playsnd",
     value: `${resolvedSound.rawPrefix ?? ""}${resolvedSound.group},${resolvedSound.index}`,
+    ...(channel !== undefined && Number.isFinite(channel) ? { channel: Math.trunc(channel) } : {}),
   };
 }

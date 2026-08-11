@@ -158,6 +158,8 @@ export type DemoMove = {
   guardCornerPush?: number;
   airGuardCornerPush?: number;
   hitSound?: string;
+  /** Ikemen-only live ModifyHitDef hitsound.channel metadata. */
+  hitSoundChannel?: number;
   guardSound?: string;
   hitSoundValue?: RuntimeResolvedSoundRef;
   guardSoundValue?: RuntimeResolvedSoundRef;

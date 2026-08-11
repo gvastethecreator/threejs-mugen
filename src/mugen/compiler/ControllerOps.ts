@@ -321,6 +321,8 @@ export type ModifyHitDefControllerOp = {
   hitSound?: string;
   /** Dynamic or mixed live hit-sound reference; prefix/group/index resolve in caller context. */
   hitSoundExpression?: string;
+  /** Ikemen-only live hitsound.channel replacement evaluated in the ModifyHitDef caller context. */
+  hitSoundChannel?: number | string;
   /** Static live guard-sound reference replacement. */
   guardSound?: string;
   /** Dynamic or mixed live guard-sound reference; prefix/group/index resolve in caller context. */
@@ -2859,6 +2861,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "guard.sparkangle",
     "guard.sparkno",
     "hitsound",
+    "hitsound.channel",
     "guardsound",
     "palfx.time",
     "palfx.add",
@@ -3001,6 +3004,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const hitSoundValue = optionalModifyHitDefSoundParam(controller, "hitsound");
   const hitSound = typeof hitSoundValue === "object" ? hitSoundValue.staticValue : undefined;
   const hitSoundExpression = typeof hitSoundValue === "object" ? hitSoundValue.expression : undefined;
+  const hitSoundChannel = optionalIntegerExpressionParam(controller, "hitsound.channel");
   const guardSoundValue = optionalModifyHitDefSoundParam(controller, "guardsound");
   const guardSound = typeof guardSoundValue === "object" ? guardSoundValue.staticValue : undefined;
   const guardSoundExpression = typeof guardSoundValue === "object" ? guardSoundValue.expression : undefined;
@@ -3081,6 +3085,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     guardSparkAngle !== true ||
     guardSparkValue !== true ||
     hitSoundValue !== true ||
+    hitSoundChannel !== true ||
     guardSoundValue !== true ||
     paletteFx !== true ||
     envShake !== true ||
@@ -3145,6 +3150,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     guardSparkAngle === false ||
     guardSparkValue === false ||
     hitSoundValue === false ||
+    hitSoundChannel === false ||
     guardSoundValue === false ||
     paletteFx === false ||
     envShake === false ||
@@ -3227,6 +3233,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(guardSparkExpression === undefined ? {} : { guardSparkExpression }),
     ...(hitSound === undefined ? {} : { hitSound }),
     ...(hitSoundExpression === undefined ? {} : { hitSoundExpression }),
+    ...(hitSoundChannel === true ? {} : { hitSoundChannel }),
     ...(guardSound === undefined ? {} : { guardSound }),
     ...(guardSoundExpression === undefined ? {} : { guardSoundExpression }),
     ...(paletteFx === true ? {} : { paletteFx }),

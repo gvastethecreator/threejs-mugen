@@ -123,6 +123,7 @@ export class RuntimeAudioWorld {
     runtimeTick: number,
     contact?: RuntimeHitDefContactMetadata,
     resolvedSound?: RuntimeResolvedSoundRef,
+    channel?: number,
   ): RuntimeSoundEvent | undefined {
     if (!sound && !resolvedSound) {
       return undefined;
@@ -137,6 +138,7 @@ export class RuntimeAudioWorld {
       stateNo: actor.runtime.stateNo,
       tick: actor.stateElapsed,
       runtimeTick,
+      ...(channel !== undefined && Number.isFinite(channel) ? { channel: Math.trunc(channel) } : {}),
       ...(contact ? { contactId: contact.contactId, contactTick: contact.contactTick, contactKind: contact.contactKind } : {}),
     };
     pushRuntimeSoundEvent(actor.soundEvents, event);

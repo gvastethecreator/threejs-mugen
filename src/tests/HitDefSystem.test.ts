@@ -2779,6 +2779,42 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("mutates live ModifyHitDef hitsound.channel and preserves omission or unresolved values", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", { attr: "S,NA", hitsound: "S5,0" })),
+      frame: activeFrame(),
+    });
+    actor.currentMove!.hitSoundChannel = 2;
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        "hitsound.channel": "7.9",
+      })),
+    });
+    expect(actor.currentMove?.hitSoundChannel).toBe(7);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        "hitsound.channel": "var(99)",
+      })),
+      resolveIntegerScalar: () => undefined,
+    });
+    expect(actor.currentMove?.hitSoundChannel).toBe(7);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { redirectid: "57" })),
+    });
+    expect(actor.currentMove?.hitSoundChannel).toBe(7);
+  });
+
   it("keeps air.fall separate from the ground fall flag", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

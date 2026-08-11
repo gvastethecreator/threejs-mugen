@@ -417,7 +417,7 @@ describe("AudioEventSystem", () => {
       contactId: "direct:p1:p2:140:200:6:hit",
       contactTick: 140,
       contactKind: "hit",
-    });
+    }, undefined, 3);
 
     expect(event).toMatchObject({
       type: "PlaySnd",
@@ -426,6 +426,7 @@ describe("AudioEventSystem", () => {
       contactId: "direct:p1:p2:140:200:6:hit",
       contactTick: 140,
       contactKind: "hit",
+      channel: 3,
     });
   });
 

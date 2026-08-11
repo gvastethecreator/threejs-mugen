@@ -77,11 +77,12 @@ describe("RuntimeContactPresentationSystem", () => {
       move: {
         hitSound: "Fvar(0),var(1)",
         hitSoundValue: { rawPrefix: "F", group: 5, index: 4 },
+        hitSoundChannel: 6,
       },
       recordAudioOperation: (_actor, operation) => recordedOperations.push(operation),
     });
 
-    expect(recordedOperations).toEqual([{ kind: "audio", controllerType: "playsnd", value: "F5,4" }]);
+    expect(recordedOperations).toEqual([{ kind: "audio", controllerType: "playsnd", value: "F5,4", channel: 6 }]);
     expect(attacker.soundEvents[0]).toMatchObject({
       type: "PlaySnd",
       group: 5,
@@ -89,6 +90,7 @@ describe("RuntimeContactPresentationSystem", () => {
       raw: "Fvar(0),var(1)",
       soundPrefix: "kfm",
       contactKind: "hit",
+      channel: 6,
     });
   });
 
