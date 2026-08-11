@@ -1,6 +1,18 @@
 ﻿# Roadmap Execution Board
 
-## Next bounded slice — T712 closed-bounded (2026-08-11)
+## Next bounded slice — T713 closed-bounded (2026-08-11)
+
+Issue 287 closes root-owned fresh Projectile `p2facing` after an accepted
+unguarded hit. The Projectile facing supplies the signed target-facing result,
+`GetHitVar(facing)` remains authored metadata, and a one-shot latch is
+consumed after automatic facing on the next runtime cycle. Required trace
+`8c77a6f3/3d34f24a` passes; aggregate QA passes `804/804` artifacts (`770`
+required, `34` optional). Caller expressions, Helper ownership,
+`ModifyProjectile`, `p1facing`, guards, reversals, noautoturn, exact tick
+parity, teams, rollback and full parity remain blocked. See [issue
+287](../.scratch/roadmap/issues/287-projectile-p2facing.md).
+
+## Previous bounded slice — T712 closed-bounded (2026-08-11)
 
 Issue 286 closes the transient Projectile `keepstate` release that remained
 open after T711. Root and Helper Projectile contacts keep the flag through the

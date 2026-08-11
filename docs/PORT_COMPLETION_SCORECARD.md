@@ -1,5 +1,16 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-11 T713 Projectile `p2facing` — closed-bounded, no score movement
+
+Issue 287 closes root-owned fresh Projectile `p2facing` for accepted
+unguarded hits. The Projectile facing drives the deferred target-facing latch,
+while authored `GetHitVar(facing)` remains intact. Required trace passes with
+`8c77a6f3/3d34f24a`; aggregate QA passes `804/804` artifacts (`770` required,
+`34` optional). No score movement: caller expressions, Helper ownership,
+`ModifyProjectile`, `p1facing`, guards, reversals, noautoturn, exact tick
+parity, teams, rollback and full parity remain blocked. See [issue
+287](../.scratch/roadmap/issues/287-projectile-p2facing.md).
+
 ## 2026-08-11 T712 Projectile `keepstate` release — closed-bounded, no score movement
 
 Issue 286 releases transient Projectile `keepstate` after the active stun

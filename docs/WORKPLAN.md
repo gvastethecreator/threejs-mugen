@@ -1,6 +1,17 @@
 # Workplan
 
-## Active slice — T712 closed-bounded (2026-08-11)
+## Active slice — T713 closed-bounded (2026-08-11)
+
+Issue 287 ports root-owned fresh Projectile `p2facing` for accepted
+unguarded contacts. The local latch uses the Projectile's facing, preserves
+`GetHitVar(facing)`, and is consumed after automatic facing on the following
+runtime cycle. Required trace `8c77a6f3/3d34f24a` and the global QA gate
+(`804/804`, `770` required, `34` optional) pass. Expressions, Helper-owned
+Projectiles, `ModifyProjectile`, `p1facing`, guards, reversals, noautoturn,
+exact tick parity, teams, rollback and full parity remain deferred. See
+[issue 287](../.scratch/roadmap/issues/287-projectile-p2facing.md).
+
+## Previous slice — T712 closed-bounded (2026-08-11)
 
 Issue 286 releases transient Projectile `keepstate` after the active stun
 window and before the next active state-controller pass, preserving the rest

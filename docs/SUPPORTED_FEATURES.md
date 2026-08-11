@@ -1,4 +1,16 @@
 ﻿# Supported Features
+## 2026-08-11 T713 Projectile `p2facing` — closed-bounded
+
+Root-owned fresh Projectiles now apply static `p2facing` after an accepted
+unguarded hit. The signed result is derived from the Projectile facing,
+`GetHitVar(facing)` remains authored metadata, and a one-shot latch is
+consumed after automatic facing on the next runtime cycle. Required trace
+`8c77a6f3/3d34f24a` passes; aggregate QA passes `804/804` artifacts (`770`
+required, `34` optional). Caller expressions, Helper-owned Projectiles,
+`ModifyProjectile`, `p1facing`, guards, reversals, noautoturn, exact tick
+parity, teams, rollback and full parity remain unsupported. See [issue
+287](../.scratch/roadmap/issues/287-projectile-p2facing.md).
+
 ## 2026-08-11 T712 Projectile `keepstate` release — closed-bounded
 
 Root and Helper Projectile contacts now release transient `keepstate` after
