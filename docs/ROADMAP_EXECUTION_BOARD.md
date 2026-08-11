@@ -1,6 +1,27 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T729 closed-bounded (2026-08-11)
+## Latest bounded slice — T730 closed-bounded (2026-08-11)
+
+Issue 304 closes Ikemen-only live `ModifyHitDef sparkangle` through root,
+RedirectID and Helper callers. Static and caller-context dynamic values resolve
+once; omission or an unresolved value preserves the live angle, and accepted
+hit presentation publishes the resolved angle in the `HitSpark` event. The
+required trace proves `var(0)=27` reaches the event without changing the spark
+identity or `sparkxy`; focused coverage passes `298/298` and aggregate QA passes
+`817/817` artifacts (`783` required, `34` optional). Guard spark angle, scale,
+palette, Projectiles, exact renderer timing and full effect parity remain
+blocked. See [issue
+304](../.scratch/roadmap/issues/304-modifyhitdef-sparkangle-expressions.md).
+
+## Next bounded slice — T731 queued
+
+Issue 305 queues the next Ikemen-only live `ModifyHitDef guard.sparkangle`
+scalar for the accepted guard presentation path. Hit spark angle, spark
+identity, scale, palette, Projectiles, exact renderer timing and full effect
+parity remain excluded. See [issue
+305](../.scratch/roadmap/issues/305-modifyhitdef-guard-sparkangle-expressions.md).
+
+## Historical bounded slice — T729 closed-bounded (2026-08-11)
 
 Issue 303 closes Ikemen-only live `ModifyHitDef sparkxy` X/Y replacement on
 root, RedirectID and Helper caller paths. Static, mixed and dynamic values
@@ -11,15 +32,6 @@ passes `816/816` artifacts (`782` required, `34` optional). Fresh defaults,
 spark identity, angle, scale, palette, Projectiles and exact renderer timing
 remain blocked. See [issue
 303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
-
-## Next bounded slice — T730 queued
-
-Issue 304 queues the next Ikemen-only live `ModifyHitDef sparkangle` scalar
-through root/RedirectID and Helper callers, with omission preservation and
-bounded hit-effect angle evidence. Guard spark angle, spark identity, `sparkxy`,
-scale, palette, Projectiles, exact renderer timing and full effect parity remain
-excluded. See [issue
-304](../.scratch/roadmap/issues/304-modifyhitdef-sparkangle-expressions.md).
 
 ## Historical bounded slice — T727 closed-bounded (2026-08-11)
 

@@ -1,17 +1,17 @@
 # Controller Support Registry
 
-Latest cursor: T729 / issue 303 is closed-bounded for Ikemen-only live
-root/RedirectID and Helper `ModifyHitDef sparkxy` X/Y replacement. Static,
-mixed and caller-context dynamic values resolve once; one component preserves
-Y, pairs replace both axes, and omission is a no-op. Required hit-effect trace
-`synthetic-imported-modifyhitdef-dynamic-sparkxy.json` carries offset `24,-72`;
-focused coverage passes `289/289`, and `pnpm qa:trace` passes `816/816`
-artifacts (`782` required, `34` optional).
+Latest cursor: T730 / issue 304 is closed-bounded for Ikemen-only live
+root/RedirectID and Helper `ModifyHitDef sparkangle`. Static and caller-context
+dynamic values resolve once; omission preserves the live value and accepted
+hit-effect telemetry carries the resolved angle. Required trace
+`synthetic-imported-modifyhitdef-dynamic-sparkangle.json` carries angle `27`;
+focused coverage passes `298/298`, and `pnpm qa:trace` passes `817/817`
+artifacts (`783` required, `34` optional).
 
-Next cursor: T730 / issue 304 is queued for Ikemen-only live
-`ModifyHitDef sparkangle` scalar replacement through root/RedirectID and
-Helper callers. Omission preservation, `guard.sparkangle`, spark identity,
-`sparkxy`, scale, palette, Projectiles, exact renderer timing, teams, rollback
+Next cursor: T731 / issue 305 is queued for Ikemen-only live
+`ModifyHitDef guard.sparkangle` through the accepted guard presentation path.
+Caller-context resolution, omission preservation, hit spark angle, spark
+identity, scale, palette, Projectiles, exact renderer timing, teams, rollback
 and full effect parity remain deferred.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root

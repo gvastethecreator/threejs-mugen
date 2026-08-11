@@ -2,6 +2,18 @@
 
 ## Current parity queue
 
+- **T730 closed-bounded** — Ikemen-only live `ModifyHitDef sparkangle` through
+  root/RedirectID and Helper callers. Caller-context static/dynamic values
+  resolve once, omission preserves the active angle, and the required trace
+  observes angle `27` in the accepted hit-effect event. Focused coverage is
+  `298/298`; QA passes `817/817` artifacts (`783` required, `34` optional).
+  See [issue 304](../.scratch/roadmap/issues/304-modifyhitdef-sparkangle-expressions.md).
+
+- **T731 queued** — Ikemen-only live `ModifyHitDef guard.sparkangle` through
+  the accepted guard presentation path, with caller-context resolution and
+  omission preservation. See [issue
+  305](../.scratch/roadmap/issues/305-modifyhitdef-guard-sparkangle-expressions.md).
+
 - **T727 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
   `ModifyReversalDef` now retain static and caller-context `hitonce`. Zero
   disables the one-contact gate, finite non-zero values enable it, live
@@ -15,7 +27,7 @@
   required lying-contact traces pass. See [issue
   302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
 
-- **T729 queued** — Ikemen-only live `ModifyHitDef sparkxy` X/Y replacement
+- **T729 closed-bounded** — Ikemen-only live `ModifyHitDef sparkxy` X/Y replacement
   with omitted-axis preservation and bounded hit-effect offset evidence. See
   [issue 303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
 

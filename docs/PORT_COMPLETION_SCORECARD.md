@@ -1,6 +1,23 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T727 ReversalDef `hitonce` expressions — closed-bounded, no score movement
+## 2026-08-11 T730 `ModifyHitDef sparkangle` expressions — closed-bounded, no score movement
+
+Issue 304 closes Ikemen-only live `ModifyHitDef sparkangle` through root,
+RedirectID and Helper callers. Static/dynamic caller-context values resolve
+once, omission preserves the active angle, and the accepted hit-effect event
+records the resolved value. Focused coverage passes `298/298`; the required
+spark-angle trace is part of the `817/817` QA aggregate (`783` required, `34`
+optional). No score movement: guard spark angle, spark identity, scale, palette,
+Projectiles, renderer timing and full presentation parity remain blocked. See
+[issue 304](../.scratch/roadmap/issues/304-modifyhitdef-sparkangle-expressions.md).
+
+## Next queued — T731 `ModifyHitDef guard.sparkangle` expressions
+
+Issue 305 queues the bounded Ikemen-only guard-spark angle mutation through the
+live guard presentation path, preserving omission and caller context. See
+[issue 305](../.scratch/roadmap/issues/305-modifyhitdef-guard-sparkangle-expressions.md).
+
+## Historical checkpoint — 2026-08-11 T727 ReversalDef `hitonce` expressions — closed-bounded, no score movement
 
 Issue 301 closes the bounded direct/root `ReversalDef` and root/RedirectID
 `ModifyReversalDef` `hitonce` path. Static and caller-context values resolve
@@ -25,13 +42,11 @@ scale, angle, palette, Projectiles and exact renderer timing remain blocked.
 See [issue
 303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
 
-## Next queued — T730 `ModifyHitDef sparkangle` expressions
+## Historical checkpoint — T729 `ModifyHitDef sparkxy` expressions
 
-Issue 304 queues the bounded Ikemen-only live hit-spark angle scalar through
-root/RedirectID and Helper caller paths. `guard.sparkangle`, identity,
-`sparkxy`, scale, palette, Projectiles and full presentation parity remain
-excluded. See [issue
-304](../.scratch/roadmap/issues/304-modifyhitdef-sparkangle-expressions.md).
+Issue 303 closes Ikemen-only live X/Y replacement through root/RedirectID and
+Helper callers. See [issue
+303](../.scratch/roadmap/issues/303-modifyhitdef-sparkxy-expressions.md).
 
 ## Historical checkpoint — T728 `ModifyHitDef down.velocity` expressions
 

@@ -13,15 +13,18 @@
 ## Ledger local
 
 El runtime ya transporta la presentación del hit-spark y T729 ya demuestra
-mutación live de `sparkxy`. El hueco siguiente es el ángulo: el IR de
-`ModifyHitDef` aún no conserva `sparkangle`, el dispatch no lo resuelve y el
-seam directo entrega `undefined` al evento.
+mutación live de `sparkxy`. El hueco siguiente era el ángulo: el IR de
+`ModifyHitDef` no conservaba `sparkangle`, el dispatch no lo resolvía y el
+seam directo entregaba `undefined` al evento. T730 lo cerró con soporte tipado
+y evidencia requerida.
 
 ## Claim permitido
 
 Root/RedirectID y Helper-owned live `ModifyHitDef sparkangle` estático o
 dinámico, con evaluación caller-context, preservación en omisión y ángulo
-observable en el evento de hit-effect.
+observable en el evento de hit-effect. La evidencia requerida pasa `817/817`
+artifacts (`783` required, `34` optional), con `var(0)=27` en la ruta
+RedirectID.
 
 ## Fuera de claim
 

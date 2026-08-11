@@ -1,6 +1,6 @@
 # Issue 304 — `ModifyHitDef` `sparkangle` expressions
 
-Status: **queued** (T730, 2026-08-11)
+Status: **closed-bounded** (T730, 2026-08-11)
 
 ## Objetivo
 
@@ -39,3 +39,19 @@ Añadir cobertura `RuntimeCompiler.test.ts`, `HitDefSystem.test.ts`,
 dinámico, omisión/preservación y caller RedirectID. La traza sólo se
 promocionará si un hit aceptado publica el ángulo en el `HitEffect` sin mutar
 la identidad del spark.
+
+## Resultado T730
+
+Implementado en `b7ca2d60` y cerrado con evidencia en `ab0114fd`. El IR y el
+runtime aceptan el escalar estático/dinámico en HitDef fresco y
+`ModifyHitDef`; root/RedirectID y Helper evalúan en caller-context, preservan
+omisión/no-resolución en la mutación viva y el evento aceptado conserva el
+ángulo junto con la identidad y `sparkxy`. La traza requerida
+`synthetic-imported-modifyhitdef-dynamic-sparkangle.json` prueba `var(0)=27`;
+la suite focal pasa `298/298` y `pnpm qa:trace` pasa `817/817`
+(`783` required, `34` optional).
+
+La clonación de snapshots de jugador, Helper y trace conserva ahora el campo
+`angle`, evitando que la evidencia pierda un valor ya resuelto antes del gate.
+`guard.sparkangle`, Projectiles, renderer exacto y paridad completa siguen
+fuera del claim.
