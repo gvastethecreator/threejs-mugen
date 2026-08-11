@@ -1110,6 +1110,33 @@ describe("DirectCombatSystem", () => {
     expect(runtimeHitVar(actor("p3", "Missing").runtime, "keepstate")).toBe(0);
   });
 
+  it("preserves the active state and skips direct default hit-state hooks for keepstate", () => {
+    const attacker = actor("p1", "Attacker", { stateNo: 200, moveType: "A" });
+    const defender = actor("p2", "Defender", { stateNo: 201, moveType: "A" });
+    const requests: string[] = [];
+
+    new RuntimeDirectCombatWorld().applyResolvedHit(attacker, defender, move({
+      keepState: true,
+      p1StateNo: 777,
+      p2StateNo: 888,
+    }), {
+      kind: "hit",
+      damage: 20,
+      kill: true,
+      pause: 1,
+      stun: 1,
+      push: 0,
+      powerGain: 0,
+    }, hooks({
+      applyHitStateTransitions: () => requests.push("transition"),
+      applyDefaultGetHit: () => requests.push("gethit"),
+    }));
+
+    expect(defender.runtime.stateNo).toBe(201);
+    expect(defender.runtime.moveType).toBe("A");
+    expect(requests).toEqual([]);
+  });
+
   it("carries direct HitDef acceleration metadata into defender GetHitVars", () => {
     const attacker = actor("p1", "Attacker");
     const defender = actor("p2", "Defender", { life: 40 });

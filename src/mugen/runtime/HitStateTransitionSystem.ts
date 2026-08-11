@@ -9,6 +9,8 @@ export type RuntimeHitStateTransitionMove = {
   p1StateNo?: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;
+  /** Ikemen keepstate prevents the contact from entering authored hit states. */
+  keepState?: boolean;
 };
 
 export type RuntimeHitStateEntryOptions<TActor extends RuntimeHitStateTransitionActor> = {
@@ -33,6 +35,9 @@ export class RuntimeHitStateTransitionWorld {
     move: RuntimeHitStateTransitionMove,
     hooks: RuntimeHitStateTransitionHooks<TActor>,
   ): RuntimeHitStateTransitionOutcome {
+    if (move.keepState === true) {
+      return { attackerEntered: false, defenderEntered: false };
+    }
     const defenderEntered =
       move.p2StateNo !== undefined
         ? this.enterTargetHitState(defender, attacker, move.p2StateNo, move.p2GetP1State ?? true, hooks)

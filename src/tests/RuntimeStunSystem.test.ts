@@ -101,6 +101,21 @@ describe("RuntimeStunSystem", () => {
     expect(fighter.runtime.moveType).toBe("H");
   });
 
+  it("keeps keepstate contacts out of hit-state presentation while stun is active", () => {
+    const world = new RuntimeStunWorld();
+    const fighter = actor({ hitStun: 2, guardStun: 0, velX: 6, moveType: "A", keepState: true });
+    const actions: RuntimeStunActor[] = [];
+
+    const result = world.advance(fighter, {
+      showHitStunAction: (target) => actions.push(target),
+    });
+
+    expect(result.hitStunActionRequests).toBe(0);
+    expect(result.restoredIdleMoveType).toBe(false);
+    expect(actions).toEqual([]);
+    expect(fighter.runtime.moveType).toBe("A");
+  });
+
   it("keeps current attacks from being restored to idle moveType", () => {
     const world = new RuntimeStunWorld();
     const fighter = actor({ hitStun: 1, guardStun: 0, velX: -4, moveType: "A" });
@@ -190,6 +205,7 @@ function actor(options: {
   guardSlideTimeRemaining?: number;
   guardControlTimeRemaining?: number;
   guardCount?: number;
+  keepState?: boolean;
 }): RuntimeStunActor {
   return {
     hitStun: options.hitStun,
@@ -202,6 +218,9 @@ function actor(options: {
       ...(options.guardSlideTimeRemaining === undefined ? {} : { guardSlideTimeRemaining: options.guardSlideTimeRemaining }),
       ...(options.guardControlTimeRemaining === undefined ? {} : { guardControlTimeRemaining: options.guardControlTimeRemaining }),
       ...(options.guardCount === undefined ? {} : { hitVars: { guardCount: options.guardCount } }),
+      ...(options.keepState === undefined
+        ? {}
+        : { hitVars: { ...(options.guardCount === undefined ? {} : { guardCount: options.guardCount }), keepState: options.keepState } }),
     },
   };
 }

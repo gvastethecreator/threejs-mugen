@@ -59,6 +59,24 @@ describe("RuntimeHitStateTransitionSystem", () => {
     expect(defender.runtime.stateNo).toBe(0);
     expect(defender.runtime.customState).toBeUndefined();
   });
+
+  it("suppresses authored attacker and defender states for keepstate contacts", () => {
+    const world = new RuntimeHitStateTransitionWorld();
+    const attacker = actor("p1", { stateNo: 200 });
+    const defender = actor("p2", { stateNo: 201, moveType: "A" });
+
+    const outcome = world.applyHitStateTransitions(
+      attacker,
+      defender,
+      { p1StateNo: 777, p2StateNo: 888, keepState: true },
+      hooksFor([777, 888]),
+    );
+
+    expect(outcome).toEqual({ attackerEntered: false, defenderEntered: false });
+    expect(attacker.runtime.stateNo).toBe(200);
+    expect(defender.runtime.stateNo).toBe(201);
+    expect(defender.runtime.moveType).toBe("A");
+  });
 });
 
 type TestActor = RuntimeHitStateTransitionActor;

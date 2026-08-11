@@ -1362,6 +1362,53 @@ describe("ProjectileCombatSystem", () => {
     }
   });
 
+  it("preserves the active state and skips default hit-state hooks for keepstate", () => {
+    for (const holdingBack of [false, true]) {
+      let projectiles = [projectile({ keepState: true, p1StateNo: 777, p2StateNo: 888, damage: 12 })];
+      const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, stateNo: 200, moveType: "A" }));
+      const defender = actor("p2", "P2", runtimeState({
+        pos: { x: 12, y: 0 },
+        life: 1000,
+        stateNo: 201,
+        stateType: "S",
+        moveType: "A",
+      }));
+      let markedGotHit = 0;
+      let guardStateRequests = 0;
+      let hitStateRequests = 0;
+
+      new RuntimeProjectileCombatWorld().resolveCombat({
+        attacker,
+        defender,
+        projectiles,
+        hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+        holdingBack,
+        log: () => undefined,
+        rememberTarget: () => undefined,
+        applyHitOverride: () => undefined,
+        markDefenderGotHit: () => {
+          markedGotHit += 1;
+        },
+        applyGuardHit: () => {
+          guardStateRequests += 1;
+        },
+        applyHitState: () => {
+          hitStateRequests += 1;
+        },
+        removeProjectilesMarkedForRemoval: () => {
+          projectiles = projectiles.filter((entry) => !entry.removalReason);
+        },
+      });
+
+      expect(defender.runtime.stateNo).toBe(201);
+      expect(defender.runtime.moveType).toBe("A");
+      expect(markedGotHit).toBe(0);
+      expect(guardStateRequests).toBe(0);
+      expect(hitStateRequests).toBe(0);
+      expect(defender.runtime.hitVars?.keepState).toBe(true);
+    }
+  });
+
   it("exposes Projectile HitDef score without moving score adjudication", () => {
     let projectiles = [projectile({ score: 7.25, damage: 12 })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));

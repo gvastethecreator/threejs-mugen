@@ -361,10 +361,12 @@ export class RuntimeProjectileCombatWorld {
         defender.runtime.vel.x += hitVelocityAdd.x;
         defender.runtime.vel.y += hitVelocityAdd.y;
       }
-      if (input.markDefenderGotHit) {
-        input.markDefenderGotHit(defender);
-      } else {
-        defender.runtime.moveType = "H";
+      if (projectile.keepState !== true) {
+        if (input.markDefenderGotHit) {
+          input.markDefenderGotHit(defender);
+        } else {
+          defender.runtime.moveType = "H";
+        }
       }
       applyRuntimePowerDelta(
         attacker.runtime,
@@ -401,8 +403,10 @@ export class RuntimeProjectileCombatWorld {
           (defender.runtime.hitVars?.guardCount ?? 0) + 1,
           comboHitCount,
         );
-        applyRuntimeControl(defender.runtime, false);
-        input.applyGuardHit?.(defender);
+        if (projectile.keepState !== true) {
+          applyRuntimeControl(defender.runtime, false);
+          input.applyGuardHit?.(defender);
+        }
         log(
           `${defender.label} guarded ${attacker.label} projectile for ${result.damage}; hits remaining ${projectile.hitsRemaining}, miss ${projectile.missTimeRemaining}; ${describeRuntimeProjectileRemoval(projectile)}`,
         );
@@ -440,7 +444,9 @@ export class RuntimeProjectileCombatWorld {
       } else if (projectile.forceNoFall && defender.runtime.hitFall) {
         defender.runtime.hitFall = { ...defender.runtime.hitFall, falling: false };
       }
-      input.applyHitState?.(attacker, defender, projectile);
+      if (projectile.keepState !== true) {
+        input.applyHitState?.(attacker, defender, projectile);
+      }
       if (projectileJuggleOwner) {
         applyRuntimeProjectileAirJuggleHit({
           profile: input.runtimeProfile,

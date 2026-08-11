@@ -901,7 +901,7 @@ export class RuntimeCombatResolutionWorld {
     getHitStateWorld: RuntimeGetHitStateWorld,
     stateHooks: RuntimeCombatResolutionStateHooks<TActor>,
   ): void {
-    if (move.p2StateNo !== undefined || defender.definition.source !== "imported") {
+    if (move.keepState === true || move.p2StateNo !== undefined || defender.definition.source !== "imported") {
       return;
     }
     const forcedStateType =
@@ -976,6 +976,9 @@ export class RuntimeCombatResolutionWorld {
     getHitStateWorld: RuntimeGetHitStateWorld,
     stateHooks: RuntimeCombatResolutionStateHooks<TActor>,
   ): void {
+    if (projectile.keepState === true) {
+      return;
+    }
     hitStateTransitionWorld.applyHitStateTransitions(
       attacker,
       defender,

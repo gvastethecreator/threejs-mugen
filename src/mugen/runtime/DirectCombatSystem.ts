@@ -247,8 +247,11 @@ export class RuntimeDirectCombatWorld {
     if (result.hitVelocityY !== undefined) {
       defender.runtime.vel.y = result.hitVelocityY;
     }
-    markRuntimeEffectActorGotHit(defender);
-    applyRuntimeControl(defender.runtime, false);
+    const keepState = move.keepState === true || move.hitVars?.keepState === true;
+    if (!keepState) {
+      markRuntimeEffectActorGotHit(defender);
+      applyRuntimeControl(defender.runtime, false);
+    }
     applyRuntimePowerDelta(
       attacker.runtime,
       runtimeAttackerPowerGain(move.attackerGuardPower, result.powerGain),
@@ -259,7 +262,9 @@ export class RuntimeDirectCombatWorld {
       runtimeAttackerPowerGain(move.guardPower, 0),
       defender.definition.constants,
     );
-    hooks.applyGuardHit(defender);
+    if (!keepState) {
+      hooks.applyGuardHit(defender);
+    }
     return {
       kind: "guard",
       damage: result.damage,
@@ -355,7 +360,10 @@ export class RuntimeDirectCombatWorld {
       defender.runtime.vel.x += hitVelocityAdd.x;
       defender.runtime.vel.y += hitVelocityAdd.y;
     }
-    markRuntimeEffectActorGotHit(defender);
+    const keepState = move.keepState === true || move.hitVars?.keepState === true;
+    if (!keepState) {
+      markRuntimeEffectActorGotHit(defender);
+    }
     applyRuntimeContactPaletteFx(defender.runtime, move.paletteFx);
     hooks.emitHitEnvShake?.(attacker, move);
     applyRuntimePowerDelta(
@@ -368,8 +376,10 @@ export class RuntimeDirectCombatWorld {
       runtimeAttackerPowerGain(move.hitPower, 0),
       defender.definition.constants,
     );
-    hooks.applyHitStateTransitions(attacker, defender, move);
-    hooks.applyDefaultGetHit(defender, move);
+    if (!keepState) {
+      hooks.applyHitStateTransitions(attacker, defender, move);
+      hooks.applyDefaultGetHit(defender, move);
+    }
     if (result.dizzyPoints !== undefined && previousDizzyPoints > 0 && defender.runtime.dizzyPoints === 0) {
       hooks.applyDizzyState?.(defender, move);
     }

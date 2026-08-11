@@ -4957,7 +4957,7 @@ function advanceFighter(
         hasCurrentMove: Boolean(actor.currentMove),
         preserveImportedStateMoveType,
         preserveImportedGuardTiming: actor.definition.source === "imported" || actor.stateOwner?.definition.source === "imported",
-        suppressHitStunAction: Boolean(actor.stateOwner),
+        suppressHitStunAction: Boolean(actor.stateOwner) || actor.runtime.hitVars?.keepState === true,
         showHitStunAction: () => changeAction(actor, actor.definition.hitstunAction),
       });
     },
