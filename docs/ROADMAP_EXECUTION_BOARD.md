@@ -1,6 +1,25 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T726 closed-bounded (2026-08-11)
+## Latest bounded slice — T727 closed-bounded (2026-08-11)
+
+Issue 301 closes direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `hitonce`. Static and caller-context expressions resolve
+once; zero disables the one-contact gate, finite non-zero values enable it, and
+live omission preserves the active value. Explicit contact memory permits a
+distinct target only when the flag is disabled. Focused compiler/runtime
+coverage passes `184/184`, resolution/helper regressions pass `78/78`, and
+typecheck/diff hygiene pass. No durable end-to-end trace is claimed. See
+[issue 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
+
+## Next bounded slice — T728 queued
+
+Issue 302 queues Ikemen-only live `ModifyHitDef down.velocity` X/Y component
+replacement with Y/Z preservation on the same caller/RedirectID boundary.
+Fresh `down.velocity`, dynamic Z, Helper-owned mutation, Projectiles and exact
+lying/landing timing remain excluded. See [issue
+302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
+
+## Historical queue — T726 completed
 
 Issue 300 closes direct/root `ReversalDef` and root/RedirectID
 `ModifyReversalDef` `nochainid` lists. Static, dynamic, and mixed lists up to
@@ -9,13 +28,6 @@ incoming `HitDef` id matching a non-negative entry is rejected. Focused
 compiler/runtime coverage passes `181/181`; typecheck and diff hygiene pass.
 No durable end-to-end trace is claimed; the evidence is scheduling-isolated
 IR/runtime and dispatch admission. See [issue 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
-
-## Next bounded slice — T727 queued
-
-Issue 301 proposes caller-context `hitonce` for the same direct/root and
-root/RedirectID ReversalDef route. Helper-owned mutation, Projectile,
-priority, exact combo/tick behavior, teams, rollback and full ReversalDef
-parity remain excluded. See [issue 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
 
 ## Previous bounded slice — T725 closed-bounded (2026-08-11)
 

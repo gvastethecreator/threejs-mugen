@@ -1,17 +1,16 @@
 # Controller Support Registry
 
-Latest cursor: T726 / issue 300 is closed-bounded for direct/root
-`ReversalDef` and root/RedirectID `ModifyReversalDef` `nochainid` lists.
-Static, dynamic, and mixed lists up to eight entries resolve once in caller
-context; finite values truncate and admission rejects a matching non-negative
-latest `HitDef` id. Focused compiler/runtime coverage passes `181/181`;
-typecheck and diff hygiene pass. No end-to-end trace is claimed because the
-evidence is scheduling-isolated.
+Latest cursor: T727 / issue 301 is closed-bounded for direct/root
+`ReversalDef` and root/RedirectID `ModifyReversalDef` `hitonce`. Static and
+caller-context values resolve once; zero disables the one-contact gate, finite
+non-zero values enable it, and live omission preserves the active flag. Focused
+compiler/runtime coverage passes `184/184`; resolution/helper regressions pass
+`78/78`; typecheck and diff hygiene pass. No end-to-end trace is claimed.
 
-Next cursor: T727 / issue 301 is queued for caller-context `hitonce` and
-one-contact ReversalDef consumption. Helper-owned mutation,
-Projectile/ModifyProjectile, priority, exact tick behavior, teams, rollback
-and full ReversalDef parity remain deferred.
+Next cursor: T728 / issue 302 is queued for Ikemen-only live
+`ModifyHitDef down.velocity` X/Y component replacement with Y/Z preservation.
+Fresh `down.velocity`, dynamic Z, Helper-owned mutation, Projectiles, exact
+lying/landing timing, teams, rollback and full parity remain deferred.
 
 Previous cursor: T723 / issue 297 is closed-bounded for direct/root
 `ReversalDef` and root/RedirectID `ModifyReversalDef` `attack.depth` static,

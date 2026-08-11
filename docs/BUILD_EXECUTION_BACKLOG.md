@@ -2,6 +2,18 @@
 
 ## Current parity queue
 
+- **T727 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
+  `ModifyReversalDef` now retain static and caller-context `hitonce`. Zero
+  disables the one-contact gate, finite non-zero values enable it, live
+  omission preserves the active value, and explicit target memory admits a
+  distinct target only while disabled. Focused compiler/runtime coverage is
+  `184/184`; resolution/helper coverage is `78/78`; no causal trace is
+  claimed. See [issue 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
+
+- **T728 queued** — Ikemen-only live `ModifyHitDef down.velocity` X/Y
+  component replacement with Y/Z preservation through caller/RedirectID.
+  See [issue 302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
+
 - **T726 closed-bounded** — direct/root `ReversalDef` and root/RedirectID
   `ModifyReversalDef` now retain static, dynamic, and mixed `nochainid` lists
   up to eight entries. Fresh/live values resolve once in caller context,
@@ -9,8 +21,9 @@
   ids. Focused compiler/runtime coverage is `181/181`; no causal trace is
   claimed. See [issue 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
 
-- **T727 queued** — caller-context `hitonce` and one-contact ReversalDef
-  consumption on the same root/RedirectID route. See [issue
+- **T727 historical queue entry — now closed-bounded** — caller-context
+  `hitonce` and one-contact ReversalDef consumption on the same
+  root/RedirectID route. See [issue
   301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
 
 - **T725 closed-bounded** — direct/root `ReversalDef` and root/RedirectID

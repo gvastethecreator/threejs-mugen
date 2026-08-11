@@ -1,6 +1,25 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T726 ReversalDef `nochainid` expressions — closed-bounded, no score movement
+## 2026-08-11 T727 ReversalDef `hitonce` expressions — closed-bounded, no score movement
+
+Issue 301 closes the bounded direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `hitonce` path. Static and caller-context values resolve
+once; zero disables the one-contact gate, finite non-zero values enable it,
+and live omission preserves the active flag. Explicit target memory permits a
+distinct target only while disabled. Focused compiler/runtime coverage passes
+`184/184`; resolution/helper coverage passes `78/78`; no causal trace is
+claimed. No score movement: Helper-owned mutation, Projectile, priority,
+exact tick/combo parity, overflow/int32, teams, rollback and full ReversalDef
+parity remain blocked. See [issue
+301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
+
+## Next queued — T728 `ModifyHitDef down.velocity` expressions
+
+Issue 302 queues Ikemen-only live X/Y component replacement with Y/Z
+preservation. See [issue
+302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
+
+## Historical checkpoint — T726 completed
 
 Issue 300 closes the bounded direct/root `ReversalDef` and root/RedirectID
 `ModifyReversalDef` `nochainid` path. Static, dynamic, and mixed lists up to
@@ -11,12 +30,6 @@ claimed. No score movement: `hitonce`, Helper-owned mutation, Projectile,
 priority, exact tick parity, overflow/int32, teams, rollback and full
 ReversalDef parity remain blocked. See [issue
 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
-
-## Next queued — T727 ReversalDef `hitonce` expressions
-
-Issue 301 queues caller-context `hitonce` and one-contact consumption on the
-same bounded root/RedirectID route. See [issue
-301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
 
 ## 2026-08-11 T725 ReversalDef `chainid` expressions — closed-bounded, no score movement
 

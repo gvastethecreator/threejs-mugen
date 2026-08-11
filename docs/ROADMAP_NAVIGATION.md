@@ -2,7 +2,23 @@
 
 Last updated: 2026-08-11
 
-## Current implementation route — T726 closed-bounded (2026-08-11)
+## Current implementation route — T727 closed-bounded (2026-08-11)
+
+T727 / [issue 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md)
+closes caller-context `hitonce` for direct/root `ReversalDef` and
+root/RedirectID `ModifyReversalDef`. Zero disables the one-contact gate,
+finite non-zero values enable it, live omission preserves the active value,
+and explicit target memory permits distinct targets only while disabled.
+Focused compiler/runtime coverage is `184/184`; resolution/helper coverage is
+`78/78`; no causal end-to-end trace is promoted.
+
+## Next implementation route — T728 queued
+
+T728 / [issue 302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md)
+queues Ikemen-only live `ModifyHitDef down.velocity` X/Y replacement with
+Y/Z preservation.
+
+## Historical queue — T726 completed
 
 T726 / [issue 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md)
 closes typed caller-context `nochainid` lists for direct/root `ReversalDef`
@@ -10,11 +26,6 @@ and root/RedirectID `ModifyReversalDef`. Lists up to eight entries resolve
 once, truncate finite values, and reject a matching non-negative incoming
 `HitDef` id. Focused compiler/runtime coverage is `181/181`; no end-to-end
 trace is promoted because the evidence is scheduling-isolated.
-
-## Next implementation route — T727 queued
-
-T727 / [issue 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md)
-queues caller-context `hitonce` and one-contact ReversalDef consumption.
 
 ## Previous implementation route — T725 closed-bounded (2026-08-11)
 

@@ -1,5 +1,24 @@
 ﻿# Supported Features
-## 2026-08-11 T726 ReversalDef `nochainid` expressions — closed-bounded
+## 2026-08-11 T727 ReversalDef `hitonce` expressions — closed-bounded
+
+Direct/root `ReversalDef` and root/RedirectID `ModifyReversalDef` now retain
+typed static and caller-context `hitonce`. Fresh/live values resolve once;
+zero disables the one-contact gate, finite non-zero values enable it, and
+omitted live mutation preserves the active flag. Explicit target memory allows
+a distinct target only while disabled. Focused compiler/runtime coverage
+passes `184/184`; resolution/helper coverage passes `78/78`; no causal
+end-to-end trace is claimed. Helper-owned mutation, Projectile, priority,
+exact combo/tick ordering, overflow/int32, teams, rollback and full ReversalDef
+parity remain outside the claim. See [issue
+301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
+
+## Next queued — T728 `ModifyHitDef down.velocity`
+
+Ikemen-only live X/Y component replacement with Y/Z preservation is queued for
+the caller/RedirectID route. See [issue
+302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
+
+## Historical checkpoint — T726 completed
 
 Direct/root `ReversalDef` and root/RedirectID `ModifyReversalDef` now retain
 typed static, dynamic, and mixed `nochainid` lists up to eight entries.
@@ -10,11 +29,6 @@ trace is claimed. `hitonce`, Helper-owned mutation, Projectile,
 priority/hitonce parity, exact tick ordering, overflow/int32, teams, rollback
 and full ReversalDef parity remain outside the claim. See [issue
 300](../.scratch/roadmap/issues/300-reversaldef-nochainid-expressions.md).
-
-## Next queued — T727 ReversalDef `hitonce` expressions
-
-Caller-context `hitonce` and one-contact consumption are queued for the same
-root/RedirectID route. See [issue 301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
 
 ## 2026-08-11 T725 ReversalDef `chainid` expressions — closed-bounded
 

@@ -1,6 +1,23 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T726 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T727 closed-bounded (2026-08-11)
+
+Issue 301 adds typed static/dynamic `hitonce` to direct/root `ReversalDef` and
+root/RedirectID `ModifyReversalDef`. Fresh/live values resolve once in caller
+context; zero disables the one-contact gate, finite non-zero values enable it,
+and omitted live mutation preserves the active flag. Explicit contact memory
+allows a distinct target only while disabled. Focused compiler/runtime tests
+pass `184/184`; resolution/helper tests pass `78/78`; typecheck and diff
+hygiene pass. No durable end-to-end trace is promoted. See [issue
+301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
+
+## Next implementation checkpoint — T728 queued
+
+Issue 302 queues Ikemen-only live `ModifyHitDef down.velocity` X/Y replacement
+with Y/Z preservation. See [issue
+302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
+
+## Historical checkpoint — T726 completed (2026-08-11)
 
 Issue 300 adds typed static, dynamic, and mixed `nochainid` lists (up to eight
 entries) to direct/root `ReversalDef` and root/RedirectID
@@ -29,12 +46,6 @@ tests green. `chainid`/`nochainid`, Helper-owned ModifyReversalDef,
 Projectile/ModifyProjectile, priority/hitonce, exact id/tick ordering,
 overflow/int32, teams, rollback and full parity remain open. See [issue
 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md).
-
-## Next implementation checkpoint — T727 queued
-
-Issue 301 is queued for caller-context `hitonce` and one-contact ReversalDef
-consumption. See [issue
-301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
 
 ## Previous implementation checkpoint — T723 closed-bounded (2026-08-11)
 

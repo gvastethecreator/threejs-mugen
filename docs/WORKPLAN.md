@@ -1,6 +1,23 @@
 # Workplan
 
-## Latest slice — T726 closed-bounded (2026-08-11)
+## Latest slice — T727 closed-bounded (2026-08-11)
+
+Issue 301 closes direct/root `ReversalDef` and root/RedirectID
+`ModifyReversalDef` `hitonce`. Static and caller-context values resolve once;
+zero disables the one-contact gate, finite non-zero values enable it, live
+omission preserves the active value, and explicit target memory admits a
+distinct target only while disabled. Focused compiler/runtime coverage is
+`184/184`; resolution/helper coverage is `78/78`; typecheck and diff hygiene
+pass. No causal end-to-end trace is promoted. See [issue
+301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
+
+## Next slice — T728 queued
+
+Issue 302 queues Ikemen-only live `ModifyHitDef down.velocity` X/Y replacement
+with Y/Z preservation through caller/RedirectID. See [issue
+302](../.scratch/roadmap/issues/302-modifyhitdef-down-velocity-expressions.md).
+
+## Historical slice — T726 completed (2026-08-11)
 
 Issue 300 closes direct/root `ReversalDef` and root/RedirectID
 `ModifyReversalDef` `nochainid` lists. Static, dynamic, and mixed lists up to
@@ -26,12 +43,6 @@ trace `27b44d26/c0adb366`, aggregate QA `815/815` (`781` required,
 Helper-owned ModifyReversalDef, Projectile/ModifyProjectile, priority/hitonce,
 exact id/tick parity, overflow/int32, teams, rollback and full parity stay
 deferred. See [issue 298](../.scratch/roadmap/issues/298-reversaldef-id-expressions.md).
-
-## Next slice — T727 queued
-
-Issue 301 is queued for caller-context `hitonce` and one-contact ReversalDef
-consumption in the same bounded root/RedirectID route. See [issue
-301](../.scratch/roadmap/issues/301-reversaldef-hitonce-expressions.md).
 
 ## Previous slice — T723 closed-bounded (2026-08-11)
 
