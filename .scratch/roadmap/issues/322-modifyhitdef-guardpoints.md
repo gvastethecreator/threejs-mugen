@@ -17,6 +17,7 @@ fresh direct HitDef guardpoints and pool/resource defaults stay separate.
 - Durable trace: `synthetic-imported-modifyhitdef-dynamic-guard-points-golden`
   proves `VarSet -> HitDef -> ModifyHitDef -> guard`, RedirectID target `78`,
   caller `var(0)=19`, `GetHitVar(guardpoints)=19`, and the guarded branch.
+  Trace/initial/final checksums are `6019c60c` / `eba2e7f0` / `c275387b`.
 - Evidence: `d1cf7962` (`test(evidence): gate live ModifyHitDef guardpoints`).
 - Aggregate status: the required artifact passes independently. The aggregate
   `pnpm qa:trace` still has the pre-existing

@@ -5,7 +5,8 @@
 Issue 322 closes live Ikemen `ModifyHitDef guardpoints` static and
 caller-context dynamic mutation through root/RedirectID and Helper callers.
 Product `dd2309df` and evidence `d1cf7962` are committed; focused tests,
-typecheck and the required imported trace are green. No score movement:
+typecheck and the required imported trace are green (trace/initial/final
+checksums `6019c60c` / `eba2e7f0` / `c275387b`). No score movement:
 fresh defaults, Projectile/ModifyProjectile, ReversalDef, exact clamp/resource
 timing, teams, rollback and full M.U.G.E.N/Ikemen parity remain blocked. See
 [issue 322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md).
