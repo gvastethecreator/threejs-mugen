@@ -176,6 +176,56 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("resolves direct and live ModifyHitDef attack.depth in caller context and preserves omitted siblings", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+    caller.vars[0] = 4.5;
+    caller.fvars[1] = 8.25;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "attack.depth": "var(0),fvar(1)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.attackDepth).toEqual([4.5, 8.25]);
+
+    caller.vars[0] = 6.75;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        redirectid: "57",
+        "attack.depth": "var(0)",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.attackDepth).toEqual([6.75, 8.25]);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { forcenofall: "1", redirectid: "57" })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.attackDepth).toEqual([6.75, 8.25]);
+
+    actor.firedHitDefs.clear();
+    caller.vars[0] = 3.25;
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "attack.depth": "var(0)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.attackDepth).toEqual([3.25, 3.25]);
+  });
+
   it("defaults missing HitDef id to target id 0", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
@@ -1581,7 +1631,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
     const caller = runtimeState();
-    const apply = (downVelocity?: string, resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy" | "snap") => [number?, number?] | undefined) => {
+    const apply = (downVelocity?: string, resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "attack.depth" | "sparkscale" | "guard.sparkscale" | "sparkxy" | "snap") => [number?, number?] | undefined) => {
       actor.firedHitDefs.clear();
       world.apply({
         actor,

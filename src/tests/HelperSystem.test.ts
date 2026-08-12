@@ -2113,6 +2113,35 @@ describe("HelperSystem", () => {
     expect(operations).toEqual(["modifyhitdef", "modifyhitdef", "modifyhitdef"]);
   });
 
+  it("applies Helper-owned HitDef and ModifyHitDef attack.depth in caller context", () => {
+    const active = helper({
+      vars: [4.5, 8.25],
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              damage: "20",
+              "attack.depth": "var(0),var(1)",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              "attack.depth": "var(0) + 2",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], { redirectid: "0", damage: "21" }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.currentMove).toMatchObject({
+      attackDepth: [6.5, 8.25],
+      damage: 21,
+    });
+  });
+
   it("applies Helper-owned ModifyHitDef pause pairs in caller context and preserves omitted siblings", () => {
     const active = helper({
       vars: [12.9, 13.8, 14.7],

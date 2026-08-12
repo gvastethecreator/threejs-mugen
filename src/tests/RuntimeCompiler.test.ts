@@ -1939,6 +1939,44 @@ value = 1
     expect(invalidRedirect.operation).toBeUndefined();
   });
 
+  it("retains direct and live ModifyHitDef attack.depth expressions with bounded arity", () => {
+    const directPair = compileControllerIr(
+      controller(200, "HitDef", [], { attr: "S,NA", "attack.depth": "var(0),fvar(1)" }),
+    );
+    const directSingle = compileControllerIr(
+      controller(200, "HitDef", [], { attr: "S,NA", "attack.depth": "var(0)" }),
+    );
+    const modifyPair = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { redirectid: "57", "attack.depth": "var(0),fvar(1)" }),
+    );
+    const modifySingle = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { redirectid: "57", "attack.depth": "7.5" }),
+    );
+    const malformed = compileControllerIr(
+      controller(200, "ModifyHitDef", [], { redirectid: "57", "attack.depth": "var(0),fvar(1),1" }),
+    );
+
+    expect(directPair.operation).toMatchObject({
+      kind: "hitdef",
+      attackDepthExpressions: ["var(0)", "fvar(1)"],
+    });
+    expect(directSingle.operation).toMatchObject({
+      kind: "hitdef",
+      attackDepthExpressions: ["var(0)"],
+    });
+    expect(modifyPair.operation).toMatchObject({
+      kind: "modifyhitdef",
+      attackDepthExpressions: ["var(0)", "fvar(1)"],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(modifySingle.operation).toMatchObject({
+      kind: "modifyhitdef",
+      attackDepthExpressions: [7.5],
+      redirectPlayerIdExpression: "57",
+    });
+    expect(malformed.operation).toBeUndefined();
+  });
+
   it("compiles direct HitDef facing integer expressions and rejects malformed values", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       p1facing: "-1.8",
