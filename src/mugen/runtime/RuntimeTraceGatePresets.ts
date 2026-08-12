@@ -10366,6 +10366,68 @@ export function createSyntheticImportedDynamicDamageScaleTraceArtifact(options: 
   });
 }
 
+export function createSyntheticImportedDynamicAttackGuardPointsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5086;
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-dynamic-attack-guardpoints-defender",
+    displayName: "Dynamic Attack Guard Points Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      guardStateNo: 130,
+      guardedBranchStateNo: branchStateNo,
+      guardedBranchAnimNo: branchStateNo,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression: "GetHitVar(guardpoints) = -20 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-dynamic-attack-guardpoints-attacker",
+    displayName: "Dynamic Attack Guard Points Attacker",
+    guardDamage: 5,
+    hitDefGuardPoints: -20,
+    guardFlag: "MA",
+    dynamicAttackMultiplier: {
+      value: "1",
+      guardPoints: "var(0) * fvar(0)",
+      vars: [{ index: 0, value: 1 }],
+      fvars: [{ index: 0, value: 0.5 }],
+    },
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultGuardStateScript(),
+    targetId: "synthetic-imported-dynamic-attack-guardpoints-golden",
+    targetLabel: "Synthetic imported dynamic AttackMulSet guardpoints route",
+    requiredExecutedStates: [200, 150, 151, branchStateNo],
+    requiredExecutedControllers: ["ChangeState", "VarSet", "AttackMulSet", "HitDef", "HitVelSet"],
+    requiredExecutedOperations: ["variable:varset", "damage-scale:attackmulset", "hitdef", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [
+      {
+        label: "dynamic AttackMulSet guardpoints precedes accepted guard",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "VarSet", name: "Dynamic Attack Scale Var 0" },
+          { stateNo: 200, controller: "VarSet", name: "Dynamic Attack Scale FVar 0" },
+          { stateNo: 200, controller: "AttackMulSet", name: "Dynamic Attack Scale" },
+          { stateNo: 200, controller: "HitDef", name: "HitDef" },
+        ],
+      },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 995, guardPoints: 990 }],
+    forbiddenExecutedStates: [5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+    notes: [
+      "Pinned Ikemen GO trace proves caller-context var(0)=1 * fvar(0)=0.5 resolves AttackMulSet guardpoints, applies the dedicated multiplier only to accepted guard-point damage, and leaves authored GetHitVar(guardpoints)=20 plus the guard route intact. Hit damage, Projectile/Helper ownership, NoGuardPointsDamage, exact resource clamp/timing, teams, rollback, and full M.U.G.E.N/Ikemen parity remain outside.",
+    ],
+  });
+}
+
 export function createSyntheticImportedDataDamageScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -65069,6 +65131,8 @@ type SyntheticDynamicDamageScale = {
   value: string;
   vars?: SyntheticRuntimeVarSeed[];
   fvars?: SyntheticRuntimeVarSeed[];
+  /** Synthetic fixture-only AttackMulSet guardpoints expression. */
+  guardPoints?: SyntheticNumberExpression;
 };
 
 export type SyntheticImportedTraceFighterOptions = {
@@ -65266,6 +65330,7 @@ export type SyntheticImportedTraceFighterOptions = {
   defenseMultiplier?: number;
   attackMultiplier?: number;
   attackDizzyPointsMultiplier?: number;
+  attackGuardPointsMultiplier?: number;
   dynamicDefenseMultiplier?: SyntheticDynamicDamageScale;
   dynamicAttackMultiplier?: SyntheticDynamicDamageScale;
   guardDamage?: number;
@@ -67112,7 +67177,7 @@ anim = 200
 ctrl = 0
 
 ${assertSpecialLine}
-${options.attackMultiplier !== undefined || options.attackDizzyPointsMultiplier !== undefined ? attackMultiplierController(options.attackMultiplier, options.attackDizzyPointsMultiplier) : ""}
+${options.attackMultiplier !== undefined || options.attackDizzyPointsMultiplier !== undefined || options.attackGuardPointsMultiplier !== undefined ? attackMultiplierController(options.attackMultiplier, options.attackDizzyPointsMultiplier, options.attackGuardPointsMultiplier) : ""}
 ${options.dynamicAttackMultiplier !== undefined ? dynamicAttackMultiplierController(options.dynamicAttackMultiplier) : ""}
 ${options.withBoundsControllers ? boundsControllerBlock() : ""}
 ${options.withScreenBoundCameraProbe ? screenBoundCameraProbeBlock() : ""}
@@ -68615,13 +68680,14 @@ value = ${value}
 `;
 }
 
-function attackMultiplierController(value?: number, dizzyPoints?: number): string {
+function attackMultiplierController(value?: number, dizzyPoints?: number, guardPoints?: number): string {
   return `
 [State 200, Attack Scale]
 type = AttackMulSet
 trigger1 = Time = 0
 ${value === undefined ? "" : `value = ${value}`}
 ${dizzyPoints === undefined ? "" : `DizzyPoints = ${dizzyPoints}`}
+${guardPoints === undefined ? "" : `GuardPoints = ${guardPoints}`}
 `;
 }
 
@@ -68642,6 +68708,7 @@ ${dynamicDamageScaleSeedBlock(200, "Dynamic Attack Scale", options, "Time = 0")}
 type = AttackMulSet
 trigger1 = Time = 0
 value = ${options.value}
+${options.guardPoints === undefined ? "" : `guardpoints = ${options.guardPoints}`}
 `;
 }
 

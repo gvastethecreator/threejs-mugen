@@ -566,6 +566,7 @@ import {
   createSyntheticImportedDynamicReversalTraceArtifact,
   createSyntheticImportedDamageScaleTraceArtifact,
   createSyntheticImportedDynamicDamageScaleTraceArtifact,
+  createSyntheticImportedDynamicAttackGuardPointsTraceArtifact,
   createSyntheticImportedDataDamageScaleTraceArtifact,
   createSyntheticImportedBoundsTraceArtifact,
   createSyntheticImportedScreenBoundCameraTraceArtifact,
@@ -11818,6 +11819,34 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({ label: "dynamic AttackMulSet resolution order", actorId: "p1", allowSameTick: true }),
         expect.objectContaining({ label: "dynamic DefenceMulSet resolution order", actorId: "p2", allowSameTick: true }),
       ]),
+    );
+  });
+
+  it("creates a synthetic imported dynamic AttackMulSet guard-points artifact", () => {
+    const artifact = createSyntheticImportedDynamicAttackGuardPointsTraceArtifact({
+      generatedAt: "2026-08-12T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-dynamic-attack-guardpoints-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-dynamic-attack-guardpoints-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.actorSources).toEqual(["imported"]);
+    expect(evidence?.executedControllers.AttackMulSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["damage-scale:attackmulset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", life: 995, guardPoints: 990 })]),
     );
   });
 

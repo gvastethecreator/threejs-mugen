@@ -901,6 +901,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDynamicDamageScaleTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-dynamic-attack-guardpoints",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicAttackGuardPointsTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-data-damage-scale",
       required: true,
       artifact: presets.createSyntheticImportedDataDamageScaleTraceArtifact(),
