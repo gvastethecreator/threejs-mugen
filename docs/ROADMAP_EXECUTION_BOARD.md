@@ -1,6 +1,25 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T749 closed-bounded (2026-08-12)
+## Latest bounded slice — T750 closed-bounded (2026-08-12)
+
+Issue 324 closes direct `HitDef guard.dist.width/height/depth` pairs through
+typed IR, root/RedirectID and Helper caller evaluation, imported move metadata,
+and the real direct InGuardDist latch. Fresh components use bounded defaults;
+live ModifyHitDef preserves omitted siblings. Product `194c0b6`; evidence
+`5b46f71c`; required trace checksum `489865dc`. Focused tests and typecheck
+pass. Aggregate QA remains blocked by the inherited helper-bind target-link
+case. MUGEN 1.1 scalar `guard.dist` and Ikemen bounds are separate claims;
+Projectile, ReversalDef, exact geometry/tick parity and full parity remain
+blocked. See [issue
+324](../.scratch/roadmap/issues/324-hitdef-guard-distance-bounds.md).
+
+## Next bounded slice — T751 upstream seam selection
+
+Select one distinct official/Ikemen seam after the aggregate T750 trace gate.
+Keep Projectile/ModifyProjectile, ReversalDef, teams, rollback and full parity
+as separate claims.
+
+## Historical bounded slice — T749 closed-bounded (2026-08-12)
 
 Issue 323 closes direct `HitDef attack.depth` expressions and live Ikemen
 `ModifyHitDef attack.depth` through typed IR, root/RedirectID caller evaluation
@@ -13,12 +32,6 @@ helper-bind missing-target-link blocker. M.U.G.E.N 1.1 covers fresh HitDef;
 live ModifyHitDef is an Ikemen-only claim. Projectile/ModifyProjectile,
 ReversalDef breadth, defaults, exact depth timing and full parity remain
 blocked.
-
-## Next bounded slice — T750 upstream seam selection
-
-Select one distinct official/Ikemen seam after the aggregate T749 trace gate.
-Keep Projectile/ModifyProjectile, ReversalDef, defaults, teams, rollback and
-full parity as separate claims.
 
 ## Historical bounded slice — T747 closed-bounded (2026-08-11)
 

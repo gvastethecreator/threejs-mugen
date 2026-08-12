@@ -1,6 +1,26 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-12 T749 `HitDef attack.depth` — closed-bounded
+## 2026-08-12 T750 direct HitDef guard-distance bounds — closed-bounded
+
+Focused compiler/runtime/CombatResolver/guard-distance coverage and typecheck
+pass for direct `HitDef guard.dist.width/height/depth`, including static,
+mixed, and caller-context dynamic pairs. Product `194c0b6`; evidence
+`5b46f71c`. Required trace
+`synthetic-imported-hitdef-dynamic-guard-distance-bounds-golden` proves six
+`VarSet` inputs, `HitDef`, direct InGuardDist latch, and no hit/guard contact;
+trace checksum is `489865dc`. Fresh components use bounded defaults and live
+ModifyHitDef preserves omitted siblings. The aggregate `pnpm qa:trace` still
+has the inherited helper-bind missing-target-link blocker; this artifact passes
+independently. MUGEN 1.1 scalar `guard.dist` and Ikemen bounds are separate;
+Projectile/ReversalDef, exact geometry/tick parity and full parity remain
+outside. See [issue
+324](../.scratch/roadmap/issues/324-hitdef-guard-distance-bounds.md).
+
+## Next gate — T751 upstream seam selection
+
+Select one bounded official/Ikemen seam after the aggregate T750 run.
+
+## Historical — T749 `HitDef attack.depth` — closed-bounded
 
 Focused compiler/runtime/Helper coverage and typecheck pass for direct
 `HitDef attack.depth` plus live Ikemen `ModifyHitDef attack.depth` static,
@@ -15,10 +35,6 @@ has the inherited helper-bind missing-target-link blocker; this artifact passes
 independently. Projectile/ModifyProjectile, ReversalDef breadth, exact depth
 timing and full parity remain outside. See [issue
 323](../.scratch/roadmap/issues/323-hitdef-attack-depth.md).
-
-## Next gate — T750 upstream seam selection
-
-Select one bounded official/Ikemen seam after the aggregate T749 run.
 
 ## Historical — T747 live `ModifyHitDef` pause pairs — closed-bounded
 

@@ -2,7 +2,20 @@
 
 Last updated: 2026-08-12
 
-## Current T749 closeout / T750 selection
+## Current T750 closeout / T751 selection
+
+T750 / [issue 324](../.scratch/roadmap/issues/324-hitdef-guard-distance-bounds.md)
+adds direct `HitDef guard.dist.width/height/depth` bounds with typed IR,
+root/RedirectID and Helper caller evaluation, imported metadata and the real
+InGuardDist latch. Fresh dimensions use bounded defaults; live Ikemen
+`ModifyHitDef` preserves omitted siblings. Product `194c0b6`, evidence
+`5b46f71c`, required trace `489865dc`, focused coverage and typecheck pass.
+Aggregate QA still has the inherited helper-bind missing-target-link blocker.
+M.U.G.E.N 1.1 scalar guard distance and Ikemen bounds remain separate claims;
+Projectile, ReversalDef, exact geometry/tick parity, teams, rollback and full
+parity remain blocked. T751 is the next source-selection checkpoint.
+
+## Historical T749 closeout / T750 selection
 
 T749 / [issue 323](../.scratch/roadmap/issues/323-hitdef-attack-depth.md)
 adds direct `HitDef attack.depth` expressions and live Ikemen
@@ -13,7 +26,7 @@ active sibling and is a no-op. Product `689a02c5`, tests `076d1f5f`, evidence
 QA still has the inherited helper-bind missing-target-link blocker. Fresh
 M.U.G.E.N support and live Ikemen support are separate claims; Projectile,
 ModifyProjectile, ReversalDef breadth, exact depth timing, teams, rollback and
-full parity remain blocked. T750 is the next source-selection checkpoint.
+full parity remain blocked. T750 was the next source-selection checkpoint.
 
 ## Historical T747 closeout / T748 selection
 

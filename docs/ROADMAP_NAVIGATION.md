@@ -2,7 +2,25 @@
 
 Last updated: 2026-08-12
 
-## Current implementation route — T749 closed-bounded (2026-08-12)
+## Current implementation route — T750 closed-bounded (2026-08-12)
+
+T750 / [issue 324](../.scratch/roadmap/issues/324-hitdef-guard-distance-bounds.md)
+closes direct `HitDef guard.dist.width/height/depth` pairs through typed IR,
+root/RedirectID and Helper caller paths, imported metadata and the direct
+InGuardDist latch. Fresh dimensions use bounded defaults; live ModifyHitDef
+preserves omitted siblings. Product `194c0b6`, evidence `5b46f71c`, required
+trace checksum `489865dc`; focused tests and typecheck pass. Aggregate QA
+retains the inherited helper-bind missing-target-link blocker. M.U.G.E.N 1.1
+scalar guard distance and Ikemen bounds are separate claims; Projectile,
+ReversalDef, exact geometry/tick parity, teams, rollback and full parity remain
+blocked.
+
+## Next implementation route — T751 upstream seam selection
+
+Select one bounded official/Ikemen source seam after the aggregate T750 trace
+gate; keep full guard geometry parity out of the claim.
+
+## Historical implementation route — T749 closed-bounded (2026-08-12)
 
 T749 / [issue 323](../.scratch/roadmap/issues/323-hitdef-attack-depth.md)
 closes direct `HitDef attack.depth` expressions and live Ikemen
@@ -14,11 +32,6 @@ omitted siblings and omission is a no-op. Product `689a02c5`, tests
 controller slice. The aggregate QA remains blocked by the inherited helper-bind
 missing-target-link case. Projectile/ModifyProjectile, ReversalDef breadth,
 exact depth timing and full parity remain blocked.
-
-## Next implementation route — T750 upstream seam selection
-
-Select one bounded official/Ikemen source seam after the aggregate T749 trace
-gate; do not widen this slice into full depth or combat parity.
 
 ## Historical implementation route — T747 closed-bounded (2026-08-11)
 

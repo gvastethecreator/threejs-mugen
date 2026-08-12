@@ -1,6 +1,23 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-12 T749 `HitDef attack.depth` — closed-bounded, no score movement
+## 2026-08-12 T750 `HitDef guard.dist` bounds — closed-bounded, no score movement
+
+Issue 324 closes direct `HitDef guard.dist.width/height/depth` static, mixed and
+caller-context dynamic bounds through root/RedirectID and Helper callers.
+Fresh dimensions use bounded defaults; live Ikemen `ModifyHitDef` preserves
+omitted siblings. Product `194c0b6`, evidence `5b46f71c`, required trace
+`489865dc` are committed and green independently. No score movement: the
+legacy M.U.G.E.N scalar remains separate, while Projectile/ModifyProjectile,
+ReversalDef, exact geometry/timing, teams, rollback and full parity remain
+blocked. Aggregate QA still has the inherited helper-bind missing-target-link
+blocker. See [issue
+324](../.scratch/roadmap/issues/324-hitdef-guard-distance-bounds.md).
+
+## Next selection — T751 upstream seam selection
+
+Choose one bounded source contract after the aggregate T750 trace gate.
+
+## Historical checkpoint — T749 `HitDef attack.depth` — closed-bounded, no score movement
 
 Issue 323 closes direct `HitDef attack.depth` expressions and live Ikemen
 `ModifyHitDef attack.depth` static, mixed and caller-context dynamic mutation
@@ -11,10 +28,6 @@ Projectile/ModifyProjectile, ReversalDef breadth, exact depth timing, teams,
 rollback and full M.U.G.E.N/Ikemen parity remain blocked. Aggregate QA still
 has the inherited helper-bind missing-target-link blocker. See [issue
 323](../.scratch/roadmap/issues/323-hitdef-attack-depth.md).
-
-## Next selection — T750 upstream seam selection
-
-Choose one bounded source contract after the aggregate T749 trace gate.
 
 ## Historical checkpoint — T747 live `ModifyHitDef` pause pairs — closed-bounded, no score movement
 

@@ -1,5 +1,22 @@
 ﻿# Supported Features
-## 2026-08-12 T749 `HitDef attack.depth` - closed-bounded
+## 2026-08-12 T750 `HitDef guard.dist` bounds - closed-bounded
+
+Direct `HitDef guard.dist.width/height/depth` now accepts static, mixed and
+caller-context dynamic pairs through root/RedirectID and Helper paths. Fresh
+dimensions use bounded defaults; live Ikemen `ModifyHitDef` updates authored
+components and preserves omitted siblings. Product `194c0b6`; evidence
+`5b46f71c`; required trace `489865dc`. The direct InGuardDist latch is covered
+without contact. M.U.G.E.N 1.1's scalar guard distance and Ikemen bounds are
+separate claims; aggregate QA remains blocked by the inherited helper-bind
+missing-target-link case. Projectile/ModifyProjectile, ReversalDef, exact
+geometry/timing, teams, rollback and full parity remain outside the claim. See
+[issue 324](../.scratch/roadmap/issues/324-hitdef-guard-distance-bounds.md).
+
+## Next selection — T751 upstream seam selection
+
+Select one bounded source contract after the aggregate T750 trace gate.
+
+## Historical — T749 `HitDef attack.depth` - closed-bounded
 
 Direct `HitDef attack.depth` now accepts static, mixed and caller-context
 dynamic one/two-component values through root and Helper paths. Live Ikemen
@@ -12,10 +29,6 @@ QA remains blocked by the inherited helper-bind missing-target-link case.
 Projectile/ModifyProjectile, ReversalDef breadth, exact defaults/timing, teams,
 rollback and full parity remain outside the claim. See [issue
 323](../.scratch/roadmap/issues/323-hitdef-attack-depth.md).
-
-## Next selection — T750 upstream seam selection
-
-Select one bounded source contract after the aggregate T749 trace gate.
 
 ## Historical — T747 live `ModifyHitDef` `pausetime`/`guard.pausetime` - closed-bounded
 

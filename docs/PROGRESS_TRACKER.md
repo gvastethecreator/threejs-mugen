@@ -1,6 +1,21 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T749 closed-bounded (2026-08-12)
+## Latest implementation checkpoint — T750 closed-bounded (2026-08-12)
+
+Issue 324 closes direct `HitDef guard.dist.width/height/depth` bounds through
+typed IR, root/RedirectID and Helper caller paths, imported metadata and the
+direct InGuardDist latch. Fresh dimensions use bounded defaults; live
+ModifyHitDef preserves omitted siblings. Product `194c0b6`, evidence
+`5b46f71c`, required trace `489865dc`; focused tests and typecheck pass.
+Aggregate QA remains blocked by the inherited helper-bind missing-target-link
+case. Projectile/ModifyProjectile, ReversalDef, exact geometry/timing, teams,
+rollback and full parity remain blocked.
+
+## Next implementation checkpoint — T751 upstream seam selection
+
+Select the next bounded source contract after the aggregate T750 trace gate.
+
+## Historical implementation checkpoint — T749 closed-bounded (2026-08-12)
 
 Issue 323 closes direct `HitDef attack.depth` expressions and live Ikemen
 `ModifyHitDef attack.depth` through root/RedirectID and Helper caller paths.
@@ -10,10 +25,6 @@ evidence `4ddbd63e`, trace `7ef8aace` -> `170aacf6`. Aggregate QA remains
 blocked by the inherited helper-bind missing-target-link case. Fresh defaults,
 Projectile/ModifyProjectile, ReversalDef breadth, exact depth timing, teams,
 rollback and full parity remain blocked.
-
-## Next implementation checkpoint — T750 upstream seam selection
-
-Select the next bounded source contract after the aggregate T749 trace gate.
 
 ## Historical implementation checkpoint — T747 closed-bounded (2026-08-11)
 
