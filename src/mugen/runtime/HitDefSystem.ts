@@ -50,7 +50,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state" | "snaptime" | "hitsound.channel" | "guardsound.channel" | "guardpoints") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
-  resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy" | "snap") => [number?, number?] | undefined;
+  resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "attack.depth" | "sparkscale" | "guard.sparkscale" | "sparkxy" | "snap") => [number?, number?] | undefined;
   resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -83,7 +83,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   resolveIntegerList?: (key: "nochainid") => number[] | undefined;
   resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "hitsound.channel" | "guardsound.channel" | "guardpoints") => number | undefined;
-  resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkxy" | "snap") => [number?, number?] | undefined;
+  resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "attack.depth" | "sparkxy" | "snap") => [number?, number?] | undefined;
   /** Resolves live dynamic float scalars in the caller context. */
   resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
   /** Resolves a live spark identity's numeric suffix in the caller context. */
@@ -769,11 +769,23 @@ export class RuntimeHitDefControllerDispatchWorld {
       context ?? {},
       resolveIntegerScalar?.("p2sprpriority"),
     );
-    const attackDepth =
-      operation?.attackDepth ??
-      normalizedNumberPair(findParam(source, "attack.depth")) ??
-      actor.runtime.combatDepth?.attack ??
-      existing?.attackDepth;
+    const fallbackAttackDepth = actor.runtime.combatDepth?.attack ?? existing?.attackDepth;
+    const resolvedAttackDepth = resolveRuntimeHitDefFloatExpressionPair(
+      operation?.attackDepthExpressions,
+      findParam(source, "attack.depth"),
+      actor.runtime,
+      context ?? {},
+      resolveFloatPair?.("attack.depth"),
+    );
+    const attackDepth = operation?.attackDepth ??
+      (resolvedAttackDepth?.first === undefined
+        ? normalizedNumberPair(findParam(source, "attack.depth")) ?? fallbackAttackDepth
+        : [
+            resolvedAttackDepth.first,
+            resolvedAttackDepth.componentCount === 1
+              ? resolvedAttackDepth.first
+              : resolvedAttackDepth.second ?? fallbackAttackDepth?.[1] ?? resolvedAttackDepth.first,
+          ] as [number, number]);
     const hitSound = operation?.hitSound ?? stripMugenString(findParam(source, "hitsound")) ?? existing?.hitSound;
     const guardSound = operation?.guardSound ?? stripMugenString(findParam(source, "guardsound")) ?? existing?.guardSound;
     const fallbackHitbox = existing?.hitbox ?? { x1: 14, y1: -72, x2: 78, y2: -38 };
@@ -1120,6 +1132,28 @@ export class RuntimeHitDefControllerDispatchWorld {
         resolveIntegerScalar?.("down.hittime"),
       );
       if (downHitTime !== undefined) existing.downHitTime = downHitTime;
+    }
+    if (operation.attackDepth !== undefined || operation.attackDepthExpressions !== undefined) {
+      const currentAttackDepth = existing.attackDepth ?? actor.runtime.combatDepth?.attack;
+      if (operation.attackDepth !== undefined) {
+        existing.attackDepth = [...operation.attackDepth] as [number, number];
+      } else {
+        const attackDepth = resolveRuntimeHitDefFloatExpressionPair(
+          operation.attackDepthExpressions,
+          findParam(controller.source, "attack.depth"),
+          actor.runtime,
+          context ?? {},
+          resolveFloatPair?.("attack.depth"),
+        );
+        if (attackDepth?.first !== undefined) {
+          existing.attackDepth = [
+            attackDepth.first,
+            attackDepth.componentCount === 2
+              ? attackDepth.second ?? currentAttackDepth?.[1] ?? attackDepth.first
+              : currentAttackDepth?.[1] ?? attackDepth.first,
+          ];
+        }
+      }
     }
     if (operation.groundVelocity !== undefined) {
       const groundVelocity = resolveRuntimeHitDefFloatExpressionPair(

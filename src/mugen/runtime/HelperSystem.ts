@@ -2222,7 +2222,7 @@ export function resolveRuntimeHelperIntegerScalarParam(
 export function resolveRuntimeHelperFloatPairParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy" | "snap",
+  key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "attack.depth" | "sparkscale" | "guard.sparkscale" | "sparkxy" | "snap",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): [number?, number?] | undefined {
   const operation = controller.operation;
@@ -2250,6 +2250,12 @@ export function resolveRuntimeHelperFloatPairParam(
                     ? operation.guardVelocityExpressions
                   : operation.airGuardVelocityExpressions
             : undefined
+        : key === "attack.depth"
+          ? operation.kind === "hitdef"
+            ? operation.attackDepthExpressions ?? operation.attackDepth
+            : operation.kind === "modifyhitdef"
+              ? operation.attackDepthExpressions ?? operation.attackDepth
+              : undefined
         : key === "snap"
           ? operation.kind === "hitdef"
             ? operation.snapExpressions
@@ -2271,7 +2277,7 @@ export function resolveRuntimeHelperFloatPairParam(
     };
     const first = resolveComponent(operationValue[0]);
     const second = resolveComponent(operationValue[1]);
-    if (key === "ground.velocity" || key === "air.velocity" || key === "down.velocity" || key === "guard.velocity" || key === "airguard.velocity" || key === "sparkxy" || key === "snap") {
+    if (key === "ground.velocity" || key === "air.velocity" || key === "down.velocity" || key === "guard.velocity" || key === "airguard.velocity" || key === "attack.depth" || key === "sparkxy" || key === "snap") {
       return operationValue.length === 1 ? [first] : [first, second];
     }
     return [first ?? 1, second];
@@ -2285,7 +2291,7 @@ export function resolveRuntimeHelperFloatPairParam(
     : [raw.slice(0, splits[0]).trim(), raw.slice(splits[0]! + 1).trim()];
   if (parts.some((part) => !part)) return undefined;
   const values = parts.map((part) => resolveHelperFloat(helper, part, options));
-  if (key === "ground.velocity" || key === "air.velocity" || key === "down.velocity" || key === "guard.velocity" || key === "airguard.velocity" || key === "sparkxy" || key === "snap") {
+  if (key === "ground.velocity" || key === "air.velocity" || key === "down.velocity" || key === "guard.velocity" || key === "airguard.velocity" || key === "attack.depth" || key === "sparkxy" || key === "snap") {
     return values.length === 2 ? [values[0], values[1]] : [values[0]];
   }
   if (values.some((value) => value === undefined) || values[0] === undefined) return undefined;

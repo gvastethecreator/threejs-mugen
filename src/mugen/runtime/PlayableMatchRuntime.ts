@@ -5488,6 +5488,8 @@ function runActiveStateControllers(
                   ? operation?.guardVelocityExpressions
                   : key === "airguard.velocity"
                   ? operation?.airGuardVelocityExpressions
+                  : key === "attack.depth"
+                    ? operation?.attackDepthExpressions ?? operation?.attackDepth
                   : key === "sparkxy"
                     ? operation?.sparkXy
                     : operation?.snap;

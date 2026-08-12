@@ -130,6 +130,8 @@ export type HitDefControllerOp = {
   /** Dynamic direct HitDef P2 sprite-priority expression. */
   p2SpritePriorityExpression?: number | string;
   attackDepth?: [number, number];
+  /** Dynamic or mixed direct HitDef attack.depth pair evaluated in caller context. */
+  attackDepthExpressions?: MugenHitDefExpressionPair;
   unhittableTime?: MugenHitDefExpressionPair;
   /** Static attacker component of HitDef pausetime. */
   pauseTime?: number;
@@ -265,6 +267,10 @@ export type ModifyHitDefControllerOp = {
   guardDamage?: number;
   /** Dynamic or mixed live damage pair evaluated in caller context. */
   damageExpressions?: MugenHitDefExpressionPair;
+  /** Live attack.depth pair; a missing second component preserves the active depth. */
+  attackDepth?: [number, number];
+  /** Dynamic or mixed live attack.depth pair evaluated in caller context. */
+  attackDepthExpressions?: MugenHitDefExpressionPair;
   /** Live guard-points metadata replacement evaluated in the ModifyHitDef caller context. */
   guardPoints?: number | string;
   /** Live attacker-side pausetime replacement; a missing second component preserves shake time. */
@@ -2616,6 +2622,14 @@ function compileHitDefControllerOp(
   const downVelocityExpressions = Array.isArray(downVelocityExpressionValue)
     ? downVelocityExpressionValue
     : undefined;
+  const attackDepthRaw = findParam(controller, "attack.depth");
+  const attackDepth = attackDepthRaw === undefined ? undefined : normalizedNumberPair(attackDepthRaw);
+  const attackDepthExpressionValue = attackDepthRaw === undefined || attackDepth !== undefined
+    ? true
+    : optionalFloatExpressionPairParam(controller, "attack.depth");
+  const attackDepthExpressions = Array.isArray(attackDepthExpressionValue)
+    ? attackDepthExpressionValue
+    : undefined;
   const guardVelocityRaw = findParam(controller, "guard.velocity");
   const guardVelocity = hitDefVelocity(guardVelocityRaw);
   const guardVelocityExpression = guardVelocityRaw === undefined || guardVelocity !== undefined
@@ -2716,6 +2730,7 @@ function compileHitDefControllerOp(
     groundVelocityExpressionValue === false ||
     airVelocityExpressionValue === false ||
     downVelocityExpressionValue === false ||
+    attackDepthExpressionValue === false ||
     guardVelocityExpression === false ||
     airGuardVelocityExpressionValue === false ||
     (Array.isArray(airGuardVelocityExpressionValue) && airGuardVelocityExpressions === undefined) ||
@@ -2804,7 +2819,8 @@ function compileHitDefControllerOp(
     p2SpritePriority: typeof p2SpritePriorityValue === "number" ? p2SpritePriorityValue : undefined,
     ...(typeof p1SpritePriorityValue === "string" ? { p1SpritePriorityExpression: p1SpritePriorityValue } : {}),
     ...(typeof p2SpritePriorityValue === "string" ? { p2SpritePriorityExpression: p2SpritePriorityValue } : {}),
-    attackDepth: normalizedNumberPair(findParam(controller, "attack.depth")),
+    ...(attackDepth === undefined ? {} : { attackDepth }),
+    ...(attackDepthExpressions === undefined ? {} : { attackDepthExpressions }),
     unhittableTime: unhittableTime === true ? undefined : unhittableTime,
     pauseTime: pauseTime?.[0] as number | undefined,
     hitShakeTime: pauseTime === undefined ? undefined : (pauseTime[1] as number | undefined) ?? 0,
@@ -2891,6 +2907,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "type",
     "redirectid",
     "damage",
+    "attack.depth",
     "guardpoints",
     "pausetime",
     "guard.pausetime",
@@ -2994,6 +3011,15 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     : undefined;
   const damage = Array.isArray(damageValue) && damageExpressions === undefined
     ? damageValue
+    : undefined;
+  const attackDepthValue = optionalFloatExpressionPairParam(controller, "attack.depth");
+  const attackDepthExpressions = Array.isArray(attackDepthValue) && (
+    attackDepthValue.some((value) => typeof value === "string") || attackDepthValue.length === 1
+  )
+    ? attackDepthValue
+    : undefined;
+  const attackDepth = Array.isArray(attackDepthValue) && attackDepthExpressions === undefined
+    ? [attackDepthValue[0], attackDepthValue[1]] as [number, number]
     : undefined;
   const guardPoints = optionalIntegerExpressionParam(controller, "guardpoints");
   const pauseTimeValue = optionalIntegerExpressionPairParam(controller, "pausetime");
@@ -3152,6 +3178,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   const hasPayload =
     damageValue !== true ||
+    attackDepthValue !== true ||
     guardPoints !== true ||
     pauseTimeValue !== true ||
     guardPauseTimeValue !== true ||
@@ -3231,6 +3258,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   if (
     !hasPayload ||
     damageValue === false ||
+    attackDepthValue === false ||
     guardPoints === false ||
     pauseTimeValue === false ||
     guardPauseTimeValue === false ||
@@ -3314,6 +3342,8 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(damage === undefined ? {} : { damage: damage[0] as number }),
     ...(damage?.[1] === undefined ? {} : { guardDamage: damage[1] as number }),
     ...(damageExpressions === undefined ? {} : { damageExpressions }),
+    ...(attackDepth === undefined ? {} : { attackDepth }),
+    ...(attackDepthExpressions === undefined ? {} : { attackDepthExpressions }),
     ...(guardPoints === true ? {} : { guardPoints }),
     ...(pauseTime === undefined ? {} : { pauseTime: pauseTime[0] as number }),
     ...(pauseTime === undefined || pauseTime.length < 2 ? {} : { hitShakeTime: pauseTime[1] as number }),
