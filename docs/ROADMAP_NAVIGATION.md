@@ -2,7 +2,23 @@
 
 Last updated: 2026-08-12
 
-## Current implementation route — T751 closed-bounded (2026-08-12)
+## Current implementation route — T752 closed-bounded (2026-08-12)
+
+T752 / [issue 326](../.scratch/roadmap/issues/326-projectile-guardpoints-dynamic.md)
+closes fresh Projectile `guardpoints` static and caller-context dynamic
+resolution for root and Helper-parented Projectiles. Accepted contacts expose
+`GetHitVar(guardpoints)=19` without mutating the defender's guard resource.
+Required trace pairs are `e369c409` / `90b185ad` and `76244e57` /
+`c5cb237b`; focused tests and typecheck pass. Aggregate QA retains the
+inherited helper-bind target-link blocker. Defaults/reset, ModifyProjectile,
+int32 edges, teams, rollback and full parity remain blocked.
+
+## Next implementation route — T753 upstream seam selection
+
+Select one bounded official/Ikemen source seam after the aggregate T752 trace
+gate; keep Projectile defaults/ModifyProjectile separate.
+
+## Historical implementation route — T751 closed-bounded (2026-08-12)
 
 T751 / [issue 325](../.scratch/roadmap/issues/325-hitdef-guardpoints-dynamic.md)
 closes fresh direct `HitDef guardpoints` static and caller-context dynamic

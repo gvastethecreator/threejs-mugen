@@ -1,6 +1,25 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-12 T751 direct HitDef guardpoints expressions — closed-bounded
+## 2026-08-12 T752 Projectile guardpoints expressions — closed-bounded
+
+Focused compiler/runtime/root/Helper coverage and typecheck pass for fresh
+Projectile `guardpoints`, including caller-context dynamic values. Required
+root trace `synthetic-imported-projectile-dynamic-guardpoints` proves
+`VarSet -> Projectile -> accepted hit -> GetHitVar(guardpoints)=19`; its trace
+checksum is `e369c409` and final checksum `90b185ad`. Required Helper trace
+`synthetic-imported-helper-projectile-dynamic-guardpoints` proves the same
+metadata through Helper-parented creation; checksums are `76244e57` and
+`c5cb237b`. The aggregate `pnpm qa:trace` remains blocked only by the
+inherited helper-bind missing-target-link case. Defaults/reset,
+ModifyProjectile, int32 edge parity, teams, rollback and full parity remain
+outside. See [issue
+326](../.scratch/roadmap/issues/326-projectile-guardpoints-dynamic.md).
+
+## Next gate — T753 upstream seam selection
+
+Select one bounded official/Ikemen seam after the aggregate T752 run.
+
+## Historical gate — T751 direct HitDef guardpoints expressions — closed-bounded
 
 Focused compiler/runtime/Helper/direct-combat coverage and typecheck pass for
 fresh direct `HitDef guardpoints`, including caller-context dynamic values.

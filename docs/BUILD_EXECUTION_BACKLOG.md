@@ -2,6 +2,20 @@
 
 ## Current parity queue
 
+- **T752 closed-bounded** — issue 326 carries fresh Projectile
+  `guardpoints` static and caller-context dynamic values through root and
+  Helper-parented creation, accepted contact metadata, and
+  `GetHitVar(guardpoints)`. Root trace `e369c409` / `90b185ad`; Helper trace
+  `76244e57` / `c5cb237b`. Product/evidence commits are `025bd5a0`,
+  `09282387`, and `6f04259b`. Aggregate QA still stops on the inherited
+  helper-bind missing-target-link case. Defaults/reset, ModifyProjectile,
+  int32 edge parity, teams, rollback and full parity remain outside. See
+  [issue 326](../.scratch/roadmap/issues/326-projectile-guardpoints-dynamic.md).
+
+- **T753 queued** — select the next single bounded official/Ikemen seam;
+  retain Projectile defaults, ModifyProjectile and resource topology as
+  separate slices.
+
 - **T751 closed-bounded** — issue 325 carries direct fresh `HitDef
   guardpoints` static and caller-context dynamic values through root and
   Helper dispatch, accepted guard metadata, and `GetHitVar(guardpoints)`.

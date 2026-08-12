@@ -1,6 +1,22 @@
 # Workplan
 
-## Latest slice — T751 closed-bounded (2026-08-12)
+## Latest slice — T752 closed-bounded (2026-08-12)
+
+Issue 326 closes fresh Projectile `guardpoints` static and caller-context
+dynamic resolution through root and Helper-parented creation. Accepted
+contacts expose `GetHitVar(guardpoints)=19` without touching the defender's
+guard resource. Root trace `e369c409` / `90b185ad`; Helper trace
+`76244e57` / `c5cb237b`; focused tests and typecheck pass. Aggregate QA
+remains blocked by the inherited helper-bind target-link case. Defaults,
+ModifyProjectile, int32 edges, teams, rollback and full parity remain outside.
+
+## Next slice — T753 upstream seam selection
+
+Select one bounded official/Ikemen seam after the aggregate T752 trace gate;
+keep omitted Projectile defaults, ModifyProjectile and resource topology
+separate.
+
+## Historical slice — T751 closed-bounded (2026-08-12)
 
 Issue 325 closes fresh direct HitDef `guardpoints` static and caller-context
 dynamic resolution through root and Helper dispatch, with accepted grounded

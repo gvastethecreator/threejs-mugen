@@ -1,6 +1,21 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-12 T751 direct `HitDef guardpoints` expressions — closed-bounded, no score movement
+## 2026-08-12 T752 Projectile `guardpoints` expressions — closed-bounded, no score movement
+
+Issue 326 closes fresh Projectile `guardpoints` static and caller-context
+dynamic resolution for root and Helper-parented Projectiles, with accepted
+contact `GetHitVar(guardpoints)=19`. Required trace pairs are
+`e369c409` -> `90b185ad` and `76244e57` -> `c5cb237b`; focused tests and
+typecheck pass. No score movement: omitted defaults/reset, ModifyProjectile,
+int32 edge behavior, teams, rollback and full parity remain blocked. Aggregate
+QA retains the inherited helper-bind missing-target-link blocker. See [issue
+326](../.scratch/roadmap/issues/326-projectile-guardpoints-dynamic.md).
+
+## Next selection — T753 upstream seam selection
+
+Choose one bounded source contract after the aggregate T752 trace gate.
+
+## Historical checkpoint — T751 direct `HitDef guardpoints` expressions — closed-bounded, no score movement
 
 Issue 325 closes caller-context dynamic integer `guardpoints` for fresh direct
 HitDef activation through root and Helper dispatch, with accepted grounded

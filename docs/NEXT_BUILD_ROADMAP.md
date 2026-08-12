@@ -1,6 +1,23 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T751 closed-bounded (2026-08-12)
+## Latest bounded slice — T752 closed-bounded (2026-08-12)
+
+Issue 326 carries fresh Projectile `guardpoints` through typed IR and one-shot
+caller-context evaluation for root and Helper-parented Projectiles. Accepted
+contacts expose `GetHitVar(guardpoints)=19` without mutating the defender's
+guard resource. Required traces: `e369c409` -> `90b185ad` (root) and
+`76244e57` -> `c5cb237b` (Helper). Focused tests and typecheck pass; aggregate
+QA remains blocked by the inherited helper-bind target-link case. Defaults,
+ModifyProjectile, int32 edge parity, teams, rollback and full parity remain
+blocked. See [issue
+326](../.scratch/roadmap/issues/326-projectile-guardpoints-dynamic.md).
+
+## Next bounded slice — T753 upstream seam selection
+
+Choose one distinct official/Ikemen source contract after the aggregate T752
+gate; keep Projectile defaults/ModifyProjectile separate.
+
+## Historical bounded slice — T751 closed-bounded (2026-08-12)
 
 Issue 325 carries fresh direct HitDef `guardpoints` through typed IR and
 caller-context root/Helper dispatch into accepted guard metadata and

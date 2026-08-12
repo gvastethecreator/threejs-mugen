@@ -1,6 +1,21 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T751 closed-bounded (2026-08-12)
+## Latest implementation checkpoint — T752 closed-bounded (2026-08-12)
+
+Issue 326 closes fresh Projectile `guardpoints` static and caller-context
+dynamic resolution for root and Helper-parented Projectiles. Accepted contact
+metadata reaches `GetHitVar(guardpoints)=19` while the defender's guard
+resource remains untouched. Required trace checksums are
+`e369c409` / `90b185ad` and `76244e57` / `c5cb237b`; focused tests and
+typecheck pass. Aggregate QA remains blocked by the inherited helper-bind
+missing-target-link case. Defaults/reset, ModifyProjectile, int32 edges,
+teams, rollback and full parity remain blocked.
+
+## Next implementation checkpoint — T753 upstream seam selection
+
+Select the next bounded source contract after the aggregate T752 trace gate.
+
+## Historical implementation checkpoint — T751 closed-bounded (2026-08-12)
 
 Issue 325 closes fresh direct `HitDef guardpoints` static and caller-context
 dynamic resolution through root and Helper callers, with accepted grounded

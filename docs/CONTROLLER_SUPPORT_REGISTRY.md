@@ -1,16 +1,22 @@
 # Controller Support Registry
 
-Latest cursor: T751 / issue 325 is closed-bounded for direct `HitDef
+Latest cursor: T752 / issue 326 is closed-bounded for fresh Projectile
+`guardpoints` expressions. Root and Helper-parented Projectiles resolve static
+or caller-context dynamic integer values once; accepted contacts expose
+`GetHitVar(guardpoints)` without mutating the defender's guard resource.
+Product `025bd5a0`, evidence `09282387` / `6f04259b`, and required traces
+`e369c409` -> `90b185ad` and `76244e57` -> `c5cb237b` pass independently.
+Aggregate QA retains the inherited helper-bind missing-target-link blocker.
+Defaults/reset, ModifyProjectile, int32 edge parity, teams, rollback and full
+parity remain unsupported.
+
+Next cursor: T753 upstream seam selection after the aggregate T752 trace gate.
+
+Previous cursor: T751 / issue 325 is closed-bounded for direct `HitDef
 guardpoints` expressions. Root and Helper callers resolve static or
 caller-context dynamic integer values; accepted grounded guards expose the
 authored value through `GetHitVar(guardpoints)` without mutating the defender's
-guard resource. Product `3c68582e`, evidence `48d7db3c`, and required trace
-`4c227a07` -> `c67b5998` pass independently. Aggregate QA retains the inherited helper-bind
-missing-target-link blocker; fresh default/reset parity, Projectile,
-ModifyProjectile, exact guard timing, teams, rollback and full parity remain
-unsupported.
-
-Next cursor: T752 upstream seam selection after the aggregate T751 trace gate.
+guard resource.
 
 Previous cursor: T750 / issue 324 is closed-bounded for direct `HitDef
 guard.dist.width/height/depth` pairs. Root/RedirectID and Helper callers
