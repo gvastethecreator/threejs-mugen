@@ -730,6 +730,7 @@ import {
   createSyntheticImportedProjectileDynamicAirGuardVelocityTraceArtifact,
   createSyntheticImportedProjectileP2FacingTraceArtifact,
   createSyntheticImportedProjectileDynamicP2FacingTraceArtifact,
+  createSyntheticImportedProjectileDynamicGuardPointsTraceArtifact,
   createSyntheticImportedProjectileDynamicAirVelocityTraceArtifact,
   createSyntheticImportedProjectileDynamicGroundVelocityTraceArtifact,
   createSyntheticImportedProjectileDynamicGuardVelocityTraceArtifact,
@@ -746,6 +747,7 @@ import {
   createSyntheticImportedProjectileKeepStateReleaseTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicDamageTraceArtifact,
+  createSyntheticImportedHelperProjectileDynamicGuardPointsTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicKeepStateTraceArtifact,
   createSyntheticImportedHelperProjectileKeepStateStatePreservationTraceArtifact,
   createSyntheticImportedHelperProjectileKeepStateReleaseTraceArtifact,
@@ -21644,6 +21646,26 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.evidence.combatReasons).not.toContain("guard");
   });
 
+  it("creates a required imported dynamic Projectile guardpoints artifact", () => {
+    const artifact = createSyntheticImportedProjectileDynamicGuardPointsTraceArtifact({
+      generatedAt: "2026-08-12T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-guardpoints-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-projectile-dynamic-guardpoints-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }));
+    expect(gate?.evidence.combatReasons).toContain("hit");
+    expect(gate?.evidence.combatReasons).not.toContain("guard");
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ stateNo: 5082, life: 963 });
+  });
+
   it("creates a required imported Projectile dynamic guard.velocity artifact", () => {
     const artifact = createSyntheticImportedProjectileDynamicGuardVelocityTraceArtifact({
       generatedAt: "2026-08-09T00:00:00.000Z",
@@ -22088,6 +22110,35 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8890 }),
       ]),
     );
+  });
+
+  it("gates dynamic fresh Helper Projectile guardpoints through the helper-parented hit route", () => {
+    const artifact = createSyntheticImportedHelperProjectileDynamicGuardPointsTraceArtifact({
+      generatedAt: "2026-08-12T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-gethitvar-hit-metadata-dynamic-guardpoints-golden",
+        source: "imported",
+      },
+      gates: [{
+        label: "synthetic-imported-helper-projectile-gethitvar-hit-metadata-dynamic-guardpoints-golden",
+        passed: true,
+        failures: [],
+      }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.targetLinks).toEqual(expect.arrayContaining([
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8890 }),
+      expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8890 }),
+    ]));
   });
 
   it("gates dynamic fresh Helper Projectile keepstate through the helper-parented hit route", () => {
