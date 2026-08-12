@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-046",
   "kind": "I",
-  "generatedAt": "2026-08-12T06:09:48.159Z",
+  "generatedAt": "2026-08-12T07:52:01.020Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-046",
@@ -24,8 +24,8 @@
     },
     {
       "path": "src/mugen/runtime/CombatResolver.ts",
-      "bytes": 26756,
-      "sha256": "d5c8bb6a590dd31739a1967517e0484bf7e35ec0f765663b1dad3195aec25458"
+      "bytes": 28422,
+      "sha256": "cab0a471ff270a343644a4406a21e478c87bc8f7b6ca5c109778d15e61d86a72"
     },
     {
       "path": "src/mugen/runtime/ContactMemorySystem.ts",
