@@ -102,6 +102,7 @@ import {
   createSyntheticImportedHitDefDynamicGroundVelocityTraceArtifact,
   createSyntheticImportedHitDefDynamicAttackDepthTraceArtifact,
   createSyntheticImportedHitDefDynamicGuardVelocityTraceArtifact,
+  createSyntheticImportedHitDefDynamicGuardPointsTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicGuardVelocityTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicGuardVelocityYZTraceArtifact,
   createSyntheticImportedHitDefOmittedGroundVelocityTraceArtifact,
@@ -26631,6 +26632,31 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({ actorId: "p1", source: "imported", stateNo: 5084 }),
     ]));
     expect(gate?.evidence.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      life: 995,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef guardpoints artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicGuardPointsTraceArtifact({
+      generatedAt: "2026-08-12T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-guard-points-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-guard-points-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.executedStates).toEqual(expect.arrayContaining([150, 151, 5085]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       source: "imported",
       life: 995,
     });

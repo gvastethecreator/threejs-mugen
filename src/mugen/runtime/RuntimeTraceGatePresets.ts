@@ -14364,6 +14364,66 @@ export function createSyntheticImportedHitDefDynamicGuardVelocityTraceArtifact(
   });
 }
 
+export function createSyntheticImportedHitDefDynamicGuardPointsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5085;
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-points-defender",
+    displayName: "Dynamic HitDef Guard Points Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      guardStateNo: 130,
+      guardedBranchStateNo: branchStateNo,
+      guardedBranchAnimNo: branchStateNo,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression: "GetHitVar(guardpoints) = 19 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-points-attacker",
+    displayName: "Dynamic HitDef Guard Points Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+    hitDefVarSeeds: [{ index: 0, value: 19 }],
+    hitDefGuardPoints: "var(0)",
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultGuardStateScript(),
+    targetId: "synthetic-imported-hitdef-dynamic-guard-points-golden",
+    targetLabel: "Synthetic imported dynamic direct HitDef guardpoints route",
+    requiredExecutedStates: [200, 150, 151, branchStateNo],
+    requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "HitVelSet"],
+    requiredExecutedOperations: ["variable:varset", "hitdef", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [{
+      label: "dynamic guardpoints accepted-contact GetHitVar order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 150, controller: "ChangeAnim", name: "Guard Shake Anim" },
+        { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+        { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+        { stateNo: 151, operation: "kinematic:hitvelset" },
+        { stateNo: 151, controller: "ChangeState", name: "Guarded HitVar Branch" },
+      ],
+    }],
+    requiredActorFrames: [
+      syntheticStandGuardHitPhysicsFrames()[0]!,
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, animNo: branchStateNo, minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 995 }],
+    forbiddenExecutedStates: [5000, 5001, 5010, 5011],
+    notes: [
+      "Official M.U.G.E.N and pinned Ikemen GO trace proves caller-context var(0)=19 resolves a fresh direct-HitDef guardpoints value. A real grounded guard creates target 77 and exposes GetHitVar(guardpoints)=19 before the dedicated Common1 branch. ModifyHitDef, Helper caller context, Projectile, ModifyProjectile, exact guard-resource clamp/timing, teams, rollback, and full parity remain excluded.",
+    ],
+  });
+}
+
 export function createSyntheticImportedModifyHitDefDynamicGuardVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -64942,7 +65002,7 @@ export type SyntheticImportedTraceFighterOptions = {
   /** Synthetic fixture-only air HitTime expression emitted into HitDef. */
   hitDefAirTime?: SyntheticNumberExpression;
   hitDefAirJuggle?: SyntheticNumberExpression;
-  hitDefGuardPoints?: number;
+  hitDefGuardPoints?: SyntheticNumberExpression;
   hitDefDizzyPoints?: number;
   dizzyPointMultipliers?: { default?: number; super?: number };
   dizzyState?: { stateNo?: number; animNo?: number };
@@ -67274,7 +67334,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
     activeEnd: 4,
     recovery: 18,
     damage: hitDefDamage,
-    ...(options.hitDefGuardPoints === undefined ? {} : { guardPoints: options.hitDefGuardPoints }),
+    ...(typeof options.hitDefGuardPoints === "number" ? { guardPoints: options.hitDefGuardPoints } : {}),
     ...(options.hitDefDizzyPoints === undefined ? {} : { dizzyPoints: options.hitDefDizzyPoints }),
     ...(options.hitDefRedLife === undefined ? {} : { redLife: options.hitDefRedLife }),
     ...(options.guardRedLife === undefined ? {} : { guardRedLife: options.guardRedLife }),
