@@ -10613,7 +10613,7 @@ export function createSyntheticImportedHelperProjectileAttackGuardPointsSnapshot
     forbiddenExecutedStates: [40, 5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
     forbiddenCombatReasons: ["hit", "override", "reversal"],
     notes: [
-      "Pinned Ikemen GO trace proves a Helper-parented Projectile captures the Helper's AttackMulSet guardpoints multiplier at spawn (0.5), then keeps it after a later Helper-local AttackMulSet changes guardpoints to 2. The accepted guard reports authored GetHitVar(guardpoints)=-20 and applies the captured -10 resource delta (1000 -> 990), while lifecycle and target links retain root/helper ownership. Helper custom-state breadth, ModifyProjectile, teams, rollback, and exact engine timing remain outside this bounded slice.",
+      "Pinned Ikemen GO trace proves a Helper-parented Projectile captures the Helper's effective creator multiplier at spawn (0.5), inherited from the root AttackMulSet, and keeps it after the root's later live AttackMulSet changes guardpoints to 2. The accepted guard reports authored GetHitVar(guardpoints)=-20 and applies the captured -10 resource delta (1000 -> 990), while lifecycle and target links retain root/helper ownership. Helper-authored AttackMulSet controllers, custom-state breadth, ModifyProjectile, teams, rollback, and exact engine timing remain outside this bounded slice.",
     ],
   });
 }
