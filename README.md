@@ -11,11 +11,32 @@ This is now a port foundation, not only an inspector. The project should grow to
 ## Run
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 pnpm dev
 ```
 
 Then open the Vite URL. The app starts in Runtime Mode. You can switch to Inspector Mode or load a character ZIP/folder. No commercial character assets are included.
+
+This repository is pnpm-native (`pnpm@11.20.0`). Use the task aliases in
+`.vscode/tasks.json` or the scripts below; Bun is not required by the runtime.
+
+## Maintenance
+
+```bash
+pnpm check              # TypeScript + CSS budgets
+pnpm test               # Full Vitest suite
+pnpm build              # Production bundle
+pnpm qa:trace           # Deterministic runtime traces
+pnpm qa:smoke           # Playwright desktop/mobile smoke
+pnpm deps:check         # Packages with newer versions
+pnpm audit              # High-severity dependency audit
+pnpm verify             # check + build
+```
+
+Dependency changelogs and upgrade impact are recorded in
+[`docs/DEPENDENCY_UPDATES.md`](docs/DEPENDENCY_UPDATES.md). The current
+quality verdict, known WIP blockers, cleanup boundaries, and browser evidence
+limits are in [`docs/QUALITY_AUDIT.md`](docs/QUALITY_AUDIT.md).
 
 ## QA Smoke
 

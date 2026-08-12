@@ -1,0 +1,66 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "📦 Install",
+      "type": "shell",
+      "command": "pnpm install --frozen-lockfile",
+      "problemMatcher": []
+    },
+    {
+      "label": "🚀 Dev",
+      "type": "shell",
+      "command": "pnpm dev",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "🏗 Build",
+      "type": "shell",
+      "command": "pnpm build",
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "🧪 Test",
+      "type": "shell",
+      "command": "pnpm test",
+      "problemMatcher": []
+    },
+    {
+      "label": "🔎 Check",
+      "type": "shell",
+      "command": "pnpm check",
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "🧭 Trace QA",
+      "type": "shell",
+      "command": "pnpm qa:trace",
+      "problemMatcher": []
+    },
+    {
+      "label": "🌐 Smoke QA",
+      "type": "shell",
+      "command": "pnpm qa:smoke",
+      "problemMatcher": []
+    },
+    {
+      "label": "⬆️ Deps",
+      "type": "shell",
+      "command": "pnpm update --latest",
+      "problemMatcher": []
+    },
+    {
+      "label": "🛡 Audit",
+      "type": "shell",
+      "command": "pnpm audit --audit-level=high",
+      "problemMatcher": []
+    },
+    {
+      "label": "✅ Verify",
+      "type": "shell",
+      "command": "pnpm verify",
+      "problemMatcher": "$tsc"
+    }
+  ]
+}
