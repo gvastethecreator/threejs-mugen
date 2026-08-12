@@ -1,22 +1,25 @@
 # Workplan
 
-## Latest slice — T754 closed-bounded (2026-08-12)
+## Latest slice — T756 closed-bounded (2026-08-12)
 
-Issue 328 snapshots finite `AttackMulSet guardpoints` at root/Helper
-Projectile creation. Accepted guard contacts consume the frozen multiplier
-against defender guardpoints, while authored GetHitVar remains distinct.
-Required root `1e6da74d` -> `819524b6` and Helper `472b325b` -> `26da3708`
-traces pass with focused typecheck/evidence. Aggregate QA retains the
-inherited helper-bind target-link blocker. Other multiplier snapshots,
-defaults, ModifyProjectile, team ownership, rollback and full parity remain
-outside.
+Issue 330 snapshots finite `AttackMulSet.DizzyPoints` at root Projectile
+creation. Accepted unguarded contacts consume the frozen multiplier against
+defender dizzy points while authored `GetHitVar(dizzypoints)` stays distinct.
+Product/evidence commits `76222e0f` / `c8c7daa1`; required trace
+`a2d32251` -> `91bf5a3a` passes. Aggregate QA retains the inherited
+helper-bind target-link blocker. Guarded contacts, ModifyProjectile, resource
+ownership, exact clamp/rounding/timing, rollback and full parity remain out.
 
-## Next slice — T755 live ModifyHitDef `down.velocity`
+## Historical slice — T755 superseded by T728
 
-Implement the bounded Ikemen root/RedirectID live mutation with X/Y
-component-preserving semantics, retained Z and accepted lying-hit evidence.
-Fresh defaults remain T673; Helper-authored, Projectile and dynamic-Z breadth
-stay deferred. See issue 329.
+T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
+down.velocity` slice. Issue 329 remains a superseded audit trail, not an open
+implementation task.
+
+## Next slice — T757 upstream seam selection
+
+Select one bounded official/Ikemen seam after the T756 evidence gate; keep
+aggregate QA repair and broader resource topology separate.
 
 ## Historical slice — T753 closed-bounded (2026-08-12)
 

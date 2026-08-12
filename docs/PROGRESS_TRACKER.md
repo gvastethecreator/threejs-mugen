@@ -1,22 +1,26 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T754 closed-bounded (2026-08-12)
+## Latest implementation checkpoint — T756 closed-bounded (2026-08-12)
 
-Issue 328 freezes `AttackMulSet guardpoints` at Projectile creation for root
-and Helper-parented Projectiles. Accepted guards consume the snapshot against
-the defender pool while preserving authored GetHitVar metadata. Required traces
-are `1e6da74d` -> `819524b6` (root) and `472b325b` -> `26da3708` (Helper);
-focused typecheck/evidence pass. Aggregate QA remains blocked only by the
-inherited helper-bind target-link case. Damage/dizzy snapshots, defaults,
-ModifyProjectile, team power ownership, global clamp/rounding, rollback and
-full parity remain blocked.
+Issue 330 snapshots the effective `AttackMulSet.DizzyPoints` multiplier at
+root Projectile creation. Accepted unguarded contacts apply the frozen value
+to the defender resource while authored `GetHitVar(dizzypoints)` remains
+separate. Product/evidence commits are `76222e0f` and `c8c7daa1`; required
+trace `a2d32251` -> `91bf5a3a` passes. Aggregate QA remains blocked by the
+inherited helper-bind target-link case. Guard routes, ModifyProjectile,
+resource-owner topology, exact clamp/rounding/timing, rollback and full parity
+remain outside. See issue 330.
 
-## Next implementation checkpoint — T755 live ModifyHitDef `down.velocity`
+## Historical checkpoint — T755 superseded by T728
 
-Close the Ikemen-only root/RedirectID component-preserving live mutation for
-lying-hit X/Y velocity, retaining omitted siblings and Z. Fresh defaults stay
-under T673; Helper-authored and Projectile breadth remain deferred. See issue
-329.
+T755 was a duplicate queue entry for the already closed T728/issue 302 live
+`ModifyHitDef down.velocity` slice. Issue 329 is retained as superseded audit
+history; no new implementation should be scheduled from it.
+
+## Next implementation checkpoint — T757 upstream seam selection
+
+Select the next bounded official/Ikemen source contract after the T756 gate;
+keep aggregate QA repair and broader resource topology separate.
 
 ## Historical implementation checkpoint — T753 closed-bounded (2026-08-12)
 

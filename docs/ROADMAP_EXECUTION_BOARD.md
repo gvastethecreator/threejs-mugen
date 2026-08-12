@@ -1,25 +1,30 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T754 closed-bounded (2026-08-12)
+## Latest bounded slice — T756 closed-bounded (2026-08-12)
 
-Issue 328 freezes the finite `AttackMulSet guardpoints` multiplier when a
-Projectile is created. Root and Helper-parented Projectiles now carry that
-snapshot into accepted guard contacts, apply it to the defender guard-points
-pool, and keep authored `GetHitVar(guardpoints)` separate. Required root trace
-`1e6da74d` -> `819524b6` and Helper trace `472b325b` -> `26da3708` pass;
-focused typecheck and evidence gates pass. The aggregate QA gate still reports
-the inherited `synthetic-imported-helper-bind-to-target-redirect` target-link
-blocker. Damage/dizzy snapshots, defaults, ModifyProjectile, power-owner/team
-banks, global clamps/rounding, rollback and full parity remain outside. See
-[issue 328](../.scratch/roadmap/issues/328-projectile-attackmulset-guardpoints.md).
+Issue 330 snapshots the finite effective `AttackMulSet.DizzyPoints` multiplier
+when a root Projectile is created. Accepted unguarded hits consume the frozen
+value against the defender dizzy-points pool while authored
+`GetHitVar(dizzypoints)` remains separate. Product `76222e0f` and evidence
+`c8c7daa1` are committed; required root trace `a2d32251` -> `91bf5a3a` passes.
+The aggregate QA run materializes the new artifact but retains the inherited
+`synthetic-imported-helper-bind-to-target-redirect` target-link blocker.
+Guarded contacts, ModifyProjectile, shared resource ownership, exact clamp /
+rounding/timing, rollback and full parity remain outside. See [issue
+330](../.scratch/roadmap/issues/330-projectile-attackmulset-dizzypoints.md).
 
-## Next bounded slice — T755 live ModifyHitDef `down.velocity`
+## Historical bounded slice — T755 superseded by T728
 
-Implement the Ikemen-only root/RedirectID component-preserving `down.velocity`
-mutation: fresh T673 remains unchanged; one component replaces X, two replace
-X/Y, omitted siblings and live Z persist. Prove caller context, lying-hit
-consumption and GetHitVar readback before widening to Helpers or Projectiles.
-See [issue 329](../.scratch/roadmap/issues/329-modifyhitdef-down-velocity.md).
+The T755 queue entry duplicated the already closed T728/issue 302
+`ModifyHitDef down.velocity` work. Root/RedirectID and Helper X/Y/Z
+component-preserving behavior is already covered by the issue 302 traces and
+commits; issue 329 remains only as a superseded audit trail.
+
+## Next bounded slice — T757 upstream seam selection
+
+Select one distinct official/Ikemen source contract after the T756 evidence
+gate; keep guarded-resource topology, ModifyProjectile and aggregate QA repair
+as separate work items.
 
 ## Historical bounded slice — T753 closed-bounded (2026-08-12)
 

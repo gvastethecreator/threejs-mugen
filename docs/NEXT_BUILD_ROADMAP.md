@@ -1,22 +1,25 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T754 closed-bounded (2026-08-12)
+## Latest bounded slice — T756 closed-bounded (2026-08-12)
 
-Issue 328 snapshots the dedicated `AttackMulSet guardpoints` multiplier at
-root/Helper Projectile creation and consumes it only on accepted guard
-contacts. Root trace `1e6da74d` -> `819524b6` and Helper trace
-`472b325b` -> `26da3708` pass; aggregate QA retains the inherited helper-bind
-target-link blocker. No score movement; defaults, ModifyProjectile, other
-multiplier snapshots, teams, rollback and full parity remain blocked. See
-[issue 328](../.scratch/roadmap/issues/328-projectile-attackmulset-guardpoints.md).
+Issue 330 snapshots the dedicated `AttackMulSet.DizzyPoints` multiplier at
+root Projectile creation and consumes it only on accepted unguarded hits.
+Product `76222e0f`, evidence `c8c7daa1`, and required trace
+`a2d32251` -> `91bf5a3a` are recorded. Aggregate QA retains the inherited
+helper-bind target-link blocker. Guarded contacts, ModifyProjectile, resource
+ownership, exact clamp/rounding/timing, teams, rollback and full parity remain
+blocked. See [issue 330](../.scratch/roadmap/issues/330-projectile-attackmulset-dizzypoints.md).
 
-## Next bounded slice — T755 live ModifyHitDef `down.velocity`
+## Historical bounded slice — T755 superseded by T728
 
-Implement root/RedirectID Ikemen live `down.velocity` X/Y component replacement
-with omitted-sibling and Z preservation, then prove accepted lying-hit physics
-and GetHitVar. Keep Helper-authored controllers, Projectiles, dynamic Z and
-fresh default changes out of this cut. See [issue
-329](../.scratch/roadmap/issues/329-modifyhitdef-down-velocity.md).
+T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
+down.velocity` work. Issue 329 is retained as superseded audit history; the
+root/RedirectID and Helper X/Y/Z evidence remains authoritative in issue 302.
+
+## Next bounded slice — T757 upstream seam selection
+
+Choose one distinct official/Ikemen source contract after the T756 evidence
+gate; do not combine it with aggregate QA repair or resource-owner topology.
 
 ## Historical bounded slice — T753 closed-bounded (2026-08-12)
 

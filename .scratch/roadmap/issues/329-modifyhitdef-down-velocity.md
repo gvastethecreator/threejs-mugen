@@ -1,8 +1,13 @@
 # T755 — live ModifyHitDef `down.velocity` X/Y
 
-- **Estado:** queued
+- **Estado:** superseded
 - **Área:** runtime / HitDef / ModifyHitDef / lying-hit kinematics
 - **Objetivo:** completar el seam Ikemen de `ModifyHitDef down.velocity` con reemplazo por componente para root/RedirectID, preservando los hermanos omitidos y el Z vivo.
+
+> Este ticket es un duplicado de T728. El trabajo ya está cerrado-bounded en
+> [issue 302](./302-modifyhitdef-down-velocity-expressions.md), incluyendo
+> root/RedirectID, Helper, X/Y/Z y las trazas requeridas. Se conserva como
+> historial del cursor T755; no debe volver a seleccionarse como trabajo nuevo.
 
 ## Fuente de paridad
 

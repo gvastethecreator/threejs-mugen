@@ -1,24 +1,27 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-12 T754 Projectile `AttackMulSet guardpoints` snapshot — closed-bounded, no score movement
+## 2026-08-12 T756 Projectile `AttackMulSet.DizzyPoints` snapshot — closed-bounded, no score movement
 
-Issue 328 closes the creation-time snapshot for the dedicated
-`AttackMulSet guardpoints` multiplier on root and Helper-parented Projectiles.
-Accepted guards consume the captured value against the defender pool and keep
-authored GetHitVar metadata separate. Required traces
-`1e6da74d` -> `819524b6` and `472b325b` -> `26da3708` pass; focused typecheck
-and evidence pass. Aggregate QA retains the inherited helper-bind target-link
-blocker. No score movement: defaults, ModifyProjectile, other multiplier
-snapshots, team power ownership, global clamps/rounding, rollback and full
-parity remain blocked. See [issue
-328](../.scratch/roadmap/issues/328-projectile-attackmulset-guardpoints.md).
+Issue 330 closes the creation-time snapshot for the effective
+`AttackMulSet.DizzyPoints` multiplier on root Projectiles. Accepted unguarded
+hits consume the captured value against the defender pool and keep authored
+`GetHitVar(dizzypoints)` separate. Product/evidence commits are
+`76222e0f` / `c8c7daa1`; required trace `a2d32251` -> `91bf5a3a` passes.
+Aggregate QA retains the inherited helper-bind target-link blocker. No score
+movement: guarded contacts, ModifyProjectile, resource-owner topology, exact
+clamp/rounding/timing, rollback and full parity remain blocked. See [issue
+330](../.scratch/roadmap/issues/330-projectile-attackmulset-dizzypoints.md).
 
-## Next selection — T755 live ModifyHitDef `down.velocity`
+## Historical checkpoint — T755 superseded by T728
 
-Close the Ikemen-only root/RedirectID component-preserving live mutation for
-lying-hit X/Y velocity, retaining omitted siblings and Z. Keep Helpers,
-Projectiles, dynamic Z and fresh-default changes separate. See [issue
-329](../.scratch/roadmap/issues/329-modifyhitdef-down-velocity.md).
+T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
+down.velocity` work. Issue 329 remains superseded audit history and is not a
+new score candidate.
+
+## Next selection — T757 upstream seam selection
+
+Choose one bounded official/Ikemen source contract after the T756 gate; keep
+aggregate QA repair and resource topology separate.
 
 ## Historical checkpoint — 2026-08-12 T753 `AttackMulSet guardpoints` — closed-bounded, no score movement
 

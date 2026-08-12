@@ -2,20 +2,26 @@
 
 ## Current parity queue
 
-- **T753 closed-bounded** — issue 327 adds typed, finite
-  caller-context `AttackMulSet guardpoints` for direct accepted guards. The
-  dedicated multiplier scales the authored guard-points delta independently
-  from damage/dizzy scaling and resets on intro skip. Product/evidence commits
-  are `1eb17d85` and `ee000f97`; required trace `5a4b2841` / `90fe9bf9`.
-  Focused tests and typecheck pass; no score movement. Projectile/Helper
-  ownership, omitted defaults, resource clamp/rounding,
-  `NoGuardPointsDamage`, int32 edges, teams, rollback and full parity remain
-  outside. See [issue
-  327](../.scratch/roadmap/issues/327-attackmulset-guardpoints-dynamic.md).
+- **T756 closed-bounded** — issue 330 snapshots the effective
+  `AttackMulSet.DizzyPoints` multiplier at root Projectile creation and applies
+  it only on accepted unguarded hits. Product/evidence commits are
+  `76222e0f` and `c8c7daa1`; required trace `a2d32251` / `91bf5a3a`.
+  Focused tests and typecheck pass. Aggregate QA still stops on the inherited
+  helper-bind target-link case. Guarded contacts, ModifyProjectile, resource
+  ownership, exact clamp/rounding/timing, teams, rollback and full parity
+  remain outside. See [issue
+  330](../.scratch/roadmap/issues/330-projectile-attackmulset-dizzypoints.md).
 
-- **T754 queued** — prove the dedicated guard-points multiplier on root
-  Projectile and Helper-parented accepted guards; keep defaults and resource
-  topology as separate claims.
+- **T755 superseded** — duplicate queue entry for the already closed T728 /
+  issue 302 live `ModifyHitDef down.velocity` slice. Issue 329 is retained as
+  audit history and must not be selected as new work.
+
+- **T754 closed-bounded** — issue 328 proves the dedicated guard-points
+  multiplier on root and Helper-parented Projectiles; retain its historical
+  root/Helper trace checksums and the inherited aggregate QA blocker.
+
+- **T757 next selection** — choose one bounded official/Ikemen seam after the
+  T756 evidence gate; keep aggregate QA repair and resource topology separate.
 
 - **T752 closed-bounded** — issue 326 carries fresh Projectile
   `guardpoints` static and caller-context dynamic values through root and
