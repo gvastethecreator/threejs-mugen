@@ -361,6 +361,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveProjectileDamage?: () => { hit?: number; guard?: number } | undefined;
   resolveProjectileGetPower?: () => { hit?: number; guard?: number } | undefined;
   resolveProjectileGivePower?: () => { hit?: number; guard?: number } | undefined;
+  /** Resolves fresh Projectile guardpoints in the original caller context. */
+  resolveGuardPoints?: () => number | undefined;
   /** Resolves fresh Projectile p2facing in the original caller context. */
   resolveP2Facing?: () => number | undefined;
   /** Resolves fresh Projectile keepstate in the original caller context. */
@@ -602,7 +604,17 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
       ?? (hasAuthoredDamage ? firstNumber(damageRaw) ?? 0 : 30),
   );
   const dizzyPoints = operation?.dizzyPoints ?? firstNumber(findControllerParam(input.controller, "dizzypoints"));
-  const guardPoints = operation?.guardPoints ?? firstNumber(findControllerParam(input.controller, "guardpoints"));
+  const dynamicGuardPoints = operation?.guardPointsExpression === undefined
+    ? undefined
+    : typeof operation.guardPointsExpression === "number"
+      ? operation.guardPointsExpression
+      : input.resolveGuardPoints?.();
+  const guardPoints = operation?.guardPoints
+    ?? (operation?.guardPointsExpression === undefined
+      ? firstNumber(findControllerParam(input.controller, "guardpoints"))
+      : dynamicGuardPoints === undefined || !Number.isFinite(dynamicGuardPoints)
+        ? undefined
+        : Math.trunc(dynamicGuardPoints));
   const redLifeRaw = findControllerParam(input.controller, "redlife");
   const redLife = operation?.redLife ?? firstNumber(redLifeRaw);
   const guardRedLife = operation?.guardRedLife ?? secondNumber(redLifeRaw) ?? (redLife === undefined ? undefined : 0);

@@ -672,6 +672,8 @@ export type ProjectileControllerOp = {
   dizzyPoints?: number;
   /** Authored Projectile HitDef guardpoints exposed by GetHitVar. */
   guardPoints?: number;
+  /** Fresh Projectile HitDef guardpoints expression evaluated in the original caller context. */
+  guardPointsExpression?: number | string;
   /** Authored Projectile HitDef redlife exposed by GetHitVar. */
   redLife?: number;
   /** Authored Projectile guard redlife exposed by guarded GetHitVar. */
@@ -3976,6 +3978,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (getPower === false) return undefined;
   const givePower = optionalIntegerExpressionPairParam(controller, "givepower");
   if (givePower === false) return undefined;
+  const guardPointsValue = optionalIntegerExpressionParam(controller, "guardpoints");
+  if (guardPointsValue === false) return undefined;
   const damageValue = optionalIntegerExpressionPairParam(controller, "damage");
   if (damageValue === false) return undefined;
   const damageExpressions = Array.isArray(damageValue) && damageValue.some((value) => typeof value === "string")
@@ -4196,7 +4200,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     guardDamage: damage?.[1] ?? secondNumber(findParam(controller, "damage")),
     ...(damageExpressions === undefined ? {} : { damageExpressions }),
     dizzyPoints: firstNumber(findParam(controller, "dizzypoints")),
-    guardPoints: firstNumber(findParam(controller, "guardpoints")),
+    guardPoints: typeof guardPointsValue === "number" ? guardPointsValue : firstNumber(findParam(controller, "guardpoints")),
+    ...(typeof guardPointsValue === "string" ? { guardPointsExpression: guardPointsValue } : {}),
     redLife: redLife?.[0],
     guardRedLife: redLife === undefined ? undefined : redLife[1] ?? 0,
     guardPower: secondNumber(findParam(controller, "givepower")),

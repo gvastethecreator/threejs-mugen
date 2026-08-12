@@ -449,6 +449,34 @@ describe("ProjectileSystem", () => {
     expect(singleDynamic).toMatchObject({ attackerHitPower: 21, attackerGuardPower: 10 });
   });
 
+  it("resolves fresh Projectile guardpoints once in the caller context", () => {
+    const controllerValue = controller({ projanim: "1005", guardpoints: "var(0)" });
+    const operation = compileControllerIr(controllerValue).operation as ProjectileControllerOp;
+    const base = {
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1 as const,
+      controller: controllerValue,
+      operation,
+    };
+
+    expect(operation).toMatchObject({ guardPointsExpression: "var(0)" });
+    expect(createRuntimeProjectile({
+      ...base,
+      serialId: "p1-projectile-guardpoints-dynamic",
+      resolveGuardPoints: () => 19.9,
+    })).toMatchObject({ guardPoints: 19 });
+    expect(createRuntimeProjectile({
+      ...base,
+      serialId: "p1-projectile-guardpoints-unresolved",
+      resolveGuardPoints: () => undefined,
+    }).guardPoints).toBeUndefined();
+  });
+
   it("carries fresh Projectile keepstate from static and caller-resolved values", () => {
     const base = {
       serialId: "p1-projectile-keepstate",

@@ -2174,6 +2174,7 @@ describe("EffectActorSystem", () => {
                   id: "8860",
                   projanim: "930",
                   velocity: "1,0",
+                  guardpoints: "Parent,Var(13)",
                   projpriority: "2",
                   projhits: "1",
                   projmisstime: "0",
@@ -2277,6 +2278,7 @@ describe("EffectActorSystem", () => {
     expect(helperProjectile).toMatchObject({
       projectileId: 8860,
       parentId: "p1-helper-0",
+      guardPoints: 44,
       animNo: 931,
       action: expect.objectContaining({ id: 931 }),
       frameIndex: 0,

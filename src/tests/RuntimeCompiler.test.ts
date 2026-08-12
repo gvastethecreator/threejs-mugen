@@ -4906,6 +4906,27 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles fresh Projectile guardpoints as static or caller-context expressions", () => {
+    const staticProjectile = compileControllerIr(
+      controller(1000, "Projectile", [], { projanim: "910", guardpoints: "17" }),
+    );
+    const dynamicProjectile = compileControllerIr(
+      controller(1000, "Projectile", [], { projanim: "910", guardpoints: "var(0) + 2" }),
+    );
+    const malformedProjectile = compileControllerIr(
+      controller(1000, "Projectile", [], { projanim: "910", guardpoints: "var(" }),
+    );
+
+    expect(staticProjectile.operation).toMatchObject({ kind: "projectile", guardPoints: 17 });
+    expect(staticProjectile.operation).not.toHaveProperty("guardPointsExpression");
+    expect(dynamicProjectile.operation).toMatchObject({
+      kind: "projectile",
+      guardPointsExpression: "var(0) + 2",
+    });
+    expect(dynamicProjectile.operation).not.toHaveProperty("guardPoints");
+    expect(malformedProjectile.operation).toBeUndefined();
+  });
+
   it("compiles ModifyProjectile controllers into typed projectile mutation operations", () => {
     const modifyProjectile = compileControllerIr(
       controller(1000, "ModifyProjectile", [], {
