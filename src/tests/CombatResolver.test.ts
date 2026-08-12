@@ -600,6 +600,26 @@ describe("CombatResolver", () => {
     });
   });
 
+  it("uses the dedicated AttackMulSet guard-points multiplier only for guard points", () => {
+    const attacker = actor({ attackMultiplier: 1.5, guardPointsAttackMultiplier: 0.5 });
+    const defender = actor({ defenseMultiplier: 0.5, stateType: "S", moveType: "I" });
+    const attack = {
+      damage: 40,
+      guardDamage: 10,
+      guardPoints: 20,
+      hitPause: 8,
+      hitStun: 20,
+      push: 12,
+      guardFlag: "MA",
+    };
+
+    expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: true })).toMatchObject({
+      kind: "guard",
+      damage: 8,
+      guardPoints: 5,
+    });
+  });
+
   it("uses explicit air guard velocity only for airborne guards", () => {
     const attack = {
       damage: 40,

@@ -51,6 +51,7 @@ export function resetRuntimeIntroSkipActor(
   runtime.superPauseDefenseMultiplier = undefined;
   runtime.fallDefenseMultiplier = undefined;
   runtime.dizzyPointsAttackMultiplier = undefined;
+  runtime.guardPointsAttackMultiplier = undefined;
   runtime.paletteRemap = undefined;
   runtime.paletteFx = undefined;
   runtime.afterImage = undefined;

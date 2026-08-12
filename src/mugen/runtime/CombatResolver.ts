@@ -429,7 +429,7 @@ export function findRuntimeHitOverride(
 }
 
 export function resolveRuntimeCombatHit(input: {
-  attacker: Pick<CharacterRuntimeState, "attackMultiplier" | "dizzyPointsAttackMultiplier" | "assertSpecial">;
+  attacker: Pick<CharacterRuntimeState, "attackMultiplier" | "dizzyPointsAttackMultiplier" | "guardPointsAttackMultiplier" | "assertSpecial">;
   defender: Pick<CharacterRuntimeState, "defenseMultiplier" | "stateType" | "moveType" | "assertSpecial">;
   attack: RuntimeCombatAttack;
   holdingBack: boolean;
@@ -459,7 +459,12 @@ export function resolveRuntimeCombatHit(input: {
       ),
       ...(input.attack.guardPoints === undefined
         ? {}
-        : { guardPoints: scaleRuntimeIncomingAmount(input.defender, scaleRuntimeOutgoingAmount(input.attacker, input.attack.guardPoints)) }),
+        : {
+            guardPoints: scaleRuntimeIncomingAmount(
+              input.defender,
+              scaleRuntimeOutgoingGuardPoints(input.attacker, input.attack.guardPoints),
+            ),
+          }),
       ...(input.attack.guardRedLife === undefined
         ? {}
         : { redLife: scaleRuntimeIncomingAmount(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.guardRedLife)) }),
@@ -664,6 +669,13 @@ export function scaleRuntimeOutgoingDizzyPoints(
   amount: number,
 ): number {
   return Math.round(amount * (attacker.dizzyPointsAttackMultiplier ?? attacker.attackMultiplier ?? 1));
+}
+
+export function scaleRuntimeOutgoingGuardPoints(
+  attacker: Pick<CharacterRuntimeState, "attackMultiplier" | "guardPointsAttackMultiplier">,
+  amount: number,
+): number {
+  return Math.round(amount * (attacker.guardPointsAttackMultiplier ?? attacker.attackMultiplier ?? 1));
 }
 
 function guardFlagAllowsState(guardFlag: string, stateType: CharacterRuntimeState["stateType"]): boolean {

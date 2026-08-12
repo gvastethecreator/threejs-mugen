@@ -99,6 +99,8 @@ export type CharacterRuntimeState = {
   fallDefenseMultiplier?: number;
   attackMultiplier?: number;
   dizzyPointsAttackMultiplier?: number;
+  /** Ikemen AttackMulSet guardpoints multiplier, separate from damage/dizzy multipliers. */
+  guardPointsAttackMultiplier?: number;
   paletteRemap?: RuntimePaletteRemap;
   spritePriority?: number;
   hitDefSpritePriority?: {

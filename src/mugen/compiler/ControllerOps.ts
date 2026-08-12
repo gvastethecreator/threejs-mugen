@@ -1438,6 +1438,8 @@ export type DamageScaleControllerOp = {
   controllerType: "attackmulset" | "defencemulset";
   multiplier?: number;
   dizzyPointsMultiplier?: number;
+  /** Ikemen AttackMulSet guard-point damage multiplier. */
+  guardPointsMultiplier?: number;
 };
 
 export type ContactControllerOp =
@@ -2594,7 +2596,12 @@ function compileDamageScaleControllerOp(
 ): DamageScaleControllerOp | undefined {
   const value = staticOptionalNumberParam(controller, "value");
   const dizzyPoints = type === "attackmulset" ? staticOptionalNumberParam(controller, "dizzypoints") : true;
-  if ((value === true || value === false) && (dizzyPoints === true || dizzyPoints === false)) {
+  const guardPoints = type === "attackmulset" ? staticOptionalNumberParam(controller, "guardpoints") : true;
+  if (
+    (value === true || value === false) &&
+    (dizzyPoints === true || dizzyPoints === false) &&
+    (guardPoints === true || guardPoints === false)
+  ) {
     return undefined;
   }
   return {
@@ -2602,6 +2609,7 @@ function compileDamageScaleControllerOp(
     controllerType: type,
     ...(typeof value === "number" ? { multiplier: Math.max(0, Math.min(10, value)) } : {}),
     ...(typeof dizzyPoints === "number" ? { dizzyPointsMultiplier: Math.max(0, Math.min(10, dizzyPoints)) } : {}),
+    ...(typeof guardPoints === "number" ? { guardPointsMultiplier: Math.max(0, Math.min(10, guardPoints)) } : {}),
   };
 }
 

@@ -10,6 +10,7 @@ export type RuntimeDamageScaleControllerResult = {
   applied: boolean;
   multiplier?: number;
   dizzyPointsMultiplier?: number;
+  guardPointsMultiplier?: number;
 };
 
 export function resolveRuntimeDamageScaleControllerOperation(
@@ -20,7 +21,8 @@ export function resolveRuntimeDamageScaleControllerOperation(
 ): DamageScaleControllerOp | undefined {
   const value = numberParam(controller, state, context, "value");
   const dizzyPoints = controllerType === "attackmulset" ? numberParam(controller, state, context, "dizzypoints") : undefined;
-  if (value === undefined && dizzyPoints === undefined) {
+  const guardPoints = controllerType === "attackmulset" ? numberParam(controller, state, context, "guardpoints") : undefined;
+  if (value === undefined && dizzyPoints === undefined && guardPoints === undefined) {
     return undefined;
   }
   return {
@@ -28,6 +30,7 @@ export function resolveRuntimeDamageScaleControllerOperation(
     controllerType,
     ...(value === undefined ? {} : { multiplier: clampDamageScaleMultiplier(value) }),
     ...(dizzyPoints === undefined ? {} : { dizzyPointsMultiplier: clampDamageScaleMultiplier(dizzyPoints) }),
+    ...(guardPoints === undefined ? {} : { guardPointsMultiplier: clampDamageScaleMultiplier(guardPoints) }),
   };
 }
 
@@ -44,18 +47,26 @@ export class RuntimeDamageScaleWorld {
       controllerType === "attackmulset"
         ? operation?.dizzyPointsMultiplier ?? numberParam(controller, state, context, "dizzypoints")
         : undefined;
-    if (value === undefined && dizzyPoints === undefined) {
+    const guardPoints =
+      controllerType === "attackmulset"
+        ? operation?.guardPointsMultiplier ?? numberParam(controller, state, context, "guardpoints")
+        : undefined;
+    if (value === undefined && dizzyPoints === undefined && guardPoints === undefined) {
       return { applied: false };
     }
 
     const multiplier = value === undefined ? undefined : clampDamageScaleMultiplier(value);
     const dizzyPointsMultiplier = dizzyPoints === undefined ? undefined : clampDamageScaleMultiplier(dizzyPoints);
+    const guardPointsMultiplier = guardPoints === undefined ? undefined : clampDamageScaleMultiplier(guardPoints);
     if (controllerType === "attackmulset") {
       if (multiplier !== undefined) {
         state.attackMultiplier = multiplier;
       }
       if (dizzyPointsMultiplier !== undefined) {
         state.dizzyPointsAttackMultiplier = dizzyPointsMultiplier;
+      }
+      if (guardPointsMultiplier !== undefined) {
+        state.guardPointsAttackMultiplier = guardPointsMultiplier;
       }
     } else if (multiplier !== undefined) {
       state.defenseMultiplier = multiplier;
@@ -64,6 +75,7 @@ export class RuntimeDamageScaleWorld {
       applied: true,
       ...(multiplier === undefined ? {} : { multiplier }),
       ...(dizzyPointsMultiplier === undefined ? {} : { dizzyPointsMultiplier }),
+      ...(guardPointsMultiplier === undefined ? {} : { guardPointsMultiplier }),
     };
   }
 }

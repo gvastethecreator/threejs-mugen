@@ -46,6 +46,24 @@ describe("RuntimeDamageScaleWorld", () => {
     expect(state.dizzyPointsAttackMultiplier).toBe(0.75);
   });
 
+  it("applies an AttackMulSet guard-points-only multiplier without resetting damage", () => {
+    const world = new RuntimeDamageScaleWorld();
+    const state = runtime({ attackMultiplier: 1.5, dizzyPointsAttackMultiplier: 0.75 });
+    const operation: DamageScaleControllerOp = {
+      kind: "damage-scale",
+      controllerType: "attackmulset",
+      guardPointsMultiplier: 0.5,
+    };
+
+    expect(world.applyController(state, controller({ guardpoints: "0.5" }), "attackmulset", operation)).toEqual({
+      applied: true,
+      guardPointsMultiplier: 0.5,
+    });
+    expect(state.attackMultiplier).toBe(1.5);
+    expect(state.dizzyPointsAttackMultiplier).toBe(0.75);
+    expect(state.guardPointsAttackMultiplier).toBe(0.5);
+  });
+
   it("keeps raw expression fallback and clamps multiplier range", () => {
     const world = new RuntimeDamageScaleWorld();
     const state = runtime();
@@ -99,6 +117,13 @@ describe("RuntimeDamageScaleWorld", () => {
       kind: "damage-scale",
       controllerType: "attackmulset",
       dizzyPointsMultiplier: 1.5,
+    });
+    expect(
+      resolveRuntimeDamageScaleControllerOperation(controller({ guardpoints: "var(0) * fvar(0)" }), state, "attackmulset"),
+    ).toEqual({
+      kind: "damage-scale",
+      controllerType: "attackmulset",
+      guardPointsMultiplier: 1.5,
     });
   });
 });
