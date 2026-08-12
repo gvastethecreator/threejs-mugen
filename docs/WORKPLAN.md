@@ -1,6 +1,21 @@
 # Workplan
 
-## Latest slice — T747 closed-bounded (2026-08-11)
+## Latest slice — T748 closed-bounded (2026-08-12)
+
+Issue 322 closes live Ikemen `ModifyHitDef guardpoints` static and
+caller-context dynamic mutation through root/RedirectID and Helper paths.
+Omission preserves the active payload. Product `dd2309df`, evidence
+`d1cf7962`, focused compiler/runtime/Helper coverage, typecheck and the
+required imported trace pass. M.U.G.E.N 1.1 fresh defaults, Projectile,
+ModifyProjectile, ReversalDef, exact clamp/timing, teams, rollback and full
+parity remain blocked.
+
+## Next slice — T749 upstream seam selection
+
+Select one bounded official/Ikemen seam after the T748 aggregate trace gate;
+keep guard/resource defaults and full parity out of the claim.
+
+## Historical slice — T747 closed-bounded (2026-08-11)
 
 Issue 321 closes live Ikemen `ModifyHitDef` `pausetime` and
 `guard.pausetime` static, mixed and caller-context dynamic pairs through

@@ -1,8 +1,19 @@
 # Roadmap Continuity Guide
 
-Last updated: 2026-08-11
+Last updated: 2026-08-12
 
-## Current T747 closeout / T748 selection
+## Current T748 closeout / T749 selection
+
+T748 / [issue 322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md)
+adds live Ikemen `ModifyHitDef guardpoints` mutation for root/RedirectID and
+Helper callers. Static and caller-context dynamic values replace the active
+payload; omission preserves it. Product `dd2309df`, evidence `d1cf7962`,
+focused compiler/runtime/Helper tests, typecheck and the required imported
+trace pass. Fresh M.U.G.E.N defaults, Projectile/ModifyProjectile,
+ReversalDef, exact clamp/timing, teams, rollback and full parity remain
+blocked. T749 is the next source-selection checkpoint.
+
+## Historical T747 closeout / T748 selection
 
 T747 / [issue 321](../.scratch/roadmap/issues/321-modifyhitdef-pausetime.md)
 adds live Ikemen `ModifyHitDef` `pausetime` and `guard.pausetime` pair mutation

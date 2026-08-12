@@ -1,6 +1,24 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T747 closed-bounded (2026-08-11)
+## Latest bounded slice — T748 closed-bounded (2026-08-12)
+
+Issue 322 closes live Ikemen `ModifyHitDef guardpoints` through typed IR,
+root/RedirectID caller evaluation and Helper runtime resolution. Static and
+caller-context dynamic values replace the active guard-points payload; omitted
+mutation preserves it. Product `dd2309df`; focused compiler/runtime/Helper
+coverage, typecheck and the required imported trace pass; evidence commit
+`d1cf7962`. M.U.G.E.N 1.1 fresh HitDef guardpoints remain a separate claim:
+this live controller slice is Ikemen-only. Fresh defaults, Projectile,
+ModifyProjectile, ReversalDef, exact resource/clamp timing and full parity
+remain blocked.
+
+## Next bounded slice — T749 upstream seam selection
+
+Select one distinct official/Ikemen seam after the aggregate T748 trace gate.
+Keep guard-points defaults, Projectile/ModifyProjectile, ReversalDef, teams,
+rollback and full parity as separate claims.
+
+## Historical bounded slice — T747 closed-bounded (2026-08-11)
 
 Issue 321 closes live Ikemen `ModifyHitDef` `pausetime` and
 `guard.pausetime` pairs through typed IR, root/RedirectID caller evaluation

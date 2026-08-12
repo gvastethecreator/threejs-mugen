@@ -1,6 +1,25 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-11 T747 live `ModifyHitDef` pause pairs — closed-bounded
+## 2026-08-12 T748 live `ModifyHitDef guardpoints` — closed-bounded
+
+Focused compiler/runtime/Helper coverage and typecheck pass for live Ikemen
+`ModifyHitDef guardpoints` static and caller-context dynamic mutation through
+root/RedirectID and Helper callers. Product `dd2309df`; evidence `d1cf7962`.
+Required trace `synthetic-imported-modifyhitdef-dynamic-guard-points-golden`
+proves `VarSet -> HitDef -> ModifyHitDef -> guard`, RedirectID target `78`,
+`GetHitVar(guardpoints)=19`, and the guarded branch. Omission preserves the
+active payload. M.U.G.E.N 1.1 does not define live ModifyHitDef, so this gate is
+Ikemen-only. Fresh defaults, Projectile/ModifyProjectile, ReversalDef, exact
+clamp/resource timing and full parity remain outside. The aggregate
+`pnpm qa:trace` still has the pre-existing helper-bind missing-target-link
+blocker; this artifact passes independently. See [issue
+322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md).
+
+## Next gate — T749 upstream seam selection
+
+Select one bounded official/Ikemen seam after the aggregate T748 run.
+
+## Historical — T747 live `ModifyHitDef` pause pairs — closed-bounded
 
 Focused compiler/runtime/Helper/Playable coverage and typecheck pass for live
 Ikemen `ModifyHitDef` `pausetime` and `guard.pausetime` static, mixed and

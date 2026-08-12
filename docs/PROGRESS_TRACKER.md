@@ -1,6 +1,19 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T747 closed-bounded (2026-08-11)
+## Latest implementation checkpoint — T748 closed-bounded (2026-08-12)
+
+Issue 322 closes live Ikemen `ModifyHitDef guardpoints` through root/RedirectID
+and Helper caller paths. Static and caller-context dynamic values replace the
+active payload; omission preserves it. Product `dd2309df`, evidence `d1cf7962`,
+focused tests/typecheck and the required imported trace pass. Fresh defaults,
+Projectile/ModifyProjectile, ReversalDef, exact clamp/timing, teams, rollback
+and full parity remain blocked.
+
+## Next implementation checkpoint — T749 upstream seam selection
+
+Select the next bounded source contract after the aggregate T748 trace gate.
+
+## Historical implementation checkpoint — T747 closed-bounded (2026-08-11)
 
 Issue 321 closes live Ikemen `ModifyHitDef` `pausetime` and
 `guard.pausetime` pair mutation through root/RedirectID and Helper caller

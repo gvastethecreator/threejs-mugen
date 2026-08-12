@@ -1,5 +1,21 @@
 ﻿# Supported Features
-## 2026-08-11 T747 live `ModifyHitDef` `pausetime`/`guard.pausetime` - closed-bounded
+## 2026-08-12 T748 live `ModifyHitDef guardpoints` - closed-bounded
+
+Live Ikemen `ModifyHitDef guardpoints` now resolves static and caller-context
+dynamic values through root/RedirectID and Helper callers. Omission preserves
+the active guard-points payload. Product `dd2309df`; evidence `d1cf7962`;
+focused compiler/runtime/Helper coverage and typecheck pass, with a required
+imported trace registered. This is Ikemen source compatibility: M.U.G.E.N 1.1
+fresh HitDef guardpoints are a separate path. Exact defaults, clamp/resource
+timing, Projectile/ModifyProjectile, ReversalDef, teams, rollback and full
+parity remain outside the claim. See [issue
+322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md).
+
+## Next selection — T749 upstream seam selection
+
+Select one bounded source contract after the aggregate T748 trace gate.
+
+## Historical — T747 live `ModifyHitDef` `pausetime`/`guard.pausetime` - closed-bounded
 
 Live Ikemen `ModifyHitDef` pause pairs now resolve static, mixed and
 caller-context dynamic values through root/RedirectID and Helper callers.

@@ -2,6 +2,19 @@
 
 ## Current parity queue
 
+- **T748 closed-bounded** — issue 322 carries live Ikemen
+  `ModifyHitDef guardpoints` static and caller-context dynamic values through
+  root/RedirectID and Helper callers. Omission preserves the active payload.
+  Product `dd2309df`; evidence `d1cf7962`; focused tests/typecheck pass and
+  the required imported trace is registered. Fresh defaults,
+  Projectile/ModifyProjectile, ReversalDef, exact clamp/resource timing,
+  teams, rollback and full parity remain outside the claim. See [issue
+  322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md).
+
+- **T749 queued** — select the next single bounded official/Ikemen seam after
+  the aggregate T748 trace gate; do not widen this queue into complete guard
+  resource or timing parity.
+
 - **T747 closed-bounded** — issue 321 carries live Ikemen `ModifyHitDef`
   `pausetime` and `guard.pausetime` static, mixed and caller-context dynamic
   pairs through root/RedirectID and Helper callers. Omitted live siblings are

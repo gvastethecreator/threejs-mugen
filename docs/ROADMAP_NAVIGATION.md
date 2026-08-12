@@ -1,8 +1,25 @@
 # Roadmap Navigation
 
-Last updated: 2026-08-11
+Last updated: 2026-08-12
 
-## Current implementation route — T747 closed-bounded (2026-08-11)
+## Current implementation route — T748 closed-bounded (2026-08-12)
+
+T748 / [issue 322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md)
+closes live Ikemen `ModifyHitDef guardpoints` through root/RedirectID and
+Helper caller paths. Static and caller-context dynamic values replace the
+active guard-points payload; omission preserves the live value. Product
+`dd2309df`; evidence `d1cf7962`; focused coverage and typecheck pass, with a
+required imported guard trace registered. This is an Ikemen live-controller
+slice, not an official M.U.G.E.N 1.1 ModifyHitDef claim. Fresh defaults,
+Projectile/ModifyProjectile, ReversalDef, exact clamp/timing and full parity
+remain blocked.
+
+## Next implementation route — T749 upstream seam selection
+
+Select one bounded official/Ikemen source seam after the aggregate T748 trace
+gate; do not widen this slice into full guard/resource parity.
+
+## Historical implementation route — T747 closed-bounded (2026-08-11)
 
 T747 / [issue 321](../.scratch/roadmap/issues/321-modifyhitdef-pausetime.md)
 closes live Ikemen `ModifyHitDef` `pausetime` and `guard.pausetime` pair

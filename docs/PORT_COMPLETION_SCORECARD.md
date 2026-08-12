@@ -1,6 +1,20 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-11 T747 live `ModifyHitDef` pause pairs — closed-bounded, no score movement
+## 2026-08-12 T748 live `ModifyHitDef guardpoints` — closed-bounded, no score movement
+
+Issue 322 closes live Ikemen `ModifyHitDef guardpoints` static and
+caller-context dynamic mutation through root/RedirectID and Helper callers.
+Product `dd2309df` and evidence `d1cf7962` are committed; focused tests,
+typecheck and the required imported trace are green. No score movement:
+fresh defaults, Projectile/ModifyProjectile, ReversalDef, exact clamp/resource
+timing, teams, rollback and full M.U.G.E.N/Ikemen parity remain blocked. See
+[issue 322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md).
+
+## Next selection — T749 upstream seam selection
+
+Choose one bounded source contract after the aggregate T748 trace gate.
+
+## Historical checkpoint — T747 live `ModifyHitDef` pause pairs — closed-bounded, no score movement
 
 Issue 321 closes live Ikemen `ModifyHitDef` `pausetime` and
 `guard.pausetime` pair mutation through root/RedirectID and Helper callers.

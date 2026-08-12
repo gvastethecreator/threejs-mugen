@@ -1,6 +1,21 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T747 closed-bounded (2026-08-11)
+## Latest bounded slice — T748 closed-bounded (2026-08-12)
+
+Issue 322 carries live Ikemen `ModifyHitDef guardpoints` through typed IR and
+root/RedirectID plus Helper caller evaluation. Static and caller-context
+dynamic values replace the active payload and omission preserves it. Product
+`dd2309df`; evidence `d1cf7962`; the required imported trace is registered and
+focused tests/typecheck pass. Fresh defaults, Projectile/ModifyProjectile,
+ReversalDef, exact clamp/timing and full parity remain blocked. See [issue
+322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md).
+
+## Next bounded slice — T749 upstream seam selection
+
+Choose one distinct official/Ikemen source contract after the T748 aggregate
+trace gate; do not broaden this into complete guard/resource parity.
+
+## Historical bounded slice — T747 closed-bounded (2026-08-11)
 
 Issue 321 carries live Ikemen `ModifyHitDef` `pausetime` and
 `guard.pausetime` pairs through typed IR and root/RedirectID plus Helper
