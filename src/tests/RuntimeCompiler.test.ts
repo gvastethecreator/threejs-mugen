@@ -2307,6 +2307,12 @@ value = 1
   });
 
   it("compiles live ModifyHitDef guardpoints expressions and rejects malformed values", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      guardpoints: "var(1) + 2",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      guardPoints: "var(1) + 2",
+    });
     expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
       guardpoints: "var(1) + 2",
       redirectid: "57",
@@ -2325,6 +2331,9 @@ value = 1
     expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
       guardpoints: "var(",
       redirectid: "57",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      guardpoints: "var(",
     })).operation).toBeUndefined();
   });
 

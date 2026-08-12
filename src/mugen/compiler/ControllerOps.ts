@@ -108,7 +108,8 @@ export type HitDefControllerOp = {
   guardDamage?: number;
   /** Dynamic or mixed HitDef damage pair evaluated in caller context. */
   damageExpressions?: MugenHitDefExpressionPair;
-  guardPoints?: number;
+  /** Dynamic direct HitDef guardpoints expression evaluated in caller context. */
+  guardPoints?: number | string;
   dizzyPoints?: number;
   redLife?: number;
   guardRedLife?: number;
@@ -2613,6 +2614,7 @@ function compileHitDefControllerOp(
   const damage = Array.isArray(damageValue) && damageExpressions === undefined
     ? damageValue
     : undefined;
+  const guardPointsValue = optionalIntegerExpressionParam(controller, "guardpoints");
   const groundVelocityRaw = findParam(controller, "ground.velocity");
   const groundVelocity = groundVelocityRaw === undefined ? undefined : strictStaticNumberVector(groundVelocityRaw);
   const groundVelocityExpressionValue = groundVelocityRaw === undefined || groundVelocity !== undefined
@@ -2743,6 +2745,7 @@ function compileHitDefControllerOp(
   if (
     noChainIds === false ||
     damageValue === false ||
+    guardPointsValue === false ||
     groundVelocityExpressionValue === false ||
     airVelocityExpressionValue === false ||
     downVelocityExpressionValue === false ||
@@ -2821,7 +2824,7 @@ function compileHitDefControllerOp(
     ...(givePower === true ? {} : { givePower }),
     score: firstNumber(findParam(controller, "score")),
     ...(getPower === true ? {} : { getPower }),
-    guardPoints: firstNumber(findParam(controller, "guardpoints")),
+    ...(guardPointsValue === true ? {} : { guardPoints: guardPointsValue }),
     dizzyPoints: firstNumber(findParam(controller, "dizzypoints")),
     kill: booleanNumber(findParam(controller, "kill")),
     keepState: booleanNumber(findParam(controller, "keepstate")),

@@ -190,7 +190,13 @@ export class RuntimeHitDefControllerDispatchWorld {
       : resolvedDamage.componentCount === 1
         ? 0
         : resolvedDamage.guard ?? 0;
-    const guardPoints = operation?.guardPoints ?? firstNumber(findParam(source, "guardpoints")) ?? existing?.guardPoints;
+    const guardPoints = resolveRuntimeHitDefIntegerScalar(
+      operation?.guardPoints,
+      findParam(source, "guardpoints"),
+      actor.runtime,
+      context ?? {},
+      resolveIntegerScalar?.("guardpoints"),
+    ) ?? existing?.guardPoints;
     const attr = operation?.attr ?? stripMugenString(findParam(source, "attr")) ?? existing?.attr ?? "S,NA";
     const dizzyPoints =
       operation?.dizzyPoints ??

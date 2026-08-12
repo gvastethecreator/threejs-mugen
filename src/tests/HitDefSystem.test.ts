@@ -485,6 +485,28 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.guardPoints).toBe(12);
   });
 
+  it("resolves fresh HitDef guardpoints in caller context without using the target vars", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    actor.runtime.vars[1] = 99;
+    actor.currentMove = { ...actor.currentMove!, guardPoints: 37 };
+    const caller = runtimeState();
+    caller.vars[1] = 13.9;
+
+    const result = world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        guardpoints: "var(1)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+
+    expect(result.activated).toBe(true);
+    expect(actor.currentMove?.guardPoints).toBe(13);
+  });
+
   it("resolves fresh and modified ground.hittime in caller or helper context", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

@@ -2051,6 +2051,27 @@ describe("HelperSystem", () => {
     });
   });
 
+  it("resolves Helper-owned fresh HitDef guardpoints in the helper caller context", () => {
+    const active = helper({
+      vars: [14.9],
+      currentMove: activeMove({ guardPoints: 37 }),
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            compiledControllerIr(6000, "HitDef", [], {
+              attr: "S,NA",
+              guardpoints: "var(0)",
+            }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.currentMove?.guardPoints).toBe(14);
+  });
+
   it("resolves Helper-owned fresh HitDef snap X/Y/Z in the helper caller context", () => {
     const active = helper({
       vars: [7, -5, 11, 4],
