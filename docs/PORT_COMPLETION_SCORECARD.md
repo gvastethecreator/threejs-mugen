@@ -1,19 +1,20 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-12 T748 live `ModifyHitDef guardpoints` — closed-bounded, no score movement
+## 2026-08-12 T749 `HitDef attack.depth` — closed-bounded, no score movement
 
-Issue 322 closes live Ikemen `ModifyHitDef guardpoints` static and
-caller-context dynamic mutation through root/RedirectID and Helper callers.
-Product `dd2309df` and evidence `d1cf7962` are committed; focused tests,
-typecheck and the required imported trace are green (trace/initial/final
-checksums `6019c60c` / `eba2e7f0` / `c275387b`). No score movement:
-fresh defaults, Projectile/ModifyProjectile, ReversalDef, exact clamp/resource
-timing, teams, rollback and full M.U.G.E.N/Ikemen parity remain blocked. See
-[issue 322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md).
+Issue 323 closes direct `HitDef attack.depth` expressions and live Ikemen
+`ModifyHitDef attack.depth` static, mixed and caller-context dynamic mutation
+through root/RedirectID and Helper callers. Product `689a02c5`, tests
+`076d1f5f` and evidence `4ddbd63e` are committed; the required imported trace
+is green (`7ef8aace` / `170aacf6`). No score movement: fresh defaults,
+Projectile/ModifyProjectile, ReversalDef breadth, exact depth timing, teams,
+rollback and full M.U.G.E.N/Ikemen parity remain blocked. Aggregate QA still
+has the inherited helper-bind missing-target-link blocker. See [issue
+323](../.scratch/roadmap/issues/323-hitdef-attack-depth.md).
 
-## Next selection — T749 upstream seam selection
+## Next selection — T750 upstream seam selection
 
-Choose one bounded source contract after the aggregate T748 trace gate.
+Choose one bounded source contract after the aggregate T749 trace gate.
 
 ## Historical checkpoint — T747 live `ModifyHitDef` pause pairs — closed-bounded, no score movement
 

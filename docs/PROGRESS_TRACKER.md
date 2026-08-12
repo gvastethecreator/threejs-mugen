@@ -1,17 +1,19 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T748 closed-bounded (2026-08-12)
+## Latest implementation checkpoint — T749 closed-bounded (2026-08-12)
 
-Issue 322 closes live Ikemen `ModifyHitDef guardpoints` through root/RedirectID
-and Helper caller paths. Static and caller-context dynamic values replace the
-active payload; omission preserves it. Product `dd2309df`, evidence `d1cf7962`,
-focused tests/typecheck and the required imported trace pass. Fresh defaults,
-Projectile/ModifyProjectile, ReversalDef, exact clamp/timing, teams, rollback
-and full parity remain blocked.
+Issue 323 closes direct `HitDef attack.depth` expressions and live Ikemen
+`ModifyHitDef attack.depth` through root/RedirectID and Helper caller paths.
+Fresh single values duplicate their component; live mutation preserves omitted
+siblings and omission is a no-op. Product `689a02c5`, tests `076d1f5f`,
+evidence `4ddbd63e`, trace `7ef8aace` -> `170aacf6`. Aggregate QA remains
+blocked by the inherited helper-bind missing-target-link case. Fresh defaults,
+Projectile/ModifyProjectile, ReversalDef breadth, exact depth timing, teams,
+rollback and full parity remain blocked.
 
-## Next implementation checkpoint — T749 upstream seam selection
+## Next implementation checkpoint — T750 upstream seam selection
 
-Select the next bounded source contract after the aggregate T748 trace gate.
+Select the next bounded source contract after the aggregate T749 trace gate.
 
 ## Historical implementation checkpoint — T747 closed-bounded (2026-08-11)
 

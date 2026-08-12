@@ -1,22 +1,24 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T748 closed-bounded (2026-08-12)
+## Latest bounded slice — T749 closed-bounded (2026-08-12)
 
-Issue 322 closes live Ikemen `ModifyHitDef guardpoints` through typed IR,
-root/RedirectID caller evaluation and Helper runtime resolution. Static and
-caller-context dynamic values replace the active guard-points payload; omitted
-mutation preserves it. Product `dd2309df`; focused compiler/runtime/Helper
-coverage, typecheck and the required imported trace pass; evidence commit
-`d1cf7962`. M.U.G.E.N 1.1 fresh HitDef guardpoints remain a separate claim:
-this live controller slice is Ikemen-only. Fresh defaults, Projectile,
-ModifyProjectile, ReversalDef, exact resource/clamp timing and full parity
-remain blocked.
+Issue 323 closes direct `HitDef attack.depth` expressions and live Ikemen
+`ModifyHitDef attack.depth` through typed IR, root/RedirectID caller evaluation
+and Helper runtime resolution. Fresh one-component values duplicate their
+component; live modification preserves omitted siblings and omission is a
+no-op. Product `689a02c5`; tests `076d1f5f`; evidence `4ddbd63e`. The required
+imported trace `synthetic-imported-hitdef-dynamic-attack-depth-golden` passes
+independently (`7ef8aace` -> `170aacf6`). Aggregate QA still has the inherited
+helper-bind missing-target-link blocker. M.U.G.E.N 1.1 covers fresh HitDef;
+live ModifyHitDef is an Ikemen-only claim. Projectile/ModifyProjectile,
+ReversalDef breadth, defaults, exact depth timing and full parity remain
+blocked.
 
-## Next bounded slice — T749 upstream seam selection
+## Next bounded slice — T750 upstream seam selection
 
-Select one distinct official/Ikemen seam after the aggregate T748 trace gate.
-Keep guard-points defaults, Projectile/ModifyProjectile, ReversalDef, teams,
-rollback and full parity as separate claims.
+Select one distinct official/Ikemen seam after the aggregate T749 trace gate.
+Keep Projectile/ModifyProjectile, ReversalDef, defaults, teams, rollback and
+full parity as separate claims.
 
 ## Historical bounded slice — T747 closed-bounded (2026-08-11)
 

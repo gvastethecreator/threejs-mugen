@@ -2,16 +2,18 @@
 
 Last updated: 2026-08-12
 
-## Current T748 closeout / T749 selection
+## Current T749 closeout / T750 selection
 
-T748 / [issue 322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md)
-adds live Ikemen `ModifyHitDef guardpoints` mutation for root/RedirectID and
-Helper callers. Static and caller-context dynamic values replace the active
-payload; omission preserves it. Product `dd2309df`, evidence `d1cf7962`,
-focused compiler/runtime/Helper tests, typecheck and the required imported
-trace pass. Fresh M.U.G.E.N defaults, Projectile/ModifyProjectile,
-ReversalDef, exact clamp/timing, teams, rollback and full parity remain
-blocked. T749 is the next source-selection checkpoint.
+T749 / [issue 323](../.scratch/roadmap/issues/323-hitdef-attack-depth.md)
+adds direct `HitDef attack.depth` expressions and live Ikemen
+`ModifyHitDef attack.depth` mutation for root/RedirectID and Helper callers.
+Fresh single values duplicate their component; live omission preserves the
+active sibling and is a no-op. Product `689a02c5`, tests `076d1f5f`, evidence
+`4ddbd63e`, and trace `7ef8aace` -> `170aacf6` pass independently. Aggregate
+QA still has the inherited helper-bind missing-target-link blocker. Fresh
+M.U.G.E.N support and live Ikemen support are separate claims; Projectile,
+ModifyProjectile, ReversalDef breadth, exact depth timing, teams, rollback and
+full parity remain blocked. T750 is the next source-selection checkpoint.
 
 ## Historical T747 closeout / T748 selection
 

@@ -1,19 +1,22 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T748 closed-bounded (2026-08-12)
+## Latest bounded slice — T749 closed-bounded (2026-08-12)
 
-Issue 322 carries live Ikemen `ModifyHitDef guardpoints` through typed IR and
-root/RedirectID plus Helper caller evaluation. Static and caller-context
-dynamic values replace the active payload and omission preserves it. Product
-`dd2309df`; evidence `d1cf7962`; the required imported trace is registered and
-focused tests/typecheck pass. Fresh defaults, Projectile/ModifyProjectile,
-ReversalDef, exact clamp/timing and full parity remain blocked. See [issue
-322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md).
+Issue 323 carries direct `HitDef attack.depth` expressions and live Ikemen
+`ModifyHitDef attack.depth` through typed IR, root/RedirectID and Helper caller
+evaluation. Fresh single values duplicate their component; live single values
+preserve the active sibling and omission is a no-op. Product `689a02c5`, tests
+`076d1f5f`, evidence `4ddbd63e`; required trace checksums are `7ef8aace` /
+`170aacf6`. The aggregate trace gate remains blocked only by the inherited
+helper-bind missing-target-link case. Fresh M.U.G.E.N support and live Ikemen
+support are stated separately; Projectile/ModifyProjectile, ReversalDef,
+exact depth timing and full parity remain blocked. See [issue
+323](../.scratch/roadmap/issues/323-hitdef-attack-depth.md).
 
-## Next bounded slice — T749 upstream seam selection
+## Next bounded slice — T750 upstream seam selection
 
-Choose one distinct official/Ikemen source contract after the T748 aggregate
-trace gate; do not broaden this into complete guard/resource parity.
+Choose one distinct official/Ikemen source contract after the T749 aggregate
+trace gate; do not broaden this queue into full depth or combat parity.
 
 ## Historical bounded slice — T747 closed-bounded (2026-08-11)
 

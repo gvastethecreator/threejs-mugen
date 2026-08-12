@@ -1,15 +1,17 @@
 # Controller Support Registry
 
-Latest cursor: T748 / issue 322 is closed-bounded for live Ikemen
-`ModifyHitDef guardpoints`. Root/RedirectID and Helper callers accept static
-and caller-context dynamic values; omission preserves the active payload.
-Product `dd2309df`, evidence `d1cf7962`, focused tests/typecheck pass, and the
-required imported trace is registered. M.U.G.E.N 1.1 fresh guardpoints remain
-separate; no official live ModifyHitDef controller is claimed. Exact defaults,
-clamp/resource timing, Projectiles, ModifyProjectile, ReversalDef and full
-parity remain unsupported.
+Latest cursor: T749 / issue 323 is closed-bounded for direct `HitDef
+attack.depth` and live Ikemen `ModifyHitDef attack.depth`. Root/RedirectID and
+Helper callers accept static, mixed and caller-context dynamic values. Fresh
+single components duplicate; live omission preserves the active sibling and
+is a no-op. Product `689a02c5`, tests `076d1f5f`, evidence `4ddbd63e`, and the
+required imported trace (`7ef8aace` / `170aacf6`) pass independently. M.U.G.E.N
+1.1 fresh HitDef and Ikemen live ModifyHitDef are separate claims. Aggregate
+QA retains the inherited helper-bind missing-target-link blocker; Projectile,
+ModifyProjectile, ReversalDef breadth, exact defaults/timing, teams, rollback
+and full parity remain unsupported.
 
-Next cursor: T749 upstream seam selection after the aggregate T748 trace gate.
+Next cursor: T750 upstream seam selection after the aggregate T749 trace gate.
 
 Previous cursor: T747 / issue 321 is closed-bounded for live Ikemen
 `ModifyHitDef` `pausetime` and `guard.pausetime`.

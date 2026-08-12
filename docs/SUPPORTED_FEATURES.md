@@ -1,19 +1,21 @@
 ﻿# Supported Features
-## 2026-08-12 T748 live `ModifyHitDef guardpoints` - closed-bounded
+## 2026-08-12 T749 `HitDef attack.depth` - closed-bounded
 
-Live Ikemen `ModifyHitDef guardpoints` now resolves static and caller-context
-dynamic values through root/RedirectID and Helper callers. Omission preserves
-the active guard-points payload. Product `dd2309df`; evidence `d1cf7962`;
-focused compiler/runtime/Helper coverage and typecheck pass, with a required
-imported trace registered. This is Ikemen source compatibility: M.U.G.E.N 1.1
-fresh HitDef guardpoints are a separate path. Exact defaults, clamp/resource
-timing, Projectile/ModifyProjectile, ReversalDef, teams, rollback and full
-parity remain outside the claim. See [issue
-322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md).
+Direct `HitDef attack.depth` now accepts static, mixed and caller-context
+dynamic one/two-component values through root and Helper paths. Live Ikemen
+`ModifyHitDef attack.depth` replaces authored components while preserving live
+siblings; omission is a no-op. Product `689a02c5`; tests `076d1f5f`; evidence
+`4ddbd63e`; required trace `7ef8aace` / `170aacf6`. Fresh one-component values
+duplicate their component. M.U.G.E.N 1.1 fresh HitDef support and live
+ModifyHitDef support are separate claims; the latter is Ikemen-only. Aggregate
+QA remains blocked by the inherited helper-bind missing-target-link case.
+Projectile/ModifyProjectile, ReversalDef breadth, exact defaults/timing, teams,
+rollback and full parity remain outside the claim. See [issue
+323](../.scratch/roadmap/issues/323-hitdef-attack-depth.md).
 
-## Next selection — T749 upstream seam selection
+## Next selection — T750 upstream seam selection
 
-Select one bounded source contract after the aggregate T748 trace gate.
+Select one bounded source contract after the aggregate T749 trace gate.
 
 ## Historical — T747 live `ModifyHitDef` `pausetime`/`guard.pausetime` - closed-bounded
 

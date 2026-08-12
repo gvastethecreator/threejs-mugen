@@ -2,22 +2,23 @@
 
 Last updated: 2026-08-12
 
-## Current implementation route — T748 closed-bounded (2026-08-12)
+## Current implementation route — T749 closed-bounded (2026-08-12)
 
-T748 / [issue 322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md)
-closes live Ikemen `ModifyHitDef guardpoints` through root/RedirectID and
-Helper caller paths. Static and caller-context dynamic values replace the
-active guard-points payload; omission preserves the live value. Product
-`dd2309df`; evidence `d1cf7962`; focused coverage and typecheck pass, with a
-required imported guard trace registered. This is an Ikemen live-controller
-slice, not an official M.U.G.E.N 1.1 ModifyHitDef claim. Fresh defaults,
-Projectile/ModifyProjectile, ReversalDef, exact clamp/timing and full parity
-remain blocked.
+T749 / [issue 323](../.scratch/roadmap/issues/323-hitdef-attack-depth.md)
+closes direct `HitDef attack.depth` expressions and live Ikemen
+`ModifyHitDef attack.depth` through root/RedirectID and Helper caller paths.
+Fresh single values duplicate their component; live modification preserves
+omitted siblings and omission is a no-op. Product `689a02c5`, tests
+`076d1f5f`, evidence `4ddbd63e`; required trace checksums are `7ef8aace` /
+`170aacf6`. This is fresh M.U.G.E.N/Ikemen support plus an Ikemen-only live
+controller slice. The aggregate QA remains blocked by the inherited helper-bind
+missing-target-link case. Projectile/ModifyProjectile, ReversalDef breadth,
+exact depth timing and full parity remain blocked.
 
-## Next implementation route — T749 upstream seam selection
+## Next implementation route — T750 upstream seam selection
 
-Select one bounded official/Ikemen source seam after the aggregate T748 trace
-gate; do not widen this slice into full guard/resource parity.
+Select one bounded official/Ikemen source seam after the aggregate T749 trace
+gate; do not widen this slice into full depth or combat parity.
 
 ## Historical implementation route — T747 closed-bounded (2026-08-11)
 

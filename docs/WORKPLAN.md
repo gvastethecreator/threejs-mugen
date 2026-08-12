@@ -1,19 +1,22 @@
 # Workplan
 
-## Latest slice — T748 closed-bounded (2026-08-12)
+## Latest slice — T749 closed-bounded (2026-08-12)
 
-Issue 322 closes live Ikemen `ModifyHitDef guardpoints` static and
-caller-context dynamic mutation through root/RedirectID and Helper paths.
-Omission preserves the active payload. Product `dd2309df`, evidence
-`d1cf7962`, focused compiler/runtime/Helper coverage, typecheck and the
-required imported trace pass. M.U.G.E.N 1.1 fresh defaults, Projectile,
-ModifyProjectile, ReversalDef, exact clamp/timing, teams, rollback and full
-parity remain blocked.
+Issue 323 closes direct `HitDef attack.depth` expressions and live Ikemen
+`ModifyHitDef attack.depth` static, mixed and caller-context dynamic mutation
+through root/RedirectID and Helper paths. Fresh single values duplicate their
+component; live omission preserves the active sibling and is a no-op. Product
+`689a02c5`, tests `076d1f5f`, evidence `4ddbd63e`; required trace checksums are
+`7ef8aace` / `170aacf6`. The aggregate QA remains blocked by the inherited
+helper-bind missing-target-link case. M.U.G.E.N 1.1 fresh support and live
+Ikemen support are separate claims; Projectile/ModifyProjectile, ReversalDef,
+exact depth timing, teams, rollback and full parity remain blocked.
 
-## Next slice — T749 upstream seam selection
+## Next slice — T750 upstream seam selection
 
-Select one bounded official/Ikemen seam after the T748 aggregate trace gate;
-keep guard/resource defaults and full parity out of the claim.
+Select one bounded official/Ikemen seam after the T749 aggregate trace gate;
+keep Projectile/ModifyProjectile, depth defaults and full parity out of the
+claim.
 
 ## Historical slice — T747 closed-bounded (2026-08-11)
 

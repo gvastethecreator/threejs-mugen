@@ -2,6 +2,21 @@
 
 ## Current parity queue
 
+- **T749 closed-bounded** — issue 323 carries direct `HitDef attack.depth`
+  expressions and live Ikemen `ModifyHitDef attack.depth` through typed IR,
+  root/RedirectID and Helper caller evaluation. Fresh single components
+  duplicate; live omission preserves the active sibling. Product `689a02c5`,
+  tests `076d1f5f`, evidence `4ddbd63e`, and required trace checksums
+  `7ef8aace` / `170aacf6` are recorded. Aggregate QA retains the inherited
+  helper-bind missing-target-link blocker. Projectile/ModifyProjectile,
+  ReversalDef breadth, exact depth defaults/timing, teams, rollback and full
+  parity remain outside the claim. See [issue
+  323](../.scratch/roadmap/issues/323-hitdef-attack-depth.md).
+
+- **T750 queued** — select the next single bounded official/Ikemen seam after
+  the aggregate T749 trace gate; do not widen this queue into full depth or
+  combat parity.
+
 - **T748 closed-bounded** — issue 322 carries live Ikemen
   `ModifyHitDef guardpoints` static and caller-context dynamic values through
   root/RedirectID and Helper callers. Omission preserves the active payload.
@@ -10,10 +25,6 @@
   Projectile/ModifyProjectile, ReversalDef, exact clamp/resource timing,
   teams, rollback and full parity remain outside the claim. See [issue
   322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md).
-
-- **T749 queued** — select the next single bounded official/Ikemen seam after
-  the aggregate T748 trace gate; do not widen this queue into complete guard
-  resource or timing parity.
 
 - **T747 closed-bounded** — issue 321 carries live Ikemen `ModifyHitDef`
   `pausetime` and `guard.pausetime` static, mixed and caller-context dynamic

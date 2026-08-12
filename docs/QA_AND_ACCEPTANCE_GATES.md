@@ -1,24 +1,24 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-12 T748 live `ModifyHitDef guardpoints` — closed-bounded
+## 2026-08-12 T749 `HitDef attack.depth` — closed-bounded
 
-Focused compiler/runtime/Helper coverage and typecheck pass for live Ikemen
-`ModifyHitDef guardpoints` static and caller-context dynamic mutation through
-root/RedirectID and Helper callers. Product `dd2309df`; evidence `d1cf7962`.
-Required trace `synthetic-imported-modifyhitdef-dynamic-guard-points-golden`
-proves `VarSet -> HitDef -> ModifyHitDef -> guard`, RedirectID target `78`,
-`GetHitVar(guardpoints)=19`, and the guarded branch. Trace/initial/final
-checksums are `6019c60c` / `eba2e7f0` / `c275387b`. Omission preserves the
-active payload. M.U.G.E.N 1.1 does not define live ModifyHitDef, so this gate is
-Ikemen-only. Fresh defaults, Projectile/ModifyProjectile, ReversalDef, exact
-clamp/resource timing and full parity remain outside. The aggregate
-`pnpm qa:trace` was rerun and still has the pre-existing helper-bind
-missing-target-link blocker; this artifact passes independently. See [issue
-322](../.scratch/roadmap/issues/322-modifyhitdef-guardpoints.md).
+Focused compiler/runtime/Helper coverage and typecheck pass for direct
+`HitDef attack.depth` plus live Ikemen `ModifyHitDef attack.depth` static,
+mixed and caller-context values. Product `689a02c5`; tests `076d1f5f`; evidence
+`4ddbd63e`. Required trace
+`synthetic-imported-hitdef-dynamic-attack-depth-golden` proves `VarSet ->
+HitDef -> accepted hit`, target link and the combat-depth branch; trace/final
+checksums are `7ef8aace` / `170aacf6`. Fresh single components duplicate; live
+omission preserves the sibling. M.U.G.E.N 1.1 covers fresh HitDef; live
+ModifyHitDef is Ikemen-only. The aggregate `pnpm qa:trace` was rerun and still
+has the inherited helper-bind missing-target-link blocker; this artifact passes
+independently. Projectile/ModifyProjectile, ReversalDef breadth, exact depth
+timing and full parity remain outside. See [issue
+323](../.scratch/roadmap/issues/323-hitdef-attack-depth.md).
 
-## Next gate — T749 upstream seam selection
+## Next gate — T750 upstream seam selection
 
-Select one bounded official/Ikemen seam after the aggregate T748 run.
+Select one bounded official/Ikemen seam after the aggregate T749 run.
 
 ## Historical — T747 live `ModifyHitDef` pause pairs — closed-bounded
 
