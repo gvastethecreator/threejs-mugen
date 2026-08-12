@@ -99,6 +99,7 @@ import {
   createSyntheticImportedHitDefDynamicAirHitTimeTraceArtifact,
   createSyntheticImportedHitDefDynamicGuardDistanceTraceArtifact,
   createSyntheticImportedHitDefDynamicGroundVelocityTraceArtifact,
+  createSyntheticImportedHitDefDynamicAttackDepthTraceArtifact,
   createSyntheticImportedHitDefDynamicGuardVelocityTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicGuardVelocityTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicGuardVelocityYZTraceArtifact,
@@ -26900,6 +26901,33 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       source: "imported",
       stateNo: 5086,
+      life: 963,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef attack.depth artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicAttackDepthTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-attack-depth-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-attack-depth-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(2);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
+    );
+    expect(gate?.evidence.combatReasons).toContain("hit");
+    expect(gate?.evidence.combatReasons).not.toContain("guard");
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5087,
       life: 963,
     });
   });

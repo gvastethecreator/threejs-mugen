@@ -14124,6 +14124,88 @@ export function createSyntheticImportedHitDefOmittedGroundVelocityTraceArtifact(
   });
 }
 
+export function createSyntheticImportedHitDefDynamicAttackDepthTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5087;
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-attack-depth-attacker",
+    displayName: "Dynamic HitDef Attack Depth Attacker",
+    hitDefVarSeeds: [
+      { index: 0, value: 4 },
+      { index: 1, value: 9 },
+    ],
+    hitDefAttackDepth: ["var(0)", "var(1)"],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-attack-depth-defender",
+    displayName: "Dynamic HitDef Attack Depth Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchExpression: "GetHitVar(damage) = 37 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "Dynamic HitDef Attack Depth GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-attack-depth-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-attack-depth-golden",
+      label: "Synthetic imported dynamic direct HitDef attack.depth route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO evaluates direct HitDef attack.depth expressions in the caller context and duplicates a single component when needed. This bounded trace proves a two-component var/fvar-style pair is retained on the accepted direct contact; live ModifyHitDef replacement, Projectile/ModifyProjectile, ReversalDef, depth scaling, localcoord, teams, rollback, and full depth parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-attack-depth-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, branchStateNo],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredEventSubstrings: ["Dynamic HitDef Attack Depth Attacker hit Dynamic HitDef Attack Depth Defender for 37"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredControllerEventSequences: [{
+        label: "dynamic attack.depth direct contact GetHitVar order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [{ stateNo: 5000, controller: "ChangeState", name: "Dynamic HitDef Attack Depth GetHitVar Branch" }],
+      }],
+      requiredActorFrames: [{
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: branchStateNo,
+        animNo: branchStateNo,
+        stateType: "S",
+        moveType: "H",
+        physics: "S",
+        minFrames: 1,
+      }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHitDefDynamicGuardVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -64960,6 +65042,8 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefGuardVelocity?: SyntheticPartialPairExpression;
   /** Synthetic fixture-only dynamic ground velocity pair emitted into HitDef. */
   hitDefGroundVelocity?: SyntheticPairExpression;
+  /** Synthetic fixture-only dynamic direct-HitDef attack.depth pair. */
+  hitDefAttackDepth?: SyntheticPartialPairExpression;
   /** Synthetic fixture-only omission of ground.velocity from the primary HitDef. */
   omitHitDefGroundVelocity?: boolean;
   groundVelocity?: [number, number?];
@@ -65509,6 +65593,8 @@ export type SyntheticImportedTraceFighterOptions = {
     airVelocity?: SyntheticPartialTripleExpression;
     downVelocity?: SyntheticPartialTripleExpression;
     airGuardVelocity?: SyntheticPartialTripleExpression;
+    /** Synthetic fixture-only active HitDef attack.depth pair. */
+    attackDepth?: SyntheticPartialPairExpression;
     /** Synthetic fixture-only active HitDef cornerpush seeds. */
     groundCornerPush?: number;
     airCornerPush?: number;
@@ -65565,6 +65651,8 @@ export type SyntheticImportedTraceFighterOptions = {
     /** Synthetic fixture-only live ModifyHitDef guard.velocity X/Y/Z vector. */
     guardVelocityComponents?: SyntheticPartialTripleExpression;
     airGuardVelocity?: SyntheticPartialTripleExpression;
+    /** Synthetic fixture-only live ModifyHitDef attack.depth pair. */
+    attackDepth?: SyntheticPartialPairExpression;
     /** Synthetic fixture-only caller expressions for live ModifyHitDef cornerpush offsets. */
     groundCornerPush?: SyntheticNumberExpression;
     airCornerPush?: SyntheticNumberExpression;
@@ -66452,6 +66540,9 @@ ${options.fallAnimType === undefined ? "" : `fall.animtype = ${options.fallAnimT
     : `ground.velocity = ${options.hitDefGroundVelocity === undefined
       ? groundVelocity.join(",")
       : options.hitDefGroundVelocity.join(",")}`;
+  const hitDefAttackDepthLine = options.hitDefAttackDepth === undefined
+    ? ""
+    : `attack.depth = ${options.hitDefAttackDepth.join(",")}`;
   const cornerPushLines = `
 ${options.groundCornerPush === undefined ? "" : `ground.cornerpush.veloff = ${options.groundCornerPush}`}
 ${options.airCornerPush === undefined ? "" : `air.cornerpush.veloff = ${options.airCornerPush}`}
@@ -66567,6 +66658,7 @@ ${options.hitDefDownHitTime === undefined ? "" : `down.hittime = ${options.hitDe
 ${options.hitDefGroundSlideTime === undefined ? "" : `ground.slidetime = ${options.hitDefGroundSlideTime}`}
 ${hitDefAirTimeLine}
 ${hitDefGroundVelocityLine}
+${hitDefAttackDepthLine}
 ${airVelocityLine}
 ${downVelocityLine}
 ${options.hitSound === undefined ? "" : `hitsound = ${options.hitSound}`}
@@ -73039,6 +73131,7 @@ ground.hittime = 8
 ground.velocity = 0, 0
 ${route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.join(", ")}\n`}
 ${route.downVelocity === undefined ? "" : `down.velocity = ${route.downVelocity.join(", ")}\n`}
+${route.attackDepth === undefined ? "" : `attack.depth = ${route.attackDepth.join(", ")}\n`}
 guardflag = ${route.guardFlag ?? "MA"}
 ${guardVelocity === undefined ? "" : `guard.velocity = ${guardVelocity.join(", ")}\n`}
 ${route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGuardVelocity.join(", ")}\n`}
@@ -73094,6 +73187,7 @@ ${route.fallKill === undefined ? "" : `fall.kill = ${route.fallKill ? 1 : 0}`}
 ${route.hitOnce === undefined ? "" : `hitonce = ${route.hitOnce ? 1 : 0}`}
 ${route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.join(", ")}`}
 ${route.downVelocity === undefined ? "" : `down.velocity = ${route.downVelocity.join(", ")}`}
+${route.attackDepth === undefined ? "" : `attack.depth = ${route.attackDepth.join(", ")}`}
 ${guardVelocity === undefined ? "" : `guard.velocity = ${guardVelocity.join(", ")}`}
 ${route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGuardVelocity.join(", ")}`}
 ${route.groundCornerPush === undefined ? "" : `ground.cornerpush.veloff = ${route.groundCornerPush}`}

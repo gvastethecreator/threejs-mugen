@@ -1206,6 +1206,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefDynamicGroundVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-attack-depth",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicAttackDepthTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-omitted-ground-velocity",
       required: true,
       artifact: presets.createSyntheticImportedHitDefOmittedGroundVelocityTraceArtifact(),
