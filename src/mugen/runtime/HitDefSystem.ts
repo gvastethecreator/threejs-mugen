@@ -48,7 +48,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   context?: RuntimeControllerEvaluationContext;
   resolveIntegerList?: (key: "nochainid") => number[] | undefined;
   resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
-  resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state" | "snaptime" | "hitsound.channel" | "guardsound.channel") => number | undefined;
+  resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state" | "snaptime" | "hitsound.channel" | "guardsound.channel" | "guardpoints") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkscale" | "guard.sparkscale" | "sparkxy" | "snap") => [number?, number?] | undefined;
   resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
@@ -82,7 +82,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   context?: RuntimeControllerEvaluationContext;
   resolveIntegerList?: (key: "nochainid") => number[] | undefined;
   resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
-  resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "hitsound.channel" | "guardsound.channel") => number | undefined;
+  resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "hitsound.channel" | "guardsound.channel" | "guardpoints") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "sparkxy" | "snap") => [number?, number?] | undefined;
   /** Resolves live dynamic float scalars in the caller context. */
   resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
@@ -998,6 +998,16 @@ export class RuntimeHitDefControllerDispatchWorld {
       );
       if (damage?.hit !== undefined) existing.damage = damage.hit;
       if (damage?.componentCount === 2 && damage.guard !== undefined) existing.guardDamage = damage.guard;
+    }
+    if (operation.guardPoints !== undefined) {
+      const guardPoints = resolveRuntimeHitDefIntegerScalar(
+        operation.guardPoints,
+        findParam(controller.source, "guardpoints"),
+        actor.runtime,
+        context ?? {},
+        resolveIntegerScalar?.("guardpoints"),
+      );
+      if (guardPoints !== undefined) existing.guardPoints = guardPoints;
     }
     if (operation.pauseTime !== undefined || operation.pauseTimeExpressions !== undefined) {
       const pauseTime = operation.pauseTimeExpressions === undefined

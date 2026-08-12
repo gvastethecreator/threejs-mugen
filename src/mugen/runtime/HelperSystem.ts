@@ -2108,7 +2108,7 @@ function resolveRuntimeHelperHitDefEnvShakeComponent(
 export function resolveRuntimeHelperIntegerScalarParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "snaptime" | "hitsound.channel" | "guardsound.channel" | "keepstate" | "projremovetime" | "projmisstime" | "projpriority" | "projhits" | "projanim",
+  key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "snaptime" | "hitsound.channel" | "guardsound.channel" | "guardpoints" | "keepstate" | "projremovetime" | "projmisstime" | "projpriority" | "projhits" | "projanim",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
   if (key === "priority") {

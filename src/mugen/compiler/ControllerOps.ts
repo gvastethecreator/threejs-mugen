@@ -265,6 +265,8 @@ export type ModifyHitDefControllerOp = {
   guardDamage?: number;
   /** Dynamic or mixed live damage pair evaluated in caller context. */
   damageExpressions?: MugenHitDefExpressionPair;
+  /** Live guard-points metadata replacement evaluated in the ModifyHitDef caller context. */
+  guardPoints?: number | string;
   /** Live attacker-side pausetime replacement; a missing second component preserves shake time. */
   pauseTime?: number;
   /** Live defender-side hit shake replacement when pausetime supplies two components. */
@@ -2889,6 +2891,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "type",
     "redirectid",
     "damage",
+    "guardpoints",
     "pausetime",
     "guard.pausetime",
     "ground.hittime",
@@ -2992,6 +2995,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const damage = Array.isArray(damageValue) && damageExpressions === undefined
     ? damageValue
     : undefined;
+  const guardPoints = optionalIntegerExpressionParam(controller, "guardpoints");
   const pauseTimeValue = optionalIntegerExpressionPairParam(controller, "pausetime");
   const pauseTimeExpressions = Array.isArray(pauseTimeValue) && pauseTimeValue.some((value) => typeof value === "string")
     ? pauseTimeValue
@@ -3148,6 +3152,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const redirectPlayerIdExpression = compileRedirectPlayerIdExpression(controller);
   const hasPayload =
     damageValue !== true ||
+    guardPoints !== true ||
     pauseTimeValue !== true ||
     guardPauseTimeValue !== true ||
     groundHitTime !== true ||
@@ -3226,6 +3231,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   if (
     !hasPayload ||
     damageValue === false ||
+    guardPoints === false ||
     pauseTimeValue === false ||
     guardPauseTimeValue === false ||
     groundHitTime === false ||
@@ -3308,6 +3314,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(damage === undefined ? {} : { damage: damage[0] as number }),
     ...(damage?.[1] === undefined ? {} : { guardDamage: damage[1] as number }),
     ...(damageExpressions === undefined ? {} : { damageExpressions }),
+    ...(guardPoints === true ? {} : { guardPoints }),
     ...(pauseTime === undefined ? {} : { pauseTime: pauseTime[0] as number }),
     ...(pauseTime === undefined || pauseTime.length < 2 ? {} : { hitShakeTime: pauseTime[1] as number }),
     ...(pauseTimeExpressions === undefined ? {} : { pauseTimeExpressions }),
