@@ -1,6 +1,22 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T750 closed-bounded (2026-08-12)
+## Latest bounded slice — T751 closed-bounded (2026-08-12)
+
+Issue 325 carries fresh direct `HitDef guardpoints` through typed IR and
+caller-context root/Helper dispatch into accepted grounded guard metadata and
+`GetHitVar(guardpoints)`. Required trace checksum `4c227a07` / final checksum
+`c67b5998` passes independently; the authored value remains separate from the
+defender's current guard resource. Aggregate QA retains the inherited
+helper-bind target-link blocker. Fresh defaults/reset, Projectile,
+ModifyProjectile, exact guard timing, teams, rollback and full parity remain
+blocked. See [issue
+325](../.scratch/roadmap/issues/325-hitdef-guardpoints-dynamic.md).
+
+## Next bounded slice — T752 upstream seam selection
+
+Select one distinct official/Ikemen seam after the aggregate T751 trace gate.
+
+## Historical bounded slice — T750 closed-bounded (2026-08-12)
 
 Issue 324 closes direct `HitDef guard.dist.width/height/depth` pairs through
 typed IR, root/RedirectID and Helper caller evaluation, imported move metadata,
@@ -12,12 +28,6 @@ case. MUGEN 1.1 scalar `guard.dist` and Ikemen bounds are separate claims;
 Projectile, ReversalDef, exact geometry/tick parity and full parity remain
 blocked. See [issue
 324](../.scratch/roadmap/issues/324-hitdef-guard-distance-bounds.md).
-
-## Next bounded slice — T751 upstream seam selection
-
-Select one distinct official/Ikemen seam after the aggregate T750 trace gate.
-Keep Projectile/ModifyProjectile, ReversalDef, teams, rollback and full parity
-as separate claims.
 
 ## Historical bounded slice — T749 closed-bounded (2026-08-12)
 

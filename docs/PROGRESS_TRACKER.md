@@ -1,6 +1,21 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T750 closed-bounded (2026-08-12)
+## Latest implementation checkpoint — T751 closed-bounded (2026-08-12)
+
+Issue 325 closes fresh direct `HitDef guardpoints` static and caller-context
+dynamic resolution through root and Helper callers, with accepted grounded
+guard metadata and `GetHitVar(guardpoints)` readback. Required trace checksums
+`4c227a07` / `c67b5998`; focused tests and typecheck pass. Aggregate QA remains
+blocked by the inherited helper-bind missing-target-link case. The authored
+value stays separate from the current guard resource; defaults/reset,
+Projectile/ModifyProjectile, exact timing, teams, rollback and full parity
+remain blocked.
+
+## Next implementation checkpoint — T752 upstream seam selection
+
+Select the next bounded source contract after the aggregate T751 trace gate.
+
+## Historical implementation checkpoint — T750 closed-bounded (2026-08-12)
 
 Issue 324 closes direct `HitDef guard.dist.width/height/depth` bounds through
 typed IR, root/RedirectID and Helper caller paths, imported metadata and the
@@ -10,10 +25,6 @@ ModifyHitDef preserves omitted siblings. Product `194c0b6`, evidence
 Aggregate QA remains blocked by the inherited helper-bind missing-target-link
 case. Projectile/ModifyProjectile, ReversalDef, exact geometry/timing, teams,
 rollback and full parity remain blocked.
-
-## Next implementation checkpoint — T751 upstream seam selection
-
-Select the next bounded source contract after the aggregate T750 trace gate.
 
 ## Historical implementation checkpoint — T749 closed-bounded (2026-08-12)
 

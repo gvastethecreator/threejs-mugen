@@ -1,6 +1,18 @@
 # Controller Support Registry
 
-Latest cursor: T750 / issue 324 is closed-bounded for direct `HitDef
+Latest cursor: T751 / issue 325 is closed-bounded for direct `HitDef
+guardpoints` expressions. Root and Helper callers resolve static or
+caller-context dynamic integer values; accepted grounded guards expose the
+authored value through `GetHitVar(guardpoints)` without mutating the defender's
+guard resource. Product `3c68582e`, evidence `48d7db3c`, and required trace
+`4c227a07` -> `c67b5998` pass independently. Aggregate QA retains the inherited helper-bind
+missing-target-link blocker; fresh default/reset parity, Projectile,
+ModifyProjectile, exact guard timing, teams, rollback and full parity remain
+unsupported.
+
+Next cursor: T752 upstream seam selection after the aggregate T751 trace gate.
+
+Previous cursor: T750 / issue 324 is closed-bounded for direct `HitDef
 guard.dist.width/height/depth` pairs. Root/RedirectID and Helper callers
 accept static, mixed, and caller-context dynamic bounds; fresh dimensions use
 bounded defaults and live omission preserves siblings. Product `194c0b6`,
@@ -9,8 +21,6 @@ M.U.G.E.N 1.1's scalar `guard.dist` and Ikemen bounds remain separate claims.
 Aggregate QA retains the inherited helper-bind missing-target-link blocker;
 Projectile, ReversalDef breadth, exact geometry/timing, teams, rollback and
 full parity remain unsupported.
-
-Next cursor: T751 upstream seam selection after the aggregate T750 trace gate.
 
 Previous cursor: T749 / issue 323 is closed-bounded for direct `HitDef
 attack.depth` and live Ikemen `ModifyHitDef attack.depth`.
@@ -1389,6 +1399,15 @@ retain authored guardpoints in typed last-hit metadata and expose numeric
 `GetHitVar(guardpoints)`, with missing metadata reading `0`. The value remains
 separate from the defender's current guard resource; cumulative reset,
 guardpower, and full parity remain unsupported.
+
+T751 dynamic guardpoints addendum: fresh direct HitDef `guardpoints` now accepts
+caller-context integer expressions through root and Helper activation, and the
+accepted grounded guard path exposes the resolved authored value through the
+existing `GetHitVar(guardpoints)` metadata. This remains separate from the
+defender's guard resource. Fresh default/reset parity, Projectile,
+ModifyProjectile, exact guard timing, teams, rollback, and full parity remain
+unsupported. Required trace `synthetic-imported-hitdef-dynamic-guardpoints`
+passes independently (`4c227a07` / `c67b5998`).
 
 T519 GetHitVar redlife addendum: direct and Projectile HitDef contacts retain
 authored redlife in typed last-hit metadata and expose numeric

@@ -1,6 +1,23 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T750 closed-bounded (2026-08-12)
+## Latest bounded slice — T751 closed-bounded (2026-08-12)
+
+Issue 325 carries fresh direct HitDef `guardpoints` through typed IR and
+caller-context root/Helper dispatch into accepted guard metadata and
+`GetHitVar(guardpoints)`. Required trace checksum `4c227a07` / final checksum
+`c67b5998`; focused tests and typecheck pass. The authored value remains
+separate from the defender's guard resource. Aggregate QA retains the
+inherited helper-bind target-link blocker; defaults/reset, Projectile,
+ModifyProjectile, exact guard timing, teams, rollback and full parity remain
+blocked. See [issue
+325](../.scratch/roadmap/issues/325-hitdef-guardpoints-dynamic.md).
+
+## Next bounded slice — T752 upstream seam selection
+
+Choose one distinct official/Ikemen source contract after the aggregate T751
+trace gate; keep the queue bounded.
+
+## Historical bounded slice — T750 closed-bounded (2026-08-12)
 
 Issue 324 carries direct `HitDef guard.dist.width/height/depth` through typed
 IR, root/RedirectID and Helper caller evaluation, imported move metadata, and
@@ -11,11 +28,6 @@ pass; aggregate QA remains blocked by the inherited helper-bind target-link
 case. This is an Ikemen bounds claim beside the MUGEN scalar; Projectile,
 ReversalDef, exact geometry/tick parity and full parity remain blocked. See
 [issue 324](../.scratch/roadmap/issues/324-hitdef-guard-distance-bounds.md).
-
-## Next bounded slice — T751 upstream seam selection
-
-Choose one distinct official/Ikemen source contract after the T750 aggregate
-trace gate; do not widen this queue into full guard geometry parity.
 
 ## Historical bounded slice — T749 closed-bounded (2026-08-12)
 

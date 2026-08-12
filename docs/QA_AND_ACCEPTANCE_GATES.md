@@ -1,5 +1,23 @@
 ﻿# QA And Acceptance Gates
 
+## 2026-08-12 T751 direct HitDef guardpoints expressions — closed-bounded
+
+Focused compiler/runtime/Helper/direct-combat coverage and typecheck pass for
+fresh direct `HitDef guardpoints`, including caller-context dynamic values.
+Required trace `synthetic-imported-hitdef-dynamic-guardpoints` proves
+`VarSet -> HitDef -> accepted grounded guard -> GetHitVar(guardpoints)=19` and
+the dedicated imported branch; trace/final checksums are `4c227a07` /
+`c67b5998`. The value remains separate from the defender's current guard
+resource. The aggregate `pnpm qa:trace` still has the inherited helper-bind
+missing-target-link blocker; this artifact passes independently. Fresh
+default/reset parity, Projectile/ModifyProjectile, exact guard timing, teams,
+rollback and full parity remain outside. See [issue
+325](../.scratch/roadmap/issues/325-hitdef-guardpoints-dynamic.md).
+
+## Next gate — T752 upstream seam selection
+
+Select one bounded official/Ikemen seam after the aggregate T751 run.
+
 ## 2026-08-12 T750 direct HitDef guard-distance bounds — closed-bounded
 
 Focused compiler/runtime/CombatResolver/guard-distance coverage and typecheck
@@ -15,10 +33,6 @@ independently. MUGEN 1.1 scalar `guard.dist` and Ikemen bounds are separate;
 Projectile/ReversalDef, exact geometry/tick parity and full parity remain
 outside. See [issue
 324](../.scratch/roadmap/issues/324-hitdef-guard-distance-bounds.md).
-
-## Next gate — T751 upstream seam selection
-
-Select one bounded official/Ikemen seam after the aggregate T750 run.
 
 ## Historical — T749 `HitDef attack.depth` — closed-bounded
 

@@ -1,6 +1,22 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-12 T750 `HitDef guard.dist` bounds — closed-bounded, no score movement
+## 2026-08-12 T751 direct `HitDef guardpoints` expressions — closed-bounded, no score movement
+
+Issue 325 closes caller-context dynamic integer `guardpoints` for fresh direct
+HitDef activation through root and Helper dispatch, with accepted grounded
+guard readback through `GetHitVar(guardpoints)`. Required trace checksum
+`4c227a07` and final checksum `c67b5998` pass independently. No score
+movement: the authored value stays separate from the defender's current guard
+resource. Fresh default/reset parity, Projectile/ModifyProjectile, exact guard
+timing, teams, rollback and full parity remain blocked. Aggregate QA retains
+the inherited helper-bind missing-target-link blocker. See [issue
+325](../.scratch/roadmap/issues/325-hitdef-guardpoints-dynamic.md).
+
+## Next selection — T752 upstream seam selection
+
+Choose one bounded source contract after the aggregate T751 trace gate.
+
+## Historical checkpoint — T750 `HitDef guard.dist` bounds — closed-bounded, no score movement
 
 Issue 324 closes direct `HitDef guard.dist.width/height/depth` static, mixed and
 caller-context dynamic bounds through root/RedirectID and Helper callers.
@@ -12,10 +28,6 @@ ReversalDef, exact geometry/timing, teams, rollback and full parity remain
 blocked. Aggregate QA still has the inherited helper-bind missing-target-link
 blocker. See [issue
 324](../.scratch/roadmap/issues/324-hitdef-guard-distance-bounds.md).
-
-## Next selection — T751 upstream seam selection
-
-Choose one bounded source contract after the aggregate T750 trace gate.
 
 ## Historical checkpoint — T749 `HitDef attack.depth` — closed-bounded, no score movement
 

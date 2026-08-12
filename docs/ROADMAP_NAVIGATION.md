@@ -2,7 +2,24 @@
 
 Last updated: 2026-08-12
 
-## Current implementation route — T750 closed-bounded (2026-08-12)
+## Current implementation route — T751 closed-bounded (2026-08-12)
+
+T751 / [issue 325](../.scratch/roadmap/issues/325-hitdef-guardpoints-dynamic.md)
+closes fresh direct `HitDef guardpoints` static and caller-context dynamic
+resolution through root and Helper callers. Accepted grounded guards expose
+the authored value through `GetHitVar(guardpoints)` without mutating the
+defender's guard resource. Required trace checksums are `4c227a07` /
+`c67b5998`; focused tests and typecheck pass. Aggregate QA retains the
+inherited helper-bind missing-target-link blocker. Defaults/reset,
+Projectile/ModifyProjectile, exact timing, teams, rollback and full parity
+remain blocked.
+
+## Next implementation route — T752 upstream seam selection
+
+Select one bounded official/Ikemen source seam after the aggregate T751 trace
+gate; keep guard-resource and Projectile breadth separate.
+
+## Historical implementation route — T750 closed-bounded (2026-08-12)
 
 T750 / [issue 324](../.scratch/roadmap/issues/324-hitdef-guard-distance-bounds.md)
 closes direct `HitDef guard.dist.width/height/depth` pairs through typed IR,
@@ -14,11 +31,6 @@ retains the inherited helper-bind missing-target-link blocker. M.U.G.E.N 1.1
 scalar guard distance and Ikemen bounds are separate claims; Projectile,
 ReversalDef, exact geometry/tick parity, teams, rollback and full parity remain
 blocked.
-
-## Next implementation route — T751 upstream seam selection
-
-Select one bounded official/Ikemen source seam after the aggregate T750 trace
-gate; keep full guard geometry parity out of the claim.
 
 ## Historical implementation route — T749 closed-bounded (2026-08-12)
 

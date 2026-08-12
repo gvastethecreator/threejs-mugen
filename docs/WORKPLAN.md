@@ -1,6 +1,22 @@
 # Workplan
 
-## Latest slice — T750 closed-bounded (2026-08-12)
+## Latest slice — T751 closed-bounded (2026-08-12)
+
+Issue 325 closes fresh direct HitDef `guardpoints` static and caller-context
+dynamic resolution through root and Helper dispatch, with accepted grounded
+guard metadata and `GetHitVar(guardpoints)` readback. Required trace checksums
+`4c227a07` / `c67b5998`; focused tests and typecheck pass. Aggregate QA remains
+blocked by the inherited helper-bind missing-target-link case. The authored
+value stays separate from the current guard resource; fresh default/reset,
+Projectile/ModifyProjectile, exact timing, teams, rollback and full parity
+remain blocked.
+
+## Next slice — T752 upstream seam selection
+
+Select one bounded official/Ikemen seam after the aggregate T751 trace gate;
+keep the wider guard-resource and Projectile parity work separate.
+
+## Historical slice — T750 closed-bounded (2026-08-12)
 
 Issue 324 closes direct HitDef `guard.dist.width`, `guard.dist.height`, and
 `guard.dist.depth` pairs through typed IR, root/RedirectID and Helper caller
@@ -12,11 +28,6 @@ compiler/runtime/guard-distance/trace coverage pass. Aggregate QA remains
 blocked by the inherited helper-bind missing-target-link case. MUGEN 1.1's
 legacy scalar and Ikemen bounds are separate claims; Projectile, ReversalDef,
 exact geometry/tick parity, teams, rollback and full parity remain blocked.
-
-## Next slice — T751 upstream seam selection
-
-Select one bounded official/Ikemen seam after the T750 aggregate trace gate;
-keep Projectile/ReversalDef breadth and full geometry parity out of the claim.
 
 ## Historical slice — T749 closed-bounded (2026-08-12)
 

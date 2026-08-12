@@ -2,6 +2,19 @@
 
 ## Current parity queue
 
+- **T751 closed-bounded** — issue 325 carries direct fresh `HitDef
+  guardpoints` static and caller-context dynamic values through root and
+  Helper dispatch, accepted guard metadata, and `GetHitVar(guardpoints)`.
+  Required trace checksums `4c227a07` / `c67b5998` pass independently. The
+  authored value remains separate from the defender's current guard resource;
+  fresh default/reset parity, Projectile/ModifyProjectile, exact guard timing,
+  teams, rollback, and full parity remain outside. Aggregate QA retains the
+  inherited helper-bind missing-target-link blocker. See [issue
+  325](../.scratch/roadmap/issues/325-hitdef-guardpoints-dynamic.md).
+
+- **T752 queued** — select the next single bounded official/Ikemen seam after
+  the aggregate T751 trace gate.
+
 - **T750 closed-bounded** — issue 324 carries direct `HitDef
   guard.dist.width/height/depth` through typed IR, root/RedirectID and Helper
   caller evaluation, imported metadata and the direct InGuardDist latch. Fresh
@@ -11,9 +24,6 @@
   missing-target-link blocker. Projectile/ModifyProjectile, ReversalDef,
   exact geometry/timing, teams, rollback and full parity remain outside. See
   [issue 324](../.scratch/roadmap/issues/324-hitdef-guard-distance-bounds.md).
-
-- **T751 queued** — select the next single bounded official/Ikemen seam after
-  the aggregate T750 trace gate; keep full guard geometry parity separate.
 
 - **T749 historical** — issue 323 carries direct `HitDef attack.depth`
   expressions and live Ikemen `ModifyHitDef attack.depth` through typed IR,

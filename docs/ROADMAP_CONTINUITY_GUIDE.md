@@ -2,7 +2,19 @@
 
 Last updated: 2026-08-12
 
-## Current T750 closeout / T751 selection
+## Current T751 closeout / T752 selection
+
+T751 / [issue 325](../.scratch/roadmap/issues/325-hitdef-guardpoints-dynamic.md)
+adds fresh direct `HitDef guardpoints` static and caller-context dynamic
+resolution for root and Helper callers. Accepted grounded guards expose the
+authored value through `GetHitVar(guardpoints)` while keeping the current guard
+resource separate. Required trace `4c227a07` -> `c67b5998`, focused coverage,
+and typecheck pass; aggregate QA retains the inherited helper-bind
+missing-target-link blocker. Fresh default/reset, Projectile/ModifyProjectile,
+exact guard timing, teams, rollback and full parity remain blocked. T752 is the
+next source-selection checkpoint.
+
+## Historical T750 closeout / T751 selection
 
 T750 / [issue 324](../.scratch/roadmap/issues/324-hitdef-guard-distance-bounds.md)
 adds direct `HitDef guard.dist.width/height/depth` bounds with typed IR,
@@ -13,7 +25,7 @@ InGuardDist latch. Fresh dimensions use bounded defaults; live Ikemen
 Aggregate QA still has the inherited helper-bind missing-target-link blocker.
 M.U.G.E.N 1.1 scalar guard distance and Ikemen bounds remain separate claims;
 Projectile, ReversalDef, exact geometry/tick parity, teams, rollback and full
-parity remain blocked. T751 is the next source-selection checkpoint.
+parity remain blocked. T751 was the next source-selection checkpoint.
 
 ## Historical T749 closeout / T750 selection
 
