@@ -1065,6 +1065,58 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.guardDistance).toBe(48);
   });
 
+  it("resolves direct guard.dist width, height, and depth and preserves live siblings", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const caller = runtimeState();
+    caller.vars[1] = 82.9;
+    caller.vars[3] = 5.8;
+    caller.fvars[2] = 7.4;
+
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        "guard.dist.width": "var(1),fvar(2)",
+        "guard.dist.height": "80,70",
+        "guard.dist.depth": "var(3)",
+      })),
+      context: { self: caller },
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.guardDistanceBounds).toEqual({
+      width: [82, 7],
+      height: [80, 70],
+      depth: [5, 0],
+    });
+
+    caller.vars[4] = 61.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        "guard.dist.width": "var(4)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.guardDistanceBounds).toEqual({
+      width: [61, 7],
+      height: [80, 70],
+      depth: [5, 0],
+    });
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { redirectid: "57" })),
+      context: { self: caller },
+    });
+    expect(actor.currentMove?.guardDistanceBounds).toEqual({
+      width: [61, 7],
+      height: [80, 70],
+      depth: [5, 0],
+    });
+  });
+
   it("resolves ground.velocity X/Y independently and preserves live siblings on ModifyHitDef", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

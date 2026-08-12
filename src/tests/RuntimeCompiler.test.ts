@@ -2496,6 +2496,40 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles direct HitDef and ModifyHitDef guard.dist bounds with bounded arity", () => {
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "guard.dist.width": "var(1),fvar(2)",
+      "guard.dist.height": "80,70",
+      "guard.dist.depth": "var(3)",
+    })).operation).toMatchObject({
+      kind: "hitdef",
+      guardDistanceBounds: {
+        width: ["var(1)", "fvar(2)"],
+        height: [80, 70],
+        depth: ["var(3)"],
+      },
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.dist.width": "-8,var(1)",
+      "guard.dist.height": "fvar(2),12",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardDistanceBounds: {
+        width: [-8, "var(1)"],
+        height: ["fvar(2)", 12],
+      },
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "HitDef", [], {
+      "guard.dist.width": "var(1),fvar(2),1",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      "guard.dist.depth": "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles dynamic direct HitDef and ModifyHitDef ground.velocity X/Y pairs", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "ground.velocity": "var(1)",

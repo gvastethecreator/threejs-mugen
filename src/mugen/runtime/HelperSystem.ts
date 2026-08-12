@@ -1872,7 +1872,7 @@ export function resolveRuntimeHelperSoundValueParam(
 export function resolveRuntimeHelperIntegerPairParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower",
+  key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower" | "guard.dist.width" | "guard.dist.height" | "guard.dist.depth",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): [number?, number?] | undefined {
   const operation = controller.operation;
@@ -1888,7 +1888,13 @@ export function resolveRuntimeHelperIntegerPairParam(
               ? operation.getPower
               : key === "givepower"
                 ? operation.givePower
-                : operation.unhittableTime
+                : key === "guard.dist.width"
+                  ? operation.guardDistanceBounds?.width
+                  : key === "guard.dist.height"
+                    ? operation.guardDistanceBounds?.height
+                    : key === "guard.dist.depth"
+                      ? operation.guardDistanceBounds?.depth
+                      : operation.unhittableTime
       : undefined;
   if (operationValue !== undefined) {
     return [

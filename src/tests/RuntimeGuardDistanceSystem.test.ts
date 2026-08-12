@@ -103,6 +103,26 @@ describe("RuntimeGuardDistanceSystem", () => {
     ).toBeUndefined();
   });
 
+  it("uses direct width, height, and depth bounds before contact", () => {
+    const world = new RuntimeGuardDistanceWorld();
+    const attacker = runtime({ pos: { x: 0, y: 0 }, facing: 1, combatDepth: { position: 0, velocity: 0, size: [0, 0], attack: [0, 0] } });
+    const defender = runtime({ pos: { x: 118, y: 30 }, facing: -1, combatDepth: { position: 4, velocity: 0, size: [0, 0], attack: [0, 0] } });
+    const target = { runtime: defender, hurtBoxes: [hurtBox()] };
+    const move = guardMove({
+      guardDistance: 0,
+      guardDistanceBounds: {
+        width: [90, 12],
+        height: [25, 15],
+        depth: [8, 6],
+      },
+    });
+
+    expect(world.isInGuardDistance(target, { runtime: attacker, currentMove: move, moveTick: 3, hasHit: false })).toBe(true);
+    expect(world.isInGuardDistance({ ...target, runtime: { ...defender, pos: { x: 145, y: 30 } } }, { runtime: attacker, currentMove: move, moveTick: 3, hasHit: false })).toBe(false);
+    expect(world.isInGuardDistance({ ...target, runtime: { ...defender, pos: { x: 118, y: 47 } } }, { runtime: attacker, currentMove: move, moveTick: 3, hasHit: false })).toBe(false);
+    expect(world.isInGuardDistance({ ...target, runtime: { ...defender, combatDepth: { ...defender.combatDepth!, position: 11 } } }, { runtime: attacker, currentMove: move, moveTick: 3, hasHit: false })).toBe(false);
+  });
+
   it("creates and clears a direct-attack latch with source and tick provenance", () => {
     const world = new RuntimeGuardDistanceWorld();
     const defender = { runtime: runtime({ pos: { x: 120, y: 0 }, facing: -1 }), hurtBoxes: [hurtBox()] };

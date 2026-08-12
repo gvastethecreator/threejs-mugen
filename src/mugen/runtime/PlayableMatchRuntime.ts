@@ -5304,7 +5304,13 @@ function runActiveStateControllers(
                   ? operation?.unhittableTime
                   : key === "getpower"
                     ? operation?.getPower
-                    : operation?.givePower;
+                    : key === "givepower"
+                      ? operation?.givePower
+                      : key === "guard.dist.width"
+                        ? operation?.guardDistanceBounds?.width
+                        : key === "guard.dist.height"
+                          ? operation?.guardDistanceBounds?.height
+                          : operation?.guardDistanceBounds?.depth;
           if (pair === undefined) return undefined;
           const resolveComponent = (component: number | string | undefined): number | undefined => {
             if (typeof component === "number") return Number.isFinite(component) ? Math.trunc(component) : undefined;
@@ -5523,9 +5529,15 @@ function runActiveStateControllers(
                 ? operation?.guardPauseTimeExpressions
                 : key === "unhittabletime"
               ? operation?.unhittableTime
-              : key === "getpower"
-                ? operation?.getPower
-                : operation?.givePower;
+                : key === "getpower"
+                  ? operation?.getPower
+                : key === "givepower"
+                  ? operation?.givePower
+                  : key === "guard.dist.width"
+                    ? operation?.guardDistanceBounds?.width
+                    : key === "guard.dist.height"
+                      ? operation?.guardDistanceBounds?.height
+                      : operation?.guardDistanceBounds?.depth;
           if (pair === undefined) return undefined;
           const resolveComponent = (component: number | string | undefined): number | undefined => {
             if (typeof component === "number") return Number.isFinite(component) ? Math.trunc(component) : undefined;

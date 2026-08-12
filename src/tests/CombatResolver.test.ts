@@ -124,6 +124,23 @@ describe("CombatResolver", () => {
     expect(hasRuntimeGuardDistance(attacker, hitbox, defender, [hurtbox], 40)).toBe(false);
   });
 
+  it("checks direct guard.dist width, height, and depth envelopes", () => {
+    const attacker = actor({ pos: { x: 0, y: 0 }, facing: 1, combatDepth: { position: 0, velocity: 0, size: [0, 0], attack: [0, 0] } });
+    const defender = actor({ pos: { x: 118, y: 30 }, facing: -1, combatDepth: { position: 4, velocity: 0, size: [0, 0], attack: [0, 0] } });
+    const hitbox = { x1: 20, y1: -60, x2: 40, y2: -20 };
+    const hurtbox = { x1: -10, y1: -50, x2: 10, y2: 0 };
+    const bounds = {
+      width: [90, 12] as [number, number],
+      height: [25, 15] as [number, number],
+      depth: [8, 6] as [number, number],
+    };
+
+    expect(hasRuntimeGuardDistance(attacker, hitbox, defender, [hurtbox], 0, bounds)).toBe(true);
+    expect(hasRuntimeGuardDistance(attacker, hitbox, { ...defender, pos: { x: 145, y: 30 } }, [hurtbox], 0, bounds)).toBe(false);
+    expect(hasRuntimeGuardDistance(attacker, hitbox, { ...defender, pos: { x: 118, y: 47 } }, [hurtbox], 0, bounds)).toBe(false);
+    expect(hasRuntimeGuardDistance(attacker, hitbox, { ...defender, combatDepth: { ...defender.combatDepth!, position: 11 } }, [hurtbox], 0, bounds)).toBe(false);
+  });
+
   it("parses and matches broad MUGEN hit attribute filters", () => {
     expect(parseHitAttribute("S, NA, SA")).toEqual({
       states: new Set(["S"]),

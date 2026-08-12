@@ -72,6 +72,13 @@ export type RuntimeCombatAttack = {
   airGuardCornerPush?: number;
 };
 
+/** Bounded direct guard-distance envelope used by Ikemen HitDef extensions. */
+export type RuntimeGuardDistanceBounds = {
+  width: [number, number];
+  height: [number, number];
+  depth: [number, number];
+};
+
 export type RuntimeCombatHitResult =
   | {
       kind: "guard";
@@ -266,13 +273,29 @@ export function hasRuntimeBoxContact(
 }
 
 export function hasRuntimeGuardDistance(
-  attacker: Pick<CharacterRuntimeState, "pos" | "facing">,
+  attacker: Pick<CharacterRuntimeState, "pos" | "facing" | "combatDepth">,
   attackBox: CollisionBox,
-  defender: Pick<CharacterRuntimeState, "pos" | "facing">,
+  defender: Pick<CharacterRuntimeState, "pos" | "facing" | "combatDepth">,
   hurtBoxes: CollisionBox[],
   guardDistance = DEFAULT_RUNTIME_GUARD_DISTANCE,
+  guardDistanceBounds?: RuntimeGuardDistanceBounds,
 ): boolean {
   const worldAttackBox = runtimeWorldBox(attacker, attackBox);
+  if (guardDistanceBounds !== undefined) {
+    const [frontWidth, backWidth] = guardDistanceBounds.width.map((value) => Math.max(0, value)) as [number, number];
+    const [lowerHeight, upperHeight] = guardDistanceBounds.height.map((value) => Math.max(0, value)) as [number, number];
+    const [backDepth, frontDepth] = guardDistanceBounds.depth.map((value) => Math.max(0, value)) as [number, number];
+    const expandedAttackBox = {
+      ...worldAttackBox,
+      x1: worldAttackBox.x1 - (attacker.facing === 1 ? backWidth : frontWidth),
+      x2: worldAttackBox.x2 + (attacker.facing === 1 ? frontWidth : backWidth),
+      y1: worldAttackBox.y1 - lowerHeight,
+      y2: worldAttackBox.y2 + upperHeight,
+    };
+    const distanceZ = (defender.combatDepth?.position ?? 0) - (attacker.combatDepth?.position ?? 0);
+    const inDepth = distanceZ === 0 || (distanceZ > -backDepth && distanceZ < frontDepth);
+    return inDepth && hasRuntimeBoxContact(expandedAttackBox, defender, hurtBoxes);
+  }
   const expandedAttackBox = {
     ...worldAttackBox,
     x1: worldAttackBox.x1 - Math.max(0, guardDistance),

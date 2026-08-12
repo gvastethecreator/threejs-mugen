@@ -5,6 +5,7 @@ import {
   isRuntimeGuarding,
 } from "./CombatResolver";
 import type { CharacterRuntimeState, RuntimeInGuardDistanceLatch } from "./types";
+import type { RuntimeGuardDistanceBounds } from "./CombatResolver";
 import type { RuntimeProjectileGuardDistanceBounds } from "./ProjectileSystem";
 
 export type RuntimeGuardDistanceMove = {
@@ -13,6 +14,7 @@ export type RuntimeGuardDistanceMove = {
   hitbox: CollisionBox;
   guardFlag?: string;
   guardDistance?: number;
+  guardDistanceBounds?: RuntimeGuardDistanceBounds;
 };
 
 export type RuntimeGuardDistanceDefender = {
@@ -21,7 +23,7 @@ export type RuntimeGuardDistanceDefender = {
 };
 
 export type RuntimeGuardDistanceAttacker = {
-  runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "assertSpecial">;
+  runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "assertSpecial" | "combatDepth">;
   currentMove?: RuntimeGuardDistanceMove;
   moveTick: number;
   hasHit: boolean;
@@ -97,6 +99,7 @@ export function isRuntimeInGuardDistance(
     defender.runtime,
     defender.hurtBoxes,
     move.guardDistance ?? DEFAULT_RUNTIME_GUARD_DISTANCE,
+    move.guardDistanceBounds,
   );
 }
 

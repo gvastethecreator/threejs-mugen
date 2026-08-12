@@ -8,6 +8,7 @@ import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { derivePinnedIkemenFreshAirGuardVelocity } from "./HitDefVelocity";
+import { DEFAULT_RUNTIME_GUARD_DISTANCE } from "./CombatResolver";
 import { runtimeDizzyPointsFromHitDef } from "./DizzyPointsDefaults";
 import { runtimeCombatDepthFromConstants } from "./RuntimeCombatDepthSystem";
 import { parseRuntimeSocdResolution, type RuntimeSocdResolution } from "./RuntimeInput";
@@ -232,6 +233,7 @@ function buildStateMoves(
         hitVelocities: runtimeHitVelocityMetadata({ groundVelocity, airVelocity, downVelocity, guardVelocity, airGuardVelocity }),
         koVelocityAdd: koVelocityAdd === undefined ? undefined : { x: koVelocityAdd[0], y: koVelocityAdd[1] ?? 0 },
         guardDistance: firstNumber(hitDef.params["guard.dist"]) ?? undefined,
+        guardDistanceBounds: runtimeGuardDistanceBounds(hitDef.params),
         guardFlag: hitDef.params.guardflag,
         guardDamage: secondNumber(hitDef.params.damage) ?? undefined,
         guardKill: boolParam(hitDef.params["guard.kill"]),
@@ -361,6 +363,7 @@ function buildMove(
       | "hitVelocities"
       | "koVelocityAdd"
       | "guardDistance"
+      | "guardDistanceBounds"
       | "guardFlag"
       | "guardDamage"
       | "guardKill"
@@ -439,6 +442,7 @@ function buildMove(
     hitVelocities: overrides.hitVelocities,
     koVelocityAdd: overrides.koVelocityAdd,
     guardDistance: overrides.guardDistance,
+    guardDistanceBounds: overrides.guardDistanceBounds,
     guardFlag: overrides.guardFlag,
     guardDamage: overrides.guardDamage,
     guardKill: overrides.guardKill,
@@ -739,6 +743,26 @@ function numberPair(value: string | undefined): [number, number] | undefined {
     return undefined;
   }
   return [numbers[0], numbers[1] ?? 0];
+}
+
+function runtimeGuardDistanceBounds(params: Record<string, string>): {
+  width: [number, number];
+  height: [number, number];
+  depth: [number, number];
+} | undefined {
+  const width = numberPair(params["guard.dist.width"]);
+  const height = numberPair(params["guard.dist.height"]);
+  const depth = numberPair(params["guard.dist.depth"]);
+  if (width === undefined && height === undefined && depth === undefined) return undefined;
+  const boundedPair = (value: [number, number] | undefined, fallback: [number, number]): [number, number] => [
+    Math.max(0, Math.trunc(value?.[0] ?? fallback[0])),
+    Math.max(0, Math.trunc(value?.[1] ?? fallback[1])),
+  ];
+  return {
+    width: boundedPair(width, [DEFAULT_RUNTIME_GUARD_DISTANCE, DEFAULT_RUNTIME_GUARD_DISTANCE]),
+    height: boundedPair(height, [1000, 1000]),
+    depth: boundedPair(depth, [10, 10]),
+  };
 }
 
 function numberTriple(value: string | undefined): [number, number?, number?] | undefined {

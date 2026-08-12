@@ -71,6 +71,17 @@ export type MugenProjectileGuardDistanceBounds = {
   /** Top/bottom depth pair. */
   depth?: [number, number];
 };
+/**
+ * Direct HitDef guard-distance bounds.  Unlike projectile bounds this keeps
+ * authored component arity and expressions until the active caller resolves
+ * them, so fresh and ModifyHitDef paths can apply the correct preservation
+ * rules independently.
+ */
+export type MugenHitDefGuardDistanceBounds = {
+  width?: MugenHitDefExpressionPair;
+  height?: MugenHitDefExpressionPair;
+  depth?: MugenHitDefExpressionPair;
+};
 
 export type ControllerCompileContext = {
   constants?: Record<string, number>;
@@ -167,6 +178,8 @@ export type HitDefControllerOp = {
   downVelocityExpressions?: MugenHitDefExpressionPair;
   /** Direct guard.dist scalar evaluated in the HitDef caller context. */
   guardDistance?: number | string;
+  /** Ikemen-only direct guard.dist.width/height/depth pairs evaluated in caller context. */
+  guardDistanceBounds?: MugenHitDefGuardDistanceBounds;
   guardFlag?: string;
   /** Static attacker component of guard.pausetime. */
   guardPauseTime?: number;
@@ -301,6 +314,8 @@ export type ModifyHitDefControllerOp = {
   airHitTime?: number | string;
   /** Live guard.dist replacement evaluated in the ModifyHitDef caller context. */
   guardDistance?: number | string;
+  /** Ikemen-only live guard.dist.width/height/depth component replacements. */
+  guardDistanceBounds?: MugenHitDefGuardDistanceBounds;
   /** Live down.hittime replacement evaluated in the ModifyHitDef caller context. */
   downHitTime?: number | string;
   /** Component-wise live ground.velocity X/Y replacement evaluated in caller context. */
@@ -2696,6 +2711,7 @@ function compileHitDefControllerOp(
   const airHitTime = optionalIntegerExpressionParam(controller, "air.hittime");
   const downHitTime = optionalIntegerExpressionParam(controller, "down.hittime");
   const guardDistance = optionalIntegerExpressionParam(controller, "guard.dist");
+  const guardDistanceBounds = optionalHitDefGuardDistanceBoundsParam(controller);
   const guardHitTime = optionalIntegerExpressionParam(controller, "guard.hittime");
   const guardSlideTime = optionalIntegerExpressionParam(controller, "guard.slidetime");
   const guardControlTime = optionalIntegerExpressionParam(controller, "guard.ctrltime");
@@ -2755,6 +2771,7 @@ function compileHitDefControllerOp(
     airHitTime === false ||
     downHitTime === false ||
     guardDistance === false ||
+    guardDistanceBounds === false ||
     guardHitTime === false ||
     guardSlideTime === false ||
     guardControlTime === false ||
@@ -2841,6 +2858,7 @@ function compileHitDefControllerOp(
     downVelocity,
     ...(downVelocityExpressions === undefined ? {} : { downVelocityExpressions }),
     ...(guardDistance === true ? {} : { guardDistance }),
+    ...(guardDistanceBounds === true ? {} : { guardDistanceBounds }),
     guardFlag: stripMugenString(findParam(controller, "guardflag")),
     guardPauseTime: guardPauseTime?.[0] as number | undefined,
     guardShakeTime: guardPauseTime === undefined ? undefined : (guardPauseTime[1] as number | undefined) ?? 0,
@@ -2918,6 +2936,9 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     "guard.ctrltime",
     "air.hittime",
     "guard.dist",
+    "guard.dist.width",
+    "guard.dist.height",
+    "guard.dist.depth",
     "down.hittime",
     "ground.velocity",
     "air.velocity",
@@ -3043,6 +3064,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const guardControlTime = optionalIntegerExpressionParam(controller, "guard.ctrltime");
   const airHitTime = optionalIntegerExpressionParam(controller, "air.hittime");
   const guardDistance = optionalIntegerExpressionParam(controller, "guard.dist");
+  const guardDistanceBounds = optionalHitDefGuardDistanceBoundsParam(controller);
   const downHitTime = optionalIntegerExpressionParam(controller, "down.hittime");
   const groundVelocityValue = optionalModifyHitDefVelocityParam(controller, "ground.velocity");
   const groundVelocity = typeof groundVelocityValue === "object" ? groundVelocityValue.xy : undefined;
@@ -3189,6 +3211,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     guardControlTime !== true ||
     airHitTime !== true ||
     guardDistance !== true ||
+    guardDistanceBounds !== true ||
     downHitTime !== true ||
     groundVelocityValue !== true ||
     groundVelocityZ !== true ||
@@ -3269,6 +3292,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     guardControlTime === false ||
     airHitTime === false ||
     guardDistance === false ||
+    guardDistanceBounds === false ||
     downHitTime === false ||
     groundVelocityValue === false ||
     airVelocityValue === false ||
@@ -3355,6 +3379,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
     ...(guardControlTime === true ? {} : { guardControlTime }),
     ...(airHitTime === true ? {} : { airHitTime }),
     ...(guardDistance === true ? {} : { guardDistance }),
+    ...(guardDistanceBounds === true ? {} : { guardDistanceBounds }),
     ...(downHitTime === true ? {} : { downHitTime }),
     ...(groundVelocity === undefined ? {} : { groundVelocity }),
     ...(groundVelocityZ === true ? {} : { groundVelocityZ }),
@@ -5286,6 +5311,21 @@ function optionalIntegerExpressionPairParam(
   if (pair[1] === undefined) return [first];
   const second = typeof pair[1] === "number" ? Math.trunc(pair[1]) : pair[1];
   return [first, second];
+}
+
+function optionalHitDefGuardDistanceBoundsParam(
+  controller: MugenStateController,
+): MugenHitDefGuardDistanceBounds | true | false {
+  const width = optionalIntegerExpressionPairParam(controller, "guard.dist.width");
+  const height = optionalIntegerExpressionPairParam(controller, "guard.dist.height");
+  const depth = optionalIntegerExpressionPairParam(controller, "guard.dist.depth");
+  if (width === false || height === false || depth === false) return false;
+  if (width === true && height === true && depth === true) return true;
+  return {
+    ...(width === true ? {} : { width }),
+    ...(height === true ? {} : { height }),
+    ...(depth === true ? {} : { depth }),
+  };
 }
 
 function optionalModifyHitDefVelocityParam(

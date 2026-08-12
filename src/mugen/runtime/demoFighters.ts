@@ -7,6 +7,7 @@ import type { MugenStateController, MugenStateDef, MugenStateSourceSelection } f
 import type { MugenFightScreenAssets, MugenFightScreenTiming } from "../model/MugenSystemAssets";
 import type { RuntimeContactEnvShake, RuntimeGetHitVars, RuntimeHitVelocityMetadata, RuntimePaletteFxPayload, RuntimeResolvedSoundRef } from "./types";
 import type { RuntimeHitDefPriorityProfile } from "./HitDefPriorityPolicy";
+import type { RuntimeGuardDistanceBounds } from "./CombatResolver";
 import type { MugenAffectTeam, MugenTeamSide } from "../model/MugenTeam";
 import type { RuntimeSocdResolution } from "./RuntimeInput";
 
@@ -135,6 +136,8 @@ export type DemoMove = {
   koVelocityAdd?: { x?: number; y?: number };
   hitVars?: RuntimeGetHitVars;
   guardDistance?: number;
+  /** Ikemen direct guard.dist.width/height/depth envelope. */
+  guardDistanceBounds?: RuntimeGuardDistanceBounds;
   guardFlag?: string;
   guardDamage?: number;
   guardKill?: boolean;

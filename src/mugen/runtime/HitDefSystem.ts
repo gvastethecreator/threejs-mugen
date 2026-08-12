@@ -1,11 +1,11 @@
-import type { HitDefControllerOp, ModifyHitDefControllerOp, MugenHitDefEnvShakeOp, MugenHitDefExpressionPair, MugenHitDefFallFlagsOp, MugenHitDefFallImpactOp, MugenHitDefFallRecoveryOp, MugenHitDefLethalFlagsOp } from "../compiler/ControllerOps";
+import type { HitDefControllerOp, ModifyHitDefControllerOp, MugenHitDefEnvShakeOp, MugenHitDefExpressionPair, MugenHitDefFallFlagsOp, MugenHitDefFallImpactOp, MugenHitDefFallRecoveryOp, MugenHitDefGuardDistanceBounds, MugenHitDefLethalFlagsOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationFrame } from "../model/MugenAnimation";
 import type { CollisionBox } from "../model/CollisionBox";
 import { normalizeMugenCollisionBoxType } from "../model/CollisionBox";
 import { normalizeMugenAffectTeam, normalizeMugenTeamSide } from "../model/MugenTeam";
 import type { MugenStateController } from "../model/MugenState";
-import { DEFAULT_RUNTIME_GUARD_DISTANCE, parseHitAttribute } from "./CombatResolver";
+import { DEFAULT_RUNTIME_GUARD_DISTANCE, parseHitAttribute, type RuntimeGuardDistanceBounds } from "./CombatResolver";
 import type { DemoMove } from "./demoFighters";
 import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { normalizeRuntimeHitDefPriority } from "./HitDefContactPriority";
@@ -47,7 +47,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   /** Active controller-expression bindings for dynamic scalar HitDef fields. */
   context?: RuntimeControllerEvaluationContext;
   resolveIntegerList?: (key: "nochainid") => number[] | undefined;
-  resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
+  resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower" | "guard.dist.width" | "guard.dist.height" | "guard.dist.depth") => [number?, number?] | undefined;
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state" | "snaptime" | "hitsound.channel" | "guardsound.channel" | "guardpoints") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "attack.depth" | "sparkscale" | "guard.sparkscale" | "sparkxy" | "snap") => [number?, number?] | undefined;
@@ -81,7 +81,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   /** Active controller-expression bindings for dynamic scalar ModifyHitDef fields. */
   context?: RuntimeControllerEvaluationContext;
   resolveIntegerList?: (key: "nochainid") => number[] | undefined;
-  resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower") => [number?, number?] | undefined;
+  resolveIntegerPair?: (key: "damage" | "pausetime" | "guard.pausetime" | "unhittabletime" | "getpower" | "givepower" | "guard.dist.width" | "guard.dist.height" | "guard.dist.depth") => [number?, number?] | undefined;
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "hitsound.channel" | "guardsound.channel" | "guardpoints") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "attack.depth" | "sparkxy" | "snap") => [number?, number?] | undefined;
   /** Resolves live dynamic float scalars in the caller context. */
@@ -540,6 +540,19 @@ export class RuntimeHitDefControllerDispatchWorld {
     const guardDistance = resolvedGuardDistance !== undefined && resolvedGuardDistance >= 0
       ? resolvedGuardDistance
       : existing?.guardDistance ?? DEFAULT_RUNTIME_GUARD_DISTANCE;
+    const guardDistanceBounds = resolveRuntimeHitDefGuardDistanceBounds(
+      operation?.guardDistanceBounds,
+      source,
+      actor.runtime,
+      context ?? {},
+      resolveIntegerPair,
+      {
+        width: [guardDistance, guardDistance],
+        height: [1000, 1000],
+        depth: [10, 10],
+      },
+      false,
+    );
     const guardPush = Math.abs(guardVelocityX ?? existing?.guardPush ?? Math.max(1, Math.round(push * 0.55)));
     const airGuardPush = airGuardVelocity ? Math.abs(airGuardVelocity[0]) : existing?.airGuardPush;
     const cornerPush = resolveHitDefCornerPush({
@@ -871,6 +884,7 @@ export class RuntimeHitDefControllerDispatchWorld {
         ...(crouchFriction !== undefined ? { crouchFriction } : {}),
       },
       guardDistance,
+      ...(guardDistanceBounds === undefined ? {} : { guardDistanceBounds }),
       guardFlag: operation?.guardFlag ?? stripMugenString(findParam(source, "guardflag")) ?? existing?.guardFlag ?? "MA",
       guardDamage,
       guardKill,
@@ -1122,6 +1136,23 @@ export class RuntimeHitDefControllerDispatchWorld {
         resolveIntegerScalar?.("guard.dist"),
       );
       if (guardDistance !== undefined && guardDistance >= 0) existing.guardDistance = guardDistance;
+    }
+    if (operation.guardDistanceBounds !== undefined) {
+      const currentGuardDistance = existing.guardDistance ?? DEFAULT_RUNTIME_GUARD_DISTANCE;
+      const guardDistanceBounds = resolveRuntimeHitDefGuardDistanceBounds(
+        operation.guardDistanceBounds,
+        controller.source,
+        actor.runtime,
+        context ?? {},
+        resolveIntegerPair,
+        existing.guardDistanceBounds ?? {
+          width: [currentGuardDistance, currentGuardDistance],
+          height: [1000, 1000],
+          depth: [10, 10],
+        },
+        true,
+      );
+      if (guardDistanceBounds !== undefined) existing.guardDistanceBounds = guardDistanceBounds;
     }
     if (operation.downHitTime !== undefined) {
       const downHitTime = resolveRuntimeHitDefIntegerScalar(
@@ -2439,6 +2470,45 @@ function resolveRuntimeHitDefFloatExpressionPair(
     ...(first === undefined ? {} : { first }),
     ...(second === undefined ? {} : { second }),
     componentCount,
+  };
+}
+
+function resolveRuntimeHitDefGuardDistanceBounds(
+  operationValue: MugenHitDefGuardDistanceBounds | undefined,
+  controller: { params: Record<string, string> },
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext,
+  resolvedOverride: RuntimeHitDefControllerDispatchOptions<RuntimeHitDefControllerDispatchActor>["resolveIntegerPair"],
+  fallback: RuntimeGuardDistanceBounds,
+  preserveMissingSecond: boolean,
+): RuntimeGuardDistanceBounds | undefined {
+  const raw = {
+    width: findParam(controller, "guard.dist.width"),
+    height: findParam(controller, "guard.dist.height"),
+    depth: findParam(controller, "guard.dist.depth"),
+  };
+  const hasAuthored = operationValue !== undefined || Object.values(raw).some((value) => value !== undefined);
+  if (!hasAuthored) return undefined;
+  const resolvePair = (
+    key: "width" | "height" | "depth",
+    runtimeKey: "guard.dist.width" | "guard.dist.height" | "guard.dist.depth",
+  ): [number, number] => {
+    const authored = operationValue?.[key] ?? splitRuntimeExpressionPair(raw[key]);
+    const pair = resolveRuntimeHitDefIntegerPair(
+      authored,
+      raw[key],
+      state,
+      context,
+      resolvedOverride?.(runtimeKey),
+      preserveMissingSecond ? fallback[key] : [fallback[key][0], 0],
+      preserveMissingSecond,
+    );
+    return [Math.max(0, pair[0]), Math.max(0, pair[1])];
+  };
+  return {
+    width: resolvePair("width", "guard.dist.width"),
+    height: resolvePair("height", "guard.dist.height"),
+    depth: resolvePair("depth", "guard.dist.depth"),
   };
 }
 
