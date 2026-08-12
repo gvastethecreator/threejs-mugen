@@ -10428,6 +10428,196 @@ export function createSyntheticImportedDynamicAttackGuardPointsTraceArtifact(
   });
 }
 
+/** T754 root Projectile proof: AttackMulSet guardpoints is snapshotted at spawn. */
+export function createSyntheticImportedProjectileAttackGuardPointsSnapshotTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5087;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-projectile-attack-guardpoints-snapshot-grid",
+    displayName: "Trace Projectile Attack Guard Points Snapshot Grid",
+    playerStart: {
+      p1: { x: 6, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-attack-guardpoints-snapshot-defender",
+    displayName: "Projectile Attack Guard Points Snapshot Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      guardStateNo: 130,
+      guardedBranchStateNo: branchStateNo,
+      guardedBranchAnimNo: branchStateNo,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression: "GetHitVar(guardpoints) = -20 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-attack-guardpoints-snapshot-attacker",
+    displayName: "Projectile Attack Guard Points Snapshot Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    attackMultiplier: 0.5,
+    postProjectileAttackGuardPointsMultiplier: 2,
+    projectileGuardPointsExpression: "-20",
+    projectileDamage: [31, 4],
+    projectileRemoveOnHit: false,
+    projectileOffset: [62, -45],
+    projectileGroundVelocity: [-1, 1],
+    guardFlag: "MA",
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultGuardStateScript(),
+    targetId: "synthetic-imported-projectile-attack-guardpoints-snapshot-golden",
+    targetLabel: "Synthetic imported Projectile AttackMulSet guardpoints snapshot route",
+    requiredExecutedStates: [200, 150, 151, branchStateNo],
+    requiredExecutedControllers: ["ChangeState", "AttackMulSet", "Projectile", "HitVelSet"],
+    requiredExecutedOperations: ["damage-scale:attackmulset", "projectile", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [
+      {
+        label: "Projectile snapshots AttackMulSet guardpoints before live multiplier changes",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "AttackMulSet", name: "Attack Scale" },
+          { stateNo: 200, controller: "Projectile", name: "Fast Projectile" },
+          { stateNo: 200, controller: "AttackMulSet", name: "Post Projectile Attack Scale" },
+        ],
+      },
+    ],
+    requiredActorFrames: [
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, animNo: branchStateNo, moveType: "I", minFrames: 1 },
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+    requiredEffectPayloads: [{ actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1", effectId: 77, minAge: 1, hasHit: true }],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    requiredFinalActors: [
+      { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+      { actorId: "p2", source: "imported", actorKind: "player", life: 998, guardPoints: 990 },
+    ],
+    forbiddenExecutedStates: [40, 5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+    forbiddenCombatReasons: ["hit", "override", "reversal"],
+    notes: [
+      "Pinned Ikemen GO trace proves a root Projectile captures the creator's AttackMulSet guardpoints multiplier at spawn (0.5), then keeps the captured value after a later live AttackMulSet changes guardpoints to 2. The accepted guard reports authored GetHitVar(guardpoints)=-20 and applies the captured -10 resource delta (1000 -> 990). Fresh Projectile defaults, ModifyProjectile, Helper ownership, teams, rollback, and exact engine timing remain outside this bounded slice.",
+    ],
+  });
+}
+
+/** T754 Helper-parented counterpart: helper-owned Projectile freezes its creator multiplier. */
+export function createSyntheticImportedHelperProjectileAttackGuardPointsSnapshotTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5088;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-helper-projectile-attack-guardpoints-snapshot-grid",
+    displayName: "Trace Helper Projectile Attack Guard Points Snapshot Grid",
+    playerStart: {
+      p1: { x: -54, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-attack-guardpoints-snapshot-defender",
+    displayName: "Helper Projectile Attack Guard Points Snapshot Defender",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      guardStateNo: 130,
+      guardedBranchStateNo: branchStateNo,
+      guardedBranchAnimNo: branchStateNo,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression: "GetHitVar(guardpoints) = -20 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-attack-guardpoints-snapshot-attacker",
+    displayName: "Helper Projectile Attack Guard Points Snapshot Attacker",
+    withHitDef: false,
+    withHelper: true,
+    attackMultiplier: 0.5,
+    postProjectileAttackGuardPointsMultiplier: 2,
+    helperProjGuardRoute: {
+      waitStateNo: 1249,
+      waitAnimNo: 989,
+      branchStateNo: 1250,
+      branchAnimNo: 990,
+      projectileAnimNo: 991,
+      projectileId: 8894,
+      pos: [360, -34],
+      guardPoints: "-20",
+      guardFlag: "MA",
+      damage: [18, 2],
+    },
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultGuardStateScript(),
+    targetId: "synthetic-imported-helper-projectile-attack-guardpoints-snapshot-golden",
+    targetLabel: "Synthetic imported Helper Projectile AttackMulSet guardpoints snapshot route",
+    requiredExecutedStates: [200, 150, 151, branchStateNo],
+    requiredExecutedControllers: ["ChangeState", "Helper", "AttackMulSet", "Projectile", "HitVelSet"],
+    requiredExecutedOperations: ["helper", "damage-scale:attackmulset", "projectile", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [
+      {
+        label: "Helper Projectile snapshots AttackMulSet guardpoints before live multiplier changes",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "AttackMulSet", name: "Attack Scale" },
+          { stateNo: 1200, controller: "Projectile", name: "Helper ProjGuard Spawn" },
+          { stateNo: 200, controller: "AttackMulSet", name: "Post Projectile Attack Scale" },
+        ],
+      },
+    ],
+    requiredActorFrames: [
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, animNo: branchStateNo, moveType: "I", minFrames: 1 },
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1249, animNo: 989, minFrames: 1 },
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1250, animNo: 990, minFrames: 1 },
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 991, moveType: "A", minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+    requiredEffectPayloads: [
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1250, minAge: 2 },
+      { actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: 8894, minAge: 1, hasHit: true },
+    ],
+    requiredTargetLinks: [
+      { ownerId: "p1", actorId: "p2", targetId: 8894 },
+      { ownerId: "p1-helper-0", actorId: "p2", targetId: 8894 },
+    ],
+    requiredFinalActors: [
+      { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+      { actorId: "p2", source: "imported", actorKind: "player", life: 999, guardPoints: 990 },
+    ],
+    forbiddenExecutedStates: [40, 5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+    forbiddenCombatReasons: ["hit", "override", "reversal"],
+    notes: [
+      "Pinned Ikemen GO trace proves a Helper-parented Projectile captures the Helper's AttackMulSet guardpoints multiplier at spawn (0.5), then keeps it after a later Helper-local AttackMulSet changes guardpoints to 2. The accepted guard reports authored GetHitVar(guardpoints)=-20 and applies the captured -10 resource delta (1000 -> 990), while lifecycle and target links retain root/helper ownership. Helper custom-state breadth, ModifyProjectile, teams, rollback, and exact engine timing remain outside this bounded slice.",
+    ],
+  });
+}
+
 export function createSyntheticImportedDataDamageScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -65331,6 +65521,8 @@ export type SyntheticImportedTraceFighterOptions = {
   attackMultiplier?: number;
   attackDizzyPointsMultiplier?: number;
   attackGuardPointsMultiplier?: number;
+  /** Synthetic fixture-only post-spawn AttackMulSet guardpoints override. */
+  postProjectileAttackGuardPointsMultiplier?: number;
   dynamicDefenseMultiplier?: SyntheticDynamicDamageScale;
   dynamicAttackMultiplier?: SyntheticDynamicDamageScale;
   guardDamage?: number;
@@ -66300,6 +66492,10 @@ export type SyntheticImportedTraceFighterOptions = {
     pos?: [number, number];
     velocity?: [number, number];
     guardFlag?: string;
+    /** Synthetic Helper-local AttackMulSet guardpoints snapshot value. */
+    attackGuardPointsMultiplier?: number;
+    /** Synthetic Helper-local post-spawn AttackMulSet guardpoints override. */
+    postSpawnAttackGuardPointsMultiplier?: number;
     guardSlideTime?: number;
     guardControlTime?: number;
     guardHitTime?: number;
@@ -66328,6 +66524,8 @@ export type SyntheticImportedTraceFighterOptions = {
     airGuardCornerPush?: number;
     guardKill?: boolean;
     damage?: [number, number?];
+    /** Synthetic Helper-local Projectile HitDef guardpoints value. */
+    guardPoints?: SyntheticNumberExpression;
     hitSound?: string;
     guardSound?: string;
     hitSpark?: string;
@@ -67250,6 +67448,12 @@ ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.super
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${projectileVarSeedBlock}
 ${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileMissTimeExpression, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileDamageExpression, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale, options.projectileGroundVelocityExpression, options.projectileGuardVelocityExpression, options.projectileDownHitTime, options.projectileGroundHitTime, options.projectileGroundSlideTime, options.projectileAirHitTime, options.projectileGuardHitTimeExpression, options.projectilePauseTime, options.projectileGuardPauseTime, "Fast Projectile", options.projectilePriorityExpression, options.projectileHitsExpression, options.projectileAnimNo, options.projectileAnimExpression, options.projectileKeepStateExpression, options.projectileP2Facing, options.projectileGuardPointsExpression) : ""}
+${options.postProjectileAttackGuardPointsMultiplier === undefined ? "" : `
+[State 200, Post Projectile Attack Scale]
+type = AttackMulSet
+trigger1 = Time = 3
+guardpoints = ${options.postProjectileAttackGuardPointsMultiplier}
+`}
 ${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secondaryProjectile) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
@@ -75082,6 +75286,13 @@ ctrl = 0
 
 ${varSeedBlocks}
 
+${route.attackGuardPointsMultiplier === undefined ? "" : `
+[State 1200, Helper Attack Scale]
+type = AttackMulSet
+trigger1 = Time = 0
+guardpoints = ${route.attackGuardPointsMultiplier}
+`}
+
 [State 1200, Helper ProjGuard Spawn]
 type = Projectile
 trigger1 = Time = 0
@@ -75102,6 +75313,7 @@ ${hitSparkLine}
 ${guardSparkLine}
 ${sparkXyLine}
 damage = ${damage.join(",")}
+${route.guardPoints === undefined ? "" : `guardpoints = ${route.guardPoints}`}
 ${guardKillLine}
 ${pauseTimeLine}
 ground.hittime = 11
@@ -75117,6 +75329,13 @@ ${airGuardVelocityLine}
 ${cornerPushLines}
 guard.dist = 100
 projsprpriority = 6
+
+${route.postSpawnAttackGuardPointsMultiplier === undefined ? "" : `
+[State 1200, Helper Post Spawn Attack Scale]
+type = AttackMulSet
+trigger1 = Time = 3
+guardpoints = ${route.postSpawnAttackGuardPointsMultiplier}
+`}
 
 [State 1200, Helper ProjGuard Wait]
 type = ChangeState

@@ -906,6 +906,16 @@ async function main() {
       artifact: presets.createSyntheticImportedDynamicAttackGuardPointsTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-attack-guardpoints-snapshot",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileAttackGuardPointsSnapshotTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-attack-guardpoints-snapshot",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileAttackGuardPointsSnapshotTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-data-damage-scale",
       required: true,
       artifact: presets.createSyntheticImportedDataDamageScaleTraceArtifact(),
