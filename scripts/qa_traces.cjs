@@ -1381,6 +1381,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileDynamicP2FacingTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-dynamic-guardpoints",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileDynamicGuardPointsTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-dynamic-ground-velocity",
       required: true,
       artifact: presets.createSyntheticImportedProjectileDynamicGroundVelocityTraceArtifact(),
@@ -1474,6 +1479,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-dynamic-damage",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileDynamicDamageTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-dynamic-guardpoints",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileDynamicGuardPointsTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-projectile-dynamic-keepstate",
