@@ -13946,6 +13946,84 @@ export function createSyntheticImportedHitDefDynamicGuardDistanceTraceArtifact(
   });
 }
 
+export function createSyntheticImportedHitDefDynamicGuardDistanceBoundsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-distance-bounds-attacker",
+    displayName: "Dynamic HitDef Guard Distance Bounds Attacker",
+    hitDefVarSeeds: [
+      { index: 0, value: 96 },
+      { index: 1, value: 12 },
+      { index: 2, value: 1000 },
+      { index: 3, value: 1000 },
+      { index: 4, value: 10 },
+      { index: 5, value: 10 },
+    ],
+    hitDefGuardDistanceBounds: {
+      width: ["var(0)", "var(1)"],
+      height: ["var(2)", "var(3)"],
+      depth: ["var(4)", "var(5)"],
+    },
+    guardDistance: 1,
+    guardDamage: 5,
+    guardFlag: "MA",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-distance-bounds-defender",
+    displayName: "Dynamic HitDef Guard Distance Bounds Defender",
+    withInGuardDistGuardStart: true,
+  });
+  const stage = options.stage ?? guardDistanceOnlyStage();
+  const script = importedInGuardDistScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitdef-dynamic-guard-distance-bounds-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-dynamic-guard-distance-bounds-golden",
+      label: "Synthetic imported dynamic direct HitDef guard-distance bounds route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves caller-context width, height, and depth guard.dist pairs resolve independently on a fresh direct HitDef and drive the bounded precontact InGuardDist latch. The width envelope overrides adversarial scalar metadata 1 while height/depth remain explicit authored dimensions; no contact, guard, get-hit, Projectile, ModifyProjectile, teams, rollback, or full guard-distance parity is claimed.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-dynamic-guard-distance-bounds-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [130, 200],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155, 5000, 5010, 5020, 5030, 5050],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredCombatReasons: ["whiff"],
+      forbiddenCombatReasons: ["hit", "guard"],
+      requiredActorFrameSequences: [{
+        label: "dynamic direct guard-distance bounds latch before guard state",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", inGuardDistAttackerId: "p1", inGuardDistSource: "direct", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 130, animNo: 130, minFrames: 1 },
+        ],
+      }],
+      requiredFinalActors: [{
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 130,
+        animNo: 130,
+        ctrl: false,
+        stateType: "S",
+        moveType: "I",
+      }],
+    }],
+  });
+}
+
 export function createSyntheticImportedHitDefDynamicGroundVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -65031,6 +65109,12 @@ export type SyntheticImportedTraceFighterOptions = {
   guardFlag?: string;
   /** Synthetic fixture-only legacy guard-distance expression emitted into HitDef. */
   hitDefGuardDistance?: SyntheticNumberExpression;
+  /** Synthetic fixture-only direct HitDef width/height/depth bounds. */
+  hitDefGuardDistanceBounds?: {
+    width?: SyntheticPartialPairExpression;
+    height?: SyntheticPartialPairExpression;
+    depth?: SyntheticPartialPairExpression;
+  };
   guardDistance?: number;
   guardHitTime?: SyntheticNumberExpression;
   omitGuardHitTime?: boolean;
@@ -66605,6 +66689,13 @@ ${cornerPushLines}
   const guardDistanceLine = options.hitDefGuardDistance === undefined
     ? options.guardDistance === undefined ? "" : `guard.dist = ${options.guardDistance}`
     : `guard.dist = ${options.hitDefGuardDistance}`;
+  const guardDistanceBoundsLine = options.hitDefGuardDistanceBounds === undefined
+    ? ""
+    : [
+        options.hitDefGuardDistanceBounds.width === undefined ? "" : `guard.dist.width = ${options.hitDefGuardDistanceBounds.width.join(",")}`,
+        options.hitDefGuardDistanceBounds.height === undefined ? "" : `guard.dist.height = ${options.hitDefGuardDistanceBounds.height.join(",")}`,
+        options.hitDefGuardDistanceBounds.depth === undefined ? "" : `guard.dist.depth = ${options.hitDefGuardDistanceBounds.depth.join(",")}`,
+      ].filter(Boolean).join("\n");
   const fallLine = options.fall ? fallHitDefBlock(options.fall) : "";
   const hitDefAirJuggleLine = options.hitDefAirJuggle === undefined ? "" : `air.juggle = ${options.hitDefAirJuggle}`;
   const hitDefAirTimeLine = options.hitDefAirTime === undefined ? "" : `air.hittime = ${options.hitDefAirTime}`;
@@ -66715,6 +66806,7 @@ ${options.hitDefP2SpritePriority === undefined ? "" : `p2sprpriority = ${options
 ${options.hitDefMissOnOverride === undefined ? "" : `missonoverride = ${options.hitDefMissOnOverride ? 1 : 0}`}
 ${guardLine}
 ${guardDistanceLine}
+${guardDistanceBoundsLine}
 ${fallLine}
 ${hitDefAirJuggleLine}
 ${hitDefStateLines}

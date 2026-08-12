@@ -98,6 +98,7 @@ import {
   createSyntheticImportedHitDefDynamicAirGuardControlTimeTraceArtifact,
   createSyntheticImportedHitDefDynamicAirHitTimeTraceArtifact,
   createSyntheticImportedHitDefDynamicGuardDistanceTraceArtifact,
+  createSyntheticImportedHitDefDynamicGuardDistanceBoundsTraceArtifact,
   createSyntheticImportedHitDefDynamicGroundVelocityTraceArtifact,
   createSyntheticImportedHitDefDynamicAttackDepthTraceArtifact,
   createSyntheticImportedHitDefDynamicGuardVelocityTraceArtifact,
@@ -26902,6 +26903,35 @@ describe("RuntimeTraceGatePresets", () => {
       source: "imported",
       stateNo: 5086,
       life: 963,
+    });
+  });
+
+  it("creates a required imported dynamic direct HitDef guard-distance bounds artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicGuardDistanceBoundsTraceArtifact({
+      generatedAt: "2026-08-12T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-hitdef-dynamic-guard-distance-bounds-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-hitdef-dynamic-guard-distance-bounds-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(6);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(6);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.combatReasons).toContain("whiff");
+    expect(gate?.evidence.combatReasons).not.toContain("hit");
+    expect(gate?.evidence.combatReasons).not.toContain("guard");
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", inGuardDistAttackerIds: ["p1"], inGuardDistSources: ["direct"] }),
+      expect.objectContaining({ actorId: "p2", source: "imported", stateNo: 130, animNo: 130 }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 130,
+      ctrl: false,
     });
   });
 

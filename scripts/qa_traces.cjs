@@ -1201,6 +1201,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefDynamicGuardDistanceTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-guard-distance-bounds",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicGuardDistanceBoundsTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-dynamic-ground-velocity",
       required: true,
       artifact: presets.createSyntheticImportedHitDefDynamicGroundVelocityTraceArtifact(),
