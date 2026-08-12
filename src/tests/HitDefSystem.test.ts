@@ -401,6 +401,40 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("mutates live ModifyHitDef guardpoints in caller context and preserves omission", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    world.apply({
+      actor,
+      controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA",
+        damage: "20",
+        guardpoints: "7",
+      })),
+      frame: activeFrame(),
+    });
+    expect(actor.currentMove?.guardPoints).toBe(7);
+
+    const caller = runtimeState();
+    caller.vars[1] = 12.9;
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", {
+        guardpoints: "var(1)",
+        redirectid: "57",
+      })),
+      context: { self: caller },
+      resolveIntegerScalar: (key) => key === "guardpoints" ? 12 : undefined,
+    });
+    expect(actor.currentMove?.guardPoints).toBe(12);
+
+    world.modify({
+      actor,
+      controller: compileControllerIr(controller("ModifyHitDef", { redirectid: "57" })),
+    });
+    expect(actor.currentMove?.guardPoints).toBe(12);
+  });
+
   it("resolves fresh and modified ground.hittime in caller or helper context", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

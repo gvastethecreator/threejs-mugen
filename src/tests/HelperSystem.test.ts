@@ -2149,6 +2149,32 @@ describe("HelperSystem", () => {
     });
   });
 
+  it("applies Helper-owned ModifyHitDef guardpoints in caller context and preserves omission", () => {
+    const active = helper({
+      vars: [15.8],
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(6000, { moveType: "A" }), [
+            controllerIr(6000, "HitDef", {
+              attr: "S,NA",
+              damage: "20",
+              guardpoints: "7",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], {
+              redirectid: "0",
+              guardpoints: "var(0)",
+            }),
+            compiledControllerIr(6000, "ModifyHitDef", [], { redirectid: "0", damage: "21" }),
+          ]),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.currentMove).toMatchObject({ guardPoints: 15 });
+  });
+
   it("applies Helper-owned ModifyHitDef snap in caller context and preserves omitted axes", () => {
     const active = helper({
       vars: [24.5],

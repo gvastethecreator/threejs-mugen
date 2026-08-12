@@ -2268,6 +2268,28 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles live ModifyHitDef guardpoints expressions and rejects malformed values", () => {
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      guardpoints: "var(1) + 2",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardPoints: "var(1) + 2",
+      redirectPlayerIdExpression: "57",
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      guardpoints: "17",
+      redirectid: "57",
+    })).operation).toMatchObject({
+      kind: "modifyhitdef",
+      guardPoints: 17,
+    });
+    expect(compileControllerIr(controller(200, "ModifyHitDef", [], {
+      guardpoints: "var(",
+      redirectid: "57",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles dynamic direct HitDef and ModifyHitDef guard.hittime scalars", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       "guard.hittime": "var(1) + 2",
