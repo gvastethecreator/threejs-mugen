@@ -1,6 +1,24 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T753 closed-bounded (2026-08-12)
+## Latest bounded slice — T754 closed-bounded (2026-08-12)
+
+Issue 328 snapshots the dedicated `AttackMulSet guardpoints` multiplier at
+root/Helper Projectile creation and consumes it only on accepted guard
+contacts. Root trace `1e6da74d` -> `819524b6` and Helper trace
+`472b325b` -> `26da3708` pass; aggregate QA retains the inherited helper-bind
+target-link blocker. No score movement; defaults, ModifyProjectile, other
+multiplier snapshots, teams, rollback and full parity remain blocked. See
+[issue 328](../.scratch/roadmap/issues/328-projectile-attackmulset-guardpoints.md).
+
+## Next bounded slice — T755 live ModifyHitDef `down.velocity`
+
+Implement root/RedirectID Ikemen live `down.velocity` X/Y component replacement
+with omitted-sibling and Z preservation, then prove accepted lying-hit physics
+and GetHitVar. Keep Helper-authored controllers, Projectiles, dynamic Z and
+fresh default changes out of this cut. See [issue
+329](../.scratch/roadmap/issues/329-modifyhitdef-down-velocity.md).
+
+## Historical bounded slice — T753 closed-bounded (2026-08-12)
 
 Issue 327 adds typed, finite caller-context `AttackMulSet guardpoints` support.
 Accepted direct guards scale the authored guard-points delta with a dedicated
@@ -10,11 +28,6 @@ movement. Projectile/Helper ownership, omitted defaults, resource
 clamp/rounding, `NoGuardPointsDamage`, int32 edges, teams, rollback and full
 parity remain blocked. See [issue
 327](../.scratch/roadmap/issues/327-attackmulset-guardpoints-dynamic.md).
-
-## Next bounded slice — T754 Projectile/Helper guard-point ownership
-
-Prove dedicated guard-point multiplier consumption for root Projectile and
-Helper-parented accepted guards; keep defaults and resource topology separate.
 
 ## Historical bounded slice — T752 closed-bounded (2026-08-12)
 

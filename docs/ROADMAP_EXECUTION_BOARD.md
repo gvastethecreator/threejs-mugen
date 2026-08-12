@@ -1,6 +1,27 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T753 closed-bounded (2026-08-12)
+## Latest bounded slice — T754 closed-bounded (2026-08-12)
+
+Issue 328 freezes the finite `AttackMulSet guardpoints` multiplier when a
+Projectile is created. Root and Helper-parented Projectiles now carry that
+snapshot into accepted guard contacts, apply it to the defender guard-points
+pool, and keep authored `GetHitVar(guardpoints)` separate. Required root trace
+`1e6da74d` -> `819524b6` and Helper trace `472b325b` -> `26da3708` pass;
+focused typecheck and evidence gates pass. The aggregate QA gate still reports
+the inherited `synthetic-imported-helper-bind-to-target-redirect` target-link
+blocker. Damage/dizzy snapshots, defaults, ModifyProjectile, power-owner/team
+banks, global clamps/rounding, rollback and full parity remain outside. See
+[issue 328](../.scratch/roadmap/issues/328-projectile-attackmulset-guardpoints.md).
+
+## Next bounded slice — T755 live ModifyHitDef `down.velocity`
+
+Implement the Ikemen-only root/RedirectID component-preserving `down.velocity`
+mutation: fresh T673 remains unchanged; one component replaces X, two replace
+X/Y, omitted siblings and live Z persist. Prove caller context, lying-hit
+consumption and GetHitVar readback before widening to Helpers or Projectiles.
+See [issue 329](../.scratch/roadmap/issues/329-modifyhitdef-down-velocity.md).
+
+## Historical bounded slice — T753 closed-bounded (2026-08-12)
 
 Issue 327 carries `AttackMulSet guardpoints` through typed IR and finite
 caller-context evaluation. Accepted direct guards apply the dedicated
@@ -11,12 +32,6 @@ No score movement. Projectile/Helper ownership, omitted defaults, resource
 clamps/rounding, `NoGuardPointsDamage`, int32 edges, teams, rollback and full
 parity remain outside. See [issue
 327](../.scratch/roadmap/issues/327-attackmulset-guardpoints-dynamic.md).
-
-## Next bounded slice — T754 Projectile/Helper guard-point ownership
-
-Prove the same dedicated `AttackMulSet guardpoints` multiplier for accepted
-root Projectile and Helper-parented guard contacts. Keep omitted defaults,
-resource topology and global parity as separate claims.
 
 ## Historical bounded slice — T752 closed-bounded (2026-08-12)
 

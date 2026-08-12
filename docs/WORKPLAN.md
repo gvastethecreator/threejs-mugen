@@ -1,6 +1,24 @@
 # Workplan
 
-## Latest slice — T753 closed-bounded (2026-08-12)
+## Latest slice — T754 closed-bounded (2026-08-12)
+
+Issue 328 snapshots finite `AttackMulSet guardpoints` at root/Helper
+Projectile creation. Accepted guard contacts consume the frozen multiplier
+against defender guardpoints, while authored GetHitVar remains distinct.
+Required root `1e6da74d` -> `819524b6` and Helper `472b325b` -> `26da3708`
+traces pass with focused typecheck/evidence. Aggregate QA retains the
+inherited helper-bind target-link blocker. Other multiplier snapshots,
+defaults, ModifyProjectile, team ownership, rollback and full parity remain
+outside.
+
+## Next slice — T755 live ModifyHitDef `down.velocity`
+
+Implement the bounded Ikemen root/RedirectID live mutation with X/Y
+component-preserving semantics, retained Z and accepted lying-hit evidence.
+Fresh defaults remain T673; Helper-authored, Projectile and dynamic-Z breadth
+stay deferred. See issue 329.
+
+## Historical slice — T753 closed-bounded (2026-08-12)
 
 Issue 327 closes typed, finite caller-context `AttackMulSet guardpoints` for
 direct accepted guards. The dedicated multiplier scales authored guard-points
@@ -9,11 +27,6 @@ Required trace `5a4b2841` / `90fe9bf9`; focused tests and typecheck pass. No
 score movement. Projectile/Helper ownership, omitted defaults, resource
 clamp/rounding, `NoGuardPointsDamage`, int32 edges, teams, rollback and full
 parity remain outside.
-
-## Next slice — T754 Projectile/Helper guard-point ownership
-
-Prove dedicated guard-point multiplier consumption for root Projectile and
-Helper-parented accepted guards; keep defaults and resource topology separate.
 
 ## Historical slice — T752 closed-bounded (2026-08-12)
 

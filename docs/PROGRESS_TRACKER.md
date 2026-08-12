@@ -1,6 +1,24 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T753 closed-bounded (2026-08-12)
+## Latest implementation checkpoint — T754 closed-bounded (2026-08-12)
+
+Issue 328 freezes `AttackMulSet guardpoints` at Projectile creation for root
+and Helper-parented Projectiles. Accepted guards consume the snapshot against
+the defender pool while preserving authored GetHitVar metadata. Required traces
+are `1e6da74d` -> `819524b6` (root) and `472b325b` -> `26da3708` (Helper);
+focused typecheck/evidence pass. Aggregate QA remains blocked only by the
+inherited helper-bind target-link case. Damage/dizzy snapshots, defaults,
+ModifyProjectile, team power ownership, global clamp/rounding, rollback and
+full parity remain blocked.
+
+## Next implementation checkpoint — T755 live ModifyHitDef `down.velocity`
+
+Close the Ikemen-only root/RedirectID component-preserving live mutation for
+lying-hit X/Y velocity, retaining omitted siblings and Z. Fresh defaults stay
+under T673; Helper-authored and Projectile breadth remain deferred. See issue
+329.
+
+## Historical implementation checkpoint — T753 closed-bounded (2026-08-12)
 
 Issue 327 closes typed, finite caller-context `AttackMulSet guardpoints` for
 direct accepted guards. The dedicated multiplier scales authored guard-points
@@ -9,11 +27,6 @@ Required trace checksums are `5a4b2841` / `90fe9bf9`; focused tests and
 typecheck pass. No score movement. Projectile/Helper ownership, omitted
 defaults, resource clamp/rounding, `NoGuardPointsDamage`, int32 edges, teams,
 rollback and full parity remain blocked.
-
-## Next implementation checkpoint — T754 Projectile/Helper guard-point ownership
-
-Prove dedicated guard-point multiplier consumption for root Projectile and
-Helper-parented accepted guards; keep defaults and resource topology separate.
 
 ## Historical implementation checkpoint — T752 closed-bounded (2026-08-12)
 

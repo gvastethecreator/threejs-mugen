@@ -1,6 +1,6 @@
 # T754 — Projectile AttackMulSet guardpoints snapshot
 
-- **Estado:** in-progress
+- **Estado:** closed-bounded
 - **Área:** runtime / Projectile / Helper / guardpoints
 - **Objetivo:** congelar el multiplicador `AttackMulSet, guardpoints` en el momento de creación del Projectile y consumir ese snapshot en contactos de guardia, tanto para Projectiles creados por el actor raíz como para Projectiles parentados por un Helper.
 
@@ -23,3 +23,13 @@ Ikemen-GO pin `149402f` mantiene `attackMul[3]` en el Projectile (`char.go:2489`
 ## Evidencia requerida
 
 Un Projectile con guardpoints authored negativo debe conservar el multiplicador de creación aunque el atacante cambie después a otro `AttackMulSet`; las rutas root y Helper deben registrar lifecycle, ownership/parent y contacto guardado.
+
+## Cierre y evidencia
+
+- Producto: `c2b2e242` (`feat(mugen): snapshot projectile guardpoints multipliers`).
+- Evidencia: `42336cd1` (`test(evidence): gate projectile guardpoints snapshots`).
+- Root trace: `synthetic-imported-projectile-attack-guardpoints-snapshot.json`, trace `1e6da74d`, final `819524b6`.
+- Helper trace: `synthetic-imported-helper-projectile-attack-guardpoints-snapshot.json`, trace `472b325b`, final `26da3708`.
+- Pruebas focales: typecheck y dos trazas requeridas pasan; `pnpm qa:trace` recorre las nuevas trazas y conserva un único bloqueo heredado en `synthetic-imported-helper-bind-to-target-redirect` por target-link ausente.
+- Claim cerrado: el multiplicador finito de `AttackMulSet guardpoints` se congela al crear Projectile raíz o Helper-parented y se usa en guardia aceptada; el authored `GetHitVar(guardpoints)` permanece separado del pool defensor.
+- Fuera de claim: daño/dizzy snapshots, defaults, `ModifyProjectile`, power-owner/team banks, clamps/rounding globales, rollback, orden exacto de ticks y paridad completa.

@@ -1,6 +1,26 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-12 T753 `AttackMulSet guardpoints` — closed-bounded, no score movement
+## 2026-08-12 T754 Projectile `AttackMulSet guardpoints` snapshot — closed-bounded, no score movement
+
+Issue 328 closes the creation-time snapshot for the dedicated
+`AttackMulSet guardpoints` multiplier on root and Helper-parented Projectiles.
+Accepted guards consume the captured value against the defender pool and keep
+authored GetHitVar metadata separate. Required traces
+`1e6da74d` -> `819524b6` and `472b325b` -> `26da3708` pass; focused typecheck
+and evidence pass. Aggregate QA retains the inherited helper-bind target-link
+blocker. No score movement: defaults, ModifyProjectile, other multiplier
+snapshots, team power ownership, global clamps/rounding, rollback and full
+parity remain blocked. See [issue
+328](../.scratch/roadmap/issues/328-projectile-attackmulset-guardpoints.md).
+
+## Next selection — T755 live ModifyHitDef `down.velocity`
+
+Close the Ikemen-only root/RedirectID component-preserving live mutation for
+lying-hit X/Y velocity, retaining omitted siblings and Z. Keep Helpers,
+Projectiles, dynamic Z and fresh-default changes separate. See [issue
+329](../.scratch/roadmap/issues/329-modifyhitdef-down-velocity.md).
+
+## Historical checkpoint — 2026-08-12 T753 `AttackMulSet guardpoints` — closed-bounded, no score movement
 
 Issue 327 closes typed, finite caller-context `AttackMulSet guardpoints` for
 direct accepted guards. The dedicated multiplier scales authored guard-points
@@ -10,11 +30,6 @@ score movement: Projectile/Helper ownership, omitted defaults, resource
 clamp/rounding, `NoGuardPointsDamage`, int32 edges, teams, rollback and full
 parity remain blocked. See [issue
 327](../.scratch/roadmap/issues/327-attackmulset-guardpoints-dynamic.md).
-
-## Next selection — T754 Projectile/Helper guard-point ownership
-
-Prove the dedicated guard-point multiplier on root Projectile and
-Helper-parented accepted guards; keep defaults and resource topology separate.
 
 ## Historical checkpoint — 2026-08-12 T752 Projectile `guardpoints` expressions — closed-bounded, no score movement
 
