@@ -916,6 +916,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjectileAttackGuardPointsSnapshotTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-attack-dizzypoints-snapshot",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileAttackDizzyPointsSnapshotTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-data-damage-scale",
       required: true,
       artifact: presets.createSyntheticImportedDataDamageScaleTraceArtifact(),
