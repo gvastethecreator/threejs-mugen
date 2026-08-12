@@ -32,7 +32,12 @@ import {
   runtimeProjectileWorldBox,
   type RuntimeProjectile,
 } from "./ProjectileSystem";
-import { applyRuntimeControl, applyRuntimeGuardPointsAdd, applyRuntimePowerDelta } from "./RuntimeResourceSystem";
+import {
+  applyRuntimeControl,
+  applyRuntimeDizzyPointsAdd,
+  applyRuntimeGuardPointsAdd,
+  applyRuntimePowerDelta,
+} from "./RuntimeResourceSystem";
 import { applyRuntimeContactPaletteFx } from "./SpriteEffectSystem";
 import type { CharacterRuntimeState, RuntimeHitOverrideSlot } from "./types";
 import type { DemoFighterDefinition } from "./demoFighters";
@@ -345,6 +350,9 @@ export class RuntimeProjectileCombatWorld {
       const lifeBefore = defender.runtime.life;
       defender.hitPause = result.pause;
       defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
+      if (result.kind === "hit" && result.dizzyPoints !== undefined) {
+        applyRuntimeDizzyPointsAdd(defender.runtime, result.dizzyPoints);
+      }
       recordRuntimeRoundWinType(attacker, defender, projectile.attr ?? "S,SP", result.kind, lifeBefore, {
         sourceEligible: source?.rootOwned === true,
       });
@@ -577,6 +585,10 @@ function runtimeAttackerPowerGain(authored: number | undefined, fallback: number
 function runtimeCombatAttackFromProjectile(projectile: RuntimeProjectile): RuntimeCombatAttack {
   return {
     damage: projectile.damage,
+    ...(projectile.dizzyPoints === undefined ? {} : { dizzyPoints: projectile.dizzyPoints }),
+    ...(projectile.dizzyPointsAttackMultiplier === undefined
+      ? {}
+      : { dizzyPointsAttackMultiplier: projectile.dizzyPointsAttackMultiplier }),
     ...(projectile.guardPoints === undefined ? {} : { guardPoints: projectile.guardPoints }),
     ...(projectile.guardPointsAttackMultiplier === undefined
       ? {}

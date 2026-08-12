@@ -732,6 +732,7 @@ export function spawnRuntimeHelperProjectileActor(
     terminalActions: resolveHelperProjectileTerminalActions(helper, controller, operation),
     pos,
     fallbackFacing: helper.facing,
+    dizzyPointsAttackMultiplier: helper.dizzyPointsAttackMultiplier ?? helper.attackMultiplier ?? 1,
     guardPointsAttackMultiplier: helper.guardPointsAttackMultiplier ?? helper.attackMultiplier ?? 1,
     constants: options.constants,
     defaultHitFlag: options.defaultHitFlag,

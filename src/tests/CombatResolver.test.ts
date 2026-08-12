@@ -641,6 +641,26 @@ describe("CombatResolver", () => {
     });
   });
 
+  it("prefers a Projectile dizzypoints snapshot over the attacker's later multiplier", () => {
+    const attacker = actor({ attackMultiplier: 1.5, dizzyPointsAttackMultiplier: 2 });
+    const defender = actor({ stateType: "S", moveType: "I" });
+    const attack = {
+      damage: 40,
+      dizzyPoints: 20,
+      hitPause: 8,
+      hitStun: 20,
+      push: 12,
+      guardFlag: "MA",
+      dizzyPointsAttackMultiplier: 0.5,
+    };
+
+    expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: false })).toMatchObject({
+      kind: "hit",
+      damage: 60,
+      dizzyPoints: 10,
+    });
+  });
+
   it("uses explicit air guard velocity only for airborne guards", () => {
     const attack = {
       damage: 40,

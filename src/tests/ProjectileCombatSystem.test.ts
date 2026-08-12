@@ -1136,7 +1136,7 @@ describe("ProjectileCombatSystem", () => {
 
     expect(defender.runtime.hitVars?.sourceDizzyPoints).toBe(29);
     expect(runtimeHitVar(defender.runtime, "dizzypoints")).toBe(29);
-    expect(defender.runtime.dizzyPoints).toBe(5);
+    expect(defender.runtime.dizzyPoints).toBe(34);
   });
 
   it("exposes Projectile HitDef guardpoints through GetHitVar(guardpoints)", () => {
@@ -1191,6 +1191,33 @@ describe("ProjectileCombatSystem", () => {
     });
 
     expect(defender.runtime.guardPoints).toBe(990);
+    expect(projectiles).toEqual([]);
+  });
+
+  it("consumes the Projectile creation snapshot instead of the attacker's later dizzypoints multiplier", () => {
+    let projectiles = [projectile({ dizzyPoints: -20, dizzyPointsAttackMultiplier: 0.5, damage: 12 })];
+    const attacker = actor("p1", "P1", runtimeState({
+      pos: { x: 0, y: 0 },
+      attackMultiplier: 1.5,
+      dizzyPointsAttackMultiplier: 2,
+    }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, life: 1000 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.dizzyPoints).toBe(990);
     expect(projectiles).toEqual([]);
   });
 

@@ -495,6 +495,24 @@ describe("ProjectileSystem", () => {
     });
   });
 
+  it("freezes the creator AttackMulSet dizzypoints multiplier on Projectile creation", () => {
+    expect(createRuntimeProjectile({
+      serialId: "p1-projectile-dizzypoints-mul-snapshot",
+      controller: controller({ projanim: "1005", dizzypoints: "20", projid: "779" }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "p1-def",
+      spriteOwnerLabel: "P1",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      dizzyPointsAttackMultiplier: 0.5,
+    })).toMatchObject({
+      dizzyPoints: 20,
+      dizzyPointsAttackMultiplier: 0.5,
+    });
+  });
+
   it("carries fresh Projectile keepstate from static and caller-resolved values", () => {
     const base = {
       serialId: "p1-projectile-keepstate",

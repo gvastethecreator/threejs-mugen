@@ -15,6 +15,8 @@ export type RuntimeCombatAttack = {
   /** Projectile-created AttackMulSet guardpoints snapshot; direct moves use attacker state. */
   guardPointsAttackMultiplier?: number;
   dizzyPoints?: number;
+  /** Projectile-created AttackMulSet dizzypoints snapshot; direct moves use attacker state. */
+  dizzyPointsAttackMultiplier?: number;
   redLife?: number;
   guardRedLife?: number;
   kill?: boolean;
@@ -507,7 +509,11 @@ export function resolveRuntimeCombatHit(input: {
       : {
           dizzyPoints: scaleRuntimeIncomingAmount(
             input.defender,
-            scaleRuntimeOutgoingDizzyPoints(input.attacker, input.attack.dizzyPoints),
+            scaleRuntimeOutgoingDizzyPoints(
+              input.attacker,
+              input.attack.dizzyPoints,
+              input.attack.dizzyPointsAttackMultiplier,
+            ),
           ),
         }),
     ...(input.attack.redLife === undefined
@@ -673,8 +679,9 @@ export function scaleRuntimeOutgoingAmount(
 export function scaleRuntimeOutgoingDizzyPoints(
   attacker: Pick<CharacterRuntimeState, "attackMultiplier" | "dizzyPointsAttackMultiplier">,
   amount: number,
+  snapshot?: number,
 ): number {
-  return Math.round(amount * (attacker.dizzyPointsAttackMultiplier ?? attacker.attackMultiplier ?? 1));
+  return Math.round(amount * (snapshot ?? attacker.dizzyPointsAttackMultiplier ?? attacker.attackMultiplier ?? 1));
 }
 
 export function scaleRuntimeOutgoingGuardPoints(

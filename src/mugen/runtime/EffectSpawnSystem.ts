@@ -320,6 +320,8 @@ export class RuntimeEffectSpawnWorld {
       terminalActions: resolveProjectileTerminalActions(owner, controller, operation),
       pos: { ...spawnPos, ...(spawnDepth === 0 ? {} : { z: spawnDepth }) },
       fallbackFacing: fighter.runtime.facing,
+      dizzyPointsAttackMultiplier:
+        fighter.runtime.dizzyPointsAttackMultiplier ?? fighter.runtime.attackMultiplier ?? 1,
       guardPointsAttackMultiplier:
         fighter.runtime.guardPointsAttackMultiplier ?? fighter.runtime.attackMultiplier ?? 1,
       localCoord: owner.definition.localCoord,

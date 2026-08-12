@@ -150,6 +150,8 @@ export type RuntimeProjectile = {
   damage: number;
   /** Authored Projectile HitDef dizzypoints exposed by GetHitVar. */
   dizzyPoints?: number;
+  /** AttackMulSet dizzypoints multiplier frozen at Projectile creation. */
+  dizzyPointsAttackMultiplier?: number;
   /** Authored Projectile HitDef guardpoints exposed by GetHitVar. */
   guardPoints?: number;
   /** AttackMulSet guardpoints multiplier frozen at Projectile creation. */
@@ -320,6 +322,8 @@ export type RuntimeProjectileSpawnInput = {
   attackDepth?: [number, number];
   depthBound?: number;
   damageScale?: number;
+  /** Snapshot of the creator's AttackMulSet dizzypoints multiplier. */
+  dizzyPointsAttackMultiplier?: number;
   /** Snapshot of the creator's AttackMulSet guardpoints multiplier. */
   guardPointsAttackMultiplier?: number;
   constants?: RuntimeResourceConstants;
@@ -1029,6 +1033,9 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     opacity: parseProjectileOpacity(operation?.trans ?? findControllerParam(input.controller, "trans")),
     damage: Math.max(0, Math.round(baseDamage * (input.damageScale ?? 1))),
     ...(dizzyPoints === undefined ? {} : { dizzyPoints: Math.trunc(dizzyPoints) }),
+    ...(input.dizzyPointsAttackMultiplier === undefined || !Number.isFinite(input.dizzyPointsAttackMultiplier)
+      ? {}
+      : { dizzyPointsAttackMultiplier: Math.max(0, Math.min(10, input.dizzyPointsAttackMultiplier)) }),
     ...(guardPoints === undefined ? {} : { guardPoints: Math.trunc(guardPoints) }),
     ...(input.guardPointsAttackMultiplier === undefined || !Number.isFinite(input.guardPointsAttackMultiplier)
       ? {}
