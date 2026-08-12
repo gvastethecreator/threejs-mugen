@@ -152,6 +152,8 @@ export type RuntimeProjectile = {
   dizzyPoints?: number;
   /** Authored Projectile HitDef guardpoints exposed by GetHitVar. */
   guardPoints?: number;
+  /** AttackMulSet guardpoints multiplier frozen at Projectile creation. */
+  guardPointsAttackMultiplier?: number;
   /** Authored Projectile HitDef redlife exposed by GetHitVar. */
   redLife?: number;
   /** Authored Projectile guard redlife exposed by guarded GetHitVar. */
@@ -318,6 +320,8 @@ export type RuntimeProjectileSpawnInput = {
   attackDepth?: [number, number];
   depthBound?: number;
   damageScale?: number;
+  /** Snapshot of the creator's AttackMulSet guardpoints multiplier. */
+  guardPointsAttackMultiplier?: number;
   constants?: RuntimeResourceConstants;
   defaultHitFlag?: string;
   resolveSoundValue?: (key: "hitsound" | "guardsound") => RuntimeResolvedSoundRef | undefined;
@@ -1026,6 +1030,9 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     damage: Math.max(0, Math.round(baseDamage * (input.damageScale ?? 1))),
     ...(dizzyPoints === undefined ? {} : { dizzyPoints: Math.trunc(dizzyPoints) }),
     ...(guardPoints === undefined ? {} : { guardPoints: Math.trunc(guardPoints) }),
+    ...(input.guardPointsAttackMultiplier === undefined || !Number.isFinite(input.guardPointsAttackMultiplier)
+      ? {}
+      : { guardPointsAttackMultiplier: Math.max(0, Math.min(10, input.guardPointsAttackMultiplier)) }),
     ...(redLife === undefined ? {} : { redLife: Math.trunc(redLife) }),
     ...(guardRedLife === undefined ? {} : { guardRedLife: Math.trunc(guardRedLife) }),
     attackerHitPower,

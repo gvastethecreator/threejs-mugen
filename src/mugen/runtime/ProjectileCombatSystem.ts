@@ -32,7 +32,7 @@ import {
   runtimeProjectileWorldBox,
   type RuntimeProjectile,
 } from "./ProjectileSystem";
-import { applyRuntimeControl, applyRuntimePowerDelta } from "./RuntimeResourceSystem";
+import { applyRuntimeControl, applyRuntimeGuardPointsAdd, applyRuntimePowerDelta } from "./RuntimeResourceSystem";
 import { applyRuntimeContactPaletteFx } from "./SpriteEffectSystem";
 import type { CharacterRuntimeState, RuntimeHitOverrideSlot } from "./types";
 import type { DemoFighterDefinition } from "./demoFighters";
@@ -397,6 +397,9 @@ export class RuntimeProjectileCombatWorld {
         defender.definition?.constants,
       );
       if (result.kind === "guard") {
+        if (result.guardPoints !== undefined) {
+          applyRuntimeGuardPointsAdd(defender.runtime, result.guardPoints);
+        }
         input.recordProjectileContact?.(attacker, defender, projectile, "guard");
         input.emitProjectileContactEffects?.(attacker, defender, projectile, "guard");
         defender.runtime.guardStun = result.stun;
@@ -574,6 +577,10 @@ function runtimeAttackerPowerGain(authored: number | undefined, fallback: number
 function runtimeCombatAttackFromProjectile(projectile: RuntimeProjectile): RuntimeCombatAttack {
   return {
     damage: projectile.damage,
+    ...(projectile.guardPoints === undefined ? {} : { guardPoints: projectile.guardPoints }),
+    ...(projectile.guardPointsAttackMultiplier === undefined
+      ? {}
+      : { guardPointsAttackMultiplier: projectile.guardPointsAttackMultiplier }),
     kill: projectile.kill,
     attr: projectile.attr,
     hitPause: projectile.hitShakeTime,

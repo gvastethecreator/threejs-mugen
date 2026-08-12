@@ -27,7 +27,17 @@ export type RuntimeEffectSpawnActor = {
     constants?: DemoFighterDefinition["constants"];
   };
   runtimeProgram?: RuntimeHelperProgram;
-  runtime: Pick<CharacterRuntimeState, "pos" | "combatDepth" | "facing" | "stateNo" | "animNo" | "attackMultiplier">;
+  runtime: Pick<
+    CharacterRuntimeState,
+    | "pos"
+    | "combatDepth"
+    | "facing"
+    | "stateNo"
+    | "animNo"
+    | "attackMultiplier"
+    | "dizzyPointsAttackMultiplier"
+    | "guardPointsAttackMultiplier"
+  >;
   stateOwner?: RuntimeEffectSpawnActor;
   effectActorWorld: Pick<
     RuntimeEffectActorWorld,
@@ -239,6 +249,9 @@ export class RuntimeEffectSpawnWorld {
           }
         : {}),
       fallbackFacing: fighter.runtime.facing,
+      attackMultiplier: fighter.runtime.attackMultiplier,
+      dizzyPointsAttackMultiplier: fighter.runtime.dizzyPointsAttackMultiplier,
+      guardPointsAttackMultiplier: fighter.runtime.guardPointsAttackMultiplier,
     });
     return true;
   }
@@ -307,6 +320,8 @@ export class RuntimeEffectSpawnWorld {
       terminalActions: resolveProjectileTerminalActions(owner, controller, operation),
       pos: { ...spawnPos, ...(spawnDepth === 0 ? {} : { z: spawnDepth }) },
       fallbackFacing: fighter.runtime.facing,
+      guardPointsAttackMultiplier:
+        fighter.runtime.guardPointsAttackMultiplier ?? fighter.runtime.attackMultiplier ?? 1,
       localCoord: owner.definition.localCoord,
       clsnScale: {
         x: finiteProjectileClsnScale(owner.definition.constants?.["size.xscale"]),

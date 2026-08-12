@@ -732,6 +732,7 @@ export function spawnRuntimeHelperProjectileActor(
     terminalActions: resolveHelperProjectileTerminalActions(helper, controller, operation),
     pos,
     fallbackFacing: helper.facing,
+    guardPointsAttackMultiplier: helper.guardPointsAttackMultiplier ?? helper.attackMultiplier ?? 1,
     constants: options.constants,
     defaultHitFlag: options.defaultHitFlag,
     resolveSoundValue: (key) => resolveRuntimeHelperSoundValueParam(helper, controller, key, options),

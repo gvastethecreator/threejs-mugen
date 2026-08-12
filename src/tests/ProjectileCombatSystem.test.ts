@@ -411,7 +411,7 @@ describe("ProjectileCombatSystem", () => {
     expect(hitStateCalls).toBe(0);
   });
 
-  it("exposes modified projectile point metadata on hit and guard without mutating current pools", () => {
+  it("exposes modified projectile point metadata and applies guardpoints only on guard", () => {
     const resolve = (holdingBack: boolean) => {
       let projectiles = [projectile({ dizzyPoints: 1, guardPoints: 2 })];
       expect(modifyRuntimeProjectiles(projectiles, {
@@ -448,12 +448,15 @@ describe("ProjectileCombatSystem", () => {
       return defender.runtime;
     };
 
-    for (const state of [resolve(false), resolve(true)]) {
+    const hitState = resolve(false);
+    const guardState = resolve(true);
+    for (const state of [hitState, guardState]) {
       expect(runtimeHitVar(state, "dizzypoints")).toBe(23);
       expect(runtimeHitVar(state, "guardpoints")).toBe(17);
       expect(state.dizzyPoints).toBe(91);
-      expect(state.guardPoints).toBe(92);
     }
+    expect(hitState.guardPoints).toBe(92);
+    expect(guardState.guardPoints).toBe(109);
   });
 
   it("applies projectile down.velocity X to a lying defender", () => {
@@ -1157,7 +1160,38 @@ describe("ProjectileCombatSystem", () => {
 
     expect(defender.runtime.hitVars?.sourceGuardPoints).toBe(33);
     expect(runtimeHitVar(defender.runtime, "guardpoints")).toBe(33);
-    expect(defender.runtime.guardPoints).toBe(7);
+    expect(defender.runtime.guardPoints).toBe(40);
+  });
+
+  it("consumes the Projectile creation snapshot instead of the attacker's later guardpoints multiplier", () => {
+    let projectiles = [projectile({ guardPoints: -20, guardPointsAttackMultiplier: 0.5 })];
+    const attacker = actor("p1", "P1", runtimeState({
+      pos: { x: 0, y: 0 },
+      attackMultiplier: 1.5,
+      guardPointsAttackMultiplier: 2,
+    }));
+    const defender = actor("p2", "P2", runtimeState({
+      pos: { x: 12, y: 0 },
+      life: 1000,
+      guardPoints: 1000,
+    }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: true,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.guardPoints).toBe(990);
+    expect(projectiles).toEqual([]);
   });
 
   it("exposes Projectile HitDef redlife without reading the current red-life pool", () => {

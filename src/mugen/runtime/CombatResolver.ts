@@ -12,6 +12,8 @@ import { runtimeHitTmpValue } from "./RuntimeHitTmpSystem";
 export type RuntimeCombatAttack = {
   damage: number;
   guardPoints?: number;
+  /** Projectile-created AttackMulSet guardpoints snapshot; direct moves use attacker state. */
+  guardPointsAttackMultiplier?: number;
   dizzyPoints?: number;
   redLife?: number;
   guardRedLife?: number;
@@ -462,7 +464,11 @@ export function resolveRuntimeCombatHit(input: {
         : {
             guardPoints: scaleRuntimeIncomingAmount(
               input.defender,
-              scaleRuntimeOutgoingGuardPoints(input.attacker, input.attack.guardPoints),
+              scaleRuntimeOutgoingGuardPoints(
+                input.attacker,
+                input.attack.guardPoints,
+                input.attack.guardPointsAttackMultiplier,
+              ),
             ),
           }),
       ...(input.attack.guardRedLife === undefined
@@ -674,8 +680,9 @@ export function scaleRuntimeOutgoingDizzyPoints(
 export function scaleRuntimeOutgoingGuardPoints(
   attacker: Pick<CharacterRuntimeState, "attackMultiplier" | "guardPointsAttackMultiplier">,
   amount: number,
+  snapshot?: number,
 ): number {
-  return Math.round(amount * (attacker.guardPointsAttackMultiplier ?? attacker.attackMultiplier ?? 1));
+  return Math.round(amount * (snapshot ?? attacker.guardPointsAttackMultiplier ?? attacker.attackMultiplier ?? 1));
 }
 
 function guardFlagAllowsState(guardFlag: string, stateType: CharacterRuntimeState["stateType"]): boolean {

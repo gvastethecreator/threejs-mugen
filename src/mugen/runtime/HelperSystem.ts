@@ -188,6 +188,9 @@ export type RuntimeHelper = {
   guardPoints?: number;
   dizzyPointsMax?: number;
   dizzyPoints?: number;
+  attackMultiplier?: number;
+  dizzyPointsAttackMultiplier?: number;
+  guardPointsAttackMultiplier?: number;
   airJugglePoints?: CharacterRuntimeState["airJugglePoints"];
   juggle?: CharacterRuntimeState["juggle"];
   juggleOrigin?: CharacterRuntimeState["juggleOrigin"];
@@ -416,6 +419,9 @@ export type RuntimeHelperSpawnInput = {
   combatDepth?: RuntimeCombatDepth;
   bodyWidth?: { front: number; back: number };
   fallbackFacing: 1 | -1;
+  attackMultiplier?: number;
+  dizzyPointsAttackMultiplier?: number;
+  guardPointsAttackMultiplier?: number;
 };
 
 export type RuntimeHelperStage = Pick<MugenStageDefinition, "bounds"> & {
@@ -501,6 +507,9 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     juggle: undefined,
     juggleOrigin: undefined,
     redLife: 0,
+    attackMultiplier: input.attackMultiplier,
+    dizzyPointsAttackMultiplier: input.dizzyPointsAttackMultiplier,
+    guardPointsAttackMultiplier: input.guardPointsAttackMultiplier,
     powerMax: 3000,
     power: 0,
     vars: Array.from({ length: 60 }, () => 0),
@@ -3440,6 +3449,13 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     ...(helper.superPauseDefenseMultiplier === undefined
       ? {}
       : { superPauseDefenseMultiplier: helper.superPauseDefenseMultiplier }),
+    ...(helper.attackMultiplier === undefined ? {} : { attackMultiplier: helper.attackMultiplier }),
+    ...(helper.dizzyPointsAttackMultiplier === undefined
+      ? {}
+      : { dizzyPointsAttackMultiplier: helper.dizzyPointsAttackMultiplier }),
+    ...(helper.guardPointsAttackMultiplier === undefined
+      ? {}
+      : { guardPointsAttackMultiplier: helper.guardPointsAttackMultiplier }),
     powerMax: helper.powerMax,
     power: helper.power,
     ...(helper.combatDepth === undefined ? {} : { combatDepth: cloneRuntimeCombatDepth(helper.combatDepth) }),
@@ -3537,6 +3553,9 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.juggleOrigin = runtime.juggleOrigin;
   helper.redLife = runtime.redLife ?? helper.redLife;
   helper.superPauseDefenseMultiplier = runtime.superPauseDefenseMultiplier;
+  helper.attackMultiplier = runtime.attackMultiplier;
+  helper.dizzyPointsAttackMultiplier = runtime.dizzyPointsAttackMultiplier;
+  helper.guardPointsAttackMultiplier = runtime.guardPointsAttackMultiplier;
   helper.powerMax = runtime.powerMax ?? helper.powerMax;
   helper.power = runtime.power;
   helper.bodyWidth = runtime.bodyWidth ? { ...runtime.bodyWidth } : undefined;

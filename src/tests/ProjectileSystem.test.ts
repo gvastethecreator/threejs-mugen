@@ -477,6 +477,24 @@ describe("ProjectileSystem", () => {
     }).guardPoints).toBeUndefined();
   });
 
+  it("freezes the creator AttackMulSet guardpoints multiplier on Projectile creation", () => {
+    expect(createRuntimeProjectile({
+      serialId: "p1-projectile-guardpoints-mul-snapshot",
+      controller: controller({ projanim: "1005", guardpoints: "-20", projid: "778" }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "p1-def",
+      spriteOwnerLabel: "P1",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      guardPointsAttackMultiplier: 0.5,
+    })).toMatchObject({
+      guardPoints: -20,
+      guardPointsAttackMultiplier: 0.5,
+    });
+  });
+
   it("carries fresh Projectile keepstate from static and caller-resolved values", () => {
     const base = {
       serialId: "p1-projectile-keepstate",

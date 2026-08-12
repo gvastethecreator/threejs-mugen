@@ -1868,6 +1868,29 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("snapshots a Helper AttackMulSet guardpoints multiplier on its Projectile", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "43", anim: "900" }),
+      animations: new Map([[900, action(900)]]),
+    });
+    helper.guardPointsAttackMultiplier = 0.5;
+
+    const projectile = spawnRuntimeHelperProjectileActor(
+      store,
+      helper,
+      compileControllerIr(controller("Projectile", { projanim: "900", projid: "8866", guardpoints: "-20" })),
+    );
+
+    expect(projectile).toMatchObject({
+      guardPoints: -20,
+      guardPointsAttackMultiplier: 0.5,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+    });
+  });
+
   it("resolves Helper-owned dynamic ModifyProjectile pause budgets in caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {
