@@ -1,20 +1,28 @@
 # Workplan
 
-## Latest slice — T752 closed-bounded (2026-08-12)
+## Latest slice — T753 closed-bounded (2026-08-12)
 
-Issue 326 closes fresh Projectile `guardpoints` static and caller-context
+Issue 327 closes typed, finite caller-context `AttackMulSet guardpoints` for
+direct accepted guards. The dedicated multiplier scales authored guard-points
+deltas independently from damage/dizzy scaling and resets on intro skip.
+Required trace `5a4b2841` / `90fe9bf9`; focused tests and typecheck pass. No
+score movement. Projectile/Helper ownership, omitted defaults, resource
+clamp/rounding, `NoGuardPointsDamage`, int32 edges, teams, rollback and full
+parity remain outside.
+
+## Next slice — T754 Projectile/Helper guard-point ownership
+
+Prove dedicated guard-point multiplier consumption for root Projectile and
+Helper-parented accepted guards; keep defaults and resource topology separate.
+
+## Historical slice — T752 closed-bounded (2026-08-12)
+
+Issue 326 closed fresh Projectile `guardpoints` static and caller-context
 dynamic resolution through root and Helper-parented creation. Accepted
-contacts expose `GetHitVar(guardpoints)=19` without touching the defender's
-guard resource. Root trace `e369c409` / `90b185ad`; Helper trace
-`76244e57` / `c5cb237b`; focused tests and typecheck pass. Aggregate QA
-remains blocked by the inherited helper-bind target-link case. Defaults,
-ModifyProjectile, int32 edges, teams, rollback and full parity remain outside.
-
-## Next slice — T753 upstream seam selection
-
-Select one bounded official/Ikemen seam after the aggregate T752 trace gate;
-keep omitted Projectile defaults, ModifyProjectile and resource topology
-separate.
+contacts exposed `GetHitVar(guardpoints)=19`; required root/Helper traces
+passed independently while aggregate QA retained the inherited helper-bind
+target-link blocker. Defaults, ModifyProjectile, int32 edges, teams, rollback
+and full parity remained outside.
 
 ## Historical slice — T751 closed-bounded (2026-08-12)
 

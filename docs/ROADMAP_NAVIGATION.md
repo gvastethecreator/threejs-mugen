@@ -2,21 +2,30 @@
 
 Last updated: 2026-08-12
 
-## Current implementation route — T752 closed-bounded (2026-08-12)
+## Current implementation route — T753 closed-bounded (2026-08-12)
+
+T753 / [issue 327](../.scratch/roadmap/issues/327-attackmulset-guardpoints-dynamic.md)
+closes typed, finite caller-context `AttackMulSet guardpoints` for direct
+accepted guards. The dedicated multiplier scales authored guard-points deltas
+independently from damage/dizzy scaling and resets on intro skip. Required
+trace `5a4b2841` / `90fe9bf9`; focused tests and typecheck pass. No score
+movement. Projectile/Helper ownership, omitted defaults, resource
+clamp/rounding, `NoGuardPointsDamage`, int32 edges, teams, rollback and full
+parity remain blocked.
+
+## Next implementation route — T754 Projectile/Helper guard-point ownership
+
+Prove the dedicated multiplier on root Projectile and Helper-parented accepted
+guards; keep defaults and resource topology separate.
+
+## Historical implementation route — T752 closed-bounded (2026-08-12)
 
 T752 / [issue 326](../.scratch/roadmap/issues/326-projectile-guardpoints-dynamic.md)
-closes fresh Projectile `guardpoints` static and caller-context dynamic
-resolution for root and Helper-parented Projectiles. Accepted contacts expose
-`GetHitVar(guardpoints)=19` without mutating the defender's guard resource.
-Required trace pairs are `e369c409` / `90b185ad` and `76244e57` /
-`c5cb237b`; focused tests and typecheck pass. Aggregate QA retains the
-inherited helper-bind target-link blocker. Defaults/reset, ModifyProjectile,
-int32 edges, teams, rollback and full parity remain blocked.
-
-## Next implementation route — T753 upstream seam selection
-
-Select one bounded official/Ikemen source seam after the aggregate T752 trace
-gate; keep Projectile defaults/ModifyProjectile separate.
+closed fresh Projectile `guardpoints` static and caller-context dynamic
+resolution for root and Helper-parented Projectiles. Required root/Helper
+traces passed independently; aggregate QA retained the inherited helper-bind
+target-link blocker. Defaults/reset, ModifyProjectile, int32 edges, teams,
+rollback and full parity remained blocked.
 
 ## Historical implementation route — T751 closed-bounded (2026-08-12)
 

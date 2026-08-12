@@ -1,6 +1,25 @@
 ﻿# QA And Acceptance Gates
 
-## 2026-08-12 T752 Projectile guardpoints expressions — closed-bounded
+## 2026-08-12 T753 AttackMulSet guardpoints — closed-bounded
+
+Focused compiler/runtime/direct-combat coverage and typecheck pass for the
+dedicated `AttackMulSet guardpoints` multiplier. Required trace
+`synthetic-imported-dynamic-attack-guardpoints-golden` proves
+`VarSet -> AttackMulSet -> HitDef -> accepted guard`, with trace checksum
+`5a4b2841` and final checksum `90fe9bf9`; authored negative guard-points
+delta is scaled independently from damage/dizzy. No score movement. The
+aggregate gate is not broadened: Projectile/Helper ownership, omitted
+defaults, resource clamp/rounding, `NoGuardPointsDamage`, int32 edges, teams,
+rollback and full parity remain outside. See [issue
+327](../.scratch/roadmap/issues/327-attackmulset-guardpoints-dynamic.md).
+
+## Next gate — T754 Projectile/Helper guard-point ownership
+
+Prove dedicated guard-point multiplier consumption for root Projectile and
+Helper-parented accepted guards; retain defaults and resource topology as
+separate gates.
+
+## Historical gate — T752 Projectile guardpoints expressions — closed-bounded
 
 Focused compiler/runtime/root/Helper coverage and typecheck pass for fresh
 Projectile `guardpoints`, including caller-context dynamic values. Required

@@ -2,6 +2,21 @@
 
 ## Current parity queue
 
+- **T753 closed-bounded** — issue 327 adds typed, finite
+  caller-context `AttackMulSet guardpoints` for direct accepted guards. The
+  dedicated multiplier scales the authored guard-points delta independently
+  from damage/dizzy scaling and resets on intro skip. Product/evidence commits
+  are `1eb17d85` and `ee000f97`; required trace `5a4b2841` / `90fe9bf9`.
+  Focused tests and typecheck pass; no score movement. Projectile/Helper
+  ownership, omitted defaults, resource clamp/rounding,
+  `NoGuardPointsDamage`, int32 edges, teams, rollback and full parity remain
+  outside. See [issue
+  327](../.scratch/roadmap/issues/327-attackmulset-guardpoints-dynamic.md).
+
+- **T754 queued** — prove the dedicated guard-points multiplier on root
+  Projectile and Helper-parented accepted guards; keep defaults and resource
+  topology as separate claims.
+
 - **T752 closed-bounded** — issue 326 carries fresh Projectile
   `guardpoints` static and caller-context dynamic values through root and
   Helper-parented creation, accepted contact metadata, and

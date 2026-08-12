@@ -1,21 +1,29 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T752 closed-bounded (2026-08-12)
+## Latest bounded slice — T753 closed-bounded (2026-08-12)
 
-Issue 326 carries fresh Projectile `guardpoints` through typed IR and one-shot
+Issue 327 adds typed, finite caller-context `AttackMulSet guardpoints` support.
+Accepted direct guards scale the authored guard-points delta with a dedicated
+multiplier, independent of damage/dizzy scaling. Required trace
+`5a4b2841` -> `90fe9bf9` passes; focused tests and typecheck pass. No score
+movement. Projectile/Helper ownership, omitted defaults, resource
+clamp/rounding, `NoGuardPointsDamage`, int32 edges, teams, rollback and full
+parity remain blocked. See [issue
+327](../.scratch/roadmap/issues/327-attackmulset-guardpoints-dynamic.md).
+
+## Next bounded slice — T754 Projectile/Helper guard-point ownership
+
+Prove dedicated guard-point multiplier consumption for root Projectile and
+Helper-parented accepted guards; keep defaults and resource topology separate.
+
+## Historical bounded slice — T752 closed-bounded (2026-08-12)
+
+Issue 326 carried fresh Projectile `guardpoints` through typed IR and
 caller-context evaluation for root and Helper-parented Projectiles. Accepted
-contacts expose `GetHitVar(guardpoints)=19` without mutating the defender's
-guard resource. Required traces: `e369c409` -> `90b185ad` (root) and
-`76244e57` -> `c5cb237b` (Helper). Focused tests and typecheck pass; aggregate
-QA remains blocked by the inherited helper-bind target-link case. Defaults,
-ModifyProjectile, int32 edge parity, teams, rollback and full parity remain
-blocked. See [issue
-326](../.scratch/roadmap/issues/326-projectile-guardpoints-dynamic.md).
-
-## Next bounded slice — T753 upstream seam selection
-
-Choose one distinct official/Ikemen source contract after the aggregate T752
-gate; keep Projectile defaults/ModifyProjectile separate.
+contacts exposed `GetHitVar(guardpoints)=19`; required root/Helper traces passed
+independently while aggregate QA retained the inherited helper-bind
+target-link blocker. Defaults, ModifyProjectile, int32 edges, teams, rollback
+and full parity remained blocked.
 
 ## Historical bounded slice — T751 closed-bounded (2026-08-12)
 

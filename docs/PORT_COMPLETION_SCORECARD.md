@@ -1,6 +1,22 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-12 T752 Projectile `guardpoints` expressions — closed-bounded, no score movement
+## 2026-08-12 T753 `AttackMulSet guardpoints` — closed-bounded, no score movement
+
+Issue 327 closes typed, finite caller-context `AttackMulSet guardpoints` for
+direct accepted guards. The dedicated multiplier scales authored guard-points
+deltas independently from damage/dizzy scaling and resets on intro skip.
+Required trace `5a4b2841` -> `90fe9bf9`; focused tests and typecheck pass. No
+score movement: Projectile/Helper ownership, omitted defaults, resource
+clamp/rounding, `NoGuardPointsDamage`, int32 edges, teams, rollback and full
+parity remain blocked. See [issue
+327](../.scratch/roadmap/issues/327-attackmulset-guardpoints-dynamic.md).
+
+## Next selection — T754 Projectile/Helper guard-point ownership
+
+Prove the dedicated guard-point multiplier on root Projectile and
+Helper-parented accepted guards; keep defaults and resource topology separate.
+
+## Historical checkpoint — 2026-08-12 T752 Projectile `guardpoints` expressions — closed-bounded, no score movement
 
 Issue 326 closes fresh Projectile `guardpoints` static and caller-context
 dynamic resolution for root and Helper-parented Projectiles, with accepted

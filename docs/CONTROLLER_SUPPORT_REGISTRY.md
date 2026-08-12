@@ -1,16 +1,25 @@
 # Controller Support Registry
 
-Latest cursor: T752 / issue 326 is closed-bounded for fresh Projectile
+Latest cursor: T753 / issue 327 is closed-bounded for typed, finite
+`AttackMulSet guardpoints`. Direct accepted guards apply the dedicated
+guard-points multiplier to authored guard-points deltas independently from
+damage/dizzy scaling, and intro reset clears the dedicated state. Product
+`1eb17d85`, evidence `ee000f97`, and required trace `5a4b2841` -> `90fe9bf9`
+pass independently. No score movement. Projectile/Helper ownership, omitted
+defaults, resource clamp/rounding, `NoGuardPointsDamage`, int32 edges, teams,
+rollback and full parity remain unsupported.
+
+Next cursor: T754 / root Projectile and Helper-parented guard-point multiplier
+ownership and accepted-contact evidence.
+
+Previous cursor: T752 / issue 326 is closed-bounded for fresh Projectile
 `guardpoints` expressions. Root and Helper-parented Projectiles resolve static
 or caller-context dynamic integer values once; accepted contacts expose
 `GetHitVar(guardpoints)` without mutating the defender's guard resource.
-Product `025bd5a0`, evidence `09282387` / `6f04259b`, and required traces
-`e369c409` -> `90b185ad` and `76244e57` -> `c5cb237b` pass independently.
-Aggregate QA retains the inherited helper-bind missing-target-link blocker.
-Defaults/reset, ModifyProjectile, int32 edge parity, teams, rollback and full
-parity remain unsupported.
-
-Next cursor: T753 upstream seam selection after the aggregate T752 trace gate.
+Required traces `e369c409` -> `90b185ad` and `76244e57` -> `c5cb237b` pass
+independently; aggregate QA retains the inherited helper-bind missing-target-
+link blocker. Defaults/reset, ModifyProjectile, int32 edge parity, teams,
+rollback and full parity remain unsupported.
 
 Previous cursor: T751 / issue 325 is closed-bounded for direct `HitDef
 guardpoints` expressions. Root and Helper callers resolve static or

@@ -1,21 +1,31 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T752 closed-bounded (2026-08-12)
+## Latest bounded slice — T753 closed-bounded (2026-08-12)
 
-Issue 326 carries fresh Projectile `guardpoints` through typed IR and one-shot
+Issue 327 carries `AttackMulSet guardpoints` through typed IR and finite
+caller-context evaluation. Accepted direct guards apply the dedicated
+guard-points multiplier to the authored guard-points delta without reusing the
+damage/dizzy multiplier; the intro reset clears the dedicated state. Required
+trace checksum `5a4b2841` / final `90fe9bf9`; focused tests and typecheck pass.
+No score movement. Projectile/Helper ownership, omitted defaults, resource
+clamps/rounding, `NoGuardPointsDamage`, int32 edges, teams, rollback and full
+parity remain outside. See [issue
+327](../.scratch/roadmap/issues/327-attackmulset-guardpoints-dynamic.md).
+
+## Next bounded slice — T754 Projectile/Helper guard-point ownership
+
+Prove the same dedicated `AttackMulSet guardpoints` multiplier for accepted
+root Projectile and Helper-parented guard contacts. Keep omitted defaults,
+resource topology and global parity as separate claims.
+
+## Historical bounded slice — T752 closed-bounded (2026-08-12)
+
+Issue 326 carried fresh Projectile `guardpoints` through typed IR and
 caller-context evaluation for root and Helper-parented Projectiles. Accepted
-contacts expose `GetHitVar(guardpoints)=19` while preserving the defender's
-guard resource. Root trace checksum `e369c409` / final `90b185ad`; Helper
-trace checksum `76244e57` / final `c5cb237b`. Focused tests and typecheck pass.
-The aggregate gate remains blocked by the inherited helper-bind target-link
-case; omitted defaults/reset, ModifyProjectile, int32 sentinel behavior,
-teams, rollback and full parity remain outside. See [issue
-326](../.scratch/roadmap/issues/326-projectile-guardpoints-dynamic.md).
-
-## Next bounded slice — T753 upstream seam selection
-
-Select one distinct official/Ikemen seam after T752; keep omitted Projectile
-defaults, ModifyProjectile and resource/topology breadth as separate claims.
+contacts exposed `GetHitVar(guardpoints)=19`; root and Helper traces passed
+independently. The aggregate gate retained the inherited helper-bind
+target-link blocker; omitted defaults/reset, ModifyProjectile, int32 edges,
+teams, rollback and full parity remained outside.
 
 ## Historical bounded slice — T751 closed-bounded (2026-08-12)
 

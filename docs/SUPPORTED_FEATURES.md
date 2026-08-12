@@ -1,5 +1,22 @@
 ﻿# Supported Features
-## 2026-08-12 T750 `HitDef guard.dist` bounds - closed-bounded
+## 2026-08-12 T753 `AttackMulSet guardpoints` - closed-bounded
+
+Direct accepted guards now support typed, finite caller-context
+`AttackMulSet guardpoints`. The dedicated multiplier scales authored
+guard-points deltas independently from damage/dizzy scaling and resets on intro
+skip. Product `1eb17d85`; evidence `ee000f97`; required trace
+`5a4b2841` / `90fe9bf9`; focused tests and typecheck pass. No score movement.
+Projectile/Helper ownership, omitted defaults, resource clamp/rounding,
+`NoGuardPointsDamage`, int32 edges, teams, rollback and full parity remain
+outside the claim. See [issue
+327](../.scratch/roadmap/issues/327-attackmulset-guardpoints-dynamic.md).
+
+## Next selection - T754 Projectile/Helper guard-point ownership
+
+Prove the dedicated multiplier for root Projectile and Helper-parented
+accepted guards; keep defaults and resource topology separate.
+
+## Historical - 2026-08-12 T752 Projectile `guardpoints` expressions - closed-bounded
 
 Direct `HitDef guard.dist.width/height/depth` now accepts static, mixed and
 caller-context dynamic pairs through root/RedirectID and Helper paths. Fresh

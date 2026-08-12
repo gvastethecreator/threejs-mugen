@@ -2,17 +2,27 @@
 
 Last updated: 2026-08-12
 
-## Current T751 closeout / T752 selection
+## Current T753 closeout / T754 selection
 
-T751 / [issue 325](../.scratch/roadmap/issues/325-hitdef-guardpoints-dynamic.md)
-adds fresh direct `HitDef guardpoints` static and caller-context dynamic
-resolution for root and Helper callers. Accepted grounded guards expose the
-authored value through `GetHitVar(guardpoints)` while keeping the current guard
-resource separate. Required trace `4c227a07` -> `c67b5998`, focused coverage,
-and typecheck pass; aggregate QA retains the inherited helper-bind
-missing-target-link blocker. Fresh default/reset, Projectile/ModifyProjectile,
-exact guard timing, teams, rollback and full parity remain blocked. T752 is the
-next source-selection checkpoint.
+T753 / [issue 327](../.scratch/roadmap/issues/327-attackmulset-guardpoints-dynamic.md)
+adds typed, finite caller-context `AttackMulSet guardpoints` for direct
+accepted guards. The dedicated multiplier scales authored guard-points deltas
+independently from damage/dizzy scaling and resets on intro skip. Required
+trace `5a4b2841` -> `90fe9bf9`, focused tests and typecheck pass; no score
+movement. Projectile/Helper ownership, omitted defaults, resource
+clamp/rounding, `NoGuardPointsDamage`, int32 edges, teams, rollback and full
+parity remain blocked. T754 is the next bounded ownership checkpoint for root
+Projectile and Helper-parented accepted guards.
+
+## Historical T752 closeout / T753 selection
+
+T752 / [issue 326](../.scratch/roadmap/issues/326-projectile-guardpoints-dynamic.md)
+added fresh Projectile `guardpoints` static and caller-context dynamic
+resolution for root and Helper-parented Projectiles. Accepted contacts exposed
+`GetHitVar(guardpoints)=19`; required root/Helper traces passed independently
+while aggregate QA retained the inherited helper-bind missing-target-link
+blocker. Defaults/reset, ModifyProjectile, int32 edges, teams, rollback and
+full parity remained blocked.
 
 ## Historical T750 closeout / T751 selection
 
