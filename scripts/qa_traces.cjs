@@ -1156,6 +1156,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyHitDefDynamicPauseTimeTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyhitdef-dynamic-guardpoints",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyHitDefDynamicGuardPointsTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-dynamic-ground-hittime",
       required: true,
       artifact: presets.createSyntheticImportedHitDefDynamicGroundHitTimeTraceArtifact(),

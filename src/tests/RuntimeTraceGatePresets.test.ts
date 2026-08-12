@@ -89,6 +89,7 @@ import {
   createSyntheticImportedHitDefOmittedDamageTraceArtifact,
   createSyntheticImportedHitDefDynamicPauseTimeTraceArtifact,
   createSyntheticImportedModifyHitDefDynamicPauseTimeTraceArtifact,
+  createSyntheticImportedModifyHitDefDynamicGuardPointsTraceArtifact,
   createSyntheticImportedHitDefDynamicGroundHitTimeTraceArtifact,
   createSyntheticImportedHitDefDynamicGroundSlideTimeTraceArtifact,
   createSyntheticImportedHitDefDynamicGuardHitTimeTraceArtifact,
@@ -26599,6 +26600,37 @@ describe("RuntimeTraceGatePresets", () => {
       stateNo: 5098,
       moveType: "H",
       life: 963,
+    });
+  });
+
+  it("creates a required imported dynamic live ModifyHitDef guardpoints artifact", () => {
+    const artifact = createSyntheticImportedModifyHitDefDynamicGuardPointsTraceArtifact({
+      generatedAt: "2026-08-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-modifyhitdef-dynamic-guard-points-golden", source: "imported" },
+      gates: [{ label: "synthetic-imported-modifyhitdef-dynamic-guard-points-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    expect(gate?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedControllers.ModifyHitDef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.executedOperations.modifyhitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.evidence.targetLinks).toContainEqual(
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 78 }),
+    );
+    expect(gate?.evidence.executedStates).toEqual(expect.arrayContaining([150, 151, 5084]));
+    expect(gate?.evidence.actorFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1", source: "imported", stateNo: 151, moveType: "H" }),
+      expect.objectContaining({ actorId: "p1", source: "imported", stateNo: 5084 }),
+    ]));
+    expect(gate?.evidence.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      life: 995,
     });
   });
 
