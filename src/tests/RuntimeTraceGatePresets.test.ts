@@ -582,6 +582,7 @@ import {
   createSyntheticImportedHelperModifyProjectileGetPowerGuardTraceArtifact,
   createSyntheticImportedHelperModifyProjectileDamageGuardTraceArtifact,
   createSyntheticImportedHelperModifyProjectileGuardVelocityTraceArtifact,
+  createSyntheticImportedHelperModifyProjectileGuardVelocityYZTraceArtifact,
   createSyntheticImportedHelperModifyProjectileAirGuardVelocityTraceArtifact,
   createSyntheticImportedHelperModifyProjectileAirGuardVelocityYTraceArtifact,
   createSyntheticImportedHelperModifyProjectileAirGuardVelocityZTraceArtifact,
@@ -12237,6 +12238,41 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.ModifyProjectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.modifyprojectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", life: 20 })]),
+    );
+  });
+
+  it("creates a synthetic imported Helper ModifyProjectile guard.velocity Y/Z matrix artifact", () => {
+    const artifact = createSyntheticImportedHelperModifyProjectileGuardVelocityYZTraceArtifact({
+      generatedAt: "2026-08-15T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-modifyprojectile-guard-velocity-yz-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-helper-modifyprojectile-guard-velocity-yz-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const branchFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 5116);
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ModifyProjectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.modifyprojectile).toBeGreaterThanOrEqual(1);
+    // The trace gate catches the exact first accepted x impulse; later branch
+    // frames include the runtime's grounded friction decay.
+    expect(branchFrame?.maxVel.x).toBeGreaterThanOrEqual(5);
+    expect(branchFrame?.minVel.y).toBeLessThanOrEqual(-6);
+    expect(branchFrame?.maxVelZ).toBeGreaterThanOrEqual(5);
+    expect(evidence?.targetLinks).toEqual(expect.arrayContaining([
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8908 }),
+      expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8908 }),
+    ]));
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(evidence?.combatReasons).not.toContain("hit");
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", life: 20 })]),
     );

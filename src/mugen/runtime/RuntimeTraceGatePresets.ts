@@ -97,6 +97,8 @@ export type RuntimeTraceGatePresetOptions = {
   reserveFighters?: readonly DemoFighterDefinition[];
   /** Synthetic fixture-only selector for the Helper ModifyProjectile airguard velocity component trace. */
   helperModifyProjectileAirGuardVelocityComponent?: "x" | "y" | "z";
+  /** Synthetic fixture-only selector for the Helper ModifyProjectile ground guard Y/Z matrix trace. */
+  helperModifyProjectileGuardVelocityYZ?: boolean;
   /** Synthetic fixture-only live ModifyProjectile damage pair. */
   modifyProjectileDamage?: SyntheticPairExpression;
   /** Synthetic fixture-only live ModifyProjectile p2facing expression. */
@@ -65737,6 +65739,10 @@ export type SyntheticImportedTraceFighterOptions = {
     airGuardedBranchTrigger?: string;
     airGuardedBranchExpression?: string;
     airGuardHitVelSetZ?: boolean;
+    /** Synthetic fixture-only ground-guard HitVelSet Y component. */
+    guardHitVelSetY?: boolean;
+    /** Synthetic fixture-only ground-guard HitVelSet Z component. */
+    guardHitVelSetZ?: boolean;
   };
   defaultGetHitFall?: {
     shakeStateNo?: number;
@@ -66627,7 +66633,7 @@ export type SyntheticImportedTraceFighterOptions = {
     /** Synthetic Helper-local dynamic/mixed Projectile guard.pausetime pair. */
     guardPauseTime?: SyntheticPairExpression;
     groundVelocity?: [number, number?];
-    guardVelocity?: [number, number?];
+    guardVelocity?: [number, number?, number?];
     omitGuardVelocity?: boolean;
     airVelocity?: [number, number?, number?];
     /** Synthetic Helper-local dynamic/mixed Projectile air.velocity expression vector. */
@@ -70668,6 +70674,8 @@ function defaultGuardHitBlock(state: {
   airGuardedBranchTrigger?: string;
   airGuardedBranchExpression?: string;
   airGuardHitVelSetZ?: boolean;
+  guardHitVelSetY?: boolean;
+  guardHitVelSetZ?: boolean;
 }): string {
   const shakeStateNo = state.shakeStateNo ?? 150;
   const slideStateNo = state.slideStateNo ?? 151;
@@ -70695,6 +70703,8 @@ function defaultGuardHitBlock(state: {
   const airGuardedBranchTrigger = state.airGuardedBranchTrigger ?? "Time >= GetHitVar(ctrltime)";
   const airGuardedBranchExpression = state.airGuardedBranchExpression ?? "GetHitVar(guarded) = 1";
   const airGuardHitVelSetZ = state.airGuardHitVelSetZ === true;
+  const guardHitVelSetY = state.guardHitVelSetY === true;
+  const guardHitVelSetZ = state.guardHitVelSetZ === true;
   const guardedBranchController =
     guardedBranchStateNo === undefined
       ? ""
@@ -70858,6 +70868,8 @@ ctrl = 0
 type = HitVelSet
 trigger1 = Time = 0
 x = 1
+${guardHitVelSetY ? "y = 1" : ""}
+${guardHitVelSetZ ? "z = 1" : ""}
 
 [State ${slideStateNo}, Stop Guard Slide]
 type = VelSet
@@ -78358,8 +78370,11 @@ export function createSyntheticImportedHelperModifyProjectileDamageGuardTraceArt
 export function createSyntheticImportedHelperModifyProjectileGuardVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
-  const branchStateNo = 5112;
-  const projectileId = 8904;
+  const yzMatrix = options.helperModifyProjectileGuardVelocityYZ === true;
+  const branchStateNo = yzMatrix ? 5116 : 5112;
+  const projectileId = yzMatrix ? 8908 : 8904;
+  const helperWaitStateNo = yzMatrix ? 1279 : 1276;
+  const helperBranchStateNo = yzMatrix ? 1280 : 1277;
   const stage: MugenStageDefinition = options.stage ?? {
     ...trainingStage,
     id: "trace-helper-modifyprojectile-guard-velocity-grid",
@@ -78371,57 +78386,80 @@ export function createSyntheticImportedHelperModifyProjectileGuardVelocityTraceA
   };
   const script = importedHelperProjectileGuardScript();
   const defender = createSyntheticImportedTraceFighter({
-    id: "synthetic-imported-helper-modifyprojectile-guard-velocity-defender",
-    displayName: "Helper ModifyProjectile Guard Velocity Defender",
+    id: yzMatrix
+      ? "synthetic-imported-helper-modifyprojectile-guard-velocity-yz-defender"
+      : "synthetic-imported-helper-modifyprojectile-guard-velocity-defender",
+    displayName: yzMatrix
+      ? "Helper ModifyProjectile Guard Velocity YZ Defender"
+      : "Helper ModifyProjectile Guard Velocity Defender",
     dataStats: { life: 50 },
     defaultGuardHit: {
       guardedBranchStateNo: branchStateNo,
       guardedBranchAnimNo: branchStateNo,
       guardedBranchTrigger: "Time >= 0",
-      guardedBranchExpression: "GetHitVar(xvel) = 8 && GetHitVar(guarded) = 1",
+      ...(yzMatrix ? { guardHitVelSetY: true, guardHitVelSetZ: true } : {}),
+      guardedBranchExpression: yzMatrix
+        ? "GetHitVar(xvel) = 8 && GetHitVar(yvel) = -7 && GetHitVar(zvel) = 6 && GetHitVar(guarded) = 1"
+        : "GetHitVar(xvel) = 8 && GetHitVar(guarded) = 1",
     },
   });
   const attacker = createSyntheticImportedTraceFighter({
-    id: "synthetic-imported-helper-modifyprojectile-guard-velocity-attacker",
-    displayName: "Helper ModifyProjectile Guard Velocity Attacker",
+    id: yzMatrix
+      ? "synthetic-imported-helper-modifyprojectile-guard-velocity-yz-attacker"
+      : "synthetic-imported-helper-modifyprojectile-guard-velocity-attacker",
+    displayName: yzMatrix
+      ? "Helper ModifyProjectile Guard Velocity YZ Attacker"
+      : "Helper ModifyProjectile Guard Velocity Attacker",
     withHitDef: false,
     withHelper: true,
     helperProjGuardRoute: {
-      waitStateNo: 1276,
-      waitAnimNo: 1025,
-      branchStateNo: 1277,
-      branchAnimNo: 1026,
+      waitStateNo: helperWaitStateNo,
+      waitAnimNo: yzMatrix ? 1031 : 1025,
+      branchStateNo: helperBranchStateNo,
+      branchAnimNo: yzMatrix ? 1032 : 1026,
       branchTrigger: `ProjContact(${projectileId}) && ProjContactTime(${projectileId}) >= 1`,
-      projectileAnimNo: 1027,
+      projectileAnimNo: yzMatrix ? 1033 : 1027,
       projectileId,
-      pos: [300, -34],
+      pos: yzMatrix ? [300, -34] : [300, -34],
       velocity: [5, 0],
       guardFlag: "MA",
-      guardVelocity: [-1],
+      guardVelocity: yzMatrix ? [-1, -2, 3] : [-1],
       damage: [45, 30],
       projectileRemoveOnHit: false,
-      varSeeds: [{ index: 0, value: -8 }],
+      varSeeds: yzMatrix
+        ? [{ index: 1, value: -7 }, { index: 2, value: 6 }]
+        : [{ index: 0, value: -8 }],
       modifyProjectileTriggerTime: 3,
-      modifyProjectileGuardVelocity: ["var(0)"],
+      modifyProjectileGuardVelocity: yzMatrix ? ["-8", "var(1)", "var(2)"] : ["var(0)"],
     },
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
-    label: "synthetic-imported-helper-modifyprojectile-guard-velocity-golden",
+    label: yzMatrix
+      ? "synthetic-imported-helper-modifyprojectile-guard-velocity-yz-golden"
+      : "synthetic-imported-helper-modifyprojectile-guard-velocity-golden",
   });
   return createRuntimeTraceArtifact({
     trace,
     script,
     generatedAt: options.generatedAt,
     target: {
-      id: "synthetic-imported-helper-modifyprojectile-guard-velocity-golden",
-      label: "Synthetic imported Helper ModifyProjectile guard.velocity route",
+      id: yzMatrix
+        ? "synthetic-imported-helper-modifyprojectile-guard-velocity-yz-golden"
+        : "synthetic-imported-helper-modifyprojectile-guard-velocity-golden",
+      label: yzMatrix
+        ? "Synthetic imported Helper ModifyProjectile guard.velocity Y/Z route"
+        : "Synthetic imported Helper ModifyProjectile guard.velocity route",
       source: "imported",
       notes: [
-        "Pinned Ikemen GO trace proves a first-generation Helper resolves a live ModifyProjectile guard.velocity X expression in Helper context before an accepted ground guard. The root-owned Projectile replaces adversarial X=-1 with -8, exposing GetHitVar(xvel)=8 and the defender's physical guard response. Airborne guard, Y/Z breadth, nested helpers, shared resources, exact timing/rounding, rollback, and full M.U.G.E.N/Ikemen parity remain outside this bounded slice.",
+        yzMatrix
+          ? "Pinned Ikemen GO trace proves a first-generation Helper resolves live ModifyProjectile guard.velocity Y/Z expressions in Helper context before an accepted ground guard. The root-owned Projectile replaces adversarial Y/Z=-2/3 with -7/6 while keeping X=-8, exposing GetHitVar(xvel/yvel/zvel)=8/-7/6 and the defender's physical guard response. Fresh defaults, airborne guard, nested helpers, shared resources, exact timing/rounding, rollback, and full M.U.G.E.N/Ikemen parity remain outside this bounded slice."
+          : "Pinned Ikemen GO trace proves a first-generation Helper resolves a live ModifyProjectile guard.velocity X expression in Helper context before an accepted ground guard. The root-owned Projectile replaces adversarial X=-1 with -8, exposing GetHitVar(xvel)=8 and the defender's physical guard response. Airborne guard, Y/Z breadth, nested helpers, shared resources, exact timing/rounding, rollback, and full M.U.G.E.N/Ikemen parity remain outside this bounded slice.",
       ],
     },
     gates: [{
-      label: "synthetic-imported-helper-modifyprojectile-guard-velocity-golden",
+      label: yzMatrix
+        ? "synthetic-imported-helper-modifyprojectile-guard-velocity-yz-golden"
+        : "synthetic-imported-helper-modifyprojectile-guard-velocity-golden",
       requiredActorSources: ["imported"],
       requiredActorKinds: ["player"],
       requiredEffectKinds: ["helper", "projectile"],
@@ -78440,10 +78478,10 @@ export function createSyntheticImportedHelperModifyProjectileGuardVelocityTraceA
           actorId: "p1",
           allowSameTick: true,
           steps: [
-            { stateNo: 1200, controller: "VarSet", name: "Helper ProjGuard VarSet 0" },
+            { stateNo: 1200, controller: "VarSet", name: yzMatrix ? "Helper ProjGuard VarSet 1" : "Helper ProjGuard VarSet 0" },
             { stateNo: 1200, controller: "Projectile", name: "Helper ProjGuard Spawn" },
-            { stateNo: 1276, controller: "ModifyProjectile", name: "Helper ProjGuard ModifyProjectile Guard Velocity" },
-            { stateNo: 1276, operation: "modifyprojectile" },
+            { stateNo: helperWaitStateNo, controller: "ModifyProjectile", name: "Helper ProjGuard ModifyProjectile Guard Velocity" },
+            { stateNo: helperWaitStateNo, operation: "modifyprojectile" },
           ],
         },
         {
@@ -78464,7 +78502,16 @@ export function createSyntheticImportedHelperModifyProjectileGuardVelocityTraceA
         ],
       }],
       requiredActorFrames: [
-        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, observedVelXAtLeast: 8, observedVelXAtMost: 8, minFrames: 1 },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: branchStateNo,
+          observedVelXAtLeast: 8,
+          observedVelXAtMost: 8,
+          ...(yzMatrix ? { observedVelYAtMost: -6, observedVelZAtLeast: 5 } : {}),
+          minFrames: 1,
+        },
       ],
       requiredWorldLifecycleEvents: [
         { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
@@ -78474,7 +78521,7 @@ export function createSyntheticImportedHelperModifyProjectileGuardVelocityTraceA
       ],
       requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
       requiredEffectPayloads: [
-        { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1277, minAge: 2 },
+        { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: helperBranchStateNo, minAge: 2 },
         { actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: projectileId, minAge: 1, hasHit: true },
       ],
       requiredTargetLinks: [
@@ -78486,6 +78533,16 @@ export function createSyntheticImportedHelperModifyProjectileGuardVelocityTraceA
         { actorId: "p2", source: "imported", actorKind: "player", life: 20 },
       ],
     }],
+  });
+}
+
+/** T775 Helper-authored ModifyProjectile proof: guard.velocity Y/Z matrix. */
+export function createSyntheticImportedHelperModifyProjectileGuardVelocityYZTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedHelperModifyProjectileGuardVelocityTraceArtifact({
+    ...options,
+    helperModifyProjectileGuardVelocityYZ: true,
   });
 }
 

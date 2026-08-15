@@ -991,6 +991,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperModifyProjectileGuardVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-modifyprojectile-guard-velocity-yz",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperModifyProjectileGuardVelocityYZTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-modifyprojectile-airguard-velocity",
       required: true,
       artifact: presets.createSyntheticImportedHelperModifyProjectileAirGuardVelocityTraceArtifact(),

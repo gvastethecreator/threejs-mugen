@@ -2180,6 +2180,57 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("resolves Helper-owned ModifyProjectile guard.velocity Y/Z components in caller context", () => {
+    const store = createRuntimeEffectActorStore();
+    const spawnGuardMatrixHelper = (helperId: string, projectileId: string, expression: string) =>
+      spawnRuntimeHelperActor(store, "p1", {
+        ...helperInput({ id: helperId, anim: "900" }),
+        runtimeProgram: {
+          states: [
+            compileStateProgram(state(6000, 900, [
+              controller("Projectile", {
+                projid: projectileId,
+                projanim: "930",
+                velocity: "0,0",
+                "ground.velocity": "-6,-8,6",
+                "guard.velocity": "-1,-2,3",
+              }, ["Time = 0"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ])),
+            compileStateProgram(state(6001, 901, [
+              controller("ModifyProjectile", { id: projectileId, "guard.velocity": expression }, ["Time = 1"]),
+            ])),
+          ],
+        },
+        animations: new Map([[900, action(900, 4)], [901, action(901, 4)], [930, action(930, 4)]]),
+      });
+    const helperPair = spawnGuardMatrixHelper("52", "8876", "Var(61),Var(62)");
+    const helperTriple = spawnGuardMatrixHelper("53", "8877", "Var(63),Var(64),Var(65)");
+    helperPair.vars[61] = -9;
+    helperPair.vars[62] = -8;
+    helperTriple.vars[63] = -9;
+    helperTriple.vars[64] = -8;
+    helperTriple.vars[65] = 3;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    const pair = store.projectiles.find((candidate) => candidate.parentId === helperPair.serialId);
+    expect(pair).toMatchObject({
+      guardPush: 9,
+      guardVelocityY: -8,
+      guardVelocityZ: 0,
+      hitVelocities: { guard: { x: -9, y: -8, z: 0 } },
+    });
+    const triple = store.projectiles.find((candidate) => candidate.parentId === helperTriple.serialId);
+    expect(triple).toMatchObject({
+      guardPush: 9,
+      guardVelocityY: -8,
+      guardVelocityZ: 3,
+      hitVelocities: { guard: { x: -9, y: -8, z: 3 } },
+    });
+  });
+
   it("resolves Helper-owned dynamic ModifyProjectile givepower in caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {
