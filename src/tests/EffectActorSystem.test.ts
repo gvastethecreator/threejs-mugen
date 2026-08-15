@@ -3216,7 +3216,7 @@ describe("EffectActorSystem", () => {
                   id: "8860",
                   projanim: "930",
                   velocity: "1,0",
-                  guardpoints: "Parent,Var(13)",
+                  guardpoints: "Var(13)",
                   projpriority: "2",
                   projhits: "1",
                   projmisstime: "0",
