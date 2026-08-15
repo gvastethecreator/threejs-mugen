@@ -70,6 +70,7 @@ import {
   createSyntheticImportedProjectileEnvShakeLongFiniteTraceArtifact,
   createSyntheticImportedProjectileDynamicEnvShakeTraceArtifact,
   createSyntheticImportedHelperProjectileEnvShakeLongFiniteTraceArtifact,
+  createSyntheticImportedHelperProjectileDynamicEnvShakeTraceArtifact,
   createSyntheticImportedHitDefAttackerFacingTraceArtifact,
   createSyntheticImportedHitDefGetPowerTraceArtifact,
   createSyntheticImportedHitDefGetPowerDefaultTraceArtifact,
@@ -27403,6 +27404,30 @@ describe("RuntimeTraceGatePresets", () => {
         effect: expect.objectContaining({ kind: "projectile", id: 8911, hasHit: true }),
       }),
     ]));
+  });
+
+  it("creates a required dynamic Helper Projectile EnvShake artifact with caller values and root-parent attribution", () => {
+    const artifact = createSyntheticImportedHelperProjectileDynamicEnvShakeTraceArtifact({
+      generatedAt: "2026-08-15T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-projectile-dynamic-envshake-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-helper-projectile-dynamic-envshake-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(6);
+    expect(evidence?.envShakeEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1", time: 17, freq: 45.5, ampl: -9, phase: 0.25, mul: 1.5, dir: 30, stateNo: 200 }),
+    ]));
+    expect(evidence?.worldLifecycleEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+      expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" }),
+      expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" }),
+    ]));
+    expect(artifact.trace.frames.some((frame) => frame.stage?.camera.shake?.remaining === 1)).toBe(true);
+    expect(artifact.trace.frames.at(-1)?.stage?.camera.shake).toBeUndefined();
   });
 
   it("creates a required imported dynamic HitDef fall EnvShake artifact", () => {

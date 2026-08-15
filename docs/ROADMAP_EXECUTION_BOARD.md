@@ -1,5 +1,17 @@
 ﻿# Roadmap Execution Board
 
+## Active bounded slice — T801 Helper Projectile dynamic `EnvShake` (2026-08-15)
+
+Issue 376 is active for one first-generation Helper-created Projectile. It
+will resolve finite `envshake.time/freq/ampl/phase/mul/dir` in the Helper
+caller context while preserving root `p1` ownership and parent
+`p1-helper-0`. The required route must prove a single accepted unguarded hit,
+root presentation event, lifecycle, target links, and fail-closed handling of
+one non-finite authored component. Nested/team/`ownProjectile` topology,
+`ModifyProjectile`, FallEnvShake, active EnvShake, waveform, pause, render,
+rollback and full parity remain out. See [issue
+376](../.scratch/roadmap/issues/376-helper-projectile-dynamic-envshake.md).
+
 ## Latest bounded slice — T786 closed-bounded (2026-08-15)
 
 Issue 360 closes Helper caller-context `ModifyProjectile RedirectID` over a

@@ -48775,6 +48775,135 @@ export function createSyntheticImportedHelperProjectileEnvShakeLongFiniteTraceAr
   });
 }
 
+export function createSyntheticImportedHelperProjectileDynamicEnvShakeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const projectileId = 8912;
+  const script = expandRuntimeTraceScript([
+    { label: "imported-helper-projectile-dynamic-envshake-start", frames: 14, p1: ["x"], p2: [] },
+    { label: "helper-projectile-dynamic-envshake-expiry", frames: 32, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({
+    p1: createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-helper-projectile-dynamic-envshake",
+      displayName: "Synthetic Imported Helper Projectile Dynamic EnvShake",
+      action200Duration: 80,
+      withHitDef: false,
+      withHelper: true,
+      helperProjHitRoute: {
+        waitStateNo: 1273,
+        waitAnimNo: 1036,
+        branchStateNo: 1274,
+        branchAnimNo: 1037,
+        projectileAnimNo: 1038,
+        projectileId,
+        pos: [360, -34],
+        damage: [10, 0],
+        projectileRemoveTime: 32,
+        projectileRemoveOnHit: false,
+        varSeeds: [
+          { index: 0, value: 17 },
+          { index: 1, value: 45.5 },
+          { index: 2, value: -9 },
+          { index: 3, value: 0.25 },
+          { index: 4, value: 1.5 },
+          { index: 5, value: 30 },
+        ],
+        envShake: {
+          time: "var(0)",
+          freq: "var(1)",
+          ampl: "var(2)",
+          phase: "var(3)",
+          mul: "var(4)",
+          dir: "var(5)",
+        },
+      },
+    }),
+    p2: demoFighters[1]!,
+    stage,
+    runtimeProfile: "ikemen-go",
+  }), script, {
+    label: "synthetic-imported-helper-projectile-dynamic-envshake-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-dynamic-envshake-golden",
+      label: "Synthetic imported dynamic Helper Projectile EnvShake route",
+      source: "mixed",
+      notes: [
+        "Required trace proves a first-generation Helper-created, root-owned Projectile resolves one finite envshake package in its Helper caller context before an accepted unguarded contact emits one root camera shake and the finite shake expires. Guard and rejected contact are covered by focused combat coverage; nested/team ownership, ownProjectile, ModifyProjectile, FallEnvShake, active EnvShake, waveform parity, pause timing, rollback, and full camera parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-projectile-dynamic-envshake-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper", "projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "Helper", "VarSet", "Projectile"],
+      requiredExecutedOperations: ["helper", "variable:varset", "projectile"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredControllerEventSequences: [{
+        label: "Helper Projectile EnvShake caller evaluation order",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 0" },
+          { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 5" },
+          { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
+          { stateNo: 1200, operation: "projectile" },
+        ],
+      }],
+      requiredEnvShakeEvents: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        time: 17,
+        freq: 45.5,
+        ampl: -9,
+        phase: 0.25,
+        mul: 1.5,
+        dir: 30,
+        stateNo: 200,
+      }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [
+        { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1274, minAge: 2 },
+        {
+          actorId: "p1-projectile-0",
+          kind: "projectile",
+          ownerId: "p1",
+          parentId: "p1-helper-0",
+          effectId: projectileId,
+          minAge: 1,
+          minPriority: 2,
+          maxHitsRemaining: 0,
+          hasHit: true,
+        },
+      ],
+      requiredTargetLinks: [
+        { ownerId: "p1", actorId: "p2", targetId: projectileId },
+        { ownerId: "p1-helper-0", actorId: "p2", targetId: projectileId },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHitDefDynamicFallEnvShakeTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

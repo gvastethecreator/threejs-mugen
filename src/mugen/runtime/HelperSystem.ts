@@ -46,6 +46,7 @@ import type {
   RuntimeModifyProjectilePairParam,
   RuntimeModifyProjectilePartialTripleParam,
   RuntimeModifyProjectileTripleParam,
+  RuntimeProjectileEnvShake,
   RuntimeProjectileModifyResolver,
 } from "./ProjectileSystem";
 import type { MatchPauseControllerResult, RuntimePauseControllerParamResolvers } from "./PauseSystem";
@@ -2067,6 +2068,33 @@ export function resolveRuntimeHelperHitDefEnvShakeParam(
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
   return resolveRuntimeHelperHitDefEnvShakeComponent(helper, controller, key, "envshake", options);
+}
+
+/**
+ * Resolves a fresh Helper-created Projectile EnvShake package in the Helper
+ * caller context. ProjectileSystem owns package validation and fail-closed
+ * semantics once these authored components have been evaluated.
+ */
+export function resolveRuntimeHelperProjectileEnvShake(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): Partial<RuntimeProjectileEnvShake> | undefined {
+  const operation = controller.operation;
+  const envShake = operation?.kind === "projectile" ? operation.envShake : undefined;
+  if (envShake === undefined) return undefined;
+  const resolveComponent = (value: number | string | undefined): number | undefined => {
+    if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+    return typeof value === "string" ? resolveHelperFloat(helper, value, options) : undefined;
+  };
+  return {
+    time: resolveComponent(envShake.time),
+    freq: resolveComponent(envShake.freq),
+    ampl: resolveComponent(envShake.ampl),
+    phase: resolveComponent(envShake.phase),
+    mul: resolveComponent(envShake.mul),
+    dir: resolveComponent(envShake.dir),
+  };
 }
 
 export function resolveRuntimeHelperHitDefFallEnvShakeParam(

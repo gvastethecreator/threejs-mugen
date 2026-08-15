@@ -1206,6 +1206,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjectileEnvShakeLongFiniteTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-projectile-dynamic-envshake",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileDynamicEnvShakeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-dynamic-fall-envshake",
       required: true,
       artifact: presets.createSyntheticImportedHitDefDynamicFallEnvShakeTraceArtifact(),

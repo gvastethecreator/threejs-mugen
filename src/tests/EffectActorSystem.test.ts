@@ -1810,6 +1810,40 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("resolves a fresh Helper Projectile EnvShake package in the helper caller context and fails closed", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "43", anim: "900" }),
+      animations: new Map([[900, action(900)]]),
+    });
+    helper.vars[0] = 17.8;
+    helper.vars[1] = 45.5;
+    helper.vars[2] = -9.4;
+    helper.vars[3] = 0.25;
+    helper.vars[4] = 1.5;
+    helper.vars[5] = 30;
+    const dynamicController = compileControllerIr(controller("Projectile", {
+      projanim: "900",
+      projid: "8863",
+      "envshake.time": "var(0)",
+      "envshake.freq": "var(1)",
+      "envshake.ampl": "var(2)",
+      "envshake.phase": "var(3)",
+      "envshake.mul": "var(4)",
+      "envshake.dir": "var(5)",
+    }));
+
+    expect(spawnRuntimeHelperProjectileActor(store, helper, dynamicController)).toMatchObject({
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+      envShake: { time: 17, freq: 45.5, ampl: -9, phase: 0.25, mul: 1.5, dir: 30 },
+    });
+
+    helper.vars[1] = Number.NaN;
+    expect(spawnRuntimeHelperProjectileActor(store, helper, dynamicController)?.envShake).toBeUndefined();
+  });
+
   it("resolves Helper Projectile keepstate in the helper caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {
