@@ -1117,6 +1117,51 @@ describe("ProjectileCombatSystem", () => {
     ]);
   });
 
+  it("attributes finite Helper-parented Projectile EnvShake to the root only after an accepted hit", () => {
+    const emitted: Array<{ actorId: string; rootId: string; parentId: string; time: number | undefined }> = [];
+    const resolve = (holdingBack: boolean, canDefenderBeHit?: boolean) => {
+      let projectiles = [projectile({
+        ownerId: "p1",
+        rootId: "p1",
+        parentId: "p1-helper-0",
+        envShake: { time: 241, freq: 30, ampl: -7, phase: 0, mul: 1, dir: 0 },
+      })];
+      const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
+      const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, life: 1000 }));
+      new RuntimeProjectileCombatWorld().resolveCombat({
+        attacker,
+        defender,
+        projectiles,
+        hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+        holdingBack,
+        log: () => undefined,
+        rememberTarget: () => undefined,
+        applyHitOverride: () => undefined,
+        emitProjectileEnvShake: (source, entry) => emitted.push({
+          actorId: source.id,
+          rootId: entry.rootId,
+          parentId: entry.parentId,
+          time: entry.envShake?.time,
+        }),
+        ...(canDefenderBeHit === undefined ? {} : { canDefenderBeHit: () => canDefenderBeHit }),
+        removeProjectilesMarkedForRemoval: () => {
+          projectiles = projectiles.filter((entry) => !entry.removalReason);
+        },
+      });
+    };
+
+    resolve(false);
+    resolve(true);
+    resolve(false, false);
+
+    expect(emitted).toEqual([{
+      actorId: "p1",
+      rootId: "p1",
+      parentId: "p1-helper-0",
+      time: 241,
+    }]);
+  });
+
   it("exposes Projectile HitDef dizzypoints through GetHitVar(dizzypoints)", () => {
     let projectiles = [projectile({ dizzyPoints: 29, damage: 12 })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));

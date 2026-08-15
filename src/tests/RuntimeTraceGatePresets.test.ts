@@ -68,6 +68,7 @@ import {
   createSyntheticImportedProjectileGroundFrictionTraceArtifact,
   createSyntheticImportedProjectileSparkScaleTraceArtifact,
   createSyntheticImportedProjectileEnvShakeLongFiniteTraceArtifact,
+  createSyntheticImportedHelperProjectileEnvShakeLongFiniteTraceArtifact,
   createSyntheticImportedHitDefAttackerFacingTraceArtifact,
   createSyntheticImportedHitDefGetPowerTraceArtifact,
   createSyntheticImportedHitDefGetPowerDefaultTraceArtifact,
@@ -27343,6 +27344,36 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.frames.at(-1)?.stage?.camera.shake).toBeUndefined();
     expect(artifact.gates[0]?.evidence.envShakeEvents).toEqual(expect.arrayContaining([
       expect.objectContaining({ actorId: "p1", time: 241, stateNo: 200 }),
+    ]));
+  });
+
+  it("creates a required long finite Helper Projectile EnvShake artifact with root-parent attribution", () => {
+    const artifact = createSyntheticImportedHelperProjectileEnvShakeLongFiniteTraceArtifact({ generatedAt: "2026-08-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-projectile-envshake-long-finite-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-helper-projectile-envshake-long-finite-golden", passed: true, failures: [] }],
+    });
+    const shakeFrames = artifact.trace.frames.filter((frame) => frame.stage?.camera.shake !== undefined);
+    expect(shakeFrames.length).toBeGreaterThanOrEqual(241);
+    expect(shakeFrames.some((frame) => frame.stage?.camera.shake?.remaining === 1)).toBe(true);
+    expect(artifact.trace.frames.at(-1)?.stage?.camera.shake).toBeUndefined();
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.envShakeEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1", time: 241, stateNo: 200 }),
+    ]));
+    expect(evidence?.worldLifecycleEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+      expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" }),
+      expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" }),
+    ]));
+    expect(evidence?.effectPayloads).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p1-projectile-0",
+        parentId: "p1-helper-0",
+        effect: expect.objectContaining({ kind: "projectile", id: 8911, hasHit: true }),
+      }),
     ]));
   });
 

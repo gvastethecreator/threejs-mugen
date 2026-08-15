@@ -48589,6 +48589,111 @@ export function createSyntheticImportedProjectileEnvShakeLongFiniteTraceArtifact
   });
 }
 
+export function createSyntheticImportedHelperProjectileEnvShakeLongFiniteTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const projectileId = 8911;
+  const script = expandRuntimeTraceScript([
+    { label: "imported-helper-projectile-envshake-long-finite-start", frames: 14, p1: ["x"], p2: [] },
+    { label: "helper-projectile-envshake-long-finite-expiry", frames: 242, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({
+    p1: createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-helper-projectile-envshake-long-finite",
+      displayName: "Synthetic Imported Helper Projectile EnvShake Long Finite",
+      action200Duration: 300,
+      withHitDef: false,
+      withHelper: true,
+      helperProjHitRoute: {
+        waitStateNo: 1271,
+        waitAnimNo: 1033,
+        branchStateNo: 1272,
+        branchAnimNo: 1034,
+        projectileAnimNo: 1035,
+        projectileId,
+        pos: [360, -34],
+        damage: [10, 0],
+        projectileRemoveTime: 48,
+        projectileRemoveOnHit: false,
+        envShake: {
+          time: 241,
+          freq: 30,
+          ampl: -7,
+          phase: 0,
+        },
+      },
+    }),
+    p2: demoFighters[1]!,
+    stage,
+    runtimeProfile: "ikemen-go",
+  }), script, {
+    label: "synthetic-imported-helper-projectile-envshake-long-finite-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-envshake-long-finite-golden",
+      label: "Synthetic imported long finite Helper Projectile EnvShake route",
+      source: "mixed",
+      notes: [
+        "Required trace proves a first-generation Helper-created, root-owned Projectile emits envshake.time = 241 only after accepted unguarded contact, remains finite past the former local ceiling, and expires. Guard and rejected contacts are covered by focused combat coverage; nested/team ownership, ownProjectile, live Projectile mutation, FallEnvShake, active EnvShake, waveform parity, pause timing, rollback, and full camera parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-projectile-envshake-long-finite-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper", "projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
+      requiredExecutedOperations: ["helper", "projectile"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredEnvShakeEvents: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        time: 241,
+        freq: 30,
+        ampl: -7,
+        phase: 0,
+        stateNo: 200,
+      }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [
+        { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1272, minAge: 2 },
+        {
+          actorId: "p1-projectile-0",
+          kind: "projectile",
+          ownerId: "p1",
+          parentId: "p1-helper-0",
+          effectId: projectileId,
+          minAge: 1,
+          minPriority: 2,
+          maxHitsRemaining: 0,
+          hasHit: true,
+        },
+      ],
+      requiredTargetLinks: [
+        { ownerId: "p1", actorId: "p2", targetId: projectileId },
+        { ownerId: "p1-helper-0", actorId: "p2", targetId: projectileId },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHitDefDynamicFallEnvShakeTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -68986,6 +69091,8 @@ export type SyntheticImportedTraceFighterOptions = {
     guardPointsExpression?: SyntheticNumberExpression;
     /** Synthetic Helper-local fresh Projectile keepstate expression. */
     keepStateExpression?: SyntheticNumberExpression;
+    /** Synthetic Helper-local Projectile contact EnvShake payload. */
+    envShake?: NonNullable<SyntheticImportedTraceFighterOptions["projectileEnvShake"]>;
     hitPause?: number;
     hitTime?: number;
     groundHitTime?: SyntheticNumberExpression;
@@ -77813,6 +77920,14 @@ function helperProjHitRouteBlock(route: NonNullable<SyntheticImportedTraceFighte
   const hitSparkLine = route.hitSpark === undefined ? "" : `sparkno = ${route.hitSpark}`;
   const guardSparkLine = route.guardSpark === undefined ? "" : `guard.sparkno = ${route.guardSpark}`;
   const sparkXyLine = route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy[0]},${route.sparkXy[1]}`;
+  const envShakeLines = `
+${route.envShake?.time === undefined ? "" : `envshake.time = ${route.envShake.time}`}
+${route.envShake?.freq === undefined ? "" : `envshake.freq = ${route.envShake.freq}`}
+${route.envShake?.ampl === undefined ? "" : `envshake.ampl = ${route.envShake.ampl}`}
+${route.envShake?.phase === undefined ? "" : `envshake.phase = ${route.envShake.phase}`}
+${route.envShake?.mul === undefined ? "" : `envshake.mul = ${route.envShake.mul}`}
+${route.envShake?.dir === undefined ? "" : `envshake.dir = ${route.envShake.dir}`}
+`;
   const airVelocityLine = route.airVelocityExpression === undefined
     ? route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.join(",")}`
     : `air.velocity = ${route.airVelocityExpression.join(",")}`;
@@ -78098,6 +78213,7 @@ ground.velocity = ${groundVelocity.join(",")}
 ${airVelocityLine}
 ${downVelocityLine}
 ${airGuardVelocityLine}
+${envShakeLines}
 ${p2StateNoLine}
 ${p2GetP1StateLine}
 ${missOnOverrideLine}
