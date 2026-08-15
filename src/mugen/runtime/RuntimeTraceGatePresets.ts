@@ -77247,3 +77247,117 @@ export function createSyntheticImportedModifyProjectileAttackRedLifeGuardTraceAr
     }],
   });
 }
+
+/** T762 root-owned ModifyProjectile proof: the live redlife replacement keeps the creation multiplier on hit. */
+export function createSyntheticImportedModifyProjectileAttackRedLifeHitTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5103;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-modifyprojectile-attack-redlife-hit-grid",
+    displayName: "Trace ModifyProjectile Attack RedLife Hit Grid",
+    playerStart: {
+      p1: { x: -54, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const script = importedProjectileScript();
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-attack-redlife-hit-defender",
+    displayName: "ModifyProjectile Attack RedLife Hit Defender",
+    dataStats: { life: 50 },
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      shakePhysics: "N",
+      slidePhysics: "S",
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchExpression: "GetHitVar(redlife) = 40 && !GetHitVar(guarded)",
+      hitTimeBranchName: "ModifyProjectile Attack RedLife GetHitVar Branch",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-attack-redlife-hit-attacker",
+    displayName: "ModifyProjectile Attack RedLife Hit Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    attackMultiplier: 1,
+    attackRedLifeMultiplier: 0.5,
+    postProjectileAttackRedLifeMultiplier: 2,
+    projectileRedLifeExpression: ["0", "0"],
+    projectileDamage: [45, 0],
+    projectileRemoveOnHit: false,
+    projectileOffset: [62, -45],
+    projectileGroundVelocity: [-1, 1],
+    withModifyProjectile: true,
+    modifyProjectileTriggerTime: 3,
+    modifyProjectileId: 77,
+    modifyProjectileRedLife: ["40", "0"],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-modifyprojectile-attack-redlife-hit-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyprojectile-attack-redlife-hit-golden",
+      label: "Synthetic imported ModifyProjectile AttackMulSet redlife hit route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root-owned Projectile is created with AttackMulSet redlife multiplier 0.5, then its live HitDef redlife pair is replaced by ModifyProjectile before an accepted hit. Authored GetHitVar(redlife)=40 remains separate while the creation snapshot applies 20 red-life resource after 45 damage leaves life 5; a later live AttackMulSet redlife=2 does not alter the captured multiplier. Helper-authored ModifyProjectile, shared banks, exact resource clamp/rounding/timing, teams, rollback, and full M.U.G.E.N/Ikemen parity remain outside this bounded slice.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyprojectile-attack-redlife-hit-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5001, branchStateNo],
+      forbiddenExecutedStates: [40, 130, 150, 151, 152, 153, 154, 155, 5020, 5021, 5030, 5050, 5100, 5101, 5102, 5110],
+      requiredExecutedControllers: ["ChangeState", "AttackMulSet", "Projectile", "ModifyProjectile"],
+      requiredExecutedOperations: ["damage-scale:attackmulset", "projectile", "modifyprojectile"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredControllerEventSequences: [{
+        label: "ModifyProjectile redlife replacement follows Projectile creation snapshot on hit",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "AttackMulSet", name: "Attack Scale" },
+          { stateNo: 200, controller: "Projectile", name: "Fast Projectile" },
+          { stateNo: 200, controller: "AttackMulSet", name: "Post Projectile RedLife Scale" },
+          { stateNo: 200, controller: "ModifyProjectile", name: "Modify Fast Projectile" },
+          { stateNo: 200, operation: "modifyprojectile" },
+        ],
+      }],
+      requiredActorFrameSequences: [{
+        label: "ModifyProjectile redlife snapshot accepted hit order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5001, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [{ actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1", effectId: 77, minAge: 1, hasHit: true }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 5, redLife: 20 },
+      ],
+    }],
+  });
+}
