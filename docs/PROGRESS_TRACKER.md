@@ -1,6 +1,17 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T758 closed-bounded (2026-08-14)
+## Latest implementation checkpoint — T759 closed-bounded (2026-08-14)
+
+Issue 333 closes the root Projectile `AttackMulSet.RedLife` guard-contact
+snapshot. Required trace `9051894a` -> `7434fbdc` and evidence commit
+`953788b3` prove the captured multiplier survives the later live update,
+authored `GetHitVar(redlife)=20` stays separate, and the accepted guard ends
+at `life=20/redLife=20`. Aggregate QA remains blocked by the inherited
+helper-bind target-link case. Helper-parented guard breadth, ModifyProjectile,
+resource ownership, exact arithmetic/timing, rollback and full parity remain
+outside. See issue 333.
+
+## Historical checkpoint — T758 closed-bounded (2026-08-14)
 
 Issue 332 closes the Helper-parented Projectile `AttackMulSet.RedLife`
 snapshot. The required trace `74274e6d` -> `8dbd5b52` proves root/helper
@@ -16,10 +27,11 @@ T755 was a duplicate queue entry for the already closed T728/issue 302 live
 `ModifyHitDef down.velocity` slice. Issue 329 is retained as superseded audit
 history; no new implementation should be scheduled from it.
 
-## Next implementation checkpoint — T759 Projectile redlife guard contact
+## Next implementation checkpoint — T760 Helper Projectile redlife guard contact
 
-Close the independent Projectile guard-contact redlife snapshot trace; keep
-aggregate QA repair and broader resource topology separate.
+Close the Helper-parented guard-contact redlife snapshot trace; keep nested
+helpers, aggregate QA repair and broader resource topology separate. See issue
+334.
 
 ## Historical implementation checkpoint — T753 closed-bounded (2026-08-12)
 

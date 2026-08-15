@@ -1,6 +1,16 @@
 # Workplan
 
-## Latest slice — T758 closed-bounded (2026-08-14)
+## Latest slice — T759 closed-bounded (2026-08-14)
+
+Issue 333 closes the root Projectile `AttackMulSet.RedLife` guard-contact
+snapshot. Evidence commit `953788b3`; required trace `9051894a` ->
+`7434fbdc` passes. The accepted guard keeps authored `GetHitVar(redlife)=20`
+separate and ends at `life=20/redLife=20` after the creation-time multiplier.
+Aggregate QA retains the inherited helper-bind target-link blocker. Helper
+guard breadth, ModifyProjectile, resource ownership, exact arithmetic/timing,
+rollback and full parity remain out.
+
+## Historical slice — T758 closed-bounded (2026-08-14)
 
 Issue 332 closes the Helper-parented Projectile `AttackMulSet.RedLife`
 snapshot. Evidence commit `092e0565`; required trace `74274e6d` ->
@@ -14,10 +24,11 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` slice. Issue 329 remains a superseded audit trail, not an open
 implementation task.
 
-## Next slice — T759 Projectile redlife guard contact
+## Next slice — T760 Helper Projectile redlife guard contact
 
-Close the independent Projectile guard-contact redlife snapshot trace; keep
-aggregate QA repair and broader resource topology separate.
+Close the Helper-parented guard-contact redlife snapshot trace; keep nested
+helpers, aggregate QA repair and broader resource topology separate. See issue
+334.
 
 ## Historical slice — T753 closed-bounded (2026-08-12)
 

@@ -1,6 +1,20 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T758 closed-bounded (2026-08-14)
+## Latest bounded slice — T759 closed-bounded (2026-08-14)
+
+Issue 333 closes the root Projectile `AttackMulSet.RedLife` guard-contact
+snapshot. The Projectile captures redlife `0.5` at spawn, remains isolated
+from the later live value `2`, and an accepted guard preserves authored
+`GetHitVar(redlife)=20` while the defender ends at `life=20/redLife=20`.
+Evidence `953788b3` is committed; required trace `9051894a` -> `7434fbdc`
+passes. Aggregate QA still stops on the inherited
+`synthetic-imported-helper-bind-to-target-redirect` target-link blocker.
+Helper-parented guard breadth, ModifyProjectile, shared resource ownership,
+exact resource arithmetic/timing, rollback and full parity remain outside.
+See [issue
+333](../.scratch/roadmap/issues/333-projectile-attackmulset-redlife-guard.md).
+
+## Historical bounded slice — T758 closed-bounded (2026-08-14)
 
 Issue 332 closes the Helper-parented Projectile counterpart to T757. The
 Helper-created Projectile keeps the effective `AttackMulSet.RedLife=0.5`
@@ -21,11 +35,12 @@ The T755 queue entry duplicated the already closed T728/issue 302
 component-preserving behavior is already covered by the issue 302 traces and
 commits; issue 329 remains only as a superseded audit trail.
 
-## Next bounded slice — T759 Projectile redlife guard contact
+## Next bounded slice — T760 Helper Projectile redlife guard contact
 
-Close the guard-contact branch of the Projectile redlife snapshot with an
-independent required trace. Keep shared-resource topology, ModifyProjectile
-and aggregate QA repair as separate work items.
+Close the Helper-parented guard-contact counterpart with an independent
+required trace. Keep nested helpers, shared-resource topology, ModifyProjectile
+and aggregate QA repair as separate work items. See [issue
+334](../.scratch/roadmap/issues/334-helper-projectile-attackmulset-redlife-guard.md).
 
 ## Historical bounded slice — T753 closed-bounded (2026-08-12)
 

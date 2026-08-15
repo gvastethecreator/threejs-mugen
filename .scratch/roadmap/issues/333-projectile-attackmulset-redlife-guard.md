@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T759 — ready-for-agent (2026-08-14)**
+- **T759 — closed-bounded (2026-08-14)**
 - **Área:** runtime / Projectile / guard / AttackMulSet / red-life resource
 - **Dependencia:** T757 / issue 331; T758 / issue 332
 
@@ -38,3 +38,22 @@ red-life resource delta.
 Update this issue, the five roadmap authorities, and the execution backlog with
 the evidence commit and trace/final checksums. Keep the inherited aggregate
 helper-bind target-link blocker explicit if `pnpm qa:trace` still stops there.
+
+## Evidencia de cierre
+
+- Evidence commit: `953788b3`.
+- Required artifact: `synthetic-imported-projectile-attack-redlife-guard`.
+- Trace checksum `9051894a`, final checksum `7434fbdc`.
+- Root Projectile lifecycle, target link, accepted guard reason,
+  `GetHitVar(redlife)=20`, and final defender `life=20/redLife=20` pass.
+- `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t
+  "Projectile AttackMulSet red-life guard snapshot"`, `pnpm run typecheck`,
+  and `git diff --check` pass.
+- Aggregate `pnpm qa:trace` still stops only on the inherited
+  `synthetic-imported-helper-bind-to-target-redirect` target-link blocker.
+
+## Cierre acotado
+
+The root Projectile guard-contact snapshot is closed. Helper-parented guard
+breadth, ModifyProjectile, shared banks, exact resource arithmetic/timing,
+rollback and full M.U.G.E.N/Ikemen parity remain outside the claim.

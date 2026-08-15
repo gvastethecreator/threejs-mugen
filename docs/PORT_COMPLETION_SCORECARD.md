@@ -1,6 +1,19 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-14 T758 Helper Projectile `AttackMulSet.RedLife` snapshot — closed-bounded, no score movement
+## 2026-08-14 T759 Projectile `AttackMulSet.RedLife` guard contact — closed-bounded, no score movement
+
+Issue 333 closes the root Projectile guard-contact snapshot for the effective
+`AttackMulSet.RedLife` multiplier. Evidence commit `953788b3`; required trace
+`9051894a` -> `7434fbdc` passes. The accepted guard keeps authored
+`GetHitVar(redlife)=20` separate and ends the defender at `life=20/redLife=20`
+after the creation-time `0.5` multiplier, despite a later live value of `2`.
+Aggregate QA retains the inherited helper-bind target-link blocker. No score
+movement: Helper-parented guard breadth, ModifyProjectile, resource-owner
+topology, exact clamp/rounding/timing, rollback and full parity remain
+blocked. See [issue
+333](../.scratch/roadmap/issues/333-projectile-attackmulset-redlife-guard.md).
+
+## Historical checkpoint — T758 Helper Projectile `AttackMulSet.RedLife` snapshot — closed-bounded, no score movement
 
 Issue 332 closes the Helper-parented creation-time snapshot for the effective
 `AttackMulSet.RedLife` multiplier. Accepted contact keeps authored
@@ -29,10 +42,11 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` work. Issue 329 remains superseded audit history and is not a
 new score candidate.
 
-## Next selection — T759 Projectile redlife guard contact
+## Next selection — T760 Helper Projectile redlife guard contact
 
-Close the independent Projectile guard-contact redlife snapshot; keep
-aggregate QA repair and resource topology separate.
+Close the Helper-parented guard-contact redlife snapshot; keep nested helpers,
+aggregate QA repair and resource topology separate. See [issue
+334](../.scratch/roadmap/issues/334-helper-projectile-attackmulset-redlife-guard.md).
 
 ## Historical checkpoint — 2026-08-12 T753 `AttackMulSet guardpoints` — closed-bounded, no score movement
 
