@@ -48752,6 +48752,89 @@ export function createSyntheticImportedProjectileDynamicFallEnvShakeTraceArtifac
   });
 }
 
+export function createSyntheticImportedProjectileDynamicFallImpactTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedCommonGetHitScript();
+  const trace = runRuntimeTrace(new MatchWorld({
+    p1: createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-projectile-dynamic-fall-impact",
+      displayName: "Synthetic Imported Projectile Dynamic Fall Impact",
+      action200Duration: 80,
+      withHitDef: false,
+      withProjectile: true,
+      projectileTargetId: 77,
+      projectileDamage: [10, 0],
+      projectileP2StateNo: 5100,
+      projectileP2GetP1State: true,
+      getHitState: { stateNo: 5100, animNo: 500 },
+      getHitVarBranch: {
+        stateNo: 305,
+        expression: "GetHitVar(fall.damage) = 17 && GetHitVar(fall.xvel) = 3.5 && GetHitVar(fall.yvel) = -6.25 && GetHitVar(fall.zvel) = 2.75",
+      },
+      projectileVarSeeds: [
+        { index: 0, value: 17.9 },
+        { index: 1, value: 3.5 },
+        { index: 2, value: -6.25 },
+        { index: 3, value: 2.75 },
+      ],
+      projectileFallImpact: {
+        damage: "var(0)",
+        xVelocity: "var(1)",
+        yVelocity: "var(2)",
+        zVelocity: "var(3)",
+      },
+    }),
+    p2: demoFighters[1]!,
+    stage,
+    runtimeProfile: "ikemen-go",
+  }), script, {
+    label: "synthetic-imported-projectile-dynamic-fall-impact-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-dynamic-fall-impact-golden",
+      label: "Synthetic imported dynamic root Projectile fall impact",
+      source: "mixed",
+      notes: [
+        "Required trace proves one root Projectile resolves finite fall.damage and fall.x/y/zvelocity expressions in its caller context, transfers them through an accepted falling hit, and exposes the stored fall GetHitVar metadata. Helper Projectile, ModifyProjectile, recovery/flags, n syntax, exact timing, teams, rollback, and full MUGEN/Ikemen parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-projectile-dynamic-fall-impact-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5100, 305],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Projectile", "HitFallVel"],
+      requiredExecutedOperations: ["variable:varset", "projectile", "hitfall:hitfallvel"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredFinalActors: [{
+        actorId: "p2",
+        actorKind: "player",
+        source: "demo",
+        stateNo: 305,
+        customOwnerId: "p1",
+        hitFall: {
+          falling: true,
+          damage: 17,
+          velocityX: 3.5,
+          velocityY: -6.25,
+          velocityZ: 2.75,
+        },
+      }],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileEnvShakeLongFiniteTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -68812,6 +68895,13 @@ export type SyntheticImportedTraceFighterOptions = {
   };
   /** Synthetic fixture-only Projectile fall EnvShake payload. Presence enables fall. */
   projectileFallEnvShake?: NonNullable<SyntheticImportedTraceFighterOptions["projectileEnvShake"]>;
+  /** Synthetic fixture-only Projectile fall impact payload. Presence enables fall. */
+  projectileFallImpact?: {
+    damage?: SyntheticNumberExpression;
+    xVelocity?: SyntheticNumberExpression;
+    yVelocity?: SyntheticNumberExpression;
+    zVelocity?: SyntheticNumberExpression;
+  };
   /** Synthetic fixture-only fresh Projectile guardpoints expression. */
   projectileGuardPointsExpression?: SyntheticNumberExpression;
   /** Synthetic fixture-only fresh Projectile dizzypoints expression. */
@@ -70627,7 +70717,7 @@ ${options.extraSuperPauseP2DefMul === undefined ? "" : extraSuperPauseP2DefMulBl
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${projectileVarSeedBlock}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileMissTimeExpression, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileDamageExpression, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale, options.projectileGroundVelocityExpression, options.projectileGuardVelocityExpression, options.projectileDownHitTime, options.projectileGroundHitTime, options.projectileGroundSlideTime, options.projectileAirHitTime, options.projectileGuardHitTimeExpression, options.projectilePauseTime, options.projectileGuardPauseTime, "Fast Projectile", options.projectilePriorityExpression, options.projectileHitsExpression, options.projectileAnimNo, options.projectileAnimExpression, options.projectileKeepStateExpression, options.projectileP2Facing, options.projectileGuardPointsExpression, options.projectileDizzyPointsExpression, options.projectileRedLifeExpression, options.projectileEnvShake, options.projectileFallEnvShake) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileMissTimeExpression, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileDamageExpression, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale, options.projectileGroundVelocityExpression, options.projectileGuardVelocityExpression, options.projectileDownHitTime, options.projectileGroundHitTime, options.projectileGroundSlideTime, options.projectileAirHitTime, options.projectileGuardHitTimeExpression, options.projectilePauseTime, options.projectileGuardPauseTime, "Fast Projectile", options.projectilePriorityExpression, options.projectileHitsExpression, options.projectileAnimNo, options.projectileAnimExpression, options.projectileKeepStateExpression, options.projectileP2Facing, options.projectileGuardPointsExpression, options.projectileDizzyPointsExpression, options.projectileRedLifeExpression, options.projectileEnvShake, options.projectileFallEnvShake, options.projectileFallImpact) : ""}
 ${options.postProjectileAttackGuardPointsMultiplier === undefined ? "" : `
 [State 200, Post Projectile Attack Scale]
 type = AttackMulSet
@@ -74725,6 +74815,7 @@ function projectileControllerBlock(
   redLifeExpression?: SyntheticPairExpression,
   envShake?: NonNullable<SyntheticImportedTraceFighterOptions["projectileEnvShake"]>,
   fallEnvShake?: NonNullable<SyntheticImportedTraceFighterOptions["projectileEnvShake"]>,
+  fallImpact?: NonNullable<SyntheticImportedTraceFighterOptions["projectileFallImpact"]>,
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
   const missTimeLine = missTimeExpression === undefined ? `projmisstime = ${missTime}` : `projmisstime = ${missTimeExpression}`;
@@ -74778,6 +74869,12 @@ ${fallEnvShake?.ampl === undefined ? "" : `fall.envshake.ampl = ${fallEnvShake.a
 ${fallEnvShake?.phase === undefined ? "" : `fall.envshake.phase = ${fallEnvShake.phase}`}
 ${fallEnvShake?.mul === undefined ? "" : `fall.envshake.mul = ${fallEnvShake.mul}`}
 ${fallEnvShake?.dir === undefined ? "" : `fall.envshake.dir = ${fallEnvShake.dir}`}
+`;
+  const fallImpactLines = `
+${fallImpact?.damage === undefined ? "" : `fall.damage = ${fallImpact.damage}`}
+${fallImpact?.xVelocity === undefined ? "" : `fall.xvelocity = ${fallImpact.xVelocity}`}
+${fallImpact?.yVelocity === undefined ? "" : `fall.yvelocity = ${fallImpact.yVelocity}`}
+${fallImpact?.zVelocity === undefined ? "" : `fall.zvelocity = ${fallImpact.zVelocity}`}
 `;
   const missOnOverrideLine = missOnOverride === undefined ? "" : `missonoverride = ${missOnOverride ? 1 : 0}`;
   const airVelocityLine = airVelocityExpression === undefined
@@ -74855,8 +74952,9 @@ ${guardPointsLine}
 ${dizzyPointsLine}
 ${redLifeLine}
 ${envShakeLines}
-${fallEnvShake === undefined ? "" : "fall = 1"}
+${fallEnvShake === undefined && fallImpact === undefined ? "" : "fall = 1"}
 ${fallEnvShakeLines}
+${fallImpactLines}
 ${keepStateLine}
 ${airJuggleLine}
 ${koVelocityAddLine}
