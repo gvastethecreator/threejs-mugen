@@ -2,6 +2,19 @@
 
 ## Current parity queue
 
+- **T807 closed-bounded** — issue 382 closes finite caller-context
+  `fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` for one
+  fresh Projectile created by a first-generation Helper. Finite siblings
+  resolve independently and transfer to existing recovery metadata and
+  `GetHitVar` aliases only on one accepted falling hit, with `owner/root = p1`
+  and `parent = p1-helper-0`. Required
+  `synthetic-imported-helper-projectile-dynamic-fall-recovery` passes at
+  `d1594d58` / `a3042cd6`; full tests `328/4100`, typecheck, build, and trace
+  QA `886/886` (`852` required) pass. Nested/`ownProjectile`, ModifyProjectile,
+  ModifyHitDef, fall flags, exact recovery timing, teams, rollback, and full
+  parity remain outside. See [issue
+  382](../.scratch/roadmap/issues/382-helper-projectile-dynamic-fall-recovery.md).
+
 - **T806 closed-bounded** — issue 381 closes finite caller-context
   `fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` for one
   fresh root Projectile. Finite siblings resolve independently and transfer to

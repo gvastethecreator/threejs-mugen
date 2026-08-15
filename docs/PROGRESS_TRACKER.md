@@ -1,6 +1,18 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T806 root Projectile dynamic fall recovery (2026-08-15)
+## Latest implementation checkpoint — T807 Helper Projectile dynamic fall recovery (2026-08-15)
+
+Issue 382 closes finite caller-context
+`fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` for one
+fresh Projectile created by a first-generation Helper. One accepted falling
+contact retains finite siblings in existing recovery metadata and `GetHitVar`
+aliases while preserving `owner/root = p1` and `parent = p1-helper-0`.
+Required evidence passes at `d1594d58` / `a3042cd6`; full tests `328/4100`,
+typecheck, build, and trace QA `886/886` (`852` required) pass.
+Nested/`ownProjectile`, ModifyProjectile, ModifyHitDef, fall flags, exact
+recovery timing, teams, rollback, and full parity remain outside.
+
+## Historical implementation checkpoint — T806 root Projectile dynamic fall recovery (2026-08-15)
 
 Issue 381 closes finite caller-context
 `fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` for one

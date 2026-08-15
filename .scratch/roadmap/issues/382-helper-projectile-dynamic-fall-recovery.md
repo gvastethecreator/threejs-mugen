@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T807 — active (2026-08-15)**
+- **T807 — closed-bounded (2026-08-15)**
 - **Área:** Helper de primera generación, Projectile root-owned, recuperación de
   caída y metadata `GetHitVar`
 - **Dependencia:** T806 cierra el resolver equivalente para Projectile creado
@@ -10,7 +10,7 @@
 
 ## Objetivo
 
-Resolver `fall.recover`, `fall.recovertime`, `down.recover` y
+Resuelve `fall.recover`, `fall.recovertime`, `down.recover` y
 `down.recovertime` cuando un Helper crea un Projectile. Cada expresión se
 evalúa una vez en caller context del Helper; una componente no finita no
 elimina sus hermanas finitas. Un contacto de caída aceptado debe transferir el
@@ -40,7 +40,20 @@ manteniendo `owner/root = p1` y `parent = p1-helper-0`.
 - Cierre con typecheck, build, `pnpm test`, `pnpm qa:trace`, documentación y
   commits separados.
 
-## Claim previsto
+## Evidencia de cierre
+
+- Producto: `c1544342` inyecta el resolver typed de recuperación en el spawn
+  de Projectile del Helper y resuelve cada componente en caller context sin
+  perder hermanas finitas.
+- Traza requerida:
+  `synthetic-imported-helper-projectile-dynamic-fall-recovery` pasa con
+  checksum de traza/final `d1594d58` / `a3042cd6`; exige `Helper`, cuatro
+  `VarSet`, `Projectile`, `HitFallVel`, owner/root/parent, target dual y los
+  cuatro aliases de recuperación en el contacto de caída aceptado.
+- Gates: focal spawn/traza `2/2`; tests completos `328/4100`; typecheck, build
+  y QA trace `886/886` (`852` requeridas) verdes.
+
+## Claim cerrado
 
 **Permitido:** un Helper de primera generación resuelve el paquete finito
 `fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` de su
