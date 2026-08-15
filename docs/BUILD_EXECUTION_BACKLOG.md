@@ -2,21 +2,38 @@
 
 ## Current parity queue
 
-- **T767 closed-bounded** — issue 341 closes the first-generation
+- **T769 closed-bounded** — issue 343 closes the first-generation
+  Helper-authored `ModifyProjectile` damage guard seam. Evidence commit is
+  `79c377cd`; required trace `65253f37` / `fb2ad29f` (initial
+  `1c4e9c53`). The root-owned Projectile resolves the Helper damage pair
+  before an accepted guard, leaving defender life `40` and
+  `GetHitVar(guarddamage)=10` evidence. Focused trace, typecheck and diff
+  hygiene pass; aggregate QA retains the inherited helper-bind target-link
+  blocker. Hit contact, nested/shared-resource topology, complete scaling,
+  exact arithmetic/timing, rollback and full parity remain outside. See
+  [issue 343](../.scratch/roadmap/issues/343-helper-modifyprojectile-damage-guard.md).
+
+- **T770 next selection** — close the Helper-authored `ModifyProjectile`
+  ground `guard.velocity` readback with one finite X component and one
+  accepted ground guard. Keep airborne guard, Y/Z breadth, nested-helper
+  breadth, aggregate QA repair and resource topology separate. See [issue
+  344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
+
+- **T768 closed-bounded** — issue 342 closes the first-generation
+  Helper-authored `ModifyProjectile` getpower guard seam. Evidence commit is
+  `c61755fa`; required trace `0c233b3f` / `7587197d` (initial
+  `8a99549b`). Attacker power ends at `8`, defender life remains `20`, and
+  guarded state evidence passes without treating `GetHitVar(power)` as
+  attacker getpower. Focused trace, typecheck and diff hygiene pass;
+  aggregate QA retains the inherited helper-bind target-link blocker. See
+  [issue 342](../.scratch/roadmap/issues/342-helper-modifyprojectile-getpower-guard.md).
+
+- **T767 historical** — issue 341 closes the first-generation
   Helper-authored `ModifyProjectile` givepower guard seam. Evidence commit is
   `4b791ec8`; required trace `200a587b` / `ab40f848` (initial
-  `1cffcc6b`). The root-owned Projectile resolves the Helper pair before an
-  accepted guard, leaving defender life `20`, power `8`, and guarded
-  `GetHitVar(power)=8` evidence. Focused trace tests, typecheck and diff
-  hygiene pass; aggregate QA retains the inherited helper-bind target-link
-  blocker. Unguarded hit, getpower mutation, nested/shared-resource topology,
-  exact arithmetic/timing, rollback and full parity remain outside. See
-  [issue 341](../.scratch/roadmap/issues/341-helper-modifyprojectile-givepower-guard.md).
-
-- **T768 next selection** — close the Helper-authored `ModifyProjectile`
-  getpower guard readback; keep givepower, unguarded hit, nested-helper
-  breadth, aggregate QA repair and resource topology separate. See [issue
-  342](../.scratch/roadmap/issues/342-helper-modifyprojectile-getpower-guard.md).
+  `1cffcc6b`). Defender life remains `20`, power reaches `8`, and guarded
+  `GetHitVar(power)=8` evidence passes. See [issue
+  341](../.scratch/roadmap/issues/341-helper-modifyprojectile-givepower-guard.md).
 
 - **T766 historical** — issue 340 closes the first-generation
   Helper-authored `ModifyProjectile` givepower hit seam. Evidence commit is

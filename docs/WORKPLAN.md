@@ -1,24 +1,31 @@
 # Workplan
 
-## Latest slice — T767 closed-bounded (2026-08-15)
+## Latest slice — T769 closed-bounded (2026-08-15)
 
-Issue 341 closes the first-generation Helper-authored `ModifyProjectile`
-`givepower` guard seam. Evidence commit `4b791ec8`; required trace
-`200a587b` (`1cffcc6b` -> `ab40f848`) passes. The Helper resolves the live
-pair before the accepted guard; defender power reaches `8`, life remains
-`20`, and guarded `GetHitVar(power)=8` remains observable. Focused trace
-tests, typecheck and diff hygiene pass. Aggregate QA retains the inherited
-helper-bind target-link blocker. Unguarded hit, getpower mutation,
-nested/shared resource topology, exact arithmetic/timing, rollback and full
-parity remain outside.
+Issue 343 closes the first-generation Helper-authored `ModifyProjectile`
+`damage` guard seam. Evidence commit `79c377cd`; required trace `65253f37`
+(`1c4e9c53` -> `fb2ad29f`) passes. The Helper resolves the live damage pair
+before the accepted guard; guard damage reaches `10`, defender life reaches
+`40`, and `GetHitVar(guarddamage)=10` remains observable. Focused trace,
+typecheck and diff hygiene pass. Aggregate QA retains the inherited
+helper-bind target-link blocker.
 
-## Next slice — T768 queued (2026-08-15)
+## Next slice — T770 queued (2026-08-15)
 
-Issue 342 covers the analogous Helper-authored `ModifyProjectile getpower`
-guard readback with one Helper, one root-owned Projectile and one accepted
-guard. Keep givepower, unguarded hit, nested/shared resource topology,
-aggregate QA repair, exact arithmetic/timing, rollback and full parity
-separate.
+Issue 344 covers the analogous Helper-authored `ModifyProjectile
+guard.velocity` ground-guard readback with one Helper, one root-owned
+Projectile, one finite X component and one accepted ground guard. Keep
+airborne guard, Y/Z breadth, nested/shared resource topology, aggregate QA
+repair, exact arithmetic/timing, rollback and full parity separate.
+
+## Historical slice — T768 closed-bounded (2026-08-15)
+
+Issue 342 closes the Helper-authored `ModifyProjectile getpower` guard seam.
+Evidence commit `c61755fa`; required trace `0c233b3f`
+(`8a99549b` -> `7587197d`) passes. Attacker power reaches `8`, defender life
+remains `20`, and guarded evidence remains separate from `GetHitVar(power)`.
+Focused trace, typecheck and diff hygiene pass; aggregate QA retains the
+inherited helper-bind target-link blocker.
 
 ## Historical slice — T766 closed-bounded (2026-08-15)
 

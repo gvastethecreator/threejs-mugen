@@ -1,23 +1,30 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T767 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T769 closed-bounded (2026-08-15)
 
-Issue 341 closes the first-generation Helper-authored `ModifyProjectile`
-`givepower` guard readback. Required trace `200a587b`
-(`1cffcc6b` -> `ab40f848`) and evidence commit `4b791ec8` prove Helper
-caller-context replacement, root-owned Projectile lifecycle, defender life
-`20`, power `8`, and guarded `GetHitVar(power)=8`. Focused trace tests,
+Issue 343 closes the first-generation Helper-authored `ModifyProjectile`
+`damage` guard readback. Required trace `65253f37`
+(`1c4e9c53` -> `fb2ad29f`) and evidence commit `79c377cd` prove the Helper
+caller-context replacement, root-owned Projectile lifecycle, guard damage
+`10`, defender life `40`, and `GetHitVar(guarddamage)=10`. Focused trace,
 typecheck and diff hygiene pass. Aggregate QA remains blocked by the
-inherited helper-bind target-link case. Unguarded hit, getpower mutation,
-nested/shared-resource topology, exact arithmetic/timing, rollback and full
-parity remain outside. See issue 341.
+inherited helper-bind target-link case. See issue 343.
 
-## Next implementation checkpoint — T768 queued (2026-08-15)
+## Next implementation checkpoint — T770 queued (2026-08-15)
 
-Issue 342 targets the analogous Helper-authored `ModifyProjectile getpower`
-guard readback. It remains bounded to one Helper, one root-owned Projectile,
-one accepted guard and caller-context power evidence; givepower, hit,
-nested/shared-resource topology and aggregate QA repair remain separate.
+Issue 344 targets the analogous Helper-authored `ModifyProjectile
+guard.velocity` ground-guard readback. It remains bounded to one Helper, one
+root-owned Projectile, one finite X component and one accepted ground guard;
+airborne guard, Y/Z breadth and aggregate QA repair remain separate.
+
+## Historical implementation checkpoint — T768 closed-bounded (2026-08-15)
+
+Issue 342 closes the Helper-authored `ModifyProjectile getpower` guard
+readback. Required trace `0c233b3f` (`8a99549b` -> `7587197d`) and evidence
+commit `c61755fa` prove attacker power `8`, defender life `20` and guarded
+state evidence without conflating `GetHitVar(power)` with attacker getpower.
+Focused trace, typecheck and diff hygiene pass; aggregate QA retains the
+inherited target-link blocker. See issue 342.
 
 ## Historical implementation checkpoint — T766 closed-bounded (2026-08-15)
 

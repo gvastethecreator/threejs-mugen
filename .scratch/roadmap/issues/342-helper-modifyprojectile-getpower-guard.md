@@ -39,3 +39,25 @@ as proof for this cut.
   readback. It must not use `GetHitVar(power)` as a proxy for `getpower`.
 - Focused Helper/Projectile test, typecheck, `git diff --check`, and aggregate
   QA recorded with inherited blockers preserved.
+
+## Evidencia de cierre
+
+- Evidence commit: `c61755fa`.
+- Required trace: `0c233b3f` (`8a99549b` -> `7587197d`), status `passed`.
+- The Helper-owned `ModifyProjectile` resolves
+  `getpower=var(0)*4,var(0)-3` in Helper context before an accepted guard;
+  the root-owned Projectile adds the guard reward `8` to the attacker, whose
+  final power is `8`, while the defender remains at life `20` and records
+  `GetHitVar(guarded)=1`.
+- Focused snapshot and Helper/Projectile getpower tests, `pnpm run typecheck`,
+  and `git diff --check` pass.
+- `GetHitVar(power)` is intentionally not claimed here: the pinned runtime
+  exposes it as the defender's `givepower`, not the attacker's `getpower`.
+- Aggregate `pnpm run qa:trace` remains stopped by the inherited
+  `synthetic-imported-helper-bind-to-target-redirect` missing target-link case.
+
+## Cierre y siguiente corte
+
+This bounded evidence closes T768. T769 is closed in issue 343. T770 is queued
+for the next Helper-owned `ModifyProjectile guard.velocity` guard slice; see
+issue 344.

@@ -1,25 +1,31 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T767 closed-bounded (2026-08-15)
+## Latest bounded slice — T769 closed-bounded (2026-08-15)
 
-Issue 341 closes the first-generation Helper-authored `ModifyProjectile`
-`givepower` guard readback. Evidence commit `4b791ec8`; required trace
-`200a587b` (`1cffcc6b` -> `ab40f848`) passes. The Helper creates a root-owned
-Projectile, resolves `givepower=var(0)*4,var(0)-3`, and an accepted guard
-leaves defender life at `20` and power at `8` while guarded
-`GetHitVar(power)=8` remains visible. Focused tests, typecheck and diff
-hygiene pass. Aggregate QA stops on the inherited helper-bind target-link
-blocker. Unguarded hit, getpower mutation, nested/shared-resource topology,
-exact arithmetic/timing, rollback and full parity remain outside. See [issue
-341](../.scratch/roadmap/issues/341-helper-modifyprojectile-givepower-guard.md).
+Issue 343 closes the first-generation Helper-authored `ModifyProjectile`
+`damage` guard readback. Evidence commit `79c377cd`; required trace
+`65253f37` (`1c4e9c53` -> `fb2ad29f`) passes. The Helper creates a root-owned
+Projectile, resolves `damage=var(0)*3,var(0)-1`, and an accepted guard leaves
+defender life at `40` while guarded `GetHitVar(guarddamage)=10` remains
+visible. Focused tests, typecheck and diff hygiene pass. Aggregate QA stops
+on the inherited helper-bind target-link blocker. See [issue
+343](../.scratch/roadmap/issues/343-helper-modifyprojectile-damage-guard.md).
 
-## Next bounded slice — T768 queued (2026-08-15)
+## Next bounded slice — T770 queued (2026-08-15)
 
-Issue 342 targets the analogous Helper-authored `ModifyProjectile getpower`
-guard readback. Keep givepower, unguarded hit, nested/shared-resource
-topology, aggregate QA repair, exact arithmetic/timing, rollback and full
-parity separate. See [issue
-342](../.scratch/roadmap/issues/342-helper-modifyprojectile-getpower-guard.md).
+Issue 344 targets the analogous Helper-authored `ModifyProjectile
+guard.velocity` ground-guard readback. Keep airborne guard, Y/Z breadth,
+nested/shared-resource topology, aggregate QA repair, exact physics/timing,
+rollback and full parity separate. See [issue
+344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
+
+## Historical bounded slice — T768 closed-bounded (2026-08-15)
+
+Issue 342 closes the Helper-authored `ModifyProjectile getpower` guard
+readback. Evidence commit `c61755fa`; required trace `0c233b3f`
+(`8a99549b` -> `7587197d`) passes. Attacker power reaches `8`, defender life
+remains `20`, and the guarded branch proves the contact without misusing
+`GetHitVar(power)`. Aggregate QA retains the inherited target-link blocker.
 
 ## Historical bounded slice — T766 closed-bounded (2026-08-15)
 

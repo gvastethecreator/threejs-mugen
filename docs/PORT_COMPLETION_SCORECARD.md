@@ -1,27 +1,35 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T767 Helper `ModifyProjectile` `givepower` guard readback — closed-bounded, no score movement
+## 2026-08-15 T769 Helper `ModifyProjectile` `damage` guard readback — closed-bounded, no score movement
 
-Issue 341 closes the first-generation Helper-authored givepower guard seam.
-Evidence commit `4b791ec8`; required trace `200a587b`
-(`1cffcc6b` -> `ab40f848`) passes. The root-owned Projectile keeps its
-Helper-context `givepower=var(0)*4,var(0)-3` replacement through an accepted
-guard; defender life remains `20`, power reaches `8`, and guarded
-`GetHitVar(power)=8` remains separate. Focused trace tests, typecheck and diff
-hygiene pass. Aggregate QA retains the inherited helper-bind target-link
-blocker. No score movement: unguarded hit, getpower mutation,
-nested/shared-resource topology, exact arithmetic/timing, rollback and full
-parity remain blocked. See [issue
-341](../.scratch/roadmap/issues/341-helper-modifyprojectile-givepower-guard.md).
+Issue 343 closes the first-generation Helper-authored damage guard seam.
+Evidence commit `79c377cd`; required trace `65253f37`
+(`1c4e9c53` -> `fb2ad29f`) passes. The root-owned Projectile keeps its
+Helper-context damage replacement through an accepted guard; guard damage is
+`10`, defender life ends at `40`, and `GetHitVar(guarddamage)=10` remains
+separate. Focused trace, typecheck and diff hygiene pass. Aggregate QA
+retains the inherited helper-bind target-link blocker. No score movement:
+hit contact, complete scaling, nested/shared-resource topology, exact
+arithmetic/timing, rollback and full parity remain blocked. See [issue
+343](../.scratch/roadmap/issues/343-helper-modifyprojectile-damage-guard.md).
 
-## 2026-08-15 T768 Helper `ModifyProjectile` `getpower` guard readback — queued
+## 2026-08-15 T770 Helper `ModifyProjectile` `guard.velocity` ground guard — queued
 
-Issue 342 is the next bounded cut for the Helper caller-context getpower guard
-path. It remains limited to one Helper, one root-owned Projectile, one
-accepted guard and attacker power/GetHitVar evidence; no score movement is
-expected. Givepower, unguarded hit, nested/shared-resource topology,
-aggregate QA repair, exact arithmetic/timing, rollback and full parity remain
+Issue 344 is the next bounded cut for the Helper caller-context ground guard
+velocity path. It remains limited to one Helper, one root-owned Projectile,
+one finite X component and one accepted ground guard; no score movement is
+expected. Airborne guard, Y/Z breadth, nested/shared-resource topology,
+aggregate QA repair, exact physics/timing, rollback and full parity remain
 blocked. See [issue
+344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
+
+## Historical checkpoint — 2026-08-15 T768 Helper `ModifyProjectile` `getpower` guard readback — closed-bounded, no score movement
+
+Issue 342 closes the Helper caller-context getpower guard path. Evidence
+commit `c61755fa`; required trace `0c233b3f` (`8a99549b` -> `7587197d`)
+passes. Attacker power ends at `8`, defender life remains `20`, and guarded
+state evidence is present without using `GetHitVar(power)` as getpower proof.
+Aggregate QA retains the inherited target-link blocker. See [issue
 342](../.scratch/roadmap/issues/342-helper-modifyprojectile-getpower-guard.md).
 
 ## Historical checkpoint — 2026-08-15 T766 Helper `ModifyProjectile` `givepower` hit readback — closed-bounded, no score movement
