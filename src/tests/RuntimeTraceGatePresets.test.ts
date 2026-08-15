@@ -572,6 +572,7 @@ import {
   createSyntheticImportedProjectileAttackDizzyPointsSnapshotTraceArtifact,
   createSyntheticImportedProjectileAttackRedLifeSnapshotTraceArtifact,
   createSyntheticImportedHelperProjectileAttackRedLifeSnapshotTraceArtifact,
+  createSyntheticImportedProjectileAttackRedLifeGuardTraceArtifact,
   createSyntheticImportedDataDamageScaleTraceArtifact,
   createSyntheticImportedBoundsTraceArtifact,
   createSyntheticImportedScreenBoundCameraTraceArtifact,
@@ -11952,6 +11953,26 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", life: 5, redLife: 10 })]),
+    );
+  });
+
+  it("creates a synthetic imported Projectile AttackMulSet red-life guard snapshot artifact", () => {
+    const artifact = createSyntheticImportedProjectileAttackRedLifeGuardTraceArtifact({
+      generatedAt: "2026-08-14T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-attack-redlife-guard-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-projectile-attack-redlife-guard-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.AttackMulSet).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", life: 20, redLife: 20 })]),
     );
   });
 

@@ -76925,3 +76925,104 @@ export function createSyntheticImportedHelperProjectileAttackRedLifeSnapshotTrac
     }],
   });
 }
+
+/** T759 root Projectile proof: the captured redlife multiplier is consumed by guard contact. */
+export function createSyntheticImportedProjectileAttackRedLifeGuardTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5096;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-projectile-attack-redlife-guard-grid",
+    displayName: "Trace Projectile Attack RedLife Guard Grid",
+    playerStart: {
+      p1: { x: -54, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const script = importedProjectileGuardScript();
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-attack-redlife-guard-defender",
+    displayName: "Projectile Attack RedLife Guard Defender",
+    dataStats: { life: 50 },
+    defaultGuardHit: {
+      guardedBranchStateNo: branchStateNo,
+      guardedBranchAnimNo: branchStateNo,
+      guardedBranchTrigger: "Time >= 0",
+      guardedBranchExpression: "GetHitVar(redlife) = 20 && GetHitVar(guarded) = 1",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-attack-redlife-guard-attacker",
+    displayName: "Projectile Attack RedLife Guard Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    attackMultiplier: 1,
+    attackRedLifeMultiplier: 0.5,
+    postProjectileAttackRedLifeMultiplier: 2,
+    projectileRedLifeExpression: ["20", "20"],
+    projectileDamage: [45, 30],
+    projectileRemoveOnHit: false,
+    projectileOffset: [62, -45],
+    projectileGroundVelocity: [-1, 1],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-projectile-attack-redlife-guard-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-attack-redlife-guard-golden",
+      label: "Synthetic imported Projectile AttackMulSet redlife guard route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root-owned Projectile captures the creator's AttackMulSet redlife multiplier at spawn (0.5), then keeps the captured value after a later live redlife=2 update on an accepted guard contact. Authored GetHitVar(redlife)=20 remains separate; the defender starts at life 20 of max 50 so the captured guard red-life amount is observable as redLife=20 while the live multiplier would produce 40. Helper ownership, ModifyProjectile, shared banks, exact resource clamp/rounding/timing, teams, rollback, and full M.U.G.E.N/Ikemen parity remain outside this bounded slice.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-projectile-attack-redlife-guard-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 130, 150, branchStateNo],
+      forbiddenExecutedStates: [40, 5000, 5001, 5020, 5021, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "AttackMulSet", "Projectile"],
+      requiredExecutedOperations: ["damage-scale:attackmulset", "projectile"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["guard"],
+      requiredCombatReasons: ["guard"],
+      forbiddenCombatReasons: ["hit", "override", "reversal"],
+      requiredControllerEventSequences: [{
+        label: "Projectile snapshots AttackMulSet redlife before guarded contact",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "AttackMulSet", name: "Attack Scale" },
+          { stateNo: 200, controller: "Projectile", name: "Fast Projectile" },
+          { stateNo: 200, controller: "AttackMulSet", name: "Post Projectile RedLife Scale" },
+        ],
+      }],
+      requiredActorFrameSequences: [{
+        label: "Projectile redlife snapshot accepted guard order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 150, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [{ actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1", effectId: 77, minAge: 1, hasHit: true }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 20, redLife: 20 },
+      ],
+    }],
+  });
+}
