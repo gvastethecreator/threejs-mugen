@@ -845,6 +845,7 @@ export class PlayableMatchRuntime {
   private attachHelperHandlers(): void {
     this.attachHelperTargetStateHandlers();
     this.attachHelperPauseHandlers();
+    this.attachHelperEnvShakeHandlers();
   }
 
   private runtimeHurtBoxes(fighter: FighterMatchState): RuntimeCollisionBox[] {
@@ -874,6 +875,8 @@ export class PlayableMatchRuntime {
       applyTeamStandby: (owner, helper, operation) =>
         this.applyHelperOwnedSelfTeamStandbyController(owner, helper, operation),
       telemetryRecorder: {
+        recordStateExecution: (owner, stateNo) =>
+          compatibilityTelemetryWorld.recordStateExecution(owner, stateNo),
         recordController: (owner, controller, context) =>
           compatibilityTelemetryWorld.recordController(owner, controller, context),
         recordOperation: (owner, operation, context) =>
@@ -894,6 +897,28 @@ export class PlayableMatchRuntime {
           resolveSoundValue,
           resolveParams,
         );
+    }
+  }
+
+  private attachHelperEnvShakeHandlers(): void {
+    for (const owner of this.matchRoster().actors) {
+      owner.onHelperEnvShakeController = (helper, controller, operation) => {
+        const result = matchEnvShakeBridgeWorld.applyController({
+          actor: {
+            runtime: { stateNo: helper.stateNo ?? owner.runtime.stateNo, hitFall: owner.runtime.hitFall },
+            stateElapsed: helper.stateTime,
+            envShakeEvents: owner.envShakeEvents,
+          },
+          controller: controller.operation === operation ? controller : { ...controller, operation },
+          runtimeTick: this.tick,
+          envShakeWorld: owner.envShakeWorld,
+        });
+        if (!result.event) return false;
+        result.event.sourceActorId = helper.serialId;
+        result.event.sourceRootId = helper.rootId;
+        result.event.sourceParentId = helper.parentId;
+        return true;
+      };
     }
   }
 

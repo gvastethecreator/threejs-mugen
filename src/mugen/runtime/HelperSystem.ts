@@ -1,5 +1,6 @@
 import type {
   ControllerOp,
+  EnvShakeControllerOp,
   ResourceControllerOp,
   HelperControllerOp,
   MugenHitDefExpressionPair,
@@ -47,6 +48,7 @@ import type {
   RuntimeProjectileModifyResolver,
 } from "./ProjectileSystem";
 import type { MatchPauseControllerResult, RuntimePauseControllerParamResolvers } from "./PauseSystem";
+import { resolveRuntimeEnvShakeControllerOperation } from "./EnvShakeSystem";
 import { RuntimeControllerDispatchWorld } from "./RuntimeControllerDispatchSystem";
 import {
   RuntimeActorConstraintControllerDispatchWorld,
@@ -368,6 +370,12 @@ export type RuntimeHelperAdvanceOptions = {
     resolveSoundValue: () => RuntimeResolvedSoundValue | undefined,
     resolveParams: RuntimePauseControllerParamResolvers,
   ) => MatchPauseControllerResult | undefined;
+  onEnvShakeController?: (
+    helper: RuntimeHelper,
+    controller: ControllerIr,
+    operation: EnvShakeControllerOp,
+  ) => boolean;
+  onStateExecution?: (helper: RuntimeHelper, stateNo: number) => void;
   scaleTargetDamage?: (runtime: CharacterRuntimeState, damage: number) => number;
   onTeamStandby?: (helper: RuntimeHelper, operation: TeamStandbyControllerOp) => TeamStandbyControllerOp | undefined;
   onController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
@@ -702,6 +710,8 @@ export function runRuntimeHelperStateControllers(
     | "onModifyExplod"
     | "onModifyProjectile"
     | "onPauseController"
+    | "onEnvShakeController"
+    | "onStateExecution"
     | "scaleTargetDamage"
     | "onTeamStandby"
     | "onController"
@@ -1007,6 +1017,26 @@ export function runRuntimeHelperStateControllers(
         if (result.pause && operation) {
           options.onOperation?.(helper, operation);
         }
+        continue;
+      }
+      options.onUnsupportedController?.(helper, controller);
+      continue;
+    }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "envshake") {
+      const operation = controller.operation?.kind === "envshake"
+        ? controller.operation
+        : resolveRuntimeEnvShakeControllerOperation(controller.source, {
+            resolveNumber: (key) => resolveHelperNumber(
+              helper,
+              undefined,
+              findControllerParam(controller, key),
+              options,
+            ),
+            resolveFloat: (key) => resolveHelperFloat(helper, findControllerParam(controller, key), options),
+          });
+      if (operation && options.onEnvShakeController?.(helper, controller, operation)) {
+        options.onController?.(helper, controller);
+        options.onOperation?.(helper, operation);
         continue;
       }
       options.onUnsupportedController?.(helper, controller);
@@ -1352,6 +1382,7 @@ function runRuntimeHelperCurrentStateControllers(
 ): RuntimeHelperControllerResult {
   let transitions = 0;
   while (true) {
+    options.onStateExecution?.(helper, helper.stateNo ?? 0);
     const result = runRuntimeHelperStateControllers(helper, options);
     if (result.status === "destroyed" || result.transition === undefined) {
       return result;

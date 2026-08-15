@@ -5,6 +5,7 @@ import type { RuntimeHelper } from "./HelperSystem";
 
 export type RuntimeHelperTelemetryOwner = {
   runtime: { stateNo: number };
+  onHelperStateExecution?: (helper: RuntimeHelper, stateNo: number) => void;
   onHelperController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
   onHelperOperation?: (helper: RuntimeHelper, operation: ControllerOp) => void;
 };
@@ -14,6 +15,7 @@ export type RuntimeHelperTelemetryContext = {
 };
 
 export type RuntimeHelperTelemetryRecorder<TOwner extends RuntimeHelperTelemetryOwner> = {
+  recordStateExecution: (owner: TOwner, stateNo: number) => void;
   recordController: (owner: TOwner, controller: MugenStateController, context: RuntimeHelperTelemetryContext) => void;
   recordOperation: (owner: TOwner, operation: ControllerOp, context: RuntimeHelperTelemetryContext) => void;
 };
@@ -24,6 +26,7 @@ export class RuntimeHelperTelemetryWorld {
     recorder: RuntimeHelperTelemetryRecorder<TOwner>,
   ): void {
     for (const owner of owners) {
+      owner.onHelperStateExecution = (_helper, stateNo) => recorder.recordStateExecution(owner, stateNo);
       owner.onHelperController = (helper, controller) => {
         if (!recordsHelperController(controller)) {
           return;
@@ -55,6 +58,8 @@ function recordsHelperController(controller: ControllerIr): boolean {
   return (
     controller.operation?.kind === "projectile" ||
     controller.operation?.kind === "pause" ||
+    controller.operation?.kind === "envshake" ||
+    controller.normalizedType === "envshake" ||
     controller.operation?.kind === "team-standby" ||
     helperKinematicControllers.has(controller.normalizedType) ||
     helperResourceControllers.has(controller.normalizedType) ||
@@ -70,6 +75,7 @@ function recordsHelperOperation(operation: ControllerOp): boolean {
     operation.kind === "variable" ||
     operation.kind === "kinematic" ||
     operation.kind === "pause" ||
+    operation.kind === "envshake" ||
     operation.kind === "team-standby" ||
     operation.kind === "resource";
 }

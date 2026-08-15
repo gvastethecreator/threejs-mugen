@@ -20,6 +20,7 @@ describe("RuntimeHelperTelemetryWorld", () => {
     const records: string[] = [];
 
     world.attachControllerTelemetry([owner], {
+      recordStateExecution: () => undefined,
       recordController: (recordOwner, controller, context) =>
         records.push(`${recordOwner.runtime.stateNo}:${controller.type}:${context.stateNo}`),
       recordOperation: (_recordOwner, recordOperation, context) => records.push(`${recordOperation.kind}:${context.stateNo}`),
@@ -52,6 +53,7 @@ describe("RuntimeHelperTelemetryWorld", () => {
     const states: number[] = [];
 
     world.attachControllerTelemetry([owner], {
+      recordStateExecution: () => undefined,
       recordController: (_owner, _controller, context) => states.push(context.stateNo),
       recordOperation: (_owner, _operation, context) => states.push(context.stateNo),
     });
@@ -70,6 +72,7 @@ describe("RuntimeHelperTelemetryWorld", () => {
     const operation = { kind: "resource", controllerType: "lifeadd", value: -100, kill: false } as ControllerOp;
 
     world.attachControllerTelemetry([owner], {
+      recordStateExecution: () => undefined,
       recordController: (_owner, controller, context) => records.push(`${controller.type}:${context.stateNo}`),
       recordOperation: (_owner, recordedOperation, context) => records.push(`${recordedOperation.kind}:${context.stateNo}`),
     });
@@ -88,6 +91,7 @@ describe("RuntimeHelperTelemetryWorld", () => {
     owner.onHelperOperation = () => records.push("stale-operation");
 
     world.attachControllerTelemetry([owner], {
+      recordStateExecution: () => undefined,
       recordController: (_owner, controller) => records.push(controller.type),
       recordOperation: (_owner, operation) => records.push(operation.kind),
     });

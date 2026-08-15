@@ -33,6 +33,7 @@ describe("RuntimeMatchHelperBindingWorld", () => {
         return operation;
       },
       telemetryRecorder: {
+        recordStateExecution: () => undefined,
         recordController: (recordOwner, controller, context) =>
           records.push(`controller:${recordOwner.id}:${controller.type}:${context.stateNo}`),
         recordOperation: (recordOwner, operation, context) =>

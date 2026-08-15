@@ -558,6 +558,12 @@ export type RuntimeEnvShakeEvent = {
   dirAdd?: number;
   /** Optional Ikemen active-shake amplitude decay exponent. */
   decay?: number;
+  /** Actor that authored the shake when presentation is projected through a root. */
+  sourceActorId?: string;
+  /** Root that owns the presentation buffer receiving the shake. */
+  sourceRootId?: string;
+  /** Immediate parent of the actor that authored the shake. */
+  sourceParentId?: string;
   stateNo: number;
   tick: number;
   runtimeTick: number;

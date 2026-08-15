@@ -28,6 +28,8 @@ export type RuntimeEffectLifecycleActor = RuntimeEffectGetHitActor & {
   onHelperOperation?: RuntimeHelperAdvanceOptions["onOperation"];
   admitResourceWrite?: RuntimeHelperAdvanceOptions["admitResourceWrite"];
   onHelperPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
+  onHelperEnvShakeController?: RuntimeHelperAdvanceOptions["onEnvShakeController"];
+  onHelperStateExecution?: RuntimeHelperAdvanceOptions["onStateExecution"];
   onHelperTeamStandby?: RuntimeHelperAdvanceOptions["onTeamStandby"];
   scaleHelperTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
   effectActorWorld: Pick<

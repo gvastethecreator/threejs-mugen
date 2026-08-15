@@ -13,6 +13,8 @@ export type RuntimeEffectHelperContextActor = {
   onHelperController?: RuntimeHelperAdvanceOptions["onController"];
   onHelperOperation?: RuntimeHelperAdvanceOptions["onOperation"];
   onHelperPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
+  onHelperEnvShakeController?: RuntimeHelperAdvanceOptions["onEnvShakeController"];
+  onHelperStateExecution?: RuntimeHelperAdvanceOptions["onStateExecution"];
   onHelperTeamStandby?: RuntimeHelperAdvanceOptions["onTeamStandby"];
   scaleHelperTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
 };
@@ -89,6 +91,8 @@ export type RuntimeEffectHelperContext = {
   onController?: RuntimeHelperAdvanceOptions["onController"];
   onOperation?: RuntimeHelperAdvanceOptions["onOperation"];
   onPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
+  onEnvShakeController?: RuntimeHelperAdvanceOptions["onEnvShakeController"];
+  onStateExecution?: RuntimeHelperAdvanceOptions["onStateExecution"];
   onTeamStandby?: RuntimeHelperAdvanceOptions["onTeamStandby"];
   scaleTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
   onStateTransitionCycle?: RuntimeHelperAdvanceOptions["onStateTransitionCycle"];
@@ -140,6 +144,8 @@ export class RuntimeEffectHelperContextWorld {
       ...(options.admitResourceWrite ? { admitResourceWrite: options.admitResourceWrite } : {}),
       ...(options.applySharedResourceWrite ? { applySharedResourceWrite: options.applySharedResourceWrite } : {}),
       ...(actor.onHelperPauseController ? { onPauseController: actor.onHelperPauseController } : {}),
+      ...(actor.onHelperEnvShakeController ? { onEnvShakeController: actor.onHelperEnvShakeController } : {}),
+      ...(actor.onHelperStateExecution ? { onStateExecution: actor.onHelperStateExecution } : {}),
       ...(actor.onHelperTeamStandby ? { onTeamStandby: actor.onHelperTeamStandby } : {}),
       ...(actor.scaleHelperTargetDamage ? { scaleTargetDamage: actor.scaleHelperTargetDamage } : {}),
     };

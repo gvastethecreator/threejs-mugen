@@ -55,6 +55,8 @@ export type FighterMatchState = {
   onHelperController?: RuntimeHelperAdvanceOptions["onController"];
   onHelperOperation?: RuntimeHelperAdvanceOptions["onOperation"];
   onHelperPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
+  onHelperEnvShakeController?: RuntimeHelperAdvanceOptions["onEnvShakeController"];
+  onHelperStateExecution?: RuntimeHelperAdvanceOptions["onStateExecution"];
   onHelperTeamStandby?: RuntimeHelperAdvanceOptions["onTeamStandby"];
   scaleHelperTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
   currentInput: Set<string>;

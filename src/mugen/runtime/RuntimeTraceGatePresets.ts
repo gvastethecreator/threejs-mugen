@@ -4879,6 +4879,76 @@ export function createSyntheticImportedDynamicEnvShakeDirAddDecayTraceArtifact(
   );
 }
 
+export function createSyntheticImportedHelperEnvShakeOwnershipTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-helper-envshake",
+      displayName: "Synthetic Imported Helper EnvShake Ownership",
+      action200Duration: 30,
+      withHelper: true,
+      hitDefVarSeeds: [
+        { index: 0, value: 18 },
+        { index: 1, value: 45 },
+        { index: 2, value: -9 },
+        { index: 3, value: 30 },
+        { index: 4, value: 20 },
+      ],
+      helperEnvShakeRoute: {
+        stateNo: 1310,
+        time: "Parent,Var(0)",
+        freq: "Parent,Var(1)",
+        ampl: "Parent,Var(2)",
+        phase: "Parent,Var(3)",
+        mul: 1,
+        dir: "Parent,Var(4)",
+        dirAdd: 20,
+        decay: 1,
+      },
+    }),
+    {
+      ...options,
+      stage: options.stage ?? farCombatStage(),
+      targetId: "synthetic-imported-helper-envshake-golden",
+      targetLabel: "Synthetic imported Helper-owned active EnvShake route",
+      requireHitEvent: false,
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Helper"],
+      requiredExecutedOperations: ["variable:varset", "helper", "envshake"],
+      requiredEffectKinds: ["helper"],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+      requiredEffectPayloads: [{ actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1310, minAge: 1 }],
+      requiredActorFrames: [{ actorId: "p1-helper-0", source: "effect", actorKind: "helper", stateNo: 1310, animNo: 1310, minFrames: 1 }],
+      requiredEnvShakeEvents: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        sourceActorId: "p1-helper-0",
+        sourceRootId: "p1",
+        sourceParentId: "p1",
+        time: 18,
+        freq: 45,
+        ampl: -9,
+        phase: 30,
+        mul: 1,
+        dir: 20,
+        dirAdd: 20,
+        decay: 1,
+        stateNo: 1200,
+      }],
+      notes: [
+        "Required trace proves a Helper-owned active EnvShake resolves Parent,Var values in the caller context, emits once into the root actor presentation buffer, preserves helper/root/parent identity, and reaches the existing stage camera-shake projection. It does not claim nested/team helper ownership, pause/stage/layer ordering, waveform parity, contact/fall shakes, rollback, or full MUGEN/IKEMEN camera parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-receiveddamage-attacker",
@@ -7150,6 +7220,10 @@ export function createImportedXTraceArtifact(
     requiredExecutedStates?: number[];
     requiredExecutedControllers?: RuntimeTraceGate["requiredExecutedControllers"];
     requiredExecutedOperations?: RuntimeTraceGate["requiredExecutedOperations"];
+    requiredEffectKinds?: RuntimeTraceGate["requiredEffectKinds"];
+    requiredWorldLifecycleEvents?: RuntimeTraceGate["requiredWorldLifecycleEvents"];
+    requiredEffectStores?: RuntimeTraceGate["requiredEffectStores"];
+    requiredEffectPayloads?: RuntimeTraceGate["requiredEffectPayloads"];
     requiredSoundEvents?: RuntimeTraceGate["requiredSoundEvents"];
     requiredHitEffectEvents?: RuntimeTraceGate["requiredHitEffectEvents"];
     requiredContactEffectPackages?: RuntimeTraceGate["requiredContactEffectPackages"];
@@ -7194,9 +7268,13 @@ export function createImportedXTraceArtifact(
         requiredActorKinds: ["player"],
         requiredRoutedStates: options.requiredRoutedStates ?? [200],
         requiredExecutedStates: options.requiredExecutedStates ?? [200],
+        requiredEffectKinds: options.requiredEffectKinds,
         forbiddenExecutedStates: options.forbiddenExecutedStates,
         requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef"],
         requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
+        requiredWorldLifecycleEvents: options.requiredWorldLifecycleEvents,
+        requiredEffectStores: options.requiredEffectStores,
+        requiredEffectPayloads: options.requiredEffectPayloads,
         requiredSoundEvents: options.requiredSoundEvents,
         requiredHitEffectEvents: options.requiredHitEffectEvents,
         requiredContactEffectPackages: options.requiredContactEffectPackages,
@@ -64571,8 +64649,8 @@ export function createSyntheticImportedHelperBindToTargetRedirectTraceArtifact(o
             hasBinding: true,
             minFrames: 1,
             minAge: 1,
-            minBindingRemaining: 1,
-            maxBindingRemaining: 3,
+            minBindingRemaining: 4,
+            maxBindingRemaining: 4,
             bindingOffsetX: 20,
             bindingOffsetY: -8,
             bindingOffsetZ: 6,
@@ -68277,6 +68355,19 @@ export type SyntheticImportedTraceFighterOptions = {
   };
   helperResourceRouteShared?: boolean;
   helperPauseRoute?: boolean;
+  /** Synthetic fixture-only active EnvShake emitted by a Helper into the root presentation sink. */
+  helperEnvShakeRoute?: {
+    stateNo: number;
+    animNo?: number;
+    time: SyntheticNumberExpression;
+    freq: SyntheticNumberExpression;
+    ampl: SyntheticNumberExpression;
+    phase: SyntheticNumberExpression;
+    mul?: SyntheticNumberExpression;
+    dir?: SyntheticNumberExpression;
+    dirAdd?: SyntheticNumberExpression;
+    decay?: SyntheticNumberExpression;
+  };
   helperIsHelperRoute?: { stateNo: number; animNo?: number; helperId?: number };
   helperRunOrderRoute?: { expected: number; stateNo: number };
   helperSelfTagRoute?: {
@@ -69500,6 +69591,7 @@ ${options.withAfterImage === undefined ? "" : afterImageControllerBlock(options.
 ${options.withDynamicAfterImage === undefined ? "" : dynamicAfterImageControllerBlock(options.withDynamicAfterImage)}
 ${options.withAfterImageTime === undefined ? "" : afterImageTimeControllerBlock(options.withAfterImageTime)}
 ${options.withDynamicAfterImageTime === undefined ? "" : dynamicAfterImageTimeControllerBlock(options.withDynamicAfterImageTime)}
+${withHitDef ? "" : hitDefVarSeedBlock}
 ${hitDefControllerBlock}
 ${options.prevStateRoute === undefined ? "" : prevStateEntryBlock(options.prevStateRoute.intermediateStateNo)}
 ${options.prevAnimRoute === undefined ? "" : prevAnimEntryBlock(options.prevAnimRoute)}
@@ -69744,6 +69836,7 @@ ${options.helperIsHelperRoute ? helperIsHelperRouteBlock(options.helperIsHelperR
 ${options.helperRunOrderRoute ? helperRunOrderRouteBlock(options.helperRunOrderRoute) : ""}
 ${options.helperSelfTagRoute ? helperSelfTagRouteBlock(options.helperSelfTagRoute) : ""}
 ${options.helperPauseRoute ? helperPauseRouteBlock() : ""}
+${options.helperEnvShakeRoute ? helperEnvShakeRouteBlock(options.helperEnvShakeRoute) : ""}
 ${options.helperResourceRoute ? helperResourceRouteBlock(options.helperResourceRoute, options.helperPauseRoute !== true, options.helperResourceRouteShared === true) : ""}
 ${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNearRoute) : ""}
 ${options.helperParentRootRedirectRoute ? helperParentRootRedirectRouteBlock(options.helperParentRootRedirectRoute) : ""}
@@ -70157,6 +70250,12 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                   number,
                   MugenAnimationAction,
                 ]>)),
+            ...(options.helperEnvShakeRoute === undefined
+              ? []
+              : ([[
+                  options.helperEnvShakeRoute.animNo ?? options.helperEnvShakeRoute.stateNo,
+                  helperTraceAction(options.helperEnvShakeRoute.animNo ?? options.helperEnvShakeRoute.stateNo),
+                ]] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperIsHelperRoute?.animNo === undefined
               ? []
               : ([[options.helperIsHelperRoute.animNo, helperTraceAction(options.helperIsHelperRoute.animNo)]] as Array<[
@@ -76155,6 +76254,43 @@ ${inheritJuggleLine}
 ${preserveLine}
 ${ownClsnScaleLine}
 ${clsnProxyLine}
+`;
+}
+
+function helperEnvShakeRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperEnvShakeRoute"]>): string {
+  const animNo = route.animNo ?? route.stateNo;
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, Helper EnvShake]
+type = EnvShake
+trigger1 = Time = 0
+time = ${route.time}
+freq = ${route.freq}
+ampl = ${route.ampl}
+phase = ${route.phase}
+${route.mul === undefined ? "" : `mul = ${route.mul}`}
+${route.dir === undefined ? "" : `dir = ${route.dir}`}
+${route.dirAdd === undefined ? "" : `diradd = ${route.dirAdd}`}
+${route.decay === undefined ? "" : `decay = ${route.decay}`}
+
+[State 1200, Helper EnvShake Branch]
+type = ChangeState
+trigger1 = Time = 0
+value = ${route.stateNo}
+ctrl = 0
+
+[Statedef ${route.stateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${animNo}
+ctrl = 0
 `;
 }
 

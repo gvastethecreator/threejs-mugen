@@ -638,6 +638,7 @@ import {
   createSyntheticImportedEnvShakeTraceArtifact,
   createSyntheticImportedDynamicEnvShakeTraceArtifact,
   createSyntheticImportedDynamicEnvShakeDirAddDecayTraceArtifact,
+  createSyntheticImportedHelperEnvShakeOwnershipTraceArtifact,
   createSyntheticImportedRemapPalTraceArtifact,
   createSyntheticImportedDynamicRemapPalTraceArtifact,
   createSyntheticImportedPalFxRemapPalTraceArtifact,
@@ -14525,6 +14526,41 @@ describe("RuntimeTraceGatePresets", () => {
     ]));
   });
 
+  it("creates a required Helper-owned EnvShake artifact with root camera projection", () => {
+    const artifact = createSyntheticImportedHelperEnvShakeOwnershipTraceArtifact({ generatedAt: "2026-08-15T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-envshake-golden", source: "mixed" },
+      gates: [{ label: "imported-x-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(artifact.gates[0]?.requirements.requiredEffectKinds).toEqual(["helper"]);
+    expect(artifact.gates[0]?.requirements.requiredEnvShakeEvents).toEqual([expect.objectContaining({
+      actorId: "p1",
+      sourceActorId: "p1-helper-0",
+      sourceRootId: "p1",
+      sourceParentId: "p1",
+      time: 18,
+      freq: 45,
+      ampl: -9,
+      phase: 30,
+      dir: 20,
+      dirAdd: 20,
+      decay: 1,
+      stateNo: 1200,
+    })]);
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.envshake).toBeGreaterThanOrEqual(1);
+    expect(evidence?.worldLifecycleEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+      expect.objectContaining({ type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+    ]));
+    expect(evidence?.envShakeEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1", sourceActorId: "p1-helper-0", sourceRootId: "p1", sourceParentId: "p1" }),
+    ]));
+    expect(artifact.trace.frames.some((frame) => frame.stage?.camera.shake?.amplitude === -9)).toBe(true);
+  });
+
   it("creates a synthetic imported RemapPal artifact with typed sprite-effect evidence", () => {
     const artifact = createSyntheticImportedRemapPalTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
 
@@ -20128,12 +20164,12 @@ describe("RuntimeTraceGatePresets", () => {
       gates: [{ label: "synthetic-imported-ikemen-helper-self-tag-golden", passed: true, failures: [] }],
       trace: {
         frameCount: 4,
-        checksum: "70f3853f",
+        checksum: "febd3573",
         frameChecksums: [
-          "b3f6f69e",
-          "ed0dac42",
-          "ead3ec9d",
-          "e54d7a0f",
+          "6fef781e",
+          "522bf47a",
+          "5df37a36",
+          "0e849fa6",
         ],
       },
     });

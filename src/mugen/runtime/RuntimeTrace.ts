@@ -1023,6 +1023,9 @@ export type RuntimeTraceGateContactEffectPackageEvidence = {
 
 export type RuntimeTraceEnvShakeEventRequirement = {
   actorId?: string;
+  sourceActorId?: string;
+  sourceRootId?: string;
+  sourceParentId?: string;
   source?: NonNullable<ActorSnapshot["source"]>;
   actorKind?: RuntimeActorKind;
   time?: number;
@@ -1043,6 +1046,9 @@ export type RuntimeTraceEnvShakeEventRequirement = {
 
 export type RuntimeTraceGateEnvShakeEventEvidence = {
   actorId: string;
+  sourceActorId?: string;
+  sourceRootId?: string;
+  sourceParentId?: string;
   label: string;
   source?: ActorSnapshot["source"];
   actorKind: RuntimeActorKind;
@@ -3041,6 +3047,9 @@ function summarizeEnvShakeEventEvidence(
 ): RuntimeTraceGateEnvShakeEventEvidence {
   return {
     actorId: actor.id,
+    ...(event.sourceActorId === undefined ? {} : { sourceActorId: event.sourceActorId }),
+    ...(event.sourceRootId === undefined ? {} : { sourceRootId: event.sourceRootId }),
+    ...(event.sourceParentId === undefined ? {} : { sourceParentId: event.sourceParentId }),
     label: actor.label,
     source: actor.source,
     actorKind: actor.actorKind,
@@ -3064,6 +3073,9 @@ function summarizeEnvShakeEventEvidence(
 function envShakeEventEvidenceKey(event: RuntimeTraceGateEnvShakeEventEvidence): string {
   return [
     event.actorId,
+    event.sourceActorId,
+    event.sourceRootId,
+    event.sourceParentId,
     event.time,
     event.freq,
     event.ampl,
@@ -3084,6 +3096,9 @@ function matchesEnvShakeEventRequirement(
 ): boolean {
   return (
     (requirement.actorId === undefined || event.actorId === requirement.actorId) &&
+    (requirement.sourceActorId === undefined || event.sourceActorId === requirement.sourceActorId) &&
+    (requirement.sourceRootId === undefined || event.sourceRootId === requirement.sourceRootId) &&
+    (requirement.sourceParentId === undefined || event.sourceParentId === requirement.sourceParentId) &&
     (requirement.source === undefined || event.source === requirement.source) &&
     (requirement.actorKind === undefined || event.actorKind === requirement.actorKind) &&
     (requirement.time === undefined || event.time === requirement.time) &&

@@ -2161,6 +2161,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDynamicEnvShakeDirAddDecayTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-envshake",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperEnvShakeOwnershipTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-remappal",
       required: true,
       artifact: presets.createSyntheticImportedRemapPalTraceArtifact(),
@@ -5781,6 +5786,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-envshake",
     "synthetic-imported-envshake-dynamic",
     "synthetic-imported-envshake-diradd-decay",
+    "synthetic-imported-helper-envshake",
     "synthetic-imported-remappal",
     "synthetic-imported-remappal-dynamic",
     "synthetic-imported-palfx-remappal",
