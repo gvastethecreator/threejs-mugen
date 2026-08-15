@@ -1,25 +1,25 @@
 ﻿# Roadmap Package Milestones
 
-## Latest package — T782 closed-bounded (2026-08-15)
+## Latest package — T783 closed-bounded (2026-08-15)
 
-Issue 356 closes Helper-owned live `ModifyProjectile ground.velocity` explicit
-`index` selection. Evidence commits `40738a8b` / `754f0909` and required trace
-checksums `b4b36888` / `bda09a12` prove caller-context static/dynamic index
-resolution, oldest-first one-match selection, component-preserving vector
-writes, sibling/trap isolation, accepted grounded-hit GetHitVar/physical
-response, lifecycle, owner/root/parent and target links. Focused tests,
-typecheck and diff hygiene pass; aggregate QA is `865/864` passing with the
-inherited helper-bind blocker.
+Issue 357 closes Helper-owned live `ModifyProjectile guard.velocity` explicit
+`index` selection. Evidence commits `f6a8fb9f` / `d26a515d` and required trace
+checksums `e4a518cc` / `a1b24816` prove caller-context static/dynamic index
+resolution, oldest-first one-match selection, live zero-fill vector writes,
+sibling/trap isolation, accepted grounded-guard GetHitVar/physical response,
+lifecycle, owner/root/parent and target links. Focused tests, typecheck and
+diff hygiene pass; aggregate QA is `866/865` passing with the inherited
+helper-bind blocker.
 
-## Next package — T783 queued (2026-08-15)
+## Next package — T784 queued (2026-08-15)
 
-Issue 357 queues the next bounded Helper-owned live `ModifyProjectile
-guard.velocity` index-selection matrix: an explicit oldest-first index chooses
-one same-id Projectile while siblings/trap ids remain unchanged through a
-grounded guard. Keep id-zero/omitted selection, fresh/default derivation,
+Issue 358 queues the next bounded Helper-owned live `ModifyProjectile
+airguard.velocity` index-selection matrix: an explicit oldest-first index
+chooses one same-id Projectile while siblings/trap ids remain unchanged through
+an airborne guard. Keep id-zero/omitted selection, fresh/default derivation,
 dynamic `n`, nested/shared topology, aggregate QA repair, exact timing,
 rollback and full parity separate. See [issue
-357](../.scratch/roadmap/issues/357-helper-modifyprojectile-guard-velocity-index.md).
+358](../.scratch/roadmap/issues/358-helper-modifyprojectile-airguard-velocity-index.md).
 
 ## Historical package — T781 closed-bounded (2026-08-15)
 

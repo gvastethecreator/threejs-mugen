@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T783 — queued (2026-08-15)**
+- **T783 — closed-bounded (2026-08-15)**
 - **Área:** runtime / Helper / Projectile / ModifyProjectile / selection
 - **Dependencia:** T782 / issue 356
 
@@ -19,8 +19,9 @@ un guard real y exponer la velocidad guardada.
 - Un Helper de primera generación y tres Projectiles root-owned: dos con el
   mismo id y uno con id distinto.
 - Índice estático y `var()` finita evaluados una vez en el caller del Helper.
-- `guard.velocity` explícito de uno, dos y tres componentes con preservación
-  por componente del vector vivo.
+- `guard.velocity` explícito de uno, dos y tres componentes con el zero-fill
+  live ya cubierto por el contrato `ModifyProjectile`: `[x,0,0]`, `[x,y,0]`,
+  `[x,y,z]`.
 - Un guard grounded aceptado del Projectile seleccionado con
   `GetHitVar(xvel/yvel/zvel)`, física, lifecycle, target links y ownership.
 
@@ -38,11 +39,14 @@ controlador en el caller; la mutación viva de `ModifyProjectile` es
 Ikemen-only. M.U.G.E.N 1.1 documenta `guard.velocity` en Projectile, pero no
 el controlador `ModifyProjectile`.
 
-## Evidencia requerida
+## Resultado y evidencia
 
-- Focused Projectile/Helper tests para resolución caller-context, selección
-  oldest-first, preservación por componente y aislamiento de siblings/trap.
-- Required Helper -> Projectile trace con guard grounded aceptado, lifecycle,
-  target/ownership y payload seleccionado.
-- Typecheck, `git diff --check`, y aggregate QA con blockers heredados
-  registrados sin ocultarlos.
+- Commits `f6a8fb9f` y `d26a515d` añaden focused Projectile/Helper tests y la
+  required trace `synthetic-imported-helper-modifyprojectile-guard-velocity-index`.
+- Trace checksum `e4a518cc`, final checksum `a1b24816`: Helper caller-context,
+  índice dinámico `var(3)=1`, oldest-first, dos Projectiles con el mismo id,
+  trampa aislada, guard grounded aceptado, `GetHitVar(xvel/yvel/zvel)=7/-5/2`,
+  física, lifecycle, ownership y target links.
+- `pnpm run typecheck`, focused Vitest y `git diff --check` pasan. Aggregate
+  QA: `866` artifacts (`832` required, `34` optional), `865` pasan; queda sólo
+  el blocker heredado `synthetic-imported-helper-bind-to-target-redirect`.

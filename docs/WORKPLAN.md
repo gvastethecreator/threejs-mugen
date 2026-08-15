@@ -1,21 +1,21 @@
 # Workplan
 
-## Latest slice — T782 closed-bounded (2026-08-15)
+## Latest slice — T783 closed-bounded (2026-08-15)
 
-Issue 356 closes Helper-owned live `ModifyProjectile ground.velocity` explicit
-`index` selection. Evidence commits `40738a8b` / `754f0909` and required trace
-checksums `b4b36888` / `bda09a12` prove one-shot caller-context index
-resolution, oldest-first selection, component-preserving vector writes,
-sibling/trap isolation, accepted grounded-hit GetHitVar/HitVelSet, lifecycle,
-ownership and target-link evidence. Focused tests, typecheck and diff hygiene
-pass; aggregate QA produces `865/864` passing artifacts with only the inherited
+Issue 357 closes Helper-owned live `ModifyProjectile guard.velocity` explicit
+`index` selection. Evidence commits `f6a8fb9f` / `d26a515d` and required trace
+checksums `e4a518cc` / `a1b24816` prove one-shot caller-context index
+resolution, oldest-first selection, live zero-fill vector writes, sibling/trap
+isolation, accepted grounded-guard GetHitVar/HitVelSet, lifecycle, ownership
+and target-link evidence. Focused tests, typecheck and diff hygiene pass;
+aggregate QA produces `866/865` passing artifacts with only the inherited
 helper-bind blocker.
 
-## Next slice — T783 queued (2026-08-15)
+## Next slice — T784 queued (2026-08-15)
 
-Issue 357 covers Helper caller-context `ModifyProjectile guard.velocity`
+Issue 358 covers Helper caller-context `ModifyProjectile airguard.velocity`
 explicit `index` selection among same-id Projectiles, preserving oldest-first
-selection, sibling/trap isolation and an accepted grounded guard. Keep id-zero/
+selection, sibling/trap isolation and an accepted airborne guard. Keep id-zero/
 omitted selection, fresh/default derivation, dynamic `n`, nested/shared
 topology, aggregate QA repair, exact timing, rollback and full parity separate.
 

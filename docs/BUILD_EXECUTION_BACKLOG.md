@@ -2,24 +2,24 @@
 
 ## Current parity queue
 
-- **T782 closed-bounded** — issue 356 closes Helper-authored live
-  `ModifyProjectile ground.velocity` explicit oldest-first `index` selection
-  among same-id Projectiles. Evidence commits `40738a8b` / `754f0909` and
-  required trace `b4b36888` / `bda09a12` prove caller-context static/dynamic
-  index resolution, one-match component-preserving writes, sibling/trap
-  isolation, accepted grounded-hit GetHitVar/HitVelSet, lifecycle, ownership
-  and target links. Focused tests, typecheck and diff hygiene pass; aggregate
-  QA produces `865/864` passing artifacts (`831` required, `34` optional) with
+- **T783 closed-bounded** — issue 357 closes Helper-authored live
+  `ModifyProjectile guard.velocity` explicit oldest-first `index` selection
+  among same-id Projectiles. Evidence commits `f6a8fb9f` / `d26a515d` and
+  required trace `e4a518cc` / `a1b24816` prove caller-context static/dynamic
+  index resolution, one-match zero-fill writes, sibling/trap isolation,
+  accepted grounded-guard GetHitVar/HitVelSet, lifecycle, ownership and target
+  links. Focused tests, typecheck and diff hygiene pass; aggregate QA
+  produces `866/865` passing artifacts (`832` required, `34` optional) with
   only the inherited helper-bind target-link blocker. Fresh/default derivation,
   edge indices, dynamic `n`, nested/shared topology, exact timing, rollback and
   full parity remain outside. See [issue
-  356](../.scratch/roadmap/issues/356-helper-modifyprojectile-ground-velocity-index.md).
-
-- **T783 next selection** — issue 357 queues the same explicit oldest-first
-  `index` selection seam for Helper-authored live `ModifyProjectile
-  guard.velocity`, with a selected grounded-guard Projectile and sibling/trap
-  isolation. See [issue
   357](../.scratch/roadmap/issues/357-helper-modifyprojectile-guard-velocity-index.md).
+
+- **T784 next selection** — issue 358 queues the same explicit oldest-first
+  `index` selection seam for Helper-authored live `ModifyProjectile
+  airguard.velocity`, with a selected airborne-guard Projectile and
+  sibling/trap isolation. See [issue
+  358](../.scratch/roadmap/issues/358-helper-modifyprojectile-airguard-velocity-index.md).
 
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;

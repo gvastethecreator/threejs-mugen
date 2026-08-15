@@ -1,24 +1,24 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T782 Helper `ModifyProjectile` `ground.velocity` index — closed-bounded, no score movement
+## 2026-08-15 T783 Helper `ModifyProjectile` `guard.velocity` index — closed-bounded, no score movement
 
-Issue 356 closes Helper-owned live `ModifyProjectile ground.velocity` explicit
-`index` selection. Evidence commits `40738a8b` / `754f0909` and required trace
-`b4b36888` / `bda09a12` prove caller-context static/dynamic index resolution,
-oldest-first one-match component-preserving writes, sibling/trap isolation,
-accepted grounded-hit `GetHitVar`/`HitVelSet`, lifecycle, ownership and target
-links. Focused tests, typecheck and diff hygiene pass. Aggregate QA produces
-`865/864` passing artifacts (`831` required, `34` optional) with only the
+Issue 357 closes Helper-owned live `ModifyProjectile guard.velocity` explicit
+`index` selection. Evidence commits `f6a8fb9f` / `d26a515d` and required trace
+`e4a518cc` / `a1b24816` prove caller-context static/dynamic index resolution,
+oldest-first one-match zero-fill writes, sibling/trap isolation, accepted
+grounded-guard `GetHitVar`/`HitVelSet`, lifecycle, ownership and target links.
+Focused tests, typecheck and diff hygiene pass. Aggregate QA produces
+`866/865` passing artifacts (`832` required, `34` optional) with only the
 inherited helper-bind target-link blocker; no score movement. Fresh/default
 derivation, edge indices, dynamic `n`, nested/shared topology, exact timing,
-rollback and full parity remain blocked. See [issue 356]
-(../.scratch/roadmap/issues/356-helper-modifyprojectile-ground-velocity-index.md).
+rollback and full parity remain blocked. See [issue 357]
+(../.scratch/roadmap/issues/357-helper-modifyprojectile-guard-velocity-index.md).
 
-## Next scorecard slice — 2026-08-15 T783 queued
+## Next scorecard slice — 2026-08-15 T784 queued
 
-Issue 357 queues the same bounded Helper-owned `ModifyProjectile guard.velocity`
-index-selection seam through an accepted grounded guard; it is not scored until
-focused and required-trace evidence closes.
+Issue 358 queues the same bounded Helper-owned `ModifyProjectile
+airguard.velocity` index-selection seam through an accepted airborne guard; it
+is not scored until focused and required-trace evidence closes.
 
 ## Historical checkpoint — 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index
 

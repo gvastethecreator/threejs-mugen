@@ -1,24 +1,24 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T782 closed-bounded (2026-08-15)
+## Latest bounded slice — T783 closed-bounded (2026-08-15)
 
-Issue 356 closes Helper-owned live `ModifyProjectile ground.velocity` explicit
-`index` selection. Commits `40738a8b` / `754f0909` and required trace
-`b4b36888` / `bda09a12` prove caller-context static/dynamic index resolution,
-oldest-first single-match replacement, component-preserving siblings, trap
-isolation, accepted grounded-hit GetHitVar/physical response, lifecycle,
+Issue 357 closes Helper-owned live `ModifyProjectile guard.velocity` explicit
+`index` selection. Commits `f6a8fb9f` / `d26a515d` and required trace
+`e4a518cc` / `a1b24816` prove caller-context static/dynamic index resolution,
+oldest-first single-match replacement, live zero-fill vectors, sibling/trap
+isolation, accepted grounded-guard GetHitVar/physical response, lifecycle,
 ownership and target links. Focused Projectile/Helper/trace tests, typecheck
-and diff hygiene pass; aggregate QA has `865/864` passing artifacts with the
+and diff hygiene pass; aggregate QA has `866/865` passing artifacts with the
 inherited helper-bind blocker as the only failure.
 
-## Next bounded slice — T783 queued (2026-08-15)
+## Next bounded slice — T784 queued (2026-08-15)
 
-Issue 357 will close explicit `index` selection for Helper-authored live
-`ModifyProjectile guard.velocity` among same-id Projectiles, preserving
-oldest-first and sibling/trap isolation through a grounded guard. Keep id-zero/
-omitted selection, fresh/default derivation, dynamic `n`, nested/shared-resource
-topology, aggregate QA repair, exact timing, rollback and full parity separate.
-See [issue 357](../.scratch/roadmap/issues/357-helper-modifyprojectile-guard-velocity-index.md).
+Issue 358 will close explicit `index` selection for Helper-authored live
+`ModifyProjectile airguard.velocity` among same-id Projectiles, preserving
+oldest-first and sibling/trap isolation through an airborne guard. Keep
+id-zero/omitted selection, fresh/default derivation, dynamic `n`, nested/shared
+resource topology, aggregate QA repair, exact timing, rollback and full parity
+separate. See [issue 358](../.scratch/roadmap/issues/358-helper-modifyprojectile-airguard-velocity-index.md).
 
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 

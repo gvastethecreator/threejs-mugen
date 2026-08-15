@@ -1,20 +1,20 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T782 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T783 closed-bounded (2026-08-15)
 
-Issue 356 closes Helper-owned live `ModifyProjectile ground.velocity` explicit
-`index` selection. Evidence commits `40738a8b` / `754f0909` and required trace
-checksums `b4b36888` / `bda09a12` prove caller-context `var()` index
-resolution, oldest-first selection, component-preserving vector replacement,
-same-id/trap isolation, grounded GetHitVar/HitVelSet response, lifecycle,
+Issue 357 closes Helper-owned live `ModifyProjectile guard.velocity` explicit
+`index` selection. Evidence commits `f6a8fb9f` / `d26a515d` and required trace
+checksums `e4a518cc` / `a1b24816` prove caller-context `var()` index
+resolution, oldest-first selection, live zero-fill vector replacement,
+same-id/trap isolation, grounded guard GetHitVar/HitVelSet response, lifecycle,
 ownership and target links. Focused tests, typecheck and diff hygiene pass;
-aggregate QA is `865/864` passing with `831` required and only the inherited
+aggregate QA is `866/865` passing with `832` required and only the inherited
 helper-bind target-link blocker.
 
-## Next implementation checkpoint — T783 queued (2026-08-15)
+## Next implementation checkpoint — T784 queued (2026-08-15)
 
-Issue 357 targets Helper-owned `ModifyProjectile guard.velocity` explicit index
-selection among same-id Projectiles and an accepted grounded guard. Keep
+Issue 358 targets Helper-owned `ModifyProjectile airguard.velocity` explicit
+index selection among same-id Projectiles and an accepted airborne guard. Keep
 id-zero/omitted selection, fresh/default derivation, dynamic `n`, nested/shared
 topology, aggregate QA repair, exact timing, rollback and full parity separate.
 

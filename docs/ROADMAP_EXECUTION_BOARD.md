@@ -1,27 +1,28 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T782 closed-bounded (2026-08-15)
+## Latest bounded slice — T783 closed-bounded (2026-08-15)
 
-Issue 356 closes Helper caller-context `ModifyProjectile ground.velocity`
-explicit `index` selection. Evidence commits `40738a8b` and `754f0909`, plus
-required trace checksum `b4b36888` / final checksum `bda09a12`, prove
-oldest-first selection of one same-id Projectile, grounded-hit GetHitVar and
-physical `HitVelSet` response, sibling/trap isolation, lifecycle,
-owner/root/parent and target links. Focused tests, typecheck and diff hygiene
-pass. Aggregate QA produces `865/864` passing artifacts (`831` required,
-`34` optional); only the inherited helper-bind target-link blocker remains.
-Ground vector writes are component-preserving: omitted Y/Z siblings remain
-live. Fresh/default derivation, dynamic `n`, edge indices, nested/shared
-topology, exact timing, rollback and full parity remain separate.
+Issue 357 closes Helper caller-context `ModifyProjectile guard.velocity`
+explicit `index` selection. Evidence commits `f6a8fb9f` and `d26a515d`, plus
+required trace checksum `e4a518cc` / final checksum `a1b24816`, prove
+oldest-first selection of one same-id Projectile, grounded-guard
+`GetHitVar(xvel/yvel/zvel)=7/-5/2` and physical response, sibling/trap
+isolation, lifecycle, owner/root/parent and target links. Focused tests,
+typecheck and diff hygiene pass. Aggregate QA produces `866/865` passing
+artifacts (`832` required, `34` optional); only the inherited helper-bind
+target-link blocker remains. Partial guard vectors follow live
+ModifyProjectile zero-fill `[x,0,0]` / `[x,y,0]` / `[x,y,z]`. Fresh/default
+derivation, dynamic `n`, edge indices, nested/shared topology, exact timing,
+rollback and full parity remain separate.
 
-## Next bounded slice — T783 queued (2026-08-15)
+## Next bounded slice — T784 queued (2026-08-15)
 
-Issue 357 queues the same oldest-first `index` selection seam for Helper-owned
-live `ModifyProjectile guard.velocity`, with a selected grounded guard and
+Issue 358 queues the same oldest-first `index` selection seam for Helper-owned
+live `ModifyProjectile airguard.velocity`, with a selected airborne guard and
 same-id/trap isolation. Keep id-zero/omitted selection, fresh/default
 derivation, dynamic `n`, nested/shared topology, exact timing, rollback and
 full parity separate. See [issue
-357](../.scratch/roadmap/issues/357-helper-modifyprojectile-guard-velocity-index.md).
+358](../.scratch/roadmap/issues/358-helper-modifyprojectile-airguard-velocity-index.md).
 
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
