@@ -68,6 +68,7 @@ import {
   createSyntheticImportedProjectileGroundFrictionTraceArtifact,
   createSyntheticImportedProjectileSparkScaleTraceArtifact,
   createSyntheticImportedProjectileEnvShakeLongFiniteTraceArtifact,
+  createSyntheticImportedProjectileDynamicEnvShakeTraceArtifact,
   createSyntheticImportedHelperProjectileEnvShakeLongFiniteTraceArtifact,
   createSyntheticImportedHitDefAttackerFacingTraceArtifact,
   createSyntheticImportedHitDefGetPowerTraceArtifact,
@@ -27345,6 +27346,33 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.envShakeEvents).toEqual(expect.arrayContaining([
       expect.objectContaining({ actorId: "p1", time: 241, stateNo: 200 }),
     ]));
+  });
+
+  it("creates a required dynamic root Projectile EnvShake artifact with caller values and expiry", () => {
+    const artifact = createSyntheticImportedProjectileDynamicEnvShakeTraceArtifact({
+      generatedAt: "2026-08-15T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-envshake-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-projectile-dynamic-envshake-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence.executedControllers.VarSet).toBeGreaterThanOrEqual(6);
+    expect(artifact.gates[0]?.evidence.envShakeEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        actorId: "p1",
+        time: 17,
+        freq: 45.5,
+        ampl: -9,
+        phase: 0.25,
+        mul: 1.5,
+        dir: 30,
+        stateNo: 200,
+      }),
+    ]));
+    expect(artifact.trace.frames.some((frame) => frame.stage?.camera.shake?.remaining === 1)).toBe(true);
+    expect(artifact.trace.frames.at(-1)?.stage?.camera.shake).toBeUndefined();
   });
 
   it("creates a required long finite Helper Projectile EnvShake artifact with root-parent attribution", () => {

@@ -2,6 +2,7 @@ import { normalizeMugenCollisionBoxType, type CollisionBox, type MugenCollisionB
 import type {
   HitDefFallOp,
   ModifyProjectileControllerOp,
+  MugenHitDefEnvShakeOp,
   MugenPartialHitDefVector,
   MugenProjectileProjection,
   MugenProjectileWindow,
@@ -336,6 +337,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveUnhittableTime?: () => [number, number?] | undefined;
   resolveGroundFriction?: () => { stand?: number; crouch?: number } | undefined;
   resolveSparkScale?: () => { hit?: [number?, number?]; guard?: [number?, number?] } | undefined;
+  /** Resolves fresh Projectile EnvShake expressions in the original caller context. */
+  resolveEnvShake?: () => Partial<RuntimeProjectileEnvShake> | undefined;
   /** Resolves Projectile ground.velocity authored expressions in the original caller context. */
   resolveGroundVelocity?: () => [number?, number?, number?] | undefined;
   /** Resolves Projectile guard.velocity authored expressions in the original caller context. */
@@ -816,14 +819,18 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const hitXAccel = operation?.xAccel ?? firstNumber(findControllerParam(input.controller, "xaccel"));
   const hitYAccel = operation?.yAccel ?? firstNumber(findControllerParam(input.controller, "yaccel"));
   const hitZAccel = operation?.zAccel ?? firstNumber(findControllerParam(input.controller, "zaccel"));
-  const envShake = runtimeProjectileEnvShake({
-    time: operation?.envShakeTime ?? firstNumber(findControllerParam(input.controller, "envshake.time")),
-    freq: operation?.envShakeFrequency ?? firstNumber(findControllerParam(input.controller, "envshake.freq")),
-    ampl: operation?.envShakeAmplitude ?? firstNumber(findControllerParam(input.controller, "envshake.ampl")),
-    phase: operation?.envShakePhase ?? firstNumber(findControllerParam(input.controller, "envshake.phase")),
-    mul: operation?.envShakeMultiplier ?? firstNumber(findControllerParam(input.controller, "envshake.mul")),
-    dir: operation?.envShakeDirection ?? firstNumber(findControllerParam(input.controller, "envshake.dir")),
-  });
+  const envShake = resolveRuntimeProjectileEnvShake(
+    operation?.envShake,
+    input.resolveEnvShake?.(),
+    {
+      time: operation?.envShakeTime ?? firstNumber(findControllerParam(input.controller, "envshake.time")),
+      freq: operation?.envShakeFrequency ?? firstNumber(findControllerParam(input.controller, "envshake.freq")),
+      ampl: operation?.envShakeAmplitude ?? firstNumber(findControllerParam(input.controller, "envshake.ampl")),
+      phase: operation?.envShakePhase ?? firstNumber(findControllerParam(input.controller, "envshake.phase")),
+      mul: operation?.envShakeMultiplier ?? firstNumber(findControllerParam(input.controller, "envshake.mul")),
+      dir: operation?.envShakeDirection ?? firstNumber(findControllerParam(input.controller, "envshake.dir")),
+    },
+  );
   const koVelocityAdd = operation?.koVelocityAdd ?? velocityPair(findControllerParam(input.controller, "ko.velocity.add"));
   const guardDamage = Math.max(
     0,
@@ -1972,6 +1979,47 @@ function runtimeProjectileEnvShake(
     mul: finite(input.mul, 1),
     dir: finite(input.dir, 0),
   };
+}
+
+function resolveRuntimeProjectileEnvShake(
+  authored: MugenHitDefEnvShakeOp | undefined,
+  resolved: Partial<RuntimeProjectileEnvShake> | undefined,
+  fallback: Partial<RuntimeProjectileEnvShake>,
+): RuntimeProjectileEnvShake | undefined {
+  if (authored === undefined) {
+    return runtimeProjectileEnvShake(fallback);
+  }
+  const hasExpression = Object.values(authored).some((value) => typeof value === "string");
+  const source = hasExpression ? resolved : authored;
+  if (source === undefined) {
+    return undefined;
+  }
+  const sourceNumbers = {
+    time: typeof source.time === "number" ? source.time : undefined,
+    freq: typeof source.freq === "number" ? source.freq : undefined,
+    ampl: typeof source.ampl === "number" ? source.ampl : undefined,
+    phase: typeof source.phase === "number" ? source.phase : undefined,
+    mul: typeof source.mul === "number" ? source.mul : undefined,
+    dir: typeof source.dir === "number" ? source.dir : undefined,
+  };
+  const hasFiniteResolvedAuthoredComponent = (
+    authoredComponent: number | string | undefined,
+    resolvedComponent: number | undefined,
+  ): boolean => authoredComponent === undefined ||
+    (typeof resolvedComponent === "number" && Number.isFinite(resolvedComponent));
+  if (
+    hasExpression && (
+      !hasFiniteResolvedAuthoredComponent(authored.time, sourceNumbers.time) ||
+      !hasFiniteResolvedAuthoredComponent(authored.freq, sourceNumbers.freq) ||
+      !hasFiniteResolvedAuthoredComponent(authored.ampl, sourceNumbers.ampl) ||
+      !hasFiniteResolvedAuthoredComponent(authored.phase, sourceNumbers.phase) ||
+      !hasFiniteResolvedAuthoredComponent(authored.mul, sourceNumbers.mul) ||
+      !hasFiniteResolvedAuthoredComponent(authored.dir, sourceNumbers.dir)
+    )
+  ) {
+    return undefined;
+  }
+  return runtimeProjectileEnvShake(sourceNumbers);
 }
 
 function resolveModifyProjectileNumberParam(

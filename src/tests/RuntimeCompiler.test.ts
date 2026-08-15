@@ -5738,6 +5738,33 @@ value = 1
     });
   });
 
+  it("compiles dynamic Projectile EnvShake packages and rejects malformed values", () => {
+    const projectile = compileControllerIr(controller(1000, "Projectile", [], {
+      "envshake.time": "var(0) + .8",
+      "envshake.freq": "var(1) * .5",
+      "envshake.ampl": "var(2) - .4",
+      "envshake.phase": "var(3) / 2",
+      "envshake.mul": "1.25",
+      "envshake.dir": "var(4) - 15",
+    }));
+
+    expect(projectile.operation).toMatchObject({
+      kind: "projectile",
+      envShake: {
+        time: "var(0) + .8",
+        freq: "var(1) * .5",
+        ampl: "var(2) - .4",
+        phase: "var(3) / 2",
+        mul: 1.25,
+        dir: "var(4) - 15",
+      },
+    });
+    expect(projectile.operation).not.toHaveProperty("envShakeTime");
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "envshake.time": "var(",
+    })).operation).toBeUndefined();
+  });
+
   it("rejects invalid static Projectile TeamSide values at compile time", () => {
     const projectile = compileControllerIr(
       controller(1000, "Projectile", [], { teamside: "3" }),

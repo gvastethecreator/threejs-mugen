@@ -48589,6 +48589,87 @@ export function createSyntheticImportedProjectileEnvShakeLongFiniteTraceArtifact
   });
 }
 
+export function createSyntheticImportedProjectileDynamicEnvShakeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "imported-projectile-dynamic-envshake-start", frames: 12, p1: ["x"], p2: [] },
+    { label: "projectile-dynamic-envshake-expiry", frames: 20, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({
+    p1: createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-projectile-dynamic-envshake",
+      displayName: "Synthetic Imported Projectile Dynamic EnvShake",
+      action200Duration: 80,
+      withHitDef: false,
+      withProjectile: true,
+      projectileTargetId: 77,
+      projectileDamage: [10, 0],
+      projectileVarSeeds: [
+        { index: 0, value: 17 },
+        { index: 1, value: 45.5 },
+        { index: 2, value: -9 },
+        { index: 3, value: 0.25 },
+        { index: 4, value: 1.5 },
+        { index: 5, value: 30 },
+      ],
+      projectileEnvShake: {
+        time: "var(0)",
+        freq: "var(1)",
+        ampl: "var(2)",
+        phase: "var(3)",
+        mul: "var(4)",
+        dir: "var(5)",
+      },
+    }),
+    p2: demoFighters[1]!,
+    stage,
+    runtimeProfile: "ikemen-go",
+  }), script, {
+    label: "synthetic-imported-projectile-dynamic-envshake-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-dynamic-envshake-golden",
+      label: "Synthetic imported dynamic root Projectile EnvShake route",
+      source: "mixed",
+      notes: [
+        "Required trace proves one root Projectile resolves finite envshake.time, freq, ampl, phase, mul, and dir in its original caller context before an accepted unguarded hit emits one root camera shake and the finite shake expires. Guard/reject, Helper Projectile, ModifyProjectile, FallEnvShake, active EnvShake, waveform, camera/render timing, teams, rollback, and full MUGEN/Ikemen parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-projectile-dynamic-envshake-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Projectile"],
+      requiredExecutedOperations: ["variable:varset", "projectile"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredEnvShakeEvents: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        time: 17,
+        freq: 45.5,
+        ampl: -9,
+        phase: 0.25,
+        mul: 1.5,
+        dir: 30,
+        stateNo: 200,
+      }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileEnvShakeLongFiniteTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

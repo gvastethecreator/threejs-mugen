@@ -2,6 +2,7 @@ import type {
   AudioControllerOp,
   ControllerOp,
   EnvColorControllerOp,
+  MugenHitDefEnvShakeOp,
   MugenHitDefExpressionPair,
   PauseControllerOp,
   TeamStandbyControllerOp,
@@ -268,6 +269,7 @@ import type {
   RuntimeModifyProjectilePairParam,
   RuntimeModifyProjectilePartialTripleParam,
   RuntimeModifyProjectileTripleParam,
+  RuntimeProjectileEnvShake,
   RuntimeProjectileModifyResolver,
 } from "./ProjectileSystem";
 import {
@@ -6637,6 +6639,22 @@ function runActiveStateControllers(
                   };
                 }
               : undefined,
+          resolveProjectileEnvShake:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  return resolveProjectileEnvShakeComponents(
+                    operation?.envShake,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                  );
+                }
+              : undefined,
           resolveProjectilePaletteFx:
             effect === "projectile"
               ? {
@@ -8983,6 +9001,47 @@ function resolveProjectileSparkScaleComponents(
     return resolveDispatchFloat(undefined, component, fighter, opponent, owner, stageBounds, stageTime);
   };
   return [resolveComponent(value[0]), resolveComponent(value[1])];
+}
+
+function resolveProjectileEnvShakeComponents(
+  value: MugenHitDefEnvShakeOp | undefined,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): Partial<RuntimeProjectileEnvShake> | undefined {
+  if (value === undefined) return undefined;
+  const resolveComponent = (component: number | string | undefined): number | undefined => {
+    if (typeof component === "number") return Number.isFinite(component) ? component : undefined;
+    if (component === undefined) return undefined;
+    const resolved = resolveDispatchFloat(undefined, component, fighter, opponent, owner, stageBounds, stageTime);
+    return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
+  };
+  const time = resolveComponent(value.time);
+  const freq = resolveComponent(value.freq);
+  const ampl = resolveComponent(value.ampl);
+  const phase = resolveComponent(value.phase);
+  const mul = resolveComponent(value.mul);
+  const dir = resolveComponent(value.dir);
+  if (
+    (value.time !== undefined && time === undefined) ||
+    (value.freq !== undefined && freq === undefined) ||
+    (value.ampl !== undefined && ampl === undefined) ||
+    (value.phase !== undefined && phase === undefined) ||
+    (value.mul !== undefined && mul === undefined) ||
+    (value.dir !== undefined && dir === undefined)
+  ) {
+    return undefined;
+  }
+  return {
+    ...(time === undefined ? {} : { time: Math.trunc(time) }),
+    ...(freq === undefined ? {} : { freq }),
+    ...(ampl === undefined ? {} : { ampl: Math.trunc(ampl) }),
+    ...(phase === undefined ? {} : { phase }),
+    ...(mul === undefined ? {} : { mul }),
+    ...(dir === undefined ? {} : { dir }),
+  };
 }
 
 function resolveProjectileIntegerPairComponents(

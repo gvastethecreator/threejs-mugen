@@ -942,6 +942,53 @@ describe("ProjectileSystem", () => {
     expect(spawn("p1-projectile-unresolved")).not.toHaveProperty("unhittableTime");
   });
 
+  it("resolves Projectile EnvShake once and drops a package with a nonfinite authored component", () => {
+    const controllerValue = controller({
+      projanim: "1005",
+      "envshake.time": "var(0) + .8",
+      "envshake.freq": "var(1) * .5",
+      "envshake.ampl": "var(2) - .4",
+      "envshake.phase": "var(3) / 2",
+      "envshake.mul": "1.25",
+      "envshake.dir": "var(4) - 15",
+    });
+    const operation = compileControllerIr(controllerValue).operation as ProjectileControllerOp;
+    const spawn = (
+      serialId: string,
+      resolveEnvShake?: Parameters<typeof createRuntimeProjectile>[0]["resolveEnvShake"],
+    ) => createRuntimeProjectile({
+      serialId,
+      controller: controllerValue,
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveEnvShake,
+    });
+
+    expect(spawn("p1-projectile-envshake-dynamic", () => ({
+      time: 17.8,
+      freq: 45.5,
+      ampl: -9.4,
+      phase: 0.25,
+      mul: 1.25,
+      dir: 30,
+    })).envShake).toEqual({ time: 17, freq: 45.5, ampl: -9, phase: 0.25, mul: 1.25, dir: 30 });
+    expect(spawn("p1-projectile-envshake-nonfinite", () => ({
+      time: 17,
+      freq: Number.NaN,
+      ampl: -9,
+      phase: 0.25,
+      mul: 1.25,
+      dir: 30,
+    })).envShake).toBeUndefined();
+    expect(spawn("p1-projectile-envshake-unresolved").envShake).toBeUndefined();
+  });
+
   it("resolves Projectile grounded friction at spawn and fails closed for unresolved expressions", () => {
     const spawn = (
       serialId: string,

@@ -799,6 +799,8 @@ export type ProjectileControllerOp = {
   envShakePhase?: number;
   envShakeMultiplier?: number;
   envShakeDirection?: number;
+  /** Dynamic or mixed Projectile HitDef EnvShake package evaluated in caller context. */
+  envShake?: MugenHitDefEnvShakeOp;
   /** Bounded synthetic/Ikemen KO velocity-delta metadata, separate from Projectile velocity. */
   koVelocityAdd?: MugenProjectileVector;
   groundCornerPush?: number;
@@ -4036,6 +4038,11 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
   const guardSparkScale = optionalFloatExpressionPairParam(controller, "guard.sparkscale");
   const paletteFx = optionalHitDefPaletteFxParam(controller);
+  const envShake = optionalHitDefEnvShakeParam(controller);
+  if (envShake === false) return undefined;
+  const envShakeExpressions = envShake === true || !Object.values(envShake).some((value) => typeof value === "string")
+    ? undefined
+    : envShake;
   const keepStateValue = optionalIntegerExpressionParam(controller, "keepstate");
   if (
     standFriction === false ||
@@ -4237,6 +4244,7 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     ...(hitSparkScale === true ? {} : { hitSparkScale }),
     ...(guardSparkScale === true ? {} : { guardSparkScale }),
     ...(paletteFx === true ? {} : { paletteFx }),
+    ...(envShakeExpressions === undefined ? {} : { envShake: envShakeExpressions }),
     airJuggle: firstNumber(findParam(controller, "air.juggle")),
     kill: booleanNumber(findParam(controller, "kill")),
     guardKill: booleanNumber(findParam(controller, "guard.kill")),
