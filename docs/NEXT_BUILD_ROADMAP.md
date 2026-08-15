@@ -1,17 +1,17 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T760 closed-bounded (2026-08-14)
+## Latest bounded slice — T761 closed-bounded (2026-08-14)
 
-Issue 334 closes the Helper-parented Projectile `AttackMulSet.RedLife`
-guard-contact snapshot. Evidence `0844ffd1` and required trace
-`2b16f9c8` -> `e850cd44` prove the accepted guard keeps authored
-`GetHitVar(redlife)=20` separate and ends the defender at
-`life=20/redLife=20`. Focused trace coverage is 1/1 and typecheck/diff
-hygiene pass. Aggregate QA materializes the artifact but retains the
-inherited helper-bind target-link blocker. Helper-local nested controllers,
+Issue 335 closes the root-owned `ModifyProjectile` `AttackMulSet.RedLife`
+guard seam. Evidence `8fd655c8` and required trace
+`abc0756c` -> `0d1eef66` prove the accepted guard keeps authored
+`GetHitVar(redlife)=40` separate and ends the defender at
+`life=20/redLife=20` after the creation multiplier `0.5`. Focused trace and
+combat coverage are 1/1 and typecheck/diff hygiene pass. Aggregate QA retains
+the inherited helper-bind target-link blocker. Helper-authored
 ModifyProjectile, resource ownership, exact arithmetic/timing, teams,
 rollback and full parity remain blocked. See [issue
-334](../.scratch/roadmap/issues/334-helper-projectile-attackmulset-redlife-guard.md).
+335](../.scratch/roadmap/issues/335-modifyprojectile-attackmulset-redlife-guard.md).
 
 ## Historical bounded slice — T759 closed-bounded (2026-08-14)
 
@@ -42,13 +42,13 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` work. Issue 329 is retained as superseded audit history; the
 root/RedirectID and Helper X/Y/Z evidence remains authoritative in issue 302.
 
-## Next bounded slice — T761 ModifyProjectile redlife guard contact
+## Next bounded slice — T762 ModifyProjectile redlife hit contact
 
-Add the root-owned `ModifyProjectile` redlife guard snapshot trace; do not
-combine it with Helper-authored ModifyProjectile, nested-helper breadth,
-aggregate QA repair or resource-owner topology.
-See [issue
-335](../.scratch/roadmap/issues/335-modifyprojectile-attackmulset-redlife-guard.md).
+Add the root-owned `ModifyProjectile` redlife snapshot trace for an accepted
+unguarded hit; do not combine it with Helper-authored ModifyProjectile,
+nested-helper breadth, aggregate QA repair or resource-owner topology. See
+[issue
+336](../.scratch/roadmap/issues/336-modifyprojectile-attackmulset-redlife-hit.md).
 
 ## Historical bounded slice — T753 closed-bounded (2026-08-12)
 

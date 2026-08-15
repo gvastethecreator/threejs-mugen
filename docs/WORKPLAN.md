@@ -1,16 +1,15 @@
 # Workplan
 
-## Latest slice — T760 closed-bounded (2026-08-14)
+## Latest slice — T761 closed-bounded (2026-08-14)
 
-Issue 334 closes the Helper-parented Projectile `AttackMulSet.RedLife`
-guard-contact snapshot. Evidence commit `0844ffd1`; required trace
-`2b16f9c8` -> `e850cd44` passes. The accepted guard keeps authored
-`GetHitVar(redlife)=20` separate and ends at `life=20/redLife=20` after the
-creation-time multiplier. Focused trace coverage is 1/1; typecheck and diff
-hygiene pass. Aggregate QA materializes the new artifact and retains the
-inherited helper-bind target-link blocker. Helper-local nested controllers,
-ModifyProjectile, resource ownership, exact arithmetic/timing, rollback and
-full parity remain out.
+Issue 335 closes the root-owned `ModifyProjectile` red-life guard seam.
+Evidence commit `8fd655c8`; required trace `abc0756c` -> `0d1eef66` passes.
+The accepted guard keeps authored `GetHitVar(redlife)=40` separate and ends at
+`life=20/redLife=20` after the creation-time multiplier `0.5`, despite a later
+live value of `2`. Focused combat/trace gates are 1/1; typecheck and diff
+hygiene pass. Aggregate QA still retains the inherited helper-bind target-link
+blocker. Helper-authored ModifyProjectile, shared-resource ownership, exact
+arithmetic/timing, rollback and full parity remain out.
 
 ## Historical slice — T759 closed-bounded (2026-08-14)
 
@@ -36,11 +35,11 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` slice. Issue 329 remains a superseded audit trail, not an open
 implementation task.
 
-## Next slice — T761 ModifyProjectile redlife guard contact
+## Next slice — T762 ModifyProjectile redlife hit contact
 
-Close the root-owned `ModifyProjectile` redlife guard snapshot trace; keep
-Helper-authored ModifyProjectile, nested helpers, aggregate QA repair and
-broader resource topology separate. See issue 335.
+Close the root-owned `ModifyProjectile` redlife snapshot for an accepted
+unguarded hit; keep Helper-authored ModifyProjectile, nested helpers,
+aggregate QA repair and broader resource topology separate. See issue 336.
 
 ## Historical slice — T753 closed-bounded (2026-08-12)
 

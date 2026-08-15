@@ -2,6 +2,17 @@
 
 ## Current parity queue
 
+- **T761 closed-bounded** — issue 335 closes the root-owned
+  `ModifyProjectile` `AttackMulSet.RedLife` guard seam. Evidence commit is
+  `8fd655c8`; required trace `abc0756c` / `0d1eef66`. The accepted guard keeps
+  authored `GetHitVar(redlife)=40` separate and ends the defender at
+  `life=20/redLife=20` after the creation multiplier `0.5`, despite a live
+  value of `2`. Focused combat/trace gates are 1/1 and typecheck/diff hygiene
+  pass. Aggregate QA still stops on the inherited helper-bind target-link
+  case. Helper-authored ModifyProjectile, shared-resource ownership, exact
+  arithmetic/timing, teams, rollback and full parity remain outside. See
+  [issue 335](../.scratch/roadmap/issues/335-modifyprojectile-attackmulset-redlife-guard.md).
+
 - **T760 closed-bounded** — issue 334 closes the Helper-parented Projectile
   `AttackMulSet.RedLife` guard-contact snapshot. Evidence commit is
   `0844ffd1`; required trace `2b16f9c8` / `e850cd44`. The accepted guard
@@ -39,10 +50,11 @@
   multiplier on root and Helper-parented Projectiles; retain its historical
   root/Helper trace checksums and the inherited aggregate QA blocker.
 
-- **T761 next selection** — close the root-owned `ModifyProjectile` redlife
-  guard contact; keep Helper-authored ModifyProjectile, nested-helper breadth,
-  aggregate QA repair and resource topology separate. See [issue
-  335](../.scratch/roadmap/issues/335-modifyprojectile-attackmulset-redlife-guard.md).
+- **T762 next selection** — close the root-owned `ModifyProjectile` redlife
+  snapshot on an accepted unguarded hit; keep Helper-authored
+  ModifyProjectile, nested-helper breadth, aggregate QA repair and resource
+  topology separate. See [issue
+  336](../.scratch/roadmap/issues/336-modifyprojectile-attackmulset-redlife-hit.md).
 
 - **T752 closed-bounded** — issue 326 carries fresh Projectile
   `guardpoints` static and caller-context dynamic values through root and

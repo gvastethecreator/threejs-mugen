@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T761 — queued (2026-08-14)**
+- **T761 — closed-bounded (2026-08-14)**
 - **Área:** runtime / Projectile / ModifyProjectile / guard / AttackMulSet / red-life
 - **Dependencia:** T759 / issue 333; T760 / issue 334
 
@@ -35,3 +35,20 @@ keeping authored `GetHitVar(redlife)` separate.
   resource.
 - Focused test, typecheck, `git diff --check`, and aggregate QA recorded with
   inherited blockers preserved.
+
+## Cierre
+
+- Evidence/test commit: `8fd655c8` (`test(evidence): close ModifyProjectile redlife guard seam`).
+- Required trace artifact: `abc0756c` -> `0d1eef66`, status `passed`.
+- Focused Projectile combat and trace gates: `1/1` each; `pnpm run typecheck`
+  and `git diff --check` pass.
+- `pnpm run qa:trace` still stops only on the inherited
+  `synthetic-imported-helper-bind-to-target-redirect` missing target-link
+  blocker; the T761 artifact itself passes.
+- The accepted guard keeps `GetHitVar(redlife)=40` separate and ends the
+  defender at `life=20/redLife=20` after the creation multiplier `0.5`, even
+  though the live attacker multiplier becomes `2`.
+
+T762 is queued separately for the accepted unguarded-hit counterpart; it must
+not widen this issue into Helper-authored `ModifyProjectile`, shared-resource
+ownership, or full timing/resource parity.

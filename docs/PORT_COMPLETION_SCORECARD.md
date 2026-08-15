@@ -1,18 +1,18 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-14 T760 Helper Projectile `AttackMulSet.RedLife` guard contact — closed-bounded, no score movement
+## 2026-08-14 T761 `ModifyProjectile` `AttackMulSet.RedLife` guard contact — closed-bounded, no score movement
 
-Issue 334 closes the Helper-parented guard-contact snapshot for the effective
-`AttackMulSet.RedLife` multiplier. Evidence commit `0844ffd1`; required trace
-`2b16f9c8` -> `e850cd44` passes. The accepted guard keeps authored
-`GetHitVar(redlife)=20` separate and ends the defender at
+Issue 335 closes the root-owned guard-contact snapshot after
+`ModifyProjectile` replaces the live redlife pair. Evidence commit
+`8fd655c8`; required trace `abc0756c` -> `0d1eef66` passes. The accepted guard
+keeps authored `GetHitVar(redlife)=40` separate and ends the defender at
 `life=20/redLife=20` after the creation-time `0.5` multiplier, despite the
-later live value `2`. Focused trace coverage is 1/1 and typecheck/diff
+later live value `2`. Focused combat/trace coverage is 1/1 and typecheck/diff
 hygiene pass. Aggregate QA retains the inherited helper-bind target-link
-blocker. No score movement: helper-local nested controllers,
-ModifyProjectile, resource-owner topology, exact clamp/rounding/timing,
-rollback and full parity remain blocked. See [issue
-334](../.scratch/roadmap/issues/334-helper-projectile-attackmulset-redlife-guard.md).
+blocker. No score movement: Helper-authored ModifyProjectile, resource-owner
+topology, exact clamp/rounding/timing, rollback and full parity remain
+blocked. See [issue
+335](../.scratch/roadmap/issues/335-modifyprojectile-attackmulset-redlife-guard.md).
 
 ## Historical checkpoint — 2026-08-14 T759 Projectile `AttackMulSet.RedLife` guard contact — closed-bounded, no score movement
 
@@ -56,12 +56,12 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` work. Issue 329 remains superseded audit history and is not a
 new score candidate.
 
-## Next selection — T761 ModifyProjectile redlife guard contact
+## Next selection — T762 ModifyProjectile redlife hit contact
 
-Close the root-owned `ModifyProjectile` redlife guard seam; keep
-Helper-authored ModifyProjectile, nested helpers, aggregate QA repair and
-resource topology separate. See [issue
-335](../.scratch/roadmap/issues/335-modifyprojectile-attackmulset-redlife-guard.md).
+Close the root-owned `ModifyProjectile` redlife snapshot on an accepted
+unguarded hit; keep Helper-authored ModifyProjectile, nested helpers,
+aggregate QA repair and resource topology separate. See [issue
+336](../.scratch/roadmap/issues/336-modifyprojectile-attackmulset-redlife-hit.md).
 
 ## Historical checkpoint — 2026-08-12 T753 `AttackMulSet guardpoints` — closed-bounded, no score movement
 
