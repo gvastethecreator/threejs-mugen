@@ -237,12 +237,12 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
 }
 
 describe("HelperSystem", () => {
-  it("resolves Helper EnvColor in Parent caller context and rejects non-positive time", () => {
+  it("resolves Helper EnvColor time = -1 in Parent caller context and rejects zero", () => {
     const parent = helperRuntimeState(helper());
     parent.vars[0] = 32;
     parent.vars[1] = 128;
     parent.vars[2] = 240;
-    parent.vars[3] = 14;
+    parent.vars[3] = -1;
     parent.vars[4] = 1;
     const active = helper({
       runtimeProgram: {
@@ -267,7 +267,7 @@ describe("HelperSystem", () => {
       },
     });
 
-    expect(operations).toEqual([{ color: [32, 128, 240], time: 14, under: true }]);
+    expect(operations).toEqual([{ color: [32, 128, 240], time: -1, under: true }]);
   });
 
   it("routes opt-in shared resource writes without mutating the helper locally", () => {

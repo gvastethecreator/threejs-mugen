@@ -4897,7 +4897,7 @@ function compileEnvColorControllerOp(controller: MugenStateController): EnvColor
     return undefined;
   }
   const clampedTime = clampEnvColorTime(time);
-  if (clampedTime <= 0) {
+  if (clampedTime === 0) {
     return undefined;
   }
   return {
@@ -6091,7 +6091,8 @@ function normalizeRandomRange(first: number, second: number): [number, number] {
 }
 
 function clampEnvColorTime(value: number): number {
-  return Math.max(0, Math.min(240, Math.round(value)));
+  const rounded = Math.round(value);
+  return rounded < 0 ? -1 : Math.max(0, Math.min(240, rounded));
 }
 
 function clampShakeTime(value: number): number {

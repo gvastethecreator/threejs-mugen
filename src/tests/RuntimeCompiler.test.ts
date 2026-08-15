@@ -4389,6 +4389,7 @@ value = 1
 
   it("compiles EnvColor controllers into typed stage flash operations", () => {
     const envColor = compileControllerIr(controller(200, "EnvColor", [], { value: "16,96,300", time: "999", under: "1" }));
+    const indefinite = compileControllerIr(controller(200, "EnvColor", [], { value: "32,128,240", time: "-1", under: "0" }));
     const dynamic = compileControllerIr(
       controller(200, "EnvColor", [], { value: "var(0),var(1),var(2)", time: "var(3)", under: "var(4)" }),
     );
@@ -4398,6 +4399,12 @@ value = 1
       color: [16, 96, 255],
       time: 240,
       under: true,
+    });
+    expect(indefinite.operation).toEqual({
+      kind: "envcolor",
+      color: [32, 128, 240],
+      time: -1,
+      under: false,
     });
     expect(dynamic.operation).toBeUndefined();
   });

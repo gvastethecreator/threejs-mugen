@@ -38,8 +38,8 @@ export function createRuntimeEnvColorEvent(
 ): RuntimeEnvColorEvent | undefined {
   const time =
     operation?.time ??
-    clampFlashTime(resolveEnvColor?.resolveNumber("time") ?? firstNumber(findControllerParam(controller, "time")) ?? 1);
-  if (time <= 0) {
+    normalizeEnvColorTime(resolveEnvColor?.resolveNumber("time") ?? firstNumber(findControllerParam(controller, "time")) ?? 1);
+  if (time === 0) {
     return undefined;
   }
   return {
@@ -59,9 +59,9 @@ export function resolveRuntimeEnvColorControllerOperation(
   resolveEnvColor?: RuntimeEnvColorResolver,
 ): EnvColorControllerOp | undefined {
   const color = resolveEnvColorTripletParam(controller, "value", resolveEnvColor, [255, 255, 255]);
-  const time = resolveEnvColorNumberParam(controller, "time", resolveEnvColor, clampFlashTime, 1);
+  const time = resolveEnvColorNumberParam(controller, "time", resolveEnvColor, normalizeEnvColorTime, 1);
   const under = resolveEnvColorNumberParam(controller, "under", resolveEnvColor, (value) => value, 0);
-  if (color === undefined || time === undefined || under === undefined || time <= 0) {
+  if (color === undefined || time === undefined || under === undefined || time === 0) {
     return undefined;
   }
   return {
@@ -123,22 +123,29 @@ export class RuntimeEnvColorControllerDispatchWorld {
 }
 
 export function calculateRuntimeStageFlash(runtimeTick: number, events: readonly RuntimeEnvColorEvent[]): RuntimeStageFlash | undefined {
-  const active = events
-    .map((event) => ({ event, age: runtimeTick - event.runtimeTick }))
-    .filter(({ event, age }) => age >= 0 && age < event.time)
-    .sort((left, right) => right.event.runtimeTick - left.event.runtimeTick)[0];
-  if (!active) {
+  let current: RuntimeEnvColorEvent | undefined;
+  for (const event of events) {
+    if (event.runtimeTick > runtimeTick || (current && event.runtimeTick <= current.runtimeTick)) {
+      continue;
+    }
+    current = event;
+  }
+  if (!current) {
     return undefined;
   }
-  const remaining = Math.max(0, active.event.time - active.age);
+  const age = runtimeTick - current.runtimeTick;
+  if (current.time >= 0 && age >= current.time) {
+    return undefined;
+  }
+  const remaining = current.time < 0 ? -1 : Math.max(0, current.time - age);
   return {
-    color: [active.event.color[0], active.event.color[1], active.event.color[2]],
-    opacity: roundFlashOpacity(Math.min(0.65, 0.18 + (remaining / Math.max(1, active.event.time)) * 0.42)),
+    color: [current.color[0], current.color[1], current.color[2]],
+    opacity: current.time < 0 ? 0.6 : roundFlashOpacity(Math.min(0.65, 0.18 + (remaining / Math.max(1, current.time)) * 0.42)),
     remaining,
-    under: active.event.under,
-    ...(active.event.sourceActorId === undefined ? {} : { sourceActorId: active.event.sourceActorId }),
-    ...(active.event.sourceRootId === undefined ? {} : { sourceRootId: active.event.sourceRootId }),
-    ...(active.event.sourceParentId === undefined ? {} : { sourceParentId: active.event.sourceParentId }),
+    under: current.under,
+    ...(current.sourceActorId === undefined ? {} : { sourceActorId: current.sourceActorId }),
+    ...(current.sourceRootId === undefined ? {} : { sourceRootId: current.sourceRootId }),
+    ...(current.sourceParentId === undefined ? {} : { sourceParentId: current.sourceParentId }),
   };
 }
 
@@ -209,8 +216,9 @@ function clampColor(value: number): number {
   return Math.max(0, Math.min(255, Math.round(value)));
 }
 
-function clampFlashTime(value: number): number {
-  return Math.max(0, Math.min(240, Math.round(value)));
+function normalizeEnvColorTime(value: number): number {
+  const rounded = Math.round(value);
+  return rounded < 0 ? -1 : Math.max(0, Math.min(240, rounded));
 }
 
 function roundFlashOpacity(value: number): number {

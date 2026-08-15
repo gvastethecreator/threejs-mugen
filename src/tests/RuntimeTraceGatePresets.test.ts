@@ -633,6 +633,7 @@ import {
   createSyntheticImportedDynamicAngleMulTraceArtifact,
   createSyntheticImportedDynamicAngleTraceArtifact,
   createSyntheticImportedDynamicEnvColorTraceArtifact,
+  createSyntheticImportedEnvColorIndefiniteTraceArtifact,
   createSyntheticImportedEnvColorTraceArtifact,
   createSyntheticImportedEnvColorUnderTraceArtifact,
   createSyntheticImportedEnvShakeTraceArtifact,
@@ -14407,6 +14408,25 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+  });
+
+  it("creates a required indefinite EnvColor artifact with replacement evidence", () => {
+    const artifact = createSyntheticImportedEnvColorIndefiniteTraceArtifact({ generatedAt: "2026-08-15T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-envcolor-indefinite-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-envcolor-indefinite-golden", passed: true, failures: [] }],
+    });
+    const indefiniteFrames = artifact.trace.frames.filter((frame) =>
+      frame.stage?.envColor?.color.join(",") === "32,128,240",
+    );
+    const replacementFrames = artifact.trace.frames.filter((frame) =>
+      frame.stage?.envColor?.color.join(",") === "255,16,32",
+    );
+    expect(indefiniteFrames.length).toBeGreaterThanOrEqual(6);
+    expect(indefiniteFrames.every((frame) => frame.stage?.envColor?.remaining === -1)).toBe(true);
+    expect(replacementFrames.length).toBeGreaterThanOrEqual(2);
+    expect(artifact.trace.frames.at(-1)?.stage?.envColor).toBeUndefined();
   });
 
   it("creates a synthetic imported EnvShake artifact with runtime camera event evidence", () => {

@@ -2171,6 +2171,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperEnvColorOwnershipTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-envcolor-indefinite",
+      required: true,
+      artifact: presets.createSyntheticImportedEnvColorIndefiniteTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-remappal",
       required: true,
       artifact: presets.createSyntheticImportedRemapPalTraceArtifact(),

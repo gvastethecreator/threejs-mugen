@@ -91,6 +91,25 @@ describe("EnvColorSystem", () => {
     expect(createRuntimeEnvColorEvent(controller("EnvColor", { time: "0" }), 10)).toBeUndefined();
   });
 
+  it("keeps time = -1 EnvColor active until a newer controller replaces it or the world resets", () => {
+    const world = new RuntimeEnvColorWorld();
+    world.emitController(controller("EnvColor", { value: "32,128,240", time: "-1", under: "1" }), 10);
+
+    expect(world.snapshotStageFlash(40)).toEqual({
+      color: [32, 128, 240],
+      opacity: 0.6,
+      remaining: -1,
+      under: true,
+    });
+
+    world.emitController(controller("EnvColor", { value: "255,16,32", time: "3", under: "0" }), 41);
+    expect(world.snapshotStageFlash(42)).toMatchObject({ color: [255, 16, 32], remaining: 2, under: false });
+    expect(world.snapshotStageFlash(44)).toBeUndefined();
+
+    world.reset();
+    expect(world.snapshotStageFlash(44)).toBeUndefined();
+  });
+
   it("keeps newest EnvColor events first and bounds history", () => {
     const events: RuntimeEnvColorEvent[] = [];
     for (let tick = 0; tick < 10; tick += 1) {

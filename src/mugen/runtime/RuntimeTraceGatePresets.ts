@@ -12793,6 +12793,74 @@ export function createSyntheticImportedDynamicEnvColorTraceArtifact(
   });
 }
 
+export function createSyntheticImportedEnvColorIndefiniteTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const trace = runRuntimeTrace(new MatchWorld({
+    p1: createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-envcolor-indefinite",
+      displayName: "Synthetic Imported EnvColor Indefinite",
+      action200Duration: 30,
+      withHitDef: false,
+      staticMoveRequiresHitDef: false,
+      withEnvColorLifetime: {
+        initial: { value: [32, 128, 240], time: -1, under: true },
+        replacement: { triggerTime: 6, value: [255, 16, 32], time: 2, under: false },
+      },
+    }),
+    p2: demoFighters[1]!,
+    stage,
+  }), script, {
+    label: "synthetic-imported-envcolor-indefinite-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-envcolor-indefinite-golden",
+      label: "Synthetic imported indefinite EnvColor route",
+      source: "mixed",
+      notes: [
+        "Required trace proves EnvColor time = -1 remains projected across multiple ticks until a later EnvColor replaces it. Once the replacement expires, the older indefinite event does not reappear. It does not claim exact blend, layer/window behavior, pause timing, nested/team ownership, rollback, or full MUGEN/IKEMEN presentation parity.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-envcolor-indefinite-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "EnvColor"],
+      requiredExecutedOperations: ["envcolor"],
+      requiredActiveCommands: ["x"],
+      requiredStageFrames: [
+        {
+          stageId: stage.id,
+          envColorR: 32,
+          envColorG: 128,
+          envColorB: 240,
+          envColorUnder: true,
+          observedEnvColorOpacityAtLeast: 0.6,
+          observedEnvColorOpacityAtMost: 0.6,
+          minFrames: 6,
+        },
+        {
+          stageId: stage.id,
+          envColorR: 255,
+          envColorG: 16,
+          envColorB: 32,
+          envColorUnder: false,
+          observedEnvColorOpacityAtLeast: 0.2,
+          minFrames: 2,
+        },
+      ],
+    }],
+  });
+}
+
 function createSyntheticImportedEnvColorLayerTraceArtifact(
   options: RuntimeTraceGatePresetOptions,
   layer: {
@@ -69106,6 +69174,10 @@ export type SyntheticImportedTraceFighterOptions = {
     time?: number;
     under?: boolean;
   };
+  withEnvColorLifetime?: {
+    initial: { value: [number, number, number]; time: number; under?: boolean };
+    replacement: { triggerTime: number; value: [number, number, number]; time: number; under?: boolean };
+  };
   withDynamicEnvColor?: {
     value: [string, string, string];
     time: string;
@@ -69655,6 +69727,7 @@ ${options.withAngle === undefined ? "" : angleControllerBlock(options.withAngle)
 ${options.withDynamicAngle === undefined ? "" : dynamicAngleControllerBlock(options.withDynamicAngle)}
 ${options.withEnvShake === undefined ? "" : envShakeControllerBlock(options.withEnvShake)}
 ${options.withEnvColor === undefined ? "" : envColorControllerBlock(options.withEnvColor)}
+${options.withEnvColorLifetime === undefined ? "" : envColorLifetimeControllerBlock(options.withEnvColorLifetime)}
 ${options.withDynamicEnvColor === undefined ? "" : dynamicEnvColorControllerBlock(options.withDynamicEnvColor)}
 ${options.withRemapPal === undefined ? "" : remapPalControllerBlock(options.withRemapPal)}
 ${options.withDynamicRemapPal === undefined ? "" : dynamicRemapPalControllerBlock(options.withDynamicRemapPal)}
@@ -72017,6 +72090,26 @@ trigger1 = Time >= 0
 value = ${(options.value ?? [255, 255, 255]).join(",")}
 time = ${options.time ?? 1}
 under = ${options.under ? 1 : 0}
+`;
+}
+
+function envColorLifetimeControllerBlock(
+  options: NonNullable<SyntheticImportedTraceFighterOptions["withEnvColorLifetime"]>,
+): string {
+  return `
+[State 200, EnvColor Indefinite]
+type = EnvColor
+trigger1 = Time = 0
+value = ${options.initial.value.join(",")}
+time = ${options.initial.time}
+under = ${options.initial.under ? 1 : 0}
+
+[State 200, EnvColor Replacement]
+type = EnvColor
+trigger1 = Time = ${options.replacement.triggerTime}
+value = ${options.replacement.value.join(",")}
+time = ${options.replacement.time}
+under = ${options.replacement.under ? 1 : 0}
 `;
 }
 
