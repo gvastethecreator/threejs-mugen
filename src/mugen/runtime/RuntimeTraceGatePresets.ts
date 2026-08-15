@@ -49618,6 +49618,128 @@ export function createSyntheticImportedHelperProjectileDynamicFallRecoveryTraceA
   });
 }
 
+export function createSyntheticImportedHelperProjectileDynamicFallFlagsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const projectileId = 8922;
+  const script = importedCommonGetHitScript();
+  const trace = runRuntimeTrace(new MatchWorld({
+    p1: createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-helper-projectile-dynamic-fall-flags",
+      displayName: "Synthetic Imported Helper Projectile Dynamic Fall Flags",
+      action200Duration: 80,
+      withHitDef: false,
+      withHelper: true,
+      getHitState: { stateNo: 5100, animNo: 500 },
+      getHitVarBranch: {
+        stateNo: 308,
+        expression: "GetHitVar(fall) = 1 && GetHitVar(fall.kill) = 0",
+      },
+      helperProjHitRoute: {
+        waitStateNo: 1281,
+        waitAnimNo: 1048,
+        branchStateNo: 1282,
+        branchAnimNo: 1049,
+        projectileAnimNo: 1050,
+        projectileId,
+        pos: [360, -34],
+        damage: [10, 0],
+        projectileRemoveTime: 32,
+        projectileRemoveOnHit: false,
+        p2StateNo: 5100,
+        p2GetP1State: true,
+        varSeeds: [
+          { index: 0, value: 1 },
+          { index: 1, value: 1 },
+          { index: 2, value: 0 },
+        ],
+        fallFlags: {
+          enabled: "var(0)",
+          airFall: "var(1)",
+          kill: "var(2)",
+        },
+      },
+    }),
+    p2: demoFighters[1]!,
+    stage,
+    runtimeProfile: "ikemen-go",
+  }), script, {
+    label: "synthetic-imported-helper-projectile-dynamic-fall-flags-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-dynamic-fall-flags-golden",
+      label: "Synthetic imported dynamic Helper Projectile fall flags",
+      source: "mixed",
+      notes: [
+        "Required trace proves a first-generation Helper-created, root-owned Projectile resolves finite fall, air.fall, and fall.kill expressions in Helper caller context. The accepted falling hit transfers enabled fall and nonlethal fall policy through existing HitFall and GetHitVar consumers. Nested Helpers, ownProjectile, airborne selection, ModifyProjectile, ModifyHitDef, exact KO or recovery timing, teams, rollback, and full MUGEN/Ikemen parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-projectile-dynamic-fall-flags-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper", "projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5100, 308],
+      requiredExecutedControllers: ["ChangeState", "Helper", "VarSet", "Projectile", "HitFallVel"],
+      requiredExecutedOperations: ["helper", "variable:varset", "projectile", "hitfall:hitfallvel"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredControllerEventSequences: [{
+        label: "Helper Projectile fall flags caller evaluation order",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 0" },
+          { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 2" },
+          { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
+          { stateNo: 1200, operation: "projectile" },
+        ],
+      }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [
+        { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1282, minAge: 2 },
+        {
+          actorId: "p1-projectile-0",
+          kind: "projectile",
+          ownerId: "p1",
+          parentId: "p1-helper-0",
+          effectId: projectileId,
+          minAge: 1,
+          minPriority: 2,
+          maxHitsRemaining: 0,
+          hasHit: true,
+        },
+      ],
+      requiredTargetLinks: [
+        { ownerId: "p1", actorId: "p2", targetId: projectileId },
+        { ownerId: "p1-helper-0", actorId: "p2", targetId: projectileId },
+      ],
+      requiredFinalActors: [{
+        actorId: "p2",
+        actorKind: "player",
+        source: "demo",
+        stateNo: 308,
+        customOwnerId: "p1",
+        hitFall: { falling: true, kill: false },
+      }],
+    }],
+  });
+}
+
 export function createSyntheticImportedHitDefDynamicFallEnvShakeTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -70045,6 +70167,8 @@ export type SyntheticImportedTraceFighterOptions = {
     fallImpact?: NonNullable<SyntheticImportedTraceFighterOptions["projectileFallImpact"]>;
     /** Synthetic Helper-local Projectile fall/down recovery payload. Presence enables fall. */
     fallRecovery?: NonNullable<SyntheticImportedTraceFighterOptions["projectileFallRecovery"]>;
+    /** Synthetic Helper-local fresh Projectile fall, air.fall, and fall.kill expressions. */
+    fallFlags?: NonNullable<SyntheticImportedTraceFighterOptions["projectileFallFlags"]>;
     hitPause?: number;
     hitTime?: number;
     groundHitTime?: SyntheticNumberExpression;
@@ -78943,6 +79067,13 @@ ${route.fallRecovery.recoverTime === undefined ? "" : `fall.recovertime = ${rout
 ${route.fallRecovery.downRecover === undefined ? "" : `down.recover = ${route.fallRecovery.downRecover}`}
 ${route.fallRecovery.downRecoverTime === undefined ? "" : `down.recovertime = ${route.fallRecovery.downRecoverTime}`}
 `;
+  const fallFlagsLines = route.fallFlags === undefined
+    ? ""
+    : `
+${route.fallFlags.enabled === undefined ? "" : `fall = ${route.fallFlags.enabled}`}
+${route.fallFlags.airFall === undefined ? "" : `air.fall = ${route.fallFlags.airFall}`}
+${route.fallFlags.kill === undefined ? "" : `fall.kill = ${route.fallFlags.kill}`}
+`;
   const airVelocityLine = route.airVelocityExpression === undefined
     ? route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.join(",")}`
     : `air.velocity = ${route.airVelocityExpression.join(",")}`;
@@ -79232,6 +79363,7 @@ ${envShakeLines}
 ${fallEnvShakeLines}
 ${fallImpactLines}
 ${fallRecoveryLines}
+${fallFlagsLines}
 ${p2StateNoLine}
 ${p2GetP1StateLine}
 ${missOnOverrideLine}
