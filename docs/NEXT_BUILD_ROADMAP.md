@@ -11,12 +11,23 @@ velocity, lifecycle, ownership and target link. It remains Ikemen-only and
 does not claim broadcast/team/nested topology, fresh/default derivation,
 dynamic `n`, exact timing, rollback or full parity.
 
-## Next bounded slice — T787 queued (2026-08-15)
+## Latest bounded slice — T787 closed-bounded (2026-08-15)
 
-Issue 361 queues live `ModifyHitDef down.velocity` X/Y component-preserving
-mutation for root/RedirectID callers. Fresh defaults, dynamic Z,
-Helper-authored controllers and Projectile variants remain separate. See
-[issue 361](../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
+Issue 361 closes live root/RedirectID `ModifyHitDef down.velocity` X/Y
+component-preserving mutation. Product `1e83fc36` and required trace
+`synthetic-imported-modifyhitdef-dynamic-down-velocity` prove caller-context
+single/pair replacement, omission/Z preservation, accepted lying-hit
+`GetHitVar` values and physical velocity. Trace/final checksums are
+`7b1f4341` / `fc695cca`. Aggregate QA remains blocked only by the inherited
+Helper bind target-link case. Fresh defaults, dynamic Z/`n`, Helper-authored
+controllers and Projectile variants remain separate.
+
+## Next bounded slice — T788 upstream seam selection (2026-08-15)
+
+Issue 362 is the next planning gate: compare the official M.U.G.E.N 1.1
+contract with Ikemen `149402f`, then select one executable runtime seam with
+callers, tests, trace and explicit exclusions. See [issue
+362](../.scratch/roadmap/issues/362-upstream-seam-selection.md).
 
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 

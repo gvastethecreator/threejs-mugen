@@ -10,11 +10,24 @@ derivation, dynamic `n`, exact timing, rollback and full parity remain outside
 the claim. See [issue 360]
 (../.scratch/roadmap/issues/360-helper-modifyprojectile-redirect-airguard-velocity.md).
 
-## Next selection — T787 live `ModifyHitDef down.velocity`
+## 2026-08-15 T787 — closed-bounded
 
-Issue 361 queues root/RedirectID live `ModifyHitDef down.velocity` X/Y
-component-preserving mutation. Fresh defaults, dynamic Z, Helper-authored
-controllers and Projectile variants remain separate.
+Root/RedirectID live `ModifyHitDef down.velocity` now resolves finite caller
+expressions and replaces X or X/Y component-wise while preserving omitted
+siblings and the live Z value. Required lying-hit trace evidence proves
+`GetHitVar(xvel/yvel/zvel)` and physical velocity. Product `1e83fc36`, trace
+checksum `7b1f4341`, final checksum `fc695cca`; focused tests and typecheck
+pass. Aggregate QA retains the inherited Helper bind target-link blocker.
+Fresh defaults, dynamic Z/`n`, Helper-authored controllers, Projectile
+variants, exact timing, rollback and full parity remain outside the claim.
+See [issue 361]
+(../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
+
+## Next selection — T788 upstream seam selection
+
+Issue 362 is a source-comparison gate for the next concrete M.U.G.E.N 1.1 /
+Ikemen `149402f` runtime contract. No new feature claim is open until its
+authority and evidence plan are recorded.
 
 ## Historical — T781 Helper `ModifyProjectile down.velocity` index
 

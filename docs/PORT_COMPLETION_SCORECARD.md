@@ -12,12 +12,23 @@ broadcast/team/nested topology, fresh/default derivation, dynamic `n`, exact
 timing, rollback and full parity remain blocked. See [issue 360]
 (../.scratch/roadmap/issues/360-helper-modifyprojectile-redirect-airguard-velocity.md).
 
-## Next scorecard slice — 2026-08-15 T787 queued
+## 2026-08-15 T787 `ModifyHitDef down.velocity` — closed-bounded, no score movement
 
-Issue 361 queues live `ModifyHitDef down.velocity` X/Y component-preserving
-mutation for root/RedirectID callers. It remains unscored until focused
-caller/preservation tests and a required down-contact trace close. See [issue
-361](../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
+Issue 361 closes the live root/RedirectID `ModifyHitDef down.velocity` X/Y
+component-preserving seam. Product `1e83fc36` and required trace
+`synthetic-imported-modifyhitdef-dynamic-down-velocity` prove caller-context
+single/pair replacement, omission/Z preservation, accepted lying-hit
+`GetHitVar` values and physical velocity. Trace/final checksums are
+`7b1f4341` / `fc695cca`. Focused tests, typecheck and diff hygiene pass; the
+aggregate gate retains the inherited Helper bind target-link blocker. This
+bounded evidence does not move the score. See [issue 361]
+(../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
+
+## Next scorecard slice — 2026-08-15 T788 upstream seam selection
+
+Issue 362 is a source-comparison gate only. It must select one concrete
+M.U.G.E.N 1.1 / Ikemen `149402f` contract before any score movement or new
+runtime claim. See [issue 362](../.scratch/roadmap/issues/362-upstream-seam-selection.md).
 
 ## Historical checkpoint — 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index
 

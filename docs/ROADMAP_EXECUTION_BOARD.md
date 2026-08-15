@@ -10,13 +10,26 @@ GetHitVar/physical velocity, lifecycle, ownership and target link. The
 Ikemen-only slice keeps broadcast/team/nested topology, fresh/default,
 dynamic `n`, exact timing, rollback and full parity excluded.
 
-## Next bounded slice — T787 queued (2026-08-15)
+## Latest bounded slice — T787 closed-bounded (2026-08-15)
 
-Issue 361 queues live `ModifyHitDef down.velocity` X/Y component-preserving
-mutation for root/RedirectID callers. Keep fresh defaults, dynamic Z,
-Helper-authored controllers, Projectile variants, exact landing/timing,
-rollback and full parity separate. See [issue
+Issue 361 closes live root/RedirectID `ModifyHitDef down.velocity` X/Y
+component-preserving mutation. Product `1e83fc36` and required trace
+`synthetic-imported-modifyhitdef-dynamic-down-velocity` prove caller-context
+single/pair replacement, omission/Z preservation, accepted lying-hit
+`GetHitVar` values and physical velocity. Trace/final checksums are
+`7b1f4341` / `fc695cca`. The aggregate gate still reports the inherited
+`synthetic-imported-helper-bind-to-target-redirect` target-link blocker; it is
+not a T787 failure. Fresh defaults, dynamic Z/`n`, Helper-authored controllers,
+Projectile variants, exact landing/timing, rollback and full parity remain
+separate claims. See [issue
 361](../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
+
+## Next bounded slice — T788 upstream seam selection (2026-08-15)
+
+Issue 362 requires comparing M.U.G.E.N 1.1 and Ikemen `149402f` before selecting
+one concrete next runtime contract. No product seam is claimed until the
+authority, caller map, focused proof and required trace are written. See
+[issue 362](../.scratch/roadmap/issues/362-upstream-seam-selection.md).
 
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 

@@ -1,6 +1,22 @@
 # Controller Support Registry
 
-Latest cursor: T786 / issue 360 is closed-bounded for Helper-owned live
+Latest cursor: T787 / issue 361 is closed-bounded for live root/RedirectID
+`ModifyHitDef down.velocity` X/Y component-preserving mutation. Product
+`1e83fc36` and required trace
+`synthetic-imported-modifyhitdef-dynamic-down-velocity` prove finite
+caller-context single/pair replacement, omission/Z preservation, accepted
+lying-hit `GetHitVar(xvel/yvel/zvel)` and physical velocity. Trace/final
+checksums are `7b1f4341` / `fc695cca`. Aggregate QA still retains the inherited
+`synthetic-imported-helper-bind-to-target-redirect` target-link blocker; it is
+not attributed to this slice. Fresh defaults, dynamic Z/`n`, Helper-authored
+controllers, Projectile variants, exact landing/timing, rollback and full
+parity remain unsupported.
+
+Next cursor: T788 / issue 362 is an upstream seam-selection gate. It must
+compare M.U.G.E.N 1.1 with Ikemen `149402f` and write one concrete next
+contract before another runtime claim is opened.
+
+Previous cursor: T786 / issue 360 is closed-bounded for Helper-owned live
 `ModifyProjectile RedirectID` over a root destination Projectile. Required
 trace `synthetic-imported-helper-modifyprojectile-redirect-airguard-velocity`
 proves finite caller-context `var(4)`, root-store mutation to
@@ -17,11 +33,6 @@ isolation, accepted GetHitVar/HitVelSet response, lifecycle, ownership and
 target links. Fresh/default derivation, index/id edge selection, other vector
 families, nested/team topology, exact timing, rollback and full parity remain
 unsupported.
-
-Next cursor: T787 / issue 361 queues live `ModifyHitDef down.velocity` X/Y
-component-preserving mutation for root/RedirectID callers. Fresh defaults,
-dynamic Z, Helper-authored controllers and Projectile variants remain
-separate.
 
 Previous cursor: T781 / issue 355 closed Helper-owned live `ModifyProjectile
 down.velocity` explicit index selection; evidence remains in `29aba4bb` /

@@ -10,11 +10,20 @@ accepted airborne guard, GetHitVar/physical velocity, lifecycle, ownership and
 target link. The slice is Ikemen-only; inherited aggregate blockers and the
 explicit topology/timing/parity exclusions remain visible.
 
-## Next implementation checkpoint — T787 queued (2026-08-15)
+## Latest implementation checkpoint — T787 closed-bounded (2026-08-15)
 
-Issue 361 queues live `ModifyHitDef down.velocity` X/Y component-preserving
-mutation for root/RedirectID callers. Fresh defaults, dynamic Z,
-Helper-authored controllers and Projectile variants remain separate.
+Issue 361 closes live root/RedirectID `ModifyHitDef down.velocity` X/Y
+component-preserving mutation. Product `1e83fc36` and required trace
+`synthetic-imported-modifyhitdef-dynamic-down-velocity` pass with checksums
+`7b1f4341` / `fc695cca`; focused compiler/runtime tests, typecheck and diff
+hygiene pass. Aggregate QA retains the inherited Helper bind target-link
+blocker and does not downgrade the bounded T787 result.
+
+## Next implementation checkpoint — T788 upstream seam selection (2026-08-15)
+
+Issue 362 will compare the official M.U.G.E.N 1.1 and Ikemen `149402f`
+contracts before selecting one concrete runtime seam. No broad parity claim
+or product change is attached until that map is complete.
 
 ## Historical implementation checkpoint — T781 closed-bounded (2026-08-15)
 

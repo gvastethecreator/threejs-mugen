@@ -2,9 +2,21 @@
 
 ## Estado
 
-- **T787 — queued (2026-08-15)**
+- **T787 — closed-bounded (2026-08-15)**
 - **Área:** runtime / HitDef / ModifyHitDef / down hit / velocity
 - **Dependencia:** T786 / issue 360
+
+## Cierre
+
+- **Producto:** `1e83fc36` (`feat(mugen): preserve live ModifyHitDef down velocity`)
+- **Trace requerida:** `synthetic-imported-modifyhitdef-dynamic-down-velocity`
+- **Trace checksum:** `7b1f4341`
+- **Final checksum:** `fc695cca`
+- **Focused proof:** RuntimeCompiler 42 tests, HitDefSystem live-preservation test,
+  RuntimeTraceGatePresets 2 tests, typecheck and diff hygiene pass.
+- **Aggregate QA:** the T787 artifact passes; `pnpm qa:trace` still exits on the
+  inherited `synthetic-imported-helper-bind-to-target-redirect` target-link
+  blocker. This remains visible and is not attributed to T787.
 
 ## Objetivo
 
@@ -42,3 +54,12 @@ durante Modify. M.U.G.E.N 1.1 documenta `down.velocity`, pero no
   `GetHitVar` y velocidad observables.
 - Typecheck, `git diff --check` y aggregate QA con blockers heredados
   registrados sin ocultarlos.
+
+## Resultado
+
+The bounded root/RedirectID path is closed. A one-component live mutation
+replaces X and preserves Y/Z; a two-component mutation replaces X/Y and
+preserves Z; omission is a no-op. The accepted lying-hit trace exposes the
+effective `GetHitVar(xvel/yvel/zvel)` and physical velocity. Helper-authored
+controllers, fresh defaults, dynamic Z/`n`, Projectile variants, and complete
+timing/parity remain separate claims.

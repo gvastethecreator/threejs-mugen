@@ -20,10 +20,22 @@
   derivation, dynamic `n`, exact timing, rollback and full parity remain
   outside. See [issue 360](../.scratch/roadmap/issues/360-helper-modifyprojectile-redirect-airguard-velocity.md).
 
-- **T787 next selection** — issue 361 queues live `ModifyHitDef down.velocity`
-  X/Y component-preserving mutation for root/RedirectID callers. Fresh
-  defaults, dynamic Z, Helper-authored controllers and Projectile variants
-  remain separate. See [issue 361](../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
+- **T787 closed-bounded** — issue 361 closes live root/RedirectID
+  `ModifyHitDef down.velocity` X/Y component-preserving mutation. Product
+  `1e83fc36` and required trace
+  `synthetic-imported-modifyhitdef-dynamic-down-velocity` prove caller-context
+  single/pair replacement, omission/Z preservation, accepted lying-hit
+  GetHitVar/physical velocity, and the target link. Trace/final checksums are
+  `7b1f4341` / `fc695cca`; focused tests and typecheck pass. Aggregate QA
+  retains the inherited Helper bind target-link blocker. Fresh defaults,
+  dynamic Z/`n`, Helper-authored controllers, Projectile variants, exact
+  timing, rollback and full parity remain outside. See [issue
+  361](../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
+
+- **T788 next selection** — issue 362 is the required upstream seam-selection
+  gate. Compare M.U.G.E.N 1.1 with Ikemen `149402f`, map callers and choose
+  one concrete runtime contract before opening another product slice. See
+  [issue 362](../.scratch/roadmap/issues/362-upstream-seam-selection.md).
 
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;

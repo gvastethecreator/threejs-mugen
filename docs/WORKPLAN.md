@@ -10,11 +10,18 @@ guard, GetHitVar/physical velocity, lifecycle, ownership and target link. The
 slice is Ikemen-only; topology, fresh/default, exact timing, rollback and full
 parity exclusions remain explicit.
 
-## Next slice — T787 queued (2026-08-15)
+## Latest slice — T787 closed-bounded (2026-08-15)
 
-Issue 361 queues live `ModifyHitDef down.velocity` X/Y component-preserving
-mutation for root/RedirectID callers. Fresh defaults, dynamic Z,
-Helper-authored controllers and Projectile variants remain separate.
+Issue 361 closes live root/RedirectID `ModifyHitDef down.velocity` X/Y
+component-preserving mutation. Product `1e83fc36` and required trace
+`synthetic-imported-modifyhitdef-dynamic-down-velocity` pass with checksums
+`7b1f4341` / `fc695cca`; focused tests, typecheck and diff hygiene pass.
+Aggregate QA retains the inherited Helper bind target-link blocker.
+
+## Next slice — T788 upstream seam selection (2026-08-15)
+
+Issue 362 requires the next official M.U.G.E.N 1.1 / Ikemen `149402f`
+contract to be selected and mapped before another runtime change is opened.
 
 ## Historical slice — T781 closed-bounded (2026-08-15)
 
