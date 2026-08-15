@@ -1596,6 +1596,51 @@ describe("ProjectileCombatSystem", () => {
     }
   });
 
+  it("keeps the Projectile creation red-life multiplier after ModifyProjectile replaces redlife", () => {
+    let projectiles = [projectile({
+      damage: 12,
+      guardDamage: 30,
+      redLife: 0,
+      guardRedLife: 0,
+      redLifeAttackMultiplier: 0.5,
+    })];
+    expect(modifyRuntimeProjectiles(projectiles, {
+      controller: {
+        stateId: 1000,
+        type: "ModifyProjectile",
+        params: { id: "77", redlife: "40,40" },
+        triggers: [],
+        line: 1,
+        rawHeader: "[State 1000, ModifyProjectile]",
+      },
+    })).toBe(1);
+    expect(projectiles[0]).toMatchObject({ redLife: 40, guardRedLife: 40, redLifeAttackMultiplier: 0.5 });
+
+    const attacker = actor("p1", "P1", runtimeState({
+      pos: { x: 0, y: 0 },
+      redLifeAttackMultiplier: 2,
+    }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, life: 50, redLife: 0 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: true,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(runtimeHitVar(defender.runtime, "redlife")).toBe(40);
+    expect(defender.runtime.life).toBe(20);
+    expect(defender.runtime.redLife).toBe(20);
+  });
+
   it("carries projectile HitDef velocity vectors into Ikemen GetHitVar metadata", () => {
     let projectiles = [projectile({
       hitVelocities: {

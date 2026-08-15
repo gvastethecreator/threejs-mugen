@@ -65913,6 +65913,8 @@ export type SyntheticImportedTraceFighterOptions = {
   modifyProjectileGetPower?: SyntheticPairExpression;
   /** Synthetic fixture-only live ModifyProjectile damage pair. */
   modifyProjectileDamage?: SyntheticPairExpression;
+  /** Synthetic fixture-only live ModifyProjectile redlife pair. */
+  modifyProjectileRedLife?: SyntheticPairExpression;
   /** Synthetic fixture-only live ModifyProjectile p2facing expression. */
   modifyProjectileP2Facing?: SyntheticNumberExpression;
   /** Synthetic fixture-only live ModifyProjectile p1stateno expression. */
@@ -67603,6 +67605,7 @@ ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   heightBound: options.modifyProjectileHeightBound,
   getPower: options.modifyProjectileGetPower,
   damage: options.modifyProjectileDamage,
+  redLife: options.modifyProjectileRedLife,
   p2Facing: options.modifyProjectileP2Facing,
   p1StateNo: options.modifyProjectileP1StateNo,
   p2StateNo: options.modifyProjectileP2StateNo,
@@ -71824,6 +71827,7 @@ function modifyProjectileControllerBlock(input: {
   heightBound?: SyntheticPairExpression;
   getPower?: SyntheticPairExpression;
   damage?: SyntheticPairExpression;
+  redLife?: SyntheticPairExpression;
   p2Facing?: SyntheticNumberExpression;
   p1StateNo?: SyntheticNumberExpression;
   p2StateNo?: SyntheticNumberExpression;
@@ -71863,6 +71867,7 @@ value = ${seed.value}
   const heightBoundLine = input.heightBound === undefined ? "" : `projheightbound = ${input.heightBound[0]},${input.heightBound[1]}`;
   const getPowerLine = input.getPower === undefined ? "" : `getpower = ${input.getPower[0]},${input.getPower[1]}`;
   const damageLine = input.damage === undefined ? "" : `damage = ${input.damage[0]},${input.damage[1]}`;
+  const redLifeLine = input.redLife === undefined ? "" : `redlife = ${input.redLife[0]},${input.redLife[1]}`;
   const p2FacingLine = input.p2Facing === undefined ? "" : `p2facing = ${input.p2Facing}`;
   const p1StateNoLine = input.p1StateNo === undefined ? "" : `p1stateno = ${input.p1StateNo}`;
   const p2StateNoLine = input.p2StateNo === undefined ? "" : `p2stateno = ${input.p2StateNo}`;
@@ -71898,6 +71903,7 @@ ${stageBoundLine}
 ${heightBoundLine}
 ${getPowerLine}
 ${damageLine}
+${redLifeLine}
 ${p2FacingLine}
 ${p1StateNoLine}
 ${p2StateNoLine}
@@ -77130,6 +77136,113 @@ export function createSyntheticImportedHelperProjectileAttackRedLifeGuardTraceAr
       requiredFinalActors: [
         { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
         { actorId: "p2", source: "imported", actorKind: "player", stateNo: 20, moveType: "I", life: 20, redLife: 20 },
+      ],
+    }],
+  });
+}
+
+/** T761 root-owned ModifyProjectile proof: live redlife changes do not replace the creation multiplier. */
+export function createSyntheticImportedModifyProjectileAttackRedLifeGuardTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5102;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-modifyprojectile-attack-redlife-guard-grid",
+    displayName: "Trace ModifyProjectile Attack RedLife Guard Grid",
+    playerStart: {
+      p1: { x: -54, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const script = importedProjectileGuardScript();
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-attack-redlife-guard-defender",
+    displayName: "ModifyProjectile Attack RedLife Guard Defender",
+    dataStats: { life: 50 },
+    defaultGuardHit: {
+      guardedBranchStateNo: branchStateNo,
+      guardedBranchAnimNo: branchStateNo,
+      guardedBranchTrigger: "Time >= 0",
+      guardedBranchExpression: "GetHitVar(redlife) = 40 && GetHitVar(guarded) = 1",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-attack-redlife-guard-attacker",
+    displayName: "ModifyProjectile Attack RedLife Guard Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    attackMultiplier: 1,
+    attackRedLifeMultiplier: 0.5,
+    postProjectileAttackRedLifeMultiplier: 2,
+    projectileRedLifeExpression: ["0", "0"],
+    projectileDamage: [45, 30],
+    projectileRemoveOnHit: false,
+    projectileOffset: [62, -45],
+    projectileGroundVelocity: [-1, 1],
+    withModifyProjectile: true,
+    modifyProjectileTriggerTime: 3,
+    modifyProjectileId: 77,
+    modifyProjectileRedLife: ["40", "40"],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-modifyprojectile-attack-redlife-guard-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyprojectile-attack-redlife-guard-golden",
+      label: "Synthetic imported ModifyProjectile AttackMulSet redlife guard route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root-owned Projectile is created with AttackMulSet redlife multiplier 0.5, then its live HitDef redlife pair is replaced by ModifyProjectile before an accepted guard. Authored GetHitVar(redlife)=40 remains separate while the creation snapshot applies 20 red-life resource after 30 guard damage leaves life 20; a later live AttackMulSet redlife=2 does not alter the captured multiplier. Helper-authored ModifyProjectile, shared banks, exact resource clamp/rounding/timing, teams, rollback, and full M.U.G.E.N/Ikemen parity remain outside this bounded slice.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-modifyprojectile-attack-redlife-guard-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 130, 150, branchStateNo],
+      forbiddenExecutedStates: [40, 5000, 5001, 5020, 5021, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "AttackMulSet", "Projectile", "ModifyProjectile"],
+      requiredExecutedOperations: ["damage-scale:attackmulset", "projectile", "modifyprojectile"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["guard"],
+      requiredCombatReasons: ["guard"],
+      forbiddenCombatReasons: ["hit", "override", "reversal"],
+      requiredControllerEventSequences: [{
+        label: "ModifyProjectile redlife replacement follows Projectile creation snapshot",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "AttackMulSet", name: "Attack Scale" },
+          { stateNo: 200, controller: "Projectile", name: "Fast Projectile" },
+          { stateNo: 200, controller: "AttackMulSet", name: "Post Projectile RedLife Scale" },
+          { stateNo: 200, controller: "ModifyProjectile", name: "Modify Fast Projectile" },
+          { stateNo: 200, operation: "modifyprojectile" },
+        ],
+      }],
+      requiredActorFrameSequences: [{
+        label: "ModifyProjectile redlife snapshot accepted guard order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 150, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [{ actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1", effectId: 77, minAge: 1, hasHit: true }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 20, redLife: 20 },
       ],
     }],
   });
