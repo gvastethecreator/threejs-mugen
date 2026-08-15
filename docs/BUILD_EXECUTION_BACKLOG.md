@@ -2,24 +2,28 @@
 
 ## Current parity queue
 
-- **T780 closed-bounded** — issue 354 closes Helper-authored live
-  `ModifyProjectile air.velocity` explicit oldest-first `index` selection
-  among same-id Projectiles. Evidence commits `8e41ec21` / `d846fca3` and
-  required trace `4c940f16` / `97569603` prove caller-context static/dynamic
+- **T781 closed-bounded** — issue 355 closes Helper-authored live
+  `ModifyProjectile down.velocity` explicit oldest-first `index` selection
+  among same-id Projectiles. Evidence commits `29aba4bb` / `b9b0752d` and
+  required trace `0bd1aca5` / `f650174f` prove caller-context static/dynamic
   index resolution, one-match zero-fill, sibling/trap isolation, accepted
-  airborne GetHitVar/HitVelSet, lifecycle, ownership and target links.
+  lying-hit GetHitVar/HitVelSet, lifecycle, ownership and target links.
   Focused tests, typecheck and diff hygiene pass; aggregate QA produces
-  `862/863` artifacts (`829` required, `34` optional) with only the inherited
+  `863/864` artifacts (`830` required, `34` optional) with only the inherited
   helper-bind target-link blocker. Fresh/default derivation, edge indices,
   dynamic `n`, nested/shared topology, exact timing, rollback and full parity
   remain outside. See [issue
-  354](../.scratch/roadmap/issues/354-helper-modifyprojectile-air-velocity-index.md).
-
-- **T781 next selection** — issue 355 queues the same explicit oldest-first
-  `index` selection seam for Helper-authored live `ModifyProjectile
-  down.velocity`, with a selected lying-hit Projectile and sibling/trap
-  isolation. See [issue
   355](../.scratch/roadmap/issues/355-helper-modifyprojectile-down-velocity-index.md).
+
+- **T782 next selection** — issue 356 queues the same explicit oldest-first
+  `index` selection seam for Helper-authored live `ModifyProjectile
+  ground.velocity`, with a selected grounded-hit Projectile and sibling/trap
+  isolation. See [issue
+  356](../.scratch/roadmap/issues/356-helper-modifyprojectile-ground-velocity-index.md).
+
+- **T780 closed-bounded** — issue 354 closes Helper-authored live
+  `ModifyProjectile air.velocity` explicit oldest-first `index` selection;
+  evidence remains in `8e41ec21` / `d846fca3`.
 
 - **T779 closed-bounded** — issue 353 closes Helper-authored live
   `ModifyProjectile air.velocity` broadcast. Evidence commit `513d8e58` and

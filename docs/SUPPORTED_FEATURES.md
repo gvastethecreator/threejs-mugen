@@ -1,20 +1,26 @@
 ﻿# Supported Features
-## 2026-08-15 T780 — closed-bounded
+## 2026-08-15 T781 — closed-bounded
 
-Helper-owned live `ModifyProjectile air.velocity` now supports explicit
-oldest-first `index` selection among same-id Projectiles. Commits `8e41ec21`
-and `d846fca3`, plus required trace `4c940f16` / `97569603`, prove caller-
+Helper-owned live `ModifyProjectile down.velocity` now supports explicit
+oldest-first `index` selection among same-id Projectiles. Commits `29aba4bb`
+and `b9b0752d`, plus required trace `0bd1aca5` / `f650174f`, prove caller-
 context static/dynamic index resolution, zero-fill, sibling/trap isolation,
-accepted airborne `GetHitVar`/physical response, lifecycle and target links.
-Aggregate QA is `862/863` with the inherited helper-bind target-link blocker;
+accepted lying-hit `GetHitVar`/physical response, lifecycle and target links.
+Aggregate QA is `863/864` with the inherited helper-bind target-link blocker;
 no score movement. Edge indices, fresh/default derivation, dynamic `n`, nested
-teams, rollback and full parity remain outside the claim. See [issue 354]
-(../.scratch/roadmap/issues/354-helper-modifyprojectile-air-velocity-index.md).
+teams, rollback and full parity remain outside the claim. See [issue 355]
+(../.scratch/roadmap/issues/355-helper-modifyprojectile-down-velocity-index.md).
 
-## Next selection — T781 Helper `ModifyProjectile down.velocity` index
+## Next selection — T782 Helper `ModifyProjectile ground.velocity` index
 
-Issue 355 queues the same bounded selection contract for a lying-hit Projectile
-and remains unscored until its focused and required-trace evidence closes.
+Issue 356 queues the same bounded selection contract for a grounded-hit
+Projectile and remains unscored until its focused and required-trace evidence
+closes.
+
+## Historical — T780 Helper `ModifyProjectile air.velocity` index
+
+Issue 354 closed the same oldest-first index contract for the airborne vector;
+evidence remains in `8e41ec21` / `d846fca3`.
 
 ## 2026-08-12 T753 `AttackMulSet guardpoints` - closed-bounded
 

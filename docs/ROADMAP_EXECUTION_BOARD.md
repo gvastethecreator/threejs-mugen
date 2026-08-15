@@ -1,27 +1,32 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T780 closed-bounded (2026-08-15)
+## Latest bounded slice — T781 closed-bounded (2026-08-15)
 
-Issue 354 closes Helper caller-context `ModifyProjectile air.velocity` explicit
-`index` selection. Evidence commits `8e41ec21` and `d846fca3`, plus required
-trace checksum `4c940f16` / final checksum `97569603`, prove oldest-first
+Issue 355 closes Helper caller-context `ModifyProjectile down.velocity` explicit
+`index` selection. Evidence commits `29aba4bb` and `b9b0752d`, plus required
+trace checksum `0bd1aca5` / final checksum `f650174f`, prove oldest-first
 selection of one same-id Projectile, zero-filled vector replacement, and
-sibling/trap isolation. The selected Projectile reaches an accepted airborne
-hit with `GetHitVar`, physical `HitVelSet`, lifecycle, owner/root/parent and
-target links. Focused tests, typecheck and diff hygiene pass. Aggregate QA
-produces `862/863` artifacts (`829` required, `34` optional); only the
-inherited helper-bind target-link blocker remains. Fresh/default derivation,
-dynamic `n`, edge indices, nested/shared topology, exact timing, rollback and
-full parity remain separate.
+sibling/trap isolation. The selected Projectile reaches an accepted lying hit
+with `GetHitVar`, physical `HitVelSet`, lifecycle, owner/root/parent and target
+links. Focused tests, typecheck and diff hygiene pass. Aggregate QA produces
+`863/864` artifacts (`830` required, `34` optional); only the inherited
+helper-bind target-link blocker remains. Fresh/default derivation, dynamic `n`,
+edge indices, nested/shared topology, exact timing, rollback and full parity
+remain separate.
 
-## Next bounded slice — T781 queued (2026-08-15)
+## Next bounded slice — T782 queued (2026-08-15)
 
-Issue 355 queues the same oldest-first `index` selection seam for Helper-owned
-live `ModifyProjectile down.velocity`, with a selected lying-hit Projectile and
-same-id/trap isolation. Keep id-zero/omitted selection, fresh/default
-derivation, dynamic `n`, nested/shared topology, exact timing, rollback and
-full parity separate. See [issue
-355](../.scratch/roadmap/issues/355-helper-modifyprojectile-down-velocity-index.md).
+Issue 356 queues the same oldest-first `index` selection seam for Helper-owned
+live `ModifyProjectile ground.velocity`, with a selected grounded-hit
+Projectile and same-id/trap isolation. Keep id-zero/omitted selection,
+fresh/default derivation, dynamic `n`, nested/shared topology, exact timing,
+rollback and full parity separate. See [issue
+356](../.scratch/roadmap/issues/356-helper-modifyprojectile-ground-velocity-index.md).
+
+## Historical bounded slice — T780 closed-bounded (2026-08-15)
+
+Issue 354 closed Helper caller-context `ModifyProjectile air.velocity` index
+selection; its evidence remains in commits `8e41ec21` / `d846fca3`.
 
 ## Historical bounded slice — T779 closed-bounded (2026-08-15)
 

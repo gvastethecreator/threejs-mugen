@@ -1,22 +1,27 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T780 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T781 closed-bounded (2026-08-15)
 
-Issue 354 closes Helper-owned live `ModifyProjectile air.velocity` explicit
-`index` selection. Evidence commits `8e41ec21` / `d846fca3` and required trace
-checksums `4c940f16` / `97569603` prove caller-context static and `var()` index
+Issue 355 closes Helper-owned live `ModifyProjectile down.velocity` explicit
+`index` selection. Evidence commits `29aba4bb` / `b9b0752d` and required trace
+checksums `0bd1aca5` / `f650174f` prove caller-context `var()` index
 resolution, oldest-first selection, zero-fill, and same-id/trap isolation.
-The selected Projectile reaches an accepted airborne hit with GetHitVar,
+The selected Projectile reaches an accepted lying hit with GetHitVar,
 HitVelSet, lifecycle, ownership and target-link evidence. Focused tests,
-typecheck and diff hygiene pass; aggregate QA is `862/863` with only the
+typecheck and diff hygiene pass; aggregate QA is `863/864` with only the
 inherited helper-bind target-link blocker.
 
-## Next implementation checkpoint — T781 queued (2026-08-15)
+## Next implementation checkpoint — T782 queued (2026-08-15)
 
-Issue 355 targets Helper-owned `ModifyProjectile down.velocity` explicit index
-selection among same-id Projectiles and an accepted lying hit. Keep id-zero/
-omitted selection, fresh/default derivation, dynamic `n`, nested/shared
+Issue 356 targets Helper-owned `ModifyProjectile ground.velocity` explicit index
+selection among same-id Projectiles and an accepted grounded hit. Keep
+id-zero/omitted selection, fresh/default derivation, dynamic `n`, nested/shared
 topology, aggregate QA repair, exact timing, rollback and full parity separate.
+
+## Historical implementation checkpoint — T780 closed-bounded (2026-08-15)
+
+Issue 354 closed Helper-owned `ModifyProjectile air.velocity` explicit index
+selection; evidence remains in `8e41ec21` / `d846fca3`.
 
 ## Historical implementation checkpoint — T776 closed-bounded (2026-08-15)
 

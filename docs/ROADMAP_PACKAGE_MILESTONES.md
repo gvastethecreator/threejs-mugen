@@ -1,24 +1,29 @@
 ﻿# Roadmap Package Milestones
 
-## Latest package — T780 closed-bounded (2026-08-15)
+## Latest package — T781 closed-bounded (2026-08-15)
 
-Issue 354 closes Helper-owned live `ModifyProjectile air.velocity` explicit
-`index` selection. Evidence commits `8e41ec21` / `d846fca3` and required trace
-checksums `4c940f16` / `97569603` prove caller-context static/dynamic index
+Issue 355 closes Helper-owned live `ModifyProjectile down.velocity` explicit
+`index` selection. Evidence commits `29aba4bb` / `b9b0752d` and required trace
+checksums `0bd1aca5` / `f650174f` prove caller-context static/dynamic index
 resolution, oldest-first one-match selection, zero-fill, sibling/trap
-isolation, accepted airborne GetHitVar/physical response, lifecycle,
+isolation, accepted lying-hit GetHitVar/physical response, lifecycle,
 owner/root/parent and target links. Focused tests, typecheck and diff hygiene
-pass; aggregate QA is `862/863` with the inherited helper-bind blocker.
+pass; aggregate QA is `863/864` with the inherited helper-bind blocker.
 
-## Next package — T781 queued (2026-08-15)
+## Next package — T782 queued (2026-08-15)
 
-Issue 355 queues the next bounded Helper-owned live `ModifyProjectile
-down.velocity` index-selection matrix: an explicit oldest-first index chooses
+Issue 356 queues the next bounded Helper-owned live `ModifyProjectile
+ground.velocity` index-selection matrix: an explicit oldest-first index chooses
 one same-id Projectile while siblings/trap ids remain unchanged through a
-lying hit. Keep id-zero/omitted selection, fresh/default derivation, dynamic
+grounded hit. Keep id-zero/omitted selection, fresh/default derivation, dynamic
 `n`, nested/shared topology, aggregate QA repair, exact timing, rollback and
 full parity separate. See [issue
-355](../.scratch/roadmap/issues/355-helper-modifyprojectile-down-velocity-index.md).
+356](../.scratch/roadmap/issues/356-helper-modifyprojectile-ground-velocity-index.md).
+
+## Historical package — T780 closed-bounded (2026-08-15)
+
+Issue 354 closed Helper-owned `ModifyProjectile air.velocity` explicit index
+selection; evidence remains in `8e41ec21` / `d846fca3`.
 
 ## Historical package — T776 closed-bounded (2026-08-15)
 

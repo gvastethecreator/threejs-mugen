@@ -1,24 +1,29 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T780 closed-bounded (2026-08-15)
+## Latest bounded slice — T781 closed-bounded (2026-08-15)
 
-Issue 354 closes Helper-owned live `ModifyProjectile air.velocity` explicit
-`index` selection. Commits `8e41ec21` / `d846fca3` and required trace
-`4c940f16` / `97569603` prove caller-context static/dynamic index resolution,
+Issue 355 closes Helper-owned live `ModifyProjectile down.velocity` explicit
+`index` selection. Commits `29aba4bb` / `b9b0752d` and required trace
+`0bd1aca5` / `f650174f` prove caller-context static/dynamic index resolution,
 oldest-first single-match replacement, zero-fill, trap isolation, accepted
-airborne GetHitVar/physical response, lifecycle, ownership and target links.
+lying-hit GetHitVar/physical response, lifecycle, ownership and target links.
 Focused Projectile/Helper/trace tests, typecheck and diff hygiene pass;
-aggregate QA produces `862/863` artifacts with the inherited helper-bind
+aggregate QA produces `863/864` artifacts with the inherited helper-bind
 blocker as the only failure.
 
-## Next bounded slice — T781 queued (2026-08-15)
+## Next bounded slice — T782 queued (2026-08-15)
 
-Issue 355 will close explicit `index` selection for Helper-authored live
-`ModifyProjectile down.velocity` among same-id Projectiles, preserving
-oldest-first and sibling/trap isolation through a lying hit. Keep id-zero/
+Issue 356 will close explicit `index` selection for Helper-authored live
+`ModifyProjectile ground.velocity` among same-id Projectiles, preserving
+oldest-first and sibling/trap isolation through a grounded hit. Keep id-zero/
 omitted selection, fresh/default derivation, dynamic `n`, nested/shared-resource
 topology, aggregate QA repair, exact timing, rollback and full parity separate.
-See [issue 355](../.scratch/roadmap/issues/355-helper-modifyprojectile-down-velocity-index.md).
+See [issue 356](../.scratch/roadmap/issues/356-helper-modifyprojectile-ground-velocity-index.md).
+
+## Historical bounded slice — T780 closed-bounded (2026-08-15)
+
+Issue 354 closed Helper-owned `ModifyProjectile air.velocity` explicit index
+selection; evidence remains in `8e41ec21` / `d846fca3`.
 
 ## Historical bounded slice — T776 closed-bounded (2026-08-15)
 

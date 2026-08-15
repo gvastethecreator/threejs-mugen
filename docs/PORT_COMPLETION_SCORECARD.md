@@ -1,23 +1,28 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T780 Helper `ModifyProjectile` `air.velocity` index — closed-bounded, no score movement
+## 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index — closed-bounded, no score movement
 
-Issue 354 closes Helper-owned live `ModifyProjectile air.velocity` explicit
-`index` selection. Evidence commits `8e41ec21` / `d846fca3` and required trace
-`4c940f16` / `97569603` prove caller-context static/dynamic index resolution,
-oldest-first one-match zero-fill, sibling/trap isolation, accepted airborne
+Issue 355 closes Helper-owned live `ModifyProjectile down.velocity` explicit
+`index` selection. Evidence commits `29aba4bb` / `b9b0752d` and required trace
+`0bd1aca5` / `f650174f` prove caller-context static/dynamic index resolution,
+oldest-first one-match zero-fill, sibling/trap isolation, accepted lying-hit
 `GetHitVar`/`HitVelSet`, lifecycle, ownership and target links. Focused tests,
-typecheck and diff hygiene pass. Aggregate QA produces `862/863` artifacts
+typecheck and diff hygiene pass. Aggregate QA produces `863/864` artifacts
 with only the inherited helper-bind target-link blocker; no score movement.
 Fresh/default derivation, edge indices, dynamic `n`, nested/shared topology,
-exact timing, rollback and full parity remain blocked. See [issue 354]
-(../.scratch/roadmap/issues/354-helper-modifyprojectile-air-velocity-index.md).
+exact timing, rollback and full parity remain blocked. See [issue 355]
+(../.scratch/roadmap/issues/355-helper-modifyprojectile-down-velocity-index.md).
 
-## Next scorecard slice — 2026-08-15 T781 queued
+## Next scorecard slice — 2026-08-15 T782 queued
 
-Issue 355 queues the same bounded Helper-owned `ModifyProjectile down.velocity`
-index-selection seam through an accepted lying hit; it is not scored until
+Issue 356 queues the same bounded Helper-owned `ModifyProjectile ground.velocity`
+index-selection seam through an accepted grounded hit; it is not scored until
 focused and required-trace evidence closes.
+
+## Historical checkpoint — 2026-08-15 T780 Helper `ModifyProjectile` `air.velocity` index — closed-bounded, no score movement
+
+Issue 354 closed Helper-owned live `ModifyProjectile air.velocity` explicit
+`index` selection; evidence remains in `8e41ec21` / `d846fca3`.
 
 ## Historical checkpoint — 2026-08-15 T776 Helper `ModifyProjectile` `down.velocity` matrix — closed-bounded, no score movement
 

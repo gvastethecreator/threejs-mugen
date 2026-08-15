@@ -1,22 +1,27 @@
 # Workplan
 
-## Latest slice — T780 closed-bounded (2026-08-15)
+## Latest slice — T781 closed-bounded (2026-08-15)
 
-Issue 354 closes Helper-owned live `ModifyProjectile air.velocity` explicit
-`index` selection. Evidence commits `8e41ec21` / `d846fca3` and required trace
-checksums `4c940f16` / `97569603` prove one-shot caller-context index
+Issue 355 closes Helper-owned live `ModifyProjectile down.velocity` explicit
+`index` selection. Evidence commits `29aba4bb` / `b9b0752d` and required trace
+checksums `0bd1aca5` / `f650174f` prove one-shot caller-context index
 resolution, oldest-first selection, zero-fill, sibling/trap isolation, and
-accepted airborne GetHitVar/HitVelSet, lifecycle, ownership and target-link
+accepted lying-hit GetHitVar/HitVelSet, lifecycle, ownership and target-link
 evidence. Focused tests, typecheck and diff hygiene pass; aggregate QA
-produces `862/863` artifacts with only the inherited helper-bind blocker.
+produces `863/864` artifacts with only the inherited helper-bind blocker.
 
-## Next slice — T781 queued (2026-08-15)
+## Next slice — T782 queued (2026-08-15)
 
-Issue 355 covers Helper caller-context `ModifyProjectile down.velocity` explicit
-`index` selection among same-id Projectiles, preserving oldest-first selection,
-sibling/trap isolation and an accepted lying hit. Keep id-zero/omitted
-selection, fresh/default derivation, dynamic `n`, nested/shared topology,
-aggregate QA repair, exact timing, rollback and full parity separate.
+Issue 356 covers Helper caller-context `ModifyProjectile ground.velocity`
+explicit `index` selection among same-id Projectiles, preserving oldest-first
+selection, sibling/trap isolation and an accepted grounded hit. Keep
+id-zero/omitted selection, fresh/default derivation, dynamic `n`, nested/shared
+topology, aggregate QA repair, exact timing, rollback and full parity separate.
+
+## Historical slice — T780 closed-bounded (2026-08-15)
+
+Issue 354 closed Helper-owned `ModifyProjectile air.velocity` explicit index
+selection; evidence remains in `8e41ec21` / `d846fca3`.
 
 ## Historical slice — T776 closed-bounded (2026-08-15)
 
