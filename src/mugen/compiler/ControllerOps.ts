@@ -754,6 +754,8 @@ export type ProjectileControllerOp = {
   fall?: HitDefFallOp;
   /** Dynamic or mixed Projectile fall EnvShake package evaluated in caller context. */
   fallEnvShake?: MugenHitDefEnvShakeOp;
+  /** Dynamic or mixed Projectile fall impact package evaluated in caller context. */
+  fallImpact?: MugenHitDefFallImpactOp;
   attackDepth?: [number, number];
   p2StateNo?: number;
   p2GetP1State?: boolean;
@@ -4050,6 +4052,11 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   const fallEnvShakeExpressions = fallEnvShake === true || !Object.values(fallEnvShake).some((value) => typeof value === "string")
     ? undefined
     : fallEnvShake;
+  const fallImpact = optionalHitDefFallImpactParam(controller);
+  if (fallImpact === false) return undefined;
+  const fallImpactExpressions = fallImpact === true || !Object.values(fallImpact).some((value) => typeof value === "string")
+    ? undefined
+    : fallImpact;
   const keepStateValue = optionalIntegerExpressionParam(controller, "keepstate");
   if (
     standFriction === false ||
@@ -4287,6 +4294,7 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     ...(typeof keepStateValue === "string" ? { keepStateExpression: keepStateValue } : {}),
     ...(Object.keys(fall).length === 0 ? {} : { fall }),
     ...(fallEnvShakeExpressions === undefined ? {} : { fallEnvShake: fallEnvShakeExpressions }),
+    ...(fallImpactExpressions === undefined ? {} : { fallImpact: fallImpactExpressions }),
     attackDepth: normalizedNumberPair(findParam(controller, "attack.depth")),
     p2StateNo: firstNumber(findParam(controller, "p2stateno")),
     p2GetP1State:

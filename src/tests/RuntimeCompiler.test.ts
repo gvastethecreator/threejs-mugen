@@ -5793,6 +5793,30 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles dynamic Projectile fall impact packages and rejects malformed values", () => {
+    const projectile = compileControllerIr(controller(1000, "Projectile", [], {
+      fall: "1",
+      "fall.damage": "14",
+      "fall.xvelocity": "var(0) * .5",
+      "fall.yvelocity": "-var(1)",
+      "fall.zvelocity": "2.5",
+    }));
+
+    expect(projectile.operation).toMatchObject({
+      kind: "projectile",
+      fall: { enabled: true, damage: 14, zVelocity: 2.5 },
+      fallImpact: {
+        damage: 14,
+        xVelocity: "var(0) * .5",
+        yVelocity: "-var(1)",
+        zVelocity: 2.5,
+      },
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "fall.damage": "var(",
+    })).operation).toBeUndefined();
+  });
+
   it("rejects invalid static Projectile TeamSide values at compile time", () => {
     const projectile = compileControllerIr(
       controller(1000, "Projectile", [], { teamside: "3" }),

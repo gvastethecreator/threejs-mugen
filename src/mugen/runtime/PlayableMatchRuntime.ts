@@ -4,6 +4,7 @@ import type {
   EnvColorControllerOp,
   MugenHitDefEnvShakeOp,
   MugenHitDefExpressionPair,
+  MugenHitDefFallImpactOp,
   PauseControllerOp,
   TeamStandbyControllerOp,
 } from "../compiler/ControllerOps";
@@ -270,6 +271,7 @@ import type {
   RuntimeModifyProjectilePartialTripleParam,
   RuntimeModifyProjectileTripleParam,
   RuntimeProjectileEnvShake,
+  RuntimeProjectileFallImpact,
   RuntimeProjectileModifyResolver,
 } from "./ProjectileSystem";
 import {
@@ -6671,6 +6673,22 @@ function runActiveStateControllers(
                   );
                 }
               : undefined,
+          resolveProjectileFallImpact:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  return resolveProjectileFallImpactComponents(
+                    operation?.fallImpact,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                  );
+                }
+              : undefined,
           resolveProjectilePaletteFx:
             effect === "projectile"
               ? {
@@ -9057,6 +9075,33 @@ function resolveProjectileEnvShakeComponents(
     ...(phase === undefined ? {} : { phase }),
     ...(mul === undefined ? {} : { mul }),
     ...(dir === undefined ? {} : { dir }),
+  };
+}
+
+function resolveProjectileFallImpactComponents(
+  value: MugenHitDefFallImpactOp | undefined,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): Partial<RuntimeProjectileFallImpact> | undefined {
+  if (value === undefined) return undefined;
+  const resolveComponent = (component: number | string | undefined): number | undefined => {
+    if (typeof component === "number") return Number.isFinite(component) ? component : undefined;
+    if (component === undefined) return undefined;
+    const resolved = resolveDispatchFloat(undefined, component, fighter, opponent, owner, stageBounds, stageTime);
+    return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
+  };
+  const damage = resolveComponent(value.damage);
+  const xVelocity = resolveComponent(value.xVelocity);
+  const yVelocity = resolveComponent(value.yVelocity);
+  const zVelocity = resolveComponent(value.zVelocity);
+  return {
+    ...(damage === undefined ? {} : { damage: Math.trunc(damage) }),
+    ...(xVelocity === undefined ? {} : { xVelocity }),
+    ...(yVelocity === undefined ? {} : { yVelocity }),
+    ...(zVelocity === undefined ? {} : { zVelocity }),
   };
 }
 

@@ -3,6 +3,7 @@ import type {
   HitDefFallOp,
   ModifyProjectileControllerOp,
   MugenHitDefEnvShakeOp,
+  MugenHitDefFallImpactOp,
   MugenPartialHitDefVector,
   MugenProjectileProjection,
   MugenProjectileWindow,
@@ -76,6 +77,13 @@ export type RuntimeProjectileEnvShake = {
   phase: number;
   mul: number;
   dir: number;
+};
+
+export type RuntimeProjectileFallImpact = {
+  damage?: number;
+  xVelocity?: number;
+  yVelocity?: number;
+  zVelocity?: number;
 };
 
 export type RuntimeProjectile = {
@@ -341,6 +349,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveEnvShake?: () => Partial<RuntimeProjectileEnvShake> | undefined;
   /** Resolves fresh Projectile fall EnvShake expressions in the original caller context. */
   resolveFallEnvShake?: () => Partial<RuntimeProjectileEnvShake> | undefined;
+  /** Resolves fresh Projectile fall impact expressions in the original caller context. */
+  resolveFallImpact?: () => Partial<RuntimeProjectileFallImpact> | undefined;
   /** Resolves Projectile ground.velocity authored expressions in the original caller context. */
   resolveGroundVelocity?: () => [number?, number?, number?] | undefined;
   /** Resolves Projectile guard.velocity authored expressions in the original caller context. */
@@ -778,15 +788,24 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const forceStand = operation?.forceStand ?? booleanNumber(findControllerParam(input.controller, "forcestand"));
   const forceCrouch = operation?.forceCrouch ?? booleanNumber(findControllerParam(input.controller, "forcecrouch"));
   const staticFall = operation?.fall ?? projectileFallData(input.controller);
+  const fallImpact = operation?.fallImpact === undefined
+    ? undefined
+    : resolveRuntimeProjectileFallImpact(operation.fallImpact, input.resolveFallImpact?.());
+  const authoredFallBase = operation?.fallImpact === undefined
+    ? staticFall
+    : {
+        ...withoutProjectileFallImpact(staticFall),
+        ...projectileFallImpactFields(fallImpact),
+      };
   const fallEnvShake = resolveRuntimeProjectileEnvShake(
     operation?.fallEnvShake,
     input.resolveFallEnvShake?.(),
-    projectileFallEnvShake(staticFall),
+    projectileFallEnvShake(authoredFallBase),
   );
   const authoredFall = operation?.fallEnvShake === undefined
-    ? staticFall
+    ? authoredFallBase
     : {
-        ...withoutProjectileFallEnvShake(staticFall),
+        ...withoutProjectileFallEnvShake(authoredFallBase),
         ...projectileFallEnvShakeFields(fallEnvShake),
       };
   const fall = Object.keys(authoredFall).length === 0 ? undefined : authoredFall;
@@ -2035,6 +2054,35 @@ function resolveRuntimeProjectileEnvShake(
   return runtimeProjectileEnvShake(sourceNumbers);
 }
 
+function resolveRuntimeProjectileFallImpact(
+  authored: MugenHitDefFallImpactOp | undefined,
+  resolved: Partial<RuntimeProjectileFallImpact> | undefined,
+): RuntimeProjectileFallImpact | undefined {
+  if (authored === undefined) return undefined;
+  const component = (key: keyof RuntimeProjectileFallImpact): number | undefined => {
+    const source = authored[key];
+    if (typeof source === "number") {
+      return Number.isFinite(source) ? source : undefined;
+    }
+    if (typeof source !== "string") return undefined;
+    const value = resolved?.[key];
+    return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+  };
+  const damage = component("damage");
+  const xVelocity = component("xVelocity");
+  const yVelocity = component("yVelocity");
+  const zVelocity = component("zVelocity");
+  if (damage === undefined && xVelocity === undefined && yVelocity === undefined && zVelocity === undefined) {
+    return undefined;
+  }
+  return {
+    ...(damage === undefined ? {} : { damage: Math.trunc(damage) }),
+    ...(xVelocity === undefined ? {} : { xVelocity }),
+    ...(yVelocity === undefined ? {} : { yVelocity }),
+    ...(zVelocity === undefined ? {} : { zVelocity }),
+  };
+}
+
 function projectileFallEnvShake(fall: HitDefFallOp): Partial<RuntimeProjectileEnvShake> {
   return {
     time: fall.envShakeTime,
@@ -2057,6 +2105,29 @@ function withoutProjectileFallEnvShake(fall: HitDefFallOp): HitDefFallOp {
     ...rest
   } = fall;
   return rest;
+}
+
+function withoutProjectileFallImpact(fall: HitDefFallOp): HitDefFallOp {
+  const {
+    damage: _damage,
+    xVelocity: _xVelocity,
+    yVelocity: _yVelocity,
+    zVelocity: _zVelocity,
+    ...rest
+  } = fall;
+  return rest;
+}
+
+function projectileFallImpactFields(
+  impact: RuntimeProjectileFallImpact | undefined,
+): Pick<HitDefFallOp, "damage" | "xVelocity" | "yVelocity" | "zVelocity"> {
+  if (impact === undefined) return {};
+  return {
+    ...(impact.damage === undefined ? {} : { damage: impact.damage }),
+    ...(impact.xVelocity === undefined ? {} : { xVelocity: impact.xVelocity }),
+    ...(impact.yVelocity === undefined ? {} : { yVelocity: impact.yVelocity }),
+    ...(impact.zVelocity === undefined ? {} : { zVelocity: impact.zVelocity }),
+  };
 }
 
 function projectileFallEnvShakeFields(

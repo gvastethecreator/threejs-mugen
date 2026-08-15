@@ -10901,6 +10901,52 @@ value = 0
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.projectile).toBe(1);
   });
 
+  it("evaluates fresh Projectile fall impact expressions in the root caller context", () => {
+    const imported = createImportedFixture({
+      id: "dynamic-projectile-fall-impact-root",
+      withStateMove: false,
+      withProjectile: true,
+      projectileHitDefParams: `
+fall = 1
+fall.damage = Time + 17.8
+fall.xvelocity = Time - 6.5
+fall.yvelocity = Time - 7
+fall.zvelocity = Time + 2.5
+`,
+    });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -35, y: 0, facing: 1 as const },
+        p2: { x: 130, y: 0, facing: -1 as const },
+      },
+    }, { effectActorWorld });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(effectActorWorld.projectiles("p1")[0]?.fall).toEqual({
+      enabled: true,
+      damage: 17,
+      xVelocity: -6.5,
+      yVelocity: -7,
+      zVelocity: 2.5,
+    });
+
+    for (let frame = 0; frame < 12 && !snapshot.actors[1]?.runtime.hitFall?.falling; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[1]?.runtime.hitFall).toMatchObject({
+      falling: true,
+      damage: 17,
+      velocity: { x: -6.5, y: -7, z: 2.5 },
+    });
+    expect(runtimeHitVar(snapshot.actors[1]!.runtime, "fall.damage")).toBe(17);
+    expect(runtimeHitVar(snapshot.actors[1]!.runtime, "fall.xvel")).toBe(-6.5);
+    expect(runtimeHitVar(snapshot.actors[1]!.runtime, "fall.yvel")).toBe(-7);
+    expect(runtimeHitVar(snapshot.actors[1]!.runtime, "fall.zvel")).toBe(2.5);
+  });
+
   it("carries fresh Projectile air-guard depth through accepted root-owned contacts", () => {
     const resolve = (airborne: boolean, airGuardVelocityExpression?: string) => {
       const attacker = createImportedFixture({

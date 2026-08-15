@@ -1045,6 +1045,61 @@ describe("ProjectileSystem", () => {
     expect(spawn("p1-projectile-fall-envshake-unresolved").fall).toEqual({ enabled: true });
   });
 
+  it("resolves Projectile fall impact per component and preserves finite siblings", () => {
+    const controllerValue = controller({
+      projanim: "1005",
+      fall: "1",
+      "fall.damage": "var(0) + .8",
+      "fall.xvelocity": "var(1) * .5",
+      "fall.yvelocity": "-7",
+      "fall.zvelocity": "var(2) + .5",
+    });
+    const operation = compileControllerIr(controllerValue).operation as ProjectileControllerOp;
+    const spawn = (
+      serialId: string,
+      resolveFallImpact?: Parameters<typeof createRuntimeProjectile>[0]["resolveFallImpact"],
+    ) => createRuntimeProjectile({
+      serialId,
+      controller: controllerValue,
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveFallImpact,
+    });
+
+    expect(spawn("p1-projectile-fall-impact-dynamic", () => ({
+      damage: 17.8,
+      xVelocity: -6.5,
+      yVelocity: -99,
+      zVelocity: 2.5,
+    })).fall).toEqual({
+      enabled: true,
+      damage: 17,
+      xVelocity: -6.5,
+      yVelocity: -7,
+      zVelocity: 2.5,
+    });
+    expect(spawn("p1-projectile-fall-impact-partial", () => ({
+      damage: 17.8,
+      xVelocity: Number.NaN,
+      zVelocity: 2.5,
+    })).fall).toEqual({
+      enabled: true,
+      damage: 17,
+      yVelocity: -7,
+      zVelocity: 2.5,
+    });
+    expect(spawn("p1-projectile-fall-impact-unresolved").fall).toEqual({
+      enabled: true,
+      yVelocity: -7,
+    });
+  });
+
   it("resolves Projectile grounded friction at spawn and fails closed for unresolved expressions", () => {
     const spawn = (
       serialId: string,
