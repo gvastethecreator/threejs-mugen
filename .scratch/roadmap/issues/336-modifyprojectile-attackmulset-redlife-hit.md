@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T762 — queued (2026-08-14)**
+- **T762 — closed-bounded (2026-08-15)**
 - **Área:** runtime / Projectile / ModifyProjectile / hit / AttackMulSet / red-life
 - **Dependencia:** T761 / issue 335; T759 / issue 333
 
@@ -35,3 +35,18 @@ multiplier after its live HitDef red-life pair is replaced by
   defender red-life resource.
 - Focused test, typecheck, `git diff --check`, and aggregate QA recorded with
   inherited blockers preserved.
+
+## Cierre
+
+- Evidence/test commit: `a98fb9c0` (`test(evidence): close ModifyProjectile redlife hit seam`).
+- Required trace artifact: `a09849a1` -> `fff29f85`, status `passed`.
+- Projectile combat suite: `111/111`; focused trace: `1/1`; typecheck and
+  `git diff --check` pass.
+- `pnpm run qa:trace` still stops only on the inherited
+  `synthetic-imported-helper-bind-to-target-redirect` missing target-link
+  blocker; the T762 artifact itself passes.
+- The accepted hit keeps `GetHitVar(redlife)=40` separate and ends at
+  `life=5/redLife=20` after the creation multiplier `0.5`, even though the
+  live attacker multiplier becomes `2`.
+
+T763 is queued separately for the Helper-authored `ModifyProjectile` route.

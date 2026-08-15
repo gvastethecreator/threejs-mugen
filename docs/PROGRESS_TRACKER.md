@@ -1,16 +1,16 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T761 closed-bounded (2026-08-14)
+## Latest implementation checkpoint — T762 closed-bounded (2026-08-15)
 
-Issue 335 closes the root-owned `ModifyProjectile` `AttackMulSet.RedLife`
-guard seam. Required trace `abc0756c` -> `0d1eef66` and evidence commit
-`8fd655c8` prove the captured multiplier survives the live redlife
+Issue 336 closes the root-owned `ModifyProjectile` `AttackMulSet.RedLife` hit
+seam. Required trace `a09849a1` -> `fff29f85` and evidence commit
+`a98fb9c0` prove the captured multiplier survives the live redlife
 replacement, authored `GetHitVar(redlife)=40` stays separate, and the
-accepted guard ends at `life=20/redLife=20`. Focused combat/trace coverage is
-1/1; typecheck and diff hygiene pass. Aggregate QA remains blocked by the
-inherited helper-bind target-link case. Helper-authored ModifyProjectile,
-resource ownership, exact arithmetic/timing, rollback and full parity remain
-outside. See issue 335.
+accepted hit ends at `life=5/redLife=20`. Projectile coverage is 111/111;
+focused trace, typecheck and diff hygiene pass. Aggregate QA remains blocked
+by the inherited helper-bind target-link case. Helper-authored
+ModifyProjectile, resource ownership, exact arithmetic/timing, rollback and
+full parity remain outside. See issue 336.
 
 ## Historical checkpoint — T759 closed-bounded (2026-08-14)
 
@@ -39,11 +39,11 @@ T755 was a duplicate queue entry for the already closed T728/issue 302 live
 `ModifyHitDef down.velocity` slice. Issue 329 is retained as superseded audit
 history; no new implementation should be scheduled from it.
 
-## Next implementation checkpoint — T762 ModifyProjectile redlife hit contact
+## Next implementation checkpoint — T763 Helper ModifyProjectile redlife hit contact
 
-Close the root-owned `ModifyProjectile` redlife snapshot for an accepted
-unguarded hit; keep Helper-authored ModifyProjectile, nested helpers,
-aggregate QA repair and broader resource topology separate. See issue 336.
+Close the Helper-authored `ModifyProjectile` redlife snapshot for an accepted
+unguarded hit; keep nested helpers, aggregate QA repair and broader resource
+topology separate. See issue 337.
 
 ## Historical implementation checkpoint — T753 closed-bounded (2026-08-12)
 
