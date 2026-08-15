@@ -478,6 +478,8 @@ export type RuntimeModifyProjectileIntegerListParam = "nochainid";
 export type RuntimeModifyProjectileGroundVelocity = MugenPartialHitDefVector;
 
 export type RuntimeProjectileModifyResolver = {
+  /** Resolves a live ModifyProjectile RedirectID in the original caller context. */
+  resolveRedirectPlayerId?: () => number | undefined;
   resolveNumber?: (key: RuntimeModifyProjectileNumberParam) => number | undefined;
   /** Resolves a typed ModifyProjectile `projanim` expression in caller context. */
   resolveAnimation?: () => number | undefined;

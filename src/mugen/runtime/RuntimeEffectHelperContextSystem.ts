@@ -47,6 +47,7 @@ export type RuntimeEffectHelperContextOptions = Pick<
   | "applySharedResourceWrite"
   | "onTargetLifeAdd"
   | "onRedirectedTargetDispatch"
+  | "onModifyProjectile"
   | "enterRedirectedTargetState"
   | "onStateTransitionCycle"
 > & {
@@ -82,6 +83,7 @@ export type RuntimeEffectHelperContext = {
   applySharedResourceWrite?: RuntimeHelperAdvanceOptions["applySharedResourceWrite"];
   onTargetLifeAdd?: RuntimeHelperAdvanceOptions["onTargetLifeAdd"];
   onRedirectedTargetDispatch?: RuntimeHelperAdvanceOptions["onRedirectedTargetDispatch"];
+  onModifyProjectile?: RuntimeHelperAdvanceOptions["onModifyProjectile"];
   enterTargetState?: RuntimeHelperAdvanceOptions["enterTargetState"];
   enterRedirectedTargetState?: RuntimeHelperAdvanceOptions["enterRedirectedTargetState"];
   onController?: RuntimeHelperAdvanceOptions["onController"];

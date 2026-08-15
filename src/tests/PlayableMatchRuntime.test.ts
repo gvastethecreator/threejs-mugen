@@ -3048,6 +3048,74 @@ RedirectID = 57
     expect(snapshot.compatibilitySession?.actors.some((actor) => actor.executedControllers.ModifyProjectile)).toBe(true);
   });
 
+  it("routes Helper ModifyProjectile RedirectID airguard velocity to a root destination", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const caller = createImportedFixture({
+      id: "helper-redirected-modify-projectile-caller",
+      withStateMove: false,
+      withHelper: true,
+      helperStateControllers: `
+[State 1200, Redirected Air Guard Projectile]
+type = VarSet
+trigger1 = Time = 0
+v = 4
+value = 57
+
+[State 1200, Redirected Air Guard Payload]
+type = VarSet
+trigger1 = Time = 0
+v = 10
+value = -9
+
+[State 1200, Redirected Air Guard Payload Y]
+type = VarSet
+trigger1 = Time = 0
+v = 11
+value = -4
+
+[State 1200, Redirected Air Guard Payload Z]
+type = VarSet
+trigger1 = Time = 0
+v = 12
+value = 6
+
+[State 1200, Redirected Air Guard Modify]
+type = ModifyProjectile
+trigger1 = Time = 1
+id = 77
+airguard.velocity = Var(10),Var(11),Var(12)
+RedirectID = Var(4)
+`,
+    });
+    const target = createImportedFixture({
+      id: "helper-redirected-modify-projectile-target",
+      withStateMove: false,
+      withProjectile: true,
+    });
+    const runtime = new PlayableMatchRuntime(caller, target, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["x"]) });
+    for (let frame = 0; frame < 5; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    const destinationProjectile = effectActorWorld.projectiles("p2")[0];
+    expect(destinationProjectile).toMatchObject({
+      ownerId: "p2",
+      rootId: "p2",
+      airGuardPush: 9,
+      airGuardVelocityY: -4,
+      airGuardVelocityZ: 6,
+      hitVelocities: { airGuard: { x: -9, y: -4, z: 6 } },
+    });
+    expect(effectActorWorld.projectiles("p1").some((projectile) => projectile.hitVelocities?.airGuard?.x === -9)).toBe(false);
+    expect(snapshot.logs.some((line) => line.includes("Blocked ModifyProjectile RedirectID"))).toBe(false);
+    expect(snapshot.compatibilitySession?.actors.some((actor) => actor.executedControllers.ModifyProjectile)).toBe(true);
+  });
+
   it("resolves dynamic ModifyProjectile id, index, and projid as separate root fields", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const fighter = createImportedFixture({

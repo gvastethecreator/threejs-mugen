@@ -356,7 +356,11 @@ export type RuntimeHelperAdvanceOptions = {
   onSpawnProjectile?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onRemoveExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onModifyExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
-  onModifyProjectile?: (helper: RuntimeHelper, controller: ControllerIr, resolveModifyProjectile?: RuntimeProjectileModifyResolver) => boolean;
+  onModifyProjectile?: (
+    helper: RuntimeHelper,
+    controller: ControllerIr,
+    resolveModifyProjectile?: RuntimeProjectileModifyResolver,
+  ) => boolean | undefined;
   onPauseController?: (
     helper: RuntimeHelper,
     controller: ControllerIr,
@@ -1110,6 +1114,12 @@ function helperModifyProjectileResolver(
   options: Parameters<typeof resolveHelperNumber>[3],
 ): RuntimeProjectileModifyResolver {
   return {
+    resolveRedirectPlayerId: () => {
+      const expression = helperControllerRedirectExpression(controller);
+      if (expression === undefined) return undefined;
+      const resolved = resolveRuntimeHelperIntegerExpression(helper, expression, options);
+      return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
+    },
     resolveAnimation: () => resolveHelperModifyProjectileAnimationParam(helper, controller, options),
     resolveTerminalAnimation: (key) => resolveHelperModifyProjectileTerminalAnimationParam(helper, controller, key, options),
     resolveMoveTime: (key) => resolveHelperModifyProjectileMoveTimeParam(helper, controller, key, options),

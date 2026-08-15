@@ -79,6 +79,7 @@ import {
   applyRuntimeHelperTagStateControl,
   canAdvanceRuntimeHelper,
   hasRuntimeHelperState,
+  helperControllerRedirectExpression,
   helperTargetControllerRedirectExpression,
   helperTargetWorld,
   helperRuntimeState,
@@ -267,6 +268,7 @@ import type {
   RuntimeModifyProjectilePairParam,
   RuntimeModifyProjectilePartialTripleParam,
   RuntimeModifyProjectileTripleParam,
+  RuntimeProjectileModifyResolver,
 } from "./ProjectileSystem";
 import {
   applyRuntimeControl,
@@ -1097,6 +1099,52 @@ export class PlayableMatchRuntime {
     controller: ControllerIr,
   ): RuntimeHelperTargetRedirect | undefined {
     return this.resolveHelperTargetRedirect(helper, playerId, controller, []);
+  }
+
+  private modifyHelperProjectileRedirect(
+    helper: RuntimeHelper,
+    controller: ControllerIr,
+    resolveModifyProjectile?: RuntimeProjectileModifyResolver,
+  ): boolean | undefined {
+    const redirectExpression = helperControllerRedirectExpression(controller);
+    if (redirectExpression === undefined) {
+      return undefined;
+    }
+    const block = (playerId: number | "invalid"): boolean => {
+      this.logs.unshift(`Blocked ModifyProjectile RedirectID ${playerId} for ${helper.serialId}`);
+      return false;
+    };
+    if (this.runtimeProfile !== "ikemen-go") {
+      return block("invalid");
+    }
+    const resolvedPlayerId = resolveModifyProjectile?.resolveRedirectPlayerId?.();
+    const playerId = resolvedPlayerId === undefined ? undefined : Math.trunc(resolvedPlayerId);
+    if (playerId === undefined || playerId < 0) {
+      return block(playerId ?? "invalid");
+    }
+    const identity = this.characterIdentity?.findByPlayerId(playerId);
+    const destination = identity?.fighter
+      ? this.characterRoots().find((root) => root.id === identity.fighter!.id)
+      : undefined;
+    if (!destination) {
+      return block(playerId);
+    }
+    const operation = controller.operation?.kind === "modifyprojectile"
+      ? controller.operation
+      : undefined;
+    const changed = this.effectActorWorld.modifyProjectiles(destination.id, {
+      controller: controller.source,
+      operation,
+      resolveModifyProjectile,
+      resolveAction: (animNo) => destination.definition.animations.get(animNo),
+    });
+    if (changed > 0) {
+      this.recordHelperRedirectedController(destination, controller.source);
+      if (operation) {
+        this.recordHelperRedirectedOperation(helper, destination, operation);
+      }
+    }
+    return changed > 0;
   }
 
   private rootForRedirectedTarget(target: RuntimeHelperTargetRedirect["actor"]): FighterMatchState | undefined {
@@ -2135,6 +2183,8 @@ export class PlayableMatchRuntime {
                   this.resolveHelperTargetRedirect(helper, playerId, controller),
                 resolveResourceRedirect: (helper, playerId, controller) =>
                   this.resolveHelperResourceRedirect(helper, playerId, controller),
+                onModifyProjectile: (helper, controller, resolveModifyProjectile) =>
+                  this.modifyHelperProjectileRedirect(helper, controller, resolveModifyProjectile),
                 admitResourceWrite: (helper, operation) => this.admitHelperResourceWrite(helper, operation),
                 applySharedResourceWrite: (helper, operation) => this.applySharedHelperResourceWrite(helper, operation),
                 onTargetRedirectBlocked: (helper, controller, playerId) =>
@@ -2709,6 +2759,8 @@ export class PlayableMatchRuntime {
               this.resolveHelperTargetRedirect(helper, playerId, controller),
             resolveResourceRedirect: (helper, playerId, controller) =>
               this.resolveHelperResourceRedirect(helper, playerId, controller),
+            onModifyProjectile: (helper, controller, resolveModifyProjectile) =>
+              this.modifyHelperProjectileRedirect(helper, controller, resolveModifyProjectile),
             admitResourceWrite: (helper, operation) => this.admitHelperResourceWrite(helper, operation),
             applySharedResourceWrite: (helper, operation) => this.applySharedHelperResourceWrite(helper, operation),
             onTargetRedirectBlocked: (helper, controller, playerId) =>

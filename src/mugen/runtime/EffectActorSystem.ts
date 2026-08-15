@@ -680,7 +680,10 @@ function createRuntimeHelperAdvanceOptions(
     },
     onModifyProjectile: (helper, controller, resolveModifyProjectile) => {
       if (options?.onModifyProjectile) {
-        return options.onModifyProjectile(helper, controller, resolveModifyProjectile);
+        const handled = options.onModifyProjectile(helper, controller, resolveModifyProjectile);
+        if (handled !== undefined) {
+          return handled;
+        }
       }
       modifyRuntimeHelperProjectileActors(store, helper, controller, resolveModifyProjectile);
       return true;
