@@ -42,10 +42,22 @@ synthetic-imported-envshake-diradd-decay records dirAdd=20 and decay=1.25.
 The aggregate trace command retains the inherited helper bind target-link
 blocker; Helper active ownership, exact waveform and full parity remain out.
 
-## Next bounded slice — T790 active EnvShake Helper ownership (2026-08-15)
+## Latest bounded slice — T790 active EnvShake Helper ownership (2026-08-15)
 
-Issue 365 queues the next ownership seam. See [issue
+Issue 365 closes the Helper ownership seam. Product `d5077de6` routes a
+Helper-owned active EnvShake into the root presentation buffer without a
+duplicate camera event. Required trace
+`synthetic-imported-helper-envshake` passes with trace/final checksums
+`f75a9af7` / `0f9f927d`, preserving owner/root/parent identity, lifecycle and
+camera projection. Nested/team ownership, waveform, pause/stage/layer,
+contact/fall, rollback and full parity remain excluded. See [issue
 365](../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
+
+## Next bounded slice — T791 upstream seam selection (2026-08-15)
+
+Issue 366 is queued to compare the next official M.U.G.E.N/Ikemen seam after
+T790 and select one bounded implementation with primary-source evidence. See
+[issue 366](../.scratch/roadmap/issues/366-upstream-seam-selection-after-envshake-helper.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper caller-context `ModifyProjectile down.velocity` index

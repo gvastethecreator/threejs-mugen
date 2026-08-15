@@ -34,9 +34,18 @@ tests, typecheck and diff hygiene pass; required evidence records dirAdd=20
 and decay=1.25. Aggregate QA retains the inherited helper bind target-link
 blocker.
 
-## Next implementation checkpoint — T790 active EnvShake Helper ownership (2026-08-15)
+## Latest implementation checkpoint — T790 active EnvShake Helper ownership (2026-08-15)
 
-Issue 365 queues the next ownership seam.
+Issue 365 closes the Helper-owned active EnvShake route through product
+`d5077de6`. Required `synthetic-imported-helper-envshake` passes with
+trace/final checksums `f75a9af7` / `0f9f927d`; the root presentation buffer
+receives one event with preserved owner/root/parent identity. Typecheck and
+diff hygiene pass. Nested/team ownership, waveform, pause/stage/layer,
+contact/fall, rollback and full parity remain open.
+
+## Next implementation checkpoint — T791 upstream seam selection (2026-08-15)
+
+Issue 366 queues the next official-source comparison before implementation.
 ## Historical implementation checkpoint — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

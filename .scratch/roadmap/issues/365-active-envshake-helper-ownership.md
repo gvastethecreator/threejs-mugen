@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T790 — queued (2026-08-15)**
+- **T790 — closed-bounded (2026-08-15)**
 - **Área:** active state controller / Helper ownership / camera shake
 - **Dependencia:** T789 / issue 364
 
@@ -27,3 +27,19 @@ cámara independiente para el Helper.
 ModifyHitDef, ModifyProjectile, env-shakes de contacto/caída, waveform exacta,
 pause/stage/layer, screenpacks, nested/team ownership, rollback, localcoord y
 paridad completa.
+
+## Cierre
+
+- **Producto:** `d5077de6` (`feat(runtime): route Helper-owned EnvShake presentation`)
+- **Trace requerida:** `synthetic-imported-helper-envshake`
+- **Trace checksum:** `f75a9af7`
+- **Final checksum:** `0f9f927d`
+- **Focused proof:** required trace gate 1/1, `pnpm run typecheck` y
+  `git diff --check` pasan.
+
+El Helper resuelve `Parent,Var(...)` en su contexto, emite una sola vez en el
+buffer de presentación del actor raíz y conserva `ownerId`, `rootId` y
+`parentId` en el evento. La proyección de cámara existente consume el evento
+sin crear una cámara separada para el Helper. Nested/team ownership, waveform,
+pause/stage/layer, contacto/caída, rollback y paridad completa siguen fuera de
+este corte.

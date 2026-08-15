@@ -39,9 +39,21 @@ product 63ef2769; focused proof and required trace pass with dirAdd=20 and
 decay=1.25. The inherited helper bind target-link blocker remains; no score
 movement. See [issue 364](../.scratch/roadmap/issues/364-active-envshake-diradd-decay.md).
 
-## Next scorecard slice — 2026-08-15 T790 active EnvShake Helper ownership
+## 2026-08-15 T790 active EnvShake Helper ownership — closed-bounded, no score movement
 
-Issue 365 queues Helper ownership without changing the current score.
+Issue 365 closes Helper-owned active EnvShake presentation through product
+`d5077de6`. Required trace `synthetic-imported-helper-envshake` passes with
+trace/final checksums `f75a9af7` / `0f9f927d`, preserving owner/root/parent
+identity and projecting one root camera event. Nested/team ownership, waveform,
+pause/stage/layer, contact/fall, rollback and full parity remain blocked; the
+score does not move. See [issue 365]
+(../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
+
+## Next scorecard slice — 2026-08-15 T791 upstream seam selection
+
+Issue 366 queues the next official-source comparison without changing the
+current score. See [issue 366]
+(../.scratch/roadmap/issues/366-upstream-seam-selection-after-envshake-helper.md).
 ## Historical checkpoint — 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index
 
 Issue 355 closed Helper-owned live `ModifyProjectile down.velocity` explicit

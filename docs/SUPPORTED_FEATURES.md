@@ -40,9 +40,20 @@ decay to the bounded camera projection. Product 63ef2769; 25 focal tests and
 typecheck pass. The inherited helper bind target-link blocker remains outside
 the slice. See issue 364.
 
-## Next selection — T790 active EnvShake Helper ownership
+## 2026-08-15 T790 — closed-bounded
 
-Issue 365 queues Helper ownership of active EnvShake.
+Helper-owned active EnvShake now resolves `Parent,Var(...)` in caller context
+and emits one root presentation event with preserved owner/root/parent identity.
+Required trace `synthetic-imported-helper-envshake` passes with checksums
+`f75a9af7` / `0f9f927d`; product `d5077de6`, typecheck and diff hygiene pass.
+Nested/team ownership, waveform, pause/stage/layer, contact/fall, rollback and
+full parity remain outside the claim. See [issue 365]
+(../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
+
+## Next selection — T791 upstream seam selection
+
+Issue 366 queues the next primary-source comparison after the T790 ownership
+closure.
 ## Historical — T781 Helper `ModifyProjectile down.velocity` index
 
 Issue 355 closed the same oldest-first index contract for the lying-hit vector;

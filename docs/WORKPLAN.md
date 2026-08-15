@@ -31,9 +31,17 @@ Issue 364 closes the pinned-Ikemen camera-shake seam through product 63ef2769.
 Focused proof, required trace, typecheck and diff hygiene pass; the aggregate
 gate retains the inherited helper bind target-link blocker.
 
-## Next slice — T790 active EnvShake Helper ownership (2026-08-15)
+## Latest slice — T790 active EnvShake Helper ownership (2026-08-15)
 
-Issue 365 queues the next ownership seam.
+Issue 365 closes Helper-owned active EnvShake through product `d5077de6`.
+Required trace `synthetic-imported-helper-envshake` passes with checksums
+`f75a9af7` / `0f9f927d`; one root presentation event preserves owner/root/parent
+identity and reaches the camera projection. Nested/team ownership, waveform,
+pause/stage/layer, contact/fall, rollback and full parity remain excluded.
+
+## Next slice — T791 upstream seam selection (2026-08-15)
+
+Issue 366 queues the next official-source comparison before implementation.
 ## Historical slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

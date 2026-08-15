@@ -1,12 +1,14 @@
 # Controller Support Registry
 
-Latest cursor: T789 / issue 364 is closed-bounded for active-state `EnvShake`
-`mul`/`dir`/`diradd`/`decay`. Product `63ef2769` and required trace
-`synthetic-imported-envshake-diradd-decay` prove finite values reach
-typed operation/event evidence and camera projection. M.U.G.E.N's base
-four-field EnvShake remains supported; exact waveform,
-Helper active ownership, pause/stage/layer, rollback and full parity remain
-unsupported. See [issue 364](../.scratch/roadmap/issues/364-active-envshake-diradd-decay.md).
+Latest cursor: T790 / issue 365 is closed-bounded for Helper-owned active
+`EnvShake`. Product `d5077de6` and required trace
+`synthetic-imported-helper-envshake` prove caller-context `Parent,Var(...)`
+resolution, one root presentation event, owner/root/parent identity, lifecycle
+and camera projection (`f75a9af7` / `0f9f927d`). M.U.G.E.N's base four-field
+EnvShake and the pinned Ikemen extensions remain bounded; nested/team
+ownership, exact waveform, pause/stage/layer, contact/fall, rollback and full
+parity remain unsupported. See [issue
+365](../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
 
 Previous cursor: T787 / issue 361 is closed-bounded for live root/RedirectID
 `ModifyHitDef down.velocity` X/Y component-preserving mutation. Product
@@ -20,8 +22,9 @@ not attributed to this slice. Fresh defaults, dynamic Z/`n`, Helper-authored
 controllers, Projectile variants, exact landing/timing, rollback and full
 parity remain unsupported.
 
-Next cursor: T790 / issue 365 queues active `EnvShake` Helper ownership as the
-next pinned-Ikemen seam with separate ownership/lifecycle evidence.
+Next cursor: T791 / issue 366 queues the next official/Ikemen seam selection
+after the Helper EnvShake ownership closure. See [issue
+366](../.scratch/roadmap/issues/366-upstream-seam-selection-after-envshake-helper.md).
 
 Previous cursor: T786 / issue 360 is closed-bounded for Helper-owned live
 `ModifyProjectile RedirectID` over a root destination Projectile. Required

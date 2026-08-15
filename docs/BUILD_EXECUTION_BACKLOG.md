@@ -45,8 +45,17 @@
   QA retains the inherited helper bind target-link blocker. See [issue 364]
   (../.scratch/roadmap/issues/364-active-envshake-diradd-decay.md).
 
-- **T790 next** — issue 365 queues active `EnvShake` Helper ownership.
-  (../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
+- **T790 closed-bounded** — issue 365 closes active `EnvShake` Helper
+  ownership. Product `d5077de6` and required trace
+  `synthetic-imported-helper-envshake` (`f75a9af7` / `0f9f927d`) prove
+  caller-context `Parent,Var(...)`, one root presentation event, lifecycle and
+  owner/root/parent identity. Nested/team ownership, waveform,
+  pause/stage/layer, contact/fall, rollback and full parity remain outside.
+  See [issue 365](../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
+
+- **T791 next** — issue 366 queues the next official/Ikemen seam comparison
+  after the Helper EnvShake ownership closure. See [issue
+  366](../.scratch/roadmap/issues/366-upstream-seam-selection-after-envshake-helper.md).
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;
   evidence remains in `29aba4bb` / `b9b0752d`.

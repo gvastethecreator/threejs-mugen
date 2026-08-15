@@ -37,10 +37,19 @@ Issue 364 closes the pinned Ikemen per-tick direction/decay seam. Product
 required trace records dirAdd=20 and decay=1.25. The inherited helper bind
 target-link blocker remains outside this slice.
 
-## Next bounded slice — T790 active EnvShake Helper ownership (2026-08-15)
+## Latest bounded slice — T790 active EnvShake Helper ownership (2026-08-15)
 
-Issue 365 queues the Helper ownership seam. See [issue
-365](../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
+Issue 365 closes Helper-owned active EnvShake presentation through product
+`d5077de6`. Required trace `synthetic-imported-helper-envshake` passes with
+trace/final checksums `f75a9af7` / `0f9f927d`; owner/root/parent identity,
+lifecycle and root camera projection are observable. Nested/team ownership,
+waveform, pause/stage/layer, contact/fall, rollback and full parity remain
+excluded. See [issue 365](../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
+
+## Next bounded slice — T791 upstream seam selection (2026-08-15)
+
+Issue 366 queues a primary-source comparison before the next implementation
+cut. See [issue 366](../.scratch/roadmap/issues/366-upstream-seam-selection-after-envshake-helper.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

@@ -35,5 +35,6 @@ timing exacto y cambios de score sin evidencia runtime.
 
 ## Salida requerida
 
-La siguiente selección concreta es T790 (ownership de EnvShake activo en
-Helpers), registrada en [issue 365](365-active-envshake-helper-ownership.md).
+La selección concreta T790 (ownership de EnvShake activo en Helpers) se cerró
+en [issue 365](365-active-envshake-helper-ownership.md). La siguiente revisión
+queda registrada como T791 en [issue 366](366-upstream-seam-selection-after-envshake-helper.md).
