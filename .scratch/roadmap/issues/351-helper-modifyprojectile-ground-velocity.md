@@ -70,6 +70,8 @@ rollback, and full parity.
 
 ## Next bounded slice
 
-T778 is queued in issue 352 for the analogous Helper-owned live
-`ModifyProjectile air.velocity` matrix on one accepted airborne hit. Fresh
+T778 is closed-bounded in issue 352 for the analogous Helper-owned live
+`ModifyProjectile air.velocity` matrix on one accepted airborne hit. T779 is
+queued in issue 353 for the multi-Projectile broadcast/isolation extension.
+Fresh
 defaults and other vector families remain separate.

@@ -1,25 +1,23 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T777 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T778 closed-bounded (2026-08-15)
 
-Issue 351 closes the first-generation Helper-authored live `ModifyProjectile`
-`ground.velocity` matrix for one root-owned Projectile and one accepted
-grounded hit. Evidence commit `2a03d5db` and required trace `52926706` prove
-caller-context variables, component replacement with omitted live sibling
-preservation, GetHitVar velocity readback, physical HitVelSet response,
-lifecycle, ownership and target links. Focused compiler/Projectile/Helper
-tests, typecheck and diff hygiene pass. Aggregate QA retains the inherited
-helper-bind target-link blocker; fresh/default derivation, vector-family
-selection, nested/shared topology, exact timing, rollback and full parity
-remain separate.
+Issue 352 closes the first-generation Helper-authored live `ModifyProjectile`
+`air.velocity` matrix for one root-owned Projectile and one accepted airborne
+hit. Evidence commit `9f7044c0` and required trace checksums `b36b10a7` /
+`6fd7f175` prove caller-context variables, zero-fill component replacement,
+GetHitVar velocity readback, physical HitVelSet response, lifecycle, ownership
+and target links. Focused tests, typecheck and diff hygiene pass. Aggregate QA
+retains the inherited helper-bind target-link blocker; fresh/default
+derivation, vector-family selection, nested/shared topology, exact timing,
+rollback and full parity remain separate.
 
-## Next implementation checkpoint — T778 queued (2026-08-15)
+## Next implementation checkpoint — T779 queued (2026-08-15)
 
-Issue 352 targets the Helper-authored live `ModifyProjectile air.velocity`
-matrix for one root-owned Projectile and one accepted airborne hit. Keep
-fresh/default derivation, dynamic `n`, down/ground/airguard selection,
-nested/shared topology, aggregate QA repair, exact timing, rollback and full
-parity separate.
+Issue 353 targets Helper-owned `ModifyProjectile air.velocity` broadcast to
+multiple selected Projectile ids with non-selected isolation. Keep id-zero/
+omitted selection, fresh/default derivation, dynamic `n`, nested/shared
+topology, aggregate QA repair, exact timing, rollback and full parity separate.
 
 ## Historical implementation checkpoint — T776 closed-bounded (2026-08-15)
 

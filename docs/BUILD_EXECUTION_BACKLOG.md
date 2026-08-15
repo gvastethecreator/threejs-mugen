@@ -94,12 +94,24 @@
   outside. See [issue
   351](../.scratch/roadmap/issues/351-helper-modifyprojectile-ground-velocity.md).
 
-- **T778 next selection** — close the Helper-authored live
+- **T778 closed-bounded** — issue 352 closes the Helper-authored live
   `ModifyProjectile air.velocity` matrix for one root-owned Projectile and one
-  accepted airborne hit. Keep fresh/default derivation, dynamic `n`,
-  down/ground/airguard selection, nested-helper breadth, aggregate QA repair,
-  exact timing, rollback and full parity separate. See [issue
+  accepted airborne hit. Evidence commit `9f7044c0`; required trace checksums
+  are `b36b10a7` / `6fd7f175`. Focused Helper/Projectile coverage proves
+  caller-context evaluation and pinned zero-fill `[x,0,0]`, `[x,y,0]`,
+  `[x,y,z]` replacement through GetHitVar, HitVelSet, lifecycle, ownership and
+  target links. Aggregate QA retains the inherited helper-bind target-link
+  blocker; fresh/default derivation, dynamic `n`, other vector families,
+  nested/shared topology, exact timing, rollback and full parity remain
+  outside. See [issue
   352](../.scratch/roadmap/issues/352-helper-modifyprojectile-air-velocity.md).
+
+- **T779 next selection** — close Helper-authored live
+  `ModifyProjectile air.velocity` broadcast to multiple selected Projectile
+  ids, with a non-selected id isolation check. Keep id-zero/omitted selection,
+  fresh/default derivation, dynamic `n`, nested-helper breadth, aggregate QA
+  repair, exact timing, rollback and full parity separate. See [issue
+  353](../.scratch/roadmap/issues/353-helper-modifyprojectile-air-velocity-broadcast.md).
 
 - **T769 historical** — issue 343 closes the first-generation
   Helper-authored `ModifyProjectile` damage guard seam. Evidence commit is

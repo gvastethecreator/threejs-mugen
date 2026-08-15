@@ -1,24 +1,22 @@
 # Workplan
 
-## Latest slice — T777 closed-bounded (2026-08-15)
+## Latest slice — T778 closed-bounded (2026-08-15)
 
-Issue 351 closes the first-generation Helper-authored live `ModifyProjectile`
-`ground.velocity` matrix for one root-owned Projectile and one accepted
-grounded hit. Evidence commit `2a03d5db` and required trace `52926706` prove
-caller-context evaluation, component replacement with omitted live sibling
-preservation, GetHitVar, physical HitVelSet, lifecycle, ownership and target
-links. Focused tests, typecheck and diff hygiene pass. Aggregate QA retains
-only the inherited helper-bind target-link blocker; fresh/default derivation,
-vector-family selection, nested/shared topology, exact timing, rollback and
-full parity remain outside.
+Issue 352 closes the first-generation Helper-authored live `ModifyProjectile`
+`air.velocity` matrix for one root-owned Projectile and one accepted airborne
+hit. Evidence commit `9f7044c0` and required trace checksums `b36b10a7` /
+`6fd7f175` prove caller-context evaluation and pinned zero-fill
+`[x,0,0]` / `[x,y,0]` / `[x,y,z]`, plus GetHitVar, physical HitVelSet,
+lifecycle, ownership and target links. Focused tests, typecheck and diff
+hygiene pass; aggregate QA retains only the inherited helper-bind blocker.
 
-## Next slice — T778 queued (2026-08-15)
+## Next slice — T779 queued (2026-08-15)
 
-Issue 352 covers the Helper-authored live `ModifyProjectile air.velocity`
-matrix for one root-owned Projectile and one accepted airborne hit. Keep
-fresh/default derivation, dynamic `n`, down/ground/airguard selection,
-nested/shared resource topology, aggregate QA repair, exact timing, rollback
-and full parity separate.
+Issue 353 covers broadcast of one Helper caller-context `ModifyProjectile
+air.velocity` write to multiple selected Projectile ids, with a non-selected
+id isolation check. Keep id-zero/omitted selection, fresh/default derivation,
+dynamic `n`, nested/shared topology, aggregate QA repair, exact timing,
+rollback and full parity separate.
 
 ## Historical slice — T776 closed-bounded (2026-08-15)
 

@@ -70,6 +70,8 @@ rollback, and full parity.
 
 ## Next bounded slice
 
-T777 is closed in issue 351. T778 is queued in issue 352 for the analogous
-Helper-owned live `ModifyProjectile air.velocity` component matrix; it remains
+T777 is closed in issue 351. T778 is closed-bounded in issue 352 for the
+analogous Helper-owned live `ModifyProjectile air.velocity` component matrix.
+T779 is queued in issue 353 for its multi-Projectile broadcast/isolation
+extension; it remains
 separate from down/ground/airguard selection and from fresh/default derivation.

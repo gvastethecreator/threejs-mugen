@@ -1,25 +1,23 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T777 closed-bounded (2026-08-15)
+## Latest bounded slice — T778 closed-bounded (2026-08-15)
 
-Issue 351 closes the first-generation Helper-authored live `ModifyProjectile`
-`ground.velocity` matrix for one root-owned Projectile and one accepted
-grounded hit. Evidence commit `2a03d5db` and required trace `52926706` prove
-caller-context component replacement with omitted live sibling preservation,
+Issue 352 closes the first-generation Helper-authored live `ModifyProjectile`
+`air.velocity` matrix for one root-owned Projectile and one accepted airborne
+hit. Evidence commit `9f7044c0` and required trace checksums `b36b10a7` /
+`6fd7f175` prove caller-context zero-fill `[x,0,0]` / `[x,y,0]` / `[x,y,z]`,
 GetHitVar/physical response, lifecycle, ownership and target links. Focused
-compiler, Projectile, Helper and trace tests, typecheck and diff hygiene pass.
-Aggregate QA retains the inherited helper-bind target-link blocker; fresh/
-default derivation, vector-family selection, nested/shared topology, exact
-timing, rollback and full parity remain blocked.
+compiler, Projectile, Helper and trace tests, typecheck and diff hygiene pass;
+aggregate QA retains the inherited helper-bind blocker.
 
-## Next bounded slice — T778 queued (2026-08-15)
+## Next bounded slice — T779 queued (2026-08-15)
 
-Issue 352 will close the Helper-authored live `ModifyProjectile air.velocity`
-matrix for one root-owned Projectile and one accepted airborne hit. Keep
-fresh/default derivation, dynamic `n`, down/ground/airguard selection,
-nested/shared-resource topology, aggregate QA repair, exact timing, rollback
-and full parity separate. See [issue
-352](../.scratch/roadmap/issues/352-helper-modifyprojectile-air-velocity.md).
+Issue 353 will close the Helper-authored broadcast matrix: the same live
+`ModifyProjectile air.velocity` result must reach multiple selected Projectile
+ids while a non-selected id remains unchanged. Keep id-zero/omitted selection,
+fresh/default derivation, dynamic `n`, nested/shared-resource topology,
+aggregate QA repair, exact timing, rollback and full parity separate. See
+[issue 353](../.scratch/roadmap/issues/353-helper-modifyprojectile-air-velocity-broadcast.md).
 
 ## Historical bounded slice — T776 closed-bounded (2026-08-15)
 

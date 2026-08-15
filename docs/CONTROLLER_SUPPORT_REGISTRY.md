@@ -1,24 +1,25 @@
 # Controller Support Registry
 
-Latest cursor: T777 / issue 351 is closed-bounded for Helper-owned live
-`ModifyProjectile ground.velocity` on one root-owned Projectile and one
-accepted grounded hit. Evidence commit `2a03d5db` and required trace
-`52926706` pass independently. The previous T753 guardpoints cursor remains
-historical below; Projectile/Helper ownership breadth, omitted defaults, int32
-edges, teams, rollback and full parity remain unsupported.
+Latest cursor: T778 / issue 352 is closed-bounded for Helper-owned live
+`ModifyProjectile air.velocity` on one root-owned Projectile and one accepted
+airborne hit. Evidence commit `9f7044c0` and required trace
+`synthetic-imported-helper-modifyprojectile-air-velocity.json`
+(`b36b10a7` / `6fd7f175`) pass independently. The previous T753 guardpoints
+cursor remains historical below; Projectile/Helper selection breadth,
+omitted defaults, int32 edges, teams, rollback and full parity remain
+unsupported.
 
-Latest closed-bounded cursor: T777 / issue 351 covers Helper-owned live
-`ModifyProjectile ground.velocity` for one root-owned Projectile and one
-accepted grounded hit. Evidence commit `2a03d5db` and required trace
-`synthetic-imported-helper-modifyprojectile-ground-velocity.json` (`52926706`)
-prove Helper caller-context component replacement with omitted live sibling
-preservation, GetHitVar/HitVelSet response, lifecycle, ownership and target
+Latest closed-bounded cursor: T778 / issue 352 covers Helper-owned live
+`ModifyProjectile air.velocity` for one root-owned Projectile and one accepted
+airborne hit. The pinned zero-fill one/two/three-component replacement is
+proven through GetHitVar/HitVelSet response, lifecycle, ownership and target
 links. Aggregate QA still has the inherited helper-bind target-link blocker.
-Fresh/default derivation, down/air/airguard selection, nested/team topology,
-exact timing, rollback and full parity remain unsupported.
+Fresh/default derivation, other vector families, nested/team topology, exact
+timing, rollback and full parity remain unsupported.
 
-Next cursor: T778 / issue 352 queues the analogous Helper-owned live
-`ModifyProjectile air.velocity` matrix and one accepted airborne hit.
+Next cursor: T779 / issue 353 queues the Helper-owned live
+`ModifyProjectile air.velocity` broadcast matrix for multiple selected ids,
+with non-selected isolation evidence.
 
 Historical cursor: T754 / root Projectile and Helper-parented guard-point
 multiplier ownership and accepted-contact evidence.

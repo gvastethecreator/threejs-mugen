@@ -66,14 +66,27 @@ derivation, down/air/airguard selection, nested/shared-resource topology,
 exact timing, rollback and full parity remain blocked. See [issue
 351](../.scratch/roadmap/issues/351-helper-modifyprojectile-ground-velocity.md).
 
-## 2026-08-15 T778 Helper `ModifyProjectile` `air.velocity` matrix — queued
+## 2026-08-15 T778 Helper `ModifyProjectile` `air.velocity` matrix — closed-bounded, no score movement
 
-Issue 352 is the next bounded cut for the Helper-owned live `ModifyProjectile
-air.velocity` matrix and one accepted airborne hit. No score movement is
-expected. Fresh/default derivation, dynamic `n`, down/ground/airguard
-selection, nested/shared-resource topology, aggregate QA repair, exact timing,
+Issue 352 closes the bounded Helper-owned live `ModifyProjectile air.velocity`
+matrix and one accepted airborne hit. Evidence commit `9f7044c0` and required
+trace checksums `b36b10a7` / `6fd7f175` prove caller-context evaluation,
+pinned zero-fill `[x,0,0]` / `[x,y,0]` / `[x,y,z]`, GetHitVar/physical response,
+lifecycle, ownership and target links. Focused tests, typecheck and diff
+hygiene pass; aggregate QA retains the inherited helper-bind target-link
+blocker. No score movement: fresh/default derivation, dynamic `n`,
+down/ground/airguard selection, nested/shared-resource topology, exact timing,
 rollback and full parity remain blocked. See [issue
 352](../.scratch/roadmap/issues/352-helper-modifyprojectile-air-velocity.md).
+
+## 2026-08-15 T779 Helper `ModifyProjectile` broadcast — queued
+
+Issue 353 is queued to prove one Helper caller-context `air.velocity` result is
+broadcast to multiple selected Projectile ids while a non-selected id remains
+unchanged. No score movement is expected; id-zero/omitted selection,
+fresh/default derivation, dynamic `n`, nested/shared-resource topology,
+aggregate QA repair, exact timing, rollback and full parity remain blocked. See
+[issue 353](../.scratch/roadmap/issues/353-helper-modifyprojectile-air-velocity-broadcast.md).
 
 ## 2026-08-15 T771 Helper `ModifyProjectile` `airguard.velocity` X air guard — historical closed-bounded, no score movement
 
