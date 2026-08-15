@@ -2395,6 +2395,85 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("resolves Helper-owned ModifyProjectile air.velocity matrix in caller context", () => {
+    const store = createRuntimeEffectActorStore();
+    const spawnAirMatrixHelper = (helperId: string, projectileId: string, expression: string) =>
+      spawnRuntimeHelperActor(store, "p1", {
+        ...helperInput({ id: helperId, anim: "910" }),
+        stateNo: 6100,
+        runtimeProgram: {
+          states: [
+            compileStateProgram(state(6100, 910, [
+              controller("Projectile", {
+                projid: projectileId,
+                projanim: "940",
+                velocity: "0,0",
+                "air.velocity": "-4,5,6",
+              }, ["Time = 0"]),
+              controller("ChangeState", { value: "6101" }, ["Time = 0"]),
+            ])),
+            compileStateProgram(state(6101, 911, [
+              controller("ModifyProjectile", { id: projectileId, "air.velocity": expression }, ["Time = 1"]),
+            ])),
+          ],
+        },
+        animations: new Map([[910, action(910, 4)], [911, action(911, 4)], [940, action(940, 4)]]),
+      });
+    const helperSingle = spawnAirMatrixHelper("62", "8890", "Var(78)");
+    const helperPair = spawnAirMatrixHelper("63", "8891", "Var(79),Var(80)");
+    const helperTriple = spawnAirMatrixHelper("64", "8892", "Var(81),Var(82),Var(83)");
+    const helperOmitted = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "65", anim: "910" }),
+      stateNo: 6100,
+      runtimeProgram: {
+        states: [
+          compileStateProgram(state(6100, 910, [
+            controller("Projectile", { projid: "8893", projanim: "940", velocity: "0,0", "air.velocity": "-4,5,6" }, ["Time = 0"]),
+            controller("ChangeState", { value: "6101" }, ["Time = 0"]),
+          ])),
+          compileStateProgram(state(6101, 911, [
+            controller("ModifyProjectile", { id: "8893", damage: "12" }, ["Time = 1"]),
+          ])),
+        ],
+      },
+      animations: new Map([[910, action(910, 4)], [911, action(911, 4)], [940, action(940, 4)]]),
+    });
+    helperSingle.vars[78] = 9;
+    helperPair.vars[79] = 8;
+    helperPair.vars[80] = -7;
+    helperTriple.vars[81] = 7;
+    helperTriple.vars[82] = -6;
+    helperTriple.vars[83] = 5;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(store.projectiles.find((candidate) => candidate.parentId === helperSingle.serialId)).toMatchObject({
+      airVelocityX: 9,
+      airVelocityY: 0,
+      airVelocityZ: 0,
+      hitVelocities: { air: { x: 9, y: 0, z: 0 } },
+    });
+    expect(store.projectiles.find((candidate) => candidate.parentId === helperPair.serialId)).toMatchObject({
+      airVelocityX: 8,
+      airVelocityY: -7,
+      airVelocityZ: 0,
+      hitVelocities: { air: { x: 8, y: -7, z: 0 } },
+    });
+    expect(store.projectiles.find((candidate) => candidate.parentId === helperTriple.serialId)).toMatchObject({
+      airVelocityX: 7,
+      airVelocityY: -6,
+      airVelocityZ: 5,
+      hitVelocities: { air: { x: 7, y: -6, z: 5 } },
+    });
+    expect(store.projectiles.find((candidate) => candidate.parentId === helperOmitted.serialId)).toMatchObject({
+      airVelocityX: -4,
+      airVelocityY: 5,
+      airVelocityZ: 6,
+      hitVelocities: { air: { x: -4, y: 5, z: 6 } },
+    });
+  });
+
   it("resolves Helper-owned dynamic ModifyProjectile givepower in caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {
