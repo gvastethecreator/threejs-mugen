@@ -34,12 +34,18 @@ Ikemen `diradd/decay`, Helper active controllers, exact waveform, pause/stage,
 rollback and full parity remain outside. See [issue
 363](../.scratch/roadmap/issues/363-active-envshake-mul-dir.md).
 
-## Next bounded slice — T789 active EnvShake `diradd/decay` (2026-08-15)
+## Latest bounded slice — T789 active EnvShake `diradd/decay` (2026-08-15)
 
-Issue 364 queues the next Ikemen-only camera-shake seam with separate per-tick
-direction and decay evidence. See [issue
-364](../.scratch/roadmap/issues/364-active-envshake-diradd-decay.md).
+Issue 364 closes active EnvShake diradd/decay. Product 63ef2769, 25 focused
+tests, typecheck and diff hygiene pass. The required trace
+synthetic-imported-envshake-diradd-decay records dirAdd=20 and decay=1.25.
+The aggregate trace command retains the inherited helper bind target-link
+blocker; Helper active ownership, exact waveform and full parity remain out.
 
+## Next bounded slice — T790 active EnvShake Helper ownership (2026-08-15)
+
+Issue 365 queues the next ownership seam. See [issue
+365](../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper caller-context `ModifyProjectile down.velocity` index

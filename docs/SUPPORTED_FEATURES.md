@@ -32,10 +32,17 @@ values in operation/event evidence and exercises the camera projection.
 rollback and full parity remain outside. See [issue
 363](../.scratch/roadmap/issues/363-active-envshake-mul-dir.md).
 
-## Next selection — T789 active EnvShake `diradd/decay`
+## 2026-08-15 T789 — closed-bounded
 
-Issue 364 queues the next pinned-Ikemen camera-shake seam.
+Active EnvShake now resolves finite diradd/decay values, retains them in
+operation/event/trace evidence and applies per-tick direction and amplitude
+decay to the bounded camera projection. Product 63ef2769; 25 focal tests and
+typecheck pass. The inherited helper bind target-link blocker remains outside
+the slice. See issue 364.
 
+## Next selection — T790 active EnvShake Helper ownership
+
+Issue 365 queues Helper ownership of active EnvShake.
 ## Historical — T781 Helper `ModifyProjectile down.velocity` index
 
 Issue 355 closed the same oldest-first index contract for the lying-hit vector;

@@ -25,11 +25,15 @@ compiler/runtime tests, typed operation/event evidence and the required
 dynamic trace. `diradd/decay`, exact waveform, Helper active ownership,
 pause/stage, rollback and full parity remain outside.
 
-## Next slice — T789 active EnvShake `diradd/decay` (2026-08-15)
+## Latest slice — T789 active EnvShake `diradd/decay` (2026-08-15)
 
-Issue 364 queues the next pinned-Ikemen camera-shake seam with separate
-per-tick direction/decay evidence.
+Issue 364 closes the pinned-Ikemen camera-shake seam through product 63ef2769.
+Focused proof, required trace, typecheck and diff hygiene pass; the aggregate
+gate retains the inherited helper bind target-link blocker.
 
+## Next slice — T790 active EnvShake Helper ownership (2026-08-15)
+
+Issue 365 queues the next ownership seam.
 ## Historical slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

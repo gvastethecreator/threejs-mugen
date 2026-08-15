@@ -27,10 +27,16 @@ required dynamic trace records `mul=1.5` and `dir=30` in typed operation/event
 evidence. `diradd/decay`, exact camera waveform, Helper active ownership,
 pause/stage, rollback and full parity remain open.
 
-## Next implementation checkpoint — T789 active EnvShake `diradd/decay` (2026-08-15)
+## Latest implementation checkpoint — T789 active EnvShake `diradd/decay` (2026-08-15)
 
-Issue 364 is queued as the next pinned-Ikemen camera-shake seam.
+Issue 364 is closed-bounded by product 63ef2769. Focused compiler/runtime/trace
+tests, typecheck and diff hygiene pass; required evidence records dirAdd=20
+and decay=1.25. Aggregate QA retains the inherited helper bind target-link
+blocker.
 
+## Next implementation checkpoint — T790 active EnvShake Helper ownership (2026-08-15)
+
+Issue 365 queues the next ownership seam.
 ## Historical implementation checkpoint — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

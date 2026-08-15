@@ -32,11 +32,16 @@ does not move the score: `diradd/decay`, exact camera waveform, Helper active
 ownership, pause/stage/layer, rollback and full parity remain blocked. See
 [issue 363](../.scratch/roadmap/issues/363-active-envshake-mul-dir.md).
 
-## Next scorecard slice — 2026-08-15 T789 active EnvShake `diradd/decay`
+## 2026-08-15 T789 active EnvShake `diradd/decay` — closed-bounded, no score movement
 
-Issue 364 queues the next pinned-Ikemen camera-shake seam without changing the
-current score. See [issue 364](../.scratch/roadmap/issues/364-active-envshake-diradd-decay.md).
+Issue 364 closes the pinned-Ikemen active EnvShake diradd/decay seam through
+product 63ef2769; focused proof and required trace pass with dirAdd=20 and
+decay=1.25. The inherited helper bind target-link blocker remains; no score
+movement. See [issue 364](../.scratch/roadmap/issues/364-active-envshake-diradd-decay.md).
 
+## Next scorecard slice — 2026-08-15 T790 active EnvShake Helper ownership
+
+Issue 365 queues Helper ownership without changing the current score.
 ## Historical checkpoint — 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index
 
 Issue 355 closed Helper-owned live `ModifyProjectile down.velocity` explicit

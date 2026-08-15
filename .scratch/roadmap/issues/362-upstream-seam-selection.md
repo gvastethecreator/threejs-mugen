@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T788 — closed-bounded (2026-08-15)**
+- **T789 — closed-bounded (2026-08-15)**
 - **Área:** roadmap / official parity / runtime seam selection
 - **Dependencia:** T787 / issue 361
 
@@ -14,6 +14,10 @@ selección produjo el contrato T788 de `EnvShake` activo `mul`/`dir`; el trabajo
 cerrado queda en [issue 363](363-active-envshake-mul-dir.md).
 
 ## Criterios de selección
+
+T788 cerró el par active EnvShake mul/dir y T789 cerró diradd/decay. Los
+detalles y la evidencia quedan en issues 363 y 364; la siguiente selección es
+T790, ownership de EnvShake activo en Helpers, registrada en issue 365.
 
 - El parámetro o controlador debe existir en una fuente oficial identificable.
 - El hueco debe ser observable en una ruta existente de `ControllerOps` y un
@@ -31,5 +35,5 @@ timing exacto y cambios de score sin evidencia runtime.
 
 ## Salida requerida
 
-La siguiente selección concreta es T789 (`diradd`/`decay` activo Ikemen),
-registrada en [issue 364](364-active-envshake-diradd-decay.md).
+La siguiente selección concreta es T790 (ownership de EnvShake activo en
+Helpers), registrada en [issue 365](365-active-envshake-helper-ownership.md).

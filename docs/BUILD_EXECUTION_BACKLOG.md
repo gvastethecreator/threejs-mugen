@@ -39,10 +39,14 @@
   pause/stage/layer, rollback and full parity remain outside. See [issue
   363](../.scratch/roadmap/issues/363-active-envshake-mul-dir.md).
 
-- **T789 next** — issue 364 queues active `EnvShake diradd/decay` as the next
-  pinned-Ikemen camera-shake seam. See [issue
-  364](../.scratch/roadmap/issues/364-active-envshake-diradd-decay.md).
+- **T789 closed-bounded** — issue 364 closes active `EnvShake diradd/decay`.
+  Product 63ef2769, focused compiler/runtime/trace tests, typecheck and diff
+  hygiene pass. Required trace records dirAdd=20 and decay=1.25; aggregate
+  QA retains the inherited helper bind target-link blocker. See [issue 364]
+  (../.scratch/roadmap/issues/364-active-envshake-diradd-decay.md).
 
+- **T790 next** — issue 365 queues active `EnvShake` Helper ownership.
+  (../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;
   evidence remains in `29aba4bb` / `b9b0752d`.
