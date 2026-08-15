@@ -66650,6 +66650,8 @@ export type SyntheticImportedTraceFighterOptions = {
     modifyProjectileRedLife?: SyntheticPairExpression;
     /** Synthetic Helper-local live ModifyProjectile getpower pair. */
     modifyProjectileGetPower?: SyntheticPairExpression;
+    /** Synthetic Helper-local live ModifyProjectile givepower pair. */
+    modifyProjectileGivePower?: SyntheticPairExpression;
     /** Trigger time for the Helper-local live ModifyProjectile redlife pair. */
     modifyProjectileTriggerTime?: number;
     hitSound?: string;
@@ -75425,15 +75427,16 @@ ${route.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = ${
   const guardPauseTimeLine = route.guardPauseTime === undefined ? "guard.pausetime = 2,2" : `guard.pausetime = ${route.guardPauseTime.join(",")}`;
   const guardFlag = route.guardFlag ?? "MA";
   const branchTrigger = route.branchTrigger ?? `ProjGuarded(${projectileId}) && ProjGuardedTime(${projectileId}) >= 1`;
-  const modifyProjectileBlock = route.modifyProjectileRedLife === undefined && route.modifyProjectileGetPower === undefined
+  const modifyProjectileBlock = route.modifyProjectileRedLife === undefined && route.modifyProjectileGetPower === undefined && route.modifyProjectileGivePower === undefined
     ? ""
     : `
-[State ${route.waitStateNo}, Helper ProjGuard ModifyProjectile${route.modifyProjectileGetPower === undefined ? " RedLife" : " GetPower"}]
+[State ${route.waitStateNo}, Helper ProjGuard ModifyProjectile${route.modifyProjectileGetPower !== undefined ? " GetPower" : route.modifyProjectileGivePower !== undefined ? " GivePower" : " RedLife"}]
 type = ModifyProjectile
 trigger1 = Time = ${route.modifyProjectileTriggerTime ?? 3}
 id = ${projectileId}
 ${route.modifyProjectileRedLife === undefined ? "" : `redlife = ${route.modifyProjectileRedLife.join(",")}`}
 ${route.modifyProjectileGetPower === undefined ? "" : `getpower = ${route.modifyProjectileGetPower.join(",")}`}
+${route.modifyProjectileGivePower === undefined ? "" : `givepower = ${route.modifyProjectileGivePower.join(",")}`}
 `;
   return `
 [Statedef 1200]
@@ -77801,6 +77804,147 @@ export function createSyntheticImportedHelperModifyProjectileGetPowerHitTraceArt
       requiredFinalActors: [
         { actorId: "p1", source: "imported", actorKind: "player", life: 1000, power: 44 },
         { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 5 },
+      ],
+    }],
+  });
+}
+
+/** T766 Helper-authored ModifyProjectile proof: helper mutation updates givepower on hit. */
+export function createSyntheticImportedHelperModifyProjectileGivePowerHitTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5107;
+  const projectileId = 8900;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-helper-modifyprojectile-givepower-hit-grid",
+    displayName: "Trace Helper ModifyProjectile GivePower Hit Grid",
+    playerStart: {
+      p1: { x: -54, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "helper-modifyprojectile-givepower-hit-contact", frames: 14, p1: ["x"], p2: [] },
+    { label: "helper-modifyprojectile-givepower-hit-settle", frames: 4, p1: [], p2: [] },
+  ]);
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-givepower-hit-defender",
+    displayName: "Helper ModifyProjectile GivePower Hit Defender",
+    dataStats: { life: 50 },
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      shakePhysics: "N",
+      slidePhysics: "S",
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchExpression: "GetHitVar(power) = 44 && !GetHitVar(guarded)",
+      hitTimeBranchName: "Helper ModifyProjectile GivePower Hit Branch",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-givepower-hit-attacker",
+    displayName: "Helper ModifyProjectile GivePower Hit Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjGuardRoute: {
+      waitStateNo: 1268,
+      waitAnimNo: 1013,
+      branchStateNo: 1269,
+      branchAnimNo: 1014,
+      branchTrigger: `ProjHit(${projectileId}) && ProjHitTime(${projectileId}) >= 1`,
+      projectileAnimNo: 1015,
+      projectileId,
+      // Delay the contact so the helper-local ModifyProjectile runs first.
+      pos: [300, -34],
+      velocity: [5, 0],
+      guardFlag: "H",
+      damage: [45, 0],
+      projectileRemoveOnHit: false,
+      varSeeds: [{ index: 0, value: 11 }],
+      modifyProjectileTriggerTime: 3,
+      modifyProjectileGivePower: ["var(0) * 4", "var(0) - 3"],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-helper-modifyprojectile-givepower-hit-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-modifyprojectile-givepower-hit-golden",
+      label: "Synthetic imported Helper ModifyProjectile givepower hit route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a first-generation Helper resolves its own live ModifyProjectile givepower pair in Helper context before an accepted unguarded hit. The root-owned Projectile contributes a defender power delta of 44 while life falls from 50 to 5 and GetHitVar(power)=44 remains visible in the receiver hit state; getpower, guard/givepower variants, nested helpers, shared power banks, exact int32/clamp/timing, rollback and full M.U.G.E.N/Ikemen parity remain outside this bounded slice.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-modifyprojectile-givepower-hit-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper", "projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5001, branchStateNo],
+      forbiddenExecutedStates: [40, 130, 150, 151, 152, 153, 154, 155, 5020, 5021, 5030, 5050, 5100, 5101, 5102, 5103, 5104, 5105, 5106, 5110],
+      requiredExecutedControllers: ["ChangeState", "Helper", "VarSet", "Projectile", "ModifyProjectile"],
+      requiredExecutedOperations: ["helper", "variable:varset", "projectile", "modifyprojectile"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredControllerEventSequences: [
+        {
+          label: "Helper modifies Projectile givepower before hit",
+          actorId: "p1",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 1200, controller: "Projectile", name: "Helper ProjGuard Spawn" },
+            { stateNo: 1268, controller: "ModifyProjectile", name: "Helper ProjGuard ModifyProjectile GivePower" },
+            { stateNo: 1268, operation: "modifyprojectile" },
+          ],
+        },
+        {
+          label: "Helper Projectile reaches accepted hit after givepower replacement",
+          actorId: "p1",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 200, controller: "Helper", name: "Visual Helper" },
+            { stateNo: 1200, controller: "Projectile", name: "Helper ProjGuard Spawn" },
+          ],
+        },
+      ],
+      requiredActorFrameSequences: [{
+        label: "Helper ModifyProjectile givepower accepted hit order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5001, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [
+        { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1269, minAge: 2 },
+        { actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: projectileId, minAge: 1, hasHit: true },
+      ],
+      requiredTargetLinks: [
+        { ownerId: "p1", actorId: "p2", targetId: projectileId },
+        { ownerId: "p1-helper-0", actorId: "p2", targetId: projectileId },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 5, power: 44 },
       ],
     }],
   });
