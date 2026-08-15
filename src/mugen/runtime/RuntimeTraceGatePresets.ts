@@ -49413,6 +49413,136 @@ export function createSyntheticImportedHelperProjectileDynamicFallImpactTraceArt
   });
 }
 
+export function createSyntheticImportedHelperProjectileDynamicFallRecoveryTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const projectileId = 8921;
+  const script = importedCommonGetHitScript();
+  const trace = runRuntimeTrace(new MatchWorld({
+    p1: createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-helper-projectile-dynamic-fall-recovery",
+      displayName: "Synthetic Imported Helper Projectile Dynamic Fall Recovery",
+      action200Duration: 80,
+      withHitDef: false,
+      withHelper: true,
+      getHitState: { stateNo: 5100, animNo: 500 },
+      getHitVarBranch: {
+        stateNo: 306,
+        expression: "GetHitVar(fall.recover) = 0 && GetHitVar(fall.recovertime) = 19 && GetHitVar(down.recover) = 1 && GetHitVar(down.recovertime) = 45 && GetHitVar(recovertime) = 45",
+      },
+      helperProjHitRoute: {
+        waitStateNo: 1279,
+        waitAnimNo: 1045,
+        branchStateNo: 1280,
+        branchAnimNo: 1046,
+        projectileAnimNo: 1047,
+        projectileId,
+        pos: [360, -34],
+        damage: [10, 0],
+        projectileRemoveTime: 32,
+        projectileRemoveOnHit: false,
+        p2StateNo: 5100,
+        p2GetP1State: true,
+        varSeeds: [
+          { index: 0, value: 0 },
+          { index: 1, value: 19 },
+          { index: 2, value: 1 },
+          { index: 3, value: 45 },
+        ],
+        fallRecovery: {
+          recover: "var(0)",
+          recoverTime: "var(1)",
+          downRecover: "var(2)",
+          downRecoverTime: "var(3)",
+        },
+      },
+    }),
+    p2: demoFighters[1]!,
+    stage,
+    runtimeProfile: "ikemen-go",
+  }), script, {
+    label: "synthetic-imported-helper-projectile-dynamic-fall-recovery-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-dynamic-fall-recovery-golden",
+      label: "Synthetic imported dynamic Helper Projectile fall recovery",
+      source: "mixed",
+      notes: [
+        "Required trace proves a first-generation Helper-created, root-owned Projectile resolves finite fall.recover, fall.recovertime, down.recover, and down.recovertime expressions in Helper caller context, transfers them through an accepted falling hit, and preserves the existing recovery and GetHitVar paths. Nested Helpers, ownProjectile, ModifyProjectile, ModifyHitDef, fall flags, exact recovery timing, teams, rollback, and full MUGEN/Ikemen parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-projectile-dynamic-fall-recovery-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper", "projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5100, 306],
+      requiredExecutedControllers: ["ChangeState", "Helper", "VarSet", "Projectile", "HitFallVel"],
+      requiredExecutedOperations: ["helper", "variable:varset", "projectile", "hitfall:hitfallvel"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredControllerEventSequences: [{
+        label: "Helper Projectile fall recovery caller evaluation order",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 0" },
+          { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 3" },
+          { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
+          { stateNo: 1200, operation: "projectile" },
+        ],
+      }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [
+        { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1280, minAge: 2 },
+        {
+          actorId: "p1-projectile-0",
+          kind: "projectile",
+          ownerId: "p1",
+          parentId: "p1-helper-0",
+          effectId: projectileId,
+          minAge: 1,
+          minPriority: 2,
+          maxHitsRemaining: 0,
+          hasHit: true,
+        },
+      ],
+      requiredTargetLinks: [
+        { ownerId: "p1", actorId: "p2", targetId: projectileId },
+        { ownerId: "p1-helper-0", actorId: "p2", targetId: projectileId },
+      ],
+      requiredFinalActors: [{
+        actorId: "p2",
+        actorKind: "player",
+        source: "demo",
+        stateNo: 306,
+        customOwnerId: "p1",
+        hitFall: {
+          falling: true,
+          recover: false,
+          recoverTime: 19,
+          downRecover: true,
+          downRecoverTime: 45,
+        },
+      }],
+    }],
+  });
+}
+
 export function createSyntheticImportedHitDefDynamicFallEnvShakeTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -69832,6 +69962,8 @@ export type SyntheticImportedTraceFighterOptions = {
     fallEnvShake?: NonNullable<SyntheticImportedTraceFighterOptions["projectileFallEnvShake"]>;
     /** Synthetic Helper-local Projectile fall impact payload. Presence enables fall. */
     fallImpact?: NonNullable<SyntheticImportedTraceFighterOptions["projectileFallImpact"]>;
+    /** Synthetic Helper-local Projectile fall/down recovery payload. Presence enables fall. */
+    fallRecovery?: NonNullable<SyntheticImportedTraceFighterOptions["projectileFallRecovery"]>;
     hitPause?: number;
     hitTime?: number;
     groundHitTime?: SyntheticNumberExpression;
@@ -78714,6 +78846,15 @@ ${route.fallImpact.xVelocity === undefined ? "" : `fall.xvelocity = ${route.fall
 ${route.fallImpact.yVelocity === undefined ? "" : `fall.yvelocity = ${route.fallImpact.yVelocity}`}
 ${route.fallImpact.zVelocity === undefined ? "" : `fall.zvelocity = ${route.fallImpact.zVelocity}`}
 `;
+  const fallRecoveryLines = route.fallRecovery === undefined
+    ? ""
+    : `
+fall = 1
+${route.fallRecovery.recover === undefined ? "" : `fall.recover = ${route.fallRecovery.recover}`}
+${route.fallRecovery.recoverTime === undefined ? "" : `fall.recovertime = ${route.fallRecovery.recoverTime}`}
+${route.fallRecovery.downRecover === undefined ? "" : `down.recover = ${route.fallRecovery.downRecover}`}
+${route.fallRecovery.downRecoverTime === undefined ? "" : `down.recovertime = ${route.fallRecovery.downRecoverTime}`}
+`;
   const airVelocityLine = route.airVelocityExpression === undefined
     ? route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.join(",")}`
     : `air.velocity = ${route.airVelocityExpression.join(",")}`;
@@ -79002,6 +79143,7 @@ ${airGuardVelocityLine}
 ${envShakeLines}
 ${fallEnvShakeLines}
 ${fallImpactLines}
+${fallRecoveryLines}
 ${p2StateNoLine}
 ${p2GetP1StateLine}
 ${missOnOverrideLine}

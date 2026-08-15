@@ -76,6 +76,7 @@ import {
   createSyntheticImportedHelperProjectileDynamicEnvShakeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicFallEnvShakeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicFallImpactTraceArtifact,
+  createSyntheticImportedHelperProjectileDynamicFallRecoveryTraceArtifact,
   createSyntheticImportedHitDefAttackerFacingTraceArtifact,
   createSyntheticImportedHitDefGetPowerTraceArtifact,
   createSyntheticImportedHitDefGetPowerDefaultTraceArtifact,
@@ -27539,6 +27540,35 @@ describe("RuntimeTraceGatePresets", () => {
       stateNo: 305,
       customOwnerId: "p1",
       hitFall: { damage: 17, velocity: { x: 3.5, y: -6.25, z: 2.75 } },
+    });
+  });
+
+  it("creates a required dynamic Helper Projectile fall recovery artifact with caller values and root-parent attribution", () => {
+    const artifact = createSyntheticImportedHelperProjectileDynamicFallRecoveryTraceArtifact({
+      generatedAt: "2026-08-15T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-projectile-dynamic-fall-recovery-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-helper-projectile-dynamic-fall-recovery-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(4);
+    expect(evidence?.executedControllers.HitFallVel).toBeGreaterThanOrEqual(1);
+    expect(evidence?.worldLifecycleEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+      expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" }),
+    ]));
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 306,
+      customOwnerId: "p1",
+      hitFall: {
+        recover: false,
+        recoverTime: 19,
+        downRecover: true,
+        downRecoverTime: 45,
+      },
     });
   });
 
