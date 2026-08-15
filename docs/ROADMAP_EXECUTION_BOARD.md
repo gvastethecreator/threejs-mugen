@@ -1,27 +1,23 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T784 closed-bounded (2026-08-15)
+## Latest bounded slice — T785 closed-bounded (2026-08-15)
 
-Issue 358 closes Helper caller-context `ModifyProjectile airguard.velocity`
-explicit `index` selection. Commits `7cf9ec6` and `506b35dd`, plus required
-trace checksum `f00d561f` / final checksum `578f30d2`, prove oldest-first
-selection of the second same-id Projectile, airborne-guard
-`GetHitVar(xvel/yvel/zvel)=7/-5/2` and physical response, sibling/trap
-isolation, lifecycle, owner/root/parent and target links. Focused tests,
-typecheck and diff hygiene pass. Aggregate QA produces `866/867` passing
-artifacts (`833` required, `34` optional) with one inherited failure:
-`synthetic-imported-helper-bind-to-target-redirect`. Zero-fill and all
-fresh/default, dynamic `n`, edge-index, nested/shared-topology, exact-timing,
-rollback and full-parity exclusions remain explicit.
+Issue 359 closes Helper caller-context `ModifyProjectile airguard.velocity`
+edge selection. Commit `42788837` proves omitted/negative id and index
+broadcast, literal `id=0`, and no-op out-of-range/no-match selectors through
+root/Helper focused tests. Typecheck and diff hygiene pass. Aggregate QA
+remains `866/867` passing artifacts (`833` required, `34` optional) with one
+inherited failure: `synthetic-imported-helper-bind-to-target-redirect`.
+Fresh/default, dynamic `n`, nested/shared-topology, exact-timing, rollback and
+full-parity exclusions remain explicit.
 
-## Next bounded slice — T785 queued (2026-08-15)
+## Next bounded slice — T786 queued (2026-08-15)
 
-Issue 359 queues fail-closed edge selection for Helper-owned live
-`ModifyProjectile airguard.velocity`: omitted/id-zero selectors, negative and
-out-of-range indexes, and no-match cases must not mutate a live Projectile.
-Keep fresh/default derivation, dynamic `n`, nested/shared topology, exact
-timing, rollback and full parity separate. See [issue
-359](../.scratch/roadmap/issues/359-helper-modifyprojectile-airguard-velocity-index-edges.md).
+Issue 360 queues Helper `ModifyProjectile RedirectID` over a root destination
+Projectile, with caller-context airguard mutation and airborne-guard evidence.
+Keep broadcast/edge selectors, nested/team topology, fresh/default derivation,
+dynamic `n`, exact timing, rollback and full parity separate. See [issue
+360](../.scratch/roadmap/issues/360-helper-modifyprojectile-redirect-airguard-velocity.md).
 
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 

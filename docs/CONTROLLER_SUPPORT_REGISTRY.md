@@ -1,15 +1,12 @@
 # Controller Support Registry
 
-Latest cursor: T784 / issue 358 is closed-bounded for Helper-owned live
-`ModifyProjectile airguard.velocity` explicit `index` selection. Evidence
-commits `7cf9ec6` / `506b35dd` and required trace
-`synthetic-imported-helper-modifyprojectile-airguard-velocity-index.json`
-(`f00d561f` / `578f30d2`) prove caller-context static/dynamic index resolution,
-oldest-first one-match zero-fill writes, sibling/trap isolation, and accepted
-airborne-guard readback. Aggregate QA is `866/867` passing (`833` required,
-`34` optional) with only the inherited helper-bind target-link blocker.
-Omitted/id-zero selection, out-of-range/negative index, fresh defaults, int32
-edges, teams, rollback and full parity remain unsupported.
+Latest cursor: T785 / issue 359 is closed-bounded for Helper-owned live
+`ModifyProjectile airguard.velocity` edge selection. Commit `42788837` proves
+official omitted/negative broadcast, literal `id=0`, and no-op out-of-range or
+no-match selectors through root/Helper focused tests. Aggregate QA is `866/867`
+passing (`833` required, `34` optional) with only the inherited helper-bind
+target-link blocker. Fresh defaults, int32 edges, teams, rollback and full
+parity remain unsupported.
 
 Latest closed-bounded cursor: T784 / issue 358 covers Helper-owned live
 `ModifyProjectile airguard.velocity` explicit index selection among same-id
@@ -20,9 +17,9 @@ target links. Fresh/default derivation, index/id edge selection, other vector
 families, nested/team topology, exact timing, rollback and full parity remain
 unsupported.
 
-Next cursor: T785 / issue 359 queues fail-closed Helper-owned live
-`ModifyProjectile airguard.velocity` edge selection for omitted/id-zero,
-negative, out-of-range and no-match selectors.
+Next cursor: T786 / issue 360 queues Helper-owned `ModifyProjectile
+RedirectID` over a root destination Projectile, with caller-context
+`airguard.velocity` mutation and accepted airborne-guard evidence.
 
 Previous cursor: T781 / issue 355 closed Helper-owned live `ModifyProjectile
 down.velocity` explicit index selection; evidence remains in `29aba4bb` /

@@ -1,23 +1,20 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T784 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T785 closed-bounded (2026-08-15)
 
-Issue 358 closes Helper-owned live `ModifyProjectile airguard.velocity`
-explicit `index` selection. Evidence commits `7cf9ec6` / `506b35dd` and
-required trace checksums `f00d561f` / `578f30d2` prove caller-context `var()`
-index resolution, oldest-first selection, live zero-fill vector replacement,
-same-id/trap isolation, airborne-guard GetHitVar/HitVelSet response, lifecycle,
-ownership and target links. Focused tests, typecheck and diff hygiene pass;
-aggregate QA is `866/867` passing with `833` required, `34` optional, and only
-the inherited helper-bind target-link blocker.
+Issue 359 closes Helper-owned live `ModifyProjectile airguard.velocity` edge
+selection. Commit `42788837` proves omitted/negative id and index broadcast,
+literal `id=0`, and no-op out-of-range/no-match selectors through root/Helper
+focused tests. Typecheck and diff hygiene pass; aggregate QA is `866/867`
+passing with `833` required, `34` optional, and only the inherited helper-bind
+target-link blocker.
 
-## Next implementation checkpoint — T785 queued (2026-08-15)
+## Next implementation checkpoint — T786 queued (2026-08-15)
 
-Issue 359 targets fail-closed Helper-owned `ModifyProjectile airguard.velocity`
-edge selection: omitted/id-zero, negative, out-of-range and no-match indexes
-must preserve every live Projectile. Keep fresh/default derivation, dynamic
-`n`, nested/shared topology, aggregate QA repair, exact timing, rollback and
-full parity separate.
+Issue 360 queues Helper `ModifyProjectile RedirectID` over a root destination
+Projectile and an airborne guard route. The next gate must separate Helper
+caller values from the root destination store and preserve the existing edge
+selector contract.
 
 ## Historical implementation checkpoint — T781 closed-bounded (2026-08-15)
 

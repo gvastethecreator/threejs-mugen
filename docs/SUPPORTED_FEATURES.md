@@ -1,22 +1,21 @@
 ﻿# Supported Features
-## 2026-08-15 T784 — closed-bounded
+## 2026-08-15 T785 — closed-bounded
 
-Helper-owned live `ModifyProjectile airguard.velocity` now supports explicit
-oldest-first `index` selection among same-id Projectiles. Commits `7cf9ec6`
-and `506b35dd`, plus required trace `f00d561f` / `578f30d2`, prove caller-
-context static/dynamic index resolution, live zero-fill writes,
-sibling/trap isolation, accepted airborne-guard `GetHitVar`/physical response,
-lifecycle and target links. Aggregate QA is `866/867` passing (`833` required,
-`34` optional) with the inherited helper-bind target-link blocker; no score
-movement. Edge indices, fresh/default derivation, dynamic `n`, nested teams,
-rollback and full parity remain outside the claim. See [issue 358]
-(../.scratch/roadmap/issues/358-helper-modifyprojectile-airguard-velocity-index.md).
+Helper-owned live `ModifyProjectile airguard.velocity` now supports the
+official edge semantics around explicit oldest-first `index` selection.
+Commit `42788837` proves omitted/negative broadcast, literal `id=0`, and
+no-op out-of-range/no-match selectors through root/Helper focused tests.
+Aggregate QA is `866/867` passing (`833` required, `34` optional) with the
+inherited helper-bind target-link blocker; no score movement. Fresh/default
+derivation, dynamic `n`, nested teams, rollback and full parity remain outside
+the claim. See [issue 359]
+(../.scratch/roadmap/issues/359-helper-modifyprojectile-airguard-velocity-index-edges.md).
 
-## Next selection — T785 Helper `ModifyProjectile airguard.velocity` edge cases
+## Next selection — T786 Helper `ModifyProjectile RedirectID`
 
-Issue 359 queues fail-closed omitted/id-zero, negative, out-of-range and
-no-match selection. It remains unscored until focused no-mutation evidence
-closes.
+Issue 360 queues Helper caller-context `RedirectID` over a root destination
+Projectile with `airguard.velocity` mutation and airborne-guard evidence. It
+remains unscored until redirect separation closes.
 
 ## Historical — T781 Helper `ModifyProjectile down.velocity` index
 

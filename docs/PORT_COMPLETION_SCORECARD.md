@@ -1,24 +1,22 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T784 Helper `ModifyProjectile` `airguard.velocity` index — closed-bounded, no score movement
+## 2026-08-15 T785 Helper `ModifyProjectile` `airguard.velocity` edge semantics — closed-bounded, no score movement
 
-Issue 358 closes Helper-owned live `ModifyProjectile airguard.velocity` explicit
-`index` selection. Evidence commits `7cf9ec6` / `506b35dd` and required trace
-`f00d561f` / `578f30d2` prove caller-context static/dynamic index resolution,
-oldest-first one-match zero-fill writes, sibling/trap isolation, accepted
-airborne-guard `GetHitVar`/`HitVelSet`, lifecycle, ownership and target links.
-Focused tests, typecheck and diff hygiene pass. Aggregate QA produces
+Issue 359 closes Helper-owned live `ModifyProjectile airguard.velocity` edge
+selection. Commit `42788837` proves omitted/negative id and index broadcast,
+literal `id=0`, and no-op out-of-range/no-match selectors through focused
+root/Helper tests. Typecheck and diff hygiene pass. Aggregate QA produces
 `866/867` passing artifacts (`833` required, `34` optional) with only the
 inherited helper-bind target-link blocker; no score movement. Fresh/default
-derivation, edge indices, dynamic `n`, nested/shared topology, exact timing,
-rollback and full parity remain blocked. See [issue 358]
-(../.scratch/roadmap/issues/358-helper-modifyprojectile-airguard-velocity-index.md).
+derivation, dynamic `n`, nested/shared topology, exact timing, rollback and
+full parity remain blocked. See [issue 359]
+(../.scratch/roadmap/issues/359-helper-modifyprojectile-airguard-velocity-index-edges.md).
 
-## Next scorecard slice — 2026-08-15 T785 queued
+## Next scorecard slice — 2026-08-15 T786 queued
 
-Issue 359 queues fail-closed edge selection for the same Helper-owned
-`ModifyProjectile airguard.velocity` seam. It is not scored until focused
-no-mutation evidence closes.
+Issue 360 queues Helper-owned `ModifyProjectile RedirectID` over a root
+destination Projectile and an accepted airborne guard. It is not scored until
+caller/redirect separation and required runtime evidence close.
 
 ## Historical checkpoint — 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index
 

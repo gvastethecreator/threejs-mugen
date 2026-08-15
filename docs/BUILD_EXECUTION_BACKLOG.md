@@ -2,23 +2,18 @@
 
 ## Current parity queue
 
-- **T784 closed-bounded** — issue 358 closes Helper-authored live
-  `ModifyProjectile airguard.velocity` explicit oldest-first `index` selection
-  among same-id Projectiles. Evidence commits `7cf9ec6` / `506b35dd` and
-  required trace `f00d561f` / `578f30d2` prove caller-context static/dynamic
-  index resolution, one-match zero-fill writes, sibling/trap isolation,
-  accepted airborne-guard GetHitVar/HitVelSet, lifecycle, ownership and target
-  links. Focused tests, typecheck and diff hygiene pass; aggregate QA
-  produces `866/867` passing artifacts (`833` required, `34` optional) with
-  only the inherited helper-bind target-link blocker. Fresh/default derivation,
-  edge indices, dynamic `n`, nested/shared topology, exact timing, rollback and
-  full parity remain outside. See [issue
-  358](../.scratch/roadmap/issues/358-helper-modifyprojectile-airguard-velocity-index.md).
-
-- **T785 next selection** — issue 359 queues fail-closed omitted/id-zero,
-  negative, out-of-range and no-match selection for Helper-authored live
-  `ModifyProjectile airguard.velocity`. See [issue
+- **T785 closed-bounded** — issue 359 closes official edge selection for
+  Helper-authored live `ModifyProjectile airguard.velocity`: omitted/negative
+  id and index broadcast, literal `id=0`, and no-op out-of-range/no-match
+  selectors. Commit `42788837` adds root/Helper focused evidence; aggregate
+  QA remains `866/867` (`833` required, `34` optional) with only the inherited
+  helper-bind target-link blocker. See [issue
   359](../.scratch/roadmap/issues/359-helper-modifyprojectile-airguard-velocity-index-edges.md).
+
+- **T786 next selection** — issue 360 queues Helper `ModifyProjectile
+  RedirectID` over a root destination Projectile, with caller-context
+  `airguard.velocity` mutation and accepted airborne-guard evidence. See
+  [issue 360](../.scratch/roadmap/issues/360-helper-modifyprojectile-redirect-airguard-velocity.md).
 
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;

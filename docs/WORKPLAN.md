@@ -1,23 +1,19 @@
 # Workplan
 
-## Latest slice — T784 closed-bounded (2026-08-15)
+## Latest slice — T785 closed-bounded (2026-08-15)
 
-Issue 358 closes Helper-owned live `ModifyProjectile airguard.velocity` explicit
-`index` selection. Evidence commits `7cf9ec6` / `506b35dd` and required trace
-checksums `f00d561f` / `578f30d2` prove one-shot caller-context index
-resolution, oldest-first selection, live zero-fill vector writes, sibling/trap
-isolation, accepted airborne-guard GetHitVar/HitVelSet, lifecycle, ownership
-and target-link evidence. Focused tests, typecheck and diff hygiene pass;
-aggregate QA produces `866/867` passing artifacts (`833` required,
-`34` optional) with only the inherited helper-bind blocker.
+Issue 359 closes Helper-owned live `ModifyProjectile airguard.velocity` edge
+selection. Commit `42788837` proves one-shot caller-context omitted/negative
+broadcast, literal `id=0`, and no-op out-of-range/no-match selectors through
+root/Helper focused tests. Typecheck and diff hygiene pass; aggregate QA
+produces `866/867` passing artifacts (`833` required, `34` optional) with only
+the inherited helper-bind blocker.
 
-## Next slice — T785 queued (2026-08-15)
+## Next slice — T786 queued (2026-08-15)
 
-Issue 359 covers fail-closed Helper caller-context `ModifyProjectile
-airguard.velocity` edge selection: omitted/id-zero, negative, out-of-range and
-no-match selectors must not mutate live Projectiles. Keep fresh/default
-derivation, dynamic `n`, nested/shared topology, aggregate QA repair, exact
-timing, rollback and full parity separate.
+Issue 360 queues Helper `ModifyProjectile RedirectID` over a root destination
+Projectile and accepted airborne guard. The next slice must separate Helper
+caller values from the root destination store while preserving T785 selectors.
 
 ## Historical slice — T781 closed-bounded (2026-08-15)
 
