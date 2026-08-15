@@ -1,24 +1,24 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T783 Helper `ModifyProjectile` `guard.velocity` index — closed-bounded, no score movement
+## 2026-08-15 T784 Helper `ModifyProjectile` `airguard.velocity` index — closed-bounded, no score movement
 
-Issue 357 closes Helper-owned live `ModifyProjectile guard.velocity` explicit
-`index` selection. Evidence commits `f6a8fb9f` / `d26a515d` and required trace
-`e4a518cc` / `a1b24816` prove caller-context static/dynamic index resolution,
+Issue 358 closes Helper-owned live `ModifyProjectile airguard.velocity` explicit
+`index` selection. Evidence commits `7cf9ec6` / `506b35dd` and required trace
+`f00d561f` / `578f30d2` prove caller-context static/dynamic index resolution,
 oldest-first one-match zero-fill writes, sibling/trap isolation, accepted
-grounded-guard `GetHitVar`/`HitVelSet`, lifecycle, ownership and target links.
+airborne-guard `GetHitVar`/`HitVelSet`, lifecycle, ownership and target links.
 Focused tests, typecheck and diff hygiene pass. Aggregate QA produces
-`866/865` passing artifacts (`832` required, `34` optional) with only the
+`866/867` passing artifacts (`833` required, `34` optional) with only the
 inherited helper-bind target-link blocker; no score movement. Fresh/default
 derivation, edge indices, dynamic `n`, nested/shared topology, exact timing,
-rollback and full parity remain blocked. See [issue 357]
-(../.scratch/roadmap/issues/357-helper-modifyprojectile-guard-velocity-index.md).
+rollback and full parity remain blocked. See [issue 358]
+(../.scratch/roadmap/issues/358-helper-modifyprojectile-airguard-velocity-index.md).
 
-## Next scorecard slice — 2026-08-15 T784 queued
+## Next scorecard slice — 2026-08-15 T785 queued
 
-Issue 358 queues the same bounded Helper-owned `ModifyProjectile
-airguard.velocity` index-selection seam through an accepted airborne guard; it
-is not scored until focused and required-trace evidence closes.
+Issue 359 queues fail-closed edge selection for the same Helper-owned
+`ModifyProjectile airguard.velocity` seam. It is not scored until focused
+no-mutation evidence closes.
 
 ## Historical checkpoint — 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index
 

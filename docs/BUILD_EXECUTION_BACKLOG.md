@@ -2,24 +2,23 @@
 
 ## Current parity queue
 
-- **T783 closed-bounded** — issue 357 closes Helper-authored live
-  `ModifyProjectile guard.velocity` explicit oldest-first `index` selection
-  among same-id Projectiles. Evidence commits `f6a8fb9f` / `d26a515d` and
-  required trace `e4a518cc` / `a1b24816` prove caller-context static/dynamic
+- **T784 closed-bounded** — issue 358 closes Helper-authored live
+  `ModifyProjectile airguard.velocity` explicit oldest-first `index` selection
+  among same-id Projectiles. Evidence commits `7cf9ec6` / `506b35dd` and
+  required trace `f00d561f` / `578f30d2` prove caller-context static/dynamic
   index resolution, one-match zero-fill writes, sibling/trap isolation,
-  accepted grounded-guard GetHitVar/HitVelSet, lifecycle, ownership and target
+  accepted airborne-guard GetHitVar/HitVelSet, lifecycle, ownership and target
   links. Focused tests, typecheck and diff hygiene pass; aggregate QA
-  produces `866/865` passing artifacts (`832` required, `34` optional) with
+  produces `866/867` passing artifacts (`833` required, `34` optional) with
   only the inherited helper-bind target-link blocker. Fresh/default derivation,
   edge indices, dynamic `n`, nested/shared topology, exact timing, rollback and
   full parity remain outside. See [issue
-  357](../.scratch/roadmap/issues/357-helper-modifyprojectile-guard-velocity-index.md).
-
-- **T784 next selection** — issue 358 queues the same explicit oldest-first
-  `index` selection seam for Helper-authored live `ModifyProjectile
-  airguard.velocity`, with a selected airborne-guard Projectile and
-  sibling/trap isolation. See [issue
   358](../.scratch/roadmap/issues/358-helper-modifyprojectile-airguard-velocity-index.md).
+
+- **T785 next selection** — issue 359 queues fail-closed omitted/id-zero,
+  negative, out-of-range and no-match selection for Helper-authored live
+  `ModifyProjectile airguard.velocity`. See [issue
+  359](../.scratch/roadmap/issues/359-helper-modifyprojectile-airguard-velocity-index-edges.md).
 
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;

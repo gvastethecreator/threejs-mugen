@@ -1,24 +1,25 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T783 closed-bounded (2026-08-15)
+## Latest bounded slice — T784 closed-bounded (2026-08-15)
 
-Issue 357 closes Helper-owned live `ModifyProjectile guard.velocity` explicit
-`index` selection. Commits `f6a8fb9f` / `d26a515d` and required trace
-`e4a518cc` / `a1b24816` prove caller-context static/dynamic index resolution,
-oldest-first single-match replacement, live zero-fill vectors, sibling/trap
-isolation, accepted grounded-guard GetHitVar/physical response, lifecycle,
-ownership and target links. Focused Projectile/Helper/trace tests, typecheck
-and diff hygiene pass; aggregate QA has `866/865` passing artifacts with the
-inherited helper-bind blocker as the only failure.
+Issue 358 closes explicit `index` selection for Helper-authored live
+`ModifyProjectile airguard.velocity` among same-id Projectiles. Commits
+`7cf9ec6` / `506b35dd` and required trace `f00d561f` / `578f30d2` prove
+caller-context static/dynamic index resolution, oldest-first single-match
+replacement, live zero-fill vectors, sibling/trap isolation, accepted
+airborne-guard GetHitVar/physical response, lifecycle, ownership and target
+links. Focused Projectile/Helper/trace tests, typecheck and diff hygiene pass;
+aggregate QA has `866/867` passing artifacts (`833` required, `34` optional)
+with the inherited helper-bind blocker as the only failure.
 
-## Next bounded slice — T784 queued (2026-08-15)
+## Next bounded slice — T785 queued (2026-08-15)
 
-Issue 358 will close explicit `index` selection for Helper-authored live
-`ModifyProjectile airguard.velocity` among same-id Projectiles, preserving
-oldest-first and sibling/trap isolation through an airborne guard. Keep
-id-zero/omitted selection, fresh/default derivation, dynamic `n`, nested/shared
-resource topology, aggregate QA repair, exact timing, rollback and full parity
-separate. See [issue 358](../.scratch/roadmap/issues/358-helper-modifyprojectile-airguard-velocity-index.md).
+Issue 359 will close fail-closed edge selection for Helper-authored live
+`ModifyProjectile airguard.velocity`: omitted/id-zero, negative, out-of-range
+and no-match selectors must leave every live Projectile unchanged. Keep
+fresh/default derivation, dynamic `n`, nested/shared resource topology,
+aggregate QA repair, exact timing, rollback and full parity separate. See
+[issue 359](../.scratch/roadmap/issues/359-helper-modifyprojectile-airguard-velocity-index-edges.md).
 
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 

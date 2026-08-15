@@ -1,28 +1,27 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T783 closed-bounded (2026-08-15)
+## Latest bounded slice — T784 closed-bounded (2026-08-15)
 
-Issue 357 closes Helper caller-context `ModifyProjectile guard.velocity`
-explicit `index` selection. Evidence commits `f6a8fb9f` and `d26a515d`, plus
-required trace checksum `e4a518cc` / final checksum `a1b24816`, prove
-oldest-first selection of one same-id Projectile, grounded-guard
+Issue 358 closes Helper caller-context `ModifyProjectile airguard.velocity`
+explicit `index` selection. Commits `7cf9ec6` and `506b35dd`, plus required
+trace checksum `f00d561f` / final checksum `578f30d2`, prove oldest-first
+selection of the second same-id Projectile, airborne-guard
 `GetHitVar(xvel/yvel/zvel)=7/-5/2` and physical response, sibling/trap
 isolation, lifecycle, owner/root/parent and target links. Focused tests,
-typecheck and diff hygiene pass. Aggregate QA produces `866/865` passing
-artifacts (`832` required, `34` optional); only the inherited helper-bind
-target-link blocker remains. Partial guard vectors follow live
-ModifyProjectile zero-fill `[x,0,0]` / `[x,y,0]` / `[x,y,z]`. Fresh/default
-derivation, dynamic `n`, edge indices, nested/shared topology, exact timing,
-rollback and full parity remain separate.
+typecheck and diff hygiene pass. Aggregate QA produces `866/867` passing
+artifacts (`833` required, `34` optional) with one inherited failure:
+`synthetic-imported-helper-bind-to-target-redirect`. Zero-fill and all
+fresh/default, dynamic `n`, edge-index, nested/shared-topology, exact-timing,
+rollback and full-parity exclusions remain explicit.
 
-## Next bounded slice — T784 queued (2026-08-15)
+## Next bounded slice — T785 queued (2026-08-15)
 
-Issue 358 queues the same oldest-first `index` selection seam for Helper-owned
-live `ModifyProjectile airguard.velocity`, with a selected airborne guard and
-same-id/trap isolation. Keep id-zero/omitted selection, fresh/default
-derivation, dynamic `n`, nested/shared topology, exact timing, rollback and
-full parity separate. See [issue
-358](../.scratch/roadmap/issues/358-helper-modifyprojectile-airguard-velocity-index.md).
+Issue 359 queues fail-closed edge selection for Helper-owned live
+`ModifyProjectile airguard.velocity`: omitted/id-zero selectors, negative and
+out-of-range indexes, and no-match cases must not mutate a live Projectile.
+Keep fresh/default derivation, dynamic `n`, nested/shared topology, exact
+timing, rollback and full parity separate. See [issue
+359](../.scratch/roadmap/issues/359-helper-modifyprojectile-airguard-velocity-index-edges.md).
 
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 

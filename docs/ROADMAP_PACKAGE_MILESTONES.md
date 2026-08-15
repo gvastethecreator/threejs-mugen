@@ -1,25 +1,24 @@
 ﻿# Roadmap Package Milestones
 
-## Latest package — T783 closed-bounded (2026-08-15)
+## Latest package — T784 closed-bounded (2026-08-15)
 
-Issue 357 closes Helper-owned live `ModifyProjectile guard.velocity` explicit
-`index` selection. Evidence commits `f6a8fb9f` / `d26a515d` and required trace
-checksums `e4a518cc` / `a1b24816` prove caller-context static/dynamic index
+Issue 358 closes Helper-owned live `ModifyProjectile airguard.velocity` explicit
+`index` selection. Evidence commits `7cf9ec6` / `506b35dd` and required trace
+checksums `f00d561f` / `578f30d2` prove caller-context static/dynamic index
 resolution, oldest-first one-match selection, live zero-fill vector writes,
-sibling/trap isolation, accepted grounded-guard GetHitVar/physical response,
+sibling/trap isolation, accepted airborne-guard GetHitVar/physical response,
 lifecycle, owner/root/parent and target links. Focused tests, typecheck and
-diff hygiene pass; aggregate QA is `866/865` passing with the inherited
-helper-bind blocker.
+diff hygiene pass; aggregate QA is `866/867` passing (`833` required,
+`34` optional) with the inherited helper-bind blocker.
 
-## Next package — T784 queued (2026-08-15)
+## Next package — T785 queued (2026-08-15)
 
-Issue 358 queues the next bounded Helper-owned live `ModifyProjectile
-airguard.velocity` index-selection matrix: an explicit oldest-first index
-chooses one same-id Projectile while siblings/trap ids remain unchanged through
-an airborne guard. Keep id-zero/omitted selection, fresh/default derivation,
-dynamic `n`, nested/shared topology, aggregate QA repair, exact timing,
-rollback and full parity separate. See [issue
-358](../.scratch/roadmap/issues/358-helper-modifyprojectile-airguard-velocity-index.md).
+Issue 359 queues fail-closed Helper-owned live `ModifyProjectile
+airguard.velocity` edge selection: omitted/id-zero, negative, out-of-range and
+no-match selectors must preserve all live Projectiles. Keep fresh/default
+derivation, dynamic `n`, nested/shared topology, aggregate QA repair, exact
+timing, rollback and full parity separate. See [issue
+359](../.scratch/roadmap/issues/359-helper-modifyprojectile-airguard-velocity-index-edges.md).
 
 ## Historical package — T781 closed-bounded (2026-08-15)
 

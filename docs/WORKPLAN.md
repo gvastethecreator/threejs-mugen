@@ -1,23 +1,23 @@
 # Workplan
 
-## Latest slice — T783 closed-bounded (2026-08-15)
+## Latest slice — T784 closed-bounded (2026-08-15)
 
-Issue 357 closes Helper-owned live `ModifyProjectile guard.velocity` explicit
-`index` selection. Evidence commits `f6a8fb9f` / `d26a515d` and required trace
-checksums `e4a518cc` / `a1b24816` prove one-shot caller-context index
+Issue 358 closes Helper-owned live `ModifyProjectile airguard.velocity` explicit
+`index` selection. Evidence commits `7cf9ec6` / `506b35dd` and required trace
+checksums `f00d561f` / `578f30d2` prove one-shot caller-context index
 resolution, oldest-first selection, live zero-fill vector writes, sibling/trap
-isolation, accepted grounded-guard GetHitVar/HitVelSet, lifecycle, ownership
+isolation, accepted airborne-guard GetHitVar/HitVelSet, lifecycle, ownership
 and target-link evidence. Focused tests, typecheck and diff hygiene pass;
-aggregate QA produces `866/865` passing artifacts with only the inherited
-helper-bind blocker.
+aggregate QA produces `866/867` passing artifacts (`833` required,
+`34` optional) with only the inherited helper-bind blocker.
 
-## Next slice — T784 queued (2026-08-15)
+## Next slice — T785 queued (2026-08-15)
 
-Issue 358 covers Helper caller-context `ModifyProjectile airguard.velocity`
-explicit `index` selection among same-id Projectiles, preserving oldest-first
-selection, sibling/trap isolation and an accepted airborne guard. Keep id-zero/
-omitted selection, fresh/default derivation, dynamic `n`, nested/shared
-topology, aggregate QA repair, exact timing, rollback and full parity separate.
+Issue 359 covers fail-closed Helper caller-context `ModifyProjectile
+airguard.velocity` edge selection: omitted/id-zero, negative, out-of-range and
+no-match selectors must not mutate live Projectiles. Keep fresh/default
+derivation, dynamic `n`, nested/shared topology, aggregate QA repair, exact
+timing, rollback and full parity separate.
 
 ## Historical slice — T781 closed-bounded (2026-08-15)
 

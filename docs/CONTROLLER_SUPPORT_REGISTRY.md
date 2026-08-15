@@ -1,18 +1,18 @@
 # Controller Support Registry
 
-Latest cursor: T783 / issue 357 is closed-bounded for Helper-owned live
-`ModifyProjectile guard.velocity` explicit `index` selection. Evidence commits
-`f6a8fb9f` / `d26a515d` and required trace
-`synthetic-imported-helper-modifyprojectile-guard-velocity-index.json`
-(`e4a518cc` / `a1b24816`) prove caller-context static/dynamic index resolution,
+Latest cursor: T784 / issue 358 is closed-bounded for Helper-owned live
+`ModifyProjectile airguard.velocity` explicit `index` selection. Evidence
+commits `7cf9ec6` / `506b35dd` and required trace
+`synthetic-imported-helper-modifyprojectile-airguard-velocity-index.json`
+(`f00d561f` / `578f30d2`) prove caller-context static/dynamic index resolution,
 oldest-first one-match zero-fill writes, sibling/trap isolation, and accepted
-grounded-guard readback. Aggregate QA is `866/865` passing with only the
-inherited helper-bind target-link blocker. Omitted/id-zero selection,
-out-of-range/negative index, fresh defaults, int32 edges, teams, rollback and
-full parity remain unsupported.
+airborne-guard readback. Aggregate QA is `866/867` passing (`833` required,
+`34` optional) with only the inherited helper-bind target-link blocker.
+Omitted/id-zero selection, out-of-range/negative index, fresh defaults, int32
+edges, teams, rollback and full parity remain unsupported.
 
-Latest closed-bounded cursor: T783 / issue 357 covers Helper-owned live
-`ModifyProjectile guard.velocity` explicit index selection among same-id
+Latest closed-bounded cursor: T784 / issue 358 covers Helper-owned live
+`ModifyProjectile airguard.velocity` explicit index selection among same-id
 Projectiles. Zero-fill replacement is proven through focused static and
 dynamic caller evaluation, oldest-first single-match selection, sibling/trap
 isolation, accepted GetHitVar/HitVelSet response, lifecycle, ownership and
@@ -20,9 +20,9 @@ target links. Fresh/default derivation, index/id edge selection, other vector
 families, nested/team topology, exact timing, rollback and full parity remain
 unsupported.
 
-Next cursor: T784 / issue 358 queues Helper-owned live `ModifyProjectile
-airguard.velocity` explicit index selection among same-id Projectiles and an
-accepted airborne-guard route.
+Next cursor: T785 / issue 359 queues fail-closed Helper-owned live
+`ModifyProjectile airguard.velocity` edge selection for omitted/id-zero,
+negative, out-of-range and no-match selectors.
 
 Previous cursor: T781 / issue 355 closed Helper-owned live `ModifyProjectile
 down.velocity` explicit index selection; evidence remains in `29aba4bb` /

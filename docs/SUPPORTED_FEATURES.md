@@ -1,21 +1,21 @@
 ﻿# Supported Features
-## 2026-08-15 T783 — closed-bounded
+## 2026-08-15 T784 — closed-bounded
 
-Helper-owned live `ModifyProjectile guard.velocity` now supports explicit
-oldest-first `index` selection among same-id Projectiles. Commits `f6a8fb9f`
-and `d26a515d`, plus required trace `e4a518cc` / `a1b24816`, prove caller-
+Helper-owned live `ModifyProjectile airguard.velocity` now supports explicit
+oldest-first `index` selection among same-id Projectiles. Commits `7cf9ec6`
+and `506b35dd`, plus required trace `f00d561f` / `578f30d2`, prove caller-
 context static/dynamic index resolution, live zero-fill writes,
-sibling/trap isolation, accepted grounded-guard `GetHitVar`/physical response,
-lifecycle and target links. Aggregate QA is `866/865` passing with the
-inherited helper-bind target-link blocker; no score movement. Edge indices,
-fresh/default derivation, dynamic `n`, nested teams, rollback and full parity
-remain outside the claim. See [issue 357]
-(../.scratch/roadmap/issues/357-helper-modifyprojectile-guard-velocity-index.md).
+sibling/trap isolation, accepted airborne-guard `GetHitVar`/physical response,
+lifecycle and target links. Aggregate QA is `866/867` passing (`833` required,
+`34` optional) with the inherited helper-bind target-link blocker; no score
+movement. Edge indices, fresh/default derivation, dynamic `n`, nested teams,
+rollback and full parity remain outside the claim. See [issue 358]
+(../.scratch/roadmap/issues/358-helper-modifyprojectile-airguard-velocity-index.md).
 
-## Next selection — T784 Helper `ModifyProjectile airguard.velocity` index
+## Next selection — T785 Helper `ModifyProjectile airguard.velocity` edge cases
 
-Issue 358 queues the same bounded selection contract for an airborne-guard
-Projectile and remains unscored until its focused and required-trace evidence
+Issue 359 queues fail-closed omitted/id-zero, negative, out-of-range and
+no-match selection. It remains unscored until focused no-mutation evidence
 closes.
 
 ## Historical — T781 Helper `ModifyProjectile down.velocity` index
