@@ -35891,6 +35891,209 @@ export function createSyntheticImportedHelperModifyProjectileAirVelocityIndexTra
   });
 }
 
+/** T781 Helper-owned ModifyProjectile proof: down.velocity index selection. */
+export function createSyntheticImportedHelperModifyProjectileDownVelocityIndexTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5127;
+  const projectileId = 8920;
+  const trapProjectileId = 8921;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-helper-modifyprojectile-down-velocity-index-grid",
+    displayName: "Trace Helper ModifyProjectile Down Velocity Index Grid",
+    playerStart: {
+      p1: { x: -54, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "helper-modifyprojectile-down-velocity-index-defender-liedown", frames: 2, p1: [], p2: ["x"] },
+    { label: "helper-modifyprojectile-down-velocity-index-contact", frames: 14, p1: ["x"], p2: [] },
+    { label: "helper-modifyprojectile-down-velocity-index-settle", frames: 18, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-down-velocity-index-attacker",
+    displayName: "Helper ModifyProjectile Down Velocity Index Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1291,
+      waitAnimNo: 1049,
+      branchStateNo: 1292,
+      branchAnimNo: 1050,
+      projectileAnimNo: 1051,
+      projectileId,
+      pos: [360, -180],
+      damage: [37, 2],
+      hitPause: 4,
+      hitTime: 14,
+      groundVelocity: [-1, 1],
+      airVelocity: [-6, -8, 2],
+      downVelocity: [-1, -1, 9],
+      hitFlag: "D",
+      varSeeds: [
+        { index: 0, value: -3 },
+        { index: 1, value: -5 },
+        { index: 2, value: 0 },
+        { index: 3, value: 1 },
+      ],
+      modifyProjectileTriggerTime: 0,
+      modifyProjectileIndex: "var(3)",
+      modifyProjectileDownVelocity: ["var(0)", "var(1)", "var(2)"],
+      secondaryProjectile: {
+        triggerTime: 0,
+        projectileId: trapProjectileId,
+        pos: [360, -180],
+        velocity: [0, 0],
+        guardFlag: "A",
+      },
+      tertiaryProjectile: {
+        triggerTime: 0,
+        projectileId,
+        pos: [360, -34],
+        velocity: [0, 0],
+        guardFlag: "A",
+      },
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-down-velocity-index-defender",
+    displayName: "Helper ModifyProjectile Down Velocity Index Defender",
+    withHitDef: false,
+    withStateTypeSet: { stateType: "L", moveType: "I", physics: "N" },
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5021,
+      shakeStateType: "A",
+      slideStateType: "A",
+      shakePhysics: "N",
+      slidePhysics: "N",
+      slideHitVelSet: { x: true, y: true, z: true },
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchStateType: "A",
+      hitTimeBranchPhysics: "N",
+      hitTimeBranchExpression:
+        "GetHitVar(xvel) = 3 && GetHitVar(yvel) = -5 && GetHitVar(zvel) = 0 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "Helper ModifyProjectile Down Velocity Index Lying Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-helper-modifyprojectile-down-velocity-index-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-modifyprojectile-down-velocity-index-golden",
+      label: "Synthetic imported Helper ModifyProjectile down.velocity index route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves Helper caller-context ModifyProjectile down.velocity explicit index selection over two same-id Projectiles in oldest-first order. Index 1 changes only the newer matching Projectile, which reaches an accepted lying hit; the older same-id sibling and different-id trap remain unchanged. Static/dynamic selector parsing, fresh/default derivation, id zero/omission, negative/out-of-range indices, dynamic n, nested/team topology, exact timing/rounding, rollback, and full M.U.G.E.N/Ikemen parity remain outside this bounded slice.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-modifyprojectile-down-velocity-index-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper", "projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5021, branchStateNo],
+      forbiddenExecutedStates: [130, 150, 151, 152, 153, 154, 155, 5001, 5010, 5011, 5020, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "StateTypeSet", "VarSet", "Helper", "Projectile", "ModifyProjectile", "HitVelSet"],
+      requiredExecutedOperations: ["metadata:statetypeset", "variable:varset", "helper", "projectile", "modifyprojectile", "kinematic:hitvelset"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [
+        { ownerId: "p1", actorId: "p2", targetId: projectileId },
+        { ownerId: "p1-helper-0", actorId: "p2", targetId: projectileId },
+      ],
+      requiredControllerEventSequences: [
+        {
+          label: "Helper ModifyProjectile down.velocity explicit index selection order",
+          actorId: "p1",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 0" },
+            { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 1" },
+            { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 2" },
+            { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 3" },
+            { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
+            { stateNo: 1291, controller: "Projectile", name: "Helper ProjHit Secondary Spawn" },
+            { stateNo: 1291, controller: "Projectile", name: "Helper ProjHit Tertiary Spawn" },
+            { stateNo: 1291, controller: "ModifyProjectile", name: "Helper ProjHit ModifyProjectile Down Velocity" },
+            { stateNo: 1291, operation: "modifyprojectile" },
+          ],
+        },
+        {
+          label: "Indexed Helper Projectile lying target consumes selected down.velocity",
+          actorId: "p2",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 200, controller: "StateTypeSet", name: "StateTypeSet Probe" },
+            { stateNo: 5000, controller: "ChangeState", name: "Hit Shake Over" },
+            { stateNo: 5021, controller: "HitVelSet", name: "Apply Hit Velocity" },
+            { stateNo: 5021, operation: "kinematic:hitvelset" },
+            { stateNo: 5021, controller: "ChangeState", name: "Helper ModifyProjectile Down Velocity Index Lying Branch" },
+          ],
+        },
+      ],
+      requiredActorFrameSequences: [{
+        label: "Indexed Helper ModifyProjectile down.velocity lying-hit physical order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 200, stateType: "L", moveType: "I", physics: "N", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, stateType: "A", moveType: "H", physics: "N", minFrames: 1 },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5021,
+            stateType: "A",
+            moveType: "H",
+            physics: "N",
+            observedVelXAtLeast: 3,
+            observedVelXAtMost: 3,
+            observedVelYAtLeast: -5,
+            observedVelYAtMost: -5,
+            observedVelZAtLeast: 0,
+            observedVelZAtMost: 0,
+            minFrames: 1,
+          },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, stateType: "A", moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredActorFrames: [
+        { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1291, animNo: 1049, minFrames: 1 },
+        { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1292, animNo: 1050, minFrames: 1 },
+        { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1051, minFrames: 1 },
+      ],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 4, minHelpers: 1, minProjectiles: 3, minNextHelperSerial: 1, minNextProjectileSerial: 3 }],
+      requiredEffectPayloads: [
+        { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1292, minAge: 2 },
+        { actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: projectileId, minAge: 1, hasHit: false },
+        { actorId: "p1-projectile-1", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: trapProjectileId, minAge: 1, hasHit: false },
+        { actorId: "p1-projectile-2", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: projectileId, minAge: 1, hasHit: true },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileAirGuardCornerPushTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
