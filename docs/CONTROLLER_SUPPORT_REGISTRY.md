@@ -1,6 +1,18 @@
 # Controller Support Registry
 
-Latest cursor: T802 / issue 377 is closed-bounded for caller-context dynamic
+Latest cursor: T803 / issue 378 is closed-bounded for caller-context dynamic
+`fall.envshake.time/freq/ampl/phase/mul/dir` on one fresh Projectile created
+by a first-generation Helper. The finite package is evaluated in Helper caller
+context and survives to the existing accepted-fall `FallEnvShake`; one
+non-finite authored component drops the package. Required
+`synthetic-imported-helper-projectile-dynamic-fall-envshake` passes at
+`3fc3c9ac` / `8700dfad`; full tests `328/4089`, typecheck, build, and trace QA
+`882/882` (`848` required) pass. Nested/`ownProjectile` topology,
+ModifyProjectile, `diradd`/`decay`, exact fall/camera timing, teams, rollback,
+and full parity remain unsupported. See [issue
+378](../.scratch/roadmap/issues/378-helper-projectile-dynamic-fall-envshake.md).
+
+Previous cursor: T802 / issue 377 is closed-bounded for caller-context dynamic
 `fall.envshake.time/freq/ampl/phase/mul/dir` on one fresh root Projectile.
 The full finite package is evaluated in the controller caller context and
 survives to the existing accepted-fall `FallEnvShake`; one non-finite authored

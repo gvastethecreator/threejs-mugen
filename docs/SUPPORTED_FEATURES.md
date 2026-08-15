@@ -1,4 +1,17 @@
 ﻿# Supported Features
+## 2026-08-15 T803 — closed-bounded
+
+Fresh Projectile created by a first-generation Helper now resolves finite
+caller-context `fall.envshake.time/freq/ampl/phase/mul/dir` and carries the
+package into the existing FallEnvShake event after an accepted falling hit. A
+non-finite authored component fails closed. Required trace
+`synthetic-imported-helper-projectile-dynamic-fall-envshake` passes at
+`3fc3c9ac` / `8700dfad`; full tests `328/4089`, typecheck, build, and trace QA
+`882/882` (`848` required) pass. Nested/`ownProjectile` topology,
+ModifyProjectile, `diradd`/`decay`, exact fall/camera timing, teams, rollback,
+and full parity remain outside. See [issue
+378](../.scratch/roadmap/issues/378-helper-projectile-dynamic-fall-envshake.md).
+
 ## 2026-08-15 T802 — closed-bounded
 
 Fresh root Projectile now resolves finite caller-context

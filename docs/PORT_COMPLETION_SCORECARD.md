@@ -1,5 +1,18 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-15 T803 Helper Projectile dynamic `fall.envshake` — closed-bounded, no score movement
+
+Issue 378 closes caller-context dynamic
+`fall.envshake.time/freq/ampl/phase/mul/dir` for one fresh Projectile created
+by a first-generation Helper. Only an accepted falling hit reaches the existing
+FallEnvShake; a non-finite authored component fails closed. Required
+`synthetic-imported-helper-projectile-dynamic-fall-envshake` passes at
+`3fc3c9ac` / `8700dfad`; full tests `328/4089`, typecheck, build, and trace QA
+`882/882` (`848` required) pass. Nested/`ownProjectile` topology,
+ModifyProjectile, `diradd`/`decay`, exact fall/camera timing, teams, rollback,
+and full parity remain blocked, so the score does not move. See [issue
+378](../.scratch/roadmap/issues/378-helper-projectile-dynamic-fall-envshake.md).
+
 ## 2026-08-15 T802 root Projectile dynamic `fall.envshake` — closed-bounded, no score movement
 
 Issue 377 closes caller-context dynamic

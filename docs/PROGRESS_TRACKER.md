@@ -1,6 +1,17 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T802 root Projectile dynamic `fall.envshake` (2026-08-15)
+## Latest implementation checkpoint — T803 Helper Projectile dynamic `fall.envshake` (2026-08-15)
+
+Issue 378 closes dynamic caller-context
+`fall.envshake.time/freq/ampl/phase/mul/dir` for a fresh Projectile created by
+a first-generation Helper. The finite package persists to the existing
+accepted-fall FallEnvShake; one non-finite authored component fails closed.
+Required evidence passes at `3fc3c9ac` / `8700dfad`; full tests `328/4089`,
+typecheck, build, and trace QA `882/882` (`848` required) pass.
+Nested/`ownProjectile` topology, ModifyProjectile, `diradd`/`decay`, exact
+fall/camera timing, teams, rollback, and full parity remain outside.
+
+## Historical implementation checkpoint — T802 root Projectile dynamic `fall.envshake` (2026-08-15)
 
 Issue 377 closes dynamic caller-context
 `fall.envshake.time/freq/ampl/phase/mul/dir` for a fresh root Projectile.

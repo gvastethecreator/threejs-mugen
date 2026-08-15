@@ -1,6 +1,17 @@
 # Workplan
 
-## Latest slice — T802 root Projectile dynamic `fall.envshake` (2026-08-15)
+## Latest slice — T803 Helper Projectile dynamic `fall.envshake` (2026-08-15)
+
+Issue 378 closes caller-context dynamic
+`fall.envshake.time/freq/ampl/phase/mul/dir` on one fresh Projectile created
+by a first-generation Helper. The finite package reaches the existing
+FallEnvShake only after an accepted falling hit; a non-finite authored
+component fails closed. Required trace passes at `3fc3c9ac` / `8700dfad`; full
+tests `328/4089`, typecheck, build, and trace QA `882/882` (`848` required)
+pass. Nested/`ownProjectile` topology, ModifyProjectile, `diradd`/`decay`,
+exact fall/camera timing, teams, rollback, and full parity remain outside.
+
+## Historical slice — T802 root Projectile dynamic `fall.envshake` (2026-08-15)
 
 Issue 377 closes caller-context dynamic
 `fall.envshake.time/freq/ampl/phase/mul/dir` on one fresh root Projectile.

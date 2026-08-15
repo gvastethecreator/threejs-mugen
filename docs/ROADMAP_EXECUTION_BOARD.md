@@ -1,6 +1,20 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T802 root Projectile dynamic `fall.envshake` (2026-08-15)
+## Latest bounded slice — T803 Helper Projectile dynamic `fall.envshake` (2026-08-15)
+
+Issue 378 closes caller-context dynamic
+`fall.envshake.time/freq/ampl/phase/mul/dir` when a first-generation Helper
+creates one root-owned Projectile. The target path is an accepted falling hit
+through the existing FallEnvShake with preserved owner/root/parent identity;
+one non-finite authored component fails closed. Required
+`synthetic-imported-helper-projectile-dynamic-fall-envshake` passes at
+`3fc3c9ac` / `8700dfad`; full tests `328/4089`, typecheck, build and trace QA
+`882/882` (`848` required) pass. Helper nesting, `ownProjectile`,
+ModifyProjectile, `diradd`/`decay`, exact fall/camera timing, teams, rollback,
+and full parity remain outside. See
+[issue 378](../.scratch/roadmap/issues/378-helper-projectile-dynamic-fall-envshake.md).
+
+## Historical bounded slice — T802 root Projectile dynamic `fall.envshake` (2026-08-15)
 
 Issue 377 closes caller-context dynamic
 `fall.envshake.time/freq/ampl/phase/mul/dir` for one fresh root Projectile.
