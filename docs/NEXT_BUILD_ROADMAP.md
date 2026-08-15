@@ -56,18 +56,25 @@ time, exact blend/layer/pause, redirects, nested/team ownership, rollback and
 full parity remain excluded. See [issue
 367](../.scratch/roadmap/issues/367-helper-envcolor-presentation-ownership.md).
 
-## Latest bounded slice — T793 `EnvColor time = -1` (2026-08-15)
+## Historical bounded slice — T793 `EnvColor time = -1` (2026-08-15)
 
 Issue 368 closes the persistent flash route. `d98a5443` normalizes negative
 time to `-1`, keeps the event active until replacement/reset, and leaves no
 older flash after replacement expiry. Required trace passes at `7481ebbf` /
-`2c8cedc7`; aggregate QA is `872/872` (`838` required). The finite positive
-240-tick ceiling and broad presentation parity remain separate.
+`2c8cedc7`; aggregate QA is `872/872` (`838` required). T794 later closes the
+finite positive 240-tick ceiling; broad presentation parity remains separate.
 
-## Next bounded slice — T794 finite `EnvColor` duration ceiling (2026-08-15)
+## Latest bounded slice — T794 finite `EnvColor` duration ceiling (2026-08-15)
 
-Issue 369 queues the finite-duration source selection. See [issue
-369](../.scratch/roadmap/issues/369-envcolor-finite-duration-ceiling.md).
+Issue 369 closes finite `EnvColor` beyond the local 240 cap. Product
+`1cab062e` plus required `synthetic-imported-envcolor-long-finite` prove
+finite `241` until expiry (`6a60ee57` / `58e50e4b`); aggregate QA is `873/873`
+(`839` required). See [issue 369](../.scratch/roadmap/issues/369-envcolor-finite-duration-ceiling.md).
+
+## Next bounded slice — T795 finite `EnvShake` duration ceiling (2026-08-15)
+
+Issue 370 queues the active-EnvShake source comparison and bounded trace gate.
+See [issue 370](../.scratch/roadmap/issues/370-envshake-finite-duration-ceiling.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

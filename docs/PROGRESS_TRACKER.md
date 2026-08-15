@@ -52,21 +52,29 @@ passes at `68d3329b` / `1b28cd00`; focused tests, typecheck, build and the
 871/871 aggregate trace gate pass. Infinite time, exact blend/layer/pause
 timing, redirects, nested/team ownership, rollback and full parity remain open.
 
-## Latest implementation checkpoint — T793 `EnvColor time = -1` (2026-08-15)
+## Historical implementation checkpoint — T793 `EnvColor time = -1` (2026-08-15)
 
 Issue 368 closes bounded indefinite EnvColor lifetime through `d98a5443`.
 Negative authored time normalizes to `-1`, zero remains ignored, and a newer
 flash replaces the persistent event without later revival. Required
 `synthetic-imported-envcolor-indefinite` passes at `7481ebbf` / `2c8cedc7`;
 focused tests, typecheck, build, DA29/DA30 evidence (`186/186`) and aggregate
-trace QA (`872/872`, `838` required) pass. Positive duration above 240, exact
-blend/layer/pause behavior, nested/team ownership, rollback and full parity
-remain open.
+trace QA (`872/872`, `838` required) pass. T794 later closes positive
+duration above 240; exact blend/layer/pause behavior, nested/team ownership,
+rollback and full parity remain open.
 
-## Next implementation checkpoint — T794 finite `EnvColor` duration ceiling (2026-08-15)
+## Latest implementation checkpoint — T794 finite `EnvColor` duration ceiling (2026-08-15)
 
-Issue 369 queues removal of the local finite 240-tick ceiling with a separate
-observable expiry claim.
+Issue 369 closes finite positive `EnvColor` through `1cab062e`. The compiler
+and runtime retain authored `241`; root/Helper coverage plus required
+`synthetic-imported-envcolor-long-finite` prove 241 visible finite frames then
+expiry (`6a60ee57` / `58e50e4b`). Typecheck, build and aggregate trace QA
+(`873/873`, `839` required) pass. Exact blend/layer/pause, nested/team
+ownership, rollback and full parity remain open.
+
+## Next implementation checkpoint — T795 finite `EnvShake` duration ceiling (2026-08-15)
+
+Issue 370 queues a separate active-EnvShake ceiling decision and evidence path.
 ## Historical implementation checkpoint — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

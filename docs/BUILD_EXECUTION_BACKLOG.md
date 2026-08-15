@@ -64,13 +64,21 @@
 - **T793 closed-bounded** — issue 368 closes `EnvColor time = -1` lifetime
   and replacement. Product `d98a5443` preserves `remaining = -1` until a
   newer flash or reset, and the required trace passes at `7481ebbf` /
-  `2c8cedc7`; aggregate QA is `872/872` (`838` required). Exact
-  blend/layer/pause, nested/team ownership, rollback and full parity remain
-  outside. See [issue 368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
+  `2c8cedc7`; aggregate QA is `872/872` (`838` required). T794 closes the
+  later finite-duration ceiling; exact blend/layer/pause, nested/team
+  ownership, rollback and full parity remain outside. See [issue 368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
 
-- **T794 next** — issue 369 selects removal of the local 240-tick finite
-  `EnvColor` duration ceiling. See [issue
-  369](../.scratch/roadmap/issues/369-envcolor-finite-duration-ceiling.md).
+- **T794 closed-bounded** — issue 369 removes the local 240-tick finite
+  `EnvColor` duration ceiling through product `1cab062e`. Root/Helper focused
+  coverage and required `synthetic-imported-envcolor-long-finite` prove a
+  finite authored `241` survives for 241 frames and expires (`6a60ee57` /
+  `58e50e4b`); aggregate QA is `873/873` (`839` required). Exact blend/layer/
+  pause, nested/team ownership, rollback and full parity remain outside. See
+  [issue 369](../.scratch/roadmap/issues/369-envcolor-finite-duration-ceiling.md).
+
+- **T795 next** — issue 370 selects active `EnvShake` finite-duration source
+  comparison without widening FallEnvShake or Projectile scope. See [issue
+  370](../.scratch/roadmap/issues/370-envshake-finite-duration-ceiling.md).
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;
   evidence remains in `29aba4bb` / `b9b0752d`.

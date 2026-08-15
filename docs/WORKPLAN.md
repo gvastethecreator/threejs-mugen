@@ -47,17 +47,27 @@ required trace `synthetic-imported-helper-envcolor` passes at `68d3329b` /
 `1b28cd00`. Infinite time, exact blend/layer/pause, redirects, nested/team
 ownership, rollback and full parity remain excluded.
 
-## Latest slice — T793 `EnvColor time = -1` (2026-08-15)
+## Historical slice — T793 `EnvColor time = -1` (2026-08-15)
 
 Issue 368 closes the indefinite lifetime/replacement route. `d98a5443` keeps
 negative time as `-1`, ignores zero, and lets a new flash replace the old one
 without revival after expiry. Required trace is `7481ebbf` / `2c8cedc7`; QA is
-`872/872` (`838` required). Positive duration above 240, exact presentation
-math, pause, nested/team ownership, rollback and full parity remain separate.
+`872/872` (`838` required). T794 closes positive duration above 240; exact
+presentation math, pause, nested/team ownership, rollback and full parity
+remain separate.
 
-## Next slice — T794 finite `EnvColor` duration ceiling (2026-08-15)
+## Latest slice — T794 finite `EnvColor` duration ceiling (2026-08-15)
 
-Issue 369 selects finite positive duration beyond the current local cap.
+Issue 369 closes finite positive duration beyond the local cap. Product
+`1cab062e` preserves finite `241` in compiler/runtime while the required trace
+observes 241 frames then expiry (`6a60ee57` / `58e50e4b`); QA is `873/873`
+(`839` required). Exact presentation math, pause, nested/team ownership,
+rollback and full parity remain separate.
+
+## Next slice — T795 finite `EnvShake` duration ceiling (2026-08-15)
+
+Issue 370 selects the separately bounded active-EnvShake finite-duration
+comparison and trace path.
 ## Historical slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

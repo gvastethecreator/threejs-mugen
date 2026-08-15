@@ -64,20 +64,30 @@ time, exact layer/blend/pause timing, redirects, nested/team ownership,
 rollback and full parity remain excluded. See [issue
 367](../.scratch/roadmap/issues/367-helper-envcolor-presentation-ownership.md).
 
-## Latest bounded slice — T793 `EnvColor time = -1` (2026-08-15)
+## Historical bounded slice — T793 `EnvColor time = -1` (2026-08-15)
 
 Issue 368 closes the bounded indefinite lifetime route. Product `d98a5443`
 normalizes negative time to `-1`, retains the flash until replacement/reset,
 and prevents an expired replacement from reviving the prior event. Required
 `synthetic-imported-envcolor-indefinite` passes at `7481ebbf` / `2c8cedc7`;
-`pnpm qa:trace` is `872/872` (`838` required). Positive durations remain
-locally capped at 240, while exact blend/layer/pause/topology/rollback/full
-parity remain separate. See [issue 368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
+`pnpm qa:trace` was `872/872` (`838` required) at close. T794 subsequently
+closes the finite-duration ceiling; exact blend/layer/pause/topology/rollback/
+full parity remain separate. See [issue 368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
 
-## Next bounded slice — T794 finite `EnvColor` duration ceiling (2026-08-15)
+## Latest bounded slice — T794 finite `EnvColor` duration ceiling (2026-08-15)
 
-Issue 369 queues the official finite-duration selection beyond the current
-240-tick local ceiling. See [issue 369](../.scratch/roadmap/issues/369-envcolor-finite-duration-ceiling.md).
+Issue 369 closes the positive finite route. Product `1cab062e` removes the
+local 240-tick cap while preserving zero rejection and negative `-1` handling.
+Root/Helper focused coverage and required
+`synthetic-imported-envcolor-long-finite` prove a finite authored `241` lasts
+past 240 and expires, at `6a60ee57` / `58e50e4b`; aggregate trace QA is
+`873/873` (`839` required). Exact blend/layer/pause/topology/rollback/full
+parity remain separate. See [issue 369](../.scratch/roadmap/issues/369-envcolor-finite-duration-ceiling.md).
+
+## Next bounded slice — T795 finite `EnvShake` duration ceiling (2026-08-15)
+
+Issue 370 queues source comparison and a separately bounded active-EnvShake
+finite-duration claim. See [issue 370](../.scratch/roadmap/issues/370-envshake-finite-duration-ceiling.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper caller-context `ModifyProjectile down.velocity` index
