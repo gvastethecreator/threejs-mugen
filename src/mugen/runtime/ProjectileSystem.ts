@@ -339,6 +339,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveSparkScale?: () => { hit?: [number?, number?]; guard?: [number?, number?] } | undefined;
   /** Resolves fresh Projectile EnvShake expressions in the original caller context. */
   resolveEnvShake?: () => Partial<RuntimeProjectileEnvShake> | undefined;
+  /** Resolves fresh Projectile fall EnvShake expressions in the original caller context. */
+  resolveFallEnvShake?: () => Partial<RuntimeProjectileEnvShake> | undefined;
   /** Resolves Projectile ground.velocity authored expressions in the original caller context. */
   resolveGroundVelocity?: () => [number?, number?, number?] | undefined;
   /** Resolves Projectile guard.velocity authored expressions in the original caller context. */
@@ -775,7 +777,18 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const forceNoFall = operation?.forceNoFall ?? booleanNumber(findControllerParam(input.controller, "forcenofall"));
   const forceStand = operation?.forceStand ?? booleanNumber(findControllerParam(input.controller, "forcestand"));
   const forceCrouch = operation?.forceCrouch ?? booleanNumber(findControllerParam(input.controller, "forcecrouch"));
-  const authoredFall = operation?.fall ?? projectileFallData(input.controller);
+  const staticFall = operation?.fall ?? projectileFallData(input.controller);
+  const fallEnvShake = resolveRuntimeProjectileEnvShake(
+    operation?.fallEnvShake,
+    input.resolveFallEnvShake?.(),
+    projectileFallEnvShake(staticFall),
+  );
+  const authoredFall = operation?.fallEnvShake === undefined
+    ? staticFall
+    : {
+        ...withoutProjectileFallEnvShake(staticFall),
+        ...projectileFallEnvShakeFields(fallEnvShake),
+      };
   const fall = Object.keys(authoredFall).length === 0 ? undefined : authoredFall;
   const push = Math.abs(groundVelocity?.[0] ?? 18);
   const hasDynamicGuardVelocity = operation?.guardVelocityExpressions !== undefined || operation?.guardVelocityZExpression !== undefined;
@@ -2020,6 +2033,47 @@ function resolveRuntimeProjectileEnvShake(
     return undefined;
   }
   return runtimeProjectileEnvShake(sourceNumbers);
+}
+
+function projectileFallEnvShake(fall: HitDefFallOp): Partial<RuntimeProjectileEnvShake> {
+  return {
+    time: fall.envShakeTime,
+    freq: fall.envShakeFrequency,
+    ampl: fall.envShakeAmplitude,
+    phase: fall.envShakePhase,
+    mul: fall.envShakeMultiplier,
+    dir: fall.envShakeDirection,
+  };
+}
+
+function withoutProjectileFallEnvShake(fall: HitDefFallOp): HitDefFallOp {
+  const {
+    envShakeTime: _time,
+    envShakeFrequency: _freq,
+    envShakeAmplitude: _ampl,
+    envShakePhase: _phase,
+    envShakeMultiplier: _mul,
+    envShakeDirection: _dir,
+    ...rest
+  } = fall;
+  return rest;
+}
+
+function projectileFallEnvShakeFields(
+  envShake: RuntimeProjectileEnvShake | undefined,
+): Pick<
+  HitDefFallOp,
+  "envShakeTime" | "envShakeFrequency" | "envShakeAmplitude" | "envShakePhase" | "envShakeMultiplier" | "envShakeDirection"
+> {
+  if (envShake === undefined) return {};
+  return {
+    envShakeTime: envShake.time,
+    envShakeFrequency: envShake.freq,
+    envShakeAmplitude: envShake.ampl,
+    envShakePhase: envShake.phase,
+    envShakeMultiplier: envShake.mul,
+    envShakeDirection: envShake.dir,
+  };
 }
 
 function resolveModifyProjectileNumberParam(

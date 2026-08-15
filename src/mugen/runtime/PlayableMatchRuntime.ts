@@ -6655,6 +6655,22 @@ function runActiveStateControllers(
                   );
                 }
               : undefined,
+          resolveProjectileFallEnvShake:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  return resolveProjectileEnvShakeComponents(
+                    operation?.fallEnvShake,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                  );
+                }
+              : undefined,
           resolveProjectilePaletteFx:
             effect === "projectile"
               ? {

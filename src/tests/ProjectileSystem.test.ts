@@ -989,6 +989,62 @@ describe("ProjectileSystem", () => {
     expect(spawn("p1-projectile-envshake-unresolved").envShake).toBeUndefined();
   });
 
+  it("resolves Projectile fall EnvShake once and drops a package with a nonfinite authored component", () => {
+    const controllerValue = controller({
+      projanim: "1005",
+      fall: "1",
+      "fall.envshake.time": "var(0) + .8",
+      "fall.envshake.freq": "var(1) * .5",
+      "fall.envshake.ampl": "var(2) - .4",
+      "fall.envshake.phase": "var(3) / 2",
+      "fall.envshake.mul": "1.25",
+      "fall.envshake.dir": "var(4) - 15",
+    });
+    const operation = compileControllerIr(controllerValue).operation as ProjectileControllerOp;
+    const spawn = (
+      serialId: string,
+      resolveFallEnvShake?: Parameters<typeof createRuntimeProjectile>[0]["resolveFallEnvShake"],
+    ) => createRuntimeProjectile({
+      serialId,
+      controller: controllerValue,
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveFallEnvShake,
+    });
+
+    expect(spawn("p1-projectile-fall-envshake-dynamic", () => ({
+      time: 17.8,
+      freq: 45.5,
+      ampl: -9.4,
+      phase: 0.25,
+      mul: 1.25,
+      dir: 30,
+    })).fall).toEqual({
+      enabled: true,
+      envShakeTime: 17,
+      envShakeFrequency: 45.5,
+      envShakeAmplitude: -9,
+      envShakePhase: 0.25,
+      envShakeMultiplier: 1.25,
+      envShakeDirection: 30,
+    });
+    expect(spawn("p1-projectile-fall-envshake-nonfinite", () => ({
+      time: 17,
+      freq: Number.NaN,
+      ampl: -9,
+      phase: 0.25,
+      mul: 1.25,
+      dir: 30,
+    })).fall).toEqual({ enabled: true });
+    expect(spawn("p1-projectile-fall-envshake-unresolved").fall).toEqual({ enabled: true });
+  });
+
   it("resolves Projectile grounded friction at spawn and fails closed for unresolved expressions", () => {
     const spawn = (
       serialId: string,

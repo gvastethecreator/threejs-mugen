@@ -75,6 +75,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveProjectileGroundFriction?: RuntimeProjectileSpawnInput["resolveGroundFriction"];
   resolveProjectileSparkScale?: RuntimeProjectileSpawnInput["resolveSparkScale"];
   resolveProjectileEnvShake?: RuntimeProjectileSpawnInput["resolveEnvShake"];
+  resolveProjectileFallEnvShake?: RuntimeProjectileSpawnInput["resolveFallEnvShake"];
   resolveProjectileGroundVelocity?: RuntimeProjectileSpawnInput["resolveGroundVelocity"];
   resolveProjectileGuardVelocity?: RuntimeProjectileSpawnInput["resolveGuardVelocity"];
   resolveProjectileAirVelocity?: RuntimeProjectileSpawnInput["resolveAirVelocity"];
@@ -273,6 +274,7 @@ export class RuntimeEffectSpawnWorld {
     resolveGroundFriction?: RuntimeProjectileSpawnInput["resolveGroundFriction"],
     resolveSparkScale?: RuntimeProjectileSpawnInput["resolveSparkScale"],
     resolveEnvShake?: RuntimeProjectileSpawnInput["resolveEnvShake"],
+    resolveFallEnvShake?: RuntimeProjectileSpawnInput["resolveFallEnvShake"],
     resolveGroundVelocity?: RuntimeProjectileSpawnInput["resolveGroundVelocity"],
     resolveGuardVelocity?: RuntimeProjectileSpawnInput["resolveGuardVelocity"],
     resolveAirVelocity?: RuntimeProjectileSpawnInput["resolveAirVelocity"],
@@ -344,6 +346,7 @@ export class RuntimeEffectSpawnWorld {
       resolveGroundFriction,
       resolveSparkScale,
       resolveEnvShake,
+      resolveFallEnvShake,
       resolveGroundVelocity,
       resolveGuardVelocity,
       resolveAirVelocity,
@@ -653,6 +656,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveProjectileGroundFriction,
         options.resolveProjectileSparkScale,
         options.resolveProjectileEnvShake,
+        options.resolveProjectileFallEnvShake,
         options.resolveProjectileGroundVelocity,
         options.resolveProjectileGuardVelocity,
         options.resolveProjectileAirVelocity,

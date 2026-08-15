@@ -69,6 +69,7 @@ import {
   createSyntheticImportedProjectileSparkScaleTraceArtifact,
   createSyntheticImportedProjectileEnvShakeLongFiniteTraceArtifact,
   createSyntheticImportedProjectileDynamicEnvShakeTraceArtifact,
+  createSyntheticImportedProjectileDynamicFallEnvShakeTraceArtifact,
   createSyntheticImportedHelperProjectileEnvShakeLongFiniteTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicEnvShakeTraceArtifact,
   createSyntheticImportedHitDefAttackerFacingTraceArtifact,
@@ -27374,6 +27375,24 @@ describe("RuntimeTraceGatePresets", () => {
     ]));
     expect(artifact.trace.frames.some((frame) => frame.stage?.camera.shake?.remaining === 1)).toBe(true);
     expect(artifact.trace.frames.at(-1)?.stage?.camera.shake).toBeUndefined();
+  });
+
+  it("creates a required dynamic root Projectile fall EnvShake artifact with caller values", () => {
+    const artifact = createSyntheticImportedProjectileDynamicFallEnvShakeTraceArtifact({
+      generatedAt: "2026-08-15T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-fall-envshake-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-projectile-dynamic-fall-envshake-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(6);
+    expect(evidence?.executedControllers.FallEnvShake).toBeGreaterThanOrEqual(1);
+    expect(evidence?.envShakeEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", time: 15, freq: 178, ampl: 6, phase: 0, mul: 0.75, dir: 67.5, stateNo: 5100 }),
+    ]));
   });
 
   it("creates a required long finite Helper Projectile EnvShake artifact with root-parent attribution", () => {
