@@ -2,7 +2,24 @@
 
 ## Current parity queue
 
-- **T765 closed-bounded** — issue 339 closes the first-generation
+- **T766 closed-bounded** — issue 340 closes the first-generation
+  Helper-authored `ModifyProjectile` givepower hit seam. Evidence commit is
+  `b2a300f1`; required trace `90cb9340` / `508dbf8f` (initial
+  `d26f12db`). The root-owned Projectile resolves the Helper pair before an
+  accepted hit, leaving defender power `44`, life `5`, and
+  `GetHitVar(power)=44` evidence. Focused Helper/trace tests, typecheck and
+  diff hygiene pass; aggregate QA retains the inherited helper-bind target-link
+  blocker. Guard contact, getpower mutation, nested/shared-resource topology,
+  exact arithmetic/timing, rollback and full parity remain outside. See [issue
+  340](../.scratch/roadmap/issues/340-helper-modifyprojectile-givepower-hit.md).
+
+- **T767 next selection** — close the Helper-authored `ModifyProjectile`
+  givepower guard readback; keep unguarded hit, getpower mutation,
+  nested-helper breadth, aggregate QA repair and resource topology separate.
+  See [issue
+  341](../.scratch/roadmap/issues/341-helper-modifyprojectile-givepower-guard.md).
+
+- **T765 historical** — issue 339 closes the first-generation
   Helper-authored `ModifyProjectile` getpower hit seam. Evidence commit is
   `c27b658e`; required trace `d1f1edf2` / `efa376d6` (initial
   `6ae1a86b`). The root-owned Projectile resolves the Helper pair before an
@@ -12,12 +29,6 @@
   blocker. Givepower, guard contact, nested/shared-resource topology, exact
   arithmetic/timing, rollback and full parity remain outside. See [issue
   339](../.scratch/roadmap/issues/339-helper-modifyprojectile-getpower-hit.md).
-
-- **T766 next selection** — close the Helper-authored `ModifyProjectile`
-  givepower hit readback; keep getpower mutation, guard contact,
-  nested-helper breadth, aggregate QA repair and resource topology separate.
-  See [issue
-  340](../.scratch/roadmap/issues/340-helper-modifyprojectile-givepower-hit.md).
 
 - **T764 closed-bounded** — issue 338 closes the first-generation
   Helper-authored `ModifyProjectile` redlife guard seam. Evidence commit is

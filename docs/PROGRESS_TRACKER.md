@@ -1,6 +1,18 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T765 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T766 closed-bounded (2026-08-15)
+
+Issue 340 closes the first-generation Helper-authored `ModifyProjectile`
+`givepower` hit readback. Required trace `90cb9340` (`d26f12db` ->
+`508dbf8f`) and evidence commit `b2a300f1` prove Helper caller-context
+replacement, root-owned Projectile lifecycle, defender power `44`, life `5`
+and `GetHitVar(power)=44` after the accepted hit. Focused Helper/trace tests,
+typecheck and diff hygiene pass. Aggregate QA remains blocked by the inherited
+helper-bind target-link case. Guard contact, getpower mutation,
+nested/shared-resource topology, exact arithmetic/timing, rollback and full
+parity remain outside. See issue 340.
+
+## Historical implementation checkpoint — T765 closed-bounded (2026-08-15)
 
 Issue 339 closes the first-generation Helper-authored `ModifyProjectile`
 `getpower` hit readback. Required trace `d1f1edf2` (`6ae1a86b` ->
@@ -77,11 +89,11 @@ T755 was a duplicate queue entry for the already closed T728/issue 302 live
 `ModifyHitDef down.velocity` slice. Issue 329 is retained as superseded audit
 history; no new implementation should be scheduled from it.
 
-## Next implementation checkpoint — T766 Helper ModifyProjectile givepower hit
+## Next implementation checkpoint — T767 Helper ModifyProjectile givepower guard
 
 Close the Helper-owned `ModifyProjectile givepower` readback for an accepted
-hit; keep guard contact, getpower mutation, nested helpers, aggregate QA repair
-and broader resource topology separate. See issue 340.
+guard; keep unguarded hit, getpower mutation, nested helpers, aggregate QA
+repair and broader resource topology separate. See issue 341.
 
 ## Historical implementation checkpoint — T753 closed-bounded (2026-08-12)
 

@@ -1,6 +1,19 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T765 Helper `ModifyProjectile` `getpower` hit readback — closed-bounded, no score movement
+## 2026-08-15 T766 Helper `ModifyProjectile` `givepower` hit readback — closed-bounded, no score movement
+
+Issue 340 closes the first-generation Helper-authored givepower hit seam.
+Evidence commit `b2a300f1`; required trace `90cb9340` (`d26f12db` ->
+`508dbf8f`) passes. The root-owned Projectile keeps its Helper-context
+`givepower=var(0)*4,var(0)-3` replacement through an accepted unguarded hit;
+defender power ends at `44`, life at `5`, and authored `GetHitVar(power)=44`
+remains separate. Focused tests, typecheck and diff hygiene pass. Aggregate
+QA retains the inherited helper-bind target-link blocker. No score movement:
+guard contact, getpower mutation, nested/shared-resource topology, exact
+arithmetic/timing, rollback and full parity remain blocked. See [issue
+340](../.scratch/roadmap/issues/340-helper-modifyprojectile-givepower-hit.md).
+
+## Historical checkpoint — 2026-08-15 T765 Helper `ModifyProjectile` `getpower` hit readback — closed-bounded, no score movement
 
 Issue 339 closes the first-generation Helper-authored getpower hit seam.
 Evidence commit `c27b658e`; required trace `d1f1edf2` (`6ae1a86b` ->
@@ -97,12 +110,12 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` work. Issue 329 remains superseded audit history and is not a
 new score candidate.
 
-## Next selection — T766 Helper ModifyProjectile givepower hit
+## Next selection — T767 Helper ModifyProjectile givepower guard
 
-Close the Helper-owned `ModifyProjectile givepower` readback on an accepted hit;
-keep guard contact, getpower mutation, nested helpers, aggregate QA repair and
+Close the Helper-owned `ModifyProjectile givepower` readback on an accepted guard;
+keep unguarded hit, getpower mutation, nested helpers, aggregate QA repair and
 resource topology separate. See [issue
-340](../.scratch/roadmap/issues/340-helper-modifyprojectile-givepower-hit.md).
+341](../.scratch/roadmap/issues/341-helper-modifyprojectile-givepower-guard.md).
 
 ## Historical checkpoint — 2026-08-12 T753 `AttackMulSet guardpoints` — closed-bounded, no score movement
 

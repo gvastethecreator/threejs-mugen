@@ -1,6 +1,19 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T765 closed-bounded (2026-08-15)
+## Latest bounded slice — T766 closed-bounded (2026-08-15)
+
+Issue 340 closes the first-generation Helper-authored `ModifyProjectile`
+`givepower` hit readback. Evidence commit `b2a300f1`; required trace
+`90cb9340` (`d26f12db` -> `508dbf8f`) passes. The Helper creates a
+root-owned Projectile, resolves `givepower=var(0)*4,var(0)-3`, and an
+accepted unguarded hit ends with defender power `44` and life `5` while
+`GetHitVar(power)=44` remains visible. Focused tests, typecheck and diff
+hygiene pass. Aggregate QA stops on the inherited helper-bind target-link
+blocker. Guard contact, getpower mutation, nested/shared-resource topology,
+exact arithmetic/timing, rollback and full parity remain outside. See [issue
+340](../.scratch/roadmap/issues/340-helper-modifyprojectile-givepower-hit.md).
+
+## Historical bounded slice — T765 closed-bounded (2026-08-15)
 
 Issue 339 closes the first-generation Helper-authored `ModifyProjectile`
 `getpower` hit readback. Evidence commit `c27b658e`; required trace
@@ -92,12 +105,12 @@ The T755 queue entry duplicated the already closed T728/issue 302
 component-preserving behavior is already covered by the issue 302 traces and
 commits; issue 329 remains only as a superseded audit trail.
 
-## Next bounded slice — T766 Helper ModifyProjectile givepower hit
+## Next bounded slice — T767 Helper ModifyProjectile givepower guard
 
-Close the Helper-owned `ModifyProjectile givepower` hit readback with an
-independent required trace. Keep guard contact, getpower mutation, nested
+Close the Helper-owned `ModifyProjectile givepower` guard readback with an
+independent required trace. Keep unguarded hit, getpower mutation, nested
 helpers, shared-resource topology and aggregate QA repair separate. See
-[issue 340](../.scratch/roadmap/issues/340-helper-modifyprojectile-givepower-hit.md).
+[issue 341](../.scratch/roadmap/issues/341-helper-modifyprojectile-givepower-guard.md).
 
 ## Historical bounded slice — T753 closed-bounded (2026-08-12)
 
