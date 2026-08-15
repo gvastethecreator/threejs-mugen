@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T804 — active (2026-08-15)**
+- **T804 — closed-bounded (2026-08-15)**
 - **Área:** Projectile fresco root, impacto de caída y metadata GetHitVar
 - **Dependencia:** T802 cierra el paquete dinámico de `fall.envshake` para el
   mismo spawn root
@@ -36,7 +36,7 @@ valores en la reacción, la velocidad y los aliases GetHitVar existentes.
 - Cierre con typecheck, build, `pnpm test`, `pnpm qa:trace`, documentación y
   commits separados.
 
-## Claim previsto
+## Claim permitido
 
 **Permitido:** un Projectile fresco de root resuelve el paquete finito
 `fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` en caller
@@ -45,3 +45,15 @@ context y lo consume sólo en su contacto de caída aceptado.
 **Bloqueado:** Projectile creado por Helper, ModifyProjectile, recovery/flags
 de caída, sintaxis `n`, orden exacto de caída/cámara, equipos, rollback y
 paridad M.U.G.E.N/Ikemen completa.
+
+## Resultado
+
+- Producto: `4604c101` conserva el paquete typed de impacto de caída y resuelve
+  sus componentes finitas en caller context durante el spawn root.
+- Evidencia: `ca0cfacc` añade la traza requerida
+  `synthetic-imported-projectile-dynamic-fall-impact`, aprobada con checksum
+  de traza/final `aa8ebc39` / `80ab5f78`.
+- Verificación: compiler/spawn/runtime focal, `pnpm test` `328/4093`,
+  typecheck, build y `pnpm qa:trace` `883/883` (`849` requeridas) aprobados.
+- Siguiente seguro: resolver el mismo paquete para Projectile creado por
+  Helper en un corte independiente; no ampliar este claim a esa topología.

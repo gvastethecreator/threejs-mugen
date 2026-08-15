@@ -1,6 +1,17 @@
 # Controller Support Registry
 
-Latest cursor: T803 / issue 378 is closed-bounded for caller-context dynamic
+Latest cursor: T804 / issue 379 is closed-bounded for caller-context dynamic
+`fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` on one fresh
+root Projectile. Finite siblings are evaluated independently and transfer only
+through an accepted falling contact to existing physical velocity and
+`GetHitVar(fall.*)` metadata. Required
+`synthetic-imported-projectile-dynamic-fall-impact` passes at `aa8ebc39` /
+`80ab5f78`; full tests `328/4093`, typecheck, build, and trace QA `883/883`
+(`849` required) pass. Helper Projectile, ModifyProjectile, recovery/flags,
+`n`, exact timing, teams, rollback, and full parity remain unsupported. See
+[issue 379](../.scratch/roadmap/issues/379-root-projectile-dynamic-fall-impact.md).
+
+Previous cursor: T803 / issue 378 is closed-bounded for caller-context dynamic
 `fall.envshake.time/freq/ampl/phase/mul/dir` on one fresh Projectile created
 by a first-generation Helper. The finite package is evaluated in Helper caller
 context and survives to the existing accepted-fall `FallEnvShake`; one

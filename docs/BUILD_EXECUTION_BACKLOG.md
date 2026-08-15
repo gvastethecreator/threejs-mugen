@@ -2,6 +2,17 @@
 
 ## Current parity queue
 
+- **T804 closed-bounded** — issue 379 closes finite caller-context
+  `fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` for one
+  fresh root Projectile. Finite siblings resolve independently and transfer to
+  existing physical velocity and `GetHitVar(fall.*)` only on one accepted
+  falling hit; a non-finite authored component fails closed. Required
+  `synthetic-imported-projectile-dynamic-fall-impact` passes at `aa8ebc39` /
+  `80ab5f78`; full tests `328/4093`, typecheck, build, and trace QA `883/883`
+  (`849` required) pass. Helper Projectile, ModifyProjectile, recovery/flags,
+  `n`, exact timing, teams, rollback, and full parity remain outside. See
+  [issue 379](../.scratch/roadmap/issues/379-root-projectile-dynamic-fall-impact.md).
+
 - **T803 closed-bounded** — issue 378 closes caller-context dynamic
   `fall.envshake.time/freq/ampl/phase/mul/dir` for one fresh Projectile created
   by a first-generation Helper. The finite package reaches `FallEnvShake` only

@@ -1,16 +1,20 @@
 ﻿# Roadmap Execution Board
 
-## Active bounded slice — T804 root Projectile dynamic fall impact (2026-08-15)
+## Latest bounded slice — T804 root Projectile dynamic fall impact (2026-08-15)
 
-Issue 379 tracks caller-context dynamic
+Issue 379 closes finite caller-context
 `fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` for one fresh
-root Projectile. The bounded target is one accepted falling contact through
-existing velocity and GetHitVar paths. Helper-parented Projectile,
-ModifyProjectile, fall recovery/flags, `n`, exact timing, teams, rollback, and
-full parity remain outside. See [issue
+root Projectile. One accepted falling contact carries the resolved package to
+existing physical velocity and `GetHitVar(fall.*)` aliases; a non-finite
+authored component fails closed without dropping finite siblings. Required
+`synthetic-imported-projectile-dynamic-fall-impact` passes at `aa8ebc39` /
+`80ab5f78`; full tests `328/4093`, typecheck, build, and trace QA `883/883`
+(`849` required) pass. Helper-parented Projectile, ModifyProjectile, fall
+recovery/flags, `n`, exact timing, teams, rollback, and full parity remain
+outside. See [issue
 379](../.scratch/roadmap/issues/379-root-projectile-dynamic-fall-impact.md).
 
-## Latest bounded slice — T803 Helper Projectile dynamic `fall.envshake` (2026-08-15)
+## Historical bounded slice — T803 Helper Projectile dynamic `fall.envshake` (2026-08-15)
 
 Issue 378 closes caller-context dynamic
 `fall.envshake.time/freq/ampl/phase/mul/dir` when a first-generation Helper
