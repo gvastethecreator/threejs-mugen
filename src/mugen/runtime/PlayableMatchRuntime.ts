@@ -4,6 +4,7 @@ import type {
   EnvColorControllerOp,
   MugenHitDefEnvShakeOp,
   MugenHitDefExpressionPair,
+  MugenHitDefFallFlagsOp,
   MugenHitDefFallImpactOp,
   MugenHitDefFallRecoveryOp,
   PauseControllerOp,
@@ -6710,6 +6711,25 @@ function runActiveStateControllers(
                   );
                 }
               : undefined,
+          resolveProjectileFallFlags:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  return resolveProjectileFallFlagComponents(
+                    operation?.fallFlags,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                    gameSpace,
+                    options.characters,
+                    createPlayerIdTarget(actor),
+                  );
+                }
+              : undefined,
           resolveProjectilePaletteFx:
             effect === "projectile"
               ? {
@@ -9164,6 +9184,46 @@ function resolveProjectileFallRecoveryComponents(
     ...(recoverTime === undefined ? {} : { recoverTime }),
     ...(downRecover === undefined ? {} : { downRecover }),
     ...(downRecoverTime === undefined ? {} : { downRecoverTime }),
+  };
+}
+
+function resolveProjectileFallFlagComponents(
+  value: MugenHitDefFallFlagsOp | undefined,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+  gameSpace?: ExpressionGameSpace,
+  characters?: readonly FighterMatchState[],
+  playerIdTarget?: PlayerIdExpressionTarget,
+): { enabled?: number; airFall?: number; kill?: number } | undefined {
+  if (value === undefined) return undefined;
+  const resolveComponent = (component: number | string | undefined): number | undefined => {
+    if (typeof component === "number") return Number.isFinite(component) ? Math.trunc(component) : undefined;
+    if (component === undefined) return undefined;
+    const resolved = resolveDispatchNumber(
+      undefined,
+      component,
+      fighter,
+      opponent,
+      owner,
+      stageBounds,
+      stageTime,
+      gameSpace,
+      characters,
+      playerIdTarget,
+    );
+    return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
+  };
+  const enabled = resolveComponent(value.enabled);
+  const airFall = resolveComponent(value.airFall);
+  const kill = resolveComponent(value.kill);
+  if (enabled === undefined && airFall === undefined && kill === undefined) return undefined;
+  return {
+    ...(enabled === undefined ? {} : { enabled }),
+    ...(airFall === undefined ? {} : { airFall }),
+    ...(kill === undefined ? {} : { kill }),
   };
 }
 

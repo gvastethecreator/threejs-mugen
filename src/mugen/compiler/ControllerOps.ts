@@ -758,6 +758,8 @@ export type ProjectileControllerOp = {
   fallImpact?: MugenHitDefFallImpactOp;
   /** Dynamic or mixed Projectile fall/down recovery package evaluated in caller context. */
   fallRecovery?: MugenHitDefFallRecoveryOp;
+  /** Dynamic Projectile fall, air-fall, and deferred KO policy evaluated in caller context. */
+  fallFlags?: MugenHitDefFallFlagsOp;
   attackDepth?: [number, number];
   p2StateNo?: number;
   p2GetP1State?: boolean;
@@ -4064,6 +4066,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   const fallRecoveryExpressions = fallRecovery === true || !Object.values(fallRecovery).some((value) => typeof value === "string")
     ? undefined
     : fallRecovery;
+  const fallFlags = optionalHitDefFallFlagsParam(controller);
+  if (fallFlags === false) return undefined;
   const keepStateValue = optionalIntegerExpressionParam(controller, "keepstate");
   if (
     standFriction === false ||
@@ -4303,6 +4307,7 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     ...(fallEnvShakeExpressions === undefined ? {} : { fallEnvShake: fallEnvShakeExpressions }),
     ...(fallImpactExpressions === undefined ? {} : { fallImpact: fallImpactExpressions }),
     ...(fallRecoveryExpressions === undefined ? {} : { fallRecovery: fallRecoveryExpressions }),
+    ...(fallFlags === true ? {} : { fallFlags }),
     attackDepth: normalizedNumberPair(findParam(controller, "attack.depth")),
     p2StateNo: firstNumber(findParam(controller, "p2stateno")),
     p2GetP1State:

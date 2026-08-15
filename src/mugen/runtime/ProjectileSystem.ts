@@ -3,6 +3,7 @@ import type {
   HitDefFallOp,
   ModifyProjectileControllerOp,
   MugenHitDefEnvShakeOp,
+  MugenHitDefFallFlagsOp,
   MugenHitDefFallImpactOp,
   MugenHitDefFallRecoveryOp,
   MugenPartialHitDefVector,
@@ -92,6 +93,13 @@ export type RuntimeProjectileFallRecovery = {
   recoverTime?: number;
   downRecover?: number;
   downRecoverTime?: number;
+};
+
+/** Finite fall-policy components resolved in the Projectile caller context. */
+export type RuntimeProjectileFallFlags = {
+  enabled?: number;
+  airFall?: number;
+  kill?: number;
 };
 
 export type RuntimeProjectile = {
@@ -361,6 +369,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveFallImpact?: () => Partial<RuntimeProjectileFallImpact> | undefined;
   /** Resolves fresh Projectile fall/down recovery expressions in the original caller context. */
   resolveFallRecovery?: () => Partial<RuntimeProjectileFallRecovery> | undefined;
+  /** Resolves fresh Projectile fall-policy expressions in the original caller context. */
+  resolveFallFlags?: () => Partial<RuntimeProjectileFallFlags> | undefined;
   /** Resolves Projectile ground.velocity authored expressions in the original caller context. */
   resolveGroundVelocity?: () => [number?, number?, number?] | undefined;
   /** Resolves Projectile guard.velocity authored expressions in the original caller context. */
@@ -798,13 +808,22 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const forceStand = operation?.forceStand ?? booleanNumber(findControllerParam(input.controller, "forcestand"));
   const forceCrouch = operation?.forceCrouch ?? booleanNumber(findControllerParam(input.controller, "forcecrouch"));
   const staticFall = operation?.fall ?? projectileFallData(input.controller);
+  const fallFlags = operation?.fallFlags === undefined
+    ? undefined
+    : resolveRuntimeProjectileFallFlags(operation.fallFlags, input.resolveFallFlags?.());
+  const authoredFallWithFlags = operation?.fallFlags === undefined
+    ? staticFall
+    : {
+        ...staticFall,
+        ...projectileFallFlagsFields(fallFlags),
+      };
   const fallImpact = operation?.fallImpact === undefined
     ? undefined
     : resolveRuntimeProjectileFallImpact(operation.fallImpact, input.resolveFallImpact?.());
   const authoredFallWithImpact = operation?.fallImpact === undefined
-    ? staticFall
+    ? authoredFallWithFlags
     : {
-        ...withoutProjectileFallImpact(staticFall),
+        ...withoutProjectileFallImpact(authoredFallWithFlags),
         ...projectileFallImpactFields(fallImpact),
       };
   const fallRecovery = operation?.fallRecovery === undefined
@@ -2131,6 +2150,29 @@ function resolveRuntimeProjectileFallRecovery(
   };
 }
 
+function resolveRuntimeProjectileFallFlags(
+  authored: MugenHitDefFallFlagsOp | undefined,
+  resolved: Partial<RuntimeProjectileFallFlags> | undefined,
+): RuntimeProjectileFallFlags | undefined {
+  if (authored === undefined) return undefined;
+  const component = (key: keyof RuntimeProjectileFallFlags): number | undefined => {
+    const source = authored[key];
+    if (typeof source === "number") return Number.isFinite(source) ? Math.trunc(source) : undefined;
+    if (typeof source !== "string") return undefined;
+    const value = resolved?.[key];
+    return typeof value === "number" && Number.isFinite(value) ? Math.trunc(value) : undefined;
+  };
+  const enabled = component("enabled");
+  const airFall = component("airFall");
+  const kill = component("kill");
+  if (enabled === undefined && airFall === undefined && kill === undefined) return undefined;
+  return {
+    ...(enabled === undefined ? {} : { enabled }),
+    ...(airFall === undefined ? {} : { airFall }),
+    ...(kill === undefined ? {} : { kill }),
+  };
+}
+
 function projectileFallEnvShake(fall: HitDefFallOp): Partial<RuntimeProjectileEnvShake> {
   return {
     time: fall.envShakeTime,
@@ -2198,6 +2240,17 @@ function projectileFallRecoveryFields(
     ...(recovery.recoverTime === undefined ? {} : { recoverTime: recovery.recoverTime }),
     ...(recovery.downRecover === undefined ? {} : { downRecover: recovery.downRecover !== 0 }),
     ...(recovery.downRecoverTime === undefined ? {} : { downRecoverTime: recovery.downRecoverTime }),
+  };
+}
+
+function projectileFallFlagsFields(
+  flags: RuntimeProjectileFallFlags | undefined,
+): Pick<HitDefFallOp, "enabled" | "airFall" | "kill"> {
+  if (flags === undefined) return {};
+  return {
+    ...(flags.enabled === undefined ? {} : { enabled: flags.enabled !== 0 }),
+    ...(flags.airFall === undefined ? {} : { airFall: flags.airFall !== 0 }),
+    ...(flags.kill === undefined ? {} : { kill: flags.kill !== 0 }),
   };
 }
 

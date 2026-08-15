@@ -1155,6 +1155,61 @@ describe("ProjectileSystem", () => {
     });
   });
 
+  it("resolves Projectile fall flags per component and preserves finite siblings", () => {
+    const controllerValue = controller({
+      projanim: "1005",
+      fall: "var(0)",
+      "air.fall": "var(1)",
+      "fall.kill": "var(2)",
+      "fall.xvelocity": "-3",
+    });
+    const operation = compileControllerIr(controllerValue).operation as ProjectileControllerOp;
+    expect(operation.fallFlags).toEqual({
+      enabled: "var(0)",
+      airFall: "var(1)",
+      kill: "var(2)",
+    });
+    const spawn = (
+      serialId: string,
+      resolveFallFlags?: Parameters<typeof createRuntimeProjectile>[0]["resolveFallFlags"],
+    ) => createRuntimeProjectile({
+      serialId,
+      controller: controllerValue,
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveFallFlags,
+    });
+
+    expect(spawn("p1-projectile-fall-flags-dynamic", () => ({
+      enabled: 1.9,
+      airFall: 0.9,
+      kill: 1.9,
+    })).fall).toEqual({
+      enabled: true,
+      airFall: false,
+      kill: true,
+      xVelocity: -3,
+    });
+    expect(spawn("p1-projectile-fall-flags-partial", () => ({
+      enabled: 1.9,
+      airFall: Number.NaN,
+      kill: 0,
+    })).fall).toEqual({
+      enabled: true,
+      kill: false,
+      xVelocity: -3,
+    });
+    expect(spawn("p1-projectile-fall-flags-unresolved").fall).toEqual({
+      xVelocity: -3,
+    });
+  });
+
   it("resolves Projectile grounded friction at spawn and fails closed for unresolved expressions", () => {
     const spawn = (
       serialId: string,

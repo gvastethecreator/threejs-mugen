@@ -78,6 +78,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveProjectileFallEnvShake?: RuntimeProjectileSpawnInput["resolveFallEnvShake"];
   resolveProjectileFallImpact?: RuntimeProjectileSpawnInput["resolveFallImpact"];
   resolveProjectileFallRecovery?: RuntimeProjectileSpawnInput["resolveFallRecovery"];
+  resolveProjectileFallFlags?: RuntimeProjectileSpawnInput["resolveFallFlags"];
   resolveProjectileGroundVelocity?: RuntimeProjectileSpawnInput["resolveGroundVelocity"];
   resolveProjectileGuardVelocity?: RuntimeProjectileSpawnInput["resolveGuardVelocity"];
   resolveProjectileAirVelocity?: RuntimeProjectileSpawnInput["resolveAirVelocity"];
@@ -303,6 +304,7 @@ export class RuntimeEffectSpawnWorld {
     resolveProjectileGuardPoints?: RuntimeProjectileSpawnInput["resolveGuardPoints"],
     resolveFallImpact?: RuntimeProjectileSpawnInput["resolveFallImpact"],
     resolveFallRecovery?: RuntimeProjectileSpawnInput["resolveFallRecovery"],
+    resolveFallFlags?: RuntimeProjectileSpawnInput["resolveFallFlags"],
   ): boolean {
     const owner = effectSpriteOwner(fighter);
     const animNo = operation?.projAnim
@@ -353,6 +355,7 @@ export class RuntimeEffectSpawnWorld {
       resolveFallEnvShake,
       resolveFallImpact,
       resolveFallRecovery,
+      resolveFallFlags,
       resolveGroundVelocity,
       resolveGuardVelocity,
       resolveAirVelocity,
@@ -689,6 +692,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveProjectileGuardPoints,
         options.resolveProjectileFallImpact,
         options.resolveProjectileFallRecovery,
+        options.resolveProjectileFallFlags,
       )
         ? 1
         : 0;
