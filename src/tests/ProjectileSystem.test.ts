@@ -3449,6 +3449,47 @@ describe("ProjectileSystem", () => {
     expect(trap).toMatchObject({ downVelocityX: 7, downVelocityY: 8, downVelocityZ: 9 });
   });
 
+  it("selects one same-id ModifyProjectile ground.velocity match by oldest-first index", () => {
+    const newest = projectile({ serialId: "ground-index-newest", projectileId: 77, push: 1, hitVelocityY: 2, hitVelocityZ: 3 });
+    const oldest = projectile({ serialId: "ground-index-oldest", projectileId: 77, push: 4, hitVelocityY: 5, hitVelocityZ: 6 });
+    const trap = projectile({ serialId: "ground-index-trap", projectileId: 88, push: 7, hitVelocityY: 8, hitVelocityZ: 9 });
+    const staticOperation = compileControllerIr(controller({
+      id: "77",
+      index: "0",
+      "ground.velocity": "-6,-4",
+    }, "ModifyProjectile")).operation as ModifyProjectileControllerOp;
+
+    expect(modifyRuntimeProjectiles([newest, trap, oldest], {
+      controller: controller({ id: "77", index: "0", "ground.velocity": "-6,-4" }),
+      operation: staticOperation,
+    })).toBe(1);
+    expect(oldest).toMatchObject({ push: 6, hitVelocityY: -4, hitVelocityZ: 6 });
+    expect(oldest.hitVelocities?.ground).toEqual({ x: -6, y: -4, z: 6 });
+    expect(newest).toMatchObject({ push: 1, hitVelocityY: 2, hitVelocityZ: 3 });
+
+    const dynamicOperation = compileControllerIr(controller({
+      id: "77",
+      index: "var(0)",
+      "ground.velocity": "-7,-5,2",
+    }, "ModifyProjectile")).operation as ModifyProjectileControllerOp;
+    const resolvedKeys: string[] = [];
+    expect(modifyRuntimeProjectiles([newest, trap, oldest], {
+      controller: controller({ id: "77", index: "var(0)", "ground.velocity": "-7,-5,2" }),
+      operation: dynamicOperation,
+      resolveModifyProjectile: {
+        resolveNumber: (key) => {
+          resolvedKeys.push(key);
+          return key === "index" ? 1 : undefined;
+        },
+      },
+    })).toBe(1);
+    expect(resolvedKeys).toEqual(["index"]);
+    expect(newest).toMatchObject({ push: 7, hitVelocityY: -5, hitVelocityZ: 2 });
+    expect(newest.hitVelocities?.ground).toEqual({ x: -7, y: -5, z: 2 });
+    expect(oldest).toMatchObject({ push: 6, hitVelocityY: -4, hitVelocityZ: 6 });
+    expect(trap).toMatchObject({ push: 7, hitVelocityY: 8, hitVelocityZ: 9 });
+  });
+
   it("resolves dynamic ModifyProjectile guard.velocity for selected live projectiles", () => {
     const matching = projectile({ projectileId: 77, guardPush: 1, guardVelocityY: 2, guardVelocityZ: 3 });
     const other = projectile({ serialId: "dynamic-guard-other", projectileId: 88, guardPush: 4, guardVelocityY: 5, guardVelocityZ: 6 });
