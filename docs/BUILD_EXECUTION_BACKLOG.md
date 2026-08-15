@@ -2,22 +2,30 @@
 
 ## Current parity queue
 
-- **T769 closed-bounded** — issue 343 closes the first-generation
+- **T770 closed-bounded** — issue 344 closes the first-generation
+  Helper-authored `ModifyProjectile` ground `guard.velocity` seam. Evidence
+  commit is `3c7ca64c`; required trace `3d47deb8` / `ae032d99` (initial
+  `fcbebd7b`). The root-owned Projectile resolves the Helper X component
+  before an accepted guard, leaving defender life `20` and
+  `GetHitVar(xvel)=8` plus physical velocity evidence. Focused trace,
+  typecheck and diff hygiene pass; aggregate QA retains the inherited
+  helper-bind target-link blocker. Airborne guard, Y/Z breadth, nested/shared
+  resource topology, exact physics/timing, rollback and full parity remain
+  outside. See [issue
+  344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
+
+- **T771 next selection** — close the Helper-authored `ModifyProjectile`
+  airborne `airguard.velocity` readback with one finite X component and one
+  accepted airborne guard. Keep ground guard, Y/Z breadth, nested-helper
+  breadth, aggregate QA repair and resource topology separate. See [issue
+  345](../.scratch/roadmap/issues/345-helper-modifyprojectile-airguard-velocity.md).
+
+- **T769 historical** — issue 343 closes the first-generation
   Helper-authored `ModifyProjectile` damage guard seam. Evidence commit is
   `79c377cd`; required trace `65253f37` / `fb2ad29f` (initial
-  `1c4e9c53`). The root-owned Projectile resolves the Helper damage pair
-  before an accepted guard, leaving defender life `40` and
-  `GetHitVar(guarddamage)=10` evidence. Focused trace, typecheck and diff
-  hygiene pass; aggregate QA retains the inherited helper-bind target-link
-  blocker. Hit contact, nested/shared-resource topology, complete scaling,
-  exact arithmetic/timing, rollback and full parity remain outside. See
-  [issue 343](../.scratch/roadmap/issues/343-helper-modifyprojectile-damage-guard.md).
-
-- **T770 next selection** — close the Helper-authored `ModifyProjectile`
-  ground `guard.velocity` readback with one finite X component and one
-  accepted ground guard. Keep airborne guard, Y/Z breadth, nested-helper
-  breadth, aggregate QA repair and resource topology separate. See [issue
-  344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
+  `1c4e9c53`). Guard damage is `10`, defender life ends at `40`, and
+  `GetHitVar(guarddamage)=10` evidence passes. See [issue
+  343](../.scratch/roadmap/issues/343-helper-modifyprojectile-damage-guard.md).
 
 - **T768 closed-bounded** — issue 342 closes the first-generation
   Helper-authored `ModifyProjectile` getpower guard seam. Evidence commit is

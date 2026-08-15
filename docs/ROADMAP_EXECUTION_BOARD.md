@@ -1,23 +1,32 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T769 closed-bounded (2026-08-15)
+## Latest bounded slice — T770 closed-bounded (2026-08-15)
 
-Issue 343 closes the first-generation Helper-authored `ModifyProjectile`
-`damage` guard readback. Evidence commit `79c377cd`; required trace
-`65253f37` (`1c4e9c53` -> `fb2ad29f`) passes. The Helper creates a root-owned
-Projectile, resolves `damage=var(0)*3,var(0)-1`, and an accepted guard leaves
-defender life at `40` while guarded `GetHitVar(guarddamage)=10` remains
-visible. Focused tests, typecheck and diff hygiene pass. Aggregate QA stops
-on the inherited helper-bind target-link blocker. See [issue
-343](../.scratch/roadmap/issues/343-helper-modifyprojectile-damage-guard.md).
+Issue 344 closes the first-generation Helper-authored `ModifyProjectile`
+`guard.velocity` ground-guard readback. Evidence commit `3c7ca64c`; required
+trace `3d47deb8` (`fcbebd7b` -> `ae032d99`) passes. The Helper creates a
+root-owned Projectile, resolves `guard.velocity=var(0)`, and an accepted
+guard exposes `GetHitVar(xvel)=8` with physical guard velocity; defender life
+ends at `20`. Focused tests, typecheck and diff hygiene pass. Aggregate QA
+stops on the inherited helper-bind target-link blocker. See [issue
+344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
 
-## Next bounded slice — T770 queued (2026-08-15)
+## Next bounded slice — T771 queued (2026-08-15)
 
-Issue 344 targets the analogous Helper-authored `ModifyProjectile
-guard.velocity` ground-guard readback. Keep airborne guard, Y/Z breadth,
+Issue 345 targets the analogous Helper-authored `ModifyProjectile
+airguard.velocity` airborne-guard readback. Keep ground guard, Y/Z breadth,
 nested/shared-resource topology, aggregate QA repair, exact physics/timing,
 rollback and full parity separate. See [issue
-344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
+345](../.scratch/roadmap/issues/345-helper-modifyprojectile-airguard-velocity.md).
+
+## Historical bounded slice — T769 closed-bounded (2026-08-15)
+
+Issue 343 closes the Helper-authored `ModifyProjectile damage` guard
+readback. Evidence commit `79c377cd`; required trace `65253f37`
+(`1c4e9c53` -> `fb2ad29f`) passes. Guard damage is `10`, defender life is
+`40`, and `GetHitVar(guarddamage)=10` remains visible. Aggregate QA retains
+the inherited target-link blocker. See [issue
+343](../.scratch/roadmap/issues/343-helper-modifyprojectile-damage-guard.md).
 
 ## Historical bounded slice — T768 closed-bounded (2026-08-15)
 

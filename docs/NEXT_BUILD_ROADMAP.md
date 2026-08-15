@@ -1,26 +1,35 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T769 closed-bounded (2026-08-15)
+## Latest bounded slice — T770 closed-bounded (2026-08-15)
 
-Issue 343 closes the first-generation Helper-authored `ModifyProjectile`
-`damage` guard readback. Evidence `79c377cd`; required trace
-`65253f37` (`1c4e9c53` -> `fb2ad29f`) passes. A root-owned Projectile born
-from a Helper resolves `damage=var(0)*3,var(0)-1` in Helper context before an
-accepted guard; the defender's guard damage is `10`, life ends at `40`, and
-`GetHitVar(guarddamage)=10` is observed. Focused trace tests, typecheck and
-diff hygiene pass. Aggregate QA retains the inherited helper-bind target-link
-blocker. Hit contact, nested/shared-resource topology, complete scaling,
-negative/healing damage, exact arithmetic/timing, rollback and full parity
-remain blocked. See [issue
-343](../.scratch/roadmap/issues/343-helper-modifyprojectile-damage-guard.md).
+Issue 344 closes the first-generation Helper-authored `ModifyProjectile`
+`guard.velocity` ground-guard readback. Evidence `3c7ca64c`; required trace
+`3d47deb8` (`fcbebd7b` -> `ae032d99`) passes. A root-owned Projectile born
+from a Helper resolves `guard.velocity=var(0)` with `var(0)=-8` before an
+accepted guard; the defender records `GetHitVar(xvel)=8`, receives the
+physical guard velocity, and ends at life `20`. Focused trace tests,
+typecheck and diff hygiene pass. Aggregate QA retains the inherited
+helper-bind target-link blocker. Airborne guard, Y/Z breadth, nested/shared
+resource topology, exact physics/timing, rollback and full parity remain
+blocked. See [issue
+344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
 
-## Next bounded slice — T770 queued (2026-08-15)
+## Next bounded slice — T771 queued (2026-08-15)
 
-Issue 344 will close the first-generation Helper-authored
-`ModifyProjectile guard.velocity` ground-guard readback. Keep airborne
+Issue 345 will close the first-generation Helper-authored
+`ModifyProjectile airguard.velocity` airborne-guard readback. Keep ground
 guard, Y/Z breadth, nested/shared-resource topology, aggregate QA repair,
 exact physics/timing, rollback and full parity separate. See [issue
-344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
+345](../.scratch/roadmap/issues/345-helper-modifyprojectile-airguard-velocity.md).
+
+## Historical bounded slice — T769 closed-bounded (2026-08-15)
+
+Issue 343 closes the first-generation Helper-authored `ModifyProjectile`
+`damage` guard readback. Evidence `79c377cd`; required trace `65253f37`
+(`1c4e9c53` -> `fb2ad29f`) passes. Guard damage is `10`, defender life ends
+at `40`, and `GetHitVar(guarddamage)=10` is observed. Aggregate QA retains
+the inherited helper-bind target-link blocker. See [issue
+343](../.scratch/roadmap/issues/343-helper-modifyprojectile-damage-guard.md).
 
 ## Historical bounded slice — T768 closed-bounded (2026-08-15)
 

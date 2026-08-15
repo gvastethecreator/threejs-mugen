@@ -1,22 +1,30 @@
 # Workplan
 
-## Latest slice — T769 closed-bounded (2026-08-15)
+## Latest slice — T770 closed-bounded (2026-08-15)
 
-Issue 343 closes the first-generation Helper-authored `ModifyProjectile`
-`damage` guard seam. Evidence commit `79c377cd`; required trace `65253f37`
-(`1c4e9c53` -> `fb2ad29f`) passes. The Helper resolves the live damage pair
-before the accepted guard; guard damage reaches `10`, defender life reaches
-`40`, and `GetHitVar(guarddamage)=10` remains observable. Focused trace,
+Issue 344 closes the first-generation Helper-authored `ModifyProjectile`
+`guard.velocity` ground-guard seam. Evidence commit `3c7ca64c`; required
+trace `3d47deb8` (`fcbebd7b` -> `ae032d99`) passes. The Helper resolves the
+live X component before the accepted guard; `GetHitVar(xvel)=8`, physical
+guard velocity is observed, and defender life reaches `20`. Focused trace,
 typecheck and diff hygiene pass. Aggregate QA retains the inherited
 helper-bind target-link blocker.
 
-## Next slice — T770 queued (2026-08-15)
+## Next slice — T771 queued (2026-08-15)
 
-Issue 344 covers the analogous Helper-authored `ModifyProjectile
-guard.velocity` ground-guard readback with one Helper, one root-owned
-Projectile, one finite X component and one accepted ground guard. Keep
-airborne guard, Y/Z breadth, nested/shared resource topology, aggregate QA
+Issue 345 covers the analogous Helper-authored `ModifyProjectile
+airguard.velocity` airborne-guard readback with one Helper, one root-owned
+Projectile, one finite X component and one accepted airborne guard. Keep
+ground guard, Y/Z breadth, nested/shared resource topology, aggregate QA
 repair, exact arithmetic/timing, rollback and full parity separate.
+
+## Historical slice — T769 closed-bounded (2026-08-15)
+
+Issue 343 closes the Helper-authored `ModifyProjectile damage` guard seam.
+Evidence commit `79c377cd`; required trace `65253f37`
+(`1c4e9c53` -> `fb2ad29f`) passes. Guard damage reaches `10`, defender life
+reaches `40`, and `GetHitVar(guarddamage)=10` remains observable. Aggregate QA
+retains the inherited helper-bind target-link blocker.
 
 ## Historical slice — T768 closed-bounded (2026-08-15)
 

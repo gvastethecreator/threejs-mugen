@@ -1,21 +1,29 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T769 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T770 closed-bounded (2026-08-15)
 
-Issue 343 closes the first-generation Helper-authored `ModifyProjectile`
-`damage` guard readback. Required trace `65253f37`
-(`1c4e9c53` -> `fb2ad29f`) and evidence commit `79c377cd` prove the Helper
-caller-context replacement, root-owned Projectile lifecycle, guard damage
-`10`, defender life `40`, and `GetHitVar(guarddamage)=10`. Focused trace,
-typecheck and diff hygiene pass. Aggregate QA remains blocked by the
-inherited helper-bind target-link case. See issue 343.
+Issue 344 closes the first-generation Helper-authored `ModifyProjectile`
+`guard.velocity` ground-guard readback. Required trace `3d47deb8`
+(`fcbebd7b` -> `ae032d99`) and evidence commit `3c7ca64c` prove the Helper
+caller-context replacement, root-owned Projectile lifecycle,
+`GetHitVar(xvel)=8`, physical guard velocity and defender life `20`. Focused
+trace, typecheck and diff hygiene pass. Aggregate QA remains blocked by the
+inherited helper-bind target-link case. See issue 344.
 
-## Next implementation checkpoint — T770 queued (2026-08-15)
+## Next implementation checkpoint — T771 queued (2026-08-15)
 
-Issue 344 targets the analogous Helper-authored `ModifyProjectile
-guard.velocity` ground-guard readback. It remains bounded to one Helper, one
-root-owned Projectile, one finite X component and one accepted ground guard;
-airborne guard, Y/Z breadth and aggregate QA repair remain separate.
+Issue 345 targets the analogous Helper-authored `ModifyProjectile
+airguard.velocity` airborne-guard readback. It remains bounded to one Helper,
+one root-owned Projectile, one finite X component and one accepted airborne
+guard; ground guard, Y/Z breadth and aggregate QA repair remain separate.
+
+## Historical implementation checkpoint — T769 closed-bounded (2026-08-15)
+
+Issue 343 closes the Helper-authored `ModifyProjectile damage` guard
+readback. Required trace `65253f37` (`1c4e9c53` -> `fb2ad29f`) and evidence
+commit `79c377cd` prove guard damage `10`, defender life `40` and
+`GetHitVar(guarddamage)=10`. Aggregate QA retains the inherited target-link
+blocker. See issue 343.
 
 ## Historical implementation checkpoint — T768 closed-bounded (2026-08-15)
 

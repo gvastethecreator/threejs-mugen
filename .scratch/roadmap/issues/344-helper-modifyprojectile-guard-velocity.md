@@ -36,3 +36,23 @@ physical response without conflating it with `airguard.velocity`.
   defender physics.
 - Focused Helper/Projectile test, typecheck, `git diff --check`, and aggregate
   QA recorded with inherited blockers preserved.
+
+## Evidencia de cierre
+
+- **T770 — closed-bounded (2026-08-15).** Evidence commit: `3c7ca64c`.
+- Required trace: `3d47deb8` (`fcbebd7b` -> `ae032d99`), status `passed`.
+- The Helper resolves `ModifyProjectile guard.velocity=var(0)` with
+  `var(0)=-8` before the accepted ground guard. The root-owned Projectile
+  replaces the seeded X value `-1`; the defender records
+  `GetHitVar(xvel)=8`, receives the physical guard velocity, and ends at life
+  `20` after the authored guard damage.
+- Focused trace, `pnpm run typecheck`, and `git diff --check` pass. Aggregate
+  `pnpm run qa:trace` still stops only at the inherited
+  `synthetic-imported-helper-bind-to-target-redirect` missing target-link case.
+
+## Siguiente corte
+
+T771 is queued for the bounded Helper-owned `ModifyProjectile airguard.velocity`
+air-guard slice. Keep Y/Z breadth beyond the selected component, nested/shared
+resource topology, aggregate QA repair, exact timing/rounding, rollback and
+full M.U.G.E.N/Ikemen parity separate.

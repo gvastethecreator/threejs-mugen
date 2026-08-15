@@ -1,27 +1,36 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T769 Helper `ModifyProjectile` `damage` guard readback — closed-bounded, no score movement
+## 2026-08-15 T770 Helper `ModifyProjectile` `guard.velocity` ground guard — closed-bounded, no score movement
+
+Issue 344 closes the first-generation Helper-authored ground guard velocity
+seam. Evidence commit `3c7ca64c`; required trace `3d47deb8`
+(`fcbebd7b` -> `ae032d99`) passes. The root-owned Projectile keeps its
+Helper-context X replacement through an accepted guard; `GetHitVar(xvel)=8`,
+physical guard velocity is observed, and defender life ends at `20`. Focused
+trace, typecheck and diff hygiene pass. Aggregate QA retains the inherited
+helper-bind target-link blocker. No score movement: airborne guard, Y/Z
+breadth, nested/shared-resource topology, exact physics/timing, rollback and
+full parity remain blocked. See [issue
+344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
+
+## 2026-08-15 T771 Helper `ModifyProjectile` `airguard.velocity` air guard — queued
+
+Issue 345 is the next bounded cut for the Helper caller-context airborne guard
+velocity path. It remains limited to one Helper, one root-owned Projectile,
+one finite X component and one accepted airborne guard; no score movement is
+expected. Ground guard, Y/Z breadth, nested/shared-resource topology,
+aggregate QA repair, exact physics/timing, rollback and full parity remain
+blocked. See [issue
+345](../.scratch/roadmap/issues/345-helper-modifyprojectile-airguard-velocity.md).
+
+## Historical checkpoint — 2026-08-15 T769 Helper `ModifyProjectile` `damage` guard readback — closed-bounded, no score movement
 
 Issue 343 closes the first-generation Helper-authored damage guard seam.
 Evidence commit `79c377cd`; required trace `65253f37`
-(`1c4e9c53` -> `fb2ad29f`) passes. The root-owned Projectile keeps its
-Helper-context damage replacement through an accepted guard; guard damage is
-`10`, defender life ends at `40`, and `GetHitVar(guarddamage)=10` remains
-separate. Focused trace, typecheck and diff hygiene pass. Aggregate QA
-retains the inherited helper-bind target-link blocker. No score movement:
-hit contact, complete scaling, nested/shared-resource topology, exact
-arithmetic/timing, rollback and full parity remain blocked. See [issue
+(`1c4e9c53` -> `fb2ad29f`) passes. Guard damage is `10`, defender life ends
+at `40`, and `GetHitVar(guarddamage)=10` remains separate. Aggregate QA
+retains the inherited target-link blocker. See [issue
 343](../.scratch/roadmap/issues/343-helper-modifyprojectile-damage-guard.md).
-
-## 2026-08-15 T770 Helper `ModifyProjectile` `guard.velocity` ground guard — queued
-
-Issue 344 is the next bounded cut for the Helper caller-context ground guard
-velocity path. It remains limited to one Helper, one root-owned Projectile,
-one finite X component and one accepted ground guard; no score movement is
-expected. Airborne guard, Y/Z breadth, nested/shared-resource topology,
-aggregate QA repair, exact physics/timing, rollback and full parity remain
-blocked. See [issue
-344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
 
 ## Historical checkpoint — 2026-08-15 T768 Helper `ModifyProjectile` `getpower` guard readback — closed-bounded, no score movement
 
