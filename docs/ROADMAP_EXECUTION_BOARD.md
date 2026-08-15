@@ -1,5 +1,15 @@
 ﻿# Roadmap Execution Board
 
+## Active bounded slice — T804 root Projectile dynamic fall impact (2026-08-15)
+
+Issue 379 tracks caller-context dynamic
+`fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` for one fresh
+root Projectile. The bounded target is one accepted falling contact through
+existing velocity and GetHitVar paths. Helper-parented Projectile,
+ModifyProjectile, fall recovery/flags, `n`, exact timing, teams, rollback, and
+full parity remain outside. See [issue
+379](../.scratch/roadmap/issues/379-root-projectile-dynamic-fall-impact.md).
+
 ## Latest bounded slice — T803 Helper Projectile dynamic `fall.envshake` (2026-08-15)
 
 Issue 378 closes caller-context dynamic
