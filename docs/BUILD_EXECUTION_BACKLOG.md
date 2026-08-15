@@ -76,16 +76,18 @@
   pause, nested/team ownership, rollback and full parity remain outside. See
   [issue 369](../.scratch/roadmap/issues/369-envcolor-finite-duration-ceiling.md).
 
-- **T795 closed-bounded** — issue 370 removes only the active root/Helper
-  `EnvShake` 240-tick duration cap through product `1819526b`. Required
-  `synthetic-imported-envshake-long-finite` proves finite `241` through expiry
-  (`a9f98d37` / `5ab967f7`); full trace QA is `874/874` (`840` required).
-  FallEnvShake, Projectile, and direct HitDef contact producers remain outside.
-  See [issue 370](../.scratch/roadmap/issues/370-envshake-finite-duration-ceiling.md).
-
-- **T796 next** — issue 371 isolates finite stored `fall.envshake.time`
-  consumption without widening other EnvShake producers. See [issue
+- **T796 closed-bounded** — issue 371 removes only the stored root
+  `FallEnvShake` 240-tick duration cap through product `c0f89a8c`. Required
+  `synthetic-imported-fallenvshake-long-finite` proves finite `241` through
+  expiry (`9f007c16` / `7d456f38`); full trace QA is `875/875` (`841`
+  required). Projectile and direct HitDef contact producers remain outside; no
+  Helper controller route is claimed. See [issue
   371](../.scratch/roadmap/issues/371-fallenvshake-finite-duration-ceiling.md).
+
+- **T797 next** — issue 372 isolates accepted direct root/Helper HitDef contact
+  `EnvShake` lifetime without widening Projectile, FallEnvShake, or active
+  EnvShake producers. See [issue
+  372](../.scratch/roadmap/issues/372-hitdef-contact-envshake-finite-duration.md).
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;
   evidence remains in `29aba4bb` / `b9b0752d`.

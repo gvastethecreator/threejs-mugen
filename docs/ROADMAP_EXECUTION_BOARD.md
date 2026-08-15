@@ -74,23 +74,23 @@ and prevents an expired replacement from reviving the prior event. Required
 closes the finite-duration ceiling; exact blend/layer/pause/topology/rollback/
 full parity remain separate. See [issue 368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
 
-## Latest bounded slice — T795 finite active `EnvShake` duration (2026-08-15)
+## Latest bounded slice — T796 finite `FallEnvShake` duration (2026-08-15)
 
-Issue 370 closes the active-controller finite route. Product `1819526b`
-removes only the active `EnvShake` 240-tick cap: root and Helper authored
-`time = 241` remain finite through expiry. Required
-`synthetic-imported-envshake-long-finite` passes at `a9f98d37` / `5ab967f7`;
-focused coverage is `261/261`, full tests `328/4074`, and aggregate trace QA
-`874/874` (`840` required). `FallEnvShake`, Projectile, and direct HitDef
-contact producers retain their existing 240-tick policy; waveform, stacking,
-pause, camera/render parity, rollback, and full parity remain separate. See
-[issue 370](../.scratch/roadmap/issues/370-envshake-finite-duration-ceiling.md).
-
-## Next bounded slice — T796 finite `FallEnvShake` duration (2026-08-15)
-
-Issue 371 queues the stored `fall.envshake.time` consumption path without
-widening Projectile or direct HitDef contact EnvShake producers. See [issue
+Issue 371 closes the stored root `fall.envshake.time` consumption route.
+Product `c0f89a8c` removes its inherited 240-tick cap while Projectile and
+direct HitDef contact producers retain their current policy. Required
+`synthetic-imported-fallenvshake-long-finite` passes at `9f007c16` /
+`7d456f38`; focused coverage is `4/4`, full tests `328/4075`, and aggregate
+trace QA `875/875` (`841` required). The active FallEnvShake controller has no
+Helper dispatch claim; waveform, stacking, pause, camera/render parity,
+rollback, and full parity remain separate. See [issue
 371](../.scratch/roadmap/issues/371-fallenvshake-finite-duration-ceiling.md).
+
+## Next bounded slice — T797 direct HitDef contact `EnvShake` duration (2026-08-15)
+
+Issue 372 queues the accepted direct root/Helper HitDef contact route without
+widening Projectile, FallEnvShake, or active EnvShake producers. See [issue
+372](../.scratch/roadmap/issues/372-hitdef-contact-envshake-finite-duration.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper caller-context `ModifyProjectile down.velocity` index

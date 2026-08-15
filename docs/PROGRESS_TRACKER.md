@@ -63,20 +63,21 @@ trace QA (`872/872`, `838` required) pass. T794 later closes positive
 duration above 240; exact blend/layer/pause behavior, nested/team ownership,
 rollback and full parity remain open.
 
-## Latest implementation checkpoint — T795 finite active `EnvShake` duration (2026-08-15)
+## Latest implementation checkpoint — T796 finite `FallEnvShake` duration (2026-08-15)
 
-Issue 370 closes active root/Helper finite `EnvShake` through `1819526b`.
+Issue 371 closes stored root finite `FallEnvShake` through `c0f89a8c`.
 Authored `time = 241` survives past the old ceiling then expires; required
-`synthetic-imported-envshake-long-finite` passes at `a9f98d37` / `5ab967f7`.
-Focused `261/261`, full `328/4074`, typecheck, build, and trace QA
-`874/874` (`840` required) pass. FallEnvShake, Projectile, and direct HitDef
-contact policies remain intentionally bounded; waveform, stacking, pause,
+`synthetic-imported-fallenvshake-long-finite` passes at `9f007c16` /
+`7d456f38`. Focused `4/4`, full `328/4075`, typecheck, build, DA29/DA30
+evidence `186/186`, and trace QA `875/875` (`841` required) pass. Projectile
+and direct HitDef contact policies remain intentionally bounded, and no active
+Helper FallEnvShake controller is claimed; waveform, stacking, pause,
 camera/render parity, rollback and full parity remain open.
 
-## Next implementation checkpoint — T796 finite `FallEnvShake` duration (2026-08-15)
+## Next implementation checkpoint — T797 direct HitDef contact `EnvShake` duration (2026-08-15)
 
-Issue 371 isolates stored `fall.envshake.time` consumption without widening
-other inherited EnvShake producers.
+Issue 372 isolates accepted direct root/Helper contact duration without
+widening Projectile, FallEnvShake, or active EnvShake producers.
 ## Historical implementation checkpoint — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index
