@@ -575,6 +575,12 @@ export type RuntimeEnvColorEvent = {
   time: number;
   under: boolean;
   runtimeTick: number;
+  /** Actor that authored the global stage color. */
+  sourceActorId?: string;
+  /** Root that owns the authoring actor. */
+  sourceRootId?: string;
+  /** Immediate parent of the authoring actor. */
+  sourceParentId?: string;
 };
 
 export type RuntimeStageFlash = {
@@ -582,6 +588,9 @@ export type RuntimeStageFlash = {
   opacity: number;
   remaining: number;
   under: boolean;
+  sourceActorId?: string;
+  sourceRootId?: string;
+  sourceParentId?: string;
 };
 
 export type RuntimeActorKind = "player" | "helper" | "projectile" | "explod";

@@ -260,6 +260,12 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
           bounds: stage.bounds ? { ...stage.bounds } : undefined,
           minCamera: { ...stage.minCamera },
           maxCamera: { ...stage.maxCamera },
+          envColor: stage.envColor
+            ? {
+                ...stage.envColor,
+                color: [stage.envColor.color[0], stage.envColor.color[1], stage.envColor.color[2]],
+              }
+            : undefined,
         })),
         rootPresentationFrames: gate.evidence.rootPresentationFrames.map((presentation) => ({
           ...presentation,
@@ -450,6 +456,17 @@ function cloneTraceStage(stage: NonNullable<RuntimeTraceFrame["stage"]>): NonNul
       zoom: stage.camera.zoom,
       shake: stage.camera.shake ? { ...stage.camera.shake } : undefined,
     },
+    envColor: stage.envColor
+      ? {
+          color: [stage.envColor.color[0], stage.envColor.color[1], stage.envColor.color[2]],
+          opacity: stage.envColor.opacity,
+          remaining: stage.envColor.remaining,
+          under: stage.envColor.under,
+          ...(stage.envColor.sourceActorId === undefined ? {} : { sourceActorId: stage.envColor.sourceActorId }),
+          ...(stage.envColor.sourceRootId === undefined ? {} : { sourceRootId: stage.envColor.sourceRootId }),
+          ...(stage.envColor.sourceParentId === undefined ? {} : { sourceParentId: stage.envColor.sourceParentId }),
+        }
+      : undefined,
   };
 }
 

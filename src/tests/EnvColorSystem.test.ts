@@ -114,6 +114,19 @@ describe("EnvColorSystem", () => {
     });
   });
 
+  it("preserves EnvColor author identity through the active stage-flash projection", () => {
+    expect(calculateRuntimeStageFlash(13, [{
+      ...event(10),
+      sourceActorId: "p1-helper-0",
+      sourceRootId: "p1",
+      sourceParentId: "p1",
+    }])).toMatchObject({
+      sourceActorId: "p1-helper-0",
+      sourceRootId: "p1",
+      sourceParentId: "p1",
+    });
+  });
+
   it("returns no stage flash when every event is expired or from the future", () => {
     expect(calculateRuntimeStageFlash(20, [{ ...event(0), time: 3 }])).toBeUndefined();
     expect(calculateRuntimeStageFlash(2, [{ ...event(5), time: 3 }])).toBeUndefined();

@@ -4949,6 +4949,67 @@ export function createSyntheticImportedHelperEnvShakeOwnershipTraceArtifact(
   );
 }
 
+export function createSyntheticImportedHelperEnvColorOwnershipTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-helper-envcolor",
+      displayName: "Synthetic Imported Helper EnvColor Ownership",
+      action200Duration: 30,
+      withHelper: true,
+      hitDefVarSeeds: [
+        { index: 0, value: 32 },
+        { index: 1, value: 128 },
+        { index: 2, value: 240 },
+        { index: 3, value: 14 },
+        { index: 4, value: 1 },
+      ],
+      helperEnvColorRoute: {
+        stateNo: 1311,
+        value: ["Parent,Var(0)", "Parent,Var(1)", "Parent,Var(2)"],
+        time: "Parent,Var(3)",
+        under: "Parent,Var(4)",
+      },
+    }),
+    {
+      ...options,
+      stage,
+      targetId: "synthetic-imported-helper-envcolor-golden",
+      targetLabel: "Synthetic imported Helper-owned active EnvColor route",
+      requireHitEvent: false,
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Helper"],
+      requiredExecutedOperations: ["variable:varset", "helper", "envcolor"],
+      requiredEffectKinds: ["helper"],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+      requiredEffectPayloads: [{ actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1311, minAge: 1 }],
+      requiredActorFrames: [{ actorId: "p1-helper-0", source: "effect", actorKind: "helper", stateNo: 1311, animNo: 1311, minFrames: 1 }],
+      requiredStageFrames: [{
+        stageId: stage.id,
+        envColorR: 32,
+        envColorG: 128,
+        envColorB: 240,
+        envColorUnder: true,
+        envColorSourceActorId: "p1-helper-0",
+        envColorSourceRootId: "p1",
+        envColorSourceParentId: "p1",
+        observedEnvColorOpacityAtLeast: 0.2,
+        minFrames: 1,
+      }],
+      notes: [
+        "Required trace proves a Helper-owned active EnvColor resolves Parent,Var values in caller context, writes one positive-duration global stage flash, preserves helper/root/parent identity, and retains under metadata. It does not claim time = -1, exact blend or stage-layer behavior, pause timing, nested/team helper ownership, redirects, rollback, or full MUGEN/IKEMEN presentation parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-receiveddamage-attacker",
@@ -7229,6 +7290,7 @@ export function createImportedXTraceArtifact(
     requiredContactEffectPackages?: RuntimeTraceGate["requiredContactEffectPackages"];
     requiredEnvShakeEvents?: RuntimeTraceGate["requiredEnvShakeEvents"];
     requiredRoundFrames?: RuntimeTraceGate["requiredRoundFrames"];
+    requiredStageFrames?: RuntimeTraceGate["requiredStageFrames"];
     requiredControllerEventSequences?: RuntimeTraceGate["requiredControllerEventSequences"];
     requiredTargetLinks?: RuntimeTraceGate["requiredTargetLinks"];
     requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
@@ -7280,6 +7342,7 @@ export function createImportedXTraceArtifact(
         requiredContactEffectPackages: options.requiredContactEffectPackages,
         requiredEnvShakeEvents: options.requiredEnvShakeEvents,
         requiredRoundFrames: options.requiredRoundFrames,
+        requiredStageFrames: options.requiredStageFrames,
         requiredControllerEventSequences: options.requiredControllerEventSequences,
         requiredTargetLinks: options.requiredTargetLinks,
         requiredActorFrames: options.requiredActorFrames,
@@ -68368,6 +68431,14 @@ export type SyntheticImportedTraceFighterOptions = {
     dirAdd?: SyntheticNumberExpression;
     decay?: SyntheticNumberExpression;
   };
+  /** Synthetic fixture-only active EnvColor emitted by a Helper into the global stage sink. */
+  helperEnvColorRoute?: {
+    stateNo: number;
+    animNo?: number;
+    value: [SyntheticNumberExpression, SyntheticNumberExpression, SyntheticNumberExpression];
+    time: SyntheticNumberExpression;
+    under: SyntheticNumberExpression;
+  };
   helperIsHelperRoute?: { stateNo: number; animNo?: number; helperId?: number };
   helperRunOrderRoute?: { expected: number; stateNo: number };
   helperSelfTagRoute?: {
@@ -69837,6 +69908,7 @@ ${options.helperRunOrderRoute ? helperRunOrderRouteBlock(options.helperRunOrderR
 ${options.helperSelfTagRoute ? helperSelfTagRouteBlock(options.helperSelfTagRoute) : ""}
 ${options.helperPauseRoute ? helperPauseRouteBlock() : ""}
 ${options.helperEnvShakeRoute ? helperEnvShakeRouteBlock(options.helperEnvShakeRoute) : ""}
+${options.helperEnvColorRoute ? helperEnvColorRouteBlock(options.helperEnvColorRoute) : ""}
 ${options.helperResourceRoute ? helperResourceRouteBlock(options.helperResourceRoute, options.helperPauseRoute !== true, options.helperResourceRouteShared === true) : ""}
 ${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNearRoute) : ""}
 ${options.helperParentRootRedirectRoute ? helperParentRootRedirectRouteBlock(options.helperParentRootRedirectRoute) : ""}
@@ -70255,6 +70327,12 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
               : ([[
                   options.helperEnvShakeRoute.animNo ?? options.helperEnvShakeRoute.stateNo,
                   helperTraceAction(options.helperEnvShakeRoute.animNo ?? options.helperEnvShakeRoute.stateNo),
+                ]] as Array<[number, MugenAnimationAction]>)),
+            ...(options.helperEnvColorRoute === undefined
+              ? []
+              : ([[
+                  options.helperEnvColorRoute.animNo ?? options.helperEnvColorRoute.stateNo,
+                  helperTraceAction(options.helperEnvColorRoute.animNo ?? options.helperEnvColorRoute.stateNo),
                 ]] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperIsHelperRoute?.animNo === undefined
               ? []
@@ -76280,6 +76358,38 @@ ${route.dirAdd === undefined ? "" : `diradd = ${route.dirAdd}`}
 ${route.decay === undefined ? "" : `decay = ${route.decay}`}
 
 [State 1200, Helper EnvShake Branch]
+type = ChangeState
+trigger1 = Time = 0
+value = ${route.stateNo}
+ctrl = 0
+
+[Statedef ${route.stateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${animNo}
+ctrl = 0
+`;
+}
+
+function helperEnvColorRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperEnvColorRoute"]>): string {
+  const animNo = route.animNo ?? route.stateNo;
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, Helper EnvColor]
+type = EnvColor
+trigger1 = Time = 0
+value = ${route.value.join(",")}
+time = ${route.time}
+under = ${route.under}
+
+[State 1200, Helper EnvColor Branch]
 type = ChangeState
 trigger1 = Time = 0
 value = ${route.stateNo}

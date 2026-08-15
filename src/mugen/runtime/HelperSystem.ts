@@ -1,5 +1,6 @@
 import type {
   ControllerOp,
+  EnvColorControllerOp,
   EnvShakeControllerOp,
   ResourceControllerOp,
   HelperControllerOp,
@@ -49,6 +50,7 @@ import type {
 } from "./ProjectileSystem";
 import type { MatchPauseControllerResult, RuntimePauseControllerParamResolvers } from "./PauseSystem";
 import { resolveRuntimeEnvShakeControllerOperation } from "./EnvShakeSystem";
+import { resolveRuntimeEnvColorControllerOperation, type RuntimeEnvColorResolver } from "./EnvColorSystem";
 import { RuntimeControllerDispatchWorld } from "./RuntimeControllerDispatchSystem";
 import {
   RuntimeActorConstraintControllerDispatchWorld,
@@ -374,6 +376,11 @@ export type RuntimeHelperAdvanceOptions = {
     helper: RuntimeHelper,
     controller: ControllerIr,
     operation: EnvShakeControllerOp,
+  ) => boolean;
+  onEnvColorController?: (
+    helper: RuntimeHelper,
+    controller: ControllerIr,
+    operation: EnvColorControllerOp,
   ) => boolean;
   onStateExecution?: (helper: RuntimeHelper, stateNo: number) => void;
   scaleTargetDamage?: (runtime: CharacterRuntimeState, damage: number) => number;
@@ -711,6 +718,7 @@ export function runRuntimeHelperStateControllers(
     | "onModifyProjectile"
     | "onPauseController"
     | "onEnvShakeController"
+    | "onEnvColorController"
     | "onStateExecution"
     | "scaleTargetDamage"
     | "onTeamStandby"
@@ -1035,6 +1043,21 @@ export function runRuntimeHelperStateControllers(
             resolveFloat: (key) => resolveHelperFloat(helper, findControllerParam(controller, key), options),
           });
       if (operation && options.onEnvShakeController?.(helper, controller, operation)) {
+        options.onController?.(helper, controller);
+        options.onOperation?.(helper, operation);
+        continue;
+      }
+      options.onUnsupportedController?.(helper, controller);
+      continue;
+    }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "envcolor") {
+      const operation = controller.operation?.kind === "envcolor"
+        ? controller.operation
+        : resolveRuntimeEnvColorControllerOperation(
+            controller.source,
+            helperEnvColorControllerParamResolvers(helper, controller, options),
+          );
+      if (operation && options.onEnvColorController?.(helper, controller, operation)) {
         options.onController?.(helper, controller);
         options.onOperation?.(helper, operation);
         continue;
@@ -2519,6 +2542,40 @@ export function resolveRuntimeHelperHitDefPaletteFx(
         : [resolved[0]!, resolved[1]!, resolved[2]!];
     },
   };
+}
+
+function helperEnvColorControllerParamResolvers(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): RuntimeEnvColorResolver {
+  return {
+    resolveNumber: (key) => resolveHelperNumber(
+      helper,
+      undefined,
+      findControllerParam(controller.source, key),
+      options,
+    ),
+    resolveTriplet: (key) => resolveHelperEnvColorTripletParam(helper, controller, key, options),
+  };
+}
+
+function resolveHelperEnvColorTripletParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "value",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): [number, number, number] | undefined {
+  const raw = findControllerParam(controller.source, key);
+  if (!raw) return undefined;
+  const splitIndices = topLevelCommaIndices(raw);
+  for (const expressions of helperExpressionPartitions(raw, splitIndices, 3)) {
+    const values = expressions.map((expression) => resolveHelperNumber(helper, undefined, expression, options));
+    if (values.every((value): value is number => value !== undefined)) {
+      return [values[0]!, values[1]!, values[2]!];
+    }
+  }
+  return undefined;
 }
 
 function helperPauseControllerParamResolvers(

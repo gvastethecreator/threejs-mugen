@@ -136,6 +136,9 @@ export function calculateRuntimeStageFlash(runtimeTick: number, events: readonly
     opacity: roundFlashOpacity(Math.min(0.65, 0.18 + (remaining / Math.max(1, active.event.time)) * 0.42)),
     remaining,
     under: active.event.under,
+    ...(active.event.sourceActorId === undefined ? {} : { sourceActorId: active.event.sourceActorId }),
+    ...(active.event.sourceRootId === undefined ? {} : { sourceRootId: active.event.sourceRootId }),
+    ...(active.event.sourceParentId === undefined ? {} : { sourceParentId: active.event.sourceParentId }),
   };
 }
 

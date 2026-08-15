@@ -237,6 +237,39 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
 }
 
 describe("HelperSystem", () => {
+  it("resolves Helper EnvColor in Parent caller context and rejects non-positive time", () => {
+    const parent = helperRuntimeState(helper());
+    parent.vars[0] = 32;
+    parent.vars[1] = 128;
+    parent.vars[2] = 240;
+    parent.vars[3] = 14;
+    parent.vars[4] = 1;
+    const active = helper({
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "EnvColor", ["1"], {
+            value: "Parent,Var(0),Parent,Var(1),Parent,Var(2)",
+            time: "Parent,Var(3)",
+            under: "Parent,Var(4)",
+          }),
+          compiledControllerIr(6000, "EnvColor", ["1"], { value: "1,2,3", time: "0" }),
+        ])],
+      },
+    });
+    const operations: Array<{ color: [number, number, number]; time: number; under: boolean }> = [];
+
+    advanceRuntimeHelpers([active], stage, {
+      parentState: parent,
+      rootState: parent,
+      onEnvColorController: (_helper, _controller, operation) => {
+        operations.push({ color: operation.color, time: operation.time, under: operation.under });
+        return true;
+      },
+    });
+
+    expect(operations).toEqual([{ color: [32, 128, 240], time: 14, under: true }]);
+  });
+
   it("routes opt-in shared resource writes without mutating the helper locally", () => {
     const active = helper({
       life: 500,

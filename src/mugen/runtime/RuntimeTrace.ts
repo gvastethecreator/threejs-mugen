@@ -772,6 +772,9 @@ export type RuntimeTraceStageFrameRequirement = {
   envColorG?: number;
   envColorB?: number;
   envColorUnder?: boolean;
+  envColorSourceActorId?: string;
+  envColorSourceRootId?: string;
+  envColorSourceParentId?: string;
   observedEnvColorOpacityAtLeast?: number;
   observedEnvColorOpacityAtMost?: number;
   boundLeft?: number;
@@ -787,6 +790,9 @@ export type RuntimeTraceGateStageFrameEvidence = {
   envColor?: {
     color: [number, number, number];
     under: boolean;
+    sourceActorId?: string;
+    sourceRootId?: string;
+    sourceParentId?: string;
     minOpacity: number;
     maxOpacity: number;
   };
@@ -3417,6 +3423,9 @@ function summarizeStageEnvColor(stage: RuntimeTraceStageSummary): RuntimeTraceGa
   return {
     color: [stage.envColor.color[0], stage.envColor.color[1], stage.envColor.color[2]],
     under: stage.envColor.under,
+    ...(stage.envColor.sourceActorId === undefined ? {} : { sourceActorId: stage.envColor.sourceActorId }),
+    ...(stage.envColor.sourceRootId === undefined ? {} : { sourceRootId: stage.envColor.sourceRootId }),
+    ...(stage.envColor.sourceParentId === undefined ? {} : { sourceParentId: stage.envColor.sourceParentId }),
     minOpacity: stage.envColor.opacity,
     maxOpacity: stage.envColor.opacity,
   };
@@ -3433,6 +3442,9 @@ function mergeStageEnvColor(
     return {
       color: [next.color[0], next.color[1], next.color[2]],
       under: next.under,
+      ...(next.sourceActorId === undefined ? {} : { sourceActorId: next.sourceActorId }),
+      ...(next.sourceRootId === undefined ? {} : { sourceRootId: next.sourceRootId }),
+      ...(next.sourceParentId === undefined ? {} : { sourceParentId: next.sourceParentId }),
       minOpacity: next.opacity,
       maxOpacity: next.opacity,
     };
@@ -3440,6 +3452,9 @@ function mergeStageEnvColor(
   return {
     color: [current.color[0], current.color[1], current.color[2]],
     under: current.under,
+    ...(current.sourceActorId === undefined ? {} : { sourceActorId: current.sourceActorId }),
+    ...(current.sourceRootId === undefined ? {} : { sourceRootId: current.sourceRootId }),
+    ...(current.sourceParentId === undefined ? {} : { sourceParentId: current.sourceParentId }),
     minOpacity: Math.min(current.minOpacity, next.opacity),
     maxOpacity: Math.max(current.maxOpacity, next.opacity),
   };
@@ -3451,7 +3466,9 @@ function stageFrameEvidenceKey(stage: RuntimeTraceStageSummary): string {
     stage.bounds?.left ?? "*",
     stage.bounds?.right ?? "*",
     stage.camera.zoom,
-    stage.envColor ? `${stage.envColor.color.join(",")}:${stage.envColor.under ? 1 : 0}` : "ec*",
+    stage.envColor
+      ? `${stage.envColor.color.join(",")}:${stage.envColor.under ? 1 : 0}:${stage.envColor.sourceActorId ?? "*"}:${stage.envColor.sourceRootId ?? "*"}:${stage.envColor.sourceParentId ?? "*"}`
+      : "ec*",
   ].join(":");
 }
 
@@ -3462,7 +3479,9 @@ function stageFrameGateEvidenceKey(stage: RuntimeTraceGateStageFrameEvidence): s
     stage.bounds?.right ?? "*",
     stage.minCamera.zoom,
     stage.maxCamera.zoom,
-    stage.envColor ? `${stage.envColor.color.join(",")}:${stage.envColor.under ? 1 : 0}:${stage.envColor.minOpacity}:${stage.envColor.maxOpacity}` : "ec*",
+    stage.envColor
+      ? `${stage.envColor.color.join(",")}:${stage.envColor.under ? 1 : 0}:${stage.envColor.sourceActorId ?? "*"}:${stage.envColor.sourceRootId ?? "*"}:${stage.envColor.sourceParentId ?? "*"}:${stage.envColor.minOpacity}:${stage.envColor.maxOpacity}`
+      : "ec*",
   ].join(":");
 }
 
@@ -3483,6 +3502,9 @@ function matchesStageFrameRequirement(
     (requirement.envColorG === undefined || stage.envColor?.color[1] === requirement.envColorG) &&
     (requirement.envColorB === undefined || stage.envColor?.color[2] === requirement.envColorB) &&
     (requirement.envColorUnder === undefined || stage.envColor?.under === requirement.envColorUnder) &&
+    (requirement.envColorSourceActorId === undefined || stage.envColor?.sourceActorId === requirement.envColorSourceActorId) &&
+    (requirement.envColorSourceRootId === undefined || stage.envColor?.sourceRootId === requirement.envColorSourceRootId) &&
+    (requirement.envColorSourceParentId === undefined || stage.envColor?.sourceParentId === requirement.envColorSourceParentId) &&
     (requirement.observedEnvColorOpacityAtLeast === undefined ||
       (stage.envColor?.maxOpacity ?? Number.NEGATIVE_INFINITY) >= requirement.observedEnvColorOpacityAtLeast) &&
     (requirement.observedEnvColorOpacityAtMost === undefined ||
@@ -3977,6 +3999,9 @@ function summarizeStage(stage: StageSnapshot): RuntimeTraceStageSummary {
           opacity: roundTraceNumber(stage.envColor.opacity),
           remaining: stage.envColor.remaining,
           under: stage.envColor.under,
+          ...(stage.envColor.sourceActorId === undefined ? {} : { sourceActorId: stage.envColor.sourceActorId }),
+          ...(stage.envColor.sourceRootId === undefined ? {} : { sourceRootId: stage.envColor.sourceRootId }),
+          ...(stage.envColor.sourceParentId === undefined ? {} : { sourceParentId: stage.envColor.sourceParentId }),
         }
       : undefined,
   };

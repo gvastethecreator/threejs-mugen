@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-15T10:44:48Z",
-  "generated_from_commit": "7923b6d762940b19b4172fbd7681764a0e71bd9a",
+  "generated_at": "2026-08-15T11:08:48Z",
+  "generated_from_commit": "40607c322749cc93746d6e2feec31aaea7e9d3a5",
   "scope": [
     "."
   ],
@@ -811,47 +811,59 @@
   ],
   "flows": [
     {
-      "trigger": "package.json scripts to the game runtime",
+      "trigger": "Tracked reference index.html:/src/main.ts",
       "steps": [
-        "repository",
-        "scripts"
+        "index",
+        "src",
+        "src-app",
+        "src-game",
+        "src-mugen",
+        "external-dependencies"
       ],
-      "outcome": "Repository scripts are the operational entrypoint for QA and build automation."
+      "outcome": "The verified dependency path reaches external-dependencies through 5 step(s)."
     },
     {
-      "trigger": "application entrypoint to the engine",
+      "trigger": "Tracked reference index.html:/src/main.ts to external-dependencies",
       "steps": [
+        "index",
+        "src",
+        "src-app",
+        "src-game",
+        "external-dependencies"
+      ],
+      "outcome": "The verified dependency path reaches external-dependencies through 4 step(s)."
+    },
+    {
+      "trigger": "Tracked reference package.json:scripts/audit_css_duplication.cjs",
+      "steps": [
+        "repository",
+        "scripts",
+        "src-game",
+        "src-mugen",
+        "external-dependencies"
+      ],
+      "outcome": "The verified dependency path reaches external-dependencies through 4 step(s)."
+    },
+    {
+      "trigger": "Tracked reference src/main.ts:./app/App",
+      "steps": [
+        "src",
+        "src-app",
+        "src-game",
+        "src-mugen",
+        "external-dependencies"
+      ],
+      "outcome": "The verified dependency path reaches external-dependencies through 4 step(s)."
+    },
+    {
+      "trigger": "Tracked reference index.html:/src/main.ts to src-engine",
+      "steps": [
+        "index",
         "src",
         "src-app",
         "src-engine"
       ],
-      "outcome": "The application entrypoint reaches the shared engine contracts."
-    },
-    {
-      "trigger": "application entrypoint to gameplay",
-      "steps": [
-        "src",
-        "src-app",
-        "src-game"
-      ],
-      "outcome": "The application entrypoint wires the gameplay loop and presentation layer."
-    },
-    {
-      "trigger": "Helper/runtime scripts to MUGEN runtime",
-      "steps": [
-        "scripts",
-        "src-mugen"
-      ],
-      "outcome": "Runtime QA scripts load the MUGEN/Ikemen runtime seam."
-    },
-    {
-      "trigger": "application to the MUGEN loader/runtime",
-      "steps": [
-        "src",
-        "src-app",
-        "src-mugen"
-      ],
-      "outcome": "The application coordinates character, stage and runtime loading."
+      "outcome": "The verified dependency path reaches src-engine through 3 step(s)."
     }
   ]
 }

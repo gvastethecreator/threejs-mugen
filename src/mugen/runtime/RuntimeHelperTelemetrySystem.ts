@@ -58,7 +58,9 @@ function recordsHelperController(controller: ControllerIr): boolean {
   return (
     controller.operation?.kind === "projectile" ||
     controller.operation?.kind === "pause" ||
+    controller.operation?.kind === "envcolor" ||
     controller.operation?.kind === "envshake" ||
+    controller.normalizedType === "envcolor" ||
     controller.normalizedType === "envshake" ||
     controller.operation?.kind === "team-standby" ||
     helperKinematicControllers.has(controller.normalizedType) ||
@@ -75,6 +77,7 @@ function recordsHelperOperation(operation: ControllerOp): boolean {
     operation.kind === "variable" ||
     operation.kind === "kinematic" ||
     operation.kind === "pause" ||
+    operation.kind === "envcolor" ||
     operation.kind === "envshake" ||
     operation.kind === "team-standby" ||
     operation.kind === "resource";

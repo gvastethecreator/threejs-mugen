@@ -29,6 +29,7 @@ export type RuntimeEffectLifecycleActor = RuntimeEffectGetHitActor & {
   admitResourceWrite?: RuntimeHelperAdvanceOptions["admitResourceWrite"];
   onHelperPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
   onHelperEnvShakeController?: RuntimeHelperAdvanceOptions["onEnvShakeController"];
+  onHelperEnvColorController?: RuntimeHelperAdvanceOptions["onEnvColorController"];
   onHelperStateExecution?: RuntimeHelperAdvanceOptions["onStateExecution"];
   onHelperTeamStandby?: RuntimeHelperAdvanceOptions["onTeamStandby"];
   scaleHelperTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];

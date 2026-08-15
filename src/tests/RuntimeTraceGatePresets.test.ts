@@ -639,6 +639,7 @@ import {
   createSyntheticImportedDynamicEnvShakeTraceArtifact,
   createSyntheticImportedDynamicEnvShakeDirAddDecayTraceArtifact,
   createSyntheticImportedHelperEnvShakeOwnershipTraceArtifact,
+  createSyntheticImportedHelperEnvColorOwnershipTraceArtifact,
   createSyntheticImportedRemapPalTraceArtifact,
   createSyntheticImportedDynamicRemapPalTraceArtifact,
   createSyntheticImportedPalFxRemapPalTraceArtifact,
@@ -14559,6 +14560,44 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({ actorId: "p1", sourceActorId: "p1-helper-0", sourceRootId: "p1", sourceParentId: "p1" }),
     ]));
     expect(artifact.trace.frames.some((frame) => frame.stage?.camera.shake?.amplitude === -9)).toBe(true);
+  });
+
+  it("creates a required Helper-owned EnvColor artifact with global stage ownership", () => {
+    const artifact = createSyntheticImportedHelperEnvColorOwnershipTraceArtifact({ generatedAt: "2026-08-15T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-envcolor-golden", source: "mixed" },
+      gates: [{ label: "imported-x-golden", passed: true, failures: [] }],
+    });
+    const requirement = artifact.gates[0]?.requirements.requiredStageFrames?.[0];
+    const evidence = artifact.gates[0]?.evidence;
+    expect(requirement).toMatchObject({
+      stageId: "trace-far-training-grid",
+      envColorR: 32,
+      envColorG: 128,
+      envColorB: 240,
+      envColorUnder: true,
+      envColorSourceActorId: "p1-helper-0",
+      envColorSourceRootId: "p1",
+      envColorSourceParentId: "p1",
+    });
+    expect(evidence?.executedOperations.envcolor).toBeGreaterThanOrEqual(1);
+    expect(evidence?.worldLifecycleEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+      expect.objectContaining({ type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+    ]));
+    expect(evidence?.stageFrames).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        stageId: "trace-far-training-grid",
+        envColor: expect.objectContaining({
+          color: [32, 128, 240],
+          under: true,
+          sourceActorId: "p1-helper-0",
+          sourceRootId: "p1",
+          sourceParentId: "p1",
+        }),
+      }),
+    ]));
   });
 
   it("creates a synthetic imported RemapPal artifact with typed sprite-effect evidence", () => {
