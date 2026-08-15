@@ -47,6 +47,7 @@ import type {
   RuntimeModifyProjectilePartialTripleParam,
   RuntimeModifyProjectileTripleParam,
   RuntimeProjectileEnvShake,
+  RuntimeProjectileFallImpact,
   RuntimeProjectileModifyResolver,
 } from "./ProjectileSystem";
 import type { MatchPauseControllerResult, RuntimePauseControllerParamResolvers } from "./PauseSystem";
@@ -2090,6 +2091,27 @@ export function resolveRuntimeHelperProjectileFallEnvShake(
   options: Parameters<typeof resolveHelperNumber>[3],
 ): Partial<RuntimeProjectileEnvShake> | undefined {
   return resolveRuntimeHelperProjectileEnvShakePackage(helper, controller, "fallEnvShake", options);
+}
+
+/** Resolves fresh Helper Projectile fall impact values in the Helper caller context. */
+export function resolveRuntimeHelperProjectileFallImpact(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): Partial<RuntimeProjectileFallImpact> | undefined {
+  const operation = controller.operation;
+  const fallImpact = operation?.kind === "projectile" ? operation.fallImpact : undefined;
+  if (fallImpact === undefined) return undefined;
+  const resolveComponent = (value: number | string | undefined): number | undefined => {
+    if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+    return typeof value === "string" ? resolveHelperFloat(helper, value, options) : undefined;
+  };
+  return {
+    damage: resolveComponent(fallImpact.damage),
+    xVelocity: resolveComponent(fallImpact.xVelocity),
+    yVelocity: resolveComponent(fallImpact.yVelocity),
+    zVelocity: resolveComponent(fallImpact.zVelocity),
+  };
 }
 
 function resolveRuntimeHelperProjectileEnvShakePackage(

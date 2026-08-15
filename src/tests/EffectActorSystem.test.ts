@@ -1887,6 +1887,47 @@ describe("EffectActorSystem", () => {
     expect(spawnRuntimeHelperProjectileActor(store, helper, dynamicController)?.fall).toEqual({ enabled: true });
   });
 
+  it("resolves Helper Projectile fall impact components in the helper caller context", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "43", anim: "900" }),
+      animations: new Map([[900, action(900)]]),
+    });
+    helper.vars[0] = 17.8;
+    helper.vars[1] = 6.5;
+    helper.vars[2] = 2.75;
+    const dynamicController = compileControllerIr(controller("Projectile", {
+      projanim: "900",
+      projid: "8864",
+      fall: "1",
+      "fall.damage": "var(0)",
+      "fall.xvelocity": "var(1) * .5",
+      "fall.yvelocity": "-7",
+      "fall.zvelocity": "var(2)",
+    }));
+
+    expect(spawnRuntimeHelperProjectileActor(store, helper, dynamicController)).toMatchObject({
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+      fall: {
+        enabled: true,
+        damage: 17,
+        xVelocity: 3.25,
+        yVelocity: -7,
+        zVelocity: 2.75,
+      },
+    });
+
+    helper.vars[1] = Number.NaN;
+    expect(spawnRuntimeHelperProjectileActor(store, helper, dynamicController)?.fall).toEqual({
+      enabled: true,
+      damage: 17,
+      yVelocity: -7,
+      zVelocity: 2.75,
+    });
+  });
+
   it("resolves Helper Projectile keepstate in the helper caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {
