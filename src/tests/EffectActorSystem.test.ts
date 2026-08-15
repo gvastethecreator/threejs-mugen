@@ -1928,6 +1928,48 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("resolves Helper Projectile fall recovery components in the helper caller context", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "43", anim: "900" }),
+      animations: new Map([[900, action(900)]]),
+    });
+    helper.vars[0] = 0.9;
+    helper.vars[1] = 19.8;
+    helper.vars[2] = 1;
+    helper.vars[3] = 45.2;
+    const dynamicController = compileControllerIr(controller("Projectile", {
+      projanim: "900",
+      projid: "8865",
+      fall: "1",
+      "fall.recover": "var(0)",
+      "fall.recovertime": "var(1)",
+      "down.recover": "var(2)",
+      "down.recovertime": "var(3)",
+    }));
+
+    expect(spawnRuntimeHelperProjectileActor(store, helper, dynamicController)).toMatchObject({
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+      fall: {
+        enabled: true,
+        recover: false,
+        recoverTime: 19,
+        downRecover: true,
+        downRecoverTime: 45,
+      },
+    });
+
+    helper.vars[1] = Number.NaN;
+    expect(spawnRuntimeHelperProjectileActor(store, helper, dynamicController)?.fall).toEqual({
+      enabled: true,
+      recover: false,
+      downRecover: true,
+      downRecoverTime: 45,
+    });
+  });
+
   it("resolves Helper Projectile keepstate in the helper caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {

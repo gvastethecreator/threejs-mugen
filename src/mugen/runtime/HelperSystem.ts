@@ -48,6 +48,7 @@ import type {
   RuntimeModifyProjectileTripleParam,
   RuntimeProjectileEnvShake,
   RuntimeProjectileFallImpact,
+  RuntimeProjectileFallRecovery,
   RuntimeProjectileModifyResolver,
 } from "./ProjectileSystem";
 import type { MatchPauseControllerResult, RuntimePauseControllerParamResolvers } from "./PauseSystem";
@@ -2111,6 +2112,23 @@ export function resolveRuntimeHelperProjectileFallImpact(
     xVelocity: resolveComponent(fallImpact.xVelocity),
     yVelocity: resolveComponent(fallImpact.yVelocity),
     zVelocity: resolveComponent(fallImpact.zVelocity),
+  };
+}
+
+/** Resolves fresh Helper Projectile fall/down recovery values in the Helper caller context. */
+export function resolveRuntimeHelperProjectileFallRecovery(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): Partial<RuntimeProjectileFallRecovery> | undefined {
+  const operation = controller.operation;
+  const fallRecovery = operation?.kind === "projectile" ? operation.fallRecovery : undefined;
+  if (fallRecovery === undefined) return undefined;
+  return {
+    recover: resolveRuntimeHelperIntegerExpression(helper, fallRecovery.recover, options),
+    recoverTime: resolveRuntimeHelperIntegerExpression(helper, fallRecovery.recoverTime, options),
+    downRecover: resolveRuntimeHelperIntegerExpression(helper, fallRecovery.downRecover, options),
+    downRecoverTime: resolveRuntimeHelperIntegerExpression(helper, fallRecovery.downRecoverTime, options),
   };
 }
 
