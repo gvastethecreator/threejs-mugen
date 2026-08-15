@@ -956,6 +956,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperModifyProjectileAttackRedLifeHitTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-modifyprojectile-attack-redlife-guard",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperModifyProjectileAttackRedLifeGuardTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-data-damage-scale",
       required: true,
       artifact: presets.createSyntheticImportedDataDamageScaleTraceArtifact(),
