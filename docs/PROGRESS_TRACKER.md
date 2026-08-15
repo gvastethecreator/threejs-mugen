@@ -43,9 +43,18 @@ receives one event with preserved owner/root/parent identity. Typecheck and
 diff hygiene pass. Nested/team ownership, waveform, pause/stage/layer,
 contact/fall, rollback and full parity remain open.
 
-## Next implementation checkpoint — T791 upstream seam selection (2026-08-15)
+## Latest implementation checkpoint — T792 Helper-owned active `EnvColor` (2026-08-15)
 
-Issue 366 queues the next official-source comparison before implementation.
+Issue 367 closes Helper-owned active `EnvColor` through product `2c5ce0fe`.
+Parent-context RGB/time/under values emit one global stage flash with preserved
+Helper/root/parent attribution. Required `synthetic-imported-helper-envcolor`
+passes at `68d3329b` / `1b28cd00`; focused tests, typecheck, build and the
+871/871 aggregate trace gate pass. Infinite time, exact blend/layer/pause
+timing, redirects, nested/team ownership, rollback and full parity remain open.
+
+## Next implementation checkpoint — T793 `EnvColor time = -1` selection (2026-08-15)
+
+Issue 368 queues the next official-source lifetime decision.
 ## Historical implementation checkpoint — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

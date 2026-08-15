@@ -1,14 +1,12 @@
 # Controller Support Registry
 
-Latest cursor: T790 / issue 365 is closed-bounded for Helper-owned active
-`EnvShake`. Product `d5077de6` and required trace
-`synthetic-imported-helper-envshake` prove caller-context `Parent,Var(...)`
-resolution, one root presentation event, owner/root/parent identity, lifecycle
-and camera projection (`f75a9af7` / `0f9f927d`). M.U.G.E.N's base four-field
-EnvShake and the pinned Ikemen extensions remain bounded; nested/team
-ownership, exact waveform, pause/stage/layer, contact/fall, rollback and full
-parity remain unsupported. See [issue
-365](../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
+Latest cursor: T792 / issue 367 is closed-bounded for Helper-owned active
+`EnvColor`. Product `2c5ce0fe` resolves caller-context `Parent,Var(...)` RGB,
+time and under values, emits one global stage flash, and preserves
+Helper/root/parent identity in required trace evidence (`68d3329b` /
+`1b28cd00`). Infinite duration, exact blend/layer/pause behavior, redirects,
+nested/team ownership, rollback and full parity remain unsupported. See [issue
+367](../.scratch/roadmap/issues/367-helper-envcolor-presentation-ownership.md).
 
 Previous cursor: T787 / issue 361 is closed-bounded for live root/RedirectID
 `ModifyHitDef down.velocity` X/Y component-preserving mutation. Product
@@ -22,9 +20,9 @@ not attributed to this slice. Fresh defaults, dynamic Z/`n`, Helper-authored
 controllers, Projectile variants, exact landing/timing, rollback and full
 parity remain unsupported.
 
-Next cursor: T791 / issue 366 queues the next official/Ikemen seam selection
-after the Helper EnvShake ownership closure. See [issue
-366](../.scratch/roadmap/issues/366-upstream-seam-selection-after-envshake-helper.md).
+Next cursor: T793 / issue 368 queues `EnvColor time = -1` lifetime/replacement
+selection. See [issue
+368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
 
 Previous cursor: T786 / issue 360 is closed-bounded for Helper-owned live
 `ModifyProjectile RedirectID` over a root destination Projectile. Required

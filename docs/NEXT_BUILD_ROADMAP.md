@@ -46,10 +46,20 @@ lifecycle and root camera projection are observable. Nested/team ownership,
 waveform, pause/stage/layer, contact/fall, rollback and full parity remain
 excluded. See [issue 365](../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
 
-## Next bounded slice — T791 upstream seam selection (2026-08-15)
+## Latest bounded slice — T792 Helper-owned active `EnvColor` (2026-08-15)
 
-Issue 366 queues a primary-source comparison before the next implementation
-cut. See [issue 366](../.scratch/roadmap/issues/366-upstream-seam-selection-after-envshake-helper.md).
+Issue 367 closes Helper caller-context active `EnvColor` through product
+`2c5ce0fe`. Required trace `synthetic-imported-helper-envcolor` proves one
+global stage flash with RGB/time/under and Helper/root/parent identity at
+`68d3329b` / `1b28cd00`; aggregate QA is 871/871 (837 required). Infinite
+time, exact blend/layer/pause, redirects, nested/team ownership, rollback and
+full parity remain excluded. See [issue
+367](../.scratch/roadmap/issues/367-helper-envcolor-presentation-ownership.md).
+
+## Next bounded slice — T793 `EnvColor time = -1` selection (2026-08-15)
+
+Issue 368 queues the lifetime/replacement decision. See [issue
+368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

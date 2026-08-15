@@ -53,9 +53,17 @@
   pause/stage/layer, contact/fall, rollback and full parity remain outside.
   See [issue 365](../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
 
-- **T791 next** — issue 366 queues the next official/Ikemen seam comparison
-  after the Helper EnvShake ownership closure. See [issue
-  366](../.scratch/roadmap/issues/366-upstream-seam-selection-after-envshake-helper.md).
+- **T792 closed-bounded** — issue 367 closes Helper-owned active `EnvColor`.
+  Product `2c5ce0fe` resolves `Parent,Var(...)` RGB/time/under and emits one
+  global stage flash with Helper/root/parent identity. Required trace
+  `synthetic-imported-helper-envcolor` (`68d3329b` / `1b28cd00`) and aggregate
+  QA 871/871 (837 required) pass. Infinite time, exact blend/layer/pause,
+  redirects, nested/team ownership, rollback and full parity remain outside.
+  See [issue 367](../.scratch/roadmap/issues/367-helper-envcolor-presentation-ownership.md).
+
+- **T793 next** — issue 368 queues bounded `EnvColor time = -1` lifetime and
+  replacement selection. See [issue
+  368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;
   evidence remains in `29aba4bb` / `b9b0752d`.

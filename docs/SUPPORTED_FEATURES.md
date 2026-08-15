@@ -50,10 +50,19 @@ Nested/team ownership, waveform, pause/stage/layer, contact/fall, rollback and
 full parity remain outside the claim. See [issue 365]
 (../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
 
-## Next selection — T791 upstream seam selection
+## 2026-08-15 T792 — closed-bounded
 
-Issue 366 queues the next primary-source comparison after the T790 ownership
-closure.
+Helper-owned active `EnvColor` now resolves `Parent,Var(...)` RGB/time/under
+in caller context and emits one global stage flash with source Helper/root/
+parent identity. Required trace `synthetic-imported-helper-envcolor` passes at
+`68d3329b` / `1b28cd00`; product `2c5ce0fe`, focused tests, typecheck, build
+and aggregate QA 871/871 pass. `time = -1`, exact blend/layer/pause behavior,
+redirects, nested/team ownership, rollback and full parity remain outside the
+claim. See [issue 367](../.scratch/roadmap/issues/367-helper-envcolor-presentation-ownership.md).
+
+## Next selection — T793 `EnvColor time = -1`
+
+Issue 368 queues the next bounded lifetime/replacement selection.
 ## Historical — T781 Helper `ModifyProjectile down.velocity` index
 
 Issue 355 closed the same oldest-first index contract for the lying-hit vector;

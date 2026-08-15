@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T791 — queued (2026-08-15)**
+- **T791 — closed-selection (2026-08-15)**
 - **Área:** upstream seam selection / presentation ownership / evidence
 - **Dependencia:** T790 / issue 365
 
@@ -22,6 +22,16 @@ topología nested/team y paridad completa.
 3. Otro controlador de presentación con contrato oficial acotado y una traza
    reproducible.
 
+## Resultado de la selección
+
+T791 seleccionó **T792: `EnvColor` activo propiedad de un Helper**. M.U.G.E.N
+1.1 documenta el flash global `value`, `time` y `under`; el pin Ikemen GO
+`149402f` compila los valores en el contexto del caller y los escribe en el
+estado global de presentación. El runtime local ya tenía el receptor global,
+pero el VM de Helper no podía despachar ni atribuir el controller. La
+implementación y la evidencia quedan en [issue
+367](367-helper-envcolor-presentation-ownership.md).
+
 ## Criterios de selección
 
 - Fuente primaria enlazada y semántica comparada antes de tocar código.
@@ -33,6 +43,6 @@ topología nested/team y paridad completa.
 
 ## Fuera de alcance
 
-No se implementa ningún candidato en este issue; la implementación será un
-corte posterior con su propio commit de producto, evidencia y actualización de
-roadmap.
+T791 no amplía `EnvColor` a duración infinita, mezcla/capas exactas, pausa,
+redirects, Helpers nested/team, rollback ni paridad total. Esas decisiones
+quedan fuera del corte T792 y de la siguiente selección.

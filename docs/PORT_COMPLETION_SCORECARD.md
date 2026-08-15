@@ -49,11 +49,19 @@ pause/stage/layer, contact/fall, rollback and full parity remain blocked; the
 score does not move. See [issue 365]
 (../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
 
-## Next scorecard slice — 2026-08-15 T791 upstream seam selection
+## 2026-08-15 T792 Helper-owned active `EnvColor` — closed-bounded, no score movement
 
-Issue 366 queues the next official-source comparison without changing the
-current score. See [issue 366]
-(../.scratch/roadmap/issues/366-upstream-seam-selection-after-envshake-helper.md).
+Issue 367 closes caller-context Helper `EnvColor` presentation. Product
+`2c5ce0fe` emits one attributed global stage flash; required trace
+`synthetic-imported-helper-envcolor` passes with `68d3329b` / `1b28cd00` and
+the aggregate gate is 871/871 (837 required). Infinite duration, exact
+blend/layer/pause behavior, redirects, nested/team ownership, rollback and full
+parity remain blocked, so the score does not move. See [issue
+367](../.scratch/roadmap/issues/367-helper-envcolor-presentation-ownership.md).
+
+## Next scorecard slice — 2026-08-15 T793 `EnvColor time = -1`
+
+Issue 368 queues the lifetime selection without changing the current score.
 ## Historical checkpoint — 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index
 
 Issue 355 closed Helper-owned live `ModifyProjectile down.velocity` explicit

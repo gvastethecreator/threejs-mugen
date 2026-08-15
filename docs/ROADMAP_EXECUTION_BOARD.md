@@ -53,11 +53,21 @@ camera projection. Nested/team ownership, waveform, pause/stage/layer,
 contact/fall, rollback and full parity remain excluded. See [issue
 365](../.scratch/roadmap/issues/365-active-envshake-helper-ownership.md).
 
-## Next bounded slice — T791 upstream seam selection (2026-08-15)
+## Latest bounded slice — T792 Helper-owned active `EnvColor` (2026-08-15)
 
-Issue 366 is queued to compare the next official M.U.G.E.N/Ikemen seam after
-T790 and select one bounded implementation with primary-source evidence. See
-[issue 366](../.scratch/roadmap/issues/366-upstream-seam-selection-after-envshake-helper.md).
+Issue 367 closes the selected presentation seam. Product `2c5ce0fe` routes
+Helper `Parent,Var(...)` RGB/time/under values into one global stage flash and
+retains Helper/root/parent identity in the stage frame. Required trace
+`synthetic-imported-helper-envcolor` passes with checksums `68d3329b` /
+`1b28cd00`; `pnpm qa:trace` passes 871/871 artifacts (837 required). Infinite
+time, exact layer/blend/pause timing, redirects, nested/team ownership,
+rollback and full parity remain excluded. See [issue
+367](../.scratch/roadmap/issues/367-helper-envcolor-presentation-ownership.md).
+
+## Next bounded slice — T793 `EnvColor time = -1` selection (2026-08-15)
+
+Issue 368 queues the bounded lifetime/replacement decision after T792. See
+[issue 368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper caller-context `ModifyProjectile down.velocity` index

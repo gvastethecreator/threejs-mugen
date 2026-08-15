@@ -39,9 +39,17 @@ Required trace `synthetic-imported-helper-envshake` passes with checksums
 identity and reaches the camera projection. Nested/team ownership, waveform,
 pause/stage/layer, contact/fall, rollback and full parity remain excluded.
 
-## Next slice — T791 upstream seam selection (2026-08-15)
+## Latest slice — T792 Helper-owned active `EnvColor` (2026-08-15)
 
-Issue 366 queues the next official-source comparison before implementation.
+Issue 367 closes Helper caller-context `EnvColor` through product `2c5ce0fe`.
+RGB/time/under reaches one global stage flash with Helper/root/parent identity;
+required trace `synthetic-imported-helper-envcolor` passes at `68d3329b` /
+`1b28cd00`. Infinite time, exact blend/layer/pause, redirects, nested/team
+ownership, rollback and full parity remain excluded.
+
+## Next slice — T793 `EnvColor time = -1` selection (2026-08-15)
+
+Issue 368 queues bounded lifetime/replacement evidence.
 ## Historical slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index
