@@ -1,17 +1,21 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T804 root Projectile dynamic fall impact — closed-bounded, no score movement
+## 2026-08-15 T805 Helper Projectile dynamic fall impact — closed-bounded, no score movement
 
-Issue 379 closes finite caller-context
+Issue 380 closes finite caller-context
 `fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` for one fresh
-root Projectile. Only an accepted falling hit reaches existing physical
-velocity and `GetHitVar(fall.*)` metadata; a non-finite authored component
-fails closed. Required `synthetic-imported-projectile-dynamic-fall-impact`
-passes at `aa8ebc39` / `80ab5f78`; full tests `328/4093`, typecheck, build, and
-trace QA `883/883` (`849` required) pass. Helper Projectile, ModifyProjectile,
-recovery/flags, `n`, exact timing, teams, rollback, and full parity remain
-blocked, so the score does not move. See [issue
-379](../.scratch/roadmap/issues/379-root-projectile-dynamic-fall-impact.md).
+Projectile created by a first-generation Helper. Only an accepted falling hit
+reaches existing physical velocity and `GetHitVar(fall.*)` metadata; finite
+siblings resolve independently while the Projectile keeps `owner/root = p1`
+and `parent = p1-helper-0`. Required
+`synthetic-imported-helper-projectile-dynamic-fall-impact` passes at
+`2a3c5e98` / `0229f235`; full tests `328/4095`, typecheck, build, and trace QA
+`884/884` (`850` required) pass. Nested/`ownProjectile` topology,
+ModifyProjectile, recovery/flags, `n`, exact timing, teams, rollback, and full
+parity remain blocked, so the score does not move. See [issue
+380](../.scratch/roadmap/issues/380-helper-projectile-dynamic-fall-impact.md).
+
+## 2026-08-15 T804 root Projectile dynamic fall impact — closed-bounded, no score movement
 
 ## 2026-08-15 T803 Helper Projectile dynamic `fall.envshake` — closed-bounded, no score movement
 

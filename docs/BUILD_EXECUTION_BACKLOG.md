@@ -2,6 +2,19 @@
 
 ## Current parity queue
 
+- **T805 closed-bounded** — issue 380 closes finite caller-context
+  `fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` for one
+  fresh Projectile created by a first-generation Helper. Finite siblings
+  resolve independently and transfer to existing physical velocity and
+  `GetHitVar(fall.*)` only on one accepted falling hit; the root store retains
+  `owner/root = p1` and `parent = p1-helper-0`. Required
+  `synthetic-imported-helper-projectile-dynamic-fall-impact` passes at
+  `2a3c5e98` / `0229f235`; full tests `328/4095`, typecheck, build, and trace
+  QA `884/884` (`850` required) pass. Nested/`ownProjectile` topology,
+  ModifyProjectile, recovery/flags, `n`, exact timing, teams, rollback, and
+  full parity remain outside. See [issue
+  380](../.scratch/roadmap/issues/380-helper-projectile-dynamic-fall-impact.md).
+
 - **T804 closed-bounded** — issue 379 closes finite caller-context
   `fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` for one
   fresh root Projectile. Finite siblings resolve independently and transfer to

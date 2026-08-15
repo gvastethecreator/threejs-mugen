@@ -1,15 +1,18 @@
 # Workplan
 
-## Latest slice — T804 root Projectile dynamic fall impact (2026-08-15)
+## Latest slice — T805 Helper Projectile dynamic fall impact (2026-08-15)
 
-Issue 379 closes finite caller-context
+Issue 380 closes finite caller-context
 `fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` on one fresh
-root Projectile. The resolved siblings reach existing physical velocity and
-`GetHitVar(fall.*)` only after an accepted falling hit; a non-finite component
-fails closed. Required trace passes at `aa8ebc39` / `80ab5f78`; full tests
-`328/4093`, typecheck, build, and trace QA `883/883` (`849` required) pass.
-Helper Projectile, ModifyProjectile, recovery/flags, `n`, exact timing, teams,
-rollback, and full parity remain outside.
+Projectile created by a first-generation Helper. The resolved finite siblings
+reach existing physical velocity and `GetHitVar(fall.*)` only after an accepted
+falling hit while retaining `owner/root = p1` and `parent = p1-helper-0`.
+Required trace passes at `2a3c5e98` / `0229f235`; full tests `328/4095`,
+typecheck, build, and trace QA `884/884` (`850` required) pass.
+Nested/`ownProjectile` topology, ModifyProjectile, recovery/flags, `n`, exact
+timing, teams, rollback, and full parity remain outside.
+
+## Historical slice — T804 root Projectile dynamic fall impact (2026-08-15)
 
 ## Historical slice — T803 Helper Projectile dynamic `fall.envshake` (2026-08-15)
 

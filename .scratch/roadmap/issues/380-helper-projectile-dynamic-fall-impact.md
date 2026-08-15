@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T805 — active (2026-08-15)**
+- **T805 — closed-bounded (2026-08-15)**
 - **Área:** Helper de primera generación, Projectile root-owned, impacto de
   caída y metadata `GetHitVar`
 - **Dependencia:** T804 cierra el resolver equivalente para Projectile creado
@@ -29,6 +29,18 @@ valores en la reacción, la velocidad y los aliases `GetHitVar` existentes.
   recovery/flags, sintaxis `n`, orden exacto de ticks, equipos, rollback y
   paridad total quedan fuera.
 
+## Evidencia cerrada
+
+- `081b7d6b` incorpora el resolver typed del paquete en el spawn Helper.
+- `65277edc` incorpora la traza requerida
+  `synthetic-imported-helper-projectile-dynamic-fall-impact`.
+- La traza pasa con checksum `2a3c5e98` / final `0229f235`: `p1-helper-0`
+  crea el Projectile `8920`, conserva `owner/root = p1` y
+  `parent = p1-helper-0`, y el contacto de caída aceptado entrega
+  `17`, `3.5`, `-6.25` y `2.75` a velocidad y `GetHitVar(fall.*)`.
+- Gates finales: `pnpm test` `328/4095`, `pnpm typecheck`, `pnpm build` y
+  `pnpm qa:trace` `884/884` (`850` requeridas) pasan.
+
 ## Criterios de cierre
 
 - El spawn Helper recibe el resolver typed del paquete `fallImpact` y conserva
@@ -41,7 +53,7 @@ valores en la reacción, la velocidad y los aliases `GetHitVar` existentes.
 - Cierre con typecheck, build, `pnpm test`, `pnpm qa:trace`, documentación y
   commits separados.
 
-## Claim previsto
+## Claim cerrado
 
 **Permitido:** un Helper de primera generación resuelve el paquete finito
 `fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` de su

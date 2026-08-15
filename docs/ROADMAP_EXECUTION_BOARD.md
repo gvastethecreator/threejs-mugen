@@ -1,17 +1,21 @@
 ﻿# Roadmap Execution Board
 
-## Active bounded slice — T805 Helper Projectile dynamic fall impact (2026-08-15)
+## Latest bounded slice — T805 Helper Projectile dynamic fall impact (2026-08-15)
 
-Issue 380 tracks caller-context dynamic
-`fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` when a
-first-generation Helper creates one root-owned Projectile. The bounded target
-is one accepted falling contact through existing velocity and `GetHitVar`
-paths with preserved owner/root/parent identity. Nested/`ownProjectile`
-topology, ModifyProjectile, fall recovery/flags, `n`, exact timing, teams,
-rollback, and full parity remain outside. See [issue
+Issue 380 is closed-bounded for finite caller-context
+`fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` when one
+first-generation Helper creates a root-owned Projectile. An accepted falling
+contact transfers finite siblings independently to existing physical velocity
+and `GetHitVar(fall.*)` while preserving `owner/root = p1` and
+`parent = p1-helper-0`. Required
+`synthetic-imported-helper-projectile-dynamic-fall-impact` passes at
+`2a3c5e98` / `0229f235`; full tests `328/4095`, typecheck, build and trace QA
+`884/884` (`850` required) pass. Nested/`ownProjectile` topology,
+ModifyProjectile, recovery/flags, `n`, exact timing, teams, rollback and full
+parity remain outside. See [issue
 380](../.scratch/roadmap/issues/380-helper-projectile-dynamic-fall-impact.md).
 
-## Latest bounded slice — T804 root Projectile dynamic fall impact (2026-08-15)
+## Historical bounded slice — T804 root Projectile dynamic fall impact (2026-08-15)
 
 Issue 379 closes finite caller-context
 `fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` for one fresh

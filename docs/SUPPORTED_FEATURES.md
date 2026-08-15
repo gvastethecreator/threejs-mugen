@@ -1,16 +1,19 @@
 ﻿# Supported Features
-## 2026-08-15 T804 — closed-bounded
+## 2026-08-15 T805 — closed-bounded
 
-Fresh root Projectile now resolves finite caller-context
-`fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity`. One accepted
-falling contact carries each resolved sibling to existing physical velocity and
-`GetHitVar(fall.*)` metadata; a non-finite authored component fails closed.
-Required `synthetic-imported-projectile-dynamic-fall-impact` passes at
-`aa8ebc39` / `80ab5f78`; full tests `328/4093`, typecheck, build, and trace QA
-`883/883` (`849` required) pass. Helper Projectile, ModifyProjectile,
-recovery/flags, `n`, exact timing, teams, rollback, and full parity remain
-outside. See [issue
-379](../.scratch/roadmap/issues/379-root-projectile-dynamic-fall-impact.md).
+A first-generation Helper now resolves finite caller-context
+`fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` for one
+fresh root-owned Projectile. An accepted falling contact carries finite
+siblings independently to existing physical velocity and `GetHitVar(fall.*)`
+metadata while retaining `owner/root = p1` and `parent = p1-helper-0`.
+Required `synthetic-imported-helper-projectile-dynamic-fall-impact` passes at
+`2a3c5e98` / `0229f235`; full tests `328/4095`, typecheck, build, and trace QA
+`884/884` (`850` required) pass. Nested/`ownProjectile` topology,
+ModifyProjectile, recovery/flags, `n`, exact timing, teams, rollback, and
+full parity remain outside. See [issue
+380](../.scratch/roadmap/issues/380-helper-projectile-dynamic-fall-impact.md).
+
+## 2026-08-15 T804 — closed-bounded
 
 ## 2026-08-15 T803 — closed-bounded
 
