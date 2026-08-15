@@ -2231,6 +2231,93 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("resolves Helper-owned ModifyProjectile down.velocity matrix in caller context", () => {
+    const store = createRuntimeEffectActorStore();
+    const spawnDownMatrixHelper = (helperId: string, projectileId: string, expression: string) =>
+      spawnRuntimeHelperActor(store, "p1", {
+        ...helperInput({ id: helperId, anim: "900" }),
+        runtimeProgram: {
+          states: [
+            compileStateProgram(state(6000, 900, [
+              controller("Projectile", {
+                projid: projectileId,
+                projanim: "930",
+                velocity: "0,0",
+                "air.velocity": "-6,-8,6",
+                "down.velocity": "-1,-2,3",
+              }, ["Time = 0"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ])),
+            compileStateProgram(state(6001, 901, [
+              controller("ModifyProjectile", { id: projectileId, "down.velocity": expression }, ["Time = 1"]),
+            ])),
+          ],
+        },
+        animations: new Map([[900, action(900, 4)], [901, action(901, 4)], [930, action(930, 4)]]),
+      });
+    const helperSingle = spawnDownMatrixHelper("54", "8878", "Var(66)");
+    const helperPair = spawnDownMatrixHelper("55", "8879", "Var(67),Var(68)");
+    const helperTriple = spawnDownMatrixHelper("56", "8880", "Var(69),Var(70),Var(71)");
+    const helperOmitted = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "57", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(state(6000, 900, [
+            controller("Projectile", {
+              projid: "8881",
+              projanim: "930",
+              velocity: "0,0",
+              "down.velocity": "4,5,6",
+            }, ["Time = 0"]),
+            controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+          ])),
+          compileStateProgram(state(6001, 901, [
+            controller("ModifyProjectile", { id: "8881", damage: "12" }, ["Time = 1"]),
+          ])),
+        ],
+      },
+      animations: new Map([[900, action(900, 4)], [901, action(901, 4)], [930, action(930, 4)]]),
+    });
+    helperSingle.vars[66] = 9;
+    helperPair.vars[67] = 8;
+    helperPair.vars[68] = -7;
+    helperTriple.vars[69] = 7;
+    helperTriple.vars[70] = -6;
+    helperTriple.vars[71] = 5;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    const single = store.projectiles.find((candidate) => candidate.parentId === helperSingle.serialId);
+    expect(single).toMatchObject({
+      downVelocityX: 9,
+      downVelocityY: 0,
+      downVelocityZ: 0,
+      hitVelocities: { down: { x: 9, y: 0, z: 0 } },
+    });
+    const pair = store.projectiles.find((candidate) => candidate.parentId === helperPair.serialId);
+    expect(pair).toMatchObject({
+      downVelocityX: 8,
+      downVelocityY: -7,
+      downVelocityZ: 0,
+      hitVelocities: { down: { x: 8, y: -7, z: 0 } },
+    });
+    const triple = store.projectiles.find((candidate) => candidate.parentId === helperTriple.serialId);
+    expect(triple).toMatchObject({
+      downVelocityX: 7,
+      downVelocityY: -6,
+      downVelocityZ: 5,
+      hitVelocities: { down: { x: 7, y: -6, z: 5 } },
+    });
+    const omitted = store.projectiles.find((candidate) => candidate.parentId === helperOmitted.serialId);
+    expect(omitted).toMatchObject({
+      downVelocityX: 4,
+      downVelocityY: 5,
+      downVelocityZ: 6,
+      hitVelocities: { down: { x: 4, y: 5, z: 6 } },
+    });
+  });
+
   it("resolves Helper-owned dynamic ModifyProjectile givepower in caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {
