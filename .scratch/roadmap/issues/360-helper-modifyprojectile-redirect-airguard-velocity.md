@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T786 — queued (2026-08-15)**
+- **T786 — closed-bounded (2026-08-15)**
 - **Área:** runtime / Helper / RedirectID / Projectile / ModifyProjectile / air guard
 - **Dependencia:** T785 / issue 359
 
@@ -43,3 +43,16 @@ mutación se aplica al `crun` destino. M.U.G.E.N 1.1 no documenta
   lifecycle/ownership/target evidence.
 - Typecheck, `git diff --check` y aggregate QA con blockers heredados
   registrados sin ocultarlos.
+
+## Cierre T786
+
+- Commit de evidencia: `1a7cdefc`.
+- Required trace: `synthetic-imported-helper-modifyprojectile-redirect-airguard-velocity`.
+- La traza prueba un Helper de primera generación que evalúa `RedirectID =
+  var(4)` en caller context, redirige al Projectile root-owned `id=77` del
+  PlayerID 57, reemplaza `airguard.velocity = -9,-4,6` y alcanza una guardia
+  aérea aceptada con `GetHitVar`/velocidad física, lifecycle, ownership y
+  target link. El Projectile local del Helper permanece separado.
+- La evidencia es bounded Ikemen-only: no atribuye `ModifyProjectile` a
+  M.U.G.E.N 1.1 y mantiene fuera broadcast, equipos, nested Helpers, fresh /
+  default derivation, dynamic `n`, timing exacto, rollback y full parity.

@@ -1,20 +1,20 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T785 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T786 closed-bounded (2026-08-15)
 
-Issue 359 closes Helper-owned live `ModifyProjectile airguard.velocity` edge
-selection. Commit `42788837` proves omitted/negative id and index broadcast,
-literal `id=0`, and no-op out-of-range/no-match selectors through root/Helper
-focused tests. Typecheck and diff hygiene pass; aggregate QA is `866/867`
-passing with `833` required, `34` optional, and only the inherited helper-bind
-target-link blocker.
+Issue 360 closes Helper-owned live `ModifyProjectile RedirectID` over a root
+destination Projectile. Required trace
+`synthetic-imported-helper-modifyprojectile-redirect-airguard-velocity` proves
+caller-context `var(4)` resolution, mutation to `airguard.velocity=-9,-4,6`,
+accepted airborne guard, GetHitVar/physical velocity, lifecycle, ownership and
+target link. The slice is Ikemen-only; inherited aggregate blockers and the
+explicit topology/timing/parity exclusions remain visible.
 
-## Next implementation checkpoint — T786 queued (2026-08-15)
+## Next implementation checkpoint — T787 queued (2026-08-15)
 
-Issue 360 queues Helper `ModifyProjectile RedirectID` over a root destination
-Projectile and an airborne guard route. The next gate must separate Helper
-caller values from the root destination store and preserve the existing edge
-selector contract.
+Issue 361 queues live `ModifyHitDef down.velocity` X/Y component-preserving
+mutation for root/RedirectID callers. Fresh defaults, dynamic Z,
+Helper-authored controllers and Projectile variants remain separate.
 
 ## Historical implementation checkpoint — T781 closed-bounded (2026-08-15)
 

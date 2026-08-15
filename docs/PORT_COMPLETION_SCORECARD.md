@@ -1,22 +1,23 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T785 Helper `ModifyProjectile` `airguard.velocity` edge semantics — closed-bounded, no score movement
+## 2026-08-15 T786 Helper `ModifyProjectile RedirectID` `airguard.velocity` — closed-bounded, no score movement
 
-Issue 359 closes Helper-owned live `ModifyProjectile airguard.velocity` edge
-selection. Commit `42788837` proves omitted/negative id and index broadcast,
-literal `id=0`, and no-op out-of-range/no-match selectors through focused
-root/Helper tests. Typecheck and diff hygiene pass. Aggregate QA produces
-`866/867` passing artifacts (`833` required, `34` optional) with only the
-inherited helper-bind target-link blocker; no score movement. Fresh/default
-derivation, dynamic `n`, nested/shared topology, exact timing, rollback and
-full parity remain blocked. See [issue 359]
-(../.scratch/roadmap/issues/359-helper-modifyprojectile-airguard-velocity-index-edges.md).
+Issue 360 closes Helper-owned live `ModifyProjectile RedirectID` over a root
+destination Projectile. The required trace
+`synthetic-imported-helper-modifyprojectile-redirect-airguard-velocity` proves
+caller-context `var(4)` resolution, mutation to `airguard.velocity=-9,-4,6`,
+accepted airborne guard, GetHitVar/physical velocity, lifecycle, ownership and
+target link. This is bounded Ikemen-only evidence with no score movement;
+broadcast/team/nested topology, fresh/default derivation, dynamic `n`, exact
+timing, rollback and full parity remain blocked. See [issue 360]
+(../.scratch/roadmap/issues/360-helper-modifyprojectile-redirect-airguard-velocity.md).
 
-## Next scorecard slice — 2026-08-15 T786 queued
+## Next scorecard slice — 2026-08-15 T787 queued
 
-Issue 360 queues Helper-owned `ModifyProjectile RedirectID` over a root
-destination Projectile and an accepted airborne guard. It is not scored until
-caller/redirect separation and required runtime evidence close.
+Issue 361 queues live `ModifyHitDef down.velocity` X/Y component-preserving
+mutation for root/RedirectID callers. It remains unscored until focused
+caller/preservation tests and a required down-contact trace close. See [issue
+361](../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
 
 ## Historical checkpoint — 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index
 

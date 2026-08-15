@@ -1,23 +1,22 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T785 closed-bounded (2026-08-15)
+## Latest bounded slice — T786 closed-bounded (2026-08-15)
 
-Issue 359 closes Helper caller-context `ModifyProjectile airguard.velocity`
-edge selection. Commit `42788837` proves omitted/negative id and index
-broadcast, literal `id=0`, and no-op out-of-range/no-match selectors through
-root/Helper focused tests. Typecheck and diff hygiene pass. Aggregate QA
-remains `866/867` passing artifacts (`833` required, `34` optional) with one
-inherited failure: `synthetic-imported-helper-bind-to-target-redirect`.
-Fresh/default, dynamic `n`, nested/shared-topology, exact-timing, rollback and
-full-parity exclusions remain explicit.
+Issue 360 closes Helper caller-context `ModifyProjectile RedirectID` over a
+root destination Projectile. The required trace
+`synthetic-imported-helper-modifyprojectile-redirect-airguard-velocity` proves
+root-store mutation to `airguard.velocity=-9,-4,6`, accepted airborne guard,
+GetHitVar/physical velocity, lifecycle, ownership and target link. The
+Ikemen-only slice keeps broadcast/team/nested topology, fresh/default,
+dynamic `n`, exact timing, rollback and full parity excluded.
 
-## Next bounded slice — T786 queued (2026-08-15)
+## Next bounded slice — T787 queued (2026-08-15)
 
-Issue 360 queues Helper `ModifyProjectile RedirectID` over a root destination
-Projectile, with caller-context airguard mutation and airborne-guard evidence.
-Keep broadcast/edge selectors, nested/team topology, fresh/default derivation,
-dynamic `n`, exact timing, rollback and full parity separate. See [issue
-360](../.scratch/roadmap/issues/360-helper-modifyprojectile-redirect-airguard-velocity.md).
+Issue 361 queues live `ModifyHitDef down.velocity` X/Y component-preserving
+mutation for root/RedirectID callers. Keep fresh defaults, dynamic Z,
+Helper-authored controllers, Projectile variants, exact landing/timing,
+rollback and full parity separate. See [issue
+361](../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
 
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 

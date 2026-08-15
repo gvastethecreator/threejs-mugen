@@ -10,10 +10,20 @@
   helper-bind target-link blocker. See [issue
   359](../.scratch/roadmap/issues/359-helper-modifyprojectile-airguard-velocity-index-edges.md).
 
-- **T786 next selection** — issue 360 queues Helper `ModifyProjectile
-  RedirectID` over a root destination Projectile, with caller-context
-  `airguard.velocity` mutation and accepted airborne-guard evidence. See
-  [issue 360](../.scratch/roadmap/issues/360-helper-modifyprojectile-redirect-airguard-velocity.md).
+- **T786 closed-bounded** — issue 360 closes Helper `ModifyProjectile
+  RedirectID` over a root destination Projectile. The required trace
+  `synthetic-imported-helper-modifyprojectile-redirect-airguard-velocity`
+  proves caller-context `var()` resolution, root-store mutation to
+  `airguard.velocity=-9,-4,6`, accepted airborne guard, GetHitVar/physical
+  velocity, lifecycle, ownership and target link. M.U.G.E.N 1.1 does not
+  document `ModifyProjectile`; broadcast/team/nested topology, fresh/default
+  derivation, dynamic `n`, exact timing, rollback and full parity remain
+  outside. See [issue 360](../.scratch/roadmap/issues/360-helper-modifyprojectile-redirect-airguard-velocity.md).
+
+- **T787 next selection** — issue 361 queues live `ModifyHitDef down.velocity`
+  X/Y component-preserving mutation for root/RedirectID callers. Fresh
+  defaults, dynamic Z, Helper-authored controllers and Projectile variants
+  remain separate. See [issue 361](../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
 
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;

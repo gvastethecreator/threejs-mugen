@@ -1,19 +1,22 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T785 closed-bounded (2026-08-15)
+## Latest bounded slice — T786 closed-bounded (2026-08-15)
 
-Issue 359 closes Helper-authored live `ModifyProjectile airguard.velocity` edge
-selection. Commit `42788837` proves omitted/negative id and index broadcast,
-literal `id=0`, and no-op out-of-range/no-match selectors through focused
-root/Helper tests. Typecheck and diff hygiene pass; aggregate QA has `866/867`
-passing artifacts (`833` required, `34` optional) with the inherited
-helper-bind blocker as the only failure.
+Issue 360 closes Helper-owned live `ModifyProjectile RedirectID` over a root
+destination Projectile. The required trace
+`synthetic-imported-helper-modifyprojectile-redirect-airguard-velocity` proves
+caller-context `var(4)` resolution, root-store mutation to
+`airguard.velocity=-9,-4,6`, accepted airborne guard, GetHitVar/physical
+velocity, lifecycle, ownership and target link. It remains Ikemen-only and
+does not claim broadcast/team/nested topology, fresh/default derivation,
+dynamic `n`, exact timing, rollback or full parity.
 
-## Next bounded slice — T786 queued (2026-08-15)
+## Next bounded slice — T787 queued (2026-08-15)
 
-Issue 360 queues Helper `ModifyProjectile RedirectID` over a root destination
-Projectile with caller-context airguard mutation and airborne-guard evidence.
-See [issue 360](../.scratch/roadmap/issues/360-helper-modifyprojectile-redirect-airguard-velocity.md).
+Issue 361 queues live `ModifyHitDef down.velocity` X/Y component-preserving
+mutation for root/RedirectID callers. Fresh defaults, dynamic Z,
+Helper-authored controllers and Projectile variants remain separate. See
+[issue 361](../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
 
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 

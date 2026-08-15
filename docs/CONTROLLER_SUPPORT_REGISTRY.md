@@ -1,12 +1,13 @@
 # Controller Support Registry
 
-Latest cursor: T785 / issue 359 is closed-bounded for Helper-owned live
-`ModifyProjectile airguard.velocity` edge selection. Commit `42788837` proves
-official omitted/negative broadcast, literal `id=0`, and no-op out-of-range or
-no-match selectors through root/Helper focused tests. Aggregate QA is `866/867`
-passing (`833` required, `34` optional) with only the inherited helper-bind
-target-link blocker. Fresh defaults, int32 edges, teams, rollback and full
-parity remain unsupported.
+Latest cursor: T786 / issue 360 is closed-bounded for Helper-owned live
+`ModifyProjectile RedirectID` over a root destination Projectile. Required
+trace `synthetic-imported-helper-modifyprojectile-redirect-airguard-velocity`
+proves finite caller-context `var(4)`, root-store mutation to
+`airguard.velocity=-9,-4,6`, accepted airborne guard, GetHitVar/physical
+velocity, lifecycle, ownership and target link. This is Ikemen-only; fresh
+defaults, broadcast/team/nested topology, dynamic `n`, exact timing, rollback
+and full parity remain unsupported.
 
 Latest closed-bounded cursor: T784 / issue 358 covers Helper-owned live
 `ModifyProjectile airguard.velocity` explicit index selection among same-id
@@ -17,9 +18,10 @@ target links. Fresh/default derivation, index/id edge selection, other vector
 families, nested/team topology, exact timing, rollback and full parity remain
 unsupported.
 
-Next cursor: T786 / issue 360 queues Helper-owned `ModifyProjectile
-RedirectID` over a root destination Projectile, with caller-context
-`airguard.velocity` mutation and accepted airborne-guard evidence.
+Next cursor: T787 / issue 361 queues live `ModifyHitDef down.velocity` X/Y
+component-preserving mutation for root/RedirectID callers. Fresh defaults,
+dynamic Z, Helper-authored controllers and Projectile variants remain
+separate.
 
 Previous cursor: T781 / issue 355 closed Helper-owned live `ModifyProjectile
 down.velocity` explicit index selection; evidence remains in `29aba4bb` /
