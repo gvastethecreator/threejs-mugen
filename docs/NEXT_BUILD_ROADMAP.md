@@ -1,6 +1,28 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T766 closed-bounded (2026-08-15)
+## Latest bounded slice — T767 closed-bounded (2026-08-15)
+
+Issue 341 closes the first-generation Helper-authored `ModifyProjectile`
+`givepower` guard readback. Evidence `4b791ec8`; required trace
+`200a587b` (`1cffcc6b` -> `ab40f848`) passes. A root-owned Projectile born
+from a Helper resolves `givepower=var(0)*4,var(0)-3` in Helper context before
+an accepted guard; defender life remains `20`, power reaches `8`, and
+`GetHitVar(power)=8` is observed in the guarded path. Focused trace tests,
+typecheck and diff hygiene pass. Aggregate QA retains the inherited
+helper-bind target-link blocker. Unguarded hit, getpower mutation,
+nested/shared-resource topology, exact arithmetic/timing, rollback and full
+parity remain blocked. See [issue
+341](../.scratch/roadmap/issues/341-helper-modifyprojectile-givepower-guard.md).
+
+## Next bounded slice — T768 queued (2026-08-15)
+
+Issue 342 will close the analogous first-generation Helper-authored
+`ModifyProjectile getpower` guard readback. Keep givepower, unguarded hit,
+nested/shared-resource topology, aggregate QA repair, exact arithmetic/timing,
+rollback and full parity separate. See [issue
+342](../.scratch/roadmap/issues/342-helper-modifyprojectile-getpower-guard.md).
+
+## Historical bounded slice — T766 closed-bounded (2026-08-15)
 
 Issue 340 closes the first-generation Helper-authored `ModifyProjectile`
 `givepower` hit readback. Evidence `b2a300f1`; required trace

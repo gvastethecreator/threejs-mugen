@@ -2,7 +2,23 @@
 
 ## Current parity queue
 
-- **T766 closed-bounded** — issue 340 closes the first-generation
+- **T767 closed-bounded** — issue 341 closes the first-generation
+  Helper-authored `ModifyProjectile` givepower guard seam. Evidence commit is
+  `4b791ec8`; required trace `200a587b` / `ab40f848` (initial
+  `1cffcc6b`). The root-owned Projectile resolves the Helper pair before an
+  accepted guard, leaving defender life `20`, power `8`, and guarded
+  `GetHitVar(power)=8` evidence. Focused trace tests, typecheck and diff
+  hygiene pass; aggregate QA retains the inherited helper-bind target-link
+  blocker. Unguarded hit, getpower mutation, nested/shared-resource topology,
+  exact arithmetic/timing, rollback and full parity remain outside. See
+  [issue 341](../.scratch/roadmap/issues/341-helper-modifyprojectile-givepower-guard.md).
+
+- **T768 next selection** — close the Helper-authored `ModifyProjectile`
+  getpower guard readback; keep givepower, unguarded hit, nested-helper
+  breadth, aggregate QA repair and resource topology separate. See [issue
+  342](../.scratch/roadmap/issues/342-helper-modifyprojectile-getpower-guard.md).
+
+- **T766 historical** — issue 340 closes the first-generation
   Helper-authored `ModifyProjectile` givepower hit seam. Evidence commit is
   `b2a300f1`; required trace `90cb9340` / `508dbf8f` (initial
   `d26f12db`). The root-owned Projectile resolves the Helper pair before an

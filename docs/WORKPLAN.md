@@ -1,6 +1,26 @@
 # Workplan
 
-## Latest slice — T766 closed-bounded (2026-08-15)
+## Latest slice — T767 closed-bounded (2026-08-15)
+
+Issue 341 closes the first-generation Helper-authored `ModifyProjectile`
+`givepower` guard seam. Evidence commit `4b791ec8`; required trace
+`200a587b` (`1cffcc6b` -> `ab40f848`) passes. The Helper resolves the live
+pair before the accepted guard; defender power reaches `8`, life remains
+`20`, and guarded `GetHitVar(power)=8` remains observable. Focused trace
+tests, typecheck and diff hygiene pass. Aggregate QA retains the inherited
+helper-bind target-link blocker. Unguarded hit, getpower mutation,
+nested/shared resource topology, exact arithmetic/timing, rollback and full
+parity remain outside.
+
+## Next slice — T768 queued (2026-08-15)
+
+Issue 342 covers the analogous Helper-authored `ModifyProjectile getpower`
+guard readback with one Helper, one root-owned Projectile and one accepted
+guard. Keep givepower, unguarded hit, nested/shared resource topology,
+aggregate QA repair, exact arithmetic/timing, rollback and full parity
+separate.
+
+## Historical slice — T766 closed-bounded (2026-08-15)
 
 Issue 340 closes the first-generation Helper-authored `ModifyProjectile`
 `givepower` hit seam. Evidence commit `b2a300f1`; required trace `90cb9340`

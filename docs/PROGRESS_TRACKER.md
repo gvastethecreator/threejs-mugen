@@ -1,6 +1,25 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T766 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T767 closed-bounded (2026-08-15)
+
+Issue 341 closes the first-generation Helper-authored `ModifyProjectile`
+`givepower` guard readback. Required trace `200a587b`
+(`1cffcc6b` -> `ab40f848`) and evidence commit `4b791ec8` prove Helper
+caller-context replacement, root-owned Projectile lifecycle, defender life
+`20`, power `8`, and guarded `GetHitVar(power)=8`. Focused trace tests,
+typecheck and diff hygiene pass. Aggregate QA remains blocked by the
+inherited helper-bind target-link case. Unguarded hit, getpower mutation,
+nested/shared-resource topology, exact arithmetic/timing, rollback and full
+parity remain outside. See issue 341.
+
+## Next implementation checkpoint — T768 queued (2026-08-15)
+
+Issue 342 targets the analogous Helper-authored `ModifyProjectile getpower`
+guard readback. It remains bounded to one Helper, one root-owned Projectile,
+one accepted guard and caller-context power evidence; givepower, hit,
+nested/shared-resource topology and aggregate QA repair remain separate.
+
+## Historical implementation checkpoint — T766 closed-bounded (2026-08-15)
 
 Issue 340 closes the first-generation Helper-authored `ModifyProjectile`
 `givepower` hit readback. Required trace `90cb9340` (`d26f12db` ->

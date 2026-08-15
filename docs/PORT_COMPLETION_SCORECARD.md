@@ -1,6 +1,30 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T766 Helper `ModifyProjectile` `givepower` hit readback — closed-bounded, no score movement
+## 2026-08-15 T767 Helper `ModifyProjectile` `givepower` guard readback — closed-bounded, no score movement
+
+Issue 341 closes the first-generation Helper-authored givepower guard seam.
+Evidence commit `4b791ec8`; required trace `200a587b`
+(`1cffcc6b` -> `ab40f848`) passes. The root-owned Projectile keeps its
+Helper-context `givepower=var(0)*4,var(0)-3` replacement through an accepted
+guard; defender life remains `20`, power reaches `8`, and guarded
+`GetHitVar(power)=8` remains separate. Focused trace tests, typecheck and diff
+hygiene pass. Aggregate QA retains the inherited helper-bind target-link
+blocker. No score movement: unguarded hit, getpower mutation,
+nested/shared-resource topology, exact arithmetic/timing, rollback and full
+parity remain blocked. See [issue
+341](../.scratch/roadmap/issues/341-helper-modifyprojectile-givepower-guard.md).
+
+## 2026-08-15 T768 Helper `ModifyProjectile` `getpower` guard readback — queued
+
+Issue 342 is the next bounded cut for the Helper caller-context getpower guard
+path. It remains limited to one Helper, one root-owned Projectile, one
+accepted guard and attacker power/GetHitVar evidence; no score movement is
+expected. Givepower, unguarded hit, nested/shared-resource topology,
+aggregate QA repair, exact arithmetic/timing, rollback and full parity remain
+blocked. See [issue
+342](../.scratch/roadmap/issues/342-helper-modifyprojectile-getpower-guard.md).
+
+## Historical checkpoint — 2026-08-15 T766 Helper `ModifyProjectile` `givepower` hit readback — closed-bounded, no score movement
 
 Issue 340 closes the first-generation Helper-authored givepower hit seam.
 Evidence commit `b2a300f1`; required trace `90cb9340` (`d26f12db` ->
