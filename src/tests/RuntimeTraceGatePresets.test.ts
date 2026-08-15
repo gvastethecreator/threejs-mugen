@@ -436,6 +436,7 @@ import {
   createSyntheticImportedHelperModifyProjectileDownVelocityIndexTraceArtifact,
   createSyntheticImportedHelperModifyProjectileGroundVelocityIndexTraceArtifact,
   createSyntheticImportedHelperModifyProjectileGuardVelocityIndexTraceArtifact,
+  createSyntheticImportedHelperModifyProjectileAirGuardVelocityIndexTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardVelocityTraceArtifact,
   createSyntheticImportedDirectAirVelocityPhysicalTraceArtifact,
   createSyntheticImportedDynamicDirectAirVelocityTraceArtifact,
@@ -12589,6 +12590,45 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.targetLinks).toEqual(expect.arrayContaining([
       expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8924 }),
       expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8924 }),
+    ]));
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(evidence?.combatReasons).not.toContain("hit");
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", life: 20 })]),
+    );
+  });
+
+  it("creates a synthetic imported Helper ModifyProjectile airguard.velocity index artifact", () => {
+    const artifact = createSyntheticImportedHelperModifyProjectileAirGuardVelocityIndexTraceArtifact({
+      generatedAt: "2026-08-15T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-modifyprojectile-airguard-velocity-index-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-helper-modifyprojectile-airguard-velocity-index-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const physicalFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 155);
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(3);
+    expect(evidence?.executedControllers.ModifyProjectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.modifyprojectile).toBeGreaterThanOrEqual(1);
+    expect(physicalFrame?.minVel.x).toBe(7);
+    expect(physicalFrame?.maxVel.x).toBe(7);
+    expect(physicalFrame?.maxVel.y).toBeLessThanOrEqual(-4.5);
+    expect(physicalFrame?.minVelZ).toBeGreaterThanOrEqual(2);
+    expect(evidence?.effectPayloads).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1-projectile-0", effect: expect.objectContaining({ id: 8926, hasHit: false }) }),
+      expect.objectContaining({ actorId: "p1-projectile-1", effect: expect.objectContaining({ id: 8927, hasHit: false }) }),
+      expect.objectContaining({ actorId: "p1-projectile-2", effect: expect.objectContaining({ id: 8926, hasHit: true }) }),
+    ]));
+    expect(evidence?.targetLinks).toEqual(expect.arrayContaining([
+      expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8926 }),
+      expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8926 }),
     ]));
     expect(evidence?.combatReasons).toContain("guard");
     expect(evidence?.combatReasons).not.toContain("hit");
