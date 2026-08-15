@@ -35190,6 +35190,175 @@ export function createSyntheticImportedHelperModifyProjectileDownVelocityTraceAr
   });
 }
 
+/** T777 Helper-authored ModifyProjectile proof: ground.velocity matrix on hit. */
+export function createSyntheticImportedHelperModifyProjectileGroundVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5121;
+  const projectileId = 8911;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-helper-modifyprojectile-ground-velocity-grid",
+    displayName: "Trace Helper ModifyProjectile Ground Velocity Grid",
+    playerStart: {
+      p1: { x: -54, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "helper-modifyprojectile-ground-velocity-contact", frames: 14, p1: ["x"], p2: [] },
+    { label: "helper-modifyprojectile-ground-velocity-settle", frames: 4, p1: [], p2: [] },
+  ]);
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-ground-velocity-defender",
+    displayName: "Helper ModifyProjectile Ground Velocity Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      shakePhysics: "N",
+      slidePhysics: "S",
+      slideHitVelSet: { x: true, y: true, z: true },
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchExpression:
+        "GetHitVar(xvel) = 7 && GetHitVar(yvel) = -5 && GetHitVar(zvel) = 0 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "Helper ModifyProjectile Ground Velocity GetHitVar Branch",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-ground-velocity-attacker",
+    displayName: "Helper ModifyProjectile Ground Velocity Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1283,
+      waitAnimNo: 1037,
+      branchStateNo: 1284,
+      branchAnimNo: 1038,
+      projectileAnimNo: 1039,
+      projectileId,
+      pos: [360, -34],
+      damage: [37, 2],
+      hitPause: 4,
+      hitTime: 14,
+      groundVelocity: [-1, 1],
+      airVelocity: [-6, -8, 2],
+      downVelocity: [-1, -1, 9],
+      hitFlag: "M",
+      varSeeds: [
+        { index: 0, value: -7 },
+        { index: 1, value: -5 },
+      ],
+      modifyProjectileTriggerTime: 0,
+      modifyProjectileGroundVelocity: ["var(0)", "var(1)"],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-helper-modifyprojectile-ground-velocity-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-modifyprojectile-ground-velocity-golden",
+      label: "Synthetic imported Helper ModifyProjectile ground.velocity route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a first-generation Helper evaluates live ModifyProjectile ground.velocity in Helper caller context before an accepted grounded hit. VarSet values -7,-5 replace the selected root-owned Projectile's grounded X/Y while preserving its live Z, and the defender exposes the resulting vector through GetHitVar and HitVelSet. Fresh/default derivation, dynamic n, down/air/airguard selection, nested/team topology, exact timing/rounding, rollback, and full M.U.G.E.N/Ikemen parity remain outside this bounded slice.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-modifyprojectile-ground-velocity-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper", "projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5001, branchStateNo],
+      forbiddenExecutedStates: [40, 130, 150, 151, 152, 153, 154, 155, 5020, 5021, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "Helper", "VarSet", "Projectile", "ModifyProjectile", "HitVelSet"],
+      requiredExecutedOperations: ["helper", "variable:varset", "projectile", "modifyprojectile", "kinematic:hitvelset"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredControllerEventSequences: [
+        {
+          label: "Helper ModifyProjectile ground.velocity caller evaluation order",
+          actorId: "p1",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 0" },
+            { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 1" },
+            { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
+            { stateNo: 1283, controller: "ModifyProjectile", name: "Helper ProjHit ModifyProjectile Ground Velocity" },
+            { stateNo: 1283, operation: "modifyprojectile" },
+          ],
+        },
+        {
+          label: "Helper Projectile grounded target consumes ModifyProjectile ground.velocity",
+          actorId: "p2",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 5000, controller: "ChangeState", name: "Hit Shake Over" },
+            { stateNo: 5001, controller: "HitVelSet", name: "Apply Hit Velocity" },
+            { stateNo: 5001, operation: "kinematic:hitvelset" },
+            { stateNo: 5001, controller: "ChangeState", name: "Helper ModifyProjectile Ground Velocity GetHitVar Branch" },
+          ],
+        },
+      ],
+      requiredActorFrameSequences: [{
+        label: "Helper ModifyProjectile ground.velocity grounded-hit physical order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, moveType: "H", minFrames: 1 },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5001,
+            moveType: "H",
+            physics: "S",
+            observedVelXAtLeast: 7,
+            observedVelXAtMost: 7,
+            observedVelYAtLeast: -5,
+            observedVelYAtMost: -5,
+            observedVelZAtLeast: 0,
+            observedVelZAtMost: 0,
+            minFrames: 1,
+          },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredActorFrames: [
+        { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1283, animNo: 1037, minFrames: 1 },
+        { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1284, animNo: 1038, minFrames: 1 },
+        { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1039, minFrames: 1 },
+      ],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [
+        { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1284, minAge: 2 },
+        { actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: projectileId, minAge: 1, hasHit: true },
+      ],
+      requiredTargetLinks: [
+        { ownerId: "p1", actorId: "p2", targetId: projectileId },
+        { ownerId: "p1-helper-0", actorId: "p2", targetId: projectileId },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileAirGuardCornerPushTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -66733,7 +66902,9 @@ export type SyntheticImportedTraceFighterOptions = {
     downVelocityExpression?: SyntheticPartialTripleExpression;
     /** Synthetic Helper-local live ModifyProjectile down.velocity expression vector. */
     modifyProjectileDownVelocity?: SyntheticPartialTripleExpression;
-    /** Trigger time for the Helper-local live ModifyProjectile down.velocity write. */
+    /** Synthetic Helper-local live ModifyProjectile ground.velocity expression vector. */
+    modifyProjectileGroundVelocity?: SyntheticPartialTripleExpression;
+    /** Trigger time for the Helper-local live ModifyProjectile velocity write. */
     modifyProjectileTriggerTime?: number;
     /** Synthetic Helper-local VarSet seeds used by dynamic Projectile expressions. */
     varSeeds?: SyntheticRuntimeVarSeed[];
@@ -75377,6 +75548,15 @@ trigger1 = Time = ${route.modifyProjectileTriggerTime ?? 3}
 id = ${projectileId}
 down.velocity = ${route.modifyProjectileDownVelocity.join(",")}
 `;
+  const modifyProjectileGroundVelocityBlock = route.modifyProjectileGroundVelocity === undefined
+    ? ""
+    : `
+[State ${route.waitStateNo}, Helper ProjHit ModifyProjectile Ground Velocity]
+type = ModifyProjectile
+trigger1 = Time = ${route.modifyProjectileTriggerTime ?? 3}
+id = ${projectileId}
+ground.velocity = ${route.modifyProjectileGroundVelocity.join(",")}
+`;
   const varSeedBlocks = (route.varSeeds ?? [])
     .map(
       (seed) => `
@@ -75567,6 +75747,7 @@ physics = N
 anim = ${waitAnimNo}
 ctrl = 0
 ${modifyProjectileDownVelocityBlock}
+${modifyProjectileGroundVelocityBlock}
 ${secondaryProjectileBlock}
 ${trapBranchBlocks}
 
