@@ -53,6 +53,7 @@ describe("RuntimeHelperCombatSystem", () => {
       p1GetP2Facing: 1,
       p2Facing: -1,
       attackerHitPower: 47,
+      envShake: { time: 999, freq: 60, ampl: -4, phase: 0, mul: 1, dir: 0 },
     });
     helper.moveTick = 1;
     const defender = defenderActor("p2", "P2", contactWorld, {
@@ -62,6 +63,7 @@ describe("RuntimeHelperCombatSystem", () => {
     const logs: string[] = [];
     const stateEntries: string[] = [];
     const audioOperations: string[] = [];
+    const emittedEnvShakes: DemoMove[] = [];
     const combatOwner = owner("p1", effectActorWorld, fighterDefinition("imported", "mugen-1.1"));
 
     new RuntimeHelperCombatWorld().resolveDirect({
@@ -77,6 +79,7 @@ describe("RuntimeHelperCombatSystem", () => {
       getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
       stateHooks: stateHooks(stateEntries, [5000]),
       recordAudioOperation: (actor, operation) => audioOperations.push(`${actor.id}:${operation.value}`),
+      emitDirectEnvShake: (_owner, authoredMove) => emittedEnvShakes.push(authoredMove),
       log: (line) => logs.push(line),
     });
 
@@ -132,6 +135,7 @@ describe("RuntimeHelperCombatSystem", () => {
     expect(stateEntries).toEqual(["p2:5000:clear"]);
     expect(runtimeMoveContactValue(helper.contact, 6000, "hit")).toBe(0);
     expect(audioOperations).toEqual(["p1:S5,1"]);
+    expect(emittedEnvShakes).toEqual([helper.currentMove]);
   });
 
   it("accepts a zero-damage Helper HitDef while retaining target and GetHitVar metadata", () => {

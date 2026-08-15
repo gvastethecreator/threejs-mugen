@@ -1186,6 +1186,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefContactEnvShakeTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-envshake-long-finite",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefContactEnvShakeLongFiniteTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-dynamic-fall-envshake",
       required: true,
       artifact: presets.createSyntheticImportedHitDefDynamicFallEnvShakeTraceArtifact(),

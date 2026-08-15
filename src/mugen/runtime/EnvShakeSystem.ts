@@ -188,7 +188,7 @@ export function createRuntimeHitDefEnvShakeEvent(
   if (!envShake || envShake.time <= 0) return undefined;
   return {
     type: "EnvShake",
-    time: clampContactEnvShakeTime(envShake.time),
+    time: normalizeHitDefEnvShakeTime(envShake.time),
     freq: Math.max(0, envShake.freq),
     ampl: clampShakeAmplitude(envShake.ampl),
     phase: envShake.phase,
@@ -421,6 +421,10 @@ function normalizeActiveEnvShakeTime(value: number): number {
 }
 
 function normalizeFallEnvShakeTime(value: number): number {
+  return Math.max(0, Math.round(value));
+}
+
+function normalizeHitDefEnvShakeTime(value: number): number {
   return Math.max(0, Math.round(value));
 }
 

@@ -48456,6 +48456,70 @@ export function createSyntheticImportedHitDefContactEnvShakeTraceArtifact(
   });
 }
 
+export function createSyntheticImportedHitDefContactEnvShakeLongFiniteTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "imported-hitdef-envshake-long-finite-start", frames: 12, p1: ["x"], p2: [] },
+    { label: "hitdef-envshake-long-finite-expiry", frames: 242, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({
+    p1: createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-hitdef-envshake-long-finite",
+      displayName: "Synthetic Imported HitDef EnvShake Long Finite",
+      action200Duration: 300,
+      hitDefEnvShake: {
+        time: 241,
+        freq: 30,
+        ampl: -7,
+        phase: 0,
+      },
+    }),
+    p2: demoFighters[1]!,
+    stage,
+    runtimeProfile: "ikemen-go",
+  }), script, {
+    label: "synthetic-imported-hitdef-envshake-long-finite-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-envshake-long-finite-golden",
+      label: "Synthetic imported long finite direct HitDef EnvShake route",
+      source: "mixed",
+      notes: [
+        "Required trace proves direct root HitDef envshake.time = 241 survives accepted unguarded contact, remains finite past the former local ceiling, and expires. Guard, Projectile, FallEnvShake, active EnvShake, waveform parity, pause timing, helper breadth, rollback, and full camera parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-hitdef-envshake-long-finite-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredEnvShakeEvents: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        time: 241,
+        freq: 30,
+        ampl: -7,
+        phase: 0,
+        stateNo: 200,
+      }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    }],
+  });
+}
+
 export function createSyntheticImportedHitDefDynamicFallEnvShakeTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
