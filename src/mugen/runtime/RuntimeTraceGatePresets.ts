@@ -35699,6 +35699,198 @@ export function createSyntheticImportedHelperModifyProjectileAirVelocityBroadcas
   });
 }
 
+/** T780 Helper-owned ModifyProjectile proof: explicit oldest-first index selection. */
+export function createSyntheticImportedHelperModifyProjectileAirVelocityIndexTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5126;
+  const projectileId = 8915;
+  const trapProjectileId = 8916;
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "helper-modifyprojectile-air-velocity-index-jump", frames: 2, p1: [], p2: ["U"] },
+    { label: "helper-modifyprojectile-air-velocity-index-contact", frames: 16, p1: ["x"], p2: [] },
+    { label: "helper-modifyprojectile-air-velocity-index-settle", frames: 4, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-air-velocity-index-attacker",
+    displayName: "Helper ModifyProjectile Air Velocity Index Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1289,
+      waitAnimNo: 1046,
+      branchStateNo: 1290,
+      branchAnimNo: 1047,
+      projectileAnimNo: 1048,
+      projectileId,
+      pos: [360, -180],
+      damage: [37, 2],
+      hitPause: 4,
+      hitTime: 14,
+      groundVelocity: [-1, 1],
+      airVelocity: [-2, -3, 4],
+      downVelocity: [-1, -1, 9],
+      hitFlag: "MA",
+      varSeeds: [
+        { index: 0, value: -7 },
+        { index: 1, value: -5 },
+        { index: 2, value: 3 },
+        { index: 3, value: 1 },
+      ],
+      modifyProjectileTriggerTime: 0,
+      modifyProjectileIndex: "var(3)",
+      modifyProjectileAirVelocity: ["var(0)", "var(1)", "var(2)"],
+      secondaryProjectile: {
+        triggerTime: 0,
+        projectileId: trapProjectileId,
+        pos: [360, -180],
+        velocity: [0, 0],
+        guardFlag: "A",
+      },
+      tertiaryProjectile: {
+        triggerTime: 0,
+        projectileId,
+        pos: [360, -92],
+        velocity: [0, 0],
+        guardFlag: "A",
+      },
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-air-velocity-index-defender",
+    displayName: "Helper ModifyProjectile Air Velocity Index Defender",
+    defaultGetHitProgression: {
+      shakeStateNo: 5020,
+      slideStateNo: 5021,
+      shakeStateType: "A",
+      slideStateType: "A",
+      shakePhysics: "N",
+      slidePhysics: "N",
+      slideHitVelSet: { x: true, y: true, z: true },
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchStateType: "A",
+      hitTimeBranchPhysics: "N",
+      hitTimeBranchExpression:
+        "GetHitVar(xvel) = 7 && GetHitVar(yvel) = -5 && GetHitVar(zvel) = 3 && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "Helper ModifyProjectile Air Velocity Index GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-helper-modifyprojectile-air-velocity-index-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-modifyprojectile-air-velocity-index-golden",
+      label: "Synthetic imported Helper ModifyProjectile air.velocity index route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves Helper caller-context ModifyProjectile air.velocity explicit index selection over two same-id Projectiles in oldest-first order. Index 1 changes only the newer matching Projectile, which reaches the accepted airborne hit; the older same-id sibling and different-id trap remain unchanged. Static/dynamic selector parsing, fresh/default derivation, id zero/omission, negative/out-of-range indices, dynamic n, nested/team topology, exact timing/rounding, rollback, and full M.U.G.E.N/Ikemen parity remain outside this bounded slice.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-modifyprojectile-air-velocity-index-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper", "projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5020, 5021, branchStateNo],
+      forbiddenExecutedStates: [150, 151, 152, 153, 154, 155, 5000, 5001, 5010, 5011, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "Helper", "VarSet", "Projectile", "ModifyProjectile", "HitVelSet"],
+      requiredExecutedOperations: ["helper", "variable:varset", "projectile", "modifyprojectile", "kinematic:hitvelset"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredControllerEventSequences: [
+        {
+          label: "Helper ModifyProjectile air.velocity explicit index selection order",
+          actorId: "p1",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 0" },
+            { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 1" },
+            { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 2" },
+            { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 3" },
+            { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
+            { stateNo: 1289, controller: "Projectile", name: "Helper ProjHit Secondary Spawn" },
+            { stateNo: 1289, controller: "Projectile", name: "Helper ProjHit Tertiary Spawn" },
+            { stateNo: 1289, controller: "ModifyProjectile", name: "Helper ProjHit ModifyProjectile Air Velocity" },
+            { stateNo: 1289, operation: "modifyprojectile" },
+          ],
+        },
+        {
+          label: "Indexed Helper Projectile airborne target consumes selected air.velocity",
+          actorId: "p2",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 5020, controller: "ChangeState", name: "Hit Shake Over" },
+            { stateNo: 5021, controller: "HitVelSet", name: "Apply Hit Velocity" },
+            { stateNo: 5021, operation: "kinematic:hitvelset" },
+            { stateNo: 5021, controller: "ChangeState", name: "Helper ModifyProjectile Air Velocity Index GetHitVar Branch" },
+          ],
+        },
+      ],
+      requiredActorFrameSequences: [{
+        label: "Indexed Helper ModifyProjectile air.velocity airborne-hit physical order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 40, stateType: "A", moveType: "I", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5020, stateType: "A", moveType: "H", minFrames: 1 },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5021,
+            stateType: "A",
+            moveType: "H",
+            physics: "N",
+            observedVelXAtLeast: 7,
+            observedVelXAtMost: 7,
+            observedVelYAtLeast: -5,
+            observedVelYAtMost: -5,
+            observedVelZAtLeast: 3,
+            observedVelZAtMost: 3,
+            minFrames: 1,
+          },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, stateType: "A", moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredActorFrames: [
+        { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1289, animNo: 1046, minFrames: 1 },
+        { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1290, animNo: 1047, minFrames: 1 },
+        { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1048, minFrames: 1 },
+      ],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 4, minHelpers: 1, minProjectiles: 3, minNextHelperSerial: 1, minNextProjectileSerial: 3 }],
+      requiredEffectPayloads: [
+        { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1290, minAge: 2 },
+        { actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: projectileId, minAge: 1, hasHit: false },
+        { actorId: "p1-projectile-1", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: trapProjectileId, minAge: 1, hasHit: false },
+        { actorId: "p1-projectile-2", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: projectileId, minAge: 1, hasHit: true },
+      ],
+      requiredTargetLinks: [
+        { ownerId: "p1", actorId: "p2", targetId: projectileId },
+        { ownerId: "p1-helper-0", actorId: "p2", targetId: projectileId },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 963 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileAirGuardCornerPushTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -67248,6 +67440,8 @@ export type SyntheticImportedTraceFighterOptions = {
     modifyProjectileAirVelocity?: SyntheticPartialTripleExpression;
     /** Trigger time for the Helper-local live ModifyProjectile velocity write. */
     modifyProjectileTriggerTime?: number;
+    /** Synthetic Helper-local live ModifyProjectile index selector. */
+    modifyProjectileIndex?: SyntheticNumberExpression;
     /** Synthetic Helper-local VarSet seeds used by dynamic Projectile expressions. */
     varSeeds?: SyntheticRuntimeVarSeed[];
     groundCornerPush?: number;
@@ -67272,6 +67466,21 @@ export type SyntheticImportedTraceFighterOptions = {
       chainId?: number;
       attr?: string;
   projectileAnimNo?: number;
+      pos?: [number, number];
+      velocity?: [number, number];
+      hitSound?: string;
+      guardSound?: string;
+      hitSpark?: string;
+      guardSpark?: string;
+      sparkXy?: [number, number];
+      guardFlag?: string;
+    };
+    tertiaryProjectile?: {
+      triggerTime?: number;
+      projectileId?: number;
+      targetId?: number;
+      chainId?: number;
+      attr?: string;
       pos?: [number, number];
       velocity?: [number, number];
       hitSound?: string;
@@ -75888,6 +76097,7 @@ function helperProjHitRouteBlock(route: NonNullable<SyntheticImportedTraceFighte
 type = ModifyProjectile
 trigger1 = Time = ${route.modifyProjectileTriggerTime ?? 3}
 id = ${projectileId}
+${route.modifyProjectileIndex === undefined ? "" : `index = ${route.modifyProjectileIndex}`}
 down.velocity = ${route.modifyProjectileDownVelocity.join(",")}
 `;
   const modifyProjectileGroundVelocityBlock = route.modifyProjectileGroundVelocity === undefined
@@ -75897,6 +76107,7 @@ down.velocity = ${route.modifyProjectileDownVelocity.join(",")}
 type = ModifyProjectile
 trigger1 = Time = ${route.modifyProjectileTriggerTime ?? 3}
 id = ${projectileId}
+${route.modifyProjectileIndex === undefined ? "" : `index = ${route.modifyProjectileIndex}`}
 ground.velocity = ${route.modifyProjectileGroundVelocity.join(",")}
 `;
   const modifyProjectileAirVelocityBlock = route.modifyProjectileAirVelocity === undefined
@@ -75906,6 +76117,7 @@ ground.velocity = ${route.modifyProjectileGroundVelocity.join(",")}
 type = ModifyProjectile
 trigger1 = Time = ${route.modifyProjectileTriggerTime ?? 3}
 id = ${projectileId}
+${route.modifyProjectileIndex === undefined ? "" : `index = ${route.modifyProjectileIndex}`}
 air.velocity = ${route.modifyProjectileAirVelocity.join(",")}
 `;
   const varSeedBlocks = (route.varSeeds ?? [])
@@ -76008,6 +76220,64 @@ guard.dist = 100
 projsprpriority = 6
 `;
         })();
+  const tertiaryProjectile = route.tertiaryProjectile;
+  const tertiaryProjectileBlock =
+    tertiaryProjectile === undefined
+      ? ""
+      : (() => {
+          const tertiaryProjectileId = tertiaryProjectile.projectileId ?? projectileId;
+          const tertiaryTargetIdLine = tertiaryProjectile.targetId === undefined ? hitTargetIdLine : `id = ${tertiaryProjectile.targetId}`;
+          const tertiaryChainIdLine = tertiaryProjectile.chainId === undefined ? chainIdLine : `chainID = ${tertiaryProjectile.chainId}`;
+          const tertiaryAttrLine = tertiaryProjectile.attr === undefined ? "" : `attr = ${tertiaryProjectile.attr}`;
+          const tertiaryPos = tertiaryProjectile.pos ?? pos;
+          const tertiaryVelocity = tertiaryProjectile.velocity ?? velocity;
+          const tertiaryHitSoundLine = tertiaryProjectile.hitSound === undefined ? "" : `hitsound = ${tertiaryProjectile.hitSound}`;
+          const tertiaryGuardSoundLine = tertiaryProjectile.guardSound === undefined ? "" : `guardsound = ${tertiaryProjectile.guardSound}`;
+          const tertiaryHitSparkLine = tertiaryProjectile.hitSpark === undefined ? "" : `sparkno = ${tertiaryProjectile.hitSpark}`;
+          const tertiaryGuardSparkLine = tertiaryProjectile.guardSpark === undefined ? "" : `guard.sparkno = ${tertiaryProjectile.guardSpark}`;
+          const tertiarySparkXyLine = tertiaryProjectile.sparkXy === undefined
+            ? ""
+            : `sparkxy = ${tertiaryProjectile.sparkXy[0]},${tertiaryProjectile.sparkXy[1]}`;
+          const tertiaryGuardFlag = tertiaryProjectile.guardFlag ?? guardFlag;
+          return `
+[State ${route.waitStateNo}, Helper ProjHit Tertiary Spawn]
+type = Projectile
+trigger1 = Time = ${tertiaryProjectile.triggerTime ?? 18}
+projid = ${tertiaryProjectileId}
+${tertiaryTargetIdLine}
+${tertiaryChainIdLine}
+${tertiaryAttrLine}
+${hitCountLine}
+projpriority = 2
+projhits = 1
+projmisstime = 0
+projanim = ${route.projectileAnimNo}
+offset = ${tertiaryPos[0]},${tertiaryPos[1]}
+velocity = ${tertiaryVelocity[0]},${tertiaryVelocity[1]}
+projremovetime = ${route.projectileRemoveTime ?? 48}
+projremove = 0
+${tertiaryHitSoundLine}
+${tertiaryGuardSoundLine}
+${tertiaryHitSparkLine}
+${tertiaryGuardSparkLine}
+${tertiarySparkXyLine}
+${damageLine}
+${pauseTimeLine}
+ground.hittime = ${hitTime}
+ground.velocity = ${groundVelocity.join(",")}
+${airVelocityLine}
+${p2StateNoLine}
+${p2GetP1StateLine}
+${missOnOverrideLine}
+guardflag = ${tertiaryGuardFlag}
+${guardPauseTimeLine}
+guard.hittime = 7
+guard.velocity = -2
+${cornerPushLines}
+guard.dist = 100
+projsprpriority = 6
+`;
+        })();
   const trapBranchBlocks = (route.trapTriggers ?? [])
     .map(
       (trap, index) => `
@@ -76031,6 +76301,9 @@ ctrl = 0
 `,
     )
     .join("");
+  const projectileMutationBlocks = route.modifyProjectileIndex === undefined
+    ? `${modifyProjectileDownVelocityBlock}${modifyProjectileGroundVelocityBlock}${modifyProjectileAirVelocityBlock}${secondaryProjectileBlock}${tertiaryProjectileBlock}`
+    : `${secondaryProjectileBlock}${tertiaryProjectileBlock}${modifyProjectileDownVelocityBlock}${modifyProjectileGroundVelocityBlock}${modifyProjectileAirVelocityBlock}`;
   return `
 [Statedef 1200]
 type = S
@@ -76097,10 +76370,7 @@ movetype = I
 physics = N
 anim = ${waitAnimNo}
 ctrl = 0
-${modifyProjectileDownVelocityBlock}
-${modifyProjectileGroundVelocityBlock}
-${modifyProjectileAirVelocityBlock}
-${secondaryProjectileBlock}
+${projectileMutationBlocks}
 ${trapBranchBlocks}
 
 [State ${route.waitStateNo}, Helper ProjHit Branch]
