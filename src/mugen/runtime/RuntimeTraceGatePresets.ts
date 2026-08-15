@@ -30865,6 +30865,171 @@ export function createSyntheticImportedHelperProjectileAirGuardVelocityDerivedZT
   });
 }
 
+export function createSyntheticImportedHelperModifyProjectileRedirectAirGuardVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5079;
+  const projectileId = 77;
+  const helperProjectileId = 8857;
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-redirect-airguard-defender",
+    displayName: "Helper ModifyProjectile Redirect Air Guard Defender",
+    withHitDef: false,
+    withHelper: true,
+    withStateTypeSet: { stateType: "A", moveType: "I", physics: "N" },
+    attackStateCtrl: 1,
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+      airGuardedBranchStateNo: branchStateNo,
+      airGuardedBranchAnimNo: branchStateNo,
+      airGuardedBranchTrigger: "Time >= 1",
+      airGuardedBranchExpression:
+        "GetHitVar(xvel) = -9 && GetHitVar(yvel) = -4 && GetHitVar(zvel) = 6 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+      airGuardHitVelSetZ: true,
+    },
+    helperProjGuardRoute: {
+      waitStateNo: 1243,
+      waitAnimNo: 980,
+      branchStateNo: 1244,
+      branchAnimNo: 981,
+      branchTrigger: "Time >= 18",
+      projectileAnimNo: 982,
+      projectileId: helperProjectileId,
+      pos: [0, -180],
+      velocity: [0, 0],
+      guardFlag: "Z",
+      guardHitTime: 18,
+      guardSlideTime: 5,
+      guardControlTime: 7,
+      varSeeds: [
+        { index: 4, value: 57 },
+        { index: 10, value: -9 },
+        { index: 11, value: -4 },
+        { index: 12, value: 6 },
+      ],
+      modifyProjectileTriggerTime: 10,
+      modifyProjectileId: projectileId,
+      modifyProjectileRedirectId: "var(4)",
+      modifyProjectileAirGuardVelocity: ["var(10)", "var(11)", "var(12)"],
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-redirect-airguard-attacker",
+    displayName: "Helper ModifyProjectile Redirect Air Guard Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileTriggerTime: 2,
+    projectileId,
+    projectileOffset: [-130, -45],
+    projectileVelocity: [12, 0],
+    projectileAirVelocity: [-6, -8, 6],
+    projectileAirGuardVelocity: [-1, -1, 1],
+    projectileDamage: [0, 0],
+    projectileHits: 1,
+    projectileRemoveOnHit: false,
+    projectileGuardHitTime: 18,
+    guardFlag: "A",
+  });
+  const script = expandRuntimeTraceScript([
+    { label: "helper-redirect-airguard-enter", frames: 1, p1: ["x"], p2: ["x"] },
+    { label: "helper-redirect-airguard-guard", frames: 14, p1: ["B"], p2: [] },
+    { label: "helper-redirect-airguard-settle", frames: 36, p1: ["B"], p2: [] },
+  ]);
+  const stage = options.stage ?? closeCombatStage();
+  const trace = runRuntimeTrace(
+    new MatchWorld({ p1: defender, p2: attacker, stage, runtimeProfile: "ikemen-go" }),
+    script,
+    { label: "synthetic-imported-helper-modifyprojectile-redirect-airguard-golden" },
+  );
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-modifyprojectile-redirect-airguard-golden",
+      label: "Synthetic imported Helper ModifyProjectile RedirectID airguard velocity",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a Helper-owned ModifyProjectile evaluates RedirectID in its caller context and mutates the live root Projectile owned by PlayerID 57. The redirected Projectile's airguard.velocity X/Y/Z reaches an accepted airborne guard with GetHitVar and physical velocity evidence, while Helper-local Projectile ownership remains separate. M.U.G.E.N 1.1 has no ModifyProjectile controller; broadcast/team/nested-helper routing, dynamic Z, exact tick order, rollback, and full parity remain excluded.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-modifyprojectile-redirect-airguard-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 154, 155, branchStateNo],
+        forbiddenExecutedStates: [150, 151, 152, 153, 5000, 5010, 5020, 5030, 5050, 5100, 5101, 5110],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "Helper", "Projectile", "ModifyProjectile", "HitVelSet", "VelAdd"],
+        requiredExecutedOperations: ["variable:varset", "helper", "projectile", "modifyprojectile", "kinematic:hitvelset", "kinematic:veladd"],
+        requiredActiveCommands: ["holdback"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        forbiddenCombatReasons: ["hit", "override", "reversal"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 155,
+            animNo: 150,
+            stateType: "A",
+            moveType: "H",
+            physics: "N",
+            observedVelXAtLeast: -9,
+            observedVelXAtMost: -9,
+            observedVelYAtMost: -3.5,
+            observedVelZAtLeast: 6,
+            observedVelZAtMost: 6,
+            minFrames: 1,
+          },
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            stateNo: branchStateNo,
+            animNo: branchStateNo,
+            stateType: "A",
+            minFrames: 1,
+          },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1243, animNo: 980, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1244, animNo: 981, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p2", animNo: 910, moveType: "A", minFrames: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "spawn", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" },
+          { type: "active", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" },
+        ],
+        requiredEffectStores: [
+          { ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 },
+          { ownerId: "p2", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 },
+        ],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, helperStateNo: 1244, minAge: 2 },
+          { kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: helperProjectileId, minAge: 1 },
+          { kind: "projectile", ownerId: "p2", parentId: "p2", effectId: projectileId, hasHit: true },
+        ],
+        requiredTargetLinks: [
+          { ownerId: "p2", actorId: "p1", targetId: projectileId },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+          { actorId: "p2", source: "imported", actorKind: "player", life: 1000 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileAirGuardVelocityDynamicTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -67104,6 +67269,8 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefAttr?: string;
   hitDefHitFlag?: string;
   attackStateType?: "S" | "C" | "A" | "L";
+  /** Synthetic fixture-only control flag for the imported state 200 probe. */
+  attackStateCtrl?: number;
   hitDefDamage?: number;
   /** Omits the authored HitDef damage parameter while retaining fixture move metadata. */
   omitHitDefDamage?: boolean;
@@ -68358,6 +68525,10 @@ export type SyntheticImportedTraceFighterOptions = {
     modifyProjectileGuardVelocity?: SyntheticPartialTripleExpression;
     /** Synthetic Helper-local live ModifyProjectile airguard.velocity vector. */
     modifyProjectileAirGuardVelocity?: SyntheticPartialTripleExpression;
+    /** Synthetic Helper-local ModifyProjectile selector id (distinct from its spawned local projectile id). */
+    modifyProjectileId?: SyntheticNumberExpression;
+    /** Synthetic Helper-local ModifyProjectile RedirectID evaluated in caller context. */
+    modifyProjectileRedirectId?: SyntheticNumberExpression;
     /** Synthetic Helper-local live ModifyProjectile givepower pair. */
     modifyProjectileGivePower?: SyntheticPairExpression;
     /** Trigger time for the Helper-local live ModifyProjectile redlife pair. */
@@ -69208,7 +69379,7 @@ type = ${options.attackStateType ?? "S"}
 movetype = A
 physics = S
 anim = 200
-ctrl = 0
+ctrl = ${options.attackStateCtrl ?? 0}
 
 ${assertSpecialLine}
 ${options.attackMultiplier !== undefined || options.attackRedLifeMultiplier !== undefined || options.attackDizzyPointsMultiplier !== undefined || options.attackGuardPointsMultiplier !== undefined ? attackMultiplierController(options.attackMultiplier, options.attackDizzyPointsMultiplier, options.attackGuardPointsMultiplier, options.attackRedLifeMultiplier) : ""}
@@ -77256,19 +77427,20 @@ ${route.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = ${
   const guardPauseTimeLine = route.guardPauseTime === undefined ? "guard.pausetime = 2,2" : `guard.pausetime = ${route.guardPauseTime.join(",")}`;
   const guardFlag = route.guardFlag ?? "MA";
   const branchTrigger = route.branchTrigger ?? `ProjGuarded(${projectileId}) && ProjGuardedTime(${projectileId}) >= 1`;
-  const modifyProjectileBlock = route.modifyProjectileRedLife === undefined && route.modifyProjectileGetPower === undefined && route.modifyProjectileDamage === undefined && route.modifyProjectileGuardVelocity === undefined && route.modifyProjectileAirGuardVelocity === undefined && route.modifyProjectileGivePower === undefined
+  const modifyProjectileBlock = route.modifyProjectileRedLife === undefined && route.modifyProjectileGetPower === undefined && route.modifyProjectileDamage === undefined && route.modifyProjectileGuardVelocity === undefined && route.modifyProjectileAirGuardVelocity === undefined && route.modifyProjectileGivePower === undefined && route.modifyProjectileId === undefined && route.modifyProjectileRedirectId === undefined
     ? ""
     : `
 [State ${route.waitStateNo}, Helper ProjGuard ModifyProjectile${route.modifyProjectileGetPower !== undefined ? " GetPower" : route.modifyProjectileDamage !== undefined ? " Damage" : route.modifyProjectileGuardVelocity !== undefined ? " Guard Velocity" : route.modifyProjectileAirGuardVelocity !== undefined ? " Air Guard Velocity" : route.modifyProjectileGivePower !== undefined ? " GivePower" : " RedLife"}]
 type = ModifyProjectile
 trigger1 = Time = ${route.modifyProjectileTriggerTime ?? 3}
-id = ${projectileId}
+id = ${route.modifyProjectileId ?? projectileId}
 ${route.modifyProjectileRedLife === undefined ? "" : `redlife = ${route.modifyProjectileRedLife.join(",")}`}
 ${route.modifyProjectileGetPower === undefined ? "" : `getpower = ${route.modifyProjectileGetPower.join(",")}`}
 ${route.modifyProjectileDamage === undefined ? "" : `damage = ${route.modifyProjectileDamage.join(",")}`}
 ${route.modifyProjectileGuardVelocity === undefined ? "" : `guard.velocity = ${route.modifyProjectileGuardVelocity.join(",")}`}
 ${route.modifyProjectileAirGuardVelocity === undefined ? "" : `airguard.velocity = ${route.modifyProjectileAirGuardVelocity.join(",")}`}
 ${route.modifyProjectileGivePower === undefined ? "" : `givepower = ${route.modifyProjectileGivePower.join(",")}`}
+${route.modifyProjectileRedirectId === undefined ? "" : `RedirectID = ${route.modifyProjectileRedirectId}`}
 `;
   return `
 [Statedef 1200]

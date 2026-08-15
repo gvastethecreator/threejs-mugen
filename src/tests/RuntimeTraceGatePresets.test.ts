@@ -425,6 +425,7 @@ import {
   createSyntheticImportedHelperProjectileAirGuardCornerPushTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardVelocityDerivedZTraceArtifact,
+  createSyntheticImportedHelperModifyProjectileRedirectAirGuardVelocityTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardVelocityDynamicTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicAirVelocityTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicDownVelocityTraceArtifact,
@@ -12635,6 +12636,39 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", life: 20 })]),
     );
+  });
+
+  it("creates a required Helper ModifyProjectile RedirectID airguard velocity artifact", () => {
+    const artifact = createSyntheticImportedHelperModifyProjectileRedirectAirGuardVelocityTraceArtifact({
+      generatedAt: "2026-08-15T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-modifyprojectile-redirect-airguard-golden",
+        source: "imported",
+      },
+      gates: [{
+        label: "synthetic-imported-helper-modifyprojectile-redirect-airguard-golden",
+        passed: true,
+        failures: [],
+      }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const airGuardFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p1" && actor.stateNo === 155);
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ModifyProjectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.modifyprojectile).toBeGreaterThanOrEqual(1);
+    expect(airGuardFrame?.minVel.x).toBe(-9);
+    expect(airGuardFrame?.maxVel.x).toBe(-9);
+    expect(airGuardFrame?.minVelZ).toBeGreaterThanOrEqual(6);
+    expect(evidence?.targetLinks).toEqual(expect.arrayContaining([
+      expect.objectContaining({ ownerId: "p2", actorId: "p1", targetId: 77 }),
+    ]));
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(evidence?.combatReasons).not.toContain("hit");
   });
 
   it("creates a synthetic imported Helper ModifyProjectile airguard.velocity air guard snapshot artifact", () => {
