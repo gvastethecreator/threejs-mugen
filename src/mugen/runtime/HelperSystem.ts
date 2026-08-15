@@ -2080,8 +2080,26 @@ export function resolveRuntimeHelperProjectileEnvShake(
   controller: ControllerIr,
   options: Parameters<typeof resolveHelperNumber>[3],
 ): Partial<RuntimeProjectileEnvShake> | undefined {
+  return resolveRuntimeHelperProjectileEnvShakePackage(helper, controller, "envShake", options);
+}
+
+/** Resolves fresh Helper Projectile fall EnvShake values in the Helper caller context. */
+export function resolveRuntimeHelperProjectileFallEnvShake(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): Partial<RuntimeProjectileEnvShake> | undefined {
+  return resolveRuntimeHelperProjectileEnvShakePackage(helper, controller, "fallEnvShake", options);
+}
+
+function resolveRuntimeHelperProjectileEnvShakePackage(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "envShake" | "fallEnvShake",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): Partial<RuntimeProjectileEnvShake> | undefined {
   const operation = controller.operation;
-  const envShake = operation?.kind === "projectile" ? operation.envShake : undefined;
+  const envShake = operation?.kind === "projectile" ? operation[key] : undefined;
   if (envShake === undefined) return undefined;
   const resolveComponent = (value: number | string | undefined): number | undefined => {
     if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
