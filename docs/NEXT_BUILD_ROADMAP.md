@@ -64,19 +64,19 @@ older flash after replacement expiry. Required trace passes at `7481ebbf` /
 `2c8cedc7`; aggregate QA is `872/872` (`838` required). T794 later closes the
 finite positive 240-tick ceiling; broad presentation parity remains separate.
 
-## Latest bounded slice — T796 finite `FallEnvShake` duration (2026-08-15)
+## Latest bounded slice — T797 direct HitDef contact `EnvShake` duration (2026-08-15)
 
-Issue 371 closes the root stored finite route. Product `c0f89a8c` plus
-required `synthetic-imported-fallenvshake-long-finite` prove `time = 241`
-until expiry (`9f007c16` / `7d456f38`); aggregate QA is `875/875` (`841`
-required). Projectile and direct HitDef contact producers retain their current
-policy, and no Helper controller claim is made. See [issue
-371](../.scratch/roadmap/issues/371-fallenvshake-finite-duration-ceiling.md).
+Issue 372 closes the direct root/Helper hit route. Product `74061162` plus
+required `synthetic-imported-hitdef-envshake-long-finite` prove `time = 241`
+until expiry (`9de955c7` / `b8383ef8`); aggregate QA is `876/876` (`842`
+required). Guard, Projectile, FallEnvShake, and active EnvShake retain their
+current policy. See [issue
+372](../.scratch/roadmap/issues/372-hitdef-contact-envshake-finite-duration.md).
 
-## Next bounded slice — T797 direct HitDef contact `EnvShake` duration (2026-08-15)
+## Next bounded slice — T798 root Projectile `EnvShake` duration (2026-08-15)
 
-Issue 372 queues accepted root/Helper contact lifetime and a required trace
-gate. See [issue 372](../.scratch/roadmap/issues/372-hitdef-contact-envshake-finite-duration.md).
+Issue 373 queues accepted root Projectile contact lifetime and a required trace
+gate. See [issue 373](../.scratch/roadmap/issues/373-projectile-envshake-finite-duration.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

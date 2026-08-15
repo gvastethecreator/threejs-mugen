@@ -56,19 +56,18 @@ without revival after expiry. Required trace is `7481ebbf` / `2c8cedc7`; QA is
 presentation math, pause, nested/team ownership, rollback and full parity
 remain separate.
 
-## Latest slice — T796 finite `FallEnvShake` duration (2026-08-15)
+## Latest slice — T797 direct HitDef contact `EnvShake` duration (2026-08-15)
 
-Issue 371 closes only stored root fall-envshake duration. Product `c0f89a8c`
-preserves finite `241` until expiry; the required trace passes at `9f007c16`
-/ `7d456f38`, and QA is `875/875` (`841` required). Projectile and direct
-HitDef contact producers remain separate; the active controller has no Helper
-claim. Exact waveform, stacking, pause, camera/render parity, rollback and
-full parity stay outside this slice.
+Issue 372 closes direct root/Helper hit duration. Product `74061162` preserves
+finite `241` until expiry; the required trace passes at `9de955c7` /
+`b8383ef8`, and QA is `876/876` (`842` required). Guard, Projectile,
+FallEnvShake, and active EnvShake remain separate. Exact waveform, stacking,
+pause, camera/render parity, rollback and full parity stay outside this slice.
 
-## Next slice — T797 direct HitDef contact `EnvShake` duration (2026-08-15)
+## Next slice — T798 root Projectile `EnvShake` duration (2026-08-15)
 
-Issue 372 selects accepted direct root/Helper contact duration without widening
-Projectile, FallEnvShake, or active EnvShake producers.
+Issue 373 selects accepted root Projectile contact duration without widening
+Helper Projectile, direct HitDef, FallEnvShake, or active EnvShake producers.
 ## Historical slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

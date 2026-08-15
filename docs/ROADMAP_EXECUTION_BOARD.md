@@ -74,23 +74,22 @@ and prevents an expired replacement from reviving the prior event. Required
 closes the finite-duration ceiling; exact blend/layer/pause/topology/rollback/
 full parity remain separate. See [issue 368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
 
-## Latest bounded slice — T796 finite `FallEnvShake` duration (2026-08-15)
+## Latest bounded slice — T797 direct HitDef contact `EnvShake` duration (2026-08-15)
 
-Issue 371 closes the stored root `fall.envshake.time` consumption route.
-Product `c0f89a8c` removes its inherited 240-tick cap while Projectile and
-direct HitDef contact producers retain their current policy. Required
-`synthetic-imported-fallenvshake-long-finite` passes at `9f007c16` /
-`7d456f38`; focused coverage is `4/4`, full tests `328/4075`, and aggregate
-trace QA `875/875` (`841` required). The active FallEnvShake controller has no
-Helper dispatch claim; waveform, stacking, pause, camera/render parity,
-rollback, and full parity remain separate. See [issue
-371](../.scratch/roadmap/issues/371-fallenvshake-finite-duration-ceiling.md).
-
-## Next bounded slice — T797 direct HitDef contact `EnvShake` duration (2026-08-15)
-
-Issue 372 queues the accepted direct root/Helper HitDef contact route without
-widening Projectile, FallEnvShake, or active EnvShake producers. See [issue
+Issue 372 closes the accepted direct root/Helper HitDef hit route. Product
+`74061162` removes its inherited 240-tick cap while guard, Projectile,
+FallEnvShake, and active EnvShake remain separate. Required
+`synthetic-imported-hitdef-envshake-long-finite` passes at `9de955c7` /
+`b8383ef8`; focused coverage is `6/6`, full tests `328/4076`, and aggregate
+trace QA `876/876` (`842` required). Waveform, stacking, pause, camera/render
+parity, rollback, and full parity remain separate. See [issue
 372](../.scratch/roadmap/issues/372-hitdef-contact-envshake-finite-duration.md).
+
+## Next bounded slice — T798 root Projectile `EnvShake` duration (2026-08-15)
+
+Issue 373 queues accepted root Projectile contact lifetime without widening
+Helper Projectile, direct HitDef, FallEnvShake, or active EnvShake. See [issue
+373](../.scratch/roadmap/issues/373-projectile-envshake-finite-duration.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper caller-context `ModifyProjectile down.velocity` index

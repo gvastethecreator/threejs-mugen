@@ -63,21 +63,21 @@ trace QA (`872/872`, `838` required) pass. T794 later closes positive
 duration above 240; exact blend/layer/pause behavior, nested/team ownership,
 rollback and full parity remain open.
 
-## Latest implementation checkpoint — T796 finite `FallEnvShake` duration (2026-08-15)
+## Latest implementation checkpoint — T797 direct HitDef contact `EnvShake` duration (2026-08-15)
 
-Issue 371 closes stored root finite `FallEnvShake` through `c0f89a8c`.
-Authored `time = 241` survives past the old ceiling then expires; required
-`synthetic-imported-fallenvshake-long-finite` passes at `9f007c16` /
-`7d456f38`. Focused `4/4`, full `328/4075`, typecheck, build, DA29/DA30
-evidence `186/186`, and trace QA `875/875` (`841` required) pass. Projectile
-and direct HitDef contact policies remain intentionally bounded, and no active
-Helper FallEnvShake controller is claimed; waveform, stacking, pause,
-camera/render parity, rollback and full parity remain open.
+Issue 372 closes direct root/Helper HitDef hit finite duration through
+`74061162`. Authored `time = 241` survives past the old ceiling then expires;
+required `synthetic-imported-hitdef-envshake-long-finite` passes at `9de955c7`
+/ `b8383ef8`. Focused `6/6`, full `328/4076`, typecheck, build, DA29/DA30
+evidence `186/186`, and trace QA `876/876` (`842` required) pass. Guard,
+Projectile, FallEnvShake, and active EnvShake remain intentionally bounded;
+waveform, stacking, pause, camera/render parity, rollback and full parity
+remain open.
 
-## Next implementation checkpoint — T797 direct HitDef contact `EnvShake` duration (2026-08-15)
+## Next implementation checkpoint — T798 root Projectile `EnvShake` duration (2026-08-15)
 
-Issue 372 isolates accepted direct root/Helper contact duration without
-widening Projectile, FallEnvShake, or active EnvShake producers.
+Issue 373 isolates accepted root Projectile contact duration without widening
+Helper Projectile, direct HitDef, FallEnvShake, or active EnvShake producers.
 ## Historical implementation checkpoint — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index
