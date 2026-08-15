@@ -1,6 +1,18 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T775 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T776 closed-bounded (2026-08-15)
+
+Issue 350 closes the first-generation Helper-authored live `ModifyProjectile`
+`down.velocity` matrix for one root-owned Projectile and one accepted lying
+hit. Evidence commit `a47c329c` and required trace `becc3b9c` prove caller-
+context variables, pinned zero-fill one/two/three-component replacement,
+GetHitVar velocity readback, physical HitVelSet response, lifecycle and target
+links. Focused compiler/Projectile/Helper tests, typecheck and diff hygiene
+pass. Aggregate QA retains the inherited helper-bind target-link blocker;
+fresh/default derivation, vector-family selection, nested/shared topology,
+exact timing, rollback and full parity remain separate.
+
+## Historical implementation checkpoint — T775 closed-bounded (2026-08-15)
 
 Issue 349 closes the first-generation Helper-authored `ModifyProjectile`
 `guard.velocity` ground-guard Y/Z component matrix. The focused contract
@@ -36,12 +48,12 @@ and trace tests, typecheck and diff hygiene pass. Aggregate QA remains blocked
 by the inherited helper-bind target-link case. Z/default derivation and full
 partial-component preservation remain separate. See issue 346.
 
-## Next implementation checkpoint — T776 queued (2026-08-15)
+## Next implementation checkpoint — T777 queued (2026-08-15)
 
-Issue 350 targets the Helper-authored `ModifyProjectile down.velocity` matrix
-for one root-owned Projectile and one accepted lying hit. Keep fresh/default
-derivation, air/airguard/ground selection, nested/shared-resource topology,
-aggregate QA repair, exact landing/timing, rollback and full parity separate.
+Issue 351 targets the Helper-authored `ModifyProjectile ground.velocity` matrix
+for one root-owned Projectile and one accepted grounded hit. Keep fresh/default
+derivation, down/air/airguard selection, nested/shared-resource topology,
+aggregate QA repair, exact timing, rollback and full parity separate.
 
 ## Historical implementation checkpoint — T771 closed-bounded (2026-08-15)
 

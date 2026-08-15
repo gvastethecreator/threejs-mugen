@@ -1,6 +1,18 @@
 # Workplan
 
-## Latest slice — T775 closed-bounded (2026-08-15)
+## Latest slice — T776 closed-bounded (2026-08-15)
+
+Issue 350 closes the first-generation Helper-authored live `ModifyProjectile`
+`down.velocity` matrix for one root-owned Projectile and one accepted lying
+hit. Evidence commit `a47c329c` and required trace `becc3b9c` prove caller-
+context evaluation, `[x,0,0]` / `[x,y,0]` / `[x,y,z]` zero-fill, GetHitVar,
+physical HitVelSet, lifecycle, ownership and target links. Focused tests,
+typecheck and diff hygiene pass. Aggregate QA retains only the inherited
+helper-bind target-link blocker; fresh/default derivation, vector-family
+selection, nested/shared topology, exact timing, rollback and full parity
+remain outside.
+
+## Historical slice — T775 closed-bounded (2026-08-15)
 
 Issue 349 closes the first-generation Helper-authored `ModifyProjectile`
 `guard.velocity` ground-guard Y/Z matrix. Evidence commit `a5cec411` and
@@ -37,12 +49,12 @@ QA retains the inherited helper-bind target-link blocker. Z/default
 derivation, full component preservation, nested/shared resource topology,
 exact arithmetic/timing, rollback and full parity remain outside.
 
-## Next slice — T776 queued (2026-08-15)
+## Next slice — T777 queued (2026-08-15)
 
-Issue 350 covers the Helper-authored `ModifyProjectile down.velocity` matrix
-for one root-owned Projectile and one accepted lying hit. Keep fresh/default
-derivation, air/airguard/ground selection, nested/shared resource topology,
-aggregate QA repair, exact landing/timing, rollback and full parity separate.
+Issue 351 covers the Helper-authored `ModifyProjectile ground.velocity` matrix
+for one root-owned Projectile and one accepted grounded hit. Keep fresh/default
+derivation, down/air/airguard selection, nested/shared resource topology,
+aggregate QA repair, exact timing, rollback and full parity separate.
 
 ## Historical slice — T771 closed-bounded (2026-08-15)
 

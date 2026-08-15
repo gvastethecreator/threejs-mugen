@@ -1,6 +1,20 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T775 Helper `ModifyProjectile` `guard.velocity` Y/Z matrix — closed-bounded, no score movement
+## 2026-08-15 T776 Helper `ModifyProjectile` `down.velocity` matrix — closed-bounded, no score movement
+
+Issue 350 closes the first-generation Helper-authored live `ModifyProjectile`
+`down.velocity` matrix for one root-owned Projectile and one accepted lying
+hit. Evidence commit `a47c329c` and required trace `becc3b9c` prove Helper
+caller-context replacement, pinned zero-fill `[x,0,0]` / `[x,y,0]` /
+`[x,y,z]`, `GetHitVar(xvel/yvel/zvel)`, physical `HitVelSet`, lifecycle,
+ownership and target links. Focused compiler, Projectile and Helper tests,
+typecheck and diff hygiene pass. Aggregate QA retains the inherited
+`synthetic-imported-helper-bind-to-target-redirect` target-link blocker; no
+score movement. Fresh/default derivation, air/airguard/ground selection,
+nested/shared topology, exact timing, rollback and full parity remain blocked.
+See [issue 350](../.scratch/roadmap/issues/350-helper-modifyprojectile-down-velocity.md).
+
+## Historical checkpoint — 2026-08-15 T775 Helper `ModifyProjectile` `guard.velocity` Y/Z matrix — closed-bounded, no score movement
 
 Issue 349 closes the first-generation Helper-authored ground-guard velocity
 Y/Z matrix. Evidence commit `a5cec411` and required trace `a6bfe6bd` ->
@@ -40,14 +54,14 @@ component preservation, nested/shared-resource topology, exact physics/timing,
 rollback and full parity remain blocked. See [issue
 346](../.scratch/roadmap/issues/346-helper-modifyprojectile-airguard-velocity-y.md).
 
-## 2026-08-15 T776 Helper `ModifyProjectile` `down.velocity` matrix — queued
+## 2026-08-15 T777 Helper `ModifyProjectile` `ground.velocity` matrix — queued
 
-Issue 350 is the next bounded cut for the Helper-owned `ModifyProjectile
-down.velocity` matrix and one accepted lying hit. No score movement is
-expected. Fresh/default derivation, air/airguard/ground selection,
-nested/shared-resource topology, aggregate QA repair, exact landing/timing,
-rollback and full parity remain blocked. See [issue
-350](../.scratch/roadmap/issues/350-helper-modifyprojectile-down-velocity.md).
+Issue 351 is the next bounded cut for the Helper-owned `ModifyProjectile
+ground.velocity` matrix and one accepted grounded hit. No score movement is
+expected. Fresh/default derivation, down/air/airguard selection,
+nested/shared-resource topology, aggregate QA repair, exact timing, rollback
+and full parity remain blocked. See [issue
+351](../.scratch/roadmap/issues/351-helper-modifyprojectile-ground-velocity.md).
 
 ## 2026-08-15 T771 Helper `ModifyProjectile` `airguard.velocity` X air guard — historical closed-bounded, no score movement
 

@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T776 — queued (2026-08-15)**
+- **T776 — closed-bounded (2026-08-15)**
 - **Área:** runtime / Helper / Projectile / ModifyProjectile / lying hit / velocity
 - **Dependencia:** T684 / issue 258; T775 / issue 349
 
@@ -50,3 +50,26 @@ replacement for one root-owned Projectile and one accepted lying hit.
 Blocked claim: M.U.G.E.N live-Modify parity, dynamic `n`, fresh defaults,
 air/airguard/ground breadth, nested/shared topology, exact timing/landing,
 rollback, and full parity.
+
+## Closure evidence
+
+- Evidence commit: `a47c329c`.
+- Required trace: `synthetic-imported-helper-modifyprojectile-down-velocity`
+  with trace checksum `becc3b9c` (final artifact checksum recorded by the QA
+  runner in `.scratch/qa/trace-gates/`), passed independently.
+- Focused compiler/Projectile/Helper coverage passes: RuntimeCompiler `3/3`,
+  ProjectileSystem `2/2`, EffectActorSystem ModifyProjectile selection `12/12`,
+  and the required trace `1/1`.
+- The trace proves Helper caller variables `-3,-5` replace adversarial live
+  down velocity `-1,-1,9` with the pinned zero-filled pair `[3,-5,0]` before an
+  accepted lying hit. `GetHitVar(xvel/yvel/zvel)`, physical `HitVelSet`, target
+  links, Helper/Projectile lifecycle, and root/helper ownership all pass.
+- `pnpm run typecheck` and `git diff --check` pass. Aggregate `pnpm run
+  qa:trace` still reports only the inherited
+  `synthetic-imported-helper-bind-to-target-redirect` target-link blocker.
+
+## Next bounded slice
+
+T777 is queued in issue 351 for the analogous Helper-owned live
+`ModifyProjectile ground.velocity` component matrix; it remains separate from
+down/air/airguard selection and from fresh/default derivation.

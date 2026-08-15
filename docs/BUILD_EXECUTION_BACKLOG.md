@@ -70,12 +70,24 @@
   rollback and full parity remain outside. See [issue
   349](../.scratch/roadmap/issues/349-helper-modifyprojectile-guard-velocity-yz.md).
 
-- **T776 next selection** — close the Helper-authored `ModifyProjectile`
-  `down.velocity` matrix for one root-owned Projectile and one accepted lying
-  hit. Keep fresh/default derivation, air/airguard/ground selection,
-  nested-helper breadth, aggregate QA repair, exact landing/timing, rollback
-  and full parity separate. See [issue
+- **T776 closed-bounded** — issue 350 closes the Helper-authored
+  `ModifyProjectile` `down.velocity` matrix for one root-owned Projectile and
+  one accepted lying hit. Evidence commit is `a47c329c`; required trace
+  `becc3b9c` proves caller-context replacement, pinned zero-fill
+  `[x,0,0]` / `[x,y,0]` / `[x,y,z]`, GetHitVar/HitVelSet response, lifecycle,
+  ownership and target links. Focused compiler/Projectile/Helper tests,
+  typecheck and diff hygiene pass; aggregate QA retains the inherited
+  helper-bind target-link blocker. Fresh/default derivation, vector-family
+  selection, nested/shared topology, exact timing, rollback and full parity
+  remain outside. See [issue
   350](../.scratch/roadmap/issues/350-helper-modifyprojectile-down-velocity.md).
+
+- **T777 next selection** — close the Helper-authored `ModifyProjectile`
+  `ground.velocity` matrix for one root-owned Projectile and one accepted
+  grounded hit. Keep fresh/default derivation, down/air/airguard selection,
+  nested-helper breadth, aggregate QA repair, exact timing, rollback and full
+  parity separate. See [issue
+  351](../.scratch/roadmap/issues/351-helper-modifyprojectile-ground-velocity.md).
 
 - **T769 historical** — issue 343 closes the first-generation
   Helper-authored `ModifyProjectile` damage guard seam. Evidence commit is

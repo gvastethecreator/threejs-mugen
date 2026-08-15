@@ -1,6 +1,17 @@
 ﻿# Roadmap Package Milestones
 
-## Latest package — T775 closed-bounded (2026-08-15)
+## Latest package — T776 closed-bounded (2026-08-15)
+
+Issue 350 closes the first-generation Helper-owned live `ModifyProjectile`
+`down.velocity` matrix for one root-owned Projectile and one accepted lying
+hit. Evidence commit `a47c329c` and required trace `becc3b9c` prove the Helper
+caller context, pinned zero-fill matrix, GetHitVar/physical response,
+lifecycle, owner/root/parent and target links. Focused tests, typecheck and
+diff hygiene pass; aggregate QA retains the inherited helper-bind target-link
+blocker. Fresh/default derivation, vector-family selection, nested/shared
+topology, exact timing, rollback and full parity remain blocked.
+
+## Historical package — T775 closed-bounded (2026-08-15)
 
 Issue 349 closes the first-generation Helper-owned `ModifyProjectile`
 `guard.velocity` ground-guard Y/Z matrix. Evidence commit `a5cec411` and
@@ -14,14 +25,13 @@ derivation, airborne guard, nested/shared topology, exact physics/timing,
 rollback and full parity remain blocked. See [issue
 349](../.scratch/roadmap/issues/349-helper-modifyprojectile-guard-velocity-yz.md).
 
-## Next package — T776 queued (2026-08-15)
+## Next package — T777 queued (2026-08-15)
 
-Issue 350 is the next bounded Helper-owned `ModifyProjectile down.velocity`
-matrix for one root-owned Projectile and one accepted lying hit. Keep
-fresh/default derivation, air/airguard/ground selection, nested/shared
-topology, aggregate QA repair, exact landing/timing, rollback and full parity
-separate. See [issue
-350](../.scratch/roadmap/issues/350-helper-modifyprojectile-down-velocity.md).
+Issue 351 is the next bounded Helper-owned `ModifyProjectile ground.velocity`
+matrix for one root-owned Projectile and one accepted grounded hit. Keep
+fresh/default derivation, down/air/airguard selection, nested/shared topology,
+aggregate QA repair, exact timing, rollback and full parity separate. See
+[issue 351](../.scratch/roadmap/issues/351-helper-modifyprojectile-ground-velocity.md).
 
 ## Active package — T716 closed-bounded (2026-08-11)
 

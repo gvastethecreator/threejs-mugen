@@ -1,6 +1,18 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T775 closed-bounded (2026-08-15)
+## Latest bounded slice — T776 closed-bounded (2026-08-15)
+
+Issue 350 closes the first-generation Helper-authored live `ModifyProjectile`
+`down.velocity` matrix for one root-owned Projectile and one accepted lying
+hit. Evidence commit `a47c329c` and required trace `becc3b9c` prove caller-
+context evaluation, pinned zero-fill `[x,0,0]` / `[x,y,0]` / `[x,y,z]`,
+GetHitVar velocity readback, physical response, lifecycle and owner/root/
+parent/target links. Focused compiler, Projectile and Helper tests, typecheck
+and diff hygiene pass. Aggregate QA retains the inherited helper-bind
+target-link blocker; fresh/default derivation, vector-family selection,
+nested/shared topology, exact timing, rollback and full parity remain blocked.
+
+## Historical bounded slice — T775 closed-bounded (2026-08-15)
 
 Issue 349 closes the first-generation Helper-authored `ModifyProjectile`
 `guard.velocity` ground-guard Y/Z component matrix. Pinned Ikemen behavior is covered
@@ -43,13 +55,13 @@ preservation, nested/shared-resource topology, exact physics/timing, rollback
 and full parity remain blocked. See [issue
 346](../.scratch/roadmap/issues/346-helper-modifyprojectile-airguard-velocity-y.md).
 
-## Next bounded slice — T776 queued (2026-08-15)
+## Next bounded slice — T777 queued (2026-08-15)
 
-Issue 350 will close the Helper-authored `ModifyProjectile down.velocity`
-matrix for one root-owned Projectile and one accepted lying hit. Keep
-fresh/default derivation, air/airguard/ground selection, nested/shared-resource
-topology, aggregate QA repair, exact landing/timing, rollback and full parity
-separate. See [issue 350](../.scratch/roadmap/issues/350-helper-modifyprojectile-down-velocity.md).
+Issue 351 will close the Helper-authored `ModifyProjectile ground.velocity`
+matrix for one root-owned Projectile and one accepted grounded hit. Keep
+fresh/default derivation, down/air/airguard selection, nested/shared-resource
+topology, aggregate QA repair, exact timing, rollback and full parity separate.
+See [issue 351](../.scratch/roadmap/issues/351-helper-modifyprojectile-ground-velocity.md).
 
 ## Historical bounded slice — T771 closed-bounded (2026-08-15)
 

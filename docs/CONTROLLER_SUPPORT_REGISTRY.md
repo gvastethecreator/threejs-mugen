@@ -1,16 +1,27 @@
 # Controller Support Registry
 
-Latest cursor: T753 / issue 327 is closed-bounded for typed, finite
-`AttackMulSet guardpoints`. Direct accepted guards apply the dedicated
-guard-points multiplier to authored guard-points deltas independently from
-damage/dizzy scaling, and intro reset clears the dedicated state. Product
-`1eb17d85`, evidence `ee000f97`, and required trace `5a4b2841` -> `90fe9bf9`
-pass independently. No score movement. Projectile/Helper ownership, omitted
-defaults, resource clamp/rounding, `NoGuardPointsDamage`, int32 edges, teams,
+Latest cursor: T776 / issue 350 is closed-bounded for Helper-owned live
+`ModifyProjectile down.velocity` on one root-owned Projectile and one accepted
+lying hit. Evidence commit `a47c329c` and required trace `becc3b9c` pass
+independently. The previous T753 guardpoints cursor remains historical below;
+Projectile/Helper ownership breadth, omitted defaults, int32 edges, teams,
 rollback and full parity remain unsupported.
 
-Next cursor: T754 / root Projectile and Helper-parented guard-point multiplier
-ownership and accepted-contact evidence.
+Latest closed-bounded cursor: T776 / issue 350 covers Helper-owned live
+`ModifyProjectile down.velocity` for one root-owned Projectile and one
+accepted lying hit. Evidence commit `a47c329c` and required trace
+`synthetic-imported-helper-modifyprojectile-down-velocity.json` (`becc3b9c`)
+prove Helper caller-context evaluation, pinned zero-filled one/two/three
+component writes, GetHitVar/HitVelSet response, lifecycle, ownership and
+target links. Aggregate QA still has the inherited helper-bind target-link
+blocker. Fresh/default derivation, air/airguard/ground selection, nested/team
+topology, exact timing, rollback and full parity remain unsupported.
+
+Next cursor: T777 / issue 351 queues the analogous Helper-owned live
+`ModifyProjectile ground.velocity` matrix and one accepted grounded hit.
+
+Historical cursor: T754 / root Projectile and Helper-parented guard-point
+multiplier ownership and accepted-contact evidence.
 
 Previous cursor: T752 / issue 326 is closed-bounded for fresh Projectile
 `guardpoints` expressions. Root and Helper-parented Projectiles resolve static
