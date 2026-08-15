@@ -1914,6 +1914,29 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("snapshots a Helper AttackMulSet red-life multiplier on its Projectile", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "43", anim: "900" }),
+      animations: new Map([[900, action(900)]]),
+    });
+    helper.redLifeAttackMultiplier = 0.5;
+
+    const projectile = spawnRuntimeHelperProjectileActor(
+      store,
+      helper,
+      compileControllerIr(controller("Projectile", { projanim: "900", projid: "8868", redlife: "20" })),
+    );
+
+    expect(projectile).toMatchObject({
+      redLife: 20,
+      redLifeAttackMultiplier: 0.5,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+    });
+  });
+
   it("resolves Helper-owned dynamic ModifyProjectile pause budgets in caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {

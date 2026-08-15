@@ -450,11 +450,12 @@ describe("ProjectileCombatSystem", () => {
 
     const hitState = resolve(false);
     const guardState = resolve(true);
-    for (const state of [hitState, guardState]) {
-      expect(runtimeHitVar(state, "dizzypoints")).toBe(23);
-      expect(runtimeHitVar(state, "guardpoints")).toBe(17);
-      expect(state.dizzyPoints).toBe(91);
-    }
+    expect(runtimeHitVar(hitState, "dizzypoints")).toBe(23);
+    expect(runtimeHitVar(hitState, "guardpoints")).toBe(17);
+    expect(hitState.dizzyPoints).toBe(114);
+    expect(runtimeHitVar(guardState, "dizzypoints")).toBe(23);
+    expect(runtimeHitVar(guardState, "guardpoints")).toBe(17);
+    expect(guardState.dizzyPoints).toBe(91);
     expect(hitState.guardPoints).toBe(92);
     expect(guardState.guardPoints).toBe(109);
   });
@@ -1221,7 +1222,7 @@ describe("ProjectileCombatSystem", () => {
     expect(projectiles).toEqual([]);
   });
 
-  it("exposes Projectile HitDef redlife without reading the current red-life pool", () => {
+  it("applies Projectile HitDef redlife while preserving authored GetHitVar(redlife)", () => {
     let projectiles = [projectile({ redLife: 33, damage: 12 })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 } }));
     const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, life: 1000, redLife: 7 }));
@@ -1242,7 +1243,34 @@ describe("ProjectileCombatSystem", () => {
 
     expect(defender.runtime.hitVars?.sourceRedLife).toBe(33);
     expect(runtimeHitVar(defender.runtime, "redlife")).toBe(33);
-    expect(defender.runtime.redLife).toBe(7);
+    expect(defender.runtime.redLife).toBe(988);
+  });
+
+  it("consumes the Projectile creation red-life snapshot instead of the live attacker multiplier", () => {
+    let projectiles = [projectile({ redLife: 20, redLifeAttackMultiplier: 0.5, damage: 12 })];
+    const attacker = actor("p1", "P1", runtimeState({
+      pos: { x: 0, y: 0 },
+      attackMultiplier: 1.5,
+      redLifeAttackMultiplier: 2,
+    }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, life: 1000, redLife: 7 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.redLife).toBe(982);
+    expect(projectiles).toEqual([]);
   });
 
   it("applies Projectile HitDef guardpower while preserving its GetHitVar delta", () => {
@@ -1529,7 +1557,7 @@ describe("ProjectileCombatSystem", () => {
     expect(runtimeHitVar(defender.runtime, "score")).toBe(7.25);
   });
 
-  it("uses ModifyProjectile redlife and score pairs for hit and guard readback only", () => {
+  it("uses ModifyProjectile redlife and score pairs for resource/readback", () => {
     for (const contact of [
       { holdingBack: false, redLife: 23, score: 6.5 },
       { holdingBack: true, redLife: 9, score: 2.25 },
@@ -1564,7 +1592,7 @@ describe("ProjectileCombatSystem", () => {
 
       expect(runtimeHitVar(defender.runtime, "redlife")).toBe(contact.redLife);
       expect(runtimeHitVar(defender.runtime, "score")).toBe(contact.score);
-      expect(defender.runtime.redLife).toBe(7);
+      expect(defender.runtime.redLife).toBe(contact.holdingBack ? 996 : 988);
     }
   });
 

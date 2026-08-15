@@ -620,6 +620,54 @@ describe("CombatResolver", () => {
     });
   });
 
+  it("uses the dedicated AttackMulSet red-life multiplier for hit and guard", () => {
+    const attacker = actor({ attackMultiplier: 1.5, redLifeAttackMultiplier: 2 });
+    const defender = actor({ stateType: "S", moveType: "I" });
+    const attack = {
+      damage: 40,
+      redLife: 20,
+      guardDamage: 10,
+      guardRedLife: 10,
+      hitPause: 8,
+      hitStun: 20,
+      push: 12,
+      guardFlag: "MA",
+    };
+
+    expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: false })).toMatchObject({
+      kind: "hit",
+      redLife: 40,
+    });
+    expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: true })).toMatchObject({
+      kind: "guard",
+      redLife: 20,
+    });
+  });
+
+  it("prefers a Projectile creation red-life snapshot over the live attacker multiplier", () => {
+    const attacker = actor({ attackMultiplier: 1.5, redLifeAttackMultiplier: 2 });
+    const defender = actor({ stateType: "S", moveType: "I" });
+    const attack = {
+      damage: 40,
+      redLife: 20,
+      guardRedLife: 10,
+      hitPause: 8,
+      hitStun: 20,
+      push: 12,
+      guardFlag: "MA",
+      redLifeAttackMultiplier: 0.5,
+    };
+
+    expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: false })).toMatchObject({
+      kind: "hit",
+      redLife: 10,
+    });
+    expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: true })).toMatchObject({
+      kind: "guard",
+      redLife: 5,
+    });
+  });
+
   it("prefers a Projectile creation snapshot over the attacker's later multiplier", () => {
     const attacker = actor({ attackMultiplier: 1.5, guardPointsAttackMultiplier: 2 });
     const defender = actor({ stateType: "S", moveType: "I" });

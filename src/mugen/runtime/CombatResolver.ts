@@ -17,6 +17,8 @@ export type RuntimeCombatAttack = {
   dizzyPoints?: number;
   /** Projectile-created AttackMulSet dizzypoints snapshot; direct moves use attacker state. */
   dizzyPointsAttackMultiplier?: number;
+  /** Projectile-created AttackMulSet red-life snapshot; direct moves use attacker state. */
+  redLifeAttackMultiplier?: number;
   redLife?: number;
   guardRedLife?: number;
   kill?: boolean;
@@ -433,7 +435,7 @@ export function findRuntimeHitOverride(
 }
 
 export function resolveRuntimeCombatHit(input: {
-  attacker: Pick<CharacterRuntimeState, "attackMultiplier" | "dizzyPointsAttackMultiplier" | "guardPointsAttackMultiplier" | "assertSpecial">;
+  attacker: Pick<CharacterRuntimeState, "attackMultiplier" | "dizzyPointsAttackMultiplier" | "guardPointsAttackMultiplier" | "redLifeAttackMultiplier" | "assertSpecial">;
   defender: Pick<CharacterRuntimeState, "defenseMultiplier" | "stateType" | "moveType" | "assertSpecial">;
   attack: RuntimeCombatAttack;
   holdingBack: boolean;
@@ -475,7 +477,12 @@ export function resolveRuntimeCombatHit(input: {
           }),
       ...(input.attack.guardRedLife === undefined
         ? {}
-        : { redLife: scaleRuntimeIncomingAmount(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.guardRedLife)) }),
+        : {
+            redLife: scaleRuntimeIncomingAmount(
+              input.defender,
+              scaleRuntimeOutgoingRedLife(input.attacker, input.attack.guardRedLife, input.attack.redLifeAttackMultiplier),
+            ),
+          }),
       kill: input.attack.guardKill ?? true,
       pause,
       ...(pause === attackerPause ? {} : { attackerPause }),
@@ -518,7 +525,12 @@ export function resolveRuntimeCombatHit(input: {
         }),
     ...(input.attack.redLife === undefined
       ? {}
-      : { redLife: scaleRuntimeIncomingAmount(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.redLife)) }),
+      : {
+          redLife: scaleRuntimeIncomingAmount(
+            input.defender,
+            scaleRuntimeOutgoingRedLife(input.attacker, input.attack.redLife, input.attack.redLifeAttackMultiplier),
+          ),
+        }),
     kill: input.attack.kill ?? true,
     pause,
     ...(pause === input.attack.hitPause ? {} : { attackerPause: input.attack.hitPause }),
@@ -690,6 +702,14 @@ export function scaleRuntimeOutgoingGuardPoints(
   snapshot?: number,
 ): number {
   return Math.round(amount * (snapshot ?? attacker.guardPointsAttackMultiplier ?? attacker.attackMultiplier ?? 1));
+}
+
+export function scaleRuntimeOutgoingRedLife(
+  attacker: Pick<CharacterRuntimeState, "attackMultiplier" | "redLifeAttackMultiplier">,
+  amount: number,
+  snapshot?: number,
+): number {
+  return Math.max(0, Math.round(amount * (snapshot ?? attacker.redLifeAttackMultiplier ?? attacker.attackMultiplier ?? 1)));
 }
 
 function guardFlagAllowsState(guardFlag: string, stateType: CharacterRuntimeState["stateType"]): boolean {

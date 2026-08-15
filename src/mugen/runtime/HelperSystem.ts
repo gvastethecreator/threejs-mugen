@@ -191,6 +191,7 @@ export type RuntimeHelper = {
   attackMultiplier?: number;
   dizzyPointsAttackMultiplier?: number;
   guardPointsAttackMultiplier?: number;
+  redLifeAttackMultiplier?: number;
   airJugglePoints?: CharacterRuntimeState["airJugglePoints"];
   juggle?: CharacterRuntimeState["juggle"];
   juggleOrigin?: CharacterRuntimeState["juggleOrigin"];
@@ -422,6 +423,7 @@ export type RuntimeHelperSpawnInput = {
   attackMultiplier?: number;
   dizzyPointsAttackMultiplier?: number;
   guardPointsAttackMultiplier?: number;
+  redLifeAttackMultiplier?: number;
 };
 
 export type RuntimeHelperStage = Pick<MugenStageDefinition, "bounds"> & {
@@ -510,6 +512,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     attackMultiplier: input.attackMultiplier,
     dizzyPointsAttackMultiplier: input.dizzyPointsAttackMultiplier,
     guardPointsAttackMultiplier: input.guardPointsAttackMultiplier,
+    redLifeAttackMultiplier: input.redLifeAttackMultiplier,
     powerMax: 3000,
     power: 0,
     vars: Array.from({ length: 60 }, () => 0),
@@ -3456,6 +3459,9 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     ...(helper.guardPointsAttackMultiplier === undefined
       ? {}
       : { guardPointsAttackMultiplier: helper.guardPointsAttackMultiplier }),
+    ...(helper.redLifeAttackMultiplier === undefined
+      ? {}
+      : { redLifeAttackMultiplier: helper.redLifeAttackMultiplier }),
     powerMax: helper.powerMax,
     power: helper.power,
     ...(helper.combatDepth === undefined ? {} : { combatDepth: cloneRuntimeCombatDepth(helper.combatDepth) }),
@@ -3556,6 +3562,7 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.attackMultiplier = runtime.attackMultiplier;
   helper.dizzyPointsAttackMultiplier = runtime.dizzyPointsAttackMultiplier;
   helper.guardPointsAttackMultiplier = runtime.guardPointsAttackMultiplier;
+  helper.redLifeAttackMultiplier = runtime.redLifeAttackMultiplier;
   helper.powerMax = runtime.powerMax ?? helper.powerMax;
   helper.power = runtime.power;
   helper.bodyWidth = runtime.bodyWidth ? { ...runtime.bodyWidth } : undefined;

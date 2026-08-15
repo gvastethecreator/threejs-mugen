@@ -513,6 +513,24 @@ describe("ProjectileSystem", () => {
     });
   });
 
+  it("freezes the creator AttackMulSet red-life multiplier on Projectile creation", () => {
+    expect(createRuntimeProjectile({
+      serialId: "p1-projectile-redlife-mul-snapshot",
+      controller: controller({ projanim: "1005", redlife: "20", projid: "780" }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "p1-def",
+      spriteOwnerLabel: "P1",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      redLifeAttackMultiplier: 0.5,
+    })).toMatchObject({
+      redLife: 20,
+      redLifeAttackMultiplier: 0.5,
+    });
+  });
+
   it("carries fresh Projectile keepstate from static and caller-resolved values", () => {
     const base = {
       serialId: "p1-projectile-keepstate",

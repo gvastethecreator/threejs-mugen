@@ -734,6 +734,7 @@ export function spawnRuntimeHelperProjectileActor(
     fallbackFacing: helper.facing,
     dizzyPointsAttackMultiplier: helper.dizzyPointsAttackMultiplier ?? helper.attackMultiplier ?? 1,
     guardPointsAttackMultiplier: helper.guardPointsAttackMultiplier ?? helper.attackMultiplier ?? 1,
+    redLifeAttackMultiplier: helper.redLifeAttackMultiplier ?? helper.attackMultiplier ?? 1,
     constants: options.constants,
     defaultHitFlag: options.defaultHitFlag,
     resolveSoundValue: (key) => resolveRuntimeHelperSoundValueParam(helper, controller, key, options),

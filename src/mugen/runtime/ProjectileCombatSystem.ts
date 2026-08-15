@@ -37,6 +37,7 @@ import {
   applyRuntimeDizzyPointsAdd,
   applyRuntimeGuardPointsAdd,
   applyRuntimePowerDelta,
+  applyRuntimeRedLifeAdd,
 } from "./RuntimeResourceSystem";
 import { applyRuntimeContactPaletteFx } from "./SpriteEffectSystem";
 import type { CharacterRuntimeState, RuntimeHitOverrideSlot } from "./types";
@@ -353,6 +354,9 @@ export class RuntimeProjectileCombatWorld {
       if (result.kind === "hit" && result.dizzyPoints !== undefined) {
         applyRuntimeDizzyPointsAdd(defender.runtime, result.dizzyPoints);
       }
+      if (result.redLife !== undefined) {
+        applyRuntimeRedLifeAdd(defender.runtime, result.redLife, true);
+      }
       recordRuntimeRoundWinType(attacker, defender, projectile.attr ?? "S,SP", result.kind, lifeBefore, {
         sourceEligible: source?.rootOwned === true,
       });
@@ -593,6 +597,11 @@ function runtimeCombatAttackFromProjectile(projectile: RuntimeProjectile): Runti
     ...(projectile.guardPointsAttackMultiplier === undefined
       ? {}
       : { guardPointsAttackMultiplier: projectile.guardPointsAttackMultiplier }),
+    ...(projectile.redLife === undefined ? {} : { redLife: projectile.redLife }),
+    ...(projectile.guardRedLife === undefined ? {} : { guardRedLife: projectile.guardRedLife }),
+    ...(projectile.redLifeAttackMultiplier === undefined
+      ? {}
+      : { redLifeAttackMultiplier: projectile.redLifeAttackMultiplier }),
     kill: projectile.kill,
     attr: projectile.attr,
     hitPause: projectile.hitShakeTime,

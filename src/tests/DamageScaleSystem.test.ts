@@ -64,6 +64,25 @@ describe("RuntimeDamageScaleWorld", () => {
     expect(state.guardPointsAttackMultiplier).toBe(0.5);
   });
 
+  it("applies an AttackMulSet red-life-only multiplier without resetting other channels", () => {
+    const world = new RuntimeDamageScaleWorld();
+    const state = runtime({ attackMultiplier: 1.5, dizzyPointsAttackMultiplier: 0.75, guardPointsAttackMultiplier: 0.5 });
+    const operation: DamageScaleControllerOp = {
+      kind: "damage-scale",
+      controllerType: "attackmulset",
+      redLifeMultiplier: 2,
+    };
+
+    expect(world.applyController(state, controller({ redlife: "2" }), "attackmulset", operation)).toEqual({
+      applied: true,
+      redLifeMultiplier: 2,
+    });
+    expect(state.attackMultiplier).toBe(1.5);
+    expect(state.dizzyPointsAttackMultiplier).toBe(0.75);
+    expect(state.guardPointsAttackMultiplier).toBe(0.5);
+    expect(state.redLifeAttackMultiplier).toBe(2);
+  });
+
   it("keeps raw expression fallback and clamps multiplier range", () => {
     const world = new RuntimeDamageScaleWorld();
     const state = runtime();
@@ -124,6 +143,13 @@ describe("RuntimeDamageScaleWorld", () => {
       kind: "damage-scale",
       controllerType: "attackmulset",
       guardPointsMultiplier: 1.5,
+    });
+    expect(
+      resolveRuntimeDamageScaleControllerOperation(controller({ redlife: "var(0) * fvar(0)" }), state, "attackmulset"),
+    ).toEqual({
+      kind: "damage-scale",
+      controllerType: "attackmulset",
+      redLifeMultiplier: 1.5,
     });
   });
 });

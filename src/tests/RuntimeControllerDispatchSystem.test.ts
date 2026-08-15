@@ -195,6 +195,24 @@ describe("RuntimeControllerDispatchSystem", () => {
     expect(results.every((result) => result.recordedOperation)).toBe(true);
   });
 
+  it("records dynamic AttackMulSet redlife separately from damage", () => {
+    const world = new RuntimeControllerDispatchWorld();
+    const actor = runtimeActor({ vars: [2], fvars: [0.75], attackMultiplier: 1.25 });
+    const recordedOperations: ControllerOp[] = [];
+    const controller = compileControllerIr(controllerSource("AttackMulSet", { redlife: "var(0) * fvar(0)" }));
+
+    const result = world.apply(actor, controller, {
+      recordOperation: (_actor, operation) => recordedOperations.push(operation),
+    });
+
+    expect(actor.runtime.attackMultiplier).toBe(1.25);
+    expect(actor.runtime.redLifeAttackMultiplier).toBe(1.5);
+    expect(recordedOperations).toEqual([
+      { kind: "damage-scale", controllerType: "attackmulset", redLifeMultiplier: 1.5 },
+    ]);
+    expect(result.recordedOperation).toBe(true);
+  });
+
   it("records bounded dynamic LifeAdd as typed resource telemetry after resolving params", () => {
     const world = new RuntimeControllerDispatchWorld();
     const actor = runtimeActor({ life: 12, vars: [1, 0] });

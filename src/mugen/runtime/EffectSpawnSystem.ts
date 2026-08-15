@@ -37,6 +37,7 @@ export type RuntimeEffectSpawnActor = {
     | "attackMultiplier"
     | "dizzyPointsAttackMultiplier"
     | "guardPointsAttackMultiplier"
+    | "redLifeAttackMultiplier"
   >;
   stateOwner?: RuntimeEffectSpawnActor;
   effectActorWorld: Pick<
@@ -252,6 +253,7 @@ export class RuntimeEffectSpawnWorld {
       attackMultiplier: fighter.runtime.attackMultiplier,
       dizzyPointsAttackMultiplier: fighter.runtime.dizzyPointsAttackMultiplier,
       guardPointsAttackMultiplier: fighter.runtime.guardPointsAttackMultiplier,
+      redLifeAttackMultiplier: fighter.runtime.redLifeAttackMultiplier,
     });
     return true;
   }
@@ -324,6 +326,8 @@ export class RuntimeEffectSpawnWorld {
         fighter.runtime.dizzyPointsAttackMultiplier ?? fighter.runtime.attackMultiplier ?? 1,
       guardPointsAttackMultiplier:
         fighter.runtime.guardPointsAttackMultiplier ?? fighter.runtime.attackMultiplier ?? 1,
+      redLifeAttackMultiplier:
+        fighter.runtime.redLifeAttackMultiplier ?? fighter.runtime.attackMultiplier ?? 1,
       localCoord: owner.definition.localCoord,
       clsnScale: {
         x: finiteProjectileClsnScale(owner.definition.constants?.["size.xscale"]),

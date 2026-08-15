@@ -1440,6 +1440,8 @@ export type DamageScaleControllerOp = {
   dizzyPointsMultiplier?: number;
   /** Ikemen AttackMulSet guard-point damage multiplier. */
   guardPointsMultiplier?: number;
+  /** Ikemen AttackMulSet red-life damage multiplier. */
+  redLifeMultiplier?: number;
 };
 
 export type ContactControllerOp =
@@ -2597,10 +2599,12 @@ function compileDamageScaleControllerOp(
   const value = staticOptionalNumberParam(controller, "value");
   const dizzyPoints = type === "attackmulset" ? staticOptionalNumberParam(controller, "dizzypoints") : true;
   const guardPoints = type === "attackmulset" ? staticOptionalNumberParam(controller, "guardpoints") : true;
+  const redLife = type === "attackmulset" ? staticOptionalNumberParam(controller, "redlife") : true;
   if (
     (value === true || value === false) &&
     (dizzyPoints === true || dizzyPoints === false) &&
-    (guardPoints === true || guardPoints === false)
+    (guardPoints === true || guardPoints === false) &&
+    (redLife === true || redLife === false)
   ) {
     return undefined;
   }
@@ -2610,6 +2614,7 @@ function compileDamageScaleControllerOp(
     ...(typeof value === "number" ? { multiplier: Math.max(0, Math.min(10, value)) } : {}),
     ...(typeof dizzyPoints === "number" ? { dizzyPointsMultiplier: Math.max(0, Math.min(10, dizzyPoints)) } : {}),
     ...(typeof guardPoints === "number" ? { guardPointsMultiplier: Math.max(0, Math.min(10, guardPoints)) } : {}),
+    ...(typeof redLife === "number" ? { redLifeMultiplier: Math.max(0, Math.min(10, redLife)) } : {}),
   };
 }
 
