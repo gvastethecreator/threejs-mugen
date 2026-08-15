@@ -1,43 +1,53 @@
 # Quality audit
 
-Fecha: 2026-08-12
+Date: 2026-08-15
 
-## Estado
+## Current status
 
-La modernización de tooling está integrada, pero el proyecto no se marca como
-release-ready. El runtime conserva WIP explícito y dos gates heredados no pasan.
+The maintained branch passes its deterministic engineering gates. The project is
+still a public, partial MUGEN/IKEMEN compatibility sandbox rather than a claim of
+full engine parity or release readiness.
 
-| Área | Resultado | Evidencia |
+| Area | Result | Evidence |
 | --- | --- | --- |
-| Gestor de paquetes | PASS | `packageManager: pnpm@11.20.0`, lockfile pnpm, sin Bun operativo |
-| Dependencias | PASS | `pnpm outdated` vacío; `pnpm audit --audit-level=high` limpio |
-| Tipos | PASS | `pnpm typecheck` |
-| Build | PASS | `pnpm build` con Vite 8.2.1; warning de chunk >500 kB |
-| CSS | PASS | `pnpm qa:css:budget` dentro de todos los presupuestos |
-| Tests | BLOCKED | 3.983/3.985 pasan; falla `EffectActorSystem` helper Projectile |
-| Trazas | BLOCKED | falla `synthetic-imported-helper-bind-to-target-redirect` |
-| Browser smoke | INCONCLUSIVE | `pnpm qa:smoke` generó capturas, pero agotó el timeout del runner |
+| Package manager | PASS | `packageManager: pnpm@11.21.0`; pnpm lockfile; no Bun runtime dependency |
+| Dependencies | PASS | `pnpm outdated` returned no pending packages |
+| Security audit | PASS | `pnpm audit --audit-level=high` found no known vulnerabilities |
+| Types | PASS | `pnpm typecheck` |
+| CSS budget | PASS | 81,134/536,051 bytes, 597/2,364 rules, no duplicate selector or exact-rule violations |
+| Production build | PASS | Vite 8.2.1 built 363 modules; the main JavaScript chunk is 2.54 MB before gzip and 627.74 kB gzip |
+| Tests | PASS | 328 files and 4,063 tests passed |
+| Trace gates | PASS | 870/870 artifacts passed, including 836 required artifacts and the Helper-owned active `EnvShake` ownership route |
+| Browser smoke | PARTIAL | The smoke run produced current desktop, mobile, runtime, and Studio captures, but 10 compatibility/evidence gates remain unresolved |
+| Pages preview | PASS | Local desktop and mobile browser checks passed with no missing images, console errors, or horizontal overflow |
 
-## Hallazgos accionables
+## Maintained runtime boundary
 
-1. Reparar el enlace de destino del fixture `helper BindToTarget RedirectID` y
-   actualizar su gate sólo cuando exista evidencia de destino estable.
-2. Revisar el contrato de `guardPoints` y la forma de `action` del Projectile
-   helper en `EffectActorSystem.test.ts`; el fallo actual compara un payload
-   heredado con el runtime WIP.
-3. Separar el bundle principal de 2.5 MB con `import()` y code splitting cuando
-   el trabajo de runtime permita una ronda de performance dedicada.
-4. Repetir `pnpm qa:smoke` con un timeout de CI suficiente y conservar sus
-   artefactos bajo `.scratch/qa/qa-smoke/`; el timeout no se interpreta como
-   PASS ni FAIL funcional.
+The Helper-owned active `EnvShake` route now:
 
-## Limpieza y documentación
+- evaluates `Parent,Var(...)` parameters in the Helper caller context;
+- preserves fractional `mul`, `diradd`, and `decay` values;
+- records Helper state execution and typed controller/operation telemetry;
+- projects one event into the verified root presentation buffer;
+- retains `sourceActorId`, `sourceRootId`, and `sourceParentId` provenance; and
+- reaches the existing stage camera-shake calculation.
 
-- `.gitignore` cubre caches de Vite, TypeScript, Playwright, coverage y
-  `.scratch` generado; se preservan las fuentes rastreadas de roadmap y
-  Wayfinder.
-- `.vscode/tasks.json` expone instalación, desarrollo, build, test, QA,
-  dependencias, auditoría y verificación con nombres cortos y emojis.
-- No se borraron fixtures, trazas, imágenes ni documentos rastreados: son
-  evidencia del producto o WIP de usuario. Los artefactos generados siguen
-  ignorados y pueden limpiarse de forma segura en una tarea separada.
+This proof does not claim nested or team Helper ownership, rollback parity,
+contact/fall-shake parity, or complete MUGEN/IKEMEN camera behavior.
+
+## Residuals
+
+1. The browser smoke suite still has 10 compatibility/evidence failures. Its
+   screenshots are valid product evidence, but the suite itself is not a pass.
+2. The primary JavaScript bundle is large. A dedicated performance pass should
+   introduce route- or feature-level dynamic imports without mixing that work
+   into compatibility changes.
+3. Full upstream MUGEN/IKEMEN compatibility remains intentionally out of scope.
+
+## Evidence handling
+
+- Current README captures are stored under `docs/assets/screenshots/` with
+  provenance in the adjacent `README.md`.
+- Generated trace and smoke artifacts stay under `.scratch/qa/`.
+- Tracked roadmap and compatibility evidence were preserved; this audit does
+  not authorize a release, push, or publication.
