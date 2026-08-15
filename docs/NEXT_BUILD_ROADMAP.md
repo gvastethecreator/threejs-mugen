@@ -1,28 +1,35 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T771 closed-bounded (2026-08-15)
+## Latest bounded slice — T772 closed-bounded (2026-08-15)
 
-Issue 345 closes the first-generation Helper-authored `ModifyProjectile`
-`airguard.velocity` X readback. Evidence `c3438d6e`; required trace
-`641792d6` (`b7850d2e` -> `61647146`) passes. A Helper-owned live
-`ModifyProjectile` resolves `airguard.velocity=var(0)` with `var(0)=6` before
-an accepted airborne guard; the defender ends at life `998` and the trace
-observes the replaced physical X response (`maxVel.x=6`). Focused trace,
+Issue 346 closes the first-generation Helper-authored `ModifyProjectile`
+`airguard.velocity` Y readback. Evidence `309eb94a`; required trace
+`8b9552db` (`b7850d2e` -> `bce06ab9`) passes. A Helper-owned live
+`ModifyProjectile` resolves `airguard.velocity=-2,var(1)` with `var(1)=-8`
+before an accepted airborne guard; the defender ends at life `998` and the
+trace observes the replaced physical Y response. Focused trace, Helper test,
 typecheck and diff hygiene pass. Aggregate QA retains the inherited
-helper-bind target-link blocker. Sibling-component preservation, Z breadth,
-nested/shared-resource topology, exact physics/timing, rollback and full
-parity remain blocked. See [issue
-345](../.scratch/roadmap/issues/345-helper-modifyprojectile-airguard-velocity.md).
-
-## Next bounded slice — T772 queued (2026-08-15)
-
-Issue 346 will close the next Helper-authored `ModifyProjectile
-airguard.velocity` Y readback with one finite dynamic component and one
-accepted airborne guard. Keep Z, fresh/default derivation, the full
-partial-component matrix, ground guard, nested/shared-resource topology,
-aggregate QA repair, exact physics/timing, rollback and full parity separate.
-See [issue
+helper-bind target-link blocker. Z/default derivation, full partial-component
+preservation, nested/shared-resource topology, exact physics/timing, rollback
+and full parity remain blocked. See [issue
 346](../.scratch/roadmap/issues/346-helper-modifyprojectile-airguard-velocity-y.md).
+
+## Next bounded slice — T773 queued (2026-08-15)
+
+Issue 347 will close the next Helper-authored `ModifyProjectile
+airguard.velocity` Z readback with one finite dynamic component and one
+accepted airborne guard. Keep fresh/default derivation, full 3D component
+preservation, ground guard, nested/shared-resource topology, aggregate QA
+repair, exact physics/timing, rollback and full parity separate. See [issue
+347](../.scratch/roadmap/issues/347-helper-modifyprojectile-airguard-velocity-z.md).
+
+## Historical bounded slice — T771 closed-bounded (2026-08-15)
+
+Issue 345 closed the first-generation Helper-authored `ModifyProjectile`
+`airguard.velocity` X readback. Evidence `c3438d6e`; required trace
+`641792d6` (`b7850d2e` -> `61647146`) passes. The defender observed
+`maxVel.x=6` and ended at life `998`. See [issue
+345](../.scratch/roadmap/issues/345-helper-modifyprojectile-airguard-velocity.md).
 
 ## Historical bounded slice — T770 closed-bounded (2026-08-15)
 

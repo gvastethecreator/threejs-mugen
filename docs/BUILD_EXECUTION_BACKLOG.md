@@ -24,12 +24,23 @@
   nested-helper breadth and resource topology remain separate. See [issue
   345](../.scratch/roadmap/issues/345-helper-modifyprojectile-airguard-velocity.md).
 
-- **T772 next selection** — close the Helper-authored `ModifyProjectile`
-  airborne `airguard.velocity` Y readback with one finite Y component and one
-  accepted airborne guard. Keep Z, fresh/default derivation, the full
-  partial-component matrix, ground guard, nested-helper breadth, aggregate QA
-  repair and resource topology separate. See [issue
+- **T772 closed-bounded** — issue 346 closes the Helper-authored
+  `ModifyProjectile` airborne `airguard.velocity` Y seam. Evidence commit is
+  `309eb94a`; required trace `8b9552db` / `bce06ab9` (initial `b7850d2e`).
+  The Helper-owned live mutation replaces Y with `-8` before an accepted
+  airborne guard; physical Y response and defender life `998` are proven.
+  Focused Helper/trace tests, typecheck and diff hygiene pass; aggregate QA
+  retains the inherited helper-bind target-link blocker. Z/default derivation,
+  full component preservation, nested-helper breadth and resource topology
+  remain separate. See [issue
   346](../.scratch/roadmap/issues/346-helper-modifyprojectile-airguard-velocity-y.md).
+
+- **T773 next selection** — close the Helper-authored `ModifyProjectile`
+  airborne `airguard.velocity` Z readback with one finite Z component and one
+  accepted airborne guard. Keep fresh/default derivation, full 3D
+  component-preservation, ground guard, nested-helper breadth, aggregate QA
+  repair and resource topology separate. See [issue
+  347](../.scratch/roadmap/issues/347-helper-modifyprojectile-airguard-velocity-z.md).
 
 - **T769 historical** — issue 343 closes the first-generation
   Helper-authored `ModifyProjectile` damage guard seam. Evidence commit is

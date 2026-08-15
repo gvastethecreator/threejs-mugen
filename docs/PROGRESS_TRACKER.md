@@ -1,22 +1,28 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T771 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T772 closed-bounded (2026-08-15)
 
-Issue 345 closes the first-generation Helper-authored `ModifyProjectile`
-`airguard.velocity` X readback. Required trace `641792d6`
-(`b7850d2e` -> `61647146`) and evidence commit `c3438d6e` prove the
+Issue 346 closes the first-generation Helper-authored `ModifyProjectile`
+`airguard.velocity` Y readback. Required trace `8b9552db`
+(`b7850d2e` -> `bce06ab9`) and evidence commit `309eb94a` prove the
 caller-context replacement, root-owned Projectile lifecycle, accepted
-airborne guard, physical X response `maxVel.x=6`, and defender life `998`.
-Focused trace, typecheck and diff hygiene pass. Aggregate QA remains blocked
-by the inherited helper-bind target-link case. Sibling-component preservation
-and Z breadth remain separate. See issue 345.
+airborne guard, physical Y response, and defender life `998`. Focused Helper
+and trace tests, typecheck and diff hygiene pass. Aggregate QA remains blocked
+by the inherited helper-bind target-link case. Z/default derivation and full
+partial-component preservation remain separate. See issue 346.
 
-## Next implementation checkpoint — T772 queued (2026-08-15)
+## Next implementation checkpoint — T773 queued (2026-08-15)
 
-Issue 346 targets the Helper-authored `ModifyProjectile airguard.velocity` Y
-readback with one finite dynamic Y component and one accepted airborne guard.
-Keep Z, fresh/default derivation, full partial-component preservation, ground
-guard, and aggregate QA repair separate.
+Issue 347 targets the Helper-authored `ModifyProjectile airguard.velocity` Z
+readback with one finite dynamic Z component and one accepted airborne guard.
+Keep fresh/default derivation, full 3D component preservation, ground guard,
+and aggregate QA repair separate.
+
+## Historical implementation checkpoint — T771 closed-bounded (2026-08-15)
+
+Issue 345 closed the Helper-authored `ModifyProjectile airguard.velocity` X
+readback. Required trace `641792d6` and evidence commit `c3438d6e` prove
+`maxVel.x=6`, accepted airborne guard, and defender life `998`. See issue 345.
 
 ## Historical implementation checkpoint — T770 closed-bounded (2026-08-15)
 

@@ -1,24 +1,32 @@
 # Workplan
 
-## Latest slice — T771 closed-bounded (2026-08-15)
+## Latest slice — T772 closed-bounded (2026-08-15)
 
-Issue 345 closes the first-generation Helper-authored `ModifyProjectile`
-`airguard.velocity` X seam. Evidence commit `c3438d6e`; required trace
-`641792d6` (`b7850d2e` -> `61647146`) passes. The Helper resolves the live X
-component before an accepted airborne guard; the physical response reaches
-`maxVel.x=6`, defender life reaches `998`, and the Helper/Projectile lifecycle
-is proven. Focused trace, typecheck and diff hygiene pass. Aggregate QA
-retains the inherited helper-bind target-link blocker. Sibling preservation,
-Z breadth, nested/shared resource topology, exact arithmetic/timing, rollback
-and full parity remain outside.
+Issue 346 closes the first-generation Helper-authored `ModifyProjectile`
+`airguard.velocity` Y seam. Evidence commit `309eb94a`; required trace
+`8b9552db` (`b7850d2e` -> `bce06ab9`) passes. The Helper resolves the live Y
+component before an accepted airborne guard; the physical Y response and
+defender life `998` are observed, and the Helper/Projectile lifecycle is
+proven. Focused Helper/trace tests, typecheck and diff hygiene pass. Aggregate
+QA retains the inherited helper-bind target-link blocker. Z/default
+derivation, full component preservation, nested/shared resource topology,
+exact arithmetic/timing, rollback and full parity remain outside.
 
-## Next slice — T772 queued (2026-08-15)
+## Next slice — T773 queued (2026-08-15)
 
-Issue 346 covers the next Helper-authored `ModifyProjectile airguard.velocity`
-Y seam with one finite dynamic Y component and one accepted airborne guard.
-Keep Z, fresh/default derivation, the full partial-component matrix, ground
+Issue 347 covers the next Helper-authored `ModifyProjectile airguard.velocity`
+Z seam with one finite dynamic Z component and one accepted airborne guard.
+Keep fresh/default derivation, full 3D partial-component preservation, ground
 guard, nested/shared resource topology, aggregate QA repair, exact
 arithmetic/timing, rollback and full parity separate.
+
+## Historical slice — T771 closed-bounded (2026-08-15)
+
+Issue 345 closed the first-generation Helper-authored `ModifyProjectile`
+`airguard.velocity` X seam. Evidence commit `c3438d6e`; required trace
+`641792d6` (`b7850d2e` -> `61647146`) passes. The physical response reaches
+`maxVel.x=6`, defender life reaches `998`, and the lifecycle is proven. See
+issue 345.
 
 ## Historical slice — T770 closed-bounded (2026-08-15)
 
