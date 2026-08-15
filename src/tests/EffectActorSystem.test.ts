@@ -1937,6 +1937,44 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("keeps a Helper Projectile red-life snapshot after Helper-owned ModifyProjectile", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "45", anim: "900" }),
+      redLifeAttackMultiplier: 0.5,
+      runtimeProgram: {
+        states: [
+          compileStateProgram(state(6000, 900, [
+            controller("Projectile", { projid: "8869", projanim: "930", redlife: "0,0" }, ["Time = 0"]),
+            controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+          ])),
+          compileStateProgram(state(6001, 901, [
+            controller("ModifyProjectile", { id: "8869", redlife: "Var(50),0" }, ["Time = 1"]),
+          ])),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+    helper.vars[50] = 40;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    const projectile = store.projectiles.find((candidate) => candidate.parentId === helper.serialId);
+    expect(projectile).toMatchObject({
+      redLife: 40,
+      guardRedLife: 0,
+      redLifeAttackMultiplier: 0.5,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+    });
+  });
+
   it("resolves Helper-owned dynamic ModifyProjectile pause budgets in caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {
