@@ -426,6 +426,11 @@ async function main() {
       artifact: presets.createSyntheticImportedEnvShakeTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-envshake-long-finite",
+      required: true,
+      artifact: presets.createSyntheticImportedEnvShakeLongFiniteTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-receiveddamage",
       required: true,
       artifact: presets.createSyntheticImportedReceivedDamageTraceArtifact(),

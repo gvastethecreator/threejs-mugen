@@ -1362,7 +1362,7 @@ value = 1
 
     expect(shake.operation).toEqual({
       kind: "envshake",
-      time: 240,
+      time: 999,
       freq: 30,
       ampl: -64,
       phase: 1.5,

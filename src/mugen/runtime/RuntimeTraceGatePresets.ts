@@ -4765,6 +4765,68 @@ export function createSyntheticImportedEnvShakeTraceArtifact(options: RuntimeTra
   );
 }
 
+export function createSyntheticImportedEnvShakeLongFiniteTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "imported-envshake-long-finite-start", frames: 12, p1: ["x"], p2: [] },
+    { label: "envshake-long-finite-expiry", frames: 242, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({
+    p1: createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-envshake-long-finite",
+      displayName: "Synthetic Imported EnvShake Long Finite",
+      action200Duration: 300,
+      withHitDef: false,
+      staticMoveRequiresHitDef: false,
+      withEnvShake: {
+        time: 241,
+        freq: 30,
+        ampl: -7,
+        phase: 0,
+      },
+    }),
+    p2: demoFighters[1]!,
+    stage,
+  }), script, {
+    label: "synthetic-imported-envshake-long-finite-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-envshake-long-finite-golden",
+      label: "Synthetic imported long finite EnvShake route",
+      source: "mixed",
+      notes: [
+        "Required trace proves active EnvShake time = 241 stays finite beyond the former local 240-tick ceiling and expires instead of becoming indefinite. FallEnvShake, HitDef contact EnvShake, Projectile, waveform parity, pause timing, ownership breadth, rollback, and full camera parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-envshake-long-finite-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "EnvShake"],
+      requiredExecutedOperations: ["envshake"],
+      requiredActiveCommands: ["x"],
+      requiredEnvShakeEvents: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        time: 241,
+        freq: 30,
+        ampl: -7,
+        phase: 0,
+        stateNo: 200,
+      }],
+    }],
+  });
+}
+
 export function createSyntheticImportedDynamicEnvShakeTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

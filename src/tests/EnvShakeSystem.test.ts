@@ -15,7 +15,7 @@ import {
 import type { RuntimeEnvShakeEvent } from "../mugen/runtime/types";
 
 describe("EnvShakeSystem", () => {
-  it("creates bounded camera shake events from EnvShake controllers", () => {
+  it("keeps finite active EnvShake durations above the former local ceiling", () => {
     const event = createRuntimeEnvShakeEvent(
       actor(200, 4),
       controller("EnvShake", { time: "999", freq: "-30", ampl: "-99", phase: "1.5" }),
@@ -24,7 +24,7 @@ describe("EnvShakeSystem", () => {
 
     expect(event).toEqual({
       type: "EnvShake",
-      time: 240,
+      time: 999,
       freq: 30,
       ampl: -64,
       phase: 1.5,
@@ -198,6 +198,18 @@ describe("EnvShakeSystem", () => {
     expect(createRuntimeProjectileEnvShakeEvent(actor(1000, 6), {
       envShake: { time: 0, freq: 60, ampl: -4, phase: 0, mul: 1, dir: 0 },
     }, 10)).toBeUndefined();
+  });
+
+  it("keeps non-active EnvShake producers on their existing bounded policy", () => {
+    expect(createRuntimeFallEnvShakeEvent(
+      actor(5050, 9, { time: 999, freq: 60, ampl: -4, phase: 0 }),
+      77,
+    )?.time).toBe(240);
+    expect(createRuntimeProjectileEnvShakeEvent(
+      actor(1000, 6),
+      { envShake: { time: 999, freq: 60, ampl: -4, phase: 0, mul: 1, dir: 0 } },
+      10,
+    )?.time).toBe(240);
   });
 
   it("keeps newest shake events first and bounds history", () => {

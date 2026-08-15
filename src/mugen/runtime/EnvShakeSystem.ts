@@ -68,7 +68,7 @@ export function createRuntimeEnvShakeEvent(
 ): RuntimeEnvShakeEvent | undefined {
   const time =
     operation?.time ??
-    clampShakeTime(resolveEnvShake?.resolveNumber("time") ?? firstNumber(findControllerParam(controller, "time")) ?? 0);
+    normalizeActiveEnvShakeTime(resolveEnvShake?.resolveNumber("time") ?? firstNumber(findControllerParam(controller, "time")) ?? 0);
   if (time <= 0) {
     return undefined;
   }
@@ -100,7 +100,7 @@ export function resolveRuntimeEnvShakeControllerOperation(
   controller: MugenStateController,
   resolveEnvShake?: RuntimeEnvShakeResolver,
 ): EnvShakeControllerOp | undefined {
-  const time = resolveEnvShakeNumberParam(controller, "time", resolveEnvShake, clampShakeTime, 0);
+  const time = resolveEnvShakeNumberParam(controller, "time", resolveEnvShake, normalizeActiveEnvShakeTime, 0);
   const freq = resolveEnvShakeFloatParam(controller, "freq", resolveEnvShake, clampShakeFrequency, 60);
   const ampl = resolveEnvShakeNumberParam(controller, "ampl", resolveEnvShake, clampShakeAmplitude, -4);
   const phase = resolveEnvShakeFloatParam(controller, "phase", resolveEnvShake, (value) => value, 0);
@@ -144,7 +144,7 @@ export function createRuntimeFallEnvShakeEvent(
   }
   return {
     type: "EnvShake",
-    time: clampShakeTime(envShake.time),
+    time: clampInheritedEnvShakeTime(envShake.time),
     freq: clampShakeFrequency(envShake.freq),
     ampl: clampShakeAmplitude(envShake.ampl),
     phase: envShake.phase,
@@ -167,7 +167,7 @@ export function createRuntimeProjectileEnvShakeEvent(
   }
   return {
     type: "EnvShake",
-    time: clampShakeTime(envShake.time),
+    time: clampInheritedEnvShakeTime(envShake.time),
     freq: Math.max(0, envShake.freq),
     ampl: clampShakeAmplitude(envShake.ampl),
     phase: envShake.phase,
@@ -188,7 +188,7 @@ export function createRuntimeHitDefEnvShakeEvent(
   if (!envShake || envShake.time <= 0) return undefined;
   return {
     type: "EnvShake",
-    time: clampShakeTime(envShake.time),
+    time: clampInheritedEnvShakeTime(envShake.time),
     freq: Math.max(0, envShake.freq),
     ampl: clampShakeAmplitude(envShake.ampl),
     phase: envShake.phase,
@@ -416,7 +416,11 @@ function resolveEnvShakeOptionalFloatParam(
   return value === undefined || !Number.isFinite(value) ? undefined : value;
 }
 
-function clampShakeTime(value: number): number {
+function normalizeActiveEnvShakeTime(value: number): number {
+  return Math.max(0, Math.round(value));
+}
+
+function clampInheritedEnvShakeTime(value: number): number {
   return Math.max(0, Math.min(240, Math.round(value)));
 }
 

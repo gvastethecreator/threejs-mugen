@@ -4872,7 +4872,7 @@ function compileEnvShakeControllerOp(controller: MugenStateController): EnvShake
   ) {
     return undefined;
   }
-  const clampedTime = clampShakeTime(time);
+  const clampedTime = normalizeActiveEnvShakeTime(time);
   if (clampedTime <= 0) {
     return undefined;
   }
@@ -6095,8 +6095,8 @@ function clampEnvColorTime(value: number): number {
   return rounded < 0 ? -1 : Math.max(0, rounded);
 }
 
-function clampShakeTime(value: number): number {
-  return Math.max(0, Math.min(240, Math.round(value)));
+function normalizeActiveEnvShakeTime(value: number): number {
+  return Math.max(0, Math.round(value));
 }
 
 function clampShakeFrequency(value: number): number {

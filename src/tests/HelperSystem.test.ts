@@ -298,6 +298,35 @@ describe("HelperSystem", () => {
     expect(operations).toEqual([{ color: [1, 2, 3], time: 241, under: false }]);
   });
 
+  it("preserves Helper active EnvShake finite time above the former local ceiling", () => {
+    const parent = helperRuntimeState(helper());
+    parent.vars[3] = 241;
+    const active = helper({
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "EnvShake", ["1"], {
+            time: "Parent,Var(3)",
+            freq: "30",
+            ampl: "-7",
+            phase: "0",
+          }),
+        ])],
+      },
+    });
+    const operations: Array<{ time: number; freq: number; ampl: number; phase: number }> = [];
+
+    advanceRuntimeHelpers([active], stage, {
+      parentState: parent,
+      rootState: parent,
+      onEnvShakeController: (_helper, _controller, operation) => {
+        operations.push({ time: operation.time, freq: operation.freq, ampl: operation.ampl, phase: operation.phase });
+        return true;
+      },
+    });
+
+    expect(operations).toEqual([{ time: 241, freq: 30, ampl: -7, phase: 0 }]);
+  });
+
   it("routes opt-in shared resource writes without mutating the helper locally", () => {
     const active = helper({
       life: 500,
