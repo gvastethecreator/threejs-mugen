@@ -1,5 +1,14 @@
 ﻿# Roadmap Execution Board
 
+## Active bounded slice — T808 root Projectile dynamic fall flags (2026-08-15)
+
+Issue 383 resolves finite caller-context `fall`, `air.fall` and `fall.kill`
+for one fresh root-owned Projectile. The accepted-fall handoff must reuse
+existing `HitFall` and metadata consumers. Helper/nesting/`ownProjectile`,
+ModifyProjectile, ModifyHitDef, exact fall/KO timing, teams, rollback and full
+parity remain separate. See [issue
+383](../.scratch/roadmap/issues/383-root-projectile-dynamic-fall-flags.md).
+
 ## Latest bounded slice — T807 Helper Projectile dynamic fall recovery (2026-08-15)
 
 Issue 382 closes caller-context dynamic

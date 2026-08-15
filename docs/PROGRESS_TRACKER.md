@@ -1,5 +1,13 @@
 ﻿# Progress Tracker
 
+## Active implementation checkpoint — T808 root Projectile dynamic fall flags (2026-08-15)
+
+Issue 383 is resolving finite caller-context `fall`, `air.fall` and
+`fall.kill` for one fresh root Projectile. The bounded target is an accepted
+fall contact using existing HitFall/GetHitVar consumers; Helper, nested,
+ModifyProjectile, exact fall/KO timing, teams, rollback and full parity remain
+outside.
+
 ## Latest implementation checkpoint — T807 Helper Projectile dynamic fall recovery (2026-08-15)
 
 Issue 382 closes finite caller-context
