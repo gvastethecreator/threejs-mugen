@@ -2,15 +2,13 @@
 
 ## Current parity queue
 
-- **T757 closed-bounded** — issue 331 snapshots the effective
-  `AttackMulSet.RedLife` multiplier at root Projectile creation and applies it
-  on accepted contact while authored `GetHitVar(redlife)` remains separate.
-  Product/evidence commits are `815b2bf1` and `b244a944`; required trace
-  `60caf22d` / `4d7e8c29`. Focused tests and typecheck pass. Aggregate QA
-  still stops on the inherited helper-bind target-link case. Guarded contacts,
-  Helper-parented evidence, ModifyProjectile, resource ownership, exact
-  clamp/rounding/timing, teams, rollback and full parity remain outside. See
-  [issue 331](../.scratch/roadmap/issues/331-projectile-attackmulset-redlife.md).
+- **T758 closed-bounded** — issue 332 closes the Helper-parented Projectile
+  `AttackMulSet.RedLife` snapshot. Evidence commit is `092e0565`; required
+  trace `74274e6d` / `8dbd5b52`. Focused tests and typecheck pass. Aggregate
+  QA still stops on the inherited helper-bind target-link case. Guarded
+  contacts, ModifyProjectile, resource ownership, exact clamp/rounding/timing,
+  teams, rollback and full parity remain outside. See [issue
+  332](../.scratch/roadmap/issues/332-helper-projectile-attackmulset-redlife.md).
 
 - **T755 superseded** — duplicate queue entry for the already closed T728 /
   issue 302 live `ModifyHitDef down.velocity` slice. Issue 329 is retained as
@@ -20,10 +18,8 @@
   multiplier on root and Helper-parented Projectiles; retain its historical
   root/Helper trace checksums and the inherited aggregate QA blocker.
 
-- **T758 next selection** — issue 332 closes the independent Helper-parented
-  Projectile redlife snapshot trace; keep aggregate QA repair and resource
-  topology separate. See [issue
-  332](../.scratch/roadmap/issues/332-helper-projectile-attackmulset-redlife.md).
+- **T759 next selection** — close the independent Projectile redlife guard
+  contact trace; keep aggregate QA repair and resource topology separate.
 
 - **T752 closed-bounded** — issue 326 carries fresh Projectile
   `guardpoints` static and caller-context dynamic values through root and

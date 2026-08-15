@@ -1,18 +1,18 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T757 closed-bounded (2026-08-14)
+## Latest bounded slice — T758 closed-bounded (2026-08-14)
 
-Issue 331 snapshots the finite effective `AttackMulSet.RedLife` multiplier
-when a root Projectile is created. The accepted hit keeps authored
-`GetHitVar(redlife)=20` separate and applies the captured `0.5` multiplier
-after a later live `redlife=2` update. Product `815b2bf1` and evidence
-`b244a944` are committed; required root trace `60caf22d` -> `4d7e8c29`
-passes. Aggregate QA materializes the artifact but retains the inherited
-`synthetic-imported-helper-bind-to-target-redirect` target-link blocker.
-Guarded contacts, Helper-parented evidence, ModifyProjectile, shared resource
+Issue 332 closes the Helper-parented Projectile counterpart to T757. The
+Helper-created Projectile keeps the effective `AttackMulSet.RedLife=0.5`
+snapshot after a later live `redlife=2` update, preserves root/helper
+ownership links, and applies the captured value while authored
+`GetHitVar(redlife)=20` remains separate. Evidence `092e0565` is committed;
+required trace `74274e6d` -> `8dbd5b52` passes. Aggregate QA materializes the
+artifact but retains the inherited `synthetic-imported-helper-bind-to-target-redirect`
+target-link blocker. Guarded contacts, ModifyProjectile, shared resource
 ownership, exact clamp/rounding/timing, rollback and full parity remain
 outside. See [issue
-331](../.scratch/roadmap/issues/331-projectile-attackmulset-redlife.md).
+332](../.scratch/roadmap/issues/332-helper-projectile-attackmulset-redlife.md).
 
 ## Historical bounded slice — T755 superseded by T728
 
@@ -21,12 +21,11 @@ The T755 queue entry duplicated the already closed T728/issue 302
 component-preserving behavior is already covered by the issue 302 traces and
 commits; issue 329 remains only as a superseded audit trail.
 
-## Next bounded slice — T758 Helper Projectile redlife evidence
+## Next bounded slice — T759 Projectile redlife guard contact
 
-Close the Helper-parented Projectile redlife snapshot with an independent
-required trace; see [issue 332](../.scratch/roadmap/issues/332-helper-projectile-attackmulset-redlife.md).
-Keep guarded-resource topology, ModifyProjectile and aggregate QA repair as
-separate work items.
+Close the guard-contact branch of the Projectile redlife snapshot with an
+independent required trace. Keep shared-resource topology, ModifyProjectile
+and aggregate QA repair as separate work items.
 
 ## Historical bounded slice — T753 closed-bounded (2026-08-12)
 

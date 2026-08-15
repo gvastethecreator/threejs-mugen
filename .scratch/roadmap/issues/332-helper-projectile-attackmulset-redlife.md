@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T758 — queued / next bounded slice**
+- **T758 — closed-bounded (2026-08-14)**
 - **Área:** runtime / Helper / Projectile / AttackMulSet / red-life resource
 - **Dependencia:** T757 / issue 331
 
@@ -32,3 +32,20 @@ authored `GetHitVar(redlife)` remains separate at contact.
   post-spawn `AttackMulSet redlife` mutation, authored GetHitVar value and
   final red-life resource delta.
 - Focused test, typecheck and `git diff --check`.
+
+## Evidencia de cierre
+
+- Evidence commit: `092e0565`.
+- Required artifact: `synthetic-imported-helper-projectile-attack-redlife-snapshot-golden`.
+- Trace checksum `74274e6d`, final checksum `8dbd5b52`.
+- Helper/Projectile lifecycle, root/helper target links, authored
+  `GetHitVar(redlife)=20` and final defender `redLife=10` pass.
+- `pnpm run typecheck`, focused trace test and `git diff --check` pass.
+- Aggregate `pnpm qa:trace` still stops only on the inherited
+  `synthetic-imported-helper-bind-to-target-redirect` target-link blocker.
+
+## Cierre acotado
+
+The Helper-parented creation snapshot is closed for accepted hit contact.
+Guarded contacts, ModifyProjectile, shared banks, exact resource arithmetic,
+rollback and full M.U.G.E.N/Ikemen parity remain outside the claim.
