@@ -71,6 +71,7 @@ import {
   createSyntheticImportedProjectileDynamicEnvShakeTraceArtifact,
   createSyntheticImportedProjectileDynamicFallEnvShakeTraceArtifact,
   createSyntheticImportedProjectileDynamicFallImpactTraceArtifact,
+  createSyntheticImportedProjectileDynamicFallRecoveryTraceArtifact,
   createSyntheticImportedHelperProjectileEnvShakeLongFiniteTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicEnvShakeTraceArtifact,
   createSyntheticImportedHelperProjectileDynamicFallEnvShakeTraceArtifact,
@@ -27414,6 +27415,31 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.targetLinks).toEqual(expect.arrayContaining([
       expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
     ]));
+  });
+
+  it("creates a required dynamic root Projectile fall recovery artifact with caller values", () => {
+    const artifact = createSyntheticImportedProjectileDynamicFallRecoveryTraceArtifact({
+      generatedAt: "2026-08-15T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-fall-recovery-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-projectile-dynamic-fall-recovery-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(4);
+    expect(evidence?.executedControllers.HitFallVel).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 307,
+      customOwnerId: "p1",
+      hitFall: {
+        recover: false,
+        recoverTime: 19,
+        downRecover: true,
+        downRecoverTime: 45,
+      },
+    });
   });
 
   it("creates a required long finite Helper Projectile EnvShake artifact with root-parent attribution", () => {
