@@ -65621,12 +65621,16 @@ export type SyntheticImportedTraceFighterOptions = {
   }>;
   defenseMultiplier?: number;
   attackMultiplier?: number;
+  /** Synthetic fixture-only initial AttackMulSet redlife multiplier. */
+  attackRedLifeMultiplier?: number;
   attackDizzyPointsMultiplier?: number;
   attackGuardPointsMultiplier?: number;
   /** Synthetic fixture-only post-spawn AttackMulSet guardpoints override. */
   postProjectileAttackGuardPointsMultiplier?: number;
   /** Synthetic fixture-only post-spawn AttackMulSet dizzypoints override. */
   postProjectileAttackDizzyPointsMultiplier?: number;
+  /** Synthetic fixture-only post-spawn AttackMulSet redlife override. */
+  postProjectileAttackRedLifeMultiplier?: number;
   dynamicDefenseMultiplier?: SyntheticDynamicDamageScale;
   dynamicAttackMultiplier?: SyntheticDynamicDamageScale;
   guardDamage?: number;
@@ -65842,6 +65846,8 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileGuardPointsExpression?: SyntheticNumberExpression;
   /** Synthetic fixture-only fresh Projectile dizzypoints expression. */
   projectileDizzyPointsExpression?: SyntheticNumberExpression;
+  /** Synthetic fixture-only fresh Projectile redlife expression. */
+  projectileRedLifeExpression?: SyntheticPairExpression;
   /** Synthetic fixture-only fresh Projectile keepstate expression. */
   projectileKeepStateExpression?: SyntheticNumberExpression;
   /** Synthetic fixture-only fresh Projectile projanim action selected by the CNS line. */
@@ -67481,7 +67487,7 @@ anim = 200
 ctrl = 0
 
 ${assertSpecialLine}
-${options.attackMultiplier !== undefined || options.attackDizzyPointsMultiplier !== undefined || options.attackGuardPointsMultiplier !== undefined ? attackMultiplierController(options.attackMultiplier, options.attackDizzyPointsMultiplier, options.attackGuardPointsMultiplier) : ""}
+${options.attackMultiplier !== undefined || options.attackRedLifeMultiplier !== undefined || options.attackDizzyPointsMultiplier !== undefined || options.attackGuardPointsMultiplier !== undefined ? attackMultiplierController(options.attackMultiplier, options.attackDizzyPointsMultiplier, options.attackGuardPointsMultiplier, options.attackRedLifeMultiplier) : ""}
 ${options.dynamicAttackMultiplier !== undefined ? dynamicAttackMultiplierController(options.dynamicAttackMultiplier) : ""}
 ${options.withBoundsControllers ? boundsControllerBlock() : ""}
 ${options.withScreenBoundCameraProbe ? screenBoundCameraProbeBlock() : ""}
@@ -67553,7 +67559,7 @@ ${options.extraSuperPauseP2DefMul === undefined ? "" : extraSuperPauseP2DefMulBl
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${projectileVarSeedBlock}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileMissTimeExpression, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileDamageExpression, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale, options.projectileGroundVelocityExpression, options.projectileGuardVelocityExpression, options.projectileDownHitTime, options.projectileGroundHitTime, options.projectileGroundSlideTime, options.projectileAirHitTime, options.projectileGuardHitTimeExpression, options.projectilePauseTime, options.projectileGuardPauseTime, "Fast Projectile", options.projectilePriorityExpression, options.projectileHitsExpression, options.projectileAnimNo, options.projectileAnimExpression, options.projectileKeepStateExpression, options.projectileP2Facing, options.projectileGuardPointsExpression, options.projectileDizzyPointsExpression) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileMissTimeExpression, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileDamageExpression, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale, options.projectileGroundVelocityExpression, options.projectileGuardVelocityExpression, options.projectileDownHitTime, options.projectileGroundHitTime, options.projectileGroundSlideTime, options.projectileAirHitTime, options.projectileGuardHitTimeExpression, options.projectilePauseTime, options.projectileGuardPauseTime, "Fast Projectile", options.projectilePriorityExpression, options.projectileHitsExpression, options.projectileAnimNo, options.projectileAnimExpression, options.projectileKeepStateExpression, options.projectileP2Facing, options.projectileGuardPointsExpression, options.projectileDizzyPointsExpression, options.projectileRedLifeExpression) : ""}
 ${options.postProjectileAttackGuardPointsMultiplier === undefined ? "" : `
 [State 200, Post Projectile Attack Scale]
 type = AttackMulSet
@@ -67565,6 +67571,12 @@ ${options.postProjectileAttackDizzyPointsMultiplier === undefined ? "" : `
 type = AttackMulSet
 trigger1 = Time = 3
 dizzypoints = ${options.postProjectileAttackDizzyPointsMultiplier}
+`}
+${options.postProjectileAttackRedLifeMultiplier === undefined ? "" : `
+[State 200, Post Projectile RedLife Scale]
+type = AttackMulSet
+trigger1 = Time = 3
+redlife = ${options.postProjectileAttackRedLifeMultiplier}
 `}
 ${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secondaryProjectile) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
@@ -68996,7 +69008,7 @@ value = ${value}
 `;
 }
 
-function attackMultiplierController(value?: number, dizzyPoints?: number, guardPoints?: number): string {
+function attackMultiplierController(value?: number, dizzyPoints?: number, guardPoints?: number, redLife?: number): string {
   return `
 [State 200, Attack Scale]
 type = AttackMulSet
@@ -69004,6 +69016,7 @@ trigger1 = Time = 0
 ${value === undefined ? "" : `value = ${value}`}
 ${dizzyPoints === undefined ? "" : `DizzyPoints = ${dizzyPoints}`}
 ${guardPoints === undefined ? "" : `GuardPoints = ${guardPoints}`}
+${redLife === undefined ? "" : `RedLife = ${redLife}`}
 `;
 }
 
@@ -71583,6 +71596,7 @@ function projectileControllerBlock(
   p2Facing?: SyntheticNumberExpression,
   guardPointsExpression?: SyntheticNumberExpression,
   dizzyPointsExpression?: SyntheticNumberExpression,
+  redLifeExpression?: SyntheticPairExpression,
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
   const missTimeLine = missTimeExpression === undefined ? `projmisstime = ${missTime}` : `projmisstime = ${missTimeExpression}`;
@@ -71620,6 +71634,7 @@ function projectileControllerBlock(
   const p2FacingLine = p2Facing === undefined ? "" : `p2facing = ${p2Facing}`;
   const guardPointsLine = guardPointsExpression === undefined ? "" : `guardpoints = ${guardPointsExpression}`;
   const dizzyPointsLine = dizzyPointsExpression === undefined ? "" : `dizzypoints = ${dizzyPointsExpression}`;
+  const redLifeLine = redLifeExpression === undefined ? "" : `redlife = ${redLifeExpression.join(",")}`;
   const missOnOverrideLine = missOnOverride === undefined ? "" : `missonoverride = ${missOnOverride ? 1 : 0}`;
   const airVelocityLine = airVelocityExpression === undefined
     ? airVelocity === undefined ? "" : `air.velocity = ${airVelocity.join(",")}`
@@ -71694,6 +71709,7 @@ ${heightBoundLine}
 ${damageLine}
 ${guardPointsLine}
 ${dizzyPointsLine}
+${redLifeLine}
 ${keepStateLine}
 ${airJuggleLine}
 ${koVelocityAddLine}
@@ -76657,4 +76673,107 @@ function reversalTraceAction(id: number, duration = 4, clsn1Extent?: number): Mu
     frame.clsn1 = [{ x1: clsn1Extent === undefined ? 10 : -clsn1Extent, y1: -45, x2: clsn1Extent ?? 36, y2: -18 }];
   }
   return action;
+}
+/** T757 root Projectile proof: AttackMulSet redlife is snapshotted at spawn. */
+export function createSyntheticImportedProjectileAttackRedLifeSnapshotTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5092;
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "projectile-attack-redlife-snapshot-setup", frames: 2, p1: [], p2: [] },
+    { label: "projectile-attack-redlife-snapshot-contact", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-attack-redlife-snapshot-settle", frames: 4, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-attack-redlife-snapshot-attacker",
+    displayName: "Projectile Attack RedLife Snapshot Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    attackMultiplier: 1,
+    attackRedLifeMultiplier: 0.5,
+    postProjectileAttackRedLifeMultiplier: 2,
+    projectileRedLifeExpression: ["20", "0"],
+    projectileDamage: [45, 0],
+    projectileRemoveOnHit: false,
+    projectileOffset: [62, -45],
+    projectileGroundVelocity: [-1, 1],
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-attack-redlife-snapshot-defender",
+    displayName: "Projectile Attack RedLife Snapshot Defender",
+    dataStats: { life: 50 },
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      shakePhysics: "N",
+      slidePhysics: "S",
+      hitTimeBranchInSlide: true,
+      hitTimeBranchTriggerTime: 1,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchExpression: "GetHitVar(redlife) = 20 && !GetHitVar(guarded)",
+      hitTimeBranchName: "Projectile Attack RedLife GetHitVar Branch",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-projectile-attack-redlife-snapshot-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-attack-redlife-snapshot-golden",
+      label: "Synthetic imported Projectile AttackMulSet redlife snapshot route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves a root-owned Projectile captures the creator's AttackMulSet redlife multiplier at spawn (0.5), then keeps the captured value after a later live AttackMulSet changes redlife to 2. The accepted unguarded hit reports authored GetHitVar(redlife)=20 and applies the captured +10 red-life delta after the projectile leaves five life. Guarded contacts, Helper ownership, ModifyProjectile, exact resource timing/clamp parity, teams, rollback, and full M.U.G.E.N/Ikemen parity remain outside this bounded slice.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-projectile-attack-redlife-snapshot-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5000, 5001, branchStateNo],
+      forbiddenExecutedStates: [40, 130, 150, 151, 152, 153, 154, 155, 5020, 5021, 5030, 5050, 5100, 5101, 5110],
+      requiredExecutedControllers: ["ChangeState", "AttackMulSet", "Projectile"],
+      requiredExecutedOperations: ["damage-scale:attackmulset", "projectile"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      forbiddenCombatReasons: ["guard", "override", "reversal"],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredControllerEventSequences: [{
+        label: "Projectile snapshots AttackMulSet redlife before live multiplier changes",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "AttackMulSet", name: "Attack Scale" },
+          { stateNo: 200, controller: "Projectile", name: "Fast Projectile" },
+          { stateNo: 200, controller: "AttackMulSet", name: "Post Projectile RedLife Scale" },
+        ],
+      }],
+      requiredActorFrameSequences: [{
+        label: "Projectile redlife snapshot accepted hit order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 5001, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+      requiredEffectPayloads: [{ actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1", effectId: 77, minAge: 1, hasHit: true }],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", life: 5, redLife: 10 },
+      ],
+    }],
+  });
 }
