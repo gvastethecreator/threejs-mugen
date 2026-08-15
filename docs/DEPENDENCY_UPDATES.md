@@ -1,16 +1,17 @@
 # Dependency baseline review
 
-Fecha de revisión: 2026-08-12
+Review date: 2026-08-15
 
-## Resultado
+## Result
 
-Este proyecto no ejecuta Bun en su runtime ni en sus scripts. El gestor
-canónico es pnpm y queda fijado en `package.json` como `pnpm@11.20.0`.
+This project does not use Bun in its runtime or scripts. pnpm is the canonical
+package manager and is pinned in `package.json` as `pnpm@11.21.0`.
 
-`pnpm update --latest` y `pnpm install --frozen-lockfile` dejan el lockfile
-reproducible y actualizan el baseline fijado por el proyecto.
+`pnpm install --frozen-lockfile` keeps the lockfile reproducible. The 2026-08-15
+maintenance pass found no outdated direct dependencies and no high-severity
+audit findings; only the package-manager pin advanced from 11.20.0 to 11.21.0.
 
-| Paquete | Antes | Ahora | Changelog / migración |
+| Package | Before | Current | Changelog / migration |
 | --- | --- | --- | --- |
 | `vite` | 8.0.16 | 8.2.1 | [releases](https://github.com/vitejs/vite/releases) |
 | `vitest` | 4.1.9 | 4.1.10 | [releases](https://github.com/vitest-dev/vitest/releases) |
@@ -21,22 +22,20 @@ reproducible y actualizan el baseline fijado por el proyecto.
 | `playwright` | 1.61.0 | 1.62.1 | [releases](https://github.com/microsoft/playwright/releases) |
 | `@types/node` | 26.0.0 | 26.2.0 | [DefinitelyTyped history](https://github.com/DefinitelyTyped/DefinitelyTyped/commits/master/types/node) |
 
-`jszip@3.10.1` y `typescript@7.0.2` ya estaban en la versión disponible
-aceptada por las políticas del lockfile y no cambiaron.
+`jszip@3.10.1` and `typescript@7.0.2` were already at the versions accepted by
+the lockfile policy and did not change.
 
-## Impacto revisado
+## Reviewed impact
 
-- Three.js y sus tipos avanzan juntos para evitar divergencias de API en el
-  renderer y los adaptadores de sprites.
-- Vite y Vitest reciben correcciones de toolchain sin cambiar la entrada de
-  la aplicación. El build sigue produciendo el bundle esperado.
-- Playwright y jsdom se actualizan para mantener la smoke browser y las
-  pruebas DOM en el mismo baseline de Node.
-- Tabler Icons sólo cambia el catálogo tipado; no se alteran contratos de UI.
-- No hubo migración de Bun: el repositorio ya era pnpm-native y no tiene
-  `bun.lock`, imports `bun:*`, ni scripts que requieran Bun.
+- Three.js and its types move together to avoid API drift in the renderer and
+  sprite adapters.
+- Vite and Vitest receive toolchain fixes without changing the app entrypoint.
+- Playwright and jsdom keep browser smoke and DOM tests on the same Node baseline.
+- Tabler Icons only changes the typed icon catalogue; UI contracts are unchanged.
+- There is no Bun migration: the repository is pnpm-native and has no `bun.lock`,
+  `bun:*` imports, or Bun-dependent scripts.
 
-## Verificación
+## Verification
 
 ```bash
 pnpm install --frozen-lockfile
@@ -47,6 +46,6 @@ pnpm build
 pnpm qa:css:budget
 ```
 
-La batería completa `pnpm test` y el gate `pnpm qa:trace` mantienen un caso
-heredado fallando en el WIP de runtime (`helper Projectile` y
-`helper BindToTarget RedirectID`); no son errores de resolución de paquetes.
+The dependency checks are clean. Product gates and current WIP residuals are
+tracked separately in [`QUALITY_AUDIT.md`](QUALITY_AUDIT.md); a passing package
+audit does not imply runtime compatibility.
