@@ -36294,6 +36294,191 @@ export function createSyntheticImportedHelperModifyProjectileGroundVelocityIndex
   });
 }
 
+/** T783 Helper-owned ModifyProjectile proof: guard.velocity index selection. */
+export function createSyntheticImportedHelperModifyProjectileGuardVelocityIndexTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const branchStateNo = 5129;
+  const projectileId = 8924;
+  const trapProjectileId = 8925;
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-helper-modifyprojectile-guard-velocity-index-grid",
+    displayName: "Trace Helper ModifyProjectile Guard Velocity Index Grid",
+    playerStart: {
+      p1: { x: -54, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const script = importedHelperProjectileGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-guard-velocity-index-attacker",
+    displayName: "Helper ModifyProjectile Guard Velocity Index Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1295,
+      waitAnimNo: 1055,
+      branchStateNo: 1296,
+      branchAnimNo: 1056,
+      branchTrigger: `ProjGuarded(${projectileId}) && ProjGuardedTime(${projectileId}) >= 1`,
+      projectileAnimNo: 1057,
+      projectileId,
+      pos: [360, -180],
+      damage: [45, 30],
+      hitPause: 4,
+      hitTime: 14,
+      groundVelocity: [-1, 1],
+      airVelocity: [-6, -8, 2],
+      downVelocity: [-1, -1, 9],
+      hitFlag: "M",
+      guardFlag: "MA",
+      varSeeds: [
+        { index: 0, value: -7 },
+        { index: 1, value: -5 },
+        { index: 2, value: 2 },
+        { index: 3, value: 1 },
+      ],
+      modifyProjectileTriggerTime: 0,
+      modifyProjectileIndex: "var(3)",
+      modifyProjectileGuardVelocity: ["var(0)", "var(1)", "var(2)"],
+      secondaryProjectile: {
+        triggerTime: 0,
+        projectileId: trapProjectileId,
+        pos: [360, -180],
+        velocity: [0, 0],
+        guardFlag: "A",
+      },
+      tertiaryProjectile: {
+        triggerTime: 0,
+        projectileId,
+        pos: [360, -34],
+        velocity: [0, 0],
+        guardFlag: "MA",
+      },
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-guard-velocity-index-defender",
+    displayName: "Helper ModifyProjectile Guard Velocity Index Defender",
+    dataStats: { life: 50 },
+    defaultGuardHit: {
+      guardedBranchStateNo: branchStateNo,
+      guardedBranchAnimNo: branchStateNo,
+      guardedBranchTrigger: "Time >= 0",
+      guardHitVelSetY: true,
+      guardHitVelSetZ: true,
+      guardedBranchExpression:
+        "GetHitVar(xvel) = 7 && GetHitVar(yvel) = -5 && GetHitVar(zvel) = 2 && GetHitVar(guarded) = 1 && !GetHitVar(fall)",
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-helper-modifyprojectile-guard-velocity-index-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-modifyprojectile-guard-velocity-index-golden",
+      label: "Synthetic imported Helper ModifyProjectile guard.velocity index route",
+      source: "imported",
+      notes: [
+        "Pinned Ikemen GO trace proves Helper caller-context ModifyProjectile guard.velocity index selection over two same-id Projectiles and one different-id trap. Index 1 changes only the newer matching Projectile, which reaches an accepted grounded guard; siblings remain isolated and GetHitVar(xvel/yvel/zvel)=7/-5/2 exposes the selected payload. Partial vectors use the pinned zero-fill behavior in focused runtime coverage. Fresh/default derivation, dynamic n, edge indices, nested/team topology, exact timing/rounding, rollback, and full M.U.G.E.N/Ikemen parity remain outside this bounded slice.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-helper-modifyprojectile-guard-velocity-index-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["helper", "projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 150, 151, branchStateNo],
+      forbiddenExecutedStates: [40, 5000, 5001, 5020, 5021, 5030, 5050, 5100, 5101, 5102, 5103, 5104, 5106, 5108, 5109, 5110, 5111],
+      requiredExecutedControllers: ["ChangeState", "Helper", "VarSet", "Projectile", "ModifyProjectile", "HitVelSet"],
+      requiredExecutedOperations: ["helper", "variable:varset", "projectile", "modifyprojectile", "kinematic:hitvelset"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["guard"],
+      requiredCombatReasons: ["guard"],
+      forbiddenCombatReasons: ["hit", "override", "reversal"],
+      requiredControllerEventSequences: [
+        {
+          label: "Helper ModifyProjectile guard.velocity index selection order",
+          actorId: "p1",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 0" },
+            { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 1" },
+            { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 2" },
+            { stateNo: 1200, controller: "VarSet", name: "Helper ProjHit VarSet 3" },
+            { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
+            { stateNo: 1295, controller: "Projectile", name: "Helper ProjHit Secondary Spawn" },
+            { stateNo: 1295, controller: "Projectile", name: "Helper ProjHit Tertiary Spawn" },
+            { stateNo: 1295, controller: "ModifyProjectile", name: "Helper ProjHit ModifyProjectile Guard Velocity" },
+            { stateNo: 1295, operation: "modifyprojectile" },
+          ],
+        },
+        {
+          label: "Indexed Helper Projectile reaches accepted ground guard after guard.velocity replacement",
+          actorId: "p2",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+            { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+            { stateNo: 151, operation: "kinematic:hitvelset" },
+            { stateNo: 151, controller: "ChangeState", name: "Guarded HitVar Branch" },
+            { stateNo: branchStateNo, controller: "ChangeState", name: "Guarded HitVar Branch Return" },
+          ],
+        },
+      ],
+      requiredActorFrameSequences: [{
+        label: "Indexed Helper ModifyProjectile guard.velocity grounded-guard physical order",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 150, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, moveType: "H", minFrames: 1 },
+        ],
+      }],
+      requiredActorFrames: [
+        { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1295, animNo: 1055, minFrames: 1 },
+        { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1296, animNo: 1056, minFrames: 1 },
+        { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1057, minFrames: 1 },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: branchStateNo,
+          observedVelXAtLeast: 7,
+          observedVelXAtMost: 7,
+          observedVelYAtMost: -5,
+          observedVelZAtLeast: 2,
+          minFrames: 1,
+        },
+      ],
+      requiredWorldLifecycleEvents: [
+        { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      ],
+      requiredEffectStores: [{ ownerId: "p1", minTotal: 4, minHelpers: 1, minProjectiles: 3, minNextHelperSerial: 1, minNextProjectileSerial: 3 }],
+      requiredEffectPayloads: [
+        { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1296, minAge: 2 },
+        { actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: projectileId, minAge: 1, hasHit: false },
+        { actorId: "p1-projectile-1", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: trapProjectileId, minAge: 1, hasHit: false },
+        { actorId: "p1-projectile-2", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: projectileId, minAge: 1, hasHit: true },
+      ],
+      requiredTargetLinks: [
+        { ownerId: "p1", actorId: "p2", targetId: projectileId },
+        { ownerId: "p1-helper-0", actorId: "p2", targetId: projectileId },
+      ],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", life: 1000 },
+        { actorId: "p2", source: "imported", actorKind: "player", stateNo: 130, moveType: "I", life: 20 },
+      ],
+    }],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileAirGuardCornerPushTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -67841,6 +68026,8 @@ export type SyntheticImportedTraceFighterOptions = {
     modifyProjectileGroundVelocity?: SyntheticPartialTripleExpression;
     /** Synthetic Helper-local live ModifyProjectile air.velocity expression vector. */
     modifyProjectileAirVelocity?: SyntheticPartialTripleExpression;
+    /** Synthetic Helper-local live ModifyProjectile guard.velocity expression vector. */
+    modifyProjectileGuardVelocity?: SyntheticPartialTripleExpression;
     /** Trigger time for the Helper-local live ModifyProjectile velocity write. */
     modifyProjectileTriggerTime?: number;
     /** Synthetic Helper-local live ModifyProjectile index selector. */
@@ -76523,6 +76710,16 @@ id = ${projectileId}
 ${route.modifyProjectileIndex === undefined ? "" : `index = ${route.modifyProjectileIndex}`}
 air.velocity = ${route.modifyProjectileAirVelocity.join(",")}
 `;
+  const modifyProjectileGuardVelocityBlock = route.modifyProjectileGuardVelocity === undefined
+    ? ""
+    : `
+[State ${route.waitStateNo}, Helper ProjHit ModifyProjectile Guard Velocity]
+type = ModifyProjectile
+trigger1 = Time = ${route.modifyProjectileTriggerTime ?? 3}
+id = ${projectileId}
+${route.modifyProjectileIndex === undefined ? "" : `index = ${route.modifyProjectileIndex}`}
+guard.velocity = ${route.modifyProjectileGuardVelocity.join(",")}
+`;
   const varSeedBlocks = (route.varSeeds ?? [])
     .map(
       (seed) => `
@@ -76705,8 +76902,8 @@ ctrl = 0
     )
     .join("");
   const projectileMutationBlocks = route.modifyProjectileIndex === undefined
-    ? `${modifyProjectileDownVelocityBlock}${modifyProjectileGroundVelocityBlock}${modifyProjectileAirVelocityBlock}${secondaryProjectileBlock}${tertiaryProjectileBlock}`
-    : `${secondaryProjectileBlock}${tertiaryProjectileBlock}${modifyProjectileDownVelocityBlock}${modifyProjectileGroundVelocityBlock}${modifyProjectileAirVelocityBlock}`;
+    ? `${modifyProjectileDownVelocityBlock}${modifyProjectileGroundVelocityBlock}${modifyProjectileAirVelocityBlock}${modifyProjectileGuardVelocityBlock}${secondaryProjectileBlock}${tertiaryProjectileBlock}`
+    : `${secondaryProjectileBlock}${tertiaryProjectileBlock}${modifyProjectileDownVelocityBlock}${modifyProjectileGroundVelocityBlock}${modifyProjectileAirVelocityBlock}${modifyProjectileGuardVelocityBlock}`;
   return `
 [Statedef 1200]
 type = S
