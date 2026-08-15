@@ -2814,7 +2814,7 @@ describe("EffectActorSystem", () => {
     });
   });
 
-  it("keeps Helper-owned ModifyProjectile airguard.velocity edge selectors fail-closed where required", () => {
+  it("follows official Helper-owned ModifyProjectile airguard.velocity edge selectors", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {
       ...helperInput({ id: "72", anim: "934" }),
