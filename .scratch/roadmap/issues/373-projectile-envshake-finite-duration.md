@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T798 — queued (2026-08-15)**
+- **T798 — closed-bounded (2026-08-15)**
 - **Área:** root Projectile accepted-contact / finite EnvShake lifetime
 - **Dependencia:** T795, T796, T797
 
@@ -35,3 +35,21 @@ Helper Projectile, HitDef directo, FallEnvShake, EnvShake activo, modificación
 viva de Projectile, waveform exacta, stacking/reemplazo global, pausa/hitpause,
 renderer/cámara exacta, overflow/int32, rollback y paridad completa no
 pertenecen a T798.
+
+## Cierre
+
+- **Producto:** `122ce17a` (`feat(runtime): lift Projectile EnvShake duration cap`).
+- **Contrato cerrado:** un Projectile raíz con hit aceptado y no guardado
+  conserva una duración finita positiva sin el techo local de 240 ticks.
+  Guard y contacto rechazado no emiten EnvShake.
+- **Evidencia:** focused `6/6`, `pnpm test` `328/4077`, typecheck, build,
+  registros DA29/DA30 regenerados y `pnpm qa:trace` `877/877` (`843`
+  required) pasan. El artefacto requerido
+  `synthetic-imported-projectile-envshake-long-finite` pasa con checksum de
+  trace `ee48d94d`, final `b52f19c9`, 254 frames y un evento.
+- **Claim permitido:** Projectile raíz, hit aceptado no guardado, duración
+  finita positiva y expiración observable.
+- **Bloqueado:** Helper Projectile, HitDef directo, FallEnvShake, EnvShake
+  activo, modificación viva de Projectile, waveform, stacking/reemplazo,
+  pausa/hitpause, cámara/render exactos, overflow/int32, rollback y paridad
+  completa.

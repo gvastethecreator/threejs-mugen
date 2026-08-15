@@ -85,11 +85,24 @@ trace QA `876/876` (`842` required). Waveform, stacking, pause, camera/render
 parity, rollback, and full parity remain separate. See [issue
 372](../.scratch/roadmap/issues/372-hitdef-contact-envshake-finite-duration.md).
 
-## Next bounded slice — T798 root Projectile `EnvShake` duration (2026-08-15)
+## Latest bounded slice — T798 root Projectile `EnvShake` duration (2026-08-15)
 
-Issue 373 queues accepted root Projectile contact lifetime without widening
-Helper Projectile, direct HitDef, FallEnvShake, or active EnvShake. See [issue
+Issue 373 closes the accepted root Projectile hit route. Product `122ce17a`
+removes the inherited 240-tick ceiling; guard and rejected contacts do not emit
+an EnvShake. Required `synthetic-imported-projectile-envshake-long-finite`
+proves `time = 241` through expiry (`ee48d94d` / `b52f19c9`); focused checks,
+full tests `328/4077`, typecheck, build, regenerated DA29/DA30 records, and
+trace QA `877/877` (`843` required) pass. Helper Projectile, direct HitDef,
+FallEnvShake, active EnvShake, waveform, stacking, pause, camera/render parity,
+rollback, and full parity remain separate. See [issue
 373](../.scratch/roadmap/issues/373-projectile-envshake-finite-duration.md).
+
+## Next bounded slice — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
+
+Issue 374 queues one first-generation Helper-created, root-owned Projectile
+hit route with finite lifetime and parent/root attribution. No support claim is
+made until its required trace closes. See [issue
+374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper caller-context `ModifyProjectile down.velocity` index

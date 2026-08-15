@@ -64,10 +64,21 @@ finite `241` until expiry; the required trace passes at `9de955c7` /
 FallEnvShake, and active EnvShake remain separate. Exact waveform, stacking,
 pause, camera/render parity, rollback and full parity stay outside this slice.
 
-## Next slice — T798 root Projectile `EnvShake` duration (2026-08-15)
+## Latest slice — T798 root Projectile `EnvShake` duration (2026-08-15)
 
-Issue 373 selects accepted root Projectile contact duration without widening
-Helper Projectile, direct HitDef, FallEnvShake, or active EnvShake producers.
+Issue 373 closes accepted root Projectile hit EnvShake through `122ce17a`.
+Finite `241` survives to expiry; guard and rejected contacts do not emit.
+Required trace passes at `ee48d94d` / `b52f19c9`; QA is `877/877` (`843`
+required). Helper Projectile, direct HitDef, FallEnvShake, active EnvShake,
+waveform, stacking, pause, camera/render parity, rollback and full parity stay
+outside this slice.
+
+## Next slice — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
+
+Issue 374 selects one first-generation Helper-created/root-owned Projectile
+route with parent/root attribution and finite expiry proof. Nested/team
+topology, direct/root changes, FallEnvShake, active EnvShake and waveform
+parity remain outside.
 ## Historical slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

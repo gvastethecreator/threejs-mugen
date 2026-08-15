@@ -84,10 +84,20 @@
   outside. See [issue
   372](../.scratch/roadmap/issues/372-hitdef-contact-envshake-finite-duration.md).
 
-- **T798 next** — issue 373 isolates accepted root Projectile `EnvShake`
-  lifetime without widening Helper Projectile, direct HitDef, FallEnvShake, or
-  active EnvShake producers. See [issue
+- **T798 closed-bounded** — issue 373 removes the accepted root Projectile hit
+  `EnvShake` 240-tick cap through product `122ce17a`. Guard and rejected
+  contacts do not emit. Required
+  `synthetic-imported-projectile-envshake-long-finite` proves finite `241`
+  through expiry (`ee48d94d` / `b52f19c9`); full trace QA is `877/877` (`843`
+  required). Helper Projectile, direct HitDef, FallEnvShake, active EnvShake,
+  waveform, stacking, pause, camera/render parity, rollback and full parity
+  remain outside. See [issue
   373](../.scratch/roadmap/issues/373-projectile-envshake-finite-duration.md).
+
+- **T799 next** — issue 374 isolates one first-generation Helper-created,
+  root-owned Projectile EnvShake hit route with parent/root attribution and
+  finite expiry. See [issue
+  374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;
   evidence remains in `29aba4bb` / `b9b0752d`.

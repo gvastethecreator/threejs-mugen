@@ -1,4 +1,15 @@
 ﻿# Supported Features
+## 2026-08-15 T798 — closed-bounded
+
+Root Projectile contact `EnvShake` now retains finite positive duration beyond
+the old 240-tick ceiling only for accepted unguarded hits. Guard and rejected
+contacts emit no shake. Required trace
+`synthetic-imported-projectile-envshake-long-finite` proves `time = 241` to
+expiry (`ee48d94d` / `b52f19c9`). Helper Projectile attribution, direct HitDef,
+FallEnvShake, active EnvShake, waveform, stacking, pause, camera/render parity,
+rollback and full parity remain outside the claim. See [issue
+373](../.scratch/roadmap/issues/373-projectile-envshake-finite-duration.md).
+
 ## 2026-08-15 T786 — closed-bounded
 
 Helper-owned live `ModifyProjectile RedirectID` now resolves a finite caller

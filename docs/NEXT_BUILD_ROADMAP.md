@@ -73,10 +73,23 @@ required). Guard, Projectile, FallEnvShake, and active EnvShake retain their
 current policy. See [issue
 372](../.scratch/roadmap/issues/372-hitdef-contact-envshake-finite-duration.md).
 
-## Next bounded slice — T798 root Projectile `EnvShake` duration (2026-08-15)
+## Latest bounded slice — T798 root Projectile `EnvShake` duration (2026-08-15)
 
-Issue 373 queues accepted root Projectile contact lifetime and a required trace
-gate. See [issue 373](../.scratch/roadmap/issues/373-projectile-envshake-finite-duration.md).
+Issue 373 closes root Projectile accepted-hit EnvShake duration. Product
+`122ce17a` retains finite `time = 241` to expiry and emits only on an
+unguarded hit; guard and rejected contacts stay silent. Required trace
+`synthetic-imported-projectile-envshake-long-finite` passes at `ee48d94d` /
+`b52f19c9`; aggregate QA is `877/877` (`843` required). Helper Projectile,
+direct HitDef, FallEnvShake, active EnvShake, waveform, stacking, pause and
+full parity remain separate. See [issue
+373](../.scratch/roadmap/issues/373-projectile-envshake-finite-duration.md).
+
+## Next bounded slice — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
+
+Issue 374 selects first-generation Helper-created/root-owned Projectile
+EnvShake attribution plus finite expiry. It excludes nested/team topology,
+direct/root rework, FallEnvShake, active EnvShake and waveform parity. See
+[issue 374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index
