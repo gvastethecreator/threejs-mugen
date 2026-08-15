@@ -47,6 +47,7 @@ import type {
   RuntimeModifyProjectilePartialTripleParam,
   RuntimeModifyProjectileTripleParam,
   RuntimeProjectileEnvShake,
+  RuntimeProjectileFallFlags,
   RuntimeProjectileFallImpact,
   RuntimeProjectileFallRecovery,
   RuntimeProjectileModifyResolver,
@@ -2129,6 +2130,22 @@ export function resolveRuntimeHelperProjectileFallRecovery(
     recoverTime: resolveRuntimeHelperIntegerExpression(helper, fallRecovery.recoverTime, options),
     downRecover: resolveRuntimeHelperIntegerExpression(helper, fallRecovery.downRecover, options),
     downRecoverTime: resolveRuntimeHelperIntegerExpression(helper, fallRecovery.downRecoverTime, options),
+  };
+}
+
+/** Resolves fresh Helper Projectile fall-policy values in the Helper caller context. */
+export function resolveRuntimeHelperProjectileFallFlags(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): Partial<RuntimeProjectileFallFlags> | undefined {
+  const operation = controller.operation;
+  const fallFlags = operation?.kind === "projectile" ? operation.fallFlags : undefined;
+  if (fallFlags === undefined) return undefined;
+  return {
+    enabled: resolveRuntimeHelperIntegerExpression(helper, fallFlags.enabled, options),
+    airFall: resolveRuntimeHelperIntegerExpression(helper, fallFlags.airFall, options),
+    kill: resolveRuntimeHelperIntegerExpression(helper, fallFlags.kill, options),
   };
 }
 

@@ -1970,6 +1970,44 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("resolves Helper Projectile fall flags independently in the helper caller context", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "43", anim: "900" }),
+      animations: new Map([[900, action(900)]]),
+    });
+    helper.vars[0] = 1.9;
+    helper.vars[1] = 0.9;
+    helper.vars[2] = 0;
+    const dynamicController = compileControllerIr(controller("Projectile", {
+      projanim: "900",
+      projid: "8866",
+      fall: "var(0)",
+      "air.fall": "var(1)",
+      "fall.kill": "var(2)",
+      "fall.xvelocity": "-3",
+    }));
+
+    expect(spawnRuntimeHelperProjectileActor(store, helper, dynamicController)).toMatchObject({
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+      fall: {
+        enabled: true,
+        airFall: false,
+        kill: false,
+        xVelocity: -3,
+      },
+    });
+
+    helper.vars[1] = Number.NaN;
+    expect(spawnRuntimeHelperProjectileActor(store, helper, dynamicController)?.fall).toEqual({
+      enabled: true,
+      kill: false,
+      xVelocity: -3,
+    });
+  });
+
   it("resolves Helper Projectile keepstate in the helper caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {
