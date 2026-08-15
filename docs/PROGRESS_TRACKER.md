@@ -63,18 +63,20 @@ trace QA (`872/872`, `838` required) pass. T794 later closes positive
 duration above 240; exact blend/layer/pause behavior, nested/team ownership,
 rollback and full parity remain open.
 
-## Latest implementation checkpoint — T794 finite `EnvColor` duration ceiling (2026-08-15)
+## Latest implementation checkpoint — T795 finite active `EnvShake` duration (2026-08-15)
 
-Issue 369 closes finite positive `EnvColor` through `1cab062e`. The compiler
-and runtime retain authored `241`; root/Helper coverage plus required
-`synthetic-imported-envcolor-long-finite` prove 241 visible finite frames then
-expiry (`6a60ee57` / `58e50e4b`). Typecheck, build and aggregate trace QA
-(`873/873`, `839` required) pass. Exact blend/layer/pause, nested/team
-ownership, rollback and full parity remain open.
+Issue 370 closes active root/Helper finite `EnvShake` through `1819526b`.
+Authored `time = 241` survives past the old ceiling then expires; required
+`synthetic-imported-envshake-long-finite` passes at `a9f98d37` / `5ab967f7`.
+Focused `261/261`, full `328/4074`, typecheck, build, and trace QA
+`874/874` (`840` required) pass. FallEnvShake, Projectile, and direct HitDef
+contact policies remain intentionally bounded; waveform, stacking, pause,
+camera/render parity, rollback and full parity remain open.
 
-## Next implementation checkpoint — T795 finite `EnvShake` duration ceiling (2026-08-15)
+## Next implementation checkpoint — T796 finite `FallEnvShake` duration (2026-08-15)
 
-Issue 370 queues a separate active-EnvShake ceiling decision and evidence path.
+Issue 371 isolates stored `fall.envshake.time` consumption without widening
+other inherited EnvShake producers.
 ## Historical implementation checkpoint — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

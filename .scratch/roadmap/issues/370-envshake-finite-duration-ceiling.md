@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T795 — queued (2026-08-15)**
+- **T795 — closed-bounded (2026-08-15)**
 - **Área:** active EnvShake / finite lifetime / camera evidence
 - **Dependencia:** T794 / issue 369
 
@@ -34,3 +34,15 @@ y no debe convertir rutas de FallEnvShake o Projectile en un claim implícito.
 Waveform exacta, stacking/reemplazo global, FallEnvShake, Projectile,
 pausa/hitpause, renderer/cámara exacta, overflow/int32, nested/team ownership,
 rollback y paridad completa no pertenecen a T795.
+
+## Cierre
+
+- **Producto:** `1819526b` (`feat(runtime): lift active EnvShake duration cap`)
+- **Contrato cerrado:** `EnvShake` activo root/Helper conserva duración positiva
+  finita por encima de 240; `time = 241` permanece hasta expirar.
+- **Separación explícita:** FallEnvShake, Projectile y EnvShake de contacto
+  directo conservan su límite previo de 240 y no forman parte del claim.
+- **Evidencia:** focused `261/261`, `pnpm test` `328/4074`, typecheck, build,
+  y `pnpm qa:trace` `874/874` (`840` required). Artefacto requerido
+  `synthetic-imported-envshake-long-finite`: trace `a9f98d37`, final
+  `5ab967f7`, 254 frames.

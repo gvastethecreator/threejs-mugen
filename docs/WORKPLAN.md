@@ -56,18 +56,19 @@ without revival after expiry. Required trace is `7481ebbf` / `2c8cedc7`; QA is
 presentation math, pause, nested/team ownership, rollback and full parity
 remain separate.
 
-## Latest slice — T794 finite `EnvColor` duration ceiling (2026-08-15)
+## Latest slice — T795 finite active `EnvShake` duration (2026-08-15)
 
-Issue 369 closes finite positive duration beyond the local cap. Product
-`1cab062e` preserves finite `241` in compiler/runtime while the required trace
-observes 241 frames then expiry (`6a60ee57` / `58e50e4b`); QA is `873/873`
-(`839` required). Exact presentation math, pause, nested/team ownership,
-rollback and full parity remain separate.
+Issue 370 closes only active root/Helper finite duration. Product `1819526b`
+preserves finite `241` until expiry; the required trace passes at `a9f98d37`
+/ `5ab967f7`, and QA is `874/874` (`840` required). FallEnvShake,
+Projectile, and direct HitDef contact producers remain separate; exact
+waveform, stacking, pause, camera/render parity, rollback and full parity stay
+outside this slice.
 
-## Next slice — T795 finite `EnvShake` duration ceiling (2026-08-15)
+## Next slice — T796 finite `FallEnvShake` duration (2026-08-15)
 
-Issue 370 selects the separately bounded active-EnvShake finite-duration
-comparison and trace path.
+Issue 371 selects stored `fall.envshake.time` consumption without widening
+other EnvShake producers.
 ## Historical slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

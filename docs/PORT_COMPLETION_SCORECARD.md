@@ -82,10 +82,18 @@ for 241 frames then expires (`6a60ee57` / `58e50e4b`); aggregate trace QA is
 rollback and full parity remain blocked, so the score does not move. See [issue
 369](../.scratch/roadmap/issues/369-envcolor-finite-duration-ceiling.md).
 
-## Next scorecard slice — 2026-08-15 T795 finite `EnvShake` duration
+## 2026-08-15 T795 finite active `EnvShake` duration — closed-bounded, no score movement
 
-Issue 370 queues a separate active-EnvShake finite-duration decision without
-changing the current score.
+Issue 370 closes active root/Helper finite `EnvShake` through `1819526b`.
+Required `synthetic-imported-envshake-long-finite` proves `time = 241` stays
+finite through expiry (`a9f98d37` / `5ab967f7`); aggregate trace QA is
+`874/874` (`840` required). FallEnvShake, Projectile, and direct HitDef
+contact producers retain their prior 240-tick policy, so no score moves. See
+[issue 370](../.scratch/roadmap/issues/370-envshake-finite-duration-ceiling.md).
+
+## Next scorecard slice — 2026-08-15 T796 finite `FallEnvShake` duration
+
+Issue 371 queues stored fall-envshake lifetime only; no score movement planned.
 ## Historical checkpoint — 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index
 
 Issue 355 closed Helper-owned live `ModifyProjectile down.velocity` explicit

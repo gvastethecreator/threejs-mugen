@@ -74,20 +74,23 @@ and prevents an expired replacement from reviving the prior event. Required
 closes the finite-duration ceiling; exact blend/layer/pause/topology/rollback/
 full parity remain separate. See [issue 368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
 
-## Latest bounded slice — T794 finite `EnvColor` duration ceiling (2026-08-15)
+## Latest bounded slice — T795 finite active `EnvShake` duration (2026-08-15)
 
-Issue 369 closes the positive finite route. Product `1cab062e` removes the
-local 240-tick cap while preserving zero rejection and negative `-1` handling.
-Root/Helper focused coverage and required
-`synthetic-imported-envcolor-long-finite` prove a finite authored `241` lasts
-past 240 and expires, at `6a60ee57` / `58e50e4b`; aggregate trace QA is
-`873/873` (`839` required). Exact blend/layer/pause/topology/rollback/full
-parity remain separate. See [issue 369](../.scratch/roadmap/issues/369-envcolor-finite-duration-ceiling.md).
+Issue 370 closes the active-controller finite route. Product `1819526b`
+removes only the active `EnvShake` 240-tick cap: root and Helper authored
+`time = 241` remain finite through expiry. Required
+`synthetic-imported-envshake-long-finite` passes at `a9f98d37` / `5ab967f7`;
+focused coverage is `261/261`, full tests `328/4074`, and aggregate trace QA
+`874/874` (`840` required). `FallEnvShake`, Projectile, and direct HitDef
+contact producers retain their existing 240-tick policy; waveform, stacking,
+pause, camera/render parity, rollback, and full parity remain separate. See
+[issue 370](../.scratch/roadmap/issues/370-envshake-finite-duration-ceiling.md).
 
-## Next bounded slice — T795 finite `EnvShake` duration ceiling (2026-08-15)
+## Next bounded slice — T796 finite `FallEnvShake` duration (2026-08-15)
 
-Issue 370 queues source comparison and a separately bounded active-EnvShake
-finite-duration claim. See [issue 370](../.scratch/roadmap/issues/370-envshake-finite-duration-ceiling.md).
+Issue 371 queues the stored `fall.envshake.time` consumption path without
+widening Projectile or direct HitDef contact EnvShake producers. See [issue
+371](../.scratch/roadmap/issues/371-fallenvshake-finite-duration-ceiling.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper caller-context `ModifyProjectile down.velocity` index
