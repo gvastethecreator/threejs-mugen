@@ -85,7 +85,19 @@ required) pass. Nested/team/`ownProjectile` topology, ModifyProjectile,
 FallEnvShake, active EnvShake, waveform, pause, camera/render parity, rollback
 and full parity stay outside.
 
-## Latest slice — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
+## Latest slice — T801 Helper Projectile dynamic `EnvShake` (2026-08-15)
+
+Issue 376 closes caller-context dynamic `envshake.*` values on one fresh
+first-generation Helper-created/root-owned Projectile. Six finite values
+resolve as `p1-helper-0`, remain root-owned as `p1`, and reach only an accepted
+unguarded root event; a non-finite authored component fails closed. Required
+`synthetic-imported-helper-projectile-dynamic-envshake` passes at `b8dd3455` /
+`0381f5c4`. Full tests `328/4084`, typecheck, build, and trace QA `880/880`
+(`846` required) pass. Nested/team/`ownProjectile` topology, ModifyProjectile,
+FallEnvShake, active EnvShake, waveform, pause, camera/render timing, teams,
+rollback, and full parity remain outside.
+
+## Historical slice — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
 
 Issue 375 closes caller-context dynamic `envshake.*` values on fresh root
 Projectile spawn. The package is finite-or-absent, reaches only an accepted

@@ -97,7 +97,20 @@ typecheck and trace QA `878/878` (`844` required) pass. Nested/team/
 `ownProjectile` topology, ModifyProjectile, FallEnvShake, active EnvShake,
 waveform, pause, camera/render parity, rollback and full parity remain open.
 
-## Latest implementation checkpoint — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
+## Latest implementation checkpoint — T801 Helper Projectile dynamic `EnvShake` (2026-08-15)
+
+Issue 376 closes the caller-context dynamic package for one first-generation
+Helper-created/root-owned Projectile. `p1-helper-0` resolves
+`envshake.time/freq/ampl/phase/mul/dir`; the Projectile retains
+`owner/root = p1` and `parent = p1-helper-0`, and an accepted unguarded hit
+emits one root event. A non-finite component fails closed. Required
+`synthetic-imported-helper-projectile-dynamic-envshake` proves the route at
+`b8dd3455` / `0381f5c4`. Full tests `328/4084`, typecheck, build, and trace
+QA `880/880` (`846` required) pass. Nested/team/`ownProjectile` topology,
+ModifyProjectile, FallEnvShake, active EnvShake, waveform, pause, camera/render
+timing, teams, rollback, and full parity remain outside.
+
+## Historical implementation checkpoint — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
 
 Issue 375 closes caller-context dynamic `envshake.time`, `freq`, `ampl`,
 `phase`, `mul`, and `dir` for a fresh root Projectile. The package remains

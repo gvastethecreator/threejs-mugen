@@ -116,6 +116,21 @@ waveform, pause, camera/render parity, rollback and full parity remain blocked,
 so the score does not move. See [issue
 374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
 
+## 2026-08-15 T801 Helper Projectile dynamic `EnvShake` — closed-bounded, no score movement
+
+Issue 376 closes caller-context dynamic
+`envshake.time/freq/ampl/phase/mul/dir` for one first-generation
+Helper-created/root-owned Projectile. The Helper resolves the finite package;
+the Projectile retains `owner/root = p1` and `parent = p1-helper-0`; accepted
+unguarded contact emits the root camera event; non-finite authored components
+fail closed. Required `synthetic-imported-helper-projectile-dynamic-envshake`
+passes at `b8dd3455` / `0381f5c4`; full tests `328/4084`, typecheck, build,
+and trace QA `880/880` (`846` required) pass. Nested/team/`ownProjectile`
+topology, ModifyProjectile, FallEnvShake, active EnvShake, waveform, pause,
+camera/render timing, teams, rollback, and full parity remain blocked, so the
+score does not move. See [issue
+376](../.scratch/roadmap/issues/376-helper-projectile-dynamic-envshake.md).
+
 ## 2026-08-15 T800 root Projectile dynamic `EnvShake` parameters — closed-bounded, no score movement
 
 Issue 375 closes a fresh root Projectile's finite caller-context

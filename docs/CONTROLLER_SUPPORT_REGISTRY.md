@@ -1,15 +1,17 @@
 # Controller Support Registry
 
-Latest cursor: T799 / issue 374 is closed-bounded for first-generation
-Helper-created/root-owned Projectile contact `EnvShake`. An accepted unguarded
-hit emits finite `time = 241` to root `p1`; guard and rejected contacts do not
-emit. Required `synthetic-imported-helper-projectile-envshake-long-finite`
-passes at `cf27a089` / `8d8a853c`, preserving `parent = p1-helper-0`, lifecycle
-and root/Helper target links; aggregate QA is `878/878` (`844` required).
-Nested/team/`ownProjectile` topology, ModifyProjectile, direct HitDef,
-FallEnvShake, active EnvShake, waveform, stacking, pause, camera/render parity,
-rollback and full parity remain unsupported. See [issue
-374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
+Latest cursor: T801 / issue 376 is closed-bounded for caller-context dynamic
+`envshake.time/freq/ampl/phase/mul/dir` on one first-generation
+Helper-created/root-owned Projectile. `p1-helper-0` resolves the finite
+package; the root store keeps `owner/root = p1` and `parent = p1-helper-0`; an
+accepted unguarded hit emits the root event; one non-finite authored component
+drops the package. Required
+`synthetic-imported-helper-projectile-dynamic-envshake` passes at `b8dd3455` /
+`0381f5c4`; full tests `328/4084`, typecheck, build, and trace QA `880/880`
+(`846` required) pass. Nested/team/`ownProjectile` topology, ModifyProjectile,
+direct HitDef, FallEnvShake, active EnvShake, waveform, stacking, pause,
+camera/render parity, rollback and full parity remain unsupported. See [issue
+376](../.scratch/roadmap/issues/376-helper-projectile-dynamic-envshake.md).
 
 Previous cursor: T793 / issue 368 is closed-bounded for `EnvColor time = -1`.
 Product `d98a5443` preserves an indefinite stage flash until a later EnvColor
@@ -32,7 +34,7 @@ not attributed to this slice. Fresh defaults, dynamic Z/`n`, Helper-authored
 controllers, Projectile variants, exact landing/timing, rollback and full
 parity remain unsupported.
 
-Latest cursor: T800 / issue 375 closes caller-context dynamic root Projectile
+Previous cursor: T800 / issue 375 closes caller-context dynamic root Projectile
 `envshake.time/freq/ampl/phase/mul/dir`. The finite package is carried to an
 accepted unguarded contact only; non-finite authored input fails closed.
 Required `synthetic-imported-projectile-dynamic-envshake` passes at

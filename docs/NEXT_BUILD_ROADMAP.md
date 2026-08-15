@@ -97,7 +97,21 @@ waveform, pause, camera/render parity, rollback and full parity remain
 separate. See [issue
 374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
 
-## Latest bounded slice — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
+## Latest bounded slice — T801 Helper Projectile dynamic `EnvShake` (2026-08-15)
+
+Issue 376 closes the dynamic six-field EnvShake package for one
+first-generation Helper-created/root-owned Projectile. `p1-helper-0` evaluates
+the package, while the root store preserves `owner/root = p1` and
+`parent = p1-helper-0`; accepted unguarded contact emits exactly one root
+event and a non-finite authored component fails closed. Required
+`synthetic-imported-helper-projectile-dynamic-envshake` passes at `b8dd3455` /
+`0381f5c4`; full tests `328/4084`, typecheck, build, and trace QA `880/880`
+(`846` required) pass. Nested/team/`ownProjectile` topology,
+ModifyProjectile, FallEnvShake, active EnvShake, waveform, pause, camera/render
+timing, teams, rollback, and full parity remain outside. See [issue
+376](../.scratch/roadmap/issues/376-helper-projectile-dynamic-envshake.md).
+
+## Historical bounded slice — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
 
 Issue 375 closes caller-context `envshake.*` values during fresh root Projectile
 spawn. Six finite values reach the accepted unguarded camera event and expire;

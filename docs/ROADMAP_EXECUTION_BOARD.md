@@ -1,13 +1,15 @@
 ﻿# Roadmap Execution Board
 
-## Active bounded slice — T801 Helper Projectile dynamic `EnvShake` (2026-08-15)
+## Latest bounded slice — T801 Helper Projectile dynamic `EnvShake` (2026-08-15)
 
-Issue 376 is active for one first-generation Helper-created Projectile. It
-will resolve finite `envshake.time/freq/ampl/phase/mul/dir` in the Helper
-caller context while preserving root `p1` ownership and parent
-`p1-helper-0`. The required route must prove a single accepted unguarded hit,
-root presentation event, lifecycle, target links, and fail-closed handling of
-one non-finite authored component. Nested/team/`ownProjectile` topology,
+Issue 376 closes one first-generation Helper-created/root-owned Projectile.
+All six finite `envshake.time/freq/ampl/phase/mul/dir` expressions resolve in
+the Helper caller context while `owner/root = p1` and `parent = p1-helper-0`
+remain intact. One accepted unguarded hit emits the root event; a non-finite
+component drops the whole package. Required
+`synthetic-imported-helper-projectile-dynamic-envshake` passes at `b8dd3455` /
+`0381f5c4`; full tests `328/4084`, typecheck, build, and trace QA `880/880`
+(`846` required) pass. Nested/team/`ownProjectile` topology,
 `ModifyProjectile`, FallEnvShake, active EnvShake, waveform, pause, render,
 rollback and full parity remain out. See [issue
 376](../.scratch/roadmap/issues/376-helper-projectile-dynamic-envshake.md).

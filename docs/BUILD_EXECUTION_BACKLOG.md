@@ -105,6 +105,20 @@
   camera/render parity, rollback and full parity remain outside. See [issue
   374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
 
+- **T801 closed-bounded** — issue 376 closes caller-context dynamic
+  `envshake.time/freq/ampl/phase/mul/dir` for one first-generation
+  Helper-created/root-owned Projectile. The six finite values resolve in
+  `p1-helper-0`; the Projectile remains `owner/root = p1`,
+  `parent = p1-helper-0`; accepted unguarded contact emits the root camera
+  event, and a non-finite authored component fails closed. Required
+  `synthetic-imported-helper-projectile-dynamic-envshake` proves the package
+  and lifecycle at `b8dd3455` / `0381f5c4`. Full tests `328/4084`, typecheck,
+  build, and trace QA `880/880` (`846` required) pass. Nested/team/
+  `ownProjectile` topology, ModifyProjectile, FallEnvShake, active EnvShake,
+  waveform, pause, camera/render timing, teams, rollback, and full parity
+  remain outside. See [issue
+  376](../.scratch/roadmap/issues/376-helper-projectile-dynamic-envshake.md).
+
 - **T800 closed-bounded** — issue 375 closes caller-context dynamic
   `envshake.time/freq/ampl/phase/mul/dir` for one fresh root Projectile.
   Accepted unguarded contact emits the resolved finite package; a non-finite
