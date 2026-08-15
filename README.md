@@ -1,12 +1,39 @@
-# MUGEN Web Sandbox
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/header/document.svg?title=MUGEN+Web+Sandbox&subtitle=Playable+browser+combat.+Inspectable+compatibility.&logo=threedotjs&theme=orange&align=center&mode=dark" />
+    <img alt="MUGEN Web Sandbox — playable browser combat with inspectable compatibility" src="https://shieldcn.dev/header/document.svg?title=MUGEN+Web+Sandbox&subtitle=Playable+browser+combat.+Inspectable+compatibility.&logo=threedotjs&theme=orange&align=center&mode=light" />
+  </picture>
+</p>
 
-Private/local Three.js prototype for progressively porting M.U.G.E.N / IKEMEN-GO-style characters, stages, and match runtime behavior to the browser.
+<p align="center">
+  <a href="https://github.com/gvastethecreator/threejs-mugen/actions/workflows/ci.yml"><img alt="CI status" src="https://shieldcn.dev/github/ci/gvastethecreator/threejs-mugen.svg?workflow=ci&branch=master&variant=secondary&size=xs" /></a>
+  <a href="https://gvastethecreator.github.io/threejs-mugen/"><img alt="Project site" src="https://shieldcn.dev/badge/site-pages-f5a742.svg?logo=githubpages&variant=branded&size=xs" /></a>
+  <a href="https://threejs.org/"><img alt="Three.js 0.185" src="https://shieldcn.dev/badge/Three.js-0.185-101214.svg?logo=threedotjs&variant=branded&size=xs" /></a>
+  <a href="https://pnpm.io/"><img alt="pnpm 11.21" src="https://shieldcn.dev/badge/pnpm-11.21-f69220.svg?logo=pnpm&variant=branded&size=xs" /></a>
+  <a href="https://github.com/gvastethecreator/threejs-mugen/stargazers"><img alt="GitHub stars" src="https://shieldcn.dev/github/stars/gvastethecreator/threejs-mugen.svg?variant=secondary&size=xs" /></a>
+</p>
 
-This is now a port foundation, not only an inspector. The project should grow toward MUGEN/IKEMEN compatibility by measured layers instead of pretending that partial parsing equals full runtime parity. It currently has three modes:
+*A local-first Three.js port laboratory for playable combat, MUGEN/IKEMEN package inspection, and evidence-led compatibility work.*
+
+This is a port foundation, not a parity claim. Every supported path is expected to connect parsing, runtime behavior, and reproducible evidence before it is presented as compatible.
+
+[Project site](https://gvastethecreator.github.io/threejs-mugen/) · [Source and issues](https://github.com/gvastethecreator/threejs-mugen) · [Support the work](https://ko-fi.com/gvaste)
+
+It currently has three product modes:
 
 - `Runtime Mode`: a playable Three.js fight prototype with three active local atlas-backed demo fighters, an original native stage, an optional imported AIR/SFF runtime route, partial imported stage `.def` support, keyboard/touch controls, hitboxes/hurtboxes, damage, hit pause, hit stun, life, power, round timer, KO/time-over flow, and debug panels.
 - `Inspector Mode`: local ZIP/folder loading for MUGEN characters, partial `.def`, `.air`, `.cmd`, `.cns/.st`, `.sff` parsing, AIR playback, and compatibility reporting.
 - `Studio Mode`: a first creator-workbench shell with `Workbench`, `Assets`, `Inspector`, `Debug`, `Evidence`, `Modules`, and `Build` surfaces for project manifests, asset provenance, module gates, runtime actor evidence, QA evidence, local recent projects, and a compiled `runtime-manifest/v0` contract.
+
+## Product tour
+
+These captures come from the repository's Playwright smoke route with local/generated content. They contain no personal files or commercial character packages. The same smoke run rendered these surfaces but failed ten compatibility/evidence assertions; see [capture provenance](docs/assets/screenshots/README.md) and [the quality audit](docs/QUALITY_AUDIT.md).
+
+| Playable runtime | Mobile controls |
+| --- | --- |
+| <img src="docs/assets/screenshots/runtime-desktop.png" alt="Desktop match runtime with two local fighters, collision overlays, and source review context" /> | <img src="docs/assets/screenshots/runtime-mobile.png" alt="Mobile match runtime with touch controls and a source review panel" /> |
+| **Studio workbench** | **Build trust chain** |
+| <img src="docs/assets/screenshots/studio-workbench.png" alt="Studio workbench showing a playable stage and an honest import compatibility task" /> | <img src="docs/assets/screenshots/studio-build.png" alt="Studio Build surface showing runtime, QA, and revision-bound evidence status" /> |
 
 ## Run
 
@@ -17,7 +44,7 @@ pnpm dev
 
 Then open the Vite URL. The app starts in Runtime Mode. You can switch to Inspector Mode or load a character ZIP/folder. No commercial character assets are included.
 
-This repository is pnpm-native (`pnpm@11.20.0`). Use the task aliases in
+This repository is pnpm-native (`pnpm@11.21.0`). Use the task aliases in
 `.vscode/tasks.json` or the scripts below; Bun is not required by the runtime.
 
 ## Maintenance
