@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T808 — active (2026-08-15)**
+- **T808 — closed-bounded (2026-08-15)**
 - **Área:** Projectile fresco creado por root, política de caída y metadata de
   contacto
 - **Dependencia:** T806 materializa recuperación de caída dinámica para el
@@ -30,8 +30,8 @@ consumidores existentes.
 - El spawn admite un resolver typed de flags sin modificar rutas estáticas.
 - Cada flag se resuelve independientemente y se trunca de forma finita en
   caller context; un valor no finito no borra los hermanos finitos.
-- Un contacto aceptado de suelo/aire expone la política efectiva al `HitFall`
-  existente, incluyendo `fall.kill`.
+- Un contacto aceptado expone la política efectiva al `HitFall` existente,
+  incluyendo `fall.kill`.
 - Hay prueba focal de spawn y una traza importada requerida root → Projectile.
 - El cierre actualiza roadmap, pasa los gates aplicables y queda en commits
   lógicos separados.
@@ -42,8 +42,18 @@ Un Projectile fresco creado por root resuelve `fall`, `air.fall` y
 `fall.kill` finitos en caller context y los consume sólo en su contacto de
 caída aceptado.
 
+## Evidencia de cierre
+
+- `a436e58f` resuelve los flags por componente desde IR, spawn y caller
+  context root; los hermanos finitos sobreviven a un valor no finito.
+- `ae111508` añade la traza requerida
+  `synthetic-imported-projectile-dynamic-fall-flags`, que pasa con checksum
+  `a39589d7` y final `fb879f83`.
+- Pasan el foco `3/3`, `pnpm test`, `pnpm typecheck`, `pnpm build` y
+  `pnpm qa:trace` `887/887` (`853` requeridas).
+
 ## Bloqueado
 
-Helper/nesting/`ownProjectile`, ModifyProjectile, ModifyHitDef, `forcenofall`,
-sintaxis `n`, cálculo exacto de caída/KO/recuperación, equipos, rollback y
-paridad M.U.G.E.N/Ikemen completa.
+Helper/nesting/`ownProjectile`, selección aérea observable de `air.fall`,
+ModifyProjectile, ModifyHitDef, `forcenofall`, sintaxis `n`, cálculo exacto de
+caída/KO/recuperación, equipos, rollback y paridad M.U.G.E.N/Ikemen completa.

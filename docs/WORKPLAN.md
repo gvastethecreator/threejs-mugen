@@ -1,11 +1,13 @@
 # Workplan
 
-## Active slice — T808 root Projectile dynamic fall flags (2026-08-15)
+## Latest closed slice — T808 root Projectile dynamic fall flags (2026-08-15)
 
-Issue 383 is resolving finite caller-context `fall`, `air.fall` and
-`fall.kill` on one fresh root Projectile. Only the existing accepted-fall
-route is in scope; Helper/nesting, ModifyProjectile, exact fall/KO timing,
-teams, rollback and full parity remain outside.
+Issue 383 closes finite caller-context `fall`, `air.fall` and `fall.kill` on
+one fresh root Projectile. The existing accepted-fall route is verified at
+`a39589d7` / `fb879f83`; full tests, typecheck, build and trace QA `887/887`
+(`853` required) pass. Helper/nesting/`ownProjectile`, airborne-only
+selection, ModifyProjectile, ModifyHitDef, exact fall/KO timing, teams,
+rollback and full parity remain outside.
 
 ## Latest slice — T807 Helper Projectile dynamic fall recovery (2026-08-15)
 

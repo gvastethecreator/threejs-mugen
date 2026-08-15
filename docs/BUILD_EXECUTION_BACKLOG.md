@@ -2,11 +2,13 @@
 
 ## Current parity queue
 
-- **T808 active** — issue 383 resolves finite caller-context `fall`,
+- **T808 closed-bounded** — issue 383 resolves finite caller-context `fall`,
   `air.fall` and `fall.kill` for one fresh root Projectile and its accepted
-  fall-contact consumer. Helper/nesting/`ownProjectile`, ModifyProjectile,
-  exact fall/KO timing, teams, rollback and full parity remain outside. See
-  [issue 383](../.scratch/roadmap/issues/383-root-projectile-dynamic-fall-flags.md).
+  fall-contact consumer. Required evidence passes at `a39589d7` / `fb879f83`;
+  full tests, typecheck, build and trace QA `887/887` (`853` required) pass.
+  Helper/nesting/`ownProjectile`, airborne-only selection, ModifyProjectile,
+  ModifyHitDef, exact fall/KO timing, teams, rollback and full parity remain
+  outside. See [issue 383](../.scratch/roadmap/issues/383-root-projectile-dynamic-fall-flags.md).
 
 - **T807 closed-bounded** — issue 382 closes finite caller-context
   `fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` for one

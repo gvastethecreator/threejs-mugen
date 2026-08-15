@@ -1,12 +1,14 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T808 root Projectile dynamic fall flags — active, no score movement
+## 2026-08-15 T808 root Projectile dynamic fall flags — closed-bounded, no score movement
 
-Issue 383 is carrying finite caller-context `fall`, `air.fall` and
-`fall.kill` through one fresh root Projectile and its accepted-fall consumer.
-This remains a bounded runtime slice, so it does not move the port score while
-Helper/nesting, ModifyProjectile, exact fall/KO timing, teams, rollback and
-full parity stay open. See [issue
+Issue 383 closes finite caller-context `fall`, `air.fall` and `fall.kill`
+through one fresh root Projectile and its accepted-fall consumer. Required
+`synthetic-imported-projectile-dynamic-fall-flags` passes at `a39589d7` /
+`fb879f83`; full tests, typecheck, build and trace QA `887/887` (`853`
+required) pass. This remains bounded, so the score does not move while
+Helper/nesting, airborne-only selection, ModifyProjectile, exact fall/KO
+timing, teams, rollback and full parity stay open. See [issue
 383](../.scratch/roadmap/issues/383-root-projectile-dynamic-fall-flags.md).
 
 ## 2026-08-15 T807 Helper Projectile dynamic fall recovery — closed-bounded, no score movement

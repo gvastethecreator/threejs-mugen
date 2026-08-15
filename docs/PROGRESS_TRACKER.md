@@ -1,12 +1,14 @@
 ﻿# Progress Tracker
 
-## Active implementation checkpoint — T808 root Projectile dynamic fall flags (2026-08-15)
+## Latest implementation checkpoint — T808 root Projectile dynamic fall flags (2026-08-15)
 
-Issue 383 is resolving finite caller-context `fall`, `air.fall` and
-`fall.kill` for one fresh root Projectile. The bounded target is an accepted
-fall contact using existing HitFall/GetHitVar consumers; Helper, nested,
-ModifyProjectile, exact fall/KO timing, teams, rollback and full parity remain
-outside.
+Issue 383 closes finite caller-context `fall`, `air.fall` and `fall.kill` for
+one fresh root Projectile. The bounded accepted falling contact reaches
+existing HitFall/GetHitVar consumers. Required evidence passes at `a39589d7` /
+`fb879f83`; full tests, typecheck, build and trace QA `887/887` (`853`
+required) pass. Helper/nested/`ownProjectile`, airborne-only selection,
+ModifyProjectile, ModifyHitDef, exact fall/KO timing, teams, rollback and full
+parity remain outside.
 
 ## Latest implementation checkpoint — T807 Helper Projectile dynamic fall recovery (2026-08-15)
 
