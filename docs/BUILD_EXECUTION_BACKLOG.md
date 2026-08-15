@@ -2,6 +2,13 @@
 
 ## Current parity queue
 
+- **T809 active** — issue 384 resolves finite caller-context `fall`,
+  `air.fall` and `fall.kill` for one first-generation Helper-created,
+  root-owned Projectile and its accepted fall-contact consumer. Nested
+  Helpers/`ownProjectile`, ModifyProjectile, exact fall/KO timing, teams,
+  rollback and full parity remain outside. See [issue
+  384](../.scratch/roadmap/issues/384-helper-projectile-dynamic-fall-flags.md).
+
 - **T808 closed-bounded** — issue 383 resolves finite caller-context `fall`,
   `air.fall` and `fall.kill` for one fresh root Projectile and its accepted
   fall-contact consumer. Required evidence passes at `a39589d7` / `fb879f83`;

@@ -1,5 +1,14 @@
 ﻿# Progress Tracker
 
+## Active implementation checkpoint — T809 Helper Projectile dynamic fall flags (2026-08-15)
+
+Issue 384 is resolving finite caller-context `fall`, `air.fall` and
+`fall.kill` for one first-generation Helper-created, root-owned Projectile.
+The bounded target is an accepted fall contact using existing HitFall/GetHitVar
+consumers with `owner/root = p1` and `parent = p1-helper-0`; nested Helpers,
+`ownProjectile`, ModifyProjectile, exact fall/KO timing, teams, rollback and
+full parity remain outside.
+
 ## Latest implementation checkpoint — T808 root Projectile dynamic fall flags (2026-08-15)
 
 Issue 383 closes finite caller-context `fall`, `air.fall` and `fall.kill` for

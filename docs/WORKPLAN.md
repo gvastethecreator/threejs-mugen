@@ -1,5 +1,13 @@
 # Workplan
 
+## Active slice — T809 Helper Projectile dynamic fall flags (2026-08-15)
+
+Issue 384 is resolving finite caller-context `fall`, `air.fall` and
+`fall.kill` on one first-generation Helper-created, root-owned Projectile.
+Only the existing accepted-fall route is in scope; nested Helpers,
+`ownProjectile`, ModifyProjectile, exact fall/KO timing, teams, rollback and
+full parity remain outside.
+
 ## Latest closed slice — T808 root Projectile dynamic fall flags (2026-08-15)
 
 Issue 383 closes finite caller-context `fall`, `air.fall` and `fall.kill` on
