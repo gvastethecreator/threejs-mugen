@@ -1,7 +1,7 @@
 {
-  "source_commit": "1cab062e8c6c2688f47b7b4ff525838ea212bbd1",
-  "working_tree_dirty": true,
-  "generated_at": "2026-08-15T11:58:51Z",
+  "source_commit": "dae6c350e27c506cc8c38e038ea6c91e0b6c683b",
+  "working_tree_dirty": false,
+  "generated_at": "2026-08-15T12:02:07Z",
   "scanned_scope": [
     "."
   ],
@@ -43,8 +43,8 @@
     {
       "id": ".scratch",
       "path": ".scratch",
-      "file_count": 877,
-      "fingerprint": "33a8bfa42a9292a96e433a2e12743bd3ab087d7588e975aaaf59af49d1063251"
+      "file_count": 878,
+      "fingerprint": "f39caba2639b8432ad9085d6c0e2dc0e4f36bb497cf451a6dd679896598456d0"
     },
     {
       "id": ".vscode",
