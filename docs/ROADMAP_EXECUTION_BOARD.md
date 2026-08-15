@@ -1,5 +1,17 @@
 ﻿# Roadmap Execution Board
 
+## Active bounded slice — T807 Helper Projectile dynamic fall recovery (2026-08-15)
+
+Issue 382 tracks caller-context dynamic
+`fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` for one
+fresh Projectile created by a first-generation Helper. One accepted falling
+contact must retain finite siblings through existing recovery-window and
+`GetHitVar` paths while preserving `owner/root = p1` and
+`parent = p1-helper-0`. Nested/`ownProjectile` topology, ModifyProjectile,
+ModifyHitDef, fall flags, exact recovery timing, teams, rollback and full
+parity remain outside. See [issue
+382](../.scratch/roadmap/issues/382-helper-projectile-dynamic-fall-recovery.md).
+
 ## Latest bounded slice — T806 root Projectile dynamic fall recovery (2026-08-15)
 
 Issue 381 tracks caller-context dynamic
