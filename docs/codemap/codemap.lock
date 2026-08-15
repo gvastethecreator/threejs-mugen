@@ -1,7 +1,7 @@
 {
-  "source_commit": "d6ee626b2ccc948f4d02ba6365381b89cf3e99ca",
-  "working_tree_dirty": false,
-  "generated_at": "2026-08-15T15:44:38Z",
+  "source_commit": "3273a79c5925470fe9ede523fe662acf9e30df5c",
+  "working_tree_dirty": true,
+  "generated_at": "2026-08-15T16:07:50Z",
   "scanned_scope": [
     "."
   ],
@@ -43,8 +43,8 @@
     {
       "id": ".scratch",
       "path": ".scratch",
-      "file_count": 888,
-      "fingerprint": "e56b1dc83e77dac5f752323050ebabc652a0f0fea74c53cc0a50c205ea19eb3f"
+      "file_count": 889,
+      "fingerprint": "c2a2f485f7f3e86ee9cae2785571cb903fd426756e7a42982bbe93c7fd817896"
     },
     {
       "id": ".vscode",
@@ -56,7 +56,7 @@
       "id": "docs",
       "path": "docs",
       "file_count": 1915,
-      "fingerprint": "9cf19f884b6153487559567b89909affab781e6098f822d290e5a1dd96b1ab1f"
+      "fingerprint": "d57dedde73dfd682ba6d81bea77fe2d1e5290e4f79fe7029e56406380384d6a6"
     },
     {
       "id": "public",
@@ -74,13 +74,13 @@
       "id": "scripts",
       "path": "scripts",
       "file_count": 88,
-      "fingerprint": "57c5690a71b84004e425af990e12f4564072574b1ee59b8af3d3ba5421ae562a"
+      "fingerprint": "772e79d51a6652062fbd33d7dc7e04160ea74e5a2f3d2d88518f669102eb9e1a"
     },
     {
       "id": "src",
       "path": "src",
       "file_count": 850,
-      "fingerprint": "a174daf47c7fe2331b62ae285d415ea765b5a006cf7ab4a8f35241f619505508"
+      "fingerprint": "947087cbb3bdcec3a1ea1278fb11d6a3e8d75653659609846a5ba1a37f073909"
     }
   ]
 }
