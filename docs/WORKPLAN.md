@@ -1,14 +1,14 @@
 # Workplan
 
-## Latest slice — T756 closed-bounded (2026-08-12)
+## Latest slice — T757 closed-bounded (2026-08-14)
 
-Issue 330 snapshots finite `AttackMulSet.DizzyPoints` at root Projectile
-creation. Accepted unguarded contacts consume the frozen multiplier against
-defender dizzy points while authored `GetHitVar(dizzypoints)` stays distinct.
-Product/evidence commits `76222e0f` / `c8c7daa1`; required trace
-`a2d32251` -> `91bf5a3a` passes. Aggregate QA retains the inherited
-helper-bind target-link blocker. Guarded contacts, ModifyProjectile, resource
-ownership, exact clamp/rounding/timing, rollback and full parity remain out.
+Issue 331 snapshots finite `AttackMulSet.RedLife` at root Projectile creation.
+Accepted contacts consume the captured multiplier while authored
+`GetHitVar(redlife)` stays distinct. Product/evidence commits `815b2bf1` /
+`b244a944`; required trace `60caf22d` -> `4d7e8c29` passes. Aggregate QA
+retains the inherited helper-bind target-link blocker. Guarded contacts,
+Helper-parented evidence, ModifyProjectile, resource ownership, exact
+clamp/rounding/timing, rollback and full parity remain out.
 
 ## Historical slice — T755 superseded by T728
 
@@ -16,10 +16,10 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` slice. Issue 329 remains a superseded audit trail, not an open
 implementation task.
 
-## Next slice — T757 upstream seam selection
+## Next slice — T758 Helper Projectile redlife evidence
 
-Select one bounded official/Ikemen seam after the T756 evidence gate; keep
-aggregate QA repair and broader resource topology separate.
+Close the independent Helper-parented Projectile redlife snapshot trace from
+issue 332; keep aggregate QA repair and broader resource topology separate.
 
 ## Historical slice — T753 closed-bounded (2026-08-12)
 

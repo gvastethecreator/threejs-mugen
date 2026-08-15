@@ -1,5 +1,17 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-14 T757 Projectile `AttackMulSet.RedLife` snapshot — closed-bounded, no score movement
+
+Issue 331 closes the creation-time snapshot for the effective
+`AttackMulSet.RedLife` multiplier on root Projectiles. Accepted contact keeps
+authored `GetHitVar(redlife)` separate and applies the captured multiplier
+after a later live update. Product/evidence commits are `815b2bf1` /
+`b244a944`; required trace `60caf22d` -> `4d7e8c29` passes. Aggregate QA
+retains the inherited helper-bind target-link blocker. No score movement:
+guard routes, Helper-parented evidence, ModifyProjectile, resource-owner
+topology, exact clamp/rounding/timing, rollback and full parity remain
+blocked. See [issue 331](../.scratch/roadmap/issues/331-projectile-attackmulset-redlife.md).
+
 ## 2026-08-12 T756 Projectile `AttackMulSet.DizzyPoints` snapshot — closed-bounded, no score movement
 
 Issue 330 closes the creation-time snapshot for the effective
@@ -18,10 +30,11 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` work. Issue 329 remains superseded audit history and is not a
 new score candidate.
 
-## Next selection — T757 upstream seam selection
+## Next selection — T758 Helper Projectile redlife evidence
 
-Choose one bounded official/Ikemen source contract after the T756 gate; keep
-aggregate QA repair and resource topology separate.
+Close the independent Helper-parented Projectile redlife snapshot from
+[issue 332](../.scratch/roadmap/issues/332-helper-projectile-attackmulset-redlife.md);
+keep aggregate QA repair and resource topology separate.
 
 ## Historical checkpoint — 2026-08-12 T753 `AttackMulSet guardpoints` — closed-bounded, no score movement
 

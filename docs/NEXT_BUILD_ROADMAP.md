@@ -1,14 +1,16 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T756 closed-bounded (2026-08-12)
+## Latest bounded slice — T757 closed-bounded (2026-08-14)
 
-Issue 330 snapshots the dedicated `AttackMulSet.DizzyPoints` multiplier at
-root Projectile creation and consumes it only on accepted unguarded hits.
-Product `76222e0f`, evidence `c8c7daa1`, and required trace
-`a2d32251` -> `91bf5a3a` are recorded. Aggregate QA retains the inherited
-helper-bind target-link blocker. Guarded contacts, ModifyProjectile, resource
-ownership, exact clamp/rounding/timing, teams, rollback and full parity remain
-blocked. See [issue 330](../.scratch/roadmap/issues/330-projectile-attackmulset-dizzypoints.md).
+Issue 331 snapshots the dedicated `AttackMulSet.RedLife` multiplier at root
+Projectile creation and consumes it on the accepted hit while authored
+`GetHitVar(redlife)` remains separate. Product `815b2bf1`, evidence
+`b244a944`, and required trace `60caf22d` -> `4d7e8c29` are recorded.
+Aggregate QA retains the inherited helper-bind target-link blocker. Guarded
+contacts, Helper-parented evidence, ModifyProjectile, resource ownership,
+exact clamp/rounding/timing, teams, rollback and full parity remain blocked.
+See [issue
+331](../.scratch/roadmap/issues/331-projectile-attackmulset-redlife.md).
 
 ## Historical bounded slice — T755 superseded by T728
 
@@ -16,10 +18,11 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` work. Issue 329 is retained as superseded audit history; the
 root/RedirectID and Helper X/Y/Z evidence remains authoritative in issue 302.
 
-## Next bounded slice — T757 upstream seam selection
+## Next bounded slice — T758 Helper Projectile redlife evidence
 
-Choose one distinct official/Ikemen source contract after the T756 evidence
-gate; do not combine it with aggregate QA repair or resource-owner topology.
+Add the independent Helper-parented Projectile redlife snapshot trace from
+[issue 332](../.scratch/roadmap/issues/332-helper-projectile-attackmulset-redlife.md);
+do not combine it with aggregate QA repair or resource-owner topology.
 
 ## Historical bounded slice — T753 closed-bounded (2026-08-12)
 

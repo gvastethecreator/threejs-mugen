@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T757 — ready / implementación en curso**
+- **T757 — closed-bounded (2026-08-14)**
 - **Área:** runtime / Projectile / AttackMulSet / red-life resource
 - **Dependencia:** T756 / issue 330 (`DizzyPoints` snapshot)
 
@@ -43,6 +43,24 @@ Ikemen-GO pin local `149402f`:
 - Declarar soporte total MUGEN/Ikemen por este corte.
 
 ## Evidencia requerida
+
+- Producto: `815b2bf1` (`feat(mugen): snapshot projectile redlife multiplier`).
+- Traza requerida: `b244a944` (`test(evidence): gate projectile redlife snapshot`).
+- Artifact: `synthetic-imported-projectile-attack-redlife-snapshot-golden`;
+  trace checksum `60caf22d`, final checksum `4d7e8c29`.
+- La traza demuestra un Projectile raíz que captura `redlife=0.5` al
+  crearse, conserva ese snapshot después de `AttackMulSet redlife=2`,
+  publica `GetHitVar(redlife)=20` y aplica `redLife=10` al contacto.
+- `pnpm run typecheck`, pruebas focales y `git diff --check` pasan. `pnpm
+  qa:trace` materializa el artifact, pero termina por el bloqueo heredado
+  `synthetic-imported-helper-bind-to-target-redirect` (target link ausente).
+
+## Cierre acotado
+
+El corte queda cerrado para el snapshot root y la propagación al contacto.
+Guard routes, Helper-parented trace, ModifyProjectile, ownership de bancos,
+clamp/rounding/int32 exactos, rollback y paridad completa siguen fuera del
+claim.
 
 - `DamageScaleSystem` prueba redlife-only estático/dinámico y aislamiento de
   los multiplicadores de daño/dizzy/guardpoints.

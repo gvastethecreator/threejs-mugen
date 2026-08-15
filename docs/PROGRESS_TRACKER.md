@@ -1,15 +1,15 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T756 closed-bounded (2026-08-12)
+## Latest implementation checkpoint — T757 closed-bounded (2026-08-14)
 
-Issue 330 snapshots the effective `AttackMulSet.DizzyPoints` multiplier at
-root Projectile creation. Accepted unguarded contacts apply the frozen value
-to the defender resource while authored `GetHitVar(dizzypoints)` remains
-separate. Product/evidence commits are `76222e0f` and `c8c7daa1`; required
-trace `a2d32251` -> `91bf5a3a` passes. Aggregate QA remains blocked by the
-inherited helper-bind target-link case. Guard routes, ModifyProjectile,
-resource-owner topology, exact clamp/rounding/timing, rollback and full parity
-remain outside. See issue 330.
+Issue 331 snapshots the effective `AttackMulSet.RedLife` multiplier at root
+Projectile creation. Accepted contacts apply the captured value while
+authored `GetHitVar(redlife)` remains separate. Product/evidence commits are
+`815b2bf1` and `b244a944`; required trace `60caf22d` -> `4d7e8c29` passes.
+Aggregate QA remains blocked by the inherited helper-bind target-link case.
+Guard routes, Helper-parented evidence, ModifyProjectile, resource-owner
+topology, exact clamp/rounding/timing, rollback and full parity remain
+outside. See issue 331.
 
 ## Historical checkpoint — T755 superseded by T728
 
@@ -17,10 +17,10 @@ T755 was a duplicate queue entry for the already closed T728/issue 302 live
 `ModifyHitDef down.velocity` slice. Issue 329 is retained as superseded audit
 history; no new implementation should be scheduled from it.
 
-## Next implementation checkpoint — T757 upstream seam selection
+## Next implementation checkpoint — T758 Helper Projectile redlife evidence
 
-Select the next bounded official/Ikemen source contract after the T756 gate;
-keep aggregate QA repair and broader resource topology separate.
+Close the independent Helper-parented Projectile redlife snapshot trace from
+issue 332; keep aggregate QA repair and broader resource topology separate.
 
 ## Historical implementation checkpoint — T753 closed-bounded (2026-08-12)
 

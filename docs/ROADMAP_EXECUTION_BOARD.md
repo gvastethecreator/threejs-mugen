@@ -1,17 +1,18 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T756 closed-bounded (2026-08-12)
+## Latest bounded slice — T757 closed-bounded (2026-08-14)
 
-Issue 330 snapshots the finite effective `AttackMulSet.DizzyPoints` multiplier
-when a root Projectile is created. Accepted unguarded hits consume the frozen
-value against the defender dizzy-points pool while authored
-`GetHitVar(dizzypoints)` remains separate. Product `76222e0f` and evidence
-`c8c7daa1` are committed; required root trace `a2d32251` -> `91bf5a3a` passes.
-The aggregate QA run materializes the new artifact but retains the inherited
+Issue 331 snapshots the finite effective `AttackMulSet.RedLife` multiplier
+when a root Projectile is created. The accepted hit keeps authored
+`GetHitVar(redlife)=20` separate and applies the captured `0.5` multiplier
+after a later live `redlife=2` update. Product `815b2bf1` and evidence
+`b244a944` are committed; required root trace `60caf22d` -> `4d7e8c29`
+passes. Aggregate QA materializes the artifact but retains the inherited
 `synthetic-imported-helper-bind-to-target-redirect` target-link blocker.
-Guarded contacts, ModifyProjectile, shared resource ownership, exact clamp /
-rounding/timing, rollback and full parity remain outside. See [issue
-330](../.scratch/roadmap/issues/330-projectile-attackmulset-dizzypoints.md).
+Guarded contacts, Helper-parented evidence, ModifyProjectile, shared resource
+ownership, exact clamp/rounding/timing, rollback and full parity remain
+outside. See [issue
+331](../.scratch/roadmap/issues/331-projectile-attackmulset-redlife.md).
 
 ## Historical bounded slice — T755 superseded by T728
 
@@ -20,11 +21,12 @@ The T755 queue entry duplicated the already closed T728/issue 302
 component-preserving behavior is already covered by the issue 302 traces and
 commits; issue 329 remains only as a superseded audit trail.
 
-## Next bounded slice — T757 upstream seam selection
+## Next bounded slice — T758 Helper Projectile redlife evidence
 
-Select one distinct official/Ikemen source contract after the T756 evidence
-gate; keep guarded-resource topology, ModifyProjectile and aggregate QA repair
-as separate work items.
+Close the Helper-parented Projectile redlife snapshot with an independent
+required trace; see [issue 332](../.scratch/roadmap/issues/332-helper-projectile-attackmulset-redlife.md).
+Keep guarded-resource topology, ModifyProjectile and aggregate QA repair as
+separate work items.
 
 ## Historical bounded slice — T753 closed-bounded (2026-08-12)
 

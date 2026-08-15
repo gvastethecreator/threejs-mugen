@@ -2,15 +2,15 @@
 
 ## Current parity queue
 
-- **T756 closed-bounded** — issue 330 snapshots the effective
-  `AttackMulSet.DizzyPoints` multiplier at root Projectile creation and applies
-  it only on accepted unguarded hits. Product/evidence commits are
-  `76222e0f` and `c8c7daa1`; required trace `a2d32251` / `91bf5a3a`.
-  Focused tests and typecheck pass. Aggregate QA still stops on the inherited
-  helper-bind target-link case. Guarded contacts, ModifyProjectile, resource
-  ownership, exact clamp/rounding/timing, teams, rollback and full parity
-  remain outside. See [issue
-  330](../.scratch/roadmap/issues/330-projectile-attackmulset-dizzypoints.md).
+- **T757 closed-bounded** — issue 331 snapshots the effective
+  `AttackMulSet.RedLife` multiplier at root Projectile creation and applies it
+  on accepted contact while authored `GetHitVar(redlife)` remains separate.
+  Product/evidence commits are `815b2bf1` and `b244a944`; required trace
+  `60caf22d` / `4d7e8c29`. Focused tests and typecheck pass. Aggregate QA
+  still stops on the inherited helper-bind target-link case. Guarded contacts,
+  Helper-parented evidence, ModifyProjectile, resource ownership, exact
+  clamp/rounding/timing, teams, rollback and full parity remain outside. See
+  [issue 331](../.scratch/roadmap/issues/331-projectile-attackmulset-redlife.md).
 
 - **T755 superseded** — duplicate queue entry for the already closed T728 /
   issue 302 live `ModifyHitDef down.velocity` slice. Issue 329 is retained as
@@ -20,8 +20,10 @@
   multiplier on root and Helper-parented Projectiles; retain its historical
   root/Helper trace checksums and the inherited aggregate QA blocker.
 
-- **T757 next selection** — choose one bounded official/Ikemen seam after the
-  T756 evidence gate; keep aggregate QA repair and resource topology separate.
+- **T758 next selection** — issue 332 closes the independent Helper-parented
+  Projectile redlife snapshot trace; keep aggregate QA repair and resource
+  topology separate. See [issue
+  332](../.scratch/roadmap/issues/332-helper-projectile-attackmulset-redlife.md).
 
 - **T752 closed-bounded** — issue 326 carries fresh Projectile
   `guardpoints` static and caller-context dynamic values through root and
