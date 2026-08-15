@@ -4827,6 +4827,74 @@ export function createSyntheticImportedEnvShakeLongFiniteTraceArtifact(
   });
 }
 
+export function createSyntheticImportedFallEnvShakeLongFiniteTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const { envShake: _staticEnvShake, ...fall } = commonGetHitFallData();
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "imported-fallenvshake-long-finite-start", frames: 12, p1: ["x"], p2: [] },
+    { label: "fallenvshake-long-finite-expiry", frames: 242, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({
+    p1: createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-fallenvshake-long-finite",
+      displayName: "Synthetic Imported FallEnvShake Long Finite",
+      action200Duration: 300,
+      fall,
+      getHitState: { stateNo: 5100, animNo: 500 },
+      hitDefFallEnvShake: {
+        time: 241,
+        freq: 30,
+        ampl: -7,
+        phase: 0,
+      },
+    }),
+    p2: demoFighters[1]!,
+    stage,
+    runtimeProfile: "ikemen-go",
+  }), script, {
+    label: "synthetic-imported-fallenvshake-long-finite-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-fallenvshake-long-finite-golden",
+      label: "Synthetic imported long finite FallEnvShake route",
+      source: "mixed",
+      notes: [
+        "Required trace proves direct root HitDef fall.envshake.time = 241 survives accepted get-hit metadata transfer, is consumed exactly once by FallEnvShake, remains finite past the former local ceiling, and expires. Active EnvShake, Projectile, direct HitDef contact EnvShake, waveform parity, pause timing, helper breadth, rollback, and full camera parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-fallenvshake-long-finite-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200, 5100],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "HitFallVel", "HitFallDamage", "HitFallSet", "FallEnvShake"],
+      requiredExecutedOperations: ["hitdef", "hitfall:hitfallvel", "hitfall:hitfalldamage", "hitfall:hitfallset", "fallenvshake"],
+      requiredControllerEventSequences: [commonGetHitControllerSequence(5100)],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredEnvShakeEvents: [{
+        actorId: "p2",
+        source: "demo",
+        actorKind: "player",
+        time: 241,
+        freq: 30,
+        ampl: -7,
+        phase: 0,
+        stateNo: 5100,
+      }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    }],
+  });
+}
+
 export function createSyntheticImportedDynamicEnvShakeTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

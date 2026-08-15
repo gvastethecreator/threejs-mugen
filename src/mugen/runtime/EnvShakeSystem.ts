@@ -144,7 +144,7 @@ export function createRuntimeFallEnvShakeEvent(
   }
   return {
     type: "EnvShake",
-    time: clampInheritedEnvShakeTime(envShake.time),
+    time: normalizeFallEnvShakeTime(envShake.time),
     freq: clampShakeFrequency(envShake.freq),
     ampl: clampShakeAmplitude(envShake.ampl),
     phase: envShake.phase,
@@ -167,7 +167,7 @@ export function createRuntimeProjectileEnvShakeEvent(
   }
   return {
     type: "EnvShake",
-    time: clampInheritedEnvShakeTime(envShake.time),
+    time: clampContactEnvShakeTime(envShake.time),
     freq: Math.max(0, envShake.freq),
     ampl: clampShakeAmplitude(envShake.ampl),
     phase: envShake.phase,
@@ -188,7 +188,7 @@ export function createRuntimeHitDefEnvShakeEvent(
   if (!envShake || envShake.time <= 0) return undefined;
   return {
     type: "EnvShake",
-    time: clampInheritedEnvShakeTime(envShake.time),
+    time: clampContactEnvShakeTime(envShake.time),
     freq: Math.max(0, envShake.freq),
     ampl: clampShakeAmplitude(envShake.ampl),
     phase: envShake.phase,
@@ -420,7 +420,11 @@ function normalizeActiveEnvShakeTime(value: number): number {
   return Math.max(0, Math.round(value));
 }
 
-function clampInheritedEnvShakeTime(value: number): number {
+function normalizeFallEnvShakeTime(value: number): number {
+  return Math.max(0, Math.round(value));
+}
+
+function clampContactEnvShakeTime(value: number): number {
   return Math.max(0, Math.min(240, Math.round(value)));
 }
 

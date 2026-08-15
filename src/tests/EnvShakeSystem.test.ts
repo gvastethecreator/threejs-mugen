@@ -5,6 +5,7 @@ import {
   calculateRuntimeCameraShake,
   createRuntimeEnvShakeEvent,
   createRuntimeFallEnvShakeEvent,
+  createRuntimeHitDefEnvShakeEvent,
   createRuntimeProjectileEnvShakeEvent,
   pushRuntimeEnvShakeEvent,
   resolveRuntimeEnvShakeControllerOperation,
@@ -200,12 +201,21 @@ describe("EnvShakeSystem", () => {
     }, 10)).toBeUndefined();
   });
 
-  it("keeps non-active EnvShake producers on their existing bounded policy", () => {
-    expect(createRuntimeFallEnvShakeEvent(
+  it("keeps finite FallEnvShake duration beyond the former inherited ceiling while contact producers remain bounded", () => {
+    const fallEvent = createRuntimeFallEnvShakeEvent(
       actor(5050, 9, { time: 999, freq: 60, ampl: -4, phase: 0 }),
       77,
-    )?.time).toBe(240);
+    );
+
+    expect(fallEvent?.time).toBe(999);
+    expect(calculateRuntimeCameraShake(1075, [fallEvent!])?.remaining).toBe(1);
+    expect(calculateRuntimeCameraShake(1076, [fallEvent!])).toBeUndefined();
     expect(createRuntimeProjectileEnvShakeEvent(
+      actor(1000, 6),
+      { envShake: { time: 999, freq: 60, ampl: -4, phase: 0, mul: 1, dir: 0 } },
+      10,
+    )?.time).toBe(240);
+    expect(createRuntimeHitDefEnvShakeEvent(
       actor(1000, 6),
       { envShake: { time: 999, freq: 60, ampl: -4, phase: 0, mul: 1, dir: 0 } },
       10,

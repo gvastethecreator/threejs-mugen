@@ -639,6 +639,7 @@ import {
   createSyntheticImportedEnvColorUnderTraceArtifact,
   createSyntheticImportedEnvShakeTraceArtifact,
   createSyntheticImportedEnvShakeLongFiniteTraceArtifact,
+  createSyntheticImportedFallEnvShakeLongFiniteTraceArtifact,
   createSyntheticImportedDynamicEnvShakeTraceArtifact,
   createSyntheticImportedDynamicEnvShakeDirAddDecayTraceArtifact,
   createSyntheticImportedHelperEnvShakeOwnershipTraceArtifact,
@@ -14459,6 +14460,23 @@ describe("RuntimeTraceGatePresets", () => {
     expect(shakeFrames.some((frame) => frame.stage?.camera.shake?.remaining === 1)).toBe(true);
     expect(shakeFrames.every((frame) => (frame.stage?.camera.shake?.remaining ?? 0) > 0)).toBe(true);
     expect(artifact.trace.frames.at(-1)?.stage?.camera.shake).toBeUndefined();
+  });
+
+  it("creates a required long finite FallEnvShake artifact with one-shot consumption and expiry", () => {
+    const artifact = createSyntheticImportedFallEnvShakeLongFiniteTraceArtifact({ generatedAt: "2026-08-15T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-fallenvshake-long-finite-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-fallenvshake-long-finite-golden", passed: true, failures: [] }],
+    });
+    const shakeFrames = artifact.trace.frames.filter((frame) => frame.stage?.camera.shake !== undefined);
+    expect(shakeFrames.length).toBeGreaterThanOrEqual(241);
+    expect(shakeFrames.some((frame) => frame.stage?.camera.shake?.remaining === 1)).toBe(true);
+    expect(shakeFrames.every((frame) => (frame.stage?.camera.shake?.remaining ?? 0) > 0)).toBe(true);
+    expect(artifact.trace.frames.at(-1)?.stage?.camera.shake).toBeUndefined();
+    expect(artifact.gates[0]?.evidence.envShakeEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p2", time: 241, stateNo: 5100 }),
+    ]));
   });
 
   it("creates a synthetic imported EnvShake artifact with runtime camera event evidence", () => {
