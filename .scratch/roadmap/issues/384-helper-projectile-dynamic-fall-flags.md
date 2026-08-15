@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T809 — active (2026-08-15)**
+- **T809 — closed-bounded (2026-08-15)**
 - **Área:** Projectile fresco creado por un Helper de primera generación,
   propiedad de root, política de caída y metadata de contacto
 - **Dependencia:** T808 resuelve el mismo payload para Projectiles creados por
@@ -40,14 +40,26 @@ Projectile conserva la propiedad root y el contacto aceptado reutiliza
 - El cierre actualiza roadmap, pasa los gates aplicables y queda en commits
   lógicos separados.
 
-## Claim permitido
+## Evidencia de cierre
 
-Un Projectile fresco creado por un Helper de primera generación resuelve
-`fall`, `air.fall` y `fall.kill` finitos en caller context del Helper, conserva
-root ownership y los consume sólo en su contacto de caída aceptado.
+- Producto: `9e4e497d` inyecta el resolver typed de flags en el spawn de
+  Projectile del Helper y evalúa cada flag de forma independiente en caller
+  context, sin borrar hermanas finitas.
+- Traza requerida:
+  `synthetic-imported-helper-projectile-dynamic-fall-flags` pasa con checksum
+  de traza/final `d0eab53e` / `dbd72649`; exige `Helper`, tres `VarSet`,
+  `Projectile`, `HitFallVel`, owner/root/parent, target dual y un contacto de
+  caída no letal con `fall = 1` y `fall.kill = 0`.
+- Gates: focal spawn/traza `2/2`; tests completos `328/4104`; typecheck, build
+  y QA trace `888/888` (`854` requeridas) verdes.
 
-## Bloqueado
+## Claim cerrado
 
-Helpers anidados, `ownProjectile`, selección aérea observable de `air.fall`,
-ModifyProjectile, ModifyHitDef, `forcenofall`, sintaxis `n`, cálculo exacto de
-caída/KO/recuperación, equipos, rollback y paridad M.U.G.E.N/Ikemen completa.
+**Permitido:** un Projectile fresco creado por un Helper de primera generación
+resuelve `fall`, `air.fall` y `fall.kill` finitos en caller context del Helper,
+conserva root ownership y los consume sólo en su contacto de caída aceptado.
+
+**Bloqueado:** Helpers anidados, `ownProjectile`, selección aérea observable de
+`air.fall`, ModifyProjectile, ModifyHitDef, `forcenofall`, sintaxis `n`,
+cálculo exacto de caída/KO/recuperación, equipos, rollback y paridad
+M.U.G.E.N/Ikemen completa.

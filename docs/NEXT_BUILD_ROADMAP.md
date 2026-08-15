@@ -1,14 +1,17 @@
 ﻿# Next Build Roadmap
 
-## Active bounded slice — T809 Helper Projectile dynamic fall flags (2026-08-15)
+## Latest closed-bounded slice — T809 Helper Projectile dynamic fall flags (2026-08-15)
 
-Issue 384 resolves finite caller-context `fall`, `air.fall` and `fall.kill`
-on one first-generation Helper-created, root-owned Projectile and reuses the
-accepted-fall consumer. Nested/`ownProjectile`, ModifyProjectile, exact
-fall/KO timing, teams, rollback and full parity remain separate. See [issue
+Issue 384 closes finite caller-context `fall`, `air.fall` and `fall.kill` on
+one first-generation Helper-created, root-owned Projectile and reuses the
+accepted-fall consumer. Required evidence passes at `d0eab53e` / `dbd72649`;
+full tests `328/4104`, typecheck, build and trace QA `888/888` (`854`
+required) pass. Nested/`ownProjectile`, airborne-only selection,
+ModifyProjectile, ModifyHitDef, exact fall/KO timing, teams, rollback and full
+parity remain separate. See [issue
 384](../.scratch/roadmap/issues/384-helper-projectile-dynamic-fall-flags.md).
 
-## Latest closed-bounded slice — T808 root Projectile dynamic fall flags (2026-08-15)
+## Previous closed-bounded slice — T808 root Projectile dynamic fall flags (2026-08-15)
 
 Issue 383 closes finite caller-context `fall`, `air.fall` and `fall.kill` on
 one fresh root Projectile and reuses the accepted-fall consumer. Required
@@ -18,7 +21,7 @@ airborne-only selection, ModifyProjectile, ModifyHitDef, exact fall/KO timing,
 teams, rollback and full parity remain separate. See [issue
 383](../.scratch/roadmap/issues/383-root-projectile-dynamic-fall-flags.md).
 
-## Latest bounded slice — T807 Helper Projectile dynamic fall recovery (2026-08-15)
+## Historical bounded slice — T807 Helper Projectile dynamic fall recovery (2026-08-15)
 
 Issue 382 closes finite caller-context
 `fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` on one

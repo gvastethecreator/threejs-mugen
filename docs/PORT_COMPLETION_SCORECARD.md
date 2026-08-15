@@ -1,15 +1,19 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T809 Helper Projectile dynamic fall flags — active, no score movement
+## 2026-08-15 T809 Helper Projectile dynamic fall flags — closed-bounded, no score movement
 
-Issue 384 carries finite caller-context `fall`, `air.fall` and `fall.kill`
+Issue 384 closes finite caller-context `fall`, `air.fall` and `fall.kill`
 through one first-generation Helper-created, root-owned Projectile and its
-accepted-fall consumer. This is a bounded runtime slice, so it does not move
-the port score while nested Helpers, `ownProjectile`, ModifyProjectile, exact
-fall/KO timing, teams, rollback and full parity stay open. See [issue
+accepted-fall consumer. Required
+`synthetic-imported-helper-projectile-dynamic-fall-flags` passes at
+`d0eab53e` / `dbd72649`; full tests `328/4104`, typecheck, build and trace QA
+`888/888` (`854` required) pass. This remains bounded, so the score does not
+move while nested Helpers, `ownProjectile`, airborne-only selection,
+ModifyProjectile, ModifyHitDef, exact fall/KO timing, teams, rollback and full
+parity stay open. See [issue
 384](../.scratch/roadmap/issues/384-helper-projectile-dynamic-fall-flags.md).
 
-## 2026-08-15 T808 root Projectile dynamic fall flags — closed-bounded, no score movement
+## 2026-08-15 T808 root Projectile dynamic fall flags — previous closed-bounded, no score movement
 
 Issue 383 closes finite caller-context `fall`, `air.fall` and `fall.kill`
 through one fresh root Projectile and its accepted-fall consumer. Required

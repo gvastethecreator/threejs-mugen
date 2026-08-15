@@ -1,14 +1,16 @@
 # Workplan
 
-## Active slice — T809 Helper Projectile dynamic fall flags (2026-08-15)
+## Latest closed slice — T809 Helper Projectile dynamic fall flags (2026-08-15)
 
-Issue 384 is resolving finite caller-context `fall`, `air.fall` and
-`fall.kill` on one first-generation Helper-created, root-owned Projectile.
-Only the existing accepted-fall route is in scope; nested Helpers,
-`ownProjectile`, ModifyProjectile, exact fall/KO timing, teams, rollback and
-full parity remain outside.
+Issue 384 closes finite caller-context `fall`, `air.fall` and `fall.kill` on
+one first-generation Helper-created, root-owned Projectile. The existing
+accepted-fall route is verified at `d0eab53e` / `dbd72649`; full tests
+`328/4104`, typecheck, build and trace QA `888/888` (`854` required) pass.
+Nested Helpers, `ownProjectile`, airborne-only selection, ModifyProjectile,
+ModifyHitDef, exact fall/KO timing, teams, rollback and full parity remain
+outside.
 
-## Latest closed slice — T808 root Projectile dynamic fall flags (2026-08-15)
+## Previous closed slice — T808 root Projectile dynamic fall flags (2026-08-15)
 
 Issue 383 closes finite caller-context `fall`, `air.fall` and `fall.kill` on
 one fresh root Projectile. The existing accepted-fall route is verified at
@@ -17,7 +19,7 @@ one fresh root Projectile. The existing accepted-fall route is verified at
 selection, ModifyProjectile, ModifyHitDef, exact fall/KO timing, teams,
 rollback and full parity remain outside.
 
-## Latest slice — T807 Helper Projectile dynamic fall recovery (2026-08-15)
+## Historical slice — T807 Helper Projectile dynamic fall recovery (2026-08-15)
 
 Issue 382 closes finite caller-context
 `fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` on one

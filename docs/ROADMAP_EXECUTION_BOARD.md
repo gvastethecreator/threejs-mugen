@@ -1,16 +1,20 @@
 ﻿# Roadmap Execution Board
 
-## Active bounded slice — T809 Helper Projectile dynamic fall flags (2026-08-15)
+## Latest closed-bounded slice — T809 Helper Projectile dynamic fall flags (2026-08-15)
 
-Issue 384 resolves finite caller-context `fall`, `air.fall` and `fall.kill`
-for one first-generation Helper-created, root-owned Projectile. The
-accepted-fall handoff must reuse existing `HitFall` and metadata consumers
-while preserving `owner/root = p1` and `parent = p1-helper-0`. Nested Helpers,
-`ownProjectile`, ModifyProjectile, ModifyHitDef, exact fall/KO timing, teams,
-rollback and full parity remain separate. See [issue
+Issue 384 closes finite caller-context `fall`, `air.fall` and `fall.kill` for
+one first-generation Helper-created, root-owned Projectile. Finite siblings
+resolve independently at spawn and an accepted falling contact reaches existing
+`HitFall`/`GetHitVar` consumers while retaining `owner/root = p1` and
+`parent = p1-helper-0`. Required
+`synthetic-imported-helper-projectile-dynamic-fall-flags` passes at
+`d0eab53e` / `dbd72649`; full tests `328/4104`, typecheck, build and trace QA
+`888/888` (`854` required) pass. Nested Helpers, `ownProjectile`,
+airborne-only selection, ModifyProjectile, ModifyHitDef, exact fall/KO timing,
+teams, rollback and full parity remain separate. See [issue
 384](../.scratch/roadmap/issues/384-helper-projectile-dynamic-fall-flags.md).
 
-## Latest closed-bounded slice — T808 root Projectile dynamic fall flags (2026-08-15)
+## Previous closed-bounded slice — T808 root Projectile dynamic fall flags (2026-08-15)
 
 Issue 383 closes finite caller-context `fall`, `air.fall` and `fall.kill` for
 one fresh root-owned Projectile. Finite siblings resolve independently at
@@ -22,7 +26,7 @@ selection, ModifyProjectile, ModifyHitDef, exact fall/KO timing, teams,
 rollback and full parity remain separate. See [issue
 383](../.scratch/roadmap/issues/383-root-projectile-dynamic-fall-flags.md).
 
-## Latest bounded slice — T807 Helper Projectile dynamic fall recovery (2026-08-15)
+## Historical bounded slice — T807 Helper Projectile dynamic fall recovery (2026-08-15)
 
 Issue 382 closes caller-context dynamic
 `fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` for one

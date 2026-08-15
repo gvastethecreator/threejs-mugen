@@ -1,15 +1,17 @@
 ﻿# Progress Tracker
 
-## Active implementation checkpoint — T809 Helper Projectile dynamic fall flags (2026-08-15)
+## Latest closed-bounded implementation checkpoint — T809 Helper Projectile dynamic fall flags (2026-08-15)
 
-Issue 384 is resolving finite caller-context `fall`, `air.fall` and
-`fall.kill` for one first-generation Helper-created, root-owned Projectile.
-The bounded target is an accepted fall contact using existing HitFall/GetHitVar
-consumers with `owner/root = p1` and `parent = p1-helper-0`; nested Helpers,
-`ownProjectile`, ModifyProjectile, exact fall/KO timing, teams, rollback and
-full parity remain outside.
+Issue 384 closes finite caller-context `fall`, `air.fall` and `fall.kill` for
+one first-generation Helper-created, root-owned Projectile. Its accepted
+falling contact reuses existing HitFall/GetHitVar consumers with `owner/root =
+p1` and `parent = p1-helper-0`. Required evidence passes at `d0eab53e` /
+`dbd72649`; full tests `328/4104`, typecheck, build and trace QA `888/888`
+(`854` required) pass. Nested Helpers, `ownProjectile`, airborne-only
+selection, ModifyProjectile, ModifyHitDef, exact fall/KO timing, teams,
+rollback and full parity remain outside.
 
-## Latest implementation checkpoint — T808 root Projectile dynamic fall flags (2026-08-15)
+## Previous closed-bounded implementation checkpoint — T808 root Projectile dynamic fall flags (2026-08-15)
 
 Issue 383 closes finite caller-context `fall`, `air.fall` and `fall.kill` for
 one fresh root Projectile. The bounded accepted falling contact reaches
@@ -19,7 +21,7 @@ required) pass. Helper/nested/`ownProjectile`, airborne-only selection,
 ModifyProjectile, ModifyHitDef, exact fall/KO timing, teams, rollback and full
 parity remain outside.
 
-## Latest implementation checkpoint — T807 Helper Projectile dynamic fall recovery (2026-08-15)
+## Historical implementation checkpoint — T807 Helper Projectile dynamic fall recovery (2026-08-15)
 
 Issue 382 closes finite caller-context
 `fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` for one
