@@ -280,6 +280,10 @@ pnpm build
 
 Frontend changes should be visually verified in the browser before calling a task done.
 
+## Sponsors
+
+Support continued compatibility and tooling work through [GitHub Sponsors](https://github.com/sponsors/gvastethecreator) or [Ko-fi](https://ko-fi.com/gvaste).
+
 ## Research References
 
 - Elecbyte MUGEN docs: https://www.elecbyte.com/mugendocs-11b1/mugen.html
