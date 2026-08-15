@@ -2,6 +2,16 @@
 
 ## Current parity queue
 
+- **T802 closed-bounded** — issue 377 closes caller-context dynamic
+  `fall.envshake.time/freq/ampl/phase/mul/dir` for one fresh root Projectile.
+  The full finite package reaches the existing `FallEnvShake` only after an
+  accepted falling hit; a non-finite authored component fails closed. Required
+  `synthetic-imported-projectile-dynamic-fall-envshake` passes at `2fcd5259` /
+  `d0a2e474`; full tests `328/4087`, typecheck, build, and trace QA `881/881`
+  (`847` required) pass. Helper, ModifyProjectile, `diradd`/`decay`, exact
+  fall/camera timing, teams, rollback, and full parity remain outside. See
+  [issue 377](../.scratch/roadmap/issues/377-root-projectile-dynamic-fall-envshake.md).
+
 - **T785 closed-bounded** — issue 359 closes official edge selection for
   Helper-authored live `ModifyProjectile airguard.velocity`: omitted/negative
   id and index broadcast, literal `id=0`, and no-op out-of-range/no-match

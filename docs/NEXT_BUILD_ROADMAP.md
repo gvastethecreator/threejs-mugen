@@ -1,5 +1,16 @@
 ﻿# Next Build Roadmap
 
+## Latest bounded slice — T802 root Projectile dynamic `fall.envshake` (2026-08-15)
+
+Issue 377 closes the six finite caller-context values
+`fall.envshake.time/freq/ampl/phase/mul/dir` on one fresh root Projectile.
+An accepted falling hit reaches the existing FallEnvShake; non-finite authored
+input fails closed. Required evidence passes at `2fcd5259` / `d0a2e474`; full
+tests `328/4087`, typecheck, build, and trace QA `881/881` (`847` required)
+pass. Helper, ModifyProjectile, `diradd`/`decay`, exact fall/camera timing,
+teams, rollback, and full parity remain separate. See [issue
+377](../.scratch/roadmap/issues/377-root-projectile-dynamic-fall-envshake.md).
+
 ## Latest bounded slice — T786 closed-bounded (2026-08-15)
 
 Issue 360 closes Helper-owned live `ModifyProjectile RedirectID` over a root

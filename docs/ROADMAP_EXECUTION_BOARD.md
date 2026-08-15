@@ -1,5 +1,17 @@
 ﻿# Roadmap Execution Board
 
+## Latest bounded slice — T802 root Projectile dynamic `fall.envshake` (2026-08-15)
+
+Issue 377 closes caller-context dynamic
+`fall.envshake.time/freq/ampl/phase/mul/dir` for one fresh root Projectile.
+An accepted falling hit preserves the finite package and emits the existing
+`FallEnvShake`; a non-finite authored component fails closed. Required
+`synthetic-imported-projectile-dynamic-fall-envshake` passes at `2fcd5259` /
+`d0a2e474`; full tests `328/4087`, typecheck, build, and trace QA `881/881`
+(`847` required) pass. Helper, ModifyProjectile, `diradd`/`decay`, exact
+fall/camera timing, teams, rollback, and full parity remain outside. See
+[issue 377](../.scratch/roadmap/issues/377-root-projectile-dynamic-fall-envshake.md).
+
 ## Latest bounded slice — T801 Helper Projectile dynamic `EnvShake` (2026-08-15)
 
 Issue 376 closes one first-generation Helper-created/root-owned Projectile.

@@ -1,5 +1,15 @@
 ﻿# Progress Tracker
 
+## Latest implementation checkpoint — T802 root Projectile dynamic `fall.envshake` (2026-08-15)
+
+Issue 377 closes dynamic caller-context
+`fall.envshake.time/freq/ampl/phase/mul/dir` for a fresh root Projectile.
+The finite package persists to the existing accepted-fall FallEnvShake; one
+non-finite authored component fails closed. Required evidence passes at
+`2fcd5259` / `d0a2e474`; full tests `328/4087`, typecheck, build, and trace QA
+`881/881` (`847` required) pass. Helper, ModifyProjectile, `diradd`/`decay`,
+exact fall/camera timing, teams, rollback, and full parity remain outside.
+
 ## Latest implementation checkpoint — T786 closed-bounded (2026-08-15)
 
 Issue 360 closes Helper-owned live `ModifyProjectile RedirectID` over a root

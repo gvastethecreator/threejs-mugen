@@ -1,5 +1,18 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-15 T802 root Projectile dynamic `fall.envshake` — closed-bounded, no score movement
+
+Issue 377 closes caller-context dynamic
+`fall.envshake.time/freq/ampl/phase/mul/dir` for one fresh root Projectile.
+Only an accepted falling hit reaches the existing FallEnvShake; a non-finite
+authored component fails closed. Required
+`synthetic-imported-projectile-dynamic-fall-envshake` passes at `2fcd5259` /
+`d0a2e474`; full tests `328/4087`, typecheck, build, and trace QA `881/881`
+(`847` required) pass. Helper, ModifyProjectile, `diradd`/`decay`, exact
+fall/camera timing, teams, rollback, and full parity remain blocked, so the
+score does not move. See [issue
+377](../.scratch/roadmap/issues/377-root-projectile-dynamic-fall-envshake.md).
+
 ## 2026-08-15 T786 Helper `ModifyProjectile RedirectID` `airguard.velocity` — closed-bounded, no score movement
 
 Issue 360 closes Helper-owned live `ModifyProjectile RedirectID` over a root
