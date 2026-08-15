@@ -70,6 +70,6 @@ rollback, and full parity.
 
 ## Next bounded slice
 
-T777 is queued in issue 351 for the analogous Helper-owned live
-`ModifyProjectile ground.velocity` component matrix; it remains separate from
-down/air/airguard selection and from fresh/default derivation.
+T777 is closed in issue 351. T778 is queued in issue 352 for the analogous
+Helper-owned live `ModifyProjectile air.velocity` component matrix; it remains
+separate from down/ground/airguard selection and from fresh/default derivation.

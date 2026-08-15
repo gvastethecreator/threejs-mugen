@@ -1,6 +1,26 @@
 # Workplan
 
-## Latest slice — T776 closed-bounded (2026-08-15)
+## Latest slice — T777 closed-bounded (2026-08-15)
+
+Issue 351 closes the first-generation Helper-authored live `ModifyProjectile`
+`ground.velocity` matrix for one root-owned Projectile and one accepted
+grounded hit. Evidence commit `2a03d5db` and required trace `52926706` prove
+caller-context evaluation, component replacement with omitted live sibling
+preservation, GetHitVar, physical HitVelSet, lifecycle, ownership and target
+links. Focused tests, typecheck and diff hygiene pass. Aggregate QA retains
+only the inherited helper-bind target-link blocker; fresh/default derivation,
+vector-family selection, nested/shared topology, exact timing, rollback and
+full parity remain outside.
+
+## Next slice — T778 queued (2026-08-15)
+
+Issue 352 covers the Helper-authored live `ModifyProjectile air.velocity`
+matrix for one root-owned Projectile and one accepted airborne hit. Keep
+fresh/default derivation, dynamic `n`, down/ground/airguard selection,
+nested/shared resource topology, aggregate QA repair, exact timing, rollback
+and full parity separate.
+
+## Historical slice — T776 closed-bounded (2026-08-15)
 
 Issue 350 closes the first-generation Helper-authored live `ModifyProjectile`
 `down.velocity` matrix for one root-owned Projectile and one accepted lying
@@ -48,13 +68,6 @@ proven. Focused Helper/trace tests, typecheck and diff hygiene pass. Aggregate
 QA retains the inherited helper-bind target-link blocker. Z/default
 derivation, full component preservation, nested/shared resource topology,
 exact arithmetic/timing, rollback and full parity remain outside.
-
-## Next slice — T777 queued (2026-08-15)
-
-Issue 351 covers the Helper-authored `ModifyProjectile ground.velocity` matrix
-for one root-owned Projectile and one accepted grounded hit. Keep fresh/default
-derivation, down/air/airguard selection, nested/shared resource topology,
-aggregate QA repair, exact timing, rollback and full parity separate.
 
 ## Historical slice — T771 closed-bounded (2026-08-15)
 

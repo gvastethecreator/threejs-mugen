@@ -1,6 +1,27 @@
 ﻿# Roadmap Package Milestones
 
-## Latest package — T776 closed-bounded (2026-08-15)
+## Latest package — T777 closed-bounded (2026-08-15)
+
+Issue 351 closes the first-generation Helper-owned live `ModifyProjectile`
+`ground.velocity` matrix for one root-owned Projectile and one accepted
+grounded hit. Evidence commit `2a03d5db` and required trace `52926706` prove
+caller-context component replacement with omitted live sibling preservation,
+GetHitVar/physical response, lifecycle, owner/root/parent and target links.
+Focused compiler/Projectile/Helper/trace tests, typecheck and diff hygiene
+pass; aggregate QA retains the inherited helper-bind target-link blocker.
+Fresh/default derivation, vector-family selection, nested/shared topology,
+exact timing, rollback and full parity remain blocked.
+
+## Next package — T778 queued (2026-08-15)
+
+Issue 352 is the next bounded Helper-owned live `ModifyProjectile air.velocity`
+matrix for one root-owned Projectile and one accepted airborne hit. Keep
+fresh/default derivation, dynamic `n`, down/ground/airguard selection,
+nested/shared topology, aggregate QA repair, exact timing, rollback and full
+parity separate. See [issue
+352](../.scratch/roadmap/issues/352-helper-modifyprojectile-air-velocity.md).
+
+## Historical package — T776 closed-bounded (2026-08-15)
 
 Issue 350 closes the first-generation Helper-owned live `ModifyProjectile`
 `down.velocity` matrix for one root-owned Projectile and one accepted lying
@@ -24,14 +45,6 @@ QA retains the inherited helper-bind target-link blocker. Fresh/default
 derivation, airborne guard, nested/shared topology, exact physics/timing,
 rollback and full parity remain blocked. See [issue
 349](../.scratch/roadmap/issues/349-helper-modifyprojectile-guard-velocity-yz.md).
-
-## Next package — T777 queued (2026-08-15)
-
-Issue 351 is the next bounded Helper-owned `ModifyProjectile ground.velocity`
-matrix for one root-owned Projectile and one accepted grounded hit. Keep
-fresh/default derivation, down/air/airguard selection, nested/shared topology,
-aggregate QA repair, exact timing, rollback and full parity separate. See
-[issue 351](../.scratch/roadmap/issues/351-helper-modifyprojectile-ground-velocity.md).
 
 ## Active package — T716 closed-bounded (2026-08-11)
 

@@ -1,6 +1,27 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T776 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T777 closed-bounded (2026-08-15)
+
+Issue 351 closes the first-generation Helper-authored live `ModifyProjectile`
+`ground.velocity` matrix for one root-owned Projectile and one accepted
+grounded hit. Evidence commit `2a03d5db` and required trace `52926706` prove
+caller-context variables, component replacement with omitted live sibling
+preservation, GetHitVar velocity readback, physical HitVelSet response,
+lifecycle, ownership and target links. Focused compiler/Projectile/Helper
+tests, typecheck and diff hygiene pass. Aggregate QA retains the inherited
+helper-bind target-link blocker; fresh/default derivation, vector-family
+selection, nested/shared topology, exact timing, rollback and full parity
+remain separate.
+
+## Next implementation checkpoint — T778 queued (2026-08-15)
+
+Issue 352 targets the Helper-authored live `ModifyProjectile air.velocity`
+matrix for one root-owned Projectile and one accepted airborne hit. Keep
+fresh/default derivation, dynamic `n`, down/ground/airguard selection,
+nested/shared topology, aggregate QA repair, exact timing, rollback and full
+parity separate.
+
+## Historical implementation checkpoint — T776 closed-bounded (2026-08-15)
 
 Issue 350 closes the first-generation Helper-authored live `ModifyProjectile`
 `down.velocity` matrix for one root-owned Projectile and one accepted lying
@@ -47,13 +68,6 @@ airborne guard, physical Y response, and defender life `998`. Focused Helper
 and trace tests, typecheck and diff hygiene pass. Aggregate QA remains blocked
 by the inherited helper-bind target-link case. Z/default derivation and full
 partial-component preservation remain separate. See issue 346.
-
-## Next implementation checkpoint — T777 queued (2026-08-15)
-
-Issue 351 targets the Helper-authored `ModifyProjectile ground.velocity` matrix
-for one root-owned Projectile and one accepted grounded hit. Keep fresh/default
-derivation, down/air/airguard selection, nested/shared-resource topology,
-aggregate QA repair, exact timing, rollback and full parity separate.
 
 ## Historical implementation checkpoint — T771 closed-bounded (2026-08-15)
 

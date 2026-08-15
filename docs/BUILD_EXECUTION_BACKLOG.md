@@ -82,12 +82,24 @@
   remain outside. See [issue
   350](../.scratch/roadmap/issues/350-helper-modifyprojectile-down-velocity.md).
 
-- **T777 next selection** — close the Helper-authored `ModifyProjectile`
-  `ground.velocity` matrix for one root-owned Projectile and one accepted
-  grounded hit. Keep fresh/default derivation, down/air/airguard selection,
-  nested-helper breadth, aggregate QA repair, exact timing, rollback and full
-  parity separate. See [issue
+- **T777 closed-bounded** — issue 351 closes the Helper-authored live
+  `ModifyProjectile ground.velocity` matrix for one root-owned Projectile and
+  one accepted grounded hit. Evidence commit `2a03d5db`; required trace
+  `52926706` proves caller-context component replacement with omitted live
+  sibling preservation, GetHitVar/HitVelSet response, lifecycle, ownership and
+  target links. Focused compiler/Projectile/Helper tests, typecheck and diff
+  hygiene pass; aggregate QA retains the inherited helper-bind target-link
+  blocker. Fresh/default derivation, dynamic `n`, other vector families,
+  nested/shared topology, exact timing, rollback and full parity remain
+  outside. See [issue
   351](../.scratch/roadmap/issues/351-helper-modifyprojectile-ground-velocity.md).
+
+- **T778 next selection** — close the Helper-authored live
+  `ModifyProjectile air.velocity` matrix for one root-owned Projectile and one
+  accepted airborne hit. Keep fresh/default derivation, dynamic `n`,
+  down/ground/airguard selection, nested-helper breadth, aggregate QA repair,
+  exact timing, rollback and full parity separate. See [issue
+  352](../.scratch/roadmap/issues/352-helper-modifyprojectile-air-velocity.md).
 
 - **T769 historical** — issue 343 closes the first-generation
   Helper-authored `ModifyProjectile` damage guard seam. Evidence commit is

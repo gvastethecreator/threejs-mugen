@@ -54,14 +54,26 @@ component preservation, nested/shared-resource topology, exact physics/timing,
 rollback and full parity remain blocked. See [issue
 346](../.scratch/roadmap/issues/346-helper-modifyprojectile-airguard-velocity-y.md).
 
-## 2026-08-15 T777 Helper `ModifyProjectile` `ground.velocity` matrix — queued
+## 2026-08-15 T777 Helper `ModifyProjectile` `ground.velocity` matrix — closed-bounded, no score movement
 
-Issue 351 is the next bounded cut for the Helper-owned `ModifyProjectile
-ground.velocity` matrix and one accepted grounded hit. No score movement is
-expected. Fresh/default derivation, down/air/airguard selection,
-nested/shared-resource topology, aggregate QA repair, exact timing, rollback
-and full parity remain blocked. See [issue
+Issue 351 closes the bounded Helper-owned live `ModifyProjectile ground.velocity`
+matrix and one accepted grounded hit. Evidence commit `2a03d5db` and required
+trace `52926706` prove caller-context replacement, omitted live sibling
+preservation, GetHitVar/physical response, lifecycle, ownership and target
+links. Focused tests, typecheck and diff hygiene pass; aggregate QA retains the
+inherited helper-bind target-link blocker. No score movement: fresh/default
+derivation, down/air/airguard selection, nested/shared-resource topology,
+exact timing, rollback and full parity remain blocked. See [issue
 351](../.scratch/roadmap/issues/351-helper-modifyprojectile-ground-velocity.md).
+
+## 2026-08-15 T778 Helper `ModifyProjectile` `air.velocity` matrix — queued
+
+Issue 352 is the next bounded cut for the Helper-owned live `ModifyProjectile
+air.velocity` matrix and one accepted airborne hit. No score movement is
+expected. Fresh/default derivation, dynamic `n`, down/ground/airguard
+selection, nested/shared-resource topology, aggregate QA repair, exact timing,
+rollback and full parity remain blocked. See [issue
+352](../.scratch/roadmap/issues/352-helper-modifyprojectile-air-velocity.md).
 
 ## 2026-08-15 T771 Helper `ModifyProjectile` `airguard.velocity` X air guard — historical closed-bounded, no score movement
 
