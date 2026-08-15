@@ -986,6 +986,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperModifyProjectileDamageGuardTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-modifyprojectile-guard-velocity",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperModifyProjectileGuardVelocityTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-data-damage-scale",
       required: true,
       artifact: presets.createSyntheticImportedDataDamageScaleTraceArtifact(),

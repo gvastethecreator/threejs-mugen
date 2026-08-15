@@ -581,6 +581,7 @@ import {
   createSyntheticImportedHelperModifyProjectileGetPowerHitTraceArtifact,
   createSyntheticImportedHelperModifyProjectileGetPowerGuardTraceArtifact,
   createSyntheticImportedHelperModifyProjectileDamageGuardTraceArtifact,
+  createSyntheticImportedHelperModifyProjectileGuardVelocityTraceArtifact,
   createSyntheticImportedHelperModifyProjectileGivePowerHitTraceArtifact,
   createSyntheticImportedHelperModifyProjectileGivePowerGuardTraceArtifact,
   createSyntheticImportedDataDamageScaleTraceArtifact,
@@ -12212,6 +12213,29 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations.modifyprojectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", life: 40 })]),
+    );
+  });
+
+  it("creates a synthetic imported Helper ModifyProjectile guard.velocity guard snapshot artifact", () => {
+    const artifact = createSyntheticImportedHelperModifyProjectileGuardVelocityTraceArtifact({
+      generatedAt: "2026-08-15T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-modifyprojectile-guard-velocity-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-helper-modifyprojectile-guard-velocity-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ModifyProjectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.modifyprojectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", life: 20 })]),
     );
   });
 
