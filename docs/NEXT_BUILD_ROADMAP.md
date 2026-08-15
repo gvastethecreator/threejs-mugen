@@ -1,6 +1,20 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T762 closed-bounded (2026-08-15)
+## Latest bounded slice — T763 closed-bounded (2026-08-15)
+
+Issue 337 closes the first-generation Helper-authored `ModifyProjectile`
+`AttackMulSet.RedLife` hit seam. Evidence `d96c7015`; required trace
+`938303dd` -> `0073df18` passes. The accepted hit keeps authored
+`GetHitVar(redlife)=40` separate and ends at `life=5/redLife=20` after the
+creation multiplier `0.5`. Focused Helper/trace tests, typecheck and diff
+hygiene pass. Aggregate QA retains the inherited helper-bind target-link
+blocker; the full trace suite is 810/811 and an unrelated EffectActor
+guardpoints assertion remains known. Guard contact, nested/shared-resource
+topology, exact arithmetic/timing, rollback and full parity remain blocked.
+See [issue
+337](../.scratch/roadmap/issues/337-helper-modifyprojectile-attackmulset-redlife-hit.md).
+
+## Historical bounded slice — T762 closed-bounded (2026-08-15)
 
 Issue 336 closes the root-owned `ModifyProjectile` `AttackMulSet.RedLife` hit
 seam. Evidence `a98fb9c0` and required trace
@@ -42,12 +56,12 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` work. Issue 329 is retained as superseded audit history; the
 root/RedirectID and Helper X/Y/Z evidence remains authoritative in issue 302.
 
-## Next bounded slice — T763 Helper ModifyProjectile redlife hit contact
+## Next bounded slice — T764 Helper ModifyProjectile redlife guard contact
 
 Add the Helper-authored `ModifyProjectile` redlife snapshot trace for an
-accepted unguarded hit; do not combine it with nested-helper breadth,
-aggregate QA repair or resource-owner topology. See [issue
-337](../.scratch/roadmap/issues/337-helper-modifyprojectile-attackmulset-redlife-hit.md).
+accepted guard; do not combine it with nested-helper breadth, aggregate QA
+repair or resource-owner topology. See [issue
+338](../.scratch/roadmap/issues/338-helper-modifyprojectile-attackmulset-redlife-guard.md).
 
 ## Historical bounded slice — T753 closed-bounded (2026-08-12)
 

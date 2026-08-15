@@ -2,6 +2,22 @@
 
 ## Current parity queue
 
+- **T763 closed-bounded** — issue 337 closes the first-generation
+  Helper-authored `ModifyProjectile` redlife hit seam. Evidence commit is
+  `d96c7015`; required trace `938303dd` / `0073df18`. The root-owned
+  Projectile keeps the creation multiplier `0.5` after Helper-context
+  `redlife=var(0),0`, authored `GetHitVar(redlife)=40` remains separate, and
+  the defender ends at `life=5/redLife=20`. Focused tests, typecheck and diff
+  hygiene pass; aggregate QA retains the inherited helper-bind target-link
+  blocker. Guard contact, nested/shared-resource topology, exact arithmetic/
+  timing, rollback and full parity remain outside. See [issue
+  337](../.scratch/roadmap/issues/337-helper-modifyprojectile-attackmulset-redlife-hit.md).
+
+- **T764 next selection** — close the Helper-authored `ModifyProjectile`
+  redlife snapshot on an accepted guard; keep nested-helper breadth, aggregate
+  QA repair and resource topology separate. See [issue
+  338](../.scratch/roadmap/issues/338-helper-modifyprojectile-attackmulset-redlife-guard.md).
+
 - **T762 closed-bounded** — issue 336 closes the root-owned
   `ModifyProjectile` `AttackMulSet.RedLife` hit seam. Evidence commit is
   `a98fb9c0`; required trace `a09849a1` / `fff29f85`. The accepted hit keeps

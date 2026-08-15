@@ -1,6 +1,18 @@
 # Workplan
 
-## Latest slice — T762 closed-bounded (2026-08-15)
+## Latest slice — T763 closed-bounded (2026-08-15)
+
+Issue 337 closes the first-generation Helper-authored `ModifyProjectile`
+red-life hit seam. Evidence commit `d96c7015`; required trace `938303dd` ->
+`0073df18` passes. The accepted hit keeps authored `GetHitVar(redlife)=40`
+separate and ends at `life=5/redLife=20` after the creation multiplier `0.5`.
+Focused tests, typecheck and diff hygiene pass. Aggregate QA retains the
+inherited helper-bind target-link blocker; the full trace suite is 810/811 and
+the unrelated EffectActor guardpoints assertion remains known. Guard contact,
+nested/shared-resource topology, exact arithmetic/timing, rollback and full
+parity remain out.
+
+## Historical slice — T762 closed-bounded (2026-08-15)
 
 Issue 336 closes the root-owned `ModifyProjectile` red-life hit seam.
 Evidence commit `a98fb9c0`; required trace `a09849a1` -> `fff29f85` passes.
@@ -36,11 +48,11 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` slice. Issue 329 remains a superseded audit trail, not an open
 implementation task.
 
-## Next slice — T763 Helper ModifyProjectile redlife hit contact
+## Next slice — T764 Helper ModifyProjectile redlife guard contact
 
 Close the Helper-authored `ModifyProjectile` redlife snapshot for an accepted
-unguarded hit; keep nested helpers, aggregate QA repair and broader resource
-topology separate. See issue 337.
+guard; keep nested helpers, aggregate QA repair and broader resource topology
+separate. See issue 338.
 
 ## Historical slice — T753 closed-bounded (2026-08-12)
 

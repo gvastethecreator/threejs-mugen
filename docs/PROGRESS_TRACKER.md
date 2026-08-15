@@ -1,6 +1,19 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T762 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T763 closed-bounded (2026-08-15)
+
+Issue 337 closes the first-generation Helper-authored `ModifyProjectile`
+red-life hit seam. Required trace `938303dd` -> `0073df18` and evidence
+commit `d96c7015` prove the Helper-owned caller-context replacement, the
+root-owned Projectile lifecycle, authored `GetHitVar(redlife)=40` and final
+`life=5/redLife=20` after the creation multiplier. Focused tests, typecheck and
+diff hygiene pass. Aggregate QA remains blocked by the inherited helper-bind
+target-link case; the full trace suite is 810/811 and the unrelated
+guardpoints assertion in EffectActorSystem remains known. Guard contact,
+nested/shared-resource topology, exact arithmetic/timing, rollback and full
+parity remain outside. See issue 337.
+
+## Historical implementation checkpoint — T762 closed-bounded (2026-08-15)
 
 Issue 336 closes the root-owned `ModifyProjectile` `AttackMulSet.RedLife` hit
 seam. Required trace `a09849a1` -> `fff29f85` and evidence commit
@@ -39,11 +52,11 @@ T755 was a duplicate queue entry for the already closed T728/issue 302 live
 `ModifyHitDef down.velocity` slice. Issue 329 is retained as superseded audit
 history; no new implementation should be scheduled from it.
 
-## Next implementation checkpoint — T763 Helper ModifyProjectile redlife hit contact
+## Next implementation checkpoint — T764 Helper ModifyProjectile redlife guard contact
 
 Close the Helper-authored `ModifyProjectile` redlife snapshot for an accepted
-unguarded hit; keep nested helpers, aggregate QA repair and broader resource
-topology separate. See issue 337.
+guard; keep nested helpers, aggregate QA repair and broader resource topology
+separate. See issue 338.
 
 ## Historical implementation checkpoint — T753 closed-bounded (2026-08-12)
 

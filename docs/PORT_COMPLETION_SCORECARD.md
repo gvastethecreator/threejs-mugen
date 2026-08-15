@@ -1,6 +1,20 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T762 `ModifyProjectile` `AttackMulSet.RedLife` hit contact — closed-bounded, no score movement
+## 2026-08-15 T763 Helper `ModifyProjectile` `AttackMulSet.RedLife` hit contact — closed-bounded, no score movement
+
+Issue 337 closes the first-generation Helper-authored hit snapshot. Evidence
+commit `d96c7015`; required trace `938303dd` -> `0073df18` passes. The
+root-owned Projectile keeps its creation multiplier `0.5` after Helper
+`ModifyProjectile` resolves `redlife=var(0),0`; authored
+`GetHitVar(redlife)=40` remains separate and the defender ends at
+`life=5/redLife=20`. Focused tests, typecheck and diff hygiene pass. Aggregate
+QA retains the inherited helper-bind target-link blocker; the full trace suite
+is 810/811 and the unrelated EffectActor guardpoints assertion remains known.
+No score movement: guard contact, nested/shared-resource topology, exact
+arithmetic/timing, rollback and full parity remain blocked. See [issue
+337](../.scratch/roadmap/issues/337-helper-modifyprojectile-attackmulset-redlife-hit.md).
+
+## Historical checkpoint — 2026-08-15 T762 `ModifyProjectile` `AttackMulSet.RedLife` hit contact — closed-bounded, no score movement
 
 Issue 336 closes the root-owned hit snapshot after `ModifyProjectile` replaces
 the live redlife pair. Evidence commit `a98fb9c0`; required trace
@@ -56,12 +70,12 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` work. Issue 329 remains superseded audit history and is not a
 new score candidate.
 
-## Next selection — T763 Helper ModifyProjectile redlife hit contact
+## Next selection — T764 Helper ModifyProjectile redlife guard contact
 
 Close the Helper-authored `ModifyProjectile` redlife snapshot on an accepted
-unguarded hit; keep nested helpers, aggregate QA repair and resource topology
+guard; keep nested helpers, aggregate QA repair and resource topology
 separate. See [issue
-337](../.scratch/roadmap/issues/337-helper-modifyprojectile-attackmulset-redlife-hit.md).
+338](../.scratch/roadmap/issues/338-helper-modifyprojectile-attackmulset-redlife-guard.md).
 
 ## Historical checkpoint — 2026-08-12 T753 `AttackMulSet guardpoints` — closed-bounded, no score movement
 
