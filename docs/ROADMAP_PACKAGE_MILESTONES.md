@@ -1,24 +1,30 @@
 ﻿# Roadmap Package Milestones
 
-## Latest package — T781 closed-bounded (2026-08-15)
+## Latest package — T782 closed-bounded (2026-08-15)
 
-Issue 355 closes Helper-owned live `ModifyProjectile down.velocity` explicit
-`index` selection. Evidence commits `29aba4bb` / `b9b0752d` and required trace
-checksums `0bd1aca5` / `f650174f` prove caller-context static/dynamic index
-resolution, oldest-first one-match selection, zero-fill, sibling/trap
-isolation, accepted lying-hit GetHitVar/physical response, lifecycle,
-owner/root/parent and target links. Focused tests, typecheck and diff hygiene
-pass; aggregate QA is `863/864` with the inherited helper-bind blocker.
+Issue 356 closes Helper-owned live `ModifyProjectile ground.velocity` explicit
+`index` selection. Evidence commits `40738a8b` / `754f0909` and required trace
+checksums `b4b36888` / `bda09a12` prove caller-context static/dynamic index
+resolution, oldest-first one-match selection, component-preserving vector
+writes, sibling/trap isolation, accepted grounded-hit GetHitVar/physical
+response, lifecycle, owner/root/parent and target links. Focused tests,
+typecheck and diff hygiene pass; aggregate QA is `865/864` passing with the
+inherited helper-bind blocker.
 
-## Next package — T782 queued (2026-08-15)
+## Next package — T783 queued (2026-08-15)
 
-Issue 356 queues the next bounded Helper-owned live `ModifyProjectile
-ground.velocity` index-selection matrix: an explicit oldest-first index chooses
+Issue 357 queues the next bounded Helper-owned live `ModifyProjectile
+guard.velocity` index-selection matrix: an explicit oldest-first index chooses
 one same-id Projectile while siblings/trap ids remain unchanged through a
-grounded hit. Keep id-zero/omitted selection, fresh/default derivation, dynamic
-`n`, nested/shared topology, aggregate QA repair, exact timing, rollback and
-full parity separate. See [issue
-356](../.scratch/roadmap/issues/356-helper-modifyprojectile-ground-velocity-index.md).
+grounded guard. Keep id-zero/omitted selection, fresh/default derivation,
+dynamic `n`, nested/shared topology, aggregate QA repair, exact timing,
+rollback and full parity separate. See [issue
+357](../.scratch/roadmap/issues/357-helper-modifyprojectile-guard-velocity-index.md).
+
+## Historical package — T781 closed-bounded (2026-08-15)
+
+Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index
+selection; evidence remains in `29aba4bb` / `b9b0752d`.
 
 ## Historical package — T780 closed-bounded (2026-08-15)
 

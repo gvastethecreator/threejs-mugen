@@ -2,24 +2,28 @@
 
 ## Current parity queue
 
-- **T781 closed-bounded** — issue 355 closes Helper-authored live
-  `ModifyProjectile down.velocity` explicit oldest-first `index` selection
-  among same-id Projectiles. Evidence commits `29aba4bb` / `b9b0752d` and
-  required trace `0bd1aca5` / `f650174f` prove caller-context static/dynamic
-  index resolution, one-match zero-fill, sibling/trap isolation, accepted
-  lying-hit GetHitVar/HitVelSet, lifecycle, ownership and target links.
-  Focused tests, typecheck and diff hygiene pass; aggregate QA produces
-  `863/864` artifacts (`830` required, `34` optional) with only the inherited
-  helper-bind target-link blocker. Fresh/default derivation, edge indices,
-  dynamic `n`, nested/shared topology, exact timing, rollback and full parity
-  remain outside. See [issue
-  355](../.scratch/roadmap/issues/355-helper-modifyprojectile-down-velocity-index.md).
-
-- **T782 next selection** — issue 356 queues the same explicit oldest-first
-  `index` selection seam for Helper-authored live `ModifyProjectile
-  ground.velocity`, with a selected grounded-hit Projectile and sibling/trap
-  isolation. See [issue
+- **T782 closed-bounded** — issue 356 closes Helper-authored live
+  `ModifyProjectile ground.velocity` explicit oldest-first `index` selection
+  among same-id Projectiles. Evidence commits `40738a8b` / `754f0909` and
+  required trace `b4b36888` / `bda09a12` prove caller-context static/dynamic
+  index resolution, one-match component-preserving writes, sibling/trap
+  isolation, accepted grounded-hit GetHitVar/HitVelSet, lifecycle, ownership
+  and target links. Focused tests, typecheck and diff hygiene pass; aggregate
+  QA produces `865/864` passing artifacts (`831` required, `34` optional) with
+  only the inherited helper-bind target-link blocker. Fresh/default derivation,
+  edge indices, dynamic `n`, nested/shared topology, exact timing, rollback and
+  full parity remain outside. See [issue
   356](../.scratch/roadmap/issues/356-helper-modifyprojectile-ground-velocity-index.md).
+
+- **T783 next selection** — issue 357 queues the same explicit oldest-first
+  `index` selection seam for Helper-authored live `ModifyProjectile
+  guard.velocity`, with a selected grounded-guard Projectile and sibling/trap
+  isolation. See [issue
+  357](../.scratch/roadmap/issues/357-helper-modifyprojectile-guard-velocity-index.md).
+
+- **T781 historical closed-bounded** — issue 355 closed Helper-authored live
+  `ModifyProjectile down.velocity` explicit oldest-first `index` selection;
+  evidence remains in `29aba4bb` / `b9b0752d`.
 
 - **T780 closed-bounded** — issue 354 closes Helper-authored live
   `ModifyProjectile air.velocity` explicit oldest-first `index` selection;

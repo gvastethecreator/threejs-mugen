@@ -1,21 +1,27 @@
 ﻿# Supported Features
-## 2026-08-15 T781 — closed-bounded
+## 2026-08-15 T782 — closed-bounded
 
-Helper-owned live `ModifyProjectile down.velocity` now supports explicit
-oldest-first `index` selection among same-id Projectiles. Commits `29aba4bb`
-and `b9b0752d`, plus required trace `0bd1aca5` / `f650174f`, prove caller-
-context static/dynamic index resolution, zero-fill, sibling/trap isolation,
-accepted lying-hit `GetHitVar`/physical response, lifecycle and target links.
-Aggregate QA is `863/864` with the inherited helper-bind target-link blocker;
-no score movement. Edge indices, fresh/default derivation, dynamic `n`, nested
-teams, rollback and full parity remain outside the claim. See [issue 355]
-(../.scratch/roadmap/issues/355-helper-modifyprojectile-down-velocity-index.md).
+Helper-owned live `ModifyProjectile ground.velocity` now supports explicit
+oldest-first `index` selection among same-id Projectiles. Commits `40738a8b`
+and `754f0909`, plus required trace `b4b36888` / `bda09a12`, prove caller-
+context static/dynamic index resolution, component-preserving writes,
+sibling/trap isolation, accepted grounded-hit `GetHitVar`/physical response,
+lifecycle and target links. Aggregate QA is `865/864` passing with the
+inherited helper-bind target-link blocker; no score movement. Edge indices,
+fresh/default derivation, dynamic `n`, nested teams, rollback and full parity
+remain outside the claim. See [issue 356]
+(../.scratch/roadmap/issues/356-helper-modifyprojectile-ground-velocity-index.md).
 
-## Next selection — T782 Helper `ModifyProjectile ground.velocity` index
+## Next selection — T783 Helper `ModifyProjectile guard.velocity` index
 
-Issue 356 queues the same bounded selection contract for a grounded-hit
+Issue 357 queues the same bounded selection contract for a grounded-guard
 Projectile and remains unscored until its focused and required-trace evidence
 closes.
+
+## Historical — T781 Helper `ModifyProjectile down.velocity` index
+
+Issue 355 closed the same oldest-first index contract for the lying-hit vector;
+evidence remains in `29aba4bb` / `b9b0752d`.
 
 ## Historical — T780 Helper `ModifyProjectile air.velocity` index
 

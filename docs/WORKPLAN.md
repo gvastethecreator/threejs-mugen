@@ -1,22 +1,28 @@
 # Workplan
 
-## Latest slice — T781 closed-bounded (2026-08-15)
+## Latest slice — T782 closed-bounded (2026-08-15)
 
-Issue 355 closes Helper-owned live `ModifyProjectile down.velocity` explicit
-`index` selection. Evidence commits `29aba4bb` / `b9b0752d` and required trace
-checksums `0bd1aca5` / `f650174f` prove one-shot caller-context index
-resolution, oldest-first selection, zero-fill, sibling/trap isolation, and
-accepted lying-hit GetHitVar/HitVelSet, lifecycle, ownership and target-link
-evidence. Focused tests, typecheck and diff hygiene pass; aggregate QA
-produces `863/864` artifacts with only the inherited helper-bind blocker.
+Issue 356 closes Helper-owned live `ModifyProjectile ground.velocity` explicit
+`index` selection. Evidence commits `40738a8b` / `754f0909` and required trace
+checksums `b4b36888` / `bda09a12` prove one-shot caller-context index
+resolution, oldest-first selection, component-preserving vector writes,
+sibling/trap isolation, accepted grounded-hit GetHitVar/HitVelSet, lifecycle,
+ownership and target-link evidence. Focused tests, typecheck and diff hygiene
+pass; aggregate QA produces `865/864` passing artifacts with only the inherited
+helper-bind blocker.
 
-## Next slice — T782 queued (2026-08-15)
+## Next slice — T783 queued (2026-08-15)
 
-Issue 356 covers Helper caller-context `ModifyProjectile ground.velocity`
+Issue 357 covers Helper caller-context `ModifyProjectile guard.velocity`
 explicit `index` selection among same-id Projectiles, preserving oldest-first
-selection, sibling/trap isolation and an accepted grounded hit. Keep
-id-zero/omitted selection, fresh/default derivation, dynamic `n`, nested/shared
+selection, sibling/trap isolation and an accepted grounded guard. Keep id-zero/
+omitted selection, fresh/default derivation, dynamic `n`, nested/shared
 topology, aggregate QA repair, exact timing, rollback and full parity separate.
+
+## Historical slice — T781 closed-bounded (2026-08-15)
+
+Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index
+selection; evidence remains in `29aba4bb` / `b9b0752d`.
 
 ## Historical slice — T780 closed-bounded (2026-08-15)
 

@@ -1,23 +1,29 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index — closed-bounded, no score movement
+## 2026-08-15 T782 Helper `ModifyProjectile` `ground.velocity` index — closed-bounded, no score movement
 
-Issue 355 closes Helper-owned live `ModifyProjectile down.velocity` explicit
-`index` selection. Evidence commits `29aba4bb` / `b9b0752d` and required trace
-`0bd1aca5` / `f650174f` prove caller-context static/dynamic index resolution,
-oldest-first one-match zero-fill, sibling/trap isolation, accepted lying-hit
-`GetHitVar`/`HitVelSet`, lifecycle, ownership and target links. Focused tests,
-typecheck and diff hygiene pass. Aggregate QA produces `863/864` artifacts
-with only the inherited helper-bind target-link blocker; no score movement.
-Fresh/default derivation, edge indices, dynamic `n`, nested/shared topology,
-exact timing, rollback and full parity remain blocked. See [issue 355]
-(../.scratch/roadmap/issues/355-helper-modifyprojectile-down-velocity-index.md).
+Issue 356 closes Helper-owned live `ModifyProjectile ground.velocity` explicit
+`index` selection. Evidence commits `40738a8b` / `754f0909` and required trace
+`b4b36888` / `bda09a12` prove caller-context static/dynamic index resolution,
+oldest-first one-match component-preserving writes, sibling/trap isolation,
+accepted grounded-hit `GetHitVar`/`HitVelSet`, lifecycle, ownership and target
+links. Focused tests, typecheck and diff hygiene pass. Aggregate QA produces
+`865/864` passing artifacts (`831` required, `34` optional) with only the
+inherited helper-bind target-link blocker; no score movement. Fresh/default
+derivation, edge indices, dynamic `n`, nested/shared topology, exact timing,
+rollback and full parity remain blocked. See [issue 356]
+(../.scratch/roadmap/issues/356-helper-modifyprojectile-ground-velocity-index.md).
 
-## Next scorecard slice — 2026-08-15 T782 queued
+## Next scorecard slice — 2026-08-15 T783 queued
 
-Issue 356 queues the same bounded Helper-owned `ModifyProjectile ground.velocity`
-index-selection seam through an accepted grounded hit; it is not scored until
+Issue 357 queues the same bounded Helper-owned `ModifyProjectile guard.velocity`
+index-selection seam through an accepted grounded guard; it is not scored until
 focused and required-trace evidence closes.
+
+## Historical checkpoint — 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index
+
+Issue 355 closed Helper-owned live `ModifyProjectile down.velocity` explicit
+`index` selection; evidence remains in `29aba4bb` / `b9b0752d`.
 
 ## Historical checkpoint — 2026-08-15 T780 Helper `ModifyProjectile` `air.velocity` index — closed-bounded, no score movement
 

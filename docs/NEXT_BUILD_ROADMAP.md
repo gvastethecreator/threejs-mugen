@@ -1,24 +1,29 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T781 closed-bounded (2026-08-15)
+## Latest bounded slice — T782 closed-bounded (2026-08-15)
 
-Issue 355 closes Helper-owned live `ModifyProjectile down.velocity` explicit
-`index` selection. Commits `29aba4bb` / `b9b0752d` and required trace
-`0bd1aca5` / `f650174f` prove caller-context static/dynamic index resolution,
-oldest-first single-match replacement, zero-fill, trap isolation, accepted
-lying-hit GetHitVar/physical response, lifecycle, ownership and target links.
-Focused Projectile/Helper/trace tests, typecheck and diff hygiene pass;
-aggregate QA produces `863/864` artifacts with the inherited helper-bind
-blocker as the only failure.
+Issue 356 closes Helper-owned live `ModifyProjectile ground.velocity` explicit
+`index` selection. Commits `40738a8b` / `754f0909` and required trace
+`b4b36888` / `bda09a12` prove caller-context static/dynamic index resolution,
+oldest-first single-match replacement, component-preserving siblings, trap
+isolation, accepted grounded-hit GetHitVar/physical response, lifecycle,
+ownership and target links. Focused Projectile/Helper/trace tests, typecheck
+and diff hygiene pass; aggregate QA has `865/864` passing artifacts with the
+inherited helper-bind blocker as the only failure.
 
-## Next bounded slice — T782 queued (2026-08-15)
+## Next bounded slice — T783 queued (2026-08-15)
 
-Issue 356 will close explicit `index` selection for Helper-authored live
-`ModifyProjectile ground.velocity` among same-id Projectiles, preserving
-oldest-first and sibling/trap isolation through a grounded hit. Keep id-zero/
+Issue 357 will close explicit `index` selection for Helper-authored live
+`ModifyProjectile guard.velocity` among same-id Projectiles, preserving
+oldest-first and sibling/trap isolation through a grounded guard. Keep id-zero/
 omitted selection, fresh/default derivation, dynamic `n`, nested/shared-resource
 topology, aggregate QA repair, exact timing, rollback and full parity separate.
-See [issue 356](../.scratch/roadmap/issues/356-helper-modifyprojectile-ground-velocity-index.md).
+See [issue 357](../.scratch/roadmap/issues/357-helper-modifyprojectile-guard-velocity-index.md).
+
+## Historical bounded slice — T781 closed-bounded (2026-08-15)
+
+Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index
+selection; evidence remains in `29aba4bb` / `b9b0752d`.
 
 ## Historical bounded slice — T780 closed-bounded (2026-08-15)
 

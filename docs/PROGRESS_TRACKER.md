@@ -1,22 +1,27 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T781 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T782 closed-bounded (2026-08-15)
 
-Issue 355 closes Helper-owned live `ModifyProjectile down.velocity` explicit
-`index` selection. Evidence commits `29aba4bb` / `b9b0752d` and required trace
-checksums `0bd1aca5` / `f650174f` prove caller-context `var()` index
-resolution, oldest-first selection, zero-fill, and same-id/trap isolation.
-The selected Projectile reaches an accepted lying hit with GetHitVar,
-HitVelSet, lifecycle, ownership and target-link evidence. Focused tests,
-typecheck and diff hygiene pass; aggregate QA is `863/864` with only the
-inherited helper-bind target-link blocker.
+Issue 356 closes Helper-owned live `ModifyProjectile ground.velocity` explicit
+`index` selection. Evidence commits `40738a8b` / `754f0909` and required trace
+checksums `b4b36888` / `bda09a12` prove caller-context `var()` index
+resolution, oldest-first selection, component-preserving vector replacement,
+same-id/trap isolation, grounded GetHitVar/HitVelSet response, lifecycle,
+ownership and target links. Focused tests, typecheck and diff hygiene pass;
+aggregate QA is `865/864` passing with `831` required and only the inherited
+helper-bind target-link blocker.
 
-## Next implementation checkpoint — T782 queued (2026-08-15)
+## Next implementation checkpoint — T783 queued (2026-08-15)
 
-Issue 356 targets Helper-owned `ModifyProjectile ground.velocity` explicit index
-selection among same-id Projectiles and an accepted grounded hit. Keep
+Issue 357 targets Helper-owned `ModifyProjectile guard.velocity` explicit index
+selection among same-id Projectiles and an accepted grounded guard. Keep
 id-zero/omitted selection, fresh/default derivation, dynamic `n`, nested/shared
 topology, aggregate QA repair, exact timing, rollback and full parity separate.
+
+## Historical implementation checkpoint — T781 closed-bounded (2026-08-15)
+
+Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index
+selection; evidence remains in `29aba4bb` / `b9b0752d`.
 
 ## Historical implementation checkpoint — T780 closed-bounded (2026-08-15)
 
