@@ -1,27 +1,35 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T770 Helper `ModifyProjectile` `guard.velocity` ground guard — closed-bounded, no score movement
+## 2026-08-15 T771 Helper `ModifyProjectile` `airguard.velocity` X air guard — closed-bounded, no score movement
 
-Issue 344 closes the first-generation Helper-authored ground guard velocity
-seam. Evidence commit `3c7ca64c`; required trace `3d47deb8`
-(`fcbebd7b` -> `ae032d99`) passes. The root-owned Projectile keeps its
-Helper-context X replacement through an accepted guard; `GetHitVar(xvel)=8`,
-physical guard velocity is observed, and defender life ends at `20`. Focused
-trace, typecheck and diff hygiene pass. Aggregate QA retains the inherited
-helper-bind target-link blocker. No score movement: airborne guard, Y/Z
+Issue 345 closes the first-generation Helper-authored airborne guard velocity
+X seam. Evidence commit `c3438d6e`; required trace `641792d6`
+(`b7850d2e` -> `61647146`) passes. The root-owned Projectile keeps the
+Helper-context X replacement through an accepted airborne guard;
+`maxVel.x=6` is observed and defender life ends at `998`. Focused trace,
+typecheck and diff hygiene pass. Aggregate QA retains the inherited
+helper-bind target-link blocker. No score movement: sibling preservation, Z
 breadth, nested/shared-resource topology, exact physics/timing, rollback and
 full parity remain blocked. See [issue
-344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
-
-## 2026-08-15 T771 Helper `ModifyProjectile` `airguard.velocity` air guard — queued
-
-Issue 345 is the next bounded cut for the Helper caller-context airborne guard
-velocity path. It remains limited to one Helper, one root-owned Projectile,
-one finite X component and one accepted airborne guard; no score movement is
-expected. Ground guard, Y/Z breadth, nested/shared-resource topology,
-aggregate QA repair, exact physics/timing, rollback and full parity remain
-blocked. See [issue
 345](../.scratch/roadmap/issues/345-helper-modifyprojectile-airguard-velocity.md).
+
+## 2026-08-15 T772 Helper `ModifyProjectile` `airguard.velocity` Y air guard — queued
+
+Issue 346 is the next bounded cut for the Helper caller-context airborne guard
+velocity Y path. It remains limited to one Helper, one root-owned Projectile,
+one finite Y component and one accepted airborne guard; no score movement is
+expected. Z, fresh/default derivation, full partial-component preservation,
+ground guard, nested/shared-resource topology, aggregate QA repair, exact
+physics/timing, rollback and full parity remain blocked. See [issue
+346](../.scratch/roadmap/issues/346-helper-modifyprojectile-airguard-velocity-y.md).
+
+## 2026-08-15 T770 Helper `ModifyProjectile` `guard.velocity` ground guard — historical closed-bounded, no score movement
+
+Issue 344 closed the first-generation Helper-authored ground guard velocity
+seam. Evidence commit `3c7ca64c`; required trace `3d47deb8` passes. The
+accepted guard exposed `GetHitVar(xvel)=8`, physical guard velocity, and
+defender life `20`. See [issue
+344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
 
 ## Historical checkpoint — 2026-08-15 T769 Helper `ModifyProjectile` `damage` guard readback — closed-bounded, no score movement
 

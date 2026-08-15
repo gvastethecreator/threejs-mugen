@@ -1,21 +1,29 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T770 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T771 closed-bounded (2026-08-15)
 
-Issue 344 closes the first-generation Helper-authored `ModifyProjectile`
-`guard.velocity` ground-guard readback. Required trace `3d47deb8`
-(`fcbebd7b` -> `ae032d99`) and evidence commit `3c7ca64c` prove the Helper
-caller-context replacement, root-owned Projectile lifecycle,
-`GetHitVar(xvel)=8`, physical guard velocity and defender life `20`. Focused
-trace, typecheck and diff hygiene pass. Aggregate QA remains blocked by the
-inherited helper-bind target-link case. See issue 344.
+Issue 345 closes the first-generation Helper-authored `ModifyProjectile`
+`airguard.velocity` X readback. Required trace `641792d6`
+(`b7850d2e` -> `61647146`) and evidence commit `c3438d6e` prove the
+caller-context replacement, root-owned Projectile lifecycle, accepted
+airborne guard, physical X response `maxVel.x=6`, and defender life `998`.
+Focused trace, typecheck and diff hygiene pass. Aggregate QA remains blocked
+by the inherited helper-bind target-link case. Sibling-component preservation
+and Z breadth remain separate. See issue 345.
 
-## Next implementation checkpoint — T771 queued (2026-08-15)
+## Next implementation checkpoint — T772 queued (2026-08-15)
 
-Issue 345 targets the analogous Helper-authored `ModifyProjectile
-airguard.velocity` airborne-guard readback. It remains bounded to one Helper,
-one root-owned Projectile, one finite X component and one accepted airborne
-guard; ground guard, Y/Z breadth and aggregate QA repair remain separate.
+Issue 346 targets the Helper-authored `ModifyProjectile airguard.velocity` Y
+readback with one finite dynamic Y component and one accepted airborne guard.
+Keep Z, fresh/default derivation, full partial-component preservation, ground
+guard, and aggregate QA repair separate.
+
+## Historical implementation checkpoint — T770 closed-bounded (2026-08-15)
+
+Issue 344 closed the Helper-authored `ModifyProjectile guard.velocity`
+ground-guard readback. Required trace `3d47deb8` and evidence commit
+`3c7ca64c` prove `GetHitVar(xvel)=8`, physical guard velocity, and defender
+life `20`. See issue 344.
 
 ## Historical implementation checkpoint — T769 closed-bounded (2026-08-15)
 

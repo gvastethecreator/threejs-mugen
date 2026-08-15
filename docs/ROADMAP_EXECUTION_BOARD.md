@@ -1,23 +1,34 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T770 closed-bounded (2026-08-15)
+## Latest bounded slice — T771 closed-bounded (2026-08-15)
 
-Issue 344 closes the first-generation Helper-authored `ModifyProjectile`
-`guard.velocity` ground-guard readback. Evidence commit `3c7ca64c`; required
-trace `3d47deb8` (`fcbebd7b` -> `ae032d99`) passes. The Helper creates a
-root-owned Projectile, resolves `guard.velocity=var(0)`, and an accepted
-guard exposes `GetHitVar(xvel)=8` with physical guard velocity; defender life
-ends at `20`. Focused tests, typecheck and diff hygiene pass. Aggregate QA
-stops on the inherited helper-bind target-link blocker. See [issue
-344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
-
-## Next bounded slice — T771 queued (2026-08-15)
-
-Issue 345 targets the analogous Helper-authored `ModifyProjectile
-airguard.velocity` airborne-guard readback. Keep ground guard, Y/Z breadth,
-nested/shared-resource topology, aggregate QA repair, exact physics/timing,
-rollback and full parity separate. See [issue
+Issue 345 closes the first-generation Helper-authored `ModifyProjectile
+airguard.velocity` X readback. Evidence commit `c3438d6e`; required trace
+`641792d6` (`b7850d2e` -> `61647146`) passes. The Helper creates a root-owned
+Projectile, resolves `airguard.velocity=var(0)` with `var(0)=6`, and an
+accepted airborne guard observes the replaced physical X response
+(`maxVel.x=6`); defender life ends at `998`. Focused tests, typecheck and diff
+hygiene pass. Aggregate QA stops on the inherited helper-bind target-link
+blocker. Sibling preservation, Z breadth, nested/shared-resource topology,
+exact physics/timing, rollback and full parity remain separate. See [issue
 345](../.scratch/roadmap/issues/345-helper-modifyprojectile-airguard-velocity.md).
+
+## Next bounded slice — T772 queued (2026-08-15)
+
+Issue 346 targets the Helper-authored `ModifyProjectile airguard.velocity` Y
+readback with one finite dynamic component and one accepted airborne guard.
+Keep Z, fresh/default derivation, the full partial-component matrix, ground
+guard, nested/shared-resource topology, aggregate QA repair, exact
+physics/timing, rollback and full parity separate. See [issue
+346](../.scratch/roadmap/issues/346-helper-modifyprojectile-airguard-velocity-y.md).
+
+## Historical bounded slice — T770 closed-bounded (2026-08-15)
+
+Issue 344 closed the first-generation Helper-authored `ModifyProjectile`
+`guard.velocity` ground-guard readback. Evidence commit `3c7ca64c`; required
+trace `3d47deb8` (`fcbebd7b` -> `ae032d99`) passes. The accepted guard exposes
+`GetHitVar(xvel)=8`, physical guard velocity, and defender life `20`. See
+[issue 344](../.scratch/roadmap/issues/344-helper-modifyprojectile-guard-velocity.md).
 
 ## Historical bounded slice — T769 closed-bounded (2026-08-15)
 
