@@ -4778,10 +4778,14 @@ export function createSyntheticImportedDynamicEnvShakeTraceArtifact(
         freq: "var(1)",
         ampl: "var(2)",
         phase: "fvar(0)",
+        mul: "var(3)",
+        dir: "var(4)",
         vars: [
           { index: 0, value: 18 },
           { index: 1, value: 45 },
           { index: 2, value: -9 },
+          { index: 3, value: 1.5 },
+          { index: 4, value: 30 },
         ],
         fvars: [
           { index: 0, value: 0.25 },
@@ -4805,11 +4809,13 @@ export function createSyntheticImportedDynamicEnvShakeTraceArtifact(
           freq: 45,
           ampl: -9,
           phase: 0.25,
+          mul: 1.5,
+          dir: 30,
           stateNo: 200,
         },
       ],
       notes: [
-        "Synthetic imported dynamic EnvShake trace proves EnvShake time/freq/ampl/phase expressions can resolve owner-local var/fvar values through active controller fallback, record typed envshake operation evidence after resolution, and emit bounded runtime camera-shake telemetry. It does not claim mul support, exact MUGEN/IKEMEN camera waveform, pause/stage/layer interaction, helper ownership, or screenpack parity.",
+        "Synthetic imported dynamic EnvShake trace proves EnvShake time/freq/ampl/phase plus pinned Ikemen mul/dir expressions resolve owner-local values through active controller fallback, record typed operation evidence, and emit bounded runtime camera-shake telemetry. It does not claim diradd, decay, exact MUGEN/IKEMEN camera waveform, pause/stage/layer interaction, helper ownership, or screenpack parity.",
       ],
     },
   );
@@ -68868,6 +68874,8 @@ export type SyntheticImportedTraceFighterOptions = {
     freq?: number | string;
     ampl?: number | string;
     phase?: number | string;
+    mul?: number | string;
+    dir?: number | string;
     vars?: Array<{ index: number; value: number }>;
     fvars?: Array<{ index: number; value: number }>;
   };
@@ -71833,6 +71841,8 @@ time = ${options.time ?? 16}
 freq = ${options.freq ?? 30}
 ampl = ${options.ampl ?? -7}
 phase = ${options.phase ?? 0.5}
+${options.mul === undefined ? "" : `mul = ${options.mul}`}
+${options.dir === undefined ? "" : `dir = ${options.dir}`}
 `;
 }
 

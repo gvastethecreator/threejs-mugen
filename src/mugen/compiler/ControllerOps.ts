@@ -1136,6 +1136,10 @@ export type EnvShakeControllerOp = {
   freq: number;
   ampl: number;
   phase: number;
+  /** Ikemen-GO active EnvShake cycle multiplier. */
+  mul?: number;
+  /** Ikemen-GO active EnvShake direction in degrees. */
+  dir?: number;
 };
 
 export type EnvColorControllerOp = {
@@ -4848,7 +4852,9 @@ function compileEnvShakeControllerOp(controller: MugenStateController): EnvShake
   const freq = staticNumberParam(controller, "freq", 60);
   const ampl = staticNumberParam(controller, "ampl", -4);
   const phase = staticNumberParam(controller, "phase", 0);
-  if (time === undefined || freq === undefined || ampl === undefined || phase === undefined) {
+  const mul = staticOptionalStrictNumberParam(controller, "mul");
+  const dir = staticOptionalStrictNumberParam(controller, "dir");
+  if (time === undefined || freq === undefined || ampl === undefined || phase === undefined || mul === false || dir === false) {
     return undefined;
   }
   const clampedTime = clampShakeTime(time);
@@ -4861,6 +4867,8 @@ function compileEnvShakeControllerOp(controller: MugenStateController): EnvShake
     freq: clampShakeFrequency(freq),
     ampl: clampShakeAmplitude(ampl),
     phase,
+    ...(typeof mul === "number" ? { mul } : {}),
+    ...(typeof dir === "number" ? { dir } : {}),
   };
 }
 

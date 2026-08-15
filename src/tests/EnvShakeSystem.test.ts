@@ -63,13 +63,20 @@ describe("EnvShakeSystem", () => {
     const dispatchWorld = new RuntimeEnvShakeControllerDispatchWorld();
     const envShakeWorld = new RuntimeEnvShakeWorld();
     const fighter = actor(200, 4);
-    const source = controller("EnvShake", { time: "var(0)", freq: "var(1)", ampl: "var(2)", phase: "fvar(0)" });
+    const source = controller("EnvShake", {
+      time: "var(0)",
+      freq: "var(1)",
+      ampl: "var(2)",
+      phase: "fvar(0)",
+      mul: "var(3)",
+      dir: "var(4)",
+    });
     const ir = compileControllerIr(source);
     const recordedControllers: string[] = [];
     const recordedOperations: string[] = [];
     const resolver = {
       resolveNumber: (key: "time" | "ampl") => ({ time: 18, ampl: -9 })[key],
-      resolveFloat: (key: "freq" | "phase") => ({ freq: 45, phase: 0.25 })[key],
+      resolveFloat: (key: "freq" | "phase" | "mul" | "dir") => ({ freq: 45, phase: 0.25, mul: 1.5, dir: 30 })[key],
     };
 
     const result = dispatchWorld.apply({
@@ -89,6 +96,8 @@ describe("EnvShakeSystem", () => {
       freq: 45,
       ampl: -9,
       phase: 0.25,
+      mul: 1.5,
+      dir: 30,
     });
     expect(resolveRuntimeEnvShakeControllerOperation(controller("EnvShake", { time: "var(0)" }))).toBeUndefined();
     expect(result.event).toMatchObject({
@@ -97,6 +106,8 @@ describe("EnvShakeSystem", () => {
       freq: 45,
       ampl: -9,
       phase: 0.25,
+      mul: 1.5,
+      dir: 30,
       stateNo: 200,
       runtimeTick: 120,
     });

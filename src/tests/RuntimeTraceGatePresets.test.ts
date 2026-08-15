@@ -14478,6 +14478,8 @@ describe("RuntimeTraceGatePresets", () => {
         freq: 45,
         ampl: -9,
         phase: 0.25,
+        mul: 1.5,
+        dir: 30,
         stateNo: 200,
       },
     ]);
@@ -14487,11 +14489,11 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.envShakeEvents).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", time: 18, freq: 45, ampl: -9, phase: 0.25, stateNo: 200 }),
+        expect.objectContaining({ actorId: "p1", time: 18, freq: 45, ampl: -9, phase: 0.25, mul: 1.5, dir: 30, stateNo: 200 }),
       ]),
     );
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")?.envShakeEvents).toEqual(
-      expect.arrayContaining([expect.objectContaining({ time: 18, freq: 45, ampl: -9, phase: 0.25, stateNo: 200 })]),
+      expect.arrayContaining([expect.objectContaining({ time: 18, freq: 45, ampl: -9, phase: 0.25, mul: 1.5, dir: 30, stateNo: 200 })]),
     );
   });
 

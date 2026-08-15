@@ -1340,10 +1340,21 @@ value = 1
   });
 
   it("compiles static EnvShake controllers into typed camera-shake operations", () => {
-    const shake = compileControllerIr(controller(200, "EnvShake", [], { time: "999", freq: "-30", ampl: "-99", phase: "1.5" }));
+    const shake = compileControllerIr(controller(200, "EnvShake", [], {
+      time: "999",
+      freq: "-30",
+      ampl: "-99",
+      phase: "1.5",
+      mul: "1.5",
+      dir: "30",
+    }));
     const defaults = compileControllerIr(controller(200, "EnvShake", [], { time: "8" }));
     const zero = compileControllerIr(controller(200, "EnvShake", [], { time: "0" }));
-    const dynamic = compileControllerIr(controller(200, "EnvShake", [], { time: "var(0)" }));
+    const dynamic = compileControllerIr(controller(200, "EnvShake", [], {
+      time: "var(0)",
+      mul: "var(1)",
+      dir: "var(2)",
+    }));
 
     expect(shake.operation).toEqual({
       kind: "envshake",
@@ -1351,6 +1362,8 @@ value = 1
       freq: 30,
       ampl: -64,
       phase: 1.5,
+      mul: 1.5,
+      dir: 30,
     });
     expect(defaults.operation).toEqual({
       kind: "envshake",

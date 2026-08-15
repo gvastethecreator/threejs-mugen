@@ -9136,7 +9136,7 @@ function resolveEnvShakeNumberParam(
 
 function resolveEnvShakeFloatParam(
   controller: ControllerIr,
-  key: "freq" | "phase",
+  key: "freq" | "phase" | "mul" | "dir",
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   owner: FighterMatchState,

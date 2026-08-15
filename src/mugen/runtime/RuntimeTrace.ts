@@ -1029,6 +1029,10 @@ export type RuntimeTraceEnvShakeEventRequirement = {
   freq?: number;
   ampl?: number;
   phase?: number;
+  /** Optional Ikemen-GO active EnvShake cycle multiplier. */
+  mul?: number;
+  /** Optional Ikemen-GO active EnvShake direction in degrees. */
+  dir?: number;
   stateNo?: number;
   minCount?: number;
 };
@@ -1042,6 +1046,8 @@ export type RuntimeTraceGateEnvShakeEventEvidence = {
   freq: number;
   ampl: number;
   phase: number;
+  mul?: number;
+  dir?: number;
   stateNo: number;
   eventTick: number;
   runtimeTick: number;
@@ -3036,6 +3042,8 @@ function summarizeEnvShakeEventEvidence(
     freq: event.freq,
     ampl: event.ampl,
     phase: event.phase,
+    ...(event.mul === undefined ? {} : { mul: event.mul }),
+    ...(event.dir === undefined ? {} : { dir: event.dir }),
     stateNo: event.stateNo,
     eventTick: event.tick,
     runtimeTick: event.runtimeTick,
@@ -3052,6 +3060,8 @@ function envShakeEventEvidenceKey(event: RuntimeTraceGateEnvShakeEventEvidence):
     event.freq,
     event.ampl,
     event.phase,
+    event.mul,
+    event.dir,
     event.stateNo,
     event.eventTick,
     event.runtimeTick,
@@ -3070,6 +3080,8 @@ function matchesEnvShakeEventRequirement(
     (requirement.freq === undefined || event.freq === requirement.freq) &&
     (requirement.ampl === undefined || event.ampl === requirement.ampl) &&
     (requirement.phase === undefined || event.phase === requirement.phase) &&
+    (requirement.mul === undefined || event.mul === requirement.mul) &&
+    (requirement.dir === undefined || event.dir === requirement.dir) &&
     (requirement.stateNo === undefined || event.stateNo === requirement.stateNo)
   );
 }
