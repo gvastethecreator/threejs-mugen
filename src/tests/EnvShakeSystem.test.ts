@@ -70,13 +70,22 @@ describe("EnvShakeSystem", () => {
       phase: "fvar(0)",
       mul: "var(3)",
       dir: "var(4)",
+      diradd: "var(5)",
+      decay: "var(6)",
     });
     const ir = compileControllerIr(source);
     const recordedControllers: string[] = [];
     const recordedOperations: string[] = [];
     const resolver = {
       resolveNumber: (key: "time" | "ampl") => ({ time: 18, ampl: -9 })[key],
-      resolveFloat: (key: "freq" | "phase" | "mul" | "dir") => ({ freq: 45, phase: 0.25, mul: 1.5, dir: 30 })[key],
+      resolveFloat: (key: "freq" | "phase" | "mul" | "dir" | "diradd" | "decay") => ({
+        freq: 45,
+        phase: 0.25,
+        mul: 1.5,
+        dir: 30,
+        diradd: 5,
+        decay: 1.25,
+      })[key],
     };
 
     const result = dispatchWorld.apply({
@@ -98,6 +107,8 @@ describe("EnvShakeSystem", () => {
       phase: 0.25,
       mul: 1.5,
       dir: 30,
+      dirAdd: 5,
+      decay: 1.25,
     });
     expect(resolveRuntimeEnvShakeControllerOperation(controller("EnvShake", { time: "var(0)" }))).toBeUndefined();
     expect(result.event).toMatchObject({
@@ -108,6 +119,8 @@ describe("EnvShakeSystem", () => {
       phase: 0.25,
       mul: 1.5,
       dir: 30,
+      dirAdd: 5,
+      decay: 1.25,
       stateNo: 200,
       runtimeTick: 120,
     });
@@ -115,6 +128,26 @@ describe("EnvShakeSystem", () => {
     expect(recordedControllers).toEqual(["EnvShake"]);
     expect(recordedOperations).toEqual(["envshake:18"]);
     expect(result).toMatchObject({ recordedController: true, recordedOperation: true });
+  });
+
+  it("applies Ikemen diradd and decay per active EnvShake tick", () => {
+    const event: RuntimeEnvShakeEvent = {
+      ...eventAt(0, 0),
+      time: 10,
+      freq: 45,
+      ampl: 8,
+      phase: 10,
+      dir: 10,
+      dirAdd: 20,
+      decay: 1,
+    };
+
+    const shake = calculateRuntimeCameraShake(2, [event]);
+
+    expect(shake?.remaining).toBe(8);
+    expect(shake?.amplitude).toBeCloseTo(5.12, 10);
+    expect(shake?.x).toBeCloseTo(-3.86256, 4);
+    expect(shake?.y).toBeCloseTo(3.24107, 4);
   });
 
   it("creates FallEnvShake events from hit fall metadata", () => {
@@ -263,7 +296,7 @@ describe("EnvShakeSystem", () => {
 function actor(
   stateNo: number,
   stateElapsed: number,
-  envShake?: { time: number; freq: number; ampl: number; phase: number; mul?: number; dir?: number },
+  envShake?: { time: number; freq: number; ampl: number; phase: number; mul?: number; dir?: number; dirAdd?: number; decay?: number },
 ) {
   return {
     runtime: {
@@ -279,6 +312,19 @@ function actor(
     },
     stateElapsed,
     envShakeEvents: [],
+  };
+}
+
+function eventAt(runtimeTick: number, tick: number): RuntimeEnvShakeEvent {
+  return {
+    type: "EnvShake",
+    time: 12,
+    freq: 30,
+    ampl: -6,
+    phase: 0,
+    stateNo: 200,
+    tick,
+    runtimeTick,
   };
 }
 

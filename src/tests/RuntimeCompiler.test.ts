@@ -1347,6 +1347,8 @@ value = 1
       phase: "1.5",
       mul: "1.5",
       dir: "30",
+      diradd: "12",
+      decay: "0.75",
     }));
     const defaults = compileControllerIr(controller(200, "EnvShake", [], { time: "8" }));
     const zero = compileControllerIr(controller(200, "EnvShake", [], { time: "0" }));
@@ -1354,6 +1356,8 @@ value = 1
       time: "var(0)",
       mul: "var(1)",
       dir: "var(2)",
+      diradd: "var(3)",
+      decay: "var(4)",
     }));
 
     expect(shake.operation).toEqual({
@@ -1364,6 +1368,8 @@ value = 1
       phase: 1.5,
       mul: 1.5,
       dir: 30,
+      dirAdd: 12,
+      decay: 0.75,
     });
     expect(defaults.operation).toEqual({
       kind: "envshake",
@@ -1374,6 +1380,7 @@ value = 1
     });
     expect(zero.operation).toBeUndefined();
     expect(dynamic.operation).toBeUndefined();
+    expect(compileControllerIr(controller(200, "EnvShake", [], { time: "8", diradd: "var(" })).operation).toBeUndefined();
   });
 
   it("compiles simple movement controllers into typed kinematic operations", () => {

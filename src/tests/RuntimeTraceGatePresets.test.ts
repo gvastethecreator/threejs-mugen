@@ -637,6 +637,7 @@ import {
   createSyntheticImportedEnvColorUnderTraceArtifact,
   createSyntheticImportedEnvShakeTraceArtifact,
   createSyntheticImportedDynamicEnvShakeTraceArtifact,
+  createSyntheticImportedDynamicEnvShakeDirAddDecayTraceArtifact,
   createSyntheticImportedRemapPalTraceArtifact,
   createSyntheticImportedDynamicRemapPalTraceArtifact,
   createSyntheticImportedPalFxRemapPalTraceArtifact,
@@ -14495,6 +14496,33 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")?.envShakeEvents).toEqual(
       expect.arrayContaining([expect.objectContaining({ time: 18, freq: 45, ampl: -9, phase: 0.25, mul: 1.5, dir: 30, stateNo: 200 })]),
     );
+  });
+
+  it("creates a synthetic imported EnvShake diradd/decay artifact", () => {
+    const artifact = createSyntheticImportedDynamicEnvShakeDirAddDecayTraceArtifact({ generatedAt: "2026-08-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-envshake-diradd-decay-golden", source: "mixed" },
+      gates: [{ label: "imported-x-golden", passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.requirements.requiredEnvShakeEvents).toEqual([{
+      actorId: "p1",
+      source: "imported",
+      actorKind: "player",
+      time: 18,
+      freq: 45,
+      ampl: -9,
+      phase: 0.25,
+      mul: 1.5,
+      dir: 30,
+      dirAdd: 20,
+      decay: 1.25,
+      stateNo: 200,
+    }]);
+    expect(artifact.gates[0]?.evidence.envShakeEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1", dirAdd: 20, decay: 1.25 }),
+    ]));
   });
 
   it("creates a synthetic imported RemapPal artifact with typed sprite-effect evidence", () => {

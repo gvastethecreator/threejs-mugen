@@ -1033,6 +1033,10 @@ export type RuntimeTraceEnvShakeEventRequirement = {
   mul?: number;
   /** Optional Ikemen-GO active EnvShake direction in degrees. */
   dir?: number;
+  /** Optional Ikemen-GO active EnvShake direction delta per elapsed tick. */
+  dirAdd?: number;
+  /** Optional Ikemen-GO active EnvShake amplitude decay exponent. */
+  decay?: number;
   stateNo?: number;
   minCount?: number;
 };
@@ -1048,6 +1052,8 @@ export type RuntimeTraceGateEnvShakeEventEvidence = {
   phase: number;
   mul?: number;
   dir?: number;
+  dirAdd?: number;
+  decay?: number;
   stateNo: number;
   eventTick: number;
   runtimeTick: number;
@@ -3044,6 +3050,8 @@ function summarizeEnvShakeEventEvidence(
     phase: event.phase,
     ...(event.mul === undefined ? {} : { mul: event.mul }),
     ...(event.dir === undefined ? {} : { dir: event.dir }),
+    ...(event.dirAdd === undefined ? {} : { dirAdd: event.dirAdd }),
+    ...(event.decay === undefined ? {} : { decay: event.decay }),
     stateNo: event.stateNo,
     eventTick: event.tick,
     runtimeTick: event.runtimeTick,
@@ -3062,6 +3070,8 @@ function envShakeEventEvidenceKey(event: RuntimeTraceGateEnvShakeEventEvidence):
     event.phase,
     event.mul,
     event.dir,
+    event.dirAdd,
+    event.decay,
     event.stateNo,
     event.eventTick,
     event.runtimeTick,
@@ -3082,6 +3092,8 @@ function matchesEnvShakeEventRequirement(
     (requirement.phase === undefined || event.phase === requirement.phase) &&
     (requirement.mul === undefined || event.mul === requirement.mul) &&
     (requirement.dir === undefined || event.dir === requirement.dir) &&
+    (requirement.dirAdd === undefined || event.dirAdd === requirement.dirAdd) &&
+    (requirement.decay === undefined || event.decay === requirement.decay) &&
     (requirement.stateNo === undefined || event.stateNo === requirement.stateNo)
   );
 }

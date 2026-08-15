@@ -554,6 +554,10 @@ export type RuntimeEnvShakeEvent = {
   mul?: number;
   /** Optional Ikemen shake direction in degrees. */
   dir?: number;
+  /** Optional Ikemen active-shake direction delta per elapsed tick. */
+  dirAdd?: number;
+  /** Optional Ikemen active-shake amplitude decay exponent. */
+  decay?: number;
   stateNo: number;
   tick: number;
   runtimeTick: number;

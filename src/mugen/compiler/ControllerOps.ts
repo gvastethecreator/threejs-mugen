@@ -1140,6 +1140,10 @@ export type EnvShakeControllerOp = {
   mul?: number;
   /** Ikemen-GO active EnvShake direction in degrees. */
   dir?: number;
+  /** Ikemen-GO active EnvShake direction delta per elapsed tick. */
+  dirAdd?: number;
+  /** Ikemen-GO active EnvShake amplitude decay exponent. */
+  decay?: number;
 };
 
 export type EnvColorControllerOp = {
@@ -4854,7 +4858,18 @@ function compileEnvShakeControllerOp(controller: MugenStateController): EnvShake
   const phase = staticNumberParam(controller, "phase", 0);
   const mul = staticOptionalStrictNumberParam(controller, "mul");
   const dir = staticOptionalStrictNumberParam(controller, "dir");
-  if (time === undefined || freq === undefined || ampl === undefined || phase === undefined || mul === false || dir === false) {
+  const dirAdd = staticOptionalStrictNumberParam(controller, "diradd");
+  const decay = staticOptionalStrictNumberParam(controller, "decay");
+  if (
+    time === undefined ||
+    freq === undefined ||
+    ampl === undefined ||
+    phase === undefined ||
+    mul === false ||
+    dir === false ||
+    dirAdd === false ||
+    decay === false
+  ) {
     return undefined;
   }
   const clampedTime = clampShakeTime(time);
@@ -4869,6 +4884,8 @@ function compileEnvShakeControllerOp(controller: MugenStateController): EnvShake
     phase,
     ...(typeof mul === "number" ? { mul } : {}),
     ...(typeof dir === "number" ? { dir } : {}),
+    ...(typeof dirAdd === "number" ? { dirAdd } : {}),
+    ...(typeof decay === "number" ? { decay } : {}),
   };
 }
 

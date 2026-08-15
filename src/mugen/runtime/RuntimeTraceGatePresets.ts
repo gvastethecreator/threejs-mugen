@@ -4821,6 +4821,64 @@ export function createSyntheticImportedDynamicEnvShakeTraceArtifact(
   );
 }
 
+export function createSyntheticImportedDynamicEnvShakeDirAddDecayTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-envshake-diradd-decay",
+      displayName: "Synthetic Imported Dynamic EnvShake DirAdd Decay",
+      action200Duration: 30,
+      withEnvShake: {
+        time: "var(0)",
+        freq: "var(1)",
+        ampl: "var(2)",
+        phase: "fvar(0)",
+        mul: "var(3)",
+        dir: "var(4)",
+        diradd: "var(5)",
+        decay: "var(6)",
+        vars: [
+          { index: 0, value: 18 },
+          { index: 1, value: 45 },
+          { index: 2, value: -9 },
+          { index: 3, value: 1.5 },
+          { index: 4, value: 30 },
+          { index: 5, value: 20 },
+          { index: 6, value: 1.25 },
+        ],
+        fvars: [{ index: 0, value: 0.25 }],
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-envshake-diradd-decay-golden",
+      targetLabel: "Synthetic imported dynamic EnvShake diradd/decay route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "EnvShake", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "envshake", "hitdef"],
+      requiredEnvShakeEvents: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        time: 18,
+        freq: 45,
+        ampl: -9,
+        phase: 0.25,
+        mul: 1.5,
+        dir: 30,
+        dirAdd: 20,
+        decay: 1.25,
+        stateNo: 200,
+      }],
+      notes: [
+        "Pinned Ikemen GO trace proves active EnvShake diradd and decay expressions resolve in caller context and are retained in event telemetry. Focused camera math proves per-tick direction and amplitude application; exact MUGEN/IKEMEN waveform, pause/stage/layer interaction, helpers, diradd/decay on contact or fall shakes, teams, rollback, and full camera parity remain excluded.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-receiveddamage-attacker",
@@ -68876,6 +68934,8 @@ export type SyntheticImportedTraceFighterOptions = {
     phase?: number | string;
     mul?: number | string;
     dir?: number | string;
+    diradd?: number | string;
+    decay?: number | string;
     vars?: Array<{ index: number; value: number }>;
     fvars?: Array<{ index: number; value: number }>;
   };
@@ -71843,6 +71903,8 @@ ampl = ${options.ampl ?? -7}
 phase = ${options.phase ?? 0.5}
 ${options.mul === undefined ? "" : `mul = ${options.mul}`}
 ${options.dir === undefined ? "" : `dir = ${options.dir}`}
+${options.diradd === undefined ? "" : `diradd = ${options.diradd}`}
+${options.decay === undefined ? "" : `decay = ${options.decay}`}
 `;
 }
 

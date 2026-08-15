@@ -34,7 +34,7 @@ export type RuntimeEnvShakeControllerDispatchOptions<TActor extends RuntimeEnvSh
 
 export type RuntimeEnvShakeResolver = {
   resolveNumber: (key: "time" | "ampl") => number | undefined;
-  resolveFloat: (key: "freq" | "phase" | "mul" | "dir") => number | undefined;
+  resolveFloat: (key: "freq" | "phase" | "mul" | "dir" | "diradd" | "decay") => number | undefined;
 };
 
 export type RuntimeEnvShakeControllerDispatchResult = {
@@ -74,6 +74,8 @@ export function createRuntimeEnvShakeEvent(
   }
   const mul = operation?.mul ?? resolveEnvShake?.resolveFloat("mul") ?? firstNumber(findControllerParam(controller, "mul"));
   const dir = operation?.dir ?? resolveEnvShake?.resolveFloat("dir") ?? firstNumber(findControllerParam(controller, "dir"));
+  const dirAdd = operation?.dirAdd ?? resolveEnvShake?.resolveFloat("diradd") ?? firstNumber(findControllerParam(controller, "diradd"));
+  const decay = operation?.decay ?? resolveEnvShake?.resolveFloat("decay") ?? firstNumber(findControllerParam(controller, "decay"));
   return {
     type: "EnvShake",
     time,
@@ -86,6 +88,8 @@ export function createRuntimeEnvShakeEvent(
     phase: operation?.phase ?? resolveEnvShake?.resolveFloat("phase") ?? firstNumber(findControllerParam(controller, "phase")) ?? 0,
     ...(mul === undefined ? {} : { mul }),
     ...(dir === undefined ? {} : { dir }),
+    ...(dirAdd === undefined ? {} : { dirAdd }),
+    ...(decay === undefined ? {} : { decay }),
     stateNo: actor.runtime.stateNo,
     tick: actor.stateElapsed,
     runtimeTick,
@@ -102,6 +106,8 @@ export function resolveRuntimeEnvShakeControllerOperation(
   const phase = resolveEnvShakeFloatParam(controller, "phase", resolveEnvShake, (value) => value, 0);
   const mul = resolveEnvShakeOptionalFloatParam(controller, "mul", resolveEnvShake);
   const dir = resolveEnvShakeOptionalFloatParam(controller, "dir", resolveEnvShake);
+  const dirAdd = resolveEnvShakeOptionalFloatParam(controller, "diradd", resolveEnvShake);
+  const decay = resolveEnvShakeOptionalFloatParam(controller, "decay", resolveEnvShake);
   if (
     time === undefined ||
     freq === undefined ||
@@ -109,6 +115,8 @@ export function resolveRuntimeEnvShakeControllerOperation(
     phase === undefined ||
     (findControllerParam(controller, "mul") !== undefined && mul === undefined) ||
     (findControllerParam(controller, "dir") !== undefined && dir === undefined) ||
+    (findControllerParam(controller, "diradd") !== undefined && dirAdd === undefined) ||
+    (findControllerParam(controller, "decay") !== undefined && decay === undefined) ||
     time <= 0
   ) {
     return undefined;
@@ -121,6 +129,8 @@ export function resolveRuntimeEnvShakeControllerOperation(
     phase,
     ...(mul === undefined ? {} : { mul }),
     ...(dir === undefined ? {} : { dir }),
+    ...(dirAdd === undefined ? {} : { dirAdd }),
+    ...(decay === undefined ? {} : { decay }),
   };
 }
 
@@ -329,13 +339,16 @@ export function calculateRuntimeCameraShake(
   const remaining = Math.max(0, event.time - age);
   const decay = remaining / Math.max(1, event.time);
   let amplitude = event.ampl * decay;
-  if (event.mul !== undefined || event.dir !== undefined) {
+  if (event.mul !== undefined || event.dir !== undefined || event.dirAdd !== undefined || event.decay !== undefined) {
     const cycleMultiplier = event.mul === undefined || event.mul === 0 || event.mul === 1
       ? 1
       : Math.pow(event.mul, Math.floor((event.freq * age) / 360));
-    amplitude *= cycleMultiplier;
+    const decayMultiplier = event.decay === undefined || event.decay === 0
+      ? 1
+      : Math.pow(Math.max(0, remaining / Math.max(1, event.time)), event.decay);
+    amplitude *= cycleMultiplier * (Number.isFinite(decayMultiplier) ? decayMultiplier : 1);
     const phase = (event.phase + event.freq * age) * Math.PI / 180;
-    const direction = (event.dir ?? 0) * Math.PI / 180;
+    const direction = ((event.dir ?? 0) + (event.dirAdd ?? 0) * age) * Math.PI / 180;
     const offset = Math.sin(phase) * amplitude;
     return {
       x: Math.sin(-direction) * offset,
@@ -394,7 +407,7 @@ function resolveEnvShakeFloatParam(
 
 function resolveEnvShakeOptionalFloatParam(
   controller: MugenStateController,
-  key: "mul" | "dir",
+  key: "mul" | "dir" | "diradd" | "decay",
   resolver: RuntimeEnvShakeResolver | undefined,
 ): number | undefined {
   const raw = findControllerParam(controller, key);
