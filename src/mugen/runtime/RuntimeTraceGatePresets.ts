@@ -95,6 +95,8 @@ export type RuntimeTraceGatePresetOptions = {
   runtimeProfile?: RuntimeCompatibilityProfile;
   teamMode?: RuntimeTeamRoundMode;
   reserveFighters?: readonly DemoFighterDefinition[];
+  /** Synthetic fixture-only selector for the Helper ModifyProjectile airguard velocity component trace. */
+  helperModifyProjectileAirGuardVelocityComponent?: "x" | "y";
   /** Synthetic fixture-only live ModifyProjectile damage pair. */
   modifyProjectileDamage?: SyntheticPairExpression;
   /** Synthetic fixture-only live ModifyProjectile p2facing expression. */
@@ -78487,16 +78489,22 @@ export function createSyntheticImportedHelperModifyProjectileGuardVelocityTraceA
   });
 }
 
-/** T771 Helper-authored ModifyProjectile proof: helper mutation updates airguard.velocity X. */
+/** T771/T772 Helper-authored ModifyProjectile proof: helper mutation updates airguard.velocity X or Y. */
 export function createSyntheticImportedHelperModifyProjectileAirGuardVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
-  const branchStateNo = 5113;
-  const projectileId = 8905;
+  const yComponent = options.helperModifyProjectileAirGuardVelocityComponent === "y";
+  const branchStateNo = yComponent ? 5114 : 5113;
+  const projectileId = yComponent ? 8906 : 8905;
+  const traceSlug = yComponent ? "airguard-velocity-y" : "airguard-velocity";
+  const traceId = `synthetic-imported-helper-modifyprojectile-${traceSlug}-golden`;
+  const variableIndex = yComponent ? 1 : 0;
+  const variableValue = yComponent ? -8 : 6;
+  const modifyAirGuardVelocity: SyntheticPartialTripleExpression = yComponent ? ["-2", "var(1)"] : ["var(0)"];
   const stage: MugenStageDefinition = options.stage ?? {
     ...trainingStage,
-    id: "trace-helper-modifyprojectile-airguard-velocity-grid",
-    displayName: "Trace Helper ModifyProjectile Air Guard Velocity Grid",
+    id: `trace-helper-modifyprojectile-${traceSlug}-grid`,
+    displayName: `Trace Helper ModifyProjectile Air Guard Velocity ${yComponent ? "Y" : "X"} Grid`,
     playerStart: {
       p1: { x: -54, y: 0, facing: 1 },
       p2: { x: 286, y: 0, facing: -1 },
@@ -78541,28 +78549,30 @@ export function createSyntheticImportedHelperModifyProjectileAirGuardVelocityTra
       airGuardVelocity: [-2, -4, 6],
       damage: [18, 2],
       projectileRemoveOnHit: false,
-      varSeeds: [{ index: 0, value: 6 }],
+      varSeeds: [{ index: variableIndex, value: variableValue }],
       modifyProjectileTriggerTime: 0,
-      modifyProjectileAirGuardVelocity: ["var(0)"],
+      modifyProjectileAirGuardVelocity: modifyAirGuardVelocity,
     },
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
-    label: "synthetic-imported-helper-modifyprojectile-airguard-velocity-golden",
+    label: traceId,
   });
   return createRuntimeTraceArtifact({
     trace,
     script,
     generatedAt: options.generatedAt,
     target: {
-      id: "synthetic-imported-helper-modifyprojectile-airguard-velocity-golden",
-      label: "Synthetic imported Helper ModifyProjectile airguard.velocity route",
+      id: traceId,
+      label: `Synthetic imported Helper ModifyProjectile airguard.velocity ${yComponent ? "Y" : "X"} route`,
       source: "imported",
       notes: [
-        "Pinned Ikemen GO trace proves a first-generation Helper resolves a live ModifyProjectile airguard.velocity X expression in Helper context before an accepted airborne guard. The root-owned Projectile replaces adversarial X=-2 with 6; the guarded route and physical X response are observed. Sibling-component preservation, ground guard, nested/shared resource topology, exact timing/rounding, rollback, and full M.U.G.E.N/Ikemen parity remain outside this bounded slice.",
+        yComponent
+          ? "Pinned Ikemen GO trace proves a first-generation Helper resolves a live ModifyProjectile airguard.velocity Y expression in Helper context before an accepted airborne guard. The root-owned Projectile replaces adversarial Y=-4 with -8 while keeping the X control component at -2; the guarded route and physical Y response are observed. Z/default derivation, ground guard, nested/shared resource topology, exact timing/rounding, rollback, and full M.U.G.E.N/Ikemen parity remain outside this bounded slice."
+          : "Pinned Ikemen GO trace proves a first-generation Helper resolves a live ModifyProjectile airguard.velocity X expression in Helper context before an accepted airborne guard. The root-owned Projectile replaces adversarial X=-2 with 6; the guarded route and physical X response are observed. Sibling-component preservation, ground guard, nested/shared resource topology, exact timing/rounding, rollback, and full M.U.G.E.N/Ikemen parity remain outside this bounded slice.",
       ],
     },
     gates: [{
-      label: "synthetic-imported-helper-modifyprojectile-airguard-velocity-golden",
+      label: traceId,
       requiredActorSources: ["imported"],
       requiredActorKinds: ["player"],
       requiredEffectKinds: ["helper", "projectile"],
@@ -78581,7 +78591,7 @@ export function createSyntheticImportedHelperModifyProjectileAirGuardVelocityTra
           actorId: "p1",
           allowSameTick: true,
           steps: [
-            { stateNo: 1200, controller: "VarSet", name: "Helper ProjGuard VarSet 0" },
+            { stateNo: 1200, controller: "VarSet", name: `Helper ProjGuard VarSet ${variableIndex}` },
             { stateNo: 1200, controller: "Projectile", name: "Helper ProjGuard Spawn" },
             { stateNo: 1278, controller: "ModifyProjectile", name: "Helper ProjGuard ModifyProjectile Air Guard Velocity" },
             { stateNo: 1278, operation: "modifyprojectile" },
@@ -78638,7 +78648,7 @@ export function createSyntheticImportedHelperModifyProjectileAirGuardVelocityTra
           stateType: "A",
           moveType: "H",
           physics: "N",
-          observedVelXAtLeast: 5.9,
+          ...(yComponent ? { observedVelYAtMost: -7 } : { observedVelXAtLeast: 5.9 }),
           minFrames: 1,
         },
         { actorId: "p2", source: "imported", actorKind: "player", stateNo: branchStateNo, animNo: branchStateNo, stateType: "A", minFrames: 1 },
@@ -78666,5 +78676,15 @@ export function createSyntheticImportedHelperModifyProjectileAirGuardVelocityTra
         { actorId: "p2", source: "imported", actorKind: "player", life: 998 },
       ],
     }],
+  });
+}
+
+/** T772 Helper-authored ModifyProjectile proof: helper mutation updates airguard.velocity Y. */
+export function createSyntheticImportedHelperModifyProjectileAirGuardVelocityYTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createSyntheticImportedHelperModifyProjectileAirGuardVelocityTraceArtifact({
+    ...options,
+    helperModifyProjectileAirGuardVelocityComponent: "y",
   });
 }
