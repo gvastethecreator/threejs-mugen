@@ -338,7 +338,9 @@ export class RuntimeProjectileCombatWorld {
       if (projectileIsAp) apProjectileContacted = true;
       input.rememberTarget(attacker, defender, projectile.targetId, projectile);
       applyRuntimeProjectileTargetDistanceBounds(projectile, defender, result.kind);
-      input.emitProjectileEnvShake?.(attacker, projectile);
+      if (result.kind === "hit") {
+        input.emitProjectileEnvShake?.(attacker, projectile);
+      }
       const source = projectileHitSource;
       const tracksComboHitCount = input.runtimeProfile === "ikemen-go" || projectile.hitDefHitCount === undefined;
       const wasInHitCombo = tracksComboHitCount && defender.runtime.moveType === "H" && defender.runtime.hitVars?.guarded !== true;

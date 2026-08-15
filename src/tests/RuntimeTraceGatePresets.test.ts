@@ -67,6 +67,7 @@ import {
   createSyntheticImportedProjectileDynamicUnhittableTimeTraceArtifact,
   createSyntheticImportedProjectileGroundFrictionTraceArtifact,
   createSyntheticImportedProjectileSparkScaleTraceArtifact,
+  createSyntheticImportedProjectileEnvShakeLongFiniteTraceArtifact,
   createSyntheticImportedHitDefAttackerFacingTraceArtifact,
   createSyntheticImportedHitDefGetPowerTraceArtifact,
   createSyntheticImportedHitDefGetPowerDefaultTraceArtifact,
@@ -27322,6 +27323,23 @@ describe("RuntimeTraceGatePresets", () => {
     expect(shakeFrames.length).toBeGreaterThanOrEqual(241);
     expect(shakeFrames.some((frame) => frame.stage?.camera.shake?.remaining === 1)).toBe(true);
     expect(shakeFrames.every((frame) => (frame.stage?.camera.shake?.remaining ?? 0) > 0)).toBe(true);
+    expect(artifact.trace.frames.at(-1)?.stage?.camera.shake).toBeUndefined();
+    expect(artifact.gates[0]?.evidence.envShakeEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({ actorId: "p1", time: 241, stateNo: 200 }),
+    ]));
+  });
+
+  it("creates a required long finite root Projectile EnvShake artifact with expiry", () => {
+    const artifact = createSyntheticImportedProjectileEnvShakeLongFiniteTraceArtifact({ generatedAt: "2026-08-15T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-envshake-long-finite-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-projectile-envshake-long-finite-golden", passed: true, failures: [] }],
+    });
+    const shakeFrames = artifact.trace.frames.filter((frame) => frame.stage?.camera.shake !== undefined);
+    expect(shakeFrames.length).toBeGreaterThanOrEqual(241);
+    expect(shakeFrames.some((frame) => frame.stage?.camera.shake?.remaining === 1)).toBe(true);
     expect(artifact.trace.frames.at(-1)?.stage?.camera.shake).toBeUndefined();
     expect(artifact.gates[0]?.evidence.envShakeEvents).toEqual(expect.arrayContaining([
       expect.objectContaining({ actorId: "p1", time: 241, stateNo: 200 }),

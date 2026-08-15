@@ -201,7 +201,7 @@ describe("EnvShakeSystem", () => {
     }, 10)).toBeUndefined();
   });
 
-  it("keeps finite FallEnvShake and direct HitDef duration beyond the former inherited ceiling while Projectile remains bounded", () => {
+  it("keeps finite FallEnvShake, direct HitDef, and Projectile duration beyond the former inherited ceiling", () => {
     const fallEvent = createRuntimeFallEnvShakeEvent(
       actor(5050, 9, { time: 999, freq: 60, ampl: -4, phase: 0 }),
       77,
@@ -214,7 +214,14 @@ describe("EnvShakeSystem", () => {
       actor(1000, 6),
       { envShake: { time: 999, freq: 60, ampl: -4, phase: 0, mul: 1, dir: 0 } },
       10,
-    )?.time).toBe(240);
+    )?.time).toBe(999);
+    const projectileEvent = createRuntimeProjectileEnvShakeEvent(
+      actor(1000, 6),
+      { envShake: { time: 999, freq: 60, ampl: -4, phase: 0, mul: 1, dir: 0 } },
+      10,
+    );
+    expect(calculateRuntimeCameraShake(1008, [projectileEvent!])?.remaining).toBe(1);
+    expect(calculateRuntimeCameraShake(1009, [projectileEvent!])).toBeUndefined();
     const hitDefEvent = createRuntimeHitDefEnvShakeEvent(
       actor(1000, 6),
       { envShake: { time: 999, freq: 60, ampl: -4, phase: 0, mul: 1, dir: 0 } },

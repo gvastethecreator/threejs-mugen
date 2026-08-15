@@ -167,7 +167,7 @@ export function createRuntimeProjectileEnvShakeEvent(
   }
   return {
     type: "EnvShake",
-    time: clampContactEnvShakeTime(envShake.time),
+    time: normalizeProjectileEnvShakeTime(envShake.time),
     freq: Math.max(0, envShake.freq),
     ampl: clampShakeAmplitude(envShake.ampl),
     phase: envShake.phase,
@@ -428,8 +428,8 @@ function normalizeHitDefEnvShakeTime(value: number): number {
   return Math.max(0, Math.round(value));
 }
 
-function clampContactEnvShakeTime(value: number): number {
-  return Math.max(0, Math.min(240, Math.round(value)));
+function normalizeProjectileEnvShakeTime(value: number): number {
+  return Math.max(0, Math.round(value));
 }
 
 function clampShakeFrequency(value: number): number {

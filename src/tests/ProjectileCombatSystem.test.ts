@@ -1083,9 +1083,9 @@ describe("ProjectileCombatSystem", () => {
     expect(defender.runtime.hitVars).toMatchObject({ hitDamage: 31, guardDamage: 4 });
   });
 
-  it("emits selected Projectile EnvShake metadata on accepted hit and guard contact", () => {
+  it("emits Projectile EnvShake metadata only on accepted unguarded hits", () => {
     const emitted: Array<RuntimeProjectile["envShake"]> = [];
-    const resolve = (holdingBack: boolean) => {
+    const resolve = (holdingBack: boolean, canDefenderBeHit?: boolean) => {
       let projectiles = [projectile({
         envShake: { time: 24, freq: 120.5, ampl: -8, phase: 45.25, mul: 1.75, dir: 90 },
       })];
@@ -1101,6 +1101,7 @@ describe("ProjectileCombatSystem", () => {
         rememberTarget: () => undefined,
         applyHitOverride: () => undefined,
         emitProjectileEnvShake: (_source, entry) => emitted.push(entry.envShake),
+        ...(canDefenderBeHit === undefined ? {} : { canDefenderBeHit: () => canDefenderBeHit }),
         removeProjectilesMarkedForRemoval: () => {
           projectiles = projectiles.filter((entry) => !entry.removalReason);
         },
@@ -1109,9 +1110,9 @@ describe("ProjectileCombatSystem", () => {
 
     resolve(false);
     resolve(true);
+    resolve(false, false);
 
     expect(emitted).toEqual([
-      { time: 24, freq: 120.5, ampl: -8, phase: 45.25, mul: 1.75, dir: 90 },
       { time: 24, freq: 120.5, ampl: -8, phase: 45.25, mul: 1.75, dir: 90 },
     ]);
   });

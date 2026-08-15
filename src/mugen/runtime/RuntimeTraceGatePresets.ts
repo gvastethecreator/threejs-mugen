@@ -48520,6 +48520,75 @@ export function createSyntheticImportedHitDefContactEnvShakeLongFiniteTraceArtif
   });
 }
 
+export function createSyntheticImportedProjectileEnvShakeLongFiniteTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "imported-projectile-envshake-long-finite-start", frames: 12, p1: ["x"], p2: [] },
+    { label: "projectile-envshake-long-finite-expiry", frames: 242, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({
+    p1: createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-projectile-envshake-long-finite",
+      displayName: "Synthetic Imported Projectile EnvShake Long Finite",
+      action200Duration: 300,
+      withHitDef: false,
+      withProjectile: true,
+      projectileTargetId: 77,
+      projectileDamage: [10, 0],
+      projectileEnvShake: {
+        time: 241,
+        freq: 30,
+        ampl: -7,
+        phase: 0,
+      },
+    }),
+    p2: demoFighters[1]!,
+    stage,
+    runtimeProfile: "ikemen-go",
+  }), script, {
+    label: "synthetic-imported-projectile-envshake-long-finite-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-envshake-long-finite-golden",
+      label: "Synthetic imported long finite root Projectile EnvShake route",
+      source: "mixed",
+      notes: [
+        "Required trace proves root Projectile envshake.time = 241 survives accepted unguarded contact, remains finite past the former local ceiling, and expires. Guard EnvShake is excluded by M.U.G.E.N and pinned Ikemen GO behavior; Helper Projectile, direct HitDef, FallEnvShake, active EnvShake, waveform parity, pause timing, rollback, and full camera parity remain excluded.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-projectile-envshake-long-finite-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredEffectKinds: ["projectile"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "Projectile"],
+      requiredExecutedOperations: ["projectile"],
+      requiredActiveCommands: ["x"],
+      requiredEventCategories: ["hit"],
+      requiredCombatReasons: ["hit"],
+      requiredEnvShakeEvents: [{
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        time: 241,
+        freq: 30,
+        ampl: -7,
+        phase: 0,
+        stateNo: 200,
+      }],
+      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    }],
+  });
+}
+
 export function createSyntheticImportedHitDefDynamicFallEnvShakeTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -68204,6 +68273,15 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileDamage?: [number, number?];
   /** Synthetic fixture-only dynamic/mixed fresh Projectile damage pair. */
   projectileDamageExpression?: SyntheticPairExpression;
+  /** Synthetic fixture-only Projectile contact EnvShake payload. */
+  projectileEnvShake?: {
+    time?: SyntheticNumberExpression;
+    freq?: SyntheticNumberExpression;
+    ampl?: SyntheticNumberExpression;
+    phase?: SyntheticNumberExpression;
+    mul?: SyntheticNumberExpression;
+    dir?: SyntheticNumberExpression;
+  };
   /** Synthetic fixture-only fresh Projectile guardpoints expression. */
   projectileGuardPointsExpression?: SyntheticNumberExpression;
   /** Synthetic fixture-only fresh Projectile dizzypoints expression. */
@@ -70015,7 +70093,7 @@ ${options.extraSuperPauseP2DefMul === undefined ? "" : extraSuperPauseP2DefMulBl
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${projectileVarSeedBlock}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileMissTimeExpression, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileDamageExpression, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale, options.projectileGroundVelocityExpression, options.projectileGuardVelocityExpression, options.projectileDownHitTime, options.projectileGroundHitTime, options.projectileGroundSlideTime, options.projectileAirHitTime, options.projectileGuardHitTimeExpression, options.projectilePauseTime, options.projectileGuardPauseTime, "Fast Projectile", options.projectilePriorityExpression, options.projectileHitsExpression, options.projectileAnimNo, options.projectileAnimExpression, options.projectileKeepStateExpression, options.projectileP2Facing, options.projectileGuardPointsExpression, options.projectileDizzyPointsExpression, options.projectileRedLifeExpression) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileMissTimeExpression, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefHitFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirVelocityExpression, options.projectileDownVelocity, options.projectileDownVelocityExpression, options.projectileAirGuardVelocity, options.projectileAirGuardVelocityExpression, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileDamageExpression, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound, options.projectileAirJuggle, options.projectileKoVelocityAdd, options.projectilePauseMoveTime, options.projectileSuperMoveTime, options.projectileUnhittableTime, options.projectileGroundFriction, options.projectileSparkScale, options.projectileGroundVelocityExpression, options.projectileGuardVelocityExpression, options.projectileDownHitTime, options.projectileGroundHitTime, options.projectileGroundSlideTime, options.projectileAirHitTime, options.projectileGuardHitTimeExpression, options.projectilePauseTime, options.projectileGuardPauseTime, "Fast Projectile", options.projectilePriorityExpression, options.projectileHitsExpression, options.projectileAnimNo, options.projectileAnimExpression, options.projectileKeepStateExpression, options.projectileP2Facing, options.projectileGuardPointsExpression, options.projectileDizzyPointsExpression, options.projectileRedLifeExpression, options.projectileEnvShake) : ""}
 ${options.postProjectileAttackGuardPointsMultiplier === undefined ? "" : `
 [State 200, Post Projectile Attack Scale]
 type = AttackMulSet
@@ -74111,6 +74189,7 @@ function projectileControllerBlock(
   guardPointsExpression?: SyntheticNumberExpression,
   dizzyPointsExpression?: SyntheticNumberExpression,
   redLifeExpression?: SyntheticPairExpression,
+  envShake?: NonNullable<SyntheticImportedTraceFighterOptions["projectileEnvShake"]>,
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
   const missTimeLine = missTimeExpression === undefined ? `projmisstime = ${missTime}` : `projmisstime = ${missTimeExpression}`;
@@ -74149,6 +74228,14 @@ function projectileControllerBlock(
   const guardPointsLine = guardPointsExpression === undefined ? "" : `guardpoints = ${guardPointsExpression}`;
   const dizzyPointsLine = dizzyPointsExpression === undefined ? "" : `dizzypoints = ${dizzyPointsExpression}`;
   const redLifeLine = redLifeExpression === undefined ? "" : `redlife = ${redLifeExpression.join(",")}`;
+  const envShakeLines = `
+${envShake?.time === undefined ? "" : `envshake.time = ${envShake.time}`}
+${envShake?.freq === undefined ? "" : `envshake.freq = ${envShake.freq}`}
+${envShake?.ampl === undefined ? "" : `envshake.ampl = ${envShake.ampl}`}
+${envShake?.phase === undefined ? "" : `envshake.phase = ${envShake.phase}`}
+${envShake?.mul === undefined ? "" : `envshake.mul = ${envShake.mul}`}
+${envShake?.dir === undefined ? "" : `envshake.dir = ${envShake.dir}`}
+`;
   const missOnOverrideLine = missOnOverride === undefined ? "" : `missonoverride = ${missOnOverride ? 1 : 0}`;
   const airVelocityLine = airVelocityExpression === undefined
     ? airVelocity === undefined ? "" : `air.velocity = ${airVelocity.join(",")}`
@@ -74224,6 +74311,7 @@ ${damageLine}
 ${guardPointsLine}
 ${dizzyPointsLine}
 ${redLifeLine}
+${envShakeLines}
 ${keepStateLine}
 ${airJuggleLine}
 ${koVelocityAddLine}
