@@ -1,14 +1,15 @@
 # Controller Support Registry
 
-Latest cursor: T798 / issue 373 is closed-bounded for root Projectile contact
-`EnvShake` duration. Product `122ce17a` preserves a finite `time = 241` until
-expiry for accepted unguarded hits; guard and rejected contact do not emit.
-Required trace `synthetic-imported-projectile-envshake-long-finite` passes at
-`ee48d94d` / `b52f19c9`; aggregate QA is `877/877` (`843` required). Helper
-Projectile attribution, direct HitDef, FallEnvShake, active EnvShake, waveform,
-stacking, pause, camera/render parity, rollback and full parity remain
-unsupported. See [issue
-373](../.scratch/roadmap/issues/373-projectile-envshake-finite-duration.md).
+Latest cursor: T799 / issue 374 is closed-bounded for first-generation
+Helper-created/root-owned Projectile contact `EnvShake`. An accepted unguarded
+hit emits finite `time = 241` to root `p1`; guard and rejected contacts do not
+emit. Required `synthetic-imported-helper-projectile-envshake-long-finite`
+passes at `cf27a089` / `8d8a853c`, preserving `parent = p1-helper-0`, lifecycle
+and root/Helper target links; aggregate QA is `878/878` (`844` required).
+Nested/team/`ownProjectile` topology, ModifyProjectile, direct HitDef,
+FallEnvShake, active EnvShake, waveform, stacking, pause, camera/render parity,
+rollback and full parity remain unsupported. See [issue
+374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
 
 Previous cursor: T793 / issue 368 is closed-bounded for `EnvColor time = -1`.
 Product `d98a5443` preserves an indefinite stage flash until a later EnvColor
@@ -31,9 +32,9 @@ not attributed to this slice. Fresh defaults, dynamic Z/`n`, Helper-authored
 controllers, Projectile variants, exact landing/timing, rollback and full
 parity remain unsupported.
 
-Next cursor: T794 / issue 369 selects finite `EnvColor` duration beyond the
-local 240-tick ceiling. See [issue
-369](../.scratch/roadmap/issues/369-envcolor-finite-duration-ceiling.md).
+Next cursor: T800 / issue 375 selects caller-context dynamic `envshake.*`
+parameters for fresh root Projectile spawn. See [issue
+375](../.scratch/roadmap/issues/375-root-projectile-envshake-dynamic-params.md).
 
 Previous cursor: T786 / issue 360 is closed-bounded for Helper-owned live
 `ModifyProjectile RedirectID` over a root destination Projectile. Required

@@ -91,7 +91,7 @@ trace QA is `876/876` (`842` required). Guard, Projectile, FallEnvShake, and
 active EnvShake retain their prior policy, so no score moves. See [issue
 372](../.scratch/roadmap/issues/372-hitdef-contact-envshake-finite-duration.md).
 
-## 2026-08-15 T798 root Projectile `EnvShake` duration — closed-bounded, no score movement
+## 2026-08-15 T798 root Projectile `EnvShake` duration — historical closed-bounded, no score movement
 
 Issue 373 closes one accepted root Projectile hit lifetime contract through
 product `122ce17a`. `time = 241` remains finite through expiry, while guard
@@ -103,10 +103,24 @@ pause, camera/render parity, rollback and full parity remain blocked, so the
 score does not move. See [issue
 373](../.scratch/roadmap/issues/373-projectile-envshake-finite-duration.md).
 
-## Next scorecard slice — 2026-08-15 T799 Helper Projectile `EnvShake` ownership
+## 2026-08-15 T799 Helper Projectile `EnvShake` ownership — closed-bounded, no score movement
 
-Issue 374 queues first-generation Helper-created/root-owned Projectile
-attribution plus the same finite-lifetime proof; no score movement planned.
+Issue 374 closes one first-generation Helper-created/root-owned Projectile
+contact route. An accepted unguarded hit emits a root `p1` EnvShake with
+`time = 241`; guard and rejected contact emit nothing. Required
+`synthetic-imported-helper-projectile-envshake-long-finite` proves parent
+`p1-helper-0`, lifecycle, root/Helper target links and expiry at `cf27a089` /
+`8d8a853c`; trace QA is `878/878` (`844` required). Nested/team/
+`ownProjectile` topology, ModifyProjectile, FallEnvShake, active EnvShake,
+waveform, pause, camera/render parity, rollback and full parity remain blocked,
+so the score does not move. See [issue
+374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
+
+## Next scorecard slice — 2026-08-15 T800 root Projectile dynamic `EnvShake` parameters
+
+Issue 375 queues caller-context dynamic `envshake.*` values for a fresh root
+Projectile; no score movement is planned. See [issue
+375](../.scratch/roadmap/issues/375-root-projectile-envshake-dynamic-params.md).
 ## Historical checkpoint — 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index
 
 Issue 355 closed Helper-owned live `ModifyProjectile down.velocity` explicit

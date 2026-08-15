@@ -73,7 +73,7 @@ required). Guard, Projectile, FallEnvShake, and active EnvShake retain their
 current policy. See [issue
 372](../.scratch/roadmap/issues/372-hitdef-contact-envshake-finite-duration.md).
 
-## Latest bounded slice — T798 root Projectile `EnvShake` duration (2026-08-15)
+## Historical bounded slice — T798 root Projectile `EnvShake` duration (2026-08-15)
 
 Issue 373 closes root Projectile accepted-hit EnvShake duration. Product
 `122ce17a` retains finite `time = 241` to expiry and emits only on an
@@ -84,12 +84,25 @@ direct HitDef, FallEnvShake, active EnvShake, waveform, stacking, pause and
 full parity remain separate. See [issue
 373](../.scratch/roadmap/issues/373-projectile-envshake-finite-duration.md).
 
-## Next bounded slice — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
+## Latest bounded slice — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
 
-Issue 374 selects first-generation Helper-created/root-owned Projectile
-EnvShake attribution plus finite expiry. It excludes nested/team topology,
-direct/root rework, FallEnvShake, active EnvShake and waveform parity. See
-[issue 374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
+Issue 374 closes the first-generation Helper-created/root-owned Projectile
+contact route. An accepted unguarded hit emits `time = 241` to root `p1` only;
+guard and rejected contact stay silent. Required
+`synthetic-imported-helper-projectile-envshake-long-finite` proves parent
+`p1-helper-0`, lifecycle, root/Helper target links and expiry at `cf27a089` /
+`8d8a853c`; trace QA is `878/878` (`844` required). Nested/team/
+`ownProjectile` topology, ModifyProjectile, FallEnvShake, active EnvShake,
+waveform, pause, camera/render parity, rollback and full parity remain
+separate. See [issue
+374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
+
+## Next bounded slice — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
+
+Issue 375 queues caller-context `envshake.*` values during fresh root
+Projectile spawn. Helper Projectile, ModifyProjectile, FallEnvShake, active
+EnvShake and presentation-parity breadth remain outside. See [issue
+375](../.scratch/roadmap/issues/375-root-projectile-envshake-dynamic-params.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

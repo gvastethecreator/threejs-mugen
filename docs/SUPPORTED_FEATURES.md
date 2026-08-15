@@ -1,5 +1,17 @@
 ﻿# Supported Features
-## 2026-08-15 T798 — closed-bounded
+## 2026-08-15 T799 — closed-bounded
+
+First-generation Helper-created/root-owned Projectile contact now carries the
+finite EnvShake route. Only an accepted unguarded hit emits root `p1`
+`time = 241`; guard and rejected contacts emit no shake. Required
+`synthetic-imported-helper-projectile-envshake-long-finite` proves parent
+`p1-helper-0`, Projectile lifecycle, root/Helper target links and expiry
+(`cf27a089` / `8d8a853c`). Nested/team/`ownProjectile` topology,
+ModifyProjectile, FallEnvShake, active EnvShake, waveform, pause,
+camera/render parity, rollback and full parity remain outside. See [issue
+374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
+
+## 2026-08-15 T798 — historical closed-bounded
 
 Root Projectile contact `EnvShake` now retains finite positive duration beyond
 the old 240-tick ceiling only for accepted unguarded hits. Guard and rejected

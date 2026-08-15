@@ -74,7 +74,7 @@ Projectile, FallEnvShake, and active EnvShake remain intentionally bounded;
 waveform, stacking, pause, camera/render parity, rollback and full parity
 remain open.
 
-## Latest implementation checkpoint — T798 root Projectile `EnvShake` duration (2026-08-15)
+## Historical implementation checkpoint — T798 root Projectile `EnvShake` duration (2026-08-15)
 
 Issue 373 closes root Projectile finite contact EnvShake through `122ce17a`.
 Only an accepted unguarded hit emits; guard and rejected contact do not. The
@@ -85,12 +85,24 @@ full `328/4077`, typecheck, build, regenerated DA29/DA30 records, and trace QA
 FallEnvShake, active EnvShake, waveform, stacking, pause, camera/render parity,
 rollback and full parity remain open.
 
-## Next implementation checkpoint — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
+## Latest implementation checkpoint — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
 
-Issue 374 isolates one first-generation Helper-created/root-owned Projectile
-hit route, including parent/root attribution and finite expiry. Direct/root,
-FallEnvShake, active EnvShake, nested/team topology and waveform parity remain
-outside the queued cut.
+Issue 374 closes the first-generation Helper-created/root-owned Projectile
+contact route. An accepted unguarded hit emits one finite `time = 241` shake
+to root `p1`; guard and rejected contacts remain silent. Required
+`synthetic-imported-helper-projectile-envshake-long-finite` preserves
+`owner/root = p1`, `parent = p1-helper-0`, lifecycle, root/Helper target links
+and expiry (`cf27a089` / `8d8a853c`, 256 frames). Focused combat evidence,
+typecheck and trace QA `878/878` (`844` required) pass. Nested/team/
+`ownProjectile` topology, ModifyProjectile, FallEnvShake, active EnvShake,
+waveform, pause, camera/render parity, rollback and full parity remain open.
+
+## Next implementation checkpoint — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
+
+Issue 375 queues caller-context dynamic `envshake.time`, `freq`, `ampl`,
+`phase`, `mul` and `dir` for a fresh root Projectile. Helper Projectile,
+ModifyProjectile, FallEnvShake, active EnvShake and presentation-parity
+breadth remain outside this next cut.
 ## Historical implementation checkpoint — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

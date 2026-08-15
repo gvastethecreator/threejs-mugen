@@ -84,7 +84,7 @@
   outside. See [issue
   372](../.scratch/roadmap/issues/372-hitdef-contact-envshake-finite-duration.md).
 
-- **T798 closed-bounded** — issue 373 removes the accepted root Projectile hit
+- **T798 historical closed-bounded** — issue 373 removes the accepted root Projectile hit
   `EnvShake` 240-tick cap through product `122ce17a`. Guard and rejected
   contacts do not emit. Required
   `synthetic-imported-projectile-envshake-long-finite` proves finite `241`
@@ -94,10 +94,22 @@
   remain outside. See [issue
   373](../.scratch/roadmap/issues/373-projectile-envshake-finite-duration.md).
 
-- **T799 next** — issue 374 isolates one first-generation Helper-created,
-  root-owned Projectile EnvShake hit route with parent/root attribution and
-  finite expiry. See [issue
+- **T799 closed-bounded** — issue 374 closes one first-generation
+  Helper-created/root-owned Projectile EnvShake route. An accepted unguarded
+  hit emits `time = 241` to root `p1`; guard and rejected contacts stay silent.
+  Required `synthetic-imported-helper-projectile-envshake-long-finite` proves
+  parent `p1-helper-0`, lifecycle, root/Helper target links and expiry
+  (`cf27a089` / `8d8a853c`). Focused evidence, typecheck and trace QA
+  `878/878` (`844` required) pass. Nested/team/`ownProjectile` topology,
+  ModifyProjectile, FallEnvShake, active EnvShake, waveform, pause,
+  camera/render parity, rollback and full parity remain outside. See [issue
   374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
+
+- **T800 next** — issue 375 selects caller-context dynamic `envshake.*`
+  parameters for fresh root Projectile spawn. Helper Projectile,
+  ModifyProjectile, FallEnvShake, active EnvShake and presentation-parity
+  breadth remain outside. See [issue
+  375](../.scratch/roadmap/issues/375-root-projectile-envshake-dynamic-params.md).
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;
   evidence remains in `29aba4bb` / `b9b0752d`.

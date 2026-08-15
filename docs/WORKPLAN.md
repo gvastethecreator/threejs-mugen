@@ -64,7 +64,7 @@ finite `241` until expiry; the required trace passes at `9de955c7` /
 FallEnvShake, and active EnvShake remain separate. Exact waveform, stacking,
 pause, camera/render parity, rollback and full parity stay outside this slice.
 
-## Latest slice — T798 root Projectile `EnvShake` duration (2026-08-15)
+## Historical slice — T798 root Projectile `EnvShake` duration (2026-08-15)
 
 Issue 373 closes accepted root Projectile hit EnvShake through `122ce17a`.
 Finite `241` survives to expiry; guard and rejected contacts do not emit.
@@ -73,12 +73,23 @@ required). Helper Projectile, direct HitDef, FallEnvShake, active EnvShake,
 waveform, stacking, pause, camera/render parity, rollback and full parity stay
 outside this slice.
 
-## Next slice — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
+## Latest slice — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
 
-Issue 374 selects one first-generation Helper-created/root-owned Projectile
-route with parent/root attribution and finite expiry proof. Nested/team
-topology, direct/root changes, FallEnvShake, active EnvShake and waveform
-parity remain outside.
+Issue 374 closes one first-generation Helper-created/root-owned Projectile
+route. Only an accepted unguarded hit emits root `p1` EnvShake `time = 241`;
+guard and rejected contacts do not emit. Required
+`synthetic-imported-helper-projectile-envshake-long-finite` proves parent
+`p1-helper-0`, lifecycle, root/Helper target links and expiry (`cf27a089` /
+`8d8a853c`). Focused evidence, typecheck and trace QA `878/878` (`844`
+required) pass. Nested/team/`ownProjectile` topology, ModifyProjectile,
+FallEnvShake, active EnvShake, waveform, pause, camera/render parity, rollback
+and full parity stay outside.
+
+## Next slice — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
+
+Issue 375 queues caller-context dynamic `envshake.*` values on fresh root
+Projectile spawn. Helper Projectile, ModifyProjectile, FallEnvShake, active
+EnvShake and presentation-parity breadth remain outside.
 ## Historical slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

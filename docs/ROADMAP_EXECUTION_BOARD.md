@@ -85,7 +85,7 @@ trace QA `876/876` (`842` required). Waveform, stacking, pause, camera/render
 parity, rollback, and full parity remain separate. See [issue
 372](../.scratch/roadmap/issues/372-hitdef-contact-envshake-finite-duration.md).
 
-## Latest bounded slice — T798 root Projectile `EnvShake` duration (2026-08-15)
+## Historical bounded slice — T798 root Projectile `EnvShake` duration (2026-08-15)
 
 Issue 373 closes the accepted root Projectile hit route. Product `122ce17a`
 removes the inherited 240-tick ceiling; guard and rejected contacts do not emit
@@ -97,12 +97,25 @@ FallEnvShake, active EnvShake, waveform, stacking, pause, camera/render parity,
 rollback, and full parity remain separate. See [issue
 373](../.scratch/roadmap/issues/373-projectile-envshake-finite-duration.md).
 
-## Next bounded slice — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
+## Latest bounded slice — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
 
-Issue 374 queues one first-generation Helper-created, root-owned Projectile
-hit route with finite lifetime and parent/root attribution. No support claim is
-made until its required trace closes. See [issue
+Issue 374 closes one first-generation Helper-created, root-owned Projectile
+hit route. The shared contact bridge emits `envshake.time = 241` to root `p1`
+only on accepted unguarded contact; guard and rejected contacts stay silent.
+Required `synthetic-imported-helper-projectile-envshake-long-finite` proves
+root/parent identity (`p1-helper-0`), lifecycle, target links and expiry at
+`cf27a089` / `8d8a853c`. Focused coverage, typecheck and trace QA `878/878`
+(`844` required) pass. Nested/team/`ownProjectile` topology,
+ModifyProjectile, FallEnvShake, active EnvShake, waveform, pause, render,
+rollback and full parity remain separate. See [issue
 374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
+
+## Next bounded slice — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
+
+Issue 375 queues caller-context dynamic `envshake.*` values on a fresh root
+Projectile. It excludes Helper Projectile, ModifyProjectile, FallEnvShake,
+active EnvShake and presentation-parity breadth. See [issue
+375](../.scratch/roadmap/issues/375-root-projectile-envshake-dynamic-params.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper caller-context `ModifyProjectile down.velocity` index
