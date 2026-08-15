@@ -60,9 +60,21 @@ and aggregate QA 871/871 pass. `time = -1`, exact blend/layer/pause behavior,
 redirects, nested/team ownership, rollback and full parity remain outside the
 claim. See [issue 367](../.scratch/roadmap/issues/367-helper-envcolor-presentation-ownership.md).
 
-## Next selection — T793 `EnvColor time = -1`
+## 2026-08-15 T793 — closed-bounded
 
-Issue 368 queues the next bounded lifetime/replacement selection.
+`EnvColor time = -1` now remains in the stage-flash projection with
+`remaining = -1` until a later EnvColor replaces it or the world resets. The
+expired replacement does not revive the older indefinite event; zero remains
+ignored. Product `d98a5443` and required
+`synthetic-imported-envcolor-indefinite` trace (`7481ebbf` / `2c8cedc7`) pass
+with aggregate QA `872/872` (`838` required). The local positive 240-tick cap,
+exact blend/layer/pause behavior, nested/team ownership, rollback and full
+parity remain outside this claim. See [issue
+368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
+
+## Next selection — T794 finite `EnvColor` duration ceiling
+
+Issue 369 queues the finite-duration source selection beyond the local cap.
 ## Historical — T781 Helper `ModifyProjectile down.velocity` index
 
 Issue 355 closed the same oldest-first index contract for the lying-hit vector;

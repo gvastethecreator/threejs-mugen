@@ -47,9 +47,17 @@ required trace `synthetic-imported-helper-envcolor` passes at `68d3329b` /
 `1b28cd00`. Infinite time, exact blend/layer/pause, redirects, nested/team
 ownership, rollback and full parity remain excluded.
 
-## Next slice — T793 `EnvColor time = -1` selection (2026-08-15)
+## Latest slice — T793 `EnvColor time = -1` (2026-08-15)
 
-Issue 368 queues bounded lifetime/replacement evidence.
+Issue 368 closes the indefinite lifetime/replacement route. `d98a5443` keeps
+negative time as `-1`, ignores zero, and lets a new flash replace the old one
+without revival after expiry. Required trace is `7481ebbf` / `2c8cedc7`; QA is
+`872/872` (`838` required). Positive duration above 240, exact presentation
+math, pause, nested/team ownership, rollback and full parity remain separate.
+
+## Next slice — T794 finite `EnvColor` duration ceiling (2026-08-15)
+
+Issue 369 selects finite positive duration beyond the current local cap.
 ## Historical slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

@@ -59,9 +59,21 @@ blend/layer/pause behavior, redirects, nested/team ownership, rollback and full
 parity remain blocked, so the score does not move. See [issue
 367](../.scratch/roadmap/issues/367-helper-envcolor-presentation-ownership.md).
 
-## Next scorecard slice — 2026-08-15 T793 `EnvColor time = -1`
+## 2026-08-15 T793 `EnvColor time = -1` — closed-bounded, no score movement
 
-Issue 368 queues the lifetime selection without changing the current score.
+Issue 368 closes one persistent stage-flash lifetime contract. Product
+`d98a5443` accepts `time = -1`, keeps `remaining = -1` until replacement or
+reset, and does not revive the old event after a finite replacement expires.
+Required trace `synthetic-imported-envcolor-indefinite` passes at
+`7481ebbf` / `2c8cedc7`; aggregate QA is `872/872` (`838` required). Positive
+duration above 240, exact blend/layer/pause, nested/team ownership, rollback
+and full parity remain blocked, so the score does not move. See [issue
+368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
+
+## Next scorecard slice — 2026-08-15 T794 finite `EnvColor` duration
+
+Issue 369 queues the finite-duration ceiling decision without changing the
+current score.
 ## Historical checkpoint — 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index
 
 Issue 355 closed Helper-owned live `ModifyProjectile down.velocity` explicit

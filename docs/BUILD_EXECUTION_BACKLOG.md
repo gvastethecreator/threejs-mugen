@@ -61,9 +61,16 @@
   redirects, nested/team ownership, rollback and full parity remain outside.
   See [issue 367](../.scratch/roadmap/issues/367-helper-envcolor-presentation-ownership.md).
 
-- **T793 next** — issue 368 queues bounded `EnvColor time = -1` lifetime and
-  replacement selection. See [issue
-  368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
+- **T793 closed-bounded** — issue 368 closes `EnvColor time = -1` lifetime
+  and replacement. Product `d98a5443` preserves `remaining = -1` until a
+  newer flash or reset, and the required trace passes at `7481ebbf` /
+  `2c8cedc7`; aggregate QA is `872/872` (`838` required). Exact
+  blend/layer/pause, nested/team ownership, rollback and full parity remain
+  outside. See [issue 368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
+
+- **T794 next** — issue 369 selects removal of the local 240-tick finite
+  `EnvColor` duration ceiling. See [issue
+  369](../.scratch/roadmap/issues/369-envcolor-finite-duration-ceiling.md).
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;
   evidence remains in `29aba4bb` / `b9b0752d`.

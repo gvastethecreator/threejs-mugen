@@ -64,10 +64,20 @@ time, exact layer/blend/pause timing, redirects, nested/team ownership,
 rollback and full parity remain excluded. See [issue
 367](../.scratch/roadmap/issues/367-helper-envcolor-presentation-ownership.md).
 
-## Next bounded slice — T793 `EnvColor time = -1` selection (2026-08-15)
+## Latest bounded slice — T793 `EnvColor time = -1` (2026-08-15)
 
-Issue 368 queues the bounded lifetime/replacement decision after T792. See
-[issue 368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
+Issue 368 closes the bounded indefinite lifetime route. Product `d98a5443`
+normalizes negative time to `-1`, retains the flash until replacement/reset,
+and prevents an expired replacement from reviving the prior event. Required
+`synthetic-imported-envcolor-indefinite` passes at `7481ebbf` / `2c8cedc7`;
+`pnpm qa:trace` is `872/872` (`838` required). Positive durations remain
+locally capped at 240, while exact blend/layer/pause/topology/rollback/full
+parity remain separate. See [issue 368](../.scratch/roadmap/issues/368-envcolor-indefinite-lifetime-selection.md).
+
+## Next bounded slice — T794 finite `EnvColor` duration ceiling (2026-08-15)
+
+Issue 369 queues the official finite-duration selection beyond the current
+240-tick local ceiling. See [issue 369](../.scratch/roadmap/issues/369-envcolor-finite-duration-ceiling.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper caller-context `ModifyProjectile down.velocity` index
