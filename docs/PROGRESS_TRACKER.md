@@ -1,21 +1,22 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T779 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T780 closed-bounded (2026-08-15)
 
-Issue 353 closes Helper-owned live `ModifyProjectile air.velocity` broadcast.
-Evidence commit `513d8e58` and required trace checksums `d0d4ca95` /
-`2dc85e6f` prove one-shot caller-context zero-fill writes reach two selected
-matches while trap id `8914` remains unchanged. Selected id `8913` reaches an
-accepted airborne hit with GetHitVar/HitVelSet, lifecycle, ownership and
-target-link evidence. Focused tests, typecheck and diff hygiene pass; aggregate
-QA retains the inherited helper-bind target-link blocker.
+Issue 354 closes Helper-owned live `ModifyProjectile air.velocity` explicit
+`index` selection. Evidence commits `8e41ec21` / `d846fca3` and required trace
+checksums `4c940f16` / `97569603` prove caller-context static and `var()` index
+resolution, oldest-first selection, zero-fill, and same-id/trap isolation.
+The selected Projectile reaches an accepted airborne hit with GetHitVar,
+HitVelSet, lifecycle, ownership and target-link evidence. Focused tests,
+typecheck and diff hygiene pass; aggregate QA is `862/863` with only the
+inherited helper-bind target-link blocker.
 
-## Next implementation checkpoint — T780 queued (2026-08-15)
+## Next implementation checkpoint — T781 queued (2026-08-15)
 
-Issue 354 targets Helper-owned `ModifyProjectile air.velocity` explicit index
-selection among same-id Projectiles. Keep id-zero/omitted selection,
-fresh/default derivation, dynamic `n`, nested/shared topology, aggregate QA
-repair, exact timing, rollback and full parity separate.
+Issue 355 targets Helper-owned `ModifyProjectile down.velocity` explicit index
+selection among same-id Projectiles and an accepted lying hit. Keep id-zero/
+omitted selection, fresh/default derivation, dynamic `n`, nested/shared
+topology, aggregate QA repair, exact timing, rollback and full parity separate.
 
 ## Historical implementation checkpoint — T776 closed-bounded (2026-08-15)
 

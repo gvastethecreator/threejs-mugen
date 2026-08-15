@@ -1,6 +1,25 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T776 Helper `ModifyProjectile` `down.velocity` matrix — closed-bounded, no score movement
+## 2026-08-15 T780 Helper `ModifyProjectile` `air.velocity` index — closed-bounded, no score movement
+
+Issue 354 closes Helper-owned live `ModifyProjectile air.velocity` explicit
+`index` selection. Evidence commits `8e41ec21` / `d846fca3` and required trace
+`4c940f16` / `97569603` prove caller-context static/dynamic index resolution,
+oldest-first one-match zero-fill, sibling/trap isolation, accepted airborne
+`GetHitVar`/`HitVelSet`, lifecycle, ownership and target links. Focused tests,
+typecheck and diff hygiene pass. Aggregate QA produces `862/863` artifacts
+with only the inherited helper-bind target-link blocker; no score movement.
+Fresh/default derivation, edge indices, dynamic `n`, nested/shared topology,
+exact timing, rollback and full parity remain blocked. See [issue 354]
+(../.scratch/roadmap/issues/354-helper-modifyprojectile-air-velocity-index.md).
+
+## Next scorecard slice — 2026-08-15 T781 queued
+
+Issue 355 queues the same bounded Helper-owned `ModifyProjectile down.velocity`
+index-selection seam through an accepted lying hit; it is not scored until
+focused and required-trace evidence closes.
+
+## Historical checkpoint — 2026-08-15 T776 Helper `ModifyProjectile` `down.velocity` matrix — closed-bounded, no score movement
 
 Issue 350 closes the first-generation Helper-authored live `ModifyProjectile`
 `down.velocity` matrix for one root-owned Projectile and one accepted lying

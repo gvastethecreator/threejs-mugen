@@ -1,4 +1,21 @@
 ﻿# Supported Features
+## 2026-08-15 T780 — closed-bounded
+
+Helper-owned live `ModifyProjectile air.velocity` now supports explicit
+oldest-first `index` selection among same-id Projectiles. Commits `8e41ec21`
+and `d846fca3`, plus required trace `4c940f16` / `97569603`, prove caller-
+context static/dynamic index resolution, zero-fill, sibling/trap isolation,
+accepted airborne `GetHitVar`/physical response, lifecycle and target links.
+Aggregate QA is `862/863` with the inherited helper-bind target-link blocker;
+no score movement. Edge indices, fresh/default derivation, dynamic `n`, nested
+teams, rollback and full parity remain outside the claim. See [issue 354]
+(../.scratch/roadmap/issues/354-helper-modifyprojectile-air-velocity-index.md).
+
+## Next selection — T781 Helper `ModifyProjectile down.velocity` index
+
+Issue 355 queues the same bounded selection contract for a lying-hit Projectile
+and remains unscored until its focused and required-trace evidence closes.
+
 ## 2026-08-12 T753 `AttackMulSet guardpoints` - closed-bounded
 
 Direct accepted guards now support typed, finite caller-context

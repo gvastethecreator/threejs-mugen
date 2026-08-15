@@ -1,22 +1,24 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T779 closed-bounded (2026-08-15)
+## Latest bounded slice — T780 closed-bounded (2026-08-15)
 
-Issue 353 closes Helper-owned live `ModifyProjectile air.velocity` broadcast.
-Evidence commit `513d8e58` and required trace `d0d4ca95` / `2dc85e6f` prove
-caller-context zero-fill reaches selected ids, trap isolation, accepted
+Issue 354 closes Helper-owned live `ModifyProjectile air.velocity` explicit
+`index` selection. Commits `8e41ec21` / `d846fca3` and required trace
+`4c940f16` / `97569603` prove caller-context static/dynamic index resolution,
+oldest-first single-match replacement, zero-fill, trap isolation, accepted
 airborne GetHitVar/physical response, lifecycle, ownership and target links.
 Focused Projectile/Helper/trace tests, typecheck and diff hygiene pass;
-aggregate QA retains the inherited helper-bind blocker.
+aggregate QA produces `862/863` artifacts with the inherited helper-bind
+blocker as the only failure.
 
-## Next bounded slice — T780 queued (2026-08-15)
+## Next bounded slice — T781 queued (2026-08-15)
 
-Issue 354 will close explicit `index` selection for Helper-authored live
-`ModifyProjectile air.velocity` among same-id Projectiles, preserving
-oldest-first and sibling/trap isolation. Keep id-zero/omitted selection,
-fresh/default derivation, dynamic `n`, nested/shared-resource topology,
-aggregate QA repair, exact timing, rollback and full parity separate. See
-[issue 354](../.scratch/roadmap/issues/354-helper-modifyprojectile-air-velocity-index.md).
+Issue 355 will close explicit `index` selection for Helper-authored live
+`ModifyProjectile down.velocity` among same-id Projectiles, preserving
+oldest-first and sibling/trap isolation through a lying hit. Keep id-zero/
+omitted selection, fresh/default derivation, dynamic `n`, nested/shared-resource
+topology, aggregate QA repair, exact timing, rollback and full parity separate.
+See [issue 355](../.scratch/roadmap/issues/355-helper-modifyprojectile-down-velocity-index.md).
 
 ## Historical bounded slice — T776 closed-bounded (2026-08-15)
 

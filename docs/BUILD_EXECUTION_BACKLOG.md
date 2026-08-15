@@ -2,6 +2,25 @@
 
 ## Current parity queue
 
+- **T780 closed-bounded** — issue 354 closes Helper-authored live
+  `ModifyProjectile air.velocity` explicit oldest-first `index` selection
+  among same-id Projectiles. Evidence commits `8e41ec21` / `d846fca3` and
+  required trace `4c940f16` / `97569603` prove caller-context static/dynamic
+  index resolution, one-match zero-fill, sibling/trap isolation, accepted
+  airborne GetHitVar/HitVelSet, lifecycle, ownership and target links.
+  Focused tests, typecheck and diff hygiene pass; aggregate QA produces
+  `862/863` artifacts (`829` required, `34` optional) with only the inherited
+  helper-bind target-link blocker. Fresh/default derivation, edge indices,
+  dynamic `n`, nested/shared topology, exact timing, rollback and full parity
+  remain outside. See [issue
+  354](../.scratch/roadmap/issues/354-helper-modifyprojectile-air-velocity-index.md).
+
+- **T781 next selection** — issue 355 queues the same explicit oldest-first
+  `index` selection seam for Helper-authored live `ModifyProjectile
+  down.velocity`, with a selected lying-hit Projectile and sibling/trap
+  isolation. See [issue
+  355](../.scratch/roadmap/issues/355-helper-modifyprojectile-down-velocity-index.md).
+
 - **T779 closed-bounded** — issue 353 closes Helper-authored live
   `ModifyProjectile air.velocity` broadcast. Evidence commit `513d8e58` and
   required trace `d0d4ca95` / `2dc85e6f` prove one-shot caller-context
@@ -12,11 +31,6 @@
   default derivation, index/id edge selection, dynamic `n`, nested/shared
   topology, exact timing, rollback and full parity remain outside. See [issue
   353](../.scratch/roadmap/issues/353-helper-modifyprojectile-air-velocity-broadcast.md).
-
-- **T780 next selection** — issue 354 queues explicit oldest-first `index`
-  selection for Helper-authored live `ModifyProjectile air.velocity` among
-  same-id Projectiles. See [issue
-  354](../.scratch/roadmap/issues/354-helper-modifyprojectile-air-velocity-index.md).
 
 - **T770 closed-bounded** — issue 344 closes the first-generation
   Helper-authored `ModifyProjectile` ground `guard.velocity` seam. Evidence

@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T780 — queued (2026-08-15)**
+- **T780 — closed-bounded (2026-08-15)**
 - **Área:** runtime / Helper / Projectile / ModifyProjectile / selection
 - **Dependencia:** T779 / issue 353
 
@@ -43,3 +43,32 @@ mutación viva es Ikemen-only; M.U.G.E.N 1.1 sólo documenta `Projectile`.
   other same-id sibling or trap id.
 - Typecheck, `git diff --check`, and aggregate QA recorded with inherited
   blockers preserved.
+
+## Cierre T780
+
+- Evidence commits: `8e41ec21` (`test(runtime): cover Helper
+  ModifyProjectile index selection`) and `d846fca3` (`test(evidence): add
+  Helper ModifyProjectile index trace`).
+- Required trace: `synthetic-imported-helper-modifyprojectile-air-velocity-index.json`.
+- Trace checksum: `4c940f16`; final checksum: `97569603`; gate passed.
+- Focused `ProjectileSystem` and `EffectActorSystem` regressions prove static
+  and caller-context `var()` index resolution, oldest-first selection, one-shot
+  evaluation, zero-fill `[x,y,z]`, and isolation of the older same-id sibling
+  plus the different-id trap.
+- Required Helper trace proves three Helper-parented Projectiles: ids `8915`,
+  `8916`, `8915`; only the indexed newer `8915` reaches the accepted airborne
+  hit with `GetHitVar`/`HitVelSet`, lifecycle, owner/root/parent and target-link
+  evidence. Aggregate `pnpm run qa:trace` produced `862/863` artifacts
+  (`829` required, `34` optional); the only failure remains the inherited
+  `synthetic-imported-helper-bind-to-target-redirect` target-link blocker.
+- `pnpm run typecheck`, focused tests, targeted trace, and `git diff --check`
+  pass.
+
+## Next cut
+
+T781 will cover the same explicit oldest-first `index` selection seam for
+Helper-owned live `ModifyProjectile down.velocity`, proving that the selected
+lying-hit Projectile changes while same-id siblings and a different-id trap
+remain unchanged. Keep id-zero/omitted selection, fresh/default derivation,
+dynamic `n`, nested/shared topology, exact timing, rollback, and full parity
+separate.

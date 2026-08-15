@@ -1,26 +1,28 @@
 # Controller Support Registry
 
-Latest cursor: T779 / issue 353 is closed-bounded for Helper-owned live
-`ModifyProjectile air.velocity` broadcast. Evidence commit `513d8e58` and
-required trace
-`synthetic-imported-helper-modifyprojectile-air-velocity-broadcast.json`
-(`d0d4ca95` / `2dc85e6f`) prove one-shot caller-context
-zero-fill on selected ids plus non-selected trap isolation and accepted-hit
-readback. The previous T753 guardpoints cursor remains historical below;
-id/index edge selection, omitted defaults, int32 edges, teams, rollback and
-full parity remain unsupported.
+Latest cursor: T780 / issue 354 is closed-bounded for Helper-owned live
+`ModifyProjectile air.velocity` explicit `index` selection. Evidence commits
+`8e41ec21` / `d846fca3` and required trace
+`synthetic-imported-helper-modifyprojectile-air-velocity-index.json`
+(`4c940f16` / `97569603`) prove caller-context static/dynamic index resolution,
+oldest-first one-match zero-fill, sibling/trap isolation, and accepted-hit
+readback. Aggregate QA is `862/863` with only the inherited helper-bind
+target-link blocker. Omitted/id-zero selection, out-of-range/negative index,
+fresh defaults, int32 edges, teams, rollback and full parity remain
+unsupported.
 
-Latest closed-bounded cursor: T779 / issue 353 covers Helper-owned live
-`ModifyProjectile air.velocity` broadcast to matching Projectiles. Pinned
-zero-fill one/two/three-component replacement is proven through focused
-one-shot caller evaluation, two selected matches, trap isolation, accepted
-GetHitVar/HitVelSet response, lifecycle, ownership and target links. Aggregate
-QA still has the inherited helper-bind target-link blocker. Fresh/default
-derivation, index/id edge selection, other vector families, nested/team
-topology, exact timing, rollback and full parity remain unsupported.
+Latest closed-bounded cursor: T780 / issue 354 covers Helper-owned live
+`ModifyProjectile air.velocity` explicit index selection among same-id
+Projectiles. Pinned zero-fill replacement is proven through focused static and
+dynamic caller evaluation, oldest-first single-match selection, sibling/trap
+isolation, accepted GetHitVar/HitVelSet response, lifecycle, ownership and
+target links. Fresh/default derivation, index/id edge selection, other vector
+families, nested/team topology, exact timing, rollback and full parity remain
+unsupported.
 
-Next cursor: T780 / issue 354 queues Helper-owned live `ModifyProjectile
-air.velocity` explicit index selection among same-id Projectiles.
+Next cursor: T781 / issue 355 queues Helper-owned live `ModifyProjectile
+down.velocity` explicit index selection among same-id Projectiles and an
+accepted lying-hit route.
 
 Historical cursor: T754 / root Projectile and Helper-parented guard-point
 multiplier ownership and accepted-contact evidence.
