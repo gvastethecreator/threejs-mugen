@@ -11,14 +11,18 @@
 Close the Helper-owned `ModifyProjectile getpower` evidence for an accepted
 guard contact. The Helper caller-context replacement must reach the guarded
 Projectile path and expose the authored attacker power delta without
-conflating it with `givepower` or the unguarded hit branch.
+conflating it with `givepower` or the unguarded hit branch. In the official
+runtime, `getpower` changes the attacker's power bank; `GetHitVar(power)` is a
+`givepower` readback on the defender and is therefore intentionally not used
+as proof for this cut.
 
 ## Alcance permitido
 
 - One first-generation Helper and one root-owned Projectile selected by an
   explicit Helper-owned `ModifyProjectile`.
 - One finite static or `var()` getpower pair, one accepted guard and one
-  required trace with attacker power and guarded `GetHitVar(power)` evidence.
+  required trace with attacker power plus guarded `GetHitVar(guarded)=1`
+  evidence.
 
 ## Fuera de alcance
 
@@ -31,6 +35,7 @@ conflating it with `givepower` or the unguarded hit branch.
 ## Evidencia requerida
 
 - Required trace proving Helper/Projectile lifecycle, live `ModifyProjectile`,
-  accepted guard, attacker power delta and guarded `GetHitVar(power)` readback.
+  accepted guard, attacker power delta and guarded `GetHitVar(guarded)=1`
+  readback. It must not use `GetHitVar(power)` as a proxy for `getpower`.
 - Focused Helper/Projectile test, typecheck, `git diff --check`, and aggregate
   QA recorded with inherited blockers preserved.
