@@ -1,6 +1,18 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T772 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T773 closed-bounded (2026-08-15)
+
+Issue 347 closes the first-generation Helper-authored `ModifyProjectile`
+`airguard.velocity` Z readback. Required trace `c1d1e70f`
+(`b7850d2e` -> `76075e30`) and evidence commit `44361ac3` prove Helper
+caller-context replacement, root-owned Projectile lifecycle, accepted
+airborne guard, physical Z response `maxVelZ=9`, and defender life `998`.
+Focused Helper and trace tests, typecheck and diff hygiene pass. Aggregate QA
+remains blocked by the inherited helper-bind target-link case. Fresh/default
+derivation and full partial-component preservation remain separate. See issue
+347.
+
+## Historical implementation checkpoint — T772 closed-bounded (2026-08-15)
 
 Issue 346 closes the first-generation Helper-authored `ModifyProjectile`
 `airguard.velocity` Y readback. Required trace `8b9552db`
@@ -11,12 +23,12 @@ and trace tests, typecheck and diff hygiene pass. Aggregate QA remains blocked
 by the inherited helper-bind target-link case. Z/default derivation and full
 partial-component preservation remain separate. See issue 346.
 
-## Next implementation checkpoint — T773 queued (2026-08-15)
+## Next implementation checkpoint — T774 queued (2026-08-15)
 
-Issue 347 targets the Helper-authored `ModifyProjectile airguard.velocity` Z
-readback with one finite dynamic Z component and one accepted airborne guard.
-Keep fresh/default derivation, full 3D component preservation, ground guard,
-and aggregate QA repair separate.
+Issue 348 targets omitted, single-component, and X/Y-pair preservation for a
+live Helper-authored `ModifyProjectile airguard.velocity` vector. Keep
+fresh/default derivation, ground guard, nested/shared-resource topology, and
+aggregate QA repair separate.
 
 ## Historical implementation checkpoint — T771 closed-bounded (2026-08-15)
 

@@ -1,6 +1,20 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T772 closed-bounded (2026-08-15)
+## Latest bounded slice — T773 closed-bounded (2026-08-15)
+
+Issue 347 closes the first-generation Helper-authored `ModifyProjectile`
+`airguard.velocity` Z readback. Evidence commit `44361ac3`; required trace
+`c1d1e70f` (`b7850d2e` -> `76075e30`) passes. The Helper creates a root-owned
+Projectile, resolves `airguard.velocity=-2,-4,var(2)` with `var(2)=9`, and an
+accepted airborne guard observes the replaced physical Z response; defender
+life ends at `998` and state `5115` records `GetHitVar(zvel)`. Focused tests,
+typecheck and diff hygiene pass. Aggregate QA stops on the inherited
+helper-bind target-link blocker. Fresh/default derivation, full component
+preservation, nested/shared-resource topology, exact physics/timing, rollback
+and full parity remain separate. See [issue
+347](../.scratch/roadmap/issues/347-helper-modifyprojectile-airguard-velocity-z.md).
+
+## Historical bounded slice — T772 closed-bounded (2026-08-15)
 
 Issue 346 closes the first-generation Helper-authored `ModifyProjectile`
 `airguard.velocity` Y readback. Evidence commit `309eb94a`; required trace
@@ -13,14 +27,14 @@ derivation, full component preservation, nested/shared-resource topology,
 exact physics/timing, rollback and full parity remain separate. See [issue
 346](../.scratch/roadmap/issues/346-helper-modifyprojectile-airguard-velocity-y.md).
 
-## Next bounded slice — T773 queued (2026-08-15)
+## Next bounded slice — T774 queued (2026-08-15)
 
-Issue 347 targets the Helper-authored `ModifyProjectile airguard.velocity` Z
-readback with one finite dynamic component and one accepted airborne guard.
-Keep fresh/default derivation, full 3D component preservation, ground guard,
-nested/shared-resource topology, aggregate QA repair, exact physics/timing,
-rollback and full parity separate. See [issue
-347](../.scratch/roadmap/issues/347-helper-modifyprojectile-airguard-velocity-z.md).
+Issue 348 targets omitted, single-component, and X/Y-pair preservation for the
+live Helper-authored `ModifyProjectile airguard.velocity` vector. Keep
+fresh/default derivation, ground guard, nested/shared-resource topology,
+aggregate QA repair, exact physics/timing, rollback and full parity separate.
+See [issue
+348](../.scratch/roadmap/issues/348-helper-modifyprojectile-airguard-velocity-preservation.md).
 
 ## Historical bounded slice — T771 closed-bounded (2026-08-15)
 

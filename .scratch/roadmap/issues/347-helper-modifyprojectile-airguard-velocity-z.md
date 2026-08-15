@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T773 — queued (2026-08-15)**
+- **T773 — closed-bounded (2026-08-15)**
 - **Área:** runtime / Helper / Projectile / ModifyProjectile / air guard / velocity / depth
 - **Dependencia:** T772 / issue 346
 
@@ -37,3 +37,19 @@ and the defender's depth response.
   defender depth response.
 - Focused Helper/Projectile test, typecheck, `git diff --check`, and aggregate
   QA recorded with inherited blockers preserved.
+
+## Resultado
+
+- **Evidence commit:** `44361ac3`
+- **Required trace:** `c1d1e70f` (`b7850d2e` -> `76075e30`)
+- **Gate:** passed; Helper, root-owned Projectile, live `ModifyProjectile`,
+  accepted airborne guard, `GetHitVar(zvel)` and physical depth response are
+  all present. The defender ends at life `998` and the guarded branch reaches
+  state `5115` with `maxVelZ=9`.
+- **Verification:** focused EffectActor and RuntimeTraceGatePresets tests pass;
+  `pnpm run typecheck` and `git diff --check` pass. Aggregate `pnpm run
+  qa:trace` still stops only on the inherited
+  `synthetic-imported-helper-bind-to-target-redirect` target-link blocker.
+- **Ceiling:** fresh/default derivation, full partial-component preservation,
+  ground guard, nested/shared-resource topology, exact 3D timing/rounding,
+  rollback and full M.U.G.E.N/Ikemen parity remain outside this slice.

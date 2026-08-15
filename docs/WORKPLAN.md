@@ -1,6 +1,18 @@
 # Workplan
 
-## Latest slice — T772 closed-bounded (2026-08-15)
+## Latest slice — T773 closed-bounded (2026-08-15)
+
+Issue 347 closes the first-generation Helper-authored `ModifyProjectile`
+`airguard.velocity` Z seam. Evidence commit `44361ac3`; required trace
+`c1d1e70f` (`b7850d2e` -> `76075e30`) passes. The Helper resolves the live Z
+component before an accepted airborne guard; the physical depth response
+reaches `maxVelZ=9`, defender life reaches `998`, and lifecycle/ownership are
+proven. Focused Helper/trace tests, typecheck and diff hygiene pass. Aggregate
+QA retains the inherited helper-bind target-link blocker. Fresh/default
+derivation, full component preservation, nested/shared resource topology,
+exact arithmetic/timing, rollback and full parity remain outside.
+
+## Historical slice — T772 closed-bounded (2026-08-15)
 
 Issue 346 closes the first-generation Helper-authored `ModifyProjectile`
 `airguard.velocity` Y seam. Evidence commit `309eb94a`; required trace
@@ -12,13 +24,13 @@ QA retains the inherited helper-bind target-link blocker. Z/default
 derivation, full component preservation, nested/shared resource topology,
 exact arithmetic/timing, rollback and full parity remain outside.
 
-## Next slice — T773 queued (2026-08-15)
+## Next slice — T774 queued (2026-08-15)
 
-Issue 347 covers the next Helper-authored `ModifyProjectile airguard.velocity`
-Z seam with one finite dynamic Z component and one accepted airborne guard.
-Keep fresh/default derivation, full 3D partial-component preservation, ground
-guard, nested/shared resource topology, aggregate QA repair, exact
-arithmetic/timing, rollback and full parity separate.
+Issue 348 covers the Helper-authored `ModifyProjectile airguard.velocity`
+component-preservation matrix for omitted, single-component, and X/Y-pair
+live mutations. Keep fresh/default derivation, ground guard,
+nested/shared resource topology, aggregate QA repair, exact arithmetic/timing,
+rollback and full parity separate.
 
 ## Historical slice — T771 closed-bounded (2026-08-15)
 
