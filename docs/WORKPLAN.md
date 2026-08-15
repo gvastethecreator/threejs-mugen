@@ -1,6 +1,18 @@
 # Workplan
 
-## Latest slice — T763 closed-bounded (2026-08-15)
+## Latest slice — T764 closed-bounded (2026-08-15)
+
+Issue 338 closes the first-generation Helper-authored `ModifyProjectile`
+red-life guard seam. Evidence commit `90156937`; required trace `4e97fdba` ->
+`eff1e719` passes. The accepted guard keeps authored `GetHitVar(redlife)=40`
+separate and ends at `life=20/redLife=20` after the creation multiplier `0.5`.
+Focused red-life traces are 4/4, typecheck and diff hygiene pass. Aggregate QA
+retains the inherited helper-bind target-link blocker; the pre-existing
+EffectActor guardpoints assertion remains separate. Hit contact,
+nested/shared-resource topology, exact arithmetic/timing, rollback and full
+parity remain out.
+
+## Historical slice — T763 closed-bounded (2026-08-15)
 
 Issue 337 closes the first-generation Helper-authored `ModifyProjectile`
 red-life hit seam. Evidence commit `d96c7015`; required trace `938303dd` ->
@@ -48,11 +60,11 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` slice. Issue 329 remains a superseded audit trail, not an open
 implementation task.
 
-## Next slice — T764 Helper ModifyProjectile redlife guard contact
+## Next slice — T765 Helper ModifyProjectile getpower hit readback
 
-Close the Helper-authored `ModifyProjectile` redlife snapshot for an accepted
-guard; keep nested helpers, aggregate QA repair and broader resource topology
-separate. See issue 338.
+Close the Helper-owned `ModifyProjectile getpower` readback for an accepted hit;
+keep givepower, guard contact, nested helpers, aggregate QA repair and broader
+resource topology separate. See issue 339.
 
 ## Historical slice — T753 closed-bounded (2026-08-12)
 

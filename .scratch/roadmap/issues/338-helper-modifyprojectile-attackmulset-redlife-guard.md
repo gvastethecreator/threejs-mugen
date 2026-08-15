@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T764 — queued (2026-08-15)**
+- **T764 — closed-bounded (2026-08-15)**
 - **Área:** runtime / Helper / Projectile / ModifyProjectile / guard / red-life
 - **Dependencia:** T763 / issue 337; T761 / issue 335
 
@@ -33,3 +33,21 @@ update, while authored `GetHitVar(redlife)` remains separate.
   resource.
 - Focused test, typecheck, `git diff --check`, and aggregate QA recorded with
   inherited blockers preserved.
+
+## Cierre
+
+- Evidence/test commit: `90156937` (`test(evidence): close Helper ModifyProjectile redlife guard seam`).
+- Required trace artifact: `4e97fdba` -> `eff1e719`, status `passed`.
+- Focused trace coverage is green; the combined red-life trace selection is
+  4/4, typecheck and `git diff --check` pass.
+- `pnpm run qa:trace` stops only on the inherited
+  `synthetic-imported-helper-bind-to-target-redirect` missing target-link case;
+  the T764 artifact itself passes. The pre-existing EffectActor guardpoints
+  assertion remains separate.
+- The first-generation Helper creates a root-owned Projectile, its caller
+  context resolves `redlife=var(0),var(0)` to `40,40`, and the accepted guard
+  ends at `life=20/redLife=20` while authored `GetHitVar(redlife)=40` remains
+  separate.
+
+T765 is queued separately for Helper-owned `ModifyProjectile getpower` hit
+  readback.

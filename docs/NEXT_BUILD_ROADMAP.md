@@ -1,6 +1,19 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T763 closed-bounded (2026-08-15)
+## Latest bounded slice — T764 closed-bounded (2026-08-15)
+
+Issue 338 closes the first-generation Helper-authored `ModifyProjectile`
+`AttackMulSet.RedLife` guard seam. Evidence `90156937`; required trace
+`4e97fdba` -> `eff1e719` passes. The accepted guard keeps authored
+`GetHitVar(redlife)=40` separate and ends at `life=20/redLife=20` after the
+creation multiplier `0.5`. Focused red-life traces are 4/4, typecheck and diff
+hygiene pass. Aggregate QA retains the inherited helper-bind target-link
+blocker; the pre-existing EffectActor guardpoints assertion remains separate.
+Hit contact, nested/shared-resource topology, exact arithmetic/timing,
+rollback and full parity remain blocked. See [issue
+338](../.scratch/roadmap/issues/338-helper-modifyprojectile-attackmulset-redlife-guard.md).
+
+## Historical bounded slice — T763 closed-bounded (2026-08-15)
 
 Issue 337 closes the first-generation Helper-authored `ModifyProjectile`
 `AttackMulSet.RedLife` hit seam. Evidence `d96c7015`; required trace
@@ -56,12 +69,12 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` work. Issue 329 is retained as superseded audit history; the
 root/RedirectID and Helper X/Y/Z evidence remains authoritative in issue 302.
 
-## Next bounded slice — T764 Helper ModifyProjectile redlife guard contact
+## Next bounded slice — T765 Helper ModifyProjectile getpower hit readback
 
-Add the Helper-authored `ModifyProjectile` redlife snapshot trace for an
-accepted guard; do not combine it with nested-helper breadth, aggregate QA
-repair or resource-owner topology. See [issue
-338](../.scratch/roadmap/issues/338-helper-modifyprojectile-attackmulset-redlife-guard.md).
+Add the Helper-owned `ModifyProjectile getpower` trace for an accepted hit; do
+not combine it with givepower, guard contact, nested-helper breadth, aggregate
+QA repair or resource-owner topology. See [issue
+339](../.scratch/roadmap/issues/339-helper-modifyprojectile-getpower-hit.md).
 
 ## Historical bounded slice — T753 closed-bounded (2026-08-12)
 

@@ -1,6 +1,20 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T763 Helper `ModifyProjectile` `AttackMulSet.RedLife` hit contact — closed-bounded, no score movement
+## 2026-08-15 T764 Helper `ModifyProjectile` `AttackMulSet.RedLife` guard contact — closed-bounded, no score movement
+
+Issue 338 closes the first-generation Helper-authored guard snapshot. Evidence
+commit `90156937`; required trace `4e97fdba` -> `eff1e719` passes. The
+root-owned Projectile keeps its creation multiplier `0.5` after Helper
+`ModifyProjectile` resolves `redlife=var(0),var(0)`; authored
+`GetHitVar(redlife)=40` remains separate and the defender ends at
+`life=20/redLife=20`. Focused red-life traces are 4/4, typecheck and diff
+hygiene pass. Aggregate QA retains the inherited helper-bind target-link
+blocker; the pre-existing EffectActor guardpoints assertion remains separate.
+No score movement: hit contact, nested/shared-resource topology, exact
+arithmetic/timing, rollback and full parity remain blocked. See [issue
+338](../.scratch/roadmap/issues/338-helper-modifyprojectile-attackmulset-redlife-guard.md).
+
+## Historical checkpoint — 2026-08-15 T763 Helper `ModifyProjectile` `AttackMulSet.RedLife` hit contact — closed-bounded, no score movement
 
 Issue 337 closes the first-generation Helper-authored hit snapshot. Evidence
 commit `d96c7015`; required trace `938303dd` -> `0073df18` passes. The
@@ -70,12 +84,12 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` work. Issue 329 remains superseded audit history and is not a
 new score candidate.
 
-## Next selection — T764 Helper ModifyProjectile redlife guard contact
+## Next selection — T765 Helper ModifyProjectile getpower hit readback
 
-Close the Helper-authored `ModifyProjectile` redlife snapshot on an accepted
-guard; keep nested helpers, aggregate QA repair and resource topology
-separate. See [issue
-338](../.scratch/roadmap/issues/338-helper-modifyprojectile-attackmulset-redlife-guard.md).
+Close the Helper-owned `ModifyProjectile getpower` readback on an accepted hit;
+keep givepower, guard contact, nested helpers, aggregate QA repair and resource
+topology separate. See [issue
+339](../.scratch/roadmap/issues/339-helper-modifyprojectile-getpower-hit.md).
 
 ## Historical checkpoint — 2026-08-12 T753 `AttackMulSet guardpoints` — closed-bounded, no score movement
 

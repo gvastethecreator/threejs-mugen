@@ -1,6 +1,20 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T763 closed-bounded (2026-08-15)
+## Latest bounded slice — T764 closed-bounded (2026-08-15)
+
+Issue 338 closes the first-generation Helper-authored `ModifyProjectile`
+`AttackMulSet.RedLife` guard seam. Evidence commit `90156937`; required trace
+`4e97fdba` -> `eff1e719` passes. The Helper creates a root-owned Projectile,
+resolves `redlife=var(0),var(0)` in Helper context, and the accepted guard
+ends at `life=20/redLife=20` while authored `GetHitVar(redlife)=40` remains
+separate. Focused red-life traces are 4/4, typecheck and diff hygiene pass.
+Aggregate QA stops on the inherited helper-bind target-link blocker; the
+pre-existing EffectActor guardpoints assertion remains separate. Hit contact,
+nested/shared-resource topology, exact arithmetic/timing, rollback and full
+parity remain outside. See [issue
+338](../.scratch/roadmap/issues/338-helper-modifyprojectile-attackmulset-redlife-guard.md).
+
+## Historical bounded slice — T763 closed-bounded (2026-08-15)
 
 Issue 337 closes the first-generation Helper-authored `ModifyProjectile`
 `AttackMulSet.RedLife` hit seam. Evidence commit `d96c7015`; required trace
@@ -64,12 +78,12 @@ The T755 queue entry duplicated the already closed T728/issue 302
 component-preserving behavior is already covered by the issue 302 traces and
 commits; issue 329 remains only as a superseded audit trail.
 
-## Next bounded slice — T764 Helper ModifyProjectile redlife guard contact
+## Next bounded slice — T765 Helper ModifyProjectile getpower hit readback
 
-Close the Helper-authored `ModifyProjectile` redlife snapshot on an accepted
-guard with an independent required trace. Keep nested helpers, shared-resource
-topology and aggregate QA repair as separate work items. See [issue
-338](../.scratch/roadmap/issues/338-helper-modifyprojectile-attackmulset-redlife-guard.md).
+Close the Helper-owned `ModifyProjectile getpower` hit readback with an
+independent required trace. Keep givepower, guard contact, nested helpers,
+shared-resource topology and aggregate QA repair separate. See [issue
+339](../.scratch/roadmap/issues/339-helper-modifyprojectile-getpower-hit.md).
 
 ## Historical bounded slice — T753 closed-bounded (2026-08-12)
 
