@@ -1,6 +1,19 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T773 Helper `ModifyProjectile` `airguard.velocity` Z air guard — closed-bounded, no score movement
+## 2026-08-15 T774 Helper `ModifyProjectile` `airguard.velocity` matrix — closed-bounded, no score movement
+
+Issue 348 closes the first-generation Helper-authored airborne guard velocity
+component matrix. Evidence commit `ebfe451e` adds focused Projectile and
+Helper micro-VM regressions for omitted no-op, single, pair, and triple writes;
+the pinned Ikemen zero-fill semantics are observed. `ProjectileSystem` passes
+`99/99`, typecheck and diff hygiene pass. The broader EffectActorSystem suite
+retains one unrelated `guardPoints` expectation failure, and aggregate QA
+retains the inherited helper-bind target-link blocker. No score movement:
+fresh/default derivation, ground guard, nested/shared topology, exact
+physics/timing, rollback and full parity remain blocked. See [issue
+348](../.scratch/roadmap/issues/348-helper-modifyprojectile-airguard-velocity-preservation.md).
+
+## Historical checkpoint — 2026-08-15 T773 Helper `ModifyProjectile` `airguard.velocity` Z air guard — closed-bounded, no score movement
 
 Issue 347 closes the first-generation Helper-authored airborne guard velocity
 Z seam. Evidence commit `44361ac3`; required trace `c1d1e70f`

@@ -46,12 +46,23 @@
   nested-helper breadth and resource topology remain separate. See [issue
   347](../.scratch/roadmap/issues/347-helper-modifyprojectile-airguard-velocity-z.md).
 
-- **T774 next selection** — close the Helper-authored `ModifyProjectile`
-  airborne `airguard.velocity` preservation matrix for omitted,
-  single-component, and X/Y-pair live mutations. Keep fresh/default
-  derivation, ground guard, nested-helper breadth, aggregate QA repair and
-  resource topology separate. See [issue
+- **T774 closed-bounded** — issue 348 closes the Helper-authored
+  `ModifyProjectile` airborne `airguard.velocity` component matrix. Evidence
+  commit is `ebfe451e`; focused Projectile and Helper micro-VM coverage proves
+  omission/no-op plus single, pair, and triple zero-fill replacement. The full
+  ProjectileSystem file passes `99/99`, typecheck and diff hygiene pass. The
+  broader EffectActorSystem file retains one unrelated `guardPoints`
+  expectation failure; aggregate QA retains the inherited helper-bind
+  target-link blocker. Fresh/default derivation, ground guard, nested/shared
+  topology, exact physics/timing, rollback and full parity remain outside.
+  See [issue
   348](../.scratch/roadmap/issues/348-helper-modifyprojectile-airguard-velocity-preservation.md).
+
+- **T775 next selection** — close the Helper-authored `ModifyProjectile`
+  ground `guard.velocity` Y/Z extension with the pinned zero-filled component
+  matrix. Keep fresh/default derivation, airborne guard, nested-helper
+  breadth, aggregate QA repair and resource topology separate. See [issue
+  349](../.scratch/roadmap/issues/349-helper-modifyprojectile-guard-velocity-yz.md).
 
 - **T769 historical** — issue 343 closes the first-generation
   Helper-authored `ModifyProjectile` damage guard seam. Evidence commit is

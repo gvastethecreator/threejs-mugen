@@ -1,6 +1,19 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T773 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T774 closed-bounded (2026-08-15)
+
+Issue 348 closes the first-generation Helper-authored `ModifyProjectile`
+`airguard.velocity` component matrix. The focused contract matches the pinned
+Ikemen runner: omission is a no-op; single, pair, and triple writes replace
+missing trailing components with zero. Evidence commit `ebfe451e` and focused
+Projectile/Helper regressions pass; typecheck and diff hygiene pass. The full
+ProjectileSystem file passes `99/99`. EffectActorSystem retains one unrelated
+`guardPoints` expectation failure, while aggregate QA retains the inherited
+helper-bind target-link blocker. Fresh/default derivation, ground guard,
+nested/shared topology, exact physics/timing, rollback and full parity remain
+separate. See issue 348.
+
+## Historical implementation checkpoint — T773 closed-bounded (2026-08-15)
 
 Issue 347 closes the first-generation Helper-authored `ModifyProjectile`
 `airguard.velocity` Z readback. Required trace `c1d1e70f`
@@ -23,11 +36,11 @@ and trace tests, typecheck and diff hygiene pass. Aggregate QA remains blocked
 by the inherited helper-bind target-link case. Z/default derivation and full
 partial-component preservation remain separate. See issue 346.
 
-## Next implementation checkpoint — T774 queued (2026-08-15)
+## Next implementation checkpoint — T775 queued (2026-08-15)
 
-Issue 348 targets omitted, single-component, and X/Y-pair preservation for a
-live Helper-authored `ModifyProjectile airguard.velocity` vector. Keep
-fresh/default derivation, ground guard, nested/shared-resource topology, and
+Issue 349 targets the Helper-authored `ModifyProjectile guard.velocity` Y/Z
+ground-guard extension with the pinned zero-filled component matrix. Keep
+fresh/default derivation, airborne guard, nested/shared-resource topology, and
 aggregate QA repair separate.
 
 ## Historical implementation checkpoint — T771 closed-bounded (2026-08-15)

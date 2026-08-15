@@ -1,6 +1,18 @@
 # Workplan
 
-## Latest slice — T773 closed-bounded (2026-08-15)
+## Latest slice — T774 closed-bounded (2026-08-15)
+
+Issue 348 closes the first-generation Helper-authored `ModifyProjectile`
+`airguard.velocity` matrix. Evidence commit `ebfe451e` proves the pinned
+omission/no-op and single, pair, and triple zero-fill replacement semantics in
+Projectile and Helper micro-VM tests. `ProjectileSystem` passes `99/99`,
+typecheck and diff hygiene pass. One unrelated EffectActorSystem
+`guardPoints` expectation remains red, and aggregate QA retains the inherited
+helper-bind target-link blocker. Fresh/default derivation, ground guard,
+nested/shared topology, exact arithmetic/timing, rollback and full parity
+remain outside.
+
+## Historical slice — T773 closed-bounded (2026-08-15)
 
 Issue 347 closes the first-generation Helper-authored `ModifyProjectile`
 `airguard.velocity` Z seam. Evidence commit `44361ac3`; required trace
@@ -24,13 +36,13 @@ QA retains the inherited helper-bind target-link blocker. Z/default
 derivation, full component preservation, nested/shared resource topology,
 exact arithmetic/timing, rollback and full parity remain outside.
 
-## Next slice — T774 queued (2026-08-15)
+## Next slice — T775 queued (2026-08-15)
 
-Issue 348 covers the Helper-authored `ModifyProjectile airguard.velocity`
-component-preservation matrix for omitted, single-component, and X/Y-pair
-live mutations. Keep fresh/default derivation, ground guard,
-nested/shared resource topology, aggregate QA repair, exact arithmetic/timing,
-rollback and full parity separate.
+Issue 349 covers the Helper-authored `ModifyProjectile guard.velocity` Y/Z
+ground-guard extension with the pinned zero-filled component matrix. Keep
+fresh/default derivation, airborne guard, nested/shared resource topology,
+aggregate QA repair, exact arithmetic/timing, rollback and full parity
+separate.
 
 ## Historical slice — T771 closed-bounded (2026-08-15)
 

@@ -1,5 +1,26 @@
 ﻿# Roadmap Package Milestones
 
+## Latest package — T774 closed-bounded (2026-08-15)
+
+Issue 348 closes the first-generation Helper-owned `ModifyProjectile`
+`airguard.velocity` component matrix. Evidence commit `ebfe451e` proves the
+pinned omission/no-op and single, pair, and triple zero-fill replacement
+semantics in focused Projectile and Helper micro-VM tests. Typecheck and diff
+hygiene pass; `ProjectileSystem` is `99/99`. The broader EffectActorSystem
+suite retains one unrelated `guardPoints` expectation failure, and aggregate
+QA retains the inherited helper-bind target-link blocker. Fresh/default
+derivation, ground guard, nested/shared topology, exact physics/timing,
+rollback and full parity remain blocked. See [issue
+348](../.scratch/roadmap/issues/348-helper-modifyprojectile-airguard-velocity-preservation.md).
+
+## Next package — T775 queued (2026-08-15)
+
+Issue 349 is the next bounded Helper-owned `ModifyProjectile guard.velocity`
+Y/Z ground-guard extension. Keep fresh/default derivation, airborne guard,
+nested/shared topology, aggregate QA repair, exact physics/timing, rollback
+and full parity separate. See [issue
+349](../.scratch/roadmap/issues/349-helper-modifyprojectile-guard-velocity-yz.md).
+
 ## Active package — T716 closed-bounded (2026-08-11)
 
 Issue 290 closes Ikemen-only live `ModifyProjectile` state expressions for
