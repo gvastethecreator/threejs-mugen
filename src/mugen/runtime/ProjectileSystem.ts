@@ -4,6 +4,7 @@ import type {
   ModifyProjectileControllerOp,
   MugenHitDefEnvShakeOp,
   MugenHitDefFallImpactOp,
+  MugenHitDefFallRecoveryOp,
   MugenPartialHitDefVector,
   MugenProjectileProjection,
   MugenProjectileWindow,
@@ -84,6 +85,13 @@ export type RuntimeProjectileFallImpact = {
   xVelocity?: number;
   yVelocity?: number;
   zVelocity?: number;
+};
+
+export type RuntimeProjectileFallRecovery = {
+  recover?: number;
+  recoverTime?: number;
+  downRecover?: number;
+  downRecoverTime?: number;
 };
 
 export type RuntimeProjectile = {
@@ -351,6 +359,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveFallEnvShake?: () => Partial<RuntimeProjectileEnvShake> | undefined;
   /** Resolves fresh Projectile fall impact expressions in the original caller context. */
   resolveFallImpact?: () => Partial<RuntimeProjectileFallImpact> | undefined;
+  /** Resolves fresh Projectile fall/down recovery expressions in the original caller context. */
+  resolveFallRecovery?: () => Partial<RuntimeProjectileFallRecovery> | undefined;
   /** Resolves Projectile ground.velocity authored expressions in the original caller context. */
   resolveGroundVelocity?: () => [number?, number?, number?] | undefined;
   /** Resolves Projectile guard.velocity authored expressions in the original caller context. */
@@ -791,11 +801,20 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const fallImpact = operation?.fallImpact === undefined
     ? undefined
     : resolveRuntimeProjectileFallImpact(operation.fallImpact, input.resolveFallImpact?.());
-  const authoredFallBase = operation?.fallImpact === undefined
+  const authoredFallWithImpact = operation?.fallImpact === undefined
     ? staticFall
     : {
         ...withoutProjectileFallImpact(staticFall),
         ...projectileFallImpactFields(fallImpact),
+      };
+  const fallRecovery = operation?.fallRecovery === undefined
+    ? undefined
+    : resolveRuntimeProjectileFallRecovery(operation.fallRecovery, input.resolveFallRecovery?.());
+  const authoredFallBase = operation?.fallRecovery === undefined
+    ? authoredFallWithImpact
+    : {
+        ...withoutProjectileFallRecovery(authoredFallWithImpact),
+        ...projectileFallRecoveryFields(fallRecovery),
       };
   const fallEnvShake = resolveRuntimeProjectileEnvShake(
     operation?.fallEnvShake,
@@ -2083,6 +2102,35 @@ function resolveRuntimeProjectileFallImpact(
   };
 }
 
+function resolveRuntimeProjectileFallRecovery(
+  authored: MugenHitDefFallRecoveryOp | undefined,
+  resolved: Partial<RuntimeProjectileFallRecovery> | undefined,
+): RuntimeProjectileFallRecovery | undefined {
+  if (authored === undefined) return undefined;
+  const component = (key: keyof RuntimeProjectileFallRecovery): number | undefined => {
+    const source = authored[key];
+    if (typeof source === "number") {
+      return Number.isFinite(source) ? Math.trunc(source) : undefined;
+    }
+    if (typeof source !== "string") return undefined;
+    const value = resolved?.[key];
+    return typeof value === "number" && Number.isFinite(value) ? Math.trunc(value) : undefined;
+  };
+  const recover = component("recover");
+  const recoverTime = component("recoverTime");
+  const downRecover = component("downRecover");
+  const downRecoverTime = component("downRecoverTime");
+  if (recover === undefined && recoverTime === undefined && downRecover === undefined && downRecoverTime === undefined) {
+    return undefined;
+  }
+  return {
+    ...(recover === undefined ? {} : { recover }),
+    ...(recoverTime === undefined ? {} : { recoverTime }),
+    ...(downRecover === undefined ? {} : { downRecover }),
+    ...(downRecoverTime === undefined ? {} : { downRecoverTime }),
+  };
+}
+
 function projectileFallEnvShake(fall: HitDefFallOp): Partial<RuntimeProjectileEnvShake> {
   return {
     time: fall.envShakeTime,
@@ -2118,6 +2166,17 @@ function withoutProjectileFallImpact(fall: HitDefFallOp): HitDefFallOp {
   return rest;
 }
 
+function withoutProjectileFallRecovery(fall: HitDefFallOp): HitDefFallOp {
+  const {
+    recover: _recover,
+    recoverTime: _recoverTime,
+    downRecover: _downRecover,
+    downRecoverTime: _downRecoverTime,
+    ...rest
+  } = fall;
+  return rest;
+}
+
 function projectileFallImpactFields(
   impact: RuntimeProjectileFallImpact | undefined,
 ): Pick<HitDefFallOp, "damage" | "xVelocity" | "yVelocity" | "zVelocity"> {
@@ -2127,6 +2186,18 @@ function projectileFallImpactFields(
     ...(impact.xVelocity === undefined ? {} : { xVelocity: impact.xVelocity }),
     ...(impact.yVelocity === undefined ? {} : { yVelocity: impact.yVelocity }),
     ...(impact.zVelocity === undefined ? {} : { zVelocity: impact.zVelocity }),
+  };
+}
+
+function projectileFallRecoveryFields(
+  recovery: RuntimeProjectileFallRecovery | undefined,
+): Pick<HitDefFallOp, "recover" | "recoverTime" | "downRecover" | "downRecoverTime"> {
+  if (recovery === undefined) return {};
+  return {
+    ...(recovery.recover === undefined ? {} : { recover: recovery.recover !== 0 }),
+    ...(recovery.recoverTime === undefined ? {} : { recoverTime: recovery.recoverTime }),
+    ...(recovery.downRecover === undefined ? {} : { downRecover: recovery.downRecover !== 0 }),
+    ...(recovery.downRecoverTime === undefined ? {} : { downRecoverTime: recovery.downRecoverTime }),
   };
 }
 

@@ -5,6 +5,7 @@ import type {
   MugenHitDefEnvShakeOp,
   MugenHitDefExpressionPair,
   MugenHitDefFallImpactOp,
+  MugenHitDefFallRecoveryOp,
   PauseControllerOp,
   TeamStandbyControllerOp,
 } from "../compiler/ControllerOps";
@@ -272,6 +273,7 @@ import type {
   RuntimeModifyProjectileTripleParam,
   RuntimeProjectileEnvShake,
   RuntimeProjectileFallImpact,
+  RuntimeProjectileFallRecovery,
   RuntimeProjectileModifyResolver,
 } from "./ProjectileSystem";
 import {
@@ -6689,6 +6691,25 @@ function runActiveStateControllers(
                   );
                 }
               : undefined,
+          resolveProjectileFallRecovery:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  return resolveProjectileFallRecoveryComponents(
+                    operation?.fallRecovery,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                    gameSpace,
+                    options.characters,
+                    createPlayerIdTarget(actor),
+                  );
+                }
+              : undefined,
           resolveProjectilePaletteFx:
             effect === "projectile"
               ? {
@@ -9102,6 +9123,47 @@ function resolveProjectileFallImpactComponents(
     ...(xVelocity === undefined ? {} : { xVelocity }),
     ...(yVelocity === undefined ? {} : { yVelocity }),
     ...(zVelocity === undefined ? {} : { zVelocity }),
+  };
+}
+
+function resolveProjectileFallRecoveryComponents(
+  value: MugenHitDefFallRecoveryOp | undefined,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+  gameSpace?: ExpressionGameSpace,
+  characters?: readonly FighterMatchState[],
+  playerIdTarget?: PlayerIdExpressionTarget,
+): Partial<RuntimeProjectileFallRecovery> | undefined {
+  if (value === undefined) return undefined;
+  const resolveComponent = (component: number | string | undefined): number | undefined => {
+    if (typeof component === "number") return Number.isFinite(component) ? Math.trunc(component) : undefined;
+    if (component === undefined) return undefined;
+    const resolved = resolveDispatchNumber(
+      undefined,
+      component,
+      fighter,
+      opponent,
+      owner,
+      stageBounds,
+      stageTime,
+      gameSpace,
+      characters,
+      playerIdTarget,
+    );
+    return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
+  };
+  const recover = resolveComponent(value.recover);
+  const recoverTime = resolveComponent(value.recoverTime);
+  const downRecover = resolveComponent(value.downRecover);
+  const downRecoverTime = resolveComponent(value.downRecoverTime);
+  return {
+    ...(recover === undefined ? {} : { recover }),
+    ...(recoverTime === undefined ? {} : { recoverTime }),
+    ...(downRecover === undefined ? {} : { downRecover }),
+    ...(downRecoverTime === undefined ? {} : { downRecoverTime }),
   };
 }
 

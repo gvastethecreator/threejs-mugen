@@ -5817,6 +5817,30 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles dynamic Projectile fall recovery packages and rejects malformed values", () => {
+    const projectile = compileControllerIr(controller(1000, "Projectile", [], {
+      fall: "1",
+      "fall.recover": "var(0) - 1",
+      "fall.recovertime": "var(1) + .8",
+      "down.recover": "0",
+      "down.recovertime": "var(3) + .5",
+    }));
+
+    expect(projectile.operation).toMatchObject({
+      kind: "projectile",
+      fall: { enabled: true, downRecover: false },
+      fallRecovery: {
+        recover: "var(0) - 1",
+        recoverTime: "var(1) + .8",
+        downRecover: 0,
+        downRecoverTime: "var(3) + .5",
+      },
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      "fall.recover": "var(",
+    })).operation).toBeUndefined();
+  });
+
   it("rejects invalid static Projectile TeamSide values at compile time", () => {
     const projectile = compileControllerIr(
       controller(1000, "Projectile", [], { teamside: "3" }),

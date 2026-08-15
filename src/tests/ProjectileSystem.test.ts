@@ -1100,6 +1100,61 @@ describe("ProjectileSystem", () => {
     });
   });
 
+  it("resolves Projectile fall recovery per component and preserves finite siblings", () => {
+    const controllerValue = controller({
+      projanim: "1005",
+      fall: "1",
+      "fall.recover": "var(0) - 1",
+      "fall.recovertime": "var(1) + .8",
+      "down.recover": "0",
+      "down.recovertime": "var(3) + .5",
+    });
+    const operation = compileControllerIr(controllerValue).operation as ProjectileControllerOp;
+    const spawn = (
+      serialId: string,
+      resolveFallRecovery?: Parameters<typeof createRuntimeProjectile>[0]["resolveFallRecovery"],
+    ) => createRuntimeProjectile({
+      serialId,
+      controller: controllerValue,
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveFallRecovery,
+    });
+
+    expect(spawn("p1-projectile-fall-recovery-dynamic", () => ({
+      recover: 1.9,
+      recoverTime: 17.8,
+      downRecover: 0,
+      downRecoverTime: 29.5,
+    })).fall).toEqual({
+      enabled: true,
+      recover: true,
+      recoverTime: 17,
+      downRecover: false,
+      downRecoverTime: 29,
+    });
+    expect(spawn("p1-projectile-fall-recovery-partial", () => ({
+      recover: 1.9,
+      recoverTime: Number.NaN,
+      downRecoverTime: 29.5,
+    })).fall).toEqual({
+      enabled: true,
+      recover: true,
+      downRecover: false,
+      downRecoverTime: 29,
+    });
+    expect(spawn("p1-projectile-fall-recovery-unresolved").fall).toEqual({
+      enabled: true,
+      downRecover: false,
+    });
+  });
+
   it("resolves Projectile grounded friction at spawn and fails closed for unresolved expressions", () => {
     const spawn = (
       serialId: string,
