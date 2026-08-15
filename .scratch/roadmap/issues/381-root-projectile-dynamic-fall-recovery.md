@@ -2,14 +2,14 @@
 
 ## Estado
 
-- **T806 — active (2026-08-15)**
+- **T806 — closed-bounded (2026-08-15)**
 - **Área:** Projectile root-owned, fall/down recovery y metadata `GetHitVar`
 - **Dependencia:** T805 cierra el paquete dinámico de impacto de caída para el
   Projectile creado por Helper
 
 ## Objetivo
 
-Resolver `fall.recover`, `fall.recovertime`, `down.recover` y
+Resuelve `fall.recover`, `fall.recovertime`, `down.recover` y
 `down.recovertime` al crear un Projectile fresco desde root. Cada expresión se
 evalúa una vez en caller context; una componente no finita no elimina sus
 hermanas finitas. Un contacto de caída aceptado debe transferir el paquete a
@@ -37,7 +37,20 @@ los aliases `GetHitVar` y a la ventana de recuperación existente.
 - Cierre con typecheck, build, `pnpm test`, `pnpm qa:trace`, documentación y
   commits separados.
 
-## Claim previsto
+## Evidencia de cierre
+
+- Producto: `f7e1b0d8` tipa el paquete, lo resuelve por componente en caller
+  context y lo materializa antes del contacto del Projectile raíz.
+- Traza requerida:
+  `synthetic-imported-projectile-dynamic-fall-recovery` pasa con checksum de
+  traza/final `35607957` / `8e0e1f63` y prueba `VarSet`, `Projectile`,
+  `HitFallVel`, target `p1 -> p2 / 77`, aliases `GetHitVar` y los cuatro
+  valores de recuperación.
+- Gates: focal de compilador/spawn `283/283`; focal de traza `1/1`; tests
+  completos `328/4098`; typecheck, build y QA trace `885/885` (`851`
+  requeridas) verdes.
+
+## Claim cerrado
 
 **Permitido:** un Projectile fresco creado por root resuelve el paquete finito
 `fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` en caller

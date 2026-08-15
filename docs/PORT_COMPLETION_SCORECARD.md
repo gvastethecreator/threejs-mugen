@@ -1,5 +1,18 @@
 ﻿# Port Completion Scorecard
 
+## 2026-08-15 T806 root Projectile dynamic fall recovery — closed-bounded, no score movement
+
+Issue 381 closes finite caller-context
+`fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` for one
+fresh root Projectile. One accepted falling hit transfers resolved siblings to
+existing recovery metadata and `GetHitVar` aliases. Required
+`synthetic-imported-projectile-dynamic-fall-recovery` passes at `35607957` /
+`8e0e1f63`; full tests `328/4098`, typecheck, build, and trace QA `885/885`
+(`851` required) pass. Helper/nesting/`ownProjectile`, ModifyProjectile,
+ModifyHitDef, fall flags, exact recovery timing, teams, rollback and full
+parity remain blocked, so the score does not move. See [issue
+381](../.scratch/roadmap/issues/381-root-projectile-dynamic-fall-recovery.md).
+
 ## 2026-08-15 T805 Helper Projectile dynamic fall impact — closed-bounded, no score movement
 
 Issue 380 closes finite caller-context

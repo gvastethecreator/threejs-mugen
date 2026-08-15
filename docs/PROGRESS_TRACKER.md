@@ -1,6 +1,17 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T805 Helper Projectile dynamic fall impact (2026-08-15)
+## Latest implementation checkpoint — T806 root Projectile dynamic fall recovery (2026-08-15)
+
+Issue 381 closes finite caller-context
+`fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` for one
+fresh root Projectile. One accepted falling contact transfers finite siblings
+to existing recovery metadata and `GetHitVar` aliases. Required evidence
+passes at `35607957` / `8e0e1f63`; full tests `328/4098`, typecheck, build, and
+trace QA `885/885` (`851` required) pass. Helper/nesting/`ownProjectile`,
+ModifyProjectile, ModifyHitDef, fall flags, exact recovery timing, teams,
+rollback, and full parity remain outside.
+
+## Historical implementation checkpoint — T805 Helper Projectile dynamic fall impact (2026-08-15)
 
 Issue 380 closes finite caller-context
 `fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` for a fresh

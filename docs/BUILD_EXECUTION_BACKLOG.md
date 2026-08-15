@@ -2,6 +2,17 @@
 
 ## Current parity queue
 
+- **T806 closed-bounded** — issue 381 closes finite caller-context
+  `fall.recover`/`fall.recovertime`/`down.recover`/`down.recovertime` for one
+  fresh root Projectile. Finite siblings resolve independently and transfer to
+  existing recovery metadata and `GetHitVar` aliases only on one accepted
+  falling hit. Required `synthetic-imported-projectile-dynamic-fall-recovery`
+  passes at `35607957` / `8e0e1f63`; full tests `328/4098`, typecheck, build,
+  and trace QA `885/885` (`851` required) pass. Helper/nesting/`ownProjectile`,
+  ModifyProjectile, ModifyHitDef, fall flags, exact recovery timing, teams,
+  rollback, and full parity remain outside. See [issue
+  381](../.scratch/roadmap/issues/381-root-projectile-dynamic-fall-recovery.md).
+
 - **T805 closed-bounded** — issue 380 closes finite caller-context
   `fall.damage`/`fall.xvelocity`/`fall.yvelocity`/`fall.zvelocity` for one
   fresh Projectile created by a first-generation Helper. Finite siblings
