@@ -2105,6 +2105,81 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("matches Helper-owned ModifyProjectile airguard.velocity omission and partial reset semantics", () => {
+    const store = createRuntimeEffectActorStore();
+    const helperSingle = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "50", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(state(6000, 900, [
+            controller("Projectile", {
+              projid: "8874",
+              projanim: "930",
+              velocity: "0,0",
+              "air.velocity": "-6,-8,6",
+              "airguard.velocity": "-1,-4,6",
+            }, ["Time = 0"]),
+            controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+          ])),
+          compileStateProgram(state(6001, 901, [
+            controller("ModifyProjectile", { id: "8874", "airguard.velocity": "Var(52)" }, ["Time = 1"]),
+          ])),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+    const helperPair = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "51", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(state(6000, 900, [
+            controller("Projectile", {
+              projid: "8875",
+              projanim: "930",
+              velocity: "0,0",
+              "air.velocity": "-6,-8,6",
+              "airguard.velocity": "-1,-4,6",
+            }, ["Time = 0"]),
+            controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+          ])),
+          compileStateProgram(state(6001, 901, [
+            controller("ModifyProjectile", { id: "8875", "airguard.velocity": "Var(53),Var(54)" }, ["Time = 1"]),
+          ])),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+    helperSingle.vars[52] = 9;
+    helperPair.vars[53] = -9;
+    helperPair.vars[54] = -8;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    const single = store.projectiles.find((candidate) => candidate.parentId === helperSingle.serialId);
+    expect(single).toMatchObject({
+      airGuardPush: 9,
+      airGuardVelocityY: 0,
+      airGuardVelocityZ: 0,
+      hitVelocities: { airGuard: { x: 9, y: 0, z: 0 } },
+    });
+    const pair = store.projectiles.find((candidate) => candidate.parentId === helperPair.serialId);
+    expect(pair).toMatchObject({
+      airGuardPush: 9,
+      airGuardVelocityY: -8,
+      airGuardVelocityZ: 0,
+      hitVelocities: { airGuard: { x: -9, y: -8, z: 0 } },
+    });
+  });
+
   it("resolves Helper-owned dynamic ModifyProjectile givepower in caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {
