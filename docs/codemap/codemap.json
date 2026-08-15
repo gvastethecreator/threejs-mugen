@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-15T09:55:20Z",
-  "generated_from_commit": "c9101ab18092191ae8320303c50b736436594425",
+  "generated_at": "2026-08-15T10:44:48Z",
+  "generated_from_commit": "7923b6d762940b19b4172fbd7681764a0e71bd9a",
   "scope": [
     "."
   ],
@@ -58,7 +58,7 @@
       "type": "module",
       "boundary": "Repository",
       "entrypoints": [
-        "README.md:MUGEN Web Sandbox"
+        "README.md:Product tour"
       ],
       "tests": [],
       "constraints": [
@@ -69,7 +69,7 @@
         "locations": [
           {
             "path": "README.md",
-            "symbol": "MUGEN Web Sandbox"
+            "symbol": "Product tour"
           }
         ]
       }
@@ -812,27 +812,45 @@
   "flows": [
     {
       "trigger": "package.json scripts to the game runtime",
-      "steps": ["repository", "scripts"],
+      "steps": [
+        "repository",
+        "scripts"
+      ],
       "outcome": "Repository scripts are the operational entrypoint for QA and build automation."
     },
     {
       "trigger": "application entrypoint to the engine",
-      "steps": ["src", "src-app", "src-engine"],
+      "steps": [
+        "src",
+        "src-app",
+        "src-engine"
+      ],
       "outcome": "The application entrypoint reaches the shared engine contracts."
     },
     {
       "trigger": "application entrypoint to gameplay",
-      "steps": ["src", "src-app", "src-game"],
+      "steps": [
+        "src",
+        "src-app",
+        "src-game"
+      ],
       "outcome": "The application entrypoint wires the gameplay loop and presentation layer."
     },
     {
       "trigger": "Helper/runtime scripts to MUGEN runtime",
-      "steps": ["scripts", "src-mugen"],
+      "steps": [
+        "scripts",
+        "src-mugen"
+      ],
       "outcome": "Runtime QA scripts load the MUGEN/Ikemen runtime seam."
     },
     {
       "trigger": "application to the MUGEN loader/runtime",
-      "steps": ["src", "src-app", "src-mugen"],
+      "steps": [
+        "src",
+        "src-app",
+        "src-mugen"
+      ],
       "outcome": "The application coordinates character, stage and runtime loading."
     }
   ]
