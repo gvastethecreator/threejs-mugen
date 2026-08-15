@@ -32,8 +32,14 @@ not attributed to this slice. Fresh defaults, dynamic Z/`n`, Helper-authored
 controllers, Projectile variants, exact landing/timing, rollback and full
 parity remain unsupported.
 
-Next cursor: T800 / issue 375 selects caller-context dynamic `envshake.*`
-parameters for fresh root Projectile spawn. See [issue
+Latest cursor: T800 / issue 375 closes caller-context dynamic root Projectile
+`envshake.time/freq/ampl/phase/mul/dir`. The finite package is carried to an
+accepted unguarded contact only; non-finite authored input fails closed.
+Required `synthetic-imported-projectile-dynamic-envshake` passes at
+`6c29ab35` / `bbaf3e8c` within trace QA `879/879` (`845` required). Helper
+Projectile dynamic params, ModifyProjectile, FallEnvShake, active EnvShake,
+waveform, pause, camera/render timing, teams, rollback, and full parity remain
+unsupported. See [issue
 375](../.scratch/roadmap/issues/375-root-projectile-envshake-dynamic-params.md).
 
 Previous cursor: T786 / issue 360 is closed-bounded for Helper-owned live

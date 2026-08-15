@@ -116,10 +116,17 @@ waveform, pause, camera/render parity, rollback and full parity remain blocked,
 so the score does not move. See [issue
 374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
 
-## Next scorecard slice — 2026-08-15 T800 root Projectile dynamic `EnvShake` parameters
+## 2026-08-15 T800 root Projectile dynamic `EnvShake` parameters — closed-bounded, no score movement
 
-Issue 375 queues caller-context dynamic `envshake.*` values for a fresh root
-Projectile; no score movement is planned. See [issue
+Issue 375 closes a fresh root Projectile's finite caller-context
+`envshake.time/freq/ampl/phase/mul/dir` package. Accepted unguarded contact
+emits the root camera event; non-finite authored components fail closed.
+Required `synthetic-imported-projectile-dynamic-envshake` passes at
+`6c29ab35` / `bbaf3e8c`; full tests `328/4082`, typecheck, build, and trace
+QA `879/879` (`845` required) pass. Helper Projectile dynamic params,
+ModifyProjectile, FallEnvShake, active EnvShake, waveform, pause, camera/render
+timing, teams, rollback, and full parity remain blocked, so the score does not
+move. See [issue
 375](../.scratch/roadmap/issues/375-root-projectile-envshake-dynamic-params.md).
 ## Historical checkpoint — 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index
 

@@ -105,10 +105,16 @@
   camera/render parity, rollback and full parity remain outside. See [issue
   374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
 
-- **T800 next** — issue 375 selects caller-context dynamic `envshake.*`
-  parameters for fresh root Projectile spawn. Helper Projectile,
-  ModifyProjectile, FallEnvShake, active EnvShake and presentation-parity
-  breadth remain outside. See [issue
+- **T800 closed-bounded** — issue 375 closes caller-context dynamic
+  `envshake.time/freq/ampl/phase/mul/dir` for one fresh root Projectile.
+  Accepted unguarded contact emits the resolved finite package; a non-finite
+  authored component fails closed. Required
+  `synthetic-imported-projectile-dynamic-envshake` proves values
+  `17/45.5/-9/0.25/1.5/30` through expiry (`6c29ab35` / `bbaf3e8c`). Full
+  tests `328/4082`, typecheck, build, and trace QA `879/879` (`845` required)
+  pass. Helper Projectile dynamic params, ModifyProjectile, FallEnvShake,
+  active EnvShake, waveform, pause, camera/render timing, teams, rollback,
+  and full parity remain outside. See [issue
   375](../.scratch/roadmap/issues/375-root-projectile-envshake-dynamic-params.md).
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;

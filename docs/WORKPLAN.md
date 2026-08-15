@@ -73,7 +73,7 @@ required). Helper Projectile, direct HitDef, FallEnvShake, active EnvShake,
 waveform, stacking, pause, camera/render parity, rollback and full parity stay
 outside this slice.
 
-## Latest slice — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
+## Historical slice — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
 
 Issue 374 closes one first-generation Helper-created/root-owned Projectile
 route. Only an accepted unguarded hit emits root `p1` EnvShake `time = 241`;
@@ -85,11 +85,15 @@ required) pass. Nested/team/`ownProjectile` topology, ModifyProjectile,
 FallEnvShake, active EnvShake, waveform, pause, camera/render parity, rollback
 and full parity stay outside.
 
-## Next slice — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
+## Latest slice — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
 
-Issue 375 queues caller-context dynamic `envshake.*` values on fresh root
-Projectile spawn. Helper Projectile, ModifyProjectile, FallEnvShake, active
-EnvShake and presentation-parity breadth remain outside.
+Issue 375 closes caller-context dynamic `envshake.*` values on fresh root
+Projectile spawn. The package is finite-or-absent, reaches only an accepted
+unguarded root contact, and expires at `6c29ab35` / `bbaf3e8c`. Full tests
+`328/4082`, typecheck, build, and trace QA `879/879` (`845` required) pass.
+Helper Projectile dynamic params, ModifyProjectile, FallEnvShake, active
+EnvShake, waveform, pause, camera/render timing, teams, rollback, and full
+parity remain outside.
 ## Historical slice — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index

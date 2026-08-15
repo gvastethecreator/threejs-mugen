@@ -84,7 +84,7 @@ direct HitDef, FallEnvShake, active EnvShake, waveform, stacking, pause and
 full parity remain separate. See [issue
 373](../.scratch/roadmap/issues/373-projectile-envshake-finite-duration.md).
 
-## Latest bounded slice — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
+## Historical bounded slice — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
 
 Issue 374 closes the first-generation Helper-created/root-owned Projectile
 contact route. An accepted unguarded hit emits `time = 241` to root `p1` only;
@@ -97,11 +97,16 @@ waveform, pause, camera/render parity, rollback and full parity remain
 separate. See [issue
 374](../.scratch/roadmap/issues/374-helper-projectile-envshake-finite-duration.md).
 
-## Next bounded slice — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
+## Latest bounded slice — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
 
-Issue 375 queues caller-context `envshake.*` values during fresh root
-Projectile spawn. Helper Projectile, ModifyProjectile, FallEnvShake, active
-EnvShake and presentation-parity breadth remain outside. See [issue
+Issue 375 closes caller-context `envshake.*` values during fresh root Projectile
+spawn. Six finite values reach the accepted unguarded camera event and expire;
+non-finite authored input fails closed. Required
+`synthetic-imported-projectile-dynamic-envshake` passes at `6c29ab35` /
+`bbaf3e8c`; full tests `328/4082`, typecheck, build, and trace QA `879/879`
+(`845` required) pass. Helper Projectile dynamic params, ModifyProjectile,
+FallEnvShake, active EnvShake, waveform, pause, camera/render timing, teams,
+rollback, and full parity remain outside. See [issue
 375](../.scratch/roadmap/issues/375-root-projectile-envshake-dynamic-params.md).
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 

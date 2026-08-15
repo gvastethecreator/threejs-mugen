@@ -85,7 +85,7 @@ full `328/4077`, typecheck, build, regenerated DA29/DA30 records, and trace QA
 FallEnvShake, active EnvShake, waveform, stacking, pause, camera/render parity,
 rollback and full parity remain open.
 
-## Latest implementation checkpoint — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
+## Historical implementation checkpoint — T799 Helper Projectile `EnvShake` ownership (2026-08-15)
 
 Issue 374 closes the first-generation Helper-created/root-owned Projectile
 contact route. An accepted unguarded hit emits one finite `time = 241` shake
@@ -97,12 +97,17 @@ typecheck and trace QA `878/878` (`844` required) pass. Nested/team/
 `ownProjectile` topology, ModifyProjectile, FallEnvShake, active EnvShake,
 waveform, pause, camera/render parity, rollback and full parity remain open.
 
-## Next implementation checkpoint — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
+## Latest implementation checkpoint — T800 root Projectile dynamic `EnvShake` parameters (2026-08-15)
 
-Issue 375 queues caller-context dynamic `envshake.time`, `freq`, `ampl`,
-`phase`, `mul` and `dir` for a fresh root Projectile. Helper Projectile,
-ModifyProjectile, FallEnvShake, active EnvShake and presentation-parity
-breadth remain outside this next cut.
+Issue 375 closes caller-context dynamic `envshake.time`, `freq`, `ampl`,
+`phase`, `mul`, and `dir` for a fresh root Projectile. The package remains
+available only for an accepted unguarded contact; a non-finite authored
+component fails closed. Required `synthetic-imported-projectile-dynamic-envshake`
+proves `17`, `45.5`, `-9`, `0.25`, `1.5`, and `30` plus finite expiry
+(`6c29ab35` / `bbaf3e8c`). Full tests `328/4082`, typecheck, build, and trace
+QA `879/879` (`845` required) pass. Helper Projectile dynamic params,
+ModifyProjectile, FallEnvShake, active EnvShake, waveform, pause, camera/render
+timing, teams, rollback, and full parity remain outside.
 ## Historical implementation checkpoint — T781 closed-bounded (2026-08-15)
 
 Issue 355 closed Helper-owned `ModifyProjectile down.velocity` explicit index
