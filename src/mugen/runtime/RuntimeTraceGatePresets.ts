@@ -12861,6 +12861,63 @@ export function createSyntheticImportedEnvColorIndefiniteTraceArtifact(
   });
 }
 
+export function createSyntheticImportedEnvColorLongFiniteTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "imported-envcolor-long-finite-start", frames: 12, p1: ["x"], p2: [] },
+    { label: "envcolor-long-finite-expiry", frames: 242, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({
+    p1: createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-envcolor-long-finite",
+      displayName: "Synthetic Imported EnvColor Long Finite",
+      action200Duration: 300,
+      withHitDef: false,
+      staticMoveRequiresHitDef: false,
+      withEnvColorFiniteLifetime: { value: [32, 128, 240], time: 241, under: true },
+    }),
+    p2: demoFighters[1]!,
+    stage,
+  }), script, {
+    label: "synthetic-imported-envcolor-long-finite-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-envcolor-long-finite-golden",
+      label: "Synthetic imported long finite EnvColor route",
+      source: "mixed",
+      notes: [
+        "Required trace proves a positive EnvColor time of 241 stays finite beyond the prior local 240-tick ceiling and expires instead of becoming indefinite. It does not claim overflow, exact blend/layer/window behavior, pause timing, nested/team ownership, rollback, or full MUGEN/IKEMEN presentation parity.",
+      ],
+    },
+    gates: [{
+      label: "synthetic-imported-envcolor-long-finite-golden",
+      requiredActorSources: ["imported"],
+      requiredActorKinds: ["player"],
+      requiredRoutedStates: [200],
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "EnvColor"],
+      requiredExecutedOperations: ["envcolor"],
+      requiredActiveCommands: ["x"],
+      requiredStageFrames: [{
+        stageId: stage.id,
+        envColorR: 32,
+        envColorG: 128,
+        envColorB: 240,
+        envColorUnder: true,
+        observedEnvColorOpacityAtLeast: 0.18,
+        observedEnvColorOpacityAtMost: 0.6,
+        minFrames: 241,
+      }],
+    }],
+  });
+}
+
 function createSyntheticImportedEnvColorLayerTraceArtifact(
   options: RuntimeTraceGatePresetOptions,
   layer: {
@@ -69178,6 +69235,11 @@ export type SyntheticImportedTraceFighterOptions = {
     initial: { value: [number, number, number]; time: number; under?: boolean };
     replacement: { triggerTime: number; value: [number, number, number]; time: number; under?: boolean };
   };
+  withEnvColorFiniteLifetime?: {
+    value: [number, number, number];
+    time: number;
+    under?: boolean;
+  };
   withDynamicEnvColor?: {
     value: [string, string, string];
     time: string;
@@ -69728,6 +69790,7 @@ ${options.withDynamicAngle === undefined ? "" : dynamicAngleControllerBlock(opti
 ${options.withEnvShake === undefined ? "" : envShakeControllerBlock(options.withEnvShake)}
 ${options.withEnvColor === undefined ? "" : envColorControllerBlock(options.withEnvColor)}
 ${options.withEnvColorLifetime === undefined ? "" : envColorLifetimeControllerBlock(options.withEnvColorLifetime)}
+${options.withEnvColorFiniteLifetime === undefined ? "" : envColorFiniteLifetimeControllerBlock(options.withEnvColorFiniteLifetime)}
 ${options.withDynamicEnvColor === undefined ? "" : dynamicEnvColorControllerBlock(options.withDynamicEnvColor)}
 ${options.withRemapPal === undefined ? "" : remapPalControllerBlock(options.withRemapPal)}
 ${options.withDynamicRemapPal === undefined ? "" : dynamicRemapPalControllerBlock(options.withDynamicRemapPal)}
@@ -72110,6 +72173,19 @@ trigger1 = Time = ${options.replacement.triggerTime}
 value = ${options.replacement.value.join(",")}
 time = ${options.replacement.time}
 under = ${options.replacement.under ? 1 : 0}
+`;
+}
+
+function envColorFiniteLifetimeControllerBlock(
+  options: NonNullable<SyntheticImportedTraceFighterOptions["withEnvColorFiniteLifetime"]>,
+): string {
+  return `
+[State 200, EnvColor Long Finite]
+type = EnvColor
+trigger1 = Time = 0
+value = ${options.value.join(",")}
+time = ${options.time}
+under = ${options.under ? 1 : 0}
 `;
 }
 

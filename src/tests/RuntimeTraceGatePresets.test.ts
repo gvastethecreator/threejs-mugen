@@ -634,6 +634,7 @@ import {
   createSyntheticImportedDynamicAngleTraceArtifact,
   createSyntheticImportedDynamicEnvColorTraceArtifact,
   createSyntheticImportedEnvColorIndefiniteTraceArtifact,
+  createSyntheticImportedEnvColorLongFiniteTraceArtifact,
   createSyntheticImportedEnvColorTraceArtifact,
   createSyntheticImportedEnvColorUnderTraceArtifact,
   createSyntheticImportedEnvShakeTraceArtifact,
@@ -14426,6 +14427,22 @@ describe("RuntimeTraceGatePresets", () => {
     expect(indefiniteFrames.length).toBeGreaterThanOrEqual(6);
     expect(indefiniteFrames.every((frame) => frame.stage?.envColor?.remaining === -1)).toBe(true);
     expect(replacementFrames.length).toBeGreaterThanOrEqual(2);
+    expect(artifact.trace.frames.at(-1)?.stage?.envColor).toBeUndefined();
+  });
+
+  it("creates a required long finite EnvColor artifact with observable expiry", () => {
+    const artifact = createSyntheticImportedEnvColorLongFiniteTraceArtifact({ generatedAt: "2026-08-15T00:00:00.000Z" });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-envcolor-long-finite-golden", source: "mixed" },
+      gates: [{ label: "synthetic-imported-envcolor-long-finite-golden", passed: true, failures: [] }],
+    });
+    const finiteFrames = artifact.trace.frames.filter((frame) =>
+      frame.stage?.envColor?.color.join(",") === "32,128,240",
+    );
+    expect(finiteFrames.length).toBeGreaterThanOrEqual(241);
+    expect(finiteFrames.some((frame) => frame.stage?.envColor?.remaining === 1)).toBe(true);
+    expect(finiteFrames.every((frame) => (frame.stage?.envColor?.remaining ?? -1) > 0)).toBe(true);
     expect(artifact.trace.frames.at(-1)?.stage?.envColor).toBeUndefined();
   });
 

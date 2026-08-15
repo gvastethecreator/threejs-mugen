@@ -218,7 +218,7 @@ function clampColor(value: number): number {
 
 function normalizeEnvColorTime(value: number): number {
   const rounded = Math.round(value);
-  return rounded < 0 ? -1 : Math.max(0, Math.min(240, rounded));
+  return rounded < 0 ? -1 : Math.max(0, rounded);
 }
 
 function roundFlashOpacity(value: number): number {

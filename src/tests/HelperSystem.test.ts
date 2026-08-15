@@ -270,6 +270,34 @@ describe("HelperSystem", () => {
     expect(operations).toEqual([{ color: [32, 128, 240], time: -1, under: true }]);
   });
 
+  it("preserves Helper EnvColor finite time above the former local ceiling", () => {
+    const parent = helperRuntimeState(helper());
+    parent.vars[3] = 241;
+    const active = helper({
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "EnvColor", ["1"], {
+            value: "1,2,3",
+            time: "Parent,Var(3)",
+            under: "0",
+          }),
+        ])],
+      },
+    });
+    const operations: Array<{ color: [number, number, number]; time: number; under: boolean }> = [];
+
+    advanceRuntimeHelpers([active], stage, {
+      parentState: parent,
+      rootState: parent,
+      onEnvColorController: (_helper, _controller, operation) => {
+        operations.push({ color: operation.color, time: operation.time, under: operation.under });
+        return true;
+      },
+    });
+
+    expect(operations).toEqual([{ color: [1, 2, 3], time: 241, under: false }]);
+  });
+
   it("routes opt-in shared resource writes without mutating the helper locally", () => {
     const active = helper({
       life: 500,

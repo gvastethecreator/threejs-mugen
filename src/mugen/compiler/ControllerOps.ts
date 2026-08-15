@@ -6092,7 +6092,7 @@ function normalizeRandomRange(first: number, second: number): [number, number] {
 
 function clampEnvColorTime(value: number): number {
   const rounded = Math.round(value);
-  return rounded < 0 ? -1 : Math.max(0, Math.min(240, rounded));
+  return rounded < 0 ? -1 : Math.max(0, rounded);
 }
 
 function clampShakeTime(value: number): number {

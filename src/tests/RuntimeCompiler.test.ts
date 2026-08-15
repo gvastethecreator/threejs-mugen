@@ -4397,7 +4397,7 @@ value = 1
     expect(envColor.operation).toEqual({
       kind: "envcolor",
       color: [16, 96, 255],
-      time: 240,
+      time: 999,
       under: true,
     });
     expect(indefinite.operation).toEqual({

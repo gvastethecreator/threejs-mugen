@@ -13,13 +13,13 @@ import {
 import type { RuntimeEnvColorEvent } from "../mugen/runtime/types";
 
 describe("EnvColorSystem", () => {
-  it("creates bounded stage flash events from EnvColor controllers", () => {
+  it("preserves authored finite stage flash duration from EnvColor controllers", () => {
     const event = createRuntimeEnvColorEvent(controller("EnvColor", { value: "300,-4,64.4", time: "999", under: "1" }), 120);
 
     expect(event).toEqual({
       type: "EnvColor",
       color: [255, 0, 64],
-      time: 240,
+      time: 999,
       under: true,
       runtimeTick: 120,
     });
@@ -108,6 +108,14 @@ describe("EnvColorSystem", () => {
 
     world.reset();
     expect(world.snapshotStageFlash(44)).toBeUndefined();
+  });
+
+  it("keeps finite EnvColor duration beyond the former 240 tick ceiling until expiry", () => {
+    const world = new RuntimeEnvColorWorld();
+    world.emitController(controller("EnvColor", { value: "32,128,240", time: "241", under: "1" }), 10);
+
+    expect(world.snapshotStageFlash(250)).toMatchObject({ color: [32, 128, 240], remaining: 1, under: true });
+    expect(world.snapshotStageFlash(251)).toBeUndefined();
   });
 
   it("keeps newest EnvColor events first and bounds history", () => {
