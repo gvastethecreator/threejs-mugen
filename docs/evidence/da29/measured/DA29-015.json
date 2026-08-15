@@ -2,15 +2,15 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-015",
   "kind": "G",
-  "generatedAt": "2026-08-15T13:56:26.412Z",
+  "generatedAt": "2026-08-15T14:28:42.785Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-015",
   "anchors": [
     {
       "path": "docs/CONTROLLER_SUPPORT_REGISTRY.md",
-      "bytes": 398825,
-      "sha256": "5a8b80f66e633ac4d8847155a53d37e6615ff35c67d241d9dde086180ac05226"
+      "bytes": 398938,
+      "sha256": "29f871e109c0cf25df0161acd1ca2d61252b5a58fb3da1ae91bc39720d9c01c4"
     },
     {
       "path": "src/mugen/da29/CnsControllerCensus.ts",
@@ -21,7 +21,7 @@
   "functionResults": {
     "uniqueControllerNames": 2,
     "authoredOccurrences": 12,
-    "registryNamedTokens": 1858,
+    "registryNamedTokens": 1857,
     "denominators": {
       "uniqueNames": "distinct controller type strings in parsed CNS",
       "authoredOccurrences": "sum of type= occurrences in [State] blocks",
