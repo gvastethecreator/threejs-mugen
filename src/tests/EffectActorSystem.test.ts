@@ -2755,6 +2755,65 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("selects one Helper-owned same-id ModifyProjectile airguard.velocity by caller index", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "71", anim: "930" }),
+      stateNo: 6160,
+      runtimeProgram: {
+        states: [
+          compileStateProgram(state(6160, 930, [
+            controller("Projectile", { projid: "8904", projanim: "947", velocity: "0,0", "airguard.velocity": "-1,-2,-3" }, ["Time = 0"]),
+            controller("Projectile", { projid: "8905", projanim: "947", velocity: "0,0", "airguard.velocity": "-2,-3,-4" }, ["Time = 0"]),
+            controller("Projectile", { projid: "8904", projanim: "947", velocity: "0,0", "airguard.velocity": "-3,-4,-5" }, ["Time = 0"]),
+            controller("ChangeState", { value: "6161" }, ["Time = 0"]),
+          ])),
+          compileStateProgram(state(6161, 931, [
+            controller("ModifyProjectile", {
+              id: "8904",
+              index: "Var(105)",
+              "airguard.velocity": "Var(102),Var(103),Var(104)",
+            }, ["Time = 1"]),
+          ])),
+        ],
+      },
+      animations: new Map([
+        [930, action(930, 4)],
+        [931, action(931, 4)],
+        [947, action(947, 4)],
+      ]),
+    });
+    helper.vars[102] = -7;
+    helper.vars[103] = -5;
+    helper.vars[104] = 2;
+    helper.vars[105] = 1;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    const owned = store.projectiles.filter((candidate) => candidate.parentId === helper.serialId);
+    expect(owned).toHaveLength(3);
+    expect(owned.find((candidate) => candidate.serialId === "p1-projectile-0")).toMatchObject({
+      projectileId: 8904,
+      airGuardPush: 1,
+      airGuardVelocityY: -2,
+      airGuardVelocityZ: -3,
+    });
+    expect(owned.find((candidate) => candidate.serialId === "p1-projectile-1")).toMatchObject({
+      projectileId: 8905,
+      airGuardPush: 2,
+      airGuardVelocityY: -3,
+      airGuardVelocityZ: -4,
+    });
+    expect(owned.find((candidate) => candidate.serialId === "p1-projectile-2")).toMatchObject({
+      projectileId: 8904,
+      airGuardPush: 7,
+      airGuardVelocityY: -5,
+      airGuardVelocityZ: 2,
+      hitVelocities: { airGuard: { x: -7, y: -5, z: 2 } },
+    });
+  });
+
   it("resolves Helper-owned dynamic ModifyProjectile givepower in caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {
