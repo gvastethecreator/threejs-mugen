@@ -2474,6 +2474,52 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("broadcasts Helper-owned ModifyProjectile air.velocity to matching projectiles and isolates a trap id", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "66", anim: "920" }),
+      stateNo: 6110,
+      runtimeProgram: {
+        states: [
+          compileStateProgram(state(6110, 920, [
+            controller("Projectile", { projid: "8894", projanim: "941", velocity: "0,0", "air.velocity": "-4,5,6" }, ["Time = 0"]),
+            controller("Projectile", { projid: "8894", projanim: "941", velocity: "0,0", "air.velocity": "-3,4,5" }, ["Time = 0"]),
+            controller("Projectile", { projid: "8895", projanim: "941", velocity: "0,0", "air.velocity": "-2,3,4" }, ["Time = 0"]),
+            controller("ChangeState", { value: "6111" }, ["Time = 0"]),
+          ])),
+          compileStateProgram(state(6111, 921, [
+            controller("ModifyProjectile", { id: "8894", "air.velocity": "Var(84),Var(85)" }, ["Time = 1"]),
+          ])),
+        ],
+      },
+      animations: new Map([[920, action(920, 4)], [921, action(921, 4)], [941, action(941, 4)]]),
+    });
+    helper.vars[84] = 9;
+    helper.vars[85] = -6;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    const owned = store.projectiles.filter((candidate) => candidate.parentId === helper.serialId);
+    expect(owned).toHaveLength(3);
+    const selected = owned.filter((candidate) => candidate.projectileId === 8894);
+    expect(selected).toHaveLength(2);
+    for (const candidate of selected) {
+      expect(candidate).toMatchObject({
+        airVelocityX: 9,
+        airVelocityY: -6,
+        airVelocityZ: 0,
+        hitVelocities: { air: { x: 9, y: -6, z: 0 } },
+      });
+    }
+    expect(owned.find((candidate) => candidate.projectileId === 8895)).toMatchObject({
+      airVelocityX: -2,
+      airVelocityY: 3,
+      airVelocityZ: 4,
+      hitVelocities: { air: { x: -2, y: 3, z: 4 } },
+    });
+  });
+
   it("resolves Helper-owned dynamic ModifyProjectile givepower in caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {

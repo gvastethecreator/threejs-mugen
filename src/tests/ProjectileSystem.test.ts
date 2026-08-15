@@ -3351,6 +3351,35 @@ describe("ProjectileSystem", () => {
     expect(matching.hitVelocities?.air).toEqual({ x: -7.5, y: -5.25, z: 0 });
   });
 
+  it("broadcasts one caller-resolved ModifyProjectile air.velocity to every selected id and isolates other ids", () => {
+    const selectedNewest = projectile({ serialId: "broadcast-newest", projectileId: 77, airVelocityX: 1, airVelocityY: 2, airVelocityZ: 3 });
+    const selectedOldest = projectile({ serialId: "broadcast-oldest", projectileId: 77, airVelocityX: 4, airVelocityY: 5, airVelocityZ: 6 });
+    const trap = projectile({ serialId: "broadcast-trap", projectileId: 88, airVelocityX: 7, airVelocityY: 8, airVelocityZ: 9 });
+    const operation = compileControllerIr(controller({
+      id: "77",
+      "air.velocity": "var(0),fvar(1)",
+    }, "ModifyProjectile")).operation as ModifyProjectileControllerOp;
+    const resolvedKeys: string[] = [];
+
+    expect(modifyRuntimeProjectiles([selectedNewest, trap, selectedOldest], {
+      controller: controller({ id: "77", "air.velocity": "var(0),fvar(1)" }),
+      operation,
+      resolveModifyProjectile: {
+        resolveFloatTriple: (key) => {
+          resolvedKeys.push(key);
+          return key === "air.velocity" ? [-8.5, -4.25, 0] : undefined;
+        },
+      },
+    })).toBe(2);
+
+    expect(resolvedKeys).toEqual(["air.velocity"]);
+    expect([selectedNewest.airVelocityX, selectedNewest.airVelocityY, selectedNewest.airVelocityZ]).toEqual([-8.5, -4.25, 0]);
+    expect([selectedOldest.airVelocityX, selectedOldest.airVelocityY, selectedOldest.airVelocityZ]).toEqual([-8.5, -4.25, 0]);
+    expect(selectedNewest.hitVelocities?.air).toEqual({ x: -8.5, y: -4.25, z: 0 });
+    expect(selectedOldest.hitVelocities?.air).toEqual({ x: -8.5, y: -4.25, z: 0 });
+    expect([trap.airVelocityX, trap.airVelocityY, trap.airVelocityZ]).toEqual([7, 8, 9]);
+  });
+
   it("resolves dynamic ModifyProjectile guard.velocity for selected live projectiles", () => {
     const matching = projectile({ projectileId: 77, guardPush: 1, guardVelocityY: 2, guardVelocityZ: 3 });
     const other = projectile({ serialId: "dynamic-guard-other", projectileId: 88, guardPush: 4, guardVelocityY: 5, guardVelocityZ: 6 });
