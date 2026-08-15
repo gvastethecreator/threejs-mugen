@@ -1,23 +1,23 @@
 ﻿# Roadmap Package Milestones
 
-## Latest package — T778 closed-bounded (2026-08-15)
+## Latest package — T779 closed-bounded (2026-08-15)
 
-Issue 352 closes the first-generation Helper-owned live `ModifyProjectile`
-`air.velocity` matrix for one root-owned Projectile and one accepted airborne
-hit. Evidence commit `9f7044c0` and required trace checksums `b36b10a7` /
-`6fd7f175` prove caller-context zero-fill `[x,0,0]` / `[x,y,0]` / `[x,y,z]`,
-GetHitVar/physical response, lifecycle, owner/root/parent and target links.
-Focused compiler/Projectile/Helper/trace tests, typecheck and diff hygiene
-pass; aggregate QA retains the inherited helper-bind blocker.
+Issue 353 closes Helper-owned live `ModifyProjectile air.velocity` broadcast.
+Evidence commit `513d8e58` and required trace checksums `d0d4ca95` /
+`2dc85e6f` prove caller-context zero-fill reaches selected ids while trap id
+`8914` remains unchanged; selected id `8913` reaches an accepted airborne hit
+with GetHitVar/physical response, lifecycle, owner/root/parent and target
+links. Focused tests, typecheck and diff hygiene pass; aggregate QA retains
+the inherited helper-bind blocker.
 
-## Next package — T779 queued (2026-08-15)
+## Next package — T780 queued (2026-08-15)
 
-Issue 353 is the next bounded Helper-owned live `ModifyProjectile air.velocity`
-broadcast matrix: multiple selected Projectile ids receive one caller-context
-result while a non-selected id remains unchanged. Keep id-zero/omitted
+Issue 354 is the next bounded Helper-owned live `ModifyProjectile air.velocity`
+index-selection matrix: an explicit oldest-first index chooses one same-id
+Projectile while siblings/trap ids remain unchanged. Keep id-zero/omitted
 selection, fresh/default derivation, dynamic `n`, nested/shared topology,
 aggregate QA repair, exact timing, rollback and full parity separate. See
-[issue 353](../.scratch/roadmap/issues/353-helper-modifyprojectile-air-velocity-broadcast.md).
+[issue 354](../.scratch/roadmap/issues/354-helper-modifyprojectile-air-velocity-index.md).
 
 ## Historical package — T776 closed-bounded (2026-08-15)
 

@@ -1,22 +1,22 @@
 # Workplan
 
-## Latest slice — T778 closed-bounded (2026-08-15)
+## Latest slice — T779 closed-bounded (2026-08-15)
 
-Issue 352 closes the first-generation Helper-authored live `ModifyProjectile`
-`air.velocity` matrix for one root-owned Projectile and one accepted airborne
-hit. Evidence commit `9f7044c0` and required trace checksums `b36b10a7` /
-`6fd7f175` prove caller-context evaluation and pinned zero-fill
-`[x,0,0]` / `[x,y,0]` / `[x,y,z]`, plus GetHitVar, physical HitVelSet,
-lifecycle, ownership and target links. Focused tests, typecheck and diff
-hygiene pass; aggregate QA retains only the inherited helper-bind blocker.
+Issue 353 closes Helper-owned live `ModifyProjectile air.velocity` broadcast.
+Evidence commit `513d8e58` and required trace checksums `d0d4ca95` /
+`2dc85e6f` prove one-shot caller-context zero-fill reaches selected ids while
+trap id `8914` stays unchanged; selected id `8913` reaches accepted airborne
+GetHitVar/HitVelSet, lifecycle, ownership and target-link evidence. Focused
+tests, typecheck and diff hygiene pass; aggregate QA retains only the inherited
+helper-bind blocker.
 
-## Next slice — T779 queued (2026-08-15)
+## Next slice — T780 queued (2026-08-15)
 
-Issue 353 covers broadcast of one Helper caller-context `ModifyProjectile
-air.velocity` write to multiple selected Projectile ids, with a non-selected
-id isolation check. Keep id-zero/omitted selection, fresh/default derivation,
-dynamic `n`, nested/shared topology, aggregate QA repair, exact timing,
-rollback and full parity separate.
+Issue 354 covers Helper caller-context `ModifyProjectile air.velocity` explicit
+`index` selection among same-id Projectiles, preserving oldest-first selection
+and sibling/trap isolation. Keep id-zero/omitted selection, fresh/default
+derivation, dynamic `n`, nested/shared topology, aggregate QA repair, exact
+timing, rollback and full parity separate.
 
 ## Historical slice — T776 closed-bounded (2026-08-15)
 

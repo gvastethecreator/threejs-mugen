@@ -79,14 +79,25 @@ down/ground/airguard selection, nested/shared-resource topology, exact timing,
 rollback and full parity remain blocked. See [issue
 352](../.scratch/roadmap/issues/352-helper-modifyprojectile-air-velocity.md).
 
-## 2026-08-15 T779 Helper `ModifyProjectile` broadcast — queued
+## 2026-08-15 T779 Helper `ModifyProjectile` broadcast — closed-bounded, no score movement
 
-Issue 353 is queued to prove one Helper caller-context `air.velocity` result is
-broadcast to multiple selected Projectile ids while a non-selected id remains
-unchanged. No score movement is expected; id-zero/omitted selection,
-fresh/default derivation, dynamic `n`, nested/shared-resource topology,
+Issue 353 closes Helper caller-context `ModifyProjectile air.velocity` broadcast
+to selected ids while trap id `8914` remains unchanged. Evidence commit
+`513d8e58` and required trace `d0d4ca95` / `2dc85e6f` prove selected id `8913`
+reaches an accepted airborne hit with GetHitVar/HitVelSet, lifecycle, ownership
+and target links. Focused tests, typecheck and diff hygiene pass. Aggregate QA
+retains the inherited helper-bind target-link blocker; no score movement.
+Fresh/default derivation, id/index edge selection, dynamic `n`, nested/shared
+topology, exact timing, rollback and full parity remain blocked. See [issue
+353](../.scratch/roadmap/issues/353-helper-modifyprojectile-air-velocity-broadcast.md).
+
+## 2026-08-15 T780 Helper `ModifyProjectile` index selection — queued
+
+Issue 354 queues explicit oldest-first `index` selection among same-id
+Projectiles from a Helper. No score movement is expected; id-zero/omitted
+selection, fresh/default derivation, dynamic `n`, nested/shared topology,
 aggregate QA repair, exact timing, rollback and full parity remain blocked. See
-[issue 353](../.scratch/roadmap/issues/353-helper-modifyprojectile-air-velocity-broadcast.md).
+[issue 354](../.scratch/roadmap/issues/354-helper-modifyprojectile-air-velocity-index.md).
 
 ## 2026-08-15 T771 Helper `ModifyProjectile` `airguard.velocity` X air guard — historical closed-bounded, no score movement
 

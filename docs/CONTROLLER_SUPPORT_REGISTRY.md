@@ -1,25 +1,26 @@
 # Controller Support Registry
 
-Latest cursor: T778 / issue 352 is closed-bounded for Helper-owned live
-`ModifyProjectile air.velocity` on one root-owned Projectile and one accepted
-airborne hit. Evidence commit `9f7044c0` and required trace
-`synthetic-imported-helper-modifyprojectile-air-velocity.json`
-(`b36b10a7` / `6fd7f175`) pass independently. The previous T753 guardpoints
-cursor remains historical below; Projectile/Helper selection breadth,
-omitted defaults, int32 edges, teams, rollback and full parity remain
-unsupported.
+Latest cursor: T779 / issue 353 is closed-bounded for Helper-owned live
+`ModifyProjectile air.velocity` broadcast. Evidence commit `513d8e58` and
+required trace
+`synthetic-imported-helper-modifyprojectile-air-velocity-broadcast.json`
+(`d0d4ca95` / `2dc85e6f`) prove one-shot caller-context
+zero-fill on selected ids plus non-selected trap isolation and accepted-hit
+readback. The previous T753 guardpoints cursor remains historical below;
+id/index edge selection, omitted defaults, int32 edges, teams, rollback and
+full parity remain unsupported.
 
-Latest closed-bounded cursor: T778 / issue 352 covers Helper-owned live
-`ModifyProjectile air.velocity` for one root-owned Projectile and one accepted
-airborne hit. The pinned zero-fill one/two/three-component replacement is
-proven through GetHitVar/HitVelSet response, lifecycle, ownership and target
-links. Aggregate QA still has the inherited helper-bind target-link blocker.
-Fresh/default derivation, other vector families, nested/team topology, exact
-timing, rollback and full parity remain unsupported.
+Latest closed-bounded cursor: T779 / issue 353 covers Helper-owned live
+`ModifyProjectile air.velocity` broadcast to matching Projectiles. Pinned
+zero-fill one/two/three-component replacement is proven through focused
+one-shot caller evaluation, two selected matches, trap isolation, accepted
+GetHitVar/HitVelSet response, lifecycle, ownership and target links. Aggregate
+QA still has the inherited helper-bind target-link blocker. Fresh/default
+derivation, index/id edge selection, other vector families, nested/team
+topology, exact timing, rollback and full parity remain unsupported.
 
-Next cursor: T779 / issue 353 queues the Helper-owned live
-`ModifyProjectile air.velocity` broadcast matrix for multiple selected ids,
-with non-selected isolation evidence.
+Next cursor: T780 / issue 354 queues Helper-owned live `ModifyProjectile
+air.velocity` explicit index selection among same-id Projectiles.
 
 Historical cursor: T754 / root Projectile and Helper-parented guard-point
 multiplier ownership and accepted-contact evidence.

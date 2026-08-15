@@ -1,26 +1,25 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T778 closed-bounded (2026-08-15)
+## Latest bounded slice — T779 closed-bounded (2026-08-15)
 
-Issue 352 closes the first-generation Helper-authored live `ModifyProjectile`
-`air.velocity` matrix for one root-owned Projectile and one accepted airborne
-hit. Evidence commit `9f7044c0` and required trace checksums `b36b10a7` /
-`6fd7f175` prove Helper caller-context evaluation, pinned zero-fill
-`[x,0,0]` / `[x,y,0]` / `[x,y,z]`, `GetHitVar` velocity readback, physical
-`HitVelSet`, lifecycle, ownership and target links. Focused Helper/Projectile
-tests, typecheck and diff hygiene pass. Aggregate QA stops only at the
-inherited helper-bind target-link blocker; fresh/default derivation, dynamic
-`n`, vector-family selection, nested/shared topology, exact timing, rollback
-and full parity remain separate.
+Issue 353 closes Helper caller-context broadcast of live `ModifyProjectile`
+`air.velocity`. Evidence commit `513d8e58` and required trace
+`d0d4ca95` / `2dc85e6f` prove one-shot zero-filled writes reach every selected
+Projectile id while trap id `8914` remains unchanged. The accepted hit on
+selected id `8913` proves `GetHitVar`, physical `HitVelSet`, lifecycle,
+owner/root/parent and target links. Focused tests, typecheck and diff hygiene
+pass; aggregate QA retains the inherited helper-bind target-link blocker.
+Fresh/default derivation, dynamic `n`, index selection, nested/shared topology,
+exact timing, rollback and full parity remain separate.
 
-## Next bounded slice — T779 queued (2026-08-15)
+## Next bounded slice — T780 queued (2026-08-15)
 
-Issue 353 will prove Helper caller-context broadcast of one live
-`ModifyProjectile air.velocity` write to multiple selected Projectile ids,
-with a non-selected id as isolation evidence. Keep id-zero/omitted selection,
+Issue 354 will prove Helper caller-context `ModifyProjectile air.velocity`
+explicit `index` selection among same-id Projectiles, preserving oldest-first
+selection and sibling/trap isolation. Keep id-zero/omitted selection,
 fresh/default derivation, dynamic `n`, nested/shared topology, exact timing,
 rollback and full parity separate. See [issue
-353](../.scratch/roadmap/issues/353-helper-modifyprojectile-air-velocity-broadcast.md).
+354](../.scratch/roadmap/issues/354-helper-modifyprojectile-air-velocity-index.md).
 
 ## Historical bounded slice — T776 closed-bounded (2026-08-15)
 

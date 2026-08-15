@@ -1,23 +1,21 @@
 ﻿# Progress Tracker
 
-## Latest implementation checkpoint — T778 closed-bounded (2026-08-15)
+## Latest implementation checkpoint — T779 closed-bounded (2026-08-15)
 
-Issue 352 closes the first-generation Helper-authored live `ModifyProjectile`
-`air.velocity` matrix for one root-owned Projectile and one accepted airborne
-hit. Evidence commit `9f7044c0` and required trace checksums `b36b10a7` /
-`6fd7f175` prove caller-context variables, zero-fill component replacement,
-GetHitVar velocity readback, physical HitVelSet response, lifecycle, ownership
-and target links. Focused tests, typecheck and diff hygiene pass. Aggregate QA
-retains the inherited helper-bind target-link blocker; fresh/default
-derivation, vector-family selection, nested/shared topology, exact timing,
-rollback and full parity remain separate.
+Issue 353 closes Helper-owned live `ModifyProjectile air.velocity` broadcast.
+Evidence commit `513d8e58` and required trace checksums `d0d4ca95` /
+`2dc85e6f` prove one-shot caller-context zero-fill writes reach two selected
+matches while trap id `8914` remains unchanged. Selected id `8913` reaches an
+accepted airborne hit with GetHitVar/HitVelSet, lifecycle, ownership and
+target-link evidence. Focused tests, typecheck and diff hygiene pass; aggregate
+QA retains the inherited helper-bind target-link blocker.
 
-## Next implementation checkpoint — T779 queued (2026-08-15)
+## Next implementation checkpoint — T780 queued (2026-08-15)
 
-Issue 353 targets Helper-owned `ModifyProjectile air.velocity` broadcast to
-multiple selected Projectile ids with non-selected isolation. Keep id-zero/
-omitted selection, fresh/default derivation, dynamic `n`, nested/shared
-topology, aggregate QA repair, exact timing, rollback and full parity separate.
+Issue 354 targets Helper-owned `ModifyProjectile air.velocity` explicit index
+selection among same-id Projectiles. Keep id-zero/omitted selection,
+fresh/default derivation, dynamic `n`, nested/shared topology, aggregate QA
+repair, exact timing, rollback and full parity separate.
 
 ## Historical implementation checkpoint — T776 closed-bounded (2026-08-15)
 

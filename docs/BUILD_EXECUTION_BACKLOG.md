@@ -2,6 +2,22 @@
 
 ## Current parity queue
 
+- **T779 closed-bounded** — issue 353 closes Helper-authored live
+  `ModifyProjectile air.velocity` broadcast. Evidence commit `513d8e58` and
+  required trace `d0d4ca95` / `2dc85e6f` prove one-shot caller-context
+  zero-fill reaches selected id `8913` while trap id `8914` remains unchanged;
+  the accepted airborne hit preserves GetHitVar/HitVelSet, lifecycle,
+  ownership and target links. Focused tests, typecheck and diff hygiene pass;
+  aggregate QA retains the inherited helper-bind target-link blocker. Fresh/
+  default derivation, index/id edge selection, dynamic `n`, nested/shared
+  topology, exact timing, rollback and full parity remain outside. See [issue
+  353](../.scratch/roadmap/issues/353-helper-modifyprojectile-air-velocity-broadcast.md).
+
+- **T780 next selection** — issue 354 queues explicit oldest-first `index`
+  selection for Helper-authored live `ModifyProjectile air.velocity` among
+  same-id Projectiles. See [issue
+  354](../.scratch/roadmap/issues/354-helper-modifyprojectile-air-velocity-index.md).
+
 - **T770 closed-bounded** — issue 344 closes the first-generation
   Helper-authored `ModifyProjectile` ground `guard.velocity` seam. Evidence
   commit is `3c7ca64c`; required trace `3d47deb8` / `ae032d99` (initial
