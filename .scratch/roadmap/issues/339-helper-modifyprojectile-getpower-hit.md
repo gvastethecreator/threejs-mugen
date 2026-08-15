@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T765 — queued (2026-08-15)**
+- **T765 — closed-bounded (2026-08-15)**
 - **Área:** runtime / Helper / Projectile / ModifyProjectile / hit / getpower
 - **Dependencia:** T764 / issue 338; T630 / root `ModifyProjectile getpower`
 
@@ -34,3 +34,18 @@ the authored hit-power delta through the accepted contact path.
   accepted hit, `GetHitVar(power)` and attacker power delta.
 - Focused Helper/Projectile test, typecheck, `git diff --check`, and aggregate
   QA recorded with inherited blockers preserved.
+
+## Resultado
+
+- Evidence commit: `c27b658e`.
+- Required trace: `d1f1edf2` (initial `6ae1a86b`, final `efa376d6`), status
+  `passed`.
+- The first-generation Helper creates a root-owned Projectile, applies
+  `ModifyProjectile getpower=var(0)*4,var(0)-3` in Helper caller context, and
+  the accepted hit leaves attacker power at `44` while defender life reaches
+  `5`. Focused Helper and trace gates pass; typecheck and `git diff --check`
+  pass.
+- Aggregate `qa:trace` materializes this artifact but still stops on the
+  inherited `synthetic-imported-helper-bind-to-target-redirect` missing target
+  link. Givepower, guard contact, nested/shared-resource topology, exact
+  arithmetic/timing, rollback and full parity remain outside this slice.

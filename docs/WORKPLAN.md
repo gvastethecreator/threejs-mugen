@@ -1,6 +1,18 @@
 # Workplan
 
-## Latest slice — T764 closed-bounded (2026-08-15)
+## Latest slice — T765 closed-bounded (2026-08-15)
+
+Issue 339 closes the first-generation Helper-authored `ModifyProjectile`
+`getpower` hit seam. Evidence commit `c27b658e`; required trace `d1f1edf2`
+(`6ae1a86b` -> `efa376d6`) passes. The Helper resolves the live pair before
+the accepted unguarded hit; attacker power reaches `44`, defender life reaches
+`5`, and authored `GetHitVar(power)` remains observable. Focused Helper/trace
+tests, typecheck and diff hygiene pass. Aggregate QA retains the inherited
+helper-bind target-link blocker. Givepower, guard contact, nested/shared
+resource topology, exact arithmetic/timing, rollback and full parity remain
+outside.
+
+## Historical slice — T764 closed-bounded (2026-08-15)
 
 Issue 338 closes the first-generation Helper-authored `ModifyProjectile`
 red-life guard seam. Evidence commit `90156937`; required trace `4e97fdba` ->
@@ -60,11 +72,11 @@ T755 duplicated the already closed T728/issue 302 live `ModifyHitDef
 down.velocity` slice. Issue 329 remains a superseded audit trail, not an open
 implementation task.
 
-## Next slice — T765 Helper ModifyProjectile getpower hit readback
+## Next slice — T766 Helper ModifyProjectile givepower hit
 
-Close the Helper-owned `ModifyProjectile getpower` readback for an accepted hit;
-keep givepower, guard contact, nested helpers, aggregate QA repair and broader
-resource topology separate. See issue 339.
+Close the Helper-owned `ModifyProjectile givepower` readback for an accepted
+hit; keep guard contact, getpower mutation, nested helpers, aggregate QA repair
+and broader resource topology separate. See issue 340.
 
 ## Historical slice — T753 closed-bounded (2026-08-12)
 

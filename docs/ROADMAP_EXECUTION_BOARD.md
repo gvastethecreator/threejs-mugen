@@ -1,6 +1,20 @@
 ﻿# Roadmap Execution Board
 
-## Latest bounded slice — T764 closed-bounded (2026-08-15)
+## Latest bounded slice — T765 closed-bounded (2026-08-15)
+
+Issue 339 closes the first-generation Helper-authored `ModifyProjectile`
+`getpower` hit readback. Evidence commit `c27b658e`; required trace
+`d1f1edf2` (`6ae1a86b` -> `efa376d6`) passes. The Helper creates a
+root-owned Projectile, resolves `getpower=var(0)*4,var(0)-3`, and an accepted
+unguarded hit ends with attacker power `44` and defender life `5`; Helper,
+Projectile, lifecycle and `GetHitVar(power)` evidence are all present.
+Focused tests, typecheck and diff hygiene pass. Aggregate QA stops on the
+inherited helper-bind target-link blocker. Givepower, guard contact,
+nested/shared-resource topology, exact arithmetic/timing, rollback and full
+parity remain outside. See [issue
+339](../.scratch/roadmap/issues/339-helper-modifyprojectile-getpower-hit.md).
+
+## Historical bounded slice — T764 closed-bounded (2026-08-15)
 
 Issue 338 closes the first-generation Helper-authored `ModifyProjectile`
 `AttackMulSet.RedLife` guard seam. Evidence commit `90156937`; required trace
@@ -78,12 +92,12 @@ The T755 queue entry duplicated the already closed T728/issue 302
 component-preserving behavior is already covered by the issue 302 traces and
 commits; issue 329 remains only as a superseded audit trail.
 
-## Next bounded slice — T765 Helper ModifyProjectile getpower hit readback
+## Next bounded slice — T766 Helper ModifyProjectile givepower hit
 
-Close the Helper-owned `ModifyProjectile getpower` hit readback with an
-independent required trace. Keep givepower, guard contact, nested helpers,
-shared-resource topology and aggregate QA repair separate. See [issue
-339](../.scratch/roadmap/issues/339-helper-modifyprojectile-getpower-hit.md).
+Close the Helper-owned `ModifyProjectile givepower` hit readback with an
+independent required trace. Keep guard contact, getpower mutation, nested
+helpers, shared-resource topology and aggregate QA repair separate. See
+[issue 340](../.scratch/roadmap/issues/340-helper-modifyprojectile-givepower-hit.md).
 
 ## Historical bounded slice — T753 closed-bounded (2026-08-12)
 

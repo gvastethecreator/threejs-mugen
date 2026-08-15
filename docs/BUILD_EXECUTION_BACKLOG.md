@@ -2,6 +2,23 @@
 
 ## Current parity queue
 
+- **T765 closed-bounded** — issue 339 closes the first-generation
+  Helper-authored `ModifyProjectile` getpower hit seam. Evidence commit is
+  `c27b658e`; required trace `d1f1edf2` / `efa376d6` (initial
+  `6ae1a86b`). The root-owned Projectile resolves the Helper pair before an
+  accepted hit, leaving attacker power `44`, defender life `5`, and
+  `GetHitVar(power)` evidence. Focused Helper/trace tests, typecheck and diff
+  hygiene pass; aggregate QA retains the inherited helper-bind target-link
+  blocker. Givepower, guard contact, nested/shared-resource topology, exact
+  arithmetic/timing, rollback and full parity remain outside. See [issue
+  339](../.scratch/roadmap/issues/339-helper-modifyprojectile-getpower-hit.md).
+
+- **T766 next selection** — close the Helper-authored `ModifyProjectile`
+  givepower hit readback; keep getpower mutation, guard contact,
+  nested-helper breadth, aggregate QA repair and resource topology separate.
+  See [issue
+  340](../.scratch/roadmap/issues/340-helper-modifyprojectile-givepower-hit.md).
+
 - **T764 closed-bounded** — issue 338 closes the first-generation
   Helper-authored `ModifyProjectile` redlife guard seam. Evidence commit is
   `90156937`; required trace `4e97fdba` / `eff1e719`. The root-owned
@@ -14,11 +31,6 @@
   See [issue
   338](../.scratch/roadmap/issues/338-helper-modifyprojectile-attackmulset-redlife-guard.md).
 
-- **T765 next selection** — close the Helper-owned `ModifyProjectile getpower`
-  hit readback; keep givepower, guard contact, nested-helper breadth, aggregate
-  QA repair and resource topology separate. See [issue
-  339](../.scratch/roadmap/issues/339-helper-modifyprojectile-getpower-hit.md).
-
 - **T763 closed-bounded** — issue 337 closes the first-generation
   Helper-authored `ModifyProjectile` redlife hit seam. Evidence commit is
   `d96c7015`; required trace `938303dd` / `0073df18`. The root-owned
@@ -29,11 +41,6 @@
   blocker. Guard contact, nested/shared-resource topology, exact arithmetic/
   timing, rollback and full parity remain outside. See [issue
   337](../.scratch/roadmap/issues/337-helper-modifyprojectile-attackmulset-redlife-hit.md).
-
-- **T764 next selection** — close the Helper-authored `ModifyProjectile`
-  redlife snapshot on an accepted guard; keep nested-helper breadth, aggregate
-  QA repair and resource topology separate. See [issue
-  338](../.scratch/roadmap/issues/338-helper-modifyprojectile-attackmulset-redlife-guard.md).
 
 - **T762 closed-bounded** — issue 336 closes the root-owned
   `ModifyProjectile` `AttackMulSet.RedLife` hit seam. Evidence commit is
