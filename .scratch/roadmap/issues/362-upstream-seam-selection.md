@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T788 — queued (2026-08-15)**
+- **T788 — closed-bounded (2026-08-15)**
 - **Área:** roadmap / official parity / runtime seam selection
 - **Dependencia:** T787 / issue 361
 
@@ -10,8 +10,8 @@
 
 Seleccionar el siguiente corte pequeño del port comparando la documentación
 M.U.G.E.N 1.1 con el pin Ikemen GO `149402f` y el estado real del runtime. La
-selección debe producir un único contrato ejecutable, no una lista genérica de
-paridad.
+selección produjo el contrato T788 de `EnvShake` activo `mul`/`dir`; el trabajo
+cerrado queda en [issue 363](363-active-envshake-mul-dir.md).
 
 ## Criterios de selección
 
@@ -31,5 +31,5 @@ timing exacto y cambios de score sin evidencia runtime.
 
 ## Salida requerida
 
-Un issue sucesor concreto (campo, seam, autoridad, tests, trace y exclusiones)
-reemplazará esta selección antes de comenzar el siguiente cambio de producto.
+La siguiente selección concreta es T789 (`diradd`/`decay` activo Ikemen),
+registrada en [issue 364](364-active-envshake-diradd-decay.md).

@@ -1,6 +1,14 @@
 # Controller Support Registry
 
-Latest cursor: T787 / issue 361 is closed-bounded for live root/RedirectID
+Latest cursor: T788 / issue 363 is closed-bounded for active-state `EnvShake`
+`mul`/`dir`. Product `eeb3a2f1` and required trace
+`synthetic-imported-envshake-dynamic` prove finite static/dynamic values reach
+typed operation/event evidence and camera projection. M.U.G.E.N's base
+four-field EnvShake remains supported; `diradd`/`decay`, exact waveform,
+Helper active ownership, pause/stage/layer, rollback and full parity remain
+unsupported. See [issue 363](../.scratch/roadmap/issues/363-active-envshake-mul-dir.md).
+
+Previous cursor: T787 / issue 361 is closed-bounded for live root/RedirectID
 `ModifyHitDef down.velocity` X/Y component-preserving mutation. Product
 `1e83fc36` and required trace
 `synthetic-imported-modifyhitdef-dynamic-down-velocity` prove finite
@@ -12,9 +20,8 @@ not attributed to this slice. Fresh defaults, dynamic Z/`n`, Helper-authored
 controllers, Projectile variants, exact landing/timing, rollback and full
 parity remain unsupported.
 
-Next cursor: T788 / issue 362 is an upstream seam-selection gate. It must
-compare M.U.G.E.N 1.1 with Ikemen `149402f` and write one concrete next
-contract before another runtime claim is opened.
+Next cursor: T789 / issue 364 queues active `EnvShake diradd/decay` as the
+next pinned-Ikemen seam with separate per-tick camera evidence.
 
 Previous cursor: T786 / issue 360 is closed-bounded for Helper-owned live
 `ModifyProjectile RedirectID` over a root destination Projectile. Required

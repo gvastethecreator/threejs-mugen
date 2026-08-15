@@ -22,12 +22,19 @@ single/pair replacement, omission/Z preservation, accepted lying-hit
 Helper bind target-link case. Fresh defaults, dynamic Z/`n`, Helper-authored
 controllers and Projectile variants remain separate.
 
-## Next bounded slice — T788 upstream seam selection (2026-08-15)
+## Latest bounded slice — T788 closed-bounded (2026-08-15)
 
-Issue 362 is the next planning gate: compare the official M.U.G.E.N 1.1
-contract with Ikemen `149402f`, then select one executable runtime seam with
-callers, tests, trace and explicit exclusions. See [issue
-362](../.scratch/roadmap/issues/362-upstream-seam-selection.md).
+Issue 363 closes active-state `EnvShake mul/dir`. Product `eeb3a2f1` and the
+required dynamic trace prove typed static/dynamic values, operation/event
+telemetry and camera projection. `diradd/decay`, exact waveform, Helper active
+controllers, pause/stage/layer, rollback and full parity remain excluded. See
+[issue 363](../.scratch/roadmap/issues/363-active-envshake-mul-dir.md).
+
+## Next bounded slice — T789 active EnvShake `diradd/decay` (2026-08-15)
+
+Issue 364 queues the pinned Ikemen per-tick direction/decay seam with its own
+focused proof and required trace. See [issue
+364](../.scratch/roadmap/issues/364-active-envshake-diradd-decay.md).
 
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 

@@ -24,12 +24,21 @@ Projectile variants, exact landing/timing, rollback and full parity remain
 separate claims. See [issue
 361](../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
 
-## Next bounded slice — T788 upstream seam selection (2026-08-15)
+## Latest bounded slice — T788 closed-bounded (2026-08-15)
 
-Issue 362 requires comparing M.U.G.E.N 1.1 and Ikemen `149402f` before selecting
-one concrete next runtime contract. No product seam is claimed until the
-authority, caller map, focused proof and required trace are written. See
-[issue 362](../.scratch/roadmap/issues/362-upstream-seam-selection.md).
+Issue 363 closes active-state `EnvShake mul/dir`. Product `eeb3a2f1` and the
+required `synthetic-imported-envshake-dynamic` trace prove static and finite
+caller-context dynamic values reach typed operation/event evidence and the
+camera-shake projection. M.U.G.E.N's four-field controller remains intact;
+Ikemen `diradd/decay`, Helper active controllers, exact waveform, pause/stage,
+rollback and full parity remain outside. See [issue
+363](../.scratch/roadmap/issues/363-active-envshake-mul-dir.md).
+
+## Next bounded slice — T789 active EnvShake `diradd/decay` (2026-08-15)
+
+Issue 364 queues the next Ikemen-only camera-shake seam with separate per-tick
+direction and decay evidence. See [issue
+364](../.scratch/roadmap/issues/364-active-envshake-diradd-decay.md).
 
 ## Historical bounded slice — T781 closed-bounded (2026-08-15)
 

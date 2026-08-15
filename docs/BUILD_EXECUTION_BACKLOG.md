@@ -32,10 +32,16 @@
   timing, rollback and full parity remain outside. See [issue
   361](../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
 
-- **T788 next selection** — issue 362 is the required upstream seam-selection
-  gate. Compare M.U.G.E.N 1.1 with Ikemen `149402f`, map callers and choose
-  one concrete runtime contract before opening another product slice. See
-  [issue 362](../.scratch/roadmap/issues/362-upstream-seam-selection.md).
+- **T788 closed-bounded** — issue 363 closes active-state `EnvShake mul/dir`.
+  Product `eeb3a2f1` and the required dynamic trace prove static and finite
+  caller-context dynamic values reach typed operation/event evidence and the
+  camera projection. `diradd/decay`, exact waveform, Helper active ownership,
+  pause/stage/layer, rollback and full parity remain outside. See [issue
+  363](../.scratch/roadmap/issues/363-active-envshake-mul-dir.md).
+
+- **T789 next** — issue 364 queues active `EnvShake diradd/decay` as the next
+  pinned-Ikemen camera-shake seam. See [issue
+  364](../.scratch/roadmap/issues/364-active-envshake-diradd-decay.md).
 
 - **T781 historical closed-bounded** — issue 355 closed Helper-authored live
   `ModifyProjectile down.velocity` explicit oldest-first `index` selection;

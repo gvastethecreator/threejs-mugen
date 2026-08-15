@@ -19,11 +19,17 @@ component-preserving mutation. Product `1e83fc36` and required trace
 hygiene pass. Aggregate QA retains the inherited Helper bind target-link
 blocker and does not downgrade the bounded T787 result.
 
-## Next implementation checkpoint — T788 upstream seam selection (2026-08-15)
+## Latest implementation checkpoint — T788 closed-bounded (2026-08-15)
 
-Issue 362 will compare the official M.U.G.E.N 1.1 and Ikemen `149402f`
-contracts before selecting one concrete runtime seam. No broad parity claim
-or product change is attached until that map is complete.
+Issue 363 closes active `EnvShake mul/dir`; product `eeb3a2f1`, focused
+compiler/runtime tests, typecheck, trace gate and diff hygiene pass. The
+required dynamic trace records `mul=1.5` and `dir=30` in typed operation/event
+evidence. `diradd/decay`, exact camera waveform, Helper active ownership,
+pause/stage, rollback and full parity remain open.
+
+## Next implementation checkpoint — T789 active EnvShake `diradd/decay` (2026-08-15)
+
+Issue 364 is queued as the next pinned-Ikemen camera-shake seam.
 
 ## Historical implementation checkpoint — T781 closed-bounded (2026-08-15)
 

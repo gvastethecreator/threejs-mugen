@@ -24,11 +24,18 @@ aggregate gate retains the inherited Helper bind target-link blocker. This
 bounded evidence does not move the score. See [issue 361]
 (../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
 
-## Next scorecard slice — 2026-08-15 T788 upstream seam selection
+## 2026-08-15 T788 active EnvShake `mul/dir` — closed-bounded, no score movement
 
-Issue 362 is a source-comparison gate only. It must select one concrete
-M.U.G.E.N 1.1 / Ikemen `149402f` contract before any score movement or new
-runtime claim. See [issue 362](../.scratch/roadmap/issues/362-upstream-seam-selection.md).
+Issue 363 closes active-state Ikemen `EnvShake mul/dir` through product
+`eeb3a2f1`, focused compiler/runtime proof and the required dynamic trace. It
+does not move the score: `diradd/decay`, exact camera waveform, Helper active
+ownership, pause/stage/layer, rollback and full parity remain blocked. See
+[issue 363](../.scratch/roadmap/issues/363-active-envshake-mul-dir.md).
+
+## Next scorecard slice — 2026-08-15 T789 active EnvShake `diradd/decay`
+
+Issue 364 queues the next pinned-Ikemen camera-shake seam without changing the
+current score. See [issue 364](../.scratch/roadmap/issues/364-active-envshake-diradd-decay.md).
 
 ## Historical checkpoint — 2026-08-15 T781 Helper `ModifyProjectile` `down.velocity` index
 

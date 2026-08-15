@@ -18,10 +18,17 @@ component-preserving mutation. Product `1e83fc36` and required trace
 `7b1f4341` / `fc695cca`; focused tests, typecheck and diff hygiene pass.
 Aggregate QA retains the inherited Helper bind target-link blocker.
 
-## Next slice — T788 upstream seam selection (2026-08-15)
+## Latest slice — T788 closed-bounded (2026-08-15)
 
-Issue 362 requires the next official M.U.G.E.N 1.1 / Ikemen `149402f`
-contract to be selected and mapped before another runtime change is opened.
+Issue 363 closes active `EnvShake mul/dir` with product `eeb3a2f1`, focused
+compiler/runtime tests, typed operation/event evidence and the required
+dynamic trace. `diradd/decay`, exact waveform, Helper active ownership,
+pause/stage, rollback and full parity remain outside.
+
+## Next slice — T789 active EnvShake `diradd/decay` (2026-08-15)
+
+Issue 364 queues the next pinned-Ikemen camera-shake seam with separate
+per-tick direction/decay evidence.
 
 ## Historical slice — T781 closed-bounded (2026-08-15)
 

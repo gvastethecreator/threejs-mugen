@@ -23,11 +23,18 @@ variants, exact timing, rollback and full parity remain outside the claim.
 See [issue 361]
 (../.scratch/roadmap/issues/361-modifyhitdef-down-velocity-component-preserve.md).
 
-## Next selection — T788 upstream seam selection
+## 2026-08-15 T788 — closed-bounded
 
-Issue 362 is a source-comparison gate for the next concrete M.U.G.E.N 1.1 /
-Ikemen `149402f` runtime contract. No new feature claim is open until its
-authority and evidence plan are recorded.
+Active `EnvShake` now preserves static `mul`/`dir` and resolves finite dynamic
+expressions in the actor context. The required dynamic trace records the
+values in operation/event evidence and exercises the camera projection.
+`diradd/decay`, exact waveform, Helper active ownership, pause/stage/layer,
+rollback and full parity remain outside. See [issue
+363](../.scratch/roadmap/issues/363-active-envshake-mul-dir.md).
+
+## Next selection — T789 active EnvShake `diradd/decay`
+
+Issue 364 queues the next pinned-Ikemen camera-shake seam.
 
 ## Historical — T781 Helper `ModifyProjectile down.velocity` index
 
