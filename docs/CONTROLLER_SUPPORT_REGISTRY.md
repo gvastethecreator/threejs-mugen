@@ -323,6 +323,17 @@ and lifecycle evidence. Missing fresh X/Z derive from effective ground
 velocity while Y defaults to zero. Live mutation, other vector defaults,
 dynamic `n`, and full Projectile parity remain excluded.
 
+T775 is the bounded Helper-owned exception to the historical live-mutation
+exclusion: required
+`synthetic-imported-helper-modifyprojectile-guard-velocity-yz.json` (trace
+`a6bfe6bd`, final `b6d30a1d`) proves Helper caller-context
+`ModifyProjectile guard.velocity` Y/Z replacement for one root-owned
+Projectile and one accepted ground guard. The pinned zero-filled one/two/three
+component matrix, `GetHitVar(yvel/zvel)`, physical response, lifecycle and
+owner/helper target links are covered. This does not expand Helper mutation to
+other Projectile vectors, fresh defaults, nested/team topology, or full
+Projectile parity.
+
 T691 adds direct HitDef `down.hittime` typed dynamic caller-context resolution
 for fresh root/Helper activation plus root-owned live ModifyHitDef replacement
 and omission preservation. Fresh omission resets to the pinned `20`, and the

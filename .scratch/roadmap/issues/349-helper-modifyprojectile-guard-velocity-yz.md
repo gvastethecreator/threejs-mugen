@@ -2,7 +2,7 @@
 
 ## Estado
 
-- **T775 — queued (2026-08-15)**
+- **T775 — closed-bounded (2026-08-15)**
 - **Área:** runtime / Helper / Projectile / ModifyProjectile / ground guard / velocity
 - **Dependencia:** T770 / issue 344; T774 / issue 348
 
@@ -48,10 +48,26 @@ present. An omitted parameter is a no-op.
 - `pnpm run typecheck`, `git diff --check`, and aggregate QA recorded with
   inherited blockers preserved.
 
+## Resultado T775
+
+- Evidence commit: `a5cec411`.
+- Required trace: `synthetic-imported-helper-modifyprojectile-guard-velocity-yz.json`
+  (`a6bfe6bd` -> `b6d30a1d`).
+- Focused compiler/Projectile/Helper/trace coverage passes; the full
+  `ProjectileSystem` suite passes `100/100`; typecheck and diff hygiene pass.
+- The trace proves Helper caller-context replacement of `guard.velocity =
+  -8,var(1),var(2)` with `var(1)=-7`, `var(2)=6`, preserving the selected
+  Projectile's X component, then an accepted ground guard exposes
+  `GetHitVar(yvel/zvel)=-7/6`, the physical Y/Z response, Helper/Projectile
+  lifecycle, owner/root/parent links, and target links.
+- Aggregate `pnpm run qa:trace` remains blocked only by the inherited
+  `synthetic-imported-helper-bind-to-target-redirect` target-link failure.
+  The broader `EffectActorSystem` suite also retains its unrelated
+  `guardPoints` expectation failure (`44` expected, `0` observed).
+
 ## Claim allowed / blocked
 
 Allowed: bounded Helper caller-context Y/Z `ModifyProjectile guard.velocity`
 replacement for one root-owned Projectile and one accepted ground guard.
 Blocked: M.U.G.E.N claim for Y/Z, fresh defaults, airborne guard, nested/shared
 topology, exact physical/tick parity, rollback, and full parity.
-

@@ -1,17 +1,18 @@
 ﻿# Port Completion Scorecard
 
-## 2026-08-15 T774 Helper `ModifyProjectile` `airguard.velocity` matrix — closed-bounded, no score movement
+## 2026-08-15 T775 Helper `ModifyProjectile` `guard.velocity` Y/Z matrix — closed-bounded, no score movement
 
-Issue 348 closes the first-generation Helper-authored airborne guard velocity
-component matrix. Evidence commit `ebfe451e` adds focused Projectile and
-Helper micro-VM regressions for omitted no-op, single, pair, and triple writes;
-the pinned Ikemen zero-fill semantics are observed. `ProjectileSystem` passes
-`99/99`, typecheck and diff hygiene pass. The broader EffectActorSystem suite
-retains one unrelated `guardPoints` expectation failure, and aggregate QA
-retains the inherited helper-bind target-link blocker. No score movement:
-fresh/default derivation, ground guard, nested/shared topology, exact
-physics/timing, rollback and full parity remain blocked. See [issue
-348](../.scratch/roadmap/issues/348-helper-modifyprojectile-airguard-velocity-preservation.md).
+Issue 349 closes the first-generation Helper-authored ground-guard velocity
+Y/Z matrix. Evidence commit `a5cec411` and required trace `a6bfe6bd` ->
+`b6d30a1d` add focused Projectile/Helper regressions and accepted guard
+evidence for omission/no-op plus single, pair, and triple zero-fill writes.
+`ProjectileSystem` passes `100/100`, typecheck and diff hygiene pass. The
+broader EffectActorSystem suite retains one unrelated `guardPoints`
+expectation failure, and aggregate QA retains the inherited helper-bind
+target-link blocker. No score movement: fresh/default derivation, airborne
+guard, nested/shared topology, exact physics/timing, rollback and full parity
+remain blocked. See [issue
+349](../.scratch/roadmap/issues/349-helper-modifyprojectile-guard-velocity-yz.md).
 
 ## Historical checkpoint — 2026-08-15 T773 Helper `ModifyProjectile` `airguard.velocity` Z air guard — closed-bounded, no score movement
 
@@ -39,14 +40,14 @@ component preservation, nested/shared-resource topology, exact physics/timing,
 rollback and full parity remain blocked. See [issue
 346](../.scratch/roadmap/issues/346-helper-modifyprojectile-airguard-velocity-y.md).
 
-## 2026-08-15 T774 Helper `ModifyProjectile` `airguard.velocity` preservation — queued
+## 2026-08-15 T776 Helper `ModifyProjectile` `down.velocity` matrix — queued
 
-Issue 348 is the next bounded cut for omitted, single-component, and X/Y-pair
-preservation on a live Helper-owned `ModifyProjectile airguard.velocity`
-vector. No score movement is expected. Fresh/default derivation, ground guard,
-nested/shared-resource topology, aggregate QA repair, exact physics/timing,
+Issue 350 is the next bounded cut for the Helper-owned `ModifyProjectile
+down.velocity` matrix and one accepted lying hit. No score movement is
+expected. Fresh/default derivation, air/airguard/ground selection,
+nested/shared-resource topology, aggregate QA repair, exact landing/timing,
 rollback and full parity remain blocked. See [issue
-348](../.scratch/roadmap/issues/348-helper-modifyprojectile-airguard-velocity-preservation.md).
+350](../.scratch/roadmap/issues/350-helper-modifyprojectile-down-velocity.md).
 
 ## 2026-08-15 T771 Helper `ModifyProjectile` `airguard.velocity` X air guard — historical closed-bounded, no score movement
 

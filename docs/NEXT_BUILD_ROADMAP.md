@@ -1,19 +1,19 @@
 ﻿# Next Build Roadmap
 
-## Latest bounded slice — T774 closed-bounded (2026-08-15)
+## Latest bounded slice — T775 closed-bounded (2026-08-15)
 
-Issue 348 closes the first-generation Helper-authored `ModifyProjectile`
-`airguard.velocity` component matrix. Pinned Ikemen behavior is covered
+Issue 349 closes the first-generation Helper-authored `ModifyProjectile`
+`guard.velocity` ground-guard Y/Z component matrix. Pinned Ikemen behavior is covered
 directly: omission is a no-op, one component writes X and zero-fills Y/Z, a
 pair writes X/Y and zero-fills Z, and a triple replaces all three components.
-Evidence commit `ebfe451e` backs focused `ProjectileSystem` and Helper
+Evidence commit `a5cec411` backs focused `ProjectileSystem` and Helper
 micro-VM regressions; typecheck and diff hygiene pass. The full
-ProjectileSystem file passes `99/99`. The broader EffectActorSystem file
+ProjectileSystem file passes `100/100`. The broader EffectActorSystem file
 retains one unrelated `guardPoints` expectation failure, and aggregate QA
 retains the inherited helper-bind target-link blocker. Fresh/default
-derivation, ground guard, nested/shared-resource topology, exact
+derivation, airborne guard, nested/shared-resource topology, exact
 physics/timing, rollback and full parity remain blocked. See [issue
-348](../.scratch/roadmap/issues/348-helper-modifyprojectile-airguard-velocity-preservation.md).
+349](../.scratch/roadmap/issues/349-helper-modifyprojectile-guard-velocity-yz.md).
 
 ## Historical bounded slice — T773 closed-bounded (2026-08-15)
 
@@ -43,13 +43,13 @@ preservation, nested/shared-resource topology, exact physics/timing, rollback
 and full parity remain blocked. See [issue
 346](../.scratch/roadmap/issues/346-helper-modifyprojectile-airguard-velocity-y.md).
 
-## Next bounded slice — T775 queued (2026-08-15)
+## Next bounded slice — T776 queued (2026-08-15)
 
-Issue 349 will close the Helper-authored `ModifyProjectile guard.velocity` Y/Z
-ground-guard extension with the pinned zero-filled component matrix. Keep
-fresh/default derivation, airborne guard, nested/shared-resource topology,
-aggregate QA repair, exact physics/timing, rollback and full parity separate.
-See [issue 349](../.scratch/roadmap/issues/349-helper-modifyprojectile-guard-velocity-yz.md).
+Issue 350 will close the Helper-authored `ModifyProjectile down.velocity`
+matrix for one root-owned Projectile and one accepted lying hit. Keep
+fresh/default derivation, air/airguard/ground selection, nested/shared-resource
+topology, aggregate QA repair, exact landing/timing, rollback and full parity
+separate. See [issue 350](../.scratch/roadmap/issues/350-helper-modifyprojectile-down-velocity.md).
 
 ## Historical bounded slice — T771 closed-bounded (2026-08-15)
 
