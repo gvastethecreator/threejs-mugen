@@ -2814,6 +2814,66 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("keeps Helper-owned ModifyProjectile airguard.velocity edge selectors fail-closed where required", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "72", anim: "934" }),
+      stateNo: 6170,
+      runtimeProgram: {
+        states: [
+          compileStateProgram(state(6170, 934, [
+            controller("Projectile", { projid: "0", projanim: "948", velocity: "0,0", "airguard.velocity": "-1,-2,3" }, ["Time = 0"]),
+            controller("Projectile", { projid: "8906", projanim: "948", velocity: "0,0", "airguard.velocity": "-4,-5,6" }, ["Time = 0"]),
+            controller("Projectile", { projid: "8906", projanim: "948", velocity: "0,0", "airguard.velocity": "-7,-8,9" }, ["Time = 0"]),
+            controller("Projectile", { projid: "8907", projanim: "948", velocity: "0,0", "airguard.velocity": "-10,-11,12" }, ["Time = 0"]),
+            controller("ChangeState", { value: "6171" }, ["Time = 0"]),
+          ])),
+          compileStateProgram(state(6171, 935, [
+            controller("ModifyProjectile", { id: "0", "airguard.velocity": "-2,-1,4" }, ["Time = 0"]),
+            controller("ChangeState", { value: "6172" }, ["Time = 0"]),
+          ])),
+          compileStateProgram(state(6172, 936, [
+            controller("ModifyProjectile", { id: "8906", index: "Var(105)", "airguard.velocity": "-6,-5,2" }, ["Time = 0"]),
+            controller("ChangeState", { value: "6173" }, ["Time = 0"]),
+          ])),
+          compileStateProgram(state(6173, 937, [
+            controller("ModifyProjectile", { id: "8906", index: "9", "airguard.velocity": "-1,-2,3" }, ["Time = 0"]),
+            controller("ModifyProjectile", { id: "9999", index: "0", "airguard.velocity": "-1,-2,3" }, ["Time = 0"]),
+          ])),
+        ],
+      },
+      animations: new Map([
+        [934, action(934, 4)],
+        [935, action(935, 4)],
+        [936, action(936, 4)],
+        [937, action(937, 4)],
+        [948, action(948, 4)],
+      ]),
+    });
+    helper.vars[105] = -1;
+
+    for (let tick = 0; tick < 4; tick += 1) {
+      advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    }
+
+    const owned = store.projectiles.filter((candidate) => candidate.parentId === helper.serialId);
+    expect(owned).toHaveLength(4);
+    expect(owned.find((candidate) => candidate.projectileId === 0)).toMatchObject({
+      airGuardPush: 2,
+      airGuardVelocityY: -1,
+      airGuardVelocityZ: 4,
+    });
+    expect(owned.filter((candidate) => candidate.projectileId === 8906)).toEqual([
+      expect.objectContaining({ airGuardPush: 6, airGuardVelocityY: -5, airGuardVelocityZ: 2 }),
+      expect.objectContaining({ airGuardPush: 6, airGuardVelocityY: -5, airGuardVelocityZ: 2 }),
+    ]);
+    expect(owned.find((candidate) => candidate.projectileId === 8907)).toMatchObject({
+      airGuardPush: 10,
+      airGuardVelocityY: -11,
+      airGuardVelocityZ: 12,
+    });
+  });
+
   it("resolves Helper-owned dynamic ModifyProjectile givepower in caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {

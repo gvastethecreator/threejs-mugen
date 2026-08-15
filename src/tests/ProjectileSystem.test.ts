@@ -3572,6 +3572,54 @@ describe("ProjectileSystem", () => {
     expect(trap).toMatchObject({ airGuardPush: 7, airGuardVelocityY: 8, airGuardVelocityZ: 9 });
   });
 
+  it("keeps official ModifyProjectile airguard.velocity edge selection semantics", () => {
+    const createStore = () => [
+      projectile({ serialId: "edge-id-zero", projectileId: 0, airGuardPush: 1, airGuardVelocityY: 2, airGuardVelocityZ: 3 }),
+      projectile({ serialId: "edge-oldest", projectileId: 77, airGuardPush: 4, airGuardVelocityY: 5, airGuardVelocityZ: 6 }),
+      projectile({ serialId: "edge-newest", projectileId: 77, airGuardPush: 7, airGuardVelocityY: 8, airGuardVelocityZ: 9 }),
+      projectile({ serialId: "edge-trap", projectileId: 88, airGuardPush: 10, airGuardVelocityY: 11, airGuardVelocityZ: 12 }),
+    ];
+
+    const omittedId = createStore();
+    expect(modifyRuntimeProjectiles(omittedId, {
+      controller: controller({ "airguard.velocity": "-8,-3" }),
+    })).toBe(4);
+    expect(omittedId.map((candidate) => [candidate.airGuardPush, candidate.airGuardVelocityY, candidate.airGuardVelocityZ])).toEqual([
+      [8, -3, 0], [8, -3, 0], [8, -3, 0], [8, -3, 0],
+    ]);
+
+    const idZero = createStore();
+    expect(modifyRuntimeProjectiles(idZero, {
+      controller: controller({ id: "0", "airguard.velocity": "-2,-1,4" }),
+    })).toBe(1);
+    expect(idZero[0]).toMatchObject({ airGuardPush: 2, airGuardVelocityY: -1, airGuardVelocityZ: 4 });
+    expect(idZero[1]).toMatchObject({ airGuardPush: 4, airGuardVelocityY: 5, airGuardVelocityZ: 6 });
+
+    const negativeIndex = createStore();
+    expect(modifyRuntimeProjectiles(negativeIndex, {
+      controller: controller({ id: "77", index: "var(0)", "airguard.velocity": "-7,-5,2" }),
+      resolveModifyProjectile: { resolveNumber: (key) => key === "index" ? -1 : undefined },
+    })).toBe(2);
+    expect(negativeIndex[1]).toMatchObject({ airGuardPush: 7, airGuardVelocityY: -5, airGuardVelocityZ: 2 });
+    expect(negativeIndex[2]).toMatchObject({ airGuardPush: 7, airGuardVelocityY: -5, airGuardVelocityZ: 2 });
+    expect(negativeIndex[0]).toMatchObject({ airGuardPush: 1, airGuardVelocityY: 2, airGuardVelocityZ: 3 });
+    expect(negativeIndex[3]).toMatchObject({ airGuardPush: 10, airGuardVelocityY: 11, airGuardVelocityZ: 12 });
+
+    const outOfRange = createStore();
+    expect(modifyRuntimeProjectiles(outOfRange, {
+      controller: controller({ id: "77", index: "9", "airguard.velocity": "-1,-2,3" }),
+    })).toBe(0);
+    expect(outOfRange.map((candidate) => [candidate.airGuardPush, candidate.airGuardVelocityY, candidate.airGuardVelocityZ])).toEqual([
+      [1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12],
+    ]);
+    expect(modifyRuntimeProjectiles(outOfRange, {
+      controller: controller({ id: "999", index: "0", "airguard.velocity": "-1,-2,3" }),
+    })).toBe(0);
+    expect(outOfRange.map((candidate) => [candidate.airGuardPush, candidate.airGuardVelocityY, candidate.airGuardVelocityZ])).toEqual([
+      [1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12],
+    ]);
+  });
+
   it("resolves dynamic ModifyProjectile guard.velocity for selected live projectiles", () => {
     const matching = projectile({ projectileId: 77, guardPush: 1, guardVelocityY: 2, guardVelocityZ: 3 });
     const other = projectile({ serialId: "dynamic-guard-other", projectileId: 88, guardPush: 4, guardVelocityY: 5, guardVelocityZ: 6 });
