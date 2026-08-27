@@ -1,21 +1,20 @@
 # Changelog
 
-## 2026-08-12 — mantenimiento de proyecto
+## 2026-08-27 — public-tree maintenance
 
-- Actualizadas las dependencias directas a las versiones disponibles y
-  regenerado `pnpm-lock.yaml`.
-- Confirmado pnpm como gestor canónico; no se migró Bun porque este proyecto no
-  lo utiliza de forma operativa.
-- Añadidos scripts `check`, `deps:check`, `audit` y `verify`.
-- Añadido `.vscode/tasks.json` con tareas comunes y emojis.
-- Revisado `.gitignore` para caches y reportes locales sin ocultar tareas de
-  VS Code.
-- Documentados los changelogs y el impacto esperado en
-  `docs/DEPENDENCY_UPDATES.md`.
-- Registrado el estado real de gates en `docs/QUALITY_AUDIT.md`.
+- Added MIT license, contributing guide, and security contact.
+- Slimmed the README and public docs. Operator roadmaps, research dumps, and ticket ledgers now live in ignored `.scratch/`.
+- Untracked `.scratch/` from git. Evidence artifacts used by tests remain in `docs/evidence/`.
 
-## Nota de compatibilidad
+## 2026-08-12 — project maintenance
 
-El WIP de runtime permanece intacto. Los fallos conocidos de helper Projectile
-y helper BindToTarget RedirectID se mantienen como bloqueos explícitos y no se
-ocultan mediante cambios de expectativas.
+- Updated direct dependencies and regenerated `pnpm-lock.yaml`.
+- Confirmed pnpm as the canonical package manager. Bun was not adopted because this project does not use it.
+- Added `check`, `deps:check`, `audit`, and `verify` scripts.
+- Added `.vscode/tasks.json` for common tasks.
+- Recorded upgrade impact in `docs/DEPENDENCY_UPDATES.md`.
+- Recorded gate status in `docs/QUALITY_AUDIT.md`.
+
+## Compatibility note
+
+Runtime WIP stays intact. Known helper Projectile and helper BindToTarget RedirectID failures remain explicit blockers. They are not hidden by weaker expectations.

@@ -32,14 +32,14 @@ const nextQueue = args["next-queue"]
     : [];
 const gatePin = (args["gate-sha"] || drainState?.measuredGateSha || drainState?.gateSha || GATE_GLOBAL).trim();
 const formalArtifact = gatePin === GATE_GLOBAL
-  ? "docs/BUILD_EXECUTION_BACKLOG.md#entry-604"
-  : "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md";
+  ? ".scratch/architecture/BUILD_EXECUTION_BACKLOG.md#entry-604"
+  : ".scratch/archive/2026-08-27-stale-docs/research/da29/2026-07-26-global-checkpoint-da29-002.md";
 const formalClaim = gatePin === GATE_GLOBAL
   ? "Entry 604 formal/global closeout (DA28-02)"
   : "DA29-002 current HEAD formal/global re-gate only";
 const globalArtifact = gatePin === GATE_GLOBAL
-  ? "docs/research/2026-07-26-global-checkpoint-da28-02.md"
-  : "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md";
+  ? ".scratch/archive/2026-08-27-stale-docs/research/2026-07-26-global-checkpoint-da28-02.md"
+  : ".scratch/archive/2026-08-27-stale-docs/research/da29/2026-07-26-global-checkpoint-da29-002.md";
 const globalClaim = gatePin === GATE_GLOBAL
   ? "global gate TypeScript/Vitest 270·2850 / traces 663 / build / boundaries at 32466c6e only"
   : "DA29-002 measured stack at claimed HEAD only; scores held";
@@ -58,7 +58,7 @@ const document = createDocument({
   },
   cursors: {
     formal: cursor(gatePin, formalArtifact, formalClaim),
-    focal: cursor(FOCAL_T406, "docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md", "T406 active juggle runtime only"),
+    focal: cursor(FOCAL_T406, ".scratch/archive/2026-08-27-stale-docs/research/2026-07-26-ikemen-statedef-hitdef-juggle.md", "T406 active juggle runtime only"),
     global: cursor(gatePin, globalArtifact, globalClaim),
     visual: cursor(VISUAL_T342, "docs/research (T342 visual gate)", "T342 visual only; not HEAD product truth"),
     product: cursor(VISUAL_T342, "docs/research (T342 product gate)", "T342 product only"),
@@ -66,7 +66,7 @@ const document = createDocument({
     sourceWorking: cursor(SOURCE_WORKING, "docs/evidence/source-authority-epoch-v1.json", "working pin 4aa for reviewed families only"),
   },
   artifacts: {
-    authoritySelectorDoc: "docs/AUTHORITY_SELECTOR.md",
+    authoritySelectorDoc: ".scratch/architecture/AUTHORITY_SELECTOR.md",
     roadmapCursor: "docs/evidence/roadmap-cursor-v1.json",
     sourceEpoch: "docs/evidence/source-authority-epoch-v1.json",
     globalCheckpointReport: globalArtifact,

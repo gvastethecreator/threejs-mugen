@@ -1,12 +1,12 @@
 # Terminal Supermercado 24h
 
-Pack parallax v2 regenerado para el port MUGEN/Ikemen. El contrato de cámara es 1672×941, 16:9, con el área central despejada para el combate. La escena usa carbón, azul pizarra, oliva y ámbar apagado, con contraste de manga de combate y sin luces saturadas.
+Parallax v2 pack regenerated for the MUGEN/Ikemen port. Camera contract: 1672×941, 16:9, with a clear central fight area. Palette: charcoal, slate blue, olive, and muted amber, combat-manga contrast, no saturated lights.
 
-- `source/terminal-supermercado-24h-base-imagegen.png`: alias estable del plano lejano v2.
-- `source/terminal-supermercado-24h-mid-imagegen-v2.png`: plano medio derivado del maestro Imagegen.
-- `source/terminal-supermercado-24h-near-alpha.png`: primer plano con máscara alfa vertical; no se pintaron reemplazos.
-- `background-pack.json`: orden, profundidad, hashes y factores de parallax.
-- `qa/background-composite.png`: prueba de composición.
-- `qa/background-scroll.gif`: prueba de desplazamiento por capa.
+- `source/terminal-supermercado-24h-base-imagegen.png`: stable far-plane v2 alias.
+- `source/terminal-supermercado-24h-mid-imagegen-v2.png`: mid plane derived from the Imagegen master.
+- `source/terminal-supermercado-24h-near-alpha.png`: foreground with a vertical alpha mask. No painted replacements.
+- `background-pack.json`: order, depth, hashes, and parallax factors.
+- `qa/background-composite.png`: composition proof.
+- `qa/background-scroll.gif`: per-layer scroll proof.
 
-Validación: `validate_background_pack.py` pasa con `representative=true` y provenance `imagegen`.
+Validation: `validate_background_pack.py` passes with `representative=true` and `imagegen` provenance.

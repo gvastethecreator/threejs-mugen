@@ -6,7 +6,7 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 
 const repoRoot = path.resolve(process.cwd());
-const roadmapPath = path.join(repoRoot, "docs/MASTER_REVIEW_ROADMAP.md");
+const roadmapPath = path.join(repoRoot, ".scratch/architecture/MASTER_REVIEW_ROADMAP.md");
 const outPath = path.join(repoRoot, "docs/evidence/da29/series-registry-v1.json");
 
 const text = fs.readFileSync(roadmapPath, "utf8");
@@ -49,7 +49,7 @@ for (let w = 0; w < 20; w += 1) {
 
 const payload = {
   schema: "Da29SeriesRegistry/v1",
-  source: "docs/MASTER_REVIEW_ROADMAP.md",
+  source: ".scratch/architecture/MASTER_REVIEW_ROADMAP.md",
   generatedAt: new Date().toISOString(),
   count: tasks.length,
   ids: tasks.map((t) => t.id),

@@ -11,18 +11,18 @@ const repoRoot = path.resolve(process.cwd());
 const outPath = path.join(repoRoot, "docs/evidence/da30/da30-001-hold-reference-audit.json");
 
 const CURRENT_SURFACES = [
-  "docs/AUTHORITY_SELECTOR.md",
-  "docs/ROADMAP_EXECUTION_BOARD.md",
-  "docs/WORKPLAN.md",
-  "docs/ROADMAP_NAVIGATION.md",
-  "docs/PROGRESS_TRACKER.md",
-  "docs/BUILD_EXECUTION_BACKLOG.md",
-  "docs/DELIVERY_ROADMAP.md",
-  "docs/NEXT_BUILD_ROADMAP.md",
-  "docs/ROADMAP_PROGRESS_SYSTEM.md",
-  "docs/MASTER_REVIEW_ROADMAP.md",
-  "docs/DA30_RECOVERY_ROADMAP.md",
-  "docs/research/2026-07-27-da29-completion-audit-and-da30-recovery.md",
+  ".scratch/architecture/AUTHORITY_SELECTOR.md",
+  ".scratch/architecture/ROADMAP_EXECUTION_BOARD.md",
+  ".scratch/architecture/WORKPLAN.md",
+  ".scratch/architecture/ROADMAP_NAVIGATION.md",
+  ".scratch/architecture/PROGRESS_TRACKER.md",
+  ".scratch/architecture/BUILD_EXECUTION_BACKLOG.md",
+  ".scratch/architecture/DELIVERY_ROADMAP.md",
+  ".scratch/architecture/NEXT_BUILD_ROADMAP.md",
+  ".scratch/architecture/ROADMAP_PROGRESS_SYSTEM.md",
+  ".scratch/architecture/MASTER_REVIEW_ROADMAP.md",
+  ".scratch/architecture/DA30_RECOVERY_ROADMAP.md",
+  ".scratch/archive/2026-08-27-stale-docs/research/2026-07-27-da29-completion-audit-and-da30-recovery.md",
 ];
 
 const ISSUE_SURFACES = [

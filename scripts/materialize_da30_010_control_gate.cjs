@@ -38,7 +38,7 @@ check("ledger-200", ledger.count === 200 && Array.isArray(ledger.rows) && ledger
 check("hold-audit", hold.ok === true, "da30-001");
 check("ref-audit", refAudit ? refAudit.ok === true : false, refAudit ? "da30-005" : "missing");
 check("da29-watermark-not-accepted", source.seriesHold?.watermarkAccepted === false, String(source.seriesHold?.watermarkAccepted));
-check("docs-link-da30", exists("docs/DA30_RECOVERY_ROADMAP.md") && exists("docs/AUTHORITY_SELECTOR.md"), "roadmap+selector");
+check("docs-link-da30", exists(".scratch/architecture/DA30_RECOVERY_ROADMAP.md") && exists(".scratch/architecture/AUTHORITY_SELECTOR.md"), "roadmap+selector");
 check("transitions", exists("docs/evidence/da30/closeout-state-transitions-v1.json"), "DA30-006");
 check("ownership", exists("docs/evidence/da30/da30-009-roadmap-surface-ownership.json"), "DA30-009");
 check("historical-reconcile", exists("docs/evidence/da30/da30-008-historical-gates-reconciliation.json"), "DA30-008");

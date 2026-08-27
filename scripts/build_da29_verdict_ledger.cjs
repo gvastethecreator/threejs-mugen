@@ -17,7 +17,7 @@ const statusDoc = JSON.parse(
 const statusById = new Map(statusDoc.records.map((r) => [r.id, r]));
 
 const AUDIT_HEAD = "fd7a9b9a16b2acd116df1e6dba69f0d451cc37ed";
-const AUDIT_REPORT = "docs/research/2026-07-27-da29-completion-audit-and-da30-recovery.md";
+const AUDIT_REPORT = ".scratch/archive/2026-08-27-stale-docs/research/2026-07-27-da29-completion-audit-and-da30-recovery.md";
 
 /** Explicit audit table overrides from 2026-07-27 completion audit. */
 const EXPLICIT = {

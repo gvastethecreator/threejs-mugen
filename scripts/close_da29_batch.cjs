@@ -39,7 +39,7 @@ for (let n = from; n <= to; n += 1) {
     cut: task.cut,
     acceptance: task.acceptance,
     risk: task.risk,
-    inputs: ["docs/MASTER_REVIEW_ROADMAP.md", "docs/evidence/da29/series-registry-v1.json"],
+    inputs: [".scratch/architecture/MASTER_REVIEW_ROADMAP.md", "docs/evidence/da29/series-registry-v1.json"],
     commands: task.kind === "G" && gateSha ? ["pnpm typecheck", "pnpm test", "pnpm qa:trace", "pnpm build", "pnpm check:boundaries", "pnpm check:redirect-boundary"] : ["node scripts/close_da29_batch.cjs"],
     gateSha: task.kind === "G" ? gateSha || null : null,
     artifacts: [],
@@ -85,7 +85,7 @@ process.stdout.write(`${JSON.stringify({ status: "passed", closed: closed.length
 function resolveKindArtifact(id, kind) {
   const map = {
     "DA29-001": "docs/evidence/da29/series-registry-v1.json",
-    "DA29-002": "docs/research/da29/2026-07-26-global-checkpoint-da29-002.md",
+    "DA29-002": ".scratch/archive/2026-08-27-stale-docs/research/da29/2026-07-26-global-checkpoint-da29-002.md",
     "DA29-003": "docs/evidence/da29/product-browser-matrix-v1.json",
     "DA29-004": "docs/evidence/da29/compatibility-corpus-v1.3.json",
     "DA29-005": "docs/evidence/da29/score-adjudication-v1.3.json",

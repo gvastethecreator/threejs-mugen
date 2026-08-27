@@ -40,7 +40,7 @@ describe("materialize control projections (side-effect)", () => {
         sourceWorking: source.cursors.sourceWorking,
       },
       artifacts: {
-        authoritySelectorDoc: "docs/AUTHORITY_SELECTOR.md",
+        authoritySelectorDoc: ".scratch/architecture/AUTHORITY_SELECTOR.md",
         roadmapCursor: "docs/evidence/roadmap-cursor-v1.json",
         sourceEpoch: "docs/evidence/source-authority-epoch-v1.json",
         globalCheckpointReport: source.cursors.global.artifact,

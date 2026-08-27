@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-194",
   "kind": "I",
-  "generatedAt": "2026-08-15T16:57:55.118Z",
+  "generatedAt": "2026-08-27T15:48:25.457Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave10ConsecutiveEvidence.test.ts -t DA29-194",
@@ -14,8 +14,8 @@
     },
     {
       "path": "scripts/materialize_authority_selector.cjs",
-      "bytes": 6899,
-      "sha256": "a1910e0b8d8764349908baffa940a557fb62c8679c01528cc07fe23b4f09e815"
+      "bytes": 7069,
+      "sha256": "b8cfedbd1a28e926572faf401360a88171f1cd48906a169413c51093176106bd"
     }
   ],
   "functionResults": {

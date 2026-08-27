@@ -1,66 +1,45 @@
-# Issue Tracker: Local Markdown
+# Issue tracker: local markdown
 
-Last audited: 2026-06-29
+Last audited: 2026-08-27
 
-Issues, PRDs, audits, and implementation plans for this repo live as markdown files in `.scratch/`.
+Issues, PRDs, audits, and implementation plans live as markdown in ignored `.scratch/`.
 
 ## Conventions
 
 - One workstream per directory: `.scratch/<feature-slug>/`
+- Reserved: `.scratch/planning/` is durable agent execution state.
+- Reserved: `.scratch/wayfinder/` is for wayfinding maps, not ordinary implementation issues.
+- Reserved: `.scratch/architecture/` is live operator architecture moved off the public tree.
+- Reserved: `.scratch/archive/` is unique stale docs moved off the public tree.
 - PRD path: `.scratch/<feature-slug>/PRD.md`
 - Issue path: `.scratch/<feature-slug>/issues/<NN>-<slug>.md`
 - Triage state: `Status:` line near the top of the issue file
-- Comments/history: append under `## Comments`
-- QA evidence: keep generated diagnostics/screenshots/traces under `.scratch/qa/` or the feature directory that produced them
+- Comments: append under `## Comments`
+- QA evidence: generated diagnostics, screenshots, and traces under `.scratch/qa/`
 
 ## Publishing
 
 When a skill says to publish to the issue tracker, create or update markdown under `.scratch/<feature-slug>/`.
 
-This repo currently has a GitHub remote, but the active working tracker is local markdown. Do not open or sync GitHub issues unless the user explicitly asks.
-
-## Skill Consumers
-
-These skills should treat this file as their issue-tracker contract:
-
-- `to-issues`
-- `to-prd`
-- `triage`
-- `diagnose`
-- `tdd`
-- `improve-codebase-architecture`
-- `web-project-readiness`
-- `zoom-out`
-
-If one of those skills needs to write work items, use local markdown first and link the affected roadmap/package docs in the issue body.
+This repo has a GitHub remote. The working tracker is local markdown. Do not open or sync GitHub issues unless the user explicitly asks.
 
 ## Fetching
 
 When a skill says to fetch an issue, read the referenced markdown path. If the user gives only a slug or number, search `.scratch/` first.
 
-## Repo-Specific Rule
+## Repo-specific rule
 
-Do not treat `.scratch/fixtures/` or `.scratch/external/` as redistributable source. Those are local/private evidence inputs.
+Do not treat `.scratch/fixtures/` or `.scratch/external/` as redistributable source. Those are local evidence inputs.
 
-Do not use the GitHub remote as the active issue tracker unless the user explicitly asks for GitHub Issues. Local markdown remains the working queue for autonomous agent passes.
+Do not create a second issue tracker under `docs/` or GitHub Issues for normal autonomous work. Parent workspace `AGENTS.md` is only a router.
 
-## Roadmap Control Ledger
-
-Use `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md` for setup-project, AGENTS, roadmap-routing, and QA-ledger refreshes. Append evidence there instead of creating duplicate setup issues unless the tracker layout, triage vocabulary, or domain-doc model changes.
-
-Before choosing a new implementation issue, compare `docs/BUILD_EXECUTION_BACKLOG.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, and the linked roadmap issue so an already-closed gate is not reselected as "next".
-
-Do not create a second issue tracker under `docs/`, GitHub Issues, or a parent workspace folder for normal autonomous work. Parent `D:\DEV\mugen-sandbox-prototypes\AGENTS.md` is only a router.
-
-## Roadmap Issue Schema
-
-Use this minimum shape for roadmap work:
+## Roadmap issue schema
 
 ```txt
 # NN - Title
 
 Status: ready-for-agent | in-progress | blocked | closed
-Labels: docs, roadmap, runtime-trace, mugen-compat, studio, generated-assets, ikemen-scan, visual-qa
+Labels: docs, runtime-trace, mugen-compat, studio, generated-assets, ikemen-scan, visual-qa
 
 ## Objective
 ## Next Useful Cuts
@@ -69,4 +48,4 @@ Labels: docs, roadmap, runtime-trace, mugen-compat, studio, generated-assets, ik
 ## Evidence
 ```
 
-Runtime issues should name trace artifacts/checksums when available. UI/Studio issues should name screenshot or diagnostics paths. Docs-only issues should state "no score movement".
+Runtime issues should name trace artifacts when available. UI/Studio issues should name screenshot paths. Docs-only issues should state "no score movement".

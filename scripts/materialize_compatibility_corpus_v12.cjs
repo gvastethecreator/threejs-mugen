@@ -99,7 +99,7 @@ const ARTIFACTS = [
   },
   {
     id: "global-checkpoint-da28-02",
-    path: "docs/research/2026-07-26-global-checkpoint-da28-02.md",
+    path: ".scratch/archive/2026-08-27-stale-docs/research/2026-07-26-global-checkpoint-da28-02.md",
     required: true,
     class: "control",
     provenance: "formal-global-gate",

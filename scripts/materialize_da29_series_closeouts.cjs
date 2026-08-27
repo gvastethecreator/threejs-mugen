@@ -27,7 +27,7 @@ const registry = JSON.parse(
 if (registry.count !== 200) fail(`registry count ${registry.count}`);
 
 const closeoutDir = path.join(repoRoot, "docs/evidence/da29/closeouts");
-const researchDir = path.join(repoRoot, "docs/research/da29");
+const researchDir = path.join(repoRoot, ".scratch/archive/2026-08-27-stale-docs/research/da29");
 const evidenceDir = path.join(repoRoot, "docs/evidence/da29");
 const probeDir = path.join(evidenceDir, "probes");
 const gateDir = path.join(evidenceDir, "gates");
@@ -117,7 +117,7 @@ function evaluateTask(task) {
   let commands = [];
   let extraAllowed = [];
   let extraBlocked = [];
-  let inputs = ["docs/MASTER_REVIEW_ROADMAP.md", "docs/evidence/da29/series-registry-v1.json"];
+  let inputs = [".scratch/architecture/MASTER_REVIEW_ROADMAP.md", "docs/evidence/da29/series-registry-v1.json"];
 
   if (id === "DA29-001") {
     status = "closed";
@@ -131,7 +131,7 @@ function evaluateTask(task) {
       evidenceClass = "measured-global-gate";
       measuredGateFlag = true;
       gateSha = measuredGate.sha;
-      artifacts.push("docs/research/da29/2026-07-26-global-checkpoint-da29-002.md");
+      artifacts.push(".scratch/archive/2026-08-27-stale-docs/research/da29/2026-07-26-global-checkpoint-da29-002.md");
       commands = [
         "pnpm typecheck",
         "pnpm test",
@@ -147,7 +147,7 @@ function evaluateTask(task) {
       extraBlocked = ["formal/global pin without measured full gate log"];
     }
   } else if (kind === "R") {
-    const noteRel = `docs/research/da29/${id.toLowerCase()}-notes.md`;
+    const noteRel = `.scratch/archive/2026-08-27-stale-docs/research/da29/${id.toLowerCase()}-notes.md`;
     const noteAbs = path.join(repoRoot, ...noteRel.split("/"));
     writeResearchNote(noteAbs, id, task, wave);
     if (fs.existsSync(noteAbs) && fs.statSync(noteAbs).size > 200) {
@@ -158,10 +158,10 @@ function evaluateTask(task) {
       extraAllowed = ["research/design inventory only"];
     }
   } else if (kind === "A") {
-    const noteRel = `docs/research/da29/${id.toLowerCase()}-architecture.md`;
+    const noteRel = `.scratch/archive/2026-08-27-stale-docs/research/da29/${id.toLowerCase()}-architecture.md`;
     const noteAbs = path.join(repoRoot, ...noteRel.split("/"));
     writeArchitectureNote(noteAbs, id, task, wave);
-    const controlPaths = ["docs/AUTHORITY_SELECTOR.md", "scripts/materialize_authority_selector.cjs"];
+    const controlPaths = [".scratch/architecture/AUTHORITY_SELECTOR.md", "scripts/materialize_authority_selector.cjs"];
     const okNote = fs.existsSync(noteAbs) && fs.statSync(noteAbs).size > 200;
     const okControl = controlPaths.every((p) => fs.existsSync(path.join(repoRoot, ...p.split("/"))));
     if (okNote && okControl) {
@@ -688,7 +688,7 @@ ${task.risk}
 
 ## Anchors
 - Authority materializer: scripts/materialize_authority_selector.cjs
-- Authority doc: docs/AUTHORITY_SELECTOR.md
+- Authority doc: .scratch/architecture/AUTHORITY_SELECTOR.md
 - Series registry: docs/evidence/da29/series-registry-v1.json
 
 ## Status

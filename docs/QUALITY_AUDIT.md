@@ -48,6 +48,7 @@ contact/fall-shake parity, or complete MUGEN/IKEMEN camera behavior.
 
 - Current README captures are stored under `docs/assets/screenshots/` with
   provenance in the adjacent `README.md`.
-- Generated trace and smoke artifacts stay under `.scratch/qa/`.
-- Tracked roadmap and compatibility evidence were preserved; this audit does
-  not authorize a release, push, or publication.
+- Generated trace and smoke artifacts stay under ignored `.scratch/qa/`.
+- Tracked compatibility evidence remains under `docs/evidence/`. Operator
+  roadmaps live in ignored `.scratch/architecture/` and `.scratch/roadmap/`.
+  This audit does not authorize a release, push, or publication.

@@ -1,12 +1,12 @@
 # Patio Dojo Publicidad
 
-Pack parallax v2 regenerado para el port MUGEN/Ikemen. El contrato de cámara es 1672×941, 16:9, con zona segura central para los luchadores. La dirección visual es pixel art de combate severo, anatomía tipo Baki y paleta carbón/óxido/hueso sin neón.
+Parallax v2 pack regenerated for the MUGEN/Ikemen port. Camera contract: 1672×941, 16:9, with a central safe zone for fighters. Direction: severe combat pixel art, Baki-like anatomy, charcoal/rust/bone palette, no neon.
 
-- `source/*imagegen.png`: alias estables de las capas v2 derivadas de una escena maestra Imagegen.
-- `source/*-v2.png`: fuentes y capas v2; el `source-provenance.json` registra el maestro y las transformaciones deterministas.
-- `source/*near-alpha.png`: plano cercano con máscara alfa vertical, sin pintar reemplazos.
-- `background-pack.json`: orden, profundidad, hashes y factores de parallax.
-- `qa/background-composite.png`: prueba de composición.
-- `qa/background-scroll.gif`: prueba de desplazamiento por capa.
+- `source/*imagegen.png`: stable aliases for v2 layers derived from one Imagegen master scene.
+- `source/*-v2.png`: v2 sources and layers. `source-provenance.json` records the master and deterministic transforms.
+- `source/*near-alpha.png`: near plane with a vertical alpha mask. No painted replacements.
+- `background-pack.json`: order, depth, hashes, and parallax factors.
+- `qa/background-composite.png`: composition proof.
+- `qa/background-scroll.gif`: per-layer scroll proof.
 
-Validación: `validate_background_pack.py` pasa con `representative=true` y provenance `imagegen`.
+Validation: `validate_background_pack.py` passes with `representative=true` and `imagegen` provenance.

@@ -14,10 +14,9 @@ Use local markdown as the working issue tracker and keep repo progress controlle
 
 - `AGENTS.md` owns agent rules and setup-project profile.
 - `.scratch/roadmap/` owns local PRD/issues for agent-sized slices.
-- `docs/PORT_COMPLETION_SCORECARD.md` owns 0-100 answers.
-- `docs/ROADMAP_EXECUTION_BOARD.md` owns current queue.
-- `docs/ROADMAP_RELEASE_TARGETS.md` owns release-train sequencing.
-- `docs/ROADMAP_PROGRESS_SYSTEM.md` owns update matrix and lifecycle.
+- `.scratch/architecture/` owns live operator roadmaps and construction ledgers.
+- `docs/QUALITY_AUDIT.md` owns the public engineering-gate snapshot.
+- `docs/COMPATIBILITY_PROFILES.md` owns profile and claim-level language.
 - Runtime/compatibility claims require tests, traces, visual QA, fixture evidence, or build/export proof.
 - Docs-only work can improve project control, but cannot raise compatibility or port scores.
 

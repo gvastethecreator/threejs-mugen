@@ -7,7 +7,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const repoRoot = path.resolve(process.cwd());
-const roadmapPath = path.join(repoRoot, "docs/DA30_RECOVERY_ROADMAP.md");
+const roadmapPath = path.join(repoRoot, ".scratch/architecture/DA30_RECOVERY_ROADMAP.md");
 const outPath = path.join(repoRoot, "docs/evidence/da31/da30-task-contracts-v1.json");
 const fixturesDir = path.join(repoRoot, "docs/evidence/da31/fixtures");
 
@@ -45,7 +45,7 @@ function parseRoadmap(md) {
       dependencies,
       expectedFailure: failureMatch ? failureMatch[0] : "missing-clause-or-stale-evidence",
       claimCeiling,
-      source: "docs/DA30_RECOVERY_ROADMAP.md",
+      source: ".scratch/architecture/DA30_RECOVERY_ROADMAP.md",
     };
     contract.digest = {
       algorithm: "sha-256",
@@ -113,7 +113,7 @@ const equivalenceFail =
 const doc = {
   schema: "Da30TaskContracts/v1",
   generatedAt: new Date().toISOString(),
-  sourceRoadmap: "docs/DA30_RECOVERY_ROADMAP.md",
+  sourceRoadmap: ".scratch/architecture/DA30_RECOVERY_ROADMAP.md",
   sourceDigest: { algorithm: "sha-256", value: sha(md) },
   count: contracts.length,
   contracts,

@@ -2,34 +2,37 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "📦 Install",
-      "type": "shell",
-      "command": "pnpm install --frozen-lockfile",
-      "problemMatcher": []
-    },
-    {
-      "label": "🚀 Dev",
+      "label": "▶️ Dev",
       "type": "shell",
       "command": "pnpm dev",
       "isBackground": true,
-      "problemMatcher": []
-    },
-    {
-      "label": "🏗 Build",
-      "type": "shell",
-      "command": "pnpm build",
-      "problemMatcher": "$tsc"
+      "problemMatcher": [],
+      "presentation": { "group": "dev" }
     },
     {
       "label": "🧪 Test",
       "type": "shell",
       "command": "pnpm test",
+      "group": "test",
       "problemMatcher": []
     },
     {
       "label": "🔎 Check",
       "type": "shell",
       "command": "pnpm check",
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "🏗️ Build",
+      "type": "shell",
+      "command": "pnpm build",
+      "group": "build",
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "✅ Verify",
+      "type": "shell",
+      "command": "pnpm verify",
       "problemMatcher": "$tsc"
     },
     {
@@ -45,22 +48,22 @@
       "problemMatcher": []
     },
     {
-      "label": "⬆️ Deps",
+      "label": "📦 Install",
       "type": "shell",
-      "command": "pnpm update --latest",
+      "command": "pnpm install --frozen-lockfile",
       "problemMatcher": []
     },
     {
-      "label": "🛡 Audit",
+      "label": "⬆️ Deps",
+      "type": "shell",
+      "command": "pnpm outdated",
+      "problemMatcher": []
+    },
+    {
+      "label": "🛡️ Audit",
       "type": "shell",
       "command": "pnpm audit --audit-level=high",
       "problemMatcher": []
-    },
-    {
-      "label": "✅ Verify",
-      "type": "shell",
-      "command": "pnpm verify",
-      "problemMatcher": "$tsc"
     }
   ]
 }

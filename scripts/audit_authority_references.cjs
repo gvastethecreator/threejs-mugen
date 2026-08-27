@@ -14,16 +14,16 @@ const cursorPath = resolveInputPath(args.cursor || "docs/evidence/roadmap-cursor
 const sourcePath = resolveInputPath(args.source || "docs/evidence/control-source-v1.json");
 
 const CURRENT_SURFACES = [
-  "docs/AUTHORITY_SELECTOR.md",
-  "docs/ROADMAP_NAVIGATION.md",
-  "docs/ROADMAP_CONTINUITY_GUIDE.md",
-  "docs/ROADMAP_PACKAGE_MILESTONES.md",
-  "docs/NEXT_BUILD_ROADMAP.md",
-  "docs/ROADMAP_EXECUTION_BOARD.md",
-  "docs/PROGRESS_TRACKER.md",
-  "docs/WORKPLAN.md",
-  "docs/DELIVERY_ROADMAP.md",
-  "docs/PORT_COMPLETION_SCORECARD.md",
+  ".scratch/architecture/AUTHORITY_SELECTOR.md",
+  ".scratch/architecture/ROADMAP_NAVIGATION.md",
+  ".scratch/architecture/ROADMAP_CONTINUITY_GUIDE.md",
+  ".scratch/architecture/ROADMAP_PACKAGE_MILESTONES.md",
+  ".scratch/architecture/NEXT_BUILD_ROADMAP.md",
+  ".scratch/architecture/ROADMAP_EXECUTION_BOARD.md",
+  ".scratch/architecture/PROGRESS_TRACKER.md",
+  ".scratch/architecture/WORKPLAN.md",
+  ".scratch/architecture/DELIVERY_ROADMAP.md",
+  ".scratch/architecture/PORT_COMPLETION_SCORECARD.md",
   ".scratch/roadmap/issues/01-runtime-compatibility-gates.md",
   ".scratch/roadmap/issues/02-studio-evidence-workflow.md",
   ".scratch/roadmap/issues/03-generated-assets-pipeline.md",
@@ -35,7 +35,7 @@ const CURRENT_SURFACES = [
 ];
 
 const REQUIRED_MARKERS = [
-  "docs/AUTHORITY_SELECTOR.md",
+  ".scratch/architecture/AUTHORITY_SELECTOR.md",
   "closedThrough",
 ];
 
@@ -174,9 +174,9 @@ for (const relative of CURRENT_SURFACES) {
   }
   const text = fs.readFileSync(absolute, "utf8");
   // Require pointer to authority selector (except the selector doc itself may only self-title).
-  if (relative !== "docs/AUTHORITY_SELECTOR.md") {
+  if (relative !== ".scratch/architecture/AUTHORITY_SELECTOR.md") {
     const hasPointer =
-      text.includes("docs/AUTHORITY_SELECTOR.md") ||
+      text.includes(".scratch/architecture/AUTHORITY_SELECTOR.md") ||
       text.includes("AUTHORITY_SELECTOR.md") ||
       text.includes("authority-selector-v1.json");
     if (!hasPointer) {

@@ -1,12 +1,12 @@
 # Nadia Arce
 
-Karateka original con gi marfil gastado, cinturón negro y estética de manga marcial extrema. Su identidad usa cicatriz en la ceja derecha, pelo negro corto, musculatura potente y vendas grises.
+Original karateka with a worn ivory gi, black belt, and extreme martial-manga look. Identity cues: scar on the right eyebrow, short black hair, powerful musculature, and grey wraps.
 
-- Atlas runtime: `sprite-sheet-alpha.png` y `manifest.json`.
-- Contrato: 14 estados y 79 cuadros transparentes.
-- Fuentes: 14 filas Imagegen verificadas en `raw/` y `source-provenance.json`.
-- QA: contactos, onion skins, GIF, matte, runtime playback y workbench en `qa/`.
-- MUGEN-lite: `mugen/nadia.def`, `.air`, `.cmd` y `.cns`.
-- Límite: el paquete no incluye un SFF binario nativo; el navegador usa el atlas PNG/WebP.
+- Runtime atlas: `sprite-sheet-alpha.png` and `manifest.json`.
+- Contract: 14 states and 79 transparent frames.
+- Sources: 14 verified Imagegen rows in `raw/` and `source-provenance.json`.
+- QA: contacts, onion skins, GIFs, matte, runtime playback, and workbench under `qa/`.
+- MUGEN-lite: `mugen/nadia.def`, `.air`, `.cmd`, and `.cns`.
+- Limit: the package has no native SFF binary. The browser uses the PNG/WebP atlas.
 
-La revisión visual está aprobada. El validador pre-package conserva en rojo el proxy geométrico de identidad para poses con escorzo y colapso; no se oculta ni se convierte en un verde documental.
+Visual review is approved. The pre-package validator keeps the geometric identity proxy red for foreshortened or collapsed poses. That red is not hidden or turned into a documentary green.

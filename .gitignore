@@ -1,5 +1,5 @@
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -9,11 +9,8 @@ lerna-debug.log*
 
 node_modules
 dist
-.scratch/*
-!.scratch/roadmap/
-!.scratch/roadmap/**
-!.scratch/wayfinder/
-!.scratch/wayfinder/**
+.scratch/
+.local/
 /output
 coverage/
 playwright-report/
