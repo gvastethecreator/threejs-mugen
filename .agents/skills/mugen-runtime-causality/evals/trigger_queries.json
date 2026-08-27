@@ -1,0 +1,66 @@
+[
+  {
+    "query": "A nested Ikemen Helper projectile causes a KO, but FightScreen shows the wrong WinType. Trace source actor, owning root, attr, and guard-KO without trusting rootId alone.",
+    "should_trigger": true
+  },
+  {
+    "query": "Our RedirectID target is valid even after the caller Helper's parent link becomes stale. Gate target controllers on live ancestry before dispatch.",
+    "should_trigger": true
+  },
+  {
+    "query": "Port TargetLifeAdd self-KO attribution so first-generation and nested Helpers credit the right root and fail closed on identity drift.",
+    "should_trigger": true
+  },
+  {
+    "query": "HitDef stores playerNo but loses the Helper serial before delayed life-zero classification. Preserve enough cause metadata for MUGEN result logic.",
+    "should_trigger": true
+  },
+  {
+    "query": "Audit Helper-parented Projectile ownership across actor ID, PlayerID, parent chain, root team, hit attr, and WinType selection.",
+    "should_trigger": true
+  },
+  {
+    "query": "ReversalDef missonoverride reads HitOverride from the wrong actor, while our fixture puts both features on one character. Separate roles and build an oracle that catches the inversion.",
+    "should_trigger": true
+  },
+  {
+    "query": "A valid PlayerID destination lets a corrupted nested Helper run BindToTarget. Add ancestry admission and negative runtime tests.",
+    "should_trigger": true
+  },
+  {
+    "query": "Direct hits work, but helper hits and helper projectiles lose source cause before team win-type aggregation. Diagnose the causality chain.",
+    "should_trigger": true
+  },
+  {
+    "query": "Clip and rotate FightScreen sprites so the imported screenpack matches its authored window layout.",
+    "should_trigger": false
+  },
+  {
+    "query": "Add a scoring system to a Three.js game with combos, checkpoints, and a results screen.",
+    "should_trigger": false
+  },
+  {
+    "query": "Update our pinned Ikemen parser files and prove the TypeScript port matches upstream on a fixture corpus.",
+    "should_trigger": false
+  },
+  {
+    "query": "A React helper function returns the wrong player label. Fix the component and its unit test.",
+    "should_trigger": false
+  },
+  {
+    "query": "Create a MUGEN character-select mockup with keyboard focus, portraits, and responsive browser proof.",
+    "should_trigger": false
+  },
+  {
+    "query": "The simulation worker drops WebGPU frames when 2,000 agents move at once. Profile the render loop.",
+    "should_trigger": false
+  },
+  {
+    "query": "Document current MUGEN compatibility scores from existing roadmap evidence; do not change runtime code.",
+    "should_trigger": false
+  },
+  {
+    "query": "A full Vitest suite hangs while each runtime test passes alone. Classify order dependence and resource starvation.",
+    "should_trigger": false
+  }
+]

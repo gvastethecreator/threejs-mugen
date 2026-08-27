@@ -1,0 +1,4 @@
+interface:
+  display_name: "MUGEN Runtime Evidence"
+  short_description: "Check source, checkpoint, and corpus freshness"
+  default_prompt: "Use $mugen-runtime-evidence to audit MUGEN or Ikemen evidence freshness before the next claim or implementation slice."

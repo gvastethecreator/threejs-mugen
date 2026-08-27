@@ -1,0 +1,53 @@
+{
+  "skill_name": "mugen-runtime-causality",
+  "evals": [
+    {
+      "id": "nested-helper-projectile-ko",
+      "prompt": "A nested Helper creates a Projectile that later causes a KO. Add root-owned WinType attribution while preserving the nested Helper as the source actor.",
+      "expected_output": "A live ancestry verifier gates the source, contact records actor/root/player/cause facts, and focused tests prove valid plus stale or cross-root paths.",
+      "files": [],
+      "assertions": [
+        "The response checks each live parent link and rejects cycles, missing actors, stale PlayerIDs, and cross-root ancestry.",
+        "The nested Helper actor identity remains distinct from the verified owning root.",
+        "The delayed result classifier consumes recorded contact facts instead of inferring from the winner.",
+        "The claim stays bounded to the exercised source and result paths."
+      ]
+    },
+    {
+      "id": "stale-redirect-caller",
+      "prompt": "RedirectID resolves a valid target, but the calling Helper's parent link changed after registration. Prevent TargetPowerAdd and BindToTarget from dispatching.",
+      "expected_output": "Caller ancestry and destination identity are checked independently before projection, rejected dispatch mutates nothing, and telemetry records the blocked caller.",
+      "files": [],
+      "assertions": [
+        "A valid destination does not authorize an invalid caller.",
+        "The same strict ownership predicate gates target and resource redirects.",
+        "Negative tests prove no receiver mutation after caller rejection.",
+        "Legacy fallback, if retained, is limited to profiles without the Ikemen identity registry."
+      ]
+    },
+    {
+      "id": "incomplete-hit-cause",
+      "prompt": "Life reaches zero while the victim remains in hit state, but source player, attr, or root ownership may be missing. Implement safe WinType classification for direct, Helper, and Projectile hits.",
+      "expected_output": "Each combat path records complete source facts at contact, incomplete facts fail closed, and suicide, teammate, guard-KO, and rival causes have separate tests.",
+      "files": [],
+      "assertions": [
+        "Source identity, root ownership, team, attr, and guard-KO remain separate facts.",
+        "Incomplete metadata does not receive inferred rival attribution.",
+        "Direct, Helper, and Projectile paths share a predicate only where semantics match.",
+        "Focused tests distinguish metadata propagation from browser or full compatibility proof."
+      ]
+    },
+    {
+      "id": "reversal-hitoverride-role-inversion",
+      "prompt": "ReversalDef missonoverride passes tests, but runtime reads HitOverride slots from the reversing actor. The fixture places ReversalDef and HitOverride on that same actor. Audit the upstream roles and design the correcting runtime slice.",
+      "expected_output": "A semantic role matrix, a source-pinned interaction plan, asymmetric fixtures that fail under the inverted lookup, and focused coverage for slot and payload ownership with a bounded compatibility claim.",
+      "files": [],
+      "assertions": [
+        "The response distinguishes reversor, countered attacker, HitOverride slot owner, inherited ReversalDef payload, incoming HitDef, and receiver.",
+        "The fixtures place opposing capabilities on different actors and include a decoy on the wrong actor.",
+        "The tests vary one role or payload owner at a time and become red under the inverted lookup.",
+        "The source pin and unsupported Projectile or ReversalDef-against-ReversalDef scope remain explicit."
+      ]
+    }
+  ]
+}

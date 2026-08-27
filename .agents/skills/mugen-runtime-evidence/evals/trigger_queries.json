@@ -1,0 +1,66 @@
+[
+  {
+    "query": "Thirty focused MUGEN runtime slices landed after the last global checkpoint. Audit what must rerun before we move the compatibility score.",
+    "should_trigger": true
+  },
+  {
+    "query": "Our source-authority manifest pins one Ikemen SHA, but the last eight tickets cite a newer commit. Reconcile the evidence and claim ceiling.",
+    "should_trigger": true
+  },
+  {
+    "query": "Studio GateEvidence still says passed, but it was produced hundreds of commits before the current runtime manifest. Decide whether the green is usable.",
+    "should_trigger": true
+  },
+  {
+    "query": "Resume the MUGEN roadmap and choose the next proof-producing slice from runtime, Studio, scanner, assets, and modular lane checkpoints.",
+    "should_trigger": true
+  },
+  {
+    "query": "Four trace corpus hashes disagree and the scorecard cites an older corpus. Build a freshness matrix before reporting progress.",
+    "should_trigger": true
+  },
+  {
+    "query": "The newest backlog entry is a UI cut, while runtime and browser checkpoints are older. Publish an honest roadmap cursor.",
+    "should_trigger": true
+  },
+  {
+    "query": "Run the daily MUGEN architecture audit and verify upstream pin, global checkpoint, corpus subject, Studio evidence, and score claims.",
+    "should_trigger": true
+  },
+  {
+    "query": "A package trust row is green for a previous project manifest. Check whether it proves the current build and name the missing gate.",
+    "should_trigger": true
+  },
+  {
+    "query": "A nested Helper Projectile causes the wrong WinType. Preserve actor identity and verify live ancestry.",
+    "should_trigger": false
+  },
+  {
+    "query": "Update the pinned Ikemen parser and prove TypeScript behavior against upstream on identical fixtures.",
+    "should_trigger": false
+  },
+  {
+    "query": "Fix a MUGEN Studio overlay that blocks clicks on mobile and capture browser proof.",
+    "should_trigger": false
+  },
+  {
+    "query": "Each runtime test passes alone, but the full Vitest suite hangs with four workers.",
+    "should_trigger": false
+  },
+  {
+    "query": "Create a responsive MUGEN character-select prototype with keyboard navigation.",
+    "should_trigger": false
+  },
+  {
+    "query": "Implement PosFreeze RedirectID using the already approved source pin and current focused test contract.",
+    "should_trigger": false
+  },
+  {
+    "query": "Clean old local logs while retaining release and audit evidence.",
+    "should_trigger": false
+  },
+  {
+    "query": "Package the Windows build, verify its signature, and smoke test the extracted artifact.",
+    "should_trigger": false
+  }
+]

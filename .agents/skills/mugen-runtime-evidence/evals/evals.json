@@ -1,0 +1,54 @@
+{
+  "skill_name": "mugen-runtime-evidence",
+  "evals": [
+    {
+      "id": "mixed-upstream-pins",
+      "prompt": "The normative Ikemen manifest pins revision A, but recent runtime tickets and reports cite revision B. Decide what can be claimed and what work comes next.",
+      "expected_output": "A source-pin delta and semantic review gate separate current evidence from blocked candidate-based claims.",
+      "files": [],
+      "assertions": [
+        "The response identifies the normative and candidate pins separately.",
+        "It diffs claim-relevant upstream files or symbols instead of trusting release notes.",
+        "It requires rerun against the normative pin or explicit candidate promotion.",
+        "It keeps broad compatibility claims blocked while semantic review is open."
+      ]
+    },
+    {
+      "id": "focused-slices-ahead-of-global",
+      "prompt": "Twenty focused runtime cuts pass, the last global test/trace checkpoint predates them, and the newest backlog entry belongs to Studio. Audit readiness for a score update.",
+      "expected_output": "Separate runtime, Studio, focused, and global cursors expose the stale global gate and prevent score movement until it reruns.",
+      "files": [],
+      "assertions": [
+        "The response does not treat the newest overall backlog entry as runtime authority.",
+        "It records focused and global checkpoints as separate evidence rows.",
+        "It requires the global checkpoint before broad score movement.",
+        "It keeps docs-only or Studio work from moving runtime scores."
+      ]
+    },
+    {
+      "id": "stale-studio-and-corpus-evidence",
+      "prompt": "Studio GateEvidence says passed and the trace corpus is green, but neither record names the current commit or input digest. Choose the next gate and handoff verdict.",
+      "expected_output": "Unidentified evidence is unknown, the matrix names missing subjects, and the next gate regenerates evidence against the current code and inputs.",
+      "files": [],
+      "assertions": [
+        "A passed label without subject identity is classified unknown.",
+        "The response asks for commit, input/corpus digest, producer command, and result.",
+        "Studio/browser and trace evidence remain separate lanes.",
+        "The handoff states allowed and blocked claims plus one next proof slice."
+      ]
+    },
+    {
+      "id": "generated-watermark-ahead-of-acceptance",
+      "prompt": "The MUGEN roadmap generator reports closedThrough DA30-025. Three tasks only prove green command exits, a loaded Play canvas, and loaded Studio shells; their written semantic clauses and negative cases have no manifests. Audit the watermark and define the repair gate.",
+      "expected_output": "Recorded and adjudicated cursors split, generic observations stay narrow, and clause manifests plus semantic reruns gate any accepted status or score claim.",
+      "files": [],
+      "assertions": [
+        "The response keeps machine-recorded and adjudicated watermarks separate.",
+        "It classifies command exits, canvas load, and shell load as narrow observations rather than task completion.",
+        "It requires versioned clause manifests with semantic assertions, negative cases, revision identity, and claim ceilings.",
+        "It names Play state changes, real Studio save/reopen/recovery, and complete formal output as repair evidence.",
+        "It blocks score movement and consecutive advancement until written clauses pass."
+      ]
+    }
+  ]
+}

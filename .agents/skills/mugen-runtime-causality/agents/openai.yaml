@@ -1,0 +1,4 @@
+interface:
+  display_name: "MUGEN Runtime Causality"
+  short_description: "Verify actor roles, identity, and cause attribution"
+  default_prompt: "Use $mugen-runtime-causality to verify MUGEN or Ikemen runtime identity and cause attribution."
