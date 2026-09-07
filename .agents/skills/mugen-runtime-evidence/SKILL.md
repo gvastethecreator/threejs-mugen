@@ -1,13 +1,13 @@
 ---
 name: mugen-runtime-evidence
-description: "MUGEN/Ikemen evidence: pin, checkpoint, corpus, and claim must share one SHA."
+description: "MUGEN/Ikemen evidence freshness and compatibility claim review."
 ---
 
 # MUGEN Runtime Evidence
 
-Work in `X:\threejs-mugen\mugen-web-sandbox`. The parent `X:\threejs-mugen` is a router only; do not run git or pnpm there. Before a progress claim or next slice, match the claim to the code, pin, corpus, and gate that proved it.
+Resolve the checkout through the workspace `AGENTS.md` router and run commands from the repository root. Before a progress claim or next slice, match the claim to the code, upstream pin, corpus, and gate that proved it. The upstream revision and local subject revision identify different repositories; record both.
 
-Read `AGENTS.md`, then `docs/ROADMAP_PROGRESS_SYSTEM.md` and `docs/ROADMAP_EXECUTION_BOARD.md`. For scores also `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md`.
+Read `AGENTS.md` and `docs/COMPATIBILITY_PROFILES.md` for public claim boundaries. For queued work, follow `docs/agents/issue-tracker.md` to the local issue and checkpoint. A clean clone may have no local queue: use tracked code, tests, and `docs/evidence/` to identify the next gap, and record it through that tracker contract. Do not recreate removed public roadmaps or infer completion percentages from ticket counts.
 
 ## Process
 

@@ -5,7 +5,7 @@ description: "MUGEN/Ikemen causality: live Helper ancestry, redirects, hit sourc
 
 # MUGEN Runtime Causality
 
-Work in `X:\threejs-mugen\mugen-web-sandbox`. The parent `X:\threejs-mugen` is a router only; do not run git or pnpm there. Read `AGENTS.md`, then `CONTEXT.md`.
+Resolve the checkout through the workspace `AGENTS.md` router and run commands from the repository root. Read its `AGENTS.md`, then `CONTEXT.md`.
 
 Use when damage, redirects, helpers, projectiles, or WinType cross actor boundaries.
 
