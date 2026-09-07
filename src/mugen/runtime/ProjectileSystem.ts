@@ -1479,11 +1479,11 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
     ?? resolveModifyProjectileFloatTripleParam(input, "maxdist", projectileZeroDefaultTriple));
   const airHitTime = operation?.airHitTime ?? resolveModifyProjectileNumberParam(input, "air.hittime");
   const groundFallParam = operation?.groundFall === undefined
-    ? resolveModifyProjectileNumberParam(input, "fall")
+    ? resolveModifyProjectileFloatParam(input, "fall")
     : undefined;
   const groundFall = operation?.groundFall ?? (groundFallParam === undefined ? undefined : groundFallParam !== 0);
   const airFallParam = operation?.airFall === undefined
-    ? resolveModifyProjectileNumberParam(input, "air.fall")
+    ? resolveModifyProjectileFloatParam(input, "air.fall")
     : undefined;
   const airFall = operation?.airFall ?? (airFallParam === undefined ? undefined : airFallParam !== 0);
   const downBounceParam = operation?.downBounce === undefined

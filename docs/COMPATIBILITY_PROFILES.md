@@ -106,6 +106,12 @@ differential parity, or full engine compatibility.
 
 ## Recovery and bounce boolean evaluation
 
+`ModifyProjectile` also preserves fractional dynamic `fall` and `air.fall`
+values through its existing decimal caller callback. Mutation tests cover
+positive and negative fractions, explicit zero, unchanged recovery metadata,
+and an unselected Projectile. This is local mutation evidence, not proof of
+every post-mutation contact or upstream differential parity.
+
 Recovery and bounce evaluation is locally covered for `fall.recover`,
 `down.recover`, and `down.bounce`: finite nonzero fractions become true while
 recovery times remain integers. Fresh Projectile recovery retains its typed

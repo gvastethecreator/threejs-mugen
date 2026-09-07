@@ -4147,6 +4147,8 @@ describe("ProjectileSystem", () => {
           "fall.recover": "var(0)",
           "down.recover": "var(0)",
           "down.bounce": "var(0)",
+          fall: "var(0)",
+          "air.fall": "var(0)",
         }),
         resolveModifyProjectile: {
           resolveFloat: () => value,
@@ -4159,7 +4161,8 @@ describe("ProjectileSystem", () => {
         forceStand: value !== 0,
         forceCrouch: value !== 0,
         downBounce: value !== 0,
-        fall: { kill: value !== 0, recover: value !== 0, downRecover: value !== 0, recoverTime: 13 },
+        fall: { enabled: value !== 0, airFall: value !== 0,
+          kill: value !== 0, recover: value !== 0, downRecover: value !== 0, recoverTime: 13 },
       });
       expect(other).toEqual(untouched);
     }
