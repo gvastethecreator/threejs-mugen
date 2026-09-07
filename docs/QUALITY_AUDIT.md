@@ -42,7 +42,9 @@ contact/fall-shake parity, or complete MUGEN/IKEMEN camera behavior.
 2. The primary JavaScript bundle is large. A dedicated performance pass should
    introduce route- or feature-level dynamic imports without mixing that work
    into compatibility changes.
-3. Full upstream MUGEN/IKEMEN compatibility remains intentionally out of scope.
+3. Full upstream MUGEN/IKEMEN compatibility remains the development objective.
+   The current evidence proves only the documented subset. Full compatibility
+   is incomplete and must not be inferred from these engineering gates.
 
 ## Evidence handling
 
