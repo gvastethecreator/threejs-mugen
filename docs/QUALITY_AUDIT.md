@@ -7,9 +7,9 @@ Latest verification: 2026-09-07
 The HitDef fall/lethal update passed 4,110 tests in 328 files (83.53 seconds).
 After fixing a test-fixture type error, the affected guarded-contact test and
 typecheck passed again. All 890 trace artifacts passed, including 856 required
-gates. Its production build is still running; the completed build below belongs
-to the preceding posture/no-fall update. No final build claim applies yet to
-the fall/lethal update.
+gates. Its production build passed: 363 modules in 2m 59s, including 177.2
+seconds preparing the output directory. The detailed checks below describe the
+preceding posture/no-fall update and remain historical evidence for that cut.
 
 The committed runtime includes fractional boolean evaluation for fresh
 Projectiles, selected `ModifyProjectile` fields, and the three posture/no-fall
