@@ -1,8 +1,31 @@
 # Quality audit
 
-Date: 2026-08-15
+Latest verification: 2026-09-07
 
-## Current status
+## Current verification
+
+The committed runtime includes fractional boolean evaluation for fresh
+Projectiles and selected `ModifyProjectile` fields. Public claim boundaries
+remain in [COMPATIBILITY_PROFILES.md](COMPATIBILITY_PROFILES.md).
+
+- Vitest 5.0.0 passed all 4,108 tests in 328 files with the default configuration
+  (69.22 seconds) and with four workers (65.55 seconds).
+- The complete trace corpus passed 890 artifacts, including 856 required gates.
+- Typecheck and production build passed. The build transformed 363 modules;
+  its timing report attributed 217.7 seconds to output-directory preparation.
+- The source map is validated and current for the runtime changes, but its
+  analysis remains partial. A valid map is not execution evidence.
+
+An earlier full run timed out in one DA29 ledger test. Its isolated rerun and
+both later full runs passed without changing assertions or timeouts. The cause
+is still unproven; one comparison does not establish that four workers prevent
+the failure. The default configuration remains unchanged.
+
+These checks ran locally. CI, dependency/security audits, and browser smoke were
+not repeated in this verification batch. They do not establish full engine parity
+or release readiness.
+
+## Historical snapshot — 2026-08-15
 
 The maintained branch passes its deterministic engineering gates. The project is
 still a public, partial MUGEN/IKEMEN compatibility sandbox rather than a claim of
