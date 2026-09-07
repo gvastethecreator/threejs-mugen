@@ -4,6 +4,13 @@ Latest verification: 2026-09-07
 
 ## Current verification
 
+The ModifyProjectile fall update passed 575 focused tests. The full run passed
+4,110 tests but failed while reading incomplete measured JSON in the DA29
+ledger. After concurrent writers finished, all six ledger tests passed (534ms).
+Typecheck, 890 traces (856 required), and build passed; build took 32.87 seconds.
+The evidence-publication race remains open. These results are not an
+uninterrupted green full-suite run or a fix for concurrent publication.
+
 The recovery/bounce update first passed 940 focused tests and types. Its full
 suite found one literal recovery-time failure (4,110 passed); after the compiler
 fix, all 747 tests in the affected files passed. Typecheck, 890 trace artifacts
