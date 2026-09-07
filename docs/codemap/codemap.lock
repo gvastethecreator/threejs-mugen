@@ -1,9 +1,9 @@
 {
   "schema_version": 2,
-  "source_commit": "988f8cf309ef34d4b4fe5cd18cfb8bf476f0d447",
+  "source_commit": "92801d35e9ffee5a41512ad6c729f40e29fd367e",
   "working_tree_dirty": true,
-  "generated_at": "2026-09-07T22:36:57Z",
-  "generation_id": "ee9398faf23db7722a13f7473d23459d891eb50789dd58621dbb772269c88b39",
+  "generated_at": "2026-09-07T22:51:15Z",
+  "generation_id": "98505788071edcf42bb4fafe5e7ec02ccc8113ebfb7da6dc5dc61c7547d2d6ff",
   "analysis": {
     "version": "syntax-1",
     "digest": "ef0bef6b47dc8f80a59969a7c79bee202c17ea461e36fb268705b34c880b9749"
@@ -2608,8 +2608,8 @@
         "path": "src/mugen/runtime/HelperSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "f456701e01b767f57e4f3a3c66caede173815adf8a2c0e6b2e30c04bfebb3cfb",
-        "size": 168926
+        "digest": "48881855179d9565e5cb489874ca16d5b8b3cec65a3f7f079dfed94d97f0c105",
+        "size": 169087
       },
       {
         "path": "src/mugen/runtime/HitDefContactPriority.ts",
@@ -2916,8 +2916,8 @@
         "path": "src/mugen/runtime/PlayableMatchRuntime.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "e51ccfc23f88e9d88e6ca08dd3739a50ef575da319961a24c0d8e96068a613b2",
-        "size": 420897
+        "digest": "215e0a06934f744fb9355b212fc8a7bb23b11d9f1479577242ac9f242e3cddce",
+        "size": 420872
       },
       {
         "path": "src/mugen/runtime/PluralCombatOracle.ts",
@@ -2944,8 +2944,8 @@
         "path": "src/mugen/runtime/ProjectileSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "cb728432efaa6e7d8176110f3faac0676d5a43269705163654d3b5312cb729e0",
-        "size": 174380
+        "digest": "0de00450d77bdc09dd9ffd61d3c64c7f0af9ff2d00875be928bbbeaebb4040d0",
+        "size": 174356
       },
       {
         "path": "src/mugen/runtime/RedLifeDefaults.ts",
@@ -4449,8 +4449,8 @@
         "path": "src/tests/EffectActorSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "74286ecb48a12969876786bc7e25bd41037af12781f1bb68d4e7b69f089d4f32",
-        "size": 185414
+        "digest": "3d46c06371b01a43e9e1d40e3fb4071b191b1a5556d516568ca11bc56fd804f8",
+        "size": 185413
       },
       {
         "path": "src/tests/EffectLifecycleSystem.test.ts",
@@ -4925,8 +4925,8 @@
         "path": "src/tests/PlayableMatchRuntime.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "b47da4a4231417f5feb7a69a32c6e33250651dcc098515129e22752b14012ff4",
-        "size": 545770
+        "digest": "26f87990248a55fc9add14598e2e44f353afbb8a1ec5bd5b4c7ccd6a18d918c5",
+        "size": 545779
       },
       {
         "path": "src/tests/PluralCombatOracle.test.ts",
@@ -4988,8 +4988,8 @@
         "path": "src/tests/ProjectileSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "0e8f874018d982781e5787e3c46df62da45f96879e1f507931004a899222bb0e",
-        "size": 171667
+        "digest": "fbbaef893df3920064a3d3d4796637f80613abc65f3baa0da0ccce1fa2bba3b1",
+        "size": 172485
       },
       {
         "path": "src/tests/RendererInfoBaseline.test.ts",
@@ -6392,12 +6392,12 @@
         "size": 235
       }
     ],
-    "digest": "6da5c89cde434505ecda8136e376c6ea64adb1090f4f8c09880b83f3966e1c6b"
+    "digest": "33849681d410672c8535565e9d9c4da45c43c6f7d349ff11f28a20b00cd4c52f"
   },
-  "source_digest": "d0421de0c996e84a1d8584bb7d1e36a16125a5c6ef1bf2df989aac539191816b",
+  "source_digest": "f92501bae09059c8bba7f5cb17cbcc0c66403ef48d43daf8cba3ce26bb9b21d9",
   "artifact_hashes": {
-    "codemap.json": "888252706bab2f00085e70bf3cf6c8eb397009a6b6a568e06467925b558b5c0d",
-    "codemap.md": "e2f8ca3b6152b4dd7c0087ff18972810bd4be96973f2715cf901c1a294c16a30",
-    "codemap.html": "38c056274c6554a99c3d6c423b4426c0a54177a658a0e5c6dbd16268cbeba87c"
+    "codemap.json": "25fde510dda5bd0239167f45e4a4e22ce13b960fa2fcdffa27d3215b61a50726",
+    "codemap.md": "7ab61d8e243df808d9548df1ca00a5884cac046fffd2a03130c79aa3b10d6c32",
+    "codemap.html": "f23b9bf583d1323a6e590a6c54e97dc1f0410b3991b9ecd345282b781cb37057"
   }
 }
