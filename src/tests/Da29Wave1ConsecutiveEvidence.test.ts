@@ -2,7 +2,8 @@
  * Acceptance-executed evidence for consecutive DA29 watermark advance from 012.
  * Writes docs/evidence/da29/measured/DA29-0xx.json with functionResults.
  */
-import { mkdirSync, writeFileSync, readFileSync, existsSync, statSync } from "node:fs";
+import { mkdirSync, readFileSync, existsSync, statSync } from "node:fs";
+import { writeMeasuredJson } from "./da29/writeMeasuredJson";
 import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -39,7 +40,7 @@ function persist(id: string, kind: "I" | "G", result: { functionResults: Record<
     functionResults: result.functionResults,
     claimCeiling: `acceptance-executed unit evidence for ${id}; broader product claims remain blocked`,
   };
-  writeFileSync(resolve(outDir, `${id}.json`), `${JSON.stringify(body, null, 2)}\n`, "utf8");
+  writeMeasuredJson(resolve(outDir, `${id}.json`), body);
 }
 
 describe("DA29 wave1 consecutive acceptance-executed evidence", () => {

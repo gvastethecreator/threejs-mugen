@@ -2,7 +2,8 @@
  * Acceptance-executed evidence for remaining open DA29 IDs (102–200, waves 10–19).
  */
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
+import { writeMeasuredJson } from "./da29/writeMeasuredJson";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { DA29_WAVE10_EXECUTORS } from "../mugen/da29/Da29Wave10Evidence";
@@ -32,7 +33,7 @@ function persist(id: string, kind: "I" | "G", result: { functionResults: Record<
     functionResults: result.functionResults,
     claimCeiling: `acceptance-executed unit evidence for ${id}; broader product claims remain blocked`,
   };
-  writeFileSync(resolve(outDir, `${id}.json`), `${JSON.stringify(body, null, 2)}\n`, "utf8");
+  writeMeasuredJson(resolve(outDir, `${id}.json`), body);
 }
 
 const CASES = Object.keys(DA29_WAVE10_EXECUTORS).sort() as Array<keyof typeof DA29_WAVE10_EXECUTORS>;

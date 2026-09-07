@@ -3,7 +3,8 @@
  * Path-inventory theater is forbidden: ok+acceptanceExecuted require functionResults.
  */
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { writeMeasuredJson } from "./da29/writeMeasuredJson";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseAir } from "../mugen/parsers/AirParser";
@@ -21,7 +22,7 @@ function writeMeasured(id: string, payload: Record<string, unknown>): void {
     generatedAt: new Date().toISOString(),
     ...payload,
   };
-  writeFileSync(resolve(outDir, `${id}.json`), `${JSON.stringify(body, null, 2)}\n`, "utf8");
+  writeMeasuredJson(resolve(outDir, `${id}.json`), body);
 }
 
 function fileDigest(rel: string): { path: string; bytes: number; sha256: string } {
