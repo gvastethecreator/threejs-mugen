@@ -1181,6 +1181,28 @@ describe("ProjectileSystem", () => {
     expect(spawn().forceNoFall).toBeUndefined();
   });
 
+  it("preserves literal Projectile fall fractions and explicit zero", () => {
+    for (const value of [0.5, -0.5, 0]) {
+      const source = controller({ projanim: "1005", fall: String(value),
+        "air.fall": String(value), "fall.kill": String(value) });
+      const projectile = createRuntimeProjectile({
+        serialId: `literal-fall-${value}`,
+        controller: source,
+        operation: compileControllerIr(source).operation as ProjectileControllerOp,
+        spriteOwnerId: "p1",
+        spriteOwnerDefinitionId: "kfm",
+        spriteOwnerLabel: "Kung Fu Man",
+        action,
+        animNo: 1005,
+        pos: { x: 0, y: 0 },
+        fallbackFacing: 1,
+      });
+      expect(projectile.fall).toMatchObject({
+        enabled: value !== 0, airFall: value !== 0, kill: value !== 0,
+      });
+    }
+  });
+
   it("resolves Projectile fall flags per component and preserves finite siblings", () => {
     const controllerValue = controller({
       projanim: "1005",
@@ -1213,9 +1235,9 @@ describe("ProjectileSystem", () => {
     });
 
     expect(spawn("p1-projectile-fall-flags-dynamic", () => ({
-      enabled: 1.9,
-      airFall: 0.9,
-      kill: 1.9,
+      enabled: 0.5,
+      airFall: 0,
+      kill: -0.5,
     })).fall).toEqual({
       enabled: true,
       airFall: false,

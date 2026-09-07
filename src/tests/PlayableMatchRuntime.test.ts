@@ -10909,7 +10909,7 @@ value = 0
       withStateMove: false,
       withProjectile: true,
       projectileHitDefParams: `
-fall = 1
+fall = Time + 0.5
 fall.damage = Time + 17.8
 fall.xvelocity = Time - 6.5
 fall.yvelocity = Time - 7

@@ -9229,9 +9229,9 @@ function resolveProjectileFallFlagComponents(
 ): { enabled?: number; airFall?: number; kill?: number } | undefined {
   if (value === undefined) return undefined;
   const resolveComponent = (component: number | string | undefined): number | undefined => {
-    if (typeof component === "number") return Number.isFinite(component) ? Math.trunc(component) : undefined;
+    if (typeof component === "number") return Number.isFinite(component) ? component : undefined;
     if (component === undefined) return undefined;
-    const resolved = resolveDispatchNumber(
+    const resolved = resolveDispatchFloat(
       undefined,
       component,
       fighter,
@@ -9243,7 +9243,7 @@ function resolveProjectileFallFlagComponents(
       characters,
       playerIdTarget,
     );
-    return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
+    return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
   };
   const enabled = resolveComponent(value.enabled);
   const airFall = resolveComponent(value.airFall);

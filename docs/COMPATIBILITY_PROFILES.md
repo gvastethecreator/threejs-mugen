@@ -84,8 +84,25 @@ contact tests observe `fall = 0.5` on the receiver and lethal guarded damage for
 `guard.kill = 0.5` and `-0.5`; explicit zero still leaves one life.
 
 Allowed: these local evaluation and contact observations. Not established:
-upstream differential parity, fractional Projectile fall behavior, every Helper
+upstream differential parity, every Helper
 contact path, complete recovery timing, or full MUGEN/Ikemen compatibility.
+
+## Projectile fall boolean evaluation
+
+Fresh Projectile `fall`, `air.fall`, and `fall.kill` preserve finite fractional
+values in the Projectile, root caller, and Helper caller evaluators. Literal
+tests cover positive/negative fractions and zero; existing tests preserve
+non-finite sibling filtering, missing fields, and Helper ownership assertions.
+An imported root contact with `fall = Time + 0.5` observes the receiver falling
+and preserves its fall damage, velocity, and GetHitVar values.
+
+At the pinned Ikemen-GO revision, `projectile.Run` delegates HitDef parameters to
+`hitDef.runSub` (`bytecode.go:8294`) before finalization. This is the source basis
+for preserving boolean evaluation rather than truncating its numeric input.
+
+Allowed: these local creation and root-contact observations. Not established:
+all Helper contact paths, complete fall-kill/recovery timing, upstream
+differential parity, or full engine compatibility.
 
 ## Support levels
 

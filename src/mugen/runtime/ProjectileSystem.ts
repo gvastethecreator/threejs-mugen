@@ -2166,10 +2166,10 @@ function resolveRuntimeProjectileFallFlags(
   if (authored === undefined) return undefined;
   const component = (key: keyof RuntimeProjectileFallFlags): number | undefined => {
     const source = authored[key];
-    if (typeof source === "number") return Number.isFinite(source) ? Math.trunc(source) : undefined;
+    if (typeof source === "number") return Number.isFinite(source) ? source : undefined;
     if (typeof source !== "string") return undefined;
     const value = resolved?.[key];
-    return typeof value === "number" && Number.isFinite(value) ? Math.trunc(value) : undefined;
+    return typeof value === "number" && Number.isFinite(value) ? value : undefined;
   };
   const enabled = component("enabled");
   const airFall = component("airFall");

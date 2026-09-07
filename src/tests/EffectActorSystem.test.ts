@@ -1976,8 +1976,8 @@ describe("EffectActorSystem", () => {
       ...helperInput({ id: "43", anim: "900" }),
       animations: new Map([[900, action(900)]]),
     });
-    helper.vars[0] = 1.9;
-    helper.vars[1] = 0.9;
+    helper.vars[0] = -0.5;
+    helper.vars[1] = 0;
     helper.vars[2] = 0;
     const dynamicController = compileControllerIr(controller("Projectile", {
       projanim: "900",

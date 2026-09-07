@@ -2150,10 +2150,14 @@ export function resolveRuntimeHelperProjectileFallFlags(
   const operation = controller.operation;
   const fallFlags = operation?.kind === "projectile" ? operation.fallFlags : undefined;
   if (fallFlags === undefined) return undefined;
+  const resolveComponent = (value: number | string | undefined): number | undefined => {
+    if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+    return typeof value === "string" ? resolveHelperFloat(helper, value, options) : undefined;
+  };
   return {
-    enabled: resolveRuntimeHelperIntegerExpression(helper, fallFlags.enabled, options),
-    airFall: resolveRuntimeHelperIntegerExpression(helper, fallFlags.airFall, options),
-    kill: resolveRuntimeHelperIntegerExpression(helper, fallFlags.kill, options),
+    enabled: resolveComponent(fallFlags.enabled),
+    airFall: resolveComponent(fallFlags.airFall),
+    kill: resolveComponent(fallFlags.kill),
   };
 }
 
