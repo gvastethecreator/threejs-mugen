@@ -1,9 +1,9 @@
 {
   "schema_version": 2,
-  "source_commit": "d72040db3b80b3024c55f8f32dd25bf88722dd05",
+  "source_commit": "0fea0a5b666108a121cf292dd11adec137415f29",
   "working_tree_dirty": true,
-  "generated_at": "2026-09-07T20:46:47Z",
-  "generation_id": "44f908458c8e12ea5ae44b72600469abbe883faf5a69a5453f9205ea48a6eb62",
+  "generated_at": "2026-09-07T21:14:19Z",
+  "generation_id": "c20b09602173bf26816299a08572c59e92f5dcb628121455d0cf4f01afcf7613",
   "analysis": {
     "version": "syntax-1",
     "digest": "ef0bef6b47dc8f80a59969a7c79bee202c17ea461e36fb268705b34c880b9749"
@@ -627,8 +627,8 @@
         "path": "scripts/qa_traces.cjs",
         "origin": "tracked",
         "state": "present",
-        "digest": "9a3488a640da60e7f6aa34f0fedbf31407a135798237d0ca8ae4d9caadcedb11",
-        "size": 266488
+        "digest": "8be673593b2786cd8a0c595f16cdf85fe7361848ddfd1b3751ccb3ad083799f9",
+        "size": 266715
       },
       {
         "path": "scripts/replace_atlas_state_from_imagegen_row.py",
@@ -3903,8 +3903,8 @@
         "path": "src/mugen/runtime/RuntimeTraceGatePresets.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "c7b97a8d1cd4b00856067b79fae3ee054998d1f04caa0ecb733505d02f05f596",
-        "size": 3521677
+        "digest": "0d5b456c14bde389155a992200ebee43c1bb4aa30bf762dfc57b806dae8f5689",
+        "size": 3522098
       },
       {
         "path": "src/mugen/runtime/RuntimeTracePresets.ts",
@@ -5954,8 +5954,8 @@
         "path": "src/tests/RuntimeTraceGatePresets.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "d59b7ce3a446f03e1cda250058378a88807dca5abce4a49b49597e4f648b81c6",
-        "size": 1618597
+        "digest": "d8dd498b5917fa17838f14d5a7f6d39e3941b446aaee393c5ee6e28ac3b0febc",
+        "size": 1619275
       },
       {
         "path": "src/tests/RuntimeTracePresets.test.ts",
@@ -6392,12 +6392,12 @@
         "size": 235
       }
     ],
-    "digest": "da049153152d409333a53c975fa6ad8fedd33bbef3666175f3213c9d611863ce"
+    "digest": "f357182368a614876f17925ec553a6481558fd05aa73614d7177d026e924a0fa"
   },
-  "source_digest": "ab728e539f0f70ec9b1bf530a6e474cb0b3d530fb02bdec49a928de129d96f13",
+  "source_digest": "bc045cfe3ba3ee4a21c6d5ac01e474c35f6be078a8bd0c5bedc64e3bb37b399e",
   "artifact_hashes": {
-    "codemap.json": "0e49f15424432ae522b698ff7a80da22a54b92a801e4376182f5ec2e647217bf",
-    "codemap.md": "d151430838ffb30e9aeb56c063bbf6baf4d4a8a9374109717f389cd9087f7fd2",
-    "codemap.html": "28e113018072c557e1ab0b7e7cedcdaafc681e68e465aef1c94e0338c2bc2806"
+    "codemap.json": "8f8e514da9a5d2100078d4ece46177992bd8b00a7c35acdec9c1871a92f0608b",
+    "codemap.md": "b451eaf85e00f0b503fafaeab6e44b3d491c4d5f0b452e970f4fa14b8c9ca381",
+    "codemap.html": "352793cc077b49676ded0134afb566384926505cd0c9ce34b2fda6a5ebf213a6"
   }
 }
