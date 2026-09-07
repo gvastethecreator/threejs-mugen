@@ -792,6 +792,7 @@ export function spawnRuntimeHelperProjectileActor(
     resolveGuardPoints: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "guardpoints", options),
     resolveP2Facing: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "p2facing", options),
     resolveKeepState: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "keepstate", options),
+    resolveForceNoFall: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "forcenofall", options),
   });
 }
 

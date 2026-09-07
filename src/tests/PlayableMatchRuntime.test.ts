@@ -10884,12 +10884,12 @@ value = 0
     expect(snapshot.logs.some((line) => line.includes("Imported Fixture projectile hit Nadia Arce for 31"))).toBe(true);
   });
 
-  it("evaluates fresh Projectile damage expressions in the root caller context", () => {
+  it("evaluates fresh Projectile damage and forcenofall expressions in the root caller context", () => {
     const imported = createImportedFixture({
       id: "dynamic-projectile-damage-root",
       withStateMove: false,
       withProjectile: true,
-      projectileHitDefParams: "damage = Time + 41,Time + 38",
+      projectileHitDefParams: "damage = Time + 41,Time + 38\nforcenofall = Time + 0.5",
     });
     const effectActorWorld = new RuntimeEffectActorWorld();
     const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, trainingStage, { effectActorWorld });
@@ -10897,7 +10897,7 @@ value = 0
     const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
     const projectile = effectActorWorld.projectiles("p1")[0];
 
-    expect(projectile).toMatchObject({ damage: 41, guardDamage: 38 });
+    expect(projectile).toMatchObject({ damage: 41, guardDamage: 38, forceNoFall: true });
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.projectile).toBe(1);
   });
 

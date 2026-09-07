@@ -1155,6 +1155,32 @@ describe("ProjectileSystem", () => {
     });
   });
 
+  it("resolves Projectile forcenofall once and leaves non-finite values unset", () => {
+    const source = controller({ projanim: "1005", forcenofall: "var(0)" });
+    const operation = compileControllerIr(source).operation as ProjectileControllerOp;
+    expect(operation.forceNoFallExpression).toBe("var(0)");
+    let value = 1;
+    const spawn = () => createRuntimeProjectile({
+      serialId: "p1-projectile-forcenofall",
+      controller: source,
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveForceNoFall: () => value,
+    });
+    const projectile = spawn();
+    value = 0;
+    expect(projectile.forceNoFall).toBe(true);
+    expect(spawn().forceNoFall).toBe(false);
+    value = Number.NaN;
+    expect(spawn().forceNoFall).toBeUndefined();
+  });
+
   it("resolves Projectile fall flags per component and preserves finite siblings", () => {
     const controllerValue = controller({
       projanim: "1005",

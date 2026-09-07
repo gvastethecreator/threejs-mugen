@@ -2008,7 +2008,7 @@ describe("EffectActorSystem", () => {
     });
   });
 
-  it("resolves Helper Projectile keepstate in the helper caller context", () => {
+  it("resolves Helper Projectile keepstate and forcenofall in the helper caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {
       ...helperInput({ id: "43", anim: "900" }),
@@ -2026,15 +2026,19 @@ describe("EffectActorSystem", () => {
         projanim: "920",
         projid: "8864",
         keepstate: "var(0)",
+        forcenofall: "var(0) / 2.0",
       })),
     );
 
     expect(projectile).toMatchObject({
       keepState: true,
+      forceNoFall: true,
       ownerId: "p1",
       rootId: "p1",
       parentId: helper.serialId,
     });
+    helper.vars[0] = 0;
+    expect(projectile?.forceNoFall).toBe(true);
   });
 
   it("resolves Helper Projectile p2facing in the helper caller context", () => {

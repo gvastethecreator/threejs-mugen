@@ -746,6 +746,8 @@ export type ProjectileControllerOp = {
   /** Projectile HitDef keepstate flag; dynamic expressions are resolved by the caller at spawn. */
   keepState?: boolean;
   keepStateExpression?: number | string;
+  /** Fresh Projectile expression evaluated in the creator's context. */
+  forceNoFallExpression?: number | string;
   /** Ikemen HitDef flag that clears the target fall flag on contact. */
   forceNoFall?: boolean;
   /** Ikemen HitDef posture overrides used before default get-hit selection. */
@@ -4069,6 +4071,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   const fallFlags = optionalHitDefFallFlagsParam(controller);
   if (fallFlags === false) return undefined;
   const keepStateValue = optionalIntegerExpressionParam(controller, "keepstate");
+  const forceNoFallValue = optionalIntegerExpressionParam(controller, "forcenofall");
+  if (forceNoFallValue === false) return undefined;
   if (
     standFriction === false ||
     crouchFriction === false ||
@@ -4303,6 +4307,7 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     forceCrouch: booleanNumber(findParam(controller, "forcecrouch")),
     keepState: typeof keepStateValue === "number" ? keepStateValue !== 0 : undefined,
     ...(typeof keepStateValue === "string" ? { keepStateExpression: keepStateValue } : {}),
+    ...(typeof forceNoFallValue === "string" ? { forceNoFallExpression: forceNoFallValue } : {}),
     ...(Object.keys(fall).length === 0 ? {} : { fall }),
     ...(fallEnvShakeExpressions === undefined ? {} : { fallEnvShake: fallEnvShakeExpressions }),
     ...(fallImpactExpressions === undefined ? {} : { fallImpact: fallImpactExpressions }),

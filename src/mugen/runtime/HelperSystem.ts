@@ -2390,6 +2390,12 @@ export function resolveRuntimeHelperIntegerScalarParam(
     const value = operation?.kind === "projectile" ? operation.keepStateExpression : undefined;
     if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
   }
+  if (key === "forcenofall") {
+    const operation = controller.operation;
+    const value = operation?.kind === "projectile" ? operation.forceNoFallExpression : undefined;
+    if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+    if (typeof value === "string") return resolveHelperFloat(helper, value, options);
+  }
   if (key === "p2facing") {
     const operation = controller.operation;
     const value = operation?.kind === "projectile" ? operation.p2FacingExpression : undefined;

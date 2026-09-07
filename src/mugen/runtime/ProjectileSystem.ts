@@ -414,6 +414,7 @@ export type RuntimeProjectileSpawnInput = {
   resolveP2Facing?: () => number | undefined;
   /** Resolves fresh Projectile keepstate in the original caller context. */
   resolveKeepState?: () => number | undefined;
+  resolveForceNoFall?: () => number | undefined;
 };
 
 export type RuntimeProjectileModifyInput = {
@@ -804,7 +805,15 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     ? dynamicGuardHitTime
     : undefined;
   const downBounce = operation?.downBounce ?? booleanNumber(findControllerParam(input.controller, "down.bounce"));
-  const forceNoFall = operation?.forceNoFall ?? booleanNumber(findControllerParam(input.controller, "forcenofall"));
+  const forceNoFallExpression = operation?.forceNoFallExpression;
+  const dynamicForceNoFall = typeof forceNoFallExpression === "number"
+    ? forceNoFallExpression
+    : forceNoFallExpression === undefined ? undefined : input.resolveForceNoFall?.();
+  const forceNoFall = forceNoFallExpression === undefined
+    ? operation?.forceNoFall ?? booleanNumber(findControllerParam(input.controller, "forcenofall"))
+    : dynamicForceNoFall === undefined || !Number.isFinite(dynamicForceNoFall)
+      ? undefined
+      : dynamicForceNoFall !== 0;
   const forceStand = operation?.forceStand ?? booleanNumber(findControllerParam(input.controller, "forcestand"));
   const forceCrouch = operation?.forceCrouch ?? booleanNumber(findControllerParam(input.controller, "forcecrouch"));
   const staticFall = operation?.fall ?? projectileFallData(input.controller);

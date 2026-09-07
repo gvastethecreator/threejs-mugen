@@ -102,6 +102,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveProjectileGuardPoints?: RuntimeProjectileSpawnInput["resolveGuardPoints"];
   resolveProjectileP2Facing?: RuntimeProjectileSpawnInput["resolveP2Facing"];
   resolveProjectileKeepState?: RuntimeProjectileSpawnInput["resolveKeepState"];
+  resolveProjectileForceNoFall?: RuntimeProjectileSpawnInput["resolveForceNoFall"];
   /** Resolves fresh Projectile projanim in the original caller context. */
   resolveProjectileAnimation?: () => number | undefined;
   resolveModifyProjectile?: RuntimeProjectileModifyResolver;
@@ -305,6 +306,7 @@ export class RuntimeEffectSpawnWorld {
     resolveFallImpact?: RuntimeProjectileSpawnInput["resolveFallImpact"],
     resolveFallRecovery?: RuntimeProjectileSpawnInput["resolveFallRecovery"],
     resolveFallFlags?: RuntimeProjectileSpawnInput["resolveFallFlags"],
+    resolveForceNoFall?: RuntimeProjectileSpawnInput["resolveForceNoFall"],
   ): boolean {
     const owner = effectSpriteOwner(fighter);
     const animNo = operation?.projAnim
@@ -378,6 +380,7 @@ export class RuntimeEffectSpawnWorld {
       resolveProjectileGivePower,
       resolveP2Facing: resolveProjectileP2Facing,
       resolveKeepState: resolveProjectileKeepState,
+      resolveForceNoFall,
       resolveGuardPoints: resolveProjectileGuardPoints,
     });
     return true;
@@ -693,6 +696,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveProjectileFallImpact,
         options.resolveProjectileFallRecovery,
         options.resolveProjectileFallFlags,
+        options.resolveProjectileForceNoFall,
       )
         ? 1
         : 0;

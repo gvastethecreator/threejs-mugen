@@ -6950,6 +6950,29 @@ function runActiveStateControllers(
                   return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
                 }
               : undefined,
+          resolveProjectileForceNoFall:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  const expression = operation?.forceNoFallExpression;
+                  if (expression === undefined) return undefined;
+                  const resolved = resolveDispatchFloat(
+                    typeof expression === "number" ? expression : undefined,
+                    typeof expression === "string" ? expression : undefined,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                    gameSpace,
+                    options.characters,
+                    createPlayerIdTarget(actor),
+                  );
+                  return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
+                }
+              : undefined,
           resolveProjectileAnimation:
             effect === "projectile"
               ? () => {
