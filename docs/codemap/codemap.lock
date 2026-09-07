@@ -1,9 +1,9 @@
 {
   "schema_version": 2,
-  "source_commit": "b9dcf5da515d516be1d3e0ba8d7f79ebaa977484",
-  "working_tree_dirty": false,
-  "generated_at": "2026-09-07T20:20:47Z",
-  "generation_id": "ce40c2605fd1f27c4a612c90837f4644024bae1124497eb26424c02c8a110bcf",
+  "source_commit": "d72040db3b80b3024c55f8f32dd25bf88722dd05",
+  "working_tree_dirty": true,
+  "generated_at": "2026-09-07T20:46:47Z",
+  "generation_id": "44f908458c8e12ea5ae44b72600469abbe883faf5a69a5453f9205ea48a6eb62",
   "analysis": {
     "version": "syntax-1",
     "digest": "ef0bef6b47dc8f80a59969a7c79bee202c17ea461e36fb268705b34c880b9749"
@@ -627,8 +627,8 @@
         "path": "scripts/qa_traces.cjs",
         "origin": "tracked",
         "state": "present",
-        "digest": "f74466522ddb147a635cde306cc056589750fb3f85685387b21936ac3d3ba833",
-        "size": 266274
+        "digest": "9a3488a640da60e7f6aa34f0fedbf31407a135798237d0ca8ae4d9caadcedb11",
+        "size": 266488
       },
       {
         "path": "scripts/replace_atlas_state_from_imagegen_row.py",
@@ -1355,8 +1355,8 @@
         "path": "src/mugen/compiler/ControllerOps.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "998b2c878a26a20bf7c29cbd88af84827696d3054e249d08f2f9bab42bb611a4",
-        "size": 278926
+        "digest": "2ea81dc56cad6ca15df0aa8472250fbd2530b66b83bb385775e6c898a4b681a9",
+        "size": 279278
       },
       {
         "path": "src/mugen/compiler/ExpressionCompiler.ts",
@@ -2524,8 +2524,8 @@
         "path": "src/mugen/runtime/EffectActorSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "fe2a60b70f5abdb13b8b8765817bb55ade14a660645f4dd1353de25a30c5bf1b",
-        "size": 44774
+        "digest": "427139bb06f1bd71c17f7b86b16bf5a4f1dede4805d5c6e3f632e306d1a283ee",
+        "size": 44888
       },
       {
         "path": "src/mugen/runtime/EffectLifecycleSystem.ts",
@@ -2538,8 +2538,8 @@
         "path": "src/mugen/runtime/EffectSpawnSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "3c29d83ec6b72ec7643964cd80c3f7f2d6021cc11040419860bfa6c4da77c8db",
-        "size": 38318
+        "digest": "aab606c54ced4283b85b7e650a6761d8ed593ef1d2ab0287994b6c16e97f987c",
+        "size": 38550
       },
       {
         "path": "src/mugen/runtime/EnvColorSystem.ts",
@@ -2608,8 +2608,8 @@
         "path": "src/mugen/runtime/HelperSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "c46de0013451d3b757d56b0d9947f37838462d4ac103f2b5ef599e40d641dcbc",
-        "size": 168165
+        "digest": "2f2f6a044cd1f46066bd729773edfa5f27a5e6950d04c385900db02208914232",
+        "size": 168514
       },
       {
         "path": "src/mugen/runtime/HitDefContactPriority.ts",
@@ -2916,8 +2916,8 @@
         "path": "src/mugen/runtime/PlayableMatchRuntime.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "5e61d8b2bec602fa90704836841cd771f68554fd316fb333d4e5b20a469bd6d0",
-        "size": 419483
+        "digest": "74cf63b297178c79cf298429bb809b6d1184fbc1dd91c678d7c8664cb06ad232",
+        "size": 420535
       },
       {
         "path": "src/mugen/runtime/PluralCombatOracle.ts",
@@ -2944,8 +2944,8 @@
         "path": "src/mugen/runtime/ProjectileSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "f930f1e28618c1b492b3ca8be1e357b602c072f6b1742b4fcd7c6d06f90ff233",
-        "size": 173915
+        "digest": "507b165356afb3effdd17fe5f7a1f8748f063c74d33fb8a5f93e60a1367bb7e9",
+        "size": 174387
       },
       {
         "path": "src/mugen/runtime/RedLifeDefaults.ts",
@@ -3903,8 +3903,8 @@
         "path": "src/mugen/runtime/RuntimeTraceGatePresets.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "c6f0ead95e3dfc7700189c4a293345638210c53e9e47ccbe9bf85047513eb8ea",
-        "size": 3521092
+        "digest": "c7b97a8d1cd4b00856067b79fae3ee054998d1f04caa0ecb733505d02f05f596",
+        "size": 3521677
       },
       {
         "path": "src/mugen/runtime/RuntimeTracePresets.ts",
@@ -4449,8 +4449,8 @@
         "path": "src/tests/EffectActorSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "c86d799e1d7571e24134725c440d2fdcc23b41678c5805dd140d184f2b515e3d",
-        "size": 185264
+        "digest": "74286ecb48a12969876786bc7e25bd41037af12781f1bb68d4e7b69f089d4f32",
+        "size": 185414
       },
       {
         "path": "src/tests/EffectLifecycleSystem.test.ts",
@@ -4925,8 +4925,8 @@
         "path": "src/tests/PlayableMatchRuntime.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "aa13e798321dd6fdb58ec9fa6640b5f68b6ec8e5abbd3ea0bf73ad80b8cf794d",
-        "size": 545351
+        "digest": "d10a51ae09f6ab6f83193f0895b58a585dd52c3041a449f32f5dd55929b2d824",
+        "size": 545412
       },
       {
         "path": "src/tests/PluralCombatOracle.test.ts",
@@ -4988,8 +4988,8 @@
         "path": "src/tests/ProjectileSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "4c2cfdffbb198375556c81038e862faba4cdc8c7bad2530d23fa459879045e3b",
-        "size": 169458
+        "digest": "d71b299fed9925829bf46ca2a11048dce5ab0134842ca518c3ddb4ef1091fc96",
+        "size": 170382
       },
       {
         "path": "src/tests/RendererInfoBaseline.test.ts",
@@ -5954,8 +5954,8 @@
         "path": "src/tests/RuntimeTraceGatePresets.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "8ab7c84bcebe6308340668f25e714a06377f295cab6e7a71c3834b5673e1d37d",
-        "size": 1617969
+        "digest": "d59b7ce3a446f03e1cda250058378a88807dca5abce4a49b49597e4f648b81c6",
+        "size": 1618597
       },
       {
         "path": "src/tests/RuntimeTracePresets.test.ts",
@@ -6392,12 +6392,12 @@
         "size": 235
       }
     ],
-    "digest": "413168c4028dd34b6d673366c40eefd42cbe398e586b16e78a436fc6b70209ab"
+    "digest": "da049153152d409333a53c975fa6ad8fedd33bbef3666175f3213c9d611863ce"
   },
-  "source_digest": "cb563dfa154249b95dc61879c5d42977ececd9d959360ed0e9d55918d97010b8",
+  "source_digest": "ab728e539f0f70ec9b1bf530a6e474cb0b3d530fb02bdec49a928de129d96f13",
   "artifact_hashes": {
-    "codemap.json": "92c6a439505ef181bdbf89853873ff3f02e28b70405afa22feb90c7b98c1753d",
-    "codemap.md": "850c4c7cf1195915da82d6c2b0e1f874030b0043f995a67632f6576f8226e0d9",
-    "codemap.html": "a26f428a4f8b6c5f142decdea826cecd7b17e92f881abb79bfc708905d69cb3f"
+    "codemap.json": "0e49f15424432ae522b698ff7a80da22a54b92a801e4376182f5ec2e647217bf",
+    "codemap.md": "d151430838ffb30e9aeb56c063bbf6baf4d4a8a9374109717f389cd9087f7fd2",
+    "codemap.html": "28e113018072c557e1ab0b7e7cedcdaafc681e68e465aef1c94e0338c2bc2806"
   }
 }
