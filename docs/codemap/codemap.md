@@ -1,7 +1,7 @@
 # Code map: mugen-web-sandbox
 
-Generated: 2026-09-07T21:29:21Z | Commit: `70a4bbb8f708` | Schema: 2
-Generation: `797635f57c930d69f93d0bec09a717e501a4de48fb07aed496eb6966e457da35`
+Generated: 2026-09-07T21:43:54Z | Commit: `f3cb353437e0` | Schema: 2
+Generation: `3a6a66648ea5484918c2aecd0c25a26cc8cf6e4ff1e1745d32933e150393c2fe`
 Scope: . | Inventory: working-tree
 Nodes: 942 | Edges: 5246 | Flows: 2
 
@@ -9,7 +9,7 @@ Nodes: 942 | Edges: 5246 | Flows: 2
 
 - Analysis: **partial**; 903 analyzed of 907 included files.
 - Configuration files: 1; omitted untracked files: 0.
-- Unresolved references and analysis limits: 6325.
+- Unresolved references and analysis limits: 6327.
 - Static references and call paths do not prove runtime execution or test coverage.
 
 ## Modules

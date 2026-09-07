@@ -1,9 +1,9 @@
 {
   "schema_version": 2,
-  "source_commit": "70a4bbb8f708322a3f60c41c60d83416c375925b",
+  "source_commit": "f3cb353437e0c51a227f3b1949d3a1f6fd996776",
   "working_tree_dirty": true,
-  "generated_at": "2026-09-07T21:29:21Z",
-  "generation_id": "797635f57c930d69f93d0bec09a717e501a4de48fb07aed496eb6966e457da35",
+  "generated_at": "2026-09-07T21:43:54Z",
+  "generation_id": "3a6a66648ea5484918c2aecd0c25a26cc8cf6e4ff1e1745d32933e150393c2fe",
   "analysis": {
     "version": "syntax-1",
     "digest": "ef0bef6b47dc8f80a59969a7c79bee202c17ea461e36fb268705b34c880b9749"
@@ -2944,8 +2944,8 @@
         "path": "src/mugen/runtime/ProjectileSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "8478930d03cfd04dcec4aa3c79c153d8afbc274333806c776782cce93fe80bdc",
-        "size": 174386
+        "digest": "cb728432efaa6e7d8176110f3faac0676d5a43269705163654d3b5312cb729e0",
+        "size": 174380
       },
       {
         "path": "src/mugen/runtime/RedLifeDefaults.ts",
@@ -4988,8 +4988,8 @@
         "path": "src/tests/ProjectileSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "8a61a7f58a41bb82c1298de1867d2f377288c2ed7278f8dc15209e149dd58f07",
-        "size": 170537
+        "digest": "0e8f874018d982781e5787e3c46df62da45f96879e1f507931004a899222bb0e",
+        "size": 171667
       },
       {
         "path": "src/tests/RendererInfoBaseline.test.ts",
@@ -6392,12 +6392,12 @@
         "size": 235
       }
     ],
-    "digest": "da2e578784db129ed7f3b9e615610a6be6014bc40a49ffd3a3975b1a5f4ae6b2"
+    "digest": "5c0b3d566645f11eb15bdfa83a64321f7c48ff4a1700c031604bbc19706acc08"
   },
-  "source_digest": "491d291f675bb2fbd5caef6683f50afd290814a46d772784d0bf7dd7dcdb5cef",
+  "source_digest": "a6951b42a619f1e86f61dd8c0053e3d98affb0ca3ba792a9ffade25f156d1ce6",
   "artifact_hashes": {
-    "codemap.json": "537afcb5136f20eaa65eb36a23db1af8c1007234ba8b9a07195f28d5809eff37",
-    "codemap.md": "cdba7103d5a46790c46421a6ff0700bb389fd54e9de6684dcd9d4383f5ef5140",
-    "codemap.html": "fa379ed432a54f16e4c79afb24f39012e51b3dfef3d368fe54fd5b981184f35b"
+    "codemap.json": "322e85be7ac2ee25ba74c1db7beda1573c596cb33412e502610a3fca834573cc",
+    "codemap.md": "1d4c79af58ac3cd4f4cb7c9ff6a3144b8bbc4d6aa4bf0262af98d53f2953ea23",
+    "codemap.html": "fe860d6cd046a73676a6b719eb4357b222b37fd4f8a31d9285f8598de8b8e7ef"
   }
 }
