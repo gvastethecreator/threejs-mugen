@@ -5,14 +5,16 @@ Latest verification: 2026-09-07
 ## Current verification
 
 The committed runtime includes fractional boolean evaluation for fresh
-Projectiles and selected `ModifyProjectile` fields. Public claim boundaries
+Projectiles, selected `ModifyProjectile` fields, and the three posture/no-fall
+fields in `HitDef` and `ModifyHitDef`. Public claim boundaries
 remain in [COMPATIBILITY_PROFILES.md](COMPATIBILITY_PROFILES.md).
 
-- Vitest 5.0.0 passed all 4,108 tests in 328 files with the default configuration
-  (69.22 seconds) and with four workers (65.55 seconds).
+- Vitest 5.0.0 passed all 4,109 tests in 328 files with the default configuration
+  (64.56 seconds). The earlier worker comparison passed 4,108 tests with default
+  workers (69.22 seconds) and four workers (65.55 seconds).
 - The complete trace corpus passed 890 artifacts, including 856 required gates.
 - Typecheck and production build passed. The build transformed 363 modules;
-  its timing report attributed 217.7 seconds to output-directory preparation.
+  its timing report attributed 150.0 seconds to output-directory preparation.
 - The source map is validated and current for the runtime changes, but its
   analysis remains partial. A valid map is not execution evidence.
 
