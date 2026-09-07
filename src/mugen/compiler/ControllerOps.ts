@@ -2740,9 +2740,9 @@ function compileHitDefControllerOp(
   const fallFlags = optionalHitDefFallFlagsParam(controller);
   const lethalFlags = optionalHitDefLethalFlagsParam(controller);
   const downBounceExpression = optionalIntegerExpressionParam(controller, "down.bounce");
-  const forceStand = optionalIntegerExpressionParam(controller, "forcestand");
-  const forceCrouch = optionalIntegerExpressionParam(controller, "forcecrouch");
-  const forceNoFall = optionalIntegerExpressionParam(controller, "forcenofall");
+  const forceStand = optionalFloatExpressionParam(controller, "forcestand");
+  const forceCrouch = optionalFloatExpressionParam(controller, "forcecrouch");
+  const forceNoFall = optionalFloatExpressionParam(controller, "forcenofall");
   const groundHitTime = optionalIntegerExpressionParam(controller, "ground.hittime");
   const groundSlideTime = optionalIntegerExpressionParam(controller, "ground.slidetime");
   const airHitTime = optionalIntegerExpressionParam(controller, "air.hittime");
@@ -3133,9 +3133,9 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const downBounceValue = optionalIntegerExpressionParam(controller, "down.bounce");
   const downBounce = typeof downBounceValue === "number" ? downBounceValue !== 0 : undefined;
   const downBounceExpression = typeof downBounceValue === "string" ? downBounceValue : undefined;
-  const forceStand = optionalIntegerExpressionParam(controller, "forcestand");
-  const forceCrouch = optionalIntegerExpressionParam(controller, "forcecrouch");
-  const forceNoFall = optionalIntegerExpressionParam(controller, "forcenofall");
+  const forceStand = optionalFloatExpressionParam(controller, "forcestand");
+  const forceCrouch = optionalFloatExpressionParam(controller, "forcecrouch");
+  const forceNoFall = optionalFloatExpressionParam(controller, "forcenofall");
   const airGuardControlTime = optionalIntegerExpressionParam(controller, "airguard.ctrltime");
   const guardVelocityRaw = findParam(controller, "guard.velocity");
   const staticGuardVelocity = guardVelocityRaw === undefined ? undefined : strictStaticNumberVector(guardVelocityRaw);

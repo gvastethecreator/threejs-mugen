@@ -5436,7 +5436,10 @@ function runActiveStateControllers(
         },
         resolveFloatScalar: (key) => {
           const operation = controller.operation?.kind === "hitdef" ? controller.operation : undefined;
-          const value = key === "airguard.velocity"
+          const value = key === "forcestand" ? operation?.forceStand
+            : key === "forcecrouch" ? operation?.forceCrouch
+            : key === "forcenofall" ? operation?.forceNoFall
+            : key === "airguard.velocity"
             ? operation?.airGuardVelocityZExpression
             : key === "snap"
               ? operation?.snapZExpression
@@ -5519,7 +5522,10 @@ function runActiveStateControllers(
         },
         resolveFloatScalar: (key) => {
           const operation = controller.operation?.kind === "modifyhitdef" ? controller.operation : undefined;
-          const value = key === "down.velocity"
+          const value = key === "forcestand" ? operation?.forceStand
+            : key === "forcecrouch" ? operation?.forceCrouch
+            : key === "forcenofall" ? operation?.forceNoFall
+            : key === "down.velocity"
             ? operation?.downVelocityZExpression ?? operation?.downVelocityZ
             : key === "guard.velocity"
               ? operation?.guardVelocityZExpression ?? operation?.guardVelocityZ

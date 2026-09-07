@@ -53,6 +53,23 @@ and negative fractions, a later explicit zero, unchanged omitted recovery time,
 and an unselected Projectile. These are local mutation claims, not full contact
 or recovery-timing parity.
 
+## HitDef boolean evaluation
+
+`HitDef` and `ModifyHitDef` preserve fractional `forcestand`, `forcecrouch`, and
+`forcenofall` values through compilation and caller evaluation. Finite nonzero
+values become true; explicit zero becomes false. Omitted fresh `forcestand`
+still derives from ground Y velocity, while omitted mutation fields keep their
+current values. Root dispatch and Helper dispatch use decimal evaluation.
+
+Source basis: Ikemen-GO `149402fa8b50a64e9af8316772e0cd266025133a`,
+`src/bytecode.go:7647-7652`, evaluates these fields as booleans before converting
+posture flags to integers. Local compiler, HitDef, Helper, and redirected root
+mutation tests cover fractional values and unchanged omission behavior.
+
+Allowed: this local compilation and active-move evaluation behavior. Not
+established: fractional contact parity against upstream, every redirected or
+nested Helper path, other boolean field families, or full engine compatibility.
+
 ## Support levels
 
 Use these labels from [QA_AND_ACCEPTANCE_GATES.md](QA_AND_ACCEPTANCE_GATES.md):

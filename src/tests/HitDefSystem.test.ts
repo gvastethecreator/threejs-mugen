@@ -2534,11 +2534,38 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove).toMatchObject({ p1Facing: 0, p1GetP2Facing: 0, p2Facing: 0 });
   });
 
+  it("preserves fractional literal and caller override flags without truncating booleans", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    for (const value of [0.5, -0.5, 0]) {
+      actor.firedHitDefs.clear();
+      world.apply({
+        actor,
+        controller: compileControllerIr(controller("HitDef", {
+          attr: "S,NA", forcestand: String(value),
+          forcecrouch: String(value), forcenofall: String(value),
+        })),
+        frame: activeFrame(),
+      });
+      const expected = { forceStand: value !== 0, forceCrouch: value !== 0, forceNoFall: value !== 0 };
+      expect(actor.currentMove).toMatchObject(expected);
+      world.modify({
+        actor,
+        controller: compileControllerIr(controller("ModifyHitDef", {
+          forcestand: "var(0)", forcecrouch: "var(0)", forcenofall: "var(0)",
+        })),
+        resolveIntegerScalar: () => Math.trunc(value),
+        resolveFloatScalar: () => value,
+      });
+      expect(actor.currentMove).toMatchObject(expected);
+    }
+  });
+
   it("derives fresh direct-HitDef posture and preserves omitted ModifyHitDef fields", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
     const caller = runtimeState();
-    caller.vars[1] = 1.9;
+    caller.vars[1] = -0.5;
 
     world.apply({
       actor,
@@ -2565,7 +2592,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
     expect(actor.currentMove).toMatchObject({ forceStand: false, forceCrouch: false });
 
-    caller.vars[2] = 1.9;
+    caller.vars[2] = 0.5;
     world.modify({
       actor,
       controller: compileControllerIr(controller("ModifyHitDef", {
@@ -2576,7 +2603,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
     expect(actor.currentMove).toMatchObject({ forceStand: true, forceCrouch: false });
 
-    caller.vars[3] = 1.9;
+    caller.vars[3] = -0.5;
     world.modify({
       actor,
       controller: compileControllerIr(controller("ModifyHitDef", {
@@ -2593,7 +2620,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     const actor = hitDefActor();
     actor.runtime.vars[1] = 99;
     const caller = runtimeState();
-    caller.vars[1] = 1.9;
+    caller.vars[1] = 0.5;
 
     world.apply({
       actor,
@@ -2611,7 +2638,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
     expect(actor.currentMove?.forceNoFall).toBe(false);
 
-    caller.vars[2] = 1.9;
+    caller.vars[2] = -0.5;
     world.modify({
       actor,
       controller: compileControllerIr(controller("ModifyHitDef", {
@@ -2631,7 +2658,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
     expect(actor.currentMove).toMatchObject({ forceNoFall: true, forceCrouch: true });
 
-    caller.vars[3] = 0.9;
+    caller.vars[3] = 0;
     world.modify({
       actor,
       controller: compileControllerIr(controller("ModifyHitDef", {

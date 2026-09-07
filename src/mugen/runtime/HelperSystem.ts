@@ -2008,14 +2008,22 @@ export function resolveRuntimeHelperFloatParam(
   return resolveHelperFloat(helper, raw, options);
 }
 
-/** Resolves the optional live Z component of a Helper-owned ModifyHitDef. */
+/** Resolves fractional fields in the context of the Helper executing the controller. */
 export function resolveRuntimeHelperFloatScalarParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle",
+  key: "forcestand" | "forcecrouch" | "forcenofall" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
   const operation = controller.operation;
+  if (key === "forcestand" || key === "forcecrouch" || key === "forcenofall") {
+    const typed = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef" ? operation : undefined;
+    const value = (key === "forcestand" ? typed?.forceStand
+      : key === "forcecrouch" ? typed?.forceCrouch : typed?.forceNoFall)
+      ?? findControllerParam(controller.source, key);
+    if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+    return typeof value === "string" ? resolveHelperFloat(helper, value, options) : undefined;
+  }
   const value = key === "down.velocity"
     ? operation?.kind === "modifyhitdef"
       ? operation.downVelocityZExpression ?? operation.downVelocityZ

@@ -2031,14 +2031,14 @@ value = 1
     })).operation).toBeUndefined();
   });
 
-  it("compiles direct HitDef posture integer expressions and rejects malformed values", () => {
+  it("preserves direct HitDef boolean fractions and rejects malformed values", () => {
     expect(compileControllerIr(controller(200, "HitDef", [], {
       forcestand: "0.8",
       forcecrouch: "var(2)",
       forcenofall: "var(4)",
     })).operation).toMatchObject({
       kind: "hitdef",
-      forceStand: 0,
+      forceStand: 0.8,
       forceCrouch: "var(2)",
       forceNoFall: "var(4)",
     });
@@ -2050,7 +2050,7 @@ value = 1
     })).operation).toMatchObject({
       kind: "modifyhitdef",
       forceStand: "Parent,var(0)",
-      forceCrouch: -2,
+      forceCrouch: -2.9,
       forceNoFall: "var(5)",
       redirectPlayerIdExpression: "57",
     });

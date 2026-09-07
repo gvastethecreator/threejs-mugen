@@ -51,7 +51,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state" | "snaptime" | "hitsound.channel" | "guardsound.channel" | "guardpoints") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "attack.depth" | "sparkscale" | "guard.sparkscale" | "sparkxy" | "snap") => [number?, number?] | undefined;
-  resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
+  resolveFloatScalar?: (key: "forcestand" | "forcecrouch" | "forcenofall" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
   resolveFallEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -85,7 +85,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "hitsound.channel" | "guardsound.channel" | "guardpoints") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "attack.depth" | "sparkxy" | "snap") => [number?, number?] | undefined;
   /** Resolves live dynamic float scalars in the caller context. */
-  resolveFloatScalar?: (key: "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
+  resolveFloatScalar?: (key: "forcestand" | "forcecrouch" | "forcenofall" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
   /** Resolves a live spark identity's numeric suffix in the caller context. */
   resolveSparkNumber?: (key: "guard.sparkno", expression?: string) => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
@@ -349,28 +349,28 @@ export class RuntimeHitDefControllerDispatchWorld {
             ?? existing?.hitVelocities?.ground?.z
             ?? existing?.hitVelocityZ,
         ];
-    const forceStandValue = resolveRuntimeHitDefIntegerScalar(
+    const forceStandValue = resolveRuntimeHitDefFloatExpressionScalar(
       operation?.forceStand,
       findParam(source, "forcestand"),
       actor.runtime,
       context ?? {},
-      resolveIntegerScalar?.("forcestand"),
+      resolveFloatScalar?.("forcestand"),
     );
-    const forceCrouchValue = resolveRuntimeHitDefIntegerScalar(
+    const forceCrouchValue = resolveRuntimeHitDefFloatExpressionScalar(
       operation?.forceCrouch,
       findParam(source, "forcecrouch"),
       actor.runtime,
       context ?? {},
-      resolveIntegerScalar?.("forcecrouch"),
+      resolveFloatScalar?.("forcecrouch"),
     );
     const forceStand = forceStandValue === undefined ? (groundVelocity?.[1] ?? 0) !== 0 : forceStandValue !== 0;
     const forceCrouch = forceCrouchValue !== undefined && forceCrouchValue !== 0;
-    const forceNoFallValue = resolveRuntimeHitDefIntegerScalar(
+    const forceNoFallValue = resolveRuntimeHitDefFloatExpressionScalar(
       operation?.forceNoFall,
       findParam(source, "forcenofall"),
       actor.runtime,
       context ?? {},
-      resolveIntegerScalar?.("forcenofall"),
+      resolveFloatScalar?.("forcenofall"),
     );
     const forceNoFall = forceNoFallValue !== undefined && forceNoFallValue !== 0;
     const koVelocityAdd = operation?.koVelocityAdd ?? velocityPair(findParam(source, "ko.velocity.add"));
@@ -1365,32 +1365,32 @@ export class RuntimeHitDefControllerDispatchWorld {
       if (downBounce !== undefined) existing.downBounce = downBounce !== 0;
     }
     if (operation.forceStand !== undefined) {
-      const forceStand = resolveRuntimeHitDefIntegerScalar(
+      const forceStand = resolveRuntimeHitDefFloatExpressionScalar(
         operation.forceStand,
         findParam(controller.source, "forcestand"),
         actor.runtime,
         context ?? {},
-        resolveIntegerScalar?.("forcestand"),
+        resolveFloatScalar?.("forcestand"),
       );
       if (forceStand !== undefined) existing.forceStand = forceStand !== 0;
     }
     if (operation.forceCrouch !== undefined) {
-      const forceCrouch = resolveRuntimeHitDefIntegerScalar(
+      const forceCrouch = resolveRuntimeHitDefFloatExpressionScalar(
         operation.forceCrouch,
         findParam(controller.source, "forcecrouch"),
         actor.runtime,
         context ?? {},
-        resolveIntegerScalar?.("forcecrouch"),
+        resolveFloatScalar?.("forcecrouch"),
       );
       if (forceCrouch !== undefined) existing.forceCrouch = forceCrouch !== 0;
     }
     if (operation.forceNoFall !== undefined) {
-      const forceNoFall = resolveRuntimeHitDefIntegerScalar(
+      const forceNoFall = resolveRuntimeHitDefFloatExpressionScalar(
         operation.forceNoFall,
         findParam(controller.source, "forcenofall"),
         actor.runtime,
         context ?? {},
-        resolveIntegerScalar?.("forcenofall"),
+        resolveFloatScalar?.("forcenofall"),
       );
       if (forceNoFall !== undefined) existing.forceNoFall = forceNoFall !== 0;
     }
@@ -2519,13 +2519,14 @@ function resolveRuntimeHitDefGuardDistanceBounds(
 }
 
 function resolveRuntimeHitDefFloatExpressionScalar(
-  operationValue: number | string,
+  operationValue: number | string | undefined,
   rawValue: string | undefined,
   state: CharacterRuntimeState,
   context: RuntimeControllerEvaluationContext,
   resolvedOverride: number | undefined,
 ): number | undefined {
   const authored = resolvedOverride ?? operationValue ?? firstNumber(rawValue);
+  if (authored === undefined) return undefined;
   const resolved = typeof authored === "number"
     ? authored
     : evaluateRuntimeControllerNumber(authored, state, context);
