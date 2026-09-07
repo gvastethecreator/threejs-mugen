@@ -47,6 +47,12 @@ timing, team/rollback behavior, or complete MUGEN/Ikemen compatibility.
 0.5 from an integer evaluator's zero and preserves nonselected Projectiles.
 This focused proof does not establish redirected contact or full mutation parity.
 
+The same decimal evaluation applies to dynamic `kill`, `guard.kill`, `fall.kill`,
+`forcestand`, `forcecrouch`, and `fall.recover`. Mutation coverage checks positive
+and negative fractions, a later explicit zero, unchanged omitted recovery time,
+and an unselected Projectile. These are local mutation claims, not full contact
+or recovery-timing parity.
+
 ## Support levels
 
 Use these labels from [QA_AND_ACCEPTANCE_GATES.md](QA_AND_ACCEPTANCE_GATES.md):

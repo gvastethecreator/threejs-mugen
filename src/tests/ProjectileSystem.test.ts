@@ -4098,6 +4098,37 @@ describe("ProjectileSystem", () => {
     expect(other).toMatchObject({ hitPause: 9, hitShakeTime: 8 });
   });
 
+  it("preserves fractional ModifyProjectile boolean values and explicit zero without changing other projectiles", () => {
+    const matching = projectile({ projectileId: 77, fall: { recoverTime: 13 } });
+    const other = projectile({ serialId: "other-booleans", projectileId: 88 });
+    const untouched = structuredClone(other);
+    for (const value of [0.5, -0.5, 0]) {
+      modifyRuntimeProjectiles([matching, other], {
+        controller: controller({
+          id: "77",
+          kill: "var(0)",
+          "guard.kill": "var(0)",
+          "fall.kill": "var(0)",
+          forcestand: "var(0)",
+          forcecrouch: "var(0)",
+          "fall.recover": "var(0)",
+        }),
+        resolveModifyProjectile: {
+          resolveFloat: () => value,
+          resolveNumber: () => Math.trunc(value),
+        },
+      });
+      expect(matching).toMatchObject({
+        kill: value !== 0,
+        guardKill: value !== 0,
+        forceStand: value !== 0,
+        forceCrouch: value !== 0,
+        fall: { kill: value !== 0, recover: value !== 0, recoverTime: 13 },
+      });
+      expect(other).toEqual(untouched);
+    }
+  });
+
   it("resolves dynamic ModifyProjectile selection and non-bound params through the bounded runtime resolver", () => {
     const matching = projectile({
       projectileId: 77,

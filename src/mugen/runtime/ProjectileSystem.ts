@@ -1372,12 +1372,12 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
   const animType = operation?.animType ?? hitAnimType(findControllerParam(input.controller, "animtype"));
   const airAnimType = operation?.airAnimType ?? hitAnimType(findControllerParam(input.controller, "air.animtype"));
   const fallAnimType = operation?.fallAnimType ?? hitAnimType(findControllerParam(input.controller, "fall.animtype"));
-  const killParam = operation?.kill === undefined ? resolveModifyProjectileNumberParam(input, "kill") : undefined;
-  const guardKillParam = operation?.guardKill === undefined ? resolveModifyProjectileNumberParam(input, "guard.kill") : undefined;
-  const fallKillParam = operation?.fallKill === undefined ? resolveModifyProjectileNumberParam(input, "fall.kill") : undefined;
+  const killParam = operation?.kill === undefined ? resolveModifyProjectileFloatParam(input, "kill") : undefined;
+  const guardKillParam = operation?.guardKill === undefined ? resolveModifyProjectileFloatParam(input, "guard.kill") : undefined;
+  const fallKillParam = operation?.fallKill === undefined ? resolveModifyProjectileFloatParam(input, "fall.kill") : undefined;
   const forceNoFallParam = operation?.forceNoFall === undefined ? resolveModifyProjectileFloatParam(input, "forcenofall") : undefined;
-  const forceStandParam = operation?.forceStand === undefined ? resolveModifyProjectileNumberParam(input, "forcestand") : undefined;
-  const forceCrouchParam = operation?.forceCrouch === undefined ? resolveModifyProjectileNumberParam(input, "forcecrouch") : undefined;
+  const forceStandParam = operation?.forceStand === undefined ? resolveModifyProjectileFloatParam(input, "forcestand") : undefined;
+  const forceCrouchParam = operation?.forceCrouch === undefined ? resolveModifyProjectileFloatParam(input, "forcecrouch") : undefined;
   const kill = operation?.kill ?? (killParam === undefined ? undefined : killParam !== 0);
   const guardKill = operation?.guardKill ?? (guardKillParam === undefined ? undefined : guardKillParam !== 0);
   const fallKill = operation?.fallKill ?? (fallKillParam === undefined ? undefined : fallKillParam !== 0);
@@ -1388,7 +1388,7 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
   const fallXVelocity = operation?.fallXVelocity ?? resolveModifyProjectileFloatParam(input, "fall.xvelocity");
   const fallYVelocity = operation?.fallYVelocity ?? resolveModifyProjectileFloatParam(input, "fall.yvelocity");
   const fallZVelocity = operation?.fallZVelocity ?? resolveModifyProjectileFloatParam(input, "fall.zvelocity");
-  const fallRecoverParam = operation?.fallRecover === undefined ? resolveModifyProjectileNumberParam(input, "fall.recover") : undefined;
+  const fallRecoverParam = operation?.fallRecover === undefined ? resolveModifyProjectileFloatParam(input, "fall.recover") : undefined;
   const fallRecover = operation?.fallRecover ?? (fallRecoverParam === undefined ? undefined : fallRecoverParam !== 0);
   const fallRecoverTime = operation?.fallRecoverTime ?? resolveModifyProjectileNumberParam(input, "fall.recovertime");
   const downRecoverParam = operation?.downRecover === undefined ? resolveModifyProjectileNumberParam(input, "down.recover") : undefined;
