@@ -4,6 +4,12 @@ Latest verification: 2026-09-07
 
 ## Current verification
 
+The Projectile fall-boolean update passed 4,111 tests in 328 files (76.00
+seconds), typecheck, and all 890 trace artifacts (856 required). Its production
+build passed in 31.94 seconds, with 30.7 seconds preparing output. The refreshed
+source map passed structural validation and retains partial analysis coverage.
+These are local checks, not CI or complete engine parity evidence.
+
 The HitDef fall/lethal update passed 4,110 tests in 328 files (83.53 seconds).
 After fixing a test-fixture type error, the affected guarded-contact test and
 typecheck passed again. All 890 trace artifacts passed, including 856 required

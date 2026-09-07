@@ -2,7 +2,7 @@
   "schema": "Da29MeasuredEvidence/v1",
   "id": "DA29-017",
   "kind": "I",
-  "generatedAt": "2026-09-07T22:31:47.154Z",
+  "generatedAt": "2026-09-07T22:49:15.055Z",
   "ok": true,
   "acceptanceExecuted": true,
   "command": "pnpm exec vitest run src/tests/Da29Wave1ConsecutiveEvidence.test.ts -t DA29-017",
