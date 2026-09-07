@@ -4,6 +4,14 @@ Latest verification: 2026-09-07
 
 ## Current verification
 
+The recovery/bounce update first passed 940 focused tests and types. Its full
+suite found one literal recovery-time failure (4,110 passed); after the compiler
+fix, all 747 tests in the affected files passed. Typecheck, 890 trace artifacts
+(856 required), and the production build then passed. Build took 20.58 seconds.
+The source map passed structural validation with partial analysis coverage.
+This is a repaired full-run failure plus focused reruns, not an uninterrupted
+green full-suite run. No CI or complete recovery-physics parity is claimed.
+
 The Projectile fall-boolean update passed 4,111 tests in 328 files (76.00
 seconds), typecheck, and all 890 trace artifacts (856 required). Its production
 build passed in 31.94 seconds, with 30.7 seconds preparing output. The refreshed
