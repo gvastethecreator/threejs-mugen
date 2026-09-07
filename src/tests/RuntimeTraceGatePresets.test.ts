@@ -27468,6 +27468,21 @@ describe("RuntimeTraceGatePresets", () => {
     });
   });
 
+  it("observes dynamic root Projectile forcenofall overriding enabled fall at contact", () => {
+    const artifact = createSyntheticImportedProjectileDynamicFallFlagsTraceArtifact({
+      generatedAt: "2026-09-07T00:00:00.000Z",
+    }, true);
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-projectile-dynamic-forcenofall-golden" },
+      gates: [{ passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 308,
+      hitFall: { falling: false, kill: false },
+    });
+  });
+
   it("creates a required long finite Helper Projectile EnvShake artifact with root-parent attribution", () => {
     const artifact = createSyntheticImportedHelperProjectileEnvShakeLongFiniteTraceArtifact({ generatedAt: "2026-08-15T00:00:00.000Z" });
 

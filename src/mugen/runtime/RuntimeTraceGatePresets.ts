@@ -48920,7 +48920,11 @@ export function createSyntheticImportedProjectileDynamicFallRecoveryTraceArtifac
 
 export function createSyntheticImportedProjectileDynamicFallFlagsTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
+  forceNoFall = false,
 ): RuntimeTraceArtifact {
+  const label = forceNoFall
+    ? "synthetic-imported-projectile-dynamic-forcenofall-golden"
+    : "synthetic-imported-projectile-dynamic-fall-flags-golden";
   const stage = options.stage ?? projectileCombatStage();
   const script = importedCommonGetHitScript();
   const trace = runRuntimeTrace(new MatchWorld({
@@ -48937,7 +48941,7 @@ export function createSyntheticImportedProjectileDynamicFallFlagsTraceArtifact(
       getHitState: { stateNo: 5100, animNo: 500 },
       getHitVarBranch: {
         stateNo: 308,
-        expression: "GetHitVar(fall) = 1 && GetHitVar(fall.kill) = 0",
+        expression: `GetHitVar(fall) = ${forceNoFall ? 0 : 1} && GetHitVar(fall.kill) = 0`,
       },
       projectileVarSeeds: [
         { index: 0, value: 1 },
@@ -48948,28 +48952,29 @@ export function createSyntheticImportedProjectileDynamicFallFlagsTraceArtifact(
         enabled: "var(0)",
         airFall: "var(1)",
         kill: "var(2)",
+        ...(forceNoFall ? { forceNoFall: "var(0)" } : {}),
       },
     }),
     p2: demoFighters[1]!,
     stage,
     runtimeProfile: "ikemen-go",
   }), script, {
-    label: "synthetic-imported-projectile-dynamic-fall-flags-golden",
+    label,
   });
   return createRuntimeTraceArtifact({
     trace,
     script,
     generatedAt: options.generatedAt,
     target: {
-      id: "synthetic-imported-projectile-dynamic-fall-flags-golden",
+      id: label,
       label: "Synthetic imported dynamic root Projectile fall flags",
       source: "mixed",
-      notes: [
-        "Required trace proves one root Projectile resolves finite fall, air.fall, and fall.kill expressions in its caller context. The accepted falling hit transfers enabled fall and nonlethal fall policy through existing HitFall and GetHitVar consumers. Airborne selection, Helper/nesting/ownProjectile, ModifyProjectile, ModifyHitDef, exact KO or recovery timing, teams, rollback, and full MUGEN/Ikemen parity remain excluded.",
-      ],
+      notes: [forceNoFall
+        ? "Root Projectile forcenofall is evaluated at creation and overrides enabled fall at accepted contact. GetHitVar observes fall=0 and nonlethal fall metadata. This is a local trace against the documented Ikemen 149402f semantics, not upstream differential parity. Helper contact, exact recovery timing, teams and rollback remain unproven."
+        : "Required trace proves one root Projectile resolves finite fall, air.fall, and fall.kill expressions in its caller context. The accepted falling hit transfers enabled fall and nonlethal fall policy through existing HitFall and GetHitVar consumers. Airborne selection, Helper/nesting/ownProjectile, ModifyProjectile, ModifyHitDef, exact KO or recovery timing, teams, rollback, and full MUGEN/Ikemen parity remain excluded."],
     },
     gates: [{
-      label: "synthetic-imported-projectile-dynamic-fall-flags-golden",
+      label,
       requiredActorSources: ["imported"],
       requiredActorKinds: ["player"],
       requiredEffectKinds: ["projectile"],
@@ -48987,7 +48992,7 @@ export function createSyntheticImportedProjectileDynamicFallFlagsTraceArtifact(
         source: "demo",
         stateNo: 308,
         customOwnerId: "p1",
-        hitFall: { falling: true, kill: false },
+        hitFall: { falling: !forceNoFall, kill: false },
       }],
     }],
   });
@@ -69454,6 +69459,7 @@ export type SyntheticImportedTraceFighterOptions = {
     enabled?: SyntheticNumberExpression;
     airFall?: SyntheticNumberExpression;
     kill?: SyntheticNumberExpression;
+    forceNoFall?: SyntheticNumberExpression;
   };
   /** Synthetic fixture-only fresh Projectile guardpoints expression. */
   projectileGuardPointsExpression?: SyntheticNumberExpression;
@@ -75447,6 +75453,7 @@ ${fallRecovery?.downRecoverTime === undefined ? "" : `down.recovertime = ${fallR
 ${fallFlags?.enabled === undefined ? "" : `fall = ${fallFlags.enabled}`}
 ${fallFlags?.airFall === undefined ? "" : `air.fall = ${fallFlags.airFall}`}
 ${fallFlags?.kill === undefined ? "" : `fall.kill = ${fallFlags.kill}`}
+${fallFlags?.forceNoFall === undefined ? "" : `forcenofall = ${fallFlags.forceNoFall}`}
 `;
   const missOnOverrideLine = missOnOverride === undefined ? "" : `missonoverride = ${missOnOverride ? 1 : 0}`;
   const airVelocityLine = airVelocityExpression === undefined

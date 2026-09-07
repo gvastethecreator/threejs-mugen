@@ -21,6 +21,24 @@ scanner/reporting plus explicitly gated runtime slices.
 | `ikemen-go-exec-later` | Future IKEMEN-specific execution. | Blocked. | No general ZSS, Lua, rollback, netplay, or model-stage claim. |
 | `shared-module-later` | Future non-fighting modules. | Blocked by fighting contracts. | No generic engine claim until one non-fighting slice runs. |
 
+## Fresh Projectile `forcenofall`
+
+The runtime evaluates `forcenofall` expressions when a root or Helper creates a
+Projectile. The result stays on that Projectile even if the creator's variables
+change. Explicit zero remains false; non-finite results leave the flag unset.
+Helper expression context remains distinct from root Projectile ownership.
+
+This adapts boolean caller evaluation from Ikemen-GO
+`149402fa8b50a64e9af8316772e0cd266025133a`, `compiler_functions.go` and
+`bytecode.go`. The required local trace
+`synthetic-imported-projectile-dynamic-forcenofall` observes the flag overriding
+enabled fall on accepted root contact. Existing combat tests preserve receiver
+fall metadata on guard contact. Spawn and actor tests cover the Helper caller.
+
+Allowed: these local expression, spawn, and contact behaviors. Not established:
+upstream differential parity, Helper contact trace coverage, full fall recovery
+timing, team/rollback behavior, or complete MUGEN/Ikemen compatibility.
+
 ## Support levels
 
 Use these labels from [QA_AND_ACCEPTANCE_GATES.md](QA_AND_ACCEPTANCE_GATES.md):
