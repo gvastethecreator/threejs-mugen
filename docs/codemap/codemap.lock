@@ -1,9 +1,9 @@
 {
   "schema_version": 2,
-  "source_commit": "0fea0a5b666108a121cf292dd11adec137415f29",
+  "source_commit": "70a4bbb8f708322a3f60c41c60d83416c375925b",
   "working_tree_dirty": true,
-  "generated_at": "2026-09-07T21:14:19Z",
-  "generation_id": "c20b09602173bf26816299a08572c59e92f5dcb628121455d0cf4f01afcf7613",
+  "generated_at": "2026-09-07T21:29:21Z",
+  "generation_id": "797635f57c930d69f93d0bec09a717e501a4de48fb07aed496eb6966e457da35",
   "analysis": {
     "version": "syntax-1",
     "digest": "ef0bef6b47dc8f80a59969a7c79bee202c17ea461e36fb268705b34c880b9749"
@@ -2944,8 +2944,8 @@
         "path": "src/mugen/runtime/ProjectileSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "507b165356afb3effdd17fe5f7a1f8748f063c74d33fb8a5f93e60a1367bb7e9",
-        "size": 174387
+        "digest": "8478930d03cfd04dcec4aa3c79c153d8afbc274333806c776782cce93fe80bdc",
+        "size": 174386
       },
       {
         "path": "src/mugen/runtime/RedLifeDefaults.ts",
@@ -4988,8 +4988,8 @@
         "path": "src/tests/ProjectileSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "d71b299fed9925829bf46ca2a11048dce5ab0134842ca518c3ddb4ef1091fc96",
-        "size": 170382
+        "digest": "8a61a7f58a41bb82c1298de1867d2f377288c2ed7278f8dc15209e149dd58f07",
+        "size": 170537
       },
       {
         "path": "src/tests/RendererInfoBaseline.test.ts",
@@ -6392,12 +6392,12 @@
         "size": 235
       }
     ],
-    "digest": "f357182368a614876f17925ec553a6481558fd05aa73614d7177d026e924a0fa"
+    "digest": "da2e578784db129ed7f3b9e615610a6be6014bc40a49ffd3a3975b1a5f4ae6b2"
   },
-  "source_digest": "bc045cfe3ba3ee4a21c6d5ac01e474c35f6be078a8bd0c5bedc64e3bb37b399e",
+  "source_digest": "491d291f675bb2fbd5caef6683f50afd290814a46d772784d0bf7dd7dcdb5cef",
   "artifact_hashes": {
-    "codemap.json": "8f8e514da9a5d2100078d4ece46177992bd8b00a7c35acdec9c1871a92f0608b",
-    "codemap.md": "b451eaf85e00f0b503fafaeab6e44b3d491c4d5f0b452e970f4fa14b8c9ca381",
-    "codemap.html": "352793cc077b49676ded0134afb566384926505cd0c9ce34b2fda6a5ebf213a6"
+    "codemap.json": "537afcb5136f20eaa65eb36a23db1af8c1007234ba8b9a07195f28d5809eff37",
+    "codemap.md": "cdba7103d5a46790c46421a6ff0700bb389fd54e9de6684dcd9d4383f5ef5140",
+    "codemap.html": "fa379ed432a54f16e4c79afb24f39012e51b3dfef3d368fe54fd5b981184f35b"
   }
 }
