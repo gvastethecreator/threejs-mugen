@@ -1,94 +1,122 @@
-# Code map · mugen-web-sandbox
+# Code map: mugen-web-sandbox
 
-generated: 2026-08-27T18:00:00Z
-commit: f49350bac810
-scope: .
+Generated: 2026-09-07T20:20:47Z | Commit: `b9dcf5da515d` | Schema: 2
+Generation: `ce40c2605fd1f27c4a612c90837f4644024bae1124497eb26424c02c8a110bcf`
+Scope: . | Inventory: working-tree
+Nodes: 942 | Edges: 5246 | Flows: 2
 
-counts: 10 nodes · 14 edges · 0 flows · 0 unknown
+## Coverage
+
+- Analysis: **partial**; 903 analyzed of 907 included files.
+- Configuration files: 1; omitted untracked files: 0.
+- Unresolved references and analysis limits: 6323.
+- Static references and call paths do not prove runtime execution or test coverage.
 
 ## Modules
 
-- `external-dependencies` · `scripts/build_character_from_imagegen_sheet.py` · external · External
-  callers: scripts (imports), src-app (imports), src-game (imports), src-mugen (imports), vitest-config (imports)
-  callees: (none)
-  tests: (none)
-  entry: scripts/build_character_from_imagegen_sheet.py:__future__
-
-- `repository` · `package.json` · module · Repository
-  callers: (none)
-  callees: scripts (calls)
-  tests: (none)
-  entry: package.json:{
-
-- `scripts` · `scripts` · service · Scripts
-  callers: repository (calls)
-  callees: external-dependencies (imports), scripts-lib (imports), src-game (imports), src-mugen (imports)
-  tests: src/tests/ControlAuthorityAudit.test.ts
-  entry: scripts/audit_authority_references.cjs:extractCurrentBlocks
-
-- `scripts-lib` · `scripts/lib` · service · Scripts
-  callers: scripts (imports)
-  callees: (none)
-  tests: (none)
-  entry: scripts/lib/assert_measured_matches_acceptance.cjs:anchorPaths
-
-- `src` · `src` · module · Src
-  callers: (none)
-  callees: src-app (imports)
-  tests: (none)
-  entry: src/main.ts:root
-
-- `src-app` · `src/app` · module · Src
-  callers: src (imports)
-  callees: external-dependencies (imports), src-engine (imports), src-game (imports), src-mugen (imports)
-  tests: src/tests/AssetReleasePolicyV1.test.ts, src/tests/ContentPackStages.test.ts, src/tests/DebugPanel.test.ts, src/tests/DualCharacterLegalJourney.test.ts, src/tests/EvidenceEnvelope.test.ts
-  entry: src/app/App.ts:tablerIcon
-
-- `src-engine` · `src/engine` · service · Src
-  callers: src-app (imports)
-  callees: (none)
-  tests: src/tests/CommonEvidenceFacts.test.ts, src/tests/ModuleContracts.test.ts
-  entry: src/engine/CommonEvidenceFacts.ts:createCommonEvidenceFacts
-
-- `src-game` · `src/game` · module · Src
-  callers: scripts (imports), src-app (imports)
-  callees: external-dependencies (imports), src-mugen (imports)
-  tests: src/tests/AtlasSpriteProvider.test.ts, src/tests/CharacterRenderer.test.ts, src/tests/CommonFxFightScreenProof.test.ts, src/tests/CompositeSpriteProvider.test.ts, src/tests/FightScreenAnnouncementRenderer.font.test.ts
-  entry: src/game/audio/MugenAudioSystem.ts:resolveRoundAnnouncementSound
-
-- `src-mugen` · `src/mugen` · module · Src
-  callers: scripts (imports), src-app (imports), src-game (imports)
-  callees: external-dependencies (imports)
-  tests: src/tests/ActParser.test.ts, src/tests/ActorConstraintSystem.test.ts, src/tests/AirParser.test.ts, src/tests/AnimationControllerSystem.test.ts, src/tests/AssertMeasuredMatchesAcceptance.test.ts
-  entry: src/mugen/compatibility/AuthoritySelector.ts:createAuthoritySelectorDocument
-
-- `vitest-config` · `vitest.config.ts` · module · Vitest.Config
-  callers: (none)
-  callees: external-dependencies (imports)
-  tests: (none)
-  entry: vitest.config.ts:import { defineConfig } from "vitest/config";
+- `external:javascript:` | external | External | callers: scripts/qa_browser_gate_da32_005_mugen_lite_visual.cjs, scripts/qa_browser_gate_t426_select_def.cjs, scripts/qa_repository_stage_compatibility.cjs, scripts/qa_smoke.cjs | callees: none | tests: 0 | entry: none
+- `external:javascript:@tabler/icons` | external | External | callers: src/app/App.ts | callees: none | tests: 0 | entry: none
+- `external:javascript:crypto` | external | External | callers: scripts/qa_asset_path_hygiene.cjs, scripts/qa_asset_path_hygiene.cjs, scripts/qa_smoke.cjs, scripts/qa_smoke.cjs | callees: none | tests: 0 | entry: none
+- `external:javascript:fs` | external | External | callers: scripts/qa_asset_path_hygiene.cjs, scripts/qa_asset_path_hygiene.cjs, scripts/qa_repository_stage_compatibility.cjs, scripts/qa_repository_stage_compatibility.cjs | callees: none | tests: 0 | entry: none
+- `external:javascript:jszip` | external | External | callers: scripts/qa_browser_gate_da32_024_source_intent_write_recovery.cjs, scripts/qa_browser_gate_da32_024_source_intent_write_recovery.cjs, scripts/qa_browser_gate_da32_028_source_write_observation_positive.cjs, scripts/qa_browser_gate_da32_028_source_write_observation_positive.cjs | callees: none | tests: 3 | entry: none
+- `external:javascript:net` | external | External | callers: scripts/qa_repository_stage_compatibility.cjs, scripts/qa_repository_stage_compatibility.cjs, scripts/qa_smoke.cjs, scripts/qa_smoke.cjs | callees: none | tests: 0 | entry: none
+- `external:javascript:node:buffer` | external | External | callers: scripts/qa_traces.cjs | callees: none | tests: 0 | entry: none
+- `external:javascript:node:child_process` | external | External | callers: scripts/audit_authority_references.cjs, scripts/audit_authority_references.cjs, scripts/audit_da30_001_hold_references.cjs, scripts/close_da29_batch.cjs | callees: none | tests: 2 | entry: none
+- `external:javascript:node:crypto` | external | External | callers: scripts/audit_da30_001_hold_references.cjs, scripts/audit_da30_001_hold_references.cjs, scripts/audit_da30_005_control_references.cjs, scripts/audit_da30_005_control_references.cjs | callees: none | tests: 15 | entry: none
+- `external:javascript:node:fs` | external | External | callers: scripts/audit_authority_references.cjs, scripts/audit_authority_references.cjs, scripts/audit_css_duplication.cjs, scripts/audit_css_duplication.cjs | callees: none | tests: 32 | entry: none
+- `external:javascript:node:http` | external | External | callers: scripts/qa_browser_gate_da32_023_source_write_intent.cjs, scripts/qa_browser_gate_da32_024_source_intent_write_recovery.cjs, scripts/qa_browser_gate_da32_025_source_write_phase_recovery.cjs, scripts/qa_browser_gate_da32_026_source_write_receipt_recovery.cjs | callees: none | tests: 0 | entry: none
+- `external:javascript:node:module` | external | External | callers: src/tests/ControlAuthorityAudit.test.ts, src/tests/ControlAuthorityAudit.test.ts | callees: none | tests: 1 | entry: none
+- `external:javascript:node:net` | external | External | callers: scripts/qa_browser_gate_da28_09_turns.cjs, scripts/qa_browser_gate_da28_09_turns.cjs, scripts/qa_browser_gate_da29_003.cjs, scripts/qa_browser_gate_da29_003.cjs | callees: none | tests: 0 | entry: none
+- `external:javascript:node:os` | external | External | callers: src/tests/FightScreenFixture.test.ts, src/tests/FightScreenFixture.test.ts, src/tests/MaterializeControlProjections.test.ts, src/tests/MaterializeControlProjections.test.ts | callees: none | tests: 2 | entry: none
+- `external:javascript:node:path` | external | External | callers: scripts/audit_authority_references.cjs, scripts/audit_authority_references.cjs, scripts/audit_css_duplication.cjs, scripts/audit_css_duplication.cjs | callees: none | tests: 32 | entry: none
+- `external:javascript:node:url` | external | External | callers: scripts/materialize_sandbox_fightscreen.cjs, scripts/materialize_sandbox_fightscreen.cjs, scripts/qa_traces.cjs, scripts/qa_traces.cjs | callees: none | tests: 1 | entry: none
+- `external:javascript:path` | external | External | callers: scripts/qa_asset_path_hygiene.cjs, scripts/qa_asset_path_hygiene.cjs, scripts/qa_repository_stage_compatibility.cjs, scripts/qa_repository_stage_compatibility.cjs | callees: none | tests: 0 | entry: none
+- `external:javascript:playwright` | external | External | callers: scripts/qa_browser_gate_da26_13.cjs, scripts/qa_browser_gate_da27_07_turns.cjs, scripts/qa_browser_gate_da27_09_fightscreen.cjs, scripts/qa_browser_gate_da28_09_turns.cjs | callees: none | tests: 0 | entry: none
+- `external:javascript:three` | external | External | callers: src/game/render/AxisRenderer.ts, src/game/render/CharacterRenderer.ts, src/game/render/CollisionBoxRenderer.ts, src/game/render/FightScreenAnnouncementRenderer.ts | callees: none | tests: 4 | entry: none
+- `external:javascript:vite` | external | External | callers: scripts/qa_browser_gate_da28_09_turns.cjs, scripts/qa_browser_gate_fighter_lab.cjs, scripts/qa_content_pack_stages.cjs, scripts/qa_repository_stage_compatibility.cjs | callees: none | tests: 0 | entry: none
+- Showing 20 of 942 nodes. Query `impact --module <path>` or open the HTML hierarchy for the rest.
 
 ## Edges
 
-- repository -> scripts · calls
-- scripts -> external-dependencies · imports
-- scripts -> scripts-lib · imports
-- scripts -> src-game · imports
-- scripts -> src-mugen · imports
-- src -> src-app · imports
-- src-app -> external-dependencies · imports
-- src-app -> src-engine · imports
-- src-app -> src-game · imports
-- src-app -> src-mugen · imports
-- src-game -> external-dependencies · imports
-- src-game -> src-mugen · imports
-- src-mugen -> external-dependencies · imports
-- vitest-config -> external-dependencies · imports
+- `scripts/audit_authority_references.cjs` -> `external:javascript:node:child_process` | calls
+- `scripts/audit_authority_references.cjs` -> `external:javascript:node:child_process` | imports
+- `scripts/audit_authority_references.cjs` -> `external:javascript:node:fs` | calls
+- `scripts/audit_authority_references.cjs` -> `external:javascript:node:fs` | imports
+- `scripts/audit_authority_references.cjs` -> `external:javascript:node:path` | calls
+- `scripts/audit_authority_references.cjs` -> `external:javascript:node:path` | imports
+- `scripts/audit_authority_references.cjs` -> `scripts/lib_control_authority.cjs` | imports
+- `scripts/audit_css_duplication.cjs` -> `external:javascript:node:fs` | calls
+- `scripts/audit_css_duplication.cjs` -> `external:javascript:node:fs` | imports
+- `scripts/audit_css_duplication.cjs` -> `external:javascript:node:path` | calls
+- `scripts/audit_css_duplication.cjs` -> `external:javascript:node:path` | imports
+- `scripts/audit_da30_001_hold_references.cjs` -> `external:javascript:node:child_process` | imports
+- `scripts/audit_da30_001_hold_references.cjs` -> `external:javascript:node:crypto` | calls
+- `scripts/audit_da30_001_hold_references.cjs` -> `external:javascript:node:crypto` | imports
+- `scripts/audit_da30_001_hold_references.cjs` -> `external:javascript:node:fs` | calls
+- `scripts/audit_da30_001_hold_references.cjs` -> `external:javascript:node:fs` | imports
+- `scripts/audit_da30_001_hold_references.cjs` -> `external:javascript:node:path` | calls
+- `scripts/audit_da30_001_hold_references.cjs` -> `external:javascript:node:path` | imports
+- `scripts/audit_da30_005_control_references.cjs` -> `external:javascript:node:crypto` | calls
+- `scripts/audit_da30_005_control_references.cjs` -> `external:javascript:node:crypto` | imports
+- `scripts/audit_da30_005_control_references.cjs` -> `external:javascript:node:fs` | calls
+- `scripts/audit_da30_005_control_references.cjs` -> `external:javascript:node:fs` | imports
+- `scripts/audit_da30_005_control_references.cjs` -> `external:javascript:node:path` | calls
+- `scripts/audit_da30_005_control_references.cjs` -> `external:javascript:node:path` | imports
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:PIL` | imports
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:__future__` | imports
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:argparse` | calls
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:argparse` | imports
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:collections` | calls
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:collections` | imports
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:io` | calls
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:io` | imports
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:json` | calls
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:json` | imports
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:pathlib` | calls
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:pathlib` | imports
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:shutil` | calls
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:shutil` | imports
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:statistics` | calls
+- `scripts/build_character_from_imagegen_sheet.py` -> `external:python:statistics` | imports
+- `scripts/build_da29_series_registry.cjs` -> `external:javascript:node:crypto` | calls
+- `scripts/build_da29_series_registry.cjs` -> `external:javascript:node:crypto` | imports
+- `scripts/build_da29_series_registry.cjs` -> `external:javascript:node:fs` | calls
+- `scripts/build_da29_series_registry.cjs` -> `external:javascript:node:fs` | imports
+- `scripts/build_da29_series_registry.cjs` -> `external:javascript:node:path` | calls
+- `scripts/build_da29_series_registry.cjs` -> `external:javascript:node:path` | imports
+- `scripts/build_da29_verdict_ledger.cjs` -> `external:javascript:node:crypto` | calls
+- `scripts/build_da29_verdict_ledger.cjs` -> `external:javascript:node:crypto` | imports
+- `scripts/build_da29_verdict_ledger.cjs` -> `external:javascript:node:fs` | calls
+- `scripts/build_da29_verdict_ledger.cjs` -> `external:javascript:node:fs` | imports
+- Showing 50 of 5246 edges; JSON contains every edge and its evidence.
 
 ## Unknown
 
-- none
+- `scripts/audit_authority_references.cjs:74`: call-target-symbol-not-resolved (auditControlDocuments)
+- `scripts/build_character_from_imagegen_sheet.py:58`: object-member-call-not-resolved (Image)
+- `scripts/build_character_from_imagegen_sheet.py:77`: object-member-call-not-resolved (Image)
+- `scripts/build_character_from_imagegen_sheet.py:91`: object-member-call-not-resolved (Image)
+- `scripts/build_character_from_imagegen_sheet.py:225`: object-member-call-not-resolved (Image)
+- `scripts/build_character_from_imagegen_sheet.py:333`: object-member-call-not-resolved (Image)
+- `scripts/build_character_from_imagegen_sheet.py:394`: object-member-call-not-resolved (Image)
+- `scripts/build_character_from_imagegen_sheet.py:395`: object-member-call-not-resolved (ImageDraw)
+- `scripts/build_character_from_imagegen_sheet.py:404`: object-member-call-not-resolved (Image)
+- `scripts/build_character_from_imagegen_sheet.py:405`: object-member-call-not-resolved (ImageDraw)
+- `scripts/create_runtime_atlas_frames.py:85`: object-member-call-not-resolved (Image)
+- `scripts/create_runtime_atlas_frames.py:104`: object-member-call-not-resolved (ImageDraw)
 
 ## Flows
 
-- none
+- Python __main__: `scripts/package_external_mugen_fixtures.py` -> `external:python:json` | Static call path reaches external:python:json:dumps
+- Python __main__: `scripts/package_external_mugen_fixtures.py` -> `external:python:zipfile` | Static call path reaches external:python:zipfile:ZipFile
+
+## Architecture changes
+
+- Nodes: +942 / -0; edges: +5246 / -0.
+- Boundary changes: 0; new cycles: 6.
+
+## Read next
+
+- Use `status` before relying on this generation.
+- Use `impact --changed` for possible impact and related test evidence.
+- Use `diff --before <model> --after <model>` for architecture changes.
