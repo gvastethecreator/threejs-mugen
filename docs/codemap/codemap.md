@@ -1,7 +1,7 @@
 # Code map: mugen-web-sandbox
 
-Generated: 2026-09-07T21:43:54Z | Commit: `f3cb353437e0` | Schema: 2
-Generation: `3a6a66648ea5484918c2aecd0c25a26cc8cf6e4ff1e1745d32933e150393c2fe`
+Generated: 2026-09-07T22:17:36Z | Commit: `d45f0c30288c` | Schema: 2
+Generation: `e060420e9c7860a5e3191f49632bdd5a81a7a7c86f429c23efb496c4731b262f`
 Scope: . | Inventory: working-tree
 Nodes: 942 | Edges: 5246 | Flows: 2
 
