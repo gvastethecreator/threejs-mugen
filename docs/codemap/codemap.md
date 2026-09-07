@@ -1,15 +1,15 @@
 # Code map: mugen-web-sandbox
 
-Generated: 2026-09-07T23:20:31Z | Commit: `ad2595821338` | Schema: 2
-Generation: `af6f57372c9c2ac01aba608f82503649fa6e0d0b59fd23eac239d7e424b1b30d`
+Generated: 2026-09-07T23:31:10Z | Commit: `fa49c2e5abe2` | Schema: 2
+Generation: `8f1ce477206d3f452de94d104fd3bfa900e6c79863b9c8c41ea51edb5ddb168f`
 Scope: . | Inventory: working-tree
-Nodes: 942 | Edges: 5246 | Flows: 2
+Nodes: 944 | Edges: 5258 | Flows: 2
 
 ## Coverage
 
-- Analysis: **partial**; 903 analyzed of 907 included files.
+- Analysis: **partial**; 904 analyzed of 909 included files.
 - Configuration files: 1; omitted untracked files: 0.
-- Unresolved references and analysis limits: 6327.
+- Unresolved references and analysis limits: 6328.
 - Static references and call paths do not prove runtime execution or test coverage.
 
 ## Modules
@@ -22,8 +22,8 @@ Nodes: 942 | Edges: 5246 | Flows: 2
 - `external:javascript:net` | external | External | callers: scripts/qa_repository_stage_compatibility.cjs, scripts/qa_repository_stage_compatibility.cjs, scripts/qa_smoke.cjs, scripts/qa_smoke.cjs | callees: none | tests: 0 | entry: none
 - `external:javascript:node:buffer` | external | External | callers: scripts/qa_traces.cjs | callees: none | tests: 0 | entry: none
 - `external:javascript:node:child_process` | external | External | callers: scripts/audit_authority_references.cjs, scripts/audit_authority_references.cjs, scripts/audit_da30_001_hold_references.cjs, scripts/close_da29_batch.cjs | callees: none | tests: 2 | entry: none
-- `external:javascript:node:crypto` | external | External | callers: scripts/audit_da30_001_hold_references.cjs, scripts/audit_da30_001_hold_references.cjs, scripts/audit_da30_005_control_references.cjs, scripts/audit_da30_005_control_references.cjs | callees: none | tests: 15 | entry: none
-- `external:javascript:node:fs` | external | External | callers: scripts/audit_authority_references.cjs, scripts/audit_authority_references.cjs, scripts/audit_css_duplication.cjs, scripts/audit_css_duplication.cjs | callees: none | tests: 32 | entry: none
+- `external:javascript:node:crypto` | external | External | callers: scripts/audit_da30_001_hold_references.cjs, scripts/audit_da30_001_hold_references.cjs, scripts/audit_da30_005_control_references.cjs, scripts/audit_da30_005_control_references.cjs | callees: none | tests: 16 | entry: none
+- `external:javascript:node:fs` | external | External | callers: scripts/audit_authority_references.cjs, scripts/audit_authority_references.cjs, scripts/audit_css_duplication.cjs, scripts/audit_css_duplication.cjs | callees: none | tests: 33 | entry: none
 - `external:javascript:node:http` | external | External | callers: scripts/qa_browser_gate_da32_023_source_write_intent.cjs, scripts/qa_browser_gate_da32_024_source_intent_write_recovery.cjs, scripts/qa_browser_gate_da32_025_source_write_phase_recovery.cjs, scripts/qa_browser_gate_da32_026_source_write_receipt_recovery.cjs | callees: none | tests: 0 | entry: none
 - `external:javascript:node:module` | external | External | callers: src/tests/ControlAuthorityAudit.test.ts, src/tests/ControlAuthorityAudit.test.ts | callees: none | tests: 1 | entry: none
 - `external:javascript:node:net` | external | External | callers: scripts/qa_browser_gate_da28_09_turns.cjs, scripts/qa_browser_gate_da28_09_turns.cjs, scripts/qa_browser_gate_da29_003.cjs, scripts/qa_browser_gate_da29_003.cjs | callees: none | tests: 0 | entry: none
@@ -34,7 +34,7 @@ Nodes: 942 | Edges: 5246 | Flows: 2
 - `external:javascript:playwright` | external | External | callers: scripts/qa_browser_gate_da26_13.cjs, scripts/qa_browser_gate_da27_07_turns.cjs, scripts/qa_browser_gate_da27_09_fightscreen.cjs, scripts/qa_browser_gate_da28_09_turns.cjs | callees: none | tests: 0 | entry: none
 - `external:javascript:three` | external | External | callers: src/game/render/AxisRenderer.ts, src/game/render/CharacterRenderer.ts, src/game/render/CollisionBoxRenderer.ts, src/game/render/FightScreenAnnouncementRenderer.ts | callees: none | tests: 4 | entry: none
 - `external:javascript:vite` | external | External | callers: scripts/qa_browser_gate_da28_09_turns.cjs, scripts/qa_browser_gate_fighter_lab.cjs, scripts/qa_content_pack_stages.cjs, scripts/qa_repository_stage_compatibility.cjs | callees: none | tests: 0 | entry: none
-- Showing 20 of 942 nodes. Query `impact --module <path>` or open the HTML hierarchy for the rest.
+- Showing 20 of 944 nodes. Query `impact --module <path>` or open the HTML hierarchy for the rest.
 
 ## Edges
 
@@ -88,7 +88,7 @@ Nodes: 942 | Edges: 5246 | Flows: 2
 - `scripts/build_da29_verdict_ledger.cjs` -> `external:javascript:node:crypto` | imports
 - `scripts/build_da29_verdict_ledger.cjs` -> `external:javascript:node:fs` | calls
 - `scripts/build_da29_verdict_ledger.cjs` -> `external:javascript:node:fs` | imports
-- Showing 50 of 5246 edges; JSON contains every edge and its evidence.
+- Showing 50 of 5258 edges; JSON contains every edge and its evidence.
 
 ## Unknown
 
@@ -112,7 +112,7 @@ Nodes: 942 | Edges: 5246 | Flows: 2
 
 ## Architecture changes
 
-- Nodes: +0 / -0; edges: +0 / -0.
+- Nodes: +2 / -0; edges: +12 / -0.
 - Boundary changes: 0; new cycles: 0.
 
 ## Read next

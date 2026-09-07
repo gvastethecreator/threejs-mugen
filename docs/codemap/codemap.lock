@@ -1,9 +1,9 @@
 {
   "schema_version": 2,
-  "source_commit": "ad2595821338d7757c1fe34251f7dd9c865b8c7e",
+  "source_commit": "fa49c2e5abe20a9ad2035bd4e6cc6e2bb62ef3cf",
   "working_tree_dirty": true,
-  "generated_at": "2026-09-07T23:20:31Z",
-  "generation_id": "af6f57372c9c2ac01aba608f82503649fa6e0d0b59fd23eac239d7e424b1b30d",
+  "generated_at": "2026-09-07T23:31:10Z",
+  "generation_id": "8f1ce477206d3f452de94d104fd3bfa900e6c79863b9c8c41ea51edb5ddb168f",
   "analysis": {
     "version": "syntax-1",
     "digest": "ef0bef6b47dc8f80a59969a7c79bee202c17ea461e36fb268705b34c880b9749"
@@ -4299,11 +4299,18 @@
         "size": 831
       },
       {
+        "path": "src/tests/Da29MeasuredPublication.test.ts",
+        "origin": "untracked",
+        "state": "present",
+        "digest": "a1f441e95915ea615820039bb8e9ec95d2c8e841b8dce26523353805ee37d7aa",
+        "size": 1627
+      },
+      {
         "path": "src/tests/Da29RemainingOpenCuts.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "1cdaa8744155170dc3029808cc056cf98113e53edf1a89a750e1af760173d40d",
-        "size": 6225
+        "digest": "a8cf163be70d3dbf5fa2fc199599b1aae2da392f2092bad55a7e979779fb579a",
+        "size": 6236
       },
       {
         "path": "src/tests/Da29SeriesCloseout.test.ts",
@@ -4316,22 +4323,22 @@
         "path": "src/tests/Da29Wave10ConsecutiveEvidence.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "48b17cb72814460b04728c945f4c7857a3029c57c0e23ad21d1bc23de4c6b3a7",
-        "size": 3462
+        "digest": "253f83d2c2dfaa2ae43a5125d62eb3a825a7b0c2270ed3ac3972e897a0e805e3",
+        "size": 3473
       },
       {
         "path": "src/tests/Da29Wave1ConsecutiveEvidence.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "e46770fdcb8ce04d35ef80684e4bb2104afd4799514f9f2cf5dc31d67b0b87a4",
-        "size": 3837
+        "digest": "e265f21889c01bdcaf8a383e4a2a6b3f5feb06463cb6f0ab8c09b823046292ab",
+        "size": 3848
       },
       {
         "path": "src/tests/Da29Wave5ConsecutiveEvidence.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "158ab23dc1ba51ff1c6f5488064e085820be60095d855d1da7e972ba239fa886",
-        "size": 2705
+        "digest": "0fad09b3303abc9bb6c24b445103346879913cd735aca276873e5f59079e520b",
+        "size": 2716
       },
       {
         "path": "src/tests/Da30BrowserGates.test.ts",
@@ -6357,6 +6364,13 @@
         "size": 2958
       },
       {
+        "path": "src/tests/da29/writeMeasuredJson.ts",
+        "origin": "untracked",
+        "state": "present",
+        "digest": "eb61e9633be2ce5a1be8795298d7781173c6b18384d9a849862f73432d92b582",
+        "size": 559
+      },
+      {
         "path": "src/tests/importedFighter.test.ts",
         "origin": "tracked",
         "state": "present",
@@ -6392,12 +6406,12 @@
         "size": 235
       }
     ],
-    "digest": "479bee10a60ba6f9bd931cdafa9abbf524e9abf3a78628a21e12193891d5b61e"
+    "digest": "523502cc3d91863ffece3ea7ed181f75df00b14c05a707427ab2cbde65a01472"
   },
-  "source_digest": "2696eb536f181210accff67e9e61e85c898b7f41d632a05c4fd171ff73cbb34c",
+  "source_digest": "ad03531606fb4718b2030443b54221ef0fa1ed06c5e9874f9d426bae335daeed",
   "artifact_hashes": {
-    "codemap.json": "9ae419a9808bdb984895c1af9469c40b30cadc75dd4866a8d37fca371a118ba9",
-    "codemap.md": "77b48b86805d17915f402903d2cd34438ec62989867adb4144523b2d35779e69",
-    "codemap.html": "44e5c2021ec4d2033bf00cd157965eb8be61c492220a5dd6a06954088d68eff0"
+    "codemap.json": "9cfa3e2b8200ce845f9ce63c3f92c37a2fcb89190b4dd16b5d5a283ff567b3c7",
+    "codemap.md": "ba9748a377ef16e6a2f16de797c0e45f1176b9f82c8dd059fc1685219d4a08c8",
+    "codemap.html": "e1579ab7a949de79e44d0e99b3c048c42e2be03c2467919649cb62d853eb0ae2"
   }
 }
