@@ -6321,7 +6321,7 @@ numhits = var(0) + 2
   });
 
   it("stores partial imported HitDef fall data on hit targets", () => {
-    const imported = createImportedFixture({ withStateMove: false, hitDefDamage: 37, withFallHitDef: true });
+    const imported = createImportedFixture({ withStateMove: false, hitDefDamage: 37, withFallHitDef: "0.5" });
     const closeStage = {
       ...trainingStage,
       playerStart: {
@@ -6411,26 +6411,28 @@ numhits = var(0) + 2
     expect(snapshot.logs.some((line) => line.includes("Nadia Arce guarded Imported Fixture for 5"))).toBe(true);
   });
 
-  it("respects imported HitDef guard.kill = 0 on guarded hits", () => {
-    const imported = createImportedFixture({
-      withStateMove: false,
-      hitDefDamage: 37,
-      guardDamage: 2000,
-      guardFlag: "MA",
-      guardKill: false,
-    });
-    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
-      ...trainingStage,
-      playerStart: {
-        p1: { x: -20, y: 0, facing: 1 as const },
-        p2: { x: 35, y: 0, facing: -1 as const },
-      },
-    });
+  it("respects zero and fractional imported HitDef guard.kill on guarded hits", () => {
+    for (const guardKill of [false, "0.5", "-0.5"] as const) {
+      const imported = createImportedFixture({
+        withStateMove: false,
+        hitDefDamage: 37,
+        guardDamage: 2000,
+        guardFlag: "MA",
+        guardKill,
+      });
+      const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      });
 
-    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["B"]) });
+      const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["B"]) });
 
-    expect(snapshot.actors[1]?.runtime.life).toBe(1);
-    expect(snapshot.logs.some((line) => line.includes("Nadia Arce guarded Imported Fixture for 2000"))).toBe(true);
+      expect(snapshot.actors[1]?.runtime.life).toBe(guardKill === false ? 1 : 0);
+      expect(snapshot.logs.some((line) => line.includes("Nadia Arce guarded Imported Fixture for 2000"))).toBe(true);
+    }
   });
 
   it("treats atomic down-back input as a crouch guard direction", () => {
@@ -13672,7 +13674,7 @@ function createImportedFixture(
     hitSparkLibraries?: DemoFighterDefinition["hitSparkLibraries"];
     guardDamage?: number;
     guardPauseExpression?: string;
-    guardKill?: boolean;
+    guardKill?: boolean | string;
     guardFlag?: string;
     guardDistance?: number;
     guardSlideTime?: number;
@@ -13762,7 +13764,7 @@ function createImportedFixture(
     withChangeAnimElem?: { animNo: number; elem: number; elemTime?: number };
     withChangeState?: { stateNo: number; controllerAnimNo?: number; stateAnimNo?: number | null };
     withAnimElemTimeVars?: boolean;
-    withFallHitDef?: boolean;
+    withFallHitDef?: boolean | string;
     fallDefenceUp?: number;
     fallKill?: boolean;
     downRecoverTime?: number;
@@ -13824,7 +13826,7 @@ sparkxy = 10,-72
       ? `
 guardflag = ${options.guardFlag}
 ${options.guardDistance === undefined ? "" : `guard.dist = ${options.guardDistance}`}
-${options.guardKill === undefined ? "" : `guard.kill = ${options.guardKill ? 1 : 0}`}
+${options.guardKill === undefined ? "" : `guard.kill = ${typeof options.guardKill === "string" ? options.guardKill : options.guardKill ? 1 : 0}`}
 guard.pausetime = ${options.guardPauseExpression ?? "4,4"}
 guard.hittime = 9
 ${options.guardSlideTime === undefined ? "" : `guard.slidetime = ${options.guardSlideTime}`}
@@ -13915,7 +13917,7 @@ ctrl = 0
     : "";
   const fallHitDef = options.withFallHitDef
     ? `
-fall = 1
+fall = ${typeof options.withFallHitDef === "string" ? options.withFallHitDef : 1}
 fall.damage = 70
 fall.defence_up = ${options.fallDefenceUp ?? 150}
 ${options.fallKill === undefined ? "" : `fall.kill = ${options.fallKill ? 1 : 0}`}
@@ -14909,7 +14911,7 @@ ${options.helperExtraStates ?? ""}
     hitPause: 8,
     hitStun: 11,
     push: 4,
-    guardKill: options.guardKill,
+    guardKill: typeof options.guardKill === "string" ? undefined : options.guardKill,
     hitSpark: options.hitSpark,
     guardSpark: options.guardSpark,
     sparkXy: options.hitSpark !== undefined || options.guardSpark !== undefined ? ([10, -72] as [number, number]) : undefined,

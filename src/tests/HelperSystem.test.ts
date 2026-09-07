@@ -2007,7 +2007,7 @@ describe("HelperSystem", () => {
               "fall.xvelocity": "var(0) + .5",
               "fall.yvelocity": "-var(1)",
               "fall.zvelocity": "var(0) - .25",
-              fall: "var(0) - 2",
+              fall: "(var(0) - 2) / 2.0",
               "air.fall": "var(1) - 7",
               "fall.kill": "var(0) - 3",
               "fall.recover": "var(0) - 3",

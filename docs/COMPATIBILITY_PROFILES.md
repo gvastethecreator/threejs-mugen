@@ -70,6 +70,23 @@ Allowed: this local compilation and active-move evaluation behavior. Not
 established: fractional contact parity against upstream, every redirected or
 nested Helper path, other boolean field families, or full engine compatibility.
 
+## HitDef fall and lethal flags
+
+Direct `HitDef` and `ModifyHitDef` preserve finite fractions in `fall`,
+`air.fall`, `fall.kill`, `kill`, `guard.kill`, and `hitonce`. Compiler and Helper
+evaluation no longer truncate these values before the final nonzero check.
+Existing caller-context tests retain independent mutation and omission checks;
+literal coverage includes positive fractions, negative fractions, and zero.
+
+The source basis is the same pinned Ikemen-GO revision above, `bytecode.go`
+lines 7586-7593 and 7717-7720, with corresponding mutation cases. Local imported
+contact tests observe `fall = 0.5` on the receiver and lethal guarded damage for
+`guard.kill = 0.5` and `-0.5`; explicit zero still leaves one life.
+
+Allowed: these local evaluation and contact observations. Not established:
+upstream differential parity, fractional Projectile fall behavior, every Helper
+contact path, complete recovery timing, or full MUGEN/Ikemen compatibility.
+
 ## Support levels
 
 Use these labels from [QA_AND_ACCEPTANCE_GATES.md](QA_AND_ACCEPTANCE_GATES.md):

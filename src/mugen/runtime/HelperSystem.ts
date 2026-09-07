@@ -2249,15 +2249,15 @@ export function resolveRuntimeHelperHitDefFallFlagsParam(
   const operationValue = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
     ? operation.fallFlags?.[key]
     : undefined;
-  if (typeof operationValue === "number") return Number.isFinite(operationValue) ? Math.trunc(operationValue) : undefined;
+  if (typeof operationValue === "number") return Number.isFinite(operationValue) ? operationValue : undefined;
   if (typeof operationValue === "string") {
     const value = resolveHelperFloat(helper, operationValue, options);
-    return value === undefined ? undefined : Math.trunc(value);
+    return value;
   }
   const rawKey = key === "enabled" ? "fall" : key === "airFall" ? "air.fall" : "fall.kill";
   const raw = findControllerParam(controller.source, rawKey);
   const value = raw === undefined ? undefined : resolveHelperFloat(helper, raw, options);
-  return value === undefined ? undefined : Math.trunc(value);
+  return value;
 }
 
 export function resolveRuntimeHelperHitDefLethalFlagsParam(
@@ -2270,15 +2270,15 @@ export function resolveRuntimeHelperHitDefLethalFlagsParam(
   const operationValue = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
     ? operation.lethalFlags?.[key]
     : undefined;
-  if (typeof operationValue === "number") return Number.isFinite(operationValue) ? Math.trunc(operationValue) : undefined;
+  if (typeof operationValue === "number") return Number.isFinite(operationValue) ? operationValue : undefined;
   if (typeof operationValue === "string") {
     const value = resolveHelperFloat(helper, operationValue, options);
-    return value === undefined ? undefined : Math.trunc(value);
+    return value;
   }
   const rawKey = key === "guardKill" ? "guard.kill" : key.toLowerCase();
   const raw = findControllerParam(controller.source, rawKey);
   const value = raw === undefined ? undefined : resolveHelperFloat(helper, raw, options);
-  return value === undefined ? undefined : Math.trunc(value);
+  return value;
 }
 
 function resolveRuntimeHelperHitDefEnvShakeComponent(

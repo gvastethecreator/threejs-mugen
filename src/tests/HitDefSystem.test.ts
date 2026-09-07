@@ -2353,14 +2353,35 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("preserves literal fall and lethal fractions through fresh and modified HitDef", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    for (const value of [0.5, -0.5, 0]) {
+      const params = { fall: String(value), "air.fall": String(value),
+        "fall.kill": String(value), kill: String(value),
+        "guard.kill": String(value), hitonce: String(value) };
+      const expected = { kill: value !== 0, guardKill: value !== 0, hitOnce: value !== 0,
+        fall: { enabled: value !== 0, airFall: value !== 0, kill: value !== 0 } };
+      actor.firedHitDefs.clear();
+      world.apply({ actor, controller: compileControllerIr(controller("HitDef", {
+        attr: "S,NA", ...params,
+      })), frame: activeFrame() });
+      expect(actor.currentMove).toMatchObject(expected);
+      world.modify({ actor, controller: compileControllerIr(controller("ModifyHitDef", {
+        ...params, redirectid: "57",
+      })) });
+      expect(actor.currentMove).toMatchObject(expected);
+    }
+  });
+
   it("resolves fall flags in the caller context and mutates live fields independently", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();
     actor.runtime.vars[1] = 999;
     const caller = runtimeState();
-    caller.vars[1] = 1.9;
-    caller.vars[2] = 0.9;
-    caller.vars[3] = 0.9;
+    caller.vars[1] = -0.5;
+    caller.vars[2] = 0;
+    caller.vars[3] = 0;
 
     world.apply({
       actor,
@@ -2375,8 +2396,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
     expect(actor.currentMove?.fall).toMatchObject({ enabled: true, airFall: false, kill: false });
 
-    caller.vars[2] = 1.9;
-    caller.vars[3] = 1.9;
+    caller.vars[2] = 0.5;
+    caller.vars[3] = -0.5;
     const modified = world.modify({
       actor,
       controller: compileControllerIr(controller("ModifyHitDef", {
@@ -2427,9 +2448,9 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     const actor = hitDefActor();
     actor.runtime.vars[1] = 999;
     const caller = runtimeState();
-    caller.vars[1] = 0.9;
-    caller.vars[2] = 1.9;
-    caller.vars[3] = 0.9;
+    caller.vars[1] = 0;
+    caller.vars[2] = -0.5;
+    caller.vars[3] = 0;
 
     world.apply({
       actor,
@@ -2444,8 +2465,8 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
     expect(actor.currentMove).toMatchObject({ kill: false, guardKill: true, hitOnce: false });
 
-    caller.vars[1] = 1.9;
-    caller.vars[3] = 1.9;
+    caller.vars[1] = 0.5;
+    caller.vars[3] = -0.5;
     const modified = world.modify({
       actor,
       controller: compileControllerIr(controller("ModifyHitDef", {

@@ -2333,7 +2333,7 @@ function resolveRuntimeHitDefFallFlags(
     operationValue: number | string | undefined,
   ): number | undefined => {
     const value = resolver?.(key) ?? resolveHitDefScalar(operationValue, raw[key], state, context);
-    return value !== undefined && Number.isFinite(value) ? Math.trunc(value) : undefined;
+    return value !== undefined && Number.isFinite(value) ? value : undefined;
   };
   const enabled = component("enabled", operation?.enabled);
   const airFall = component("airFall", operation?.airFall);
@@ -2364,7 +2364,7 @@ function resolveRuntimeHitDefLethalFlags(
     operationValue: number | string | undefined,
   ): number | undefined => {
     const value = resolver?.(key) ?? resolveHitDefScalar(operationValue, raw[key], state, context);
-    return value !== undefined && Number.isFinite(value) ? Math.trunc(value) : undefined;
+    return value !== undefined && Number.isFinite(value) ? value : undefined;
   };
   const kill = component("kill", operation?.kill);
   const guardKill = component("guardKill", operation?.guardKill);

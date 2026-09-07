@@ -5173,9 +5173,9 @@ function optionalHitDefFallRecoveryParam(
 function optionalHitDefFallFlagsParam(
   controller: MugenStateController,
 ): MugenHitDefFallFlagsOp | true | false {
-  const enabled = optionalIntegerExpressionParam(controller, "fall");
-  const airFall = optionalIntegerExpressionParam(controller, "air.fall");
-  const kill = optionalIntegerExpressionParam(controller, "fall.kill");
+  const enabled = optionalFloatExpressionParam(controller, "fall");
+  const airFall = optionalFloatExpressionParam(controller, "air.fall");
+  const kill = optionalFloatExpressionParam(controller, "fall.kill");
   if (enabled === false || airFall === false || kill === false) return false;
   const dynamicKill = typeof kill === "string" ? kill : true;
   if (enabled === true && airFall === true && dynamicKill === true) return true;
@@ -5189,9 +5189,9 @@ function optionalHitDefFallFlagsParam(
 function optionalHitDefLethalFlagsParam(
   controller: MugenStateController,
 ): MugenHitDefLethalFlagsOp | true | false {
-  const kill = optionalIntegerExpressionParam(controller, "kill");
-  const guardKill = optionalIntegerExpressionParam(controller, "guard.kill");
-  const hitOnce = optionalIntegerExpressionParam(controller, "hitonce");
+  const kill = optionalFloatExpressionParam(controller, "kill");
+  const guardKill = optionalFloatExpressionParam(controller, "guard.kill");
+  const hitOnce = optionalFloatExpressionParam(controller, "hitonce");
   if (kill === false || guardKill === false || hitOnce === false) return false;
   const dynamicKill = typeof kill === "string" ? kill : true;
   const dynamicGuardKill = typeof guardKill === "string" ? guardKill : true;
