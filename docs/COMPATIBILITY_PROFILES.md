@@ -33,10 +33,13 @@ This adapts boolean caller evaluation from Ikemen-GO
 `bytecode.go`. The required local trace
 `synthetic-imported-projectile-dynamic-forcenofall` observes the flag overriding
 enabled fall on accepted root contact. Existing combat tests preserve receiver
-fall metadata on guard contact. Spawn and actor tests cover the Helper caller.
+fall metadata on guard contact. The required local trace
+`synthetic-imported-helper-projectile-dynamic-forcenofall` also uses
+`var(0) / 2.0` to distinguish a nonzero fractional Helper value from the root's
+zero value. It checks the receiver's cleared fall state and root/Helper ownership.
 
 Allowed: these local expression, spawn, and contact behaviors. Not established:
-upstream differential parity, Helper contact trace coverage, full fall recovery
+upstream differential parity, nested Helper contact coverage, full fall recovery
 timing, team/rollback behavior, or complete MUGEN/Ikemen compatibility.
 
 ## Support levels

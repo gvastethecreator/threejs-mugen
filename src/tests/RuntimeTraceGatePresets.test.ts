@@ -27636,6 +27636,22 @@ describe("RuntimeTraceGatePresets", () => {
     });
   });
 
+  it("observes fractional Helper Projectile forcenofall at contact without using root variables", () => {
+    const artifact = createSyntheticImportedHelperProjectileDynamicFallFlagsTraceArtifact({
+      generatedAt: "2026-09-07T00:00:00.000Z",
+    }, true);
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: { id: "synthetic-imported-helper-projectile-dynamic-forcenofall-golden" },
+      gates: [{ passed: true, failures: [] }],
+    });
+    expect(artifact.gates[0]?.evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 308,
+      customOwnerId: "p1",
+      hitFall: { falling: false, kill: false },
+    });
+  });
+
   it("creates a required imported dynamic HitDef fall EnvShake artifact", () => {
     const artifact = createSyntheticImportedHitDefDynamicFallEnvShakeTraceArtifact({
       generatedAt: "2026-08-08T00:00:00.000Z",

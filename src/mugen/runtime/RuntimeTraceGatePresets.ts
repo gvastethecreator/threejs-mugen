@@ -49625,13 +49625,17 @@ export function createSyntheticImportedHelperProjectileDynamicFallRecoveryTraceA
 
 export function createSyntheticImportedHelperProjectileDynamicFallFlagsTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
+  forceNoFall = false,
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const projectileId = 8922;
+  const label = forceNoFall
+    ? "synthetic-imported-helper-projectile-dynamic-forcenofall-golden"
+    : "synthetic-imported-helper-projectile-dynamic-fall-flags-golden";
   const script = importedCommonGetHitScript();
   const trace = runRuntimeTrace(new MatchWorld({
     p1: createSyntheticImportedTraceFighter({
-      id: "synthetic-imported-helper-projectile-dynamic-fall-flags",
+      id: forceNoFall ? label : "synthetic-imported-helper-projectile-dynamic-fall-flags",
       displayName: "Synthetic Imported Helper Projectile Dynamic Fall Flags",
       action200Duration: 80,
       withHitDef: false,
@@ -49639,7 +49643,7 @@ export function createSyntheticImportedHelperProjectileDynamicFallFlagsTraceArti
       getHitState: { stateNo: 5100, animNo: 500 },
       getHitVarBranch: {
         stateNo: 308,
-        expression: "GetHitVar(fall) = 1 && GetHitVar(fall.kill) = 0",
+        expression: `GetHitVar(fall) = ${forceNoFall ? 0 : 1} && GetHitVar(fall.kill) = 0`,
       },
       helperProjHitRoute: {
         waitStateNo: 1281,
@@ -49663,6 +49667,7 @@ export function createSyntheticImportedHelperProjectileDynamicFallFlagsTraceArti
           enabled: "var(0)",
           airFall: "var(1)",
           kill: "var(2)",
+          forceNoFall: forceNoFall ? "var(0) / 2.0" : undefined,
         },
       },
     }),
@@ -49670,22 +49675,23 @@ export function createSyntheticImportedHelperProjectileDynamicFallFlagsTraceArti
     stage,
     runtimeProfile: "ikemen-go",
   }), script, {
-    label: "synthetic-imported-helper-projectile-dynamic-fall-flags-golden",
+    label,
   });
   return createRuntimeTraceArtifact({
     trace,
     script,
     generatedAt: options.generatedAt,
     target: {
-      id: "synthetic-imported-helper-projectile-dynamic-fall-flags-golden",
+      id: label,
       label: "Synthetic imported dynamic Helper Projectile fall flags",
       source: "mixed",
       notes: [
-        "Required trace proves a first-generation Helper-created, root-owned Projectile resolves finite fall, air.fall, and fall.kill expressions in Helper caller context. The accepted falling hit transfers enabled fall and nonlethal fall policy through existing HitFall and GetHitVar consumers. Nested Helpers, ownProjectile, airborne selection, ModifyProjectile, ModifyHitDef, exact KO or recovery timing, teams, rollback, and full MUGEN/Ikemen parity remain excluded.",
+        ...(forceNoFall ? ["Helper-local var(0) / 2.0 evaluates to nonzero 0.5, unlike the root's unset variable. Accepted Projectile contact must clear enabled fall. This is local trace proof, not an upstream differential run."] : []),
+        "Required trace exercises a first-generation Helper-created, root-owned Projectile with finite fall, air.fall, and fall.kill expressions in Helper caller context. HitFall and GetHitVar consumers observe the resulting fall policy after accepted contact. Nested Helpers, ownProjectile, airborne selection, ModifyProjectile, ModifyHitDef, exact KO or recovery timing, teams, rollback, and full MUGEN/Ikemen parity remain excluded.",
       ],
     },
     gates: [{
-      label: "synthetic-imported-helper-projectile-dynamic-fall-flags-golden",
+      label,
       requiredActorSources: ["imported"],
       requiredActorKinds: ["player"],
       requiredEffectKinds: ["helper", "projectile"],
@@ -49739,7 +49745,7 @@ export function createSyntheticImportedHelperProjectileDynamicFallFlagsTraceArti
         source: "demo",
         stateNo: 308,
         customOwnerId: "p1",
-        hitFall: { falling: true, kill: false },
+        hitFall: { falling: !forceNoFall, kill: false },
       }],
     }],
   });
@@ -79080,6 +79086,7 @@ ${route.fallRecovery.downRecoverTime === undefined ? "" : `down.recovertime = ${
 ${route.fallFlags.enabled === undefined ? "" : `fall = ${route.fallFlags.enabled}`}
 ${route.fallFlags.airFall === undefined ? "" : `air.fall = ${route.fallFlags.airFall}`}
 ${route.fallFlags.kill === undefined ? "" : `fall.kill = ${route.fallFlags.kill}`}
+${route.fallFlags.forceNoFall === undefined ? "" : `forcenofall = ${route.fallFlags.forceNoFall}`}
 `;
   const airVelocityLine = route.airVelocityExpression === undefined
     ? route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.join(",")}`
