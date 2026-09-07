@@ -4120,7 +4120,7 @@ describe("ProjectileSystem", () => {
       projremanim: 1400,
       projcancelanim: 1005,
       teamside: 2,
-      forcenofall: 1,
+      forcenofall: 0,
       forcestand: 1,
       forcecrouch: 0,
       "fall.damage": 13,
@@ -4279,6 +4279,11 @@ describe("ProjectileSystem", () => {
         projremove: "var(18)",
       }),
       resolveModifyProjectile: {
+        resolveFloat: (key) => {
+          if (key !== "forcenofall") return undefined;
+          resolvedKeys.push(key);
+          return 0.5;
+        },
         resolveNumber: (key) => {
           resolvedKeys.push(key);
           return numberValues[key];

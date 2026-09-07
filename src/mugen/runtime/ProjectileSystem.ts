@@ -1375,7 +1375,7 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
   const killParam = operation?.kill === undefined ? resolveModifyProjectileNumberParam(input, "kill") : undefined;
   const guardKillParam = operation?.guardKill === undefined ? resolveModifyProjectileNumberParam(input, "guard.kill") : undefined;
   const fallKillParam = operation?.fallKill === undefined ? resolveModifyProjectileNumberParam(input, "fall.kill") : undefined;
-  const forceNoFallParam = operation?.forceNoFall === undefined ? resolveModifyProjectileNumberParam(input, "forcenofall") : undefined;
+  const forceNoFallParam = operation?.forceNoFall === undefined ? resolveModifyProjectileFloatParam(input, "forcenofall") : undefined;
   const forceStandParam = operation?.forceStand === undefined ? resolveModifyProjectileNumberParam(input, "forcestand") : undefined;
   const forceCrouchParam = operation?.forceCrouch === undefined ? resolveModifyProjectileNumberParam(input, "forcecrouch") : undefined;
   const kill = operation?.kill ?? (killParam === undefined ? undefined : killParam !== 0);

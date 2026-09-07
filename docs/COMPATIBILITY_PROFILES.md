@@ -42,6 +42,11 @@ Allowed: these local expression, spawn, and contact behaviors. Not established:
 upstream differential parity, nested Helper contact coverage, full fall recovery
 timing, team/rollback behavior, or complete MUGEN/Ikemen compatibility.
 
+`ModifyProjectile` uses the existing decimal caller evaluator for dynamic
+`forcenofall` before conversion to a boolean. The focused mutation test distinguishes
+0.5 from an integer evaluator's zero and preserves nonselected Projectiles.
+This focused proof does not establish redirected contact or full mutation parity.
+
 ## Support levels
 
 Use these labels from [QA_AND_ACCEPTANCE_GATES.md](QA_AND_ACCEPTANCE_GATES.md):
