@@ -104,6 +104,21 @@ Allowed: these local creation and root-contact observations. Not established:
 all Helper contact paths, complete fall-kill/recovery timing, upstream
 differential parity, or full engine compatibility.
 
+## Recovery and bounce boolean evaluation
+
+Recovery and bounce evaluation is locally covered for `fall.recover`,
+`down.recover`, and `down.bounce`: finite nonzero fractions become true while
+recovery times remain integers. Fresh Projectile recovery retains its typed
+package even for literals. Dynamic Projectile bounce is compiled and evaluated
+once in the root or Helper caller context; zero is false and non-finite results
+remain unset. ModifyProjectile down-recovery and bounce use decimal evaluation.
+The source basis is the pinned Ikemen-GO `evalB` cases at `bytecode.go:7662`,
+`7724`, and `7898`, distinct from integer recovery-time cases.
+
+These are compilation, creation, mutation, and payload observations. They do
+not establish complete rebound trajectories, recovery windows, nested Helper
+contact parity, or upstream differential parity.
+
 ## Support levels
 
 Use these labels from [QA_AND_ACCEPTANCE_GATES.md](QA_AND_ACCEPTANCE_GATES.md):

@@ -2012,13 +2012,18 @@ export function resolveRuntimeHelperFloatParam(
 export function resolveRuntimeHelperFloatScalarParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "forcestand" | "forcecrouch" | "forcenofall" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle",
+  key: "down.bounce" | "forcestand" | "forcecrouch" | "forcenofall" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
   const operation = controller.operation;
-  if (key === "forcestand" || key === "forcecrouch" || key === "forcenofall") {
+  if (key === "down.bounce" || key === "forcestand" || key === "forcecrouch" || key === "forcenofall") {
+    if (key === "down.bounce" && operation?.kind === "projectile") {
+      const expression = operation.downBounceExpression;
+      return expression === undefined ? undefined : resolveHelperFloat(helper, expression, options);
+    }
     const typed = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef" ? operation : undefined;
-    const value = (key === "forcestand" ? typed?.forceStand
+    const value = (key === "down.bounce" ? typed?.downBounceExpression
+      : key === "forcestand" ? typed?.forceStand
       : key === "forcecrouch" ? typed?.forceCrouch : typed?.forceNoFall)
       ?? findControllerParam(controller.source, key);
     if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
@@ -2133,10 +2138,14 @@ export function resolveRuntimeHelperProjectileFallRecovery(
   const operation = controller.operation;
   const fallRecovery = operation?.kind === "projectile" ? operation.fallRecovery : undefined;
   if (fallRecovery === undefined) return undefined;
+  const resolveBoolean = (value: number | string | undefined): number | undefined => {
+    if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+    return typeof value === "string" ? resolveHelperFloat(helper, value, options) : undefined;
+  };
   return {
-    recover: resolveRuntimeHelperIntegerExpression(helper, fallRecovery.recover, options),
+    recover: resolveBoolean(fallRecovery.recover),
     recoverTime: resolveRuntimeHelperIntegerExpression(helper, fallRecovery.recoverTime, options),
-    downRecover: resolveRuntimeHelperIntegerExpression(helper, fallRecovery.downRecover, options),
+    downRecover: resolveBoolean(fallRecovery.downRecover),
     downRecoverTime: resolveRuntimeHelperIntegerExpression(helper, fallRecovery.downRecoverTime, options),
   };
 }
@@ -2226,10 +2235,14 @@ export function resolveRuntimeHelperHitDefFallRecoveryParam(
   const operationValue = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
     ? operation.fallRecovery?.[key]
     : undefined;
-  if (typeof operationValue === "number") return Number.isFinite(operationValue) ? Math.trunc(operationValue) : undefined;
+  const normalize = (value: number | undefined): number | undefined => {
+    if (value === undefined || !Number.isFinite(value)) return undefined;
+    return key === "recover" || key === "downRecover" ? value : Math.trunc(value);
+  };
+  if (typeof operationValue === "number") return normalize(operationValue);
   if (typeof operationValue === "string") {
     const value = resolveHelperFloat(helper, operationValue, options);
-    return value === undefined ? undefined : Math.trunc(value);
+    return normalize(value);
   }
   const rawKey = key === "recover"
     ? "fall.recover"
@@ -2240,7 +2253,7 @@ export function resolveRuntimeHelperHitDefFallRecoveryParam(
         : "down.recovertime";
   const raw = findControllerParam(controller.source, rawKey);
   const value = raw === undefined ? undefined : resolveHelperFloat(helper, raw, options);
-  return value === undefined ? undefined : Math.trunc(value);
+  return normalize(value);
 }
 
 export function resolveRuntimeHelperHitDefFallFlagsParam(

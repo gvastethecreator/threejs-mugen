@@ -5436,7 +5436,8 @@ function runActiveStateControllers(
         },
         resolveFloatScalar: (key) => {
           const operation = controller.operation?.kind === "hitdef" ? controller.operation : undefined;
-          const value = key === "forcestand" ? operation?.forceStand
+          const value = key === "down.bounce" ? operation?.downBounceExpression
+            : key === "forcestand" ? operation?.forceStand
             : key === "forcecrouch" ? operation?.forceCrouch
             : key === "forcenofall" ? operation?.forceNoFall
             : key === "airguard.velocity"
@@ -5522,7 +5523,8 @@ function runActiveStateControllers(
         },
         resolveFloatScalar: (key) => {
           const operation = controller.operation?.kind === "modifyhitdef" ? controller.operation : undefined;
-          const value = key === "forcestand" ? operation?.forceStand
+          const value = key === "down.bounce" ? operation?.downBounceExpression
+            : key === "forcestand" ? operation?.forceStand
             : key === "forcecrouch" ? operation?.forceCrouch
             : key === "forcenofall" ? operation?.forceNoFall
             : key === "down.velocity"
@@ -6959,10 +6961,25 @@ function runActiveStateControllers(
           resolveProjectileForceNoFall:
             effect === "projectile"
               ? () => {
+                  const operation = controller.operation?.kind === "projectile" ? controller.operation : undefined;
+                  const expression = operation?.forceNoFallExpression;
+                  if (expression === undefined) return undefined;
+                  const resolved = resolveDispatchFloat(
+                    typeof expression === "number" ? expression : undefined,
+                    typeof expression === "string" ? expression : undefined,
+                    actor, targetOpponent, stateOwner, stageBounds, activeTick,
+                    gameSpace, options.characters, createPlayerIdTarget(actor),
+                  );
+                  return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
+                }
+              : undefined,
+          resolveProjectileDownBounce:
+            effect === "projectile"
+              ? () => {
                   const operation = controller.operation?.kind === "projectile"
                     ? controller.operation
                     : undefined;
-                  const expression = operation?.forceNoFallExpression;
+                  const expression = operation?.downBounceExpression;
                   if (expression === undefined) return undefined;
                   const resolved = resolveDispatchFloat(
                     typeof expression === "number" ? expression : undefined,
@@ -9187,10 +9204,10 @@ function resolveProjectileFallRecoveryComponents(
   playerIdTarget?: PlayerIdExpressionTarget,
 ): Partial<RuntimeProjectileFallRecovery> | undefined {
   if (value === undefined) return undefined;
-  const resolveComponent = (component: number | string | undefined): number | undefined => {
-    if (typeof component === "number") return Number.isFinite(component) ? Math.trunc(component) : undefined;
+  const resolveComponent = (component: number | string | undefined, isBoolean = false): number | undefined => {
+    if (typeof component === "number") return Number.isFinite(component) ? (isBoolean ? component : Math.trunc(component)) : undefined;
     if (component === undefined) return undefined;
-    const resolved = resolveDispatchNumber(
+    const resolved = (isBoolean ? resolveDispatchFloat : resolveDispatchNumber)(
       undefined,
       component,
       fighter,
@@ -9202,11 +9219,11 @@ function resolveProjectileFallRecoveryComponents(
       characters,
       playerIdTarget,
     );
-    return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
+    return resolved === undefined || !Number.isFinite(resolved) ? undefined : isBoolean ? resolved : Math.trunc(resolved);
   };
-  const recover = resolveComponent(value.recover);
+  const recover = resolveComponent(value.recover, true);
   const recoverTime = resolveComponent(value.recoverTime);
-  const downRecover = resolveComponent(value.downRecover);
+  const downRecover = resolveComponent(value.downRecover, true);
   const downRecoverTime = resolveComponent(value.downRecoverTime);
   return {
     ...(recover === undefined ? {} : { recover }),

@@ -10910,6 +10910,7 @@ value = 0
       withProjectile: true,
       projectileHitDefParams: `
 fall = Time + 0.5
+down.bounce = Time - 0.5
 fall.damage = Time + 17.8
 fall.xvelocity = Time - 6.5
 fall.yvelocity = Time - 7
@@ -10926,6 +10927,7 @@ fall.zvelocity = Time + 2.5
     }, { effectActorWorld });
 
     let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(effectActorWorld.projectiles("p1")[0]?.downBounce).toBe(true);
     expect(effectActorWorld.projectiles("p1")[0]?.fall).toEqual({
       enabled: true,
       damage: 17,

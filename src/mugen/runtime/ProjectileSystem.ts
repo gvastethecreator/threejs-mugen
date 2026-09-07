@@ -415,6 +415,7 @@ export type RuntimeProjectileSpawnInput = {
   /** Resolves fresh Projectile keepstate in the original caller context. */
   resolveKeepState?: () => number | undefined;
   resolveForceNoFall?: () => number | undefined;
+  resolveDownBounce?: () => number | undefined;
 };
 
 export type RuntimeProjectileModifyInput = {
@@ -804,7 +805,10 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const finiteDynamicGuardHitTime = dynamicGuardHitTime !== undefined && Number.isFinite(dynamicGuardHitTime)
     ? dynamicGuardHitTime
     : undefined;
-  const downBounce = operation?.downBounce ?? booleanNumber(findControllerParam(input.controller, "down.bounce"));
+  const bounceValue = operation?.downBounceExpression === undefined ? undefined : input.resolveDownBounce?.();
+  const downBounce = operation?.downBounceExpression === undefined
+    ? operation?.downBounce ?? booleanNumber(findControllerParam(input.controller, "down.bounce"))
+    : bounceValue !== undefined && Number.isFinite(bounceValue) ? bounceValue !== 0 : undefined;
   const forceNoFallExpression = operation?.forceNoFallExpression;
   const dynamicForceNoFall = typeof forceNoFallExpression === "number"
     ? forceNoFallExpression
@@ -1391,7 +1395,7 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
   const fallRecoverParam = operation?.fallRecover === undefined ? resolveModifyProjectileFloatParam(input, "fall.recover") : undefined;
   const fallRecover = operation?.fallRecover ?? (fallRecoverParam === undefined ? undefined : fallRecoverParam !== 0);
   const fallRecoverTime = operation?.fallRecoverTime ?? resolveModifyProjectileNumberParam(input, "fall.recovertime");
-  const downRecoverParam = operation?.downRecover === undefined ? resolveModifyProjectileNumberParam(input, "down.recover") : undefined;
+  const downRecoverParam = operation?.downRecover === undefined ? resolveModifyProjectileFloatParam(input, "down.recover") : undefined;
   const downRecover = operation?.downRecover ?? (downRecoverParam === undefined ? undefined : downRecoverParam !== 0);
   const downRecoverTime = operation?.downRecoverTime ?? resolveModifyProjectileNumberParam(input, "down.recovertime");
   const fallEnvShakeTime = operation?.fallEnvShakeTime ?? resolveModifyProjectileNumberParam(input, "fall.envshake.time");
@@ -1483,7 +1487,7 @@ export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input
     : undefined;
   const airFall = operation?.airFall ?? (airFallParam === undefined ? undefined : airFallParam !== 0);
   const downBounceParam = operation?.downBounce === undefined
-    ? resolveModifyProjectileNumberParam(input, "down.bounce")
+    ? resolveModifyProjectileFloatParam(input, "down.bounce")
     : undefined;
   const downBounce = operation?.downBounce ?? (downBounceParam === undefined ? undefined : downBounceParam !== 0);
   const hitStun = operation?.hitStun ?? resolveModifyProjectileNumberParam(input, "ground.hittime");
@@ -2137,12 +2141,13 @@ function resolveRuntimeProjectileFallRecovery(
   if (authored === undefined) return undefined;
   const component = (key: keyof RuntimeProjectileFallRecovery): number | undefined => {
     const source = authored[key];
+    const isBoolean = key === "recover" || key === "downRecover";
     if (typeof source === "number") {
-      return Number.isFinite(source) ? Math.trunc(source) : undefined;
+      return Number.isFinite(source) ? (isBoolean ? source : Math.trunc(source)) : undefined;
     }
     if (typeof source !== "string") return undefined;
     const value = resolved?.[key];
-    return typeof value === "number" && Number.isFinite(value) ? Math.trunc(value) : undefined;
+    return typeof value === "number" && Number.isFinite(value) ? (isBoolean ? value : Math.trunc(value)) : undefined;
   };
   const recover = component("recover");
   const recoverTime = component("recoverTime");

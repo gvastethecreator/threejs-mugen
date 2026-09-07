@@ -51,7 +51,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "air.juggle" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "p1stateno" | "p2stateno" | "p2getp1state" | "snaptime" | "hitsound.channel" | "guardsound.channel" | "guardpoints") => number | undefined;
   resolveScalar?: (key: "stand.friction" | "crouch.friction") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "attack.depth" | "sparkscale" | "guard.sparkscale" | "sparkxy" | "snap") => [number?, number?] | undefined;
-  resolveFloatScalar?: (key: "forcestand" | "forcecrouch" | "forcenofall" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
+  resolveFloatScalar?: (key: "down.bounce" | "forcestand" | "forcecrouch" | "forcenofall" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveEnvShake?: RuntimeHitDefEnvShakeResolver;
   resolveFallEnvShake?: RuntimeHitDefEnvShakeResolver;
@@ -85,7 +85,7 @@ export type RuntimeModifyHitDefControllerDispatchOptions<TActor extends RuntimeH
   resolveIntegerScalar?: (key: "id" | "chainid" | "p1facing" | "p1getp2facing" | "p2facing" | "p1sprpriority" | "p2sprpriority" | "priority" | "ground.hittime" | "ground.slidetime" | "air.hittime" | "down.hittime" | "guard.hittime" | "guard.slidetime" | "guard.ctrltime" | "airguard.ctrltime" | "guard.dist" | "down.bounce" | "numhits" | "forcestand" | "forcecrouch" | "forcenofall" | "hitsound.channel" | "guardsound.channel" | "guardpoints") => number | undefined;
   resolveFloatPair?: (key: "ground.velocity" | "air.velocity" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "attack.depth" | "sparkxy" | "snap") => [number?, number?] | undefined;
   /** Resolves live dynamic float scalars in the caller context. */
-  resolveFloatScalar?: (key: "forcestand" | "forcecrouch" | "forcenofall" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
+  resolveFloatScalar?: (key: "down.bounce" | "forcestand" | "forcecrouch" | "forcenofall" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle") => number | undefined;
   /** Resolves a live spark identity's numeric suffix in the caller context. */
   resolveSparkNumber?: (key: "guard.sparkno", expression?: string) => number | undefined;
   resolvePaletteFx?: RuntimePaletteFxResolver;
@@ -489,12 +489,12 @@ export class RuntimeHitDefControllerDispatchWorld {
     const downVelocityX = downVelocity[0];
     const downVelocityY = downVelocity[1];
     const downVelocityZ = downVelocity[2];
-    const resolvedDownBounce = resolveRuntimeHitDefIntegerScalar(
+    const resolvedDownBounce = resolveRuntimeHitDefFloatExpressionScalar(
       operation?.downBounceExpression,
       findParam(source, "down.bounce"),
       actor.runtime,
       context ?? {},
-      resolveIntegerScalar?.("down.bounce"),
+      resolveFloatScalar?.("down.bounce"),
     );
     const downBounce = resolvedDownBounce !== undefined
       ? resolvedDownBounce !== 0
@@ -1355,12 +1355,12 @@ export class RuntimeHitDefControllerDispatchWorld {
       existing.downBounce = operation.downBounce;
     }
     if (operation.downBounceExpression !== undefined) {
-      const downBounce = resolveRuntimeHitDefIntegerScalar(
+      const downBounce = resolveRuntimeHitDefFloatExpressionScalar(
         operation.downBounceExpression,
         findParam(controller.source, "down.bounce"),
         actor.runtime,
         context ?? {},
-        resolveIntegerScalar?.("down.bounce"),
+        resolveFloatScalar?.("down.bounce"),
       );
       if (downBounce !== undefined) existing.downBounce = downBounce !== 0;
     }
@@ -2300,7 +2300,8 @@ function resolveRuntimeHitDefFallRecovery(
     operationValue: number | string | undefined,
   ): number | undefined => {
     const value = resolver?.(key) ?? resolveHitDefScalar(operationValue, raw[key], state, context);
-    return value !== undefined && Number.isFinite(value) ? Math.trunc(value) : undefined;
+    if (value === undefined || !Number.isFinite(value)) return undefined;
+    return key === "recover" || key === "downRecover" ? value : Math.trunc(value);
   };
   const recover = component("recover", operation?.recover);
   const recoverTime = component("recoverTime", operation?.recoverTime);

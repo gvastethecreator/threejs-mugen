@@ -1128,7 +1128,7 @@ describe("ProjectileSystem", () => {
     });
 
     expect(spawn("p1-projectile-fall-recovery-dynamic", () => ({
-      recover: 1.9,
+      recover: -0.5,
       recoverTime: 17.8,
       downRecover: 0,
       downRecoverTime: 29.5,
@@ -1155,11 +1155,12 @@ describe("ProjectileSystem", () => {
     });
   });
 
-  it("resolves Projectile forcenofall once and leaves non-finite values unset", () => {
-    const source = controller({ projanim: "1005", forcenofall: "var(0)" });
+  it("resolves Projectile forcenofall and down.bounce once and leaves non-finite values unset", () => {
+    const source = controller({ projanim: "1005", forcenofall: "var(0)", "down.bounce": "var(0)" });
     const operation = compileControllerIr(source).operation as ProjectileControllerOp;
     expect(operation.forceNoFallExpression).toBe("var(0)");
-    let value = 1;
+    expect(operation.downBounceExpression).toBe("var(0)");
+    let value = -0.5;
     const spawn = () => createRuntimeProjectile({
       serialId: "p1-projectile-forcenofall",
       controller: source,
@@ -1172,19 +1173,26 @@ describe("ProjectileSystem", () => {
       pos: { x: 0, y: 0 },
       fallbackFacing: 1,
       resolveForceNoFall: () => value,
+      resolveDownBounce: () => value,
     });
     const projectile = spawn();
     value = 0;
     expect(projectile.forceNoFall).toBe(true);
+    expect(projectile.downBounce).toBe(true);
     expect(spawn().forceNoFall).toBe(false);
+    expect(spawn().downBounce).toBe(false);
     value = Number.NaN;
     expect(spawn().forceNoFall).toBeUndefined();
+    expect(spawn().downBounce).toBeUndefined();
   });
 
   it("preserves literal Projectile fall fractions and explicit zero", () => {
     for (const value of [0.5, -0.5, 0]) {
       const source = controller({ projanim: "1005", fall: String(value),
-        "air.fall": String(value), "fall.kill": String(value) });
+        "air.fall": String(value), "fall.kill": String(value),
+        "fall.recover": String(value), "down.recover": String(value),
+        "fall.recovertime": "17.8", "down.recovertime": "29.5",
+        "down.bounce": String(value) });
       const projectile = createRuntimeProjectile({
         serialId: `literal-fall-${value}`,
         controller: source,
@@ -1199,7 +1207,10 @@ describe("ProjectileSystem", () => {
       });
       expect(projectile.fall).toMatchObject({
         enabled: value !== 0, airFall: value !== 0, kill: value !== 0,
+        recover: value !== 0, downRecover: value !== 0,
+        recoverTime: 17, downRecoverTime: 29,
       });
+      expect(projectile.downBounce).toBe(value !== 0);
     }
   });
 
@@ -4134,6 +4145,8 @@ describe("ProjectileSystem", () => {
           forcestand: "var(0)",
           forcecrouch: "var(0)",
           "fall.recover": "var(0)",
+          "down.recover": "var(0)",
+          "down.bounce": "var(0)",
         }),
         resolveModifyProjectile: {
           resolveFloat: () => value,
@@ -4145,7 +4158,8 @@ describe("ProjectileSystem", () => {
         guardKill: value !== 0,
         forceStand: value !== 0,
         forceCrouch: value !== 0,
-        fall: { kill: value !== 0, recover: value !== 0, recoverTime: 13 },
+        downBounce: value !== 0,
+        fall: { kill: value !== 0, recover: value !== 0, downRecover: value !== 0, recoverTime: 13 },
       });
       expect(other).toEqual(untouched);
     }

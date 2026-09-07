@@ -28,6 +28,7 @@ import {
   createRuntimeHelper,
   removeRuntimeHelpers,
   resolveRuntimeHelperFloatParam,
+  resolveRuntimeHelperFloatScalarParam,
   resolveRuntimeHelperFloatPairParam,
   resolveRuntimeHelperIntegerPairParam,
   resolveRuntimeHelperIntegerScalarParam,
@@ -793,6 +794,7 @@ export function spawnRuntimeHelperProjectileActor(
     resolveP2Facing: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "p2facing", options),
     resolveKeepState: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "keepstate", options),
     resolveForceNoFall: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "forcenofall", options),
+    resolveDownBounce: () => resolveRuntimeHelperFloatScalarParam(helper, controller, "down.bounce", options),
   });
 }
 

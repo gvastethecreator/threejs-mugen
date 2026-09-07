@@ -1934,9 +1934,9 @@ describe("EffectActorSystem", () => {
       ...helperInput({ id: "43", anim: "900" }),
       animations: new Map([[900, action(900)]]),
     });
-    helper.vars[0] = 0.9;
+    helper.vars[0] = 0;
     helper.vars[1] = 19.8;
-    helper.vars[2] = 1;
+    helper.vars[2] = -0.5;
     helper.vars[3] = 45.2;
     const dynamicController = compileControllerIr(controller("Projectile", {
       projanim: "900",
@@ -1983,6 +1983,7 @@ describe("EffectActorSystem", () => {
       projanim: "900",
       projid: "8866",
       fall: "var(0)",
+      "down.bounce": "var(0)",
       "air.fall": "var(1)",
       "fall.kill": "var(2)",
       "fall.xvelocity": "-3",
@@ -1992,6 +1993,7 @@ describe("EffectActorSystem", () => {
       ownerId: "p1",
       rootId: "p1",
       parentId: helper.serialId,
+      downBounce: true,
       fall: {
         enabled: true,
         airFall: false,

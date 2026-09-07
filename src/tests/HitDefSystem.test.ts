@@ -2306,9 +2306,9 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     const actor = hitDefActor();
     actor.runtime.vars[1] = 999;
     const caller = runtimeState();
-    caller.vars[1] = 0.9;
+    caller.vars[1] = 0;
     caller.vars[2] = 19.8;
-    caller.vars[3] = 1.9;
+    caller.vars[3] = -0.5;
     caller.vars[4] = 45.8;
 
     world.apply({
@@ -2332,7 +2332,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       downRecoverTime: 45,
     });
 
-    caller.vars[1] = 1.9;
+    caller.vars[1] = 0.5;
     caller.vars[4] = 12.9;
     const modified = world.modify({
       actor,
@@ -2416,7 +2416,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     const actor = hitDefActor();
     actor.runtime.vars[1] = 0;
     const caller = runtimeState();
-    caller.vars[1] = 1.9;
+    caller.vars[1] = -0.5;
 
     world.apply({
       actor,
@@ -2429,7 +2429,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
     expect(actor.currentMove?.downBounce).toBe(true);
 
-    caller.vars[1] = 0.9;
+    caller.vars[1] = 0;
     const modified = world.modify({
       actor,
       controller: compileControllerIr(controller("ModifyHitDef", {

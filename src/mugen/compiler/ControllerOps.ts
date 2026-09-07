@@ -743,6 +743,7 @@ export type ProjectileControllerOp = {
   downVelocityZExpression?: number | string;
   /** M.U.G.E.N down.bounce toggle carried by projectile HitDef data. */
   downBounce?: boolean;
+  downBounceExpression?: string;
   /** Projectile HitDef keepstate flag; dynamic expressions are resolved by the caller at spawn. */
   keepState?: boolean;
   keepStateExpression?: number | string;
@@ -2739,7 +2740,7 @@ function compileHitDefControllerOp(
   const fallRecovery = optionalHitDefFallRecoveryParam(controller);
   const fallFlags = optionalHitDefFallFlagsParam(controller);
   const lethalFlags = optionalHitDefLethalFlagsParam(controller);
-  const downBounceExpression = optionalIntegerExpressionParam(controller, "down.bounce");
+  const downBounceExpression = optionalFloatExpressionParam(controller, "down.bounce");
   const forceStand = optionalFloatExpressionParam(controller, "forcestand");
   const forceCrouch = optionalFloatExpressionParam(controller, "forcecrouch");
   const forceNoFall = optionalFloatExpressionParam(controller, "forcenofall");
@@ -3130,7 +3131,7 @@ function compileModifyHitDefControllerOp(controller: MugenStateController): Modi
   const downVelocityZExpression = staticDownVelocity === undefined && typeof downVelocityZValue === "string"
     ? downVelocityZValue
     : undefined;
-  const downBounceValue = optionalIntegerExpressionParam(controller, "down.bounce");
+  const downBounceValue = optionalFloatExpressionParam(controller, "down.bounce");
   const downBounce = typeof downBounceValue === "number" ? downBounceValue !== 0 : undefined;
   const downBounceExpression = typeof downBounceValue === "string" ? downBounceValue : undefined;
   const forceStand = optionalFloatExpressionParam(controller, "forcestand");
@@ -4065,13 +4066,13 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     : fallImpact;
   const fallRecovery = optionalHitDefFallRecoveryParam(controller);
   if (fallRecovery === false) return undefined;
-  const fallRecoveryExpressions = fallRecovery === true || !Object.values(fallRecovery).some((value) => typeof value === "string")
-    ? undefined
-    : fallRecovery;
+  const fallRecoveryValues = fallRecovery === true ? undefined : fallRecovery;
   const fallFlags = optionalHitDefFallFlagsParam(controller);
   if (fallFlags === false) return undefined;
   const keepStateValue = optionalIntegerExpressionParam(controller, "keepstate");
   const forceNoFallValue = optionalIntegerExpressionParam(controller, "forcenofall");
+  const downBounceValue = optionalFloatExpressionParam(controller, "down.bounce");
+  if (downBounceValue === false) return undefined;
   if (forceNoFallValue === false) return undefined;
   if (
     standFriction === false ||
@@ -4302,6 +4303,7 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     ...(downVelocityExpressions === undefined ? {} : { downVelocityExpressions }),
     ...(downVelocityZExpression === undefined ? {} : { downVelocityZExpression }),
     downBounce: booleanNumber(findParam(controller, "down.bounce")),
+    ...(typeof downBounceValue === "string" ? { downBounceExpression: downBounceValue } : {}),
     forceNoFall: booleanNumber(findParam(controller, "forcenofall")),
     forceStand: booleanNumber(findParam(controller, "forcestand")),
     forceCrouch: booleanNumber(findParam(controller, "forcecrouch")),
@@ -4311,7 +4313,7 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     ...(Object.keys(fall).length === 0 ? {} : { fall }),
     ...(fallEnvShakeExpressions === undefined ? {} : { fallEnvShake: fallEnvShakeExpressions }),
     ...(fallImpactExpressions === undefined ? {} : { fallImpact: fallImpactExpressions }),
-    ...(fallRecoveryExpressions === undefined ? {} : { fallRecovery: fallRecoveryExpressions }),
+    ...(fallRecoveryValues === undefined ? {} : { fallRecovery: fallRecoveryValues }),
     ...(fallFlags === true ? {} : { fallFlags }),
     attackDepth: normalizedNumberPair(findParam(controller, "attack.depth")),
     p2StateNo: firstNumber(findParam(controller, "p2stateno")),
@@ -5156,9 +5158,9 @@ function optionalHitDefFallImpactParam(
 function optionalHitDefFallRecoveryParam(
   controller: MugenStateController,
 ): MugenHitDefFallRecoveryOp | true | false {
-  const recover = optionalIntegerExpressionParam(controller, "fall.recover");
+  const recover = optionalFloatExpressionParam(controller, "fall.recover");
   const recoverTime = optionalIntegerExpressionParam(controller, "fall.recovertime");
-  const downRecover = optionalIntegerExpressionParam(controller, "down.recover");
+  const downRecover = optionalFloatExpressionParam(controller, "down.recover");
   const downRecoverTime = optionalIntegerExpressionParam(controller, "down.recovertime");
   if (recover === false || recoverTime === false || downRecover === false || downRecoverTime === false) return false;
   if (recover === true && recoverTime === true && downRecover === true && downRecoverTime === true) return true;
