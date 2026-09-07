@@ -4,6 +4,15 @@ Latest verification: 2026-09-07
 
 ## Current verification
 
+DA29 measured-evidence publication now writes a unique sibling temporary file
+and replaces the final document only after the write completes. A deterministic
+partial-write regression and the concurrent producer/ledger group passed (140
+tests), followed by typecheck and the full default suite: 4,112 tests in 329
+files, 87.05 seconds. Build passed in 12.04 seconds. No timeouts, worker counts,
+or reader assertions were relaxed. This repairs the default-suite publication
+race described in the older verification entry below; external live-renderer
+publication and crash-durability guarantees are outside this cut.
+
 The ModifyProjectile fall update passed 575 focused tests. The full run passed
 4,110 tests but failed while reading incomplete measured JSON in the DA29
 ledger. After concurrent writers finished, all six ledger tests passed (534ms).
