@@ -116,7 +116,11 @@ export function parseGateEvidenceDocument(value: unknown): GateEvidenceParseResu
   };
 }
 
-export function assessGateEvidenceFreshness(result: GateEvidenceResult, now = Date.now()): GateEvidenceFreshnessAssessment {
+export function assessGateEvidenceFreshness(
+  result: GateEvidenceResult,
+  now = Date.now(),
+  currentSourceRevision?: string,
+): GateEvidenceFreshnessAssessment {
   if (result.status === "missing") {
     return { state: "missing", detail: "gate evidence is explicitly missing" };
   }
@@ -125,6 +129,20 @@ export function assessGateEvidenceFreshness(result: GateEvidenceResult, now = Da
     return { state: "missing", detail: "gate evidence observedAt is invalid" };
   }
   const ageMs = Math.max(0, now - observedAt);
+  if (currentSourceRevision !== undefined) {
+    if (result.sourceRevision !== currentSourceRevision) {
+      return {
+        state: "stale",
+        ageMs,
+        detail: `gate evidence sourceRevision ${result.sourceRevision} does not match ${currentSourceRevision}`,
+      };
+    }
+    return {
+      state: "current",
+      ageMs,
+      detail: `gate evidence is current for sourceRevision ${result.sourceRevision}`,
+    };
+  }
   if (ageMs > result.freshness.maxAgeMs) {
     return {
       state: "stale",

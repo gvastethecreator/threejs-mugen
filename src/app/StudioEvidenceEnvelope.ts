@@ -60,6 +60,7 @@ export function createStudioEvidenceEnvelopeDocument(input: {
   packageAnalysis?: PackageAnalysisV1Result;
   currentPackageRevision?: string;
   currentPackageAvailable?: boolean;
+  currentGateSourceRevision?: string;
   now?: number;
 }): StudioEvidenceEnvelopeDocument {
   const projectId = input.projectId.trim();
@@ -70,7 +71,9 @@ export function createStudioEvidenceEnvelopeDocument(input: {
     result,
     producerRevision: STUDIO_EVIDENCE_ENVELOPE_PRODUCER.revision,
     artifactDigest: sha256StableJson(result),
-    freshnessState: toEnvelopeFreshness(assessGateEvidenceFreshness(result, input.now).state),
+    freshnessState: toEnvelopeFreshness(
+      assessGateEvidenceFreshness(result, input.now, input.currentGateSourceRevision).state,
+    ),
     project: projectRevision ? { id: projectId, revision: projectRevision } : undefined,
   }));
   const packageFreshness = input.packageAnalysis

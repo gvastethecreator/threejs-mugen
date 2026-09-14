@@ -98,6 +98,32 @@ describe("StudioEvidenceEnvelope", () => {
     expect(reopened.document?.summary).toEqual(document.summary);
   });
 
+  it("keeps architecture gate envelopes current by sourceRevision after the age window", () => {
+    const gate = createGate();
+    const now = Date.parse("2099-01-01T00:00:00.000Z");
+    const current = createStudioEvidenceEnvelopeDocument({
+      generatedAt: "2099-01-01T00:00:00.000Z",
+      projectId: "project:test",
+      projectRevision: 3,
+      gates: [gate],
+      currentGateSourceRevision: gate.sourceRevision,
+      now,
+    });
+    expect(current.summary).toEqual({ total: 1, current: 1, stale: 0, missing: 0, unknown: 0 });
+    expect(current.envelopes[0]?.observation.freshness.state).toBe("current");
+
+    const stale = createStudioEvidenceEnvelopeDocument({
+      generatedAt: "2099-01-01T00:00:00.000Z",
+      projectId: "project:test",
+      projectRevision: 3,
+      gates: [gate],
+      currentGateSourceRevision: "other-revision",
+      now,
+    });
+    expect(stale.summary).toEqual({ total: 1, current: 0, stale: 1, missing: 0, unknown: 0 });
+    expect(stale.envelopes[0]?.observation.freshness.state).toBe("stale");
+  });
+
   it("keeps session scope and source freshness visible instead of promoting stale facts", () => {
     const document = createStudioEvidenceEnvelopeDocument({
       generatedAt: "2026-07-16T12:00:00.000Z",

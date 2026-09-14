@@ -11344,6 +11344,7 @@ export class App {
       projectId: manifest.id,
       projectRevision: this.projectStorageRevision,
       gates: STUDIO_GATE_EVIDENCE_DOCUMENT.results,
+      currentGateSourceRevision: STUDIO_GATE_EVIDENCE_DOCUMENT.sourceRevision,
       packageAnalysis: this.importedPackageAnalysisV1,
       currentPackageRevision: this.importedSourceBundle?.fingerprint.digest,
       currentPackageAvailable: Boolean(this.importedSourceBundle),
@@ -12769,7 +12770,7 @@ export class App {
         canExport: false,
       };
     }
-    const freshness = assessGateEvidenceFreshness(evidence);
+    const freshness = assessGateEvidenceFreshness(evidence, Date.now(), STUDIO_GATE_EVIDENCE_DOCUMENT.sourceRevision);
     const status: StudioStatus = evidence.status === "failed"
       ? "fail"
       : evidence.status === "unsupported"

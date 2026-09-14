@@ -43,6 +43,15 @@ describe("GateEvidence", () => {
     expect(assessGateEvidenceFreshness({ ...current, freshness: { maxAgeMs: 1_000 } }, now).state).toBe("stale");
   });
 
+  it("binds architecture gate freshness to sourceRevision instead of calendar age", () => {
+    const now = Date.parse("2099-01-01T00:00:00.000Z");
+    const bound = result({ observedAt: "2026-07-16T00:00:00.000Z", sourceRevision: "abc" });
+    expect(assessGateEvidenceFreshness(bound, now, "abc").state).toBe("current");
+    expect(assessGateEvidenceFreshness(bound, now, "def").state).toBe("stale");
+    expect(isGateEvidenceExportable(bound, assessGateEvidenceFreshness(bound, now, "abc"))).toBe(true);
+    expect(isGateEvidenceExportable(bound, assessGateEvidenceFreshness(bound, now, "def"))).toBe(false);
+  });
+
   it("does not export diagnostic evidence as release evidence", () => {
     const diagnostic = result({ intent: "diagnostic" });
     const freshness = assessGateEvidenceFreshness(diagnostic, Date.parse(diagnostic.observedAt));
