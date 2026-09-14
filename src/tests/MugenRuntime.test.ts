@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
+import type { MugenStateController } from "../mugen/model/MugenState";
 import { evaluateExpression } from "../mugen/runtime/ExpressionEvaluator";
 import { MugenRuntime } from "../mugen/runtime/MugenRuntime";
+import { executeStateController } from "../mugen/runtime/StateControllerExecutor";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
 describe("MugenRuntime frame selection", () => {
@@ -85,8 +87,49 @@ describe("MugenRuntime frame selection", () => {
       },
     });
     expect(xorRandom).toHaveLength(2);
+    expect(evaluateExpression("Sin(0)", { self })).toBe(0);
+    expect(evaluateExpression("Cos(0)", { self })).toBe(1);
+    expect(evaluateExpression("Tan(0)", { self })).toBe(0);
+    expect(evaluateExpression("Sin(Pi/2)", { self })).toBeCloseTo(1, 6);
+    const moved = executeStateController(controller("PosAdd", { x: "Sin(0.5)" }), expressionSelf(), () => undefined);
+    expect(moved.pos.x).toBeCloseTo(Math.sin(0.5), 6);
+    expect(Number.isInteger(moved.pos.x)).toBe(false);
+    expect(evaluateExpression("Acos(1)", { self })).toBe(0);
+    expect(evaluateExpression("Asin(0)", { self })).toBe(0);
+    expect(evaluateExpression("Atan(0)", { self })).toBe(0);
+    expect(evaluateExpression("Asin(1)", { self })).toBeCloseTo(Math.PI / 2, 6);
+    expect(evaluateExpression("Acos(2)", { self, reportUnsupported: report })).toBe(0);
+    expect(malformed).toContain("math(domain)");
+    expect(evaluateExpression("Exp(0)", { self })).toBe(1);
+    expect(evaluateExpression("Ln(1)", { self })).toBe(0);
+    expect(evaluateExpression("Log(2,8)", { self })).toBeCloseTo(3, 10);
+    expect(evaluateExpression("Ln(0)", { self, reportUnsupported: report })).toBe(0);
+    expect(evaluateExpression("Log(8)", { self, reportUnsupported: report })).toBe(0);
+    expect(malformed).toContain("log(arity)");
+    expect(evaluateExpression("Floor(1.8)", { self })).toBe(1);
+    expect(evaluateExpression("Ceil(1.2)", { self })).toBe(2);
+    expect(evaluateExpression("Floor(-1.2)", { self })).toBe(-2);
+    expect(evaluateExpression("Ceil(-1.8)", { self })).toBe(-1);
+    const floored = executeStateController(
+      controller("PosAdd", { x: "Floor(var(0))" }),
+      expressionSelf({ vars: [1.8] }),
+      () => undefined,
+    );
+    expect(floored.pos.x).toBe(1);
   });
 });
+
+function controller(type: string, params: Record<string, string>): MugenStateController {
+  return {
+    stateId: 200,
+    name: type,
+    type,
+    params,
+    triggers: [],
+    line: 1,
+    rawHeader: `[State 200, ${type}]`,
+  };
+}
 
 function expressionSelf(overrides: Partial<CharacterRuntimeState> = {}): CharacterRuntimeState {
   return {

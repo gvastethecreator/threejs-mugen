@@ -576,6 +576,39 @@ class ExpressionParser {
     return Math.trunc(numeric(value)) | 0;
   }
 
+  private mathUnary(
+    argument: ExpressionValue | undefined,
+    compute: (value: number) => number,
+    invalid?: (value: number) => boolean,
+  ): ExpressionValue {
+    if (isFailedRedirect(argument ?? 0)) {
+      return failedRedirectMarker;
+    }
+    const value = numeric(argument ?? 0);
+    if (invalid?.(value) || !Number.isFinite(value)) {
+      this.context.reportUnsupported?.("math(domain)");
+      return failedRedirectMarker;
+    }
+    const result = compute(value);
+    if (!Number.isFinite(result)) {
+      this.context.reportUnsupported?.("math(domain)");
+      return failedRedirectMarker;
+    }
+    return result;
+  }
+
+  private mathRound(argument: ExpressionValue | undefined, compute: (value: number) => number): ExpressionValue {
+    if (isFailedRedirect(argument ?? 0)) {
+      return failedRedirectMarker;
+    }
+    const value = numeric(argument ?? 0);
+    if (!Number.isFinite(value)) {
+      this.context.reportUnsupported?.("math(domain)");
+      return failedRedirectMarker;
+    }
+    return compute(value);
+  }
+
   private parseEquality(): ExpressionValue {
     let left = this.parseComparison();
     while (true) {
@@ -1049,6 +1082,12 @@ class ExpressionParser {
     if (lower === "random") {
       return Math.floor((this.context.random?.() ?? Math.random()) * 1000);
     }
+    if (lower === "pi") {
+      return Math.PI;
+    }
+    if (lower === "e") {
+      return Math.E;
+    }
     if (lower === "velx") {
       return this.context.self.vel.x;
     }
@@ -1238,6 +1277,57 @@ class ExpressionParser {
     const lower = identifier.toLowerCase();
     if (lower === "abs") {
       return Math.abs(numeric(args[0] ?? 0));
+    }
+    if (lower === "sin") {
+      return this.mathUnary(args[0], Math.sin);
+    }
+    if (lower === "cos") {
+      return this.mathUnary(args[0], Math.cos);
+    }
+    if (lower === "tan") {
+      return this.mathUnary(args[0], Math.tan);
+    }
+    if (lower === "acos") {
+      return this.mathUnary(args[0], Math.acos, (value) => value < -1 || value > 1);
+    }
+    if (lower === "asin") {
+      return this.mathUnary(args[0], Math.asin, (value) => value < -1 || value > 1);
+    }
+    if (lower === "atan") {
+      return this.mathUnary(args[0], Math.atan);
+    }
+    if (lower === "exp") {
+      return this.mathUnary(args[0], Math.exp);
+    }
+    if (lower === "ln") {
+      return this.mathUnary(args[0], Math.log, (value) => value <= 0);
+    }
+    if (lower === "log") {
+      if (args.length !== 2) {
+        this.context.reportUnsupported?.("log(arity)");
+        return failedRedirectMarker;
+      }
+      if (isFailedRedirect(args[0] ?? 0) || isFailedRedirect(args[1] ?? 0)) {
+        return failedRedirectMarker;
+      }
+      const base = numeric(args[0] ?? 0);
+      const value = numeric(args[1] ?? 0);
+      if (base <= 0 || value <= 0 || base === 1) {
+        this.context.reportUnsupported?.("log(domain)");
+        return failedRedirectMarker;
+      }
+      const result = Math.log(value) / Math.log(base);
+      if (!Number.isFinite(result)) {
+        this.context.reportUnsupported?.("log(domain)");
+        return failedRedirectMarker;
+      }
+      return result;
+    }
+    if (lower === "floor") {
+      return this.mathRound(args[0], Math.floor);
+    }
+    if (lower === "ceil") {
+      return this.mathRound(args[0], Math.ceil);
     }
     if (lower === "command" || lower === "selfcommand") {
       return this.context.commandActive?.(String(args[0] ?? "")) ? 1 : 0;

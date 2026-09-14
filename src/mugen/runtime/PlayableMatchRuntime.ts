@@ -5375,6 +5375,8 @@ function runActiveStateControllers(
           const operation = controller.operation?.kind === "hitdef" ? controller.operation : undefined;
           const raw = key === "snaptime" && operation?.snapTime !== undefined
             ? operation.snapTime
+            : key === "priority" && operation?.priority !== undefined
+            ? operation.priority
             : key === "priority" && operation?.priorityExpression !== undefined
             ? operation.priorityExpression
             : findParam(controller, key) ??
@@ -5501,7 +5503,9 @@ function runActiveStateControllers(
           resolveModifyProjectileIntegerListParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
         resolveIntegerScalar: (key) => {
           const operation = controller.operation?.kind === "modifyhitdef" ? controller.operation : undefined;
-          const raw = key === "priority" && operation?.priorityExpression !== undefined
+          const raw = key === "priority" && operation?.priority !== undefined
+            ? operation.priority
+            : key === "priority" && operation?.priorityExpression !== undefined
             ? operation.priorityExpression
             : findParam(controller, key) ??
             (key === "p1sprpriority" ? findParam(controller, "sprpriority") : undefined);
