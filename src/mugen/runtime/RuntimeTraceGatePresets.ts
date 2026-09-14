@@ -1349,7 +1349,7 @@ async function createIkemenZssTraceArtifact(
       label: `${routeId}-golden`,
       requiredActorSources: ["imported"],
       requiredActorKinds: ["player"],
-      requiredEffectKinds: ["projectile", "helper"],
+      requiredEffectKinds: ["projectile", "helper", "explod"],
       requiredExecutedStates: [100, 101, 102, 104, 105],
       requiredExecutedControllers: [
         { type: "changeState", minCount: 4 },
@@ -1367,6 +1367,10 @@ async function createIkemenZssTraceArtifact(
         { type: "hitDef", minCount: 1 },
         { type: "projectile", minCount: 1 },
         { type: "helper", minCount: 1 },
+        { type: "explod", minCount: 1 },
+        { type: "playSnd", minCount: 1 },
+        { type: "removeExplod", minCount: 1 },
+        { type: "stopSnd", minCount: 1 },
       ],
       requiredControllerEventSequences: [{
         label: `${sourceLabel} controller and state order`,
@@ -1376,6 +1380,8 @@ async function createIkemenZssTraceArtifact(
           { stateNo: 0, controller: "posAdd", sourcePath },
           { stateNo: 0, controller: "projectile", sourcePath },
           { stateNo: 0, controller: "helper", sourcePath },
+          { stateNo: 0, controller: "explod", sourcePath },
+          { stateNo: 0, controller: "playSnd", sourcePath },
           { stateNo: 0, controller: "changeState", sourcePath },
           { stateNo: 100, controller: "velSet", sourcePath },
           { stateNo: 100, controller: "changeState", sourcePath },

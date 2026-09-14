@@ -85,9 +85,9 @@ The current implementation uses IKEMEN-GO as a guide in these places:
   under `ikemen-go`: `StateDef`, `Null`, `PosAdd`, `ChangeState`, `VelSet`,
   `ChangeAnim`, `ChangeAnim2`, `PosSet`, `VelAdd`, `VelMul`, `CtrlSet`,
   `StateTypeSet`, `VarSet`, `VarAdd`, `HitDef`, `Projectile`, `Helper`,
-  `DestroySelf`, `ParentVarSet`, `ParentVarAdd`, `if`/`else`, comments, and
-  bounded wrappers lower into the existing state IR. `let` local assignment
-  stays blocked.
+  `DestroySelf`, `ParentVarSet`, `ParentVarAdd`, `Explod`, `RemoveExplod`,
+  `PlaySnd`, `StopSnd`, `if`/`else`, comments, and bounded wrappers lower
+  into the existing state IR. `let` local assignment stays blocked.
   The direct/fallback/mixed fixtures and required `ikemen-zss-live` trace
   (`47c627a2`) are runtime evidence; all other ZSS remains scanner-only or
   blocked.

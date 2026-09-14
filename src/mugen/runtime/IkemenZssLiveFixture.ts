@@ -231,6 +231,8 @@ if time = 0 {
   varSet{v: 2; value: 1;}
   projectile{projanim: 200; projid: 7; velocity: 12, 0; offset: 40, 0; guard.kill: var(2);}
   helper{stateno: 105;}
+  explod{anim: 200; id: 17; pos: 0, 0; bindtime: -1;}
+  playSnd{value: 0, 0; channel: 2;}
   changeState{value: 100;}
 }
 
@@ -264,6 +266,8 @@ if time = 0 {
   varSet{v: 0; value: 3;}
   varAdd{v: 0; value: 2;}
   varSet{fv: 1; value: 0.5;}
+  removeExplod{id: 17;}
+  stopSnd{channel: 2;}
 }
 persistent(2) if time >= 0 {
   posAdd{y: var(0);}

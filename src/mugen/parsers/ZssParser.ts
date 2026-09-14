@@ -64,6 +64,10 @@ const EXECUTABLE_ZSS_CONTROLLER_TYPES = new Set([
   "destroyself",
   "parentvarset",
   "parentvaradd",
+  "explod",
+  "removeexplod",
+  "playsnd",
+  "stopsnd",
 ]);
 
 /**
