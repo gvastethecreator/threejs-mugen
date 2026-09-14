@@ -778,8 +778,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     [0, 0],
     authoredPauseTime,
   );
-  const hitPause = Math.max(0, Math.round(resolvedPauseTime[0]));
-  const hitShakeTime = Math.max(0, Math.round(resolvedPauseTime[1]));
+  const hitPause = Math.max(0, Math.trunc(resolvedPauseTime[0]));
+  const hitShakeTime = Math.max(0, Math.trunc(resolvedPauseTime[1]));
   const dynamicGroundHitTime = operation?.groundHitTimeExpression === undefined
     ? undefined
     : input.resolveGroundHitTime?.();
@@ -789,7 +789,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const hitStun = Math.max(
     1,
     finiteDynamicGroundHitTime === undefined
-      ? Math.round(operation?.hitStun ?? firstNumber(findControllerParam(input.controller, "ground.hittime")) ?? 18)
+      ? Math.trunc(operation?.hitStun ?? firstNumber(findControllerParam(input.controller, "ground.hittime")) ?? 18)
       : Math.trunc(finiteDynamicGroundHitTime),
   );
   const dynamicGroundSlideTime = operation?.groundSlideTimeExpression === undefined
@@ -810,7 +810,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const airHitTime = Math.max(
     0,
     finiteDynamicAirHitTime === undefined
-      ? Math.round(operation?.airHitTime ?? firstNumber(findControllerParam(input.controller, "air.hittime")) ?? 20)
+      ? Math.trunc(operation?.airHitTime ?? firstNumber(findControllerParam(input.controller, "air.hittime")) ?? 20)
       : Math.trunc(finiteDynamicAirHitTime),
   );
   const dynamicDownHitTime = operation?.downHitTimeExpression === undefined
@@ -822,7 +822,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const downHitTime = Math.max(
     0,
     finiteDynamicDownHitTime === undefined
-      ? Math.round(operation?.downHitTime ?? firstNumber(findControllerParam(input.controller, "down.hittime")) ?? 20)
+      ? Math.trunc(operation?.downHitTime ?? firstNumber(findControllerParam(input.controller, "down.hittime")) ?? 20)
       : Math.trunc(finiteDynamicDownHitTime),
   );
   const dynamicGuardHitTime = operation?.guardHitTimeExpression === undefined
@@ -982,8 +982,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     [hitPause, hitShakeTime],
     guardPauseAuthored ? authoredGuardPauseTime : undefined,
   );
-  const guardPause = Math.max(0, Math.round(resolvedGuardPauseTime[0]));
-  const guardShakeTime = Math.max(0, Math.round(resolvedGuardPauseTime[1]));
+  const guardPause = Math.max(0, Math.trunc(resolvedGuardPauseTime[0]));
+  const guardShakeTime = Math.max(0, Math.trunc(resolvedGuardPauseTime[1]));
   const guardDistanceBounds = runtimeProjectileGuardDistanceBounds(input.controller, operation?.guardDistanceBounds);
   const minDistance = operation?.minDistance ?? partialNumberTriple(findControllerParam(input.controller, "mindist"));
   const maxDistance = operation?.maxDistance ?? partialNumberTriple(findControllerParam(input.controller, "maxdist"));

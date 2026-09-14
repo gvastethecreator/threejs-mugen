@@ -2167,6 +2167,20 @@ describe("ProjectileSystem", () => {
     expect(dynamic.guardStun).toBe(17);
     expect(unresolved.hitStun).toBe(18);
     expect(omitted.hitStun).toBe(18);
+    const literalSource = controller({ "ground.hittime": "17.8", pausetime: "17.8,4.9" });
+    const literal = createRuntimeProjectile({
+      serialId: "p1-projectile-ground-hittime-literal",
+      controller: literalSource,
+      operation: compileControllerIr(literalSource).operation as ProjectileControllerOp,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+    expect(literal).toMatchObject({ hitStun: 17, hitPause: 17, hitShakeTime: 4 });
   });
 
   it("resolves fresh Projectile ground.slidetime in the caller context", () => {
