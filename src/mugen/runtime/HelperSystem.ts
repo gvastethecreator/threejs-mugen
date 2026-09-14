@@ -36,6 +36,7 @@ import type { RuntimePaletteFxResolver } from "./SpriteEffectSystem";
 import { tickRuntimeUnhittableTime } from "./RuntimeUnhittableTimeSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { runtimeActorTeamSide } from "./RuntimeExpressionContextSystem";
+import { runtimeAnimationElementNo } from "./RuntimeAnimationSystem";
 import { RuntimeOpponentSelectionWorld, type RuntimeOpponentRosterEntry } from "./RuntimeOpponentSelectionSystem";
 import { resolveRuntimePushSizeBox } from "./RuntimeRootBodyPushSystem";
 import { runtimeCurrentSizeBox, type RuntimeSizeBoxState } from "./RuntimeSizeBoxSystem";
@@ -3635,6 +3636,16 @@ function helperExpressionContext(
     uniqueHitCount: () => runtimeMoveHitCountValue(helper.contact, helper.stateNo ?? 0, true),
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
     activeAnimExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
+    animElemNo: (timeOffset: number) =>
+      runtimeAnimationElementNo(
+        {
+          currentAction: helper.action,
+          frameElapsed: helper.frameElapsed,
+          animationComplete: false,
+          runtime: { frameIndex: helper.frameIndex, animTime: helper.age },
+        },
+        timeOffset,
+      ),
     stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => matchesMugenStateIdentity(candidate, stateNo)) ?? false,
   };
 }

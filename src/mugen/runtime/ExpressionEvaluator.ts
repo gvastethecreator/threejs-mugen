@@ -134,6 +134,7 @@ export type ExpressionContext = {
   projCancelTime?: (projectileId?: number) => number;
   animElemVar?: (parameter: string) => number | string | undefined;
   animElemTime?: (elementNumber: number) => number | undefined;
+  animElemNo?: (timeOffset: number) => number | undefined;
   random?: () => number;
   roundDecision?: {
     settled: boolean;
@@ -176,6 +177,7 @@ export type ExpressionRedirectTarget = {
   opponentAnimPlayerNo?: number;
   animExists?: ExpressionContext["animExists"];
   activeAnimExists?: ExpressionContext["activeAnimExists"];
+  animElemNo?: ExpressionContext["animElemNo"];
   clsnVar?: ExpressionContext["clsnVar"];
   opponentClsnVar?: ExpressionContext["clsnVar"];
   clsnOverlap?: ExpressionContext["clsnOverlap"];
@@ -1579,6 +1581,12 @@ class ExpressionParser {
       const elementNumber = Math.floor(numeric(args[0] ?? 0));
       return this.context.animElemTime?.(elementNumber) ?? (this.context.self.frameIndex + 1 === elementNumber ? 0 : -1);
     }
+    if (lower === "animelemno") {
+      if (isFailedRedirect(args[0] ?? 0)) {
+        return failedRedirectMarker;
+      }
+      return this.context.animElemNo?.(Math.trunc(numeric(args[0] ?? 0))) ?? 0;
+    }
     if (lower === "p2bodydist") {
       const axis = String(args[0] ?? "x").toLowerCase().startsWith("y") ? "y" : "x";
       return this.p2BodyDist(axis);
@@ -2147,6 +2155,7 @@ function redirectedTargetContext(context: ExpressionContext, redirected: Express
     animPlayerNo: redirected.animPlayerNo,
     animExists: redirected.animExists ?? context.animExists,
     activeAnimExists: redirected.activeAnimExists ?? context.activeAnimExists,
+    animElemNo: redirected.animElemNo ?? context.animElemNo,
     clsnVar: redirected.clsnVar,
     opponentClsnVar: redirected.opponentClsnVar ?? context.clsnVar,
     clsnOverlap: redirected.clsnOverlap,

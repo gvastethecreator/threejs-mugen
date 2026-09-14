@@ -22,7 +22,12 @@ import { runtimeTeamSide } from "./RuntimeTeamTopologySystem";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
 import { runtimeCurrentSizeBox } from "./RuntimeSizeBoxSystem";
-import { runtimeAnimationElementVar, runtimeAnimationLength, runtimeAnimationPlayerNo } from "./RuntimeAnimationSystem";
+import {
+  runtimeAnimationElementNo,
+  runtimeAnimationElementVar,
+  runtimeAnimationLength,
+  runtimeAnimationPlayerNo,
+} from "./RuntimeAnimationSystem";
 import { runtimeClsnOverlap, runtimeClsnVar } from "./RuntimeFrameSystem";
 import { runtimeProjectileClsnOverlap, runtimeProjectileVar } from "./ProjectileSystem";
 import {
@@ -50,6 +55,8 @@ export type RuntimeExpressionContextActor = RuntimeTargetWorldActor & {
   playerId?: number;
   playerNo?: number;
   animationOwnerPlayerNo?: number;
+  frameElapsed?: number;
+  animationComplete?: boolean;
   definition: RuntimeExpressionContextDefinition;
   runtimeProgram?: { states: readonly { id: number; special?: MugenStateSpecial }[] };
   commandBuffer: Pick<CommandBuffer, "isCommandActive">;
@@ -91,6 +98,7 @@ export type RuntimeExpressionContextInput<TActor extends RuntimeExpressionContex
   random?: () => number;
   animTimeRemaining?: number;
   animElemTime?: (elementNumber: number) => number | undefined;
+  animElemNo?: (timeOffset: number) => number | undefined;
   inGuardDist?: () => boolean;
   reportUnsupported?: (feature: string) => void;
   teamMode?: string;
@@ -194,6 +202,7 @@ export class RuntimeExpressionContextWorld {
       animLength: currentAction ? runtimeAnimationLength(currentAction) : undefined,
       animTimeRemaining: input.animTimeRemaining,
       animElemTime: input.animElemTime,
+      animElemNo: input.animElemNo ?? ((timeOffset) => runtimeActorAnimationElementNo(actor, timeOffset)),
       animElemVar: currentAction
         ? (parameter) => runtimeAnimationElementVar({ currentAction, runtime: actor.runtime }, parameter)
         : undefined,
@@ -425,6 +434,7 @@ export class RuntimeExpressionContextWorld {
       animPlayerNo: runtimeAnimationPlayerNo(redirected),
       animExists: (animationId) => redirected.definition.animations.has(animationId),
       activeAnimExists: (animationId) => runtimeActiveAnimExists(redirected, actor, characters, animationId),
+      animElemNo: (timeOffset) => runtimeActorAnimationElementNo(redirected, timeOffset),
       opponent: actor.runtime,
       opponentPlayerId: actor.playerId,
       opponentPlayerNo: actor.playerNo,
@@ -566,6 +576,24 @@ function runtimeExpressionSizeBoxY(
   const box = resolveRuntimePushSizeBox(actor.definition.constants, stateType);
   const projected = runtimeCurrentSizeBox(actor.runtime, box, { includeHeight, includeWidth: false });
   return projected ? { y1: projected.y1, y2: projected.y2 } : null;
+}
+
+function runtimeActorAnimationElementNo(
+  actor: RuntimeExpressionContextActor,
+  timeOffset: number,
+): number | undefined {
+  if (!actor.currentAction) {
+    return undefined;
+  }
+  return runtimeAnimationElementNo(
+    {
+      currentAction: actor.currentAction,
+      frameElapsed: actor.frameElapsed ?? 0,
+      animationComplete: actor.animationComplete ?? false,
+      runtime: actor.runtime,
+    },
+    timeOffset,
+  );
 }
 
 function runtimeActiveAnimExists(

@@ -220,6 +220,77 @@ export function runtimeAnimationTimeRemaining(actor: RuntimeAnimationActor): num
   return remaining;
 }
 
+export function runtimeAnimationElementNo(
+  actor: RuntimeAnimationActor,
+  timeOffset: number,
+): number | undefined {
+  const frames = actor.currentAction.frames;
+  if (frames.length === 0) {
+    return undefined;
+  }
+
+  let time = Math.trunc(timeOffset);
+  if (time < -actor.runtime.animTime) {
+    return undefined;
+  }
+
+  const loopStart = actor.currentAction.loopStart ?? 0;
+  const wrapsForward = actor.currentAction.loopStart !== undefined;
+  let index = actor.runtime.frameIndex;
+  let previousTime = 0;
+
+  if (time <= 0) {
+    time += actor.frameElapsed;
+    let wrapped = false;
+    for (;;) {
+      if (time >= 0) {
+        return index + 1;
+      }
+      index -= 1;
+      if (index < 0 || (actor.runtime.frameIndex >= loopStart && index < loopStart)) {
+        if (time === previousTime) {
+          break;
+        }
+        previousTime = time;
+        wrapped = true;
+        index = frames.length - 1;
+      }
+      time += animationElementNoStep(frames[index]);
+      if (wrapped && index === frames.length - 1 && frames[index]?.duration === -1) {
+        return index + 1;
+      }
+    }
+  } else {
+    time += actor.frameElapsed;
+    for (;;) {
+      time -= animationElementNoStep(frames[index]);
+      if (time < 0 || (index === frames.length - 1 && frames[index]?.duration === -1)) {
+        return index + 1;
+      }
+      index += 1;
+      if (index >= frames.length) {
+        if (!wrapsForward) {
+          return frames.length;
+        }
+        if (time === previousTime) {
+          break;
+        }
+        previousTime = time;
+        index = loopStart;
+      }
+    }
+  }
+
+  return frames.length;
+}
+
+function animationElementNoStep(frame: MugenAnimationFrame | undefined): number {
+  if (!frame || frame.duration === -1) {
+    return 0;
+  }
+  return runtimeAnimationFrameDuration(frame);
+}
+
 export function runtimeAnimationElementTime(
   actor: RuntimeAnimationActor,
   elementNumber: number,

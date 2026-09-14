@@ -342,6 +342,7 @@ const supportedExpressionFunctions = new Set([
   "ceil",
   "animelemtime",
   "animexist",
+  "animelemno",
   "command",
   "const",
   "const240p",

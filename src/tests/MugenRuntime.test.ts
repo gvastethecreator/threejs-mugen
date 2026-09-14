@@ -159,6 +159,8 @@ describe("MugenRuntime frame selection", () => {
         activeAnimExists: () => true,
       }),
     ).toBe(0);
+    expect(evaluateExpression("AnimElemNo(0)", { self: expressionSelf(), animElemNo: (offset) => (offset === 0 ? 1 : 2) })).toBe(1);
+    expect(evaluateExpression("AnimElemNo(2)", { self: expressionSelf(), animElemNo: (offset) => (offset === 0 ? 1 : 2) })).toBe(2);
   });
 });
 

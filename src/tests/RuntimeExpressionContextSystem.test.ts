@@ -107,6 +107,30 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(world.evaluateNumber("AnimLength", { actor, opponent })).toBe(8);
   });
 
+  it("resolves AnimElemNo from the current AIR cursor without advancing it", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author");
+    const opponent = runtimeActor("p2", "Rival");
+    actor.currentAction = {
+      id: 300,
+      loopStart: 1,
+      rawLines: [],
+      frames: [
+        { ...emptyAnimationFrame(1), duration: 2 },
+        { ...emptyAnimationFrame(2), duration: 3 },
+        { ...emptyAnimationFrame(3), duration: 4 },
+      ],
+    } satisfies MugenAnimationAction;
+    actor.frameElapsed = 0;
+    actor.runtime.frameIndex = 0;
+    actor.runtime.animTime = 0;
+
+    expect(world.evaluateNumber("AnimElemNo(0)", { actor, opponent })).toBe(1);
+    expect(world.evaluateNumber("AnimElemNo(2)", { actor, opponent })).toBe(2);
+    expect(actor.runtime.frameIndex).toBe(0);
+    expect(actor.frameElapsed).toBe(0);
+  });
+
   it("exposes AnimPlayerNo from the active animation owner and redirects", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author");

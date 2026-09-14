@@ -28,6 +28,7 @@ export type RuntimeControllerExpressionBindings = Pick<
   | "animElemVar"
   | "animExists"
   | "activeAnimExists"
+  | "animElemNo"
   | "animLength"
   | "animPlayerNo"
   | "clsnVar"
@@ -91,6 +92,7 @@ export type RuntimeControllerEvaluationContext = RuntimeControllerExpressionBind
   animElemVar?: ExpressionContext["animElemVar"];
   animExists?: ExpressionContext["animExists"];
   activeAnimExists?: ExpressionContext["activeAnimExists"];
+  animElemNo?: ExpressionContext["animElemNo"];
   animLength?: ExpressionContext["animLength"];
   animPlayerNo?: ExpressionContext["animPlayerNo"];
   parentClsnVar?: ExpressionContext["parentClsnVar"];
@@ -146,6 +148,7 @@ export function createRuntimeControllerExpressionContext(
     animElemVar: context.animElemVar,
     animExists: context.animExists,
     activeAnimExists: context.activeAnimExists,
+    animElemNo: context.animElemNo,
     animLength: context.animLength,
     animPlayerNo: context.animPlayerNo,
     clsnVar: context.clsnVar,

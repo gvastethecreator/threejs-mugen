@@ -117,6 +117,7 @@ time = 20
     const roundOutcome = compileExpression("Win && Lose && DrawGame && WinKO");
     const teamMode = compileExpression("TeamMode = Single && TeamMode != Turns");
     const animExist = compileExpression("AnimExist(7777) && SelfAnimExist(6666)");
+    const animElemNo = compileExpression("AnimElemNo(2)");
 
     expect(clean.normalized).toBe(
       'p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && GameWidth >= 320 && GameHeight >= 240 && ScreenWidth >= 320 && ScreenHeight >= 240 && Const240p(3) = 6 && Const480p(6) = 6 && Const720p(12) = 6 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
@@ -313,6 +314,7 @@ time = 20
     expect(roundOutcome.supportLevel).toBe("executable");
     expect(teamMode.supportLevel).toBe("executable");
     expect(animExist.supportLevel).toBe("executable");
+    expect(animElemNo.supportLevel).toBe("executable");
   });
 
   it("summarizes controller and State -1 routability as compiler output", () => {

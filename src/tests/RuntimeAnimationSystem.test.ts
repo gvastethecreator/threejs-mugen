@@ -3,6 +3,7 @@ import type { MugenAnimationAction, MugenAnimationFrame } from "../mugen/model/M
 import {
   RuntimeAnimationWorld,
   runtimeAnimationElapsedBeforeFrame,
+  runtimeAnimationElementNo,
   runtimeAnimationElementTime,
   runtimeAnimationElementVar,
   runtimeAnimationElementVarForFrame,
@@ -119,6 +120,39 @@ describe("RuntimeAnimationWorld", () => {
       frameChanged: false,
     });
     expect(actor.animationComplete).toBe(true);
+  });
+
+  it("resolves AnimElemNo from signed time offsets on the active AIR timeline", () => {
+    const actor = runtimeActor(action(10, [2, 3, 4], 1));
+    const frameIndex = actor.runtime.frameIndex;
+    const frameElapsed = actor.frameElapsed;
+    const animTime = actor.runtime.animTime;
+
+    expect(runtimeAnimationElementNo(actor, 0)).toBe(1);
+    expect(runtimeAnimationElementNo(actor, 2)).toBe(2);
+    expect(runtimeAnimationElementNo(actor, -1)).toBeUndefined();
+    expect(actor.runtime.frameIndex).toBe(frameIndex);
+    expect(actor.frameElapsed).toBe(frameElapsed);
+    expect(actor.runtime.animTime).toBe(animTime);
+
+    actor.runtime.frameIndex = 1;
+    actor.frameElapsed = 0;
+    actor.runtime.animTime = 2;
+    expect(runtimeAnimationElementNo(actor, 0)).toBe(2);
+    expect(runtimeAnimationElementNo(actor, -1)).toBe(3);
+    expect(runtimeAnimationElementNo(actor, 3)).toBe(3);
+    expect(runtimeAnimationElementNo(actor, 8)).toBe(2);
+    actor.runtime.frameIndex = 2;
+    actor.runtime.animTime = 5;
+    expect(runtimeAnimationElementNo(actor, -1)).toBe(2);
+
+    const linear = runtimeActor(action(12, [2, 3, 4]));
+    linear.runtime.frameIndex = 1;
+    linear.runtime.animTime = 2;
+    expect(runtimeAnimationElementNo(linear, -1)).toBe(1);
+
+    const held = runtimeActor(action(11, [2, -1]));
+    expect(runtimeAnimationElementNo(held, 5)).toBe(2);
   });
 
   it("treats zero and negative durations as one tick", () => {

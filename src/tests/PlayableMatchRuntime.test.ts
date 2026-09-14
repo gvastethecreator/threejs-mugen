@@ -10840,7 +10840,7 @@ value = 0
     const imported = createImportedFixture({
       withStateMove: false,
       withAnimElemTimeVars: true,
-      multiFrameAction: { id: 200, durations: [2, 4, 4] },
+      multiFrameAction: { id: 200, durations: [2, 3, 4], loopStart: 1 },
     });
     const farStage = {
       ...trainingStage,
@@ -10854,6 +10854,9 @@ value = 0
     let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
     expect(snapshot.actors[0]?.runtime.vars[7]).toBe(70);
     expect(snapshot.actors[0]?.runtime.vars[8]).toBeUndefined();
+    expect(snapshot.actors[0]?.runtime.vars[10]).toBe(1);
+    expect(snapshot.actors[0]?.runtime.vars[11]).toBe(2);
+    expect(snapshot.actors[0]?.runtime.frameIndex).toBe(0);
 
     snapshot = runtime.step({ p1: new Set(), p2: new Set() });
     expect(snapshot.actors[0]?.runtime.frameIndex).toBe(1);
@@ -13806,7 +13809,7 @@ function createImportedFixture(
     id?: string;
     displayName?: string;
     actionGroupOffset?: number;
-    multiFrameAction?: { id: number; durations: number[] };
+    multiFrameAction?: { id: number; durations: number[]; loopStart?: number };
     withStateMove?: boolean;
     hitDefDamage?: number;
     hitDefDamageExpression?: string;
@@ -13963,7 +13966,7 @@ function createImportedFixture(
   const hitDefIdValue = options.hitDefIdExpression ?? hitDefTargetId;
   const fixtureAction = (
     id: number,
-    actionOptions: { clsn1?: Array<{ x1: number; y1: number; x2: number; y2: number }>; durations?: number[] } = {},
+    actionOptions: { clsn1?: Array<{ x1: number; y1: number; x2: number; y2: number }>; durations?: number[]; loopStart?: number } = {},
   ): MugenAnimationAction => action(id, actionOptions, options.actionGroupOffset ?? 0);
   const hitDefP1StateValue = options.hitDefP1StateExpression ?? options.hitDefP1StateNo;
   const hitDefP2StateValue = options.hitDefP2StateExpression ?? options.hitDefP2StateNo;
@@ -14651,6 +14654,16 @@ var(8) = 80
 type = VarSet
 trigger1 = AnimElemTime(2) = 2
 var(9) = 90
+
+[State 200, Mark AnimElemNo Current]
+type = VarSet
+trigger1 = Time >= 0
+var(10) = AnimElemNo(0)
+
+[State 200, Mark AnimElemNo Boundary]
+type = VarSet
+trigger1 = Time >= 0
+var(11) = AnimElemNo(2)
 `
     : "";
   const contactTriggerBranches = [
@@ -15153,7 +15166,10 @@ ${options.helperExtraStates ?? ""}
     animations.set(500, fixtureAction(500));
   }
   if (options.multiFrameAction) {
-    animations.set(options.multiFrameAction.id, fixtureAction(options.multiFrameAction.id, { durations: options.multiFrameAction.durations }));
+    animations.set(options.multiFrameAction.id, fixtureAction(options.multiFrameAction.id, {
+      durations: options.multiFrameAction.durations,
+      loopStart: options.multiFrameAction.loopStart,
+    }));
   }
   for (const stateNo of extraStateNos) {
     animations.set(stateNo, fixtureAction(stateNo));
@@ -15509,12 +15525,13 @@ ctrl = 1
 
 function action(
   id: number,
-  options: { clsn1?: Array<{ x1: number; y1: number; x2: number; y2: number }>; durations?: number[] } = {},
+  options: { clsn1?: Array<{ x1: number; y1: number; x2: number; y2: number }>; durations?: number[]; loopStart?: number } = {},
   groupOffset = 0,
 ): MugenAnimationAction {
   const durations = options.durations?.length ? options.durations : [4];
   return {
     id,
+    ...(options.loopStart === undefined ? {} : { loopStart: options.loopStart }),
     rawLines: [`[Begin Action ${id}]`],
     frames: durations.map((duration, index) => ({
       spriteGroup: id + groupOffset,
