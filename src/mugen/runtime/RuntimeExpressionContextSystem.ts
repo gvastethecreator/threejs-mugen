@@ -102,7 +102,7 @@ export type RuntimeExpressionContextInput<TActor extends RuntimeExpressionContex
   inGuardDist?: () => boolean;
   reportUnsupported?: (feature: string) => void;
   teamMode?: string;
-  roundDecision?: ExpressionContext["roundDecision"];
+  roundDecision?: ExpressionContext["roundDecision"] | ((actor: TActor) => ExpressionContext["roundDecision"] | undefined);
 };
 
 export class RuntimeExpressionContextWorld {
@@ -155,10 +155,10 @@ export class RuntimeExpressionContextWorld {
       opponentProjVarFlag: selectedP2 ? runtimeExpressionProjVarFlag(selectedP2) : undefined,
       parentProjVarFlag: runtimeExpressionProjVarFlag(owner),
       rootProjVarFlag: runtimeExpressionProjVarFlag(actor),
-      enemyNear: (index) => this.resolveEnemyNearRedirect(actor, opponentRoster, index, expressionActors),
+      enemyNear: (index) => this.resolveEnemyNearRedirect(actor, opponentRoster, index, expressionActors, input.roundDecision),
       enemyNearFallbackToOpponent: input.rootSelection ? false : undefined,
-      partner: (index) => this.resolveRosterRedirect(actor, partnerRoster, index, expressionActors),
-      enemy: (index) => this.resolveRosterRedirect(actor, enemyRoster, index, expressionActors),
+      partner: (index) => this.resolveRosterRedirect(actor, partnerRoster, index, expressionActors, input.roundDecision),
+      enemy: (index) => this.resolveRosterRedirect(actor, enemyRoster, index, expressionActors, input.roundDecision),
       name: actor.definition.displayName,
       authorName: actor.definition.authorName,
       introState: actor.fightScreen?.introState ?? 0,
@@ -192,10 +192,10 @@ export class RuntimeExpressionContextWorld {
       parentPlayerNo: owner.playerNo,
       rootPlayerId: actor.playerId,
       rootPlayerNo: actor.playerNo,
-      target: (targetId) => this.resolveTargetRedirect(actor, input.opponent, targetId, expressionActors),
+      target: (targetId) => this.resolveTargetRedirect(actor, input.opponent, targetId, expressionActors, input.roundDecision),
       playerIdTarget:
         input.playerIdTarget ??
-        (input.characters ? (playerId) => this.resolvePlayerIdRedirect(actor, input.characters ?? [], playerId) : undefined),
+        (input.characters ? (playerId) => this.resolvePlayerIdRedirect(actor, input.characters ?? [], playerId, input.roundDecision) : undefined),
       stageTime: input.stageTime,
       stateTime: runtimeExpressionStateTime(actor),
       random: input.random,
@@ -257,7 +257,17 @@ export class RuntimeExpressionContextWorld {
       uniqueHitCount: () => this.moveHitCountValue(actor, true),
       reportUnsupported: input.reportUnsupported,
       ...(input.teamMode === undefined ? {} : { teamMode: input.teamMode }),
-      ...(input.roundDecision === undefined ? {} : { roundDecision: input.roundDecision }),
+      ...(resolveActorRoundDecision(input.roundDecision, actor, true) === undefined
+        ? {}
+        : { roundDecision: resolveActorRoundDecision(input.roundDecision, actor, true) }),
+      ...(owner !== actor
+        ? {
+            parent: owner.runtime,
+            parentRedirect: this.createRedirectTarget(actor, owner, includeWidth, expressionActors, input.roundDecision),
+          }
+        : {}),
+      root: actor.runtime,
+      rootRedirect: this.createRedirectTarget(actor, actor, includeWidth, expressionActors, input.roundDecision),
     };
   }
 
@@ -282,13 +292,14 @@ export class RuntimeExpressionContextWorld {
     opponent: TActor,
     targetId?: number,
     characters: readonly TActor[] = [actor, opponent],
+    roundDecision?: RuntimeExpressionContextInput<TActor>["roundDecision"],
   ): ExpressionRedirectTarget | undefined {
     if (!actor.targetWorld.find(actor, opponent.id, targetId)) {
       return undefined;
     }
     const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
     return {
-      ...this.createRedirectTarget(actor, opponent, includeWidth, characters),
+      ...this.createRedirectTarget(actor, opponent, includeWidth, characters, roundDecision),
     };
   }
 
@@ -296,13 +307,14 @@ export class RuntimeExpressionContextWorld {
     actor: TActor,
     characters: readonly TActor[],
     playerId: number,
+    roundDecision?: RuntimeExpressionContextInput<TActor>["roundDecision"],
   ): ExpressionRedirectTarget | undefined {
     const redirected = characters.find((candidate) => candidate.playerId === playerId);
     if (!redirected) {
       return undefined;
     }
     const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
-    return this.createRedirectTarget(actor, redirected, includeWidth, characters);
+    return this.createRedirectTarget(actor, redirected, includeWidth, characters, roundDecision);
   }
 
   resolveEnemyNearRedirect<TActor extends RuntimeExpressionContextActor>(
@@ -310,6 +322,7 @@ export class RuntimeExpressionContextWorld {
     opponents: readonly TActor[],
     index: number,
     characters: readonly TActor[] = [actor, ...opponents],
+    roundDecision?: RuntimeExpressionContextInput<TActor>["roundDecision"],
   ): ExpressionRedirectTarget | undefined {
     const opponent = opponents[index];
     if (!opponent) {
@@ -317,7 +330,7 @@ export class RuntimeExpressionContextWorld {
     }
     const includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition);
     return {
-      ...this.createRedirectTarget(actor, opponent, includeWidth, characters),
+      ...this.createRedirectTarget(actor, opponent, includeWidth, characters, roundDecision),
     };
   }
 
@@ -416,9 +429,10 @@ export class RuntimeExpressionContextWorld {
     roster: readonly TActor[],
     index: number,
     characters: readonly TActor[] = [actor, ...roster],
+    roundDecision?: RuntimeExpressionContextInput<TActor>["roundDecision"],
   ): ExpressionRedirectTarget | undefined {
     const redirected = roster[index];
-    return redirected ? this.createRedirectTarget(actor, redirected, undefined, characters) : undefined;
+    return redirected ? this.createRedirectTarget(actor, redirected, undefined, characters, roundDecision) : undefined;
   }
 
   private createRedirectTarget<TActor extends RuntimeExpressionContextActor>(
@@ -426,6 +440,7 @@ export class RuntimeExpressionContextWorld {
     redirected: TActor,
     includeWidth = !usesMugenPlayerPushMinimumWidth(actor.definition),
     characters: readonly TActor[] = [actor, redirected],
+    roundDecision?: RuntimeExpressionContextInput<TActor>["roundDecision"],
   ): ExpressionRedirectTarget {
     return {
       self: redirected.runtime,
@@ -435,6 +450,9 @@ export class RuntimeExpressionContextWorld {
       animExists: (animationId) => redirected.definition.animations.has(animationId),
       activeAnimExists: (animationId) => runtimeActiveAnimExists(redirected, actor, characters, animationId),
       animElemNo: (timeOffset) => runtimeActorAnimationElementNo(redirected, timeOffset),
+      ...(resolveActorRoundDecision(roundDecision, redirected) === undefined
+        ? {}
+        : { roundDecision: resolveActorRoundDecision(roundDecision, redirected) }),
       opponent: actor.runtime,
       opponentPlayerId: actor.playerId,
       opponentPlayerNo: actor.playerNo,
@@ -464,6 +482,17 @@ export class RuntimeExpressionContextWorld {
     };
   }
 
+}
+
+function resolveActorRoundDecision<TActor>(
+  roundDecision: RuntimeExpressionContextInput<TActor>["roundDecision"] | undefined,
+  actor: TActor,
+  inheritStatic = false,
+): ExpressionContext["roundDecision"] | undefined {
+  if (typeof roundDecision === "function") {
+    return roundDecision(actor);
+  }
+  return inheritStatic ? roundDecision : undefined;
 }
 
 function runtimeExpressionClsnVar(

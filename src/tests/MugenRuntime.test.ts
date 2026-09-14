@@ -149,6 +149,47 @@ describe("MugenRuntime frame selection", () => {
       }),
     ).toBe(1);
     expect(evaluateExpression("DrawGame", { self: expressionSelf({ matchOver: true }), roundDecision: { settled: true, draw: true, win: false, lose: false } })).toBe(1);
+    const caller = expressionSelf({ life: 1000 });
+    const near = expressionSelf({ life: 0 });
+    expect(
+      evaluateExpression("EnemyNear, Win", {
+        self: caller,
+        roundDecision: { settled: true, win: true, lose: false },
+        enemyNear: () => ({
+          self: near,
+          roundDecision: { settled: true, win: false, lose: true },
+          animExists: (id) => id === 2222,
+        }),
+        animExists: (id) => id === 1111,
+      }),
+    ).toBe(0);
+    expect(
+      evaluateExpression("EnemyNear, Lose", {
+        self: caller,
+        roundDecision: { settled: true, win: true, lose: false },
+        enemyNear: () => ({
+          self: near,
+          roundDecision: { settled: true, win: false, lose: true },
+        }),
+      }),
+    ).toBe(1);
+    expect(
+      evaluateExpression("EnemyNear, SelfAnimExist(2222)", {
+        self: caller,
+        animExists: (id) => id === 1111,
+        enemyNear: () => ({
+          self: near,
+          animExists: (id) => id === 2222,
+        }),
+      }),
+    ).toBe(1);
+    expect(
+      evaluateExpression("EnemyNear(3), Win", {
+        self: caller,
+        roundDecision: { settled: true, win: true },
+        enemyNear: () => undefined,
+      }),
+    ).toBe(0);
     expect(evaluateExpression("TeamMode = Single", { self: expressionSelf(), teamMode: "single" })).toBe(1);
     expect(evaluateExpression("TeamMode = Single", { self: expressionSelf(), teamMode: "turns" })).toBe(0);
     expect(evaluateExpression("TeamMode != Turns", { self: expressionSelf(), teamMode: "single" })).toBe(1);

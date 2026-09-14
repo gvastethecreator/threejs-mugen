@@ -158,6 +158,8 @@ export type ExpressionContext = {
   uniqueHitCount?: () => number;
   animLength?: number;
   animTimeRemaining?: number;
+  parentRedirect?: ExpressionRedirectTarget;
+  rootRedirect?: ExpressionRedirectTarget;
 };
 
 export type ExpressionGameSpace = {
@@ -200,6 +202,7 @@ export type ExpressionRedirectTarget = {
   opponentAuthorName?: string;
   teamSide?: number;
   opponentTeamSide?: number;
+  roundDecision?: ExpressionContext["roundDecision"];
 };
 
 export function evaluateExpression(expression: string, context: ExpressionContext): boolean | number | string {
@@ -483,24 +486,11 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
     context.reportUnsupported?.(`${target}(index)`);
     return 0;
   }
-  const redirectedSelf = target === "parent" ? context.parent : context.root;
-  if (!redirectedSelf) {
-    context.reportUnsupported?.(target ?? "redirect");
+  const redirected = parentOrRootRedirectContext(target === "parent" ? "parent" : "root", context);
+  if (redirected === "fail") {
     return 0;
   }
-  return evaluateExpression(expressionBody, {
-    ...context,
-    self: redirectedSelf,
-    playerId: target === "parent" ? context.parentPlayerId : context.rootPlayerId,
-    playerNo: target === "parent" ? context.parentPlayerNo : context.rootPlayerNo,
-    localCoord: target === "parent" ? context.parentLocalCoord ?? context.localCoord : context.rootLocalCoord ?? context.localCoord,
-    teamSide: target === "parent" ? context.parentTeamSide : context.rootTeamSide,
-    clsnVar: target === "parent" ? context.parentClsnVar : context.rootClsnVar,
-    clsnOverlap: target === "parent" ? context.parentClsnOverlap : context.rootClsnOverlap,
-    projClsnOverlap: target === "parent" ? context.parentProjClsnOverlap : context.rootProjClsnOverlap,
-    projVar: target === "parent" ? context.parentProjVar : context.rootProjVar,
-    projVarFlag: target === "parent" ? context.parentProjVarFlag : context.rootProjVarFlag,
-  });
+  return evaluateExpression(expressionBody, redirected);
 }
 
 type Token = ExpressionLexToken;
@@ -922,24 +912,7 @@ class ExpressionParser {
       this.context.reportUnsupported?.(`${target}(index)`);
       return "fail";
     }
-    const redirectedSelf = target === "parent" ? this.context.parent : this.context.root;
-    if (!redirectedSelf) {
-      this.context.reportUnsupported?.(target);
-      return "fail";
-    }
-    return {
-      ...this.context,
-      self: redirectedSelf,
-      playerId: target === "parent" ? this.context.parentPlayerId : this.context.rootPlayerId,
-      playerNo: target === "parent" ? this.context.parentPlayerNo : this.context.rootPlayerNo,
-      localCoord: target === "parent" ? this.context.parentLocalCoord ?? this.context.localCoord : this.context.rootLocalCoord ?? this.context.localCoord,
-      teamSide: target === "parent" ? this.context.parentTeamSide : this.context.rootTeamSide,
-      clsnVar: target === "parent" ? this.context.parentClsnVar : this.context.rootClsnVar,
-      clsnOverlap: target === "parent" ? this.context.parentClsnOverlap : this.context.rootClsnOverlap,
-      projClsnOverlap: target === "parent" ? this.context.parentProjClsnOverlap : this.context.rootProjClsnOverlap,
-      projVar: target === "parent" ? this.context.parentProjVar : this.context.rootProjVar,
-      projVarFlag: target === "parent" ? this.context.parentProjVarFlag : this.context.rootProjVarFlag,
-    };
+    return parentOrRootRedirectContext(target === "parent" ? "parent" : "root", this.context);
   }
 
   private tryConsumeRedirectIndex(): string | undefined {
@@ -2147,6 +2120,30 @@ function rosterRedirectContext(target: "partner" | "enemy", index: string | unde
   return redirectedTargetContext(context, redirected);
 }
 
+function parentOrRootRedirectContext(target: "parent" | "root", context: ExpressionContext): ExpressionContext | "fail" {
+  const packaged = target === "parent" ? context.parentRedirect : context.rootRedirect;
+  if (packaged) {
+    return redirectedTargetContext(context, packaged);
+  }
+  const redirectedSelf = target === "parent" ? context.parent : context.root;
+  if (!redirectedSelf) {
+    context.reportUnsupported?.(target);
+    return "fail";
+  }
+  return redirectedTargetContext(context, {
+    self: redirectedSelf,
+    playerId: target === "parent" ? context.parentPlayerId : context.rootPlayerId,
+    playerNo: target === "parent" ? context.parentPlayerNo : context.rootPlayerNo,
+    localCoord: target === "parent" ? context.parentLocalCoord ?? context.localCoord : context.rootLocalCoord ?? context.localCoord,
+    teamSide: target === "parent" ? context.parentTeamSide : context.rootTeamSide,
+    clsnVar: target === "parent" ? context.parentClsnVar : context.rootClsnVar,
+    clsnOverlap: target === "parent" ? context.parentClsnOverlap : context.rootClsnOverlap,
+    projClsnOverlap: target === "parent" ? context.parentProjClsnOverlap : context.rootProjClsnOverlap,
+    projVar: target === "parent" ? context.parentProjVar : context.rootProjVar,
+    projVarFlag: target === "parent" ? context.parentProjVarFlag : context.rootProjVarFlag,
+  });
+}
+
 function redirectedTargetContext(context: ExpressionContext, redirected: ExpressionRedirectTarget): ExpressionContext {
   return {
     ...context,
@@ -2154,9 +2151,10 @@ function redirectedTargetContext(context: ExpressionContext, redirected: Express
     playerId: redirected.playerId,
     playerNo: redirected.playerNo,
     animPlayerNo: redirected.animPlayerNo,
-    animExists: redirected.animExists ?? context.animExists,
-    activeAnimExists: redirected.activeAnimExists ?? context.activeAnimExists,
-    animElemNo: redirected.animElemNo ?? context.animElemNo,
+    animExists: redirected.animExists,
+    activeAnimExists: redirected.activeAnimExists,
+    animElemNo: redirected.animElemNo,
+    roundDecision: redirected.roundDecision,
     clsnVar: redirected.clsnVar,
     opponentClsnVar: redirected.opponentClsnVar ?? context.clsnVar,
     clsnOverlap: redirected.clsnOverlap,

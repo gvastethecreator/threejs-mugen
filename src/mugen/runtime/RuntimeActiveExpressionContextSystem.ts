@@ -58,12 +58,7 @@ export class RuntimeActiveExpressionContextWorld {
       animElemTime: (elementNumber) => input.animElemTime(input.actor, elementNumber),
       inGuardDist: () => input.inGuardDist(input.actor, input.opponent),
       ...(input.teamMode === undefined ? {} : { teamMode: input.teamMode }),
-      ...(input.roundDecision === undefined
-        ? {}
-        : {
-            roundDecision:
-              typeof input.roundDecision === "function" ? input.roundDecision(input.actor) : input.roundDecision,
-          }),
+      ...(input.roundDecision === undefined ? {} : { roundDecision: input.roundDecision }),
     });
   }
 

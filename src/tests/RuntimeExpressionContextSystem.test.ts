@@ -80,6 +80,58 @@ describe("RuntimeExpressionContextWorld", () => {
     })).toBe(0);
   });
 
+  it("binds Win/Lose and animation queries to the redirected actor", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author");
+    const opponent = runtimeActor("p2", "Rival");
+    const owner = runtimeActor("p3", "Owner");
+    actor.definition.animations = new Map<number, unknown>([[200, {}], [1111, {}]]);
+    opponent.definition.animations = new Map<number, unknown>([[200, {}], [2222, {}]]);
+    owner.definition.animations = new Map<number, unknown>([[200, {}], [3333, {}]]);
+    actor.currentAction = {
+      id: 200,
+      loopStart: 0,
+      rawLines: [],
+      frames: [
+        { ...emptyAnimationFrame(1), duration: 2 },
+        { ...emptyAnimationFrame(2), duration: 2 },
+      ],
+    } satisfies MugenAnimationAction;
+    opponent.currentAction = {
+      id: 2222,
+      loopStart: 0,
+      rawLines: [],
+      frames: [
+        { ...emptyAnimationFrame(1), duration: 1 },
+        { ...emptyAnimationFrame(2), duration: 1 },
+        { ...emptyAnimationFrame(3), duration: 1 },
+      ],
+    } satisfies MugenAnimationAction;
+    actor.frameElapsed = 0;
+    actor.runtime.frameIndex = 0;
+    opponent.frameElapsed = 2;
+    opponent.runtime.frameIndex = 2;
+    const roundDecision = (candidate: typeof actor) =>
+      candidate.id === "p1"
+        ? { settled: true as const, win: true, lose: false, winKO: true }
+        : { settled: true as const, win: false, lose: true, loseKO: true };
+    const input = { actor, opponent, owner, characters: [actor, opponent, owner], roundDecision };
+
+    expect(world.evaluateNumber("Win", input)).toBe(1);
+    expect(world.evaluateNumber("EnemyNear, Win", input)).toBe(0);
+    expect(world.evaluateNumber("EnemyNear, Lose", input)).toBe(1);
+    expect(world.evaluateNumber("EnemyNear(9), Win", input)).toBe(0);
+    expect(world.evaluateNumber("SelfAnimExist(1111)", input)).toBe(1);
+    expect(world.evaluateNumber("EnemyNear, SelfAnimExist(2222)", input)).toBe(1);
+    expect(world.evaluateNumber("EnemyNear, SelfAnimExist(1111)", input)).toBe(0);
+    expect(world.evaluateNumber("AnimElemNo(0)", input)).toBe(1);
+    expect(world.evaluateNumber("EnemyNear, AnimElemNo(0)", input)).toBe(3);
+    expect(world.evaluateNumber("Parent, Win", input)).toBe(0);
+    expect(world.evaluateNumber("Parent, Lose", input)).toBe(1);
+    expect(world.evaluateNumber("Parent, SelfAnimExist(3333)", input)).toBe(1);
+    expect(world.evaluateNumber("Parent, SelfAnimExist(1111)", input)).toBe(0);
+  });
+
   it("exposes AnimElemVar from the actor's active AIR frame", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author");
