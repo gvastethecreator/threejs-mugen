@@ -376,6 +376,10 @@ export class RuntimeRoundSystem {
     this.resetRoundPhase();
   }
 
+  winnerDisplaySelectionSnapshot(): RuntimeRoundWinnerDisplaySelection | undefined {
+    return this.winnerDisplaySelection;
+  }
+
   snapshot(): RoundSnapshot {
     const snapshot: RoundSnapshot = {
       state: this.state,

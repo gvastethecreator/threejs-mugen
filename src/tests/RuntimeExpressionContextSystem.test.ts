@@ -59,6 +59,27 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(result).toBe(629);
   });
 
+  it("reads WinPerfect only from a settled round decision", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author");
+    const opponent = runtimeActor("p2", "Rival");
+    expect(world.evaluateNumber("WinPerfect", {
+      actor,
+      opponent,
+      roundDecision: { settled: false, win: true, winPerfect: true },
+    })).toBe(0);
+    expect(world.evaluateNumber("WinPerfect", {
+      actor,
+      opponent,
+      roundDecision: { settled: true, win: true, winKO: true, winPerfect: true },
+    })).toBe(1);
+    expect(world.evaluateNumber("WinPerfect", {
+      actor,
+      opponent,
+      roundDecision: { settled: true, win: true, winKO: true, winPerfect: false },
+    })).toBe(0);
+  });
+
   it("exposes AnimElemVar from the actor's active AIR frame", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author");

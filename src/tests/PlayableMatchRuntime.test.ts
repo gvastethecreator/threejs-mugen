@@ -5360,6 +5360,119 @@ value = 321
     expect(runtime.getSnapshot().round).not.toHaveProperty("matchProjection");
   });
 
+  it("projects settled WinPerfect onto the winning team and clears it next round", () => {
+    const attacker = createImportedFixture({
+      id: "winperfect-attacker",
+      withStateMove: false,
+      hitDefDamage: 2000,
+    });
+    const defender = createImportedFixture({
+      id: "winperfect-defender",
+      withStateMove: false,
+      hitDefDamage: 0,
+    });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(attacker, defender, closeStage, {
+      runtimeProfile: "ikemen-go",
+      roundTiming: {
+        overHitTimeFrames: 1,
+        postKoPhase4StartFrames: 4,
+        winPoseFrames: 2,
+        postKoFrames: 8,
+      },
+    });
+    const internals = runtime as unknown as {
+      actorRoundDecision: (actor: { id: string }) => {
+        settled: boolean;
+        win?: boolean;
+        lose?: boolean;
+        draw?: boolean;
+        winKO?: boolean;
+        winPerfect?: boolean;
+        winTime?: boolean;
+      };
+      p1: { id: string; runtime: { life: number } };
+      p2: { id: string; runtime: { life: number } };
+    };
+
+    expect(internals.actorRoundDecision(internals.p1).settled).toBe(false);
+    internals.p2.runtime.life = 0;
+    expect(internals.actorRoundDecision(internals.p1).settled).toBe(false);
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 40; frame += 1) {
+      const snapshot = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+      if ((snapshot.round?.roundPhase ?? 0) >= 3) {
+        break;
+      }
+    }
+
+    const p1 = internals.actorRoundDecision(internals.p1);
+    const p2 = internals.actorRoundDecision(internals.p2);
+    const reserve = internals.actorRoundDecision({ id: "p3" });
+    expect(p1).toMatchObject({ settled: true, win: true, winKO: true, winPerfect: true, lose: false });
+    expect(p2).toMatchObject({ settled: true, win: false, lose: true, winPerfect: false });
+    expect(reserve).toMatchObject({ settled: true, win: true, lose: false, winPerfect: true });
+
+    internals.p1.runtime.life = 400;
+    const damaged = new PlayableMatchRuntime(attacker, defender, closeStage, {
+      runtimeProfile: "ikemen-go",
+      roundTiming: {
+        overHitTimeFrames: 1,
+        postKoPhase4StartFrames: 4,
+        winPoseFrames: 2,
+        postKoFrames: 8,
+      },
+    });
+    const damagedInternals = damaged as unknown as typeof internals;
+    damagedInternals.p1.runtime.life = 400;
+    damagedInternals.p2.runtime.life = 0;
+    damaged.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 40; frame += 1) {
+      const snapshot = damaged.step({ p1: new Set(), p2: new Set() }, { force: true });
+      if ((snapshot.round?.roundPhase ?? 0) >= 3) {
+        break;
+      }
+    }
+    expect(damagedInternals.actorRoundDecision(damagedInternals.p1)).toMatchObject({
+      settled: true,
+      win: true,
+      winKO: true,
+      winPerfect: false,
+    });
+
+    const drawRuntime = new PlayableMatchRuntime(attacker, defender, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      roundTimerFrames: 1,
+      roundTiming: {
+        overHitTimeFrames: 1,
+        postKoPhase4StartFrames: 4,
+        winPoseFrames: 2,
+        postKoFrames: 8,
+      },
+    });
+    const draw = drawRuntime.step({ p1: new Set(), p2: new Set() });
+    expect(draw.round?.state).toBe("timeover");
+    const drawInternals = drawRuntime as unknown as typeof internals;
+    expect(drawInternals.actorRoundDecision(drawInternals.p1)).toMatchObject({
+      settled: true,
+      draw: true,
+      win: false,
+      lose: false,
+      winPerfect: false,
+      winTime: false,
+    });
+
+    (runtime as unknown as { round: { startNextRound: () => void } }).round.startNextRound();
+    expect(internals.actorRoundDecision(internals.p1).settled).toBe(false);
+  });
+
   it("resets stage background time between rounds only when resetBG is enabled", () => {
     const resetStage = { ...bgCtrlLabStage, resetBackgroundBetweenRounds: true };
     const continuingStage = { ...bgCtrlLabStage, resetBackgroundBetweenRounds: false };

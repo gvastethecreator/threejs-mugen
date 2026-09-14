@@ -4545,8 +4545,10 @@ export class PlayableMatchRuntime {
     }
     const draw = winner === "Draw";
     const winnerRoot = this.characterRoots().find((root) => root.label === winner || root.id === winner);
-    const won = !draw && winnerRoot?.id === actor.id;
-    const lost = !draw && !won;
+    const winnerSide = winnerRoot ? runtimeTeamSide(winnerRoot) : undefined;
+    const actorSide = runtimeTeamSide(actor);
+    const won = !draw && winnerSide !== undefined && actorSide === winnerSide;
+    const lost = !draw && winnerSide !== undefined && actorSide !== undefined && actorSide !== winnerSide;
     const ko = round.state === "ko";
     const timeover = round.state === "timeover";
     return {
@@ -4558,6 +4560,7 @@ export class PlayableMatchRuntime {
       winTime: won && timeover,
       loseKO: lost && ko,
       loseTime: lost && timeover,
+      winPerfect: won && this.round.winnerDisplaySelectionSnapshot()?.winType === "perfect",
     };
   }
 
