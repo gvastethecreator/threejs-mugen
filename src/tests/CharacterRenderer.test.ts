@@ -6,6 +6,7 @@ import {
   resolveCharacterRenderDepth,
   shouldRenderActorReflection,
 } from "../game/render/CharacterRenderer";
+import { transformPaletteFxRgba } from "../game/render/PaletteFxMaterial";
 import type { TextureStore } from "../game/render/TextureStore";
 import type { MugenSprite, SpriteLookupContext, SpriteProvider } from "../mugen/model/MugenSprite";
 import type { ActorSnapshot } from "../mugen/runtime/types";
@@ -306,6 +307,41 @@ describe("CharacterRenderer", () => {
       color: [64, 128, 192],
     });
     expect(resolveActorShadowPresentation(actor({}, { shadowVisible: false }))).toBeUndefined();
+  });
+
+  it("applies identity PalFX without fade, opacity loss, or additive blending", async () => {
+    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
+    const identity = {
+      remaining: 5,
+      time: 10,
+      add: [0, 0, 0] as [number, number, number],
+      mul: [256, 256, 256] as [number, number, number],
+      color: 256,
+      invert: false,
+    };
+
+    expect(transformPaletteFxRgba(40, 80, 120, 255, identity)).toEqual([40, 80, 120, 255]);
+    expect(transformPaletteFxRgba(40, 80, 120, 255, { ...identity, remaining: 1 })).toEqual([40, 80, 120, 255]);
+    expect(transformPaletteFxRgba(200, 10, 10, 255, { ...identity, add: [-40, 0, 0], invert: true })).toEqual([15, 245, 245, 255]);
+
+    await renderer.update([actor({ paletteFx: identity, renderOpacity: 1 })]);
+    const mesh = renderer.group.children.find((child): child is THREE.Mesh => child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry);
+    const material = mesh?.material as THREE.MeshBasicMaterial;
+    expect(material.color.r).toBeCloseTo(1);
+    expect(material.color.g).toBeCloseTo(1);
+    expect(material.color.b).toBeCloseTo(1);
+    expect(material.opacity).toBe(1);
+    expect(material.blending).toBe(THREE.NormalBlending);
+
+    await renderer.update([
+      actor({
+        paletteFx: { ...identity, remaining: 9, add: [80, 0, 0] },
+        renderOpacity: 0.5,
+      }),
+    ]);
+    expect(material.opacity).toBe(0.5);
+    expect(material.blending).toBe(THREE.NormalBlending);
+    renderer.dispose();
   });
 });
 

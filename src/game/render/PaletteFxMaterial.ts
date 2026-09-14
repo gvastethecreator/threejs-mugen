@@ -9,33 +9,60 @@ export type RenderPaletteFx = {
   invert: boolean;
 };
 
+/**
+ * Decoded RGBA PalFX from Ikemen sprite.frag: invert, color (gray mix),
+ * add, then mul. Channel values are 0..255. Identity is add 0, mul 256,
+ * color 256, invert false. Duration is on/off; this function does not fade.
+ */
+export function transformPaletteFxRgba(
+  red: number,
+  green: number,
+  blue: number,
+  alpha: number,
+  paletteFx: RenderPaletteFx,
+): [number, number, number, number] {
+  let r = red;
+  let g = green;
+  let b = blue;
+  const a = alpha;
+  if (paletteFx.invert) {
+    r = a - r;
+    g = a - g;
+    b = a - b;
+  }
+  const color = clamp(paletteFx.color, 0, 256) / 256;
+  const gray = (r + g + b) / 3;
+  r = gray + (r - gray) * color;
+  g = gray + (g - gray) * color;
+  b = gray + (b - gray) * color;
+  r += paletteFx.add[0];
+  g += paletteFx.add[1];
+  b += paletteFx.add[2];
+  r = (r * paletteFx.mul[0]) / 256;
+  g = (g * paletteFx.mul[1]) / 256;
+  b = (b * paletteFx.mul[2]) / 256;
+  return [r, g, b, a];
+}
+
 export function applyPaletteFxMaterial(
   material: THREE.MeshBasicMaterial,
   paletteFx: RenderPaletteFx | undefined,
   renderOpacity = 1,
 ): void {
-  if (!paletteFx) {
+  material.opacity = renderOpacity;
+  material.blending = THREE.NormalBlending;
+  material.transparent = true;
+  if (!paletteFx || paletteFx.remaining <= 0) {
     material.color.setRGB(1, 1, 1);
-    material.opacity = renderOpacity;
-    material.blending = THREE.NormalBlending;
-    material.transparent = true;
     return;
   }
 
-  const progress = paletteFx.time > 0 ? paletteFx.remaining / paletteFx.time : 1;
-  const addTint = paletteFx.add.map((value) => Math.max(0, value) / 255) as [number, number, number];
-  const mulTint = paletteFx.mul.map((value) => Math.max(0, value) / 256) as [number, number, number];
-  const colorLevel = paletteFx.color / 256;
-  const saturationLoss = (1 - colorLevel) * 0.25;
-  const invertBoost = paletteFx.invert ? 0.35 : 0;
-  material.color.setRGB(
-    clamp01((mulTint[0] * (1 - saturationLoss) + addTint[0] * 0.42 + invertBoost) * progress + (1 - progress)),
-    clamp01((mulTint[1] * (1 - saturationLoss) + addTint[1] * 0.42 + invertBoost) * progress + (1 - progress)),
-    clamp01((mulTint[2] * (1 - saturationLoss) + addTint[2] * 0.42 + invertBoost) * progress + (1 - progress)),
-  );
-  material.opacity = clamp01((0.72 + progress * 0.28) * renderOpacity);
-  material.blending = paletteFx.add.some((value) => value > 0) ? THREE.AdditiveBlending : THREE.NormalBlending;
-  material.transparent = true;
+  const [red, green, blue] = transformPaletteFxRgba(255, 255, 255, 255, paletteFx);
+  material.color.setRGB(clamp01(red / 255), clamp01(green / 255), clamp01(blue / 255));
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
 }
 
 function clamp01(value: number): number {
