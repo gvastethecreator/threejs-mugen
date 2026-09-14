@@ -324,18 +324,14 @@ function createStageSprites(
 ): THREE.Mesh[] {
   const texture = textures.getTexture(sprite, `stage:${stage.id ?? "unknown"}`);
   return projectStageSpriteLayer(layer, sprite, stage, stageWidth).map((placement) =>
-    createRect(
-      placement.x,
-      placement.y,
-      placement.width,
-      placement.height,
+    createStageSpriteMesh(
+      placement,
       new THREE.MeshBasicMaterial({
         ...stageLayerMaterialParameters(0xffffff, layer.opacity, layer.trans),
         transparent: true,
         map: texture,
       }),
       layerZ(layer.layerNo, index),
-      placement.uv,
     ),
   );
 }
@@ -454,6 +450,38 @@ function disposeTransientMaterial(material: THREE.Material | THREE.Material[], s
   }
 }
 
+function createStageSpriteMesh(
+  placement: StageSpritePlacement,
+  material: THREE.Material,
+  z: number,
+): THREE.Mesh {
+  if (
+    placement.topWidth !== undefined &&
+    placement.bottomWidth !== undefined &&
+    placement.topWidth !== placement.bottomWidth
+  ) {
+    return createTrapezoid(
+      placement.x,
+      placement.y,
+      placement.topWidth,
+      placement.bottomWidth,
+      placement.height,
+      material,
+      z,
+      placement.uv,
+    );
+  }
+  return createRect(
+    placement.x,
+    placement.y,
+    placement.width,
+    placement.height,
+    material,
+    z,
+    placement.uv,
+  );
+}
+
 export function createRect(
   x: number,
   y: number,
@@ -471,6 +499,39 @@ export function createRect(
   mesh.position.set(x, y, z);
   mesh.scale.set(width, height, 1);
   return mesh;
+}
+
+function createTrapezoid(
+  x: number,
+  y: number,
+  topWidth: number,
+  bottomWidth: number,
+  height: number,
+  material: THREE.Material,
+  z: number,
+  uv?: StageSpritePlacementUv,
+): THREE.Mesh {
+  const geometry = new THREE.PlaneGeometry(1, 1);
+  applyTrapezoid(geometry, topWidth, bottomWidth, height);
+  if (uv) {
+    applyUv(geometry, uv);
+  }
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.position.set(x, y, z);
+  return mesh;
+}
+
+function applyTrapezoid(geometry: THREE.PlaneGeometry, topWidth: number, bottomWidth: number, height: number): void {
+  const position = geometry.getAttribute("position") as THREE.BufferAttribute;
+  const halfHeight = height / 2;
+  const halfTop = topWidth / 2;
+  const halfBottom = bottomWidth / 2;
+  position.setXYZ(0, -halfTop, halfHeight, 0);
+  position.setXYZ(1, halfTop, halfHeight, 0);
+  position.setXYZ(2, -halfBottom, -halfHeight, 0);
+  position.setXYZ(3, halfBottom, -halfHeight, 0);
+  position.needsUpdate = true;
+  geometry.computeBoundingSphere();
 }
 
 function applyUv(geometry: THREE.PlaneGeometry, uv: StageSpritePlacementUv): void {

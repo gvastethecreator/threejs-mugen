@@ -277,6 +277,45 @@ yscaledelta = 1.2
 
     expect(runtime.layers[0]).toMatchObject({ yScaleStart: 100, yScaleDelta: 1.2 });
   });
+
+  it("keeps parallax width ahead of xscale and ignores xscale on normal layers", () => {
+    const runtime = stageDefToRuntime(
+      parseStageDef(`
+[BGDef]
+
+[BG Floor]
+type = parallax
+spriteno = 0,0
+width = 200,80
+xscale = 3,4
+
+[BG XScale]
+type = parallax
+spriteno = 1,0
+xscale = 2,0.5
+
+[BG Wall]
+type = normal
+spriteno = 2,0
+width = 400,100
+xscale = 9,9
+`, "stages/parallax-width.def"),
+      "stage-parallax-width",
+    );
+
+    expect(runtime.layers[0]).toMatchObject({
+      type: "parallax",
+      parallaxWidth: { top: 200, bottom: 80 },
+    });
+    expect(runtime.layers[0]?.parallaxXScale).toBeUndefined();
+    expect(runtime.layers[1]).toMatchObject({
+      type: "parallax",
+      parallaxXScale: { top: 2, bottom: 0.5 },
+    });
+    expect(runtime.layers[1]?.parallaxWidth).toBeUndefined();
+    expect(runtime.layers[2]?.parallaxWidth).toBeUndefined();
+    expect(runtime.layers[2]?.parallaxXScale).toBeUndefined();
+  });
 });
 
 describe("MugenStageLoader", () => {

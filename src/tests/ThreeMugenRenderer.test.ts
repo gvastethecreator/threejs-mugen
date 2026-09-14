@@ -418,6 +418,67 @@ describe("ThreeMugenRenderer stage BGPalFX", () => {
     expect(renderer.getDiagnostics()[8]).toMatchObject({ id: "layer-8", layerNo: 1, authoredOrder: 8 });
     renderer.dispose();
   });
+
+  it("renders parallax width as non-rectangular geometry and keeps a normal sprite rectangular", () => {
+    const textures = { getTexture: () => new THREE.Texture() } as unknown as TextureStore;
+    const renderer = new AxisRenderer(textures);
+    const sprite = { group: 0, index: 0, width: 100, height: 40, axisX: 50, axisY: 20 };
+    renderer.setStageSpriteArchives([{ stageId: "trap", archive: { version: "v1", sprites: [sprite], warnings: [] } }]);
+    renderer.update({
+      width: 640,
+      height: 360,
+      showAxis: false,
+      showGrid: false,
+      tick: 0,
+      stage: {
+        id: "trap",
+        displayName: "Trap",
+        floorY: 0,
+        zOffset: 200,
+        camera: { x: 0, y: 0, zoom: 1 },
+        layers: [
+          {
+            id: "floor",
+            type: "parallax",
+            color: "#fff",
+            y: 0,
+            width: 320,
+            height: 40,
+            deltaX: 1,
+            opacity: 1,
+            startX: 0,
+            startY: 0,
+            spriteGroup: 0,
+            spriteIndex: 0,
+            parallaxWidth: { top: 200, bottom: 80 },
+          },
+          {
+            id: "wall",
+            type: "normal",
+            color: "#fff",
+            y: 0,
+            width: 320,
+            height: 40,
+            deltaX: 1,
+            opacity: 1,
+            startX: 0,
+            startY: 0,
+            spriteGroup: 0,
+            spriteIndex: 0,
+          },
+        ],
+      },
+    });
+    const floor = renderer.group.children[0] as THREE.Mesh;
+    const wall = renderer.group.children[1] as THREE.Mesh;
+    const floorPos = floor.geometry.getAttribute("position") as THREE.BufferAttribute;
+    expect(floor.scale.x).toBe(1);
+    expect(floorPos.getX(1) - floorPos.getX(0)).toBe(200);
+    expect(floorPos.getX(3) - floorPos.getX(2)).toBe(80);
+    expect(wall.scale.x).toBe(100);
+    expect(wall.scale.y).toBe(40);
+    renderer.dispose();
+  });
 });
 
 function actor(id: string): ActorSnapshot {

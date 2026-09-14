@@ -8,6 +8,8 @@ export type StageSpritePlacement = {
   width: number;
   height: number;
   uv?: StageSpritePlacementUv;
+  topWidth?: number;
+  bottomWidth?: number;
 };
 
 export type StageSpritePlacementUv = {
@@ -35,6 +37,9 @@ export function projectStageSpriteLayer(
   stage: StageSnapshot,
   viewportWidth: number,
 ): StageSpritePlacement[] {
+  if (isParallaxLayer(layer) && hasParallaxUnsupportedCombo(layer)) {
+    return [];
+  }
   const scale = resolveStageLayerScale(layer, stage);
   const width = sprite.width * scale.x;
   const height = sprite.height * scale.y;
@@ -43,11 +48,15 @@ export function projectStageSpriteLayer(
   }
   const centerX = projectStageSpriteX(layer, sprite, stage, scale);
   const centerY = projectStageSpriteY(layer, sprite, stage, scale);
+  const trapezoid = resolveParallaxEdgeWidths(layer, sprite, scale);
   const base: StageSpritePlacement = {
     x: centerX,
     y: centerY,
-    width,
+    width: trapezoid ? Math.max(trapezoid.top, trapezoid.bottom) : width,
     height,
+    ...(trapezoid && (trapezoid.top !== trapezoid.bottom)
+      ? { topWidth: trapezoid.top, bottomWidth: trapezoid.bottom }
+      : {}),
   };
 
   if (!layer.tile || (layer.tile.x === 0 && layer.tile.y === 0)) {
@@ -429,6 +438,37 @@ function parseControllerNumber(value: string | undefined): number | undefined {
   }
   const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+export function isParallaxLayer(layer: Pick<MugenStageLayer, "type">): boolean {
+  return layer.type?.trim().toLowerCase() === "parallax";
+}
+
+export function hasParallaxUnsupportedCombo(layer: Pick<MugenStageLayer, "tile" | "clip">): boolean {
+  return Boolean(layer.clip) || Boolean(layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0));
+}
+
+function resolveParallaxEdgeWidths(
+  layer: MugenStageLayer,
+  sprite: MugenSprite,
+  scale: StageLayerScale,
+): { top: number; bottom: number } | undefined {
+  if (!isParallaxLayer(layer)) {
+    return undefined;
+  }
+  if (layer.parallaxWidth && (layer.parallaxWidth.top !== 0 || layer.parallaxWidth.bottom !== 0)) {
+    return {
+      top: Math.max(0, layer.parallaxWidth.top * scale.x),
+      bottom: Math.max(0, layer.parallaxWidth.bottom * scale.x),
+    };
+  }
+  if (layer.parallaxXScale) {
+    return {
+      top: Math.max(0, sprite.width * layer.parallaxXScale.top * scale.x),
+      bottom: Math.max(0, sprite.width * layer.parallaxXScale.bottom * scale.x),
+    };
+  }
+  return undefined;
 }
 
 function projectStageSpriteX(layer: MugenStageLayer, sprite: MugenSprite, stage: StageSnapshot, scale: StageLayerScale): number {

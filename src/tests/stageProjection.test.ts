@@ -112,6 +112,67 @@ describe("projectStageSpriteLayer", () => {
     expect(placement).toMatchObject({ x: 100, y: 147.5, width: 200, height: 60 });
   });
 
+  it("projects parallax width as a trapezoid and keeps a normal layer rectangular", () => {
+    const shared = {
+      color: "#000",
+      y: 0,
+      width: 320,
+      height: 200,
+      deltaX: 0.5,
+      opacity: 1,
+      startX: 20,
+      startY: 30,
+      spriteGroup: 1,
+      spriteIndex: 0,
+    } satisfies Partial<MugenStageLayer>;
+    const parallax: MugenStageLayer = {
+      id: "BG Floor",
+      type: "parallax",
+      ...shared,
+      parallaxWidth: { top: 200, bottom: 80 },
+    };
+    const normal: MugenStageLayer = {
+      id: "BG Wall",
+      type: "normal",
+      ...shared,
+      parallaxWidth: { top: 200, bottom: 80 },
+    };
+    const xscaleParallax: MugenStageLayer = {
+      id: "BG XScale",
+      type: "parallax",
+      ...shared,
+      parallaxXScale: { top: 2, bottom: 0.5 },
+    };
+    const widthBeatsXScale: MugenStageLayer = {
+      id: "BG Precedence",
+      type: "parallax",
+      ...shared,
+      parallaxWidth: { top: 200, bottom: 80 },
+      parallaxXScale: { top: 9, bottom: 9 },
+    };
+
+    const [floor] = projectStageSpriteLayer(parallax, sprite, stage, 640);
+    const [wall] = projectStageSpriteLayer(normal, sprite, stage, 640);
+    const [scaled] = projectStageSpriteLayer(xscaleParallax, sprite, stage, 640);
+    const [preceded] = projectStageSpriteLayer(widthBeatsXScale, sprite, stage, 640);
+    const [moved] = projectStageSpriteLayer(parallax, sprite, { ...stage, camera: { ...stage.camera, x: 160 } }, 640);
+
+    expect(floor).toMatchObject({ x: 100, y: 155, topWidth: 200, bottomWidth: 80, height: 40 });
+    expect(wall).toMatchObject({ x: 100, y: 155, width: 100, height: 40 });
+    expect(wall?.topWidth).toBeUndefined();
+    expect(wall?.bottomWidth).toBeUndefined();
+    expect(scaled).toMatchObject({ topWidth: 200, bottomWidth: 50 });
+    expect(preceded).toMatchObject({ topWidth: 200, bottomWidth: 80 });
+    expect(moved?.x).toBe(140);
+    expect(moved).toMatchObject({ topWidth: 200, bottomWidth: 80 });
+    expect(projectStageSpriteLayer(
+      { ...parallax, tile: { x: 1, y: 0 } },
+      sprite,
+      stage,
+      640,
+    )).toEqual([]);
+  });
+
   it("resolves camera movement scale and keeps zoomdelta=0 screen-stable", () => {
     const scale = resolveStageLayerScale(
       {

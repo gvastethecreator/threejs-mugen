@@ -307,6 +307,18 @@ function describeBackgroundLayer(
 
   if (layer.spriteGroup !== undefined && layer.spriteIndex !== undefined) {
     const decoded = spriteKeys.has(`${layer.spriteGroup}:${layer.spriteIndex}`);
+    if (isParallaxLayer(layer) && hasParallaxUnsupportedCombo(layer)) {
+      return {
+        ...base,
+        status: "unsupported",
+        sprite: {
+          group: layer.spriteGroup,
+          index: layer.spriteIndex,
+          decoded,
+        },
+        fallback: "Parallax tile or clip combinations are not rendered as trapezoids",
+      };
+    }
     return {
       ...base,
       status: decoded ? "rendered" : "missing",
@@ -372,9 +384,14 @@ function collectUnsupportedStageFeatures(stagePackage: MugenStagePackage): Unsup
     "unsupported BG layer type",
     stagePackage.stage.layers.filter((layer) => {
       const type = layer.type?.toLowerCase();
-      return Boolean(type && type !== "normal" && type !== "anim");
+      return Boolean(type && !isSupportedStageLayerType(type));
     }).length,
     "Renderer uses placeholder BG bands for BG layer types without a bounded render path",
+  );
+  push(
+    "parallax tile or clip",
+    stagePackage.stage.layers.filter((layer) => isParallaxLayer(layer) && hasParallaxUnsupportedCombo(layer)).length,
+    "Parallax trapezoid rendering is skipped when tile or clip is authored",
   );
   push(
     "exact window/maskwindow clipping",
@@ -410,8 +427,14 @@ function getLayerRawSection(stagePackage: MugenStagePackage, layer: MugenStageLa
 
 function collectUnsupportedLayerFeatures(rawSection: Record<string, string>, type: string, layer: MugenStageLayer): string[] {
   const unsupported: string[] = [];
-  if (type && type !== "normal" && type !== "anim") {
+  if (type && !isSupportedStageLayerType(type)) {
     unsupported.push(`type:${type}`);
+  }
+  if (isParallaxLayer(layer) && layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0)) {
+    unsupported.push("tile+parallax");
+  }
+  if (isParallaxLayer(layer) && layer.clip) {
+    unsupported.push("clip+parallax");
   }
   if ((hasKey(rawSection, "window") || hasKey(rawSection, "maskwindow")) && !layer.clip) {
     unsupported.push("window clipping");
@@ -447,6 +470,18 @@ function hasKey(values: Record<string, string>, key: string): boolean {
 
 function hasLayerScale(layer: MugenStageLayer): boolean {
   return Boolean(layer.scaleStart || layer.scaleDelta || layer.yScaleStart !== undefined || layer.yScaleDelta !== undefined || layer.zoomDelta);
+}
+
+function isSupportedStageLayerType(type: string): boolean {
+  return type === "normal" || type === "anim" || type === "parallax";
+}
+
+function isParallaxLayer(layer: Pick<MugenStageLayer, "type">): boolean {
+  return layer.type?.trim().toLowerCase() === "parallax";
+}
+
+function hasParallaxUnsupportedCombo(layer: Pick<MugenStageLayer, "tile" | "clip">): boolean {
+  return Boolean(layer.clip) || Boolean(layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0));
 }
 
 function formatStageDiagnostic(file: string | undefined, line: number | undefined, message: string): string {

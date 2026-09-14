@@ -40,6 +40,16 @@ export type MugenStageLayer = {
   /** Deprecated MUGEN parallax vertical scale parameters. */
   yScaleStart?: number;
   yScaleDelta?: number;
+  /** Authored BG parallax `width` top/bottom pixel pair. Precedes `xscale`. */
+  parallaxWidth?: {
+    top: number;
+    bottom: number;
+  };
+  /** Authored BG parallax `xscale` top/bottom pair, used only when `width` is omitted. */
+  parallaxXScale?: {
+    top: number;
+    bottom: number;
+  };
   /** Authored share of the global camera zoom, duplicated for one-value input. */
   zoomDelta?: {
     x: number;

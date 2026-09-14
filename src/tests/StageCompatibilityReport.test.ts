@@ -148,14 +148,14 @@ describe("createStageCompatibilityReport", () => {
       }),
       expect.objectContaining({
         section: "BG Parallax",
-        status: "unsupported",
+        status: "fallback",
         type: "parallax",
         scale: {
           start: { x: 1, y: 1 },
           delta: { x: 0, y: 0 },
           legacyYScale: { start: 100, delta: 1.2 },
         },
-        unsupported: ["type:parallax"],
+        unsupported: [],
       }),
     ]);
     expect(report.backgrounds.controllers).toMatchObject({
@@ -193,9 +193,9 @@ describe("createStageCompatibilityReport", () => {
       "exact window/maskwindow clipping",
       "mask color-key semantics",
       "stage SFF PNG",
-      "unsupported BG layer type",
       "unsupported BGCtrl type",
     ]));
+    expect(report.unsupported.map((item) => item.feature)).not.toContain("unsupported BG layer type");
     expect(report.unsupported.map((item) => item.feature)).not.toContain("transparency mode");
   });
 
@@ -266,5 +266,47 @@ sin.x = 12,8,0
       sinusoid: { x: { amplitude: 12, period: 8, phase: 0 } },
       unsupported: [],
     });
+  });
+
+  it("keeps sprite-backed parallax rendered and reports tile/clip parallax as unsupported", () => {
+    const definition = parseStageDef(`
+[BGDef]
+spr = floor.sff
+[BG Floor]
+type = parallax
+spriteno = 0,0
+width = 200,80
+[BG Tiled]
+type = parallax
+spriteno = 0,0
+width = 200,80
+tile = 1,0
+`, "stages/parallax.def");
+    const report = createStageCompatibilityReport({
+      sourceName: "parallax.zip",
+      defPath: "stages/parallax.def",
+      definition,
+      stage: stageDefToRuntime(definition, "parallax"),
+      files: { def: "stages/parallax.def", sprite: "stages/floor.sff", missing: [] },
+      spriteArchive: {
+        version: "v1",
+        sprites: [{ group: 0, index: 0, width: 100, height: 40, axisX: 50, axisY: 0 }],
+        warnings: [],
+      },
+      diagnostics: [],
+    });
+    expect(report.backgrounds.layers[0]).toMatchObject({
+      section: "BG Floor",
+      status: "rendered",
+      type: "parallax",
+      unsupported: [],
+    });
+    expect(report.backgrounds.layers[1]).toMatchObject({
+      section: "BG Tiled",
+      status: "unsupported",
+      unsupported: ["tile+parallax"],
+      fallback: "Parallax tile or clip combinations are not rendered as trapezoids",
+    });
+    expect(report.unsupported.map((item) => item.feature)).toContain("parallax tile or clip");
   });
 });

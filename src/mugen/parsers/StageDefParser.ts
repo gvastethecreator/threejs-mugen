@@ -161,6 +161,7 @@ function buildPlaceholderLayers(
     const scaleDelta = pairOrScalarValue(values, "scaledelta");
     const yScaleStart = numberValue(values, "yscalestart");
     const yScaleDelta = numberValue(values, "yscaledelta");
+    const parallaxShape = stageLayerParallaxShape(values, getValue(values, "type"));
     const zoomDelta = pairOrScalarValue(values, "zoomdelta");
     const sprite = pairValue(values, "spriteno");
     const spriteLabel = getValue(values, "spriteno") ?? `${index},0`;
@@ -204,6 +205,7 @@ function buildPlaceholderLayers(
       ...(scaleDelta ? { scaleDelta: { x: scaleDelta[0], y: scaleDelta[1] } } : {}),
       ...(yScaleStart === undefined ? {} : { yScaleStart }),
       ...(yScaleDelta === undefined ? {} : { yScaleDelta }),
+      ...parallaxShape,
       ...(zoomDelta ? { zoomDelta: { x: zoomDelta[0], y: zoomDelta[1] } } : {}),
       ...(linkTarget
         ? { positionLink: { targetId: linkTarget.id, offsetX: start[0] ?? 0, offsetY: start[1] ?? 0 } }
@@ -323,6 +325,24 @@ function extractEmbeddedActionText(text: string): string {
     }
   }
   return output.join("\n");
+}
+
+function stageLayerParallaxShape(
+  values: Record<string, string>,
+  type: string | undefined,
+): Pick<MugenStageLayer, "parallaxWidth" | "parallaxXScale"> {
+  if (type?.trim().toLowerCase() !== "parallax") {
+    return {};
+  }
+  const width = pairOrScalarValue(values, "width");
+  if (width && (width[0] !== 0 || width[1] !== 0)) {
+    return { parallaxWidth: { top: width[0], bottom: width[1] } };
+  }
+  const xscale = pairOrScalarValue(values, "xscale");
+  if (xscale) {
+    return { parallaxXScale: { top: xscale[0], bottom: xscale[1] } };
+  }
+  return {};
 }
 
 function stageLayerColor(index: number, layerNo: number): string {
