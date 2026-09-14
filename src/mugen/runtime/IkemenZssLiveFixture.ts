@@ -258,6 +258,13 @@ if time = 0 {
   posSet{x: 12.5;}
   ctrlSet{value: 0;}
   stateTypeSet{statetype: A;}
+  varSet{v: 0; value: 3;}
+  varAdd{v: 0; value: 2;}
+  varSet{fv: 1; value: 0.5;}
+}
+persistent(2) if time >= 0 {
+  posAdd{y: var(0);}
+  velSet{y: fvar(1);}
 }
 `;
 

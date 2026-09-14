@@ -56,6 +56,8 @@ const EXECUTABLE_ZSS_CONTROLLER_TYPES = new Set([
   "velmul",
   "ctrlset",
   "statetypeset",
+  "varset",
+  "varadd",
 ]);
 
 /**

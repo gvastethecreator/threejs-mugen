@@ -1361,6 +1361,8 @@ async function createIkemenZssTraceArtifact(
         { type: "posSet", minCount: 1 },
         { type: "ctrlSet", minCount: 1 },
         { type: "stateTypeSet", minCount: 1 },
+        { type: "varSet", minCount: 2 },
+        { type: "varAdd", minCount: 1 },
       ],
       requiredControllerEventSequences: [{
         label: `${sourceLabel} controller and state order`,
@@ -1380,6 +1382,8 @@ async function createIkemenZssTraceArtifact(
           { stateNo: 102, controller: "posSet", sourcePath },
           { stateNo: 102, controller: "ctrlSet", sourcePath },
           { stateNo: 102, controller: "stateTypeSet", sourcePath },
+          { stateNo: 102, controller: "varSet", sourcePath },
+          { stateNo: 102, controller: "varAdd", sourcePath },
         ],
       }],
       requiredActorFrameSequences: [{
@@ -1394,7 +1398,7 @@ async function createIkemenZssTraceArtifact(
       requiredActorFrames: [
         { actorId: "p1", source: "imported", stateNo: 100, observedVelXAtLeast: 2, minFrames: 2 },
         { actorId: "p1", source: "imported", stateNo: 101, observedPosXAtLeast: -90, minFrames: 1 },
-        { actorId: "p1", source: "imported", stateNo: 102, observedVelXAtLeast: 6, observedVelXAtMost: 6, observedPosXAtLeast: 12.5, observedPosXAtMost: 12.5, stateType: "A", minFrames: 1 },
+        { actorId: "p1", source: "imported", stateNo: 102, observedVelXAtLeast: 6, observedVelXAtMost: 6, observedPosXAtLeast: 12.5, observedPosXAtMost: 12.5, observedPosYAtLeast: 5, observedVelYAtLeast: 0.5, observedVelYAtMost: 0.5, stateType: "A", minFrames: 1 },
       ],
       requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 102, ctrl: false }],
     }],
