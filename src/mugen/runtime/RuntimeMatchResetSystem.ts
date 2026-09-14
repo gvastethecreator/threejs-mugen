@@ -29,6 +29,7 @@ export type RuntimeMatchResetInput<TActor extends object, TDefinition> = {
   preserveHelpers?: boolean;
   pauseWorld: RuntimeMatchResettableWorld;
   envColorWorld: RuntimeMatchResettableWorld;
+  bgPalFxWorld?: RuntimeMatchResettableWorld;
   effectActorWorld: RuntimeMatchResettableWorld<RuntimeMatchResetEffectOptions>;
   reserveActors?: Array<{
     actor: TActor;
@@ -54,6 +55,7 @@ export class RuntimeMatchResetWorld {
     }
     input.pauseWorld.reset();
     input.envColorWorld.reset();
+    input.bgPalFxWorld?.reset();
     input.effectActorWorld.reset({ preserveHelpers: input.preserveHelpers === true });
 
     replaceObjectContents(input.p1, input.createFighter("p1", input.p1Definition, input.p1Start));

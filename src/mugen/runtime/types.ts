@@ -826,6 +826,7 @@ export type StageSnapshot = {
     };
   };
   envColor?: RuntimeStageFlash;
+  bgPalFx?: RuntimePaletteFxState;
   layers?: MugenStageDefinition["layers"];
   animations?: MugenStageDefinition["animations"];
   bgControllers?: MugenStageDefinition["bgControllers"];

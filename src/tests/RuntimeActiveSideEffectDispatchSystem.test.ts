@@ -37,6 +37,7 @@ describe("RuntimeActiveSideEffectDispatchWorld", () => {
     ["pause", "pause", "pause"],
     ["sound", "sound", "sound"],
     ["envcolor", "envcolor", "envColor"],
+    ["bgpalfx", "bgpalfx", "bgPalFx"],
     ["envshake", "envshake", "envShake"],
     ["contact", "contact", "contact"],
   ] satisfies Array<[StateProgramSideEffect, RuntimeActiveSideEffectRoute, string]>)(
@@ -123,6 +124,7 @@ function routeHooks(calls: string[]): RuntimeActiveSideEffectDispatchHooks<Actor
     pause: push("pause"),
     sound: push("sound"),
     envColor: push("envColor"),
+    bgPalFx: push("bgPalFx"),
     envShake: push("envShake"),
     contact: push("contact"),
   };

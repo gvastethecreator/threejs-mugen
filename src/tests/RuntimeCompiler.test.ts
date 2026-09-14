@@ -1723,6 +1723,42 @@ value = 1
     expect(malformed.operation).toBeUndefined();
   });
 
+  it("compiles static BGPalFX into a match-owned palette operation", () => {
+    const value = compileControllerIr(
+      controller(200, "BGPalFX", [], {
+        time: "12",
+        add: "80,-10,300",
+        mul: "256,160,160",
+        color: "999",
+        invertall: "1",
+        sinadd: "80,0,0,4",
+      }),
+    );
+    const clear = compileControllerIr(controller(200, "BGPalFX", [], { time: "0" }));
+    const dynamic = compileControllerIr(controller(200, "BGPalFX", [], { time: "var(0)", add: "80,0,0" }));
+
+    expect(getControllerSupport("BGPalFX")).toEqual({ level: "partial", runtimeLabel: "stage palette" });
+    expect(value.operation).toEqual({
+      kind: "bgpalfx",
+      time: 12,
+      add: [80, -10, 255],
+      mul: [256, 160, 160],
+      color: 256,
+      invert: true,
+      sinadd: [80, 0, 0],
+      sinaddPeriod: 4,
+    });
+    expect(clear.operation).toEqual({
+      kind: "bgpalfx",
+      time: 0,
+      add: [0, 0, 0],
+      mul: [256, 256, 256],
+      color: 256,
+      invert: false,
+    });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles static RemapPal controllers into typed sprite-effect operations", () => {
     const value = compileControllerIr(controller(200, "RemapPal", [], { source: "-1,1.4", dest: "2,3" }));
     const dynamic = compileControllerIr(controller(200, "RemapPal", [], { source: "Const(data.life),1", dest: "2,3" }));

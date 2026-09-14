@@ -3,6 +3,7 @@ import type { MugenAnimationAction, MugenAnimationFrame } from "../../mugen/mode
 import type { MugenSprite, SffArchive } from "../../mugen/model/MugenSprite";
 import type { MugenStageLayerTrans } from "../../mugen/model/MugenStage";
 import type { StageSnapshot } from "../../mugen/runtime/types";
+import { applyStageLayerPaletteFx } from "./PaletteFxMaterial";
 import { TextureStore } from "./TextureStore";
 import {
   applyThreePresentationOrder,
@@ -76,6 +77,7 @@ export class AxisRenderer {
             index,
             stagePresentationBlendPolicy(renderLayer.trans, renderLayer.opacity),
             createStageSprites(renderLayer, sprite, options.stage, this.textures, index, stageWidth),
+            options.stage.bgPalFx,
           );
           return;
         }
@@ -88,6 +90,7 @@ export class AxisRenderer {
               index,
               stagePresentationBlendPolicy(renderLayer.trans, renderLayer.opacity),
               [assetLayer],
+              options.stage.bgPalFx,
             );
           }
           return;
@@ -123,6 +126,7 @@ export class AxisRenderer {
             layerZ(renderLayer.layerNo, index),
             placement.uv,
           )],
+          options.stage.bgPalFx,
         );
       });
     } else {
@@ -178,11 +182,15 @@ export class AxisRenderer {
     authoredOrder: number,
     blendPolicy: "normal" | "alpha" | "additive" | "subtractive",
     meshes: THREE.Mesh[],
+    paletteFx?: StageSnapshot["bgPalFx"],
   ): void {
     const presentationOrder = resolveStagePresentationOrder(layerNo, authoredOrder, { blendPolicy });
     for (const mesh of meshes) {
       const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       for (const material of materials) {
+        if (material instanceof THREE.MeshBasicMaterial) {
+          applyStageLayerPaletteFx(material, paletteFx);
+        }
         applyThreePresentationOrder(mesh, material, presentationOrder);
       }
       this.group.add(mesh);

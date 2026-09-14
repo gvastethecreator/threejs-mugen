@@ -28,6 +28,7 @@ export type StateProgramSideEffect =
   | "pause"
   | "sound"
   | "envcolor"
+  | "bgpalfx"
   | "envshake"
   | "contact";
 
@@ -101,6 +102,7 @@ const sideEffects: Record<string, StateProgramSideEffect> = {
   stopsnd: "sound",
   sndpan: "sound",
   envcolor: "envcolor",
+  bgpalfx: "bgpalfx",
   envshake: "envshake",
   movehitreset: "contact",
   hitadd: "contact",

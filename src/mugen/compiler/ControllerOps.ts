@@ -1175,6 +1175,17 @@ export type EnvColorControllerOp = {
   under: boolean;
 };
 
+export type BgPalFxControllerOp = {
+  kind: "bgpalfx";
+  time: number;
+  add: [number, number, number];
+  mul: [number, number, number];
+  color: number;
+  invert: boolean;
+  sinadd?: [number, number, number];
+  sinaddPeriod?: number;
+};
+
 export type MovementKinematicControllerOp = {
   kind: "kinematic";
   controllerType: "velset" | "veladd" | "velmul" | "hitvelset" | "posset" | "posadd";
@@ -1539,6 +1550,7 @@ export type ControllerOp =
   | FallEnvShakeControllerOp
   | EnvShakeControllerOp
   | EnvColorControllerOp
+  | BgPalFxControllerOp
   | KinematicControllerOp
   | BoundsControllerOp
   | CollisionControllerOp
@@ -1595,6 +1607,9 @@ export function compileControllerOp(controller: MugenStateController, context: C
   }
   if (type === "palfx") {
     return compilePalFxControllerOp(controller);
+  }
+  if (type === "bgpalfx") {
+    return compileBgPalFxControllerOp(controller);
   }
   if (type === "remappal") {
     return compileRemapPalControllerOp(controller);
@@ -2157,7 +2172,9 @@ function compileSprPriorityControllerOp(controller: MugenStateController): Sprit
   };
 }
 
-function compilePalFxControllerOp(controller: MugenStateController): SpriteEffectControllerOp | undefined {
+function compilePalFxControllerOp(
+  controller: MugenStateController,
+): Extract<SpriteEffectControllerOp, { controllerType: "palfx" }> | undefined {
   const time = firstNumber(findParam(controller, "time"));
   const add = strictNumberTripletOrDefault(findParam(controller, "add"), [0, 0, 0], -255, 255);
   const mul = strictNumberTripletOrDefault(findParam(controller, "mul"), [256, 256, 256], 0, 512);
@@ -2185,6 +2202,22 @@ function compilePalFxControllerOp(controller: MugenStateController): SpriteEffec
     color: clampPaletteFxColor(color ?? 256),
     invert: invert ?? false,
     ...(sinadd && sinadd.period > 1 ? { sinadd: sinadd.amplitude, sinaddPeriod: sinadd.period } : {}),
+  };
+}
+
+function compileBgPalFxControllerOp(controller: MugenStateController): BgPalFxControllerOp | undefined {
+  const palFx = compilePalFxControllerOp(controller);
+  if (!palFx) {
+    return undefined;
+  }
+  return {
+    kind: "bgpalfx",
+    time: palFx.time,
+    add: palFx.add,
+    mul: palFx.mul,
+    color: palFx.color,
+    invert: palFx.invert,
+    ...(palFx.sinadd ? { sinadd: palFx.sinadd, sinaddPeriod: palFx.sinaddPeriod } : {}),
   };
 }
 

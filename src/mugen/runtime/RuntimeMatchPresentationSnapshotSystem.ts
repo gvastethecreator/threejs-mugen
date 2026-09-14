@@ -2,7 +2,7 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import type { RuntimeEffectLifecycleActor, RuntimeEffectSnapshotGroups } from "./EffectLifecycleSystem";
 import type { RuntimeEnvShakeWorldActor } from "./EnvShakeSystem";
 import type { RuntimeEffectSnapshotInput, RuntimeSnapshotActor, RuntimeStageSnapshotInput } from "./RuntimeSnapshotSystem";
-import type { RuntimeStageFlash, StageSnapshot } from "./types";
+import type { RuntimePaletteFxState, RuntimeStageFlash, StageSnapshot } from "./types";
 
 export type RuntimeMatchPresentationSnapshotActor = RuntimeSnapshotActor &
   RuntimeEnvShakeWorldActor &
@@ -21,6 +21,9 @@ export type RuntimeMatchPresentationSnapshotInput<TActor extends RuntimeMatchPre
   envColorWorld: {
     snapshotStageFlash(runtimeTick: number): RuntimeStageFlash | undefined;
   };
+  bgPalFxWorld?: {
+    snapshot(): RuntimePaletteFxState | undefined;
+  };
   effectLifecycleWorld: {
     snapshotGroups(actor: TActor): RuntimeEffectSnapshotGroups;
   };
@@ -36,12 +39,14 @@ export class RuntimeMatchPresentationSnapshotWorld {
     input: RuntimeMatchPresentationSnapshotInput<TActor>,
   ): RuntimeMatchPresentationSnapshotResult {
     const actors = [input.p1, input.p2] as const;
+    const bgPalFx = input.bgPalFxWorld?.snapshot();
     return {
       stage: {
         stage: input.stage,
         actors: [...(input.cameraActors ?? actors)],
         cameraShake: input.envShakeWorld.snapshotCameraShake(input.tick, actors),
         envColor: input.envColorWorld.snapshotStageFlash(input.tick),
+        ...(bgPalFx ? { bgPalFx } : {}),
         ...(input.backgroundTick === undefined ? {} : { backgroundTick: input.backgroundTick }),
       },
       effects: {

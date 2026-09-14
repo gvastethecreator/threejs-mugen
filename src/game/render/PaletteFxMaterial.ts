@@ -44,6 +44,24 @@ export function transformPaletteFxRgba(
   return [r, g, b, a];
 }
 
+/** Tint a stage-layer material with PalFX without changing blend or opacity. */
+export function applyStageLayerPaletteFx(
+  material: THREE.MeshBasicMaterial,
+  paletteFx: RenderPaletteFx | undefined,
+): void {
+  if (!paletteFx || paletteFx.remaining <= 0) {
+    return;
+  }
+  const [red, green, blue] = transformPaletteFxRgba(
+    material.color.r * 255,
+    material.color.g * 255,
+    material.color.b * 255,
+    255,
+    paletteFx,
+  );
+  material.color.setRGB(clamp01(red / 255), clamp01(green / 255), clamp01(blue / 255));
+}
+
 export function applyPaletteFxMaterial(
   material: THREE.MeshBasicMaterial,
   paletteFx: RenderPaletteFx | undefined,

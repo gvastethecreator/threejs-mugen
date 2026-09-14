@@ -11,6 +11,7 @@ import type {
   RuntimeEnvShakeEvent,
   RuntimeHitEffectEvent,
   RuntimeSoundEvent,
+  RuntimePaletteFxState,
   RuntimeStageFlash,
   StageSnapshot,
 } from "./types";
@@ -64,6 +65,7 @@ export type RuntimeStageSnapshotInput = {
   actors: RuntimeSnapshotActor[];
   cameraShake?: StageSnapshot["camera"]["shake"];
   envColor?: RuntimeStageFlash;
+  bgPalFx?: RuntimePaletteFxState;
   backgroundTick?: number;
 };
 
@@ -145,6 +147,7 @@ export class RuntimeSnapshotWorld {
         ...(input.cameraShake ? { shake: input.cameraShake } : {}),
       },
       ...(input.envColor ? { envColor: input.envColor } : {}),
+      ...(input.bgPalFx ? { bgPalFx: input.bgPalFx } : {}),
       layers: input.stage.layers,
       animations: input.stage.animations,
       bgControllers: input.stage.bgControllers,

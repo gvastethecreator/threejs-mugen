@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest";
+import * as THREE from "three";
 import {
   resolveRootCollisionActors,
   resolveRootPresentationActors,
   resolveRoundFadePresentation,
   resolveRoundShutterPresentation,
 } from "../game/render/ThreeMugenRenderer";
+import { AxisRenderer } from "../game/render/AxisRenderer";
+import { transformPaletteFxRgba } from "../game/render/PaletteFxMaterial";
+import type { TextureStore } from "../game/render/TextureStore";
 import {
   clipFightScreenPlacement,
   projectFightScreenSprite,
@@ -282,6 +286,62 @@ describe("FightScreenAnnouncementRenderer asset selection", () => {
       [320, 240],
       [0, 0, 20, 20],
     )).toBeUndefined();
+  });
+});
+
+describe("ThreeMugenRenderer stage BGPalFX", () => {
+  it("tints background and foreground stage layers without floor, axis, or additive blend", () => {
+    const renderer = new AxisRenderer({} as TextureStore);
+    const paletteFx = {
+      remaining: 4,
+      time: 4,
+      add: [-80, 0, 0] as [number, number, number],
+      mul: [256, 256, 256] as [number, number, number],
+      color: 256,
+      invert: false,
+    };
+    const stage = {
+      id: "stage-test",
+      displayName: "Test",
+      floorY: 0,
+      camera: { x: 0, y: 0, zoom: 1 },
+      layers: [
+        { id: "back", color: "#ffffff", y: 0, width: 640, height: 360, deltaX: 1, opacity: 1, layerNo: 0 },
+        { id: "front", color: "#ffffff", y: 0, width: 40, height: 80, deltaX: 1, opacity: 0.5, layerNo: 1 },
+      ],
+      bgPalFx: paletteFx,
+    };
+    const view = { width: 640, height: 360, showAxis: false, showGrid: false, tick: 0, stage };
+
+    renderer.update(view);
+    const layerMeshCount = renderer.getDiagnostics().reduce((count, layer) => count + layer.meshCount, 0);
+    const [expectedR, expectedG, expectedB] = transformPaletteFxRgba(255, 255, 255, 255, paletteFx);
+    const layerMeshes = renderer.group.children.slice(0, layerMeshCount) as THREE.Mesh[];
+    expect(layerMeshes).toHaveLength(2);
+    expect(renderer.getDiagnostics().map((layer) => layer.layerNo)).toEqual([0, 1]);
+    for (const mesh of layerMeshes) {
+      const material = mesh.material as THREE.MeshBasicMaterial;
+      expect(material.color.r).toBeCloseTo(expectedR / 255);
+      expect(material.color.g).toBeCloseTo(expectedG / 255);
+      expect(material.color.b).toBeCloseTo(expectedB / 255);
+      expect(material.blending).toBe(THREE.NormalBlending);
+    }
+    const floor = renderer.group.children[layerMeshCount] as THREE.Mesh;
+    expect((floor.material as THREE.MeshBasicMaterial).color.getHexString()).toBe("6b7280");
+
+    const first = (layerMeshes[0]!.material as THREE.MeshBasicMaterial).color.clone();
+    renderer.update(view);
+    const second = ((renderer.group.children[0] as THREE.Mesh).material as THREE.MeshBasicMaterial).color;
+    expect(second.r).toBeCloseTo(first.r);
+    expect(second.g).toBeCloseTo(first.g);
+    expect(second.b).toBeCloseTo(first.b);
+
+    renderer.update({ ...view, stage: { ...stage, bgPalFx: undefined } });
+    const restored = ((renderer.group.children[0] as THREE.Mesh).material as THREE.MeshBasicMaterial).color;
+    expect(restored.r).toBeCloseTo(1);
+    expect(restored.g).toBeCloseTo(1);
+    expect(restored.b).toBeCloseTo(1);
+    renderer.dispose();
   });
 });
 

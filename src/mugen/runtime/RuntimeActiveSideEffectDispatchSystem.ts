@@ -22,6 +22,7 @@ export type RuntimeActiveSideEffectRoute =
   | "pause"
   | "sound"
   | "envcolor"
+  | "bgpalfx"
   | "envshake"
   | "contact";
 
@@ -55,6 +56,7 @@ export type RuntimeActiveSideEffectDispatchHooks<TActor> = {
   pause?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "pause">) => void;
   sound?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "sound">) => void;
   envColor?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "envcolor">) => void;
+  bgPalFx?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "bgpalfx">) => void;
   envShake?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "envshake">) => void;
   contact?: (input: RuntimeActiveSideEffectDispatchHandlerInput<TActor, "contact">) => void;
 };
@@ -133,6 +135,8 @@ export class RuntimeActiveSideEffectDispatchWorld {
       input.hooks.sound?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "sound">);
     } else if (input.dispatch.effect === "envcolor") {
       input.hooks.envColor?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "envcolor">);
+    } else if (input.dispatch.effect === "bgpalfx") {
+      input.hooks.bgPalFx?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "bgpalfx">);
     } else if (input.dispatch.effect === "envshake") {
       input.hooks.envShake?.(handlerInput as RuntimeActiveSideEffectDispatchHandlerInput<TActor, "envshake">);
     } else {
@@ -165,6 +169,7 @@ export function runtimeActiveSideEffectRoute(effect: StateProgramSideEffect): Ru
   if (effect === "pause") return "pause";
   if (effect === "sound") return "sound";
   if (effect === "envcolor") return "envcolor";
+  if (effect === "bgpalfx") return "bgpalfx";
   if (effect === "envshake") return "envshake";
   return "contact";
 }
@@ -188,6 +193,7 @@ function activeSideEffectHookExists<TActor>(
   if (route === "pause") return Boolean(hooks.pause);
   if (route === "sound") return Boolean(hooks.sound);
   if (route === "envcolor") return Boolean(hooks.envColor);
+  if (route === "bgpalfx") return Boolean(hooks.bgPalFx);
   if (route === "envshake") return Boolean(hooks.envShake);
   return Boolean(hooks.contact);
 }

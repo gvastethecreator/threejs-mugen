@@ -46,6 +46,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   sndpan: partial("audio panning"),
   envshake: partial("camera shake"),
   envcolor: partial("stage color flash"),
+  bgpalfx: partial("stage palette"),
   palfx: partial("material tint"),
   afterimage: partial("sprite trails"),
   afterimagetime: partial("sprite trails"),

@@ -2,7 +2,7 @@ import { parsePalFxSinAdd, type SpriteEffectControllerOp } from "../compiler/Con
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
-import type { CharacterRuntimeState, RuntimeAfterImageSample, RuntimePaletteFxPayload } from "./types";
+import type { CharacterRuntimeState, RuntimeAfterImageSample, RuntimePaletteFxPayload, RuntimePaletteFxState } from "./types";
 
 export type RuntimeAfterImageSampleFactory = () => RuntimeAfterImageSample | undefined;
 
@@ -257,7 +257,7 @@ export function resolveRuntimeSpritePriorityControllerOperation(
 }
 
 export function applyRuntimePaletteFxController(
-  state: CharacterRuntimeState,
+  state: { paletteFx?: RuntimePaletteFxState },
   controller: MugenStateController,
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "palfx" }>,
   resolvePaletteFx?: RuntimePaletteFxResolver,
@@ -284,7 +284,6 @@ export function applyRuntimePaletteFxController(
   state.paletteFx = {
     remaining: time,
     time,
-    add,
     mul:
       resolvedOperation?.mul ??
       clampColorTriplet(mulParam === undefined ? undefined : resolvePaletteFx?.resolveTriplet("mul"), 0, 512) ??
@@ -314,7 +313,6 @@ export function applyRuntimeContactPaletteFx(
   state.paletteFx = {
     remaining: time,
     time,
-    add,
     mul: clampColorTriplet(payload.mul, 0, 512) ?? [255, 255, 255],
     color: clampColorLevel(payload.color),
     invert: payload.invert,
@@ -410,7 +408,7 @@ export function resolveRuntimeRemapPalControllerOperation(
   };
 }
 
-export function tickRuntimePaletteFx(state: CharacterRuntimeState): void {
+export function tickRuntimePaletteFx(state: { paletteFx?: RuntimePaletteFxState }): void {
   if (!state.paletteFx) {
     return;
   }

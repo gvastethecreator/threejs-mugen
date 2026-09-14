@@ -10700,6 +10700,51 @@ value = 1
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.envshake).toBe(1);
   });
 
+  it("stores BGPalFX on the stage, not the fighter, and expires it", () => {
+    const imported = createImportedFixture({ withStateMove: false, withBgPalFx: true });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!);
+
+    const applied = runtime.step({ p1: new Set(["x"]) });
+    expect(applied.actors[0]?.runtime.paletteFx).toBeUndefined();
+    expect(applied.stage.bgPalFx).toMatchObject({
+      remaining: 4,
+      time: 4,
+      add: [80, 0, 0],
+      mul: [256, 256, 256],
+      color: 256,
+      invert: false,
+    });
+    expect(applied.compatibilitySession?.actors[0]?.executedControllers.BGPalFX).toBe(1);
+    expect(applied.compatibilitySession?.actors[0]?.executedOperations.bgpalfx).toBe(1);
+
+    let current = applied;
+    for (let i = 0; i < 3; i += 1) {
+      current = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(current.stage.bgPalFx?.remaining).toBe(1);
+    expect(current.actors[0]?.runtime.paletteFx).toBeUndefined();
+
+    current = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(current.stage.bgPalFx).toBeUndefined();
+
+    runtime.step({ p1: new Set(["x"]) });
+    runtime.reset();
+    expect(runtime.getSnapshot().stage.bgPalFx).toBeUndefined();
+  });
+
+  it("clears an active BGPalFX when time is 0", () => {
+    const imported = createImportedFixture({ withStateMove: false, withBgPalFxClear: true });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!);
+
+    const applied = runtime.step({ p1: new Set(["x"]) });
+    expect(applied.stage.bgPalFx).toMatchObject({ remaining: 8, time: 8, add: [80, 0, 0] });
+    expect(applied.actors[0]?.runtime.paletteFx).toBeUndefined();
+
+    const cleared = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(cleared.stage.bgPalFx).toBeUndefined();
+    expect(cleared.actors[0]?.runtime.paletteFx).toBeUndefined();
+  });
+
   it("executes imported Turn, PlayerPush, LifeSet, and PowerSet controllers", () => {
     const imported = createImportedFixture({ withStateMove: false, withRuntimeFlags: true });
     const closeStage = {
@@ -13899,6 +13944,8 @@ function createImportedFixture(
     attackMultiplier?: number;
     withPaletteUtilities?: boolean;
     withSideEffects?: boolean;
+    withBgPalFx?: boolean;
+    withBgPalFxClear?: boolean;
     passiveRemoveOnGetHitExplod?: boolean;
     withRuntimeFlags?: boolean;
     withPosFreeze?: boolean;
@@ -14364,6 +14411,37 @@ time = 12
 freq = 30
 ampl = -6
 phase = 0
+`
+    : "";
+  const bgPalFx = options.withBgPalFx
+    ? `
+[State 200, Seed Stage Pal]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 4
+
+[State 200, Stage Palette]
+type = BGPalFX
+trigger1 = Time = 0
+time = var(0)
+add = 80,0,0
+mul = 256,256,256
+color = 256
+`
+    : "";
+  const bgPalFxClear = options.withBgPalFxClear
+    ? `
+[State 200, Stage Palette]
+type = BGPalFX
+trigger1 = Time = 0
+time = 8
+add = 80,0,0
+
+[State 200, Clear Stage Palette]
+type = BGPalFX
+trigger1 = Time = 1
+time = 0
 `
     : "";
   const runtimeFlags = options.withRuntimeFlags
@@ -15026,6 +15104,8 @@ ${fallHitDef}
 ${attackMultiplier}
 ${paletteUtilities}
 ${sideEffects}
+${bgPalFx}
+${bgPalFxClear}
 ${runtimeFlags}
 ${posFreeze}
 ${screenBound}

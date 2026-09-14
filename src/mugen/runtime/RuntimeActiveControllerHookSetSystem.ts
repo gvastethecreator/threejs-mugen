@@ -33,6 +33,7 @@ export type RuntimeActiveControllerHookSetInput<TActor extends RuntimeActiveStat
   pause: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["pause"]>;
   sound: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["sound"]>;
   envColor: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["envColor"]>;
+  bgPalFx: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["bgPalFx"]>;
   envShake: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["envShake"]>;
   contact: NonNullable<RuntimeActiveSideEffectDispatchHooks<TActor>["contact"]>;
   runtimeController: NonNullable<RuntimeActiveControllerDispatchHooks<TActor>["runtimeController"]>;
@@ -75,6 +76,7 @@ export class RuntimeActiveControllerHookSetWorld {
         pause: input.pause,
         sound: input.sound,
         envColor: input.envColor,
+        bgPalFx: input.bgPalFx,
         envShake: input.envShake,
         contact: input.contact,
       },
