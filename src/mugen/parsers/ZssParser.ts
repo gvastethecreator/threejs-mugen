@@ -58,6 +58,7 @@ const EXECUTABLE_ZSS_CONTROLLER_TYPES = new Set([
   "statetypeset",
   "varset",
   "varadd",
+  "hitdef",
 ]);
 
 /**

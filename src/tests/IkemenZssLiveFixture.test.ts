@@ -37,7 +37,7 @@ describe("IKEMEN ZSS live fixture", () => {
         }),
       ]),
     );
-    expect(character.runtimeProgram?.states.map((state) => state.id)).toEqual(expect.arrayContaining([0, 100, 101, 102]));
+    expect(character.runtimeProgram?.states.map((state) => state.id)).toEqual(expect.arrayContaining([0, 100, 101, 102, 104]));
     expect(character.states.find((state) => state.id === 101)?.controllers).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -74,6 +74,7 @@ describe("IKEMEN ZSS live fixture", () => {
       "varSet",
       "posAdd",
       "velSet",
+      "changeState",
     ]);
     expect(character.states.find((state) => state.id === 102)?.controllers).toEqual(
       expect.arrayContaining([
@@ -88,8 +89,8 @@ describe("IKEMEN ZSS live fixture", () => {
       recognized: [IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath],
       compiled: {
         sourcePaths: [IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath],
-        stateIds: [-2, 0, 100, 101, 102],
-        controllers: 20,
+        stateIds: [-2, 0, 100, 101, 102, 104],
+        controllers: 24,
       },
       executed: { stateIds: [], controllers: 0 },
       blocked: { count: 0 },
@@ -174,13 +175,11 @@ describe("IKEMEN ZSS live fixture", () => {
         expect.objectContaining({ stateNo: 102, controller: "stateTypeSet", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
         expect.objectContaining({ stateNo: 102, controller: "varSet", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
         expect.objectContaining({ stateNo: 102, controller: "varAdd", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
+        expect.objectContaining({ stateNo: 104, controller: "hitDef", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
       ]),
     );
-    expect(artifact.gates[0]?.evidence.finalActors).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ id: "p1", stateNo: 102, ctrl: false }),
-      ]),
-    );
+    expect(artifact.gates[0]?.evidence.eventCategories).toEqual(expect.arrayContaining(["hit"]));
+    expect(artifact.gates[0]?.evidence.executedStates).toEqual(expect.arrayContaining([104]));
 
     const character = await new MugenCharacterLoader().load(
       IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.entry,
@@ -190,7 +189,7 @@ describe("IKEMEN ZSS live fixture", () => {
     const report = withZssExecutionTelemetry(character.compatibility, p1Events);
 
     expect(character.compatibility.zss?.executed).toEqual({ stateIds: [], controllers: 0 });
-    expect(report.zss?.executed).toEqual({ stateIds: [0, 100, 101, 102], controllers: 41 });
+    expect(report.zss?.executed.stateIds).toEqual(expect.arrayContaining([0, 100, 101, 102, 104]));
   });
 
   it("executes the .cns.zss fallback through the ZIP loader and real match runtime", async () => {

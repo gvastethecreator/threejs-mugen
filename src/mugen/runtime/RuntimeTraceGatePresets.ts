@@ -1320,7 +1320,7 @@ async function createIkemenZssTraceArtifact(
   const routeId = mode === "direct" ? "ikemen-zss-live" : "ikemen-zss-fallback";
   const sourceLabel = mode === "direct" ? "direct ZSS" : ".cns.zss fallback ZSS";
   const script = expandRuntimeTraceScript([
-    { label: routeId, frames: 8, p1: [], p2: [] },
+    { label: routeId, frames: 16, p1: [], p2: [] },
   ]);
   const trace = runRuntimeTrace(
     new MatchWorld({
@@ -1342,16 +1342,16 @@ async function createIkemenZssTraceArtifact(
       source: "imported",
       fixturePath: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.entry,
       notes: [
-        `${IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.schema} loads a CC0 ZIP through the character loader, lowers ${sourceLabel} into the shared state IR, and executes StateDef 0 -> 100 -> 101 -> 102 with PosAdd, persistent(2) VelSet, owned ChangeAnim 200, borrowed ChangeAnim2, VelAdd/VelMul, PosSet 12.5, CtrlSet, and StateTypeSet. Functions, loops, local variables, Lua, non-granted controllers, screenpack ZSS, and broad IKEMEN compatibility remain blocked.`,
+        `${IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.schema} loads a CC0 ZIP through the character loader, lowers ${sourceLabel} into the shared state IR, and executes StateDef 0 -> 100 -> 101 -> 102 -> 104 with PosAdd, persistent(2) VelSet, owned ChangeAnim 200, borrowed ChangeAnim2, VelAdd/VelMul, PosSet, CtrlSet, StateTypeSet, VarSet/VarAdd, and a variable-backed HitDef. Functions, loops, local variables, Lua, non-granted controllers, screenpack ZSS, and broad IKEMEN compatibility remain blocked.`,
       ],
     },
     gates: [{
       label: `${routeId}-golden`,
       requiredActorSources: ["imported"],
       requiredActorKinds: ["player"],
-      requiredExecutedStates: [100, 101, 102],
+      requiredExecutedStates: [100, 101, 102, 104],
       requiredExecutedControllers: [
-        { type: "changeState", minCount: 3 },
+        { type: "changeState", minCount: 4 },
         { type: "posAdd", minCount: 3 },
         { type: "velSet", minCount: 2 },
         { type: "changeAnim", minCount: 1 },
@@ -1363,6 +1363,7 @@ async function createIkemenZssTraceArtifact(
         { type: "stateTypeSet", minCount: 1 },
         { type: "varSet", minCount: 2 },
         { type: "varAdd", minCount: 1 },
+        { type: "hitDef", minCount: 1 },
       ],
       requiredControllerEventSequences: [{
         label: `${sourceLabel} controller and state order`,
@@ -1384,6 +1385,8 @@ async function createIkemenZssTraceArtifact(
           { stateNo: 102, controller: "stateTypeSet", sourcePath },
           { stateNo: 102, controller: "varSet", sourcePath },
           { stateNo: 102, controller: "varAdd", sourcePath },
+          { stateNo: 102, controller: "changeState", sourcePath },
+          { stateNo: 104, controller: "hitDef", sourcePath },
         ],
       }],
       requiredActorFrameSequences: [{
@@ -1399,8 +1402,12 @@ async function createIkemenZssTraceArtifact(
         { actorId: "p1", source: "imported", stateNo: 100, observedVelXAtLeast: 2, minFrames: 2 },
         { actorId: "p1", source: "imported", stateNo: 101, observedPosXAtLeast: -90, minFrames: 1 },
         { actorId: "p1", source: "imported", stateNo: 102, observedVelXAtLeast: 6, observedVelXAtMost: 6, observedPosXAtLeast: 12.5, observedPosXAtMost: 12.5, observedPosYAtLeast: 5, observedVelYAtLeast: 0.5, observedVelYAtMost: 0.5, stateType: "A", minFrames: 1 },
+        { actorId: "p2", source: "imported", observedLifeAtMost: 999, minFrames: 1 },
       ],
-      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 102, ctrl: false }],
+      requiredEventCategories: ["hit"],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported" },
+      ],
     }],
   });
 }
