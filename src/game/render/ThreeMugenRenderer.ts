@@ -125,9 +125,10 @@ export class ThreeMugenRenderer implements MugenRenderer {
       stage: snapshot.stage,
       tick: snapshot.tick,
     });
-    this.characters.group.position.y = floorY;
-    this.boxes.group.position.y = floorY;
-    this.hitSparks.group.position.y = floorY;
+    applyLinkedStageFloorPresentation(
+      { characters: this.characters.group, boxes: this.boxes.group, hitSparks: this.hitSparks.group },
+      floorY,
+    );
     const effects = snapshot.effects ?? [];
     const presentedRoots = resolveRootPresentationActors(snapshot);
     await this.characters.update([...presentedRoots, ...effects], snapshot.stage.allPalFx);
@@ -308,6 +309,15 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.renderer.dispose();
     this.renderer.domElement.remove();
   }
+}
+
+export function applyLinkedStageFloorPresentation(
+  groups: { characters: THREE.Object3D; boxes: THREE.Object3D; hitSparks: THREE.Object3D },
+  floorY: number,
+): void {
+  groups.characters.position.y = floorY;
+  groups.boxes.position.y = floorY;
+  groups.hitSparks.position.y = floorY;
 }
 
 export function resolveRoundFadePresentation(

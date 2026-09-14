@@ -1,14 +1,23 @@
 import { describe, expect, it } from "vitest";
 import * as THREE from "three";
 import {
+  applyLinkedStageFloorPresentation,
   resolveRootCollisionActors,
   resolveRootPresentationActors,
   resolveRoundFadePresentation,
   resolveRoundShutterPresentation,
 } from "../game/render/ThreeMugenRenderer";
 import { AxisRenderer } from "../game/render/AxisRenderer";
+import { CollisionBoxRenderer } from "../game/render/CollisionBoxRenderer";
 import { composePaletteFxRgba, transformPaletteFxRgba } from "../game/render/PaletteFxMaterial";
+import { projectCollisionBox } from "../game/render/projection";
+import { resolveStageLayerForTick, resolveStageZOffsetLink } from "../game/render/stageProjection";
 import type { TextureStore } from "../game/render/TextureStore";
+import { createStageCompatibilityReport } from "../mugen/compatibility/StageCompatibilityReport";
+import { MugenStageLoader } from "../mugen/loader/MugenStageLoader";
+import { VirtualFileSystem } from "../mugen/loader/VirtualFileSystem";
+import type { MugenSprite } from "../mugen/model/MugenSprite";
+import { runtimeStageGameSpace } from "../mugen/runtime/RuntimeStageGameSpaceSystem";
 import {
   clipFightScreenPlacement,
   projectFightScreenSprite,
@@ -23,7 +32,8 @@ import { projectRoundFadeSprite, resolveRoundFadeAnimationFrame } from "../game/
 import { projectRoundShutterBars } from "../game/render/RoundShutterRenderer";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenFightScreenDisplayDefinitions } from "../mugen/model/MugenSystemAssets";
-import type { ActorSnapshot, MugenSnapshot } from "../mugen/runtime/types";
+import type { MugenStageDefinition } from "../mugen/model/MugenStage";
+import type { ActorSnapshot, MugenSnapshot, StageSnapshot } from "../mugen/runtime/types";
 
 describe("resolveRootPresentationActors", () => {
   it("selects and orders promoted reserve roots without widening snapshot actors", () => {
@@ -479,6 +489,105 @@ describe("ThreeMugenRenderer stage BGPalFX", () => {
     expect(wall.scale.y).toBe(40);
     renderer.dispose();
   });
+
+  it("renders a nine-layer loaded stage with sinusoid, trapezoid and linked floor together", async () => {
+    const vfs = new VirtualFileSystem();
+    vfs.addFile("stages/composition-nine/stage.def", new TextEncoder().encode(NINE_LAYER_COMPOSITION_DEF));
+    vfs.addFile("stages/composition-nine/stage.sff", new Uint8Array([0]));
+    const [loaded] = await new MugenStageLoader().loadAll("composition-nine.zip", vfs);
+    expect(loaded?.stage.layers).toHaveLength(9);
+    expect(loaded?.stage.zOffset).toBe(180);
+    expect(loaded?.stage.zOffsetLink).toBe(4);
+    expect(loaded?.stage.playerStart.p1.y).toBe(0);
+    expect(loaded?.stage.layers.map((layer) => layer.sectionName)).toEqual([
+      "BG Sky",
+      "BG Far",
+      "BG Mid",
+      "BG Wave",
+      "BG Floor",
+      "BG Extra 5",
+      "BG Extra 6",
+      "BG Extra 7",
+      "BG Front",
+    ]);
+    expect(loaded?.stage.layers[8]).toMatchObject({ layerNo: 1, spriteGroup: 8, spriteIndex: 0 });
+    expect(loaded?.stage.layers[3]?.sinusoid).toEqual({ x: { amplitude: 10, period: 8, phase: 0 } });
+    expect(loaded?.stage.layers[4]).toMatchObject({
+      type: "parallax",
+      controlId: 4,
+      parallaxWidth: { top: 200, bottom: 80 },
+      sinusoid: { y: { amplitude: 10, period: 8, phase: 0 } },
+    });
+    expect(runtimeStageGameSpace(loaded!.stage)).toMatchObject({ width: 320, height: 240 });
+
+    const report = createStageCompatibilityReport({
+      ...loaded!,
+      spriteArchive: { version: "v1", sprites: compositionSprites(), warnings: [] },
+    });
+    expect(report.backgrounds.total).toBe(9);
+    expect(report.zOffsetLink).toEqual({ controlId: 4, resolved: true });
+    expect(report.backgrounds.layers[4]).toMatchObject({
+      section: "BG Floor",
+      status: "rendered",
+      projected: true,
+      parallaxWidth: { top: 200, bottom: 80 },
+    });
+
+    const renderer = new AxisRenderer({ getTexture: () => new THREE.Texture() } as unknown as TextureStore);
+    renderer.setStageSpriteArchives([
+      { stageId: loaded!.stage.id, archive: { version: "v1", sprites: compositionSprites(), warnings: [] } },
+    ]);
+    const namedTicks = [0, 2, 8] as const;
+    const captures = namedTicks.map((tick) => captureCompositionTick(renderer, loaded!.stage, tick, 0));
+    const rest = captures[0]!;
+    const quarter = captures[1]!;
+    const period = captures[2]!;
+    const moved = captureCompositionTick(renderer, loaded!.stage, 0, 80);
+
+    expect(rest.diagnostics).toHaveLength(9);
+    expect(rest.diagnostics.map((layer) => layer.authoredOrder)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+    expect(rest.diagnostics[8]).toMatchObject({ id: loaded!.stage.layers[8]!.id, layerNo: 1, authoredOrder: 8 });
+    expect(rest.waveX).toBeCloseTo(quarter.waveX - 10);
+    expect(quarter.waveX).not.toBeCloseTo(rest.waveX);
+    expect(period.waveX).toBeCloseTo(rest.waveX);
+    expect(period.floorY).toBeCloseTo(rest.floorY);
+    expect(quarter.floorY).toBeCloseTo(rest.floorY - 10);
+    expect(rest.trapezoid).toEqual({ top: 200, bottom: 80, uv: [[0, 1], [1, 1], [0, 0], [1, 0]] });
+    expect(quarter.trapezoid).toEqual(rest.trapezoid);
+    expect(moved.farX).not.toBeCloseTo(rest.farX);
+    expect(moved.trapezoid).toEqual(rest.trapezoid);
+    expect(resolveStageLayerForTick(loaded!.stage.layers[3]!, { ...loaded!.stage, camera: { x: 0, y: 0, zoom: 1 } }, 0)?.startX).toBeCloseTo(
+      resolveStageLayerForTick(loaded!.stage.layers[3]!, { ...loaded!.stage, camera: { x: 0, y: 0, zoom: 1 } }, 8)?.startX ?? Number.NaN,
+    );
+
+    const fighter = compositionFighter();
+    const characters = new THREE.Group();
+    const boxes = new CollisionBoxRenderer();
+    const hitSparks = new THREE.Group();
+    const fighterMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1));
+    fighterMesh.position.set(fighter.runtime.pos.x, fighter.runtime.pos.y, 0);
+    characters.add(fighterMesh);
+    boxes.update([fighter], { showClsn1: false, showClsn2: true });
+    const logicalBox = projectCollisionBox(fighter, fighter.clsn2[0]!);
+    const boxMesh = boxes.group.children[0] as THREE.Mesh;
+    applyLinkedStageFloorPresentation({ characters, boxes: boxes.group, hitSparks }, quarter.floorY);
+
+    expect(loaded!.stage.zOffset).toBe(180);
+    expect(loaded!.stage.playerStart.p1.y).toBe(0);
+    expect(fighter.runtime.pos.y).toBe(0);
+    expect(fighterMesh.position.y).toBe(0);
+    expect(boxMesh.position.y).toBeCloseTo(logicalBox.y);
+    expect(characters.position.y).toBeCloseTo(quarter.floorY);
+    expect(boxes.group.position.y).toBeCloseTo(quarter.floorY);
+    expect(hitSparks.position.y).toBeCloseTo(quarter.floorY);
+    expect(quarter.floorMeshY).toBeCloseTo(quarter.floorY);
+    expect(characters.position.y).toBeCloseTo(quarter.floorMeshY);
+    applyLinkedStageFloorPresentation({ characters, boxes: boxes.group, hitSparks }, rest.floorY);
+    expect(fighter.runtime.pos.y).toBe(0);
+    expect(characters.position.y).toBeCloseTo(rest.floorY);
+    boxes.dispose();
+    renderer.dispose();
+  });
 });
 
 function actor(id: string): ActorSnapshot {
@@ -516,4 +625,133 @@ function diagnostic(drawRootIds: string[], collisionRootIds = drawRootIds): NonN
     cameraRootIds: [],
     collisionRootIds,
   };
+}
+
+const NINE_LAYER_COMPOSITION_DEF = `[Info]
+name = Composition Nine
+displayname = Composition Nine
+[Camera]
+startx = 0
+starty = 0
+[PlayerInfo]
+p1startx = -40
+p1starty = 0
+p2startx = 40
+p2starty = 0
+[StageInfo]
+zoffset = 180
+zoffsetlink = 4
+localcoord = 320,240
+[BGDef]
+spr = stage.sff
+[BG Sky]
+type = normal
+spriteno = 0,0
+start = 0,0
+delta = 0.2,1
+[BG Far]
+type = normal
+spriteno = 1,0
+start = 0,8
+delta = 0.4,1
+[BG Mid]
+type = normal
+spriteno = 2,0
+start = 0,16
+delta = 0.6,1
+[BG Wave]
+type = normal
+spriteno = 3,0
+start = 20,0
+delta = 1,1
+sin.x = 10,8,0
+[BG Floor]
+type = parallax
+id = 4
+spriteno = 4,0
+start = 0,12
+delta = 1,1
+width = 200,80
+sin.y = 10,8,0
+[BG Extra 5]
+type = normal
+spriteno = 5,0
+start = 0,24
+delta = 1,1
+[BG Extra 6]
+type = normal
+spriteno = 6,0
+start = 0,32
+delta = 1,1
+[BG Extra 7]
+type = normal
+spriteno = 7,0
+start = 0,40
+delta = 1,1
+[BG Front]
+type = normal
+layerno = 1
+spriteno = 8,0
+start = 0,0
+delta = 1,1
+`;
+
+function compositionSprites(): MugenSprite[] {
+  return Array.from({ length: 9 }, (_, index) => ({
+    group: index,
+    index: 0,
+    width: 100,
+    height: 40,
+    axisX: 50,
+    axisY: 20,
+  }));
+}
+
+function compositionSnapshot(stage: MugenStageDefinition, cameraX: number): StageSnapshot {
+  return {
+    id: stage.id,
+    displayName: stage.displayName,
+    floorY: stage.floorY,
+    zOffset: stage.zOffset,
+    zOffsetLink: stage.zOffsetLink,
+    bounds: stage.bounds,
+    camera: { x: cameraX, y: 0, zoom: 1 },
+    layers: stage.layers,
+    animations: stage.animations,
+    bgControllers: stage.bgControllers,
+  };
+}
+
+function captureCompositionTick(renderer: AxisRenderer, stage: MugenStageDefinition, tick: number, cameraX: number) {
+  const snapshot = compositionSnapshot(stage, cameraX);
+  renderer.update({ width: 640, height: 360, showAxis: false, showGrid: false, tick, stage: snapshot });
+  const diagnostics = renderer.getDiagnostics();
+  const layerMeshCount = diagnostics.reduce((count, layer) => count + layer.meshCount, 0);
+  const far = renderer.group.children[1] as THREE.Mesh;
+  const wave = renderer.group.children[3] as THREE.Mesh;
+  const trapezoidMesh = renderer.group.children[4] as THREE.Mesh;
+  const floor = renderer.group.children[layerMeshCount] as THREE.Mesh;
+  const position = trapezoidMesh.geometry.getAttribute("position") as THREE.BufferAttribute;
+  const uv = trapezoidMesh.geometry.getAttribute("uv") as THREE.BufferAttribute;
+  return {
+    diagnostics,
+    farX: far.position.x,
+    waveX: wave.position.x,
+    floorY: resolveStageZOffsetLink(snapshot, tick).floorY,
+    floorMeshY: floor.position.y,
+    trapezoid: {
+      top: position.getX(1) - position.getX(0),
+      bottom: position.getX(3) - position.getX(2),
+      uv: Array.from({ length: uv.count }, (_, index) => [uv.getX(index), uv.getY(index)]),
+    },
+  };
+}
+
+function compositionFighter(): ActorSnapshot {
+  return {
+    id: "p1",
+    runtime: { pos: { x: -40, y: 0 }, facing: 1 },
+    clsn1: [],
+    clsn2: [{ x1: -10, y1: 0, x2: 10, y2: 60 }],
+  } as ActorSnapshot;
 }
