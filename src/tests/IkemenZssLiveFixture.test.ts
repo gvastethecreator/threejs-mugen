@@ -315,11 +315,39 @@ ${extraLayers}
       runtimeProfile: "ikemen-go",
       effectActorWorld,
     });
-    const first = runtime.step({ p1: new Set(["x"]), p2: new Set() });
-    const second = runtime.step({ p1: new Set(["x"]), p2: new Set() });
-    expect(first.stage.layers).toHaveLength(9);
-    expect(second.stage.layers).toHaveLength(9);
-    expect(second.tick).toBeGreaterThan(first.tick);
+    const observed = {
+      helpers: 0,
+      explods: 0,
+      helperKind: false,
+    };
+    let live = runtime.getSnapshot();
+    for (let tick = 0; tick < 16; tick += 1) {
+      live = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+      observed.helpers = Math.max(observed.helpers, effectActorWorld.helpers("p1").length);
+      observed.explods = Math.max(observed.explods, effectActorWorld.countExplods("p1"));
+      if ((live.effects ?? []).some((effect) => effect.actorKind === "helper")) {
+        observed.helperKind = true;
+      }
+    }
+    const p1Session = live.compatibilitySession?.actors.find((actor) => actor.actorId === "p1");
+    const p1Store = runtime.getEffectActorStores().find((store) => store.ownerId === "p1");
+    const p2 = live.actors.find((actor) => actor.id === "p2");
+    expect(live.stage.layers).toHaveLength(9);
+    expect(p1Session?.executedStates).toEqual(expect.arrayContaining([100, 104, 105]));
+    expect(p1Session?.executedControllers).toMatchObject({
+      helper: expect.any(Number),
+      projectile: expect.any(Number),
+      explod: expect.any(Number),
+      hitDef: expect.any(Number),
+    });
+    expect(observed.helpers).toBeGreaterThan(0);
+    expect(observed.explods).toBeGreaterThan(0);
+    expect(observed.helperKind).toBe(true);
+    expect(p1Store?.nextSerials.projectile).toBeGreaterThan(0);
+    expect(runtime.getHitDefContactMemory().actors.find((actor) => actor.actorId === "p1")?.committed).toContain("p2");
+    expect(p2?.runtime.life).toBeLessThan(1000);
+    expect(live.logs).toEqual(expect.arrayContaining([expect.stringMatching(/projectile hit/i)]));
+    expect(live.round?.state).toBe("fight");
     expect(report.backgrounds.total).toBe(9);
     expect(report.backgrounds.layers.find((layer) => layer.type === "parallax")).toMatchObject({
       parallaxWidth: { top: 200, bottom: 80 },
@@ -334,6 +362,7 @@ ${extraLayers}
     expect(reset.effects ?? []).toEqual([]);
     expect(effectActorWorld.helpers("p1")).toEqual([]);
     expect(effectActorWorld.projectiles("p1")).toEqual([]);
+    expect(effectActorWorld.countExplods("p1")).toBe(0);
     expect(reset.stage.bgPalFx).toBeUndefined();
     expect(reset.actors[0]?.runtime.pos.y).toBe(0);
   });
