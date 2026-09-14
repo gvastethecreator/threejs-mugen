@@ -863,6 +863,7 @@ export class PlayableMatchRuntime {
     this.attachHelperPauseHandlers();
     this.attachHelperEnvShakeHandlers();
     this.attachHelperEnvColorHandlers();
+    this.attachHelperPalFxHandlers();
   }
 
   private runtimeHurtBoxes(fighter: FighterMatchState): RuntimeCollisionBox[] {
@@ -952,6 +953,19 @@ export class PlayableMatchRuntime {
         event.sourceActorId = helper.serialId;
         event.sourceRootId = helper.rootId;
         event.sourceParentId = helper.parentId;
+        return true;
+      };
+    }
+  }
+
+  private attachHelperPalFxHandlers(): void {
+    for (const owner of this.matchRoster().actors) {
+      owner.onHelperBgPalFxController = (_helper, controller, operation) => {
+        this.bgPalFxWorld.apply(controller.source, operation);
+        return true;
+      };
+      owner.onHelperAllPalFxController = (_helper, controller, operation) => {
+        this.allPalFxWorld.apply(controller.source, operation);
         return true;
       };
     }

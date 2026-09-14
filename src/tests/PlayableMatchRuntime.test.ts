@@ -11084,6 +11084,74 @@ value = 1
     expect(runtime.getSnapshot().actors[0]?.runtime.paletteFx).toBeUndefined();
   });
 
+  it("routes Helper BGPalFX and AllPalFX through the match-owned clocks", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(
+      createImportedFixture({
+        id: "helper-global-palfx",
+        withStateMove: false,
+        withHelper: true,
+        withPause: true,
+        helperRemoveTime: 40,
+        helperStateControllers: `
+[State 1200, Stage Palette]
+type = BGPalFX
+trigger1 = Time = 0
+time = 8
+add = 80,0,0
+mul = 256,256,256
+color = 256
+sinadd = 16,0,0,4
+
+[State 1200, Replace Stage Palette]
+type = BGPalFX
+trigger1 = Time = 0
+time = 6
+add = 0,90,0
+mul = 256,256,256
+color = 256
+
+[State 1200, Global Palette]
+type = AllPalFX
+trigger1 = Time = 0
+time = 5
+add = 0,0,70
+mul = 256,256,256
+color = 256
+`,
+      }),
+      demoFighters[1]!,
+      trainingStage,
+      { effectActorWorld },
+    );
+
+    const applied = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(applied.actors[0]?.runtime.paletteFx).toBeUndefined();
+    expect(applied.actors[1]?.runtime.paletteFx).toBeUndefined();
+    expect(applied.stage.bgPalFx).toMatchObject({
+      remaining: 6,
+      time: 6,
+      add: [0, 90, 0],
+    });
+    expect(applied.stage.allPalFx).toMatchObject({ remaining: 5, time: 5, add: [0, 0, 70] });
+    expect(effectActorWorld.helpers("p1")[0]).toBeDefined();
+    expect(applied.matchPause?.type).toBe("Pause");
+
+    const pausedRemaining: number[] = [];
+    let current = applied;
+    while (current.matchPause) {
+      pausedRemaining.push(current.stage.bgPalFx?.remaining ?? 0);
+      current = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(pausedRemaining.length).toBeGreaterThan(1);
+    expect(pausedRemaining[0]! - pausedRemaining.at(-1)!).toBe(pausedRemaining.length - 1);
+    expect(current.actors[0]?.runtime.paletteFx).toBeUndefined();
+
+    runtime.reset();
+    expect(runtime.getSnapshot().stage.bgPalFx).toBeUndefined();
+    expect(runtime.getSnapshot().stage.allPalFx).toBeUndefined();
+  });
+
   it("executes imported Turn, PlayerPush, LifeSet, and PowerSet controllers", () => {
     const imported = createImportedFixture({ withStateMove: false, withRuntimeFlags: true });
     const closeStage = {

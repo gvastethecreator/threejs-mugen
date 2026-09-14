@@ -1,4 +1,6 @@
 import type {
+  AllPalFxControllerOp,
+  BgPalFxControllerOp,
   ControllerOp,
   EnvColorControllerOp,
   EnvShakeControllerOp,
@@ -33,7 +35,11 @@ import {
   RuntimeHitDefControllerDispatchWorld,
   runtimeHitDefSparkNumericExpression,
 } from "./HitDefSystem";
-import type { RuntimePaletteFxResolver } from "./SpriteEffectSystem";
+import {
+  resolveRuntimePaletteFxControllerOperation,
+  type RuntimePaletteFxResolver,
+} from "./SpriteEffectSystem";
+import { toAllPalFxControllerOp, toBgPalFxControllerOp } from "./RuntimeBgPalFxSystem";
 import { tickRuntimeUnhittableTime } from "./RuntimeUnhittableTimeSystem";
 import type { RuntimeCompatibilityProfile } from "./RuntimeCompatibilityProfile";
 import { runtimeActorTeamSide } from "./RuntimeExpressionContextSystem";
@@ -396,6 +402,16 @@ export type RuntimeHelperAdvanceOptions = {
     controller: ControllerIr,
     operation: EnvColorControllerOp,
   ) => boolean;
+  onBgPalFxController?: (
+    helper: RuntimeHelper,
+    controller: ControllerIr,
+    operation: BgPalFxControllerOp,
+  ) => boolean;
+  onAllPalFxController?: (
+    helper: RuntimeHelper,
+    controller: ControllerIr,
+    operation: AllPalFxControllerOp,
+  ) => boolean;
   onStateExecution?: (helper: RuntimeHelper, stateNo: number) => void;
   scaleTargetDamage?: (runtime: CharacterRuntimeState, damage: number) => number;
   onTeamStandby?: (helper: RuntimeHelper, operation: TeamStandbyControllerOp) => TeamStandbyControllerOp | undefined;
@@ -735,6 +751,8 @@ export function runRuntimeHelperStateControllers(
     | "onPauseController"
     | "onEnvShakeController"
     | "onEnvColorController"
+    | "onBgPalFxController"
+    | "onAllPalFxController"
     | "onStateExecution"
     | "scaleTargetDamage"
     | "onTeamStandby"
@@ -1087,6 +1105,26 @@ export function runRuntimeHelperStateControllers(
             helperEnvColorControllerParamResolvers(helper, controller, options),
           );
       if (operation && options.onEnvColorController?.(helper, controller, operation)) {
+        options.onController?.(helper, controller);
+        options.onOperation?.(helper, operation);
+        continue;
+      }
+      options.onUnsupportedController?.(helper, controller);
+      continue;
+    }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "bgpalfx") {
+      const operation = resolveHelperBgPalFxOperation(helper, controller, options);
+      if (operation && options.onBgPalFxController?.(helper, controller, operation)) {
+        options.onController?.(helper, controller);
+        options.onOperation?.(helper, operation);
+        continue;
+      }
+      options.onUnsupportedController?.(helper, controller);
+      continue;
+    }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "allpalfx") {
+      const operation = resolveHelperAllPalFxOperation(helper, controller, options);
+      if (operation && options.onAllPalFxController?.(helper, controller, operation)) {
         options.onController?.(helper, controller);
         options.onOperation?.(helper, operation);
         continue;
@@ -2743,6 +2781,66 @@ export function resolveRuntimeHelperHitDefPaletteFx(
         : [resolved[0]!, resolved[1]!, resolved[2]!];
     },
   };
+}
+
+function resolveHelperBgPalFxOperation(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): BgPalFxControllerOp | undefined {
+  if (controller.operation?.kind === "bgpalfx") {
+    return controller.operation;
+  }
+  return toBgPalFxControllerOp(
+    resolveRuntimePaletteFxControllerOperation(controller.source, helperPaletteFxResolver(helper, controller, options)),
+  );
+}
+
+function resolveHelperAllPalFxOperation(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): AllPalFxControllerOp | undefined {
+  if (controller.operation?.kind === "allpalfx") {
+    return controller.operation;
+  }
+  return toAllPalFxControllerOp(
+    resolveRuntimePaletteFxControllerOperation(controller.source, helperPaletteFxResolver(helper, controller, options)),
+  );
+}
+
+function helperPaletteFxResolver(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Parameters<typeof resolveHelperNumber>[3],
+): RuntimePaletteFxResolver {
+  return {
+    resolveNumber: (key) => resolveHelperNumber(
+      helper,
+      undefined,
+      findControllerParam(controller.source, key),
+      options,
+    ),
+    resolveTriplet: (key) => resolveHelperPaletteFxTripletParam(helper, controller, key, options),
+  };
+}
+
+function resolveHelperPaletteFxTripletParam(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "add" | "mul",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): [number, number, number] | undefined {
+  const raw = findControllerParam(controller.source, key);
+  if (!raw) return undefined;
+  const splitIndices = topLevelCommaIndices(raw);
+  for (const expressions of helperExpressionPartitions(raw, splitIndices, 3)) {
+    const values = expressions.map((expression) => resolveHelperNumber(helper, undefined, expression, options));
+    if (values.every((value): value is number => value !== undefined)) {
+      return [values[0]!, values[1]!, values[2]!];
+    }
+  }
+  return undefined;
 }
 
 function helperEnvColorControllerParamResolvers(

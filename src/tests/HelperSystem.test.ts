@@ -271,6 +271,31 @@ describe("HelperSystem", () => {
     expect(operations).toEqual([{ color: [32, 128, 240], time: -1, under: true }]);
   });
 
+  it("projects Helper BGPalFX and AllPalFX into match-owned callbacks", () => {
+    const bgOps: Array<{ time: number; add: [number, number, number] }> = [];
+    const allOps: Array<{ time: number; add: [number, number, number] }> = [];
+    const active = helper({
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "BGPalFX", ["1"], { time: "4", add: "80,0,0", mul: "256,256,256", color: "256" }),
+          compiledControllerIr(6000, "AllPalFX", ["1"], { time: "3", add: "0,40,0", mul: "256,256,256", color: "256" }),
+        ])],
+      },
+    });
+    advanceRuntimeHelpers([active], stage, {
+      onBgPalFxController: (_helper, _controller, operation) => {
+        bgOps.push({ time: operation.time, add: operation.add });
+        return true;
+      },
+      onAllPalFxController: (_helper, _controller, operation) => {
+        allOps.push({ time: operation.time, add: operation.add });
+        return true;
+      },
+    });
+    expect(bgOps).toEqual([{ time: 4, add: [80, 0, 0] }]);
+    expect(allOps).toEqual([{ time: 3, add: [0, 40, 0] }]);
+  });
+
   it("writes ParentVarSet and ParentVarAdd to the direct parent helper, not the root", () => {
     const root = helperRuntimeState(helper({ vars: [10, 0], fvars: [0, 0] }));
     const parent = helper({

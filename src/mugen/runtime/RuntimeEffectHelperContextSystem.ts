@@ -15,6 +15,8 @@ export type RuntimeEffectHelperContextActor = {
   onHelperPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
   onHelperEnvShakeController?: RuntimeHelperAdvanceOptions["onEnvShakeController"];
   onHelperEnvColorController?: RuntimeHelperAdvanceOptions["onEnvColorController"];
+  onHelperBgPalFxController?: RuntimeHelperAdvanceOptions["onBgPalFxController"];
+  onHelperAllPalFxController?: RuntimeHelperAdvanceOptions["onAllPalFxController"];
   onHelperStateExecution?: RuntimeHelperAdvanceOptions["onStateExecution"];
   onHelperTeamStandby?: RuntimeHelperAdvanceOptions["onTeamStandby"];
   scaleHelperTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
@@ -98,6 +100,8 @@ export type RuntimeEffectHelperContext = {
   onPauseController?: RuntimeHelperAdvanceOptions["onPauseController"];
   onEnvShakeController?: RuntimeHelperAdvanceOptions["onEnvShakeController"];
   onEnvColorController?: RuntimeHelperAdvanceOptions["onEnvColorController"];
+  onBgPalFxController?: RuntimeHelperAdvanceOptions["onBgPalFxController"];
+  onAllPalFxController?: RuntimeHelperAdvanceOptions["onAllPalFxController"];
   onStateExecution?: RuntimeHelperAdvanceOptions["onStateExecution"];
   onTeamStandby?: RuntimeHelperAdvanceOptions["onTeamStandby"];
   scaleTargetDamage?: RuntimeHelperAdvanceOptions["scaleTargetDamage"];
@@ -152,6 +156,8 @@ export class RuntimeEffectHelperContextWorld {
       ...(actor.onHelperPauseController ? { onPauseController: actor.onHelperPauseController } : {}),
       ...(actor.onHelperEnvShakeController ? { onEnvShakeController: actor.onHelperEnvShakeController } : {}),
       ...(actor.onHelperEnvColorController ? { onEnvColorController: actor.onHelperEnvColorController } : {}),
+      ...(actor.onHelperBgPalFxController ? { onBgPalFxController: actor.onHelperBgPalFxController } : {}),
+      ...(actor.onHelperAllPalFxController ? { onAllPalFxController: actor.onHelperAllPalFxController } : {}),
       ...(actor.onHelperStateExecution ? { onStateExecution: actor.onHelperStateExecution } : {}),
       ...(actor.onHelperTeamStandby ? { onTeamStandby: actor.onHelperTeamStandby } : {}),
       ...(actor.scaleHelperTargetDamage ? { scaleTargetDamage: actor.scaleHelperTargetDamage } : {}),
