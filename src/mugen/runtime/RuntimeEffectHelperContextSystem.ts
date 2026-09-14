@@ -40,6 +40,8 @@ export type RuntimeEffectHelperContextOptions = Pick<
   | "opponentLocalCoord"
   | "p2BodyDistYUsesSizeBoxes"
   | "pauseKind"
+  | "teamMode"
+  | "roundDecision"
   | "resolveTargetRedirect"
   | "resolveResourceRedirect"
   | "onTargetRedirectBlocked"
@@ -75,6 +77,8 @@ export type RuntimeEffectHelperContext = {
   stageTime?: number;
   runtimeTick?: number;
   pauseKind?: RuntimeHelperAdvanceOptions["pauseKind"];
+  teamMode?: RuntimeHelperAdvanceOptions["teamMode"];
+  roundDecision?: RuntimeHelperAdvanceOptions["roundDecision"];
   targetCandidates?: RuntimeTargetWorldActor[];
   resolveTargetRedirect?: RuntimeHelperAdvanceOptions["resolveTargetRedirect"];
   resolveResourceRedirect?: RuntimeHelperAdvanceOptions["resolveResourceRedirect"];

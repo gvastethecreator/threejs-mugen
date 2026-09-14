@@ -318,6 +318,56 @@ describe("HelperSystem", () => {
     expect(child.vars[0]).toBe(30);
   });
 
+  it("projects match TeamMode and settled Win/Lose into Helper controllers", () => {
+    const winning = helper({
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: "p1",
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "VarSet", [], { v: "0", value: "TeamMode = Turns" }),
+          compiledControllerIr(6000, "VarSet", [], { v: "1", value: "Win" }),
+          compiledControllerIr(6000, "VarSet", [], { v: "2", value: "Lose" }),
+        ])],
+      },
+    });
+    const losing = helper({
+      serialId: "p2-helper-0",
+      ownerId: "p2",
+      rootId: "p2",
+      parentId: "p2",
+      runtimeProgram: winning.runtimeProgram,
+    });
+    const nested = helper({
+      serialId: "p1-helper-1",
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: "p1-helper-0",
+      runtimeProgram: winning.runtimeProgram,
+    });
+    const roundDecision = (candidate: RuntimeHelper) =>
+      candidate.ownerId === "p1"
+        ? { settled: true as const, win: true, lose: false }
+        : { settled: true as const, win: false, lose: true };
+    advanceRuntimeHelpers([winning, losing, nested], stage, { teamMode: "turns", roundDecision });
+    expect(winning.vars[0]).toBe(1);
+    expect(winning.vars[1]).toBe(1);
+    expect(winning.vars[2]).toBe(0);
+    expect(losing.vars[0]).toBe(1);
+    expect(losing.vars[1]).toBe(0);
+    expect(losing.vars[2]).toBe(1);
+    expect(nested.vars[1]).toBe(1);
+    expect(nested.vars[2]).toBe(0);
+
+    const unsettled = helper({
+      runtimeProgram: winning.runtimeProgram,
+    });
+    advanceRuntimeHelpers([unsettled], stage, { teamMode: "turns", roundDecision: { settled: false } });
+    expect(unsettled.vars[0]).toBe(1);
+    expect(unsettled.vars[1]).toBe(0);
+    expect(unsettled.vars[2]).toBe(0);
+  });
+
   it("uses Helper action time and borrowed AIR tables for animation queries", () => {
     const shortAction: MugenAnimationAction = {
       ...action,

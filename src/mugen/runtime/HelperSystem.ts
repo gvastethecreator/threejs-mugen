@@ -13,7 +13,7 @@ import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenCommand } from "../model/MugenCommand";
 import type { MugenStageDefinition } from "../model/MugenStage";
-import type { ExpressionGameSpace } from "./ExpressionEvaluator";
+import type { ExpressionContext, ExpressionGameSpace } from "./ExpressionEvaluator";
 import { CommandBuffer } from "./CommandBuffer";
 import { matchesMugenStateIdentity, type MugenStateController, type MugenStateDef, type MugenStateSpecial } from "../model/MugenState";
 import { compileExpression } from "../compiler/ExpressionCompiler";
@@ -310,6 +310,8 @@ export type RuntimeHelperAdvanceOptions = {
   projectileContactTime?: (helper: RuntimeHelper, kind: RuntimeHelperProjectileContactKind, projectileId?: number) => number;
   projectileCancelTime?: (helper: RuntimeHelper, projectileId?: number) => number;
   ownerAnimations?: Pick<Map<number, MugenAnimationAction>, "has">;
+  teamMode?: string;
+  roundDecision?: ExpressionContext["roundDecision"] | ((helper: RuntimeHelper) => ExpressionContext["roundDecision"] | undefined);
   targetCandidates?: RuntimeTargetWorldActor[];
   resolveTargetRedirect?: (
     helper: RuntimeHelper,
@@ -874,6 +876,8 @@ export function runRuntimeHelperStateControllers(
         animExists: expressionContext.animExists,
         activeAnimExists: expressionContext.activeAnimExists,
         animElemNo: expressionContext.animElemNo,
+        teamMode: expressionContext.teamMode,
+        roundDecision: expressionContext.roundDecision,
       };
       const redirectedController = redirect
         ? resolveHelperResourceController(controller, helper, context)
@@ -3395,6 +3399,9 @@ type RuntimeHelperExpressionOptions = Pick<
   | "projectileContactTime"
   | "projectileCancelTime"
   | "runtimeProfile"
+  | "ownerAnimations"
+  | "teamMode"
+  | "roundDecision"
 >;
 
 function helperTriggersPass(
@@ -3795,6 +3802,10 @@ function helperExpressionContext(
         },
         timeOffset,
       ),
+    ...(options.teamMode === undefined ? {} : { teamMode: options.teamMode }),
+    ...(resolveHelperRoundDecision(options.roundDecision, helper) === undefined
+      ? {}
+      : { roundDecision: resolveHelperRoundDecision(options.roundDecision, helper) }),
     stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => matchesMugenStateIdentity(candidate, stateNo)) ?? false,
   };
 }
@@ -4058,6 +4069,16 @@ function advanceRuntimeHelperTargetMemory(helper: RuntimeHelper): void {
   const actor = runtimeHelperTargetActor(helper);
   helperTargetWorld.advance(actor);
   syncRuntimeHelperTargetActor(helper, actor);
+}
+
+function resolveHelperRoundDecision(
+  roundDecision: RuntimeHelperAdvanceOptions["roundDecision"],
+  helper: RuntimeHelper,
+): ExpressionContext["roundDecision"] | undefined {
+  if (typeof roundDecision === "function") {
+    return roundDecision(helper);
+  }
+  return roundDecision;
 }
 
 function helperEnemyNearRedirect(

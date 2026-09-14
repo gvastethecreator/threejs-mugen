@@ -5548,6 +5548,80 @@ value = 321
     expect(fightingInternals.actorRoundDecision(fightingInternals.p1).settled).toBe(false);
   });
 
+  it("projects match TeamMode and settled Win/Lose into spawned Helpers", () => {
+    const helperVars = `
+[State 1200, Team]
+type = VarSet
+trigger1 = 1
+v = 0
+value = TeamMode = Turns
+
+[State 1200, Win]
+type = VarSet
+trigger1 = 1
+v = 1
+value = Win
+
+[State 1200, Lose]
+type = VarSet
+trigger1 = 1
+v = 2
+value = Lose
+`;
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(
+      createImportedFixture({
+        id: "helper-team-round",
+        withStateMove: false,
+        withHelper: true,
+        helperRemoveTime: 200,
+        helperStateControllers: helperVars,
+      }),
+      createImportedFixture({ id: "helper-team-round-p2", withStateMove: false }),
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+      {
+        runtimeProfile: "ikemen-go",
+        teamMode: "turns",
+        effectActorWorld,
+        roundTiming: { overHitTimeFrames: 1, postKoPhase4StartFrames: 4, winPoseFrames: 2, postKoFrames: 8 },
+      },
+    );
+
+    runtime.step({ p1: new Set(["x"]), p2: new Set() }, { force: true });
+    const helper = effectActorWorld.helpers("p1")[0];
+    expect(helper?.vars[0]).toBe(1);
+    expect(helper?.vars[1]).toBe(0);
+    expect(helper?.vars[2]).toBe(0);
+
+    const internals = runtime as unknown as {
+      actorRoundDecision: (actor: { id: string }) => { settled: boolean; win?: boolean; lose?: boolean };
+      p1: { id: string };
+      p2: { runtime: { life: number } };
+    };
+    internals.p2.runtime.life = 0;
+    runtime.step({ p1: new Set(["x"]), p2: new Set() }, { force: true });
+    for (let frame = 0; frame < 40; frame += 1) {
+      const snapshot = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+      if ((snapshot.round?.roundPhase ?? 0) >= 3) break;
+    }
+    runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    expect(internals.actorRoundDecision(internals.p1)).toMatchObject({ settled: true, win: true });
+    expect(effectActorWorld.helpers("p1")[0]?.vars[0]).toBe(1);
+    expect(effectActorWorld.helpers("p1")[0]?.vars[1]).toBe(1);
+    expect(effectActorWorld.helpers("p1")[0]?.vars[2]).toBe(0);
+
+    runtime.reset();
+    runtime.step({ p1: new Set(["x"]), p2: new Set() }, { force: true });
+    expect(effectActorWorld.helpers("p1")[0]?.vars[1]).toBe(0);
+    expect(effectActorWorld.helpers("p1")[0]?.vars[2]).toBe(0);
+  });
+
   it("resets stage background time between rounds only when resetBG is enabled", () => {
     const resetStage = { ...bgCtrlLabStage, resetBackgroundBetweenRounds: true };
     const continuingStage = { ...bgCtrlLabStage, resetBackgroundBetweenRounds: false };
