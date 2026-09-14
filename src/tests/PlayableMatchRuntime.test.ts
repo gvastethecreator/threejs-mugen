@@ -11591,6 +11591,124 @@ p2getp1state = 0
     expect(denied.actors[1]?.runtime.stateNo).not.toBe(5210);
   });
 
+  it("applies Projectile down.bounce once at the first ground impact", () => {
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -35, y: 0, facing: 1 as const },
+        p2: { x: 130, y: 0, facing: -1 as const },
+      },
+    };
+    const bounceOn = driveProjectileGroundImpact({ bounce: true, recover: true });
+    const bounceOff = driveProjectileGroundImpact({ bounce: false, recover: true });
+
+    expect(bounceOn.hitFall).toMatchObject({
+      falling: true,
+      downBounce: true,
+      downRecover: true,
+      velocity: { y: -6 },
+    });
+    expect(bounceOff.hitFall).toMatchObject({
+      falling: true,
+      downBounce: false,
+      velocity: { y: -6 },
+    });
+    expect(bounceOn.impactStateNo).toBe(5101);
+    expect(bounceOff.impactStateNo).toBe(5101);
+    expect(bounceOn.bounceVelY).toBe(-6);
+    expect(bounceOff.bounceVelY).toBe(0);
+    expect(bounceOn.lifeAfterImpact).toBeLessThan(bounceOn.lifeBeforeImpact);
+    expect(bounceOff.lifeAfterImpact).toBeLessThan(bounceOff.lifeBeforeImpact);
+    expect(bounceOn.lifeLater).toBe(bounceOn.lifeAfterImpact);
+    expect(bounceOff.lifeLater).toBe(bounceOff.lifeAfterImpact);
+    expect(bounceOn.pausedStates.every((stateNo) => stateNo === 5050)).toBe(true);
+
+    const deniedRecover = driveProjectileGroundImpact({ bounce: false, recover: false });
+    expect(deniedRecover.hitFall?.downRecover).toBe(false);
+    expect(deniedRecover.liedownStateNo).toBe(5110);
+    expect(deniedRecover.fastRecoverStateNo).toBe(5110);
+    expect(deniedRecover.naturalGetUpStateNo).toBe(5120);
+
+    bounceOn.runtime.reset();
+    expect(bounceOn.runtime.getSnapshot().actors[1]?.runtime.hitFall).toBeUndefined();
+
+    function driveProjectileGroundImpact(options: { bounce: boolean; recover: boolean }) {
+      const world = new RuntimeEffectActorWorld();
+      const runtime = new PlayableMatchRuntime(
+        createImportedFixture({
+          id: `projectile-ground-bounce-${options.bounce ? "on" : "off"}-${options.recover ? "recover" : "norecover"}`,
+          withStateMove: false,
+          withProjectile: true,
+          projectileHitDefParams: `
+fall = 1
+fall.recover = 1
+fall.recovertime = 3
+fall.yvelocity = -6
+fall.xvelocity = -2
+fall.damage = 12
+down.bounce = ${options.bounce ? 1 : 0}
+down.recover = ${options.recover ? 1 : 0}
+down.recovertime = 4
+ground.velocity = -2,-8
+air.velocity = -2,-8
+p2stateno = 5050
+p2getp1state = 0
+`,
+        }),
+        createGroundImpactDefender(`projectile-ground-impact-${options.bounce}-${options.recover}`),
+        closeStage,
+        { effectActorWorld: world },
+      );
+      let live = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+      for (let frame = 0; frame < 16 && !live.actors[1]?.runtime.hitFall?.falling; frame += 1) {
+        live = runtime.step({ p1: new Set(), p2: new Set() });
+      }
+      const pausedStates: number[] = [];
+      while ((live.actors[1]?.hitPause ?? 0) > 0) {
+        pausedStates.push(live.actors[1]!.runtime.stateNo);
+        live = runtime.step({ p1: new Set(), p2: new Set() });
+      }
+      let lifeBeforeImpact = live.actors[1]!.runtime.life;
+      let capturedImpactLife = false;
+      for (let frame = 0; frame < 48 && live.actors[1]?.runtime.stateNo !== 5101; frame += 1) {
+        if (live.actors[1]?.runtime.stateNo === 5100 && !capturedImpactLife) {
+          lifeBeforeImpact = live.actors[1]!.runtime.life;
+          capturedImpactLife = true;
+        }
+        live = runtime.step({ p1: new Set(), p2: new Set() });
+      }
+      const impactStateNo = live.actors[1]?.runtime.stateNo;
+      const bounceVelY = live.actors[1]?.runtime.vel.y;
+      const impactHitFall = live.actors[1]?.runtime.hitFall;
+      const lifeAfterImpact = live.actors[1]!.runtime.life;
+      live = runtime.step({ p1: new Set(), p2: new Set() });
+      const lifeLater = live.actors[1]!.runtime.life;
+      for (let frame = 0; frame < 8 && live.actors[1]?.runtime.stateNo !== 5110; frame += 1) {
+        live = runtime.step({ p1: new Set(), p2: new Set() });
+      }
+      const liedownStateNo = live.actors[1]?.runtime.stateNo;
+      live = runtime.step({ p1: new Set(), p2: new Set(["a"]) });
+      const fastRecoverStateNo = live.actors[1]?.runtime.stateNo;
+      for (let frame = 0; frame < 24 && live.actors[1]?.runtime.stateNo !== 5120; frame += 1) {
+        live = runtime.step({ p1: new Set(), p2: new Set() });
+      }
+      const naturalGetUpStateNo = live.actors[1]?.runtime.stateNo;
+      return {
+        runtime,
+        hitFall: impactHitFall,
+        impactStateNo,
+        bounceVelY,
+        lifeBeforeImpact,
+        lifeAfterImpact,
+        lifeLater,
+        pausedStates,
+        liedownStateNo,
+        fastRecoverStateNo,
+        naturalGetUpStateNo,
+      };
+    }
+  });
+
   it("carries fresh Projectile air-guard depth through accepted root-owned contacts", () => {
     const resolve = (airborne: boolean, airGuardVelocityExpression?: string) => {
       const attacker = createImportedFixture({
@@ -14273,6 +14391,98 @@ function effectX(snapshot: ReturnType<PlayableMatchRuntime["getSnapshot"]>, labe
   const effect = snapshot.effects?.find((candidate) => candidate.label === label);
   expect(effect).toBeDefined();
   return effect!.runtime.pos.x;
+}
+
+function createGroundImpactDefender(id: string): DemoFighterDefinition {
+  const defender = createImportedFixture({
+    id,
+    displayName: "Ground Impact Defender",
+    withStateMove: false,
+    extraStateNos: [5050, 5100, 5101, 5110, 5120],
+  });
+  defender.commands = [
+    ...(defender.commands ?? []),
+    ...parseCmd(`
+[Command]
+name = "recovery"
+command = a
+`).commands,
+  ];
+  const impactStates = parseCns(`
+[Statedef 5050]
+type = A
+movetype = H
+physics = N
+anim = 5050
+ctrl = 0
+
+[State 5050, Ground]
+type = ChangeState
+trigger1 = Vel Y > 0
+trigger1 = Pos Y >= 0
+value = 5100
+
+[Statedef 5100]
+type = L
+movetype = H
+physics = N
+anim = 5100
+ctrl = 0
+
+[State 5100, Floor]
+type = PosSet
+trigger1 = Time = 0
+y = 0
+
+[State 5100, Stop]
+type = VelSet
+trigger1 = Time = 0
+y = 0
+
+[State 5100, Fall Damage]
+type = HitFallDamage
+trigger1 = Time = 1
+
+[State 5100, Bounce]
+type = ChangeState
+trigger1 = Time >= 2
+value = 5101
+
+[Statedef 5101]
+type = L
+movetype = H
+physics = N
+anim = 5101
+ctrl = 0
+
+[State 5101, Impulse]
+type = HitFallVel
+trigger1 = Time = 0
+
+[State 5101, Lie Down]
+type = ChangeState
+trigger1 = Time >= 2
+value = 5110
+
+[Statedef 5110]
+type = L
+movetype = H
+physics = N
+anim = 5110
+ctrl = 0
+
+[Statedef 5120]
+type = S
+movetype = I
+physics = S
+anim = 5120
+ctrl = 1
+`).states;
+  defender.states = [
+    ...defender.states.filter((state) => ![5050, 5100, 5101, 5110, 5120].includes(state.id)),
+    ...impactStates,
+  ];
+  return defender;
 }
 
 function createAirRecoveryDefender(id = "projectile-air-recovery-defender"): DemoFighterDefinition {
