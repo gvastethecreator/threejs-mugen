@@ -11247,6 +11247,88 @@ fall.zvelocity = Time + 2.5
     expect(runtimeHitVar(snapshot.actors[1]!.runtime, "fall.zvel")).toBe(2.5);
   });
 
+  it("counts Projectile air recovery through contact, hitpause, and one Common1 recovery entry", () => {
+    const attacker = createImportedFixture({
+      id: "projectile-air-recovery-attacker",
+      withStateMove: false,
+      withProjectile: true,
+      projectileHitDefParams: `
+fall = 1
+fall.recover = 1
+fall.recovertime = 3
+p2stateno = 5050
+p2getp1state = 0
+`,
+    });
+    const defender = createAirRecoveryDefender();
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -35, y: 0, facing: 1 as const },
+        p2: { x: 130, y: 0, facing: -1 as const },
+      },
+    };
+    const acceptedWorld = new RuntimeEffectActorWorld();
+    const accepted = new PlayableMatchRuntime(attacker, defender, closeStage, { effectActorWorld: acceptedWorld });
+    let live = accepted.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 16 && !live.actors[1]?.runtime.hitFall?.falling; frame += 1) {
+      live = accepted.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(live.actors[1]?.runtime.stateNo).toBe(5050);
+    expect(live.actors[1]?.runtime.hitFall).toMatchObject({ recover: true, recoverTime: 3, falling: true });
+    expect(live.actors[1]?.hitPause).toBeGreaterThan(0);
+
+    const pausedRecoverTimes: number[] = [];
+    const pausedTicks: number[] = [];
+    while ((live.actors[1]?.hitPause ?? 0) > 0) {
+      pausedRecoverTimes.push(live.actors[1]!.runtime.hitFall!.recoverTime!);
+      pausedTicks.push(live.tick);
+      live = accepted.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(pausedRecoverTimes.length).toBeGreaterThan(0);
+    expect(pausedRecoverTimes.every((value) => value === 3)).toBe(true);
+    expect(pausedTicks.at(-1)!).toBeGreaterThan(pausedTicks[0]!);
+
+    const activeWindow = [live.actors[1]!.runtime.hitFall!.recoverTime!];
+    while ((live.actors[1]?.runtime.hitFall?.recoverTime ?? 0) > 0) {
+      live = accepted.step({ p1: new Set(), p2: new Set() });
+      activeWindow.push(live.actors[1]!.runtime.hitFall!.recoverTime!);
+    }
+    expect(activeWindow).toEqual([3, 2, 1, 0]);
+    expect(live.actors[1]?.runtime.stateNo).toBe(5050);
+
+    live = accepted.step({ p1: new Set(), p2: new Set(["a"]) });
+    expect(live.actors[1]?.runtime.stateNo).toBe(5210);
+    live = accepted.step({ p1: new Set(), p2: new Set(["a"]) });
+    expect(live.actors[1]?.runtime.stateNo).toBe(5210);
+
+    const blockedWorld = new RuntimeEffectActorWorld();
+    const blocked = new PlayableMatchRuntime(
+      createImportedFixture({
+        id: "projectile-air-recovery-blocked-attacker",
+        withStateMove: false,
+        withProjectile: true,
+        projectileHitDefParams: `
+fall = 1
+fall.recover = 0
+fall.recovertime = 3
+p2stateno = 5050
+p2getp1state = 0
+`,
+      }),
+      createAirRecoveryDefender("projectile-air-recovery-blocked-defender"),
+      closeStage,
+      { effectActorWorld: blockedWorld },
+    );
+    let denied = blocked.step({ p1: new Set(["x"]), p2: new Set(["a"]) });
+    for (let frame = 0; frame < 24; frame += 1) {
+      denied = blocked.step({ p1: new Set(), p2: new Set(["a"]) });
+    }
+    expect(denied.actors[1]?.runtime.hitFall?.recover).toBe(false);
+    expect(denied.actors[1]?.runtime.stateNo).toBe(5050);
+    expect(denied.actors[1]?.runtime.stateNo).not.toBe(5210);
+  });
+
   it("carries fresh Projectile air-guard depth through accepted root-owned contacts", () => {
     const resolve = (airborne: boolean, airGuardVelocityExpression?: string) => {
       const attacker = createImportedFixture({
@@ -13929,6 +14011,49 @@ function effectX(snapshot: ReturnType<PlayableMatchRuntime["getSnapshot"]>, labe
   const effect = snapshot.effects?.find((candidate) => candidate.label === label);
   expect(effect).toBeDefined();
   return effect!.runtime.pos.x;
+}
+
+function createAirRecoveryDefender(id = "projectile-air-recovery-defender"): DemoFighterDefinition {
+  const defender = createImportedFixture({
+    id,
+    displayName: "Air Recovery Defender",
+    withStateMove: false,
+    extraStateNos: [5050, 5210],
+  });
+  defender.commands = [
+    ...(defender.commands ?? []),
+    ...parseCmd(`
+[Command]
+name = "recovery"
+command = a
+`).commands,
+  ];
+  const recoveryStates = parseCns(`
+[Statedef 5050]
+type = A
+movetype = H
+physics = N
+anim = 5050
+ctrl = 0
+
+[State 5050, Air Recover]
+type = ChangeState
+trigger1 = CanRecover
+trigger1 = command = "recovery"
+value = 5210
+
+[Statedef 5210]
+type = A
+movetype = I
+physics = N
+anim = 5210
+ctrl = 0
+`).states;
+  defender.states = [
+    ...defender.states.filter((state) => state.id !== 5050 && state.id !== 5210),
+    ...recoveryStates,
+  ];
+  return defender;
 }
 
 function createImportedFixture(

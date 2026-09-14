@@ -21,8 +21,6 @@ describe("RuntimeRecoverySystem", () => {
     system.tickHitFallRecoveryWindow(fighter);
     expect(fighter.runtime.hitFall?.recoverTime).toBe(2);
     expect(canRecover()).toBe(0);
-    const paused = fighter.runtime.hitFall?.recoverTime;
-    expect(paused).toBe(2);
     system.tickHitFallRecoveryWindow(fighter);
     expect(fighter.runtime.hitFall?.recoverTime).toBe(1);
     expect(canRecover()).toBe(0);
