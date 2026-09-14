@@ -1,3 +1,4 @@
+import { isMalformedMugenExpression, tokenizeMugenExpression } from "./ExpressionLexer";
 import type { CompileSupportLevel, ExpressionIr } from "./RuntimeIr";
 
 export function normalizeMugenExpression(expression: string): string {
@@ -61,6 +62,9 @@ export function compileExpression(expression: string): ExpressionIr {
   }
   if (/[\[\]]/.test(withoutStrings)) {
     unsupportedFeatures.add("range syntax");
+  }
+  if (isMalformedMugenExpression(tokenizeMugenExpression(normalized))) {
+    unsupportedFeatures.add("malformed expression");
   }
 
   for (const match of withoutStrings.matchAll(/[A-Za-z_][A-Za-z0-9_.]*/g)) {

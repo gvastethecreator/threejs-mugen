@@ -93,6 +93,13 @@ time = 20
     const unsupportedTargetDynamic = compileExpression("Target(enemynear(1), stateno), Life > 0");
     const unsupportedTargetNegative = compileExpression("Target(-1), Life > 0");
     const unsupportedPlayerIdNegative = compileExpression("PlayerID(-1), Life > 0");
+    const compactSubtract = compileExpression("5-2");
+    const spacedSubtract = compileExpression("5 - 2");
+    const groupedUnaryMinus = compileExpression("-(2+3)");
+    const unknownOperator = compileExpression("1 @ 2");
+    const juxtaposition = compileExpression("1 2");
+    const unterminatedParen = compileExpression("(1");
+    const missingOperand = compileExpression("1 +");
 
     expect(clean.normalized).toBe(
       'p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && GameWidth >= 320 && GameHeight >= 240 && ScreenWidth >= 320 && ScreenHeight >= 240 && Const240p(3) = 6 && Const480p(6) = 6 && Const720p(12) = 6 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
@@ -259,6 +266,17 @@ time = 20
     expect(unsupportedTargetNegative.unsupportedFeatures).toEqual(["target(negative)"]);
     expect(unsupportedPlayerIdNegative.supportLevel).toBe("unsupported");
     expect(unsupportedPlayerIdNegative.unsupportedFeatures).toEqual(["playerid(negative)"]);
+    expect(compactSubtract.supportLevel).toBe("executable");
+    expect(spacedSubtract.supportLevel).toBe("executable");
+    expect(groupedUnaryMinus.supportLevel).toBe("executable");
+    expect(unknownOperator.supportLevel).toBe("unsupported");
+    expect(unknownOperator.unsupportedFeatures).toEqual(["malformed expression"]);
+    expect(juxtaposition.supportLevel).toBe("unsupported");
+    expect(juxtaposition.unsupportedFeatures).toEqual(["malformed expression"]);
+    expect(unterminatedParen.supportLevel).toBe("unsupported");
+    expect(unterminatedParen.unsupportedFeatures).toEqual(["malformed expression"]);
+    expect(missingOperand.supportLevel).toBe("unsupported");
+    expect(missingOperand.unsupportedFeatures).toEqual(["malformed expression"]);
   });
 
   it("summarizes controller and State -1 routability as compiler output", () => {

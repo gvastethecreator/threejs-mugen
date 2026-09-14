@@ -1,4 +1,5 @@
 import { normalizeMugenExpression } from "../compiler/ExpressionCompiler";
+import { tokenizeMugenExpression, type ExpressionLexToken } from "../compiler/ExpressionLexer";
 import { runtimeRoundStateFromPhase } from "./RuntimeRoundPhaseSystem";
 import {
   runtimeFightScreenStateValue,
@@ -485,16 +486,11 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
   });
 }
 
-type Token =
-  | { type: "number"; value: string }
-  | { type: "string"; value: string }
-  | { type: "identifier"; value: string }
-  | { type: "operator"; value: string }
-  | { type: "paren"; value: "(" | ")" }
-  | { type: "comma"; value: "," };
+type Token = ExpressionLexToken;
 
 class ExpressionParser {
   private cursor = 0;
+  private malformed = false;
 
   constructor(
     private readonly tokens: Token[],
@@ -510,7 +506,16 @@ class ExpressionParser {
     if (this.tokens.length === 0) {
       return false;
     }
-    return this.parseOr();
+    if (this.tokens.some((token) => token.type === "invalid")) {
+      this.reportMalformed();
+      return 0;
+    }
+    const value = this.parseOr();
+    if (this.malformed || this.cursor < this.tokens.length) {
+      this.reportMalformed();
+      return 0;
+    }
+    return value;
   }
 
   private parseOr(): ExpressionValue {
@@ -627,6 +632,7 @@ class ExpressionParser {
   private parsePrimary(): ExpressionValue {
     const token = this.advance();
     if (!token) {
+      this.malformed = true;
       return false;
     }
     if (token.type === "number") {
@@ -654,16 +660,21 @@ class ExpressionParser {
             args.push(this.parseOr());
           } while (this.matchComma());
         }
-        this.matchParen(")");
+        if (!this.matchParen(")")) {
+          this.malformed = true;
+        }
         return this.evaluateFunction(token.value, args);
       }
       return this.evaluateIdentifier(token.value);
     }
     if (token.type === "paren" && token.value === "(") {
       const value = this.parseOr();
-      this.matchParen(")");
+      if (!this.matchParen(")")) {
+        this.malformed = true;
+      }
       return value;
     }
+    this.malformed = true;
     return false;
   }
 
@@ -1372,6 +1383,7 @@ class ExpressionParser {
       current.push(token);
     }
 
+    this.malformed = true;
     pushRawArg(args, current);
     return args;
   }
@@ -1562,35 +1574,14 @@ class ExpressionParser {
     this.cursor += 1;
     return token;
   }
+
+  private reportMalformed(): void {
+    this.context.reportUnsupported?.("malformed expression");
+  }
 }
 
 function tokenize(expression: string): Token[] {
-  const tokens: Token[] = [];
-  const pattern = /\s*(?:(-?(?:\d+(?:\.\d+)?|\.\d+))|"(.*?)"|([A-Za-z_][A-Za-z0-9_.]*)|(&&|\|\||!=|<=|>=|[=<>+\-*/!])|([()])|(,))/gy;
-  let cursor = 0;
-  while (cursor < expression.length) {
-    pattern.lastIndex = cursor;
-    const match = pattern.exec(expression);
-    if (!match) {
-      cursor += 1;
-      continue;
-    }
-    cursor = pattern.lastIndex;
-    if (match[1] !== undefined) {
-      tokens.push({ type: "number", value: match[1] });
-    } else if (match[2] !== undefined) {
-      tokens.push({ type: "string", value: match[2] });
-    } else if (match[3] !== undefined) {
-      tokens.push({ type: "identifier", value: match[3] });
-    } else if (match[4] !== undefined) {
-      tokens.push({ type: "operator", value: match[4] });
-    } else if (match[5] !== undefined) {
-      tokens.push({ type: "paren", value: match[5] as "(" | ")" });
-    } else if (match[6] !== undefined) {
-      tokens.push({ type: "comma", value: "," });
-    }
-  }
-  return tokens;
+  return tokenizeMugenExpression(expression).tokens;
 }
 
 const rawArgumentFunctions = new Set([
