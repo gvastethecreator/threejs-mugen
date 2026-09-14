@@ -1342,7 +1342,7 @@ async function createIkemenZssTraceArtifact(
       source: "imported",
       fixturePath: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.entry,
       notes: [
-        `${IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.schema} loads a CC0 ZIP through the character loader, lowers ${sourceLabel} into the shared state IR, and executes StateDef 0 -> 100 -> 101 with PosAdd, persistent(2) VelSet, and source-located controller telemetry. Functions, loops, local variables, Lua, non-granted controllers, screenpack ZSS, and broad IKEMEN compatibility remain blocked.`,
+        `${IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.schema} loads a CC0 ZIP through the character loader, lowers ${sourceLabel} into the shared state IR, and executes StateDef 0 -> 100 -> 101 with PosAdd, persistent(2) VelSet, owned ChangeAnim 200, borrowed ChangeAnim2, and source-located controller telemetry. Functions, loops, local variables, Lua, non-granted controllers, screenpack ZSS, and broad IKEMEN compatibility remain blocked.`,
       ],
     },
     gates: [{
@@ -1354,6 +1354,8 @@ async function createIkemenZssTraceArtifact(
         { type: "changeState", minCount: 2 },
         { type: "posAdd", minCount: 3 },
         { type: "velSet", minCount: 2 },
+        { type: "changeAnim", minCount: 1 },
+        { type: "changeAnim2", minCount: 1 },
       ],
       requiredControllerEventSequences: [{
         label: `${sourceLabel} controller and state order`,
@@ -1365,6 +1367,8 @@ async function createIkemenZssTraceArtifact(
           { stateNo: 100, controller: "velSet", sourcePath },
           { stateNo: 100, controller: "changeState", sourcePath },
           { stateNo: 101, controller: "posAdd", sourcePath },
+          { stateNo: 101, controller: "changeAnim", sourcePath },
+          { stateNo: 101, controller: "changeAnim2", sourcePath },
         ],
       }],
       requiredActorFrameSequences: [{
@@ -1372,14 +1376,14 @@ async function createIkemenZssTraceArtifact(
         steps: [
           { actorId: "p1", source: "imported", stateNo: 0, animNo: 0 },
           { actorId: "p1", source: "imported", stateNo: 100, animNo: 0 },
-          { actorId: "p1", source: "imported", stateNo: 101, animNo: 0, effectiveCtrl: false },
+          { actorId: "p1", source: "imported", stateNo: 101, animNo: 200, effectiveCtrl: false },
         ],
       }],
       requiredActorFrames: [
         { actorId: "p1", source: "imported", stateNo: 100, observedVelXAtLeast: 2, minFrames: 2 },
         { actorId: "p1", source: "imported", stateNo: 101, observedPosXAtLeast: -90, minFrames: 1 },
       ],
-      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 101, animNo: 0, ctrl: false }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", stateNo: 101, animNo: 200, ctrl: false }],
     }],
   });
 }

@@ -11,6 +11,7 @@ import {
   createIkemenZssFallbackTraceArtifact,
   createIkemenZssLiveTraceArtifact,
 } from "../mugen/runtime/RuntimeTraceGatePresets";
+import { dispatchStateProgramController } from "../mugen/runtime/StateProgramExecutor";
 
 describe("IKEMEN ZSS live fixture", () => {
   it("loads direct ZSS alongside CNS in declared source order", async () => {
@@ -37,12 +38,37 @@ describe("IKEMEN ZSS live fixture", () => {
       ]),
     );
     expect(character.runtimeProgram?.states.map((state) => state.id)).toEqual(expect.arrayContaining([0, 100, 101]));
+    expect(character.states.find((state) => state.id === 101)?.controllers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "changeAnim",
+          params: expect.objectContaining({ value: "200" }),
+          source: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }),
+        }),
+        expect.objectContaining({
+          type: "changeAnim2",
+          params: expect.objectContaining({ value: "200" }),
+          source: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }),
+        }),
+      ]),
+    );
+    const state101 = character.runtimeProgram?.states.find((state) => state.id === 101)?.controllers ?? [];
+    expect(dispatchStateProgramController(state101.find((controller) => controller.normalizedType === "changeanim")!)).toMatchObject({
+      kind: "change-anim",
+      animationSource: "self",
+      actionId: 200,
+    });
+    expect(dispatchStateProgramController(state101.find((controller) => controller.normalizedType === "changeanim2")!)).toMatchObject({
+      kind: "change-anim",
+      animationSource: "state-owner",
+      actionId: 200,
+    });
     expect(character.compatibility.zss).toMatchObject({
       recognized: [IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath],
       compiled: {
         sourcePaths: [IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath],
         stateIds: [-2, 0, 100, 101],
-        controllers: 7,
+        controllers: 9,
       },
       executed: { stateIds: [], controllers: 0 },
       blocked: { count: 0 },
@@ -118,6 +144,13 @@ describe("IKEMEN ZSS live fixture", () => {
         expect.objectContaining({ stateNo: 0, controller: "posAdd", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
         expect.objectContaining({ stateNo: 100, controller: "velSet", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
         expect.objectContaining({ stateNo: 101, controller: "posAdd", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
+        expect.objectContaining({ stateNo: 101, controller: "changeAnim", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
+        expect.objectContaining({ stateNo: 101, controller: "changeAnim2", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
+      ]),
+    );
+    expect(artifact.gates[0]?.evidence.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", stateNo: 101, animNo: 200, ctrl: false }),
       ]),
     );
 
@@ -129,7 +162,7 @@ describe("IKEMEN ZSS live fixture", () => {
     const report = withZssExecutionTelemetry(character.compatibility, p1Events);
 
     expect(character.compatibility.zss?.executed).toEqual({ stateIds: [], controllers: 0 });
-    expect(report.zss?.executed).toEqual({ stateIds: [0, 100, 101], controllers: 16 });
+    expect(report.zss?.executed).toEqual({ stateIds: [0, 100, 101], controllers: 20 });
   });
 
   it("executes the .cns.zss fallback through the ZIP loader and real match runtime", async () => {
@@ -141,6 +174,8 @@ describe("IKEMEN ZSS live fixture", () => {
         expect.objectContaining({ stateNo: 0, controller: "posAdd", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.fallbackStatePath }) }),
         expect.objectContaining({ stateNo: 100, controller: "velSet", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.fallbackStatePath }) }),
         expect.objectContaining({ stateNo: 101, controller: "posAdd", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.fallbackStatePath }) }),
+        expect.objectContaining({ stateNo: 101, controller: "changeAnim", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.fallbackStatePath }) }),
+        expect.objectContaining({ stateNo: 101, controller: "changeAnim2", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.fallbackStatePath }) }),
       ]),
     );
   });

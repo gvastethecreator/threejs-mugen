@@ -221,7 +221,7 @@ type = Null
 trigger1 = 1
 `;
 
-const LIVE_ZSS = `# The fixture intentionally uses only T427's executable grammar slice.
+const LIVE_ZSS = `# Named executable ZSS subset: T427 motion plus ChangeAnim/ChangeAnim2.
 [StateDef -2; type: S; physics: S; anim: 0; ctrl: 1;]
 null{}
 
@@ -244,6 +244,8 @@ if time >= 2 {
 [StateDef 101; type: S; movetype: I; physics: S; anim: 0; ctrl: 0;]
 if time = 0 {
   posAdd{x: 2; y: 0;}
+  changeAnim{value: 200;}
+  changeAnim2{value: 200;}
 }
 `;
 

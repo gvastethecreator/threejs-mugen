@@ -83,7 +83,8 @@ The current implementation uses IKEMEN-GO as a guide in these places:
 - `PackageAnalysis/v0` applies the scanner through one VirtualFileSystem package report shared by character, stage, system, and screenpack inputs. It preserves source-located dependencies and MUGEN profile/version metadata while retaining the `ikemen-go-scan` scanner-only ceiling.
 - T427 admits only direct `.zss`/fallback `.cns.zss` character state sources
   under `ikemen-go`: `StateDef`, `Null`, `PosAdd`, `ChangeState`, `VelSet`,
-  `if`/`else`, comments, and bounded wrappers lower into the existing state IR.
+  `ChangeAnim`, `ChangeAnim2`, `if`/`else`, comments, and bounded wrappers
+  lower into the existing state IR.
   The direct/fallback/mixed fixtures and required `ikemen-zss-live` trace
   (`47c627a2`) are runtime evidence; all other ZSS remains scanner-only or
   blocked.

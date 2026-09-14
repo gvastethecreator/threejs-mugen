@@ -49,6 +49,8 @@ const EXECUTABLE_ZSS_CONTROLLER_TYPES = new Set([
   "posadd",
   "changestate",
   "velset",
+  "changeanim",
+  "changeanim2",
 ]);
 
 /**
