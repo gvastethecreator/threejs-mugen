@@ -793,6 +793,8 @@ export function spawnRuntimeHelperProjectileActor(
     resolveProjectileGivePower: () => resolveHelperProjectilePowerPair(helper, controller, "givepower", options),
     resolveGuardPoints: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "guardpoints", options),
     resolveP2Facing: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "p2facing", options),
+    resolveP2StateNo: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "p2stateno", options),
+    resolveP2GetP1State: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "p2getp1state", options),
     resolveKeepState: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "keepstate", options),
     resolveForceNoFall: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "forcenofall", options),
     resolveDownBounce: () => resolveRuntimeHelperFloatScalarParam(helper, controller, "down.bounce", options),

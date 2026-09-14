@@ -6955,6 +6955,58 @@ function runActiveStateControllers(
                   return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
                 }
               : undefined,
+          resolveProjectileP2StateNo:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  const expression = operation?.p2StateNoExpression;
+                  if (expression === undefined) return undefined;
+                  if (typeof expression === "number") {
+                    return Number.isFinite(expression) ? Math.trunc(expression) : undefined;
+                  }
+                  const resolved = resolveDispatchNumber(
+                    undefined,
+                    expression,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                    gameSpace,
+                    options.characters,
+                    createPlayerIdTarget(actor),
+                  );
+                  return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
+                }
+              : undefined,
+          resolveProjectileP2GetP1State:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  const expression = operation?.p2GetP1StateExpression;
+                  if (expression === undefined) return undefined;
+                  if (typeof expression === "number") {
+                    return Number.isFinite(expression) ? expression : undefined;
+                  }
+                  const resolved = resolveDispatchNumber(
+                    undefined,
+                    expression,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                    gameSpace,
+                    options.characters,
+                    createPlayerIdTarget(actor),
+                  );
+                  return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
+                }
+              : undefined,
           resolveProjectileKeepState:
             effect === "projectile"
               ? () => {

@@ -414,6 +414,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveGuardPoints?: () => number | undefined;
   /** Resolves fresh Projectile p2facing in the original caller context. */
   resolveP2Facing?: () => number | undefined;
+  resolveP2StateNo?: () => number | undefined;
+  resolveP2GetP1State?: () => number | undefined;
   /** Resolves fresh Projectile keepstate in the original caller context. */
   resolveKeepState?: () => number | undefined;
   resolveForceNoFall?: () => number | undefined;
@@ -731,6 +733,26 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     : operation?.p2FacingExpression !== undefined
       ? (dynamicP2Facing === undefined || !Number.isFinite(dynamicP2Facing) ? undefined : Math.trunc(dynamicP2Facing))
       : firstNumber(findControllerParam(input.controller, "p2facing"));
+  const dynamicP2StateNo = operation?.p2StateNoExpression === undefined
+    ? undefined
+    : typeof operation.p2StateNoExpression === "number"
+      ? operation.p2StateNoExpression
+      : input.resolveP2StateNo?.();
+  const authoredP2StateNo = operation?.p2StateNoExpression === undefined
+    ? operation?.p2StateNo ?? firstNumber(findControllerParam(input.controller, "p2stateno"))
+    : dynamicP2StateNo === undefined || !Number.isFinite(dynamicP2StateNo)
+      ? undefined
+      : Math.trunc(dynamicP2StateNo);
+  const dynamicP2GetP1State = operation?.p2GetP1StateExpression === undefined
+    ? undefined
+    : typeof operation.p2GetP1StateExpression === "number"
+      ? operation.p2GetP1StateExpression
+      : input.resolveP2GetP1State?.();
+  const authoredP2GetP1State = operation?.p2GetP1StateExpression === undefined
+    ? resolveProjectileP2GetP1State(input.controller, operation, authoredP2StateNo)
+    : dynamicP2GetP1State === undefined || !Number.isFinite(dynamicP2GetP1State)
+      ? undefined
+      : dynamicP2GetP1State !== 0;
   const keepStateExpression = operation?.keepStateExpression;
   const dynamicKeepState = keepStateExpression === undefined
     ? undefined
@@ -1214,8 +1236,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     ...(forceCrouch === undefined ? {} : { forceCrouch }),
     ...(fall === undefined ? {} : { fall }),
     p1StateNo: operation?.p1StateNo ?? firstNumber(findControllerParam(input.controller, "p1stateno")),
-    p2StateNo: operation?.p2StateNo ?? firstNumber(findControllerParam(input.controller, "p2stateno")),
-    p2GetP1State: resolveProjectileP2GetP1State(input.controller, operation),
+    p2StateNo: authoredP2StateNo,
+    p2GetP1State: authoredP2GetP1State,
     p2ClsnCheck: operation?.p2ClsnCheck ?? normalizeMugenCollisionBoxType(findControllerParam(input.controller, "p2clsncheck")),
     p2ClsnRequire: operation?.p2ClsnRequire ?? normalizeMugenCollisionBoxType(findControllerParam(input.controller, "p2clsnrequire")),
     missOnOverride: operation?.missOnOverride ?? booleanNumber(findControllerParam(input.controller, "missonoverride")),
@@ -2714,9 +2736,9 @@ function resolveActorIdentity(input: RuntimeProjectileSpawnInput): Pick<
 
 function resolveProjectileP2GetP1State(
   controller: MugenStateController,
-  operation?: ProjectileControllerOp,
+  operation: ProjectileControllerOp | undefined,
+  p2StateNo: number | undefined,
 ): boolean | undefined {
-  const p2StateNo = operation?.p2StateNo ?? firstNumber(findControllerParam(controller, "p2stateno"));
   if (p2StateNo === undefined) {
     return undefined;
   }

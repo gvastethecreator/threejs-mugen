@@ -770,7 +770,9 @@ export type ProjectileControllerOp = {
   fallFlags?: MugenHitDefFallFlagsOp;
   attackDepth?: [number, number];
   p2StateNo?: number;
+  p2StateNoExpression?: number | string;
   p2GetP1State?: boolean;
+  p2GetP1StateExpression?: number | string;
   /** Authored Projectile HitDef p2facing exposed by GetHitVar(facing). */
   p2Facing?: number;
   /** Dynamic Projectile HitDef p2facing evaluated in the original caller context. */
@@ -4051,6 +4053,10 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (projAnimValue === false) return undefined;
   const p2FacingValue = optionalIntegerExpressionParam(controller, "p2facing");
   if (p2FacingValue === false) return undefined;
+  const p2StateNoValue = optionalIntegerExpressionParam(controller, "p2stateno");
+  if (p2StateNoValue === false) return undefined;
+  const p2GetP1StateValue = optionalIntegerExpressionParam(controller, "p2getp1state");
+  if (p2GetP1StateValue === false) return undefined;
   const standFriction = optionalScalarNumberOrExpression(controller, "stand.friction");
   const crouchFriction = optionalScalarNumberOrExpression(controller, "crouch.friction");
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
@@ -4338,11 +4344,16 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     ...(fallRecoveryValues === undefined ? {} : { fallRecovery: fallRecoveryValues }),
     ...(fallFlags === true ? {} : { fallFlags }),
     attackDepth: normalizedNumberPair(findParam(controller, "attack.depth")),
-    p2StateNo: firstNumber(findParam(controller, "p2stateno")),
-    p2GetP1State:
-      firstNumber(findParam(controller, "p2stateno")) !== undefined
-        ? (firstNumber(findParam(controller, "p2getp1state")) ?? 1) !== 0
-        : undefined,
+    p2StateNo: typeof p2StateNoValue === "number" ? p2StateNoValue : undefined,
+    ...(typeof p2StateNoValue === "string" ? { p2StateNoExpression: p2StateNoValue } : {}),
+    p2GetP1State: typeof p2GetP1StateValue === "number"
+      ? p2GetP1StateValue !== 0
+      : p2StateNoValue === true || p2StateNoValue === undefined
+        ? undefined
+        : typeof p2GetP1StateValue === "string"
+          ? undefined
+          : true,
+    ...(typeof p2GetP1StateValue === "string" ? { p2GetP1StateExpression: p2GetP1StateValue } : {}),
     p2Facing: typeof p2FacingValue === "number" ? p2FacingValue : undefined,
     ...(typeof p2FacingValue === "string" ? { p2FacingExpression: p2FacingValue } : {}),
     minDistance: numberPartialTriple(findParam(controller, "mindist")),

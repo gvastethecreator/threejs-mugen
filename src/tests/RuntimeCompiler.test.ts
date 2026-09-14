@@ -4719,6 +4719,25 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles fresh Projectile p2stateno and p2getp1state expressions", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      p2stateno: "var(0)",
+      p2getp1state: "0",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      p2StateNoExpression: "var(0)",
+      p2GetP1State: false,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      p2stateno: "888",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      p2StateNo: 888,
+      p2GetP1State: true,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], { p2stateno: "var(" })).operation).toBeUndefined();
+  });
+
   it("compiles fresh Projectile projmisstime expressions and rejects malformed values", () => {
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       projmisstime: "var(0) + 2",

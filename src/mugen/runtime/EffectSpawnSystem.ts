@@ -102,6 +102,8 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"];
   resolveProjectileGuardPoints?: RuntimeProjectileSpawnInput["resolveGuardPoints"];
   resolveProjectileP2Facing?: RuntimeProjectileSpawnInput["resolveP2Facing"];
+  resolveProjectileP2StateNo?: RuntimeProjectileSpawnInput["resolveP2StateNo"];
+  resolveProjectileP2GetP1State?: RuntimeProjectileSpawnInput["resolveP2GetP1State"];
   resolveProjectileKeepState?: RuntimeProjectileSpawnInput["resolveKeepState"];
   resolveProjectileForceNoFall?: RuntimeProjectileSpawnInput["resolveForceNoFall"];
   resolveProjectileDownBounce?: RuntimeProjectileSpawnInput["resolveDownBounce"];
@@ -305,6 +307,8 @@ export class RuntimeEffectSpawnWorld {
     resolveProjectileGetPower?: RuntimeProjectileSpawnInput["resolveProjectileGetPower"],
     resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"],
     resolveProjectileP2Facing?: RuntimeProjectileSpawnInput["resolveP2Facing"],
+    resolveP2StateNo?: RuntimeProjectileSpawnInput["resolveP2StateNo"],
+    resolveP2GetP1State?: RuntimeProjectileSpawnInput["resolveP2GetP1State"],
     resolveProjectileAnimation?: () => number | undefined,
     resolveProjectileKeepState?: RuntimeProjectileSpawnInput["resolveKeepState"],
     resolveProjectileGuardPoints?: RuntimeProjectileSpawnInput["resolveGuardPoints"],
@@ -388,6 +392,8 @@ export class RuntimeEffectSpawnWorld {
       resolveProjectileGetPower,
       resolveProjectileGivePower,
       resolveP2Facing: resolveProjectileP2Facing,
+      resolveP2StateNo,
+      resolveP2GetP1State,
       resolveKeepState: resolveProjectileKeepState,
       resolveForceNoFall,
       resolveDownBounce,
@@ -703,6 +709,8 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveProjectileGetPower,
         options.resolveProjectileGivePower,
         options.resolveProjectileP2Facing,
+        options.resolveProjectileP2StateNo,
+        options.resolveProjectileP2GetP1State,
         options.resolveProjectileAnimation,
         options.resolveProjectileKeepState,
         options.resolveProjectileGuardPoints,

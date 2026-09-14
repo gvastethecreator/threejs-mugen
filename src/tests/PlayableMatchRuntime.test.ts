@@ -6692,6 +6692,50 @@ RedirectID = var(0)
     expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
   });
 
+  it("applies fresh Projectile p2stateno once with authored state owner", () => {
+    const attacker = createImportedFixture({
+      id: "dynamic-projectile-p2state",
+      withStateMove: false,
+      withProjectile: true,
+      extraStateNos: [888],
+      projectileHitDefParams: `
+p2stateno = Time + 888
+p2getp1state = Time + 1
+`,
+    });
+    const defender = createImportedFixture({
+      id: "dynamic-projectile-p2state-defender",
+      displayName: "Custom State Defender",
+      withStateMove: false,
+      extraStateNos: [888],
+    });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -35, y: 0, facing: 1 as const },
+        p2: { x: 130, y: 0, facing: -1 as const },
+      },
+    };
+    const acceptedWorld = new RuntimeEffectActorWorld();
+    const accepted = new PlayableMatchRuntime(attacker, defender, closeStage, { effectActorWorld: acceptedWorld });
+    let snapshot = accepted.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(acceptedWorld.projectiles("p1")[0]).toMatchObject({ p2StateNo: 888, p2GetP1State: true });
+    for (let frame = 0; frame < 12 && snapshot.actors[1]?.runtime.stateNo === 0; frame += 1) {
+      snapshot = accepted.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(snapshot.actors[1]?.runtime.stateNo).toBe(888);
+    expect(snapshot.actors[1]?.runtime.customState).toEqual({ ownerId: "p1", stateNo: 888, getP1State: true });
+
+    const rejectedWorld = new RuntimeEffectActorWorld();
+    const rejected = new PlayableMatchRuntime(attacker, defender, closeStage, { effectActorWorld: rejectedWorld });
+    let rejectedSnapshot = rejected.step({ p1: new Set(["x"]), p2: new Set(["B"]) });
+    for (let frame = 0; frame < 12; frame += 1) {
+      rejectedSnapshot = rejected.step({ p1: new Set(), p2: new Set(["B"]) });
+    }
+    expect(rejectedSnapshot.actors[1]?.runtime.stateNo).not.toBe(888);
+    expect(rejectedSnapshot.actors[1]?.runtime.customState).toBeUndefined();
+  });
+
   it("uses simple HitDef p1stateno and p2stateno as a partial custom-state bridge", () => {
     const imported = createImportedFixture({
       withStateMove: false,

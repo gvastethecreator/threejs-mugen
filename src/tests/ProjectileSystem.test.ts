@@ -1263,6 +1263,34 @@ describe("ProjectileSystem", () => {
     expect(spawn()).toMatchObject({ hitPriority: 1, priority: 2, spritePriority: 7 });
   });
 
+  it("resolves Projectile p2stateno once and keeps p2getp1state as a finite boolean", () => {
+    const source = controller({ projanim: "1005", p2stateno: "var(0)", p2getp1state: "var(1)" });
+    const operation = compileControllerIr(source).operation as ProjectileControllerOp;
+    expect(operation.p2StateNoExpression).toBe("var(0)");
+    expect(operation.p2GetP1StateExpression).toBe("var(1)");
+    let stateNo = 888.9;
+    let getP1 = 0;
+    const spawn = () => createRuntimeProjectile({
+      serialId: "p1-projectile-custom-state",
+      controller: source,
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveP2StateNo: () => stateNo,
+      resolveP2GetP1State: () => getP1,
+    });
+    const projectile = spawn();
+    stateNo = 777;
+    getP1 = 1;
+    expect(projectile).toMatchObject({ p2StateNo: 888, p2GetP1State: false });
+    expect(spawn()).toMatchObject({ p2StateNo: 777, p2GetP1State: true });
+  });
+
   it("resolves Projectile kill and guard.kill once and does not treat a missing result as true", () => {
     const source = controller({ projanim: "1005", kill: "var(0)", "guard.kill": "var(1)" });
     const operation = compileControllerIr(source).operation as ProjectileControllerOp;
