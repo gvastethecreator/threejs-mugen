@@ -294,6 +294,7 @@ describe("ExplodSystem", () => {
             pausemovetime: "3",
             supermovetime: "4",
             sprpriority: "8",
+            ontop: "1",
             bindtime: "2",
             trans: "none",
           }),
@@ -313,9 +314,11 @@ describe("ExplodSystem", () => {
       pauseMoveTime: 3,
       superMoveTime: 4,
       spritePriority: 8,
+      ontop: true,
       bind: { remaining: 2 },
       opacity: 0.9,
     });
+    expect(runtimeExplodsToSnapshots([changed], 200)[0]?.presentationOrder?.phase).toBe("stage-foreground");
   });
 
   it("removes only explods flagged with removeongethit", () => {
@@ -385,7 +388,13 @@ describe("ExplodSystem", () => {
       defaultRemoveTime: 8,
     });
     expect(explod).toMatchObject({ ontop: true, spritePriority: 4 });
-    expect(runtimeExplodsToSnapshots([explod], 200)[0]?.effect).toMatchObject({ ontop: true, spritePriority: 4 });
+    const snapshot = runtimeExplodsToSnapshots([explod], 200)[0];
+    expect(snapshot?.effect).toMatchObject({ ontop: true, spritePriority: 4 });
+    expect(snapshot?.presentationOrder).toMatchObject({
+      phase: "stage-foreground",
+      sourceKind: "explod",
+      priority: 4,
+    });
   });
 });
 

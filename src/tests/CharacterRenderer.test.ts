@@ -465,6 +465,8 @@ describe("CharacterRenderer", () => {
 
   it("draws ontop Explods in the stage-foreground band above ordinary Explods", async () => {
     const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
+    const fighter = actor({ spritePriority: 9999, pos: { x: 0, y: 0 } });
+    fighter.id = "p1";
     const ordinary = actor(
       { spritePriority: 10, pos: { x: 0, y: 0 } },
       {
@@ -474,21 +476,40 @@ describe("CharacterRenderer", () => {
     );
     ordinary.id = "explod-normal";
     const ontop = actor(
-      { spritePriority: 4, pos: { x: 8, y: 0 } },
+      { spritePriority: 0, pos: { x: 0, y: 0 } },
       {
         actorKind: "explod",
-        presentationOrder: createActorPresentationOrder("explod", 4, 0, { layerNo: 1 }),
+        presentationOrder: createActorPresentationOrder("explod", 0, 0, { layerNo: 1 }),
       },
     );
     ontop.id = "explod-ontop";
 
-    await renderer.update([ordinary, ontop]);
+    await renderer.update([fighter, ordinary, ontop]);
     const diagnostics = renderer.getDiagnostics();
+    const fighterOrder = diagnostics.find((entry) => entry.actorId === "p1")?.presentationOrder;
     const ordinaryOrder = diagnostics.find((entry) => entry.actorId === "explod-normal")?.presentationOrder;
     const ontopOrder = diagnostics.find((entry) => entry.actorId === "explod-ontop")?.presentationOrder;
+    expect(fighterOrder?.semantic.phase).toBe("actor");
     expect(ordinaryOrder?.semantic.phase).toBe("actor");
     expect(ontopOrder?.semantic.phase).toBe("stage-foreground");
+    expect(ontopOrder?.three.depthTest).toBe(false);
+    expect(ontopOrder?.three.depthWrite).toBe(false);
+    expect(fighterOrder?.three.renderOrder ?? 0).toBeLessThan(ontopOrder?.three.renderOrder ?? 0);
     expect(ordinaryOrder?.three.renderOrder ?? 0).toBeLessThan(ontopOrder?.three.renderOrder ?? 0);
+    const meshes = renderer.group.children.filter((child): child is THREE.Mesh => child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry);
+    const named = Object.fromEntries(
+      meshes.map((mesh) => {
+        const match = diagnostics.find((entry) => entry.presentationOrder?.three.renderOrder === mesh.renderOrder);
+        return [match?.actorId ?? mesh.uuid, mesh];
+      }),
+    );
+    expect(named["explod-ontop"]?.position.z).toBe(0);
+    expect(named["p1"]?.position.z).toBeGreaterThan(named["explod-ontop"]?.position.z ?? -1);
+    expect(named["explod-ontop"]?.material.depthTest).toBe(false);
+
+    await renderer.update([fighter]);
+    const remaining = renderer.group.children.filter((child): child is THREE.Mesh => child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry);
+    expect(remaining).toHaveLength(1);
     renderer.dispose();
   });
 });

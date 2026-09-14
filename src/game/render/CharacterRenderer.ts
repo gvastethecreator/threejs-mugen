@@ -94,7 +94,9 @@ export class CharacterRenderer {
       applyThreePresentationOrder(mesh, mesh.material, presentationOrder);
       mesh.position.x = projected.x;
       mesh.position.y = projected.y;
-      mesh.position.z = resolveCharacterRenderDepth(priority, orderBias);
+      mesh.position.z = presentationOrder.semantic.phase === "actor"
+        ? resolveCharacterRenderDepth(priority, orderBias)
+        : 0;
       mesh.scale.set(projected.width * projected.scaleX, projected.height, 1);
       applyCharacterMeshProjection(mesh, {
         projection: actor.runtime.renderProjection ?? "orthographic",

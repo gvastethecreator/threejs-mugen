@@ -2,6 +2,7 @@ import type { ExplodControllerOp, ModifyExplodControllerOp } from "../compiler/C
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
+import { createActorPresentationOrder } from "./PresentationOrder";
 import type { ActorSnapshot } from "./types";
 
 export type RuntimeExplod = {
@@ -290,6 +291,12 @@ export function runtimeExplodsToSnapshots(explods: RuntimeExplod[], sourceStateN
         rootId: explod.rootId,
         parentId: explod.parentId,
         source: "effect",
+        presentationOrder: createActorPresentationOrder(
+          "explod",
+          explod.spritePriority,
+          0,
+          { layerNo: explod.ontop ? 1 : 0 },
+        ),
         spriteOwnerId: explod.spriteOwnerId,
         spriteOwnerDefinitionId: explod.spriteOwnerDefinitionId,
         spriteOwnerLabel: explod.spriteOwnerLabel,
