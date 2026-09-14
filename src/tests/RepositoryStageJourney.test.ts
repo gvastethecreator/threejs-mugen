@@ -18,6 +18,7 @@ describe("repository-authored Skyline Relay stage journey", () => {
       loaded: true,
       files: { def: true, sff: true, music: false },
       backgrounds: { animated: 1, tiled: 1, renderedAnimated: 1 },
+      audio: { fileFound: false, playbackObserved: false },
     });
     expect(result.journey.runtime).toMatchObject({
       status: "passed",

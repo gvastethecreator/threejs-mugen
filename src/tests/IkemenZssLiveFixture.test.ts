@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { withZssExecutionTelemetry } from "../mugen/compatibility/CompatibilityReport";
+import { createStageCompatibilityReport } from "../mugen/compatibility/StageCompatibilityReport";
 import { MugenCharacterLoader } from "../mugen/loader/MugenCharacterLoader";
+import { parseStageDef, stageDefToRuntime } from "../mugen/parsers/StageDefParser";
 import {
   IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST,
   createIkemenZssLiveFixtureVfs,
@@ -8,6 +10,10 @@ import {
   createIkemenZssMalformedGrantedFixtureVfs,
   createMugenProfileZssFixtureVfs,
 } from "../mugen/runtime/IkemenZssLiveFixture";
+import { createImportedFighterDefinition } from "../mugen/runtime/importedFighter";
+import { PlayableMatchRuntime } from "../mugen/runtime/PlayableMatchRuntime";
+import { demoFighters } from "../mugen/runtime/demoFighters";
+import { RuntimeEffectActorWorld } from "../mugen/runtime/EffectActorSystem";
 import {
   createIkemenZssFallbackTraceArtifact,
   createIkemenZssLiveTraceArtifact,
@@ -258,5 +264,77 @@ describe("IKEMEN ZSS live fixture", () => {
         expect.objectContaining({ stateNo: 102, controller: "posSet", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.fallbackStatePath }) }),
       ]),
     );
+  });
+
+  it("runs one imported ZSS duel on a nine-layer stage and clears effects on reset", async () => {
+    const character = await new MugenCharacterLoader().load(
+      IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.entry,
+      createIkemenZssLiveFixtureVfs(),
+    );
+    const p1 = createImportedFighterDefinition(character);
+    if (!p1) throw new Error("IKEMEN ZSS fixture did not produce a runtime fighter");
+    const extraLayers = Array.from({ length: 6 }, (_, index) => `
+[BG Extra ${index}]
+type = normal
+id = ${index + 10}
+spriteno = 0,0
+start = 0,${index * 8}
+`).join("\n");
+    const definition = parseStageDef(`
+[StageInfo]
+zoffset = 200
+zoffsetlink = 4
+localcoord = 320,240
+[BGDef]
+spr = stage.sff
+[BG Sky]
+type = normal
+spriteno = 0,0
+[BG Floor]
+type = parallax
+id = 4
+spriteno = 0,0
+width = 200,80
+sin.y = 10,8,0
+[BG Dummy]
+type = dummy
+spriteno = 0,0
+${extraLayers}
+`, "stages/integrated.def");
+    const stage = stageDefToRuntime(definition, "integrated-duel");
+    const report = createStageCompatibilityReport({
+      sourceName: "integrated-duel.zip",
+      defPath: "stages/integrated.def",
+      definition,
+      stage,
+      files: { def: "stages/integrated.def", sprite: "stages/stage.sff", missing: [] },
+      diagnostics: [],
+    });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(p1, demoFighters[1]!, stage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+    const first = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const second = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(first.stage.layers).toHaveLength(9);
+    expect(second.stage.layers).toHaveLength(9);
+    expect(second.tick).toBeGreaterThan(first.tick);
+    expect(report.backgrounds.total).toBe(9);
+    expect(report.backgrounds.layers.find((layer) => layer.type === "parallax")).toMatchObject({
+      parallaxWidth: { top: 200, bottom: 80 },
+    });
+    expect(report.backgrounds.layers.find((layer) => layer.type === "dummy")).toMatchObject({
+      projected: false,
+      unsupported: ["type:dummy"],
+    });
+    expect(report.audio.playbackObserved).toBe(false);
+    runtime.dispatch({ type: "reset" });
+    const reset = runtime.getSnapshot();
+    expect(reset.effects ?? []).toEqual([]);
+    expect(effectActorWorld.helpers("p1")).toEqual([]);
+    expect(effectActorWorld.projectiles("p1")).toEqual([]);
+    expect(reset.stage.bgPalFx).toBeUndefined();
+    expect(reset.actors[0]?.runtime.pos.y).toBe(0);
   });
 });

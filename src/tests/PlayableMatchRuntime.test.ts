@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import { parseCmd } from "../mugen/parsers/CmdParser";
 import { parseCns } from "../mugen/parsers/CnsParser";
+import { parseStageDef, stageDefToRuntime } from "../mugen/parsers/StageDefParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "../mugen/runtime/demoFighters";
 import { bgCtrlLabStage, trainingStage } from "../mugen/runtime/demoStage";
 import { createRuntimeEffectActorStores, RuntimeEffectActorWorld } from "../mugen/runtime/EffectActorSystem";
@@ -4756,6 +4757,51 @@ RedirectID = 999
     expect(snapshot.actors[0]?.runtime.moveType).toBe("A");
     expect(snapshot.actors[1]?.runtime.assertSpecial?.runFirst).toBeUndefined();
     expect(controllerOrder).toEqual(["p2", "p1"]);
+  });
+
+  it("clears imported helper effects after reset on a nine-layer stage", () => {
+    const imported = createImportedFixture({
+      id: "imported-integrated-duel",
+      withHelper: true,
+    });
+    const extraLayers = Array.from({ length: 6 }, (_, index) => `
+[BG Extra ${index}]
+type = normal
+id = ${index + 3}
+spriteno = 0,0
+`).join("\n");
+    const stage = stageDefToRuntime(
+      parseStageDef(`
+[StageInfo]
+zoffset = 200
+localcoord = 320,240
+[BGDef]
+spr = stage.sff
+[BG 0]
+type = normal
+spriteno = 0,0
+[BG 1]
+type = normal
+spriteno = 0,0
+[BG Dummy]
+type = dummy
+spriteno = 0,0
+${extraLayers}
+`, "stages/duel.def"),
+      "duel-nine",
+    );
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, stage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+    runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(stage.layers).toHaveLength(9);
+    expect(effectActorWorld.helpers("p1").length).toBeGreaterThan(0);
+    runtime.dispatch({ type: "reset" });
+    expect(effectActorWorld.helpers("p1")).toEqual([]);
+    expect(runtime.getSnapshot().effects ?? []).toEqual([]);
+    expect(runtime.getSnapshot().stage.layers).toHaveLength(9);
   });
 
   it("preserves configured round timer fixtures across reset", () => {
