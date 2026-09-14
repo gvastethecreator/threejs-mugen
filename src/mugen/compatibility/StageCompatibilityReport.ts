@@ -266,6 +266,7 @@ function describeBackgroundLayer(
         }
       : {}),
     ...(layer.positionLink ? { positionLink: layer.positionLink } : {}),
+    ...(layer.sinusoid ? { sinusoid: layer.sinusoid } : {}),
     tiled: Boolean(layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0)),
     ...(layer.trans ? { trans: layer.trans } : {}),
     ...(layer.clip ? { clip: layer.clip } : {}),
@@ -423,6 +424,9 @@ function collectUnsupportedLayerFeatures(rawSection: Record<string, string>, typ
   }
   if (hasKey(rawSection, "positionlink")) {
     unsupported.push("positionlink");
+  }
+  if ((hasKey(rawSection, "sin.x") || hasKey(rawSection, "sin.y")) && !layer.sinusoid) {
+    unsupported.push("static sinusoid");
   }
   if (hasKey(rawSection, "trans") && !layer.trans) {
     unsupported.push("transparency mode");

@@ -244,4 +244,27 @@ spriteno = ${index},0
       sprite: { group: 8, index: 0 },
     });
   });
+
+  it("reports parsed static sinusoid fields on authored layers", () => {
+    const definition = parseStageDef(`
+[BGDef]
+spr = wave.sff
+[BG Wave]
+type = normal
+spriteno = 0,0
+sin.x = 12,8,0
+`, "stages/wave.def");
+    const report = createStageCompatibilityReport({
+      sourceName: "wave.zip",
+      defPath: "stages/wave.def",
+      definition,
+      stage: stageDefToRuntime(definition, "wave"),
+      files: { def: "stages/wave.def", sprite: "stages/wave.sff", missing: [] },
+      diagnostics: [],
+    });
+    expect(report.backgrounds.layers[0]).toMatchObject({
+      sinusoid: { x: { amplitude: 12, period: 8, phase: 0 } },
+      unsupported: [],
+    });
+  });
 });

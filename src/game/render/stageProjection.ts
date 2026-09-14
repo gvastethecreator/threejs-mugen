@@ -89,17 +89,18 @@ function resolveStageLayerForTickInternal(
   if (!layer) {
     return undefined;
   }
+  const sinusoidLayer = applyAuthoredSinusoid(layer, tick);
   const controllers = stage.bgControllers?.flatMap((group) => group.controllers) ?? [];
-  const targetedControllers = controllers.filter((controller) => targetsLayer(controller, layer));
+  const targetedControllers = controllers.filter((controller) => targetsLayer(controller, sinusoidLayer));
   const motionControllers = targetedControllers.filter((controller) => isMotionController(controller.type));
   let resolved = motionControllers.length > 0
-    ? resolveStageMotion(layer, motionControllers, tick)
-    : { ...layer };
+    ? resolveStageMotion(sinusoidLayer, motionControllers, tick)
+    : { ...sinusoidLayer };
   const enabledControllers = controllers.filter((controller) =>
-    controller.type.toLowerCase() === "enabled" && targetsLayer(controller, layer),
+    controller.type.toLowerCase() === "enabled" && targetsLayer(controller, sinusoidLayer),
   );
   for (const controller of controllers) {
-    if (!targetsLayer(controller, layer) || !isControllerActive(controller, tick) || isMotionController(controller.type)) {
+    if (!targetsLayer(controller, sinusoidLayer) || !isControllerActive(controller, tick) || isMotionController(controller.type)) {
       continue;
     }
     const next = applyStageBgController(resolved, controller, tick);
@@ -145,6 +146,28 @@ function resolveLinkedStageLayer(
     deltaX: resolvedTarget.deltaX,
     deltaY: resolvedTarget.deltaY,
   };
+}
+
+function applyAuthoredSinusoid(layer: MugenStageLayer, tick: number): MugenStageLayer {
+  const offsetX = sinusoidOffset(layer.sinusoid?.x, tick);
+  const offsetY = sinusoidOffset(layer.sinusoid?.y, tick);
+  if (offsetX === 0 && offsetY === 0) {
+    return layer;
+  }
+  return offsetStageLayer(layer, offsetX, offsetY);
+}
+
+function sinusoidOffset(
+  sinusoid: { amplitude: number; period: number; phase: number } | undefined,
+  tick: number,
+): number {
+  if (!sinusoid || sinusoid.period <= 0) {
+    return 0;
+  }
+  const period = sinusoid.period;
+  const phaseTicks = (sinusoid.phase / 360) * period;
+  const wrapped = ((Math.trunc(tick) + phaseTicks) % period + period) % period;
+  return sinusoid.amplitude * Math.sin((wrapped / period) * Math.PI * 2);
 }
 
 function isMotionController(type: string): boolean {

@@ -334,6 +334,18 @@ describe("resolveStageLayerForTick", () => {
     expect(resolved).toMatchObject({ startX: 19, startY: 23 });
   });
 
+  it("offsets static sin.x at quarter period and stays stable for the same tick", () => {
+    const wave: MugenStageLayer = {
+      ...layer,
+      sinusoid: { x: { amplitude: 10, period: 8, phase: 0 } },
+    };
+    const first = resolveStageLayerForTick(wave, stage, 2);
+    const second = resolveStageLayerForTick(wave, stage, 2);
+    expect(first?.startX).toBeCloseTo(20);
+    expect(second?.startX).toBe(first?.startX);
+    expect(resolveStageLayerForTick(wave, stage, 0)?.startX).toBeCloseTo(10);
+  });
+
   it("supports looped SinX and Anim controllers for action-backed backgrounds", () => {
     const resolved = resolveStageLayerForTick(
       layer,

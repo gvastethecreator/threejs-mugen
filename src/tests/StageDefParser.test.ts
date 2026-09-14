@@ -188,6 +188,28 @@ delta = 1,1
     });
   });
 
+  it("parses static BG sin.x and sin.y triples", () => {
+    const runtime = stageDefToRuntime(
+      parseStageDef(`
+[BGDef]
+spr = sine.sff
+
+[BG Wave]
+type = normal
+spriteno = 0,0
+start = 0,0
+sin.x = 10,8,90
+sin.y = 4,16,0
+`, "stages/sine.def"),
+      "stage-sine",
+    );
+
+    expect(runtime.layers[0]?.sinusoid).toEqual({
+      x: { amplitude: 10, period: 8, phase: 90 },
+      y: { amplitude: 4, period: 16, phase: 0 },
+    });
+  });
+
   it("preserves parent and controller BGCtrl loop periods separately", () => {
     const parsed = parseStageDef(`
 [BGDef]

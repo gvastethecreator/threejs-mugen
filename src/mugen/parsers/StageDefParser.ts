@@ -172,6 +172,8 @@ function buildPlaceholderLayers(
     const trans = stageLayerTrans(values);
     const clip = stageLayerClip(values, localcoord);
     const mask = booleanValue(values, "mask");
+    const sinX = sinusoidValue(values, "sin.x");
+    const sinY = sinusoidValue(values, "sin.y");
     const positionLink = booleanValue(values, "positionlink") === true;
     const linkTarget = positionLink ? positionLinkBase : undefined;
     const effectiveStart = linkTarget
@@ -217,6 +219,7 @@ function buildPlaceholderLayers(
             spacingY: tilespacing?.[1],
           }
         : undefined,
+      ...(sinX || sinY ? { sinusoid: { ...(sinX ? { x: sinX } : {}), ...(sinY ? { y: sinY } : {}) } } : {}),
     };
     layers.push(layer);
     if (!positionLink) {
@@ -338,6 +341,22 @@ function getValue(section: Record<string, string>, expected: string): string | u
 function numberValue(section: Record<string, string>, key: string): number | undefined {
   const value = getValue(section, key);
   return value === undefined ? undefined : parseNumber(value);
+}
+
+function sinusoidValue(section: Record<string, string>, key: string): { amplitude: number; period: number; phase: number } | undefined {
+  const values = numberListValue(section, key);
+  if (!values?.length || values[0] === undefined) {
+    return undefined;
+  }
+  const period = values[1] ?? 0;
+  if (period <= 0) {
+    return undefined;
+  }
+  return {
+    amplitude: values[0],
+    period,
+    phase: values[2] ?? 0,
+  };
 }
 
 function pairValue(section: Record<string, string>, key: string): [number, number] | undefined {

@@ -60,6 +60,17 @@ export type MugenStageLayer = {
     spacingX?: number;
     spacingY?: number;
   };
+  /** Static BG sin.x/sin.y: amplitude, period ticks, phase degrees. */
+  sinusoid?: {
+    x?: MugenStageLayerSinusoid;
+    y?: MugenStageLayerSinusoid;
+  };
+};
+
+export type MugenStageLayerSinusoid = {
+  amplitude: number;
+  period: number;
+  phase: number;
 };
 
 export type MugenStageLayerTrans = {
