@@ -163,8 +163,8 @@ function parseSffV1(bytes: Uint8Array): SffArchive {
               bytes: palette,
               stride: 3 as const,
               transparentIndex: 0,
-              key: `sff-v1:${palettes.length - 1}`,
-              sourcePalette: [1, palettes.indexOf(palette) + 1] as [number, number],
+              key: `sff-v1:${palettes.indexOf(palette)}`,
+              sourcePalette: [1, 1] as [number, number],
             },
           }
         : undefined;

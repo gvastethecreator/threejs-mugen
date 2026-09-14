@@ -34,14 +34,14 @@ export class SffSpriteProvider implements SpriteProvider {
     if (!remap || !sprite.indexed) {
       return sprite;
     }
-    if (!spriteUsesRemapSource(sprite, remap, this.archive.version)) {
+    if (!spriteUsesRemapSource(sprite, remap)) {
       return sprite;
     }
     const palette = this.palettes.get(paletteKey(remap.dest[0], remap.dest[1]));
     if (!palette?.data) {
       return sprite;
     }
-    const cacheKey = `${spriteKey(group, index)}:${remap.source.join(",")}:${remap.dest.join(",")}:${palette.path}`;
+    const cacheKey = `${context.ownerId ?? "default"}:${spriteKey(group, index)}:${remap.source.join(",")}:${remap.dest.join(",")}:${palette.path}`;
     const cached = this.remappedSprites.get(cacheKey);
     if (cached) {
       return cached;
@@ -82,16 +82,9 @@ export class SffSpriteProvider implements SpriteProvider {
 function spriteUsesRemapSource(
   sprite: MugenSprite,
   remap: NonNullable<SpriteLookupContext["paletteRemap"]>,
-  version: SffArchive["version"],
 ): boolean {
   const source = sprite.indexed?.palette.sourcePalette;
-  if (source && source[0] === remap.source[0] && source[1] === remap.source[1]) {
-    return true;
-  }
-  if (version === "v1" && remap.source[0] === 1 && remap.source[1] === 1) {
-    return (sprite.group === 0 && sprite.index === 0) || (sprite.group === 9000 && sprite.index === 0);
-  }
-  return false;
+  return Boolean(source && source[0] === remap.source[0] && source[1] === remap.source[1]);
 }
 
 function spriteKey(group: number, index: number): string {

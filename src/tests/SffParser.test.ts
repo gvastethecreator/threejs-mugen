@@ -83,6 +83,24 @@ describe("SffParser", () => {
       hasEmbeddedPalette: false,
       usesPreviousPalette: true,
     });
+    expect(archive.sprites[0]?.indexed?.palette.sourcePalette).toEqual([1, 1]);
+    expect(archive.sprites[1]?.indexed?.palette.sourcePalette).toEqual([1, 1]);
+    expect(archive.sprites[1]?.indexed?.palette.key).toBe(archive.sprites[0]?.indexed?.palette.key);
+  });
+
+  it("tags every SFF v1 indexed sprite as pal1 even when PCX palettes differ", async () => {
+    const archive = await new SffParser().load(
+      createSffV1([
+        { group: 0, index: 0, axisX: 0, axisY: 0 },
+        { group: 200, index: 0, axisX: 7, axisY: 9 },
+      ]),
+    );
+
+    expect(archive.sprites.map((sprite) => sprite.indexed?.palette.sourcePalette)).toEqual([
+      [1, 1],
+      [1, 1],
+    ]);
+    expect(archive.sprites[0]?.indexed?.palette.key).not.toBe(archive.sprites[1]?.indexed?.palette.key);
   });
 
   it("decodes SFF v2 RLE8 sprites with embedded palettes", async () => {

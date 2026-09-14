@@ -75,6 +75,34 @@ describe("SffSpriteProvider", () => {
     expect(replaced?.indexed?.palette.bytes.slice(3, 6)).toEqual(new Uint8Array([40, 50, 60]));
     expect(await provider.getSprite(10, 0)).toBe(matched);
   });
+
+  it("does not remap v1 sprites by group or index when provenance differs", async () => {
+    const idle = indexedSprite({ group: 0, index: 0, sourcePalette: [1, 3] });
+    const attack = indexedSprite({ group: 200, index: 0, sourcePalette: [1, 1] });
+    const dest = actPalette(1, 2, "pal2.act", [0, 0, 0, 240, 32, 80, 35, 195, 255]);
+    const provider = new SffSpriteProvider({ version: "v1", warnings: [], sprites: [idle, attack] }, [dest]);
+    const remap = { source: [1, 1] as [number, number], dest: [1, 2] as [number, number] };
+
+    expect(await provider.getSprite(0, 0, { paletteRemap: remap })).toBe(idle);
+    const remapped = await provider.getSprite(200, 0, { paletteRemap: remap });
+    expect(remapped).not.toBe(attack);
+    expect(remapped?.indexed?.palette.bytes.slice(3, 6)).toEqual(new Uint8Array([240, 32, 80]));
+    expect(remapped?.indexed?.pixels[0]).toBe(0);
+  });
+
+  it("keeps remapped textures isolated per owner and restores the source mapping", async () => {
+    const sprite = indexedSprite({ group: 200, index: 0, sourcePalette: [1, 1] });
+    const pal2 = actPalette(1, 2, "pal2.act", [0, 0, 0, 240, 32, 80]);
+    const pal3 = actPalette(1, 3, "pal3.act", [0, 0, 0, 10, 200, 30]);
+    const provider = new SffSpriteProvider({ version: "v1", warnings: [], sprites: [sprite] }, [pal2, pal3]);
+
+    const p1 = await provider.getSprite(200, 0, { ownerId: "p1", paletteRemap: { source: [1, 1], dest: [1, 2] } });
+    const p2 = await provider.getSprite(200, 0, { ownerId: "p2", paletteRemap: { source: [1, 1], dest: [1, 3] } });
+    expect(p1).not.toBe(p2);
+    expect(p1?.indexed?.palette.bytes.slice(3, 6)).toEqual(new Uint8Array([240, 32, 80]));
+    expect(p2?.indexed?.palette.bytes.slice(3, 6)).toEqual(new Uint8Array([10, 200, 30]));
+    expect(await provider.getSprite(200, 0, { ownerId: "p1" })).toBe(sprite);
+  });
 });
 
 function indexedSprite(options: { group?: number; index?: number; sourcePalette?: [number, number] } = {}): MugenSprite {
