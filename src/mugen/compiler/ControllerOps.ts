@@ -780,6 +780,8 @@ export type ProjectileControllerOp = {
   /** Optional Projectile target-distance bounds; omitted spawn components stay unset. */
   minDistance?: MugenHitDefVector;
   maxDistance?: MugenHitDefVector;
+  minDistanceExpressions?: MugenHitDefExpressionPair | MugenHitDefExpressionTriplet;
+  maxDistanceExpressions?: MugenHitDefExpressionPair | MugenHitDefExpressionTriplet;
   p2ClsnCheck?: MugenCollisionBoxType;
   p2ClsnRequire?: MugenCollisionBoxType;
   missOnOverride?: boolean;
@@ -4057,6 +4059,10 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (p2StateNoValue === false) return undefined;
   const p2GetP1StateValue = optionalIntegerExpressionParam(controller, "p2getp1state");
   if (p2GetP1StateValue === false) return undefined;
+  const minDistanceValue = optionalFloatExpressionVectorParam(controller, "mindist");
+  if (minDistanceValue === false) return undefined;
+  const maxDistanceValue = optionalFloatExpressionVectorParam(controller, "maxdist");
+  if (maxDistanceValue === false) return undefined;
   const standFriction = optionalScalarNumberOrExpression(controller, "stand.friction");
   const crouchFriction = optionalScalarNumberOrExpression(controller, "crouch.friction");
   const hitSparkScale = optionalFloatExpressionPairParam(controller, "sparkscale");
@@ -4356,8 +4362,18 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     ...(typeof p2GetP1StateValue === "string" ? { p2GetP1StateExpression: p2GetP1StateValue } : {}),
     p2Facing: typeof p2FacingValue === "number" ? p2FacingValue : undefined,
     ...(typeof p2FacingValue === "string" ? { p2FacingExpression: p2FacingValue } : {}),
-    minDistance: numberPartialTriple(findParam(controller, "mindist")),
-    maxDistance: numberPartialTriple(findParam(controller, "maxdist")),
+    minDistance: Array.isArray(minDistanceValue) && minDistanceValue.some((value) => typeof value === "string")
+      ? undefined
+      : numberPartialTriple(findParam(controller, "mindist")),
+    maxDistance: Array.isArray(maxDistanceValue) && maxDistanceValue.some((value) => typeof value === "string")
+      ? undefined
+      : numberPartialTriple(findParam(controller, "maxdist")),
+    ...(Array.isArray(minDistanceValue) && minDistanceValue.some((value) => typeof value === "string")
+      ? { minDistanceExpressions: minDistanceValue }
+      : {}),
+    ...(Array.isArray(maxDistanceValue) && maxDistanceValue.some((value) => typeof value === "string")
+      ? { maxDistanceExpressions: maxDistanceValue }
+      : {}),
     p2ClsnCheck: normalizeMugenCollisionBoxType(findParam(controller, "p2clsncheck")),
     p2ClsnRequire: normalizeMugenCollisionBoxType(findParam(controller, "p2clsnrequire")),
     missOnOverride: booleanNumber(findParam(controller, "missonoverride")),

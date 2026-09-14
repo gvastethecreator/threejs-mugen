@@ -10947,6 +10947,21 @@ value = 0
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.projectile).toBe(1);
   });
 
+  it("evaluates mixed fresh Projectile mindist expressions in the root caller context", () => {
+    const imported = createImportedFixture({
+      id: "dynamic-projectile-mindist-root",
+      withStateMove: false,
+      withProjectile: true,
+      projectileHitDefParams: "mindist = Time + 24, 0",
+    });
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, trainingStage, { effectActorWorld });
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(effectActorWorld.projectiles("p1")[0]?.minDistance).toEqual([24, 0]);
+    expect(effectActorWorld.projectiles("p1")[0]?.minDistance?.[2]).toBeUndefined();
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.projectile).toBe(1);
+  });
+
   it("applies fresh Projectile kill and guard.kill expressions at spawn to hit and guard contact", () => {
     const closeStage = {
       ...trainingStage,

@@ -2183,6 +2183,31 @@ describe("ProjectileSystem", () => {
     expect(literal).toMatchObject({ hitStun: 17, hitPause: 17, hitShakeTime: 4 });
   });
 
+  it("resolves mixed Projectile mindist components once and leaves omitted axes unset", () => {
+    const source = controller({ projanim: "1005", mindist: "var(0), 0" });
+    const operation = compileControllerIr(source).operation as ProjectileControllerOp;
+    expect(operation.minDistanceExpressions).toEqual(["var(0)", 0]);
+    let value = 24;
+    const spawn = () => createRuntimeProjectile({
+      serialId: "p1-projectile-mindist",
+      controller: source,
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveMinDistance: () => [value],
+    });
+    const projectile = spawn();
+    value = 1;
+    expect(projectile.minDistance).toEqual([24, 0]);
+    expect(projectile.minDistance?.[2]).toBeUndefined();
+    expect(spawn().minDistance).toEqual([1, 0]);
+  });
+
   it("resolves fresh Projectile ground.slidetime in the caller context", () => {
     const dynamicOperation = compileControllerIr(controller({ "ground.slidetime": "var(0) + 3" })).operation as ProjectileControllerOp;
     const dynamic = createRuntimeProjectile({

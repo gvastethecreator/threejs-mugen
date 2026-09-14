@@ -373,6 +373,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveFallFlags?: () => Partial<RuntimeProjectileFallFlags> | undefined;
   /** Resolves Projectile ground.velocity authored expressions in the original caller context. */
   resolveGroundVelocity?: () => [number?, number?, number?] | undefined;
+  resolveMinDistance?: () => [number?, number?, number?] | undefined;
+  resolveMaxDistance?: () => [number?, number?, number?] | undefined;
   /** Resolves Projectile guard.velocity authored expressions in the original caller context. */
   resolveGuardVelocity?: () => [number?, number?, number?] | undefined;
   /** Resolves Projectile air.velocity authored expressions in the original caller context. */
@@ -985,8 +987,12 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const guardPause = Math.max(0, Math.trunc(resolvedGuardPauseTime[0]));
   const guardShakeTime = Math.max(0, Math.trunc(resolvedGuardPauseTime[1]));
   const guardDistanceBounds = runtimeProjectileGuardDistanceBounds(input.controller, operation?.guardDistanceBounds);
-  const minDistance = operation?.minDistance ?? partialNumberTriple(findControllerParam(input.controller, "mindist"));
-  const maxDistance = operation?.maxDistance ?? partialNumberTriple(findControllerParam(input.controller, "maxdist"));
+  const minDistance = operation?.minDistanceExpressions === undefined
+    ? operation?.minDistance ?? partialNumberTriple(findControllerParam(input.controller, "mindist"))
+    : mergeFreshProjectileDistanceVector(operation.minDistanceExpressions, input.resolveMinDistance?.());
+  const maxDistance = operation?.maxDistanceExpressions === undefined
+    ? operation?.maxDistance ?? partialNumberTriple(findControllerParam(input.controller, "maxdist"))
+    : mergeFreshProjectileDistanceVector(operation.maxDistanceExpressions, input.resolveMaxDistance?.());
   const guardTiming = resolveHitDefGuardTiming({
     groundHitTime: hitStun,
     guardHitTime:
@@ -3478,6 +3484,22 @@ function projectilePaletteRemap(value: string | undefined): [number, number] | u
   const values = value.split(",").map((part) => Number(part.trim()));
   if (values.length !== 2 || !Number.isFinite(values[0]) || !Number.isFinite(values[1])) return undefined;
   return [Math.trunc(values[0]!), Math.trunc(values[1]!)];
+}
+
+function mergeFreshProjectileDistanceVector(
+  expressions: Array<number | string>,
+  resolved: [number?, number?, number?] | undefined,
+): [number?, number?, number?] | undefined {
+  const merged: [number?, number?, number?] = [];
+  let present = false;
+  expressions.forEach((component, index) => {
+    const value = typeof component === "number" ? component : resolved?.[index];
+    if (value !== undefined && Number.isFinite(value)) {
+      merged[index] = value;
+      present = true;
+    }
+  });
+  return present ? merged : undefined;
 }
 
 function cloneRuntimePaletteRemap(value: RuntimePaletteRemap): RuntimePaletteRemap {

@@ -6230,6 +6230,62 @@ function runActiveStateControllers(
                   ];
                 }
               : undefined,
+          resolveProjectileMinDistance:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  const expressions = operation?.minDistanceExpressions;
+                  if (expressions === undefined) return undefined;
+                  const resolveComponent = (value: number | string | undefined): number | undefined => {
+                    if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+                    if (value === undefined) return undefined;
+                    const resolved = resolveDispatchFloat(
+                      undefined,
+                      value,
+                      actor,
+                      targetOpponent,
+                      stateOwner,
+                      stageBounds,
+                      activeTick,
+                      gameSpace,
+                      options.characters,
+                      createPlayerIdTarget(actor),
+                    );
+                    return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
+                  };
+                  return [resolveComponent(expressions[0]), resolveComponent(expressions[1]), resolveComponent(expressions[2])];
+                }
+              : undefined,
+          resolveProjectileMaxDistance:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  const expressions = operation?.maxDistanceExpressions;
+                  if (expressions === undefined) return undefined;
+                  const resolveComponent = (value: number | string | undefined): number | undefined => {
+                    if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+                    if (value === undefined) return undefined;
+                    const resolved = resolveDispatchFloat(
+                      undefined,
+                      value,
+                      actor,
+                      targetOpponent,
+                      stateOwner,
+                      stageBounds,
+                      activeTick,
+                      gameSpace,
+                      options.characters,
+                      createPlayerIdTarget(actor),
+                    );
+                    return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
+                  };
+                  return [resolveComponent(expressions[0]), resolveComponent(expressions[1]), resolveComponent(expressions[2])];
+                }
+              : undefined,
           resolveProjectileGuardVelocity:
             effect === "projectile"
               ? () => {

@@ -80,6 +80,8 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveProjectileFallRecovery?: RuntimeProjectileSpawnInput["resolveFallRecovery"];
   resolveProjectileFallFlags?: RuntimeProjectileSpawnInput["resolveFallFlags"];
   resolveProjectileGroundVelocity?: RuntimeProjectileSpawnInput["resolveGroundVelocity"];
+  resolveProjectileMinDistance?: RuntimeProjectileSpawnInput["resolveMinDistance"];
+  resolveProjectileMaxDistance?: RuntimeProjectileSpawnInput["resolveMaxDistance"];
   resolveProjectileGuardVelocity?: RuntimeProjectileSpawnInput["resolveGuardVelocity"];
   resolveProjectileAirVelocity?: RuntimeProjectileSpawnInput["resolveAirVelocity"];
   resolveProjectileDownVelocity?: RuntimeProjectileSpawnInput["resolveDownVelocity"];
@@ -286,6 +288,8 @@ export class RuntimeEffectSpawnWorld {
     resolveEnvShake?: RuntimeProjectileSpawnInput["resolveEnvShake"],
     resolveFallEnvShake?: RuntimeProjectileSpawnInput["resolveFallEnvShake"],
     resolveGroundVelocity?: RuntimeProjectileSpawnInput["resolveGroundVelocity"],
+    resolveMinDistance?: RuntimeProjectileSpawnInput["resolveMinDistance"],
+    resolveMaxDistance?: RuntimeProjectileSpawnInput["resolveMaxDistance"],
     resolveGuardVelocity?: RuntimeProjectileSpawnInput["resolveGuardVelocity"],
     resolveAirVelocity?: RuntimeProjectileSpawnInput["resolveAirVelocity"],
     resolveDownVelocity?: RuntimeProjectileSpawnInput["resolveDownVelocity"],
@@ -371,6 +375,8 @@ export class RuntimeEffectSpawnWorld {
       resolveFallRecovery,
       resolveFallFlags,
       resolveGroundVelocity,
+      resolveMinDistance,
+      resolveMaxDistance,
       resolveGuardVelocity,
       resolveAirVelocity,
       resolveDownVelocity,
@@ -688,6 +694,8 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveProjectileEnvShake,
         options.resolveProjectileFallEnvShake,
         options.resolveProjectileGroundVelocity,
+        options.resolveProjectileMinDistance,
+        options.resolveProjectileMaxDistance,
         options.resolveProjectileGuardVelocity,
         options.resolveProjectileAirVelocity,
         options.resolveProjectileDownVelocity,

@@ -2531,6 +2531,23 @@ export function resolveRuntimeHelperFloatPairParam(
  * Resolves a Helper-authored Projectile's dynamic fresh ground.velocity vector.
  * Missing components stay undefined so ProjectileSystem can apply fresh zero defaults.
  */
+export function resolveRuntimeHelperProjectileDistanceVector(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  key: "mindist" | "maxdist",
+  options: Parameters<typeof resolveHelperNumber>[3],
+): [number?, number?, number?] | undefined {
+  const operation = controller.operation;
+  if (operation?.kind !== "projectile") return undefined;
+  const expressions = key === "mindist" ? operation.minDistanceExpressions : operation.maxDistanceExpressions;
+  if (expressions === undefined) return undefined;
+  const resolveComponent = (component: number | string | undefined): number | undefined => {
+    if (typeof component === "number") return Number.isFinite(component) ? component : undefined;
+    return component === undefined ? undefined : resolveHelperFloat(helper, component, options);
+  };
+  return [resolveComponent(expressions[0]), resolveComponent(expressions[1]), resolveComponent(expressions[2])];
+}
+
 export function resolveRuntimeHelperProjectileGroundVelocity(
   helper: RuntimeHelper,
   controller: ControllerIr,
