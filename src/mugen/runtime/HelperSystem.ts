@@ -16,6 +16,7 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import type { ExpressionGameSpace } from "./ExpressionEvaluator";
 import { CommandBuffer } from "./CommandBuffer";
 import { matchesMugenStateIdentity, type MugenStateController, type MugenStateDef, type MugenStateSpecial } from "../model/MugenState";
+import { compileExpression } from "../compiler/ExpressionCompiler";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import { createRuntimeSoundEvent, pushRuntimeSoundEvent, type RuntimeResolvedSoundValue } from "./AudioEventSystem";
 import {
@@ -3607,12 +3608,26 @@ function applyHelperParentVariableController(
     if (raw === undefined) {
       return undefined;
     }
+    if (compileExpression(raw).supportLevel === "unsupported") {
+      return undefined;
+    }
     const direct = Number(raw);
-    if (Number.isFinite(direct)) {
+    if (raw.trim() !== "" && Number.isFinite(direct) && !/[A-Za-z_]/.test(raw)) {
       return direct;
     }
-    const evaluated = Number(evaluateExpression(raw, context));
-    return Number.isFinite(evaluated) ? evaluated : undefined;
+    let refused = false;
+    const evaluated = evaluateExpression(raw, {
+      ...context,
+      reportUnsupported: (reason) => {
+        refused = true;
+        context.reportUnsupported?.(reason);
+      },
+    });
+    if (refused) {
+      return undefined;
+    }
+    const numeric = Number(evaluated);
+    return Number.isFinite(numeric) ? numeric : undefined;
   };
   const assignedOp =
     operation && (operation.controllerType === "parentvarset" || operation.controllerType === "parentvaradd")
@@ -3650,11 +3665,16 @@ function applyHelperParentVariableController(
   if (index === undefined || value === undefined || index < 0) {
     return;
   }
+  const integerIndex = Math.trunc(index);
+  const maxIndex = variableType === "fvar" ? 39 : variableType === "sysvar" ? 4 : 59;
+  if (integerIndex < 0 || integerIndex > maxIndex) {
+    return;
+  }
   applyRuntimeVariableAssignment(
     parent,
     {
       variableType,
-      index: Math.round(index),
+      index: integerIndex,
       value: variableType === "fvar" ? value : Math.trunc(value),
     },
     additive,

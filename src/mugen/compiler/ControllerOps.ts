@@ -2485,11 +2485,15 @@ function compileVariableControllerOp(controller: MugenStateController, type: Var
   if (index === undefined || value === undefined || index < 0) {
     return undefined;
   }
+  const integerIndex = type === "parentvarset" || type === "parentvaradd" ? Math.trunc(index) : Math.round(index);
+  if (integerIndex < 0) {
+    return undefined;
+  }
   return {
     kind: "variable",
     controllerType: type,
     variableType,
-    index: Math.round(index),
+    index: integerIndex,
     value,
   };
 }

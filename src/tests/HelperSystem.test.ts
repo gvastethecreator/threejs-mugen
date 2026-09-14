@@ -317,6 +317,40 @@ describe("HelperSystem", () => {
     expect(child.vars[0]).toBe(30);
   });
 
+  it("truncates ParentVar index toward zero and refuses invalid index or value writes", () => {
+    const root = helperRuntimeState(helper({ vars: [10, 11, 12], fvars: [1, 2] }));
+    const parent = helper({
+      serialId: "helper-a",
+      parentId: "p1",
+      vars: [20, 21, 22],
+      fvars: [1.5, 2.5],
+    });
+    const child = helper({
+      serialId: "helper-b",
+      parentId: "helper-a",
+      vars: [30, 31, 32],
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "ParentVarSet", [], { v: "1.9", value: "99" }),
+          compiledControllerIr(6000, "ParentVarSet", [], { v: "-1", value: "7" }),
+          compiledControllerIr(6000, "ParentVarSet", [], { v: "60", value: "8" }),
+          compiledControllerIr(6000, "ParentVarSet", [], { v: "0", value: "1 + * 2" }),
+        ])],
+      },
+    });
+    const sibling = helper({
+      serialId: "helper-c",
+      parentId: "helper-a",
+      vars: [40, 41, 42],
+    });
+    advanceRuntimeHelpers([parent, child, sibling], stage, { parentState: root, rootState: root });
+
+    expect(parent.vars).toEqual([20, 99, 22]);
+    expect(child.vars).toEqual([30, 31, 32]);
+    expect(sibling.vars).toEqual([40, 41, 42]);
+    expect(root.vars).toEqual([10, 11, 12]);
+  });
+
   it("preserves Helper EnvColor finite time above the former local ceiling", () => {
     const parent = helperRuntimeState(helper());
     parent.vars[3] = 241;
