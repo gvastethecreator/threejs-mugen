@@ -694,6 +694,19 @@ class ExpressionParser {
         const right = this.parseUnary();
         const divisor = numeric(right);
         left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : divisor === 0 ? 0 : numeric(left) / divisor;
+      } else if (this.matchOperator("%")) {
+        const right = this.parseUnary();
+        if (isFailedRedirect(left) || isFailedRedirect(right)) {
+          left = failedRedirectMarker;
+        } else {
+          const divisor = Math.trunc(numeric(right));
+          if (divisor === 0) {
+            this.context.reportUnsupported?.("mod(0)");
+            left = failedRedirectMarker;
+          } else {
+            left = Math.trunc(numeric(left)) % divisor;
+          }
+        }
       } else {
         return left;
       }

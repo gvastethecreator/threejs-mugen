@@ -58,6 +58,13 @@ describe("MugenRuntime frame selection", () => {
       }),
     ).toBe(1);
     expect(randomDraws).toEqual([0.25]);
+    expect(evaluateExpression("7 % 3", { self })).toBe(1);
+    expect(evaluateExpression("-7 % 3", { self })).toBe(-1);
+    expect(evaluateExpression("7.9 % 3.2", { self })).toBe(1);
+    expect(evaluateExpression("8 % 4 = 0", { self })).toBe(1);
+    expect(evaluateExpression("7 % 0", { self, reportUnsupported: report })).toBe(0);
+    expect(evaluateExpression("7 % 0 = 0", { self, reportUnsupported: report })).toBe(0);
+    expect(malformed).toContain("mod(0)");
   });
 });
 
