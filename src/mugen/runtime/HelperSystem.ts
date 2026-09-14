@@ -3614,19 +3614,23 @@ function applyHelperParentVariableController(
     const evaluated = Number(evaluateExpression(raw, context));
     return Number.isFinite(evaluated) ? evaluated : undefined;
   };
+  const assignedOp =
+    operation && (operation.controllerType === "parentvarset" || operation.controllerType === "parentvaradd")
+      ? operation
+      : undefined;
   let variableType: "var" | "fvar" | "sysvar" =
-    operation?.variableType === "fvar" || operation?.variableType === "sysvar" || operation?.variableType === "var"
-      ? operation.variableType
+    assignedOp?.variableType === "fvar" || assignedOp?.variableType === "sysvar" || assignedOp?.variableType === "var"
+      ? assignedOp.variableType
       : findControllerParam(controller.source, "fv") !== undefined || findControllerParam(controller.source, "fvar") !== undefined
         ? "fvar"
         : "var";
   let index =
-    operation?.index ??
+    assignedOp?.index ??
     readNumber(
       findControllerParam(controller.source, variableType === "fvar" ? "fv" : "v") ??
         findControllerParam(controller.source, variableType),
     );
-  let value = operation?.value ?? readNumber(findControllerParam(controller.source, "value"));
+  let value = assignedOp?.value ?? readNumber(findControllerParam(controller.source, "value"));
   if (index === undefined || value === undefined) {
     for (const [key, rawValue] of Object.entries(controller.params)) {
       const match = /^(sysvar|f?var)\((\d+)\)$/i.exec(key.trim());

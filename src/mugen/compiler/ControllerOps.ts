@@ -1363,14 +1363,28 @@ export type ResourceControllerOp =
 export type VariableControllerOp =
   | {
       kind: "variable";
-      controllerType: "varset" | "parentvarset";
+      controllerType: "varset";
       variableType: "var" | "fvar" | "sysvar";
       index: number;
       value: number;
     }
   | {
       kind: "variable";
-      controllerType: "varadd" | "parentvaradd";
+      controllerType: "parentvarset";
+      variableType: "var" | "fvar" | "sysvar";
+      index: number;
+      value: number;
+    }
+  | {
+      kind: "variable";
+      controllerType: "varadd";
+      variableType: "var" | "fvar" | "sysvar";
+      index: number;
+      value: number;
+    }
+  | {
+      kind: "variable";
+      controllerType: "parentvaradd";
       variableType: "var" | "fvar" | "sysvar";
       index: number;
       value: number;
